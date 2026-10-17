@@ -567,12 +567,16 @@ a surface that changes the background behind its children publishes the
 surface context (`--kui-color-surface-current`, `-region`, and `-tint`; see
 `docs/component-contract.md`), and the line layers it the same way the page
 does. On a sunken panel, a quiet `ContentItem`, a lowered `FramedList`, a
-raised `List`, popup, or dialog, or a sunken Pane, Workbench area, or
-TabNavigator scene, the line matches the pixels outside the box, so it reads
-as a cut through the fill instead of a light halo. On a doubly sunken surface
-the brand ring still clears 3:1 against the line (about 3.2:1 in light, 6.9:1
-in dark). A sunken surface's grain is not part of the line, and a translucent
-glass material, which has no single color, falls back to the base surface.
+raised `List`, popup, or dialog, a highlighted `FramedList` row, a sunken
+Pane, Workbench area, or TabNavigator scene, or a Pane or TabNavigator app
+`background`, the line matches the pixels outside the box, so it reads as a
+cut through the fill instead of a light halo. On a doubly sunken surface the
+brand ring still clears 3:1 against the line (about 3.2:1 in light, 6.9:1 in
+dark). A sunken surface's grain is not part of the line. Translucent glass
+chrome (an overlay header, bar, or bottom toolbar, a dialog's floating
+header) has no single color over scrolling content, so the line paints the
+material over the surface beneath it: exact at rest, an approximation while
+content scrolls under the bar.
 
 ## Checkbox, RadioGroup, and Switch
 

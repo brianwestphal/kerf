@@ -70,6 +70,13 @@
 
 .kui-tab-scaffold__scene[data-background] {
   background: var(--_kui-tab-scaffold-scene-background);
+  --kui-color-surface-current-region: var(--_kui-tab-scaffold-scene-background);
+}
+
+/* The navigator's color paints its root and a docked bar over whatever holds
+   the navigator: a region in the surface context. */
+.kui-tab-scaffold[data-background] {
+  --kui-color-surface-current-region: var(--_kui-tab-scaffold-background);
 }
 
 @media (forced-colors: active) {
@@ -211,6 +218,15 @@
   -webkit-backdrop-filter: var(--kui-chrome-material-filter);
   backdrop-filter: var(--kui-chrome-material-filter);
   background: var(--kui-chrome-material);
+}
+
+/* The material's surface context at rest (see pane.css); a clear bar keeps
+   the inherited context. */
+.kui-tab-scaffold[data-bar-presentation="overlay"]:not(
+    [data-bar-material="clear"]
+  )
+  > .kui-tab-scaffold__bar {
+  --kui-color-surface-current-tint: var(--kui-chrome-material);
 }
 
 .kui-tab-scaffold[data-bar-presentation="overlay"][data-bar-overlay="measured"] {

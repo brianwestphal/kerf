@@ -53,15 +53,24 @@ describe('layout backgrounds', () => {
     const css = rules('layout/pane/pane.css');
     expect(
       css.find((rule) => rule.selector === '.kui-pane[data-background]')?.decls,
-    ).toEqual(['background:var(--_kui-pane-background)']);
+    ).toEqual([
+      'background:var(--_kui-pane-background)',
+      // The app color is a region in the surface context (foundation.css).
+      '--kui-color-surface-current-region:var(--_kui-pane-background)',
+    ]);
     expect(
-      css.find(
-        (rule) =>
-          rule.selector.startsWith(
-            '.kui-pane[data-background][data-appearance="sunken"] > .kui-pane__content',
-          ) && rule.decls.includes('background:transparent'),
-      ),
-    ).toBeDefined();
+      css.find((rule) =>
+        rule.selector.startsWith(
+          '.kui-pane[data-background][data-appearance="sunken"] > .kui-pane__content',
+        ),
+      )?.decls,
+    ).toEqual([
+      // The transparent slots keep the root's surface context.
+      '--kui-color-surface-current:inherit',
+      '--kui-color-surface-current-region:inherit',
+      '--kui-color-surface-current-tint:inherit',
+      'background:transparent',
+    ]);
     expect(
       css.find(
         (rule) =>
@@ -164,6 +173,15 @@ describe('layout backgrounds', () => {
       css.find(
         (rule) => rule.selector === '.kui-tab-scaffold__scene[data-background]',
       )?.decls,
-    ).toEqual(['background:var(--_kui-tab-scaffold-scene-background)']);
+    ).toEqual([
+      'background:var(--_kui-tab-scaffold-scene-background)',
+      '--kui-color-surface-current-region:var(--_kui-tab-scaffold-scene-background)',
+    ]);
+    expect(
+      css.find((rule) => rule.selector === '.kui-tab-scaffold[data-background]')
+        ?.decls,
+    ).toEqual([
+      '--kui-color-surface-current-region:var(--_kui-tab-scaffold-background)',
+    ]);
   });
 });

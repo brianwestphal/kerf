@@ -424,11 +424,17 @@ background behind its children publishes, on its own painted element, the
 foundation tokens `--kui-color-surface-current` (the opaque surface beneath:
 a raised `DialogSurface`, popover dialog, `AnchoredSurface`, or `List`
 `surface`, and a sunken Pane's opaque auto chrome, set it and clear both
-layers), `--kui-color-surface-current-region` (a layout region's translucent
-fill: a sunken `Pane`, `Workbench` area, or `TabNavigator` scene), and
-`--kui-color-surface-current-tint` (a content surface's translucent fill: a
-`SunkenPanel`, a sunken `Disclosure`, a lowered `FramedList`, a quiet,
-hovered, pressed, or selected `ContentItem`). They are undeclared at `:root`
+layers), `--kui-color-surface-current-region` (a layout region's fill: a sunken
+`Pane`, `Workbench` area, or `TabNavigator` scene, and a `Pane`'s or
+`TabNavigator`'s app `background`), and `--kui-color-surface-current-tint` (a
+content surface's fill: a `SunkenPanel`, a sunken `Disclosure`, a lowered
+`FramedList` and its highlighted row, a quiet, hovered, pressed, or selected
+`ContentItem`, a `TabBar` strip, and translucent glass chrome at rest — a
+`Pane` overlay header, `NavStack` overlay chrome or bottom toolbar, a
+`TabNavigator` overlay bar, and a dialog's floating header; clear chrome
+paints nothing and keeps the inherited context). Interactive rows (`ListItem`,
+`ListActionRow`, `SummaryRow`) are buttons or links themselves, so no control
+nests on their hover or selection fill and they publish nothing. They are undeclared at `:root`
 and a scoped `[data-kui-tint]` resets them. A control that must match what
 lies behind it (the inset focus ring's inner line on `Button` and
 `SplitButton`) layers tint over region over the opaque color, falling back to

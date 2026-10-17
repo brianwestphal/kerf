@@ -38,6 +38,12 @@
     --kui-tab-bar-strip-background,
     var(--kui-tab-bar-background)
   );
+  /* The surface context (foundation.css): the strip's fill is a tint over
+     whatever the bar sits on. */
+  --kui-color-surface-current-tint: var(
+    --kui-tab-bar-strip-background,
+    var(--kui-tab-bar-background)
+  );
   scrollbar-width: none;
   align-items: center;
   flex: var(--kui-tab-bar-strip-flex, 1 1 auto);

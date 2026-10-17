@@ -337,6 +337,8 @@ h2.kui-dialog-surface__title {
   -webkit-backdrop-filter: var(--kui-chrome-material-filter);
   backdrop-filter: var(--kui-chrome-material-filter);
   background: var(--kui-chrome-material-raised);
+  /* The material's surface context at rest, over the raised panel. */
+  --kui-color-surface-current-tint: var(--kui-chrome-material-raised);
   /* The divider is scroll state: the register publishes it only while
      content is scrolled beneath the header. An inset shadow, so showing it
      never moves the header or the content. */

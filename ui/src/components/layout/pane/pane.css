@@ -76,11 +76,16 @@
    surface instead. */
 .kui-pane[data-background] {
   background: var(--_kui-pane-background);
+  --kui-color-surface-current-region: var(--_kui-pane-background);
 }
 
+/* The transparent slots keep the root's surface context. */
 .kui-pane[data-background][data-appearance="sunken"] > .kui-pane__content,
 .kui-pane[data-background][data-appearance="sunken"][data-chrome-placement="auto"]
   > :is(.kui-pane__header, .kui-pane__footer) {
+  --kui-color-surface-current: inherit;
+  --kui-color-surface-current-region: inherit;
+  --kui-color-surface-current-tint: inherit;
   background: transparent;
 }
 
@@ -264,6 +269,16 @@
   -webkit-backdrop-filter: var(--kui-chrome-material-filter);
   backdrop-filter: var(--kui-chrome-material-filter);
   background: var(--kui-chrome-material);
+}
+
+/* The material has no single color over scrolling content; the surface
+   context takes it at rest, as a tint over the region it covers. A clear
+   header paints nothing and keeps the inherited context. */
+.kui-pane[data-header-presentation="overlay"]:not(
+    [data-header-material="clear"]
+  )
+  > .kui-pane__header {
+  --kui-color-surface-current-tint: var(--kui-chrome-material);
 }
 
 .kui-pane[data-header-presentation="overlay"][data-header-overlay="measured"]:not(

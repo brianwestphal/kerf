@@ -224,6 +224,19 @@
   background: var(--kui-chrome-material);
 }
 
+/* The material's surface context at rest (see pane.css); clear chrome keeps
+   the inherited context. */
+.kui-nav-stack[data-chrome-presentation="overlay"]:not(
+    [data-chrome-material="clear"]
+  )
+  > .kui-nav-stack__chrome,
+.kui-nav-stack[data-bottom-toolbar-presentation="overlay"]:not(
+    [data-bottom-toolbar-material="clear"]
+  )
+  > .kui-nav-stack__bottom {
+  --kui-color-surface-current-tint: var(--kui-chrome-material);
+}
+
 .kui-nav-stack[data-chrome-presentation="overlay"][data-chrome-overlay="measured"]
   > .kui-nav-stack__chrome:not(.kui-nav-stack__chrome-copy) {
   position: absolute;

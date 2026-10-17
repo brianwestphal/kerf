@@ -184,12 +184,15 @@
        --kui-color-surface-current: the opaque surface beneath (default
          --kui-color-surface); an opaque surface (a raised dialog or popup, a
          base or raised List) sets it and clears the tint.
-       --kui-color-surface-current-region: a layout region's translucent
-         fill over it (a sunken Pane, Workbench area, or TabNavigator scene;
-         default transparent).
-       --kui-color-surface-current-tint: a content surface's translucent
-         fill over that (a SunkenPanel, a sunken Disclosure, a lowered
-         FramedList, a quiet ContentItem; default transparent).
+       --kui-color-surface-current-region: a layout region's fill over it
+         (a sunken Pane, Workbench area, or TabNavigator scene; a Pane's or
+         TabNavigator's app `background`; default transparent).
+       --kui-color-surface-current-tint: a content surface's fill over that
+         (a SunkenPanel, a sunken Disclosure, a lowered FramedList or its
+         highlighted row, a quiet ContentItem, a TabBar strip, and glass
+         chrome at rest: a Pane overlay header, NavStack overlay chrome, a
+         TabNavigator overlay bar, a dialog's floating header; default
+         transparent).
      A reader layers the tint over the region over the color, so a content
      surface inside a sunken region (the common nesting) composes exactly;
      custom properties cannot fold an inherited value into a new one, so a

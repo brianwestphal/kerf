@@ -48,4 +48,6 @@
 
 .kui-framed-list__row[data-highlighted="true"] {
   background: var(--kui-color-brand-fill-quiet);
+  /* The row's controls sit on the tint, not the list's lowered fill. */
+  --kui-color-surface-current-tint: var(--kui-color-brand-fill-quiet);
 }

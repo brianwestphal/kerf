@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 427800,
+  "totalJavaScriptGzip": 427900,
   "measuredLargestJavaScriptGzip": 164542,
-  "measuredTotalJavaScriptGzip": 427796,
+  "measuredTotalJavaScriptGzip": 427801,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5923,6 +5923,22 @@
         "measuredTotalJavaScriptGzip": 427796,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 427800
+      }
+    },
+    {
+      "at": "2026-10-17T09:34:05.002Z",
+      "reason": "surface-context tokens on TabBar strips, highlighted FramedList rows, Pane/TabNavigator app colors, and glass chrome",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164542,
+        "measuredTotalJavaScriptGzip": 427796,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 427800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164542,
+        "measuredTotalJavaScriptGzip": 427801,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 427900
       }
     }
   ]

@@ -131,9 +131,11 @@ test('an inset focus ring line matches the sunken surface it sits on', async ({
 });
 
 // Every surface that paints behind its children publishes the context on its
-// own element: quiet ContentItem fills, a lowered FramedList, a raised List
-// (opaque, so it resets the tint), and a sunken panel nested in a raised
-// surface (the lowered tint over the raised color, not over the base).
+// own element: quiet ContentItem fills, a lowered FramedList and its
+// highlighted row, a raised List (opaque, so it resets the tint), a sunken
+// panel nested in a raised surface (the lowered tint over the raised color,
+// not over the base), a TabBar strip, a Pane's or TabNavigator's app color
+// (a sunken Pane's transparent content keeps it), and glass chrome at rest.
 const SURFACES = {
   'neutral ContentItem':
     '<div class="kui-content-item" data-appearance="neutral"><div data-slot></div></div>',
@@ -145,6 +147,18 @@ const SURFACES = {
     '<div class="kui-list" data-surface="raised" style="padding: 8px"><div data-slot></div></div>',
   'sunken panel in a raised List':
     '<div class="kui-list" data-surface="raised" style="padding: 8px"><div class="kui-sunken-panel"><div data-slot></div></div></div>',
+  'highlighted FramedList row':
+    '<ul class="kui-framed-list"><li class="kui-framed-list__row" data-highlighted="true"><div data-slot></div></li></ul>',
+  'segmented TabBar strip':
+    '<nav class="kui-tab-bar" data-presentation="segmented"><div class="kui-tab-bar__tabs" style="padding: 8px"><div data-slot></div></div></nav>',
+  'Pane app background':
+    '<div class="kui-pane" data-background style="--_kui-pane-background: light-dark(#dcebe0, #1e3326)"><div class="kui-pane__content" style="padding: 8px"><div data-slot></div></div></div>',
+  'sunken Pane app background':
+    '<div class="kui-pane" data-appearance="sunken" data-background style="--_kui-pane-background: light-dark(#dcebe0, #1e3326)"><div class="kui-pane__content" style="padding: 8px"><div data-slot></div></div></div>',
+  'TabNavigator app background':
+    '<div class="kui-tab-scaffold" data-background style="--_kui-tab-scaffold-background: light-dark(#dcebe0, #1e3326); padding: 8px"><div data-slot></div></div>',
+  'Pane glass overlay header':
+    '<div class="kui-pane" data-header-presentation="overlay"><div class="kui-pane__header" style="padding: 8px"><div data-slot></div></div></div>',
 };
 
 for (const [name, markup] of Object.entries(SURFACES)) {

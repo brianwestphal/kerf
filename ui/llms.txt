@@ -694,7 +694,8 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   box; inside a container that clips overflow, set `focusRingInset` and the
   ring moves inside the box with a surface-colored line inside it, so it keeps
   3:1 contrast even on a loud fill of its own hue. The line follows the
-  surface context sunken, quiet, and raised surfaces publish
+  surface context sunken, quiet, raised, and highlighted surfaces, app
+  `background` colors, and glass chrome publish
   (`--kui-color-surface-current`, `-region`, `-tint`), so it never reads as a
   halo there. Never re-offset the outline from app CSS.
 - **Span a full-width primary action with `fill`.** `<Button tone="brand" fill action="create">Create Project</Button>`
