@@ -34,15 +34,22 @@ test('ColorPicker follows pointer and keyboard input and reports its value', asy
   );
   await expect(hex).toHaveValue('E60000');
 
-  // The hue slider is a native range.
-  const hue = picker.getByRole('slider', { name: 'Hue' });
-  await hue.focus();
+  // RGB shows red, green, blue, and opacity sliders: native ranges that each
+  // change only their own channel.
+  const sliders = picker.getByRole('slider');
+  await expect(sliders).toHaveCount(5);
+  await expect(picker.getByRole('slider', { name: 'Hue' })).toHaveCount(0);
+  const green = picker.getByRole('slider', { name: 'Green' });
+  await green.focus();
   await page.keyboard.press('End');
-  await expect(hue).toHaveValue('360');
+  await expect(green).toHaveValue('255');
+  await expect(hex).toHaveValue('E6FF00');
   await page.keyboard.press('Home');
   await page.keyboard.press('ArrowRight');
-  await expect(hue).toHaveValue('1');
-  await expect(picker.getByRole('textbox', { name: 'Green' })).toHaveValue('4');
+  await expect(green).toHaveValue('1');
+  await expect(green).toHaveAttribute('aria-valuetext', '1');
+  await expect(picker.getByRole('textbox', { name: 'Green' })).toHaveValue('1');
+  await expect(hex).toHaveValue('E60100');
 
   // Hex and channel fields commit on Enter; the model menu switches fields.
   await hex.fill('0A84FF');
@@ -63,6 +70,23 @@ test('ColorPicker follows pointer and keyboard input and reports its value', asy
   await expect(page.locator('input[type="hidden"][name="fill"]')).toHaveValue(
     '#0a84ff80',
   );
+
+  // HSB shows hue, saturation, and brightness sliders; saturation to gray
+  // and back keeps the hue.
+  await expect(picker.getByRole('slider', { name: 'Red' })).toHaveCount(0);
+  const hue = picker.getByRole('slider', { name: 'Hue' });
+  await expect(hue).toHaveAttribute('aria-valuetext', '210°');
+  const saturation = picker.getByRole('slider', {
+    name: 'Saturation',
+    exact: true,
+  });
+  await saturation.focus();
+  await page.keyboard.press('Home');
+  await expect(saturation).toHaveAttribute('aria-valuetext', '0%');
+  await expect(hex).toHaveValue('FFFFFF80');
+  await page.keyboard.press('End');
+  await expect(hue).toHaveValue('210');
+  await expect(hex).toHaveValue('007FFF80');
 
   // A preset applies its color; + adds the current color to User Colors.
   await picker.getByRole('radio', { name: '#34C759' }).check({ force: true });

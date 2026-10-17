@@ -54,7 +54,7 @@ export function ColorPickerDemo() {
     >
       <CatalogExample
         label="Full Picker"
-        note="Drag in the area or use the arrow keys (Shift for larger steps); drag the hue and opacity sliders; type in the channel, hex, or opacity fields and press Enter; switch the model between RGB, HSL, HSB, and Grayscale. Presets and user colors apply their color; + adds the current color to User Colors. The screen sampler appears where the browser offers the EyeDropper API."
+        note="Drag in the area or use the arrow keys (Shift for larger steps); drag the channel sliders (red, green, and blue in RGB; hue, saturation, and lightness or brightness in HSL and HSB; one gray level in Grayscale) and the opacity slider, each track previewing its channel; type in the channel, hex, or opacity fields and press Enter; switch the model between RGB, HSL, HSB, and Grayscale. Presets and user colors apply their color; + adds the current color to User Colors. The screen sampler appears where the browser offers the EyeDropper API."
       >
         <ColorPicker
           id="color-picker-demo"
@@ -78,7 +78,7 @@ export function ColorPickerDemo() {
       </CatalogExample>
       <CatalogExample
         label="Without Opacity"
-        note="alpha false drops the opacity slider and field; the value is always opaque #rrggbb."
+        note="alpha false drops the opacity slider and field, leaving the HSB model its hue, saturation, and brightness sliders; the value is always opaque #rrggbb."
       >
         <ColorPicker
           id="color-picker-demo-opaque"

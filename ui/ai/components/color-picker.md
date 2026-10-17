@@ -4,7 +4,7 @@
 
 `@kerfjs/ui:color-picker` · Kerf UI · component · Controls
 
-A full inline color picker: a saturation and brightness area, hue and opacity sliders, an RGB/HSL/HSB/Grayscale model menu with channel fields, a hex field (8 digits below full opacity) and opacity field, a screen sampler where the EyeDropper API exists, and optional preset and sample swatches.
+A full inline color picker: a saturation and brightness area, a slider per channel of the color model (red, green, and blue; hue, saturation, and lightness or brightness; or one gray level) whose tracks paint the colors each channel produces while the others hold, an opacity slider, an RGB/HSL/HSB/Grayscale model menu that switches the sliders and channel fields together, a hex field (8 digits below full opacity) and opacity field, a screen sampler where the EyeDropper API exists, and optional preset and sample swatches.
 
 ## When to use
 
@@ -25,7 +25,7 @@ Let a person choose any color precisely, by dragging, typing channel or hex valu
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/color-picker` — exports `ColorPicker`, `ColorPickerProps`, `ColorPickerMode`, `ColorPickerSamples`, `ColorPickerRootAttributes`, `colorPickerChannels`, `colorPickerAreaText`, `colorPickerStyle`.
+- JavaScript: `@kerfjs/ui/color-picker` — exports `ColorPicker`, `ColorPickerProps`, `ColorPickerMode`, `ColorPickerSamples`, `ColorPickerRootAttributes`, `colorPickerChannels`, `colorPickerSlider`, `ColorPickerSliderState`, `colorPickerAreaText`, `colorPickerStyle`.
 - CSS: the browser build of `@kerfjs/ui/color-picker` pulls its CSS automatically; import `@kerfjs/ui/color-picker.css` manually only without the `browser` export condition.
 - Wiring: `wireColorPickers` from `@kerfjs/ui/wire-color-pickers` (required).
 - Declared side effects: browser-condition-css.
@@ -37,7 +37,7 @@ Exact prop names and types: [`@kerfjs/ui/color-picker`](../public-api-signatures
 **Variants (configure, do not restyle):**
 
 - with or without opacity
-- RGB, HSL, HSB, or Grayscale channel fields
+- RGB, HSL, HSB, or Grayscale channel sliders and fields
 - presets and titled sample groups with an add button
 - screen sampler where the EyeDropper API exists
 - disabled
@@ -66,20 +66,20 @@ Exact prop names and types: [`@kerfjs/ui/color-picker`](../public-api-signatures
 
 Margin: none · border: self · padding: self (layout role: controls). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
-- The panel takes the shared block-content inset and a 320px maximum width; its rows are 12px apart.
+- The panel takes the shared block-content inset and a 320px maximum width; its rows are 12px apart and its sliders form one group 8px apart.
 
 ## Accessibility
 
 - The area is a slider named Saturation and Brightness with a spoken value; the arrow keys move it (Shift for 10% steps), Page Up and Down change brightness, Home and End saturation.
-- Hue and opacity are native range inputs; every field is named (Red, Hue, Hex Color, Opacity); the picker is a named group.
+- Every channel slider and the opacity slider is a native range input named for its channel (Red, Hue, Lightness, Gray Level, Opacity) with a spoken value in the channel's unit (210°, 40%, or a 0–255 byte); every field is named (Red, Hue, Hex Color, Opacity); the picker is a named group.
 
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.
 
-Public class hooks (select for layout placement only, never to change the component's look): `kui-color-picker`, `kui-color-picker__surface`, `kui-color-picker__area`, `kui-color-picker__area-thumb`, `kui-color-picker__hue`, `kui-color-picker__opacity`, `kui-color-picker__controls`, `kui-color-picker__mode-wrap`, `kui-color-picker__mode-icon`, `kui-color-picker__mode`, `kui-color-picker__tool`, `kui-color-picker__channels`, `kui-color-picker__hex-row`, `kui-color-picker__field`, `kui-color-picker__field-label`, `kui-color-picker__field--hex`.
+Public class hooks (select for layout placement only, never to change the component's look): `kui-color-picker`, `kui-color-picker__surface`, `kui-color-picker__area`, `kui-color-picker__area-thumb`, `kui-color-picker__sliders`, `kui-color-picker__slider`, `kui-color-picker__opacity`, `kui-color-picker__controls`, `kui-color-picker__mode-wrap`, `kui-color-picker__mode-icon`, `kui-color-picker__mode`, `kui-color-picker__tool`, `kui-color-picker__channels`, `kui-color-picker__hex-row`, `kui-color-picker__field`, `kui-color-picker__field-label`, `kui-color-picker__field--hex`.
 
-Never put `kui-color-picker`, `kui-color-picker__surface`, `kui-color-picker__area`, `kui-color-picker__area-thumb`, `kui-color-picker__hue`, `kui-color-picker__opacity`, `kui-color-picker__controls`, `kui-color-picker__mode-wrap`, `kui-color-picker__mode-icon`, `kui-color-picker__mode`, `kui-color-picker__tool`, `kui-color-picker__channels`, `kui-color-picker__hex-row`, `kui-color-picker__field`, `kui-color-picker__field-label`, `kui-color-picker__field--hex` on an element you write; render `ColorPicker` instead (`KUI-L103`).
+Never put `kui-color-picker`, `kui-color-picker__surface`, `kui-color-picker__area`, `kui-color-picker__area-thumb`, `kui-color-picker__sliders`, `kui-color-picker__slider`, `kui-color-picker__opacity`, `kui-color-picker__controls`, `kui-color-picker__mode-wrap`, `kui-color-picker__mode-icon`, `kui-color-picker__mode`, `kui-color-picker__tool`, `kui-color-picker__channels`, `kui-color-picker__hex-row`, `kui-color-picker__field`, `kui-color-picker__field-label`, `kui-color-picker__field--hex` on an element you write; render `ColorPicker` instead (`KUI-L103`).
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

@@ -24,7 +24,7 @@ instead; `LucideIcon` and
 use them; `ResizableRegion` and the whole-screen layouts (`NavStack`,
 `SplitView`, `Workbench`, `TabNavigator`) and the `Catalog` shell are
 interaction-/viewport-driven screens rather than component cards — the live UX
-catalog and the app-layouts docs cover those. `ColorPicker` is templated from stand-ins: its area and hue and opacity tracks are CSS gradients and range-input pseudo-elements a static capture cannot keep, so the templates draw them as inline SVG gradients and checker squares from the picker's own values (`staticColorPicker`). For the same reason the `Slider` templates draw
+catalog and the app-layouts docs cover those. `ColorPicker` is templated from stand-ins: its area and its channel and opacity tracks are CSS gradients and range-input pseudo-elements a static capture cannot keep, so the templates draw them as inline SVG gradients and checker squares from the picker's own values (`staticColorPicker`). For the same reason the `Slider` templates draw
 its track, fill, and thumb with template-only stand-in elements built from
 the Slider's own tokens and fill value (`staticRange` in
 `scripts/build-design-templates.mjs`). The `ColorField` templates likewise draw the swatch's checkerboard with plain squares (`staticSwatch`), since the capture would embed its conic gradient as a nested SVG.

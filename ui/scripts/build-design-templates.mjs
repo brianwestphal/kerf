@@ -645,7 +645,7 @@ export const COMPONENTS = {
       {
         id: 'rgb',
         label: 'RGB with Presets',
-        height: 470,
+        height: 530,
         render: () =>
           staticColorPicker(
             ColorPicker({
@@ -666,6 +666,21 @@ export const COMPONENTS = {
                 label: value.toUpperCase(),
                 color: fillColor(value),
               })),
+            }),
+          ),
+      },
+      {
+        id: 'hsb',
+        label: 'HSB with Opacity',
+        height: 490,
+        render: () =>
+          staticColorPicker(
+            ColorPicker({
+              id: 'dt-accent',
+              label: 'Accent Color',
+              value: '#34c759',
+              mode: 'hsb',
+              eyedropper: false,
             }),
           ),
       },
@@ -2064,10 +2079,10 @@ function staticRange(markup) {
   );
 }
 
-// A ColorPicker paints its area and its hue and opacity tracks with CSS
+// A ColorPicker paints its area and its channel and opacity tracks with CSS
 // gradients on range inputs, which the capture cannot keep as vectors.
 // Template-only: draw them as inline SVG gradients (and an SVG checkerboard
-// pattern) from the picker's own hue, saturation, brightness, and opacity.
+// pattern) from the picker's own hue, channel tracks, and opacity.
 function staticColorPicker(markup) {
   const source = String(markup);
   const value = (name) =>
@@ -2087,9 +2102,26 @@ function staticColorPicker(markup) {
   ).join('');
   const track = (id, stops, under = '') =>
     `<span class="dt-picker-track"><svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="${id}-clip"><rect width="300" height="12" rx="6"/></clipPath><linearGradient id="${id}">${stops}</linearGradient></defs><g clip-path="url(#${id}-clip)">${under}</g><rect width="300" height="12" rx="6" fill="url(#${id})"/></svg></span>`;
-  const rainbow = ['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#f00']
-    .map((stop, index) => `<stop offset="${index / 6}" stop-color="${stop}"/>`)
-    .join('');
+  // A channel slider's inline style carries its track stops and thumb color;
+  // a slot the model does not use is hidden and drops out.
+  const channelSlider = (input) => {
+    if (/\shidden[\s=>]/.test(input)) return '';
+    const attr = (name) => new RegExp(`${name}="([^"]*)"`).exec(input)[1];
+    const style = attr('style');
+    const stops = /linear-gradient\(to right,([^)]*)\)/
+      .exec(style)[1]
+      .split(',');
+    const fill = /--_kui-color-picker-thumb-color:(#[0-9a-f]+)/.exec(style)[1];
+    return `<div class="dt-picker-range">${track(
+      `dt-channel-${attr('data-slider')}`,
+      stops
+        .map(
+          (stop, index) =>
+            `<stop offset="${index / (stops.length - 1)}" stop-color="${stop}"/>`,
+        )
+        .join(''),
+    )}${thumb(Number(attr('value')) / Number(attr('max')), fill)}</div>`;
+  };
   const thumb = (fraction, fill) =>
     `<span class="dt-picker-thumb" style="--dt-fraction:${fraction};background:${fill}"></span>`;
   return raw(
@@ -2099,10 +2131,7 @@ function staticColorPicker(markup) {
         '<span class="kui-color-picker__area-thumb"></span>',
         `<span class="dt-picker-area"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="dt-area-hue"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="${hue}"/></linearGradient><linearGradient id="dt-area-dark" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#000"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient></defs><rect width="100" height="100" fill="url(#dt-area-hue)"/><rect width="100" height="100" fill="url(#dt-area-dark)"/></svg></span><span class="kui-color-picker__area-thumb"></span>`,
       )
-      .replace(
-        /<input class="kui-color-picker__hue"[^>]*>/,
-        `<div class="dt-picker-range">${track('dt-hue', rainbow)}${thumb(h / 360, hue)}</div>`,
-      )
+      .replace(/<input class="kui-color-picker__slider"[^>]*>/g, channelSlider)
       .replace(
         /<input class="kui-color-picker__opacity"[^>]*>/,
         `<div class="dt-picker-range">${track(

@@ -5805,22 +5805,45 @@ interface ColorPickerProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-/** The labels, accessible names, and maximum of each channel field per mode. */
+/**
+ * The labels, accessible names, maximum, and spoken unit of each channel per
+ * mode; the mode's sliders and fields both follow it.
+ */
 declare const COLOR_PICKER_CHANNELS: Record<ColorPickerMode, readonly {
     short: string;
     name: string;
     max: number;
+    unit: '' | '%' | '°';
 }[]>;
 /** The rounded channel values a mode shows for an HSV color. */
 declare function colorPickerChannels(mode: ColorPickerMode, hsv: Hsva): number[];
+/** One channel slider's attributes; see {@link colorPickerSlider}. */
+interface ColorPickerSliderState {
+    max: number;
+    value: string;
+    label: string;
+    valueText: string;
+    style: string;
+}
+/**
+ * The attributes of one channel slider for a mode's exact channel values:
+ * its range, value, accessible name and spoken value, and an inline style
+ * with the track gradient of the colors that channel produces while the
+ * others hold and the color under the thumb.
+ * `undefined` for a slot the mode does not use.
+ */
+declare function colorPickerSlider(mode: ColorPickerMode, index: number, values: readonly number[]): ColorPickerSliderState | undefined;
 /** The area's spoken value. */
 declare function colorPickerAreaText(hsv: Hsva): string;
 /** The CSS custom properties that place the thumbs and paint the tracks. */
 declare function colorPickerStyle(hsv: Hsva): string;
 /**
- * A full color picker panel: a saturation and brightness area, a hue slider,
- * an optional opacity slider on a checkerboard, a color-model menu (RGB, HSL,
- * HSB, Grayscale) with its channel fields, a hex field (8 digits below full
+ * A full color picker panel: a saturation and brightness area; a slider for
+ * each channel of the color model (red, green, and blue; hue, saturation, and
+ * lightness or brightness; or one gray level), each track painting the colors
+ * that channel produces while the others hold; an optional opacity slider on
+ * a checkerboard; a color-model menu (RGB, HSL, HSB, Grayscale) with its
+ * channel fields, a hex field (8 digits below full
  * opacity) and an opacity field, an optional screen sampler (EyeDropper), and
  * optional preset and sample swatches. The controlled `value` renders it;
  * wire `wireColorPickers` from `@kerfjs/ui/wire-color-pickers` to make it
@@ -5830,7 +5853,7 @@ declare function colorPickerStyle(hsv: Hsva): string;
  */
 declare function ColorPicker({ id, label, value, mode, alpha, name, form, eyedropper, presets, samples, addSampleAction, disabled, className, rootAttributes, slot, }: ColorPickerProps): kerfjs.SafeHtml;
 
-export { COLOR_PICKER_CHANNELS, COLOR_PICKER_SWATCH_ACTION, ColorPicker, type ColorPickerMode, type ColorPickerProps, type ColorPickerRootAttributes, type ColorPickerSamples, colorPickerAreaText, colorPickerChannels, colorPickerStyle };
+export { COLOR_PICKER_CHANNELS, COLOR_PICKER_SWATCH_ACTION, ColorPicker, type ColorPickerMode, type ColorPickerProps, type ColorPickerRootAttributes, type ColorPickerSamples, type ColorPickerSliderState, colorPickerAreaText, colorPickerChannels, colorPickerSlider, colorPickerStyle };
 ```
 
 ## `@kerfjs/ui/color-field`

@@ -3,7 +3,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
   ColorPicker,
+  colorPickerChannels,
   type ColorPickerMode,
+  colorPickerSlider,
 } from '../../src/components/forms/color-picker/color-picker.js';
 import { wireColorPickers } from '../../src/components/forms/color-picker/wiring/wire-color-pickers.js';
 import { fillColor } from '../../src/shared/styles/css-values.js';
@@ -44,8 +46,42 @@ describe('ColorPicker', () => {
       'Saturation 0%, brightness 85%',
     );
     expect(
-      root.querySelector<HTMLInputElement>('.kui-color-picker__hue')!.value,
-    ).toBe('0');
+      [
+        ...root.querySelectorAll<HTMLInputElement>('.kui-color-picker__slider'),
+      ].map((s) => [
+        s.getAttribute('aria-label'),
+        s.max,
+        s.value,
+        s.getAttribute('aria-valuetext'),
+        s.hidden,
+        s.getAttribute('style'),
+      ]),
+    ).toEqual([
+      [
+        'Red',
+        '255',
+        '216',
+        '216',
+        false,
+        '--_kui-color-picker-track:linear-gradient(to right,#00d8d8,#ffd8d8);--_kui-color-picker-thumb-color:#d8d8d8',
+      ],
+      [
+        'Green',
+        '255',
+        '216',
+        '216',
+        false,
+        '--_kui-color-picker-track:linear-gradient(to right,#d800d8,#d8ffd8);--_kui-color-picker-thumb-color:#d8d8d8',
+      ],
+      [
+        'Blue',
+        '255',
+        '216',
+        '216',
+        false,
+        '--_kui-color-picker-track:linear-gradient(to right,#d8d800,#d8d8ff);--_kui-color-picker-thumb-color:#d8d8d8',
+      ],
+    ]);
     expect(
       root.querySelector<HTMLInputElement>('.kui-color-picker__opacity')!.value,
     ).toBe('50');
@@ -108,6 +144,79 @@ describe('ColorPicker', () => {
       ['Brightness', '60'],
     ]);
     expect(fields('gray')).toEqual([['Gray Level', '36']]);
+    const sliders = (mode: ColorPickerMode) =>
+      [
+        ...render(
+          ColorPicker({ id: 'p', label: 'P', value: '#336699', mode }),
+        ).querySelectorAll<HTMLInputElement>('.kui-color-picker__slider'),
+      ]
+        .filter((s) => !s.hidden)
+        .map((s) => [
+          s.getAttribute('aria-label'),
+          s.max,
+          s.value,
+          s.getAttribute('aria-valuetext'),
+          /--_kui-color-picker-track:([^;]+)/.exec(
+            s.getAttribute('style')!,
+          )![1],
+        ]);
+    // Each track is the colors its channel produces while the others hold:
+    // hue breaks every 60°, HSL lightness at 50%.
+    expect(sliders('hsb')).toEqual([
+      [
+        'Hue',
+        '360',
+        '210',
+        '210°',
+        'linear-gradient(to right,#993333,#999933,#339933,#339999,#333399,#993399,#993333)',
+      ],
+      [
+        'Saturation',
+        '100',
+        '67',
+        '67%',
+        'linear-gradient(to right,#999999,#004d99)',
+      ],
+      [
+        'Brightness',
+        '100',
+        '60',
+        '60%',
+        'linear-gradient(to right,#000000,#55aaff)',
+      ],
+    ]);
+    expect(sliders('hsl')).toEqual([
+      [
+        'Hue',
+        '360',
+        '210',
+        '210°',
+        'linear-gradient(to right,#993333,#999933,#339933,#339999,#333399,#993399,#993333)',
+      ],
+      [
+        'Saturation',
+        '100',
+        '50',
+        '50%',
+        'linear-gradient(to right,#666666,#0066cc)',
+      ],
+      [
+        'Lightness',
+        '100',
+        '40',
+        '40%',
+        'linear-gradient(to right,#000000,#4080bf,#ffffff)',
+      ],
+    ]);
+    expect(sliders('gray')).toEqual([
+      [
+        'Gray Level',
+        '100',
+        '36',
+        '36%',
+        'linear-gradient(to right,#000000,#ffffff)',
+      ],
+    ]);
     const host = render(
       ColorPicker({
         id: 'q',
@@ -166,6 +275,23 @@ describe('ColorPicker', () => {
       )!.checked,
     ).toBe(true);
     expect(root.querySelector('input[type="hidden"]')).toBeNull();
+  });
+});
+
+describe('ColorPicker channel helpers', () => {
+  it('rounds each model’s channels and describes a slider, or nothing for an unused slot', () => {
+    const hsv = { h: 210.4, s: 2 / 3, v: 0.6, a: 1 };
+    expect(colorPickerChannels('rgb', hsv)).toEqual([51, 101, 153]);
+    expect(colorPickerChannels('hsb', hsv)).toEqual([210, 67, 60]);
+    expect(colorPickerSlider('gray', 1, [40])).toBeUndefined();
+    expect(colorPickerSlider('hsb', 0, [210.4, 66.67, 60])).toEqual(
+      expect.objectContaining({
+        max: 360,
+        value: '210',
+        label: 'Hue',
+        valueText: '210°',
+      }),
+    );
   });
 });
 
@@ -253,7 +379,7 @@ describe('wireColorPickers', () => {
   });
 
   it('follows the hue and opacity sliders and reports kui-color events', () => {
-    const t = setup('#ff0000');
+    const t = setup('#ff0000', 'hsb');
     const events: string[] = [];
     t.host.addEventListener('kui-color-input', (e) =>
       events.push(`input ${(e as CustomEvent).detail.value}`),
@@ -261,7 +387,8 @@ describe('wireColorPickers', () => {
     t.host.addEventListener('kui-color-change', (e) =>
       events.push(`change ${(e as CustomEvent).detail.value}`),
     );
-    const hue = t.q<HTMLInputElement>('.kui-color-picker__hue');
+    const hue = t.q<HTMLInputElement>('[data-slider="0"]');
+    expect(hue.getAttribute('aria-label')).toBe('Hue');
     hue.value = '120';
     hue.dispatchEvent(new Event('input', { bubbles: true }));
     hue.dispatchEvent(new Event('change', { bubbles: true }));
@@ -375,6 +502,125 @@ describe('wireColorPickers', () => {
     red.checked = true;
     red.dispatchEvent(new Event('change', { bubbles: true }));
     expect(t.value.value).toBe('#ff0000');
+    t.stop();
+    t.dispose();
+  });
+
+  it('follows the model with its sliders and round-trips channel edits across mode switches without drift', () => {
+    const t = setup('#3366cc');
+    const select = t.q<HTMLSelectElement>('.kui-color-picker__mode');
+    const switchTo = (mode: ColorPickerMode) => {
+      select.value = mode;
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+    const slider = (i: number) =>
+      t.q<HTMLInputElement>(`.kui-color-picker__slider[data-slider="${i}"]`);
+    const drag = (input: HTMLInputElement, ...values: string[]) => {
+      for (const value of values) {
+        input.value = value;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+    const shown = () =>
+      [
+        ...t.host.querySelectorAll<HTMLInputElement>(
+          '.kui-color-picker__slider',
+        ),
+      ]
+        .filter((s) => !s.hidden)
+        .map((s) => `${s.getAttribute('aria-label')} ${s.value}`);
+    const fields = () =>
+      [
+        ...t.host.querySelectorAll<HTMLInputElement>(
+          '.kui-color-picker__channel',
+        ),
+      ]
+        .filter((f) => !f.closest('label')!.hidden)
+        .map((f) => f.value);
+
+    // Switching models alone never changes the color.
+    expect(shown()).toEqual(['Red 51', 'Green 102', 'Blue 204']);
+    for (const mode of ['hsl', 'hsb', 'gray', 'rgb'] as const) switchTo(mode);
+    expect(t.onChange.mock.calls.map(([change]) => change.value)).toEqual([
+      '#3366cc',
+      '#3366cc',
+      '#3366cc',
+      '#3366cc',
+    ]);
+    expect(shown()).toEqual(['Red 51', 'Green 102', 'Blue 204']);
+
+    // RGB: drag red away and back; the fields and the other tracks follow.
+    drag(slider(0), '100', '200');
+    expect(t.value.value).toBe('#c866cc');
+    expect(fields()).toEqual(['200', '102', '204']);
+    expect(slider(1).getAttribute('style')).toContain(
+      '--_kui-color-picker-track:linear-gradient(to right,#c800cc,#c8ffcc)',
+    );
+    drag(slider(0), '51');
+    expect(t.value.value).toBe('#3366cc');
+
+    // HSB: saturation to gray and back keeps the hue.
+    switchTo('hsb');
+    expect(shown()).toEqual(['Hue 220', 'Saturation 75', 'Brightness 80']);
+    drag(slider(1), '40', '0');
+    expect(t.value.value).toBe('#cccccc');
+    expect(slider(0).getAttribute('style')).toContain(
+      '--_kui-color-picker-track:linear-gradient(to right,#cccccc,#cccccc,#cccccc,#cccccc,#cccccc,#cccccc,#cccccc)',
+    );
+    drag(slider(1), '75');
+    expect(t.value.value).toBe('#3366cc');
+    // Brightness to black and back keeps the saturation too.
+    drag(slider(2), '0');
+    expect(t.value.value).toBe('#000000');
+    drag(slider(2), '80');
+    expect(t.value.value).toBe('#3366cc');
+
+    // HSL: lightness to black, an opacity change there, and back keeps the
+    // saturation the HSV state cannot carry at black.
+    switchTo('hsl');
+    expect(shown()).toEqual(['Hue 220', 'Saturation 60', 'Lightness 50']);
+    drag(slider(2), '0');
+    expect(t.value.value).toBe('#000000');
+    expect(shown()).toEqual(['Hue 220', 'Saturation 60', 'Lightness 0']);
+    drag(t.q<HTMLInputElement>('.kui-color-picker__opacity'), '50');
+    expect(shown()).toEqual(['Hue 220', 'Saturation 60', 'Lightness 0']);
+    drag(slider(2), '100');
+    expect(t.value.value).toBe('#ffffff80');
+    drag(slider(2), '50');
+    expect(t.value.value).toBe('#3366cc80');
+    // A channel field and its slider are one channel.
+    const lightness = t.q<HTMLInputElement>('[data-channel="2"]');
+    lightness.value = '40';
+    lightness.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Enter',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(slider(2).value).toBe('40');
+    expect(slider(2).getAttribute('aria-valuetext')).toBe('40%');
+    lightness.value = '50';
+    lightness.dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+    expect(t.value.value).toBe('#3366cc80');
+
+    // Grayscale: one slider; the others hide. Back in HSB the hue survives.
+    switchTo('gray');
+    expect(shown()).toEqual(['Gray Level 39']);
+    expect(slider(1).hidden).toBe(true);
+    // Its thumb shows the gray the slider would set, not the current color.
+    expect(slider(0).getAttribute('style')).toContain(
+      '--_kui-color-picker-thumb-color:#626262',
+    );
+    drag(slider(0), '50');
+    expect(t.value.value).toBe('#80808080');
+    switchTo('hsb');
+    expect(shown()).toEqual(['Hue 220', 'Saturation 0', 'Brightness 50']);
+    drag(slider(1), '75');
+    switchTo('rgb');
+    expect(shown()).toEqual(['Red 32', 'Green 64', 'Blue 128']);
+    expect(slider(2).getAttribute('aria-valuetext')).toBe('128');
     t.stop();
     t.dispose();
   });
@@ -531,8 +777,10 @@ describe('wireColorPickers', () => {
     );
     expect(value.value).toBe('#ffffff');
     expect(
-      host.querySelector<HTMLInputElement>('.kui-color-picker__hue')!.value,
-    ).toBe('60');
+      host
+        .querySelector<HTMLElement>('.kui-color-picker__surface')!
+        .getAttribute('style'),
+    ).toContain('--_kui-color-picker-h:60.00');
     // Disabled: the area takes no pointer or keys.
     disabled.value = true;
     const before = onInput.mock.calls.length;

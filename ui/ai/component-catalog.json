@@ -5732,7 +5732,7 @@
       "category": "Controls",
       "kind": "component",
       "source": "kerf",
-      "description": "A full inline color picker: a saturation and brightness area, hue and opacity sliders, an RGB/HSL/HSB/Grayscale model menu with channel fields, a hex field (8 digits below full opacity) and opacity field, a screen sampler where the EyeDropper API exists, and optional preset and sample swatches.",
+      "description": "A full inline color picker: a saturation and brightness area, a slider per channel of the color model (red, green, and blue; hue, saturation, and lightness or brightness; or one gray level) whose tracks paint the colors each channel produces while the others hold, an opacity slider, an RGB/HSL/HSB/Grayscale model menu that switches the sliders and channel fields together, a hex field (8 digits below full opacity) and opacity field, a screen sampler where the EyeDropper API exists, and optional preset and sample swatches.",
       "uses": [
         "color-swatches",
         "lucide-icon"
@@ -5745,6 +5745,8 @@
         "ColorPickerSamples",
         "ColorPickerRootAttributes",
         "colorPickerChannels",
+        "colorPickerSlider",
+        "ColorPickerSliderState",
         "colorPickerAreaText",
         "colorPickerStyle"
       ],
@@ -5771,21 +5773,21 @@
       ],
       "variants": [
         "with or without opacity",
-        "RGB, HSL, HSB, or Grayscale channel fields",
+        "RGB, HSL, HSB, or Grayscale channel sliders and fields",
         "presets and titled sample groups with an add button",
         "screen sampler where the EyeDropper API exists",
         "disabled"
       ],
       "accessibility": [
         "The area is a slider named Saturation and Brightness with a spoken value; the arrow keys move it (Shift for 10% steps), Page Up and Down change brightness, Home and End saturation.",
-        "Hue and opacity are native range inputs; every field is named (Red, Hue, Hex Color, Opacity); the picker is a named group."
+        "Every channel slider and the opacity slider is a native range input named for its channel (Red, Hue, Lightness, Gray Level, Opacity) with a spoken value in the channel's unit (210°, 40%, or a 0–255 byte); every field is named (Red, Hue, Hex Color, Opacity); the picker is a named group."
       ],
       "geometry": {
         "margin": "none",
         "border": "self",
         "padding": "self",
         "notes": [
-          "The panel takes the shared block-content inset and a 320px maximum width; its rows are 12px apart."
+          "The panel takes the shared block-content inset and a 320px maximum width; its rows are 12px apart and its sliders form one group 8px apart."
         ]
       },
       "delivery": {
@@ -5820,7 +5822,8 @@
         "kui-color-picker__surface",
         "kui-color-picker__area",
         "kui-color-picker__area-thumb",
-        "kui-color-picker__hue",
+        "kui-color-picker__sliders",
+        "kui-color-picker__slider",
         "kui-color-picker__opacity",
         "kui-color-picker__controls",
         "kui-color-picker__mode-wrap",

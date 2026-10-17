@@ -7,12 +7,15 @@ import {
   ColorSwatches,
 } from '../color-swatches/color-swatches.js';
 import {
+  colorChannelColor,
+  colorChannelTrack,
+  colorChannelValues,
+} from './model/color-channels.js';
+import {
   formatHex,
-  grayLevel,
   type Hsva,
   hsvToRgb,
   parseColor,
-  rgbToHsl,
   rgbToHsv,
 } from './model/color-model.js';
 
@@ -88,27 +91,30 @@ const MODE_LABELS: Record<ColorPickerMode, [string, string]> = {
   gray: ['Grayscale', 'Grayscale'],
 };
 
-/** The labels, accessible names, and maximum of each channel field per mode. */
+/**
+ * The labels, accessible names, maximum, and spoken unit of each channel per
+ * mode; the mode's sliders and fields both follow it.
+ */
 export const COLOR_PICKER_CHANNELS: Record<
   ColorPickerMode,
-  readonly { short: string; name: string; max: number }[]
+  readonly { short: string; name: string; max: number; unit: '' | '%' | '°' }[]
 > = {
   rgb: [
-    { short: 'R', name: 'Red', max: 255 },
-    { short: 'G', name: 'Green', max: 255 },
-    { short: 'B', name: 'Blue', max: 255 },
+    { short: 'R', name: 'Red', max: 255, unit: '' },
+    { short: 'G', name: 'Green', max: 255, unit: '' },
+    { short: 'B', name: 'Blue', max: 255, unit: '' },
   ],
   hsl: [
-    { short: 'H', name: 'Hue', max: 360 },
-    { short: 'S', name: 'Saturation', max: 100 },
-    { short: 'L', name: 'Lightness', max: 100 },
+    { short: 'H', name: 'Hue', max: 360, unit: '°' },
+    { short: 'S', name: 'Saturation', max: 100, unit: '%' },
+    { short: 'L', name: 'Lightness', max: 100, unit: '%' },
   ],
   hsb: [
-    { short: 'H', name: 'Hue', max: 360 },
-    { short: 'S', name: 'Saturation', max: 100 },
-    { short: 'B', name: 'Brightness', max: 100 },
+    { short: 'H', name: 'Hue', max: 360, unit: '°' },
+    { short: 'S', name: 'Saturation', max: 100, unit: '%' },
+    { short: 'B', name: 'Brightness', max: 100, unit: '%' },
   ],
-  gray: [{ short: 'W', name: 'Gray Level', max: 100 }],
+  gray: [{ short: 'W', name: 'Gray Level', max: 100, unit: '%' }],
 };
 
 /** The rounded channel values a mode shows for an HSV color. */
@@ -116,19 +122,43 @@ export function colorPickerChannels(
   mode: ColorPickerMode,
   hsv: Hsva,
 ): number[] {
-  const rgba = hsvToRgb(hsv);
-  switch (mode) {
-    case 'rgb':
-      return [rgba.r, rgba.g, rgba.b].map(Math.round);
-    case 'hsl': {
-      const hsl = rgbToHsl(rgba);
-      return [hsv.h, hsl.s * 100, hsl.l * 100].map(Math.round);
-    }
-    case 'hsb':
-      return [hsv.h, hsv.s * 100, hsv.v * 100].map(Math.round);
-    case 'gray':
-      return [Math.round(grayLevel(rgba) * 100)];
-  }
+  return colorChannelValues(mode, hsv).map(Math.round);
+}
+
+/** One channel slider's attributes; see {@link colorPickerSlider}. */
+export interface ColorPickerSliderState {
+  max: number;
+  value: string;
+  label: string;
+  valueText: string;
+  style: string;
+}
+
+/**
+ * The attributes of one channel slider for a mode's exact channel values:
+ * its range, value, accessible name and spoken value, and an inline style
+ * with the track gradient of the colors that channel produces while the
+ * others hold and the color under the thumb.
+ * `undefined` for a slot the mode does not use.
+ */
+export function colorPickerSlider(
+  mode: ColorPickerMode,
+  index: number,
+  values: readonly number[],
+): ColorPickerSliderState | undefined {
+  const channel = COLOR_PICKER_CHANNELS[mode][index];
+  if (channel === undefined) return undefined;
+  const value = String(Math.round(values[index]!));
+  return {
+    max: channel.max,
+    value,
+    label: channel.name,
+    valueText: `${value}${channel.unit}`,
+    style: [
+      `--_kui-color-picker-track:${colorChannelTrack(mode, index, values)}`,
+      `--_kui-color-picker-thumb-color:${colorChannelColor(mode, values)}`,
+    ].join(';'),
+  };
 }
 
 /** The area's spoken value. */
@@ -149,9 +179,12 @@ export function colorPickerStyle(hsv: Hsva): string {
 }
 
 /**
- * A full color picker panel: a saturation and brightness area, a hue slider,
- * an optional opacity slider on a checkerboard, a color-model menu (RGB, HSL,
- * HSB, Grayscale) with its channel fields, a hex field (8 digits below full
+ * A full color picker panel: a saturation and brightness area; a slider for
+ * each channel of the color model (red, green, and blue; hue, saturation, and
+ * lightness or brightness; or one gray level), each track painting the colors
+ * that channel produces while the others hold; an optional opacity slider on
+ * a checkerboard; a color-model menu (RGB, HSL, HSB, Grayscale) with its
+ * channel fields, a hex field (8 digits below full
  * opacity) and an opacity field, an optional screen sampler (EyeDropper), and
  * optional preset and sample swatches. The controlled `value` renders it;
  * wire `wireColorPickers` from `@kerfjs/ui/wire-color-pickers` to make it
@@ -181,7 +214,8 @@ export function ColorPicker({
   const hsv = rgbToHsv(rgba);
   const hex = formatHex(rgba);
   const channels = COLOR_PICKER_CHANNELS[mode];
-  const channelValues = colorPickerChannels(mode, hsv);
+  const exact = colorChannelValues(mode, hsv);
+  const channelValues = exact.map(Math.round);
   const opacity = `${Math.round(hsv.a * 100)}%`;
   return (
     <div
@@ -216,29 +250,40 @@ export function ColorPicker({
         >
           <span class="kui-color-picker__area-thumb" />
         </div>
-        <input
-          class="kui-color-picker__hue"
-          type="range"
-          min="0"
-          max="360"
-          step="1"
-          value={String(Math.round(hsv.h))}
-          aria-label="Hue"
-          disabled={disabled}
-        />
-        {alpha ? (
-          <input
-            class="kui-color-picker__opacity"
-            type="range"
-            min="0"
-            max="100"
-            step="1"
-            value={String(Math.round(hsv.a * 100))}
-            aria-label="Opacity"
-            aria-valuetext={opacity}
-            disabled={disabled}
-          />
-        ) : null}
+        <div class="kui-color-picker__sliders">
+          {[0, 1, 2].map((index) => {
+            const slider = colorPickerSlider(mode, index, exact);
+            return (
+              <input
+                class="kui-color-picker__slider"
+                type="range"
+                data-slider={String(index)}
+                min="0"
+                max={String(slider?.max ?? 100)}
+                step="1"
+                value={slider?.value ?? '0'}
+                aria-label={slider?.label}
+                aria-valuetext={slider?.valueText}
+                style={slider?.style}
+                hidden={slider === undefined}
+                disabled={disabled}
+              />
+            );
+          })}
+          {alpha ? (
+            <input
+              class="kui-color-picker__opacity"
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value={String(Math.round(hsv.a * 100))}
+              aria-label="Opacity"
+              aria-valuetext={opacity}
+              disabled={disabled}
+            />
+          ) : null}
+        </div>
         <div class="kui-color-picker__controls">
           <span class="kui-color-picker__mode-wrap">
             <select

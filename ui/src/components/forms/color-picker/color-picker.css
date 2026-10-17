@@ -1,8 +1,10 @@
-/* ColorPicker: a saturation and brightness area, hue and opacity sliders, a
-   color-model menu with its tools, channel fields, a hex and opacity row,
-   then preset and sample swatches. The surface's custom properties
-   (--_kui-color-picker-h/s/v/a and the opaque color) place the thumbs and
-   paint the tracks; the wiring updates them while a person drags. */
+/* ColorPicker: a saturation and brightness area, a slider per channel of the
+   color model plus an opacity slider, a color-model menu with its tools,
+   channel fields, a hex and opacity row, then preset and sample swatches.
+   The surface's custom properties (--_kui-color-picker-h/s/v/a and the
+   opaque color) place the area thumb and paint the opacity slider; each
+   channel slider carries its own track gradient and thumb color inline. The
+   wiring updates both while a person drags. */
 .kui-color-picker {
   display: grid;
   width: 100%;
@@ -64,9 +66,17 @@
   translate: -50% -50%;
 }
 
-/* The hue and opacity sliders: native ranges drawn as 12px tracks with a
-   round thumb that shows the color at that point. */
-.kui-color-picker__hue,
+/* The channel and opacity sliders, one group: native ranges drawn as 12px
+   tracks with a round thumb that shows the color at that point. A channel
+   slider's inline style carries its track (the colors its channel produces
+   while the others hold) and its thumb color. */
+.kui-color-picker__sliders {
+  display: grid;
+  min-width: 0;
+  gap: var(--kui-space-xs, remify(8px));
+}
+
+.kui-color-picker__slider,
 .kui-color-picker__opacity {
   --_kui-color-picker-thumb: remify(20px);
 
@@ -81,18 +91,8 @@
   appearance: none;
 }
 
-.kui-color-picker__hue {
-  --_kui-color-picker-track: linear-gradient(
-    to right,
-    #f00,
-    #ff0,
-    #0f0,
-    #0ff,
-    #00f,
-    #f0f,
-    #f00
-  );
-  --_kui-color-picker-thumb-color: hsl(var(--_kui-color-picker-h) 100% 50%);
+.kui-color-picker__slider[hidden] {
+  display: none;
 }
 
 .kui-color-picker__opacity {
@@ -106,7 +106,7 @@
   );
 }
 
-.kui-color-picker__hue::-webkit-slider-runnable-track,
+.kui-color-picker__slider::-webkit-slider-runnable-track,
 .kui-color-picker__opacity::-webkit-slider-runnable-track {
   height: remify(12px);
   border-radius: var(--kui-radius-pill);
@@ -114,7 +114,7 @@
   box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.1);
 }
 
-.kui-color-picker__hue::-moz-range-track,
+.kui-color-picker__slider::-moz-range-track,
 .kui-color-picker__opacity::-moz-range-track {
   height: remify(12px);
   border-radius: var(--kui-radius-pill);
@@ -122,7 +122,7 @@
   box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.1);
 }
 
-.kui-color-picker__hue::-webkit-slider-thumb,
+.kui-color-picker__slider::-webkit-slider-thumb,
 .kui-color-picker__opacity::-webkit-slider-thumb {
   width: var(--_kui-color-picker-thumb);
   height: var(--_kui-color-picker-thumb);
@@ -137,7 +137,7 @@
   appearance: none;
 }
 
-.kui-color-picker__hue::-moz-range-thumb,
+.kui-color-picker__slider::-moz-range-thumb,
 .kui-color-picker__opacity::-moz-range-thumb {
   width: var(--_kui-color-picker-thumb);
   height: var(--_kui-color-picker-thumb);
@@ -150,18 +150,18 @@
     var(--kui-shadow-s);
 }
 
-.kui-color-picker__hue:focus-visible,
+.kui-color-picker__slider:focus-visible,
 .kui-color-picker__opacity:focus-visible {
   outline: none;
 }
 
-.kui-color-picker__hue:focus-visible::-webkit-slider-thumb,
+.kui-color-picker__slider:focus-visible::-webkit-slider-thumb,
 .kui-color-picker__opacity:focus-visible::-webkit-slider-thumb {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
 }
 
-.kui-color-picker__hue:focus-visible::-moz-range-thumb,
+.kui-color-picker__slider:focus-visible::-moz-range-thumb,
 .kui-color-picker__opacity:focus-visible::-moz-range-thumb {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
@@ -320,7 +320,7 @@
 @media (forced-colors: active) {
   .kui-color-picker__area,
   .kui-color-picker__area-thumb,
-  .kui-color-picker__hue,
+  .kui-color-picker__slider,
   .kui-color-picker__opacity {
     forced-color-adjust: none;
   }

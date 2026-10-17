@@ -4747,14 +4747,14 @@
           "border": "self",
           "padding": "self",
           "notes": [
-            "The panel takes the shared block-content inset and a 320px maximum width; its rows are 12px apart."
+            "The panel takes the shared block-content inset and a 320px maximum width; its rows are 12px apart and its sliders form one group 8px apart."
           ]
         }
       },
       "accessibility": {
         "obligations": [
           "The area is a slider named Saturation and Brightness with a spoken value; the arrow keys move it (Shift for 10% steps), Page Up and Down change brightness, Home and End saturation.",
-          "Hue and opacity are native range inputs; every field is named (Red, Hue, Hex Color, Opacity); the picker is a named group."
+          "Every channel slider and the opacity slider is a native range input named for its channel (Red, Hue, Lightness, Gray Level, Opacity) with a spoken value in the channel's unit (210°, 40%, or a 0–255 byte); every field is named (Red, Hue, Hex Color, Opacity); the picker is a named group."
         ]
       },
       "cssValueProps": [],
@@ -4765,7 +4765,8 @@
           "kui-color-picker__surface",
           "kui-color-picker__area",
           "kui-color-picker__area-thumb",
-          "kui-color-picker__hue",
+          "kui-color-picker__sliders",
+          "kui-color-picker__slider",
           "kui-color-picker__opacity",
           "kui-color-picker__controls",
           "kui-color-picker__mode-wrap",

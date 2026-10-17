@@ -2,17 +2,19 @@ import {
   COLOR_PICKER_CHANNELS,
   COLOR_PICKER_SWATCH_ACTION,
   colorPickerAreaText,
-  colorPickerChannels,
   type ColorPickerMode,
+  colorPickerSlider,
   colorPickerStyle,
 } from '../color-picker.js';
 import {
+  colorChannelValues,
+  hsvFromChannels,
+} from '../model/color-channels.js';
+import {
   formatHex,
-  hslToRgb,
   type Hsva,
   hsvForValue,
   hsvToRgb,
-  rgbToHsv,
 } from '../model/color-model.js';
 
 /** Reported to {@link WireColorPickersOptions.onInput} and `onChange`. */
@@ -37,6 +39,12 @@ interface PickerState {
   mode: ColorPickerMode;
   /** The hex last reported or adopted, to tell an app re-render from an echo. */
   value: string;
+  /**
+   * The exact channel values a slider or field last set in `mode`, while
+   * `hsv` is still the color they produced, so a channel the HSV state cannot
+   * carry (HSL saturation at black or white) survives the next edit.
+   */
+  memo?: { mode: ColorPickerMode; hsv: Hsva; values: number[] };
 }
 
 const clamp = (value: number, min: number, max: number) =>
@@ -47,9 +55,10 @@ const isMode = (value: string | undefined): value is ColorPickerMode =>
 
 /**
  * Make every ColorPicker under `root` interactive. The area takes pointer
- * drags and the arrow keys (Shift for steps of 10%); the hue and opacity
- * sliders are native ranges; channel, hex, and opacity fields commit on Enter
- * or blur; the model menu switches the channel fields; the screen sampler
+ * drags and the arrow keys (Shift for steps of 10%); the model's channel
+ * sliders and the opacity slider are native ranges, each changing only its
+ * own channel; channel, hex, and opacity fields commit on Enter or blur; the
+ * model menu switches the channel sliders and fields; the screen sampler
  * opens the EyeDropper where the browser has it; preset and sample swatches
  * apply their color. Each change updates the picker at once, dispatches a
  * bubbling `kui-color-input` (or `kui-color-change` when committed) event
@@ -83,12 +92,20 @@ export function wireColorPickers(
     return state;
   };
 
+  /** The exact channel values the picker's model shows. */
+  const channelValuesOf = (state: PickerState) =>
+    state.memo?.mode === state.mode && state.memo.hsv === state.hsv
+      ? state.memo.values
+      : colorChannelValues(state.mode, state.hsv);
+
   const hexOf = (picker: HTMLElement, hsv: Hsva) =>
     formatHex(hsvToRgb(alphaOn(picker) ? hsv : { ...hsv, a: 1 }));
 
   /** Repaint the wiring-owned surface from the state. */
   const paint = (picker: HTMLElement, skipField?: Element) => {
-    const { hsv, mode } = stateOf(picker);
+    const state = stateOf(picker);
+    const { hsv, mode } = state;
+    const exact = channelValuesOf(state);
     const surface = picker.querySelector<HTMLElement>(
       '.kui-color-picker__surface',
     )!;
@@ -96,10 +113,22 @@ export function wireColorPickers(
     const area = surface.querySelector<HTMLElement>('.kui-color-picker__area');
     area?.setAttribute('aria-valuenow', String(Math.round(hsv.s * 100)));
     area?.setAttribute('aria-valuetext', colorPickerAreaText(hsv));
-    const hue = surface.querySelector<HTMLInputElement>(
-      '.kui-color-picker__hue',
-    );
-    if (hue && hue !== skipField) hue.value = String(Math.round(hsv.h));
+    for (const input of surface.querySelectorAll<HTMLInputElement>(
+      '.kui-color-picker__slider',
+    )) {
+      const slider = colorPickerSlider(
+        mode,
+        Number(input.dataset.slider),
+        exact,
+      );
+      input.hidden = slider === undefined;
+      if (slider === undefined) continue;
+      input.max = String(slider.max);
+      if (input !== skipField) input.value = slider.value;
+      input.setAttribute('aria-label', slider.label);
+      input.setAttribute('aria-valuetext', slider.valueText);
+      input.setAttribute('style', slider.style);
+    }
     const opacity = `${Math.round(hsv.a * 100)}%`;
     const slider = surface.querySelector<HTMLInputElement>(
       '.kui-color-picker__opacity',
@@ -109,7 +138,7 @@ export function wireColorPickers(
       slider.setAttribute('aria-valuetext', opacity);
     }
     const channels = COLOR_PICKER_CHANNELS[mode];
-    const values = colorPickerChannels(mode, hsv);
+    const values = exact.map(Math.round);
     surface
       .querySelector('.kui-color-picker__channels')
       ?.setAttribute('data-count', String(channels.length));
@@ -174,7 +203,31 @@ export function wireColorPickers(
     skipField?: Element,
   ) => {
     const state = stateOf(picker);
+    const held = state.memo?.hsv === state.hsv ? state.memo : undefined;
     state.hsv = { ...state.hsv, ...next };
+    // An opacity change leaves the model's exact channels as they were.
+    if (held && Object.keys(next).join() === 'a') held.hsv = state.hsv;
+    paint(picker, skipField);
+    report(picker, committed);
+  };
+
+  /** Set one channel of the picker's model, holding every other one. */
+  const setChannel = (
+    picker: HTMLElement,
+    index: number,
+    value: number,
+    committed: boolean,
+    skipField?: Element,
+  ) => {
+    const state = stateOf(picker);
+    const values = [...channelValuesOf(state)];
+    values[index] = clamp(
+      value,
+      0,
+      COLOR_PICKER_CHANNELS[state.mode][index]!.max,
+    );
+    state.hsv = hsvFromChannels(state.mode, values, state.hsv);
+    state.memo = { mode: state.mode, hsv: state.hsv, values };
     paint(picker, skipField);
     report(picker, committed);
   };
@@ -289,33 +342,7 @@ export function wireColorPickers(
       paint(picker);
       return;
     }
-    const values = colorPickerChannels(state.mode, state.hsv);
-    values[index] = clamp(number, 0, channel.max);
-    const { a } = state.hsv;
-    let next: Hsva;
-    switch (state.mode) {
-      case 'rgb':
-        next = rgbToHsv({ r: values[0]!, g: values[1]!, b: values[2]!, a });
-        if (next.s === 0) next.h = state.hsv.h;
-        break;
-      case 'hsl': {
-        const rgba = hslToRgb({
-          h: values[0]!,
-          s: values[1]! / 100,
-          l: values[2]! / 100,
-          a,
-        });
-        next = { ...rgbToHsv(rgba), h: values[0]! };
-        break;
-      }
-      case 'hsb':
-        next = { h: values[0]!, s: values[1]! / 100, v: values[2]! / 100, a };
-        break;
-      case 'gray':
-        next = { h: state.hsv.h, s: 0, v: values[0]! / 100, a };
-        break;
-    }
-    update(picker, next, true);
+    setChannel(picker, index, number, true);
   };
   const onFieldKey = (event: KeyboardEvent) => {
     const field = event.target;
@@ -351,9 +378,15 @@ export function wireColorPickers(
     if (!(input instanceof HTMLInputElement)) return;
     const picker = pickerOf(input);
     if (!picker) return;
-    if (input.classList.contains('kui-color-picker__hue')) {
+    if (input.classList.contains('kui-color-picker__slider')) {
       event.stopPropagation();
-      update(picker, { h: Number(input.value) }, false, input);
+      setChannel(
+        picker,
+        Number(input.dataset.slider),
+        Number(input.value),
+        false,
+        input,
+      );
     } else if (input.classList.contains('kui-color-picker__opacity')) {
       event.stopPropagation();
       update(picker, { a: Number(input.value) / 100 }, false, input);
@@ -365,7 +398,7 @@ export function wireColorPickers(
     if (!picker) return;
     if (
       target instanceof HTMLInputElement &&
-      target.matches('.kui-color-picker__hue, .kui-color-picker__opacity')
+      target.matches('.kui-color-picker__slider, .kui-color-picker__opacity')
     ) {
       event.stopPropagation();
       report(picker, true);

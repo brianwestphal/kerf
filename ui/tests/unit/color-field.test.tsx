@@ -160,9 +160,8 @@ describe('wireColorFields', () => {
       document.querySelectorAll('[data-component="color-picker"]'),
     ).toHaveLength(1);
 
-    const hue = picker.querySelector<HTMLInputElement>(
-      '.kui-color-picker__hue',
-    )!;
+    const hue = picker.querySelector<HTMLInputElement>('[data-slider="0"]')!;
+    expect(hue.getAttribute('aria-label')).toBe('Hue');
     hue.value = '120';
     hue.dispatchEvent(new Event('input', { bubbles: true }));
     expect(t.onInput).toHaveBeenLastCalledWith({
@@ -216,13 +215,12 @@ describe('wireColorFields', () => {
     )!;
     expect(picker.getAttribute('aria-label')).toBe('Color');
     expect(picker.hasAttribute('data-alpha')).toBe(false);
-    const hue = picker.querySelector<HTMLInputElement>(
-      '.kui-color-picker__hue',
-    )!;
-    hue.value = '0';
-    hue.dispatchEvent(new Event('input', { bubbles: true }));
-    hue.dispatchEvent(new Event('change', { bubbles: true }));
-    expect(host.querySelector('#a-value')!.textContent).toBe('561212');
+    const red = picker.querySelector<HTMLInputElement>('[data-slider="0"]')!;
+    expect(red.getAttribute('aria-label')).toBe('Red');
+    red.value = '0';
+    red.dispatchEvent(new Event('input', { bubbles: true }));
+    red.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(host.querySelector('#a-value')!.textContent).toBe('003456');
     stop();
     await flush();
     expect(
