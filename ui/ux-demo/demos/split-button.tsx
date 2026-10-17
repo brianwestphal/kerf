@@ -1,4 +1,5 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
 import { SplitButton } from '@kerfjs/ui/split-button';
@@ -15,17 +16,19 @@ export function SplitButtonDemo() {
         note="Click the primary half to start or stop; the app switches the tone to neutral and marks it busy while running. The options trigger reports aria-expanded for the app's own menu."
         viewport={{ width: 'compact' }}
       >
-        <SplitButton
-          label={running ? 'Codex Running' : 'Drive with Codex'}
-          action="toggle-split-button-demo"
-          icon={<LucideIcon icon={Play} name="play" />}
-          optionsLabel="Choose Drive Provider, Model, and Effort"
-          optionsAction="toggle-split-button-options-demo"
-          optionsExpanded={splitButtonOptionsOpen.value}
-          tone={running ? 'neutral' : 'success'}
-          busy={running}
-          fill
-        />
+        <ListInsetControl sides="rl">
+          <SplitButton
+            label={running ? 'Codex Running' : 'Drive with Codex'}
+            action="toggle-split-button-demo"
+            icon={<LucideIcon icon={Play} name="play" />}
+            optionsLabel="Choose Drive Provider, Model, and Effort"
+            optionsAction="toggle-split-button-options-demo"
+            optionsExpanded={splitButtonOptionsOpen.value}
+            tone={running ? 'neutral' : 'success'}
+            busy={running}
+            fill
+          />
+        </ListInsetControl>
       </CatalogExample>
       <CatalogExample label="Tones and States" align="inline-control">
         <Row wrap>

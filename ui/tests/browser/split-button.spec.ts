@@ -31,6 +31,22 @@ test('SplitButton exposes native halves and follows its controlled state', async
     expect(geometry.height).toBe(44);
     expect(geometry.width).toBeCloseTo(geometry.parent, 0);
     expect(geometry.trigger).toBe(40);
+    // The full-width specimen starts on the same inset as every other
+    // example's specimen instead of the demo column's edge.
+    const starts = await demo
+      .locator('.kui-catalog-example')
+      .evaluateAll((examples) =>
+        examples.map(
+          (example) =>
+            example.querySelector('.kui-split-button')!.getBoundingClientRect()
+              .left,
+        ),
+      );
+    for (const start of starts) expect(start).toBeCloseTo(starts[0]!, 0);
+    const column = await demo.evaluate(
+      (element) => element.getBoundingClientRect().left,
+    );
+    expect(starts[0]! - column).toBe(8);
 
     await primary.click();
     await expect(split).toHaveAttribute('data-tone', 'neutral');
