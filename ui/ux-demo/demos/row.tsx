@@ -40,11 +40,18 @@ const vertical: readonly [string, VerticalAlignment, string][] = [
   ],
 ];
 
-const chips = (prefix: string) => [
-  <DemoChip label={`${prefix} one`} />,
-  <DemoChip label={`${prefix} two`} size="tall" />,
-  <DemoChip label={`${prefix} three`} />,
-];
+// A row that does not wrap must fit a 320px stage in any font, so its chips
+// go unprefixed: the example label already names the setting.
+const chips = (prefix?: string) => {
+  const [one, two, three] = prefix
+    ? [`${prefix} one`, `${prefix} two`, `${prefix} three`]
+    : ['One', 'Two', 'Three'];
+  return [
+    <DemoChip label={one} />,
+    <DemoChip label={two} size="tall" />,
+    <DemoChip label={three} />,
+  ];
+};
 
 export function RowDemo() {
   return (
@@ -55,7 +62,7 @@ export function RowDemo() {
         note="Row defaults to left, full-height children, the xs gap, and no wrapping."
       >
         <DemoFrameShell>
-          <Row>{chips('Default')}</Row>
+          <Row>{chips()}</Row>
         </DemoFrameShell>
       </CatalogExample>
       {horizontal.map(([label, alignment, note]) => (
@@ -66,7 +73,7 @@ export function RowDemo() {
         >
           <DemoFrameShell>
             <Row hAlign={alignment} vAlign="middle">
-              {chips(label.split(' ').at(-1)!)}
+              {chips()}
             </Row>
           </DemoFrameShell>
         </CatalogExample>
