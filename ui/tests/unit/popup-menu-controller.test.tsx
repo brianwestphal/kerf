@@ -284,6 +284,57 @@ describe('PopupMenu register: opening and closing', () => {
     });
   });
 
+  it('opens a button-triggered menu at a point with an explicit placement for that opening only', async () => {
+    const { root, menu, trigger } = setup();
+    root.dataset.placement = 'bottom-end';
+    openPopupMenuAt(root, 30, 40, { placement: 'top-start' });
+    expect(isShown(menu)).toBe(true);
+    await flush();
+    const position = floating.positions.at(-1)!;
+    expect(position.placement).toBe('top-start');
+    expect(position.anchor).not.toBe(trigger);
+    expect(
+      (
+        position.anchor as { getBoundingClientRect(): DOMRect }
+      ).getBoundingClientRect(),
+    ).toMatchObject({ x: 30, y: 40, width: 0, height: 0 });
+    closePopupMenu(root);
+    // The next point opening without one returns to bottom-start.
+    openPopupMenuAt(root, 30, 40);
+    await flush();
+    expect(floating.positions.at(-1)!.placement).toBe('bottom-start');
+    closePopupMenu(root);
+    // And the next trigger opening uses the trigger and its own placement.
+    openPopupMenu(root);
+    await flush();
+    expect(floating.positions.at(-1)).toMatchObject({
+      anchor: trigger,
+      placement: 'bottom-end',
+    });
+  });
+
+  it('opens a context menu at a point with an explicit placement over its own', async () => {
+    const { root, trigger } = setup({
+      context: true,
+      label: 'Row',
+      text: undefined,
+    } as Partial<PopupMenuProps>);
+    root.dataset.placement = 'top-end';
+    openPopupMenuAt(root, 5, 6, { placement: 'bottom' });
+    await flush();
+    expect(floating.positions.at(-1)).toMatchObject({
+      anchor: trigger,
+      placement: 'bottom',
+    });
+    closePopupMenu(root);
+    openPopupMenu(root);
+    await flush();
+    expect(floating.positions.at(-1)).toMatchObject({
+      anchor: trigger,
+      placement: 'top-end',
+    });
+  });
+
   it('opens a context menu from its anchor at its placement', async () => {
     const { root, trigger, menu } = setup({
       context: true,

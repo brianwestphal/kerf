@@ -478,7 +478,9 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   `closePopupMenu` for pointer-anchored row menus, whose `placement` applies
   at the point (`top-start` opens above it); the menu owns its
   zero-footprint anchor host, so add no wrapper or CSS. `openPopupMenuAt`
-  also opens a button-triggered menu at the pointer for one opening. A row's
+  also opens a button-triggered menu at the pointer for one opening
+  (`bottom-start`, or `openPopupMenuAt(menu, x, y, { placement: 'top-start' })`
+  to open above the point). A row's
   trailing "…" overflow menu is `ListActionRow`'s `trailingMenu` (`label`,
   `icon`, `items`, optional `placement` and `disabled`), which renders a
   `PopupMenu` as the row's sibling trailing control. Do not force a dropdown or button width. Nothing

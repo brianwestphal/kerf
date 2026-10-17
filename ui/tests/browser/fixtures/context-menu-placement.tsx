@@ -16,7 +16,10 @@ import { mount } from 'kerfjs';
  * the suite can open one from its rendered anchor (`openPopupMenu`) or at a
  * new pointer point (`openPopupMenuAt`) and measure where it sits against
  * that point. Nothing here re-renders, so each menu keeps the placement it
- * was rendered with.
+ * was rendered with. A button-triggered menu (`data-context-placement`
+ * `button`, rendered with the default placement) checks that a pointer
+ * opening sits bottom-start at the point by default and at an explicit
+ * `openPopupMenuAt` placement when one is given.
  */
 const PLACEMENTS: readonly PopupMenuPlacement[] = [
   'bottom-start',
@@ -49,6 +52,15 @@ mount(host, () => (
         ]}
       />
     ))}
+    <PopupMenu
+      text="Row actions"
+      rootAttributes={{ 'data-context-placement': 'button' }}
+      items={[
+        { label: 'Open', action: 'open' },
+        { label: 'Rename', action: 'rename' },
+        { label: 'Archive', action: 'archive', tone: 'danger' },
+      ]}
+    />
   </div>
 ));
 
@@ -61,10 +73,21 @@ const menuFor = (placement: string) =>
   globalThis as unknown as {
     contextPlacementFixture: {
       open(placement: string): void;
-      openAt(placement: string, x: number, y: number): void;
+      openAt(
+        placement: string,
+        x: number,
+        y: number,
+        at?: PopupMenuPlacement,
+      ): void;
     };
   }
 ).contextPlacementFixture = {
   open: (placement) => openPopupMenu(menuFor(placement)),
-  openAt: (placement, x, y) => openPopupMenuAt(menuFor(placement), x, y),
+  openAt: (placement, x, y, at) =>
+    openPopupMenuAt(
+      menuFor(placement),
+      x,
+      y,
+      at === undefined ? undefined : { placement: at },
+    ),
 };

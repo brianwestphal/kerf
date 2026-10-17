@@ -286,16 +286,25 @@ function requestOpen(menu: PopupMenuElement, detail: PopupMenuOpenDetail) {
  * instead). A button-triggered menu (such
  * as a `ListActionRow` trailing menu) opens `bottom-start` from the point,
  * like a context menu, for this opening only; its next opening returns to its
- * trigger and placement. Needs the `/register` entry.
+ * trigger and placement. `options.placement` sets the placement at the point
+ * for this opening instead (`top-start` sits above it, say), for either kind
+ * of menu; flipping, shifting, and the height cap still apply. Needs the
+ * `/register` entry.
  */
 export function openPopupMenuAt(
   menu: PopupMenuElement,
   x: number,
   y: number,
+  options: { placement?: PopupMenuPlacement } = {},
 ): void {
   menu.style.setProperty('--kui-popup-menu-context-x', `${x}px`);
   menu.style.setProperty('--kui-popup-menu-context-y', `${y}px`);
-  requestOpen(menu, { point: { x, y } });
+  requestOpen(
+    menu,
+    options.placement === undefined
+      ? { point: { x, y } }
+      : { point: { x, y }, placement: options.placement },
+  );
 }
 
 /**

@@ -22,7 +22,7 @@ const fixtureBundle = build({
 type Fixture = {
   contextPlacementFixture: {
     open(placement: string): void;
-    openAt(placement: string, x: number, y: number): void;
+    openAt(placement: string, x: number, y: number, at?: string): void;
   };
 };
 
@@ -126,5 +126,51 @@ test('a context PopupMenu opens at its placement against its anchor point', asyn
   await page.screenshot({
     path: test.info().outputPath('context-placement-flipped.png'),
   });
+  await page.keyboard.press('Escape');
+});
+
+// A button-triggered PopupMenu opened at a pointer point sits bottom-start
+// there by default, and at an explicit `openPopupMenuAt` placement (top-start
+// above the point) for that opening when one is given.
+test('a button-triggered PopupMenu opens at an explicit placement at a point', async ({
+  page,
+}) => {
+  await mountFixture(page);
+  const openAt = (x: number, y: number, at?: string) =>
+    page.evaluate(
+      ([px, py, value]) =>
+        (globalThis as unknown as Fixture).contextPlacementFixture.openAt(
+          'button',
+          px as number,
+          py as number,
+          value as string | undefined,
+        ),
+      [x, y, at] as const,
+    );
+
+  await openAt(500, 300);
+  let box = await placed(page, 'button');
+  expect(box.placement).toBe('bottom-start');
+  expect(Math.abs(box.top - 300)).toBeLessThan(2);
+  expect(Math.abs(box.left - 500)).toBeLessThan(2);
+  await page.keyboard.press('Escape');
+  await expect(menuOf(page, 'button')).toBeHidden();
+
+  await openAt(500, 600, 'top-start');
+  box = await placed(page, 'button');
+  expect(box.placement).toBe('top-start');
+  expect(Math.abs(box.bottom - 600)).toBeLessThan(2);
+  expect(Math.abs(box.left - 500)).toBeLessThan(2);
+  await page.screenshot({
+    path: test.info().outputPath('button-point-top-start.png'),
+  });
+  await page.keyboard.press('Escape');
+  await expect(menuOf(page, 'button')).toBeHidden();
+
+  // The next point opening without a placement is bottom-start again.
+  await openAt(500, 300);
+  box = await placed(page, 'button');
+  expect(box.placement).toBe('bottom-start');
+  expect(Math.abs(box.top - 300)).toBeLessThan(2);
   await page.keyboard.press('Escape');
 });

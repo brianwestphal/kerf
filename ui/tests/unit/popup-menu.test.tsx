@@ -404,10 +404,16 @@ describe('PopupMenu open and close helpers', () => {
       requests.push(['close']),
     );
     openPopupMenu(menu);
+    openPopupMenuAt(menu, 7, 8, { placement: 'top-start' });
+    openPopupMenuAt(menu, 123, 456, {});
     openPopupMenuAt(menu, 123, 456);
     closePopupMenu(menu);
     expect(requests).toEqual([
       ['open', {}],
+      // An explicit placement is forwarded with the point.
+      ['open', { point: { x: 7, y: 8 }, placement: 'top-start' }],
+      // No placement by default: the controller decides (bottom-start).
+      ['open', { point: { x: 123, y: 456 } }],
       ['open', { point: { x: 123, y: 456 } }],
       ['close'],
     ]);

@@ -196,7 +196,11 @@ export function installPopupMenus(doc: Document = document): void {
 
   const openRoot = (
     root: HTMLElement,
-    { point, focus }: { point?: { x: number; y: number }; focus: Focus },
+    {
+      point,
+      placement: pointPlacement,
+      focus,
+    }: PopupMenuOpenDetail & { focus: Focus },
   ) => {
     const opener = rootOpenerOf(root);
     const menu = rootMenuOf(root);
@@ -205,19 +209,20 @@ export function installPopupMenus(doc: Document = document): void {
     if (isOpen(menu)) closeMenu(menu, false);
     const context = root.getAttribute('data-trigger') === 'context';
     // A button-triggered menu opened at a pointer point (openPopupMenuAt)
-    // opens bottom-start from it, as pointer menus do, for that opening only:
-    // its placement describes where it sits against its trigger. A context
-    // menu's anchor is always its point, so its placement (top-start above
-    // the point, say) applies there.
+    // opens at the point for that opening only, `bottom-start` unless the
+    // call names a placement: its own placement describes where it sits
+    // against its trigger. A context menu's anchor is always its point, so
+    // its placement (top-start above the point, say) applies there, unless
+    // the call names one for this opening.
     const pointOpened = point !== undefined && !context;
     const anchor: PopupAnchor = pointOpened
       ? pointAnchor(point.x, point.y)
       : opener;
-    const placement = (
-      pointOpened
+    const placement = ((point !== undefined ? pointPlacement : undefined) ??
+      (pointOpened
         ? 'bottom-start'
-        : (root.getAttribute('data-placement') ?? 'bottom-start')
-    ) as PopupPlacement;
+        : (root.getAttribute('data-placement') ??
+          'bottom-start'))) as PopupPlacement;
     try {
       menu.showPopover();
     } catch {
@@ -593,8 +598,9 @@ export function installPopupMenus(doc: Document = document): void {
     (event) => {
       const root = event.target;
       if (!(root instanceof HTMLElement) || !root.matches(ROOT)) return;
-      const { point } = (event as CustomEvent<PopupMenuOpenDetail>).detail;
-      openRoot(root, { point, focus: 'first' });
+      const { point, placement } = (event as CustomEvent<PopupMenuOpenDetail>)
+        .detail;
+      openRoot(root, { point, placement, focus: 'first' });
     },
     true,
   );

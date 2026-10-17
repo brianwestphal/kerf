@@ -772,7 +772,8 @@ the point: the default `bottom-start` opens below it, and `top-start` or
 flipping when that side has no room. Because the point is part of the
 menu's own template, it survives re-renders and a rebuilt menu, so the app
 never re-applies it. `openPopupMenuAt` still opens a menu rendered without `anchor` at a given
-point. Call `closePopupMenu` for programmatic dismissal. A pointer-anchored menu
+point, at its `placement` unless the call names one for that opening
+(`openPopupMenuAt(menu, x, y, { placement: 'top-start' })`). Call `closePopupMenu` for programmatic dismissal. A pointer-anchored menu
 keeps the same collision placement, focus management, submenu keyboard
 navigation, and outside/Escape dismissal as a trigger-anchored one.
 
@@ -820,7 +821,10 @@ right-click, delegate `contextmenu` on the row's primary button, prevent the
 browser menu, and call `openPopupMenuAt` with the row's
 `[data-component="popup-menu"]` child and the pointer's `clientX` /
 `clientY`: a button-triggered menu opens `bottom-start` at the pointer for that
-opening and returns to its trigger once it closes.
+opening and returns to its trigger once it closes. Pass a placement for that
+opening as a fourth argument, `openPopupMenuAt(menu, x, y, { placement:
+'top-start' })`, to open it above the point instead (for a row near a footer
+or composer); the viewport flip, shift, and height cap still apply.
 
 ```tsx
 <ListActionRow
