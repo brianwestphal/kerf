@@ -50,7 +50,8 @@ Exact prop names and types: [`@kerfjs/ui/message-composer`](../public-api-signat
 
 Zones (a zone is bound to JSX only through its listed prop; never assume the zone id is a prop):
 
-- `actions` — JSX prop `actions`; accepts `KerfUiContent`; at least 1.
+- `leading` — JSX prop `leading`; accepts `KerfUiContent`; any number.
+- `trailing` — JSX prop `trailing`; accepts `KerfUiContent`; at least 1.
 
 ## State and wiring
 

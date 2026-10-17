@@ -128,6 +128,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **`kerf-ui-doctor` no longer reports a false `KUI-L203` for every `MessageComposer`.** The shipped composition catalog still declared the removed `actions` zone; it now declares a required `trailing` zone and an optional `leading` zone, and a test keeps every component's composition zones aligned with its real props (`KF-Z00DKT`).
 - **`RadioGroup` circles line up with Checkbox boxes.** Each radio circle now sits on the group's inline-start edge, where a `Checkbox` draws its box, instead of 8px further in, so stacked checkboxes and radios share one control column; the group label and hint keep the text column (`KF-F68AZ9`).
 - **`NavStack` overlay chrome keeps its material during a push or pop.** The overlay top chrome and bottom toolbar used to fade as a whole while their contents cross-faded, which faded the backdrop blur with them (Safari dropped it outright), so the sliding views showed through the bars mid-transition. Now the live bar keeps the material at full opacity while its new contents fade in, and the copy fading out above it carries only the old contents (`KF-H3NNP6`).
 - **`Combobox` suggestions are no longer clipped inside popups.** The listbox is a top-layer popover placed below the field at its width (flipping above when short), so an `AnchoredSurface`, a dialog, or a scrolling `List` around the field no longer cuts it off. The `--kui-combobox-z-index` token is gone; the top layer needs none (`KF-C558Z9`).

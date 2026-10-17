@@ -4885,8 +4885,15 @@
       "contexts": ["chat-composer", "dialog-floating-footer"],
       "zones": [
         {
-          "id": "actions",
-          "jsx": { "prop": "actions" },
+          "id": "leading",
+          "jsx": { "prop": "leading" },
+          "accepts": ["KerfUiContent"],
+          "cardinality": { "min": 0, "max": "unbounded" },
+          "exclusiveWith": []
+        },
+        {
+          "id": "trailing",
+          "jsx": { "prop": "trailing" },
           "accepts": ["KerfUiContent"],
           "cardinality": { "min": 1, "max": "unbounded" },
           "exclusiveWith": []

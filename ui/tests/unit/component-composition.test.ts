@@ -1,6 +1,7 @@
-import { readFile } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
+import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 
 import type { ComponentComposition } from '../../ai/component-composition.js';
@@ -141,6 +142,74 @@ describe('component composition catalog contract', () => {
       'kui-toolbar-action-link',
     );
   });
+
+  it("names only real component props as JSX zones, required exactly when the zone's minimum is non-zero", async () => {
+    // A zone naming a renamed or removed prop makes kerf-ui-doctor report an
+    // error no consumer can satisfy (MessageComposer `actions` → `trailing`).
+    const composition = await readJson<ComponentComposition>(
+      '../../ai/component-composition.json',
+    );
+    const uiRoot = resolve(import.meta.dirname, '../..');
+    const config = ts.readConfigFile(resolve(uiRoot, 'tsconfig.json'), (path) =>
+      ts.sys.readFile(path),
+    );
+    const { options } = ts.parseJsonConfigFileContent(
+      config.config,
+      ts.sys,
+      uiRoot,
+    );
+    const componentsDir = resolve(uiRoot, 'src/components');
+    const rootNames = (await readdir(componentsDir, { recursive: true }))
+      .filter((file) => /\.tsx?$/.test(file))
+      .map((file) => resolve(componentsDir, file));
+    const program = ts.createProgram(rootNames, { ...options, noEmit: true });
+    const checker = program.getTypeChecker();
+    const propsTypes = new Map<string, ts.Type>();
+    for (const file of program.getSourceFiles()) {
+      if (!file.fileName.startsWith(componentsDir)) continue;
+      const moduleSymbol = checker.getSymbolAtLocation(file);
+      if (moduleSymbol === undefined) continue;
+      for (const exported of checker.getExportsOfModule(moduleSymbol)) {
+        if (exported.name.endsWith('Props')) {
+          propsTypes.set(
+            exported.name,
+            checker.getDeclaredTypeOfSymbol(exported),
+          );
+        }
+      }
+    }
+
+    const mismatches: string[] = [];
+    for (const entry of composition.entries) {
+      if (entry.source !== 'kerf') continue;
+      for (const zone of entry.zones) {
+        const prop = zone.jsx?.prop;
+        if (prop === undefined) continue;
+        const propsType = propsTypes.get(`${entry.name}Props`);
+        if (propsType === undefined) {
+          mismatches.push(`${entry.name}: no exported ${entry.name}Props`);
+          continue;
+        }
+        const variants = propsType.isUnion() ? propsType.types : [propsType];
+        const declared = variants
+          .map((variant) => checker.getPropertyOfType(variant, prop))
+          .filter((symbol) => symbol !== undefined);
+        if (declared.length === 0) {
+          mismatches.push(`${entry.name}: zone prop \`${prop}\` is not a prop`);
+          continue;
+        }
+        const optional = declared.every(
+          (symbol) => (symbol.flags & ts.SymbolFlags.Optional) !== 0,
+        );
+        if (optional === zone.cardinality.min > 0) {
+          mismatches.push(
+            `${entry.name}: zone \`${zone.id}\` min ${zone.cardinality.min} but prop \`${prop}\` is ${optional ? 'optional' : 'required'}`,
+          );
+        }
+      }
+    }
+    expect(mismatches).toEqual([]);
+  }, 30_000);
 
   it('declares wiring-owned state attributes on every entry, flattened with their helper', async () => {
     const composition = await readJson<ComponentComposition>(
