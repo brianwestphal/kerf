@@ -13,7 +13,6 @@
   display: inline-grid;
   min-width: 0;
   min-height: remify(44px);
-  overflow: hidden;
   border-radius: var(--_kui-split-button-radius);
   color: var(--_kui-split-button-on);
   background: var(--_kui-split-button-fill);
@@ -83,7 +82,8 @@
 }
 
 /* Each half rounds its outer corners with the group, so its hover fill and
-   inset focus ring follow the rounded or pill end. */
+   focus ring follow the rounded or pill end. The group does not clip, so
+   these radii are what keep a half's fill inside the group's corners. */
 .kui-split-button > .kui-split-button__primary {
   border-start-start-radius: var(--_kui-split-button-radius);
   border-end-start-radius: var(--_kui-split-button-radius);
@@ -94,11 +94,17 @@
   border-end-end-radius: var(--_kui-split-button-radius);
 }
 
-/* The group clips outer outlines at its rounded corners, so the ring sits
-   inside each half. */
+/* The ring sits outside the focused half, offset like Button's, so it is
+   drawn against the surrounding surface rather than the loud fill, whose
+   brand color can match the ring's own (an inset ring vanished there). The
+   segment along the divider overlaps the neighboring half, painted above it. */
+.kui-split-button > button:focus {
+  outline: none;
+}
+
 .kui-split-button > button:focus-visible {
   outline: var(--kui-focus-ring);
-  outline-offset: -3px;
+  outline-offset: 1px;
 }
 
 .kui-split-button > button:disabled {

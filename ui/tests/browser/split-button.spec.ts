@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { contrastRatio } from '../../evaluator/index.mjs';
+
 // Both halves are native buttons, so the trigger's state reaches the
 // accessibility tree directly; the full-width variant fills its parent.
 test('SplitButton exposes native halves and follows its controlled state', async ({
@@ -63,7 +65,7 @@ test('SplitButton exposes native halves and follows its controlled state', async
 
 // shape="pill" fully rounds the group's outer ends, as on Button; each half
 // rounds only its outer corners, so the divider seam stays square and the
-// hover fill and inset focus ring follow the pill end.
+// hover fill and focus ring follow the pill end.
 test('a pill SplitButton rounds its outer ends and keeps the seam square', async ({
   page,
 }) => {
@@ -103,5 +105,70 @@ test('a pill SplitButton rounds its outer ends and keeps the seam square', async
     // The default stays on the shared rounded control radius.
     const rounded = demo.locator('.kui-split-button:not([data-shape])').first();
     await expect(rounded).toHaveCSS('border-top-left-radius', '12px');
+  }
+});
+
+// The focus ring sits outside the focused half, offset like Button's, so it
+// is drawn against the surrounding surface instead of the loud fill: an inset
+// ring vanished on the brand fill, whose color can equal the ring's own. On
+// every tone, in both schemes, each half draws a solid ring of at least 2px
+// that clears 3:1 non-text contrast against the surface it sits on.
+test('each SplitButton half draws a visible focus ring outside its fill', async ({
+  page,
+}) => {
+  for (const colorScheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme });
+    await page.setViewportSize({ width: 1100, height: 900 });
+    await page.goto('/?component=split-button');
+    const demo = page.locator('[data-demo="split-button"]');
+    const halves = demo.locator('.kui-split-button > button:enabled');
+    const count = await halves.count();
+    expect(count).toBeGreaterThan(6);
+    for (let index = 0; index < count; index += 1) {
+      const half = halves.nth(index);
+      await page.keyboard.press('Shift');
+      await half.focus();
+      const ring = await half.evaluate((element) => {
+        const context = document
+          .createElement('canvas')
+          .getContext('2d', { willReadFrequently: true })!;
+        context.canvas.width = 1;
+        context.canvas.height = 1;
+        // Composite colors bottom-up; the canvas does the alpha blending.
+        const paint = (colors: string[]) => {
+          context.fillStyle = '#000';
+          context.fillRect(0, 0, 1, 1);
+          for (const color of colors) {
+            context.fillStyle = color;
+            context.fillRect(0, 0, 1, 1);
+          }
+          return [...context.getImageData(0, 0, 1, 1).data.slice(0, 3)];
+        };
+        // The surface the group sits on: every ancestor's background color,
+        // from the root's opaque canvas up to the group's parent.
+        const layers: string[] = [];
+        for (
+          let ancestor = element.parentElement!.parentElement;
+          ancestor;
+          ancestor = ancestor.parentElement
+        )
+          layers.unshift(window.getComputedStyle(ancestor).backgroundColor);
+        const surface = paint(layers);
+        const style = window.getComputedStyle(element);
+        return {
+          focusVisible: element.matches(':focus-visible'),
+          style: style.outlineStyle,
+          width: parseFloat(style.outlineWidth),
+          offset: parseFloat(style.outlineOffset),
+          color: paint([...layers, style.outlineColor]),
+          surface,
+        };
+      });
+      expect(ring.focusVisible).toBe(true);
+      expect(ring.style).toBe('solid');
+      expect(ring.width).toBeGreaterThanOrEqual(2);
+      expect(ring.offset).toBeGreaterThanOrEqual(0);
+      expect(contrastRatio(ring.color, ring.surface)).toBeGreaterThanOrEqual(3);
+    }
   }
 });
