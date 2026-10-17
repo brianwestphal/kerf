@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "largestJavaScriptGzip": 164300,
+  "largestJavaScriptGzip": 164400,
   "totalJavaScriptGzip": 426400,
-  "measuredLargestJavaScriptGzip": 164299,
-  "measuredTotalJavaScriptGzip": 426375,
+  "measuredLargestJavaScriptGzip": 164316,
+  "measuredTotalJavaScriptGzip": 426388,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5746,6 +5746,22 @@
         "measuredLargestJavaScriptGzip": 164299,
         "measuredTotalJavaScriptGzip": 426375,
         "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 426400
+      }
+    },
+    {
+      "at": "2026-10-17T03:11:04.983Z",
+      "reason": "DialogSurface describedBy demo (KF-JNV47V) plus sized WA Progress Bar/Skeleton/Zoomable Frame specimens (KF-J214TZ)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164299,
+        "measuredTotalJavaScriptGzip": 426375,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 426400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164316,
+        "measuredTotalJavaScriptGzip": 426388,
+        "largestJavaScriptGzip": 164400,
         "totalJavaScriptGzip": 426400
       }
     }
