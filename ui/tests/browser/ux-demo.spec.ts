@@ -4162,6 +4162,82 @@ test('aligns Web Awesome control and text specimens like their Kerf counterparts
   }
 });
 
+// The rightmost painted extent of each example's specimens past the example's
+// inline-end edge, clipped by every overflow-clipping box on the way down: a
+// carousel's off-screen slides sit inside its scroll container, and a
+// visually-hidden instruction is clipped to a 1px box, so neither is a
+// visible overrun.
+async function visibleSpecimenOverruns(page: Page, route: string) {
+  return page
+    .locator(`[data-demo="${route}"] [data-catalog-example]`)
+    .evaluateAll((examples) =>
+      examples.map((example) => {
+        const bounds = example.getBoundingClientRect();
+        let right = -Infinity;
+        const visit = (node: Node, clip: number): void => {
+          if (node.nodeType === Node.TEXT_NODE) {
+            if (!node.textContent?.trim()) return;
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            for (const rect of range.getClientRects())
+              if (rect.width > 0)
+                right = Math.max(right, Math.min(rect.right, clip));
+            return;
+          }
+          if (!(node instanceof Element)) return;
+          if (
+            node.matches(
+              '[data-catalog-example-label], [data-catalog-example-note], style, script, template, :popover-open, :modal',
+            )
+          )
+            return;
+          const style = window.getComputedStyle(node);
+          if (
+            style.display === 'none' ||
+            style.visibility === 'hidden' ||
+            style.position === 'fixed'
+          )
+            return;
+          const rect = node.getBoundingClientRect();
+          const painted =
+            (parseFloat(style.borderInlineEndWidth) > 0 &&
+              style.borderInlineEndStyle !== 'none') ||
+            style.backgroundColor !== 'rgba(0, 0, 0, 0)';
+          if (painted && rect.width > 0 && rect.height > 0)
+            right = Math.max(right, Math.min(rect.right, clip));
+          const clipped =
+            style.overflowX !== 'visible' || style.clip !== 'auto';
+          const inner = clipped
+            ? Math.min(clip, style.clip !== 'auto' ? rect.left : rect.right)
+            : clip;
+          const children: Node[] = node.shadowRoot
+            ? [...node.shadowRoot.childNodes]
+            : node instanceof HTMLSlotElement
+              ? node.assignedNodes({ flatten: true })
+              : [...node.childNodes];
+          for (const child of children) visit(child, inner);
+        };
+        for (const child of example.children) visit(child, Infinity);
+        return Number.isFinite(right) ? right - bounds.right : 0;
+      }),
+    );
+}
+
+test('keeps Web Awesome media and segmented-field specimens inside their example', async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  for (const width of [1100, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    for (const route of ['wa-time-input', 'wa-carousel', 'wa-carousel-item']) {
+      await page.goto(`/?component=${route}`);
+      await expect(page.locator(`[data-demo="${route}"]`)).toBeVisible();
+      for (const overrun of await visibleSpecimenOverruns(page, route))
+        expect(overrun, `${route} overrun at ${width}`).toBeLessThan(0.5);
+    }
+  }
+});
+
 test('styles and aligns OTP label and hint like a bordered text field', async ({
   page,
 }) => {
