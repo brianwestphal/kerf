@@ -1166,6 +1166,70 @@ describe('wireWorkbench toolbar toggle focus', () => {
     ).toBe(true);
   });
 
+  it('focuses an overlay opened from a persistent external toggle once it can take focus', async () => {
+    // The panel shows a frame after it opens (the app's render runs after
+    // this wiring), so the opening focus lands on a hidden panel and does
+    // nothing; the toggle stays connected, so the opener hand-off never
+    // fires either. Hidden elements refuse focus here as a browser's do.
+    let hidden = false;
+    const realFocus = HTMLElement.prototype.focus;
+    vi.spyOn(HTMLElement.prototype, 'focus').mockImplementation(function (
+      this: HTMLElement,
+      options?: FocusOptions,
+    ) {
+      if (hidden && this.closest('[data-workbench-rail]')) return;
+      realFocus.call(this, options);
+    });
+    vi.spyOn(HTMLElement.prototype, 'checkVisibility').mockImplementation(
+      function (this: HTMLElement) {
+        return !(hidden && this.closest('[data-workbench-rail]'));
+      },
+    );
+    const app = studio();
+    app.wire();
+    resize(true);
+    const toggle = document.createElement('button');
+    toggle.setAttribute('aria-controls', 'studio-left-rail');
+    document.body.append(toggle);
+    disposers.push(() => toggle.remove());
+    const rail = app.leftRail();
+
+    // Opens hidden; once the panel shows, its first control takes focus.
+    toggle.focus();
+    hidden = true;
+    app.left.value = false;
+    expect(document.activeElement).toBe(toggle);
+    await frame();
+    hidden = false;
+    await frame();
+    expect(document.activeElement?.textContent).toBe('Close nav');
+    expect(rail.contains(document.activeElement)).toBe(true);
+
+    // Focus the person moves elsewhere before the panel shows stays put.
+    app.left.value = true;
+    toggle.focus();
+    hidden = true;
+    app.left.value = false;
+    const other = app.button('Plain');
+    other.focus();
+    hidden = false;
+    await frame();
+    await frame();
+    expect(document.activeElement).toBe(other);
+
+    // A panel that never shows a control is focused itself once the frames
+    // run out, rather than leaving focus behind the overlay.
+    app.left.value = true;
+    toggle.focus();
+    hidden = true;
+    const focus = vi.mocked(HTMLElement.prototype.focus);
+    focus.mockClear();
+    app.left.value = false;
+    for (let step = 0; step < 10; step += 1) await frame();
+    expect(focus.mock.contexts.at(-1)).toBe(app.leftRail());
+    hidden = false;
+  });
+
   it('waits for a render that removes the opener a frame later, and never steals moved focus', async () => {
     const root = document.createElement('div');
     document.body.append(root);

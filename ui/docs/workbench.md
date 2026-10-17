@@ -471,7 +471,13 @@ presents as one, mirroring `wireSidebar`'s compact overlay:
 - **Focus moves in, and Tab stays in:** a panel that opens while it presents
   as an overlay takes focus on its first focusable control (typically the
   close control in its header), because it covers the work area and the
-  control that opened it. While it is open, Tab and Shift+Tab cycle through
+  control that opened it. That holds whichever control opens it: the
+  Workbench's own relocating toggle, or a persistent toggle outside the
+  Workbench (an app-bar button whose `aria-controls` names the panel) that
+  stays where it is. Focus moves in as soon as the panel can take it, even
+  when the app's render shows the panel a frame after the `collapsed` signal
+  changes; focus the person has moved elsewhere in the meantime stays put.
+  While it is open, Tab and Shift+Tab cycle through
   its controls and never reach the covered work area; Escape, its own close
   control, or an outside press leaves it. This is the ARIA dialog pattern
   `wireSidebar`'s compact overlay follows. A panel opening inline never moves

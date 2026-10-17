@@ -491,6 +491,35 @@ export function wireWorkbenchOverlays(
         // browser scrolls the panel's clipped, still-sliding content to reveal
         // the target, which then unwinds as the slide finishes.
         (focusables(element)[0] ?? element).focus({ preventScroll: true });
+        // The app's render may show the panel after this effect (its render
+        // effect runs later, or in a later frame), so the focus above can
+        // land on a still-hidden panel and do nothing. The Workbench's own
+        // toggle recovers through the hand-off once it is removed; a
+        // persistent toggle outside the Workbench never is, so retry for a
+        // few frames until the overlay can take focus. Only focus left on
+        // the opener or the body is moved, never focus the person moved.
+        const opener = openers.get(panel);
+        const focusIn = (frames: number): void => {
+          const current = panelElement(panel);
+          const focused = ownerDocument.activeElement;
+          if (
+            panel.collapsed.peek() ||
+            !current ||
+            current.contains(focused) ||
+            !overlaid(current) ||
+            (focused !== null &&
+              focused !== ownerDocument.body &&
+              focused !== opener)
+          )
+            return;
+          focusables(current)[0]?.focus({ preventScroll: true });
+          if (current.contains(ownerDocument.activeElement)) return;
+          if (frames > 0)
+            globalThis.requestAnimationFrame(() => focusIn(frames - 1));
+          else current.focus({ preventScroll: true });
+        };
+        if (!element.contains(ownerDocument.activeElement))
+          globalThis.requestAnimationFrame(() => focusIn(8));
       }),
     );
   }

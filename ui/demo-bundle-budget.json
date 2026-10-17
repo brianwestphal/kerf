@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 428200,
+  "totalJavaScriptGzip": 428300,
   "measuredLargestJavaScriptGzip": 164543,
-  "measuredTotalJavaScriptGzip": 428125,
+  "measuredTotalJavaScriptGzip": 428258,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5971,6 +5971,22 @@
         "measuredTotalJavaScriptGzip": 428125,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 428200
+      }
+    },
+    {
+      "at": "2026-10-17T23:44:51.811Z",
+      "reason": "wireWorkbench retries overlay focus for a persistent external toggle",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 428125,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 428200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 428258,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 428300
       }
     }
   ]

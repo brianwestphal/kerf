@@ -795,7 +795,8 @@ the Tab order while collapsed or not inline. `wireWorkbench`, given a panel's
 `collapsed` signal, returns focus stranded in a closing panel to the control that
 opened it, else the restore control, else a control whose `aria-controls` names the
 panel; an open overlay panel takes focus and keeps Tab inside it (the ARIA dialog
-pattern). See [`workbench.md`](workbench.md).
+pattern), whether its own toggle or a persistent toggle outside the Workbench
+opened it, as soon as the panel can take focus. See [`workbench.md`](workbench.md).
 
 ## Chrome material
 
