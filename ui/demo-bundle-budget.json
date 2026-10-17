@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 427700,
-  "measuredLargestJavaScriptGzip": 164543,
-  "measuredTotalJavaScriptGzip": 427602,
+  "totalJavaScriptGzip": 427800,
+  "measuredLargestJavaScriptGzip": 164542,
+  "measuredTotalJavaScriptGzip": 427796,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5907,6 +5907,22 @@
         "measuredTotalJavaScriptGzip": 427602,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 427700
+      }
+    },
+    {
+      "at": "2026-10-17T08:50:34.971Z",
+      "reason": "KF-40SSN2 sunken inset-ring specimens merged after Button fill, Disclosure embedded and carousel sizing",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 427602,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 427700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164542,
+        "measuredTotalJavaScriptGzip": 427796,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 427800
       }
     }
   ]
