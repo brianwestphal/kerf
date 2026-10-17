@@ -115,9 +115,9 @@ interpolated value keeps its own spelling. The covered props are:
   the `aria-label` of a landmark element (`section`, `nav`, `aside`, `main`,
   `header`, `footer`, `form`, `search`) or landmark role;
 - field and group labels: the `label` (or `ariaLabel`) of `TextField`,
-  `Select`, and `RadioGroup`, and, in an application using the optional Web
-  Awesome integration, the `label` of a raw `wa-input`, `wa-select`,
-  `wa-textarea`, or `wa-radio-group`;
+  `Select`, `CheckboxGroup`, and `RadioGroup`, and, in an application using
+  the optional Web Awesome integration, the `label` of a raw `wa-input`,
+  `wa-select`, `wa-textarea`, `wa-checkbox-group`, or `wa-radio-group`;
 - the accessible names of icon-only controls: an icon-only `Button`'s `ariaLabel`, `PopupMenu` `label`, `SplitButton`
   `optionsLabel`, `SearchField` and `TextField` `clearLabel`, and the `aria-label` of a
   `button` or `wa-button` whose only content is an icon.

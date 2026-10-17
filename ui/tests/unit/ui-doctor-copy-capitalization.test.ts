@@ -359,7 +359,7 @@ describe('titleStyleLabels', () => {
     ]);
   });
 
-  test('reads raw Web Awesome field and radio-group labels, not option text', () => {
+  test('reads raw Web Awesome field, checkbox-group, and radio-group labels, not option text', () => {
     expect(
       labels(`
         export const Form = () => (
@@ -367,6 +367,9 @@ describe('titleStyleLabels', () => {
             <wa-input label="Project name" placeholder="Search tickets" />
             <wa-select label="Release channel" />
             <wa-textarea label="Release notes" />
+            <wa-checkbox-group label="Send updates by">
+              <wa-checkbox value="email">Email a daily digest</wa-checkbox>
+            </wa-checkbox-group>
             <wa-radio-group label="Notify me">
               <wa-radio value="all">Every new reply</wa-radio>
             </wa-radio-group>
@@ -380,6 +383,7 @@ describe('titleStyleLabels', () => {
       '<wa-input> label: Project name',
       '<wa-select> label: Release channel',
       '<wa-textarea> label: Release notes',
+      '<wa-checkbox-group> label: Send updates by',
       '<wa-radio-group> label: Notify me',
     ]);
   });

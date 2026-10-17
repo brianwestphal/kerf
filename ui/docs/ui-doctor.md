@@ -182,9 +182,10 @@ covers these string literals:
   `section`, `nav`, `aside`, `main`, `header`, `footer`, `form`, or `search`
   element or an element with a landmark `role`;
 - field and group labels: the `label` and `ariaLabel` of `TextField`,
-  `Select`, `CheckboxGroup`, and `RadioGroup`, and the `label` of a raw `wa-input`,
-  `wa-select`, `wa-textarea`, or `wa-radio-group` in an application using the
-  optional Web Awesome integration;
+  `Select`, `CheckboxGroup`, and `RadioGroup`, and the `label` of a raw
+  `wa-input`, `wa-select`, `wa-textarea`, `wa-checkbox-group`, or
+  `wa-radio-group` in an application using the optional Web Awesome
+  integration;
 - the accessible names of icon-only controls, which the rule also gives title
   style: an icon-only `Button`'s `ariaLabel`, `PopupMenu` `label`,
   `SplitButton` `optionsLabel`, `SearchField` and `TextField`

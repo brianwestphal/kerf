@@ -718,7 +718,8 @@ toolbar `toggle: { action, name }` names, region and landmark names (Pane,
 Workbench, Toolbar, ToolbarControlGroup, SunkenPanel, List, TabBar, NavStack,
 CollapsiblePanel, FloatingToolbar, ResizableRegion labels, their nested
 panel/toolbar/pane config labels, and landmark `aria-label`s), and raw
-`wa-input` / `wa-select` / `wa-textarea` / `wa-radio-group` labels. It
+`wa-input` / `wa-select` / `wa-textarea` / `wa-checkbox-group` /
+`wa-radio-group` labels. It
 reports words left lowercase against Apple's title-style
 rule (`ui/docs/writing.md`); `ui/tests/unit/ui-doctor-copy-capitalization.test.ts`
 pins the word rules and prop coverage.

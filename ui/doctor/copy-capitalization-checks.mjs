@@ -245,14 +245,15 @@ const landmarkRoles = new Set([
   'form',
   'search',
 ]);
-// A raw Web Awesome field's or radio group's `label` (in an application using
-// the optional integration) is a field label. The option text of
-// `wa-checkbox`, `wa-switch`, and `wa-radio` is sentence style and is not
-// read.
+// A raw Web Awesome field's, checkbox group's, or radio group's `label` (in an
+// application using the optional integration) is a field label. The option
+// text of `wa-checkbox`, `wa-switch`, and `wa-radio` is sentence style and is
+// not read.
 const fieldLabelTags = new Set([
   'wa-input',
   'wa-select',
   'wa-textarea',
+  'wa-checkbox-group',
   'wa-radio-group',
 ]);
 const titleToolbarTextSizes = new Set(['xlarge', 'xlarge-fixed', 'large']);
