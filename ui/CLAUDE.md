@@ -208,7 +208,12 @@ widths — not just DOM assertions. Most of the mistakes above are invisible to 
 passing test and obvious in a screenshot. Capture before/after when a ticket shows
 a target or a defect. Toolbar and trigger geometry differs across engines
 (Safari clips what Chrome fits), so check Firefox and WebKit too when a change
-touches it. See the root `CLAUDE.md` "Visual UI validation".
+touches it. Judge `backdrop-filter` materials (overlay chrome, toolbars over
+scrolling content) in full Chromium (`channel: 'chromium'`): Playwright's
+default headless shell renders in software and, at deviceScaleFactor 2, leaks
+sharp backdrop content through the blur — a false defect, reproducible with
+plain HTML. Headless WebKit paints no backdrop blur at all, so assert its
+computed styles instead. See the root `CLAUDE.md` "Visual UI validation".
 
 ## Keep the guidance surfaces in sync
 
