@@ -52,6 +52,7 @@ export function ColorFieldDemo() {
     >
       <CatalogExample
         label="Color Fields"
+        align="inline-control"
         note="The trigger shows the color as a swatch (over a checkerboard, so opacity reads) and its hex value. Pressing it opens a ColorPicker below; edits preview on the trigger at once, Escape or a press outside closes it, and focus returns to the trigger."
         viewport={{ width: 'compact' }}
       >

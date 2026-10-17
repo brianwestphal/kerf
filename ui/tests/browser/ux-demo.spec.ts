@@ -3554,40 +3554,115 @@ test('puts Web Awesome checkbox and radio groups on the Kerf toggle control colu
   }
 });
 
+// The x of the first visible character of `root`'s text, through shadow
+// roots and slots, so the assertion follows the glyphs a person aligns.
+const textX = (root: Element) => {
+  const walk = (node: Node): number | null => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent ?? '';
+      const index = text.search(/\S/);
+      if (index >= 0) {
+        const range = document.createRange();
+        range.setStart(node, index);
+        range.setEnd(node, index + 1);
+        const rect = range.getBoundingClientRect();
+        if (rect.width > 0) return rect.x;
+      }
+    }
+    const children: Node[] =
+      node instanceof HTMLSlotElement
+        ? node.assignedNodes({ flatten: true })
+        : [
+            ...((node as Element).shadowRoot?.childNodes ?? []),
+            ...node.childNodes,
+          ];
+    for (const child of children) {
+      const x = walk(child);
+      if (x !== null) return x;
+    }
+    return null;
+  };
+  return walk(root);
+};
+test('puts every Kerf field demo on one border and text column', async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  // [route, bordered or control part, label part] inside the route's demo.
+  // A Slider has no border, so only its label is checked; a Switch's and a
+  // Checkbox's label follows their control, so only the control is.
+  const fields = [
+    ['text-field', '.kui-text-field__box', '.kui-text-field__label'],
+    ['select', '.kui-select__trigger', '.kui-select__label'],
+    ['combobox', '.kui-combobox__control', '.kui-combobox__label'],
+    ['color-field', '.kui-color-field__trigger', '.kui-color-field__label'],
+    ['tag-field', '.kui-search-field__field', '.kui-search-field__field-label'],
+    ['slider', null, '.kui-slider__label'],
+    ['switch', '.kui-switch__track', null],
+    ['checkbox', '.kui-checkbox__box', null],
+    ['radio-group', '.kui-radio-group__circle', '.kui-radio-group__label'],
+    ['checkbox-group', '.kui-checkbox__box', '.kui-checkbox-group__label'],
+  ] as const;
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    let column: { border: number; label: number } | undefined;
+    for (const [route, borderSelector, labelSelector] of fields) {
+      await page.goto(`/?component=${route}`);
+      const demo = page.locator(`[data-demo="${route}"]`);
+      await expect(demo).toBeVisible();
+      const geometry = await demo.evaluate(
+        (element, [borderSelector, labelSelector, source]) => {
+          const x = new Function(`return ${source}`)() as (
+            root: Element,
+          ) => number | null;
+          return {
+            border: borderSelector
+              ? element.querySelector(borderSelector)!.getBoundingClientRect().x
+              : null,
+            label: labelSelector
+              ? x(element.querySelector(labelSelector)!)
+              : null,
+            // How far any specimen frame runs past its example's end edge.
+            overrun: Math.max(
+              0,
+              ...[
+                ...element.querySelectorAll('[data-catalog-example-viewport]'),
+              ].map(
+                (viewport) =>
+                  viewport.getBoundingClientRect().right -
+                  viewport.parentElement!.getBoundingClientRect().right,
+              ),
+            ),
+          };
+        },
+        [borderSelector, labelSelector, textX.toString()] as const,
+      );
+      // TextField sets the column: its box border and 9px label text.
+      column ??= { border: geometry.border!, label: geometry.label! };
+      // The aligned offset comes out of a framed specimen's width.
+      expect(geometry.overrun, `${route} overrun at ${width}`).toBeLessThan(
+        0.5,
+      );
+      if (geometry.border !== null) {
+        expect(geometry.border, `${route} border at ${width}`).toBeCloseTo(
+          column.border,
+          0,
+        );
+      }
+      if (geometry.label !== null) {
+        expect(geometry.label, `${route} label at ${width}`).toBeCloseTo(
+          column.label,
+          0,
+        );
+      }
+    }
+  }
+});
+
 test('puts Web Awesome fields on the Kerf field border and text columns', async ({
   page,
 }) => {
   test.setTimeout(120_000);
-  // The x of the first visible character of `root`'s text, through shadow
-  // roots and slots, so the assertion follows the glyphs a person aligns.
-  const textX = (root: Element) => {
-    const walk = (node: Node): number | null => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        const text = node.textContent ?? '';
-        const index = text.search(/\S/);
-        if (index >= 0) {
-          const range = document.createRange();
-          range.setStart(node, index);
-          range.setEnd(node, index + 1);
-          const rect = range.getBoundingClientRect();
-          if (rect.width > 0) return rect.x;
-        }
-      }
-      const children: Node[] =
-        node instanceof HTMLSlotElement
-          ? node.assignedNodes({ flatten: true })
-          : [
-              ...((node as Element).shadowRoot?.childNodes ?? []),
-              ...node.childNodes,
-            ];
-      for (const child of children) {
-        const x = walk(child);
-        if (x !== null) return x;
-      }
-      return null;
-    };
-    return walk(root);
-  };
 
   for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 1000 });

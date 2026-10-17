@@ -48,6 +48,7 @@ export function TagFieldDemo() {
     >
       <CatalogExample
         label="Labels"
+        align="inline-control"
         note="Type a label and press Enter or a comma; Backspace at the start removes the last tag, a chip's label moves it back to edit, ArrowLeft and ArrowRight move between chips. Each tag submits as its own hidden input."
         viewport={{ width: 'medium' }}
       >
@@ -62,6 +63,7 @@ export function TagFieldDemo() {
       </CatalogExample>
       <CatalogExample
         label="Validated with a Limit"
+        align="inline-control"
         note="max refuses tags past the limit and normalize refuses values the app does not accept; wireTagFields reports each refusal, and the app shows it as the field's error."
         viewport={{ width: 'medium' }}
       >

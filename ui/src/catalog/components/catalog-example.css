@@ -201,6 +201,17 @@
   margin-inline-start: var(--kui-catalog-example-align);
 }
 
+/* An aligned viewport's inline-start offset comes out of its width, so a
+   full-width frame still ends on the example's inline-end edge. */
+.kui-catalog-example:is(
+    [data-align="glyph"],
+    [data-align="inline-control"],
+    [data-align="text-trigger"]
+  )
+  > .kui-catalog-example__viewport {
+  max-width: calc(100% - var(--kui-catalog-example-align));
+}
+
 /* A trigger's text lines up with the example label's: the trigger's own
    inset (8px plus its 1px border) follows this 8px offset. */
 .kui-catalog-example[data-align="text-trigger"]

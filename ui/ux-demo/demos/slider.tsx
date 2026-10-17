@@ -29,6 +29,7 @@ export function SliderDemo() {
     >
       <CatalogExample
         label="Labeled with a Readout"
+        align="inline-control"
         note="A native range input drawn as a track, a fill up to the value, and a thumb; the readout and fill follow a drag through wireSliders. Arrow keys, Page Up and Down, Home, and End step it."
         viewport={{ width: 'medium' }}
       >
@@ -44,6 +45,7 @@ export function SliderDemo() {
       </CatalogExample>
       <CatalogExample
         label="Stepped with Ticks"
+        align="inline-control"
         note="step snaps the value; ticks label stops under the track, each centered under the thumb at that value."
         viewport={{ width: 'medium' }}
       >
@@ -67,6 +69,7 @@ export function SliderDemo() {
       </CatalogExample>
       <CatalogExample
         label="Compact and Disabled"
+        align="inline-control"
         note="size compact is a thinner track, a smaller thumb, and 14px text; a disabled slider dims and refuses input."
         viewport={{ width: 'medium' }}
       >
@@ -90,6 +93,7 @@ export function SliderDemo() {
       </CatalogExample>
       <CatalogExample
         label="Vertical"
+        align="inline-control"
         note='orientation="vertical" stands the slider up, minimum at the bottom, length tall (here 120px), for a volume control in a popup; arrow keys still step it and the fill runs upward.'
       >
         <Slider

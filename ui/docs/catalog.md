@@ -219,7 +219,12 @@ for a control whose own inline padding contributes about 8px, and
 8px inset (such as a plain `PopupMenu` trigger), so its text lines up with the
 example label past the trigger's own padding and border. Use
 `align="none"` (the default) for a content item or composition that owns its
-geometry.
+geometry. Every form field specimen (TextField, Select, ColorField, TagField,
+Slider, Switch, Checkbox, RadioGroup, CheckboxGroup) uses `inline-control`,
+so field borders and label text share one column across the catalog; a field
+that already insets itself by 8px (Combobox) stays at `none`. A sized
+`viewport` takes the alignment offset out of its width, so it still ends at the
+example's inline-end edge.
 
 ```tsx
 import { CatalogExample, CatalogExampleStack } from "@kerfjs/ui/catalog";
