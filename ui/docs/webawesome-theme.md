@@ -99,8 +99,8 @@ share Kerf's 44px control height — the height of a Kerf `Select`, a toolbar
 group, and a list row — so a `wa-input` or `wa-button` sits flush beside a Kerf
 `Select`. The theme sets `--wa-form-control-height` to `2.75em` (44px at the
 16px default) on Button, Color Picker, Input, Known Date, Number Input, Radio
-Group, Select, Textarea (its minimum height), and Time Input, so `size="large"`
-scales proportionally while `size="small"` keeps Web Awesome's compact secondary
+Group, Select, Tag Input (its box's minimum height), Textarea (its minimum
+height), and Time Input, so `size="large"` scales proportionally while `size="small"` keeps Web Awesome's compact secondary
 height. The token is scoped to those controls rather than the root because Web
 Awesome also derives tag, copy-button, and toast geometry from it. Buttons
 inside a `ToolbarControlGroup` keep the group's 40px (32px compact) control
@@ -114,16 +114,16 @@ uppercase 12px/650 treatment. Inline control labels (Checkbox, Switch) keep
 their natural sentence case.
 
 On coarse touch devices, the editable part of small and extra-small Web Awesome
-Input, Number Input, Time Input, Textarea, and Select has a 16px minimum text
-size. Small field chrome keeps its compact height and desktop typography stays
-small. This prevents Safari from magnifying the page just to focus text; it does
-not constrain a user's own pinch zoom. App-owned native fields need the same
+Input, Number Input, Tag Input, Time Input, Textarea, and Select has a 16px
+minimum text size. Small field chrome keeps its compact height and desktop
+typography stays small. This prevents Safari from magnifying the page just to
+focus text; it does not constrain a user's own pinch zoom. App-owned native fields need the same
 editable-text audit.
 
 Known Date's field captions and bordered text-like field hints use the same 9px
 inline inset, keeping secondary text aligned with the value rather than the
 field's outer border. This covers Input, Known Date, Number Input, OTP Input,
-Select, Textarea, and Time Input hints.
+Select, Tag Input, Textarea, and Time Input hints.
 OTP Input's label and hint both use the 9px field-text inset.
 
 Checkbox Group, Radio Group, and Color Picker follow Kerf's `Checkbox`,
@@ -138,13 +138,16 @@ Awesome's `0.375em`, the first and last radio still flush), so a Radio Group
 keeps the same 28px pitch as a Kerf `RadioGroup` and a Checkbox Group's 8px
 gap; horizontal and button radios keep Web Awesome's spacing.
 
-Bordered fields (Input, Known Date, Number Input, OTP Input, Select, Textarea,
-and Time Input) and Switch likewise draw their border or track on the host's
-inline-start edge, exactly where Kerf's `TextField`, `Select`, and `Switch`
+Bordered fields (Input, Known Date, Number Input, OTP Input, Select, Tag
+Input, Textarea, and Time Input) and Switch likewise draw their border or
+track on the host's inline-start edge, exactly where Kerf's `TextField`, `Select`, and `Switch`
 draw theirs, with the label and hint on the same 9px text column. Place a Web
 Awesome field where you would place the Kerf field it stands in for, so a mixed
 form shares one border column and one text column; the UX catalog gives these
-specimens the same `inline-control` alignment as the Kerf field demos.
+specimens the same `inline-control` alignment as the Kerf field demos. Tag
+Input is Discouraged in favor of Kerf's `TagField`, but an application that
+still renders it gets the same label, hint, height, and border placement as the
+other bordered fields.
 
 Slider's complete interactive region receives the
 shared 8px logical inline outer inset through `::part(slider)`, keeping its

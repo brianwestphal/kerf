@@ -1049,10 +1049,10 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
 // border, switch track, color swatch, box, and circle on the host's
 // inline-start edge with the label and hint on the 9px text column, so this
 // offset puts the control and text columns where Kerf's land. Rating has no
-// Kerf counterpart, Slider keeps its own 8px track inset, and Tag Input is not
-// yet themed, so those keep their natural geometry.
+// Kerf counterpart and Slider keeps its own 8px track inset, so those keep
+// their natural geometry.
 const unalignedFormSpecimens: ReadonlySet<WebAwesomeCatalogId> =
-  new Set<WebAwesomeCatalogId>(['wa-rating', 'wa-slider', 'wa-tag-input']);
+  new Set<WebAwesomeCatalogId>(['wa-rating', 'wa-slider']);
 
 export const webAwesomeComponentDemos: Record<
   WebAwesomeCatalogId,

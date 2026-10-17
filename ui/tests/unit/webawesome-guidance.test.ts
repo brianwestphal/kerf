@@ -253,7 +253,7 @@ describe('Web Awesome consumer guidance', () => {
       /Checkbox Group, Radio Group, and Color Picker follow Kerf's `Checkbox`,\s+`RadioGroup`, and `ColorField`/,
     );
     expect(guidance).toMatch(
-      /Bordered fields \(Input, Known Date, Number Input, OTP Input, Select, Textarea,\s+and Time Input\) and Switch likewise draw their border or track on the host's\s+inline-start edge/,
+      /Bordered fields \(Input, Known Date, Number Input, OTP Input, Select, Tag\s+Input, Textarea, and Time Input\) and Switch likewise draw their border or\s+track on the host's inline-start edge/,
     );
   });
 

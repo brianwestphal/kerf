@@ -4,6 +4,7 @@ const smallFields = [
   ['wa-input', 'input'],
   ['wa-number-input', 'input'],
   ['wa-time-input', 'input'],
+  ['wa-tag-input', 'input'],
   ['wa-textarea', 'textarea'],
   ['wa-select', 'display-input'],
 ] as const;

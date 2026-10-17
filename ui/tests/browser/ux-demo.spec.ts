@@ -3676,10 +3676,12 @@ test('puts Web Awesome fields on the Kerf field border and text columns', async 
         const x = new Function(`return ${source}`)() as (
           root: Element,
         ) => number | null;
+        const box = element
+          .querySelector('.kui-text-field__box')!
+          .getBoundingClientRect();
         return {
-          border: element
-            .querySelector('.kui-text-field__box')!
-            .getBoundingClientRect().x,
+          border: box.x,
+          height: box.height,
           label: x(element.querySelector('.kui-text-field__label')!),
           hint: x(element.querySelector('.kui-text-field__hint')!),
         };
@@ -3714,6 +3716,7 @@ test('puts Web Awesome fields on the Kerf field border and text columns', async 
         true,
       ],
       ['wa-time-input', 'wa-time-input', 'base', 'form-control-label', false],
+      ['wa-tag-input', 'wa-tag-input', 'tag-input', 'form-control-label', true],
       [
         'wa-known-date',
         'wa-known-date',
@@ -3731,6 +3734,12 @@ test('puts Web Awesome fields on the Kerf field border and text columns', async 
       ],
       ['wa-switch', 'wa-switch', 'control', 'base', false],
     ] as const;
+    const singleLineFields = new Set<string>([
+      'wa-input',
+      'wa-number-input',
+      'wa-time-input',
+      'wa-tag-input',
+    ]);
     for (const [route, tag, borderPart, labelPart, hasHint] of specimens) {
       await page.goto(`/?component=${route}`);
       const host = page.locator(tag).first();
@@ -3753,8 +3762,10 @@ test('puts Web Awesome fields on the Kerf field border and text columns', async 
           const part = (name: string) =>
             element.shadowRoot!.querySelector(`[part~="${name}"]`);
           const hint = part('hint');
+          const box = part(borderPart)!.getBoundingClientRect();
           return {
-            border: part(borderPart)!.getBoundingClientRect().x,
+            border: box.x,
+            height: box.height,
             label: x(part(labelPart)!),
             hint: hint ? x(hint) : null,
           };
@@ -3773,6 +3784,13 @@ test('puts Web Awesome fields on the Kerf field border and text columns', async 
         kerf.label!,
         0,
       );
+      // A single-line bordered field is as tall as a Kerf TextField's box.
+      if (singleLineFields.has(route)) {
+        expect(geometry.height, `${route} height at ${width}`).toBeCloseTo(
+          kerfField.height,
+          0,
+        );
+      }
       if (hasHint) {
         expect(geometry.hint, `${route} hint at ${width}`).toBeCloseTo(
           kerfField.hint!,

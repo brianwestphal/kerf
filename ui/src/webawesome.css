@@ -583,6 +583,7 @@
     wa-number-input,
     wa-radio-group,
     wa-select,
+    wa-tag-input,
     wa-textarea,
     wa-time-input
   ):not([size="small"]) {
@@ -600,6 +601,7 @@
     wa-number-input,
     wa-radio-group,
     wa-select,
+    wa-tag-input,
     wa-textarea,
     wa-time-input
   )::part(form-control-label),
@@ -656,6 +658,7 @@
     wa-otp-input,
     wa-radio-group,
     wa-select,
+    wa-tag-input,
     wa-textarea,
     wa-time-input
   )::part(hint) {
@@ -671,7 +674,7 @@
    their compact chrome and desktop typography keep their normal sizes. */
 @media (hover: none) and (pointer: coarse) {
   @layer wa-theme-overrides {
-    :is(wa-input, wa-number-input, wa-time-input):is(
+    :is(wa-input, wa-number-input, wa-tag-input, wa-time-input):is(
         [size="xs"],
         [size="s"],
         [size="small"]
