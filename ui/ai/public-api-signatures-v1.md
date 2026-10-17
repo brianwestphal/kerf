@@ -6589,6 +6589,12 @@ interface ButtonOptions {
     /** Corner shape (default `rounded`). */
     shape?: ButtonShape;
     /**
+     * Span the full width of the parent instead of sizing to the label, as on
+     * `SplitButton`. The label stays centered and ellipsizes when it no longer
+     * fits.
+     */
+    fill?: boolean;
+    /**
      * Make it a toggle: `aria-pressed` reports the state, and a pressed look is
      * drawn on top of the tone and emphasis. The application owns the state and
      * flips it in its `action` handler. A link (`href`) cannot be a toggle.
@@ -6647,12 +6653,13 @@ interface ButtonOptions {
  * A standalone action button: a native `<button>` (or a link with `href`)
  * in one of three tones and three emphases, at the 44px control height or
  * compact, with a label or as an icon-only square, rounded or pill-shaped,
- * and optionally a `pressed` toggle. Inside a
+ * sized to its label or filling its parent's width, and optionally a
+ * `pressed` toggle. Inside a
  * `ToolbarControlGroup`, use a plain `<button>`, which the group styles; use
  * Button for a dialog footer, a form, or a standalone action beside other
  * content.
  */
-declare function Button({ children, tone, emphasis, size, shape, pressed, icon, loading, disabled, type, name, value, form, href, target, action, focusRingInset, badge, badgeLabel, badgeTone, ariaLabel, title, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
+declare function Button({ children, tone, emphasis, size, shape, fill, pressed, icon, loading, disabled, type, name, value, form, href, target, action, focusRingInset, badge, badgeLabel, badgeTone, ariaLabel, title, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
 
 export { Button, type ButtonContent, type ButtonEmphasis, type ButtonLabel, type ButtonOptions, type ButtonProps, type ButtonRootAttributes, type ButtonShape, type ButtonSize, type ButtonTone, type ButtonType };
 ```

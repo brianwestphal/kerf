@@ -13,6 +13,7 @@ Trigger an action from a dialog footer, a form, or content outside any Toolbar, 
 - A dialog footer, a form, or content needs an action button: tone="brand" for the main action, tone="danger" for a destructive one, and emphasis="secondary" or "plain" for the quieter actions beside it.
 - A form submits or resets: type="submit" or "reset" (the default type never submits), with name, value, and form when needed.
 - An action navigates: href renders a link with the same chrome.
+- A single primary action spans its form, sheet, or narrow column: fill makes it span the parent's available inline width, label centered, as SplitButton's fill does.
 
 **Not when:**
 
@@ -41,6 +42,7 @@ Exact prop names and types: [`@kerfjs/ui/button`](../public-api-signatures-v1.md
 - primary, secondary, or plain emphasis
 - default or compact size
 - rounded (default) or pill shape
+- content width (default) or fill: spans the parent's available inline width, label centered and ellipsized when it no longer fits
 - leading icon
 - icon-only square (icon and ariaLabel, no label)
 - pressed toggle (aria-pressed) on any tone and emphasis

@@ -51,6 +51,22 @@ export function ButtonDemo() {
           </Button>
         </Row>
       </CatalogExample>
+      <CatalogExample
+        label="Full-Width Primary Action"
+        note="fill spans the button across its column instead of sizing it to the label; the label stays centered and ellipsizes once it no longer fits. A link Button (href) fills the same way."
+        align="inline-control"
+        viewport={{ width: 'compact' }}
+      >
+        <Button
+          tone="brand"
+          fill
+          icon={<LucideIcon icon={Plus} name="plus" />}
+          action="log-more"
+          rootAttributes={{ 'data-demo-section': 'fill' }}
+        >
+          Create Project
+        </Button>
+      </CatalogExample>
       <CatalogExample label="Compact and Icons" align="inline-control">
         <Row wrap vAlign="middle">
           <Button

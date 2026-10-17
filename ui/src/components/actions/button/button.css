@@ -75,6 +75,18 @@
   flex-shrink: 0;
   padding: 0;
 }
+/* fill: the button spans its parent's available inline width, as a filled
+   SplitButton does. The label stays centered and ellipsizes once it no longer
+   fits; an icon-only button that fills spans too. */
+.kui-button[data-fill="true"] {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+}
+.kui-button[data-fill="true"] > .kui-button__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 /* A pill: fully round ends (a circle when icon-only). */
 .kui-button[data-shape="pill"] {
   border-radius: var(--kui-layout-pill-radius, calc(1px + remify(21px)));

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 427200,
-  "measuredLargestJavaScriptGzip": 164533,
-  "measuredTotalJavaScriptGzip": 427186,
+  "totalJavaScriptGzip": 427400,
+  "measuredLargestJavaScriptGzip": 164534,
+  "measuredTotalJavaScriptGzip": 427302,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5859,6 +5859,22 @@
         "measuredTotalJavaScriptGzip": 427186,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 427200
+      }
+    },
+    {
+      "at": "2026-10-17T07:40:23.273Z",
+      "reason": "Button fill adds a documented prop and a Full-Width Primary Action demo specimen",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164533,
+        "measuredTotalJavaScriptGzip": 427186,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 427200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164534,
+        "measuredTotalJavaScriptGzip": 427302,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 427400
       }
     }
   ]

@@ -1674,6 +1674,20 @@ export const COMPONENTS = {
             ],
           }),
       },
+      {
+        id: 'full-width',
+        label: 'Full-Width Primary Action',
+        height: 44,
+        // A fixed frame gives the filled Button a parent to span.
+        frameWidth: 440,
+        render: () =>
+          Button({
+            children: 'Create Project',
+            tone: 'brand',
+            icon: glyph(Plus, 'plus'),
+            fill: true,
+          }),
+      },
     ],
   },
   // A fixed compact-width frame, so the full-width variant has a parent to
@@ -2447,12 +2461,13 @@ async function buildComponent(domotion, name, spec) {
   await rm(dir, { recursive: true, force: true });
   await mkdir(dir, { recursive: true });
 
-  const frameWidth =
-    typeof spec.frameWidth === 'number'
-      ? `${spec.frameWidth}px`
-      : spec.frameWidth;
+  // A variant may set its own frameWidth, such as a fixed width that gives a
+  // full-width variant a parent to fill inside a max-content template.
+  const frameWidthOf = (width) =>
+    typeof width === 'number' ? `${width}px` : width;
   const rendered = [];
   for (const variant of spec.variants) {
+    const frameWidth = frameWidthOf(variant.frameWidth ?? spec.frameWidth);
     const themed = {};
     for (const theme of THEMES) {
       const wire = variant.wireToolbarVisibility

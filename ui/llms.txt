@@ -695,6 +695,11 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   ring moves inside the box with a surface-colored line inside it, so it keeps
   3:1 contrast even on a loud fill of its own hue. Never re-offset the outline
   from app CSS.
+- **Span a full-width primary action with `fill`.** `<Button tone="brand" fill action="create">Create Project</Button>`
+  spans the parent's available inline width instead of shrinking to its
+  label, with the label centered and ellipsized once it no longer fits; a
+  link (`href`) fills the same way. It is the same `fill` `SplitButton`
+  takes. Never set `width: 100%` on a Button from app CSS.
 - **Make any `Button` a toggle with `pressed`.** In content or a pane footer,
   `<Button icon={…} ariaLabel="Show Conversation" emphasis="plain" pressed={open} action="toggle-chat" />`
   renders a native `aria-pressed` button whose pressed look draws on top of

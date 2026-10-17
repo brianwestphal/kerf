@@ -172,6 +172,113 @@ test('Buttons are 44px tall, or 33px compact, at wide and narrow widths', async 
   }
 });
 
+// fill spans the button across its parent's inline width: the icon and label
+// stay centered as one group 8px apart, the default ring stays clear of any
+// clipping ancestor, focusRingInset still draws inside the box, a link fills
+// the same way, and a column narrower than the label ellipsizes it.
+test('a filled Button spans its column at wide and narrow widths', async ({
+  page,
+}) => {
+  for (const width of [1100, 390]) {
+    const demo = await openDemo(page, width);
+    const button = demo.locator('[data-demo-section="fill"]');
+    await expect(button).toHaveAttribute('data-fill', 'true');
+    await button.evaluate((element) =>
+      element.scrollIntoView({ block: 'center', behavior: 'instant' }),
+    );
+    const geometry = () =>
+      button.evaluate((element) => {
+        const parent = element.parentElement!.getBoundingClientRect();
+        const box = element.getBoundingClientRect();
+        const icon = element
+          .querySelector('.kui-button__icon')!
+          .getBoundingClientRect();
+        const label = element.querySelector('.kui-button__label')!;
+        const text = label.getBoundingClientRect();
+        let clip: Element | null = element.parentElement;
+        while (clip && window.getComputedStyle(clip).overflow === 'visible')
+          clip = clip.parentElement;
+        const clipBox = clip!.getBoundingClientRect();
+        return {
+          tag: element.tagName,
+          parentLeft: parent.left,
+          parentWidth: parent.width,
+          left: box.left,
+          width: box.width,
+          height: box.height,
+          contentCenter: (icon.left + text.right) / 2,
+          center: box.left + box.width / 2,
+          iconGap: text.left - icon.right,
+          truncated: label.scrollWidth > label.clientWidth,
+          textOverflow: window.getComputedStyle(label).textOverflow,
+          // The default ring paints 1px outside, 3px wide: 4px past the box.
+          ringClear:
+            box.left - 4 >= clipBox.left &&
+            box.right + 4 <= clipBox.right &&
+            box.top - 4 >= clipBox.top &&
+            box.bottom + 4 <= clipBox.bottom,
+        };
+      });
+    const filled = await geometry();
+    expect(filled.tag).toBe('BUTTON');
+    expect(filled.left).toBeCloseTo(filled.parentLeft, 0);
+    expect(filled.width).toBeCloseTo(filled.parentWidth, 0);
+    expect(filled.width).toBeLessThanOrEqual(440);
+    expect(filled.height).toBe(44);
+    expect(Math.abs(filled.contentCenter - filled.center)).toBeLessThan(1);
+    expect(filled.iconGap).toBeCloseTo(8, 0);
+    expect(filled.truncated).toBe(false);
+    if (width === 390) expect(filled.width).toBeLessThan(390);
+    else expect(filled.width).toBe(440);
+
+    // The default ring stays outside the box and clear of every clip.
+    await page.mouse.move(1, 1);
+    await page.keyboard.press('Shift');
+    await button.focus();
+    await expect(button).toHaveCSS('outline-offset', '1px');
+    await expect(button).toHaveCSS('outline-width', '3px');
+    expect(filled.ringClear).toBe(true);
+
+    // focusRingInset keeps its two-tone ring inside a filled box.
+    await button.evaluate((element) => {
+      element.dataset.focusRingInset = 'true';
+    });
+    const ring = await sampleInsetRing(page, button, 4.5);
+    expect(ring.width).toBe(3);
+    expect(ring.offset + ring.width).toBeLessThanOrEqual(0);
+    expect(contrastRatio(ring.ringOuter, ring.ringInner)).toBeLessThan(1.1);
+    expect(contrastRatio(ring.ringInner, ring.line)).toBeGreaterThanOrEqual(3);
+    await button.evaluate((element) => {
+      delete element.dataset.focusRingInset;
+    });
+
+    // A link Button with the same markers fills the same column.
+    await button.evaluate((element) => {
+      const link = document.createElement('a');
+      for (const { name, value } of element.attributes)
+        link.setAttribute(name, value);
+      link.removeAttribute('type');
+      link.setAttribute('href', '#button');
+      link.innerHTML = element.innerHTML;
+      element.replaceWith(link);
+    });
+    const linked = await geometry();
+    expect(linked.tag).toBe('A');
+    expect(linked.width).toBeCloseTo(filled.width, 0);
+    expect(linked.height).toBe(44);
+    expect(Math.abs(linked.contentCenter - linked.center)).toBeLessThan(1);
+
+    // A column narrower than the label ellipsizes it inside the full width.
+    await button.evaluate((element) => {
+      element.parentElement!.style.width = '96px';
+    });
+    const narrow = await geometry();
+    expect(narrow.width).toBeCloseTo(96, 0);
+    expect(narrow.truncated).toBe(true);
+    expect(narrow.textOverflow).toBe('ellipsis');
+  }
+});
+
 test('a pressed Button toggles, stays legible, and an icon-only one shows its help tag', async ({
   page,
 }) => {

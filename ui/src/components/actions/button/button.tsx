@@ -29,6 +29,7 @@ const BUTTON_PROTECTED = new Set([
   'data-loading',
   'data-icon-only',
   'data-shape',
+  'data-fill',
   'data-focus-ring-inset',
 ]);
 
@@ -69,6 +70,12 @@ export interface ButtonOptions {
   size?: ButtonSize;
   /** Corner shape (default `rounded`). */
   shape?: ButtonShape;
+  /**
+   * Span the full width of the parent instead of sizing to the label, as on
+   * `SplitButton`. The label stays centered and ellipsizes when it no longer
+   * fits.
+   */
+  fill?: boolean;
   /**
    * Make it a toggle: `aria-pressed` reports the state, and a pressed look is
    * drawn on top of the tone and emphasis. The application owns the state and
@@ -129,7 +136,8 @@ export interface ButtonOptions {
  * A standalone action button: a native `<button>` (or a link with `href`)
  * in one of three tones and three emphases, at the 44px control height or
  * compact, with a label or as an icon-only square, rounded or pill-shaped,
- * and optionally a `pressed` toggle. Inside a
+ * sized to its label or filling its parent's width, and optionally a
+ * `pressed` toggle. Inside a
  * `ToolbarControlGroup`, use a plain `<button>`, which the group styles; use
  * Button for a dialog footer, a form, or a standalone action beside other
  * content.
@@ -140,6 +148,7 @@ export function Button({
   emphasis = 'primary',
   size = 'default',
   shape = 'rounded',
+  fill = false,
   pressed,
   icon,
   loading = false,
@@ -173,6 +182,7 @@ export function Button({
     'data-loading': loading ? '' : undefined,
     'data-icon-only': children === undefined ? '' : undefined,
     'data-shape': shape === 'pill' ? 'pill' : undefined,
+    'data-fill': fill ? 'true' : undefined,
     'data-focus-ring-inset': focusRingInset ? 'true' : undefined,
     'data-action': action,
     'aria-label':

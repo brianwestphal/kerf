@@ -197,6 +197,33 @@ describe('Button', () => {
     expect(forged.hasAttribute('data-focus-ring-inset')).toBe(false);
   });
 
+  it('marks fill and protects the marker', () => {
+    expect(render(<Button>Default</Button>).hasAttribute('data-fill')).toBe(
+      false,
+    );
+    expect(
+      render(<Button fill={false}>Off</Button>).hasAttribute('data-fill'),
+    ).toBe(false);
+    const filled = render(
+      <Button tone="brand" fill>
+        Continue
+      </Button>,
+    );
+    expect(filled.tagName).toBe('BUTTON');
+    expect(filled.dataset.fill).toBe('true');
+    const link = render(
+      <Button href="/docs" fill>
+        Docs
+      </Button>,
+    );
+    expect(link.tagName).toBe('A');
+    expect(link.dataset.fill).toBe('true');
+    const forged = render(
+      <Button rootAttributes={{ 'data-fill': 'true' }}>Forged</Button>,
+    );
+    expect(forged.hasAttribute('data-fill')).toBe(false);
+  });
+
   it('refuses to make a link a toggle', () => {
     expect(() =>
       Button({ children: 'Docs', href: '/docs', pressed: true }),
