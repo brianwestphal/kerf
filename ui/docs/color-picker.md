@@ -82,4 +82,10 @@ field is named the same way (Red, Hue, Hex Color, Opacity). The panel takes
 the shared block-content inset, fills its container up to 320px, and spaces
 its rows 12px apart; the sliders form one group 8px apart.
 
+Every slider track draws a 1px inner edge halfway between the text color and
+the track, so a track as dark as a dark surface (a hue at low brightness, a
+faint opacity) or as light as a light one keeps a boundary of at least 3:1
+against the surface around it. Increased contrast draws the edge in the full
+text color and forced colors in `CanvasText`.
+
 Use `ColorSwatches` for a small fixed palette.

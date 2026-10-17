@@ -72,6 +72,7 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 
 - The area is a slider named Saturation and Brightness with a spoken value; the arrow keys move it (Shift for 10% steps), Page Up and Down change brightness, Home and End saturation.
 - Every channel slider and the opacity slider is a native range input named for its channel (Red, Hue, Lightness, Gray Level, Opacity) with a spoken value in the channel's unit (210°, 40%, or a 0–255 byte); every field is named (Red, Hue, Hex Color, Opacity); the picker is a named group.
+- Every slider track carries a 1px inner edge halfway to the text color, so a track as dark or as light as the surface around it keeps at least 3:1 non-text contrast against it; increased contrast draws the edge in the full text color and forced colors in CanvasText.
 
 ## Styling boundary
 

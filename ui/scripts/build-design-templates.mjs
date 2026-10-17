@@ -2173,6 +2173,7 @@ body { margin: 0; padding: 20px; background: ${theme.pageBackground}; font-famil
 .dt-picker-track { border-radius: 6px; }
 .dt-picker-track { position: absolute; top: 4px; left: 0; width: 100%; height: 12px; overflow: hidden; }
 .dt-picker-track > svg { display: block; width: 100%; height: 100%; }
+.dt-picker-track-edge { color: var(--kui-color-text); stroke: currentColor; stroke-opacity: 0.5; }
 .dt-picker-thumb { position: absolute; top: 0; left: calc((100% - 20px) * var(--dt-fraction)); width: 20px; height: 20px; box-sizing: border-box; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 0 1px rgb(0 0 0 / 0.2), var(--kui-shadow-s); }
 .kui-color-field__swatch.dt-swatch { position: relative; overflow: hidden; background: var(--kui-color-surface); }
 .dt-swatch > span { position: absolute; }
@@ -2223,7 +2224,7 @@ function staticColorPicker(markup) {
       .join(''),
   ).join('');
   const track = (id, stops, under = '') =>
-    `<span class="dt-picker-track"><svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="${id}-clip"><rect width="300" height="12" rx="6"/></clipPath><linearGradient id="${id}">${stops}</linearGradient></defs><g clip-path="url(#${id}-clip)">${under}</g><rect width="300" height="12" rx="6" fill="url(#${id})"/></svg></span>`;
+    `<span class="dt-picker-track"><svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="${id}-clip"><rect width="300" height="12" rx="6"/></clipPath><linearGradient id="${id}">${stops}</linearGradient></defs><g clip-path="url(#${id}-clip)">${under}</g><rect width="300" height="12" rx="6" fill="url(#${id})"/><rect class="dt-picker-track-edge" x="0.5" y="0.5" width="299" height="11" rx="5.5" fill="none"/></svg></span>`;
   // A channel slider's inline style carries its track stops and thumb color;
   // a slot the model does not use is hidden and drops out.
   const channelSlider = (input) => {

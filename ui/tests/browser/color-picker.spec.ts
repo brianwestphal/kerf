@@ -1,4 +1,6 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Locator, type Page, test } from '@playwright/test';
+
+import { contrastRatio } from '../../evaluator/index.mjs';
 
 test('ColorPicker follows pointer and keyboard input and reports its value', async ({
   page,
@@ -114,3 +116,93 @@ test('ColorPicker without opacity reports an opaque value', async ({
   await hex.press('Enter');
   await expect(hex).toHaveValue('112233');
 });
+
+/** The painted pixels of an element, read from a screenshot of its box. */
+async function paintedPixels(page: Page, locator: Locator) {
+  const png = await locator.screenshot();
+  const { width, height, data } = await page.evaluate(
+    async (source) => {
+      const image = new window.Image();
+      image.src = source;
+      await image.decode();
+      const context = document
+        .createElement('canvas')
+        .getContext('2d', { willReadFrequently: true })!;
+      context.canvas.width = image.width;
+      context.canvas.height = image.height;
+      context.drawImage(image, 0, 0);
+      return {
+        width: image.width,
+        height: image.height,
+        data: [...context.getImageData(0, 0, image.width, image.height).data],
+      };
+    },
+    `data:image/png;base64,${png.toString('base64')}`,
+  );
+  return {
+    width,
+    height,
+    at(x: number, y: number): number[] {
+      const offset = (Math.round(y) * width + Math.round(x)) * 4;
+      return data.slice(offset, offset + 3);
+    },
+  };
+}
+
+const distance = (a: readonly number[], b: readonly number[]) =>
+  a.reduce((sum, value, index) => sum + Math.abs(value - b[index]!), 0);
+
+/** Open the demo picker on a plain surface with a color in a model. */
+async function openPicker(page: Page, hex: string, mode: string) {
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      'kerf-ui-ux-demo-display',
+      JSON.stringify({ backgroundStyle: 'surface' }),
+    );
+  });
+  await page.setViewportSize({ width: 1280, height: 1100 });
+  await page.goto('/?component=color-picker');
+  const picker = page.locator('#color-picker-demo');
+  const field = picker.getByRole('textbox', { name: 'Hex Color' });
+  await field.fill(hex);
+  await field.press('Enter');
+  await picker
+    .getByRole('combobox', { name: 'Color Model' })
+    .selectOption(mode);
+  await page.mouse.move(0, 0);
+  return picker;
+}
+
+for (const scheme of ['light', 'dark'] as const) {
+  test(`ColorPicker slider tracks keep a visible edge on a ${scheme} surface`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: scheme });
+    // A color as dark as a dark surface, then one as light as a light one.
+    for (const hex of ['1A1A40', 'F4F0D8']) {
+      const picker = await openPicker(page, hex, 'hsb');
+      const sliders = picker.locator(
+        '.kui-color-picker__slider:not([hidden]), .kui-color-picker__opacity',
+      );
+      await expect(sliders).toHaveCount(4);
+      for (const slider of await sliders.all()) {
+        const pixels = await paintedPixels(page, slider);
+        // In a column clear of the thumb, the 20px input box shows the
+        // surface above the 12px track: its first painted row is the edge.
+        let measured = false;
+        for (const x of [pixels.width * 0.2, pixels.width * 0.8]) {
+          const surface = pixels.at(x, 0);
+          if (distance(pixels.at(x, pixels.height - 1), surface) > 6) continue;
+          const rows = Array.from({ length: pixels.height }, (_, y) =>
+            pixels.at(x, y),
+          );
+          const edge = rows.find((pixel) => distance(pixel, surface) > 6)!;
+          expect(contrastRatio(edge, surface)).toBeGreaterThanOrEqual(3);
+          measured = true;
+          break;
+        }
+        expect(measured).toBe(true);
+      }
+    }
+  });
+}
