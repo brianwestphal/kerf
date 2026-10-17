@@ -3,7 +3,7 @@
   "largestJavaScriptGzip": 164300,
   "totalJavaScriptGzip": 426300,
   "measuredLargestJavaScriptGzip": 164300,
-  "measuredTotalJavaScriptGzip": 426238,
+  "measuredTotalJavaScriptGzip": 426278,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5713,6 +5713,22 @@
       "next": {
         "measuredLargestJavaScriptGzip": 164300,
         "measuredTotalJavaScriptGzip": 426238,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 426300
+      }
+    },
+    {
+      "at": "2026-10-17T02:50:35.201Z",
+      "reason": "WA tag-input theming and Known Date/Slider specimen widths (KF-S5XTY4, KF-ZVA2S2) plus autoReposition surface observation in the bundled core (KF-S92WX8)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164300,
+        "measuredTotalJavaScriptGzip": 426238,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 426300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164300,
+        "measuredTotalJavaScriptGzip": 426278,
         "largestJavaScriptGzip": 164300,
         "totalJavaScriptGzip": 426300
       }
