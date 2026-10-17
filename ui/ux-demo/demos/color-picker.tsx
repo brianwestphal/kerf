@@ -54,7 +54,7 @@ export function ColorPickerDemo() {
     >
       <CatalogExample
         label="Full Picker"
-        note="Drag in the area or use the arrow keys (Shift for larger steps); drag the channel sliders (red, green, and blue in RGB; hue, saturation, and lightness or brightness in HSL and HSB; one gray level in Grayscale) and the opacity slider, each track previewing its channel; type in the channel, hex, or opacity fields and press Enter; switch the model between RGB, HSL, HSB, and Grayscale. Presets and user colors apply their color; + adds the current color to User Colors. The screen sampler appears where the browser offers the EyeDropper API."
+        note="Each slider previews its channel and follows the model. Add saves the current color to User Colors."
       >
         <ColorPicker
           id="color-picker-demo"
