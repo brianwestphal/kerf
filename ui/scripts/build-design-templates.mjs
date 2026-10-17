@@ -2281,7 +2281,13 @@ function staticSwatch(markup) {
 // `ui-monospace` resolves to different fonts on developer and hosted macOS
 // machines. Keep the public component fallback unchanged, but pin the capture
 // fixture to a font shipped by macOS so its text metrics are reproducible.
-const captureCss = `:root { --kui-font-mono: "Courier New", monospace; }`;
+//
+// A browser drops a <button>'s native appearance as soon as author CSS styles
+// its background or border, but the capture does not model that and silently
+// discards the contents (label, icon, divider) of a button left at
+// `appearance: auto`. Reset it in the fixture so every button captures the way
+// browsers paint it, whether or not its component also sets the reset.
+const captureCss = `:root { --kui-font-mono: "Courier New", monospace; } button { appearance: none; }`;
 
 const escapeHtml = (value) =>
   String(value)
