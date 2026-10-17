@@ -674,6 +674,7 @@ type ListHeaderRootAttributes = Readonly<Record<`data-${string}`, string | undef
     'data-divider'?: never;
     'data-inline'?: never;
     'data-width'?: never;
+    'data-wrap'?: never;
     'data-indicator-tone'?: never;
     'data-toggle'?: never;
 }>;
@@ -695,6 +696,12 @@ interface ListHeaderBaseProps {
     inline?: boolean;
     /** Fill the available row or shrink-wrap while retaining normal header geometry. */
     width?: 'fill' | 'content';
+    /**
+     * Wrap a long label onto further lines instead of truncating it to one
+     * ellipsized line. Default false. Use it where the whole label must stay
+     * readable in a narrow column, such as a specimen or form-section heading.
+     */
+    wrap?: boolean;
     indicatorTone?: 'neutral' | 'accent' | 'pop' | 'danger';
     /** Render as an unanimated loading skeleton: keep the label and action affordance, disable interaction. */
     placeholder?: boolean;
@@ -755,7 +762,7 @@ type ListHeaderIndicatorProps = {
     status?: SafeHtml | undefined;
 };
 type ListHeaderProps = ListHeaderBaseProps & ListHeaderIndicatorProps & ListHeaderModeProps;
-declare function ListHeader({ label, size, headingLevel, count, countLabel, badge, status, density, divider, inline, width, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, slot, }: ListHeaderProps): SafeHtml;
+declare function ListHeader({ label, size, headingLevel, count, countLabel, badge, status, density, divider, inline, width, wrap, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, slot, }: ListHeaderProps): SafeHtml;
 
 export { ListHeader, type ListHeaderProps };
 ```

@@ -549,6 +549,8 @@ describe('CatalogExample', () => {
     expect(html).toContain('data-component="list-header"');
     expect(html).toContain('data-catalog-example-label');
     expect(html).toContain('data-width="content"');
+    // The label wraps in a narrow stage instead of running past it.
+    expect(html).toContain('data-wrap="true"');
     // The note is ListInsetText + quiet compact Text.
     expect(html).toMatch(
       /data-catalog-example-note[^>]*class="kui-list-inset-text kui-catalog-example__note"[\s\S]*data-tone="quiet" data-size="compact"[^>]*>A note\./,

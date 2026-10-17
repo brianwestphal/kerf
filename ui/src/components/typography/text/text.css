@@ -175,6 +175,16 @@ span.kui-text {
   white-space: nowrap;
 }
 
+/* A wrapping header keeps the whole label: it breaks onto further lines
+   instead of ellipsizing, and `anywhere` lets a single long word break too, so
+   the label's minimum width never pushes the header past its column. */
+.kui-list-header[data-wrap="true"] .kui-list-header__title > .kui-text {
+  overflow: visible;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
+}
+
 .kui-list-header[data-size="xs"] .kui-list-header__title > .kui-text {
   font-size: var(--kui-font-2xs);
   text-transform: capitalize;

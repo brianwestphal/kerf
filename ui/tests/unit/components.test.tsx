@@ -1912,6 +1912,29 @@ describe('production UI primitives', () => {
     expect(asHtml(ListHeader({ label: 'Fitted', width: 'content' }))).toContain(
       'data-width="content"',
     );
+    // A wrapping label is opt-in on both the passive and the toggle header.
+    expect(asHtml(ListHeader({ label: 'Single line' }))).not.toContain(
+      'data-wrap',
+    );
+    expect(asHtml(ListHeader({ label: 'Wrapped', wrap: true }))).toContain(
+      'data-wrap="true"',
+    );
+    expect(
+      asHtml(
+        ListHeader({
+          label: 'Wrapped toggle',
+          toggle: true,
+          action: 'toggle',
+          expanded: false,
+          wrap: true,
+        }),
+      ),
+    ).toContain('data-wrap="true"');
+    ListHeader({
+      label: 'Reserved wrap',
+      // @ts-expect-error data-wrap is owned by ListHeader.wrap.
+      rootAttributes: { 'data-wrap': 'true' },
+    });
     ListItem({
       label: 'Unsafe menu role',
       action: 'unsafe',

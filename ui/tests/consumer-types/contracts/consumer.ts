@@ -956,6 +956,7 @@ void rootBarrelPresentationTypes;
 // KUI-T001 positive: every ListHeader mode carries its complete contract.
 ListHeader({ label: 'Passive' });
 ListHeader({ label: 'Inline passive', inline: true });
+ListHeader({ label: 'Wrapped passive', width: 'content', wrap: true });
 ListHeader({ label: 'Featured', badge: icon, indicatorTone: 'pop' });
 ListHeader({
   label: 'Action',

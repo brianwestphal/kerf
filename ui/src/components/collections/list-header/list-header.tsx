@@ -22,6 +22,7 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-divider',
   'data-inline',
   'data-width',
+  'data-wrap',
   'data-indicator-tone',
   'data-toggle',
 ]);
@@ -41,6 +42,7 @@ type ListHeaderRootAttributes = Readonly<
     'data-divider'?: never;
     'data-inline'?: never;
     'data-width'?: never;
+    'data-wrap'?: never;
     'data-indicator-tone'?: never;
     'data-toggle'?: never;
   }
@@ -67,6 +69,12 @@ interface ListHeaderBaseProps {
   inline?: boolean;
   /** Fill the available row or shrink-wrap while retaining normal header geometry. */
   width?: 'fill' | 'content';
+  /**
+   * Wrap a long label onto further lines instead of truncating it to one
+   * ellipsized line. Default false. Use it where the whole label must stay
+   * readable in a narrow column, such as a specimen or form-section heading.
+   */
+  wrap?: boolean;
   indicatorTone?: 'neutral' | 'accent' | 'pop' | 'danger';
   /** Render as an unanimated loading skeleton: keep the label and action affordance, disable interaction. */
   placeholder?: boolean;
@@ -145,6 +153,7 @@ export function ListHeader({
   divider = 'none',
   inline = false,
   width = 'fill',
+  wrap = false,
   indicatorTone = 'neutral',
   action,
   actionLabel,
@@ -221,6 +230,7 @@ export function ListHeader({
         data-divider={divider}
         data-inline={String(inline)}
         data-width={width}
+        data-wrap={wrap ? 'true' : undefined}
         data-indicator-tone={indicatorTone}
         data-toggle="true"
         data-placeholder={placeholder ? 'true' : undefined}
@@ -261,6 +271,7 @@ export function ListHeader({
       data-divider={divider}
       data-inline={String(inline)}
       data-width={width}
+      data-wrap={wrap ? 'true' : undefined}
       data-indicator-tone={indicatorTone}
       data-toggle="false"
       data-placeholder={placeholder ? 'true' : undefined}

@@ -4238,6 +4238,60 @@ test('keeps Web Awesome media and segmented-field specimens inside their example
   }
 });
 
+test('wraps long example labels and keeps specimens inside their example at phone widths', async ({
+  page,
+}) => {
+  test.setTimeout(180_000);
+  // Routes whose long labels or wide specimens once ran past a 320px stage.
+  const routes = [
+    'chip',
+    'layout',
+    'pane',
+    'backdrop-image',
+    'toolbar',
+    'list-inset-control',
+    'content-item',
+    'tab-bar',
+    'select',
+    'feedback',
+    'list-header',
+    'wa-otp-input',
+  ];
+  for (const width of [1100, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    for (const route of routes) {
+      await page.goto(`/?component=${route}`);
+      await expect(page.locator(`[data-demo="${route}"]`)).toBeVisible();
+      // Every label header stays inside its example and shows its whole
+      // label: it wraps instead of truncating or running past the stage.
+      const labels = await page
+        .locator(`[data-demo="${route}"] [data-catalog-example-label]`)
+        .evaluateAll((headers) =>
+          headers.map((header) => {
+            const text = header.querySelector<HTMLElement>(
+              '.kui-list-header__title > .kui-text',
+            )!;
+            return {
+              label: text.textContent,
+              overrun:
+                header.getBoundingClientRect().right -
+                header
+                  .closest('[data-catalog-example]')!
+                  .getBoundingClientRect().right,
+              hidden: text.scrollWidth - text.clientWidth,
+            };
+          }),
+        );
+      for (const { label, overrun, hidden } of labels) {
+        expect(overrun, `${route} "${label}" at ${width}`).toBeLessThan(0.5);
+        expect(hidden, `${route} "${label}" at ${width}`).toBeLessThan(1);
+      }
+      for (const overrun of await visibleSpecimenOverruns(page, route))
+        expect(overrun, `${route} overrun at ${width}`).toBeLessThan(0.5);
+    }
+  }
+});
+
 test('styles and aligns OTP label and hint like a bordered text field', async ({
   page,
 }) => {

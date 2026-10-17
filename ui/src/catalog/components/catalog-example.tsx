@@ -162,6 +162,7 @@ export function CatalogExample({
         <ListHeader
           label={label}
           width="content"
+          wrap
           rootAttributes={{ 'data-catalog-example-label': '' }}
         />
       ) : null}

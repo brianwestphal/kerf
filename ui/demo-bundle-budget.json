@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
   "totalJavaScriptGzip": 427200,
-  "measuredLargestJavaScriptGzip": 164528,
-  "measuredTotalJavaScriptGzip": 427148,
+  "measuredLargestJavaScriptGzip": 164533,
+  "measuredTotalJavaScriptGzip": 427186,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5841,6 +5841,22 @@
       "next": {
         "measuredLargestJavaScriptGzip": 164528,
         "measuredTotalJavaScriptGzip": 427148,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 427200
+      }
+    },
+    {
+      "at": "2026-10-17T05:02:10.117Z",
+      "reason": "KF-12WBGR: ListHeader wrap prop, wrapping CatalogExample labels, small OTP specimen, wrapping inline-header row",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164528,
+        "measuredTotalJavaScriptGzip": 427148,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 427200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164533,
+        "measuredTotalJavaScriptGzip": 427186,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 427200
       }

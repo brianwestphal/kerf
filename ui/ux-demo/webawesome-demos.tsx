@@ -213,9 +213,13 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       </wa-option>
     </wa-select>
   ),
+  // Six fixed 2.5em cells plus the group separator need 292px at the default
+  // size, past a 320px phone's 280px specimen column; the small size's cells
+  // fit the column while keeping the grouped format.
   'wa-otp-input': () => (
     <wa-otp-input
       label="Verification Code"
+      size="s"
       value="274816"
       format="### ###"
       hint="Six-digit code"

@@ -32,7 +32,7 @@ export function ListHeaderDemo() {
         align="none"
         rootAttributes={{ 'data-demo-inline-list-header': '' }}
       >
-        <Row vAlign="middle">
+        <Row vAlign="middle" wrap>
           <Text variant="span">Queue:</Text>
           <ListHeader
             label="Inline Queue"

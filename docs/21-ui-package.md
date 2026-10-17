@@ -121,7 +121,9 @@ groups and inside items. Its `overflow="wrap"` option moves whole independent
 links to another row when they do not fit; the catalog resource footer uses it
 to keep Guidance visible at phone widths. `ListHeader` fills the available inline width and
 separates a dormant title and count-or-badge cluster from its optional
-logical-end 44px action with an 18px visual. Non-negative safe-integer section
+logical-end 44px action with an 18px visual. Its label is one ellipsized line
+unless `wrap` breaks it onto further lines, which the catalog's
+`CatalogExample` labels use so a long label stays whole at phone widths. Non-negative safe-integer section
 counts use the required localized `count`/`countLabel` pair and the shared
 neutral pill; non-count `SafeHtml` remains available through the mutually
 exclusive legacy `badge` slot. `ListActionRow` keeps independently interactive
