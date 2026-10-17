@@ -1058,23 +1058,61 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
 const unalignedFormSpecimens: ReadonlySet<WebAwesomeCatalogId> =
   new Set<WebAwesomeCatalogId>(['wa-rating']);
 
-// Width-sized content specimens join the same field column as the Kerf
-// ProgressBar demo: a bar's or skeleton's edge, and Pagination's bordered
-// page buttons, sit on the field border column instead of flush at the
-// example's edge. Panels and framed specimens (Zoomable Frame) keep their
-// own geometry.
-const alignedContentSpecimens: ReadonlySet<WebAwesomeCatalogId> =
-  new Set<WebAwesomeCatalogId>([
-    'wa-progress-bar',
-    'wa-skeleton',
-    'wa-pagination',
-  ]);
+// Every other specimen aligns the way its Kerf counterpart's demo does.
+// Controls, badges, tags, toasts, observer compositions, and width-sized bars
+// or skeletons use inline-control, as the Kerf Button, Badge, Chip, Toast,
+// Tooltip, ProgressBar, and ProgressRing demos do: the control's box sits on
+// the 8px field border column and its label on the text column past the
+// control's own inset. A specimen led by bare text or a bare glyph (copy-button
+// and breadcrumb text, divider rows, Markdown, relative time, Pagination's
+// summary, a stepper's markers, a spinner, an icon) uses glyph, as the Kerf
+// flush Text, LoadingSpinner, and LucideIcon demos do, so that text lands on
+// the text column instead of flush at the example's edge. Panels and framed
+// media (Page, Split Panel, Zoomable Frame, QR Code, ...) keep their own
+// geometry.
+const contentSpecimenAlign: Partial<
+  Record<WebAwesomeCatalogId, 'inline-control' | 'glyph'>
+> = {
+  'wa-button': 'inline-control',
+  'wa-button-group': 'inline-control',
+  'wa-dropdown': 'inline-control',
+  'wa-dropdown-item': 'inline-control',
+  'wa-tab': 'inline-control',
+  'wa-tab-group': 'inline-control',
+  'wa-tab-panel': 'inline-control',
+  'wa-intersection-observer': 'inline-control',
+  'wa-mutation-observer': 'inline-control',
+  'wa-resize-observer': 'inline-control',
+  'wa-animation': 'inline-control',
+  'wa-dialog': 'inline-control',
+  'wa-drawer': 'inline-control',
+  'wa-popover': 'inline-control',
+  'wa-tooltip': 'inline-control',
+  'wa-toast': 'inline-control',
+  'wa-toast-item': 'inline-control',
+  'wa-badge': 'inline-control',
+  'wa-tag': 'inline-control',
+  'wa-avatar': 'inline-control',
+  'wa-progress-ring': 'inline-control',
+  'wa-progress-bar': 'inline-control',
+  'wa-skeleton': 'inline-control',
+  'wa-copy-button': 'glyph',
+  'wa-breadcrumb': 'glyph',
+  'wa-breadcrumb-item': 'glyph',
+  'wa-divider': 'glyph',
+  'wa-markdown': 'glyph',
+  'wa-relative-time': 'glyph',
+  'wa-pagination': 'glyph',
+  'wa-stepper': 'glyph',
+  'wa-step': 'glyph',
+  'wa-spinner': 'glyph',
+  'wa-icon': 'glyph',
+};
 
 const specimenAlign = (entry: (typeof webAwesomeCatalog)[number]) =>
-  (entry.category === 'Forms' && !unalignedFormSpecimens.has(entry.id)) ||
-  alignedContentSpecimens.has(entry.id)
+  entry.category === 'Forms' && !unalignedFormSpecimens.has(entry.id)
     ? 'inline-control'
-    : 'none';
+    : (contentSpecimenAlign[entry.id] ?? 'none');
 
 // A specimen whose host sizes to its container rather than to its content
 // (Known Date's segments and hint, Slider's track, a progress or skeleton
@@ -1089,9 +1127,10 @@ const sizedSpecimens: Partial<
   'wa-progress-bar': { width: 'medium' },
   'wa-skeleton': { width: 'compact' },
   'wa-zoomable-frame': { width: 'medium' },
-  // Pagination's host is display: contents, so it cannot take the column
-  // offset itself; a plain frame carries it.
+  // Pagination's and Dropdown's hosts are display: contents, so they cannot
+  // take the column offset themselves; a plain frame carries it.
   'wa-pagination': {},
+  'wa-dropdown': {},
 };
 
 export const webAwesomeComponentDemos: Record<

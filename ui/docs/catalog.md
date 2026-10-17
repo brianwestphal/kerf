@@ -227,9 +227,19 @@ A field is a control a person fills in or picks a value with inline, swatch
 pickers included. A field composition (fields in a `Grid` or a form `List`)
 uses `inline-control` too. A width-sized content specimen — one that fills a
 sized `viewport` or its container rather than its content, such as a
-ProgressBar, a group-title `Text`, or Web Awesome's Progress Bar, Skeleton, and
-Pagination — joins the same column with `inline-control`, so a bar's label
-lines up with the example label and note text. A panel — a multi-part picker or
+ProgressBar, a group-title `Text`, or Web Awesome's Progress Bar and Skeleton —
+joins the same column with `inline-control`, so a bar's label lines up with the
+example label and note text. Web Awesome integration specimens follow their
+Kerf counterpart's demo: controls and control compositions (Button, Button
+Group, Dropdown, Dropdown Item, the Tab family, Badge, Tag, Avatar, Progress
+Ring, Toast and Toast Item, the dialog, drawer, popover, and tooltip triggers,
+Animation, and the intersection, mutation, and resize observer compositions)
+use `inline-control`, as the Kerf Button demo does, so the control box sits on
+the 8px column; a specimen led by bare text or a bare glyph (Copy Button,
+Breadcrumb and Breadcrumb Item, Divider, Markdown, Relative Time, Pagination's
+summary, Stepper and Step markers, Spinner, Icon) uses `glyph`, as Kerf's flush
+`Text`, `LoadingSpinner`, and `LucideIcon` demos do, so its text lands on the
+text column instead of flush at the example's edge. A panel — a multi-part picker or
 a drop zone such as ColorPicker and FilePicker, or a framed specimen such as
 Web Awesome's Zoomable Frame — owns its geometry and stays flush at `none`, as
 does an edge-to-edge composition (a toolbar, tab bar, or pane). A sized

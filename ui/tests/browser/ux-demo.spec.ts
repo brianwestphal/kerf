@@ -4004,8 +4004,6 @@ test('puts width-sized Web Awesome specimens on the Kerf field border column', a
     for (const [route, selector] of [
       ['wa-progress-bar', 'wa-progress-bar'],
       ['wa-skeleton', 'wa-skeleton'],
-      // Pagination's host is display: contents; its frame carries the offset.
-      ['wa-pagination', '[data-catalog-example-viewport]'],
     ] as const) {
       await page.goto(`/?component=${route}`);
       await expect(page.locator(`[data-demo="${route}"]`)).toBeVisible();
@@ -4023,6 +4021,132 @@ test('puts width-sized Web Awesome specimens on the Kerf field border column', a
       '[data-demo="wa-zoomable-frame"] [data-catalog-example-viewport]',
     );
     expect(frame!.x).toBeCloseTo(0, 0);
+  }
+});
+
+test('aligns Web Awesome control and text specimens like their Kerf counterparts', async ({
+  page,
+}) => {
+  test.setTimeout(180_000);
+  // Each example's specimen edges relative to the example: the leftmost
+  // painted control box (border or background), the leftmost visible text,
+  // and the rightmost painted extent past the example's inline-end edge.
+  const measure = (route: string) =>
+    page
+      .locator(`[data-demo="${route}"] [data-catalog-example]`)
+      .evaluateAll((examples) =>
+        examples.map((example) => {
+          const bounds = example.getBoundingClientRect();
+          let box = Infinity;
+          let text = Infinity;
+          let right = -Infinity;
+          const visit = (node: Node): void => {
+            if (node.nodeType === Node.TEXT_NODE) {
+              if (!node.textContent?.trim()) return;
+              const range = document.createRange();
+              range.selectNodeContents(node);
+              for (const rect of range.getClientRects())
+                if (rect.width > 0) {
+                  text = Math.min(text, rect.x);
+                  right = Math.max(right, rect.right);
+                }
+              return;
+            }
+            if (!(node instanceof Element)) return;
+            if (
+              node.matches(
+                '[data-catalog-example-label], [data-catalog-example-note], style, script, template, :popover-open',
+              )
+            )
+              return;
+            const style = window.getComputedStyle(node);
+            if (style.display === 'none' || style.visibility === 'hidden')
+              return;
+            const rect = node.getBoundingClientRect();
+            const painted =
+              (parseFloat(style.borderInlineStartWidth) > 0 &&
+                style.borderInlineStartStyle !== 'none') ||
+              style.backgroundColor !== 'rgba(0, 0, 0, 0)';
+            if (painted && rect.width > 0 && rect.height > 0) {
+              box = Math.min(box, rect.x);
+              right = Math.max(right, rect.right);
+            }
+            const children: Node[] = node.shadowRoot
+              ? [...node.shadowRoot.childNodes]
+              : node instanceof HTMLSlotElement
+                ? node.assignedNodes({ flatten: true })
+                : [...node.childNodes];
+            children.forEach(visit);
+          };
+          for (const child of example.children) visit(child);
+          return {
+            box: Number.isFinite(box) ? box - bounds.x : null,
+            text: Number.isFinite(text) ? text - bounds.x : null,
+            overrun: right - bounds.right,
+          };
+        }),
+      );
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    // The Kerf Button demo's control box is the column the Web Awesome
+    // controls join.
+    await page.goto('/?component=button');
+    const [kerfButton] = await measure('button');
+    // Controls and control compositions sit on the 8px control column.
+    for (const route of [
+      'wa-button',
+      'wa-button-group',
+      'wa-dropdown',
+      'wa-badge',
+      'wa-avatar',
+      'wa-toast-item',
+      'wa-intersection-observer',
+      'wa-mutation-observer',
+      'wa-resize-observer',
+    ]) {
+      await page.goto(`/?component=${route}`);
+      await expect(page.locator(`[data-demo="${route}"]`)).toBeVisible();
+      const [found] = await measure(route);
+      expect(found!.box, `${route} box at ${width}`).toBeCloseTo(
+        kerfButton!.box!,
+        0,
+      );
+      expect(found!.overrun, `${route} overrun at ${width}`).toBeLessThan(0.5);
+    }
+    // A tab group draws no box; its tabs' text sits past the 8px column
+    // rather than flush.
+    for (const route of ['wa-tab', 'wa-tab-group', 'wa-tab-panel']) {
+      await page.goto(`/?component=${route}`);
+      await expect(page.locator(`[data-demo="${route}"]`)).toBeVisible();
+      const [found] = await measure(route);
+      expect(found!.text, `${route} text at ${width}`).toBeGreaterThanOrEqual(
+        7.5,
+      );
+      expect(found!.overrun).toBeLessThan(0.5);
+    }
+    // Bare text leads on the glyph column, as the Kerf flush Text demo does.
+    for (const route of [
+      'wa-copy-button',
+      'wa-breadcrumb',
+      'wa-breadcrumb-item',
+      'wa-divider',
+      'wa-markdown',
+      'wa-relative-time',
+      'wa-pagination',
+    ]) {
+      await page.goto(`/?component=${route}`);
+      await expect(page.locator(`[data-demo="${route}"]`)).toBeVisible();
+      const [found] = await measure(route);
+      expect(found!.text, `${route} text at ${width}`).toBeCloseTo(16, 0);
+      expect(found!.overrun, `${route} overrun at ${width}`).toBeLessThan(0.5);
+    }
+    // The embedded CornerStatus stack joins the standalone banners' column.
+    await page.goto('/?component=corner-status');
+    const [, embedded] = await measure('corner-status');
+    expect(embedded!.box, `embedded corner status at ${width}`).toBeCloseTo(
+      8,
+      0,
+    );
   }
 });
 

@@ -29,7 +29,7 @@ export function CornerStatusDemo() {
       <CatalogExample
         label="Embedded"
         note='presentation="embedded" shows the same stack in flow, for a catalog or an inline preview.'
-        align="none"
+        align="inline-control"
       >
         <CornerStatus presentation="embedded">
           <StateBanner
