@@ -41,6 +41,11 @@ openDialog(document.getElementById('edit-workspace') as HTMLDialogElement);
 - **Name.** `label` names the dialog and is its title text. With `heading`
   (title content such as an xl `ToolbarText` with a description), pass
   `labelledBy`, the id of the element that names it, or keep `label`.
+- **Description.** `describedBy` is the id of the element whose text is the
+  dialog's accessible description, rendered as `aria-describedby` on the
+  `<dialog>`: the `heading` ToolbarText's `descriptionId`, or app-owned summary
+  copy in the body. `rootAttributes` takes only `data-*` attributes, so it can
+  never set or override `aria-describedby`.
 - **Header.** The title, then `headerActions` and a close button (`closeLabel`,
   default `Close`). `withoutHeader` renders none, for content that owns its
   heading and close control.
@@ -447,8 +452,7 @@ pass `describedBy`, the id of the element that holds the summary. It renders as
 </PopoverDialogSurface>;
 ```
 
-`DialogSurface` has no `describedBy`: name it with `label` or `labelledBy`,
-and keep any description in the body or its `heading`'s description.
+`DialogSurface` takes the same `describedBy` for a modal dialog.
 
 Open it with a control's `popoverTarget` (or `showPopover()`); the browser
 places it centered in the top layer, light-dismisses it, and restores nothing

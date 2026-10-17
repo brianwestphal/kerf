@@ -56,6 +56,7 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 - core kerfjs/overlay confirm/prompt/form/choice as a bottom sheet styled by @kerfjs/ui/overlay-sheet.css
 - resizable core kerfjs/overlay bottom sheet: the kui-overlay-sheet-resizable class plus wireOverlaySheets adds the resizable DialogSurface sheet grabber
 - header with label text or heading content, headerActions, a close button, and an optional footer; withoutHeader for content that owns its heading and close control
+- accessible description by describedBy: the heading ToolbarText descriptionId or app-owned body summary copy
 - light dismiss (a backdrop press closes; otherwise the panel pulses)
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
@@ -87,7 +88,7 @@ Margin: parent · border: child · padding: self (layout role: structure). `self
 
 - DialogSurface is a native \<dialog> opened modally (showModal): it is in the top layer, the rest of the page is inert, focus stays inside, and it returns to the opener on close. Focus starts on an autofocus element, otherwise on the panel.
 - Name it with label (also its title text) or labelledBy (the id of a heading, such as a ToolbarText). The close button is named Close (closeLabel) and Escape asks to close; the cancelable kui-request-close event reports source close-button, escape, or backdrop.
-- Name a PopoverDialogSurface with label or labelledBy, and describe it with describedBy (rendered as aria-describedby), usually a title ToolbarText descriptionId.
+- Name a PopoverDialogSurface with label or labelledBy. Describe either surface with describedBy (rendered as aria-describedby on the dialog root), usually the heading ToolbarText descriptionId or app-owned summary copy in the body; rootAttributes accepts only data-\* attributes, so it never sets aria-describedby.
 - A floating header's title uses the normal text color, which keeps WCAG AA over the 80% raised chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.
 - A resizable bottom sheet's grabber is a focusable horizontal separator ("Resize sheet") with aria-valuemin, aria-valuenow, and aria-valuemax in visible px; the arrow keys, Page Up/Down, Home, and End resize it, and its slide motion is skipped under prefers-reduced-motion.
 - Use popup surfaces only for real dropdown menus with named triggers.

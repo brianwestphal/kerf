@@ -76,6 +76,27 @@ describe('ListDetailDialog', () => {
     expect(controls[1]!.hasAttribute('data-dialog-close')).toBe(true);
     expect(detail.querySelector('[data-test-detail]')).not.toBeNull();
     expect(detail.textContent).toContain('Open Project');
+    // The detail description describes the selection, not the dialog.
+    expect(dialog.hasAttribute('aria-describedby')).toBe(false);
+  });
+
+  it('takes an explicit describedBy for app-owned summary copy', () => {
+    for (const compact of [false, true]) {
+      const dialog = render(
+        ListDetailDialog({
+          ...base,
+          compact,
+          detailActive: compact,
+          describedBy: 'projects-summary',
+          detail: {
+            ...base.detail,
+            content: <p id="projects-summary">2 projects need review.</p>,
+          },
+        }),
+      ).querySelector('dialog')!;
+      expect(dialog.getAttribute('aria-describedby')).toBe('projects-summary');
+      expect(dialog.querySelector('#projects-summary')).not.toBeNull();
+    }
   });
 
   it('forwards sizing, dismissal, and identity, protecting its layout marker', () => {

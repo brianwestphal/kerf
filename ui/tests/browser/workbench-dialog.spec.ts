@@ -18,6 +18,8 @@ test('WorkbenchDialog runs its rails the full height with the title and close in
   const dialog = page.locator('#workbench-dialog-demo');
   await openFrom(trigger, dialog);
   await expect(dialog).toHaveAccessibleName('Edit Slide');
+  // The title's description is the dialog's accessible description.
+  await expect(dialog).toHaveAccessibleDescription('Slide 3 of 12');
   await expect(dialog).toHaveAttribute('data-presentation', 'modal');
 
   const geometry = await dialog.evaluate((element) => {

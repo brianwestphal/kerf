@@ -326,6 +326,38 @@ describe('production UI primitives', () => {
     );
     expect(host.querySelector('.kui-dialog-surface__header')).toBe(null);
 
+    // describedBy describes the dialog from the heading's description (or
+    // app-owned copy); without it no aria-describedby renders, and a
+    // rootAttributes spoof never sets one.
+    expect(dialog.hasAttribute('aria-describedby')).toBe(false);
+    expect(named.hasAttribute('aria-describedby')).toBe(false);
+    host.innerHTML = asHtml(
+      DialogSurface({
+        labelledBy: 'close-title',
+        describedBy: 'close-summary',
+        heading: (
+          <ToolbarText
+            text="Close Ticket"
+            id="close-title"
+            description="3 open tasks remain."
+            descriptionId="close-summary"
+          />
+        ),
+        rootAttributes: {
+          'aria-describedby': 'spoofed',
+          'data-key': 'close',
+        } as never,
+        children: <>Body</>,
+      }),
+    );
+    const described = host.querySelector('dialog')!;
+    expect(described.getAttribute('aria-describedby')).toBe('close-summary');
+    expect(described.dataset.key).toBe('close');
+    expect(described.querySelector('#close-summary')!.textContent).toBe(
+      '3 open tasks remain.',
+    );
+    expect(described.outerHTML).not.toContain('spoofed');
+
     // Only a resizable bottom sheet renders the grabber.
     host.innerHTML = asHtml(
       DialogSurface({

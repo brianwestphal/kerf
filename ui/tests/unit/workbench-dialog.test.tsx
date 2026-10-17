@@ -152,5 +152,30 @@ describe('WorkbenchDialog', () => {
       '--_kui-dialog-surface-height:35rem',
     );
     expect(capped.querySelector('[data-workbench-rail]')).toBeNull();
+    // No description: no accessible description.
+    expect(capped.hasAttribute('aria-describedby')).toBe(false);
+  });
+
+  it('describes the dialog by its title description, or an explicit describedBy', () => {
+    const dialog = render(WorkbenchDialog(base)).querySelector('dialog')!;
+    expect(dialog.getAttribute('aria-describedby')).toBe('slide-description');
+    const description = dialog.querySelector('#slide-description')!;
+    expect(description.textContent).toBe('Slide 3 of 12');
+    expect(description.closest('#slide-title')).toBeNull();
+    const compact = render(WorkbenchDialog({ ...base, compact: true }));
+    expect(
+      compact.querySelector('dialog')!.getAttribute('aria-describedby'),
+    ).toBe('slide-description');
+    expect(compact.querySelector('#slide-description')).not.toBeNull();
+
+    const explicit = render(
+      WorkbenchDialog({
+        ...base,
+        describedBy: 'slide-summary',
+        main: <p id="slide-summary">Unsaved changes</p>,
+      }),
+    ).querySelector('dialog')!;
+    expect(explicit.getAttribute('aria-describedby')).toBe('slide-summary');
+    expect(explicit.querySelector('#slide-summary')).not.toBeNull();
   });
 });

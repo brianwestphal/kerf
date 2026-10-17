@@ -310,7 +310,7 @@ export function SurfaceScaffoldDemo() {
       </CatalogExample>
       <CatalogExample
         label="Viewport-Bounded Modal"
-        note="An 832px preferred width overrides the large preset; an 8px gutter and viewport height cap keep it on phones."
+        note="An 832px preferred width overrides the large preset; an 8px gutter and viewport height cap keep it on phones. describedBy makes the body's summary line the dialog's accessible description."
         align="inline-control"
       >
         <Button
@@ -322,6 +322,7 @@ export function SurfaceScaffoldDemo() {
         <DialogSurface
           id="catalog-bounded-dialog"
           label="Close Workspace"
+          describedBy="catalog-bounded-dialog-summary"
           size="large"
           preferredWidth={remify(832)}
           viewportGutter={remify(8)}
@@ -340,8 +341,10 @@ export function SurfaceScaffoldDemo() {
         >
           <List>
             <ListInsetText>
-              Closing this workspace stops its running tasks. Saved files remain
-              available when you reopen it.
+              <Text variant="span" id="catalog-bounded-dialog-summary">
+                Closing this workspace stops its running tasks. Saved files
+                remain available when you reopen it.
+              </Text>
             </ListInsetText>
             <ListInsetText>
               Review your changes before stopping the workspace. Unsaved
@@ -453,11 +456,13 @@ export function SurfaceScaffoldDemo() {
         <DialogSurface
           id={THREAD_DIALOG_ID}
           label="Release Thread"
+          describedBy="catalog-thread-dialog-description"
           heading={
             <ToolbarText
               text="Release Thread"
               size="xlarge"
               description="Engineering · 5.2 candidate"
+              descriptionId="catalog-thread-dialog-description"
             />
           }
           viewportGutter={remify(8)}

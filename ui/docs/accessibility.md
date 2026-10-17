@@ -364,7 +364,13 @@ holds an optional icon `ToolbarControlGroup` and a direct extra-large
 `ToolbarText`; controls belong in a trailing `ToolbarControlGroup`. By default
 the title carries no native heading role, so for a **dialog or panel** the
 application connects the title id and optional supporting-copy id to the owning
-host through `aria-labelledby` and `aria-describedby`. For a **page or view**
+host through `aria-labelledby` and `aria-describedby`. `DialogSurface` and
+`PopoverDialogSurface` take these as `labelledBy` and `describedBy`, so the
+supporting line (or app-owned summary copy in the body) is the dialog's
+accessible description; `WorkbenchDialog` wires its title `description`
+automatically (`<id>-description`), and `ListDetailDialog` takes an explicit
+`describedBy`, since its detail description describes the selection, not the
+dialog. For a **page or view**
 title, pass `headingLevel` (usually `1`) to `ToolbarText`: it then exposes
 `role="heading"` with a matching `aria-level`, giving the view a heading landmark
 so screen-reader heading navigation and "main heading" semantics work — the same

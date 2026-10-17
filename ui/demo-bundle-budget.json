@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164300,
-  "totalJavaScriptGzip": 426300,
-  "measuredLargestJavaScriptGzip": 164300,
-  "measuredTotalJavaScriptGzip": 426278,
+  "totalJavaScriptGzip": 426400,
+  "measuredLargestJavaScriptGzip": 164299,
+  "measuredTotalJavaScriptGzip": 426375,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5731,6 +5731,22 @@
         "measuredTotalJavaScriptGzip": 426278,
         "largestJavaScriptGzip": 164300,
         "totalJavaScriptGzip": 426300
+      }
+    },
+    {
+      "at": "2026-10-17T03:08:02.750Z",
+      "reason": "KF-JNV47V: DialogSurface/WorkbenchDialog/ListDetailDialog describedBy plus the described catalog dialog demos",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164300,
+        "measuredTotalJavaScriptGzip": 426278,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 426300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164299,
+        "measuredTotalJavaScriptGzip": 426375,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 426400
       }
     }
   ]

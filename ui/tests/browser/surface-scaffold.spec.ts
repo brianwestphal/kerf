@@ -16,6 +16,10 @@ test('dialog names follow the label, a native name change, and repeated opens', 
     exact: true,
   });
   await expect(named).toBeVisible();
+  // describedBy: the body's summary line is the accessible description.
+  await expect(named).toHaveAccessibleDescription(
+    'Closing this workspace stops its running tasks. Saved files remain available when you reopen it.',
+  );
   await expect(
     dialog.getByRole('heading', { name: 'Close Workspace', exact: true }),
   ).toBeVisible();
@@ -505,6 +509,10 @@ test('a dialog with a composed heading is the only dialog with its name', async 
   });
   await expect(named).toHaveCount(1);
   await expect(named).toHaveAttribute('id', 'catalog-thread-dialog');
+  // describedBy names the heading ToolbarText's description.
+  await expect(named).toHaveAccessibleDescription(
+    'Engineering · 5.2 candidate',
+  );
   expect(
     await named.evaluate((element) => [
       element.localName,

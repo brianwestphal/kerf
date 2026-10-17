@@ -44,8 +44,17 @@ export interface WorkbenchDialogProps {
   label: string;
   /** The dialog's primary title: an xl heading in the work area's toolbar. */
   title: string;
-  /** A short supporting line under the title. */
+  /**
+   * A short supporting line under the title. It is the dialog's accessible
+   * description (`aria-describedby` to its `<id>-description`) unless
+   * `describedBy` names other content.
+   */
   description?: string;
+  /**
+   * Id of the element whose text is the dialog's accessible description, in
+   * place of `description`, such as app-owned summary copy in `main`.
+   */
+  describedBy?: string;
   /** Groups after the title in the work area's toolbar. */
   leading?: KerfUiContent;
   /** Header controls before the close control, such as a `ToolbarControlGroup`. */
@@ -116,6 +125,7 @@ export function WorkbenchDialog({
   label,
   title,
   description,
+  describedBy,
   leading,
   actions,
   main,
@@ -141,6 +151,10 @@ export function WorkbenchDialog({
     <DialogSurface
       id={id}
       label={label}
+      describedBy={
+        describedBy ??
+        (description === undefined ? undefined : `${id}-description`)
+      }
       withoutHeader
       lightDismiss={lightDismiss}
       closeLabel={closeLabel}
@@ -174,6 +188,9 @@ export function WorkbenchDialog({
             <ToolbarText
               text={title}
               description={description}
+              descriptionId={
+                description === undefined ? undefined : `${id}-description`
+              }
               size="xlarge"
               id={`${id}-title`}
               headingLevel={2}

@@ -50,7 +50,8 @@ The dialog draws no surface header and no body inset. Its body is a
 `Workbench` (`<id>-workbench`):
 
 - **The work area's toolbar** carries the dialog's primary title (an xl
-  level-2 heading, id `<id>-title`) with an optional `description`, any
+  level-2 heading, id `<id>-title`) with an optional `description` (id
+  `<id>-description`, the dialog's accessible description), any
   `leading` groups, the `actions`, and the close control. Close stays the
   outermost trailing control, after a hidden right rail's toggle.
 - **The rails** (`leftRail`, `rightRail`) keep their own toolbars, with
@@ -74,6 +75,8 @@ Escape closes the dialog.
 
 - `id`, `label` (required): identity and the dialog's accessible name.
 - `title` (required), `description`, `leading`, `actions`.
+- `describedBy`: the id of other content, such as summary copy in `main`,
+  that describes the dialog in place of `description`.
 - `main` (required), `mainFooter`, `mainBottomToolbar`.
 - `leftRail`, `rightRail`, `bottomDrawer`: `WorkbenchPanel`s.
 - `compact`, `closeLabel` (default `Close`), `lightDismiss`.

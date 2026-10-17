@@ -4683,6 +4683,12 @@ type DialogSurfaceProps = DialogSurfaceName & DialogSurfaceOptions;
 interface DialogSurfaceOptions {
     /** The dialog's id, for `openDialog(document.getElementById(id))`. */
     id?: string;
+    /**
+     * Id of the element whose text is the dialog's accessible description,
+     * such as the `heading` ToolbarText's `descriptionId` or app-owned summary
+     * copy in the body; rendered as `aria-describedby` on the `<dialog>`.
+     */
+    describedBy?: string;
     /** The body content. */
     children: KerfUiContent;
     /**
@@ -4797,7 +4803,7 @@ interface DialogSurfaceOptions {
  * floating header and footer measurement, the bottom sheet's keyboard
  * clearance and grabber, and re-render resilience while open.
  */
-declare function DialogSurface({ id, label, labelledBy, heading, headerActions, footer, withoutHeader, lightDismiss, closeLabel, children, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, minHeight, resizable, enterMotion, exitMotion, bodyLayout, headerPresentation, footerPresentation, footerOffset, rootAttributes, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
+declare function DialogSurface({ id, label, labelledBy, describedBy, heading, headerActions, footer, withoutHeader, lightDismiss, closeLabel, children, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, minHeight, resizable, enterMotion, exitMotion, bodyLayout, headerPresentation, footerPresentation, footerOffset, rootAttributes, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
 /** Where a PopoverDialogSurface appears: the top layer, or in flow. */
 type PopoverDialogSurfacePresentation = 'overlay' | 'embedded';
 /** Application `data-*` metadata on the surface root. */
@@ -4942,6 +4948,12 @@ interface ListDetailDialogProps {
     id: string;
     /** The dialog's accessible name. */
     label: string;
+    /**
+     * Id of the element whose text is the dialog's accessible description,
+     * such as app-owned summary copy. The detail's `description` describes the
+     * selection, not the dialog, so it is not wired automatically.
+     */
+    describedBy?: string;
     list: ListDetailDialogList;
     detail: ListDetailDialogDetail;
     /**
@@ -4984,7 +4996,7 @@ interface ListDetailDialogProps {
  * stack's back control dispatches `nav-back`). Built from `DialogSurface`,
  * `SplitView`, and `Pane`.
  */
-declare function ListDetailDialog({ id, label, list, detail, compact, detailActive, backLabel, closeLabel, lightDismiss, size, preferredWidth, height, maxHeight, viewportGutter, rootAttributes, className, slot, }: ListDetailDialogProps): kerfjs.SafeHtml;
+declare function ListDetailDialog({ id, label, describedBy, list, detail, compact, detailActive, backLabel, closeLabel, lightDismiss, size, preferredWidth, height, maxHeight, viewportGutter, rootAttributes, className, slot, }: ListDetailDialogProps): kerfjs.SafeHtml;
 
 export { ListDetailDialog, type ListDetailDialogDetail, type ListDetailDialogList, type ListDetailDialogProps, type ListDetailDialogRootAttributes };
 ```
@@ -5028,8 +5040,17 @@ interface WorkbenchDialogProps {
     label: string;
     /** The dialog's primary title: an xl heading in the work area's toolbar. */
     title: string;
-    /** A short supporting line under the title. */
+    /**
+     * A short supporting line under the title. It is the dialog's accessible
+     * description (`aria-describedby` to its `<id>-description`) unless
+     * `describedBy` names other content.
+     */
     description?: string;
+    /**
+     * Id of the element whose text is the dialog's accessible description, in
+     * place of `description`, such as app-owned summary copy in `main`.
+     */
+    describedBy?: string;
     /** Groups after the title in the work area's toolbar. */
     leading?: KerfUiContent;
     /** Header controls before the close control, such as a `ToolbarControlGroup`. */
@@ -5086,7 +5107,7 @@ interface WorkbenchDialogProps {
  * Escape or a press outside it before the dialog sees the Escape. Built from
  * `DialogSurface` and `Workbench`.
  */
-declare function WorkbenchDialog({ id, label, title, description, leading, actions, main, mainFooter, mainBottomToolbar, leftRail, rightRail, bottomDrawer, compact, closeLabel, lightDismiss, size, preferredWidth, height, maxHeight, viewportGutter, mainMinSize, rootAttributes, className, slot, }: WorkbenchDialogProps): kerfjs.SafeHtml;
+declare function WorkbenchDialog({ id, label, title, description, describedBy, leading, actions, main, mainFooter, mainBottomToolbar, leftRail, rightRail, bottomDrawer, compact, closeLabel, lightDismiss, size, preferredWidth, height, maxHeight, viewportGutter, mainMinSize, rootAttributes, className, slot, }: WorkbenchDialogProps): kerfjs.SafeHtml;
 
 export { WorkbenchDialog, type WorkbenchDialogProps, type WorkbenchDialogRootAttributes };
 ```

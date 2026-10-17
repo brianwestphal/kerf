@@ -75,7 +75,7 @@ Margin: parent · border: self · padding: child (layout role: structure). `self
 ## Accessibility
 
 - It is a native modal \<dialog> named by label: the page is inert, focus stays inside, Escape asks to close, and focus returns to the opener on close.
-- On roomy devices the detail title is a level-2 heading; every presentation keeps a close control named Close (closeLabel), and the compact back control is named by backLabel.
+- Pass describedBy, the id of app-owned summary copy, for the dialog's accessible description; the detail description describes the selection and is not wired. On roomy devices the detail title is a level-2 heading; every presentation keeps a close control named Close (closeLabel), and the compact back control is named by backLabel.
 
 ## Styling boundary
 

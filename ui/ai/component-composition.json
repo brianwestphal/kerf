@@ -2055,7 +2055,7 @@
         "obligations": [
           "DialogSurface is a native <dialog> opened modally (showModal): it is in the top layer, the rest of the page is inert, focus stays inside, and it returns to the opener on close. Focus starts on an autofocus element, otherwise on the panel.",
           "Name it with label (also its title text) or labelledBy (the id of a heading, such as a ToolbarText). The close button is named Close (closeLabel) and Escape asks to close; the cancelable kui-request-close event reports source close-button, escape, or backdrop.",
-          "Name a PopoverDialogSurface with label or labelledBy, and describe it with describedBy (rendered as aria-describedby), usually a title ToolbarText descriptionId.",
+          "Name a PopoverDialogSurface with label or labelledBy. Describe either surface with describedBy (rendered as aria-describedby on the dialog root), usually the heading ToolbarText descriptionId or app-owned summary copy in the body; rootAttributes accepts only data-* attributes, so it never sets aria-describedby.",
           "A floating header's title uses the normal text color, which keeps WCAG AA over the 80% raised chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.",
           "A resizable bottom sheet's grabber is a focusable horizontal separator (\"Resize sheet\") with aria-valuemin, aria-valuenow, and aria-valuemax in visible px; the arrow keys, Page Up/Down, Home, and End resize it, and its slide motion is skipped under prefers-reduced-motion.",
           "Use popup surfaces only for real dropdown menus with named triggers."
@@ -2290,7 +2290,7 @@
       "accessibility": {
         "obligations": [
           "It is a native modal <dialog> named by label: the page is inert, focus stays inside, Escape asks to close, and focus returns to the opener on close.",
-          "On roomy devices the detail title is a level-2 heading; every presentation keeps a close control named Close (closeLabel), and the compact back control is named by backLabel."
+          "Pass describedBy, the id of app-owned summary copy, for the dialog's accessible description; the detail description describes the selection and is not wired. On roomy devices the detail title is a level-2 heading; every presentation keeps a close control named Close (closeLabel), and the compact back control is named by backLabel."
         ]
       },
       "cssValueProps": [],
@@ -2389,7 +2389,7 @@
       "accessibility": {
         "obligations": [
           "It is a native modal <dialog> named by label: the page is inert, focus stays inside, Escape asks to close, and focus returns to the opener on close.",
-          "The title is a level-2 heading; the close control is named Close (closeLabel) and stays the outermost trailing control. An open overlay rail takes focus, keeps Tab inside it, and closes on Escape before the dialog does."
+          "The title is a level-2 heading, and its description (id <id>-description) is the dialog's accessible description unless describedBy names other content; the close control is named Close (closeLabel) and stays the outermost trailing control. An open overlay rail takes focus, keeps Tab inside it, and closes on Escape before the dialog does."
         ]
       },
       "cssValueProps": [],

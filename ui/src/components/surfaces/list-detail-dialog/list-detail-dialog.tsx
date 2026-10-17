@@ -83,6 +83,12 @@ export interface ListDetailDialogProps {
   id: string;
   /** The dialog's accessible name. */
   label: string;
+  /**
+   * Id of the element whose text is the dialog's accessible description,
+   * such as app-owned summary copy. The detail's `description` describes the
+   * selection, not the dialog, so it is not wired automatically.
+   */
+  describedBy?: string;
   list: ListDetailDialogList;
   detail: ListDetailDialogDetail;
   /**
@@ -141,6 +147,7 @@ function closeGroup(closeLabel: string) {
 export function ListDetailDialog({
   id,
   label,
+  describedBy,
   list,
   detail,
   compact = false,
@@ -250,6 +257,7 @@ export function ListDetailDialog({
     <DialogSurface
       id={id}
       label={label}
+      describedBy={describedBy}
       withoutHeader
       lightDismiss={lightDismiss}
       closeLabel={closeLabel}

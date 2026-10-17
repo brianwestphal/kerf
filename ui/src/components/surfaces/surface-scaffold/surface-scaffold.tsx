@@ -93,6 +93,12 @@ export type DialogSurfaceProps = DialogSurfaceName & DialogSurfaceOptions;
 export interface DialogSurfaceOptions {
   /** The dialog's id, for `openDialog(document.getElementById(id))`. */
   id?: string;
+  /**
+   * Id of the element whose text is the dialog's accessible description,
+   * such as the `heading` ToolbarText's `descriptionId` or app-owned summary
+   * copy in the body; rendered as `aria-describedby` on the `<dialog>`.
+   */
+  describedBy?: string;
   /** The body content. */
   children: KerfUiContent;
   /**
@@ -212,6 +218,7 @@ export function DialogSurface({
   id,
   label,
   labelledBy,
+  describedBy,
   heading,
   headerActions,
   footer,
@@ -268,6 +275,7 @@ export function DialogSurface({
       class={`kui-dialog-surface ${className}`.trim()}
       aria-label={label}
       aria-labelledby={labelledBy}
+      aria-describedby={describedBy}
       tabindex={-1}
       data-light-dismiss={lightDismiss ? '' : undefined}
       data-component="dialog-surface"

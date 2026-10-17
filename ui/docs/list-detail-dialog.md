@@ -36,6 +36,10 @@ stylesheets, or `@kerfjs/ui/styles.css`.
   `list.footer`.
 - **The surface draws no header.** Both columns start at the dialog's top
   edge, so the divider between them runs the dialog's full height.
+- **The description is yours to name.** The detail `description` describes the
+  selected record, not the dialog, so it is not the dialog's accessible
+  description. Pass `describedBy`, the id of app-owned summary copy, to render
+  `aria-describedby` on the dialog.
 
 Each column is a `Pane`: its header and footer stay pinned and its content
 scrolls on its own. Pass content that owns its geometry, usually a `List`.
