@@ -1044,6 +1044,18 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
 };
 
+// Checkbox and radio specimens use the same inline-control alignment as the
+// Kerf Checkbox and RadioGroup demos: the theme keeps each box and circle on
+// the host's inline-start edge, so the catalog offsets the specimen to put the
+// control column and the group label's text column where Kerf's land.
+const inlineControlSpecimens: ReadonlySet<WebAwesomeCatalogId> =
+  new Set<WebAwesomeCatalogId>([
+    'wa-checkbox',
+    'wa-checkbox-group',
+    'wa-radio',
+    'wa-radio-group',
+  ]);
+
 export const webAwesomeComponentDemos: Record<
   WebAwesomeCatalogId,
   DemoRenderer
@@ -1058,6 +1070,9 @@ export const webAwesomeComponentDemos: Record<
         <CatalogExample
           label={entry.name}
           note={`Web Awesome 3.14 · ${entry.category}`}
+          align={
+            inlineControlSpecimens.has(entry.id) ? 'inline-control' : 'none'
+          }
         >
           {specimenRenderers[entry.id]()}
         </CatalogExample>

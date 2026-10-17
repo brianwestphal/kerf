@@ -617,11 +617,12 @@
     text-transform: uppercase;
   }
 
-  /* Checkbox/radio groups and the color picker have no bordered field shell,
-     so their control regions need the content-item's 8px inline outer inset. */
-  :is(wa-checkbox-group, wa-color-picker, wa-radio-group)::part(
-    form-control-input
-  ) {
+  /* The color picker has no bordered field shell, so its trigger needs the
+     content-item's 8px inline outer inset. Checkbox and radio groups keep
+     their option region flush: each box or circle sits on the group's
+     inline-start edge, where a Kerf Checkbox or RadioGroup draws it, while
+     the group label and hint stay on the 9px text column. */
+  wa-color-picker::part(form-control-input) {
     margin-inline: var(--kui-layout-inline-margin, remify(8px));
   }
 
@@ -630,13 +631,16 @@
   }
 
   /* Secondary captions and hints align with the value inside bordered fields:
-     1px border + 8px field padding = a 9px logical inset. */
+     1px border + 8px field padding = a 9px logical inset. Checkbox and radio
+     group hints share that text column with their group label. */
   wa-known-date::part(field-label),
   :is(
+    wa-checkbox-group,
     wa-input,
     wa-known-date,
     wa-number-input,
     wa-otp-input,
+    wa-radio-group,
     wa-select,
     wa-textarea,
     wa-time-input

@@ -409,9 +409,10 @@ meaning without spurious `KUI-D003` conflicts.
 Filled Web Awesome badges use each semantic variant's quiet fill with normal
 text by default, with a documented two-token override pair, so compact badge
 copy stays WCAG-AA readable without application host selectors. Web Awesome
-Checkbox Group and Radio Group option regions use the shared 8px
-inline outer inset because those groups have no bordered field shell. The Color
-Picker trigger uses the same inset for the same unbordered geometry. Known Date
+Checkbox Group and Radio Group keep their option regions flush, so each box or
+circle sits on the group's inline-start edge like Kerf's `Checkbox` and
+`RadioGroup`, with the group label and hint on the 9px text column. The
+unbordered Color Picker trigger uses the shared 8px inline outer inset. Known Date
 field captions and bordered text-like field hints align with values at the 9px
 border-plus-padding inset. OTP Input's label uses the same uppercase xs/650
 treatment as other field labels, and its label and hint both use that inset.

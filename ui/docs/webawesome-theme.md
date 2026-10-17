@@ -123,15 +123,17 @@ editable-text audit.
 Known Date's field captions and bordered text-like field hints use the same 9px
 inline inset, keeping secondary text aligned with the value rather than the
 field's outer border. This covers Input, Known Date, Number Input, OTP Input,
-Select, Textarea, and Time Input hints; unbordered group hints retain their own
-natural geometry. OTP Input's label and hint both use the 9px field-text inset.
+Select, Textarea, and Time Input hints.
+OTP Input's label and hint both use the 9px field-text inset.
 
-Checkbox Group and Radio Group option regions receive the shared 8px inline
-outer inset through `::part(form-control-input)`. Unlike bordered fields, these
-groups have no shell of their own, so the explicit margin places their controls
-on the same content-item geometry without adding padding to each option. The
-Color Picker trigger receives the same 8px inline outer inset because it also
-has no bordered field shell. Slider's complete interactive region receives the
+Checkbox Group and Radio Group follow Kerf's `Checkbox` and `RadioGroup`: the
+option region stays flush, so each box or circle sits on the group's
+inline-start edge, while the group label and hint use the same 9px text column
+as field labels. Stacked checkboxes and radios therefore share one control
+column with Kerf's own toggle controls; place the group where you would place a
+Kerf `Checkbox` or `RadioGroup` rather than adding margin to its parts. The
+Color Picker trigger receives the shared 8px inline outer inset through
+`::part(form-control-input)` because it has no bordered field shell. Slider's complete interactive region receives the
 shared 8px logical inline outer inset through `::part(slider)`, keeping its
 track, markers, references, and hint together without moving the label.
 

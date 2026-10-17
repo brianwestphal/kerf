@@ -230,7 +230,7 @@ describe('Web Awesome consumer guidance', () => {
     expect(guidance).toContain('directly exported `header-actions` part');
   });
 
-  it('keeps unbordered group and color-picker control regions on the shared inline inset', () => {
+  it('keeps checkbox and radio group controls on the host edge, like Kerf toggles', () => {
     const css = readFileSync(
       resolve(import.meta.dirname, '../../src/webawesome.css'),
       'utf8',
@@ -240,17 +240,24 @@ describe('Web Awesome consumer guidance', () => {
       'utf8',
     );
 
+    // Only the unbordered Color Picker trigger takes the 8px outer inset; the
+    // group option regions stay flush so boxes and circles share Kerf's
+    // control column.
     expect(css).toMatch(
-      /:is\(\s*wa-checkbox-group,\s*wa-color-picker,\s*wa-radio-group\s*\)::part\(\s*form-control-input\s*\)/,
+      /wa-color-picker::part\(form-control-input\)\s*\{\s*margin-inline: var\(--kui-layout-inline-margin, remify\(8px\)\);/,
     );
-    expect(css).toContain(
-      'margin-inline: var(--kui-layout-inline-margin, remify(8px))',
+    expect(css).not.toMatch(
+      /wa-(?:checkbox|radio)-group[^{}]*::part\(\s*form-control-input\s*\)/,
+    );
+    // Their group hints share the label's 9px text column.
+    expect(css).toMatch(
+      /:is\(\s*wa-checkbox-group,\s*wa-input,[^)]*wa-radio-group,[^)]*\)::part\(hint\)/,
     );
     expect(guidance).toMatch(
-      /Checkbox Group and Radio Group option regions receive the shared 8px inline\s+outer inset/,
+      /Checkbox Group and Radio Group follow Kerf's `Checkbox` and `RadioGroup`/,
     );
     expect(guidance).toMatch(
-      /Color Picker trigger receives the same 8px inline outer inset/,
+      /Color Picker trigger receives the shared 8px inline outer inset/,
     );
   });
 

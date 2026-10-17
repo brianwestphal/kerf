@@ -490,10 +490,10 @@ WCAG-AA contrast, with `--kui-wa-badge-filled-background` and
 `wa-dialog` with another dismissal affordance
 can add `class="hide-actions"`; the theme hides the directly exported
 `header-actions` part without unsupported chained `::part()` selectors. The
-theme gives Checkbox Group and Radio Group
-option regions the shared 8px inline outer inset because those groups have no
-bordered field shell. The Color Picker trigger receives the same inset for the
-same unbordered geometry. Known Date field captions and bordered text-like
+theme keeps Checkbox Group and Radio Group option regions flush, so each box or
+circle sits on the group's inline-start edge like Kerf's `Checkbox` and
+`RadioGroup`, with the group label and hint on the 9px text column. The
+unbordered Color Picker trigger receives the shared 8px inline outer inset. Known Date field captions and bordered text-like
 field hints align with their values at the 9px border-plus-padding inset. OTP
 Input's label uses the same uppercase xs/650 treatment, and its label and hint
 both use that inset. Slider's complete interactive region uses the shared 8px

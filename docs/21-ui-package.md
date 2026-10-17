@@ -150,9 +150,10 @@ shadows. It styles every free component that consumes those contracts while
 remaining overridable through later or scoped `--wa-*` declarations. The CSS
 entry registers no custom elements; importing individual Web Awesome component
 modules keeps their JavaScript tree-shakeable. Checkbox Group and Radio Group
-option regions use the shared 8px inline outer inset because those groups have
-no bordered field shell; the Color Picker trigger uses the same inset for the
-same unbordered geometry. Known Date field captions and bordered text-like
+keep their option regions flush, so each box or circle sits on the group's
+inline-start edge like Kerf's `Checkbox` and `RadioGroup`, while their group
+label and hint use the 9px field-text column; the unbordered Color Picker
+trigger uses the shared 8px inline outer inset. Known Date field captions and bordered text-like
 field hints align with their values at the shared 9px border-plus-padding
 inset. OTP Input's label uses the same uppercase xs/650 treatment as other
 field labels, and its label and hint both use that inset. Slider's complete

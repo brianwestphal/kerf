@@ -3483,6 +3483,67 @@ test('aligns Known Date captions and bordered text-field hints with their values
   ]);
 });
 
+test('puts Web Awesome checkbox and radio groups on the Kerf toggle control column', async ({
+  page,
+}) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/?component=checkbox');
+    const kerfBox = await page
+      .locator('[data-demo="checkbox"] .kui-checkbox__box')
+      .first()
+      .evaluate((element) => element.getBoundingClientRect().x);
+
+    for (const [route, control] of [
+      ['wa-checkbox-group', 'wa-checkbox'],
+      ['wa-radio-group', 'wa-radio'],
+    ] as const) {
+      await page.goto(`/?component=${route}`);
+      const host = page.locator(route);
+      await expect
+        .poll(() =>
+          host.evaluate(
+            (element, control) =>
+              Boolean(
+                element.shadowRoot?.querySelector(
+                  '[part~="form-control-input"]',
+                ) &&
+                element
+                  .querySelector(control)
+                  ?.shadowRoot?.querySelector('[part~="control"]'),
+              ),
+            control,
+          ),
+        )
+        .toBe(true);
+      const geometry = await host.evaluate((element, control) => {
+        const part = (name: string) =>
+          window.getComputedStyle(
+            element.shadowRoot!.querySelector(`[part~="${name}"]`)!,
+          );
+        const first = element
+          .querySelector(control)!
+          .shadowRoot!.querySelector('[part~="control"]')!;
+        return {
+          host: element.getBoundingClientRect().x,
+          control: first.getBoundingClientRect().x,
+          inputMargin: part('form-control-input').marginInlineStart,
+          labelPadding: part('form-control-label').paddingInlineStart,
+          hintPadding: part('hint').paddingInlineStart,
+        };
+      }, control);
+      // The box or circle sits on the host's inline-start edge, exactly where
+      // a Kerf Checkbox draws its box in the same catalog column; the group
+      // label and hint keep the 9px text column.
+      expect(geometry.inputMargin).toBe('0px');
+      expect(geometry.control).toBeCloseTo(geometry.host, 0);
+      expect(geometry.control).toBeCloseTo(kerfBox, 0);
+      expect(geometry.labelPadding).toBe('9px');
+      expect(geometry.hintPadding).toBe('9px');
+    }
+  }
+});
+
 test('styles and aligns OTP label and hint like a bordered text field', async ({
   page,
 }) => {
