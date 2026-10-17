@@ -1058,15 +1058,19 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
 const unalignedFormSpecimens: ReadonlySet<WebAwesomeCatalogId> =
   new Set<WebAwesomeCatalogId>(['wa-rating']);
 
-// A field whose host sizes to its container rather than to its content
-// (Known Date's segments and hint, Slider's track) collapses in the
-// shrink-to-fit specimen column, so it gets the width its Kerf counterpart's
-// demo gives it: a compact field column, or Slider's medium track.
-const sizedFormSpecimens: Partial<
+// A specimen whose host sizes to its container rather than to its content
+// (Known Date's segments and hint, Slider's track, a progress or skeleton
+// bar, a zoomable frame's iframe) collapses in the shrink-to-fit specimen
+// column, so it gets the width its Kerf counterpart's demo gives it: a
+// compact field or text column, or ProgressBar's and Slider's medium track.
+const sizedSpecimens: Partial<
   Record<WebAwesomeCatalogId, CatalogExampleViewport>
 > = {
   'wa-known-date': { width: 'compact' },
   'wa-slider': { width: 'medium' },
+  'wa-progress-bar': { width: 'medium' },
+  'wa-skeleton': { width: 'compact' },
+  'wa-zoomable-frame': { width: 'medium' },
 };
 
 export const webAwesomeComponentDemos: Record<
@@ -1088,7 +1092,7 @@ export const webAwesomeComponentDemos: Record<
               ? 'inline-control'
               : 'none'
           }
-          viewport={sizedFormSpecimens[entry.id]}
+          viewport={sizedSpecimens[entry.id]}
         >
           {specimenRenderers[entry.id]()}
         </CatalogExample>

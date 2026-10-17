@@ -3902,6 +3902,62 @@ test('gives Known Date and Slider specimens a field width on the Kerf columns', 
   }
 });
 
+test('gives container-sized Web Awesome specimens a width instead of collapsing', async ({
+  page,
+}) => {
+  // Progress Bar, Skeleton, and Zoomable Frame size to their container, so
+  // the shrink-to-fit specimen column once collapsed them to a 30px stub, a
+  // 0px bar, and a 16px empty frame. Each gets its Kerf counterpart's tier.
+  const hostWidths = (id: string) =>
+    page
+      .locator(`[data-demo="${id}"] ${id}`)
+      .evaluateAll((hosts) =>
+        hosts.map((host) => host.getBoundingClientRect().width),
+      );
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/?component=progress-bar');
+    const kerfBar = await page
+      .locator('[data-demo="progress-bar"] .kui-progress-bar')
+      .first()
+      .evaluate((element) => element.getBoundingClientRect().width);
+
+    await page.goto('/?component=wa-progress-bar');
+    await expect(page.locator('wa-progress-bar').first()).toBeVisible();
+    for (const bar of await hostWidths('wa-progress-bar'))
+      expect(bar, `progress bar width at ${width}`).toBeCloseTo(kerfBar, 0);
+
+    await page.goto('/?component=wa-skeleton');
+    await expect(page.locator('wa-skeleton').first()).toBeVisible();
+    for (const line of await hostWidths('wa-skeleton'))
+      expect(line, `skeleton width at ${width}`).toBeCloseTo(
+        Math.min(440, width - 32),
+        0,
+      );
+
+    await page.goto('/?component=wa-zoomable-frame');
+    const frame = page.locator('wa-zoomable-frame');
+    await expect(frame).toBeVisible();
+    const box = await frame.evaluate((element) => {
+      const host = element.getBoundingClientRect();
+      const iframe = element
+        .shadowRoot!.querySelector('[part~="iframe"]')!
+        .getBoundingClientRect();
+      const example = element
+        .closest('[data-catalog-example]')!
+        .getBoundingClientRect();
+      return {
+        width: host.width,
+        iframe: iframe.width * iframe.height,
+        overrun: host.right - example.right,
+      };
+    });
+    expect(box.width, `zoomable frame width at ${width}`).toBeGreaterThan(300);
+    expect(box.iframe).toBeGreaterThan(0);
+    expect(box.overrun).toBeLessThan(0.5);
+  }
+});
+
 test('styles and aligns OTP label and hint like a bordered text field', async ({
   page,
 }) => {
