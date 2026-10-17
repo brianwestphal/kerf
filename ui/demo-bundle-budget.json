@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164300,
-  "totalJavaScriptGzip": 426200,
-  "measuredLargestJavaScriptGzip": 164276,
-  "measuredTotalJavaScriptGzip": 426174,
+  "totalJavaScriptGzip": 426300,
+  "measuredLargestJavaScriptGzip": 164300,
+  "measuredTotalJavaScriptGzip": 426238,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5699,6 +5699,22 @@
         "measuredTotalJavaScriptGzip": 426174,
         "largestJavaScriptGzip": 164300,
         "totalJavaScriptGzip": 426200
+      }
+    },
+    {
+      "at": "2026-10-17T02:37:46.197Z",
+      "reason": "Catalog field alignment: aligned field specimens and per-entry Web Awesome specimen widths (KF-ZPDYQW, KF-S5XTY4, KF-ZVA2S2)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164276,
+        "measuredTotalJavaScriptGzip": 426174,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 426200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164300,
+        "measuredTotalJavaScriptGzip": 426238,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 426300
       }
     }
   ]

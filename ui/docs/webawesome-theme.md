@@ -151,7 +151,15 @@ other bordered fields.
 
 Slider's complete interactive region receives the
 shared 8px logical inline outer inset through `::part(slider)`, keeping its
-track, markers, references, and hint together without moving the label.
+track, markers, references, and hint together without moving the label. Placed
+where a Kerf `Slider` goes, its label and track land on the Kerf Slider's text
+column.
+
+Known Date and Slider size to their container rather than to their content, so
+give them a width (a form column, or the container's full width) instead of a
+shrink-to-fit parent, where Known Date collapses to nothing and Slider to a
+stub. The UX catalog gives Known Date a compact field column and Slider the
+Kerf Slider demo's medium width.
 
 Non-field chrome follows explicit, overridable control, surface, and container
 tiers:

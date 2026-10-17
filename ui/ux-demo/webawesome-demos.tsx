@@ -72,7 +72,11 @@ import '@awesome.me/webawesome/dist/components/tree-item/tree-item.js';
 import '@awesome.me/webawesome/dist/components/tree/tree.js';
 import '@awesome.me/webawesome/dist/components/zoomable-frame/zoomable-frame.js';
 
-import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import {
+  CatalogExample,
+  CatalogExampleStack,
+  type CatalogExampleViewport,
+} from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
 import { Row } from '@kerfjs/ui/row';
 import { Select } from '@kerfjs/ui/select';
@@ -1048,11 +1052,22 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
 // Select, Switch, Checkbox, and RadioGroup demos. The theme keeps each field
 // border, switch track, color swatch, box, and circle on the host's
 // inline-start edge with the label and hint on the 9px text column, so this
-// offset puts the control and text columns where Kerf's land. Rating has no
-// Kerf counterpart and Slider keeps its own 8px track inset, so those keep
-// their natural geometry.
+// offset puts the control and text columns where Kerf's land; Slider's own
+// 8px track inset then follows it, as the Kerf Slider's track does. Rating has
+// no Kerf counterpart, so it keeps its natural geometry.
 const unalignedFormSpecimens: ReadonlySet<WebAwesomeCatalogId> =
-  new Set<WebAwesomeCatalogId>(['wa-rating', 'wa-slider']);
+  new Set<WebAwesomeCatalogId>(['wa-rating']);
+
+// A field whose host sizes to its container rather than to its content
+// (Known Date's segments and hint, Slider's track) collapses in the
+// shrink-to-fit specimen column, so it gets the width its Kerf counterpart's
+// demo gives it: a compact field column, or Slider's medium track.
+const sizedFormSpecimens: Partial<
+  Record<WebAwesomeCatalogId, CatalogExampleViewport>
+> = {
+  'wa-known-date': { width: 'compact' },
+  'wa-slider': { width: 'medium' },
+};
 
 export const webAwesomeComponentDemos: Record<
   WebAwesomeCatalogId,
@@ -1073,6 +1088,7 @@ export const webAwesomeComponentDemos: Record<
               ? 'inline-control'
               : 'none'
           }
+          viewport={sizedFormSpecimens[entry.id]}
         >
           {specimenRenderers[entry.id]()}
         </CatalogExample>

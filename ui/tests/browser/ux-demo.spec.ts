@@ -3801,6 +3801,107 @@ test('puts Web Awesome fields on the Kerf field border and text columns', async 
   }
 });
 
+test('gives Known Date and Slider specimens a field width on the Kerf columns', async ({
+  page,
+}) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/?component=slider');
+    const kerfSlider = await page
+      .locator('[data-demo="slider"] .kui-slider')
+      .first()
+      .evaluate((element, source) => {
+        const x = new Function(`return ${source}`)() as (
+          root: Element,
+        ) => number | null;
+        const input = element
+          .querySelector('.kui-slider__input')!
+          .getBoundingClientRect();
+        return {
+          width: element.getBoundingClientRect().width,
+          track: input.x,
+          label: x(element.querySelector('.kui-slider__label')!),
+        };
+      }, textX.toString());
+
+    // Known Date sizes to its container, so its specimen gets a compact
+    // field column: the three segments share one row and the hint one line.
+    await page.goto('/?component=wa-known-date');
+    const knownDate = page.locator('wa-known-date');
+    await expect
+      .poll(() =>
+        knownDate.evaluate(
+          (element) =>
+            element.shadowRoot?.querySelectorAll('[part~="field-input"]')
+              .length ?? 0,
+        ),
+      )
+      .toBe(3);
+    const date = await knownDate.evaluate((element) => {
+      const host = element.getBoundingClientRect();
+      const example = element.closest('[data-catalog-example]')!;
+      const fields = [
+        ...element.shadowRoot!.querySelectorAll('[part~="field-input"]'),
+      ].map((field) => field.getBoundingClientRect());
+      const hint = element
+        .shadowRoot!.querySelector('[part~="hint"]')!
+        .getBoundingClientRect();
+      return {
+        width: host.width,
+        overrun: host.right - example.getBoundingClientRect().right,
+        tops: fields.map((field) => Math.round(field.top)),
+        hintHeight: hint.height,
+        lineHeight: parseFloat(
+          window.getComputedStyle(
+            element.shadowRoot!.querySelector('[part~="hint"]')!,
+          ).lineHeight,
+        ),
+      };
+    });
+    expect(date.width, `known date width at ${width}`).toBeGreaterThan(300);
+    expect(date.overrun).toBeLessThan(0.5);
+    expect(new Set(date.tops).size, `segments on one row at ${width}`).toBe(1);
+    expect(date.hintHeight).toBeLessThan(date.lineHeight * 1.5);
+
+    // Slider gets the Kerf Slider demo's medium track, with its label and
+    // track on the Kerf Slider's text column.
+    await page.goto('/?component=wa-slider');
+    const slider = page.locator('wa-slider');
+    await expect
+      .poll(() =>
+        slider.evaluate(
+          (element) =>
+            (element.shadowRoot
+              ?.querySelector('[part~="track"]')
+              ?.getBoundingClientRect().width ?? 0) > 0,
+        ),
+      )
+      .toBe(true);
+    const wa = await slider.evaluate((element, source) => {
+      const x = new Function(`return ${source}`)() as (
+        root: Element,
+      ) => number | null;
+      const part = (name: string) =>
+        element.shadowRoot!.querySelector(`[part~="${name}"]`)!;
+      return {
+        width: element.getBoundingClientRect().width,
+        track: part('track').getBoundingClientRect().x,
+        label: x(part('label')),
+      };
+    }, textX.toString());
+    expect(wa.width, `slider width at ${width}`).toBeCloseTo(
+      kerfSlider.width,
+      0,
+    );
+    expect(wa.label, `slider label at ${width}`).toBeCloseTo(
+      kerfSlider.label!,
+      0,
+    );
+    // Web Awesome insets its track 8px; Kerf's sits past a 1px border too.
+    expect(Math.abs(wa.track - kerfSlider.track)).toBeLessThanOrEqual(1.5);
+  }
+});
+
 test('styles and aligns OTP label and hint like a bordered text field', async ({
   page,
 }) => {
