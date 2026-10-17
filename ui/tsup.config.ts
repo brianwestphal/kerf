@@ -91,6 +91,7 @@ const entries = [
   'text-field',
   'wire-text-fields',
   'checkbox',
+  'checkbox-group',
   'slider',
   'wire-sliders',
   'wire-checkboxes',

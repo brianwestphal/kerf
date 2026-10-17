@@ -340,6 +340,7 @@ describe('titleStyleLabels', () => {
             <TextField ariaLabel="Search components" clearable clearLabel="Clear search" />
             <Select label="Release channel" choices={[{ value: 'b', label: 'Beta channel' }]} />
             <RadioGroup label="Notify me" choices={[{ value: 'all', label: 'Every new reply' }]} />
+            <CheckboxGroup label="Send updates by" choices={[{ value: 'email', label: 'Email digest' }]} />
             <Checkbox label="Show hidden files" hint="Includes dotfiles" />
             <Switch label="Sync over cellular" />
             <Button tone="brand">Save draft</Button>
@@ -353,6 +354,7 @@ describe('titleStyleLabels', () => {
       'Select label: Release channel',
       'Select choices: Beta channel',
       'RadioGroup label: Notify me',
+      'CheckboxGroup label: Send updates by',
       '<Button> text: Save draft',
     ]);
   });

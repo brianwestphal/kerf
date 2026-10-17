@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`CheckboxGroup` in `@kerfjs/ui`.** `@kerfjs/ui/checkbox-group` puts a labeled set of related options in a native fieldset of `Checkbox`es: a `choices` array with per-choice hints and disabled choices, an array `value` of checked values that all submit under `name`, a group `hint` and `error` (marking the group invalid), `default` or `compact` size, and a stacked or wrapping horizontal `orientation`. It is named by `label`, `ariaLabel`, or `labelledBy` and laid out exactly like `RadioGroup`: each box on the inline-start edge, choices at the shared 28px pitch, hints on the label column. `wa-checkbox-group` now points to it (`KF-JJ80V3`).
 - **`SplitButton` `shape`.** `shape="pill"` fully rounds both outer ends of a SplitButton, the same `rounded` (default) or `pill` choice `Button` takes; the divider between the halves stays square, and each half's hover fill and focus ring follow its rounded end (`KF-4GC1J4`).
 - **`wirePaneChrome`.** `@kerfjs/ui/wire-pane-chrome` makes a Pane's open `overlay` compact chrome transient: Escape or a press outside it closes it through the app's `compactChromeOpen` signals, and focus returns to the control that opened it (`KF-EEGAT7`).
 - **ChoiceChips icon picker.** `presentation="icons"` renders square 36px icon-only choices, each named by its label (hidden, and its hover title), and `maxHeight` scrolls a long grid, with native radio (or toggle, or listbox) semantics unchanged (`KF-K60RRM`).

@@ -58,6 +58,7 @@ import {
 import { TabBarItem } from '../dist/tab-bar-item.js';
 import { Button } from '../dist/button.js';
 import { Checkbox } from '../dist/checkbox.js';
+import { CheckboxGroup } from '../dist/checkbox-group.js';
 import { Chip } from '../dist/chip.js';
 import { ChoiceChips } from '../dist/choice-chips.js';
 import { MessageComposer } from '../dist/message-composer.js';
@@ -1928,6 +1929,54 @@ export const COMPONENTS = {
                 checked: true,
               }),
               Checkbox({ label: 'Show drafts', size: 'compact' }),
+            ],
+          }),
+      },
+    ],
+  },
+  'checkbox-group': {
+    css: ['foundation', 'layout', 'checkbox', 'checkbox-group'],
+    selector: '#frame',
+    width: 400,
+    frameWidth: 360,
+    variants: [
+      {
+        id: 'vertical',
+        label: 'Stacked Choices with Hints',
+        height: 177,
+        render: () =>
+          CheckboxGroup({
+            label: 'Notification Channels',
+            name: 'channels',
+            value: ['email', 'push'],
+            hint: 'Sent to your work account.',
+            choices: [
+              { value: 'email', label: 'Email' },
+              {
+                value: 'push',
+                label: 'Push notifications',
+                hint: 'On devices where you are signed in.',
+              },
+              { value: 'digest', label: 'Weekly digest' },
+              { value: 'sms', label: 'Text messages', disabled: true },
+            ],
+          }),
+      },
+      {
+        id: 'horizontal',
+        label: 'Horizontal, Compact, with an Error',
+        height: 65,
+        render: () =>
+          CheckboxGroup({
+            label: 'Platforms',
+            name: 'platforms',
+            size: 'compact',
+            orientation: 'horizontal',
+            error: 'Choose a platform.',
+            choices: [
+              { value: 'macos', label: 'macOS' },
+              { value: 'windows', label: 'Windows' },
+              { value: 'linux', label: 'Linux' },
             ],
           }),
       },

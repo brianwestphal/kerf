@@ -180,6 +180,8 @@ import {
   adoptionTokens,
   bannerTone,
   buttonToggleConversationOpen,
+  checkboxGroupChannels,
+  checkboxGroupPlatforms,
   checkboxTasks,
   choiceChipsColor,
   choiceChipsDialogColor,
@@ -2285,6 +2287,22 @@ const stopChoiceChipsDemo = delegateActions(app, 'change', {
             ? input.checked
             : checkboxTasks.value.includes(value),
         );
+    const label = input.closest('label')?.textContent ?? '';
+    actionLog.value = `${label}: ${input.checked ? 'checked' : 'unchecked'}`;
+  },
+  'checkbox-group-demo': (_event, element) => {
+    const input = element as HTMLInputElement;
+    const checked = [
+      ...input
+        .closest('fieldset')!
+        .querySelectorAll<HTMLInputElement>('input:checked'),
+    ].map((choice) => choice.value);
+    if (input.name === 'notification-channels')
+      checkboxGroupChannels.value =
+        checked as typeof checkboxGroupChannels.value;
+    else if (input.name === 'platforms')
+      checkboxGroupPlatforms.value =
+        checked as typeof checkboxGroupPlatforms.value;
     const label = input.closest('label')?.textContent ?? '';
     actionLog.value = `${label}: ${input.checked ? 'checked' : 'unchecked'}`;
   },

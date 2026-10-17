@@ -106,6 +106,14 @@
 .kui-checkbox__error {
   color: var(--kui-color-danger-on-quiet);
 }
+/* Inside a CheckboxGroup a choice's hint sits directly under its label, as a
+   RadioGroup choice hint does, and an invalid group marks every box. */
+.kui-checkbox-group__choices > .kui-checkbox > .kui-checkbox__hint {
+  margin-block-start: 0;
+}
+.kui-checkbox-group[data-invalid] .kui-checkbox__box {
+  border-color: var(--kui-color-danger-border-loud);
+}
 .kui-checkbox__hint + .kui-checkbox__error {
   margin-block-start: 0;
 }

@@ -22,6 +22,7 @@ Turn one independent option on or off in a form or settings list, including a pa
 **Alternatives:**
 
 - [Checkbox](./wa-checkbox.md) (prefer-over)
+- [CheckboxGroup](./checkbox-group.md) (nearest) — Use CheckboxGroup for a labeled set of related options.
 - [Switch](./switch.md) (nearest) — Use Switch for a setting that applies immediately.
 - [ChoiceChips](./choice-chips.md) (nearest) — Use ChoiceChips multiple for several visible, wrapping choices.
 
@@ -84,6 +85,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [LucideIcon](./lucide-icon.md), [Checkbox](./wa-checkbox.md), [Switch](./switch.md), [ChoiceChips](./choice-chips.md).
+- Components: [LucideIcon](./lucide-icon.md), [Checkbox](./wa-checkbox.md), [CheckboxGroup](./checkbox-group.md), [Switch](./switch.md), [ChoiceChips](./choice-chips.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#problem-to-component-matrix`](../../docs/component-selection.md#problem-to-component-matrix).
 - UX catalog route: `?component=checkbox`.

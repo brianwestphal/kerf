@@ -563,6 +563,13 @@ forced-colors mode paints checked state with `Highlight`.
   its `aria-description`; `error` sets `aria-invalid` on the group, `required`
   sets native `required` on each radio plus `aria-required` on the group, and a
   choice's `hint` is that radio's `aria-description`.
+- `CheckboxGroup` is a `<fieldset>` (natively a group) of `Checkbox`es, named
+  by its `<legend>` (`label`), `ariaLabel`, or `labelledBy`. Each checkbox
+  is its own Tab stop and Space toggles it; every checked value submits under
+  `name`. The group's `hint` and `error` form its `aria-description`; `error`
+  sets `aria-invalid` on the group and the danger border on each box, and a
+  choice's `hint` is that checkbox's `aria-description`. `disabled` disables
+  the fieldset and so, natively, every checkbox in it.
 - `Switch` is an `<input type="checkbox" role="switch">`, so assistive
   technology announces on and off; Space toggles it. Its `hint` is its
   `aria-description`. The thumb's slide is skipped when reduced motion is

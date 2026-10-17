@@ -1227,7 +1227,7 @@ const discouragedTags = [
   ['wa-input', 'text-field'],
   ['wa-textarea', 'text-field'],
   ['wa-checkbox', 'checkbox'],
-  ['wa-checkbox-group', 'checkbox'],
+  ['wa-checkbox-group', 'checkbox-group'],
   ['wa-radio-group', 'radio-group'],
   ['wa-radio', 'radio-group'],
   ['wa-switch', 'switch'],

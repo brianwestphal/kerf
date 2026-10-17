@@ -802,6 +802,21 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "checkbox-group",
+    "name": "CheckboxGroup",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Choose any number of a few related options that should stay visible under one group label, with native keyboard behavior and form participation.",
+    "uses": [
+      "checkbox"
+    ],
+    "demoSource": "ui/ux-demo/demos/checkbox-group.tsx",
+    "componentSource": "ui/src/components/forms/checkbox-group/checkbox-group.tsx",
+    "designTemplate": "ui/docs/design/templates/checkbox-group.svg",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "radio-group",
     "name": "RadioGroup",
     "category": "Controls",
@@ -1403,7 +1418,7 @@ export const generatedWebAwesomeCatalog = [
     "category": "Forms",
     "kind": "component",
     "source": "webawesome",
-    "description": "Ecosystem checkbox group; use Kerf Checkbox rows or ChoiceChips.",
+    "description": "Ecosystem checkbox group; use Kerf CheckboxGroup or ChoiceChips.",
     "recommendation": "avoid",
     "uses": [
       "wa-checkbox"

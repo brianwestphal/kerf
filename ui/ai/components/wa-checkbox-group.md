@@ -6,18 +6,18 @@
 
 ## When to use
 
-Ecosystem checkbox group; use Kerf Checkbox rows or ChoiceChips.
+Ecosystem checkbox group; use Kerf CheckboxGroup or ChoiceChips.
 
 - Labels and validates a related set of checkboxes.
 
 **Not when:**
 
-- Do not use it in Kerf UI; use Checkbox rows in a List, or ChoiceChips multiple for wrapping pills.
+- Do not use it in Kerf UI; use CheckboxGroup for a labeled set of options, or ChoiceChips multiple for wrapping pills.
 
 **Alternatives:**
 
-- [Checkbox](./checkbox.md) (prefer-kerf) — Use Checkbox rows in a List, or ChoiceChips multiple for wrapping pills.
-- [ChoiceChips](./choice-chips.md) (prefer-kerf) — Use Checkbox rows in a List, or ChoiceChips multiple for wrapping pills.
+- [CheckboxGroup](./checkbox-group.md) (prefer-kerf) — Use CheckboxGroup for a labeled set of options, or ChoiceChips multiple for wrapping pills.
+- [ChoiceChips](./choice-chips.md) (prefer-kerf) — Use CheckboxGroup for a labeled set of options, or ChoiceChips multiple for wrapping pills.
 
 ## Imports
 
@@ -57,6 +57,6 @@ Theme it only through `@kerfjs/ui/webawesome.css` and cataloged tokens. Do not r
 
 ## Related
 
-- Components: [Checkbox](./wa-checkbox.md), [Checkbox](./checkbox.md), [ChoiceChips](./choice-chips.md).
+- Components: [Checkbox](./wa-checkbox.md), [CheckboxGroup](./checkbox-group.md), [ChoiceChips](./choice-chips.md).
 - Docs: [`docs/webawesome-theme.md#coverage`](../../docs/webawesome-theme.md#coverage).
 - UX catalog route: `?component=wa-checkbox-group`.

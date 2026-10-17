@@ -73,6 +73,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Combobox](./combobox.md) — Let people pick an existing value or create a new one by typing (tags, labels, recipients), with the themed field chrome, the ARIA combobox pattern, and a touch-safe font size, without a native datalist or app CSS.
 - [TextField](./text-field.md) — Collect free text (names, addresses, notes, comments) with Kerf's field chrome, a visible or accessible label, supporting and validation text, and native input semantics.
 - [Checkbox](./checkbox.md) — Turn one independent option on or off in a form or settings list, including a parent whose children are partly checked, without Web Awesome.
+- [CheckboxGroup](./checkbox-group.md) — Choose any number of a few related options that should stay visible under one group label, with native keyboard behavior and form participation.
 - [RadioGroup](./radio-group.md) — Choose exactly one of a few options that should stay visible with room for a label and hint each, with native keyboard behavior and form participation.
 - [Switch](./switch.md) — Turn a setting on or off the moment it changes, such as live updates or a preference, without Web Awesome.
 - [Slider](./slider.md) — Let a person pick a value from a range where the relative position matters more than an exact number (volume, zoom, opacity, a threshold).
@@ -107,7 +108,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 ## Web Awesome — Forms
 
 - [Checkbox](./wa-checkbox.md) (avoid) — Ecosystem checkbox; use Kerf Checkbox.
-- [Checkbox Group](./wa-checkbox-group.md) (avoid) — Ecosystem checkbox group; use Kerf Checkbox rows or ChoiceChips.
+- [Checkbox Group](./wa-checkbox-group.md) (avoid) — Ecosystem checkbox group; use Kerf CheckboxGroup or ChoiceChips.
 - [Color Picker](./wa-color-picker.md) (avoid) — Ecosystem color picker; use the Kerf ColorField or ColorPicker.
 - [Input](./wa-input.md) (avoid) — Ecosystem text input; use Kerf TextField.
 - [Known Date](./wa-known-date.md) — Experimental segmented field for partially or fully known dates.

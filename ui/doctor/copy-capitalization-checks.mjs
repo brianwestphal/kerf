@@ -14,7 +14,7 @@ import { isUiTraversalExcluded } from '../traversal-exclusions.mjs';
 // to known title-style props are read (a template literal's static words, never
 // its interpolated values), so prose, descriptions, placeholders, tooltips,
 // checkbox/switch option text, status lines, LoadingSpinner and Skeleton
-// labels, Checkbox/Switch labels and RadioGroup choice labels, and dynamic
+// labels, Checkbox/Switch labels and CheckboxGroup/RadioGroup choice labels, and dynamic
 // data are never judged. The check reports lowercase words title style capitalizes; it
 // does not report capitalized short words, because Apple capitalizes a
 // preposition of any length inside a phrasal verb ("Log In to the Server").
@@ -179,9 +179,11 @@ const titleStyleProps = new Map([
     'Select',
     { props: ['label', 'ariaLabel'], entries: { choices: ['label'] } },
   ],
-  // Field and group labels. A Checkbox or Switch label and a RadioGroup
-  // choice label are option text, which is sentence style and not read.
+  // Field and group labels. A Checkbox or Switch label and a CheckboxGroup or
+  // RadioGroup choice label are option text, which is sentence style and not
+  // read.
   ['TextField', { props: ['label', 'ariaLabel', 'clearLabel'] }],
+  ['CheckboxGroup', { props: ['label', 'ariaLabel'] }],
   ['RadioGroup', { props: ['label', 'ariaLabel'] }],
   ['TabNavigator', { entries: { tabs: ['label'] } }],
   // Region and landmark names: the accessible name of a pane, toolbar,

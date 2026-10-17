@@ -5603,6 +5603,82 @@
       }
     },
     {
+      "key": "@kerfjs/ui:checkbox-group",
+      "package": "@kerfjs/ui",
+      "id": "checkbox-group",
+      "name": "CheckboxGroup",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "checked values", "owner": "application", "required": false },
+        {
+          "id": "choices and their copy",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "validation and error copy",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "self",
+          "notes": [
+            "Laid out exactly like a RadioGroup: the label and hint sit on the text column (1px + 8px); each choice's 20px box (18px compact) sits on the group's inline-start edge 8px (7px) before its label; choices stack 8px apart (--kui-space-xs), the same 28px pitch as RadioGroup choices, wrap with a 24px column gap when horizontal, and a choice hint sits directly under its label text."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "A native <fieldset> (a group) named by its legend (label), ariaLabel, or labelledBy; each choice is a Kerf Checkbox, a native checkbox inside its <label>, invisibly over the drawn box. Every checkbox is its own Tab stop and Space toggles it; each checked value submits under name.",
+          "The group's hint and error form its aria-description; an error sets aria-invalid on the group and the danger border on each box. A choice's hint is that checkbox's aria-description. disabled disables the fieldset, and so every checkbox, natively."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-checkbox-group",
+        "publicClasses": [
+          "kui-checkbox-group",
+          "kui-checkbox-group__label",
+          "kui-checkbox-group__choices",
+          "kui-checkbox-group__hint",
+          "kui-checkbox-group__error"
+        ],
+        "rootElement": "fieldset",
+        "publicTokens": [
+          "--kui-color-neutral-on-quiet",
+          "--kui-color-text-quiet",
+          "--kui-color-danger-on-quiet",
+          "--kui-font-m",
+          "--kui-font-s",
+          "--kui-font-xs",
+          "--kui-layout-item-padding",
+          "--kui-space-xs"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:radio-group",
       "package": "@kerfjs/ui",
       "id": "radio-group",

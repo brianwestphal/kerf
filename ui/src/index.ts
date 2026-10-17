@@ -186,6 +186,16 @@ export {
 } from './components/forms/checkbox/checkbox.js';
 export { wireCheckboxes } from './components/forms/checkbox/wiring/wire-checkboxes.js';
 export {
+  CheckboxGroup,
+  type CheckboxGroupChoice,
+  type CheckboxGroupName,
+  type CheckboxGroupOptions,
+  type CheckboxGroupOrientation,
+  type CheckboxGroupProps,
+  type CheckboxGroupRootAttributes,
+  type CheckboxGroupSize,
+} from './components/forms/checkbox-group/checkbox-group.js';
+export {
   ChoiceChips,
   type ChoiceChipsChoice,
   type ChoiceChipsProps,

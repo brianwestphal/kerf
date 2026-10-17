@@ -586,6 +586,7 @@ describe('UX catalog metadata', () => {
       'Combobox',
       'TextField',
       'Checkbox',
+      'CheckboxGroup',
       'RadioGroup',
       'Switch',
       'Slider',

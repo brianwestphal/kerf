@@ -280,6 +280,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `TextField`                                                  | `@kerfjs/ui/text-field`                 | `@kerfjs/ui/text-field.css`              |
 | `wireTextFields`                                             | `@kerfjs/ui/wire-text-fields`           | —                                        |
 | `Checkbox`                                                   | `@kerfjs/ui/checkbox`                   | `@kerfjs/ui/checkbox.css`                |
+| `CheckboxGroup`                                              | `@kerfjs/ui/checkbox-group`             | `@kerfjs/ui/checkbox-group.css`          |
 | `wireCheckboxes`                                             | `@kerfjs/ui/wire-checkboxes`            | —                                        |
 | `RadioGroup`                                                 | `@kerfjs/ui/radio-group`                | `@kerfjs/ui/radio-group.css`             |
 | `Switch`                                                     | `@kerfjs/ui/switch`                     | `@kerfjs/ui/switch.css`                  |

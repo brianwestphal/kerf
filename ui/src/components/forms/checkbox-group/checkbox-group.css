@@ -1,0 +1,63 @@
+/* CheckboxGroup: the group label, the choices (each a Kerf Checkbox, which
+   draws its own box, label, and hint), and hint and error text below. It is
+   laid out exactly like a RadioGroup: each box sits on the group's
+   inline-start edge and stacked choices sit 8px apart, the 28px pitch
+   checkboxes and radios share. */
+.kui-checkbox-group {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  border: none;
+  font-size: var(--kui-font-m, remify(16px));
+  font-weight: 400;
+  line-height: 1.2;
+}
+.kui-checkbox-group[data-size="compact"] {
+  font-size: var(--kui-font-s, remify(14px));
+}
+/* The label matches every Kerf form control's label (RadioGroup's too). */
+.kui-checkbox-group__label {
+  display: block;
+  float: none;
+  margin-block-end: remify(6px);
+  padding: 0;
+  padding-inline: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  color: var(--kui-color-neutral-on-quiet);
+  font-size: var(--kui-font-xs);
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+.kui-checkbox-group__choices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kui-space-xs);
+}
+.kui-checkbox-group[data-orientation="horizontal"]
+  .kui-checkbox-group__choices {
+  flex-direction: row;
+  flex-wrap: wrap;
+  column-gap: remify(24px);
+}
+.kui-checkbox-group__hint,
+.kui-checkbox-group__error {
+  display: block;
+  margin-block-start: remify(7px);
+  padding-inline: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s, remify(14px));
+  line-height: 1.6;
+}
+.kui-checkbox-group[data-size="compact"]
+  :is(.kui-checkbox-group__hint, .kui-checkbox-group__error) {
+  font-size: var(--kui-font-xs, remify(12px));
+}
+.kui-checkbox-group__error {
+  color: var(--kui-color-danger-on-quiet);
+}
+.kui-checkbox-group__hint + .kui-checkbox-group__error {
+  margin-block-start: 0;
+}

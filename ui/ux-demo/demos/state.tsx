@@ -169,6 +169,12 @@ export const badgePlayground = signal<BadgePlaygroundState>({
   size: 'default',
 });
 export const checkboxTasks = signal<readonly string[]>(['design']);
+export const checkboxGroupChannels = signal<
+  readonly ('email' | 'push' | 'digest' | 'sms')[]
+>(['email']);
+export const checkboxGroupPlatforms = signal<
+  readonly ('macos' | 'windows' | 'linux')[]
+>([]);
 export const radioDensity = signal<'compact' | 'balanced' | 'roomy'>(
   'balanced',
 );

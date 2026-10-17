@@ -182,7 +182,7 @@ covers these string literals:
   `section`, `nav`, `aside`, `main`, `header`, `footer`, `form`, or `search`
   element or an element with a landmark `role`;
 - field and group labels: the `label` and `ariaLabel` of `TextField`,
-  `Select`, and `RadioGroup`, and the `label` of a raw `wa-input`,
+  `Select`, `CheckboxGroup`, and `RadioGroup`, and the `label` of a raw `wa-input`,
   `wa-select`, `wa-textarea`, or `wa-radio-group` in an application using the
   optional Web Awesome integration;
 - the accessible names of icon-only controls, which the rule also gives title
@@ -203,7 +203,8 @@ The check is deliberately one-directional, to keep false positives rare:
   is. A word joined to an interpolation (`` `${count}s` ``) is skipped.
 - It ignores other dynamic values and every sentence-style surface: descriptions,
   details, placeholders, tooltips, status text, and option text, including
-  `Checkbox` and `Switch` labels, `RadioGroup` choice labels, and
+  `Checkbox` and `Switch` labels, `CheckboxGroup` and `RadioGroup` choice
+  labels, and
   `wa-checkbox`, `wa-switch`, and `wa-radio` labels. It does not read
   `LoadingSpinner` or `Skeleton` labels, which announce a status.
 - It skips tokens containing digits, code, paths, or URLs, and lowercase-led

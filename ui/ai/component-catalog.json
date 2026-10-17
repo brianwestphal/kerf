@@ -6857,6 +6857,11 @@
           "relationship": "prefer-over"
         },
         {
+          "id": "checkbox-group",
+          "relationship": "nearest",
+          "when": "Use CheckboxGroup for a labeled set of related options."
+        },
+        {
           "id": "switch",
           "relationship": "nearest",
           "when": "Use Switch for a setting that applies immediately."
@@ -6941,6 +6946,108 @@
       }
     },
     {
+      "id": "checkbox-group",
+      "name": "CheckboxGroup",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A native fieldset of Kerf Checkboxes with the group label above, per-choice hints, and hint and error text below, stacked or wrapping like a RadioGroup.",
+      "uses": [
+        "checkbox"
+      ],
+      "purpose": "Choose any number of a few related options that should stay visible under one group label, with native keyboard behavior and form participation.",
+      "publicExports": [
+        "CheckboxGroup"
+      ],
+      "useWhen": [
+        "A form asks for any of two to about eight related options under one label, each with a readable label and an optional hint, and every checked value submits under one name."
+      ],
+      "avoidWhen": [
+        "Do not use for one choice among several; use RadioGroup.",
+        "Do not use for a single independent option or a parent with a mixed state; use Checkbox.",
+        "Do not use for settings that apply the moment they change; use Switch.",
+        "Do not use for many short tag-like or wrapping pill choices; use ChoiceChips multiple."
+      ],
+      "alternatives": [
+        {
+          "id": "wa-checkbox-group",
+          "relationship": "prefer-over"
+        },
+        {
+          "id": "checkbox",
+          "relationship": "nearest",
+          "when": "Use Checkbox for one independent option, or a mixed parent above its children."
+        },
+        {
+          "id": "radio-group",
+          "relationship": "nearest",
+          "when": "Use RadioGroup when exactly one option may be chosen."
+        },
+        {
+          "id": "choice-chips",
+          "relationship": "nearest",
+          "when": "Use ChoiceChips multiple for wrapping pill choices."
+        }
+      ],
+      "appOwns": [
+        "checked values",
+        "choices and their copy",
+        "validation and error copy"
+      ],
+      "variants": [
+        "vertical or horizontal",
+        "per-choice hint",
+        "disabled choice",
+        "whole group disabled",
+        "hint",
+        "error",
+        "default or compact size"
+      ],
+      "accessibility": [
+        "A native <fieldset> (a group) named by its legend (label), ariaLabel, or labelledBy; each choice is a Kerf Checkbox, a native checkbox inside its <label>, invisibly over the drawn box. Every checkbox is its own Tab stop and Space toggles it; each checked value submits under name.",
+        "The group's hint and error form its aria-description; an error sets aria-invalid on the group and the danger border on each box. A choice's hint is that checkbox's aria-description. disabled disables the fieldset, and so every checkbox, natively."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "self",
+        "notes": [
+          "Laid out exactly like a RadioGroup: the label and hint sit on the text column (1px + 8px); each choice's 20px box (18px compact) sits on the group's inline-start edge 8px (7px) before its label; choices stack 8px apart (--kui-space-xs), the same 28px pitch as RadioGroup choices, wrap with a 24px column gap when horizontal, and a choice hint sits directly under its label text."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/checkbox-group",
+        "manualCssImport": "@kerfjs/ui/checkbox-group.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-checkbox-group",
+        "kui-checkbox-group__label",
+        "kui-checkbox-group__choices",
+        "kui-checkbox-group__hint",
+        "kui-checkbox-group__error"
+      ],
+      "publicTokens": [
+        "--kui-color-neutral-on-quiet",
+        "--kui-color-text-quiet",
+        "--kui-color-danger-on-quiet",
+        "--kui-font-m",
+        "--kui-font-s",
+        "--kui-font-xs",
+        "--kui-layout-item-padding",
+        "--kui-space-xs"
+      ],
+      "rootElement": "fieldset",
+      "links": {
+        "catalogRoute": "?component=checkbox-group",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "radio-group",
       "name": "RadioGroup",
       "category": "Controls",
@@ -6978,6 +7085,11 @@
           "id": "choice-chips",
           "relationship": "nearest",
           "when": "Use ChoiceChips for wrapping pill choices."
+        },
+        {
+          "id": "checkbox-group",
+          "relationship": "nearest",
+          "when": "Use CheckboxGroup when people may choose several."
         }
       ],
       "appOwns": [
@@ -9049,29 +9161,29 @@
       "category": "Forms",
       "kind": "component",
       "source": "webawesome",
-      "description": "Ecosystem checkbox group; use Kerf Checkbox rows or ChoiceChips.",
+      "description": "Ecosystem checkbox group; use Kerf CheckboxGroup or ChoiceChips.",
       "uses": [
         "wa-checkbox"
       ],
-      "purpose": "Ecosystem checkbox group; use Kerf Checkbox rows or ChoiceChips.",
+      "purpose": "Ecosystem checkbox group; use Kerf CheckboxGroup or ChoiceChips.",
       "customElement": "wa-checkbox-group",
       "useWhen": [
         "Labels and validates a related set of checkboxes."
       ],
       "avoidWhen": [
-        "Do not use it in Kerf UI; use Checkbox rows in a List, or ChoiceChips multiple for wrapping pills."
+        "Do not use it in Kerf UI; use CheckboxGroup for a labeled set of options, or ChoiceChips multiple for wrapping pills."
       ],
       "recommendation": "avoid",
       "alternatives": [
         {
-          "id": "checkbox",
+          "id": "checkbox-group",
           "relationship": "prefer-kerf",
-          "when": "Use Checkbox rows in a List, or ChoiceChips multiple for wrapping pills."
+          "when": "Use CheckboxGroup for a labeled set of options, or ChoiceChips multiple for wrapping pills."
         },
         {
           "id": "choice-chips",
           "relationship": "prefer-kerf",
-          "when": "Use Checkbox rows in a List, or ChoiceChips multiple for wrapping pills."
+          "when": "Use CheckboxGroup for a labeled set of options, or ChoiceChips multiple for wrapping pills."
         }
       ],
       "geometry": {

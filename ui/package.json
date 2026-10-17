@@ -495,6 +495,11 @@
       "browser": "./dist/browser/checkbox.js",
       "import": "./dist/checkbox.js"
     },
+    "./checkbox-group": {
+      "types": "./dist/checkbox-group.d.ts",
+      "browser": "./dist/browser/checkbox-group.js",
+      "import": "./dist/checkbox-group.js"
+    },
     "./radio-group": {
       "types": "./dist/radio-group.d.ts",
       "browser": "./dist/browser/radio-group.js",
@@ -626,6 +631,7 @@
     "./file-picker.css": "./dist/styles/file-picker.css",
     "./text-field.css": "./dist/styles/text-field.css",
     "./checkbox.css": "./dist/styles/checkbox.css",
+    "./checkbox-group.css": "./dist/styles/checkbox-group.css",
     "./slider.css": "./dist/styles/slider.css",
     "./radio-group.css": "./dist/styles/radio-group.css",
     "./switch.css": "./dist/styles/switch.css",

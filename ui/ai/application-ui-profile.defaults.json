@@ -90,8 +90,13 @@
     },
     "boolean-option": {
       "preferred": "@kerfjs/ui:checkbox",
-      "avoid": ["@kerfjs/ui:wa-checkbox", "@kerfjs/ui:wa-checkbox-group"],
+      "avoid": ["@kerfjs/ui:wa-checkbox"],
       "rationale": "Render Checkbox, a native checkbox drawn as a Kerf box."
+    },
+    "multiple-option": {
+      "preferred": "@kerfjs/ui:checkbox-group",
+      "avoid": ["@kerfjs/ui:wa-checkbox-group"],
+      "rationale": "Render CheckboxGroup, a native fieldset of Checkboxes with a choices array, laid out like RadioGroup."
     },
     "exclusive-option": {
       "preferred": "@kerfjs/ui:radio-group",

@@ -24,6 +24,7 @@ Choose exactly one of a few options that should stay visible with room for a lab
 - [Radio](./wa-radio.md) (prefer-over)
 - [Select](./select.md) (nearest) — Use Select for a long list.
 - [ChoiceChips](./choice-chips.md) (nearest) — Use ChoiceChips for wrapping pill choices.
+- [CheckboxGroup](./checkbox-group.md) (nearest) — Use CheckboxGroup when people may choose several.
 
 ## Imports
 
@@ -83,6 +84,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [Radio Group](./wa-radio-group.md), [Radio](./wa-radio.md), [Select](./select.md), [ChoiceChips](./choice-chips.md).
+- Components: [Radio Group](./wa-radio-group.md), [Radio](./wa-radio.md), [Select](./select.md), [ChoiceChips](./choice-chips.md), [CheckboxGroup](./checkbox-group.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#problem-to-component-matrix`](../../docs/component-selection.md#problem-to-component-matrix).
 - UX catalog route: `?component=radio-group`.

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164300,
-  "totalJavaScriptGzip": 425600,
-  "measuredLargestJavaScriptGzip": 164219,
-  "measuredTotalJavaScriptGzip": 425509,
+  "totalJavaScriptGzip": 426200,
+  "measuredLargestJavaScriptGzip": 164276,
+  "measuredTotalJavaScriptGzip": 426174,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5683,6 +5683,22 @@
         "measuredTotalJavaScriptGzip": 425509,
         "largestJavaScriptGzip": 164300,
         "totalJavaScriptGzip": 425600
+      }
+    },
+    {
+      "at": "2026-10-17T01:45:52.394Z",
+      "reason": "CheckboxGroup catalog route (KF-JJ80V3) on top of the session's integrated demo changes",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164219,
+        "measuredTotalJavaScriptGzip": 425509,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 425600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164276,
+        "measuredTotalJavaScriptGzip": 426174,
+        "largestJavaScriptGzip": 164300,
+        "totalJavaScriptGzip": 426200
       }
     }
   ]

@@ -29,6 +29,7 @@ import {
   CatalogExample,
   CatalogExampleStack,
 } from '@kerfjs/ui/catalog';
+import { CheckboxGroup } from '@kerfjs/ui/checkbox-group';
 import { Chip } from '@kerfjs/ui/chip';
 import { ChoiceChips } from '@kerfjs/ui/choice-chips';
 import {
@@ -161,6 +162,40 @@ ChoiceChips<'board' | 'list'>({
   // @ts-expect-error The controlled value must be one of the choice values.
   value: 'calendar',
   choices: [{ value: 'board', label: 'Board' }],
+});
+CheckboxGroup<'email' | 'push'>({
+  name: 'channels',
+  label: 'Channels',
+  value: ['email'],
+  choices: [
+    { value: 'email', label: 'Email' },
+    { value: 'push', label: 'Push', hint: 'On this device.' },
+  ],
+});
+CheckboxGroup({
+  name: 'channels',
+  labelledBy: 'channels-heading',
+  orientation: 'horizontal',
+  choices: [{ value: 'email', label: 'Email' }],
+});
+CheckboxGroup<'email' | 'push'>({
+  name: 'channels',
+  label: 'Channels',
+  // @ts-expect-error Every checked value must be one of the choice values.
+  value: ['sms'],
+  choices: [{ value: 'email', label: 'Email' }],
+});
+// @ts-expect-error A checkbox group needs exactly one name source.
+CheckboxGroup({
+  name: 'channels',
+  choices: [{ value: 'email', label: 'Email' }],
+});
+// @ts-expect-error A checkbox group takes only one name source.
+CheckboxGroup({
+  name: 'channels',
+  label: 'Channels',
+  ariaLabel: 'Channels',
+  choices: [{ value: 'email', label: 'Email' }],
 });
 // @ts-expect-error A radio group needs exactly one name source.
 ChoiceChips({ name: 'view', choices: [{ value: 'board', label: 'Board' }] });

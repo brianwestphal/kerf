@@ -6,6 +6,7 @@ import { BackdropImageDemo } from './backdrop-image.js';
 import { BadgeDemo, BadgeSettings } from './badge.js';
 import { ButtonDemo } from './button.js';
 import { CheckboxDemo } from './checkbox.js';
+import { CheckboxGroupDemo } from './checkbox-group.js';
 import { ChipDemo } from './chip.js';
 import { ChoiceChipsDemo } from './choice-chips.js';
 import { CollapsiblePanelDemo } from './collapsible-panel.js';
@@ -144,6 +145,7 @@ export const demos = {
   button: ButtonDemo,
   'text-field': TextFieldDemo,
   checkbox: CheckboxDemo,
+  'checkbox-group': CheckboxGroupDemo,
   'radio-group': RadioGroupDemo,
   switch: SwitchDemo,
   'split-button': SplitButtonDemo,
