@@ -427,3 +427,42 @@ test('Select option icon colors keep non-text contrast in light and dark themes'
     await expect(select).not.toHaveAttribute('open');
   }
 });
+
+// A Select whose enclosing ToolbarControlGroup owns the focus ring paints no
+// ring of its own on keyboard focus: only the group's pill ring shows. Before,
+// the trigger's focus-within ring outranked the owner rule, so a group-owned
+// trigger drew a second ring inside the group's. A select-owned trigger still
+// draws its own ring.
+test('group-owned Select trigger draws no ring of its own; the group draws the pill ring', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=select');
+  const demo = page.locator('[data-demo="select"]');
+  const outlineOf = (target: Locator) =>
+    target.evaluate((element) => {
+      const style = window.getComputedStyle(element);
+      return `${style.outlineStyle} ${style.outlineWidth}`;
+    });
+
+  const owned = demo.locator('[name="ticket-label-filter"]');
+  await expect(owned).toHaveAttribute('data-focus-ring-owner', 'group');
+  const group = owned.locator('xpath=..');
+  await expect(group).toHaveAttribute('data-focus-ring', 'outline');
+  await page.keyboard.press('Shift');
+  await owned.getByRole('combobox').focus();
+  await expect(owned.getByRole('combobox')).toBeFocused();
+  await expect
+    .poll(() => outlineOf(owned.locator(':scope > .kui-select__trigger')))
+    .toMatch(/^none /);
+  await expect.poll(() => outlineOf(group)).toBe('solid 3px');
+
+  const own = demo
+    .locator('.kui-select[data-focus-ring-owner="select"]')
+    .first();
+  await own.getByRole('combobox').focus();
+  await expect(own.getByRole('combobox')).toBeFocused();
+  await expect
+    .poll(() => outlineOf(own.locator(':scope > .kui-select__trigger')))
+    .toBe('solid 3px');
+});

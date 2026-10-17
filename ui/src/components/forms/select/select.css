@@ -67,8 +67,12 @@
   outline-color: transparent;
 }
 /* Focus shows on the control (pointer or keyboard), but not while its
-   listbox is open: the listbox shows where focus is then. */
-.kui-select:not([open]):focus-within > .kui-select__trigger {
+   listbox is open: the listbox shows where focus is then. A Select whose
+   enclosing group owns the ring (`focusRingOwner="group"`) never paints its
+   own here: the exclusion lives in this selector, not in a later override,
+   because the focus state outranks any plain owner rule. */
+.kui-select:not([data-focus-ring-owner="group"]):not([open]):focus-within
+  > .kui-select__trigger {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
 }
