@@ -479,7 +479,9 @@ controls; Enter and Space use native button activation. The application handles
 the supplied `data-action`, reads `data-segment-value`, updates `value`, and
 re-renders. Keep labels unique and meaningful even when `content` shows only an
 icon. The filled track uses the normal neutral text role for readable unselected
-labels in light and dark themes. Use tabs—not a segmented control—when choices switch page regions that
+labels in light and dark themes. A whole-control `disabled` disables every
+native button and marks the group `aria-disabled` while `aria-pressed` still
+reports the current choice. Use tabs—not a segmented control—when choices switch page regions that
 need `tab`/`tabpanel` semantics.
 
 ## ChoiceChips
