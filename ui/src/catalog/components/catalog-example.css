@@ -182,43 +182,69 @@
   }
 }
 
-/* Bare specimens use a small inset to align with the surrounding examples. */
-.kui-catalog-example[data-align="glyph"]
-  > :not([data-catalog-example-label]):not([data-catalog-example-note]):not(
-    :popover-open,
-    :modal
-  ) {
+/* An aligned example insets its specimens so their visible edge lines up with
+   the label: 16px for a bare glyph, 8px for a control, and 8px for a text
+   trigger (whose own 8px inset plus 1px border then puts its text on the
+   label's). The inset is a grid column rather than a margin on each specimen:
+   the label and note span the full width while every specimen sits in the
+   inset column, so a percentage width — a full-width field, a fill-width
+   Select, a full-width or control-sized frame — resolves against that column
+   and ends on the example's inline-end edge instead of running past it by the
+   inset. Specimens keep their own width caps, and top-layer popovers and modal
+   dialogs ignore grid placement. */
+.kui-catalog-example:is(
+  [data-align="glyph"],
+  [data-align="inline-control"],
+  [data-align="text-trigger"]
+) {
+  display: grid;
+  grid-template-columns: var(--kui-catalog-example-align) minmax(0, 1fr);
+  align-content: start;
+  align-items: start;
+  justify-items: start;
+  column-gap: 0;
+}
+
+.kui-catalog-example[data-align="glyph"] {
   --kui-catalog-example-align: remify(16px);
-  margin-inline-start: var(--kui-catalog-example-align);
 }
 
-.kui-catalog-example[data-align="inline-control"]
-  > :not([data-catalog-example-label]):not([data-catalog-example-note]):not(
-    :popover-open,
-    :modal
-  ) {
+.kui-catalog-example:is(
+  [data-align="inline-control"],
+  [data-align="text-trigger"]
+) {
   --kui-catalog-example-align: remify(8px);
-  margin-inline-start: var(--kui-catalog-example-align);
 }
 
-/* An aligned viewport's inline-start offset comes out of its width, so a
-   full-width frame still ends on the example's inline-end edge. */
 .kui-catalog-example:is(
     [data-align="glyph"],
     [data-align="inline-control"],
     [data-align="text-trigger"]
   )
-  > .kui-catalog-example__viewport {
-  max-width: calc(100% - var(--kui-catalog-example-align));
+  > * {
+  grid-column: 2;
 }
 
-/* A trigger's text lines up with the example label's: the trigger's own
-   inset (8px plus its 1px border) follows this 8px offset. */
-.kui-catalog-example[data-align="text-trigger"]
+/* The column is the whole inset: a specimen's own start margin (a ListItem's
+   8px list inset) does not stack on it. Top-layer surfaces keep their
+   centering margins. */
+.kui-catalog-example:is(
+    [data-align="glyph"],
+    [data-align="inline-control"],
+    [data-align="text-trigger"]
+  )
   > :not([data-catalog-example-label]):not([data-catalog-example-note]):not(
     :popover-open,
     :modal
   ) {
-  --kui-catalog-example-align: remify(8px);
-  margin-inline-start: var(--kui-catalog-example-align);
+  margin-inline-start: 0;
+}
+
+.kui-catalog-example:is(
+    [data-align="glyph"],
+    [data-align="inline-control"],
+    [data-align="text-trigger"]
+  )
+  > :is([data-catalog-example-label], [data-catalog-example-note]) {
+  grid-column: 1 / -1;
 }

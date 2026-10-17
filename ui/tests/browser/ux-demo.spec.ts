@@ -3631,16 +3631,27 @@ test('puts every Kerf field demo on one border and text column', async ({
             label: labelSelector
               ? x(element.querySelector(labelSelector)!)
               : null,
-            // How far any specimen frame runs past its example's end edge.
+            // How far any specimen — a frame or a bare full-width field —
+            // runs past its example's end edge. Page-fixed and top-layer
+            // surfaces are not laid out in the example.
             overrun: Math.max(
               0,
               ...[
-                ...element.querySelectorAll('[data-catalog-example-viewport]'),
-              ].map(
-                (viewport) =>
-                  viewport.getBoundingClientRect().right -
-                  viewport.parentElement!.getBoundingClientRect().right,
-              ),
+                ...element.querySelectorAll(
+                  '[data-catalog-example] > :not([data-catalog-example-label], [data-catalog-example-note])',
+                ),
+              ]
+                .filter(
+                  (specimen) =>
+                    !specimen.matches(':popover-open, :modal') &&
+                    window.getComputedStyle(specimen).position !== 'fixed' &&
+                    specimen.getBoundingClientRect().width > 0,
+                )
+                .map(
+                  (specimen) =>
+                    specimen.getBoundingClientRect().right -
+                    specimen.parentElement!.getBoundingClientRect().right,
+                ),
             ),
           };
         },
@@ -3648,7 +3659,8 @@ test('puts every Kerf field demo on one border and text column', async ({
       );
       // TextField sets the column: its box border and 9px label text.
       column ??= { border: geometry.border!, label: geometry.label! };
-      // The aligned offset comes out of a framed specimen's width.
+      // The aligned offset comes out of every specimen's width: a frame's,
+      // and a full-width field's (the Disabled SearchField, a fill Select).
       expect(geometry.overrun, `${route} overrun at ${width}`).toBeLessThan(
         0.5,
       );
