@@ -18,7 +18,22 @@ if (process.env.NO_COLOR !== undefined) {
  *
  * The tests run against a static fixture page served by Playwright's
  * `webServer`. Run with `npm run test:browser`.
+ *
+ * The fixture server listens on `KERF_PLAYWRIGHT_PORT` (default 5180), and
+ * Playwright starts its own server for every run: an existing server on that
+ * port is reused only with `KERF_PLAYWRIGHT_REUSE_SERVER=1`. Reusing by
+ * default let parallel worktrees silently run their tests against another
+ * checkout's server (and `dist/`); now a busy port fails the run instead. Give
+ * each parallel worktree its own port, for example
+ * `KERF_PLAYWRIGHT_PORT=5181 npm run test:browser`.
  */
+const port = Number(process.env.KERF_PLAYWRIGHT_PORT || 5180);
+if (!Number.isInteger(port) || port < 1 || port > 65535) {
+  throw new Error(
+    `KERF_PLAYWRIGHT_PORT must be a TCP port number, got "${process.env.KERF_PLAYWRIGHT_PORT}"`,
+  );
+}
+
 export default defineConfig({
   testDir: './tests/browser',
   globalSetup: './tests/browser/global-setup.mjs',
@@ -28,7 +43,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'list',
   use: {
-    baseURL: 'http://127.0.0.1:5180',
+    baseURL: `http://127.0.0.1:${port}`,
     trace: 'on-first-retry',
   },
   projects: [
@@ -39,8 +54,8 @@ export default defineConfig({
   webServer: {
     // Serve from the repo root so the fixture page can pull `dist/` and
     // `node_modules/@preact/signals-core/dist/signals-core.mjs` via importmap.
-    command: 'npx http-server . -p 5180 -c-1 --silent',
-    port: 5180,
-    reuseExistingServer: !process.env.CI,
+    command: `npx http-server . -p ${port} -c-1 --silent`,
+    port,
+    reuseExistingServer: process.env.KERF_PLAYWRIGHT_REUSE_SERVER === '1',
   },
 });

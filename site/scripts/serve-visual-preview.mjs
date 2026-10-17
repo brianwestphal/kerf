@@ -5,7 +5,8 @@ const server = await preview({
   root: fileURLToPath(new URL('../', import.meta.url)),
   server: {
     host: '127.0.0.1',
-    port: 4322,
+    // Matches site/playwright.config.ts, whose web server inherits this env.
+    port: Number(process.env.KERF_SITE_PLAYWRIGHT_PORT || 4322),
   },
 });
 

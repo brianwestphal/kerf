@@ -9,18 +9,23 @@ if (process.env.NO_COLOR !== undefined) {
   process.env.FORCE_COLOR = forceColor ?? '0';
 }
 
+// The preview server's port (see scripts/serve-visual-preview.mjs, which reads
+// the same variable). Give each parallel worktree its own, for example
+// `KERF_SITE_PLAYWRIGHT_PORT=4323 npm run test:visual`.
+const port = Number(process.env.KERF_SITE_PLAYWRIGHT_PORT || 4322);
+
 export default defineConfig({
   testDir: './tests',
   testMatch: '**/*.spec.ts',
   reporter: 'list',
   use: {
-    baseURL: 'http://127.0.0.1:4322/kerf/',
+    baseURL: `http://127.0.0.1:${port}/kerf/`,
     trace: 'on-first-retry',
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
     command: 'npm run preview:visual',
-    port: 4322,
+    port,
     // This gate audits the dist/ output built by pretest:visual. Reusing an
     // arbitrary process on this port could silently validate stale content.
     reuseExistingServer: false,

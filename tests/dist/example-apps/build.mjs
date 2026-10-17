@@ -2,7 +2,7 @@
 // KF-165: Build each complete example app under `site/src/examples/complete/`
 // to `tests/dist/example-apps/<name>/` with `base: './'` so the emitted HTML
 // uses relative paths. This lets the Playwright webServer (which serves the
-// repo root on port 5180) reach the apps at `/tests/dist/example-apps/<name>/`
+// repo root on `KERF_PLAYWRIGHT_PORT`, default 5180) reach the apps at `/tests/dist/example-apps/<name>/`
 // without the `/kerf/run/<name>/` prefix that production builds bake in.
 //
 // Kerfjs resolves from `site/node_modules/kerfjs` (a `file:..` symlink to the
