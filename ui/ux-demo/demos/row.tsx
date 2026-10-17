@@ -157,7 +157,7 @@ export function RowDemo() {
       >
         <DemoFrameShell>
           <Row textInsets="tbl" controlInsets="r" vAlign="middle">
-            {chips('Inset')}
+            {chips()}
           </Row>
         </DemoFrameShell>
       </CatalogExample>
