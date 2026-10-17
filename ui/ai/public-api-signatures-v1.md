@@ -3447,10 +3447,12 @@ interface SegmentedControlProps<Value extends string = string> {
     className?: string;
     /** Render as a loading placeholder: every choice keeps its live label or icon, none is selected, and every segment is disabled. */
     placeholder?: boolean;
+    /** Disable the whole control: every segment is disabled and dimmed, the selection stays visible, and the group reports `aria-disabled`. A choice's own `disabled` still disables just that segment. */
+    disabled?: boolean;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function SegmentedControl<Value extends string>({ id, label, value, choices, action, appearance, shape, size, layout, className, placeholder, slot, }: SegmentedControlProps<Value>): kerfjs.SafeHtml;
+declare function SegmentedControl<Value extends string>({ id, label, value, choices, action, appearance, shape, size, layout, className, placeholder, disabled, slot, }: SegmentedControlProps<Value>): kerfjs.SafeHtml;
 
 export { SegmentedControl, type SegmentedControlAppearance, type SegmentedControlChoice, type SegmentedControlLayout, type SegmentedControlProps, type SegmentedControlShape, type SegmentedControlSize };
 ```

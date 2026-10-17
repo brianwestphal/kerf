@@ -40,6 +40,7 @@ Exact prop names and types: [`@kerfjs/ui/segmented-control`](../public-api-signa
 - equal width
 - small
 - placeholder (loading)
+- disabled (whole control)
 
 ## Composition
 

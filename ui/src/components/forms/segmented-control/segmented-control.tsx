@@ -26,6 +26,8 @@ export interface SegmentedControlProps<Value extends string = string> {
   className?: string;
   /** Render as a loading placeholder: every choice keeps its live label or icon, none is selected, and every segment is disabled. */
   placeholder?: boolean;
+  /** Disable the whole control: every segment is disabled and dimmed, the selection stays visible, and the group reports `aria-disabled`. A choice's own `disabled` still disables just that segment. */
+  disabled?: boolean;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
 }
@@ -42,6 +44,7 @@ export function SegmentedControl<Value extends string>({
   layout = 'content',
   className = '',
   placeholder = false,
+  disabled = false,
   slot,
 }: SegmentedControlProps<Value>) {
   return (
@@ -55,8 +58,10 @@ export function SegmentedControl<Value extends string>({
       data-size={size}
       data-layout={layout}
       data-placeholder={placeholder ? 'true' : undefined}
+      data-disabled={disabled ? 'true' : undefined}
       role="group"
       aria-label={label}
+      aria-disabled={disabled ? 'true' : undefined}
       aria-busy={placeholder ? 'true' : undefined}
       slot={slot}
     >
@@ -64,6 +69,7 @@ export function SegmentedControl<Value extends string>({
         // The choices are known chrome; only the selection is unknown while
         // loading, so a placeholder shows every choice and selects none.
         const selected = !placeholder && choice.value === value;
+        const unavailable = disabled || choice.disabled;
         return (
           <button
             type="button"
@@ -74,9 +80,9 @@ export function SegmentedControl<Value extends string>({
             aria-label={choice.label}
             aria-pressed={String(selected)}
             title={placeholder ? undefined : choice.title}
-            disabled={choice.disabled || placeholder}
+            disabled={unavailable || placeholder}
             tabindex={placeholder ? '-1' : '0'}
-            data-kui-disabled={choice.disabled ? 'true' : undefined}
+            data-kui-disabled={unavailable ? 'true' : undefined}
           >
             {choice.content ?? <span>{choice.label}</span>}
           </button>

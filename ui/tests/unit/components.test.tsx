@@ -3343,6 +3343,61 @@ describe('production UI primitives', () => {
       'data-appearance="filled" data-shape="rounded" data-size="default" data-layout="content"',
     );
     expect(defaults).toContain('<span>One</span>');
+    expect(defaults).not.toContain('aria-disabled');
+    expect(defaults).not.toContain('data-kui-disabled');
+  });
+
+  it('disables a whole SegmentedControl while keeping its selection visible', () => {
+    const host = document.createElement('div');
+    const render = (extra: { placeholder?: boolean } = {}) => {
+      host.innerHTML = asHtml(
+        SegmentedControl({
+          id: 'range',
+          label: 'Range',
+          value: 'week',
+          disabled: true,
+          ...extra,
+          choices: [
+            { value: 'day', label: 'Day' },
+            { value: 'week', label: 'Week' },
+            { value: 'month', label: 'Month', disabled: true },
+          ],
+        }),
+      );
+      return {
+        root: host.querySelector<HTMLElement>('.kui-segmented-control')!,
+        items: [
+          ...host.querySelectorAll<HTMLButtonElement>(
+            '.kui-segmented-control__item',
+          ),
+        ],
+      };
+    };
+    const { root, items } = render();
+    expect(root.getAttribute('aria-disabled')).toBe('true');
+    expect(root.dataset.disabled).toBe('true');
+    // Every segment is disabled and carries the dimmed author-disabled tone.
+    expect(items.map((item) => item.disabled)).toEqual([true, true, true]);
+    expect(items.map((item) => item.dataset.kuiDisabled)).toEqual([
+      'true',
+      'true',
+      'true',
+    ]);
+    // Unlike a placeholder, the selection stays visible.
+    expect(items.map((item) => item.getAttribute('aria-pressed'))).toEqual([
+      'false',
+      'true',
+      'false',
+    ]);
+    // A loading placeholder of a disabled control selects nothing and stays
+    // dimmed, as a disabled ListItem's placeholder does.
+    const loading = render({ placeholder: true });
+    expect(
+      loading.items.map((item) => item.getAttribute('aria-pressed')),
+    ).toEqual(['false', 'false', 'false']);
+    expect(
+      loading.items.every((item) => item.dataset.kuiDisabled === 'true'),
+    ).toBe(true);
   });
 
   it('clamps and describes horizontal, vertical, and collapsed resizable regions', () => {

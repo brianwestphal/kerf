@@ -5469,7 +5469,8 @@
         "pill",
         "equal width",
         "small",
-        "placeholder (loading)"
+        "placeholder (loading)",
+        "disabled (whole control)"
       ],
       "accessibility": [
         "Keep choice labels meaningful and every enabled native button in sequential Tab order."

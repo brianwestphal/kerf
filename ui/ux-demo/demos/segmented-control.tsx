@@ -137,6 +137,23 @@ export function SegmentedControlDemo() {
           placeholder
         />
       </CatalogExample>
+      <CatalogExample
+        label="Disabled"
+        note="The whole control is unavailable while its current choice stays visible, for a setting that cannot change right now."
+        align="inline-control"
+      >
+        <SegmentedControl
+          id="segmented-disabled"
+          label="Report Range"
+          value="week"
+          choices={[
+            { value: 'day', label: 'Day' },
+            { value: 'week', label: 'Week' },
+            { value: 'month', label: 'Month' },
+          ]}
+          disabled
+        />
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }
