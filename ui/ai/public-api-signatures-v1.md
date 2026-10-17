@@ -5829,7 +5829,8 @@ interface ColorPickerSliderState {
  * The attributes of one channel slider for a mode's exact channel values:
  * its range, value, accessible name and spoken value, and an inline style
  * with the track gradient of the colors that channel produces while the
- * others hold and the color under the thumb.
+ * others hold (the full rainbow for the HSL and HSB hue) and the color under
+ * the thumb.
  * `undefined` for a slot the mode does not use.
  */
 declare function colorPickerSlider(mode: ColorPickerMode, index: number, values: readonly number[]): ColorPickerSliderState | undefined;
@@ -5841,7 +5842,8 @@ declare function colorPickerStyle(hsv: Hsva): string;
  * A full color picker panel: a saturation and brightness area; a slider for
  * each channel of the color model (red, green, and blue; hue, saturation, and
  * lightness or brightness; or one gray level), each track painting the colors
- * that channel produces while the others hold; an optional opacity slider on
+ * that channel produces while the others hold (the hue track the full
+ * rainbow); an optional opacity slider on
  * a checkerboard; a color-model menu (RGB, HSL, HSB, Grayscale) with its
  * channel fields, a hex field (8 digits below full
  * opacity) and an opacity field, an optional screen sampler (EyeDropper), and

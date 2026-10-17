@@ -6,8 +6,10 @@
 - a slider for each channel of the color model — red, green, and blue (RGB);
   hue, saturation, and lightness (HSL); hue, saturation, and brightness
   (HSB); or one gray level (Grayscale) — each track painting the colors that
-  channel produces while the others hold, and, optionally, an opacity slider
-  on a checkerboard;
+  channel produces while the others hold, except the hue track, which always
+  shows the full-saturation, full-brightness rainbow so a dark or gray color
+  still shows every hue; and, optionally, an opacity slider on a
+  checkerboard;
 - a color-model menu (RGB, HSL, HSB, Grayscale) that switches the channel
   sliders and fields together;
 - a hex field (8 digits below full opacity) and an opacity field;

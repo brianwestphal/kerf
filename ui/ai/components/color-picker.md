@@ -4,7 +4,7 @@
 
 `@kerfjs/ui:color-picker` · Kerf UI · component · Controls
 
-A full inline color picker: a saturation and brightness area, a slider per channel of the color model (red, green, and blue; hue, saturation, and lightness or brightness; or one gray level) whose tracks paint the colors each channel produces while the others hold, an opacity slider, an RGB/HSL/HSB/Grayscale model menu that switches the sliders and channel fields together, a hex field (8 digits below full opacity) and opacity field, a screen sampler where the EyeDropper API exists, and optional preset and sample swatches.
+A full inline color picker: a saturation and brightness area, a slider per channel of the color model (red, green, and blue; hue, saturation, and lightness or brightness; or one gray level) whose tracks paint the colors each channel produces while the others hold (the hue track a fixed full-saturation rainbow), an opacity slider, an RGB/HSL/HSB/Grayscale model menu that switches the sliders and channel fields together, a hex field (8 digits below full opacity) and opacity field, a screen sampler where the EyeDropper API exists, and optional preset and sample swatches.
 
 ## When to use
 

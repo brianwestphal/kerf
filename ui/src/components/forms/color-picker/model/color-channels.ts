@@ -116,7 +116,9 @@ export function colorChannelColor(
 /**
  * The gradient a channel's slider track paints: the colors that channel
  * produces from its minimum to its maximum while every other channel keeps
- * its value. The gradient runs in the slider's writing direction (its
+ * its value. The HSL and HSB hue track is the exception: it is always the
+ * full-saturation, full-brightness rainbow, so a dark or gray color still
+ * shows which hue each position picks. The gradient runs in the slider's writing direction (its
  * `--_kui-color-picker-track-direction`, `to left` in right-to-left text),
  * so the minimum always sits where the native range puts it.
  */
@@ -125,7 +127,9 @@ export function colorChannelTrack(
   index: number,
   values: readonly number[],
 ): string {
+  const hue = index === 0 && (mode === 'hsl' || mode === 'hsb');
   const stops = trackStops(mode, index).map((stop) => {
+    if (hue) return formatHex(rgbOf('hsb', [stop, 100, 100]));
     const next = [...values];
     next[index] = stop;
     return formatHex(rgbOf(mode, next));

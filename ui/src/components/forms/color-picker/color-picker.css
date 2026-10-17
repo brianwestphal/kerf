@@ -69,10 +69,11 @@
 /* The channel and opacity sliders, one group: native ranges drawn as 12px
    tracks with a round thumb that shows the color at that point. A channel
    slider's inline style carries its track (the colors its channel produces
-   while the others hold) and its thumb color. Every track runs in the
-   writing direction, as the native range does, and carries an inner edge
-   halfway to the text color, so a track as dark (or as light) as the
-   surface behind it keeps a visible boundary in either scheme. */
+   while the others hold, or the full rainbow for hue) and its thumb color.
+   Every track runs in the writing direction, as the native range does, and
+   carries an inner edge halfway to the text color, so a track as dark (or as
+   light) as the surface behind it keeps a visible boundary in either
+   scheme. */
 .kui-color-picker__sliders {
   --_kui-color-picker-track-edge: color-mix(
     in srgb,

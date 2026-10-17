@@ -160,15 +160,16 @@ describe('ColorPicker', () => {
             s.getAttribute('style')!,
           )![1],
         ]);
-    // Each track is the colors its channel produces while the others hold:
-    // hue breaks every 60°, HSL lightness at 50%.
+    // Each track is the colors its channel produces while the others hold,
+    // except the hue track, which is always the full rainbow: hue breaks
+    // every 60°, HSL lightness at 50%.
     expect(sliders('hsb')).toEqual([
       [
         'Hue',
         '360',
         '210',
         '210°',
-        'linear-gradient(var(--_kui-color-picker-track-direction,to right),#993333,#999933,#339933,#339999,#333399,#993399,#993333)',
+        'linear-gradient(var(--_kui-color-picker-track-direction,to right),#ff0000,#ffff00,#00ff00,#00ffff,#0000ff,#ff00ff,#ff0000)',
       ],
       [
         'Saturation',
@@ -191,7 +192,7 @@ describe('ColorPicker', () => {
         '360',
         '210',
         '210°',
-        'linear-gradient(var(--_kui-color-picker-track-direction,to right),#993333,#999933,#339933,#339999,#333399,#993399,#993333)',
+        'linear-gradient(var(--_kui-color-picker-track-direction,to right),#ff0000,#ffff00,#00ff00,#00ffff,#0000ff,#ff00ff,#ff0000)',
       ],
       [
         'Saturation',
@@ -292,6 +293,24 @@ describe('ColorPicker channel helpers', () => {
         valueText: '210°',
       }),
     );
+  });
+
+  it('paints the HSL and HSB hue track as the full rainbow for any color', () => {
+    const rainbow =
+      '--_kui-color-picker-track:linear-gradient(var(--_kui-color-picker-track-direction,to right),#ff0000,#ffff00,#00ff00,#00ffff,#0000ff,#ff00ff,#ff0000)';
+    // A dark, nearly gray color: the hue track still shows every hue, while
+    // the thumb and the other channels keep previewing the color itself.
+    for (const [mode, values] of [
+      ['hsb', [210, 5, 10]],
+      ['hsl', [210, 5, 5]],
+    ] as const) {
+      const [hue, saturation] = [0, 1].map(
+        (index) => colorPickerSlider(mode, index, values)!.style,
+      );
+      expect(hue).toMatch(new RegExp(`^${rainbow.replace(/[()]/g, '\\$&')};`));
+      expect(hue).not.toContain('thumb-color:#ff');
+      expect(saturation).not.toContain('#ff0000');
+    }
   });
 
   it('runs every channel track in the writing direction the stylesheet sets', () => {
@@ -582,8 +601,10 @@ describe('wireColorPickers', () => {
     expect(shown()).toEqual(['Hue 220', 'Saturation 75', 'Brightness 80']);
     drag(slider(1), '40', '0');
     expect(t.value.value).toBe('#cccccc');
-    expect(slider(0).getAttribute('style')).toContain(
-      '--_kui-color-picker-track:linear-gradient(var(--_kui-color-picker-track-direction,to right),#cccccc,#cccccc,#cccccc,#cccccc,#cccccc,#cccccc,#cccccc)',
+    // The hue track stays the full rainbow for a gray; the thumb shows the
+    // gray itself.
+    expect(slider(0).getAttribute('style')).toBe(
+      '--_kui-color-picker-track:linear-gradient(var(--_kui-color-picker-track-direction,to right),#ff0000,#ffff00,#00ff00,#00ffff,#0000ff,#ff00ff,#ff0000);--_kui-color-picker-thumb-color:#cccccc',
     );
     drag(slider(1), '75');
     expect(t.value.value).toBe('#3366cc');
