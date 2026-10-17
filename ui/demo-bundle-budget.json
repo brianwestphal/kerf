@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 427400,
-  "measuredLargestJavaScriptGzip": 164534,
-  "measuredTotalJavaScriptGzip": 427302,
+  "totalJavaScriptGzip": 427600,
+  "measuredLargestJavaScriptGzip": 164533,
+  "measuredTotalJavaScriptGzip": 427588,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -5875,6 +5875,22 @@
         "measuredTotalJavaScriptGzip": 427302,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 427400
+      }
+    },
+    {
+      "at": "2026-10-17T07:47:49.102Z",
+      "reason": "Merged growth: Button fill (KF-FXKCHW), Disclosure embedded (KF-2JTH1A), Row/Grid 320 specimens (KF-37ERTC)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164534,
+        "measuredTotalJavaScriptGzip": 427302,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 427400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164533,
+        "measuredTotalJavaScriptGzip": 427588,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 427600
       }
     }
   ]
