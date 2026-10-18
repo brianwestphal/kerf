@@ -625,8 +625,8 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   `TabBar trailingPlacement="adjacent"`, put the local action in `trailing`, and
   the workspace action in `end`; the component keeps both visible while its tab
   list shrinks and scrolls, without application descendant CSS. Each action
-  zone accepts one ToolbarControlGroup or a standalone `Button` for its own
-  chrome. Managed
+  zone accepts one ToolbarControlGroup, standalone Kerf `Button`, or exceptional
+  Web Awesome `wa-button` for its own chrome. Managed
   SearchField clear also preserves open state and replacement
   editor focus before the next input task, so shortcut-letter typing stays in search.
   Select All deletion does the same; deletion

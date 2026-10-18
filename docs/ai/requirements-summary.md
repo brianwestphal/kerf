@@ -469,6 +469,8 @@ the full name during inline loading instead of the default ellipsis.
 `TabBarItem.pinned` keeps the leading tab visible inside the scrolling TabBar
 tablist, including its keyboard and selection semantics. Focus and controlled
 selection reveal peers beyond the pinned tab.
+Each TabBar `trailing` and `end` action zone accepts one ToolbarControlGroup,
+Kerf Button, or Web Awesome button while the tabs alone shrink and scroll.
 
 The optional `createSearchFieldModel` grammar now gives rule suggestion callbacks
 both the unfinished value and the current committed token state, enabling

@@ -596,6 +596,11 @@ kerf/
 └── README.md
 ```
 
+TabBar action-zone composition is declared in
+`ui/ai/component-composition-rules.json`: `trailing` and `end` each accept one
+ToolbarControlGroup, Kerf Button, or Web Awesome button. The compiled contract
+in `ui/ai/component-composition.json` drives the doctor and lint rule.
+
 `ui/src/components/forms/text-field/text-field.tsx` forwards `min`, `max`, and
 `step` to its native input only for `type="number"`; the numeric catalog
 specimens and unit/browser checks live under `ui/ux-demo/demos/text-field.tsx`

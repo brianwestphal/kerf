@@ -552,6 +552,10 @@ tester.run('ui-composition', composition, {
       settings: shippedUiSettings,
     },
     {
+      code: "import { TabBar, TabBarItem, Button } from '@kerfjs/ui'; <TabBar trailing={<Button>Add tab</Button>} end={<Button tone='brand'>New ticket</Button>}><TabBarItem /></TabBar>;",
+      settings: shippedUiSettings,
+    },
+    {
       code: "import { TabBar, TabBarItem, ToolbarControlGroup } from '@kerfjs/ui'; <TabBar leading={<ToolbarControlGroup />} trailing={<ToolbarControlGroup />} end={<ToolbarControlGroup />}><TabBarItem /></TabBar>;",
       settings: shippedUiSettings,
     },

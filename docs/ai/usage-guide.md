@@ -406,6 +406,8 @@ Apply tab reorder reports with
 workspace action at the far edge, set `trailingPlacement="adjacent"`, put the
 local action in `trailing`, and put the workspace action in `end`; TabBar owns
 the shrinking/scrolling strip and keeps both fixed action regions visible.
+Each action zone accepts one `ToolbarControlGroup`, Kerf `Button`, or
+exceptional Web Awesome `wa-button`; prefer `Button` for standalone actions.
 Import
 `@kerfjs/ui/select/register` once only when using Select; that is the explicit
 custom-element side effect and Web Awesome is otherwise optional. Supply

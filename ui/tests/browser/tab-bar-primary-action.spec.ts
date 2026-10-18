@@ -23,13 +23,20 @@ test('standalone tab bar actions stay visible while the tabs scroll', async ({
     .toBe(true);
   await expect(adjacent).toBeVisible();
   await expect(primary).toBeVisible();
+  await adjacent.click();
+  await expect(page.locator('.catalog-log')).toHaveText(
+    'More actions requested',
+  );
+  await primary.click();
+  await expect(page.locator('.catalog-log')).toHaveText('Add action requested');
   if (testInfo.project.name === 'chromium')
     await bar.screenshot({
       path: testInfo.outputPath('tab-bar-action-wide.png'),
     });
 
+  await page.setViewportSize({ width: 390, height: 800 });
   await bar.evaluate((element) => {
-    element.style.width = '390px';
+    element.style.width = '100%';
   });
   await expect
     .poll(() =>
@@ -59,6 +66,12 @@ test('standalone tab bar actions stay visible while the tabs scroll', async ({
   expect(positions.primaryRight).toBeLessThanOrEqual(positions.barRight + 1);
   await expect(adjacent).toBeVisible();
   await expect(primary).toBeVisible();
+  await adjacent.click();
+  await expect(page.locator('.catalog-log')).toHaveText(
+    'More actions requested',
+  );
+  await primary.click();
+  await expect(page.locator('.catalog-log')).toHaveText('Add action requested');
   if (testInfo.project.name === 'chromium')
     await bar.screenshot({
       path: testInfo.outputPath('tab-bar-action-narrow.png'),

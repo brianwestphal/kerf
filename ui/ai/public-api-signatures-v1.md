@@ -1461,12 +1461,12 @@ interface TabBarProps {
     label: string;
     children: KerfUiContent;
     leading?: KerfUiContent;
-    /** Tab-local action: a ToolbarControlGroup or a standalone Web Awesome button. */
+    /** Tab-local action: one ToolbarControlGroup, Kerf Button, or Web Awesome button. */
     trailing?: KerfUiContent;
     /**
      * Action pinned to the far edge of the bar. Combine with an adjacent `trailing`
      * action when the tab-local and workspace-level actions must remain distinct.
-     * Accepts a ToolbarControlGroup or a standalone Web Awesome button.
+     * Accepts one ToolbarControlGroup, Kerf Button, or Web Awesome button.
      */
     end?: KerfUiContent;
     className?: string;

@@ -421,8 +421,10 @@ workspace action in `end`; TabBar keeps the adjacent action immediately after
 the shrinkable/scrolling tabs and pins `end` at the far edge. Leading,
 trailing, and end actions remain visible and do not shrink. The component owns
 that geometry; applications must not override its anatomy to create the split.
-`trailing` and `end` each accept one `ToolbarControlGroup` for grouped controls
-or one standalone `Button` when a primary action needs its own chrome. Do not add a wrapper or flex margins to position the action.
+`trailing` and `end` each accept one `ToolbarControlGroup` for grouped controls,
+one standalone Kerf `Button` for an action with its own chrome, or one standalone
+Web Awesome `wa-button` for an exceptional ecosystem use. Do not add a wrapper
+or flex margins to position the action.
 `TabBarItem` provides compact 32px, segmented, truncating-label, and icon-only
 presentations. Icon-only tabs keep the required `name` as the tab button's
 accessible name while visually hiding the duplicate label. The default name

@@ -599,6 +599,7 @@ export const generatedKerfCatalog = [
     "uses": [
       "tabs",
       "toolbar-control-group",
+      "button",
       "wa-button"
     ],
     "demoSource": "ui/ux-demo/demos/tab-bar.tsx",

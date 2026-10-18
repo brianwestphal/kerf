@@ -5278,6 +5278,7 @@
       "uses": [
         "tabs",
         "toolbar-control-group",
+        "button",
         "wa-button"
       ],
       "purpose": "Controlled tab strips whose tabs shrink and scroll while fixed leading, trailing, and far-edge end actions remain visible.",
@@ -5323,7 +5324,7 @@
         "intrinsic or fill allocation",
         "separate or adjacent trailing action",
         "far-edge end action",
-        "standalone Web Awesome action in trailing or end",
+        "standalone Kerf Button or Web Awesome action in trailing or end",
         "overflow dividers on each side with tabs scrolled out of view (wired by wireScrollDividers)"
       ],
       "accessibility": [

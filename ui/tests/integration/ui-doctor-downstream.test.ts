@@ -999,6 +999,7 @@ test(
           "import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';",
           "import { TabBar } from '@kerfjs/ui/tab-bar';",
           "import { TabBarItem } from '@kerfjs/ui/tab-bar-item';",
+          "import { Button } from '@kerfjs/ui/button';",
           "import { ToolbarControlGroup, ToolbarActionLink } from '@kerfjs/ui/toolbar-control-group';",
           'export const view = () => (',
           '  <>',
@@ -1022,6 +1023,10 @@ test(
           '    trailing={<ToolbarControlGroup label="Project actions" single><button type="button">Add project</button></ToolbarControlGroup>}',
           '    end={<ToolbarControlGroup label="Workspace actions" single><button type="button">New ticket</button></ToolbarControlGroup>}',
           '  ><TabBarItem id="project-one" name="Project one" /></TabBar>',
+          '  <TabBar id="button-projects" label="Button Projects"',
+          '    trailing={<Button action="add-tab">Add Tab</Button>}',
+          '    end={<Button tone="brand" action="new-ticket">New Ticket</Button>}',
+          '  ><TabBarItem id="button-project-one" name="Project one" /></TabBar>',
           '  </>',
           ');',
           '',
@@ -1044,7 +1049,8 @@ test(
       const result = await doctor(root);
       expect(
         result.report.diagnostics.filter(
-          (item: { id: string }) => item.id === 'KUI-L201',
+          (item: { id: string }) =>
+            item.id === 'KUI-L201' || item.id === 'KUI-L202',
         ),
       ).toEqual([]);
       expect(result.status).toBe(0);

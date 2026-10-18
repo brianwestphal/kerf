@@ -135,7 +135,7 @@ export function TabBarDemo() {
       </CatalogExample>
       <CatalogExample
         label="Project Strip · Primary Action"
-        note="A standalone Web Awesome action keeps its own brand chrome at the far edge while tabs shrink and scroll."
+        note="Standalone Kerf Buttons keep their own chrome in both action zones while tabs shrink and scroll."
         align="none"
       >
         <TabBar

@@ -373,6 +373,16 @@ describe('component composition catalog contract', () => {
       ['trailing', 'trailing'],
       ['end', 'end'],
     ]);
+    for (const zone of tabBar.zones.filter(({ id }) =>
+      ['trailing', 'end'].includes(id),
+    )) {
+      expect(zone.accepts).toEqual([
+        'toolbar-control-group',
+        'button',
+        'wa-button',
+      ]);
+      expect(zone.cardinality).toEqual({ min: 0, max: 1 });
+    }
     expect(workbench.zones).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ id: 'main', jsx: { prop: 'main' } }),
