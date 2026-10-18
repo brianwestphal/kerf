@@ -406,8 +406,14 @@ application off them.
 
 ## Customization
 
-Load application overrides after the package theme, or scope them to the
-smallest subtree that needs a different identity:
+To change the brand, set Kerf's opt-in `--kui-color-brand` on `:root`: the
+theme derives `--wa-color-brand-fill-loud`, `--wa-color-brand-on-quiet`, and
+`--wa-color-focus` from it (with the matching Kerf tokens) at AA-safe
+lightness, so brand text and the focus ring follow the new hue. See
+[Brand color](./component-selection.md#brand-color).
+
+For anything else, load application overrides after the package theme, or
+scope them to the smallest subtree that needs a different identity:
 
 ```css
 :root {

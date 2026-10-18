@@ -488,7 +488,8 @@
         "--kui-focus-ring",
         "--kui-shadow-s",
         "--kui-shadow-m",
-        "--kui-shadow-l"
+        "--kui-shadow-l",
+        "--kui-color-brand"
       ],
       "links": {
         "catalogRoute": "?component=foundation",

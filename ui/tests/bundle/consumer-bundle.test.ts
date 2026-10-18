@@ -530,8 +530,10 @@ describe('consumer bundle boundaries', () => {
       '@awesome.me/webawesome/dist/styles/themes/default.css',
     );
     expect(css).toContain('@layer wa-theme-overrides');
-    expect(css).toContain(
-      '--wa-color-brand-fill-loud: light-dark(#0075db, #64d2ff)',
+    // The tuned brand fill, unless the app's opt-in --kui-color-brand
+    // derives one (foundation.css).
+    expect(css).toMatch(
+      /--wa-color-brand-fill-loud:\s*var\(\s*--_kui-brand-fill-loud,\s*light-dark\(#0075db, #64d2ff\)\s*\)/,
     );
     expect(css).toContain(
       '--wa-form-control-border-color: var(--wa-color-neutral-border-normal)',

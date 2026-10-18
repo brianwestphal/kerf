@@ -108,6 +108,30 @@ useful subtree. Prefer a component prop or component-specific token when the
 change belongs to one component or instance, and preserve the documented
 foreground/background contrast relationships and visible focus ring.
 
+### Brand color
+
+Set the opt-in `--kui-color-brand` once on `:root` to give the application its
+own brand. Any color works: Kerf derives the whole brand ramp from it — the
+loud fill (and the quiet and normal fills and borders mixed from it), its
+on-loud text, brand text and links, brand text on brand fills, and the focus
+ring — clamping lightness in each color scheme so every pair keeps WCAG AA for
+any hue. Unset, every brand token keeps its tuned default exactly. With the
+Web Awesome integration the same derivation drives `--wa-color-brand-*` and
+`--wa-color-focus`.
+
+```css
+:root {
+  --kui-color-brand: #1a7f37;
+}
+```
+
+Do not change the brand by overriding `--kui-color-brand-fill-loud` alone:
+brand text (`--kui-color-brand-on-quiet`, `--kui-color-brand-on-fill`) and the
+focus ring are separate tuned values and would stay the default blue. Choose a
+brand hue apart from the status tones it shares surfaces with: `info` follows
+the brand, so a green brand makes an info banner read like `success`. For one
+subtree with a different identity, use a scoped `tint` accent instead.
+
 ### Typed runtime dimensions
 
 Use `Row`, `Grid`, or `List` spacing shorthands for repeated sibling spacing: `gap="xs"`,

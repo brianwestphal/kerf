@@ -462,6 +462,11 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   whose strict "below" is one pixel off the Toolbar's inclusive width), or
   gather them behind a "…" `PopupMenu` overflow group. The app decides which
   controls yield.
+- **Change the brand with `--kui-color-brand`.** Set it once on `:root` (any
+  color): Kerf derives the brand fill, brand text and links, text on brand
+  fills, and the focus ring at WCAG AA, and Web Awesome's brand tokens follow.
+  Overriding `--kui-color-brand-fill-loud` alone leaves brand text and the
+  focus ring blue.
 - **Toolbars hold only `ToolbarText` and `ToolbarControlGroup`.** Never put a bare
   button, input, link, or loose markup in a `leading`/`center`/`trailing` zone.
   Wrap every control — `SegmentedControl`, `Select`, a collapsible

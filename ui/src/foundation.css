@@ -267,9 +267,11 @@
     var(--kui-color-surface)
   );
 
+  /* Each brand token below falls back to its tuned literal unless the app
+     sets the opt-in --kui-color-brand (see the brand ramp after this block). */
   --kui-color-brand-fill-loud: var(
     --wa-color-brand-fill-loud,
-    light-dark(#0075db, #64d2ff)
+    var(--_kui-brand-fill-loud, light-dark(#0075db, #64d2ff))
   );
   --kui-color-brand-fill-quiet: var(
     --wa-color-brand-fill-quiet,
@@ -315,7 +317,7 @@
      4.65:1 on the page (5.2:1 on white). */
   --kui-color-brand-on-quiet: var(
     --wa-color-brand-on-quiet,
-    light-dark(#0c62f3, #8acbff)
+    var(--_kui-brand-on-quiet, light-dark(#0c62f3, #8acbff))
   );
   --kui-color-brand-on-normal: var(
     --wa-color-brand-on-normal,
@@ -331,7 +333,10 @@
      4.26:1 over brand-fill-normal (#d6ecff), while #1a5dcf (same hue) clears
      ~4.9:1 there and ~5.5:1 over brand-fill-quiet (#ebf6ff). The dark value
      matches brand-on-quiet, which already passes over the dark fills. */
-  --kui-color-brand-on-fill: light-dark(#1a5dcf, #8acbff);
+  --kui-color-brand-on-fill: var(
+    --_kui-brand-on-fill,
+    light-dark(#1a5dcf, #8acbff)
+  );
 
   /* Pop is attractive emphasis without status meaning: use it for featured,
      novel, or celebratory content, never as a success/danger substitute. */
@@ -541,7 +546,11 @@
 
   --kui-focus-ring: var(
     --wa-focus-ring,
-    3px solid var(--wa-color-focus, light-dark(#007aff, #64d2ff))
+    3px solid
+      var(
+        --wa-color-focus,
+        var(--_kui-brand-focus, light-dark(#007aff, #64d2ff))
+      )
   );
   /* Elevation mirrors webawesome.css's scheme-aware shadows: dark raises the
      alpha so a raised surface still separates from a near-black page. */
@@ -597,6 +606,37 @@
   --kui-color-surface-current: initial;
   --kui-color-surface-current-region: initial;
   --kui-color-surface-current-tint: initial;
+}
+
+/* The opt-in brand, left undeclared so the tuned literals apply:
+     --kui-color-brand: any color an app sets on :root;
+   the whole brand ramp follows it, the way a scoped tint's accent re-derives
+   its ramp: the loud fill (and the quiet/normal fills and borders mixed from
+   it), brand text and links, brand text on brand fills, and the focus ring.
+   Lightness is clamped per scheme so every pair keeps WCAG AA for any hue
+   and chroma (the brand-ramp browser test sweeps them): a light fill stays
+   dark enough for white text and a dark one light enough for near-black
+   text; brand text stays dark enough for the page, the surface, and the
+   brand fills in light, and light enough in dark. Unset, each private
+   derivation references an undefined variable, is invalid, and the tokens
+   above keep their tuned literals exactly. Web Awesome's theme reads the
+   same derivations (webawesome.css). */
+@supports (color: oklch(from red l c h)) {
+  :root {
+    --_kui-brand-fill-loud: light-dark(
+      oklch(from var(--kui-color-brand) min(l, 0.46) c h),
+      oklch(from var(--kui-color-brand) clamp(0.74, l, 0.86) c h)
+    );
+    --_kui-brand-on-quiet: light-dark(
+      oklch(from var(--kui-color-brand) min(l, 0.43) c h),
+      oklch(from var(--kui-color-brand) max(l, 0.86) c h)
+    );
+    --_kui-brand-on-fill: light-dark(
+      oklch(from var(--kui-color-brand) min(l, 0.38) c h),
+      oklch(from var(--kui-color-brand) max(l, 0.9) c h)
+    );
+    --_kui-brand-focus: var(--_kui-brand-fill-loud);
+  }
 }
 
 @supports (color: oklch(from red l c h)) {
