@@ -714,6 +714,15 @@ test('a floating footer lies inset over the body while a fill-last transcript sc
   await expect
     .poll(async () => Math.round((await chatGeometry(page)).panel.height))
     .toBe(560);
+  // The panel scales during entry. CI WebKit once sampled a 7px inset after
+  // its height first rounded to 560px, so wait for the settled panel.
+  await expect(page.locator('#catalog-chat-dialog')).not.toHaveAttribute(
+    'data-kui-dialog-motion',
+    'enter',
+  );
+  await expect
+    .poll(async () => footerOffsets(await chatGeometry(page)))
+    .toEqual([8, 8, 8]);
   const geometry = await chatGeometry(page);
   // The footer floats its 8px offset inside the panel's inline and block-end
   // edges on a transparent background, over the body's block end.
