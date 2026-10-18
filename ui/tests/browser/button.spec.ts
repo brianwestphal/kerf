@@ -126,6 +126,30 @@ test('success Button stays legible across emphases and states in both themes', a
   }
 });
 
+test('brand secondary Button clears text contrast on a strong quiet hover fill', async ({
+  page,
+}) => {
+  await page.emulateMedia({ colorScheme: 'light' });
+  const demo = await openDemo(page);
+  const button = demo.getByRole('button', { name: 'Secondary', exact: true });
+  await expect(button).toHaveCount(1);
+  await button.evaluate((element) => {
+    const button = element as HTMLElement;
+    button.style.setProperty('--kui-color-brand-fill-quiet', '#b7d4f6');
+    button.style.setProperty('--kui-color-brand-on-quiet', '#4b8af6');
+  });
+  await button.hover();
+  await page.waitForTimeout(120);
+  const hovered = await paintedButtonColors(button);
+  expect(hovered.fill).toEqual([183, 212, 246]);
+  expect(contrastRatio(hovered.text, hovered.fill)).toBeGreaterThanOrEqual(4.5);
+  await page.keyboard.press('Shift');
+  await button.focus();
+  await expect(button).toHaveCSS('outline-width', '3px');
+  const focused = await paintedButtonColors(button);
+  expect(contrastRatio(focused.text, focused.fill)).toBeGreaterThanOrEqual(4.5);
+});
+
 // focusRingInset moves the ring inside the box so a clipping ancestor (the
 // specimen frame clips overflow) cannot crop it. A loud fill can share the
 // ring's hue, so a surface-colored line runs inside the ring: the ring meets

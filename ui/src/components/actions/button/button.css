@@ -44,7 +44,12 @@
   --_kui-button-fill: var(--kui-color-brand-fill-loud);
   --_kui-button-text: var(--kui-color-brand-on-loud);
   --_kui-button-quiet: var(--kui-color-brand-fill-quiet);
-  --_kui-button-on-quiet: var(--kui-color-brand-on-quiet);
+  /* A quiet hover fill can be stronger than the page (including app-owned
+     palettes), so darken the brand label enough for text on that fill. */
+  --_kui-button-on-quiet: light-dark(
+    oklch(from var(--kui-color-brand-on-quiet) min(l, 0.38) c h),
+    var(--kui-color-brand-on-quiet)
+  );
   --_kui-button-outline: var(--kui-color-brand-border-loud);
 }
 .kui-button[data-tone="success"] {
@@ -108,7 +113,10 @@
   --_kui-button-fill: var(--kui-color-brand-fill-loud);
   --_kui-button-text: var(--kui-color-brand-on-loud);
   --_kui-button-quiet: var(--kui-color-brand-fill-quiet);
-  --_kui-button-on-quiet: var(--kui-color-brand-on-quiet);
+  --_kui-button-on-quiet: light-dark(
+    oklch(from var(--kui-color-brand-on-quiet) min(l, 0.38) c h),
+    var(--kui-color-brand-on-quiet)
+  );
   --_kui-button-outline: var(--kui-color-brand-border-loud);
 }
 /* A pressed toggle draws on top of its tone and emphasis. Secondary and plain

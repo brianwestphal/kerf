@@ -743,11 +743,12 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   an app div with `max-height`, `overflow`, and a border.
 - **Use `Button` for every standalone action, icon-only included.**
   `Button` (`@kerfjs/ui/button`) is a native button in a `tone` (`neutral`,
-  `brand`, `danger`) and an `emphasis` (`primary`, `secondary`, `plain`), at
+  `brand`, `success`, `danger`) and an `emphasis` (`primary`, `secondary`, `plain`), at
   the 44px control height or `size="compact"`, with an optional `icon`,
   `loading`, `href`, form `type`, `shape` (`rounded` or `pill`), and `pressed`
   for a toggle. With an `icon` and `ariaLabel` but no label it is an icon-only
-  square (a circle as a pill). Inside a `ToolbarControlGroup`
+  square (a circle as a pill). Brand secondary/plain labels darken the brand
+  token in light mode to stay legible on a quiet hover fill. Inside a `ToolbarControlGroup`
   keep a native `button`; the group owns its geometry.
 - **Paint a strip's surface with `List surface`.** `surface="base"` or
   `"raised"` fills a List and its insets with a solid surface (a banner strip

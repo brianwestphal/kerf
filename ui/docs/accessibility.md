@@ -563,6 +563,12 @@ touch screens so focusing a field never zooms the page in iOS.
 
 ## Button and SplitButton focus
 
+A brand `Button` with `secondary` or `plain` emphasis clamps its
+`brand-on-quiet` label to a darker light-theme value. Its quiet hover fill can
+be stronger than the page background, so the unclamped token may be too light
+for the button label. The same label color applies to pressed and focused
+states; the focus ring remains visible around the control.
+
 `Button` and each `SplitButton` half draw the 3px focus ring 1px outside the
 box, against the surrounding surface, because a loud fill can share the ring's
 hue (the brand fill matches the focus color in both schemes). An ancestor that
