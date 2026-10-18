@@ -58,10 +58,37 @@ test('ContentSwap pushes between sides and hides the inactive one', async ({
   await page.evaluate(() =>
     document.documentElement.setAttribute('dir', 'rtl'),
   );
+  // Keep the final animation alive across Playwright's click/evaluate round
+  // trips. On a busy Firefox runner the production 280ms animation can finish
+  // before getAnimations() runs, hiding the direction this assertion checks.
+  await page.addStyleTag({
+    content:
+      '[data-demo="content-swap"] .kui-content-swap__side { animation-duration: 10s !important; }',
+  });
   await swap.getByRole('button', { name: 'Next' }).click();
+  await expect
+    .poll(() =>
+      swap.evaluate((node) =>
+        node
+          .querySelector('[data-side="b"]')!
+          .getAnimations()
+          .some(
+            (animation) =>
+              (animation as CSSAnimation).animationName ===
+              'kui-content-swap-in-end',
+          ),
+      ),
+    )
+    .toBe(true);
   const start = await swap.evaluate((node) => {
     const incoming = node.querySelector('[data-side="b"]')!;
-    const animation = incoming.getAnimations()[0]!;
+    const animation = incoming
+      .getAnimations()
+      .find(
+        (candidate) =>
+          (candidate as CSSAnimation).animationName ===
+          'kui-content-swap-in-end',
+      )!;
     animation.pause();
     animation.currentTime = 0;
     return (
