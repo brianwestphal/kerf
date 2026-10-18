@@ -471,6 +471,10 @@ For a read-only field preview that replaces a Web Awesome input, use `FieldLabel
 For exact numeric entry, use `TextField` with `type="number"` and pass native
 `min`, `max`, and `step` as numbers or strings (`step="any"` permits arbitrary
 decimals). Those attributes reach the inner input only for numeric fields.
+For a calendar date use `type="date"` with an ISO date value. Set
+`autofocus` when the native input or textarea should receive initial focus on
+insertion or when its containing dialog opens; move focus explicitly when an
+application interaction needs different timing.
 
 Common mistakes:
 

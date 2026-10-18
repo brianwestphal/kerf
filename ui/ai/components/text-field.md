@@ -54,6 +54,7 @@ Exact prop names and types: [`@kerfjs/ui/text-field`](../public-api-signatures-v
 - disabled
 - read-only
 - required
+- native autofocus (input or textarea)
 - email, password, search, url, tel, number, or date type
 - number type with native min, max, and step constraints
 

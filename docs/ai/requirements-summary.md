@@ -313,6 +313,7 @@ Stage 2 of the Web Awesome independence work (code): Web Awesome is an optional 
 `@kerfjs/ui` `TextField` (stage 2 of the Web Awesome independence work) is a native input or textarea in one labeled box with hint and error text (its `aria-description`; an error sets `aria-invalid`), an optional leading icon, clear button, growing rows, and live count, matching the old `wa-input` / `wa-textarea` look; `wireTextFields` clears and counts, and the catalog no longer renders `wa-input` or `wa-textarea` outside the Web Awesome routes.
 
 `type="date"` is shipped as a native date input with ISO value, form attributes, focus, browser picker, and native events.
+`autofocus` forwards to the native input or textarea for initial mount and dialog-open focus.
 
 For `type="number"`, TextField forwards native `min`, `max`, and `step` attributes (numbers or strings, including `step="any"`) to the input, preserving browser range and step validity. Other input types and textareas omit them.
 

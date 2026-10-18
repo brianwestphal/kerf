@@ -6125,7 +6125,7 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 /** `default` is the 44px control height; `compact` is 33px with smaller text. */
 type TextFieldSize = 'default' | 'compact';
 /** The kinds of single-line value a TextField takes. */
-type TextFieldType = 'text' | 'email' | 'password' | 'search' | 'url' | 'tel' | 'number';
+type TextFieldType = 'text' | 'email' | 'password' | 'search' | 'url' | 'tel' | 'number' | 'date';
 /** Application `data-*` metadata; the TextField's own markers stay protected. */
 type TextFieldRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
 /**
@@ -6169,7 +6169,7 @@ interface TextFieldOptions {
      * `wireTextFields(root)`, which updates it as people type.
      */
     showCount?: boolean;
-    /** Single-line value kind (default `text`). */
+    /** Single-line value kind (default `text`); `date` uses the native picker. */
     type?: TextFieldType;
     /** Native lower bound for `type="number"` (number or numeric string). */
     min?: number | string;
@@ -6189,6 +6189,8 @@ interface TextFieldOptions {
     disabled?: boolean;
     readOnly?: boolean;
     required?: boolean;
+    /** Request native focus on insertion or when the containing dialog opens. */
+    autofocus?: boolean;
     autocomplete?: string;
     /** The input's id, for an external label or form. */
     id?: string;
@@ -6205,7 +6207,7 @@ interface TextFieldOptions {
  * The whole field is one `<label>`, so clicking anywhere on it focuses the
  * input; the input is named by `label` (or `ariaLabel`) directly.
  */
-declare function TextField({ label, ariaLabel, value, name, placeholder, hint, error, size, icon, clearable, clearLabel, maxLength, showCount, type, min, max, step, multiline, rows, maxRows, disabled, readOnly, required, autocomplete, id, className, rootAttributes, slot, }: TextFieldProps): kerfjs.SafeHtml;
+declare function TextField({ label, ariaLabel, value, name, placeholder, hint, error, size, icon, clearable, clearLabel, maxLength, showCount, type, min, max, step, multiline, rows, maxRows, disabled, readOnly, required, autofocus, autocomplete, id, className, rootAttributes, slot, }: TextFieldProps): kerfjs.SafeHtml;
 
 export { TextField, type TextFieldName, type TextFieldOptions, type TextFieldProps, type TextFieldRootAttributes, type TextFieldSize, type TextFieldType };
 ```

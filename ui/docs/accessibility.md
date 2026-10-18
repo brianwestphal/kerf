@@ -546,6 +546,10 @@ its label; the input itself reports `required`. The focus ring is drawn on the
 box around the input (`:focus-within`), 3px with a 1px offset like every Kerf
 control.
 
+`autofocus` forwards to the native input or textarea. It requests initial focus
+when a field is inserted or its containing native dialog opens. Applications
+still direct focus themselves when it must move from an already focused control.
+
 For `type="number"`, `min`, `max`, and `step` pass through to the native input.
 Each accepts a number or string; `step="any"` allows arbitrary decimals.
 They are omitted for other input types and `multiline` textareas. Native

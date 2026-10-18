@@ -81,6 +81,8 @@ export interface TextFieldOptions {
   disabled?: boolean;
   readOnly?: boolean;
   required?: boolean;
+  /** Request native focus on insertion or when the containing dialog opens. */
+  autofocus?: boolean;
   autocomplete?: string;
   /** The input's id, for an external label or form. */
   id?: string;
@@ -122,6 +124,7 @@ export function TextField({
   disabled = false,
   readOnly = false,
   required = false,
+  autofocus = false,
   autocomplete,
   id,
   className = '',
@@ -139,6 +142,7 @@ export function TextField({
     disabled,
     readonly: readOnly,
     required,
+    autofocus,
     autocomplete,
     maxlength: maxLength,
     // The label element also wraps the clear button and the count, so the

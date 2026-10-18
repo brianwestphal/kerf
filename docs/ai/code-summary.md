@@ -607,6 +607,8 @@ specimens and unit/browser checks live under `ui/ux-demo/demos/text-field.tsx`
 and `ui/tests/{unit,browser}/text-field.*`.
 The same component accepts `type="date"` and leaves picker and events to the
 native input; its date specimen and tests live beside the numeric ones.
+The `autofocus` prop forwards through shared native attributes to both input
+and textarea, with browser checks for insertion and dialog opening.
 
 Kerf UI's stable single-root visual components explicitly forward native
 `slot?: string` on every root branch for custom-element light-DOM projection.

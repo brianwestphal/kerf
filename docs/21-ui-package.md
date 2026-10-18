@@ -283,6 +283,8 @@ constraints to its input. Values may be numbers or strings; `step="any"`
 permits arbitrary decimals. Text inputs and textareas omit these attributes.
 `type="date"` renders a native date input with an ISO date value, browser
 picker and events, and the same label and form attributes as other TextFields.
+`autofocus` forwards to the native input or textarea for initial insertion and
+dialog-open focus.
 
 For arbitrary interactive help or popup content, `openAnchoredSurface` and
 `openAnchoredSurfaceAt` (`@kerfjs/ui/anchored-surface`) add a named, non-modal

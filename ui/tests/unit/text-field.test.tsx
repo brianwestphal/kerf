@@ -45,6 +45,7 @@ describe('TextField', () => {
       'disabled',
       'readonly',
       'required',
+      'autofocus',
       'name',
       'id',
     ])
@@ -172,6 +173,20 @@ describe('TextField', () => {
       render(TextField({ label: 'Received On', type: 'date', readOnly: true })),
     );
     expect(readOnly.readOnly).toBe(true);
+  });
+
+  it('forwards autofocus to the native input or textarea', () => {
+    const single = input(
+      render(TextField({ label: 'Title', autofocus: true })),
+    );
+    expect(single.autofocus).toBe(true);
+    expect(single.hasAttribute('autofocus')).toBe(true);
+
+    const area = render(
+      TextField({ label: 'Description', multiline: true, autofocus: true }),
+    ).querySelector('textarea')!;
+    expect(area.autofocus).toBe(true);
+    expect(area.hasAttribute('autofocus')).toBe(true);
   });
 
   it('carries input attributes, an accessible name, and protected metadata', () => {

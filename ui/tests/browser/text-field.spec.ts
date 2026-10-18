@@ -1,5 +1,7 @@
 import { expect, type Page, test } from '@playwright/test';
 
+import { TextField } from '../../dist/text-field.js';
+
 // TextField is a native input or textarea inside a labeled box: its label
 // names it, its hint and error describe it, the box shows the focus ring, a
 // clearable field clears itself, a counted field counts, and a growing
@@ -215,6 +217,38 @@ test('date fields keep native values, picker API, events, and focus', async ({
     await expect(received).toHaveValue('2026-10-18');
     await expect(received).toHaveJSProperty('readOnly', true);
   }
+});
+
+test('autofocus focuses a TextField input when mounted', async ({ page }) => {
+  await openDemo(page);
+  const markup = String(TextField({ label: 'New Title', autofocus: true }));
+  await page.evaluate((html) => {
+    const host = document.createElement('div');
+    host.innerHTML = html;
+    document.querySelector('[data-demo="text-field"]')!.prepend(host);
+  }, markup);
+  const input = page.getByRole('textbox', { name: 'New Title' });
+  await expect(input).toHaveAttribute('autofocus', '');
+  await expect(input).toBeFocused();
+});
+
+test('autofocus focuses a TextField textarea when a dialog opens', async ({
+  page,
+}) => {
+  await openDemo(page);
+  const markup = String(
+    TextField({ label: 'Dialog Notes', multiline: true, autofocus: true }),
+  );
+  await page.evaluate((html) => {
+    const dialog = document.createElement('dialog');
+    dialog.innerHTML = html;
+    document.body.append(dialog);
+    dialog.showModal();
+  }, markup);
+  const area = page.getByRole('textbox', { name: 'Dialog Notes' });
+  await expect(area).toHaveAttribute('autofocus', '');
+  await expect(area).toBeFocused();
+  await expect(page.locator('dialog')).toHaveJSProperty('open', true);
 });
 
 test('fields are 44px tall, or 33px compact, with the focus ring on the box', async ({
