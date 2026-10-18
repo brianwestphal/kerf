@@ -16,6 +16,15 @@
   font-family: var(--kui-font-sans);
 }
 
+/* In a List, a vertical stack, the toolbar is chrome and keeps its whole
+   natural height. Its explicit one-band min-height (below) replaces the flex
+   item's automatic content minimum, so a column shrinking toward a long
+   flex scroller beside it would otherwise squeeze a wrapped or stacked
+   toolbar onto its first row and clip the rest. */
+.kui-list > .kui-toolbar {
+  flex-shrink: 0;
+}
+
 /* Safe areas: a toolbar compensates only for the inline edges its owner hands
    it through `--kui-edge-inset-inline-*` (a Pane header or footer does), so its
    box and dividers keep reaching the edge while its zones clear the unsafe
