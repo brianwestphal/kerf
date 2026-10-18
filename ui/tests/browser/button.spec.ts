@@ -1,4 +1,4 @@
-import { expect, type Page, test } from '@playwright/test';
+import { expect, type Locator, type Page, test } from '@playwright/test';
 
 import { contrastRatio } from '../../evaluator/index.mjs';
 import { sampleInsetRing } from './fixtures/focus-ring-inset.js';
@@ -13,6 +13,27 @@ async function openDemo(page: Page, width = 1100) {
   await page.setViewportSize({ width, height: 900 });
   await page.goto('/?component=button');
   return page.locator('[data-demo="button"]');
+}
+
+async function paintedButtonColors(button: Locator) {
+  return button.evaluate((element) => {
+    const style = window.getComputedStyle(element);
+    const canvas = document.createElement('canvas');
+    canvas.width = 2;
+    canvas.height = 1;
+    const context = canvas.getContext('2d')!;
+    context.fillStyle = '#fff';
+    context.fillRect(0, 0, 2, 1);
+    context.fillStyle = style.color;
+    context.fillRect(0, 0, 1, 1);
+    context.fillStyle = style.backgroundColor;
+    context.fillRect(1, 0, 1, 1);
+    return {
+      text: [...context.getImageData(0, 0, 1, 1).data.slice(0, 3)],
+      fill: [...context.getImageData(1, 0, 1, 1).data.slice(0, 3)],
+      background: style.backgroundColor,
+    };
+  });
 }
 
 test('Enter and Space activate a Button, which shows the focus ring', async ({
@@ -47,6 +68,64 @@ test('Enter and Space activate a Button, which shows the focus ring', async ({
   await expect(cancel).toHaveCSS('box-shadow', 'none');
 });
 
+test('success Button stays legible across emphases and states in both themes', async ({
+  page,
+}) => {
+  for (const colorScheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme });
+    const demo = await openDemo(page);
+    const success = demo.locator('[data-demo-section="success-emphasis"]');
+    const buttons = success.locator('.kui-button');
+    await expect(buttons).toHaveCount(3);
+    for (const emphasis of ['primary', 'secondary', 'plain']) {
+      const button = buttons.and(
+        success.locator(`[data-emphasis="${emphasis}"]`),
+      );
+      await expect(button).toHaveAttribute('data-tone', 'success');
+      if (emphasis === 'primary') {
+        const idle = await paintedButtonColors(button);
+        expect(contrastRatio(idle.text, idle.fill)).toBeGreaterThanOrEqual(4.5);
+      }
+      await button.hover();
+      await page.waitForTimeout(120);
+      const hovered = await paintedButtonColors(button);
+      expect(hovered.background).not.toBe('rgba(0, 0, 0, 0)');
+      expect(
+        contrastRatio(hovered.text, hovered.fill),
+        `${colorScheme} ${emphasis}: ${hovered.text} on ${hovered.fill}`,
+      ).toBeGreaterThanOrEqual(4.5);
+      await page.keyboard.press('Shift');
+      await button.focus();
+      await expect(button).toHaveCSS('outline-width', '3px');
+    }
+    const busy = demo.getByRole('button', { name: 'Checking Prices' });
+    await expect(busy).toHaveAttribute('data-tone', 'success');
+    await expect(busy).toHaveAttribute('aria-busy', 'true');
+    await expect(busy.locator('.kui-button__spinner')).toBeVisible();
+    const busyColors = await paintedButtonColors(busy);
+    expect(
+      contrastRatio(busyColors.text, busyColors.fill),
+    ).toBeGreaterThanOrEqual(4.5);
+    const disabled = demo.getByRole('button', { name: 'Pricing Unavailable' });
+    await expect(disabled).toBeDisabled();
+    await expect(disabled).toHaveAttribute('data-tone', 'success');
+    await expect(disabled).toHaveCSS('opacity', '1');
+    const disabledColors = await paintedButtonColors(disabled);
+    expect(
+      contrastRatio(disabledColors.text, disabledColors.fill),
+    ).toBeGreaterThanOrEqual(4.5);
+    const pressed = demo.getByRole('button', { name: 'Approved' });
+    await expect(pressed).toHaveAttribute('aria-pressed', 'false');
+    await pressed.click();
+    await expect(pressed).toHaveAttribute('aria-pressed', 'true');
+    await expect(pressed).toHaveAttribute('data-tone', 'success');
+    const pressedColors = await paintedButtonColors(pressed);
+    expect(
+      contrastRatio(pressedColors.text, pressedColors.fill),
+    ).toBeGreaterThanOrEqual(4.5);
+  }
+});
+
 // focusRingInset moves the ring inside the box so a clipping ancestor (the
 // specimen frame clips overflow) cannot crop it. A loud fill can share the
 // ring's hue, so a surface-colored line runs inside the ring: the ring meets
@@ -61,8 +140,8 @@ test('an inset focus ring stays inside a clipping container on every tone', asyn
     const buttons = demo.locator(
       '[data-demo-section="focus-ring-inset"] > .kui-button',
     );
-    await expect(buttons).toHaveCount(3);
-    for (const tone of ['neutral', 'brand', 'danger']) {
+    await expect(buttons).toHaveCount(4);
+    for (const tone of ['neutral', 'brand', 'success', 'danger']) {
       const button = buttons.and(demo.locator(`[data-tone="${tone}"]`));
       await expect(button).toHaveAttribute('data-focus-ring-inset', 'true');
       // Button's line runs inside its 1px border, 3px to 6px in.
@@ -113,8 +192,8 @@ test('an inset focus ring line matches the sunken surface it sits on', async ({
     const buttons = demo.locator(
       '[data-demo-section="focus-ring-inset-sunken"] > .kui-button',
     );
-    await expect(buttons).toHaveCount(3);
-    for (const tone of ['neutral', 'brand', 'danger']) {
+    await expect(buttons).toHaveCount(4);
+    for (const tone of ['neutral', 'brand', 'success', 'danger']) {
       const button = buttons.and(demo.locator(`[data-tone="${tone}"]`));
       const ring = await sampleInsetRing(page, button, 4.5);
       expect(ring.clipped).toBe(true);
@@ -183,8 +262,8 @@ for (const [name, markup] of Object.entries(SURFACES)) {
       const buttons = demo.locator(
         '[data-demo-section="focus-ring-inset-moved"] > .kui-button',
       );
-      await expect(buttons).toHaveCount(3);
-      for (const tone of ['neutral', 'brand', 'danger']) {
+      await expect(buttons).toHaveCount(4);
+      for (const tone of ['neutral', 'brand', 'success', 'danger']) {
         const button = buttons.and(demo.locator(`[data-tone="${tone}"]`));
         const ring = await sampleInsetRing(page, button, 4.5);
         expect(contrastRatio(ring.line, ring.outside)).toBeLessThan(1.1);
@@ -255,7 +334,9 @@ test('a link Button navigates, a busy one keeps its name, a disabled one dims', 
   expect(widths.label).toBeGreaterThan(0);
   expect(widths.button).toBeGreaterThan(widths.label);
 
-  const disabled = demo.getByRole('button', { name: 'Unavailable' }).first();
+  const disabled = demo
+    .getByRole('button', { name: 'Unavailable', exact: true })
+    .first();
   await expect(disabled).toBeDisabled();
   const dim = await disabled.evaluate((button) => {
     const style = window.getComputedStyle(button);

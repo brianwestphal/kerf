@@ -3,8 +3,8 @@ import { filterDataAttributes } from '../../../shared/dom/extension-attributes.j
 import { Badge, type BadgeTone } from '../../feedback/badge/badge.js';
 import { LoadingSpinner } from '../../feedback/loading-spinner/loading-spinner.js';
 
-/** The color family: `neutral` (default), `brand` for the main action, `danger` for a destructive one. */
-export type ButtonTone = 'neutral' | 'brand' | 'danger';
+/** The color family: `neutral` (default), `brand` for the main action, `success` for a positive one, `danger` for a destructive one. */
+export type ButtonTone = 'neutral' | 'brand' | 'success' | 'danger';
 
 /**
  * How loudly it asks: `primary` (default) fills the button, `secondary`
@@ -134,7 +134,7 @@ export interface ButtonOptions {
 
 /**
  * A standalone action button: a native `<button>` (or a link with `href`)
- * in one of three tones and three emphases, at the 44px control height or
+ * in one of four tones and three emphases, at the 44px control height or
  * compact, with a label or as an icon-only square, rounded or pill-shaped,
  * sized to its label or filling its parent's width, and optionally a
  * `pressed` toggle. Inside a

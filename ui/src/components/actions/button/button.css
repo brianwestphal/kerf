@@ -47,6 +47,13 @@
   --_kui-button-on-quiet: var(--kui-color-brand-on-quiet);
   --_kui-button-outline: var(--kui-color-brand-border-loud);
 }
+.kui-button[data-tone="success"] {
+  --_kui-button-fill: var(--kui-color-success-fill-loud);
+  --_kui-button-text: var(--kui-color-success-on-loud);
+  --_kui-button-quiet: var(--kui-color-success-fill-quiet);
+  --_kui-button-on-quiet: var(--kui-color-success-on-fill);
+  --_kui-button-outline: var(--kui-color-success-border-loud);
+}
 .kui-button[data-tone="danger"] {
   --_kui-button-fill: var(--kui-color-danger-fill-loud);
   --_kui-button-text: var(--kui-color-danger-on-loud);
@@ -92,9 +99,10 @@
   border-radius: var(--kui-layout-pill-radius, calc(1px + remify(21px)));
 }
 /* A pressed neutral toggle takes the brand accent, as a pressed toolbar group
-   control and a selected chip do; brand and danger keep their own tone. */
+   control and a selected chip do; semantic tones keep their own color. */
 .kui-button[aria-pressed="true"]:not(
     [data-tone="brand"],
+    [data-tone="success"],
     [data-tone="danger"]
   ) {
   --_kui-button-fill: var(--kui-color-brand-fill-loud);
@@ -105,7 +113,7 @@
 }
 /* A pressed toggle draws on top of its tone and emphasis. Secondary and plain
    take the tone's quiet fill with a doubled tone outline; primary keeps its
-   loud fill (darkened for brand and danger) with an inset ring. The second pixel of outline marks
+   loud fill (darkened for semantic tones) with an inset ring. The second pixel of outline marks
    the state without relying on hue. */
 .kui-button[aria-pressed="true"]:is(
     [data-emphasis="secondary"],
@@ -130,6 +138,16 @@
   --_kui-button-fill: color-mix(
     in oklab,
     var(--kui-color-brand-fill-loud),
+    light-dark(#000, #fff) 18%
+  );
+}
+.kui-button[data-tone="success"][aria-pressed="true"]:not(
+    [data-emphasis="secondary"],
+    [data-emphasis="plain"]
+  ) {
+  --_kui-button-fill: color-mix(
+    in oklab,
+    var(--kui-color-success-fill-loud),
     light-dark(#000, #fff) 18%
   );
 }
@@ -229,6 +247,14 @@
 .kui-button:is(:disabled, [aria-disabled="true"]) {
   cursor: not-allowed;
   opacity: 0.5;
+}
+/* Keep a disabled positive action quiet without fading its label below text
+   contrast. The subdued fill and border mark it unavailable. */
+.kui-button[data-tone="success"]:is(:disabled, [aria-disabled="true"]) {
+  --_kui-button-fill: var(--kui-color-success-fill-quiet);
+  --_kui-button-text: var(--kui-color-success-on-fill);
+  --_kui-button-border: var(--kui-color-success-border-quiet);
+  opacity: 1;
 }
 .kui-button__icon {
   display: inline-flex;

@@ -9,6 +9,28 @@ const render = (markup: unknown) => {
 };
 
 describe('Button', () => {
+  it('keeps the success tone across emphases and native states', () => {
+    for (const emphasis of ['primary', 'secondary', 'plain'] as const) {
+      const button = render(
+        Button({ children: 'Price Check', tone: 'success', emphasis }),
+      );
+      expect(button.dataset.tone).toBe('success');
+      expect(button.dataset.emphasis).toBe(emphasis);
+      expect(button.textContent).toBe('Price Check');
+    }
+    const busy = render(
+      Button({ children: 'Checking Prices', tone: 'success', loading: true }),
+    );
+    expect(busy.dataset.tone).toBe('success');
+    expect(busy.getAttribute('aria-busy')).toBe('true');
+    expect(busy.querySelector('.kui-button__spinner')).not.toBeNull();
+    const disabled = render(
+      Button({ children: 'Price Check', tone: 'success', disabled: true }),
+    );
+    expect(disabled.dataset.tone).toBe('success');
+    expect(disabled.hasAttribute('disabled')).toBe(true);
+  });
+
   it('renders a native button with the default tone, emphasis, and size', () => {
     const button = render(Button({ children: 'Save' }));
     expect(button.localName).toBe('button');

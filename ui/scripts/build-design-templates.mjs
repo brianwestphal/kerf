@@ -1604,6 +1604,7 @@ export const COMPONENTS = {
             children: [
               Button({ children: 'Save Changes', tone: 'brand' }),
               Button({ children: 'Cancel' }),
+              Button({ children: 'Price Check', tone: 'success' }),
               Button({ children: 'Delete Project', tone: 'danger' }),
             ],
           }),

@@ -7563,7 +7563,7 @@
       "category": "Controls",
       "kind": "component",
       "source": "kerf",
-      "description": "A standalone action button: a native button (or a link with href) in a neutral, brand, or danger tone and a primary, secondary, or plain emphasis, at the 44px control height or compact.",
+      "description": "A standalone action button: a native button (or a link with href) in a neutral, brand, success, or danger tone and a primary, secondary, or plain emphasis, at the 44px control height or compact.",
       "uses": [
         "loading-spinner"
       ],
@@ -7572,7 +7572,7 @@
         "Button"
       ],
       "useWhen": [
-        "A dialog footer, a form, or content needs an action button: tone=\"brand\" for the main action, tone=\"danger\" for a destructive one, and emphasis=\"secondary\" or \"plain\" for the quieter actions beside it.",
+        "A dialog footer, a form, or content needs an action button: tone=\"brand\" for the main action, tone=\"success\" for a positive action such as a pricing check, tone=\"danger\" for a destructive one, and emphasis=\"secondary\" or \"plain\" for the quieter actions beside it.",
         "A form submits or resets: type=\"submit\" or \"reset\" (the default type never submits), with name, value, and form when needed.",
         "An action navigates: href renders a link with the same chrome.",
         "A single primary action spans its form, sheet, or narrow column: fill makes it span the parent's available inline width, label centered, as SplitButton's fill does."
@@ -7599,7 +7599,7 @@
         "form ownership"
       ],
       "variants": [
-        "neutral, brand, or danger tone",
+        "neutral, brand, success, or danger tone",
         "primary, secondary, or plain emphasis",
         "default or compact size",
         "rounded (default) or pill shape",
@@ -7615,7 +7615,7 @@
       ],
       "accessibility": [
         "A native <button> (type=\"button\" unless set) or, with href, an <a>; its label names it, or ariaLabel when the label is not enough. Focus shows the standard focus ring 1px outside the box; with focusRingInset it is drawn inside the box, two-tone with a surface-colored line inside the ring color, so it keeps 3:1 contrast on a loud fill of its own hue.",
-        "Loading shows a spinner in place of the label, which still names the button, and sets aria-busy=\"true\". A disabled link drops its href and reports aria-disabled=\"true\".",
+        "Loading shows a spinner in place of the label, which still names the button, and sets aria-busy=\"true\". A disabled link drops its href and reports aria-disabled=\"true\". Disabled success uses a quiet success fill and readable on-fill text instead of fading the label.",
         "With pressed, it is a toggle: aria-pressed reports the state, and the pressed look adds a doubled outline (secondary and plain) or a darkened fill with an inset ring (primary), so the state never relies on hue alone; forced-colors mode paints it Highlight. An icon-only Button is named by ariaLabel, and help tags show that name on hover and keyboard focus. A title gives native hover text that says more than the name and replaces the help tag."
       ],
       "geometry": {
@@ -7648,6 +7648,11 @@
         "--kui-color-brand-fill-quiet",
         "--kui-color-brand-on-quiet",
         "--kui-color-brand-border-loud",
+        "--kui-color-success-fill-loud",
+        "--kui-color-success-on-loud",
+        "--kui-color-success-fill-quiet",
+        "--kui-color-success-on-fill",
+        "--kui-color-success-border-loud",
         "--kui-color-danger-fill-loud",
         "--kui-color-danger-on-loud",
         "--kui-color-danger-fill-quiet",

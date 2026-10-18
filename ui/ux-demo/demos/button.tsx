@@ -22,13 +22,16 @@ export function ButtonDemo() {
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'button' }}>
       <CatalogExample
         label="Tones"
-        note="Neutral for most actions, brand for the main action, danger for a destructive one."
+        note="Neutral for most actions, brand for the main action, success for a positive one such as pricing, danger for a destructive one."
         align="inline-control"
       >
         <Row wrap>
           <Button action="log-more">Cancel</Button>
           <Button tone="brand" action="log-more">
             Save
+          </Button>
+          <Button tone="success" action="log-more">
+            Price Check
           </Button>
           <Button tone="danger" action="log-more">
             Delete
@@ -49,6 +52,23 @@ export function ButtonDemo() {
           </Button>
           <Button tone="brand" emphasis="plain" action="log-more">
             Plain
+          </Button>
+        </Row>
+      </CatalogExample>
+      <CatalogExample
+        label="Success Emphasis"
+        note="A positive action keeps its success tone as a fill, outline, or plain text."
+        align="inline-control"
+      >
+        <Row wrap rootAttributes={{ 'data-demo-section': 'success-emphasis' }}>
+          <Button tone="success" action="log-more">
+            Price Check
+          </Button>
+          <Button tone="success" emphasis="secondary" action="log-more">
+            Review Prices
+          </Button>
+          <Button tone="success" emphasis="plain" action="log-more">
+            View Results
           </Button>
         </Row>
       </CatalogExample>
@@ -102,6 +122,12 @@ export function ButtonDemo() {
         <Row wrap>
           <Button tone="brand" loading action="log-more">
             Saving
+          </Button>
+          <Button tone="success" loading action="log-more">
+            Checking Prices
+          </Button>
+          <Button tone="success" disabled>
+            Pricing Unavailable
           </Button>
           <Button disabled>Unavailable</Button>
           <Button emphasis="secondary" disabled>
@@ -197,6 +223,13 @@ export function ButtonDemo() {
           >
             Live
           </Button>
+          <Button
+            tone="success"
+            pressed={buttonToggleConversationOpen.value}
+            action="toggle-button-demo"
+          >
+            Approved
+          </Button>
         </Row>
       </CatalogExample>
       <CatalogExample
@@ -244,6 +277,9 @@ export function ButtonDemo() {
           <Button tone="brand" focusRingInset action="log-more">
             Confirm
           </Button>
+          <Button tone="success" focusRingInset action="log-more">
+            Apply
+          </Button>
           <Button tone="danger" focusRingInset action="log-more">
             Erase
           </Button>
@@ -265,6 +301,9 @@ export function ButtonDemo() {
             </Button>
             <Button tone="brand" focusRingInset action="log-more">
               Confirm
+            </Button>
+            <Button tone="success" focusRingInset action="log-more">
+              Apply
             </Button>
             <Button tone="danger" focusRingInset action="log-more">
               Erase

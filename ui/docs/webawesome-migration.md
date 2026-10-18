@@ -17,6 +17,8 @@ standard DOM events, and keeps its state in native form controls, so a
 delegated `input` / `change` / `click` handler usually keeps working once the
 selector changes.
 
+For a positive action such as Price Check, migrate `<wa-button variant="success">` to `<Button tone="success">`. The semantic success palette also applies to `secondary` and `plain` emphasis; use the component prop rather than an application color override.
+
 | Web Awesome markup                                            | Kerf replacement                                                                                                                                                            | Notes                                                                                                                                                                                             |
 | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `<wa-button variant="brand">Save</wa-button>`                 | `<Button tone="brand" action="save">Save</Button>` (`@kerfjs/ui/button`)                                                                                                    | `tone` replaces `variant`; `emphasis` replaces `appearance`. Use `href` for a link button, `icon` with `ariaLabel` and no label for an icon-only one, and `pressed` for a toggle.                 |

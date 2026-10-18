@@ -667,15 +667,15 @@ the control's dimensions, shows `LoadingSpinner` in its place, sets
 group hides only the glyph; a `content="text"` or `"mixed"` group hides the
 whole control, label included, so the spinner never draws over text.
 
-| Want                           | Put in the zone                                                                        | Notes                                                                                                          |
-| ------------------------------ | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| Identity or title text         | `<ToolbarText text="…" size="large" />` (or `xlarge` for a page/panel title that fits) | Wrap in a `single` borderless group only when it must align with adjacent control pills                        |
-| One or more icon/text buttons  | `<ToolbarControlGroup>{buttons}</ToolbarControlGroup>`                                 | Use `buttonAppearance="push"` for toggle buttons with `aria-pressed`; `single` for a lone control              |
-| One primary application action | `trailing={<Button tone="brand">New Ticket…</Button>}`                                 | The standalone button keeps its own chrome; use `tone="danger"` when the action is destructive                 |
-| An exclusive view switch       | `<ToolbarControlGroup><SegmentedControl … /></ToolbarControlGroup>`                    | Not `TabBar`, which switches tabpanels                                                                         |
-| A value list                   | `<ToolbarControlGroup><Select … /></ToolbarControlGroup>`                              | Register `@kerfjs/ui/select/register` once; use `focusRingOwner="group"` so focus follows the group's geometry |
-| A command menu                 | `<ToolbarControlGroup single nestedDropdown><PopupMenu … /></ToolbarControlGroup>`     | Register `@kerfjs/ui/popup-menu/register` once; set `menuInset` on the group                                   |
-| A collapsible search box       | `<ToolbarControlGroup single><SearchField collapsible … /></ToolbarControlGroup>`      | The group animates the iconic ↔ expanded states; `wireSearchFields` manages expand/collapse/focus by default   |
+| Want                           | Put in the zone                                                                        | Notes                                                                                                                                           |
+| ------------------------------ | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Identity or title text         | `<ToolbarText text="…" size="large" />` (or `xlarge` for a page/panel title that fits) | Wrap in a `single` borderless group only when it must align with adjacent control pills                                                         |
+| One or more icon/text buttons  | `<ToolbarControlGroup>{buttons}</ToolbarControlGroup>`                                 | Use `buttonAppearance="push"` for toggle buttons with `aria-pressed`; `single` for a lone control                                               |
+| One primary application action | `trailing={<Button tone="brand">New Ticket…</Button>}`                                 | The standalone button keeps its own chrome; use `tone="success"` for a positive pricing check or `tone="danger"` when the action is destructive |
+| An exclusive view switch       | `<ToolbarControlGroup><SegmentedControl … /></ToolbarControlGroup>`                    | Not `TabBar`, which switches tabpanels                                                                                                          |
+| A value list                   | `<ToolbarControlGroup><Select … /></ToolbarControlGroup>`                              | Register `@kerfjs/ui/select/register` once; use `focusRingOwner="group"` so focus follows the group's geometry                                  |
+| A command menu                 | `<ToolbarControlGroup single nestedDropdown><PopupMenu … /></ToolbarControlGroup>`     | Register `@kerfjs/ui/popup-menu/register` once; set `menuInset` on the group                                                                    |
+| A collapsible search box       | `<ToolbarControlGroup single><SearchField collapsible … /></ToolbarControlGroup>`      | The group animates the iconic ↔ expanded states; `wireSearchFields` manages expand/collapse/focus by default                                    |
 
 ### Room for an expanded search
 

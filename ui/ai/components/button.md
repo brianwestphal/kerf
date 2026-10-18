@@ -4,13 +4,13 @@
 
 `@kerfjs/ui:button` · Kerf UI · component · Controls
 
-A standalone action button: a native button (or a link with href) in a neutral, brand, or danger tone and a primary, secondary, or plain emphasis, at the 44px control height or compact.
+A standalone action button: a native button (or a link with href) in a neutral, brand, success, or danger tone and a primary, secondary, or plain emphasis, at the 44px control height or compact.
 
 ## When to use
 
 Trigger an action from a dialog footer, a form, or content outside any Toolbar, with Kerf's button chrome and native button semantics.
 
-- A dialog footer, a form, or content needs an action button: tone="brand" for the main action, tone="danger" for a destructive one, and emphasis="secondary" or "plain" for the quieter actions beside it.
+- A dialog footer, a form, or content needs an action button: tone="brand" for the main action, tone="success" for a positive action such as a pricing check, tone="danger" for a destructive one, and emphasis="secondary" or "plain" for the quieter actions beside it.
 - A form submits or resets: type="submit" or "reset" (the default type never submits), with name, value, and form when needed.
 - An action navigates: href renders a link with the same chrome.
 - A single primary action spans its form, sheet, or narrow column: fill makes it span the parent's available inline width, label centered, as SplitButton's fill does.
@@ -38,7 +38,7 @@ Exact prop names and types: [`@kerfjs/ui/button`](../public-api-signatures-v1.md
 
 **Variants (configure, do not restyle):**
 
-- neutral, brand, or danger tone
+- neutral, brand, success, or danger tone
 - primary, secondary, or plain emphasis
 - default or compact size
 - rounded (default) or pill shape
@@ -72,7 +72,7 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 ## Accessibility
 
 - A native \<button> (type="button" unless set) or, with href, an \<a>; its label names it, or ariaLabel when the label is not enough. Focus shows the standard focus ring 1px outside the box; with focusRingInset it is drawn inside the box, two-tone with a surface-colored line inside the ring color, so it keeps 3:1 contrast on a loud fill of its own hue.
-- Loading shows a spinner in place of the label, which still names the button, and sets aria-busy="true". A disabled link drops its href and reports aria-disabled="true".
+- Loading shows a spinner in place of the label, which still names the button, and sets aria-busy="true". A disabled link drops its href and reports aria-disabled="true". Disabled success uses a quiet success fill and readable on-fill text instead of fading the label.
 - With pressed, it is a toggle: aria-pressed reports the state, and the pressed look adds a doubled outline (secondary and plain) or a darkened fill with an inset ring (primary), so the state never relies on hue alone; forced-colors mode paints it Highlight. An icon-only Button is named by ariaLabel, and help tags show that name on hover and keyboard focus. A title gives native hover text that says more than the name and replaces the help tag.
 
 ## Styling boundary
@@ -83,7 +83,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-button`, `kui-button__icon`, `kui-button__label`, `kui-button__spinner` on an element you write; render `Button` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-color-neutral-fill-loud`, `--kui-color-neutral-on-loud`, `--kui-color-neutral-fill-quiet`, `--kui-color-neutral-on-quiet`, `--kui-color-neutral-border-loud`, `--kui-color-brand-fill-loud`, `--kui-color-brand-on-loud`, `--kui-color-brand-fill-quiet`, `--kui-color-brand-on-quiet`, `--kui-color-brand-border-loud`, `--kui-color-danger-fill-loud`, `--kui-color-danger-on-loud`, `--kui-color-danger-fill-quiet`, `--kui-color-danger-on-quiet`, `--kui-color-danger-border-loud`, `--kui-focus-ring`, `--kui-font-m`, `--kui-font-s`, `--kui-layout-rounded-radius`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-neutral-fill-loud`, `--kui-color-neutral-on-loud`, `--kui-color-neutral-fill-quiet`, `--kui-color-neutral-on-quiet`, `--kui-color-neutral-border-loud`, `--kui-color-brand-fill-loud`, `--kui-color-brand-on-loud`, `--kui-color-brand-fill-quiet`, `--kui-color-brand-on-quiet`, `--kui-color-brand-border-loud`, `--kui-color-success-fill-loud`, `--kui-color-success-on-loud`, `--kui-color-success-fill-quiet`, `--kui-color-success-on-fill`, `--kui-color-success-border-loud`, `--kui-color-danger-fill-loud`, `--kui-color-danger-on-loud`, `--kui-color-danger-fill-quiet`, `--kui-color-danger-on-quiet`, `--kui-color-danger-border-loud`, `--kui-focus-ring`, `--kui-font-m`, `--kui-font-s`, `--kui-layout-rounded-radius`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

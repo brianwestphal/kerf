@@ -6601,8 +6601,8 @@ import { BadgeTone } from './badge.js';
 import './css-values.js';
 import './semantic-tone-CdW013KF.js';
 
-/** The color family: `neutral` (default), `brand` for the main action, `danger` for a destructive one. */
-type ButtonTone = 'neutral' | 'brand' | 'danger';
+/** The color family: `neutral` (default), `brand` for the main action, `success` for a positive one, `danger` for a destructive one. */
+type ButtonTone = 'neutral' | 'brand' | 'success' | 'danger';
 /**
  * How loudly it asks: `primary` (default) fills the button, `secondary`
  * outlines it, and `plain` shows only its text until hovered.
@@ -6705,7 +6705,7 @@ interface ButtonOptions {
 }
 /**
  * A standalone action button: a native `<button>` (or a link with `href`)
- * in one of three tones and three emphases, at the 44px control height or
+ * in one of four tones and three emphases, at the 44px control height or
  * compact, with a label or as an icon-only square, rounded or pill-shaped,
  * sized to its label or filling its parent's width, and optionally a
  * `pressed` toggle. Inside a
