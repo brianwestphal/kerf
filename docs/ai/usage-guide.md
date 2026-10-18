@@ -48,6 +48,8 @@ Vite / esbuild need no extra config. The `jsx-runtime` and `jsx-dev-runtime` sub
 For exact numeric input, `@kerfjs/ui/text-field` accepts `type="number"`
 with native `min`, `max`, and `step` props (numbers or strings, including
 `step="any"`). The browser applies range and step validity directly.
+For a calendar date, use `type="date"` and an ISO `YYYY-MM-DD` value; the
+native input supplies the browser picker and events.
 
 For a kerf app that needs shared visual primitives, add the optional lockstep
 package and its semantic styles:

@@ -9,7 +9,7 @@ export type TextFieldSize = 'default' | 'compact';
 
 /** The kinds of single-line value a TextField takes. */
 export type TextFieldType =
-  'text' | 'email' | 'password' | 'search' | 'url' | 'tel' | 'number';
+  'text' | 'email' | 'password' | 'search' | 'url' | 'tel' | 'number' | 'date';
 
 const TEXT_FIELD_PROTECTED = new Set([
   'data-component',
@@ -61,7 +61,7 @@ export interface TextFieldOptions {
    * `wireTextFields(root)`, which updates it as people type.
    */
   showCount?: boolean;
-  /** Single-line value kind (default `text`). */
+  /** Single-line value kind (default `text`); `date` uses the native picker. */
   type?: TextFieldType;
   /** Native lower bound for `type="number"` (number or numeric string). */
   min?: number | string;

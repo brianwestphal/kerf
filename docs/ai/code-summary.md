@@ -605,6 +605,8 @@ in `ui/ai/component-composition.json` drives the doctor and lint rule.
 `step` to its native input only for `type="number"`; the numeric catalog
 specimens and unit/browser checks live under `ui/ux-demo/demos/text-field.tsx`
 and `ui/tests/{unit,browser}/text-field.*`.
+The same component accepts `type="date"` and leaves picker and events to the
+native input; its date specimen and tests live beside the numeric ones.
 
 Kerf UI's stable single-root visual components explicitly forward native
 `slot?: string` on every root branch for custom-element light-DOM projection.

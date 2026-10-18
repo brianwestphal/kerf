@@ -281,6 +281,8 @@ follows its rendered columns with Left/Right/Up/Down and Home/End.
 `TextField` with `type="number"` forwards native `min`, `max`, and `step`
 constraints to its input. Values may be numbers or strings; `step="any"`
 permits arbitrary decimals. Text inputs and textareas omit these attributes.
+`type="date"` renders a native date input with an ISO date value, browser
+picker and events, and the same label and form attributes as other TextFields.
 
 For arbitrary interactive help or popup content, `openAnchoredSurface` and
 `openAnchoredSurfaceAt` (`@kerfjs/ui/anchored-surface`) add a named, non-modal

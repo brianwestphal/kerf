@@ -760,7 +760,8 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   `showCount`, at the 44px height or `size="compact"`. Call
   `wireTextFields(root)` (`@kerfjs/ui/wire-text-fields`) once for clearing and
   counting. For `type="number"`, pass native `min`, `max`, and `step` as numbers
-  or strings (`step="any"` accepts arbitrary decimals). Never render `wa-input`
+  or strings (`step="any"` accepts arbitrary decimals). For `type="date"`,
+  pass an ISO date string and use the browser's native picker. Never render `wa-input`
   or `wa-textarea` for a form field.
 - **Use `Checkbox`, `CheckboxGroup`, `RadioGroup`, and `Switch` for native
   toggles.** `@kerfjs/ui/checkbox` (with `indeterminate` and

@@ -312,6 +312,8 @@ Stage 2 of the Web Awesome independence work (code): Web Awesome is an optional 
 
 `@kerfjs/ui` `TextField` (stage 2 of the Web Awesome independence work) is a native input or textarea in one labeled box with hint and error text (its `aria-description`; an error sets `aria-invalid`), an optional leading icon, clear button, growing rows, and live count, matching the old `wa-input` / `wa-textarea` look; `wireTextFields` clears and counts, and the catalog no longer renders `wa-input` or `wa-textarea` outside the Web Awesome routes.
 
+`type="date"` is shipped as a native date input with ISO value, form attributes, focus, browser picker, and native events.
+
 For `type="number"`, TextField forwards native `min`, `max`, and `step` attributes (numbers or strings, including `step="any"`) to the input, preserving browser range and step validity. Other input types and textareas omit them.
 
 `@kerfjs/ui` `Button` (stage 2 of the Web Awesome independence work) is a native button in a `tone` × `emphasis` × `size` (including a contrast-safe semantic success tone for positive actions such as pricing checks) with an optional icon, loading, link, and form type, matching the old `wa-button` look; brand secondary/plain labels darken in light mode to remain legible on quiet hover fills. An `icon` with `ariaLabel` makes its icon-only square, `pressed` makes it a toggle and `shape` a pill (KF-TQCJSS retired `IconButton` / `IconToggleButton` into it), and the catalog no longer renders `wa-button` outside the Web Awesome routes.

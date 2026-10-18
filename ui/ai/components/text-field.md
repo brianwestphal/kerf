@@ -4,7 +4,7 @@
 
 `@kerfjs/ui:text-field` · Kerf UI · component · Controls
 
-A labeled single-line input or multi-line textarea with hint and error text, an optional leading icon, clear button, character count, and native numeric constraints, at the 44px control height or compact.
+A labeled single-line input (including native date and number types) or multi-line textarea with hint and error text, an optional leading icon, clear button, character count, and native numeric constraints, at the 44px control height or compact.
 
 ## When to use
 
@@ -14,6 +14,7 @@ Collect free text (names, addresses, notes, comments) with Kerf's field chrome, 
 - People write a longer note or message: multiline with rows, or rows plus maxRows to grow with the content; maxLength with showCount shows the remaining budget.
 - A filter or search field needs a leading icon and a clear button: icon and clearable.
 - An exact number needs native range or decimal-step validation: type=number with min, max, and step (including step=any).
+- A form needs a calendar date with the browser's native date picker: type=date.
 
 **Not when:**
 
@@ -53,7 +54,7 @@ Exact prop names and types: [`@kerfjs/ui/text-field`](../public-api-signatures-v
 - disabled
 - read-only
 - required
-- email, password, search, url, tel, or number type
+- email, password, search, url, tel, number, or date type
 - number type with native min, max, and step constraints
 
 ## Composition

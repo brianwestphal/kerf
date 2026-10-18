@@ -552,6 +552,12 @@ They are omitted for other input types and `multiline` textareas. Native
 constraint validation (`rangeUnderflow`, `rangeOverflow`, and `stepMismatch`)
 then applies without custom field wiring.
 
+For `type="date"`, TextField renders a native date input. The browser owns its
+picker, localized display, keyboard interaction, and `input`/`change` events;
+the `value` remains an ISO date string (`YYYY-MM-DD`). The same `name`, label,
+required, disabled, read-only, and focus behavior as other single-line fields
+applies. Numeric `min`, `max`, and `step` props do not pass to date inputs.
+
 `clearable` adds a native `<button>` named by `clearLabel` (default "Clear")
 after the input. It is hidden while the field is empty, is a normal Tab stop,
 and with `wireTextFields(root)` empties the field, dispatches bubbling `input`

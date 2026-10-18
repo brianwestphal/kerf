@@ -183,6 +183,40 @@ test('numeric fields preserve native range and step validity', async ({
   ).toBe(true);
 });
 
+test('date fields keep native values, picker API, events, and focus', async ({
+  page,
+}) => {
+  for (const width of [1100, 390]) {
+    const demo = await openDemo(page, width);
+    const date = demo.locator('input[name="neededBy"]');
+    await expect(date).toHaveAttribute('type', 'date');
+    await expect(date).toHaveAttribute('aria-label', 'Needed By');
+    await expect(date).toHaveValue('2026-11-12');
+    await expect(date).toHaveJSProperty('required', true);
+    expect(
+      await date.evaluate((input: HTMLInputElement) => typeof input.showPicker),
+    ).toBe('function');
+    await date.evaluate((input) => {
+      for (const name of ['input', 'change']) {
+        input.addEventListener(name, () => {
+          input.dataset[name] = String(Number(input.dataset[name] ?? 0) + 1);
+        });
+      }
+    });
+    await date.focus();
+    await expect(date).toBeFocused();
+    await date.fill('2026-12-01');
+    await expect(date).toHaveValue('2026-12-01');
+    await expect(date).toHaveAttribute('data-input', '1');
+    await expect(date).toHaveAttribute('data-change', '1');
+    await expect(date).toHaveJSProperty('valueAsNumber', Date.UTC(2026, 11, 1));
+
+    const received = demo.locator('input[name="receivedOn"]');
+    await expect(received).toHaveValue('2026-10-18');
+    await expect(received).toHaveJSProperty('readOnly', true);
+  }
+});
+
 test('fields are 44px tall, or 33px compact, with the focus ring on the box', async ({
   page,
 }) => {

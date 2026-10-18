@@ -80,6 +80,28 @@ export function TextFieldDemo() {
         </List>
       </CatalogExample>
       <CatalogExample
+        label="Native Date"
+        note="A date field keeps the browser's date picker, value, and input events."
+        align="inline-control"
+      >
+        <List gap="xs">
+          <TextField
+            label="Needed By"
+            type="date"
+            name="neededBy"
+            value="2026-11-12"
+            required
+          />
+          <TextField
+            label="Received On"
+            type="date"
+            name="receivedOn"
+            value="2026-10-18"
+            readOnly
+          />
+        </List>
+      </CatalogExample>
+      <CatalogExample
         label="Numeric Constraints"
         note="Number fields keep native range and step validity, including unrestricted decimal steps."
         align="inline-control"

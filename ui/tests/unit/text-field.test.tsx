@@ -141,6 +141,39 @@ describe('TextField', () => {
       expect(area.hasAttribute(attribute)).toBe(false);
   });
 
+  it('renders a native date input with its value and form attributes', () => {
+    const field = render(
+      TextField({
+        label: 'Needed By',
+        type: 'date',
+        value: '2026-11-12',
+        name: 'neededBy',
+        required: true,
+        min: '2026-10-01',
+      }),
+    );
+    const control = input(field);
+    expect(control.type).toBe('date');
+    expect(control.value).toBe('2026-11-12');
+    expect(control.name).toBe('neededBy');
+    expect(control.required).toBe(true);
+    expect(control.getAttribute('aria-label')).toBe('Needed By');
+    expect(control.hasAttribute('min')).toBe(false);
+
+    const updated = render(
+      TextField({ label: 'Needed By', type: 'date', value: '2026-12-01' }),
+    );
+    expect(input(updated).value).toBe('2026-12-01');
+    const disabled = input(
+      render(TextField({ label: 'Received On', type: 'date', disabled: true })),
+    );
+    expect(disabled.disabled).toBe(true);
+    const readOnly = input(
+      render(TextField({ label: 'Received On', type: 'date', readOnly: true })),
+    );
+    expect(readOnly.readOnly).toBe(true);
+  });
+
   it('carries input attributes, an accessible name, and protected metadata', () => {
     const field = render(
       TextField({
