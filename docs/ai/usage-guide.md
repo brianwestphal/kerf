@@ -955,6 +955,11 @@ UI metadata, feedback, and content appearances share the exported `SemanticTone`
 type: `neutral | info | pop | success | warning | danger`. Badge and Chip use
 `info` in place of the former `brand` tone.
 
+A scoped `tint={{ color, scheme, accent }}` re-derives its brand ramp, links,
+and focus ring from `accent`. Its lightness clamps keep text and controls at AA
+contrast even for vivid green and cyan accents on tinted surfaces; see
+`ui/docs/layout.md` for the palette bounds.
+
 The sunken/lowered background is semi-transparent. `--wa-color-surface-lowered`
 and `--kui-color-surface-lowered` are the shared tint, also used by
 `--kui-color-neutral-fill-quiet`; `--kui-sunken-panel-background` and

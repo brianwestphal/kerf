@@ -1174,7 +1174,7 @@ surface/text/brand tokens with lightness-clamped `oklch(from …)` values; every
 material fallback also names the tint scope. `ui/tests/unit/surface-tint.test.tsx`
 pins markup and rules (plus `data-kui-tint-accent` / `--_kui-tint-accent` for the
 optional accent, whose brand-ramp rules sit beside the tint rules), and
-`ui/tests/browser/tone-contrast.spec.ts` sweeps seeds and accent seeds for AA (fixture `ui/tests/browser/fixtures/tint-sweep.tsx`).
+`ui/tests/browser/tone-contrast.spec.ts` sweeps seeds and accent seeds for AA (fixture `ui/tests/browser/fixtures/tint-sweep.tsx`); `ui/tests/browser/tint-accent-ramp.spec.ts` sweeps every hue across chroma and lightness against loud fills, tinted surfaces, brand fills, and focus rings.
 
 Layout backgrounds (KF-C7GSDQ, app-chosen surface colors): `Pane.background`
 (also `PaneConfig`, forwarded by `paneConfigProps`), `NavStack.background`,

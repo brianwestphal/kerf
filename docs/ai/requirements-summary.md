@@ -586,7 +586,8 @@ Scoped tints (shipped): `tint: { color, scheme }` on `Pane` (and `PaneConfig`),
 `NavStack`, `TabNavigator`, and `TabNavigatorTab` re-derives surface, text,
 link, fills, and chrome material from an app-declared color and scheme, with
 lightness clamped for AA; increased contrast keeps the plain palette.
-An optional `accent` re-derives the brand ramp, links, and focus ring at AA (shipped).
+An optional `accent` re-derives the brand ramp, links, and focus ring at AA
+across hue and chroma, including vivid accents after gamut clipping (shipped).
 
 Layout background colors (shipped): `Pane` (and `PaneConfig`), `NavStack`,
 `TabNavigator`, and `TabNavigatorTab` take a typed `background` color that

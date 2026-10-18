@@ -175,10 +175,15 @@ Add `accent` (usually the artwork's most vivid color) to re-derive the brand
 ramp too: `tint={{ color, scheme, accent }}`. Loud fills (primary buttons, the
 current popup row, checked controls) and their text, brand text and links,
 text on brand fills, and the focus ring all take the accent's hue. Lightness
-is clamped so each pair keeps AA for any accent: in a light scope the fill
-stays at or below 50% OKLCH lightness under white text and brand text at most
-45%; in a dark scope the fill stays between 72% and 85% under near-black text
-and brand text at least 80%.
+is clamped so each pair keeps AA for any accent, including vivid green and
+cyan after gamut clipping: in a light scope the fill stays at or below 46%
+OKLCH lightness under white text, brand text at most 36%, and text on brand
+fills at most 30%; in a dark scope the fill stays between 72% and 85% under
+near-black text, brand text at least 94% against a raised tint surface, and
+text on brand fills at least 95% with chroma capped at 0.12. The dark focus
+ring starts at 78% to stay visible on raised tinted surfaces. The browser
+regression sweeps 36 hues, four chroma levels, and three seed lightnesses in
+both schemes with and without the Web Awesome theme.
 
 `PaneConfig.tint` forwards like `background`. `NavStack`, `TabNavigator`, and
 each `TabNavigatorTab` take `tint` for the stack, the navigator, or one scene.
