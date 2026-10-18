@@ -8648,7 +8648,7 @@ test('renders controlled toolbar, rounded, and pill SegmentedControl Variants', 
   await page.goto('/?component=segmented-control');
   const demo = page.locator('[data-demo="segmented-control"]');
   const controls = demo.locator(
-    '[data-component="segmented-control"]:not([data-placeholder="true"])',
+    '[data-component="segmented-control"]:not([data-placeholder="true"], [data-disabled="true"])',
   );
   await expect(controls).toHaveCount(3);
   await expect(demo.locator('.kui-list-header__title > .kui-text')).toHaveText([
@@ -8656,6 +8656,7 @@ test('renders controlled toolbar, rounded, and pill SegmentedControl Variants', 
     'Rounded Rectangle',
     'Pill',
     'Placeholder',
+    'Disabled',
   ]);
 
   const toolbar = demo.locator(
