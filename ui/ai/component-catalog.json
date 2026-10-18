@@ -6715,7 +6715,7 @@
       "category": "Controls",
       "kind": "component",
       "source": "kerf",
-      "description": "A labeled single-line input or multi-line textarea with hint and error text, an optional leading icon, clear button, and character count, at the 44px control height or compact.",
+      "description": "A labeled single-line input or multi-line textarea with hint and error text, an optional leading icon, clear button, character count, and native numeric constraints, at the 44px control height or compact.",
       "uses": [
         "lucide-icon"
       ],
@@ -6727,7 +6727,8 @@
       "useWhen": [
         "A form or dialog collects a line of free text: label names it (or ariaLabel when nearby content already does), hint explains it, and error reports a validation problem.",
         "People write a longer note or message: multiline with rows, or rows plus maxRows to grow with the content; maxLength with showCount shows the remaining budget.",
-        "A filter or search field needs a leading icon and a clear button: icon and clearable."
+        "A filter or search field needs a leading icon and a clear button: icon and clearable.",
+        "An exact number needs native range or decimal-step validation: type=number with min, max, and step (including step=any)."
       ],
       "avoidWhen": [
         "Do not use when only existing values are allowed; use Select.",
@@ -6773,7 +6774,8 @@
         "disabled",
         "read-only",
         "required",
-        "email, password, search, url, tel, or number type"
+        "email, password, search, url, tel, or number type",
+        "number type with native min, max, and step constraints"
       ],
       "accessibility": [
         "The whole field is a <label> around a native <input> or <textarea>, so clicking anywhere on it focuses the field; the input is named by label (aria-label, with the visible label text hidden from assistive technology so the clear button and count stay out of the name) or by ariaLabel. Focus shows the standard focus ring around the box.",

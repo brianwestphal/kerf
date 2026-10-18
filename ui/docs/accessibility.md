@@ -544,6 +544,12 @@ its label; the input itself reports `required`. The focus ring is drawn on the
 box around the input (`:focus-within`), 3px with a 1px offset like every Kerf
 control.
 
+For `type="number"`, `min`, `max`, and `step` pass through to the native input.
+Each accepts a number or string; `step="any"` allows arbitrary decimals.
+They are omitted for other input types and `multiline` textareas. Native
+constraint validation (`rangeUnderflow`, `rangeOverflow`, and `stepMismatch`)
+then applies without custom field wiring.
+
 `clearable` adds a native `<button>` named by `clearLabel` (default "Clear")
 after the input. It is hidden while the field is empty, is a normal Tab stop,
 and with `wireTextFields(root)` empties the field, dispatches bubbling `input`

@@ -39,6 +39,9 @@ describe('TextField', () => {
       'placeholder',
       'value',
       'maxlength',
+      'min',
+      'max',
+      'step',
       'disabled',
       'readonly',
       'required',
@@ -91,6 +94,51 @@ describe('TextField', () => {
           .querySelector(`.kui-text-field__${part}`)!
           .getAttribute('aria-hidden'),
       ).toBe('true');
+  });
+
+  it('forwards numeric constraints only to a number input', () => {
+    const duty = input(
+      render(
+        TextField({
+          label: 'Customs Duty',
+          type: 'number',
+          min: '0',
+          max: 100,
+          step: '0.01',
+        }),
+      ),
+    );
+    expect(duty.getAttribute('min')).toBe('0');
+    expect(duty.getAttribute('max')).toBe('100');
+    expect(duty.getAttribute('step')).toBe('0.01');
+
+    const rate = input(
+      render(
+        TextField({ label: 'Exchange Rate', type: 'number', step: 'any' }),
+      ),
+    );
+    expect(rate.getAttribute('step')).toBe('any');
+    expect(rate.hasAttribute('min')).toBe(false);
+    expect(rate.hasAttribute('max')).toBe(false);
+
+    const text = input(
+      render(TextField({ label: 'Code', min: 0, max: 100, step: 1 })),
+    );
+    for (const attribute of ['min', 'max', 'step'])
+      expect(text.hasAttribute(attribute)).toBe(false);
+
+    const area = render(
+      TextField({
+        label: 'Notes',
+        multiline: true,
+        type: 'number',
+        min: 0,
+        max: 100,
+        step: 1,
+      }),
+    ).querySelector('textarea')!;
+    for (const attribute of ['min', 'max', 'step'])
+      expect(area.hasAttribute(attribute)).toBe(false);
   });
 
   it('carries input attributes, an accessible name, and protected metadata', () => {

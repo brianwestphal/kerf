@@ -79,6 +79,35 @@ export function TextFieldDemo() {
           />
         </List>
       </CatalogExample>
+      <CatalogExample
+        label="Numeric Constraints"
+        note="Number fields keep native range and step validity, including unrestricted decimal steps."
+        align="inline-control"
+      >
+        <List gap="xs">
+          <TextField
+            label="Customs Duty"
+            type="number"
+            value="12.50"
+            min="0"
+            max="100"
+            step="0.01"
+          />
+          <TextField
+            label="Exchange Rate"
+            type="number"
+            value="1.2345"
+            step="any"
+          />
+          <TextField
+            label="AI Budget"
+            type="number"
+            value="10"
+            min={0}
+            step={1}
+          />
+        </List>
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

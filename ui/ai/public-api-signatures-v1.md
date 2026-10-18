@@ -6171,6 +6171,12 @@ interface TextFieldOptions {
     showCount?: boolean;
     /** Single-line value kind (default `text`). */
     type?: TextFieldType;
+    /** Native lower bound for `type="number"` (number or numeric string). */
+    min?: number | string;
+    /** Native upper bound for `type="number"` (number or numeric string). */
+    max?: number | string;
+    /** Native number increment (number, numeric string, or `"any"`). */
+    step?: number | string;
     /** A multi-line field: a `<textarea>`. */
     multiline?: boolean;
     /** A multi-line field's height in lines (default 3). */
@@ -6199,7 +6205,7 @@ interface TextFieldOptions {
  * The whole field is one `<label>`, so clicking anywhere on it focuses the
  * input; the input is named by `label` (or `ariaLabel`) directly.
  */
-declare function TextField({ label, ariaLabel, value, name, placeholder, hint, error, size, icon, clearable, clearLabel, maxLength, showCount, type, multiline, rows, maxRows, disabled, readOnly, required, autocomplete, id, className, rootAttributes, slot, }: TextFieldProps): kerfjs.SafeHtml;
+declare function TextField({ label, ariaLabel, value, name, placeholder, hint, error, size, icon, clearable, clearLabel, maxLength, showCount, type, min, max, step, multiline, rows, maxRows, disabled, readOnly, required, autocomplete, id, className, rootAttributes, slot, }: TextFieldProps): kerfjs.SafeHtml;
 
 export { TextField, type TextFieldName, type TextFieldOptions, type TextFieldProps, type TextFieldRootAttributes, type TextFieldSize, type TextFieldType };
 ```

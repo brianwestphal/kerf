@@ -63,6 +63,12 @@ export interface TextFieldOptions {
   showCount?: boolean;
   /** Single-line value kind (default `text`). */
   type?: TextFieldType;
+  /** Native lower bound for `type="number"` (number or numeric string). */
+  min?: number | string;
+  /** Native upper bound for `type="number"` (number or numeric string). */
+  max?: number | string;
+  /** Native number increment (number, numeric string, or `"any"`). */
+  step?: number | string;
   /** A multi-line field: a `<textarea>`. */
   multiline?: boolean;
   /** A multi-line field's height in lines (default 3). */
@@ -107,6 +113,9 @@ export function TextField({
   maxLength,
   showCount = false,
   type = 'text',
+  min,
+  max,
+  step,
   multiline = false,
   rows = 3,
   maxRows,
@@ -195,6 +204,9 @@ export function TextField({
             class="kui-text-field__input"
             type={type}
             value={value}
+            min={type === 'number' ? min : undefined}
+            max={type === 'number' ? max : undefined}
+            step={type === 'number' ? step : undefined}
           />
         )}
         {clearable && !multiline ? (

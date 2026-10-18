@@ -1906,6 +1906,20 @@ export const COMPONENTS = {
         render: () =>
           TextField({ label: 'Tag', value: 'design', size: 'compact' }),
       },
+      {
+        id: 'number',
+        label: 'Bounded Decimal',
+        height: 54,
+        render: () =>
+          TextField({
+            label: 'Customs Duty',
+            type: 'number',
+            value: '12.50',
+            min: '0',
+            max: '100',
+            step: '0.01',
+          }),
+      },
     ],
   },
   checkbox: {

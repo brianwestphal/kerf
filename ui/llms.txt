@@ -758,7 +758,9 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   button, `multiline` with `rows` and a growing `maxRows`, and `maxLength` with
   `showCount`, at the 44px height or `size="compact"`. Call
   `wireTextFields(root)` (`@kerfjs/ui/wire-text-fields`) once for clearing and
-  counting. Never render `wa-input` or `wa-textarea` for a form field.
+  counting. For `type="number"`, pass native `min`, `max`, and `step` as numbers
+  or strings (`step="any"` accepts arbitrary decimals). Never render `wa-input`
+  or `wa-textarea` for a form field.
 - **Use `Checkbox`, `CheckboxGroup`, `RadioGroup`, and `Switch` for native
   toggles.** `@kerfjs/ui/checkbox` (with `indeterminate` and
   `wireCheckboxes(root)` from `@kerfjs/ui/wire-checkboxes`),

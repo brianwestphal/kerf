@@ -134,6 +134,55 @@ test('a counted field counts as people type, and a growing one grows', async ({
   ).toBe(true);
 });
 
+test('numeric fields preserve native range and step validity', async ({
+  page,
+}) => {
+  const demo = await openDemo(page);
+  const duty = demo.getByRole('spinbutton', { name: 'Customs Duty' });
+  await expect(duty).toHaveAttribute('min', '0');
+  await expect(duty).toHaveAttribute('max', '100');
+  await expect(duty).toHaveAttribute('step', '0.01');
+  const validity = () =>
+    duty.evaluate((input: HTMLInputElement) => ({
+      under: input.validity.rangeUnderflow,
+      over: input.validity.rangeOverflow,
+      step: input.validity.stepMismatch,
+      valid: input.validity.valid,
+    }));
+  await duty.fill('12.53');
+  expect(await validity()).toEqual({
+    under: false,
+    over: false,
+    step: false,
+    valid: true,
+  });
+  await duty.fill('-0.01');
+  expect((await validity()).under).toBe(true);
+  await duty.fill('100.01');
+  expect((await validity()).over).toBe(true);
+  await duty.fill('12.531');
+  expect((await validity()).step).toBe(true);
+
+  const rate = demo.getByRole('spinbutton', { name: 'Exchange Rate' });
+  await expect(rate).toHaveAttribute('step', 'any');
+  await rate.fill('1.234567');
+  expect(
+    await rate.evaluate(
+      (input: HTMLInputElement) => input.validity.stepMismatch,
+    ),
+  ).toBe(false);
+
+  const budget = demo.getByRole('spinbutton', { name: 'AI Budget' });
+  await expect(budget).toHaveAttribute('min', '0');
+  await expect(budget).toHaveAttribute('step', '1');
+  await budget.fill('1.5');
+  expect(
+    await budget.evaluate(
+      (input: HTMLInputElement) => input.validity.stepMismatch,
+    ),
+  ).toBe(true);
+});
+
 test('fields are 44px tall, or 33px compact, with the focus ring on the box', async ({
   page,
 }) => {

@@ -45,6 +45,10 @@ Vite / esbuild need no extra config. The `jsx-runtime` and `jsx-dev-runtime` sub
 
 ## First-party UI components
 
+For exact numeric input, `@kerfjs/ui/text-field` accepts `type="number"`
+with native `min`, `max`, and `step` props (numbers or strings, including
+`step="any"`). The browser applies range and step validity directly.
+
 For a kerf app that needs shared visual primitives, add the optional lockstep
 package and its semantic styles:
 

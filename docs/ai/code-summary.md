@@ -596,6 +596,11 @@ kerf/
 └── README.md
 ```
 
+`ui/src/components/forms/text-field/text-field.tsx` forwards `min`, `max`, and
+`step` to its native input only for `type="number"`; the numeric catalog
+specimens and unit/browser checks live under `ui/ux-demo/demos/text-field.tsx`
+and `ui/tests/{unit,browser}/text-field.*`.
+
 Kerf UI's stable single-root visual components explicitly forward native
 `slot?: string` on every root branch for custom-element light-DOM projection.
 The multi-root `ResizableRegion` and `CollapsiblePanel` intentionally omit it;

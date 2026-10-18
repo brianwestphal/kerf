@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 428500,
-  "measuredLargestJavaScriptGzip": 164542,
-  "measuredTotalJavaScriptGzip": 428430,
+  "totalJavaScriptGzip": 428600,
+  "measuredLargestJavaScriptGzip": 164540,
+  "measuredTotalJavaScriptGzip": 428578,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6003,6 +6003,22 @@
         "measuredTotalJavaScriptGzip": 428430,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 428500
+      }
+    },
+    {
+      "at": "2026-10-18T05:19:36.104Z",
+      "reason": "TextField numeric constraint specimens in the UX catalog",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164542,
+        "measuredTotalJavaScriptGzip": 428430,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 428500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164540,
+        "measuredTotalJavaScriptGzip": 428578,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 428600
       }
     }
   ]
