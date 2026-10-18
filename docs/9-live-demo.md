@@ -18,7 +18,7 @@ Both are static asset bundles. There is no server-side rendering, no API. The si
 `npm run site:build` runs `astro build`, whose `prebuild` npm hook chains five steps before Astro itself runs:
 
 1. **`sync-docs`** — currently writes no files. The published Starlight pages are hand-owned consumer documentation; `site/scripts/sync-docs.mjs` retains a source-to-site map (all current targets are `null`) because the documentation-ticket coverage gate imports that inventory. The hook remains in the pipeline so a future verbatim mapping can be re-enabled in one place.
-2. **`typecheck`** — checks the Astro site source and the Kerf TSX examples in separate TypeScript projects. `site/tsconfig.json` excludes `src/examples/`; `site/src/examples/tsconfig.json` supplies `jsxImportSource: "kerfjs"` and includes both basic and complete examples. Run `npm run typecheck` from `site/` to check both without building.
+2. **`typecheck`** — runs `astro sync` to generate Astro's module declarations on a fresh install, then checks the site source and the Kerf TSX examples in separate TypeScript projects. `site/tsconfig.json` excludes `src/examples/`; `site/src/examples/tsconfig.json` supplies `jsxImportSource: "kerfjs"` and includes both basic and complete examples. Run `npm run typecheck` from `site/` to check both without building.
 3. **`build-examples`** — runs in two passes:
    - Builds each complete app (`site/src/examples/complete/<name>/`) via Vite into `site/public/run/<name>/`. Each app's docs page links here as **Run live →**.
    - Builds the nine-section reactivity demo (`examples/reactivity-demo/`) via its own Vite config (base `/kerf/demo/`) and copies the result into `site/public/demo/`.
