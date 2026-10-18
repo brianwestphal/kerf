@@ -15,14 +15,15 @@ Both are static asset bundles. There is no server-side rendering, no API. The si
 
 ## 9.2 How it builds
 
-`npm run site:build` runs `astro build`, whose `prebuild` npm hook chains four steps before Astro itself runs:
+`npm run site:build` runs `astro build`, whose `prebuild` npm hook chains five steps before Astro itself runs:
 
 1. **`sync-docs`** — currently writes no files. The published Starlight pages are hand-owned consumer documentation; `site/scripts/sync-docs.mjs` retains a source-to-site map (all current targets are `null`) because the documentation-ticket coverage gate imports that inventory. The hook remains in the pipeline so a future verbatim mapping can be re-enabled in one place.
-2. **`build-examples`** — runs in two passes:
+2. **`typecheck`** — checks the Astro site source and the Kerf TSX examples in separate TypeScript projects. `site/tsconfig.json` excludes `src/examples/`; `site/src/examples/tsconfig.json` supplies `jsxImportSource: "kerfjs"` and includes both basic and complete examples. Run `npm run typecheck` from `site/` to check both without building.
+3. **`build-examples`** — runs in two passes:
    - Builds each complete app (`site/src/examples/complete/<name>/`) via Vite into `site/public/run/<name>/`. Each app's docs page links here as **Run live →**.
    - Builds the nine-section reactivity demo (`examples/reactivity-demo/`) via its own Vite config (base `/kerf/demo/`) and copies the result into `site/public/demo/`.
-3. **`build-icons`** — generates the site's icon assets.
-4. **`gen-llms-txt`** — regenerates the site's `llms.txt` AI-discovery index.
+4. **`build-icons`** — generates the site's icon assets.
+5. **`gen-llms-txt`** — regenerates the site's `llms.txt` AI-discovery index.
 
 Astro then runs and copies `public/` into `dist/` as part of its normal static asset handling. The result: `site/dist/` contains the Starlight site at the root, the runnable complete apps under `dist/run/<name>/`, and the reactivity demo under `dist/demo/`. One artifact, one upload, no manual `cp` step.
 
@@ -42,7 +43,7 @@ The basic single-concept examples (9 of them) are **not** built by this pipeline
 
 1. `npm ci` → installs kerf's deps.
 2. `npm run build` → emits `dist/` for the kerf package itself. This must happen before the site install/build: the site and examples consume local `file:` dependencies, while the site's install-script policy deliberately blocks the repository package's `prepare` script from building it implicitly.
-3. `npm run site:build` → runs `npm install` in `site/`, then `prebuild` (the no-op sync-docs inventory pass + build-examples + build-icons + gen-llms-txt) and `astro build`, producing the combined `site/dist/`.
+3. `npm run site:build` → runs `npm install` in `site/`, then `prebuild` (the no-op sync-docs inventory pass + separate site/example typechecks + build-examples + build-icons + gen-llms-txt) and `astro build`, producing the combined `site/dist/`.
 4. `actions/configure-pages@v5` → wires up Pages metadata.
 5. `actions/upload-pages-artifact@v3` with `path: site/dist` → uploads the bundle.
 6. A separate `deploy` job uses `actions/deploy-pages@v4` to publish.

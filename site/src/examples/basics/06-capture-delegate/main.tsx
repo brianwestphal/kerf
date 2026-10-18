@@ -6,7 +6,7 @@ const focused = signal<string | null>(null);
 const root = document.getElementById('app')!;
 
 mount(root, () => (
-  <form class="kerf-stack" style="max-width: 24rem;" onsubmit="return false">
+  <form class="kerf-stack" style="max-width: 24rem;">
     <div style="display: grid; grid-template-columns: 8rem 1fr; gap: 0.5rem 1rem; align-items: center;">
       {fields.value.map((label, i) => (
         <>
@@ -42,6 +42,10 @@ delegateCapture(root, 'focus', 'input', (_e, input) => {
 });
 delegateCapture(root, 'blur', 'input', () => {
   focused.value = null;
+});
+
+delegate(root, 'submit', 'form', (event) => {
+  event.preventDefault();
 });
 
 delegate(root, 'click', '[data-action="add"]', () => {

@@ -9,10 +9,11 @@
   "scripts": {
     "preinstall": "node scripts/check-install-script-policy.mjs",
     "sync-docs": "node scripts/sync-docs.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p src/examples/tsconfig.json",
     "build-examples": "node scripts/build-examples.mjs",
     "build-icons": "node scripts/build-icons.mjs",
     "gen-llms-txt": "node scripts/gen-llms-txt.mjs",
-    "prebuild": "npm run sync-docs && npm run build-examples && npm run build-icons && npm run gen-llms-txt",
+    "prebuild": "npm run sync-docs && npm run typecheck && npm run build-examples && npm run build-icons && npm run gen-llms-txt",
     "dev": "npm run build && astro preview",
     "predev:hmr": "npm run sync-docs && npm run build-examples && npm run build-icons && npm run gen-llms-txt",
     "dev:hmr": "astro dev",

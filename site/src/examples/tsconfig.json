@@ -4,5 +4,6 @@
     "jsx": "react-jsx",
     "jsxImportSource": "kerfjs"
   },
-  "include": ["**/*"]
+  "include": ["**/*"],
+  "exclude": ["**/dist"]
 }
