@@ -44,10 +44,35 @@ let active: ViewTransition | undefined;
 const queued: ViewTransitionListAction[] = [];
 
 function apply(action: ViewTransitionListAction) {
-  viewTransitionListRows.value = nextViewTransitionListRows(
-    viewTransitionListRows.value,
-    action,
-  );
+  const specimen = document.querySelector('[data-demo-view-transitions]');
+  const scrollPositions: Array<{
+    element: Element;
+    top: number;
+    left: number;
+  }> = [];
+  for (let element = specimen; element; element = element.parentElement) {
+    if (
+      element.scrollHeight > element.clientHeight ||
+      element.scrollWidth > element.clientWidth
+    )
+      scrollPositions.push({
+        element,
+        top: element.scrollTop,
+        left: element.scrollLeft,
+      });
+  }
+  try {
+    viewTransitionListRows.value = nextViewTransitionListRows(
+      viewTransitionListRows.value,
+      action,
+    );
+  } finally {
+    for (const { element, top, left } of scrollPositions) {
+      if (!element.isConnected) continue;
+      element.scrollTop = top;
+      element.scrollLeft = left;
+    }
+  }
 }
 
 /** The catalog app owns the transition around the source write, not Kerf. */

@@ -78,6 +78,41 @@ test('List demo updates directly without View Transitions and under reduced moti
   ).toBe(0);
 });
 
+for (const width of [1402, 390]) {
+  test(`List controls preserve catalog scroll at ${width}px`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize({ width, height: width === 1402 ? 1252 : 844 });
+    const root = await example(page);
+    const position = () =>
+      root.evaluate((element) => {
+        const pane = element.closest('.kui-pane__content')!;
+        return {
+          scrollTop: pane.scrollTop,
+          top: element.getBoundingClientRect().top,
+        };
+      });
+    const baseline = await position();
+    expect(baseline.scrollTop).toBeGreaterThan(0);
+    for (const name of ['Reorder', 'Insert Delta', 'Remove Last', 'Reset']) {
+      await root
+        .getByRole('button', { name })
+        .evaluate((element: HTMLElement) => element.click());
+      const during = await position();
+      expect(during.scrollTop).toBeCloseTo(baseline.scrollTop, 0);
+      expect(during.top).toBeCloseTo(baseline.top, 0);
+      await page.waitForTimeout(400);
+      const settled = await position();
+      expect(settled.scrollTop).toBeCloseTo(baseline.scrollTop, 0);
+      expect(settled.top).toBeCloseTo(baseline.top, 0);
+      if (name === 'Reorder' && testInfo.project.name === 'webkit')
+        await page.screenshot({
+          path: testInfo.outputPath(`list-scroll-stable-${width}-settled.png`),
+        });
+    }
+  });
+}
+
 for (const width of [1200, 390]) {
   test(`List View Transitions demo remains readable at ${width}px`, async ({
     page,

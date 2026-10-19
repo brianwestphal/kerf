@@ -1,3 +1,4 @@
+import { effect } from 'kerfjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -63,6 +64,33 @@ describe('List View Transitions demo actions', () => {
       'c',
     ]);
     expect(start).not.toHaveBeenCalled();
+  });
+
+  it('restores a scrolling ancestor after a row update changes its position', () => {
+    const pane = document.createElement('div');
+    const specimen = document.createElement('div');
+    specimen.dataset.demoViewTransitions = '';
+    pane.append(specimen);
+    document.body.append(pane);
+    Object.defineProperties(pane, {
+      scrollHeight: { configurable: true, value: 500 },
+      clientHeight: { configurable: true, value: 100 },
+    });
+    const stop = effect(() => {
+      if (viewTransitionListRows.value) pane.scrollTop = 52;
+    });
+    pane.scrollTop = 187;
+    Object.defineProperty(document, 'startViewTransition', {
+      configurable: true,
+      value: undefined,
+    });
+    try {
+      changeViewTransitionList('reorder');
+      expect(pane.scrollTop).toBe(187);
+    } finally {
+      stop();
+      pane.remove();
+    }
   });
 
   it('queues rapid edits during snapshot capture and applies them in order', async () => {

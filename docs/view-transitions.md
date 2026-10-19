@@ -9,7 +9,8 @@ the timing and scope.
 Try the interactive [List View Transitions catalog example](../ui/ux-demo/?component=list):
 its Reorder, Insert Delta, Remove Last, and Reset controls use this recipe in a
 real `each()` list. The named-row CSS and transition coordinator belong to the
-catalog app.
+catalog app. It also restores its scrollable ancestors around each source write
+so moving rows cannot shift the catalog pane while the action runs.
 
 ## Render rows with stable names
 

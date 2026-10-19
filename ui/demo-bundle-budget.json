@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 432600,
-  "measuredLargestJavaScriptGzip": 164543,
-  "measuredTotalJavaScriptGzip": 432522,
+  "totalJavaScriptGzip": 432700,
+  "measuredLargestJavaScriptGzip": 164542,
+  "measuredTotalJavaScriptGzip": 432676,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6099,6 +6099,22 @@
         "measuredTotalJavaScriptGzip": 432522,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 432600
+      }
+    },
+    {
+      "at": "2026-10-19T04:57:16.563Z",
+      "reason": "Preserve catalog scroll positions around List View Transition source writes",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 432522,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 432600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164542,
+        "measuredTotalJavaScriptGzip": 432676,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 432700
       }
     }
   ]
