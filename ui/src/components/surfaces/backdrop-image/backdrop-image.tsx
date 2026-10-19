@@ -73,6 +73,7 @@ const backdropImageProtected = new Set([
   'data-under-chrome',
   'data-aspect-ratio',
   'data-inline-bleed',
+  'data-defer-offscreen',
 ]);
 
 type BackdropImageRootAttributes = StructuralRootAttributes &
@@ -86,6 +87,7 @@ type BackdropImageRootAttributes = StructuralRootAttributes &
     'data-under-chrome'?: never;
     'data-aspect-ratio'?: never;
     'data-inline-bleed'?: never;
+    'data-defer-offscreen'?: never;
   }>;
 
 interface BackdropImageCommonProps {
@@ -119,6 +121,8 @@ interface BackdropImageCommonProps {
    * statically blurred copy. Static (unblurred) wherever parallax is.
    */
   blur?: BackdropImageBlur;
+  /** Skip painting the image hero while it is off screen in a long feed. */
+  deferOffscreen?: boolean;
   /**
    * Run the image up beneath the scroller's block-start inset: an overlay or
    * clear Pane header, NavStack chrome handed to a view's Pane, and the top
@@ -223,6 +227,7 @@ export function BackdropImage(props: BackdropImageProps) {
     bleedInline = true,
     parallax = 'none',
     blur,
+    deferOffscreen = false,
     fadeTo,
     scrim = 'none',
     underChrome = false,
@@ -316,6 +321,7 @@ export function BackdropImage(props: BackdropImageProps) {
       data-under-chrome={underChrome ? 'true' : undefined}
       data-aspect-ratio={aspectRatio === undefined ? undefined : 'true'}
       data-inline-bleed={bleedInline ? undefined : 'false'}
+      data-defer-offscreen={deferOffscreen ? 'true' : undefined}
       style={style || undefined}
       slot={slot}
     >

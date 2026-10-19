@@ -1726,7 +1726,8 @@
         "progressive blur from a once-filtered copy or an app-supplied blurred asset, with an optional dim",
         "fade into a color that also paints below",
         "bottom or full scrim under overlay content",
-        "image running beneath clear or overlay chrome (underChrome)"
+        "image running beneath clear or overlay chrome (underChrome)",
+        "opt-in deferOffscreen hero paint deferral for dense image feeds without changing reserved height"
       ],
       "accessibility": [
         "alt describes a meaningful image; pass an empty alt for a decorative one. A tiled image with alt text is exposed as role=\"img\". Parallax and the progressive blur run only with prefers-reduced-motion: no-preference and scroll-driven animation support, and are off under data-kui-effects=\"static\" and on slow-update displays, leaving a static, sharp image; the blurred copy is decorative and aria-hidden. Reduced transparency or increased contrast replaces the fade with a hard edge on solid fadeTo and puts overlay content on a solid fadeTo band. Overlay text needs a scrim or fade color that keeps it at AA."
@@ -5108,7 +5109,8 @@
         "chat bubble at the start or end of the row (bubble), fit to its content up to 80%",
         "named focus-target region",
         "multi-select rich grid row",
-        "gridRow: a non-selectable row (role=\"row\" with a gridcell) between selectable rows of a multi-select List or Grid"
+        "gridRow: a non-selectable row (role=\"row\" with a gridcell) between selectable rows of a multi-select List or Grid",
+        "image-led feed media with opt-in deferOffscreen hero paint deferral"
       ],
       "accessibility": [
         "An ordinary item adds no role or name; pass ariaLabel only when the item is a distinct named region (it then renders role=\"region\").",

@@ -23,6 +23,22 @@ function card(tinted = true) {
 }
 
 describe('ContentItem image state wiring', () => {
+  it('forwards offscreen hero deferral only when media requests it', () => {
+    const deferred = String(
+      ContentItem({
+        media: { src: '/lead.jpg', alt: 'Lead', deferOffscreen: true },
+        children: 'Story',
+      }),
+    );
+    expect(deferred).toContain('data-defer-offscreen="true"');
+    expect(String(ContentItem({ children: 'Story' }))).not.toContain(
+      'data-defer-offscreen',
+    );
+    expect(
+      String(ContentItem({ media: { src: '/lead.jpg', alt: 'Lead' } })),
+    ).not.toContain('data-defer-offscreen');
+  });
+
   it('restores tint after a failed lead source is replaced and keeps the soft copy decorative', async () => {
     const root = document.createElement('div');
     const item = card();

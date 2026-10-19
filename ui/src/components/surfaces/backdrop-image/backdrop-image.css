@@ -65,6 +65,12 @@
   view-timeline: --kui-backdrop-image block;
 }
 
+/* Dense feeds can skip offscreen image painting without changing the height
+   reserved by the hero's aspect ratio or the containing card body. */
+.kui-backdrop-image[data-defer-offscreen="true"] .kui-backdrop-image__hero {
+  content-visibility: auto;
+}
+
 .kui-backdrop-image[data-aspect-ratio="true"] .kui-backdrop-image__hero {
   min-height: 0;
   aspect-ratio: var(--_kui-backdrop-image-ratio);

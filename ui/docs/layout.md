@@ -458,7 +458,12 @@ The card composes `BackdropImage` for its scroll timeline, optional overlay and
 scrim, progressive `blur`, and typed `fadeTo` that continues behind its body.
 `blurredSrc` is a pre-blurred decorative copy; the browser animates
 only its opacity and the image layer's transform. Each image has its own view
-timeline in the containing Pane's shared vertical scroller. `wireContentItems`
+timeline in the containing Pane's shared vertical scroller. Set
+`media.deferOffscreen` for dense feeds: it skips painting an offscreen
+image hero while preserving the card and its reserved media height. Enable it
+only when many media cards share a scrollport; it has no effect in browsers
+without `content-visibility`. The card body and controls remain in the layout.
+`wireContentItems`
 also listens for image load/error from one containing root: a broken lead image
 hides its media block and removes its tint, leaving an ordinary ContentItem;
 changing its source and loading successfully restores the card treatment. A

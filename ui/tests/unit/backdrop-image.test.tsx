@@ -158,6 +158,25 @@ describe('BackdropImage', () => {
     ).toThrow(TypeError);
   });
 
+  it('defers only an opted-in offscreen hero while retaining its aspect ratio', () => {
+    const deferred = String(
+      BackdropImage({
+        src: '/feed.jpg',
+        alt: 'Feed image',
+        aspectRatio: 16 / 9,
+        deferOffscreen: true,
+      }),
+    );
+    expect(deferred).toContain('data-defer-offscreen="true"');
+    expect(deferred).toContain('data-aspect-ratio="true"');
+    expect(css).toContain(
+      '.kui-backdrop-image[data-defer-offscreen="true"] .kui-backdrop-image__hero {\n  content-visibility: auto;',
+    );
+    expect(String(BackdropImage({ src: '/feed.jpg', alt: '' }))).not.toContain(
+      'data-defer-offscreen',
+    );
+  });
+
   it('tiles the image as an escaped background and exposes alt text as an image', () => {
     const html = String(
       BackdropImage({

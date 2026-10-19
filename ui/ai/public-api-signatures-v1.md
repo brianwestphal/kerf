@@ -1234,6 +1234,8 @@ interface ContentItemMedia {
     blurredSrc?: string;
     /** Shared BackdropImage blur behavior; use instead of `blurredSrc`. */
     blur?: BackdropImageBlur;
+    /** Skip offscreen media painting in long feeds while retaining card geometry. */
+    deferOffscreen?: boolean;
     /** Color the image dissolves into and the card body continues on. */
     fadeTo?: CssColor;
     /** Content layered over the image, including native controls. */
@@ -4578,6 +4580,7 @@ type BackdropImageRootAttributes = StructuralRootAttributes & Readonly<{
     'data-under-chrome'?: never;
     'data-aspect-ratio'?: never;
     'data-inline-bleed'?: never;
+    'data-defer-offscreen'?: never;
 }>;
 interface BackdropImageCommonProps {
     /** Image URL. */
@@ -4610,6 +4613,8 @@ interface BackdropImageCommonProps {
      * statically blurred copy. Static (unblurred) wherever parallax is.
      */
     blur?: BackdropImageBlur;
+    /** Skip painting the image hero while it is off screen in a long feed. */
+    deferOffscreen?: boolean;
     /**
      * Run the image up beneath the scroller's block-start inset: an overlay or
      * clear Pane header, NavStack chrome handed to a view's Pane, and the top

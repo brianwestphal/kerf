@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Dense-feed media deferral.** `BackdropImage.deferOffscreen` and `ContentItem.media.deferOffscreen` opt into skipping offscreen hero painting while retaining card height and the shared scrollport. The 200-card constrained-CPU feed improved in both desktop and narrow measurements; the default remains unchanged (`KF-J5SAFS`).
 - **`DialogSurface` `closeEmphasis`.** Set it to `quiet` for a smaller, quieter close glyph within the existing 40px native button. Accessible naming, focus, forced colors, and close requests remain intact; `normal` keeps the established default (`KF-GJ4GTJ`).
 - **`Button` `currentStep`.** A setup or progress step can mark its native button or link with `aria-current="step"` through a typed prop, including when disabled, without changing its label or visual state (`KF-TGEW3B`).
 - **`each()` keeps a uniquely keyed row across item-object replacement.** Replacing an item with a new object that renders the same unique `id` or `data-key` now morphs its same-tag row in place, including during a reorder, so live children such as an open popover anchor stay connected. Ambiguous keys and tag changes still replace the row; the per-item HTML cache remains based on object identity (`KF-GS850A`).

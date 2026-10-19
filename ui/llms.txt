@@ -919,6 +919,9 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   `data-kui-effects="static"`, or without scroll-driven animations, and ends on
   a hard edge (overlay on a solid `fadeTo` band) under reduced transparency. Never hand-roll scroll listeners or
   `background-attachment: fixed`.
+  In a dense image-led feed, opt into `ContentItem.media.deferOffscreen` (or
+  `BackdropImage.deferOffscreen` directly) to skip offscreen hero painting while
+  preserving card height and the shared scroll owner.
 
 - **Use `MessageComposer` for a chat or prompt composer.** `@kerfjs/ui/message-composer`
   renders a raised frame (standard border, large radius, `shadow-l`) whose

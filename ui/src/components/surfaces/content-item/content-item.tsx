@@ -54,6 +54,8 @@ export interface ContentItemMedia {
   blurredSrc?: string;
   /** Shared BackdropImage blur behavior; use instead of `blurredSrc`. */
   blur?: BackdropImageBlur;
+  /** Skip offscreen media painting in long feeds while retaining card geometry. */
+  deferOffscreen?: boolean;
   /** Color the image dissolves into and the card body continues on. */
   fadeTo?: CssColor;
   /** Content layered over the image, including native controls. */
@@ -398,6 +400,7 @@ export function ContentItem({
               media.blur ??
               (media.blurredSrc ? { blurredSrc: media.blurredSrc } : undefined)
             }
+            deferOffscreen={media.deferOffscreen}
             fadeTo={media.fadeTo}
             overlay={media.overlay}
             scrim={media.scrim}

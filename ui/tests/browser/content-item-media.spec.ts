@@ -9,7 +9,9 @@ async function feed(page: Page, waitReady = true) {
   const cards = pane.locator('[data-feed-card]');
   if (waitReady) {
     await expect(cards.nth(0)).toHaveAttribute('data-media-state', 'ready');
+    await cards.nth(1).scrollIntoViewIfNeeded();
     await expect(cards.nth(1)).toHaveAttribute('data-media-state', 'ready');
+    await cards.nth(0).scrollIntoViewIfNeeded();
   }
   return { pane, cards, scroller: pane.locator('.kui-pane__content') };
 }
@@ -20,6 +22,57 @@ async function offset(card: Locator) {
     return matrix === 'none' ? 0 : new DOMMatrixReadOnly(matrix).m42;
   });
 }
+
+test('opted-in media defers offscreen heroes without shifting the feed or hiding visible images', async ({
+  page,
+}, testInfo) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 700 });
+    const { cards, scroller } = await feed(page);
+    const first = cards.nth(0);
+    const hero = first.locator('.kui-backdrop-image__hero');
+    await expect(first.locator('.kui-backdrop-image')).toHaveAttribute(
+      'data-defer-offscreen',
+      'true',
+    );
+    expect(
+      await hero.evaluate(
+        (node) => window.getComputedStyle(node).contentVisibility,
+      ),
+    ).toBe('auto');
+    expect(
+      await first.evaluate(
+        (node) => window.getComputedStyle(node).contentVisibility,
+      ),
+    ).toBe('visible');
+    const height = await scroller.evaluate((node) => node.scrollHeight);
+    await scroller.evaluate((node) => {
+      node.scrollTop = node.scrollHeight;
+    });
+    await cards.nth(2).scrollIntoViewIfNeeded();
+    await expect(
+      cards.nth(2).locator('.kui-backdrop-image__media'),
+    ).toBeVisible();
+    await expect(
+      cards.nth(2).getByRole('button', { name: 'Explore' }),
+    ).toBeVisible();
+    await first.scrollIntoViewIfNeeded();
+    await expect
+      .poll(() =>
+        first
+          .locator('.kui-backdrop-image__media')
+          .evaluate(
+            (node: HTMLImageElement) => node.complete && node.naturalWidth > 0,
+          ),
+      )
+      .toBe(true);
+    expect(await scroller.evaluate((node) => node.scrollHeight)).toBe(height);
+    if (testInfo.project.name === 'chromium')
+      await first.screenshot({
+        path: testInfo.outputPath(`content-item-deferred-${width}.png`),
+      });
+  }
+});
 
 test('feed cards have independent image timelines in one scroller and reverse on scroll back', async ({
   page,

@@ -43,6 +43,7 @@ Exact prop names and types: [`@kerfjs/ui/backdrop-image`](../public-api-signatur
 - fade into a color that also paints below
 - bottom or full scrim under overlay content
 - image running beneath clear or overlay chrome (underChrome)
+- opt-in deferOffscreen hero paint deferral for dense image feeds without changing reserved height
 
 ## Composition
 

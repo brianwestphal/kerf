@@ -101,6 +101,11 @@ color, set `tint={{ color, scheme }}` on the same components (and
 text, link, fills, and chrome material from it with lightness clamped to keep
 text at WCAG AA. Add `accent` to re-derive the brand ramp (loud fills, links, focus ring) from the artwork's vivid color with the same AA clamps. Never restyle tokens by hand inside a tinted region.
 
+For many image-led `ContentItem` cards in one feed, opt into
+`media.deferOffscreen` to skip offscreen hero painting while retaining the
+card's reserved height and the shared scroll owner. `BackdropImage` exposes
+the same `deferOffscreen` option directly; leave it off for a single page hero.
+
 ## Components own their styles; configure, never override
 
 This is the rule every Kerf UI surface follows, and applications and

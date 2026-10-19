@@ -53,6 +53,7 @@ Exact prop names and types: [`@kerfjs/ui/content-item`](../public-api-signatures
 - named focus-target region
 - multi-select rich grid row
 - gridRow: a non-selectable row (role="row" with a gridcell) between selectable rows of a multi-select List or Grid
+- image-led feed media with opt-in deferOffscreen hero paint deferral
 
 ## Composition
 

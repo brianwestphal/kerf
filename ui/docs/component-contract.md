@@ -598,6 +598,8 @@ An image-led feed card uses `ContentItem.media` and an optional app-supplied
 `SurfaceTint` in `tint`. Its media composes `BackdropImage`, reserving an aspect
 ratio and running a per-image view timeline in the shared scrollport. Optional
 `overlay`, `scrim`, `fadeTo`, and `blur` use the same behavior as a page hero;
+`media.deferOffscreen` opts dense feeds into offscreen hero paint deferral
+without changing card geometry or the shared scroll owner;
 `edgeToEdge` extends media to the card's top and inline inner edges;
 `wireContentItems` handles load/error and restores the normal surface when the
 lead image fails. The once-wired helper also restores the native image state

@@ -75,6 +75,7 @@ export function ContentItemDemo() {
                   blurredSrc: svgUrl(SKYLINE_BLURRED),
                   aspectRatio: 16 / 9,
                   parallax: 'subtle',
+                  deferOffscreen: true,
                   ...(index === 2
                     ? {
                         fadeTo: fillColor('#283a54'),
