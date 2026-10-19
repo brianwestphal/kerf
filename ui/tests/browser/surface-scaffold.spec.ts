@@ -16,8 +16,9 @@ test('quiet close emphasis keeps its target, name, focus, and close request', as
     await expect(close).toHaveAttribute('data-emphasis', 'quiet');
     await expect(close.locator('svg')).toHaveAttribute('data-size', 'm');
     const quietBox = (await close.boundingBox())!;
-    await page.keyboard.press('Shift');
     await close.focus();
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Shift+Tab');
     await expect(close).toBeFocused();
     await expect(close).toHaveCSS('outline-style', 'solid');
     await dialog.evaluate((element) => {
