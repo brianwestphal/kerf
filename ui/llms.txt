@@ -717,6 +717,9 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   renders a native `aria-pressed` button whose pressed look draws on top of
   its tone and emphasis; the app flips the state. Never wrap a
   `ToolbarControlGroup` outside a toolbar or restyle a button to fake it.
+- **Mark a current setup step with `Button.currentStep`.** It emits
+  `aria-current="step"` on a button or link, including a disabled current step.
+  The app owns the step label and which step is current. See `docs/button.md`.
 - **Let an icon-state toggle skip selected chrome.** When a pressed toggle's
   glyph already shows its state (an empty or filled star), set
   `data-selected-chrome="none"` on that button, or `selectedChrome="none"` on

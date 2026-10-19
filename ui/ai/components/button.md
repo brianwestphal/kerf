@@ -13,6 +13,7 @@ Trigger an action from a dialog footer, a form, or content outside any Toolbar, 
 - A dialog footer, a form, or content needs an action button: tone="brand" for the main action, tone="success" for a positive action such as a pricing check, tone="danger" for a destructive one, and emphasis="secondary" or "plain" for the quieter actions beside it.
 - A form submits or resets: type="submit" or "reset" (the default type never submits), with name, value, and form when needed.
 - An action navigates: href renders a link with the same chrome.
+- A setup or progress sequence uses a Button as its current step: currentStep marks that button or link with aria-current="step" without changing its styling.
 - A single primary action spans its form, sheet, or narrow column: fill makes it span the parent's available inline width, label centered, as SplitButton's fill does.
 
 **Not when:**
@@ -46,6 +47,7 @@ Exact prop names and types: [`@kerfjs/ui/button`](../public-api-signatures-v1.md
 - leading icon
 - icon-only square (icon and ariaLabel, no label)
 - pressed toggle (aria-pressed) on any tone and emphasis
+- currentStep marker (aria-current="step") on a button or link
 - loading
 - disabled
 - link (href)
@@ -61,7 +63,7 @@ Exact prop names and types: [`@kerfjs/ui/button`](../public-api-signatures-v1.md
 
 ## State and wiring
 
-**The app owns:** the label and its delegated action; what a press does while loading; form ownership.
+**The app owns:** the label and its delegated action; which step is current when currentStep marks a sequence; what a press does while loading; form ownership.
 
 No wiring helper.
 
@@ -74,6 +76,7 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 - A native \<button> (type="button" unless set) or, with href, an \<a>; its label names it, or ariaLabel when the label is not enough. Focus shows the standard focus ring 1px outside the box; with focusRingInset it is drawn inside the box, two-tone with a surface-colored line inside the ring color, so it keeps 3:1 contrast on a loud fill of its own hue.
 - Loading shows a spinner in place of the label, which still names the button, and sets aria-busy="true". A disabled link drops its href and reports aria-disabled="true". Disabled success uses a quiet success fill and readable on-fill text instead of fading the label.
 - With pressed, it is a toggle: aria-pressed reports the state, and the pressed look adds a doubled outline (secondary and plain) or a darkened fill with an inset ring (primary), so the state never relies on hue alone; forced-colors mode paints it Highlight. An icon-only Button is named by ariaLabel, and help tags show that name on hover and keyboard focus. A title gives native hover text that says more than the name and replaces the help tag.
+- With currentStep, a native button or link reports aria-current="step" even when disabled; the app owns the step label and which step is current.
 
 ## Styling boundary
 
@@ -90,5 +93,5 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 ## Related
 
 - Components: [LoadingSpinner](./loading-spinner.md), [Button](./wa-button.md), [ToolbarControlGroup](./toolbar-control-group.md).
-- Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#problem-to-component-matrix`](../../docs/component-selection.md#problem-to-component-matrix).
+- Docs: [`docs/button.md`](../../docs/button.md), [`docs/component-selection.md#problem-to-component-matrix`](../../docs/component-selection.md#problem-to-component-matrix).
 - UX catalog route: `?component=button`.

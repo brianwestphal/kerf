@@ -908,6 +908,7 @@ The detailed rationale lives in the theme contract.
 - [Apple HIG translation](./docs/apple-hig.md)
 - [Writing interface copy](./docs/writing.md)
 - [Accessibility and keyboard contracts](./docs/accessibility.md)
+- [Button current-step semantics](./docs/button.md)
 - [Component and integration contract](./docs/component-contract.md)
 - [Spacing and application layout](./docs/layout.md)
 - [Web Awesome theme contract](./docs/webawesome-theme.md)

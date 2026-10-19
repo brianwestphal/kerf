@@ -68,6 +68,27 @@ test('Enter and Space activate a Button, which shows the focus ring', async ({
   await expect(cancel).toHaveCSS('box-shadow', 'none');
 });
 
+test('currentStep identifies button and link steps without changing disabled behavior', async ({
+  page,
+}) => {
+  for (const width of [1100, 390]) {
+    const demo = await openDemo(page, width);
+    const steps = demo.locator('[data-demo-section="current-step"]');
+    const current = steps.getByRole('button', { name: 'Configure' });
+    await expect(current).toHaveAttribute('aria-current', 'step');
+    await expect(current).toBeEnabled();
+    await expect(
+      steps.getByRole('button', { name: 'Review' }),
+    ).not.toHaveAttribute('aria-current');
+    const link = steps.getByRole('link', { name: 'Current Guide' });
+    await expect(link).toHaveAttribute('href', '#button');
+    await expect(link).toHaveAttribute('aria-current', 'step');
+    const disabled = steps.getByRole('button', { name: 'Locked Step' });
+    await expect(disabled).toBeDisabled();
+    await expect(disabled).toHaveAttribute('aria-current', 'step');
+  }
+});
+
 test('success Button stays legible across emphases and states in both themes', async ({
   page,
 }) => {

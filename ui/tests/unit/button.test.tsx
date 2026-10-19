@@ -49,6 +49,7 @@ describe('Button', () => {
       'aria-label',
       'title',
       'aria-busy',
+      'aria-current',
       'data-loading',
       'data-icon-only',
       'disabled',
@@ -173,6 +174,39 @@ describe('Button', () => {
     );
     expect(off.getAttribute('aria-pressed')).toBe('false');
     expect(off.hasAttribute('data-icon-only')).toBe(true);
+  });
+
+  it('marks the current step on buttons and links, including disabled ones', () => {
+    const currentButton = render(<Button currentStep>Install</Button>);
+    expect(currentButton.getAttribute('aria-current')).toBe('step');
+    expect(currentButton.hasAttribute('aria-pressed')).toBe(false);
+    expect(
+      render(<Button currentStep={false}>Install</Button>).hasAttribute(
+        'aria-current',
+      ),
+    ).toBe(false);
+    const currentLink = render(
+      <Button href="/setup/install" currentStep>
+        Install
+      </Button>,
+    );
+    expect(currentLink.localName).toBe('a');
+    expect(currentLink.getAttribute('aria-current')).toBe('step');
+    const disabledButton = render(
+      <Button currentStep disabled>
+        Install
+      </Button>,
+    );
+    expect(disabledButton.hasAttribute('disabled')).toBe(true);
+    expect(disabledButton.getAttribute('aria-current')).toBe('step');
+    const disabledLink = render(
+      <Button href="/setup/install" currentStep disabled>
+        Install
+      </Button>,
+    );
+    expect(disabledLink.hasAttribute('href')).toBe(false);
+    expect(disabledLink.getAttribute('aria-disabled')).toBe('true');
+    expect(disabledLink.getAttribute('aria-current')).toBe('step');
   });
 
   it('takes a pill shape and protects its shape marker', () => {

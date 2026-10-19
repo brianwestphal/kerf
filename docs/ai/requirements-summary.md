@@ -325,6 +325,8 @@ For `type="number"`, TextField forwards native `min`, `max`, and `step` attribut
 
 `@kerfjs/ui` `Button` (stage 2 of the Web Awesome independence work) is a native button in a `tone` × `emphasis` × `size` (including a contrast-safe semantic success tone for positive actions such as pricing checks) with an optional icon, loading, link, and form type, matching the old `wa-button` look; brand secondary/plain labels darken in light mode to remain legible on quiet hover fills. An `icon` with `ariaLabel` makes its icon-only square, `pressed` makes it a toggle and `shape` a pill (KF-TQCJSS retired `IconButton` / `IconToggleButton` into it), and the catalog no longer renders `wa-button` outside the Web Awesome routes.
 
+**Shipped (KF-TGEW3B).** `Button.currentStep` emits `aria-current="step"` on a button or link, including a disabled current step. The app owns the label and current-step selection; this semantic prop does not alter styling or permit arbitrary ARIA overrides. See `ui/docs/button.md`.
+
 `@kerfjs/ui` supports every Web Awesome 3.x from 3.14 (optional peer `^3.14.0`): stage 1 of the Web Awesome independence work retired every prototype patch, and CI tests the newest 3.x alongside the 3.14.0 floor.
 
 `@kerfjs/ui` Select is Kerf's own control (wa-independence stage 1; it no

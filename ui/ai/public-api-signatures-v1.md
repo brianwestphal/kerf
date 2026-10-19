@@ -6662,6 +6662,8 @@ interface ButtonOptions {
      * flips it in its `action` handler. A link (`href`) cannot be a toggle.
      */
     pressed?: boolean;
+    /** Mark the current step in a sequence with `aria-current="step"`. */
+    currentStep?: boolean;
     /**
      * Busy: a spinner replaces the label (which still names it) and the button
      * reports `aria-busy`. Presses still reach it; the application decides
@@ -6716,12 +6718,12 @@ interface ButtonOptions {
  * in one of four tones and three emphases, at the 44px control height or
  * compact, with a label or as an icon-only square, rounded or pill-shaped,
  * sized to its label or filling its parent's width, and optionally a
- * `pressed` toggle. Inside a
+ * `pressed` toggle or `currentStep` marker. Inside a
  * `ToolbarControlGroup`, use a plain `<button>`, which the group styles; use
  * Button for a dialog footer, a form, or a standalone action beside other
  * content.
  */
-declare function Button({ children, tone, emphasis, size, shape, fill, pressed, icon, loading, disabled, type, name, value, form, href, target, action, focusRingInset, badge, badgeLabel, badgeTone, ariaLabel, title, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
+declare function Button({ children, tone, emphasis, size, shape, fill, pressed, currentStep, icon, loading, disabled, type, name, value, form, href, target, action, focusRingInset, badge, badgeLabel, badgeTone, ariaLabel, title, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
 
 export { Button, type ButtonContent, type ButtonEmphasis, type ButtonLabel, type ButtonOptions, type ButtonProps, type ButtonRootAttributes, type ButtonShape, type ButtonSize, type ButtonTone, type ButtonType };
 ```

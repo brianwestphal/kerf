@@ -136,6 +136,24 @@ export function ButtonDemo() {
         </Row>
       </CatalogExample>
       <CatalogExample
+        label="Current Step"
+        note="currentStep marks the active step with aria-current=step on a button or link, even when the step is disabled. The application still names each step."
+        align="inline-control"
+      >
+        <Row wrap rootAttributes={{ 'data-demo-section': 'current-step' }}>
+          <Button currentStep action="log-more">
+            Configure
+          </Button>
+          <Button action="log-more">Review</Button>
+          <Button href="#button" currentStep>
+            Current Guide
+          </Button>
+          <Button currentStep disabled>
+            Locked Step
+          </Button>
+        </Row>
+      </CatalogExample>
+      <CatalogExample
         label="Icon-Only"
         note="With no label, a Button is a square one control height on each side, named by ariaLabel; badge pins a count or dot to its corner, named by badgeLabel; its help tag repeats that name, and a title (Delete) gives longer native hover text instead. Beside a field, it lines up with the field below its label."
         viewport={{ width: 'medium' }}

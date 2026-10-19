@@ -82,6 +82,8 @@ export interface ButtonOptions {
    * flips it in its `action` handler. A link (`href`) cannot be a toggle.
    */
   pressed?: boolean;
+  /** Mark the current step in a sequence with `aria-current="step"`. */
+  currentStep?: boolean;
   /**
    * Busy: a spinner replaces the label (which still names it) and the button
    * reports `aria-busy`. Presses still reach it; the application decides
@@ -137,7 +139,7 @@ export interface ButtonOptions {
  * in one of four tones and three emphases, at the 44px control height or
  * compact, with a label or as an icon-only square, rounded or pill-shaped,
  * sized to its label or filling its parent's width, and optionally a
- * `pressed` toggle. Inside a
+ * `pressed` toggle or `currentStep` marker. Inside a
  * `ToolbarControlGroup`, use a plain `<button>`, which the group styles; use
  * Button for a dialog footer, a form, or a standalone action beside other
  * content.
@@ -150,6 +152,7 @@ export function Button({
   shape = 'rounded',
   fill = false,
   pressed,
+  currentStep = false,
   icon,
   loading = false,
   disabled = false,
@@ -191,6 +194,7 @@ export function Button({
         : ariaLabel,
     title,
     'aria-busy': loading ? 'true' : undefined,
+    'aria-current': currentStep ? 'step' : undefined,
     slot,
   };
   const content = (
