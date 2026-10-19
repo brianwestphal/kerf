@@ -9,7 +9,7 @@ test('single icon PopupMenu fills and centers the toolbar control slot when enab
     .locator('[data-catalog-example]')
     .filter({
       has: page.locator('[data-catalog-example-label]', {
-        hasText: 'Popup Menu',
+        hasText: 'Popup Menu (Icon Only)',
       }),
     })
     .first();
@@ -77,15 +77,15 @@ test('single icon PopupMenu fills and centers the toolbar control slot when enab
   const enabled = groups.first().locator('.kui-popup-menu__trigger');
   await enabled.click();
   await expect(
-    groups.first().getByRole('menu', { name: 'Sort Tickets' }),
+    groups.first().getByRole('menu', { name: 'Sort Direction' }),
   ).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(
-    groups.first().getByRole('menu', { name: 'Sort Tickets' }),
+    groups.first().getByRole('menu', { name: 'Sort Direction' }),
   ).toBeHidden();
   const disabled = groups.nth(1).locator('.kui-popup-menu__trigger');
   await disabled.evaluate((button: HTMLButtonElement) => button.click());
   await expect(
-    groups.nth(1).getByRole('menu', { name: 'Sort Tickets' }),
+    groups.nth(1).getByRole('menu', { name: 'Sort Direction' }),
   ).toBeHidden();
 });

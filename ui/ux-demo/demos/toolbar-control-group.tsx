@@ -180,6 +180,23 @@ export function ToolbarControlGroupDemo() {
           <PopupMenu
             label="Sort Tickets"
             icon={<LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />}
+            items={[
+              { label: 'Recently Updated', action: 'sort-recent' },
+              { label: 'Priority', action: 'sort-priority' },
+            ]}
+          />
+        </ToolbarControlGroup>
+      </CatalogExample>
+      <CatalogExample label="Popup Menu (Icon Only)" align="inline-control">
+        <ToolbarControlGroup
+          single
+          shape={shape}
+          nestedDropdown
+          menuInset="compact"
+        >
+          <PopupMenu
+            label="Sort Direction"
+            icon={<LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />}
             caret={false}
             items={[
               { label: 'Recently Updated', action: 'sort-recent' },

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 434900,
-  "measuredLargestJavaScriptGzip": 164544,
-  "measuredTotalJavaScriptGzip": 434828,
+  "totalJavaScriptGzip": 435000,
+  "measuredLargestJavaScriptGzip": 164545,
+  "measuredTotalJavaScriptGzip": 434934,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6227,6 +6227,22 @@
         "measuredTotalJavaScriptGzip": 434828,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 434900
+      }
+    },
+    {
+      "at": "2026-10-19T12:01:10.245Z",
+      "reason": "Keep separate caret and icon-only PopupMenu catalog specimens for verified toolbar contracts",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164544,
+        "measuredTotalJavaScriptGzip": 434828,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 434900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 434934,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 435000
       }
     }
   ]
