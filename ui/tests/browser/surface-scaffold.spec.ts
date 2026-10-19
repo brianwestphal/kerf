@@ -1,5 +1,55 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
+test('quiet close emphasis keeps its target, name, focus, and close request', async ({
+  page,
+}) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 850 });
+    await page.goto('/?component=surface-scaffold');
+    await page
+      .getByRole('button', { name: 'Open Dialog', exact: true })
+      .click();
+    const dialog = page.locator('#catalog-medium-dialog');
+    await expect(dialog).toHaveAttribute('open', '');
+    await expect(dialog).not.toHaveAttribute('data-kui-dialog-motion');
+    const close = dialog.getByRole('button', { name: 'Close', exact: true });
+    await expect(close).toHaveAttribute('data-emphasis', 'quiet');
+    await expect(close.locator('svg')).toHaveAttribute('data-size', 'm');
+    const quietBox = (await close.boundingBox())!;
+    await page.keyboard.press('Shift');
+    await close.focus();
+    await expect(close).toBeFocused();
+    await expect(close).toHaveCSS('outline-style', 'solid');
+    await dialog.evaluate((element) => {
+      element.addEventListener('kui-request-close', (event) => {
+        element.setAttribute(
+          'data-last-close-source',
+          (event as CustomEvent<{ source: string }>).detail.source,
+        );
+      });
+    });
+    await close.click();
+    await expect(dialog).not.toHaveAttribute('open', '');
+    await expect(dialog).toHaveAttribute(
+      'data-last-close-source',
+      'close-button',
+    );
+    await page
+      .getByRole('button', { name: 'Open Bounded Dialog', exact: true })
+      .click();
+    const normalDialog = page.getByRole('dialog', { name: 'Close Workspace' });
+    await expect(normalDialog).not.toHaveAttribute('data-kui-dialog-motion');
+    const normalClose = normalDialog.getByRole('button', {
+      name: 'Close',
+      exact: true,
+    });
+    await expect(normalClose).not.toHaveAttribute('data-emphasis');
+    const normalBox = (await normalClose.boundingBox())!;
+    expect(quietBox.width).toBeCloseTo(normalBox.width, 0);
+    expect(quietBox.height).toBeCloseTo(normalBox.height, 0);
+  }
+});
+
 // The label names the native dialog and titles its header; a native name
 // change, Escape, and reopening keep one correctly named dialog. (Web
 // Awesome's slotted-label and without-header name repair has no equivalent:

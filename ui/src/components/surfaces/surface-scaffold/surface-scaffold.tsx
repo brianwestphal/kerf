@@ -53,6 +53,9 @@ export type DialogSurfaceFooterPresentation = 'docked' | 'floating';
  */
 export type DialogSurfaceHeaderPresentation = 'docked' | 'floating';
 
+/** The built-in close control's visual weight; `normal` keeps the default. */
+export type DialogSurfaceCloseEmphasis = 'normal' | 'quiet';
+
 /**
  * Application `data-*` identity on the DialogSurface root, such as
  * `data-key`; the surface's own configuration attributes stay protected.
@@ -128,6 +131,8 @@ export interface DialogSurfaceOptions {
   lightDismiss?: boolean;
   /** The close button's accessible name (default `Close`). */
   closeLabel?: string;
+  /** Soften the built-in close control without changing its 40px target. */
+  closeEmphasis?: DialogSurfaceCloseEmphasis;
   size?: DialogSurfaceSize;
   presentation?: DialogSurfacePresentation;
   /** Modal preferred width. Takes precedence over size, within the viewport cap. */
@@ -234,6 +239,7 @@ export function DialogSurface({
   withoutHeader = false,
   lightDismiss = false,
   closeLabel = 'Close',
+  closeEmphasis = 'normal',
   children,
   size = 'medium',
   presentation = 'modal',
@@ -324,9 +330,14 @@ export function DialogSurface({
               type="button"
               class="kui-dialog-surface__close"
               aria-label={closeLabel}
+              data-emphasis={closeEmphasis === 'quiet' ? 'quiet' : undefined}
               data-dialog-close=""
             >
-              <LucideIcon icon={X} name="x" size="l" />
+              <LucideIcon
+                icon={X}
+                name="x"
+                size={closeEmphasis === 'quiet' ? 'm' : 'l'}
+              />
             </button>
           </div>
         </header>

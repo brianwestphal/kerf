@@ -47,7 +47,10 @@ openDialog(document.getElementById('edit-workspace') as HTMLDialogElement);
   copy in the body. `rootAttributes` takes only `data-*` attributes, so it can
   never set or override `aria-describedby`.
 - **Header.** The title, then `headerActions` and a close button (`closeLabel`,
-  default `Close`). `withoutHeader` renders none, for content that owns its
+  default `Close`). Set `closeEmphasis="quiet"` for a smaller, softer X in the
+  same 40px button target; the default `"normal"` keeps the standard close
+  control. Both preserve the accessible name, keyboard focus, and close
+  request behavior. `withoutHeader` renders none, for content that owns its
   heading and close control.
 - **Body and footer.** `children` is the body; `footer` sits below it (or
   floats over it, see [Chat dialogs](#chat-dialogs-a-floating-footer-over-a-filling-transcript)).

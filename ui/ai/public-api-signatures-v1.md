@@ -4712,6 +4712,8 @@ type DialogSurfaceFooterPresentation = 'docked' | 'floating';
  * material, so content scrolls visibly beneath the title bar.
  */
 type DialogSurfaceHeaderPresentation = 'docked' | 'floating';
+/** The built-in close control's visual weight; `normal` keeps the default. */
+type DialogSurfaceCloseEmphasis = 'normal' | 'quiet';
 /**
  * Application `data-*` identity on the DialogSurface root, such as
  * `data-key`; the surface's own configuration attributes stay protected.
@@ -4767,6 +4769,8 @@ interface DialogSurfaceOptions {
     lightDismiss?: boolean;
     /** The close button's accessible name (default `Close`). */
     closeLabel?: string;
+    /** Soften the built-in close control without changing its 40px target. */
+    closeEmphasis?: DialogSurfaceCloseEmphasis;
     size?: DialogSurfaceSize;
     presentation?: DialogSurfacePresentation;
     /** Modal preferred width. Takes precedence over size, within the viewport cap. */
@@ -4860,7 +4864,7 @@ interface DialogSurfaceOptions {
  * floating header and footer measurement, the bottom sheet's keyboard
  * clearance and grabber, and re-render resilience while open.
  */
-declare function DialogSurface({ id, label, labelledBy, describedBy, alert, heading, headerActions, footer, withoutHeader, lightDismiss, closeLabel, children, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, minHeight, resizable, enterMotion, exitMotion, bodyLayout, headerPresentation, footerPresentation, footerOffset, rootAttributes, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
+declare function DialogSurface({ id, label, labelledBy, describedBy, alert, heading, headerActions, footer, withoutHeader, lightDismiss, closeLabel, closeEmphasis, children, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, minHeight, resizable, enterMotion, exitMotion, bodyLayout, headerPresentation, footerPresentation, footerOffset, rootAttributes, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
 /** Where a PopoverDialogSurface appears: the top layer, or in flow. */
 type PopoverDialogSurfacePresentation = 'overlay' | 'embedded';
 /** Application `data-*` metadata on the surface root. */
@@ -4927,7 +4931,7 @@ interface PopupSurfaceProps {
 /** Configure recurring Web Awesome dropdown-menu geometry without consumer ::part() CSS. */
 declare function PopupSurface({ children, inset, className, slot, }: PopupSurfaceProps): kerfjs.SafeHtml;
 
-export { type DialogCloseSource, type DialogRequestCloseDetail, DialogSurface, type DialogSurfaceBodyLayout, type DialogSurfaceFooterPresentation, type DialogSurfaceHeaderPresentation, type DialogSurfaceHeight, type DialogSurfaceMaxHeight, type DialogSurfaceName, type DialogSurfaceOptions, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceRootAttributes, type DialogSurfaceSheetMotion, type DialogSurfaceSize, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset, closeDialog, openDialog };
+export { type DialogCloseSource, type DialogRequestCloseDetail, DialogSurface, type DialogSurfaceBodyLayout, type DialogSurfaceCloseEmphasis, type DialogSurfaceFooterPresentation, type DialogSurfaceHeaderPresentation, type DialogSurfaceHeight, type DialogSurfaceMaxHeight, type DialogSurfaceName, type DialogSurfaceOptions, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceRootAttributes, type DialogSurfaceSheetMotion, type DialogSurfaceSize, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset, closeDialog, openDialog };
 ```
 
 ## `@kerfjs/ui/list-detail-dialog`

@@ -2151,6 +2151,7 @@
         "A modal task needs a dialog: render a DialogSurface with a label (or labelledBy plus a heading), its body as children, and its buttons as footer, then open it with openDialog() and close it with closeDialog(), the close button, or any element with data-dialog-close. A raw Web Awesome dropdown that needs a list-compatible menu inset uses PopupSurface.",
         "A dialog body should compose rows, sections, or aligned bare prose through List and ListInsetText.",
         "A modal needs a typed preferred width, viewport gutter, or dynamic viewport-bounded height cap while retaining native body scrolling and footer actions.",
+        "A dialog needs a less prominent built-in close control: closeEmphasis=\"quiet\" softens the glyph while keeping the native button target and close behavior.",
         "A dialog that must leave the page interactive and close on Escape or an outside press uses PopoverDialogSurface; one that fills its body with a SplitView or Pane uses height and bodyLayout=\"fill\".",
         "A chat-style dialog floats its composer over the transcript with footerPresentation=\"floating\" and keeps a heading or notice above one scrolling transcript with bodyLayout=\"fill-last\".",
         "A phone-first task (compose, quick edit, a picker) should rise from the bottom edge as a sheet the person can resize: presentation=\"bottom-sheet\" with height, and resizable with minHeight / maxHeight bounds.",
@@ -2190,12 +2191,14 @@
         "core kerfjs/overlay confirm/prompt/form/choice as a bottom sheet styled by @kerfjs/ui/overlay-sheet.css",
         "resizable core kerfjs/overlay bottom sheet: the kui-overlay-sheet-resizable class plus wireOverlaySheets adds the resizable DialogSurface sheet grabber",
         "header with label text or heading content, headerActions, a close button, and an optional footer; withoutHeader for content that owns its heading and close control",
+        "normal (default) or quiet closeEmphasis on the built-in close button",
         "accessible description by describedBy: the heading ToolbarText descriptionId or app-owned body summary copy",
         "light dismiss (a backdrop press closes; otherwise the panel pulses)"
       ],
       "accessibility": [
         "DialogSurface is a native <dialog> opened modally (showModal): it is in the top layer, the rest of the page is inert, focus stays inside, and it returns to the opener on close. Focus starts on an autofocus element, otherwise on the panel.",
         "Name it with label (also its title text) or labelledBy (the id of a heading, such as a ToolbarText). The close button is named Close (closeLabel) and Escape asks to close; the cancelable kui-request-close event reports source close-button, escape, or backdrop.",
+        "closeEmphasis=\"quiet\" uses a smaller, quiet-colored close glyph inside the same 40px target; hover, focus ring, forced colors, accessible naming, and close requests remain available.",
         "Name a PopoverDialogSurface with label or labelledBy. Describe either surface with describedBy (rendered as aria-describedby on the dialog root), usually the heading ToolbarText descriptionId or app-owned summary copy in the body; rootAttributes accepts only data-* attributes, so it never sets aria-describedby.",
         "A floating header's title uses the normal text color, which keeps WCAG AA over the 80% raised chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.",
         "A resizable bottom sheet's grabber is a focusable horizontal separator (\"Resize sheet\") with aria-valuemin, aria-valuenow, and aria-valuemax in visible px; the arrow keys, Page Up/Down, Home, and End resize it, and its slide motion is skipped under prefers-reduced-motion.",

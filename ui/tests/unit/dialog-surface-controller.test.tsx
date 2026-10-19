@@ -222,6 +222,29 @@ describe('openDialog and closeDialog', () => {
 });
 
 describe('close requests', () => {
+  it('keeps the native close request with quiet emphasis and an accessible label', () => {
+    const normal = setup({ closeLabel: 'Dismiss' }).dialog.querySelector(
+      '.kui-dialog-surface__close',
+    )!;
+    expect(normal.getAttribute('aria-label')).toBe('Dismiss');
+    expect(normal.hasAttribute('data-emphasis')).toBe(false);
+    expect(normal.querySelector('svg')?.getAttribute('data-size')).toBe('l');
+
+    const { dialog, requests } = setup({
+      closeLabel: 'Dismiss setup',
+      closeEmphasis: 'quiet',
+    });
+    const close = dialog.querySelector('.kui-dialog-surface__close')!;
+    expect(close.localName).toBe('button');
+    expect(close.getAttribute('aria-label')).toBe('Dismiss setup');
+    expect(close.getAttribute('data-emphasis')).toBe('quiet');
+    expect(close.querySelector('svg')?.getAttribute('data-size')).toBe('m');
+    openDialog(dialog);
+    click(close);
+    expect(requests).toEqual(['close-button']);
+    expect(dialog.open).toBe(false);
+  });
+
   it('closes from the close button and data-dialog-close, which a listener may refuse', () => {
     const { dialog, requests } = setup();
     openDialog(dialog);

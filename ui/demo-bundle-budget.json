@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 428800,
+  "totalJavaScriptGzip": 429300,
   "measuredLargestJavaScriptGzip": 164543,
-  "measuredTotalJavaScriptGzip": 428720,
+  "measuredTotalJavaScriptGzip": 429219,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6051,6 +6051,22 @@
         "measuredTotalJavaScriptGzip": 428720,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 428800
+      }
+    },
+    {
+      "at": "2026-10-19T01:29:10.133Z",
+      "reason": "KF-TGEW3B current-step Button and KF-GJ4GTJ quiet DialogSurface catalog specimens",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 428720,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 428800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 429219,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 429300
       }
     }
   ]

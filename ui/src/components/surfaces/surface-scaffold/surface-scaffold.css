@@ -173,15 +173,23 @@ h2.kui-dialog-surface__title {
   background: transparent;
   cursor: pointer;
 }
+.kui-dialog-surface__close[data-emphasis="quiet"] {
+  color: var(--kui-color-text-quiet);
+}
 .kui-dialog-surface__close:hover {
   background-color: var(--kui-color-neutral-fill-normal);
+}
+.kui-dialog-surface__close[data-emphasis="quiet"]:is(:hover, :focus-visible) {
+  color: var(--kui-color-neutral-on-quiet);
 }
 .kui-dialog-surface__close:focus-visible {
   outline: var(--kui-focus-ring);
   outline-offset: var(--kui-focus-ring-offset, 1px);
 }
 @media (forced-colors: active) {
-  .kui-dialog-surface__close {
+  .kui-dialog-surface__close,
+  .kui-dialog-surface__close[data-emphasis="quiet"]:is(:hover, :focus-visible),
+  .kui-dialog-surface__close[data-emphasis="quiet"] {
     color: ButtonText;
   }
 }

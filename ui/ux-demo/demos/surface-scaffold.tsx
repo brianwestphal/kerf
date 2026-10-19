@@ -276,7 +276,11 @@ export function SurfaceScaffoldDemo() {
       label="Surface Scaffold Demo"
       rootAttributes={{ 'data-demo': 'surface-scaffold' }}
     >
-      <CatalogExample label="Medium Dialog" align="inline-control">
+      <CatalogExample
+        label="Medium Dialog"
+        note="closeEmphasis=quiet softens the built-in close glyph while retaining its target, accessible name, keyboard focus, and close request."
+        align="inline-control"
+      >
         <Button
           action="show-dialog"
           rootAttributes={{ 'data-dialog-id': 'catalog-medium-dialog' }}
@@ -286,6 +290,7 @@ export function SurfaceScaffoldDemo() {
         <DialogSurface
           id="catalog-medium-dialog"
           label="Edit Workspace"
+          closeEmphasis="quiet"
           size="medium"
           presentation="modal"
           bodyInset="none"

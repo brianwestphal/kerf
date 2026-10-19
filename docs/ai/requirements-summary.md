@@ -327,6 +327,8 @@ For `type="number"`, TextField forwards native `min`, `max`, and `step` attribut
 
 **Shipped (KF-TGEW3B).** `Button.currentStep` emits `aria-current="step"` on a button or link, including a disabled current step. The app owns the label and current-step selection; this semantic prop does not alter styling or permit arbitrary ARIA overrides. See `ui/docs/button.md`.
 
+**Shipped (KF-GJ4GTJ).** `DialogSurface.closeEmphasis="quiet"` softens the built-in close glyph while keeping its native 40px button target, accessible label, focus treatment, and close request. The default `normal` presentation is unchanged. See `ui/docs/surface-scaffold.md`.
+
 `@kerfjs/ui` supports every Web Awesome 3.x from 3.14 (optional peer `^3.14.0`): stage 1 of the Web Awesome independence work retired every prototype patch, and CI tests the newest 3.x alongside the 3.14.0 floor.
 
 `@kerfjs/ui` Select is Kerf's own control (wa-independence stage 1; it no

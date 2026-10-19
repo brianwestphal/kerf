@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`DialogSurface` `closeEmphasis`.** Set it to `quiet` for a smaller, quieter close glyph within the existing 40px native button. Accessible naming, focus, forced colors, and close requests remain intact; `normal` keeps the established default (`KF-GJ4GTJ`).
 - **`Button` `currentStep`.** A setup or progress step can mark its native button or link with `aria-current="step"` through a typed prop, including when disabled, without changing its label or visual state (`KF-TGEW3B`).
 - **`each()` keeps a uniquely keyed row across item-object replacement.** Replacing an item with a new object that renders the same unique `id` or `data-key` now morphs its same-tag row in place, including during a reorder, so live children such as an open popover anchor stay connected. Ambiguous keys and tag changes still replace the row; the per-item HTML cache remains based on object identity (`KF-GS850A`).
 - **Kerf Button in TabBar action zones.** The published TabBar composition contract now accepts one standalone Kerf `Button` in either `trailing` or `end`, alongside the existing `ToolbarControlGroup` and `wa-button` cases. The catalog, doctor, and examples agree with the already supported rendering and fixed action placement (`KF-535H1M`: TabBar Kerf Button composition).
