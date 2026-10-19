@@ -19,6 +19,32 @@ function findRootJSXFromBody(body) {
   return null;
 }
 
+function isComponentRoot(name) {
+  return (
+    name.type === 'JSXMemberExpression' ||
+    (name.type === 'JSXIdentifier' && /^[A-Z]/.test(name.name))
+  );
+}
+
+function isKeyName(name) {
+  return name === 'data-key' || name === 'id';
+}
+
+function hasKeyInRootAttributes(attribute) {
+  const value = attribute.value;
+  const object = value?.type === 'JSXExpressionContainer' && value.expression;
+  if (!object || object.type !== 'ObjectExpression') return false;
+  for (let index = object.properties.length - 1; index >= 0; index--) {
+    const property = object.properties[index];
+    // A later spread or computed name could overwrite an earlier key.
+    if (property.type !== 'Property' || property.computed) return false;
+    const key = property.key;
+    if (isKeyName(key.type === 'Identifier' ? key.name : key.value))
+      return true;
+  }
+  return false;
+}
+
 const meta = {
   type: 'problem',
   docs: {
@@ -54,11 +80,15 @@ function create(context) {
         return;
       }
       const attrs = root.openingElement.attributes;
+      const componentRoot = isComponentRoot(root.openingElement.name);
       const hasKey = attrs.some((a) => {
         if (a.type === 'JSXSpreadAttribute') return true;
         if (a.type !== 'JSXAttribute') return false;
         const n = a.name && a.name.name;
-        return n === 'data-key' || n === 'id';
+        return (
+          isKeyName(n) ||
+          (componentRoot && n === 'rootAttributes' && hasKeyInRootAttributes(a))
+        );
       });
       if (!hasKey) {
         context.report({ node: root.openingElement, messageId: 'missingKey' });

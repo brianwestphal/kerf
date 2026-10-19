@@ -16,6 +16,16 @@ ruleTester.run('require-data-key-in-each', rule, {
     },
     // Spread attribute — conservatively allowed (might include a key)
     { code: 'each(items, (item) => <li {...item.attrs}>{item.name}</li>);' },
+    // A component can pass a statically named key to its single root.
+    {
+      code: 'each(items, (item) => <ListActionRow rootAttributes={{ "data-key": item.id }} />);',
+    },
+    {
+      code: 'each(items, (item) => <UI.Row rootAttributes={{ id: item.id }} />);',
+    },
+    {
+      code: 'each(items, (item) => <Row rootAttributes={{ ...item.attrs, "data-key": item.id }} />);',
+    },
     // Different identifier — not flagged (only `each` is checked).
     { code: 'map(items, (item) => <li>{item.name}</li>);' },
     // Non-arrow callback (e.g. a named function passed by reference) — rule
@@ -37,6 +47,34 @@ ruleTester.run('require-data-key-in-each', rule, {
     },
     {
       code: 'each(items, (item) => <>{item.name}</>);',
+      errors: [{ messageId: 'fragmentRoot' }],
+    },
+    {
+      code: 'each(items, (item) => <ListActionRow rootAttributes={{ "data-other": item.id }} />);',
+      errors: [{ messageId: 'missingKey' }],
+    },
+    {
+      code: 'each(items, (item) => <ListActionRow rootAttributes={item.attrs} />);',
+      errors: [{ messageId: 'missingKey' }],
+    },
+    {
+      code: 'each(items, (item) => <ListActionRow rootAttributes={{ ...item.attrs }} />);',
+      errors: [{ messageId: 'missingKey' }],
+    },
+    {
+      code: 'each(items, (item) => <ListActionRow rootAttributes={{ [item.keyName]: item.id }} />);',
+      errors: [{ messageId: 'missingKey' }],
+    },
+    {
+      code: 'each(items, (item) => <Row rootAttributes={{ "data-key": item.id, ...item.attrs }} />);',
+      errors: [{ messageId: 'missingKey' }],
+    },
+    {
+      code: 'each(items, (item) => <li rootAttributes={{ "data-key": item.id }} />);',
+      errors: [{ messageId: 'missingKey' }],
+    },
+    {
+      code: 'each(items, (item) => <><ListActionRow rootAttributes={{ "data-key": item.id }} /></>);',
       errors: [{ messageId: 'fragmentRoot' }],
     },
   ],
