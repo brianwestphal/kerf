@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { ContentItem } from '../../src/components/surfaces/content-item/content-item.js';
+import { fillColor } from '../../src/shared/styles/css-values.js';
 
 describe('ContentItem', () => {
   it('renders an unframed rounded content item by default', () => {
@@ -110,5 +111,46 @@ describe('ContentItem', () => {
     expect(html).toContain('data-appearance="transparent"');
     expect(html).not.toContain('spoofed');
     expect(html).not.toContain('onclick');
+  });
+
+  it('renders a reserved, lazy media block with a scoped tint and decorative soft copy', () => {
+    const html = String(
+      ContentItem({
+        media: {
+          src: '/art.jpg',
+          alt: 'Harbor',
+          srcset: '/art-2.jpg 2x',
+          aspectRatio: 2,
+          blurredSrc: '/art-soft.jpg',
+          parallax: 0.5,
+        },
+        tint: { color: fillColor('#283a54'), scheme: 'dark' },
+        children: <a href="/source">Source</a>,
+      }),
+    );
+    expect(html).toContain('data-media-state="pending"');
+    expect(html).toContain('data-kui-tint="dark"');
+    expect(html).toContain('--_kui-content-item-media-ratio:2');
+    expect(html).toContain('--_kui-content-item-media-parallax:0.5');
+    expect(html).toContain('src="/art.jpg"');
+    expect(html).toContain('alt="Harbor" loading="lazy" decoding="async"');
+    expect(html).toContain('src="/art-soft.jpg" alt="" aria-hidden="true"');
+    expect(html).toContain('<a href="/source">Source</a>');
+    expect(
+      String(
+        ContentItem({ tint: { color: fillColor('#fff'), scheme: 'light' } }),
+      ),
+    ).not.toContain('data-kui-tint=');
+    expect(() =>
+      ContentItem({ media: { src: 'x', alt: '', aspectRatio: 0 } }),
+    ).toThrow(RangeError);
+    expect(() =>
+      ContentItem({ media: { src: 'x', alt: '', parallax: 2 } }),
+    ).toThrow(RangeError);
+    expect(() =>
+      ContentItem({
+        media: { src: 'x', alt: '', position: 'left;bad' as never },
+      }),
+    ).toThrow(TypeError);
   });
 });

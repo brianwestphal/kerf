@@ -220,6 +220,14 @@ and [`backdrop-image.md`](backdrop-image.md) for the image.
 
 ## Rules shared by every recipe
 
+An image-led feed composes `ContentItem` rows with `media` and a per-card
+app-sampled `tint` inside one scrolling Pane. Each image reserves its size and
+animates on its own view timeline as it crosses that Pane's top edge. Use
+`wireContentItems` on the stable app root for image load/error as well as card
+keyboard behavior. Put source links and actions inside static cards. Use
+`BackdropImage` for a first-child page hero, not for each feed row. See
+[Content items](layout.md#content-items) and [BackdropImage](backdrop-image.md).
+
 - Import `@kerfjs/ui/layout.css`; keep every pane unpadded and use exactly one
   `.kui-pane__content` scroll owner for each real boundary.
 - For direct `wa-*` JSX, import types from `@kerfjs/ui/webawesome`. Import only

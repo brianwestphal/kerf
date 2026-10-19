@@ -404,6 +404,12 @@ recipes, and apps no longer hand-write `.kui-content-item` modifier classes.
 `success`, `warning`, and `danger` coordinate quiet semantic fills, borders,
 and foregrounds with `StateBanner`. `transparent` is the default. A lowered
 inset surface around a stack remains `SunkenPanel`.
+Image-led feed cards are shipped through `ContentItem.media` and an optional
+per-card `SurfaceTint`: each reserved, lazy image has its own view timeline in
+the feed's shared scrollport, and `wireContentItems` handles failed and
+replaced sources without leaving a broken image or tint. The catalog and
+browser tests cover per-row motion, light/dark AA tokens, missing-image and
+accessibility fallbacks; `BackdropImage` remains the first-child page hero.
 
 The root `@kerfjs/ui` declaration barrel re-exports the named TabBarItem, TabBar,
 ToolbarControlGroup, and Select presentation axes; source and packed-tarball

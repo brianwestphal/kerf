@@ -167,6 +167,7 @@ import { S as Sides } from './sides-BPSWde0A.js';
 import { PaneSeparatorSide } from './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
+import './surface-tint-DQgYCaP9.js';
 
 type ToolbarPosition = 'header' | 'footer';
 /** Control-band density: `default` (60px with 44px groups) or `compact`. */
@@ -1196,6 +1197,10 @@ export { ListInsetText, type ListInsetTextProps, Sides };
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { S as SemanticTone } from './semantic-tone-CdW013KF.js';
+import { S as SurfaceTint } from './surface-tint-DQgYCaP9.js';
+import { BackdropImagePosition, BackdropImageParallax } from './backdrop-image.js';
+import './css-values.js';
+import './extension-attributes-mu8MFUl0.js';
 
 /**
  * Base surface treatment, semantic status colors, or `brand-loud`: the solid
@@ -1214,12 +1219,29 @@ type ContentItemFrame = 'none' | 'framed';
 type ContentItemShape = 'rounded' | 'pill';
 /** `single` uses an option; `multiple` uses a grid row; `toggle` uses a pressed button. */
 type ContentItemSelectionMode = 'none' | 'single' | 'multiple' | 'toggle';
+/** One card-owned lead image in the containing feed's shared scrollport. */
+interface ContentItemMedia {
+    src: string;
+    alt: string;
+    srcset?: string;
+    sizes?: string;
+    /** Width divided by height; reserves the image block before it loads. Default 16/9. */
+    aspectRatio?: number;
+    position?: BackdropImagePosition;
+    /** Default subtle (35% lag); set none for a static lead image. */
+    parallax?: BackdropImageParallax;
+    /** App-supplied soft copy; its opacity changes, never its blur filter. */
+    blurredSrc?: string;
+}
 type ContentItemRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
     'data-appearance'?: never;
     'data-outlined'?: never;
     'data-bubble'?: never;
     'data-grid-row'?: never;
+    'data-media-state'?: never;
+    'data-kui-tint'?: never;
+    'data-kui-tint-accent'?: never;
 }>;
 type ContentItemInteractiveRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -1227,6 +1249,9 @@ type ContentItemInteractiveRootAttributes = Readonly<Record<`data-${string}`, st
     'data-outlined'?: never;
     'data-bubble'?: never;
     'data-grid-row'?: never;
+    'data-media-state'?: never;
+    'data-kui-tint'?: never;
+    'data-kui-tint-accent'?: never;
     'data-action'?: never;
     'data-item-id'?: never;
     'data-interactive'?: never;
@@ -1242,6 +1267,10 @@ interface ContentItemBaseProps {
      * semantic values match StateBanner. Defaults to `transparent`.
      */
     appearance?: ContentItemAppearance;
+    /** Reserved lead image with a per-image scroll timeline. Wire the containing root with `wireContentItems`. */
+    media?: ContentItemMedia;
+    /** App-sampled image color, scoped to this card once its image loads. */
+    tint?: SurfaceTint;
     /** Item content; a plain string is allowed for bare copy. */
     children?: KerfUiContent | string;
     /**
@@ -1318,9 +1347,9 @@ type ContentItemProps = ContentItemBaseProps & ({
  * border (transparent unless `framed`), 8px padding, and a rounded or pill
  * radius. It owns that whole geometry, so wrappers must not add more.
  */
-declare function ContentItem({ appearance, children, frame, flush, shape, bubble, title, ariaLabel, focusTarget, outlined, tabIndex, gridRow, interactive, action, itemId, selectionMode, selected, disabled, className, rootAttributes, slot, }: ContentItemProps): kerfjs.SafeHtml;
+declare function ContentItem({ appearance, media, tint, children, frame, flush, shape, bubble, title, ariaLabel, focusTarget, outlined, tabIndex, gridRow, interactive, action, itemId, selectionMode, selected, disabled, className, rootAttributes, slot, }: ContentItemProps): kerfjs.SafeHtml;
 
-export { ContentItem, type ContentItemAppearance, type ContentItemBubble, type ContentItemFrame, type ContentItemProps, type ContentItemSelectionMode, type ContentItemShape, SemanticTone };
+export { ContentItem, type ContentItemAppearance, type ContentItemBubble, type ContentItemFrame, type ContentItemMedia, type ContentItemProps, type ContentItemSelectionMode, type ContentItemShape, SemanticTone };
 ```
 
 ## `@kerfjs/ui/value-table`
@@ -1722,12 +1751,13 @@ export { wireListFocusScroll };
 ## `@kerfjs/ui/nav-stack`
 
 ```ts
-export { c as NavStack, d as NavStackBottomToolbarPresentation, e as NavStackChromePresentation, N as NavStackProps, f as NavStackToolbarConfig, a as NavStackView, g as NavStackViewBottomToolbar, h as NavStackViewToolbar } from './nav-stack-CU_0dKtI.js';
+export { c as NavStack, d as NavStackBottomToolbarPresentation, e as NavStackChromePresentation, N as NavStackProps, f as NavStackToolbarConfig, a as NavStackView, g as NavStackViewBottomToolbar, h as NavStackViewToolbar } from './nav-stack-CrZF95VO.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
+import './surface-tint-DQgYCaP9.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -1767,11 +1797,12 @@ export { type WireNavStackOptions, wireNavStack };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { N as NavStackProps, a as NavStackView } from './nav-stack-CU_0dKtI.js';
+import { N as NavStackProps, a as NavStackView } from './nav-stack-CrZF95VO.js';
 import { ResizableRegionProps } from './resizable-region.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
+import './surface-tint-DQgYCaP9.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -1876,6 +1907,8 @@ import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { S as ScrollClearance } from './scroll-clearance-BikHljTc.js';
 import { CssColor } from './css-values.js';
+import { S as SurfaceTint } from './surface-tint-DQgYCaP9.js';
+export { a as SurfaceTintScheme } from './surface-tint-DQgYCaP9.js';
 
 /**
  * What clear (fully transparent) chrome fades in as content scrolls beneath
@@ -1885,28 +1918,6 @@ import { CssColor } from './css-values.js';
  * `wireScrollDividers` reports; unwired, the chrome stays clear.
  */
 type ScrollEdge = 'none' | 'material' | 'surface';
-
-/** The color scheme an app declares for a {@link SurfaceTint}'s color. */
-type SurfaceTintScheme = 'light' | 'dark';
-/**
- * A scoped tint for a layout surface: the app's color (usually sampled from
- * artwork it already knows) and the scheme that color belongs to. Kerf does no
- * color detection; `scheme` says whether the color reads as a light or a dark
- * surface. Inside the scope the surface, raised surface, text, quiet text, and
- * everything built on them (quiet fills, separators' backdrop, the chrome
- * material) re-derive from the color, with lightness clamped so text keeps
- * WCAG AA over any color.
- */
-interface SurfaceTint {
-    color: CssColor;
-    scheme: SurfaceTintScheme;
-    /**
-     * An optional accent (usually the artwork's most vivid color). The scope's
-     * brand ramp re-derives from it: loud fills and their text, brand text and
-     * links, text on brand fills, and the focus ring, each clamped to keep AA.
-     */
-    accent?: CssColor;
-}
 
 /**
  * Logical pane sides: where a {@link Pane} can show a separator and where it can
@@ -2129,7 +2140,7 @@ type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separator
  */
 declare function Pane({ header, children, footer, chromePlacement, chromeDividers, compactChrome, compactChromeOpen, headerPresentation, scrollEdge, scrollEdgeDistance, appearance, background, tint, deepInset, scrollClearance, tabIndex, outlined, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
 
-export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlacement, type PaneCompactChrome, type PaneCompactChromePolicy, type PaneConfig, type PaneContentElement, type PaneElement, type PaneHeaderPresentation, type PaneProps, type PaneSeparatorSide, ScrollClearance, type ScrollEdge, type SurfaceTint, type SurfaceTintScheme };
+export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlacement, type PaneCompactChrome, type PaneCompactChromePolicy, type PaneConfig, type PaneContentElement, type PaneElement, type PaneHeaderPresentation, type PaneProps, type PaneSeparatorSide, ScrollClearance, type ScrollEdge, SurfaceTint };
 ```
 
 ## `@kerfjs/ui/workbench`
@@ -2137,13 +2148,14 @@ export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlac
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { b as NavPane, N as NavStackProps } from './nav-stack-CU_0dKtI.js';
+import { b as NavPane, N as NavStackProps } from './nav-stack-CrZF95VO.js';
 import { ListConfig } from './list.js';
 import { PaneConfig } from './pane.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
 import { a as PanelToolbar, c as PanelBottomToolbar, b as PanelChromePlacement, d as PanelToggle } from './panel-toolbar-vg6Ir5Dy.js';
 import { ToolbarConfig } from './toolbar.js';
 import './css-values.js';
+import './surface-tint-DQgYCaP9.js';
 import './toolbar-text.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -2557,6 +2569,7 @@ import './sides-BPSWde0A.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './scroll-clearance-BikHljTc.js';
+import './surface-tint-DQgYCaP9.js';
 
 /** Which edge a {@link CollapsiblePanel} docks to. */
 type CollapsiblePanelSide = PanelSide;
@@ -2762,8 +2775,9 @@ export { type SidebarStorage, type WireSidebarOptions, type WireSidebarPanel, wi
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { PaneAppearance, SurfaceTint, ScrollEdge } from './pane.js';
+import { PaneAppearance, ScrollEdge } from './pane.js';
 import { CssColor } from './css-values.js';
+import { S as SurfaceTint } from './surface-tint-DQgYCaP9.js';
 import './scroll-clearance-BikHljTc.js';
 
 interface TabNavigatorTabBase<Id extends string> {
@@ -3092,8 +3106,9 @@ import './sides-BPSWde0A.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
+import './surface-tint-DQgYCaP9.js';
 import './workbench.js';
-import './nav-stack-CU_0dKtI.js';
+import './nav-stack-CrZF95VO.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -3247,8 +3262,9 @@ import './sides-BPSWde0A.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
+import './surface-tint-DQgYCaP9.js';
 import './workbench.js';
-import './nav-stack-CU_0dKtI.js';
+import './nav-stack-CrZF95VO.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -3302,8 +3318,9 @@ import './sides-BPSWde0A.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
+import './surface-tint-DQgYCaP9.js';
 import './workbench.js';
-import './nav-stack-CU_0dKtI.js';
+import './nav-stack-CrZF95VO.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -4943,9 +4960,10 @@ import { CssLength } from './css-values.js';
 import { SplitViewListWidth } from './split-view.js';
 import { DialogSurfaceSize, DialogSurfaceHeight, DialogSurfaceMaxHeight, DialogSurfaceRootAttributes } from './surface-scaffold.js';
 export { DialogCloseSource, DialogRequestCloseDetail, closeDialog, openDialog } from './surface-scaffold.js';
-import './nav-stack-CU_0dKtI.js';
+import './nav-stack-CrZF95VO.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
+import './surface-tint-DQgYCaP9.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -5071,9 +5089,10 @@ import { CssLength } from './css-values.js';
 import { WorkbenchMainBottomToolbar, WorkbenchPanel } from './workbench.js';
 import { DialogSurfaceSize, DialogSurfaceHeight, DialogSurfaceMaxHeight, DialogSurfaceRootAttributes } from './surface-scaffold.js';
 export { DialogCloseSource, DialogRequestCloseDetail, closeDialog, openDialog } from './surface-scaffold.js';
-import './nav-stack-CU_0dKtI.js';
+import './nav-stack-CrZF95VO.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
+import './surface-tint-DQgYCaP9.js';
 import './list.js';
 import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';

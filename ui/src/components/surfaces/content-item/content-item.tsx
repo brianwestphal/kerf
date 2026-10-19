@@ -1,6 +1,14 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
 import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
+import {
+  type SurfaceTint,
+  surfaceTintAttributes,
+} from '../../../shared/styles/surface-tint.js';
+import type {
+  BackdropImageParallax,
+  BackdropImagePosition,
+} from '../backdrop-image/backdrop-image.js';
 
 export type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
 
@@ -27,6 +35,41 @@ export type ContentItemShape = 'rounded' | 'pill';
 export type ContentItemSelectionMode =
   'none' | 'single' | 'multiple' | 'toggle';
 
+/** One card-owned lead image in the containing feed's shared scrollport. */
+export interface ContentItemMedia {
+  src: string;
+  alt: string;
+  srcset?: string;
+  sizes?: string;
+  /** Width divided by height; reserves the image block before it loads. Default 16/9. */
+  aspectRatio?: number;
+  position?: BackdropImagePosition;
+  /** Default subtle (35% lag); set none for a static lead image. */
+  parallax?: BackdropImageParallax;
+  /** App-supplied soft copy; its opacity changes, never its blur filter. */
+  blurredSrc?: string;
+}
+
+function mediaParallax(value: BackdropImageParallax): number {
+  if (value === 'none') return 0;
+  if (value === 'subtle') return 0.35;
+  if (!Number.isFinite(value) || value < 0 || value > 1)
+    throw new RangeError('ContentItem media.parallax must be from 0 to 1.');
+  return value;
+}
+
+const mediaPositions = new Set<BackdropImagePosition>([
+  'center',
+  'top',
+  'bottom',
+  'left',
+  'right',
+  'top left',
+  'top right',
+  'bottom left',
+  'bottom right',
+]);
+
 function roleForSelectionMode(
   mode: ContentItemSelectionMode,
 ): 'option' | 'row' | 'button' {
@@ -47,6 +90,9 @@ const contentItemProtectedAttributes = new Set([
   'data-outlined',
   'data-bubble',
   'data-grid-row',
+  'data-media-state',
+  'data-kui-tint',
+  'data-kui-tint-accent',
 ]);
 const interactiveProtectedAttributes = new Set([
   'data-component',
@@ -54,6 +100,9 @@ const interactiveProtectedAttributes = new Set([
   'data-outlined',
   'data-bubble',
   'data-grid-row',
+  'data-media-state',
+  'data-kui-tint',
+  'data-kui-tint-accent',
   'data-action',
   'data-item-id',
   'data-interactive',
@@ -70,6 +119,9 @@ type ContentItemRootAttributes = Readonly<
     'data-outlined'?: never;
     'data-bubble'?: never;
     'data-grid-row'?: never;
+    'data-media-state'?: never;
+    'data-kui-tint'?: never;
+    'data-kui-tint-accent'?: never;
   }
 >;
 
@@ -80,6 +132,9 @@ type ContentItemInteractiveRootAttributes = Readonly<
     'data-outlined'?: never;
     'data-bubble'?: never;
     'data-grid-row'?: never;
+    'data-media-state'?: never;
+    'data-kui-tint'?: never;
+    'data-kui-tint-accent'?: never;
     'data-action'?: never;
     'data-item-id'?: never;
     'data-interactive'?: never;
@@ -97,6 +152,10 @@ interface ContentItemBaseProps {
    * semantic values match StateBanner. Defaults to `transparent`.
    */
   appearance?: ContentItemAppearance;
+  /** Reserved lead image with a per-image scroll timeline. Wire the containing root with `wireContentItems`. */
+  media?: ContentItemMedia;
+  /** App-sampled image color, scoped to this card once its image loads. */
+  tint?: SurfaceTint;
   /** Item content; a plain string is allowed for bare copy. */
   children?: KerfUiContent | string;
   /**
@@ -181,6 +240,8 @@ export type ContentItemProps = ContentItemBaseProps &
  */
 export function ContentItem({
   appearance = 'transparent',
+  media,
+  tint,
   children,
   frame = 'none',
   flush = false,
@@ -214,11 +275,26 @@ export function ContentItem({
   if (interactive && selected && selectionMode === 'none') {
     throw new Error('Selected ContentItem requires a selectionMode');
   }
+  if (
+    media?.aspectRatio !== undefined &&
+    (!Number.isFinite(media.aspectRatio) || media.aspectRatio <= 0)
+  )
+    throw new RangeError('ContentItem media.aspectRatio must be positive.');
+  if (media?.position !== undefined && !mediaPositions.has(media.position))
+    throw new TypeError(
+      'ContentItem media.position must be a supported position.',
+    );
+  const factor = mediaParallax(media?.parallax ?? 'subtle');
+  const tinted = surfaceTintAttributes(media ? tint : undefined);
+  const mediaStyle = media
+    ? `--_kui-content-item-media-ratio:${String(media.aspectRatio ?? 16 / 9)};--_kui-content-item-media-parallax:${String(factor)};--_kui-content-item-media-position:${media.position ?? 'center'}`
+    : undefined;
   const cls = [
     'kui-content-item',
     shape === 'pill' ? 'kui-content-item--pill' : '',
     frame === 'framed' ? 'kui-content-item--framed' : '',
     flush ? 'kui-content-item--flush' : '',
+    tinted.className,
     className,
   ]
     .filter(Boolean)
@@ -244,12 +320,16 @@ export function ContentItem({
       {...safeRootAttributes}
       {...interactiveAttributes}
       class={cls}
+      style={[tinted.style, mediaStyle].filter(Boolean).join(';') || undefined}
       title={title}
       data-component="content-item"
       data-appearance={appearance}
       data-outlined={outlined ? 'true' : undefined}
       data-bubble={bubble}
       data-grid-row={!interactive && gridRow ? 'true' : undefined}
+      data-media-state={media ? 'pending' : undefined}
+      data-kui-tint={tinted['data-kui-tint']}
+      data-kui-tint-accent={tinted['data-kui-tint-accent']}
       role={role}
       aria-label={ariaLabel}
       aria-selected={
@@ -271,8 +351,49 @@ export function ContentItem({
       }
       slot={slot}
     >
-      {(interactive && selectionMode === 'multiple') ||
-      (!interactive && gridRow) ? (
+      {media ? (
+        <div
+          class="kui-content-item__media"
+          data-tint-scheme={tinted['data-kui-tint']}
+          data-tint-accent={tinted['data-kui-tint-accent']}
+        >
+          <div class="kui-content-item__media-layers">
+            <img
+              class="kui-content-item__media-image"
+              src={media.src}
+              srcSet={media.srcset}
+              sizes={media.sizes}
+              alt={media.alt}
+              loading="lazy"
+              decoding="async"
+            />
+            {media.blurredSrc ? (
+              <img
+                class="kui-content-item__media-blurred"
+                src={media.blurredSrc}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                decoding="async"
+              />
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+      {media ? (
+        <div
+          class="kui-content-item__body"
+          role={
+            (interactive && selectionMode === 'multiple') ||
+            (!interactive && gridRow)
+              ? 'gridcell'
+              : undefined
+          }
+        >
+          {children}
+        </div>
+      ) : (interactive && selectionMode === 'multiple') ||
+        (!interactive && gridRow) ? (
         <div role="gridcell">{children}</div>
       ) : (
         children

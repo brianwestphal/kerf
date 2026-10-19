@@ -448,6 +448,27 @@ the inline margin, padding, and border. Use it for content such as a markdown
 preview that must reach the item's top and bottom edges. `title` passes through
 to the root element as a native tooltip.
 
+For an image-led feed card, pass `media={{ src, alt, aspectRatio?, srcset?,
+sizes?, position?, parallax?, blurredSrc? }}` and an optional app-sampled
+`tint={{ color, scheme, accent? }}`. The image reserves a 16:9 block by default,
+loads lazily with async decode, and stays inside the item's existing border and
+padding. `blurredSrc` is a pre-blurred decorative copy; the browser animates
+only its opacity and the image layer's transform. Each image has its own view
+timeline in the containing Pane's shared vertical scroller. `wireContentItems`
+also listens for image load/error from one containing root: a broken lead image
+hides its media block and removes its tint, leaving an ordinary ContentItem;
+changing its source and loading successfully restores the card treatment. A
+card with no `media` keeps the existing surface and geometry. Do not create a
+scroller inside each card. A source link or multiple actions belong inside a
+static ContentItem so each retains native keyboard behavior.
+
+The image stays sharp and static under reduced motion, the static-effects
+switch, a slow-update display, or missing scroll-timeline support. Reduced
+transparency and increased contrast also stop the movement and blur; forced
+colors hides the image and uses system surface colors. The tint uses the same
+light/dark AA-clamped tokens as a tinted Pane, including quiet text, links,
+controls, and focus. The application provides the sampled color and scheme.
+
 For a static item that needs focus, set `tabIndex={0}` for a Tab stop or
 `tabIndex={-1}` for programmatic focus. Set `outlined` for a persistent focus
 ring, such as a drop target, on static or interactive items. Interactive items

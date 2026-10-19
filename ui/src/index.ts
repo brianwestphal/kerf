@@ -415,6 +415,7 @@ export {
   type ContentItemAppearance,
   type ContentItemBubble,
   type ContentItemFrame,
+  type ContentItemMedia,
   type ContentItemProps,
   type ContentItemSelectionMode,
   type ContentItemShape,

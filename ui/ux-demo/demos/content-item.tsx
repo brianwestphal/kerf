@@ -2,7 +2,7 @@ import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import type { ContentItemAppearance } from '@kerfjs/ui/content-item';
 import { ContentItem } from '@kerfjs/ui/content-item';
-import { rem } from '@kerfjs/ui/css-values';
+import { fillColor, rem } from '@kerfjs/ui/css-values';
 import { Grid } from '@kerfjs/ui/grid';
 import { List } from '@kerfjs/ui/list';
 import { Pane } from '@kerfjs/ui/pane';
@@ -10,6 +10,11 @@ import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { Row } from '@kerfjs/ui/row';
 import { Text } from '@kerfjs/ui/text';
 
+import {
+  SKYLINE,
+  SKYLINE_BLURRED,
+  svgUrl,
+} from '../components/sample-artwork.js';
 import {
   contentCardChoice,
   contentCardSelected,
@@ -44,6 +49,68 @@ function itemCopy(title: string, detail: string) {
 export function ContentItemDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'content-item' }}>
+      <CatalogExample
+        label="Image-Tinted Feed Cards"
+        note="Each ContentItem reserves its lead image, derives readable colors from an app-supplied tint, and scrolls its own image against the shared Pane scroller. The source link and card action remain independent."
+        align="none"
+        viewport={{
+          layout: 'grid',
+          width: 'medium',
+          height: 'tall',
+          surface: 'default',
+        }}
+      >
+        <Pane
+          label="Stories"
+          rootAttributes={{ 'data-content-item-feed': 'true' }}
+        >
+          {['Harbor at dusk', 'Morning coastline', 'Night crossing'].map(
+            (title, index) => (
+              <ContentItem
+                appearance="surface"
+                frame="framed"
+                media={{
+                  src: svgUrl(SKYLINE),
+                  alt: '',
+                  blurredSrc: svgUrl(SKYLINE_BLURRED),
+                  aspectRatio: 16 / 9,
+                  parallax: 'subtle',
+                }}
+                tint={{
+                  color: fillColor(index === 1 ? '#dad9c8' : '#283a54'),
+                  scheme: index === 1 ? 'light' : 'dark',
+                  accent: fillColor(index === 1 ? '#67502b' : '#8cb7df'),
+                }}
+                rootAttributes={{ 'data-feed-card': String(index + 1) }}
+              >
+                <List gap="2xs">
+                  <Text variant="span">
+                    <strong>{title}</strong>
+                  </Text>
+                  <Text variant="span" tone="quiet">
+                    A short dispatch from the coast.
+                  </Text>
+                  <Row vAlign="middle">
+                    <a href="#source">Source</a>
+                    <Button emphasis="plain" action="log-more">
+                      Save
+                    </Button>
+                  </Row>
+                </List>
+              </ContentItem>
+            ),
+          )}
+          <ContentItem
+            appearance="surface"
+            rootAttributes={{ 'data-feed-card': 'no-image' }}
+          >
+            {itemCopy(
+              'Text-only update',
+              'No image is available for this story.',
+            )}
+          </ContentItem>
+        </Pane>
+      </CatalogExample>
       <CatalogExample
         label="Unframed and Framed Items"
         note={

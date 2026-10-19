@@ -26,4 +26,13 @@ in `tests/browser/dialog-bottom-sheet.spec.ts`.
 
 ## Automated coverage summary
 
-Nothing has moved from this plan into automation yet.
+The feed-card route `?component=content-item`, example "Image-Tinted Feed
+Cards", has unit coverage for image state transitions and three-engine browser
+coverage for independent timelines, reverse scrolling, image error/recovery,
+light/dark tint contrast, reduced motion, increased contrast, and forced
+colors. Wide and narrow light/dark captures were inspected for text, controls,
+image clipping, and card spacing. A 50/200-card Chromium trace checks node and
+listener growth; it uses repeated sample artwork, so a production feed with
+unique high-resolution assets still needs its own image-cache profiling.
+
+The remaining device-only checks above require a real mobile keyboard.

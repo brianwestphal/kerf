@@ -1,3 +1,5 @@
+import { wireContentItemMedia } from './wire-content-item-media.js';
+
 const ITEM_SELECTOR =
   '[data-component="content-item"][data-interactive="true"]';
 const NESTED_CONTROL_SELECTOR =
@@ -108,6 +110,7 @@ function activate(item: HTMLElement, modifiers: ActivationModifiers) {
  * platform. Returns a disposer.
  */
 export function wireContentItems(root: HTMLElement): () => void {
+  const stopMedia = wireContentItemMedia(root);
   // Roving tabindex: each multi-select grid is one Tab stop, on the last
   // focused row, else the first selected, else the first enabled row.
   const activeRows = new WeakMap<Element, HTMLElement>();
@@ -265,6 +268,7 @@ export function wireContentItems(root: HTMLElement): () => void {
   root.addEventListener('focusout', focusout);
   root.addEventListener('focusin', focusin);
   return () => {
+    stopMedia();
     clearSpace();
     observer?.disconnect();
     root.removeEventListener('focusin', focusin);

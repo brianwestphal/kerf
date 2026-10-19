@@ -1088,6 +1088,16 @@ insets and hands them back. Static fallbacks: no `animation-timeline`
 support, reduced motion, `:root[data-kui-effects="static"]`, `update: slow`;
 reduced transparency/increased contrast drop the mask. Tests:
 `ui/tests/unit/backdrop-image.test.tsx`, `ui/tests/browser/backdrop-image.spec.ts`.
+`ui/src/components/surfaces/content-item/content-item.tsx` owns optional feed
+`media` (lazy lead image, pre-blurred decorative copy, reserved ratio, and a
+per-image view timeline) and a card-scoped app `SurfaceTint`. Its existing
+geometry and selection roles remain on the root. The shared
+`wireContentItems` root installer delegates image load/error through
+`wiring/wire-content-item-media.ts`, removes the tint and media on lead-image
+failure, and restores them when a replacement loads. Rules and composition:
+`ui/docs/layout.md#content-items`; unit and browser checks:
+`ui/tests/unit/content-item-media.test.tsx` and
+`ui/tests/browser/content-item-media.spec.ts`.
 `ui/src/components/forms/choice-chips/choice-chips.tsx` (`@kerfjs/ui/choice-chips`)
 renders a wrapping choice: separate pill `<label>`s around native radios in a
 `role="radiogroup"` (or, with `multiple` and an array `value`, native

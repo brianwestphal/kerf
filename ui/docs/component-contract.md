@@ -594,6 +594,11 @@ preserves the surrounding surface.
 neutral fill so it remains visible on a lowered surface. For a card with
 multiple actions, put sibling buttons in a static ContentItem (or use
 `ListActionRow` for a simple two-action row).
+An image-led feed card uses `ContentItem.media` and an optional app-supplied
+`SurfaceTint` in `tint`. The image's reserved aspect-ratio block stays inside
+the item geometry and runs a per-image view timeline in the shared scrollport;
+`wireContentItems` handles load/error and restores the normal surface when the
+lead image fails. See [Content items](layout.md#content-items).
 For an interactive ContentItem, `wireContentItems` activates the card on Enter
 or Space only when the key event originated from the card itself. A nested
 native control, including one inside a custom element's shadow root, keeps its

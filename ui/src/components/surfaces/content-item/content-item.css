@@ -17,6 +17,120 @@
   background: var(--kui-content-item-background, transparent);
 }
 
+/* A feed card keeps ContentItem's outer 8/1/8 geometry. Its image owns an
+   aspect-ratio block inside that padding and names a timeline in the nearest
+   shared vertical scroller; each sibling card has an independent range. */
+.kui-content-item__media {
+  position: relative;
+  aspect-ratio: var(--_kui-content-item-media-ratio, 1.7777778);
+  overflow: clip;
+  border-radius: max(0px, calc(var(--kui-content-item-radius, 12px) - 9px));
+  background: var(--kui-color-surface);
+  view-timeline: --kui-content-item-media block;
+  pointer-events: none;
+}
+
+.kui-content-item__media-layers {
+  position: absolute;
+  inset: 0;
+}
+
+.kui-content-item__media-image,
+.kui-content-item__media-blurred {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--_kui-content-item-media-position, center);
+}
+
+.kui-content-item__media-blurred {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.kui-content-item__body {
+  min-width: 0;
+  margin-block-start: var(--kui-space-xs);
+}
+
+.kui-content-item[data-media-state][data-kui-tint][data-appearance="transparent"] {
+  --kui-content-item-background: var(--kui-color-surface);
+}
+
+.kui-content-item[data-media-state="error"] .kui-content-item__media {
+  display: none;
+}
+
+.kui-content-item[data-media-state="error"] .kui-content-item__body {
+  margin-block-start: 0;
+}
+
+.kui-content-item__media-blurred[data-image-error="true"] {
+  display: none;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .kui-content-item[data-media-state="ready"]
+      .kui-content-item__media-layers {
+      animation: kui-content-item-media-parallax linear both;
+      animation-timeline: --kui-content-item-media;
+      animation-range: exit-crossing 0% exit-crossing 100%;
+    }
+
+    .kui-content-item[data-media-state="ready"]
+      .kui-content-item__media-blurred:not([data-image-error="true"]) {
+      animation: kui-content-item-media-reveal linear both;
+      animation-timeline: --kui-content-item-media;
+      animation-range: exit-crossing 0% exit-crossing 50%;
+    }
+  }
+}
+
+@keyframes kui-content-item-media-parallax {
+  from {
+    transform: none;
+  }
+  to {
+    transform: translateY(calc(var(--_kui-content-item-media-parallax) * 100%));
+  }
+}
+
+@keyframes kui-content-item-media-reveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+:root[data-kui-effects="static"] .kui-content-item__media-layers,
+:root[data-kui-effects="static"] .kui-content-item__media-blurred {
+  animation: none !important;
+}
+
+@media (update: slow),
+  (prefers-reduced-transparency: reduce),
+  (prefers-contrast: more),
+  (forced-colors: active) {
+  .kui-content-item__media-layers,
+  .kui-content-item__media-blurred {
+    animation: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .kui-content-item__media {
+    display: none;
+  }
+  .kui-content-item__body {
+    margin-block-start: 0;
+  }
+}
+
 .kui-content-item--pill {
   --kui-content-item-radius: var(
     --kui-layout-pill-radius,
