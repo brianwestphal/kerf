@@ -89,7 +89,9 @@ entry (`dist/browser/<name>.js`), which imports every stylesheet the component's
 runtime reaches. A nested component's styles — the `Badge` inside `StateBanner` or
 `ListHeader`, the `Skeleton` inside a placeholder — are therefore loaded exactly as a
 consumer's browser import loads them, instead of depending on a hand-maintained
-list. Run `npm run build` before the template build so those entries exist.
+list. The capture also inlines relative CSS `@import` statements from public
+stylesheets, because its standalone HTML pages live outside `dist/styles`.
+Run `npm run build` before the template build so those entries exist.
 
 **Keep the templates current as components change.** The variants live in the
 `COMPONENTS` manifest in `scripts/build-design-templates.mjs` — when a component

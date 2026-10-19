@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   buildLibraryPage,
+  readTemplateCss,
   resolveTemplateStyles,
   // The build script is JavaScript because it runs directly under Node.
   // @ts-expect-error no declaration file is needed for this build-only module
@@ -60,6 +61,24 @@ describe('design template stylesheet resolution', () => {
       'skeleton',
       'state-banner',
     ]);
+  });
+
+  it('inlines nested public CSS imports in order for standalone capture pages', async () => {
+    const styles: Record<string, string> = {
+      'content-item.css':
+        '@import "./backdrop-image.css";\n@import "./components/surfaces/content-item/content-item.css";',
+      'backdrop-image.css': '.backdrop { color: blue; }',
+      'components/surfaces/content-item/content-item.css':
+        '.item { border: 1px solid; }',
+    };
+    const css = await readTemplateCss(
+      ['content-item'],
+      async (path: string) => styles[path],
+    );
+
+    expect(css).not.toContain('@import');
+    expect(css).toContain('.item { border: 1px solid; }');
+    expect(css.indexOf('.backdrop')).toBeLessThan(css.indexOf('.item'));
   });
 });
 

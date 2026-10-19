@@ -26,7 +26,7 @@
 
 import { execFile } from 'node:child_process';
 import { access, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
+import { dirname, posix, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 
@@ -2498,14 +2498,37 @@ export async function resolveTemplateStyles(
   return styles;
 }
 
-async function buildComponent(domotion, name, spec) {
-  const cssText = (
-    await Promise.all(
-      (await resolveTemplateStyles(spec.css)).map((f) =>
-        readFile(resolve(root, `dist/styles/${f}.css`), 'utf8'),
-      ),
-    )
+/** Inline public stylesheet imports before placing CSS in a standalone capture page. */
+export async function readTemplateCss(
+  styles,
+  readStyle = (path) => readFile(resolve(root, `dist/styles/${path}`), 'utf8'),
+) {
+  const expand = async (path, ancestors = []) => {
+    if (ancestors.includes(path))
+      throw new Error(
+        `Circular design-template CSS import: ${[...ancestors, path].join(' -> ')}`,
+      );
+    const source = await readStyle(path);
+    const imports = [...source.matchAll(/@import\s+["']([^"']+\.css)["'];/g)];
+    let output = '';
+    let start = 0;
+    for (const match of imports) {
+      output += source.slice(start, match.index);
+      const dependency = posix.normalize(
+        posix.join(posix.dirname(path), match[1]),
+      );
+      output += await expand(dependency, [...ancestors, path]);
+      start = match.index + match[0].length;
+    }
+    return output + source.slice(start);
+  };
+  return (
+    await Promise.all(styles.map((style) => expand(`${style}.css`)))
   ).join('\n');
+}
+
+async function buildComponent(domotion, name, spec) {
+  const cssText = await readTemplateCss(await resolveTemplateStyles(spec.css));
   const dir = resolve(outRoot, name);
   await rm(dir, { recursive: true, force: true });
   await mkdir(dir, { recursive: true });
