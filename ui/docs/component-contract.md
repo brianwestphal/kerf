@@ -600,7 +600,9 @@ ratio and running a per-image view timeline in the shared scrollport. Optional
 `overlay`, `scrim`, `fadeTo`, and `blur` use the same behavior as a page hero;
 `edgeToEdge` extends media to the card's top and inline inner edges;
 `wireContentItems` handles load/error and restores the normal surface when the
-lead image fails. See [Content items](layout.md#content-items).
+lead image fails. The once-wired helper also restores the native image state
+and tint after a render rewrites card attributes without replacing the image.
+See [Content items](layout.md#content-items).
 For an interactive ContentItem, `wireContentItems` activates the card on Enter
 or Space only when the key event originated from the card itself. A nested
 native control, including one inside a custom element's shadow root, keeps its

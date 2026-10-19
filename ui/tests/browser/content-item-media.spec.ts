@@ -134,7 +134,7 @@ test('edge-to-edge media composes fade, scrim, and a usable overlay control', as
 
 test('broken and replaced images switch between ordinary and tinted card surfaces', async ({
   page,
-}) => {
+}, testInfo) => {
   const { cards } = await feed(page);
   const card = cards.nth(0);
   const image = card.locator('.kui-backdrop-image__media');
@@ -152,6 +152,33 @@ test('broken and replaced images switch between ordinary and tinted card surface
     ),
   ).toBe(normal);
   await expect(card.locator('.kui-content-item__media')).toBeHidden();
+  for (const attribute of ['data-theme', 'data-other']) {
+    await card.evaluate((element, name) => {
+      element.setAttribute('data-media-state', 'pending');
+      element.setAttribute('data-kui-tint', 'dark');
+      element.setAttribute('data-kui-tint-accent', '');
+      element.classList.add('wa-dark');
+      element.setAttribute(name, 'changed');
+    }, attribute);
+    await expect(card).toHaveAttribute('data-media-state', 'error');
+    await expect(card).not.toHaveAttribute('data-kui-tint');
+    await expect(card.locator('.kui-content-item__media')).toBeHidden();
+  }
+  if (testInfo.project.name === 'chromium') {
+    await card.scrollIntoViewIfNeeded();
+    await card.screenshot({
+      path: testInfo.outputPath('content-item-error-after.png'),
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await image.evaluate((element: HTMLImageElement) => {
+      element.src = '/missing-feed-image.png';
+    });
+    await expect(card).toHaveAttribute('data-media-state', 'error');
+    await card.scrollIntoViewIfNeeded();
+    await card.screenshot({
+      path: testInfo.outputPath('content-item-error-after-narrow.png'),
+    });
+  }
   await image.evaluate((element: HTMLImageElement) => {
     element.src =
       'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="32" height="18"/%3E';
@@ -159,6 +186,14 @@ test('broken and replaced images switch between ordinary and tinted card surface
   await expect(card).toHaveAttribute('data-media-state', 'ready');
   await expect(card).toHaveAttribute('data-kui-tint', 'dark');
   await expect(card.locator('.kui-content-item__media')).toBeVisible();
+  await card.evaluate((element) => {
+    element.setAttribute('data-media-state', 'pending');
+    element.removeAttribute('data-kui-tint');
+    element.removeAttribute('data-kui-tint-accent');
+    element.classList.remove('wa-dark');
+  });
+  await expect(card).toHaveAttribute('data-media-state', 'ready');
+  await expect(card).toHaveAttribute('data-kui-tint', 'dark');
   await expect(card.getByRole('link', { name: 'Source' })).toBeVisible();
   await expect(card.getByRole('button', { name: 'Save' })).toBeVisible();
 });

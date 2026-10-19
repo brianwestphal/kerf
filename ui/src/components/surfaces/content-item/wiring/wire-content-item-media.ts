@@ -9,15 +9,26 @@ export function wireContentItemMedia(root: HTMLElement): () => void {
     const scheme = media?.dataset.tintScheme;
     if (!scheme) return;
     if (enabled) {
-      card.setAttribute('data-kui-tint', scheme);
-      card.classList.add(`wa-${scheme}`);
-      if (media?.hasAttribute('data-tint-accent')) {
+      if (card.dataset.kuiTint !== scheme)
+        card.setAttribute('data-kui-tint', scheme);
+      if (!card.classList.contains(`wa-${scheme}`))
+        card.classList.add(`wa-${scheme}`);
+      if (
+        media?.hasAttribute('data-tint-accent') &&
+        !card.hasAttribute('data-kui-tint-accent')
+      ) {
         card.setAttribute('data-kui-tint-accent', '');
       }
     } else {
-      card.removeAttribute('data-kui-tint');
-      card.removeAttribute('data-kui-tint-accent');
-      card.classList.remove('wa-light', 'wa-dark');
+      if (card.hasAttribute('data-kui-tint'))
+        card.removeAttribute('data-kui-tint');
+      if (card.hasAttribute('data-kui-tint-accent'))
+        card.removeAttribute('data-kui-tint-accent');
+      if (
+        card.classList.contains('wa-light') ||
+        card.classList.contains('wa-dark')
+      )
+        card.classList.remove('wa-light', 'wa-dark');
     }
   };
   const sync = (card: HTMLElement) => {
@@ -46,12 +57,35 @@ export function wireContentItemMedia(root: HTMLElement): () => void {
     const card = target.closest<HTMLElement>(CARD);
     if (card && root.contains(card)) sync(card);
   };
-  const observer = new MutationObserver(all);
+  // Morph can restore template attributes without changing an image node or
+  // firing a second load/error event. Reconcile its writes against native state.
+  const observer = new MutationObserver((records) => {
+    if (records.some((record) => record.type === 'childList')) {
+      all();
+      return;
+    }
+    const cards = new Set<HTMLElement>();
+    for (const record of records) {
+      const target = record.target;
+      if (target instanceof Element) {
+        const card = target.closest<HTMLElement>(CARD);
+        if (card && root.contains(card)) cards.add(card);
+      }
+    }
+    cards.forEach(sync);
+  });
   observer.observe(root, {
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ['src', 'srcset'],
+    attributeFilter: [
+      'src',
+      'srcset',
+      'data-media-state',
+      'data-kui-tint',
+      'data-kui-tint-accent',
+      'class',
+    ],
   });
   root.addEventListener('load', onImage, true);
   root.addEventListener('error', onImage, true);

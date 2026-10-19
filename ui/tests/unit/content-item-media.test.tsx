@@ -80,4 +80,56 @@ describe('ContentItem image state wiring', () => {
     expect(item.hasAttribute('data-kui-tint')).toBe(false);
     stop();
   });
+
+  it('restores native image state after morph-written attributes and stops on disposal', async () => {
+    const root = document.createElement('div');
+    const item = card();
+    root.append(item);
+    const lead = item.querySelector<HTMLImageElement>(
+      '.kui-content-item__media .kui-backdrop-image__media',
+    )!;
+    let width = 0;
+    Object.defineProperties(lead, {
+      complete: { get: () => true },
+      naturalWidth: { get: () => width },
+    });
+    const settle = () =>
+      new Promise<void>((resolve) => globalThis.setTimeout(resolve, 0));
+    const stop = wireContentItemMedia(root);
+    expect(item.dataset.mediaState).toBe('error');
+
+    for (const attribute of ['data-theme', 'data-other']) {
+      item.dataset.mediaState = 'pending';
+      item.setAttribute('data-kui-tint', 'dark');
+      item.setAttribute('data-kui-tint-accent', '');
+      item.classList.add('wa-dark');
+      item.setAttribute(attribute, 'changed');
+      await settle();
+      expect(item.dataset.mediaState).toBe('error');
+      expect(item.hasAttribute('data-kui-tint')).toBe(false);
+      expect(item.hasAttribute('data-kui-tint-accent')).toBe(false);
+      expect(item.classList.contains('wa-dark')).toBe(false);
+    }
+
+    width = 160;
+    lead.dispatchEvent(new Event('load'));
+    expect(item.dataset.mediaState).toBe('ready');
+    item.dataset.mediaState = 'pending';
+    item.removeAttribute('data-kui-tint');
+    item.removeAttribute('data-kui-tint-accent');
+    item.classList.remove('wa-dark');
+    await settle();
+    expect(item.dataset.mediaState).toBe('ready');
+    expect(item.getAttribute('data-kui-tint')).toBe('dark');
+    expect(item.hasAttribute('data-kui-tint-accent')).toBe(true);
+    expect(item.classList.contains('wa-dark')).toBe(true);
+
+    width = 0;
+    lead.dispatchEvent(new Event('error'));
+    expect(item.dataset.mediaState).toBe('error');
+    stop();
+    item.dataset.mediaState = 'pending';
+    await settle();
+    expect(item.dataset.mediaState).toBe('pending');
+  });
 });

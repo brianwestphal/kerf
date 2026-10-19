@@ -408,7 +408,8 @@ Image-led feed cards are shipped through `ContentItem.media` composed with
 `BackdropImage` and an optional per-card `SurfaceTint`: each reserved, lazy
 image has its own view timeline in
 the feed's shared scrollport, and `wireContentItems` handles failed and
-replaced sources without leaving a broken image or tint. The catalog and
+replaced sources as well as attribute-only rerenders without leaving a broken
+image or tint. The catalog and
 browser tests cover per-row motion, light/dark AA tokens, missing-image and
 accessibility fallbacks. Media also supports BackdropImage's overlay, scrim,
 progressive blur, and typed fade, plus optional top/inline edge bleed.

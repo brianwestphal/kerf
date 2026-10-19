@@ -1097,7 +1097,8 @@ edge bleed, and a card-scoped app `SurfaceTint`. Its existing
 geometry and selection roles remain on the root. The shared
 `wireContentItems` root installer delegates image load/error through
 `wiring/wire-content-item-media.ts`, removes the tint and media on lead-image
-failure, and restores them when a replacement loads. Rules and composition:
+failure, and restores them when a replacement loads. It also reconciles
+native image state after morph rewrites helper-owned card attributes. Rules and composition:
 `ui/docs/layout.md#content-items`; unit and browser checks:
 `ui/tests/unit/content-item-media.test.tsx` and
 `ui/tests/browser/content-item-media.spec.ts`.

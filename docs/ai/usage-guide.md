@@ -382,6 +382,8 @@ hand-written `<div class="kui-content-item">` (`KUI-L103` reports that div; the
 class stays for a `<ul>` or `<footer>` carrier): pass `frame="framed"` only when
 the item marks a real distinction and `shape="pill"` for the 22px radius. It
 owns its whole 8/1/8 geometry, so never pad around it.
+For image-led cards, wire `wireContentItems(root)` once; it reconciles native
+image load/error state after card attribute rerenders as well as image changes.
 
 The package keeps app policy outside components: wire emitted `data-action`
 hooks at the mount root, retain every disposer, and let the app own menu/tab
