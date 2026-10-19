@@ -44,4 +44,7 @@ The real catalog scroll position is checked during and after all four List
 transition actions at wide and narrow viewports. During motion, check that
 named rows stay within the visible example and do not cover the catalog footer
 or neighboring examples; the browser suite checks the computed transition
-clip at wide and narrow viewports.
+clip at wide and narrow viewports. Also check that the catalog header, sidebar,
+and surrounding examples remain painted throughout the transition; browser
+captures compare a header pixel before and during motion at narrow, medium,
+and review-sized viewports.

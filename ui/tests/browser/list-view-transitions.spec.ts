@@ -228,3 +228,60 @@ for (const { width, height } of [
       .toBe('');
   });
 }
+
+for (const { width, height } of [
+  { width: 701, height: 626 },
+  { width: 390, height: 844 },
+  { width: 2560, height: 1410 },
+]) {
+  test(`List motion keeps the surrounding page painted at ${width}px`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize({ width, height });
+    const root = await example(page);
+    const before = await page.screenshot();
+    await root
+      .getByRole('button', { name: 'Reorder' })
+      .evaluate((element: HTMLElement) => element.click());
+    await expect
+      .poll(() =>
+        page.evaluate(() => document.documentElement.style.viewTransitionName),
+      )
+      .toBe('none');
+    await page.waitForTimeout(90);
+    const during = await page.screenshot({
+      path:
+        testInfo.project.name === 'webkit'
+          ? testInfo.outputPath(`list-page-painted-${width}-motion.png`)
+          : undefined,
+    });
+    const colors = await page.evaluate(
+      async ({ images, x }) => {
+        const sample = async (base64: string) => {
+          const image = new window.Image();
+          image.src = `data:image/png;base64,${base64}`;
+          await image.decode();
+          const canvas = document.createElement('canvas');
+          canvas.width = canvas.height = 1;
+          const context = canvas.getContext('2d')!;
+          context.drawImage(image, x, 30, 1, 1, 0, 0, 1, 1);
+          return [...context.getImageData(0, 0, 1, 1).data.slice(0, 3)];
+        };
+        return Promise.all(images.map(sample));
+      },
+      {
+        images: [before.toString('base64'), during.toString('base64')],
+        x: Math.floor(width / 2),
+      },
+    );
+    for (let channel = 0; channel < 3; channel++)
+      expect(
+        Math.abs(colors[0]![channel]! - colors[1]![channel]!),
+      ).toBeLessThanOrEqual(3);
+    await expect
+      .poll(() =>
+        page.evaluate(() => document.documentElement.style.viewTransitionName),
+      )
+      .toBe('');
+  });
+}

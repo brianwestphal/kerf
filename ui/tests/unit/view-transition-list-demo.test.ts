@@ -23,6 +23,7 @@ afterEach(() => {
   document.documentElement.style.removeProperty(
     '--demo-list-view-transition-clip',
   );
+  document.documentElement.style.removeProperty('view-transition-name');
   if (startDescriptor)
     Object.defineProperty(document, 'startViewTransition', startDescriptor);
   else Reflect.deleteProperty(document, 'startViewTransition');
@@ -130,7 +131,9 @@ describe('List View Transitions demo actions', () => {
       }),
     });
     try {
+      document.documentElement.style.viewTransitionName = 'prior-root';
       changeViewTransitionList('reorder');
+      expect(document.documentElement.style.viewTransitionName).toBe('none');
       expect(
         document.documentElement.style.getPropertyValue(
           '--demo-list-view-transition-clip',
@@ -146,8 +149,39 @@ describe('List View Transitions demo actions', () => {
           '--demo-list-view-transition-clip',
         ),
       ).toBe('');
+      expect(document.documentElement.style.viewTransitionName).toBe(
+        'prior-root',
+      );
     } finally {
       pane.remove();
+    }
+  });
+
+  it('restores the root snapshot setting if the transition cannot start', () => {
+    const specimen = document.createElement('div');
+    specimen.dataset.demoViewTransitions = '';
+    document.body.append(specimen);
+    document.documentElement.style.viewTransitionName = 'prior-root';
+    Object.defineProperty(document, 'startViewTransition', {
+      configurable: true,
+      value: () => {
+        throw new Error('capture failed');
+      },
+    });
+    try {
+      expect(() => changeViewTransitionList('reorder')).toThrow(
+        'capture failed',
+      );
+      expect(document.documentElement.style.viewTransitionName).toBe(
+        'prior-root',
+      );
+      expect(
+        document.documentElement.style.getPropertyValue(
+          '--demo-list-view-transition-clip',
+        ),
+      ).toBe('');
+    } finally {
+      specimen.remove();
     }
   });
 

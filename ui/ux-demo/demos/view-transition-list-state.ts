@@ -120,21 +120,34 @@ export function changeViewTransitionList(
     apply(action);
   } else {
     pendingCapture = true;
+    const page = document.documentElement;
+    const previousRootName = page.style.viewTransitionName;
     const clip = visibleSpecimenClip();
-    if (clip) document.documentElement.style.setProperty(clipProperty, clip);
-    const transition = document.startViewTransition(() => {
-      try {
-        apply(action);
-        for (const next of queued.splice(0)) apply(next);
-      } finally {
-        pendingCapture = false;
-      }
-    });
+    if (clip) page.style.setProperty(clipProperty, clip);
+    // The full-page root snapshot would disappear outside the specimen clip.
+    page.style.viewTransitionName = 'none';
+    let transition: ViewTransition;
+    try {
+      transition = document.startViewTransition(() => {
+        try {
+          apply(action);
+          for (const next of queued.splice(0)) apply(next);
+        } finally {
+          pendingCapture = false;
+        }
+      });
+    } catch (error) {
+      pendingCapture = false;
+      page.style.viewTransitionName = previousRootName;
+      page.style.removeProperty(clipProperty);
+      throw error;
+    }
     active = transition;
     const clear = () => {
       if (active === transition) {
         active = undefined;
-        document.documentElement.style.removeProperty(clipProperty);
+        page.style.viewTransitionName = previousRootName;
+        page.style.removeProperty(clipProperty);
       }
     };
     void transition.finished.then(clear, clear);

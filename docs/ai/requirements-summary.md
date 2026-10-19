@@ -414,6 +414,8 @@ The List UX demo now exposes the shipped opt-in document View Transitions
 recipe with interactive reorder, insert, remove, and reset controls; it uses
 `each()` and keeps names, motion, scroll-position preservation, the visible
 specimen clip for document snapshots, and fallback policy in the demo app.
+The List coordinator excludes the document root snapshot only while its clipped
+transition runs, so the rest of the catalog stays painted during row motion.
 
 The root `@kerfjs/ui` declaration barrel re-exports the named TabBarItem, TabBar,
 ToolbarControlGroup, and Select presentation axes; source and packed-tarball

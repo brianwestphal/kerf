@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 433000,
+  "totalJavaScriptGzip": 433100,
   "measuredLargestJavaScriptGzip": 164543,
-  "measuredTotalJavaScriptGzip": 432981,
+  "measuredTotalJavaScriptGzip": 433004,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6131,6 +6131,22 @@
         "measuredTotalJavaScriptGzip": 432981,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 433000
+      }
+    },
+    {
+      "at": "2026-10-19T05:54:40.620Z",
+      "reason": "Keep catalog page painted during clipped List transitions",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 432981,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 433000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 433004,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 433100
       }
     }
   ]

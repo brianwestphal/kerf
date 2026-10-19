@@ -13,7 +13,10 @@ catalog app. It also restores its scrollable ancestors around each source write
 so moving rows cannot shift the catalog pane while the action runs. Because a
 document View Transition renders above the page, the catalog example clips its
 snapshot overlay to the visible intersection of the specimen and its scrolling
-pane. This keeps moving rows clear of the fixed catalog footer.
+pane. It temporarily excludes the document root from the snapshot while doing
+so; otherwise the page outside that clip would turn blank during motion. This
+keeps moving rows clear of the fixed catalog footer while the surrounding page
+stays painted.
 
 ## Render rows with stable names
 

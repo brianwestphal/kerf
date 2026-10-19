@@ -1104,7 +1104,9 @@ The List catalog example in `ui/ux-demo/demos/list.tsx` uses
 app-owned document View Transition and restore ancestor scroll positions
 around each source write. It also bounds the document snapshot overlay to the
 visible specimen; `ui/ux-demo/style.css` applies that clip and suppresses the
-unnamed root animation. `ui/ux-demo/view-transition-list-row.tsx`
+unnamed root animation. The coordinator temporarily sets the document root's
+`view-transition-name` to `none` and restores it on completion, keeping the
+page painted outside the clip. `ui/ux-demo/view-transition-list-row.tsx`
 owns each wrapper and its finite CSS names;
 `ui/tests/browser/list-view-transitions.spec.ts`
 exercises the real controls.
