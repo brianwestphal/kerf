@@ -429,6 +429,7 @@ kerf/
 │   │   ├── global-setup.mjs            ← rebuilds `tests/dist/consumer-app/dist/main.js` AND `tests/dist/example-apps/<name>/` before the suite (skipped per-build via `KERF_SKIP_CONSUMER_BUILD=1` / `KERF_SKIP_EXAMPLE_APPS_BUILD=1`)
 │   │   ├── input-preservation.spec.ts  ← KF-474 / KF-2TNZPJ — exact input/textarea/contenteditable caret preservation in all three engines: an each() row across unrelated morph + keyed reorder, and a bindList contenteditable through its own keyed move; pins Firefox's moveBefore Selection-retargeting regression
 │   │   ├── each-keyed-replacement.spec.ts ← KF-GS850A — a popover anchored in an each() row stays open when a new item object renders the same unique row key; row and button identities survive in Chromium, Firefox, and WebKit
+│   │   ├── view-transitions.spec.ts      ← KF-YMBR5M — consumer-owned document View Transitions around each()/bindList() source writes: list changes, rapid edits, nested/sibling names, fallback, reduced motion, and focus across Chromium/Firefox/WebKit
 │   │   ├── list.spec.ts                ← kerfjs/list virtualization real scroll/layout happy-dom can't model: only the viewport window renders, shifts on real scroll, padding keeps scrollHeight honest; + measured mode: observeRowHeights sizes rows from real offsetHeight (natural 40px, not the estimate), scrollHeight grows past the estimate baseline; + content-visibility mode KF-525: EVERY row present in the DOM (findability guarantee, incl. the far last row), content-visibility:auto/contain-intrinsic-size set, off-screen rows layout-skipped via checkVisibility({contentVisibilityAuto}) where the engine implements the flag
 │   │   ├── router.spec.ts              ← kerfjs/router real navigation happy-dom can't model (KF-532): a real link click routes without a full reload (URL changes, outlet swaps, no navigation), browser Back/Forward drives popstate → the outlet + active-link follow, a same-route param change keeps the outlet element in place (DOM identity) while cross-route replaces it
 │   │   ├── attach.spec.ts              ← kerfjs/attach disconnected-node lifecycle in real engines: setup before insertion, later light-DOM or direct shadow-root connection, and one-shot teardown after ordinary ancestor, direct, or shadow-host removal
@@ -514,7 +515,8 @@ kerf/
 │   ├── 24-ai-first-setup.md       ← deterministic project detection and transactional AI-first setup contract
 │   ├── 25-ticket-timing.md        ← durable Hot Sheet phase records and process-review summaries without raw output or machine-specific paths
 │   ├── companion-utilities-design.md ← design history for the optional companion subpaths
-│   ├── view-transitions-design.md ← KF-XN0WMQ design decision: app-owned state-update boundary for optional list View Transitions; browser recipe pending
+│   ├── view-transitions-design.md ← KF-XN0WMQ design decision: app-owned state-update boundary for optional list View Transitions
+│   ├── view-transitions.md        ← KF-YMBR5M consumer recipe and browser-verified CSS for opt-in list View Transitions
 │   ├── graphics/                  ← editable logo sources plus the published SVG
 │   ├── technical-changelog/      ← long-form release migration notes
 │   │   └── v0.16.0-v1.0.0.md      ← historical version migration record

@@ -1,7 +1,8 @@
 # List View Transitions — design decision
 
-> **Status: design only (KF-XN0WMQ).** The consumer recipe and browser coverage
-> are tracked in KF-YMBR5M. No kerf API or runtime behavior changes here.
+> **Status: design verified by KF-YMBR5M browser coverage.** The
+> [consumer recipe](view-transitions.md) keeps this opt-in at the app boundary.
+> No kerf API or runtime behavior changes here.
 
 ## Decision
 
@@ -22,8 +23,8 @@ if (document.startViewTransition) {
 The callback can instead call an `arraySignal` mutator such as `move()`; either
 source can drive `each()` or `bindList()`. The app chooses the triggering
 action, names its rows with CSS, and owns any animation rules. Kerf continues
-to ship no animation CSS. This is a proposed recipe, pending real-browser
-verification in KF-YMBR5M, rather than a new `transition` option on `each()`,
+to ship no animation CSS. This is a consumer recipe verified in real browsers,
+rather than a new `transition` option on `each()`,
 `bindList()`, or `mount()`.
 
 ## Why the boundary belongs outside the reconciler
@@ -92,17 +93,19 @@ move algorithm.
   `content-visibility` mode keeps rows in the DOM but still needs browser
   validation of snapshots outside the viewport.
 
-## Verification required before publishing the recipe
+## Browser verification scope
 
-KF-YMBR5M should exercise real rendered lists in Chromium, Firefox, and
-WebKit at wide and narrow viewports: plain-signal and `arraySignal` `each()`;
+KF-YMBR5M exercises real rendered lists in Chromium, Firefox, and WebKit at
+wide and narrow viewports: plain-signal and `arraySignal` `each()`;
 `bindList()` snapshot and patch paths; reorder, insert, remove, empty/refill,
 rapid successive edits, sibling/nested lists, unsupported-API fallback, reduced
-motion, and a focused input in a moving row. Assert update-callback order and
-final DOM state, then inspect actual animation frames and accessibility/focus.
-Check duplicate names and CSS used to avoid a root crossfade. The browser
-findings decide whether the recipe needs a helper or a narrower supported
-scope; no core flag is approved by this design alone.
+motion, and a focused input in a moving row. Tests assert update-callback
+order, final DOM state, focus, unique names, and active pseudo-element
+animations where supported. A Chromium transition frame was inspected at wide
+and narrow viewports for readable, unclipped rows. The recipe needs no core
+helper or per-list flag. See the
+[browser test](../tests/browser/view-transitions.spec.ts) for executable
+coverage and the [recipe](view-transitions.md) for app code.
 
 Browser API references: [MDN process and callback timing](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API/Using),
 [MDN `skipTransition()` semantics](https://developer.mozilla.org/en-US/docs/Web/API/ViewTransition/skipTransition),
