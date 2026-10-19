@@ -10,7 +10,8 @@
  *      `replaced` (same ref, html changed), or `new` (never seen before).
  *   2. Bulk-parse every fresh row's HTML in ONE `innerHTML` call — for an
  *      initial population of 10k rows that's 1 parse instead of 10k.
- *   3. Remove orphan refs (gone from the new list) + replaced rows' old nodes.
+ *   3. Reuse uniquely keyed, same-tag rows across object replacement, then
+ *      remove the remaining orphan refs and replaced nodes.
  *   4. Compute a longest-increasing-subsequence over old positions; items in
  *      the LIS are already in the right relative order, so they don't move.
  *   5. Reverse-pass over the new record, `insertBefore` only the items that
@@ -27,7 +28,11 @@ import { disposeRowBindings, wireRowBindings } from './bindings.js';
 import { devHooks } from './dev-hooks.js';
 import { type BoundItem, endAnchor, type ListBinding } from './list-binding.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
-import { tryInPlaceContentUpdate } from './list-reconcile-inplace.js';
+import {
+  tryInPlaceContentUpdate,
+  updateRowInPlace,
+} from './list-reconcile-inplace.js';
+import { getNodeKey } from './morph.js';
 import type { ListSegment } from './segment.js';
 import { moveNode } from './utils/moveNode.js';
 import { parseRowTemplate, rowContractError } from './utils/row-contract.js';
@@ -74,12 +79,84 @@ export function reconcileSnapshot(
   const tailAnchor = endAnchor(binding);
   buildFreshNodes(newRecord, freshIndices, freshHtmls, liveParent);
   const focusSnap = captureFocus(liveParent);
+  reuseKeyedRows(
+    binding.items,
+    listSeg,
+    newRecord,
+    prevIdx,
+    removedItems,
+    freshIndices,
+    liveParent,
+  );
   removeOldNodes(liveParent, removedItems);
   applyMoves(liveParent, newRecord, prevIdx, lis(prevIdx), tailAnchor);
   if (focusSnap !== null) restoreFocus(focusSnap);
   binding.items = newRecord;
   if (newRecord.length > 0) {
     devHooks.missingRowKey?.(newRecord[0].node, newRecord[0].html, binding);
+  }
+}
+
+/**
+ * A new item object can still describe the same rendered row. Pair a fresh
+ * parse with a removed row only when its id/data-key is unique on BOTH sides;
+ * ambiguous keys retain the reference-based remove/insert behavior. The DOM
+ * row survives and its content/bindings update through the same ladder used
+ * by the same-reference fast path. Structural moves still use the LIS pass.
+ */
+function reuseKeyedRows(
+  oldItems: BoundItem[],
+  listSeg: ListSegment,
+  newRecord: BoundItem[],
+  prevIdx: number[],
+  removedItems: BoundItem[],
+  freshIndices: number[],
+  liveParent: Element,
+): void {
+  if (freshIndices.length === 0 || removedItems.length === 0) return;
+
+  const oldByKey = new Map<string, { item: BoundItem; index: number } | null>();
+  for (let index = 0; index < oldItems.length; index++) {
+    const key = getNodeKey(oldItems[index].node);
+    if (key === undefined) continue;
+    oldByKey.set(
+      key,
+      oldByKey.has(key) ? null : { item: oldItems[index], index },
+    );
+  }
+  const newKeyCounts = new Map<string, number>();
+  for (const item of newRecord) {
+    const key = getNodeKey(item.node);
+    if (key !== undefined)
+      newKeyCounts.set(key, (newKeyCounts.get(key) ?? 0) + 1);
+  }
+  const removedSet = new Set(removedItems);
+  const reused = new Set<BoundItem>();
+  for (const index of freshIndices) {
+    const fresh = newRecord[index];
+    const key = getNodeKey(fresh.node);
+    if (key === undefined || newKeyCounts.get(key) !== 1) continue;
+    const prior = oldByKey.get(key);
+    if (
+      prior === undefined ||
+      prior === null ||
+      !removedSet.has(prior.item) ||
+      prior.item.node.tagName !== fresh.node.tagName
+    )
+      continue;
+    disposeRowBindings(fresh.bindingDisposers);
+    newRecord[index] = updateRowInPlace(
+      liveParent,
+      prior.item,
+      listSeg.items[index],
+      index,
+      fresh.node,
+    );
+    prevIdx[index] = prior.index;
+    reused.add(prior.item);
+  }
+  for (let i = removedItems.length - 1; i >= 0; i--) {
+    if (reused.has(removedItems[i])) removedItems.splice(i, 1);
   }
 }
 
@@ -117,8 +194,8 @@ function classifyItems(
         prevIdx[i] = oi[1];
         continue;
       }
-      // Same ref, new html → the old node is replaced. Its bound effects go
-      // with it (KF-294); `removeOldNodes` disposes them.
+      // Same ref, new html → a fresh parse. A unique rendered key can still
+      // pair it with the old node below; otherwise removal disposes effects.
       removedItems.push(oi[0]);
     }
     newRecord[i] = {

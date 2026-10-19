@@ -160,16 +160,14 @@ describe('Doc contract coverage (KF-104)', () => {
     });
 
     it('focused row that is REPLACED loses focus (the documented trade-off)', () => {
-      // docs/4-render.md §4.4: "Replaced rows are a different story: the old
-      // node is removed before the new one is inserted, so focus that lived
-      // inside it is genuinely gone."
+      // A changed rendered key makes this a genuinely new row.
       const items = signal<{ id: number; ver: number }[]>([{ id: 1, ver: 1 }]);
       mount(root, () => (
         <ul>
           {each(
             items.value,
             (it) => (
-              <li data-key={String(it.id)}>
+              <li data-key={`${it.id}-${it.ver}`}>
                 <input type="text" defaultValue={`v${it.ver}`} />
               </li>
             ),
@@ -180,7 +178,7 @@ describe('Doc contract coverage (KF-104)', () => {
       const input = root.querySelector('input')!;
       input.focus();
       expect(document.activeElement).toBe(input);
-      // Same id but different cacheKey → cache miss → row replaced.
+      // Different rendered key → row replaced.
       items.value = [{ id: 1, ver: 2 }];
       // Old input was removed; focus is gone.
       expect(document.activeElement).not.toBe(input);
@@ -221,8 +219,8 @@ describe('Doc contract coverage (KF-104)', () => {
       li1.addEventListener('click', () => directClicks++);
       li1.click();
       expect(directClicks).toBe(1);
-      // Replace the row (different ref → cache miss → fresh node).
-      items.value = [{ id: 1 }];
+      // A different rendered key removes the listener-bearing row.
+      items.value = [{ id: 2 }];
       const li2 = root.querySelector('li')!;
       expect(li2).not.toBe(li1); // new node
       li2.click();

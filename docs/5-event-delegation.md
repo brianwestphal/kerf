@@ -1,6 +1,6 @@
 # 5. Event delegation
 
-Per-element `addEventListener` calls don't survive morph re-renders for nodes the diff inserts or rebuilds. The fix is delegation: bind one listener at the morph root and dispatch via `closest()`.
+Per-element `addEventListener` calls don't survive morph re-renders for nodes the diff inserts or rebuilds. A uniquely keyed `each()` row now survives replacement of its item object when its rendered tag stays the same, so a listener on a matched descendant survives that update; removing the row, changing its key or tag, or rebuilding an ancestor still loses it. The durable pattern across those transitions is delegation: bind one listener at the morph root and dispatch via `closest()`.
 
 kerf ships two helpers — `delegate()` (which auto-promotes the well-known non-bubbling event types to capture phase under the hood) and `delegateCapture()` (the explicit-capture escape hatch) — plus one convention: `data-morph-skip` for subtrees neither helper should reach into.
 

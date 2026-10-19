@@ -111,7 +111,7 @@ The original v0.1–v0.3 runtime design is shipped (`each` / native diff / list 
 
 ### §1 Overview
 
-States kerf's positioning: tiny reactive UI framework, ~15 KB (still ~15 KB with `arraySignal`), no virtual DOM, no compiler, no component lifecycle, no third-party DOM-diff dependency. Four primitives (signals / stores / render / delegation) plus a JSX runtime and an SVG-aware `toElement`. Rules out routing in the core (an optional `kerfjs/router` subpath ships separately), full SSR, styling opinions, and a framework ecosystem.
+States kerf's positioning: tiny reactive UI framework, ~15 KB (~16 KB with `arraySignal`), no virtual DOM, no compiler, no component lifecycle, no third-party DOM-diff dependency. Four primitives (signals / stores / render / delegation) plus a JSX runtime and an SVG-aware `toElement`. Rules out routing in the core (an optional `kerfjs/router` subpath ships separately), full SSR, styling opinions, and a framework ecosystem.
 
 ### §2 Reactivity
 
@@ -126,6 +126,8 @@ Also covers `arraySignal()` (KF-92) — a granular collection signal at the `ker
 `defineStore({ initial, actions })` produces a `{ state, actions, reset }`. Three rules: read-only state, actions-only mutation, always-reset. Module-level registry powers `resetAllStores()`. Multi-step actions use `batch()` for atomic notification. Derived state via `computed()` next to the store. With the diagnostics installed (`kerfjs/dev`), `get()` returns a **deep read-only Proxy** (`src/utils/dev-readonly.ts`, reached through the `devHooks.storeReadonly` slot): any write — including a nested `get().a.b = 1` — throws a Rule-9 `TypeError`, while reads (spread/JSON/keys/iteration) are transparent and the live state object is never frozen; `set()` unwraps get()-derived proxies through `devHooks.storeToRaw` so the signal only ever stores plain objects. The narrow-set warning hook is resolved at each `set()` call and its per-store one-shot context is allocated lazily, so stores created before diagnostics are installed honor them on later actions. Prod returns the bare reference (byte-identical, no proxy).
 
 ### §4 Render
+
+**Shipped (KF-GS850A).** `each()` snapshot reconciliation retains a same-tag row and its live descendants when a new item object has the same unique rendered `id`/`data-key`, including a reorder. HTML memoization remains based on object identity, so a new object still re-renders. Missing or ambiguous keys and top-level tag changes retain replacement behavior. Unit transition tests and a real-browser open-popover flow cover the boundary.
 
 **View Transitions design only (KF-XN0WMQ).** [`docs/view-transitions-design.md`](../view-transitions-design.md) places an optional browser transition around the app's state mutation, because `mount()` and `bindList()` already reconcile synchronously in signal effects while the browser runs its update callback only after capturing the old view. No per-list flag or runtime behavior is shipped; the consumer recipe and real-browser verification are tracked in KF-YMBR5M.
 

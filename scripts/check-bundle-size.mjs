@@ -80,7 +80,8 @@ const BUDGETS = [
     // are re-parsed and morphed instead of the whole page.
     // KF-G7N4PK (+0.17 KB): seed the custom-element rendered-attribute record
     // when kerf creates an element, so its first sync keeps reflected defaults.
-    budgetKb: 15.1,
+    // KF-GS850A (+0.17 KB): keyed each() rows survive a new item object.
+    budgetKb: 15.3,
     description: 'realistic app import — the number the docs advertise',
     entry: `
       import { signal, computed, effect, batch, mount, each, delegate } from '${DIST}/index.js';
@@ -98,7 +99,8 @@ const BUDGETS = [
     // values that need escaping) in the shared jsx runtime.
     // KF-HA8R27 (+2.08 KB): the change-scoped morph in the shared core (see main).
     // KF-G7N4PK (+0.17 KB): rendered-attribute record seeding (see main).
-    budgetKb: 17.0,
+    // KF-GS850A (+0.22 KB): the same keyed row identity fix in the barrel.
+    budgetKb: 17.3,
     description: 'the whole public barrel — worst case for a consumer',
     entry: `
       import * as kerf from '${DIST}/index.js';
@@ -218,7 +220,8 @@ const BUDGETS = [
     // layout clamped a scrolled surface to its top).
     // KF-S92WX8 (+0.1 KB): autoReposition also observes the surface's own
     // size, skipping resizes its own positioning writes caused.
-    budgetKb: 23.4,
+    // KF-GS850A (+0.14 KB): shared keyed row identity logic.
+    budgetKb: 23.6,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
@@ -237,7 +240,8 @@ const BUDGETS = [
     // re-render cannot redirect a later delegate onto a recycled target.
     // KF-HA8R27 (+2.1 KB): the change-scoped morph in the shared core (see main).
     // KF-G7N4PK (+0.17 KB): rendered-attribute record seeding (see main).
-    budgetKb: 13.5,
+    // KF-GS850A (+0.16 KB): shared keyed row identity logic.
+    budgetKb: 13.7,
     description:
       'the dispose-scope subpath (disposeScope + disposeSubtree + observeRemovals) — includes shared core',
     entry: `
@@ -272,7 +276,8 @@ const BUDGETS = [
     // KF-VBQJAX's per-name attribute-check memo in the shared core; +2.1 for
     // KF-HA8R27's change-scoped morph in the shared core (see main).
     // KF-G7N4PK (+0.17 KB): rendered-attribute record seeding (see main).
-    budgetKb: 15.7,
+    // KF-GS850A (+0.21 KB): shared keyed row identity logic.
+    budgetKb: 16.0,
     description:
       'the bindList subpath (keyed per-row mount + virtualization) — includes shared core',
     entry: `
@@ -318,7 +323,8 @@ const BUDGETS = [
     // +0.1 for KF-K8S4RX's custom-element rendered-attribute record (see main).
     // +2.1 for KF-HA8R27's change-scoped morph in the shared core (see main).
     // KF-G7N4PK (+0.17 KB): rendered-attribute record seeding (see main).
-    budgetKb: 13.0,
+    // KF-GS850A (+0.19 KB): shared keyed row identity logic.
+    budgetKb: 13.3,
     description:
       'the remount subpath (remountOn — keyed subtree replacement) — includes shared core',
     entry: `
@@ -347,7 +353,8 @@ const BUDGETS = [
     name: 'main-no-dev-code',
     // Same figure as `main` (see its KF-HK7WE8, KF-K8S4RX, and KF-HA8R27 notes).
     // Same figure as `main` (see its KF-G7N4PK note).
-    budgetKb: 15.1,
+    // KF-GS850A: same measured growth as `main`, with the dev-code guard intact.
+    budgetKb: 15.3,
     description:
       'same as `main`, and asserts zero dev-diagnostic code leaked in',
     forbid: [

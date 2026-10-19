@@ -418,6 +418,38 @@ describe('in-place updates re-wire changed binding instances (KF-347)', () => {
     dispose();
   });
 
+  it("snapshot keyed replacement re-wires a new object's self-reading hole", () => {
+    const ext = signal('one');
+    const rows = signal<Row[]>([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ]);
+    const dispose = mount(root, () =>
+      jsx('ul', {
+        children: each(rows.value, (item) =>
+          jsx('li', {
+            'data-key': String(item.id),
+            children: [
+              computed(() => item.label),
+              '/',
+              computed(() => ext.value),
+            ],
+          }),
+        ),
+      }),
+    );
+    const first = root.querySelector('li');
+    rows.value = [
+      { id: 2, label: 'b' },
+      { id: 1, label: 'new' },
+    ];
+    expect(root.querySelectorAll('li')[1]).toBe(first);
+    expect(first?.textContent).toBe('new/one');
+    ext.value = 'two';
+    expect(first?.textContent).toBe('new/two');
+    dispose();
+  });
+
   it('granular update(): a row that LOSES its bound hole disposes the old effect and wires nothing', () => {
     const rows = arraySignal<Row>([{ id: 1, label: 'a', done: true }]);
     const dispose = mount(root, () =>

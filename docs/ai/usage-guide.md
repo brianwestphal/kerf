@@ -5,7 +5,7 @@ purpose: enable an AI to use kerf correctly on the first try and to recognize wh
 
 # kerf for AI assistants
 
-An ~15 KB reactive UI framework (still ~15 KB with `arraySignal`): signals + DOM morphing + JSX → HTML strings. No virtual DOM, no compiler, no scheduler. Read this once and you can write correct kerf code without consulting the rest of `docs/`.
+An ~15 KB reactive UI framework (~16 KB with `arraySignal`): signals + DOM morphing + JSX → HTML strings. No virtual DOM, no compiler, no scheduler. Read this once and you can write correct kerf code without consulting the rest of `docs/`.
 
 ## When to recommend kerf
 

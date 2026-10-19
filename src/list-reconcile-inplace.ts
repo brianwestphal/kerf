@@ -16,10 +16,8 @@
  * external-state-driven row changes (e.g. a single `selectedId` signal read
  * via `each()`'s `cacheKey`) update as cheaply as every other framework does.
  *
- * Only the "no structural change" shape is handled here; anything with an
- * insert, remove, or move falls through to the full snapshot algorithm. The
- * rare "row moved AND changed content" case therefore stays on the general
- * (node-replacing) path.
+ * The no-structural-change path calls the same row-update ladder used when
+ * the snapshot reconciler pairs a fresh object with a uniquely keyed row.
  *
  * Internal to kerf — invoked from `reconcileSnapshot`.
  */
@@ -77,11 +75,12 @@ export function tryInPlaceContentUpdate(
  * fast paths → `_morphElement` when the top-level tag matches → `replaceChild`
  * when it doesn't (consumer's render fn returned a different top-level tag).
  */
-function updateRowInPlace(
+export function updateRowInPlace(
   liveParent: Element,
   old: BoundItem,
   ni: ListItem,
   index: number,
+  parsedNode?: Element,
 ): BoundItem {
   if (
     old.html === ni.html ||
@@ -108,7 +107,7 @@ function updateRowInPlace(
       bindingDisposers: kept.bindingDisposers,
     };
   }
-  const newNode = parseSingleRow(ni.html, index, liveParent);
+  const newNode = parsedNode ?? parseSingleRow(ni.html, index, liveParent);
   if (old.node.tagName === newNode.tagName) {
     _morphElement(old.node, newNode);
     // Same carry-or-rewire decision as the fast-path arm above (KF-347).

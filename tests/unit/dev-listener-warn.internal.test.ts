@@ -74,8 +74,8 @@ describe('dev-listener-warn (KF-174, opt-in)', () => {
     mount(root, () => renderList(items.value) as never);
     const li1 = root.querySelector('li') as HTMLElement;
     li1.addEventListener('click', () => {});
-    // Fresh-ref item — cache miss forces each() to rebuild the row node.
-    items.value = [{ id: 1 }];
+    // A different rendered key genuinely removes the listener-bearing row.
+    items.value = [{ id: 2 }];
     await flushMutationObserver();
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(warnSpy.mock.calls[0][0]).toMatch(
@@ -89,7 +89,7 @@ describe('dev-listener-warn (KF-174, opt-in)', () => {
     mount(root, () => renderList(items.value) as never);
     const li1 = root.querySelector('li') as HTMLElement;
     li1.addEventListener('click', () => {});
-    items.value = [{ id: 1 }];
+    items.value = [{ id: 2 }];
     await flushMutationObserver();
     const li2 = root.querySelector('li') as HTMLElement;
     li2.addEventListener('click', () => {});
@@ -112,7 +112,7 @@ describe('dev-listener-warn (KF-174, opt-in)', () => {
       'click',
       () => {},
     );
-    a.value = [{ id: 1 }];
+    a.value = [{ id: 2 }];
     await flushMutationObserver();
     expect(warnSpy).toHaveBeenCalledTimes(1);
 
@@ -130,7 +130,7 @@ describe('dev-listener-warn (KF-174, opt-in)', () => {
       'click',
       () => {},
     );
-    b.value = [{ id: 1 }];
+    b.value = [{ id: 2 }];
     await flushMutationObserver();
     expect(warnSpy).toHaveBeenCalledTimes(2);
 
@@ -150,7 +150,7 @@ describe('dev-listener-warn (KF-174, opt-in)', () => {
     mount(root, () => renderList(items.value) as never);
     const li1 = root.querySelector('li') as HTMLElement;
     li1.addEventListener('click', () => {});
-    items.value = [{ id: 1 }];
+    items.value = [{ id: 2 }];
     await flushMutationObserver();
     expect(warnSpy).not.toHaveBeenCalled();
   });
@@ -203,7 +203,7 @@ describe('dev-listener-warn (KF-174, opt-in)', () => {
     );
     const leaf = root.querySelector('.leaf') as HTMLElement;
     leaf.addEventListener('click', () => {});
-    items.value = [{ id: 1 }];
+    items.value = [{ id: 2 }];
     await flushMutationObserver();
     expect(warnSpy).toHaveBeenCalledTimes(1);
   });
@@ -230,7 +230,7 @@ describe('dev-listener-warn (KF-174, opt-in)', () => {
     );
     const leaf = root.querySelector('.leaf') as HTMLElement;
     leaf.addEventListener('click', () => {});
-    items.value = [{ id: 1 }];
+    items.value = [{ id: 2 }];
     await flushMutationObserver();
     expect(warnSpy).toHaveBeenCalledTimes(1);
   });
@@ -322,7 +322,7 @@ describe('dev-listener-warn at the overlay host slot boundary (KF-J31B0Q)', () =
       'click',
       () => {},
     );
-    rows.value = [{ id: 1 }]; // fresh ref: the row node is rebuilt
+    rows.value = [{ id: 2 }]; // changed rendered key: the row is rebuilt
     await flushMutationObserver();
     expect(warnSpy).toHaveBeenCalledTimes(1);
     pop.close();

@@ -75,7 +75,8 @@ const ELEMENT_NODE = 1;
 const TEXT_NODE = 3;
 const COMMENT_NODE = 8;
 
-function getNodeKey(node: Node): string | undefined {
+/** Internal shared key convention for the morph and snapshot list reconciler. */
+export function getNodeKey(node: Node): string | undefined {
   if (node.nodeType !== ELEMENT_NODE) return undefined;
   const el = node as HTMLElement;
   if (el.id !== '') return `${ID_KEY_PREFIX}${el.id}`;

@@ -76,7 +76,7 @@ Write plain `.tsx` and build with your existing esbuild / Vite / tsup — no ext
 
 ## Why Kerf
 
-1. **~15 KB in the browser.** ~15 KB minified + gzipped including `@preact/signals-core` (~15 KB with `arraySignal`). The optional setup CLI has its own npm dependencies; they stay out of the browser bundle. No virtual DOM, no scheduler, no concurrent-mode machinery. On the official [krausest benchmark](https://krausest.github.io/js-framework-benchmark/current.html) kerf sits in the same cluster as Vue, Lit, and vanjs; Solid's compiler leads the update-path benchmarks, which kerf doesn't try to match by design — no compiler.
+1. **~15 KB in the browser.** ~15 KB minified + gzipped including `@preact/signals-core` (~16 KB with `arraySignal`). The optional setup CLI has its own npm dependencies; they stay out of the browser bundle. No virtual DOM, no scheduler, no concurrent-mode machinery. On the official [krausest benchmark](https://krausest.github.io/js-framework-benchmark/current.html) kerf sits in the same cluster as Vue, Lit, and vanjs; Solid's compiler leads the update-path benchmarks, which kerf doesn't try to match by design — no compiler.
 
 2. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it _is_ the DOM.
 

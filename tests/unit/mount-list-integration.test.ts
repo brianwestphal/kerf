@@ -80,8 +80,86 @@ describe('mount() — focus and selection preservation', () => {
       expect(after[2]).toBe(before[2]);
       expect(after[3]).toBe(before[3]);
       expect(after[4]).toBe(before[4]);
-      // Changed row is a fresh node.
-      expect(after[1]).not.toBe(before[1]);
+      // A new item object at the same rendered key keeps its row node.
+      expect(after[1]).toBe(before[1]);
+    });
+
+    it('retains a keyed row and its live child through replacement, reorder, and removal', () => {
+      const rows = signal<Row[]>(makeRows(3));
+      mount(root, () =>
+        jsx('ul', {
+          children: each(rows.value, (r) =>
+            jsx('li', {
+              'data-key': r.id,
+              children: [
+                jsx('span', { children: r.label }),
+                jsx('button', { 'data-morph-skip': '', children: 'Open' }),
+              ],
+            }),
+          ),
+        }),
+      );
+      const original = Array.from(root.querySelectorAll('li'));
+      const button = original[1].querySelector('button');
+      let clicks = 0;
+      button?.addEventListener('click', () => clicks++);
+
+      rows.value = [rows.value[0], { id: 2, label: 'updated' }, rows.value[2]];
+      expect(root.querySelectorAll('li')[1]).toBe(original[1]);
+      expect(original[1].querySelector('button')).toBe(button);
+      expect(original[1].querySelector('span')?.textContent).toBe('updated');
+
+      rows.value = [
+        { id: 3, label: 'third' },
+        { id: 2, label: 'again' },
+        { id: 1, label: 'first' },
+      ];
+      expect(Array.from(root.querySelectorAll('li'))).toEqual([
+        original[2],
+        original[1],
+        original[0],
+      ]);
+      expect(original[1].querySelector('button')).toBe(button);
+      button?.click();
+      expect(clicks).toBe(1);
+
+      rows.value = [
+        { id: 3, label: 'third' },
+        { id: 1, label: 'first' },
+      ];
+      expect(original[1].isConnected).toBe(false);
+      rows.value = [];
+      rows.value = [{ id: 2, label: 'new' }];
+      expect(root.querySelector('li')?.textContent).toBe('newOpen');
+      expect(root.querySelector('li')).not.toBe(original[1]);
+    });
+
+    it('falls back to replacement for ambiguous keys and changed tags', () => {
+      const rows = signal<Row[]>(makeRows(2));
+      mount(root, () =>
+        jsx('ul', {
+          children: each(rows.value, (r) =>
+            jsx(r.label.startsWith('tag') ? 'div' : 'li', {
+              'data-key': r.id,
+              children: r.label,
+            }),
+          ),
+        }),
+      );
+      const first = root.querySelector('[data-key="1"]');
+      rows.value = [{ id: 1, label: 'tag changed' }, rows.value[1]];
+      expect(root.querySelector('[data-key="1"]')?.tagName).toBe('DIV');
+      expect(root.querySelector('[data-key="1"]')).not.toBe(first);
+
+      const second = root.querySelector('[data-key="2"]');
+      rows.value = [
+        { id: 2, label: 'duplicate' },
+        { id: 2, label: 'other' },
+      ];
+      expect(root.querySelectorAll('[data-key="2"]')).toHaveLength(2);
+      expect(Array.from(root.querySelectorAll('[data-key="2"]'))).not.toContain(
+        second,
+      );
     });
 
     it('moves existing nodes when the list reorders', () => {
