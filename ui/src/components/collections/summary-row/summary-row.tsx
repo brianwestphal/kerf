@@ -1,6 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import { nativeDraggable } from '../../../shared/dom/draggable.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
 import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
 
@@ -63,12 +64,15 @@ export type SummaryRowProps = SummaryRowBaseProps &
     | {
         /** Selectable option, the default; place it in a labeled listbox. */
         semanticRole?: 'option';
+        /** Native HTML drag source on this option root, in row or card form. */
+        draggable?: boolean;
         /** Accessible name when the visible content is not a good one. */
         ariaLabel?: string;
       }
     | {
         /** Static labeled group; nested actions own focus and activation. */
         semanticRole: 'group';
+        draggable?: never;
         ariaLabel: string;
       }
   );
@@ -91,6 +95,7 @@ export function SummaryRow({
   listEdge,
   deferRendering = false,
   semanticRole = 'option',
+  draggable,
   ariaLabel,
   id,
   className = '',
@@ -114,6 +119,7 @@ export function SummaryRow({
       data-dimmed={dimmed ? 'true' : undefined}
       data-defer={deferRendering ? 'true' : undefined}
       role={semanticRole}
+      draggable={nativeDraggable(draggable, false)}
       tabindex={semanticRole === 'option' ? '0' : undefined}
       aria-selected={
         semanticRole === 'option' ? (selected ? 'true' : 'false') : undefined

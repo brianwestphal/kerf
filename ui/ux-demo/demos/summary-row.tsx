@@ -52,6 +52,7 @@ function rows(presentation: 'row' | 'card') {
   return items.map((item, index) => (
     <SummaryRow
       presentation={presentation}
+      draggable
       listEdge={presentation === 'row' ? edges[index] : undefined}
       selected={summaryRowSelected.value === item.id}
       rail={item.rail}

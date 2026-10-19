@@ -3407,7 +3407,8 @@
         "list edge start, end, or only",
         "title line budget",
         "deferred rendering",
-        "static labeled group with a nested action (semanticRole=group)"
+        "static labeled group with a nested action (semanticRole=group)",
+        "native draggable option root for list rows and board cards"
       ],
       "accessibility": [
         "By default SummaryRow is role=option with tabindex=0 and aria-selected; place options in a labeled role=listbox and move focus with the arrow keys in the app. semanticRole=group requires ariaLabel and omits the root Tab stop and aria-selected, so a nested native action owns focus and activation. The rail is decorative; carry its meaning in text."

@@ -80,3 +80,49 @@ test('a static diagnostic group keeps visual state while its nested action owns 
     }
   }
 });
+
+test('row and card options keep native dragstart after a selection rerender', async ({
+  page,
+}, testInfo) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 1100 });
+    await page.goto('/?component=summary-row');
+    await page.evaluate(() => {
+      document.addEventListener('dragstart', (event) => {
+        document.body.dataset.dragSource =
+          (event.target as HTMLElement)
+            .closest('[data-item-id]')
+            ?.getAttribute('data-item-id') ?? '';
+      });
+    });
+    for (const [name, presentation] of [
+      ['Tickets', 'row'],
+      ['Board Column', 'card'],
+    ] as const) {
+      const options = page.getByRole('listbox', { name }).getByRole('option');
+      const first = options.first();
+      const second = options.nth(1);
+      await expect(first).toHaveAttribute('data-presentation', presentation);
+      await expect(first).toHaveAttribute('draggable', 'true');
+      await expect(first).toHaveAttribute('tabindex', '0');
+      await expect(first).toHaveAttribute('data-item-id', 'KF-12');
+      await second.click();
+      await expect(second).toHaveAttribute('aria-selected', 'true');
+      await expect(first).toHaveAttribute('draggable', 'true');
+      await page.locator('body').evaluate((element) => {
+        delete element.dataset.dragSource;
+      });
+      await first.dragTo(second);
+      await expect(page.locator('body')).toHaveAttribute(
+        'data-drag-source',
+        'KF-12',
+      );
+      if (testInfo.project.name === 'chromium')
+        await first.screenshot({
+          path: testInfo.outputPath(
+            `summary-row-draggable-${presentation}-${width}.png`,
+          ),
+        });
+    }
+  }
+});

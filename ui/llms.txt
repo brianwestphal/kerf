@@ -734,7 +734,8 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   `listEdge` rounding; the app owns the listbox and keyboard movement. Never
   hand-roll ticket-row chrome. For a non-option diagnostic with a nested
   recovery button, set `semanticRole="group"` and `ariaLabel`; the root is not
-  a Tab stop and only the button activates.
+  a Tab stop and only the button activates. Set `draggable` on an option row or
+  card for a native drag source on that same selection root.
 - **Group settings rows in `FramedList`.** For rows of arbitrary content in
   one rounded frame with dividers between them (settings, account cards,
   shortcut lists), compose `FramedListRow`s; `ValueTable` is the same frame for

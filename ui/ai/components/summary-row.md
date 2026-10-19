@@ -45,6 +45,7 @@ Exact prop names and types: [`@kerfjs/ui/summary-row`](../public-api-signatures-
 - title line budget
 - deferred rendering
 - static labeled group with a nested action (semanticRole=group)
+- native draggable option root for list rows and board cards
 
 ## Composition
 

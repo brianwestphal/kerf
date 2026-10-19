@@ -5501,11 +5501,14 @@ interface SummaryRowBaseProps {
 type SummaryRowProps = SummaryRowBaseProps & ({
     /** Selectable option, the default; place it in a labeled listbox. */
     semanticRole?: 'option';
+    /** Native HTML drag source on this option root, in row or card form. */
+    draggable?: boolean;
     /** Accessible name when the visible content is not a good one. */
     ariaLabel?: string;
 } | {
     /** Static labeled group; nested actions own focus and activation. */
     semanticRole: 'group';
+    draggable?: never;
     ariaLabel: string;
 });
 /**
@@ -5513,7 +5516,7 @@ type SummaryRowProps = SummaryRowBaseProps & ({
  * rail. The default is a focusable `role="option"` for a labeled listbox;
  * `semanticRole="group"` gives a static labeled row for nested actions.
  */
-declare function SummaryRow({ title, leading, trailingMeta, metadata, presentation, titleLines, rail, selected, dimmed, listEdge, deferRendering, semanticRole, ariaLabel, id, className, rootAttributes, }: SummaryRowProps): SafeHtml;
+declare function SummaryRow({ title, leading, trailingMeta, metadata, presentation, titleLines, rail, selected, dimmed, listEdge, deferRendering, semanticRole, draggable, ariaLabel, id, className, rootAttributes, }: SummaryRowProps): SafeHtml;
 
 export { SummaryRow, type SummaryRowListEdge, type SummaryRowPresentation, type SummaryRowProps };
 ```

@@ -829,6 +829,9 @@ item diagnostic with a recovery button inside the title, set
 `card` chrome, rail, list-edge rounding, and selected visual fill, but it has
 no root Tab stop or `aria-selected`; the nested button owns keyboard focus and
 activation. Keep option rows in the app's labeled listbox.
+Set `draggable` on an option to make the same row or card root a native drag
+source; it preserves role, selection, focus, and delegated `data-*` identity
+through rerenders. Handle `dragstart` and drop policy in the application.
 
 Configure the List family instead of selecting its descendant classes. Use
 `density="compact"` for result-heavy panes, `description` for the secondary

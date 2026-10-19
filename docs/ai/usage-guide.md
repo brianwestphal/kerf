@@ -279,6 +279,8 @@ Use `SummaryRow` for selectable list or board summaries. Its default root is
 an option; for a diagnostic row with a nested recovery button, set
 `semanticRole="group"` and `ariaLabel`. The group keeps the row's visual state
 without entering the option Tab order or exposing `aria-selected`.
+For native drag on selectable rows or cards, pass `draggable` to the option
+`SummaryRow`; the app still owns drag and drop handling.
 
 Use `ChoiceChips` (`@kerfjs/ui/choice-chips`) when one value is chosen from a
 visible set too large for `SegmentedControl` and the options must wrap, such as

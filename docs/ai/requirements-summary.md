@@ -429,6 +429,8 @@ contrast through the scoped brand on-fill token.
 rail, metadata, and clamped title. Its `semanticRole="group"` mode supports a
 labeled static diagnostic with a nested recovery action, while preserving
 the same visual row states without option selection semantics.
+Selectable SummaryRow options can also opt into native drag on their row or
+card root without splitting the selection and drag targets.
 The List UX demo now exposes the shipped opt-in document View Transitions
 recipe with interactive reorder, insert, remove, and reset controls; it uses
 `each()` and keeps names, motion, scroll-position preservation, the visible

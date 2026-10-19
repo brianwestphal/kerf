@@ -436,8 +436,10 @@ paints nothing and keeps the inherited context). Interactive `ListItem` and
 `ListActionRow` actions are buttons or links themselves, so no control nests on
 their hover or selection fill. A default `SummaryRow` is a selectable option;
 `semanticRole="group"` makes it a static labeled group whose title may contain
-a nested native action. These rows publish nothing. They are undeclared at `:root`
-and a scoped `[data-kui-tint]` resets them. A control that must match what
+a nested native action. These rows publish nothing. They are undeclared at
+`:root` and a scoped `[data-kui-tint]` resets them. An option `SummaryRow`
+also accepts `draggable` on its root in row and card presentations; the app
+owns the drag gesture and drop policy. A control that must match what
 lies behind it (the inset focus ring's inner line on `Button` and
 `SplitButton`) layers tint over region over the opaque color, falling back to
 `--kui-color-surface`. Custom properties cannot fold an inherited value into a

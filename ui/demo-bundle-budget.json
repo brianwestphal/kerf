@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
   "totalJavaScriptGzip": 435200,
-  "measuredLargestJavaScriptGzip": 164544,
-  "measuredTotalJavaScriptGzip": 435105,
+  "measuredLargestJavaScriptGzip": 164543,
+  "measuredTotalJavaScriptGzip": 435110,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6273,6 +6273,22 @@
       "next": {
         "measuredLargestJavaScriptGzip": 164544,
         "measuredTotalJavaScriptGzip": 435105,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 435200
+      }
+    },
+    {
+      "at": "2026-10-19T13:17:33.636Z",
+      "reason": "SummaryRow catalog options now demonstrate native dragging on row and card roots",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164544,
+        "measuredTotalJavaScriptGzip": 435105,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 435200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 435110,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 435200
       }

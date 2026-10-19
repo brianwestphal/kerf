@@ -77,4 +77,29 @@ describe('SummaryRow', () => {
     expect(html).toContain('data-list-edge="only"');
     expect(html).toContain('<button type="button">Open</button>');
   });
+
+  it('keeps the native drag attribute on row and card options with selection identity', () => {
+    for (const presentation of ['row', 'card'] as const) {
+      const html = String(
+        SummaryRow({
+          title: <span>Ticket</span>,
+          presentation,
+          draggable: true,
+          selected: true,
+          rootAttributes: { 'data-item-id': 'KF-12' },
+        }),
+      );
+      expect(html).toContain(
+        'role="option" draggable="true" tabindex="0" aria-selected="true"',
+      );
+      expect(html).toContain('data-item-id="KF-12"');
+      expect(html).toContain(`data-presentation="${presentation}"`);
+    }
+    expect(
+      String(SummaryRow({ title: <span>Ticket</span>, draggable: false })),
+    ).toContain('draggable="false"');
+    expect(String(SummaryRow({ title: <span>Ticket</span> }))).not.toContain(
+      'draggable=',
+    );
+  });
 });
