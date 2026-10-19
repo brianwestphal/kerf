@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
   "totalJavaScriptGzip": 433100,
-  "measuredLargestJavaScriptGzip": 164543,
-  "measuredTotalJavaScriptGzip": 433004,
+  "measuredLargestJavaScriptGzip": 164544,
+  "measuredTotalJavaScriptGzip": 433034,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6145,6 +6145,22 @@
       "next": {
         "measuredLargestJavaScriptGzip": 164543,
         "measuredTotalJavaScriptGzip": 433004,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 433100
+      }
+    },
+    {
+      "at": "2026-10-19T06:03:17.642Z",
+      "reason": "Keep Remove Last visible in a fixed List viewport",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 433004,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 433100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164544,
+        "measuredTotalJavaScriptGzip": 433034,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 433100
       }

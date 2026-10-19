@@ -48,3 +48,5 @@ clip at wide and narrow viewports. Also check that the catalog header, sidebar,
 and surrounding examples remain painted throughout the transition; browser
 captures compare a header pixel before and during motion at narrow, medium,
 and review-sized viewports.
+The row viewport has a fixed height across Reorder, Insert Delta, Remove Last,
+and Reset; inspect the disappearing last row within it at wide and narrow sizes.

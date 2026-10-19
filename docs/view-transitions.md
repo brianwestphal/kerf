@@ -17,6 +17,8 @@ pane. It temporarily excludes the document root from the snapshot while doing
 so; otherwise the page outside that clip would turn blank during motion. This
 keeps moving rows clear of the fixed catalog footer while the surrounding page
 stays painted.
+The example gives its row List a fixed, scrollable height so Remove Last stays
+in view and the controls and neighboring content do not jump as rows change.
 
 ## Render rows with stable names
 

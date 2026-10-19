@@ -78,6 +78,50 @@ test('List demo updates directly without View Transitions and under reduced moti
   ).toBe(0);
 });
 
+for (const { width, height } of [
+  { width: 1200, height: 900 },
+  { width: 390, height: 844 },
+]) {
+  test(`List row viewport stays fixed through all actions at ${width}px`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize({ width, height });
+    const root = await example(page);
+    const rows = root.locator('[data-vt-row-viewport]');
+    const initial = await rows.boundingBox();
+    expect(initial).not.toBeNull();
+    const stableHeight = initial!.height;
+    for (const action of ['Reorder', 'Insert Delta', 'Remove Last', 'Reset']) {
+      const lastRow = root.locator('[data-vt-row]').last();
+      const before = await lastRow.boundingBox();
+      expect(before).not.toBeNull();
+      const viewport = await rows.boundingBox();
+      expect(before!.y + before!.height).toBeLessThanOrEqual(
+        viewport!.y + viewport!.height,
+      );
+      await root
+        .getByRole('button', { name: action })
+        .evaluate((element: HTMLElement) => element.click());
+      if (action === 'Remove Last' && testInfo.project.name === 'webkit') {
+        await page.waitForTimeout(90);
+        await root.screenshot({
+          path: testInfo.outputPath(`list-remove-last-${width}-motion.png`),
+        });
+      }
+      await expect
+        .poll(async () => (await rows.boundingBox())?.height)
+        .toBe(stableHeight);
+      await expect
+        .poll(() =>
+          page.evaluate(
+            () => document.documentElement.style.viewTransitionName,
+          ),
+        )
+        .toBe('');
+    }
+  });
+}
+
 for (const width of [1402, 390]) {
   test(`List controls preserve catalog scroll at ${width}px`, async ({
     page,

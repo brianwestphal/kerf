@@ -442,7 +442,17 @@ export function ListDemo() {
               Reset
             </Button>
           </Row>
-          <List gap="xs" ariaLabel="Transitioning Rows">
+          <List
+            gap="xs"
+            rootAttributes={{
+              role: 'region',
+              'aria-label': 'Transitioning Rows',
+              'data-vt-row-viewport': '',
+            }}
+            minHeight={rem(17)}
+            maxHeight={rem(17)}
+            scrollable
+          >
             {each(viewTransitionListRows.value, (row) => (
               <ViewTransitionListRow row={row} />
             ))}
