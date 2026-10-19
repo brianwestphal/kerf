@@ -60,8 +60,7 @@ test('feed cards have independent image timelines in one scroller and reverse on
   await scroller.evaluate((element) => {
     element.scrollTop = 0;
   });
-  await page.waitForTimeout(100);
-  expect(await offset(cards.nth(0))).toBeCloseTo(first, 0);
+  await expect.poll(() => offset(cards.nth(0))).toBeCloseTo(first, 0);
   expect(
     await cards.nth(0).locator('img[loading="lazy"][decoding="async"]').count(),
   ).toBe(2);
