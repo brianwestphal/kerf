@@ -36,3 +36,7 @@ listener growth; it uses repeated sample artwork, so a production feed with
 unique high-resolution assets still needs its own image-cache profiling.
 
 The remaining device-only checks above require a real mobile keyboard.
+The List View Transitions catalog example has unit coverage for its row edits
+and pending-snapshot queue, with browser coverage for real controls, fallback,
+reduced motion, and wide/narrow layout. Its animation was visually inspected
+at both widths; the browser tests verify names and state after each edit.

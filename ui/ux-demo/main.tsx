@@ -267,6 +267,7 @@ import {
 } from './demos/tag-field.js';
 import { SHOW_TOAST_DEMO_ACTION, showToastDemo } from './demos/toast.js';
 import { wireTooltipDemo } from './demos/tooltip.js';
+import { changeViewTransitionList } from './demos/view-transition-list-state.js';
 import {
   COLLAPSED_WORKBENCH_ID,
   NAVIGATION_STACK_ID,
@@ -712,6 +713,10 @@ function selectCard(
   return result.selected;
 }
 const stopActions = delegateActions(app, 'click', {
+  'view-transition-reorder': () => changeViewTransitionList('reorder'),
+  'view-transition-insert': () => changeViewTransitionList('insert'),
+  'view-transition-remove': () => changeViewTransitionList('remove'),
+  'view-transition-reset': () => changeViewTransitionList('reset'),
   'width-refresh': () => {
     actionLog.value = 'Workspace refreshed';
   },

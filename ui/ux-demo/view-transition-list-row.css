@@ -1,0 +1,12 @@
+.view-transition-list-row[data-vt-row="a"] {
+  view-transition-name: vt-ux-list-a;
+}
+.view-transition-list-row[data-vt-row="b"] {
+  view-transition-name: vt-ux-list-b;
+}
+.view-transition-list-row[data-vt-row="c"] {
+  view-transition-name: vt-ux-list-c;
+}
+.view-transition-list-row[data-vt-row="d"] {
+  view-transition-name: vt-ux-list-d;
+}

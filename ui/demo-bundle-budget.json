@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 430400,
-  "measuredLargestJavaScriptGzip": 164544,
-  "measuredTotalJavaScriptGzip": 430359,
+  "totalJavaScriptGzip": 432600,
+  "measuredLargestJavaScriptGzip": 164543,
+  "measuredTotalJavaScriptGzip": 432522,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6083,6 +6083,22 @@
         "measuredTotalJavaScriptGzip": 430359,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 430400
+      }
+    },
+    {
+      "at": "2026-10-19T03:33:13.745Z",
+      "reason": "Interactive List View Transitions catalog example and app-owned actions",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164544,
+        "measuredTotalJavaScriptGzip": 430359,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 430400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 432522,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 432600
       }
     }
   ]

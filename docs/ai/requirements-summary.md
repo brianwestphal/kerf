@@ -410,6 +410,9 @@ the feed's shared scrollport, and `wireContentItems` handles failed and
 replaced sources without leaving a broken image or tint. The catalog and
 browser tests cover per-row motion, light/dark AA tokens, missing-image and
 accessibility fallbacks; `BackdropImage` remains the first-child page hero.
+The List UX demo now exposes the shipped opt-in document View Transitions
+recipe with interactive reorder, insert, remove, and reset controls; it uses
+`each()` and keeps names, motion, and fallback policy in the demo app.
 
 The root `@kerfjs/ui` declaration barrel re-exports the named TabBarItem, TabBar,
 ToolbarControlGroup, and Select presentation axes; source and packed-tarball

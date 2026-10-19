@@ -6,6 +6,11 @@ Kerf does not start, name, or style transitions. This recipe is for ordinary,
 non-virtualized lists; the [design decision](view-transitions-design.md) explains
 the timing and scope.
 
+Try the interactive [List View Transitions catalog example](../ui/ux-demo/?component=list):
+its Reorder, Insert Delta, Remove Last, and Reset controls use this recipe in a
+real `each()` list. The named-row CSS and transition coordinator belong to the
+catalog app.
+
 ## Render rows with stable names
 
 Use a stable, CSS-safe row ID and prefix it with a list ID. The resulting

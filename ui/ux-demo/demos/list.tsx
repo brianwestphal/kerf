@@ -1,3 +1,4 @@
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { Chip } from '@kerfjs/ui/chip';
 import { flex, rem } from '@kerfjs/ui/css-values';
@@ -14,6 +15,7 @@ import { TextField } from '@kerfjs/ui/text-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
+import { each } from 'kerfjs';
 import {
   CircleHelp,
   FileText,
@@ -25,9 +27,11 @@ import {
   Wrench,
 } from 'lucide';
 
+import { ViewTransitionListRow } from '../view-transition-list-row.js';
 import { DemoContentItem } from './demo-content-item.js';
 import { DemoFrameShell } from './demo-frame-shell.js';
 import { menuToolsOpen } from './state.js';
+import { viewTransitionListRows } from './view-transition-list-state.js';
 
 /** Duplicate candidates for the Result Picker example. */
 const RESULT_PICKER_CANDIDATES = [
@@ -396,6 +400,54 @@ export function ListDemo() {
             />
           </List>
         </Row>
+      </CatalogExample>
+      <CatalogExample
+        label="List View Transitions"
+        note={
+          <>
+            Reorder, insert, or remove named rows with the browser's document
+            View Transition. The app wraps the source write and supplies the row
+            names and motion; Kerf's <code>each()</code> preserves row identity.{' '}
+            <a href="https://github.com/brianwestphal/kerf/blob/main/docs/view-transitions.md">
+              Read the recipe
+            </a>
+            .
+          </>
+        }
+        viewport={{ width: 'medium', frame: 'solid', surface: 'default' }}
+      >
+        <List gap="m" rootAttributes={{ 'data-demo-view-transitions': '' }}>
+          <Row wrap>
+            <Button
+              action="view-transition-reorder"
+              disabled={viewTransitionListRows.value.length < 2}
+            >
+              Reorder
+            </Button>
+            <Button
+              action="view-transition-insert"
+              disabled={viewTransitionListRows.value.some(
+                (row) => row.id === 'd',
+              )}
+            >
+              Insert Delta
+            </Button>
+            <Button
+              action="view-transition-remove"
+              disabled={viewTransitionListRows.value.length === 0}
+            >
+              Remove Last
+            </Button>
+            <Button emphasis="plain" action="view-transition-reset">
+              Reset
+            </Button>
+          </Row>
+          <List gap="xs" ariaLabel="Transitioning Rows">
+            {each(viewTransitionListRows.value, (row) => (
+              <ViewTransitionListRow row={row} />
+            ))}
+          </List>
+        </List>
       </CatalogExample>
     </CatalogExampleStack>
   );
