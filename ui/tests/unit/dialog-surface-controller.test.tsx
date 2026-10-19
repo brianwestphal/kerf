@@ -11,6 +11,8 @@ import {
   keyboardInset,
   openDialog,
   SHEET_HEIGHT_PROPERTY,
+  syncDialogStack,
+  wireDialogStack,
 } from '../../src/components/surfaces/surface-scaffold/internal/dialog-surface-controller.js';
 import {
   DialogSurface,
@@ -108,6 +110,108 @@ const placePanel = (dialog: HTMLElement) =>
   vi
     .spyOn(dialog, 'getBoundingClientRect')
     .mockReturnValue(new DOMRect(100, 100, 400, 300));
+
+describe('controlled dialog stacks', () => {
+  it('rejects invalid controlled state before rendering', () => {
+    expect(() =>
+      DialogSurface({
+        id: 'invalid',
+        label: 'Invalid',
+        children: <p>Body</p>,
+        stack: { open: false, active: true, position: 1, count: 1 },
+      }),
+    ).toThrow(RangeError);
+  });
+
+  it('opens, pushes, reorders, pops, and refills native modal layers', () => {
+    const first = setup({
+      stack: { open: false, active: false, position: 1, count: 2 },
+    });
+    const second = setup({
+      stack: { open: false, active: false, position: 2, count: 2 },
+    });
+    const root = document.createElement('div');
+    root.append(first.dialog, second.dialog);
+    document.body.append(root);
+    const set = (
+      dialog: HTMLDialogElement,
+      open: boolean,
+      active: boolean,
+      position: number,
+    ) => {
+      dialog.dataset.stackOpen = String(open);
+      dialog.dataset.stackActive = String(active);
+      dialog.dataset.stackPosition = String(position);
+      dialog.inert = !active;
+      dialog.setAttribute('aria-hidden', String(!active));
+      dialog.setAttribute('aria-modal', String(active));
+    };
+    syncDialogStack(root);
+    expect(first.dialog.open).toBe(false);
+    set(first.dialog, true, true, 1);
+    syncDialogStack(root);
+    expect(first.dialog.open).toBe(true);
+    expect(document.activeElement).toBe(first.dialog);
+    set(first.dialog, true, false, 1);
+    set(second.dialog, true, true, 2);
+    syncDialogStack(root);
+    expect(second.dialog.open).toBe(true);
+    expect(document.activeElement).toBe(second.dialog);
+    set(first.dialog, true, true, 2);
+    set(second.dialog, true, false, 1);
+    syncDialogStack(root);
+    expect(first.dialog.open).toBe(true);
+    expect(second.dialog.open).toBe(true);
+    expect(document.activeElement).toBe(first.dialog);
+    set(first.dialog, false, false, 2);
+    set(second.dialog, true, true, 1);
+    syncDialogStack(root);
+    expect(first.dialog.open).toBe(false);
+    expect(second.dialog.open).toBe(true);
+    set(second.dialog, false, false, 1);
+    syncDialogStack(root);
+    expect(second.dialog.open).toBe(false);
+    set(first.dialog, true, true, 1);
+    syncDialogStack(root);
+    expect(first.dialog.open).toBe(true);
+  });
+
+  it('requires one frontmost active layer and leaves controlled close to the app', () => {
+    const { dialog, requests } = setup({
+      stack: { open: true, active: true, position: 1, count: 2 },
+    });
+    const root = document.createElement('div');
+    root.append(dialog);
+    document.body.append(root);
+    const stop = wireDialogStack(root);
+    click(dialog.querySelector('[data-dialog-close]')!);
+    expect(requests).toEqual(['close-button']);
+    expect(dialog.open).toBe(true);
+    dialog.dataset.stackActive = 'false';
+    expect(() => syncDialogStack(root)).toThrow(RangeError);
+    stop();
+  });
+
+  it('observes rerenders and stops after cleanup', async () => {
+    const { dialog } = setup({
+      stack: { open: false, active: false, position: 1, count: 1 },
+    });
+    const root = document.createElement('div');
+    root.append(dialog);
+    document.body.append(root);
+    const stop = wireDialogStack(root);
+    dialog.inert = false;
+    dialog.dataset.stackOpen = 'true';
+    dialog.dataset.stackActive = 'true';
+    await flush();
+    expect(dialog.open).toBe(true);
+    stop();
+    expect(dialog.open).toBe(false);
+    dialog.dataset.stackOpen = 'false';
+    await flush();
+    expect(dialog.open).toBe(false);
+  });
+});
 
 /** Make the panel report a running animation of `duration`. */
 function animate(duration: string) {

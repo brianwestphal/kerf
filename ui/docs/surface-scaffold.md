@@ -105,6 +105,52 @@ of wrapping it in an app `div`:
 `rootAttributes` takes `data-*` identity only; the surface's own configuration
 attributes (`data-size`, `data-presentation`, …) stay protected.
 
+### Controlled modal stacks
+
+For a reader stack, render one `DialogSurface` per reader with a stable `id` or
+`data-key`, and pass each layer its controlled `stack` state:
+
+```tsx
+<DialogSurface
+  id={`reader-${reader.id}`}
+  label={reader.title}
+  preferredWidth={remify(1024)}
+  height="viewport"
+  bodyInset="none"
+  bodyLayout="fill"
+  stack={{
+    open: reader.open,
+    active: reader.id === activeReaderId,
+    position: reader.position,
+    count: readers.length,
+    offset: remify(-10 * (readers.length - reader.position)),
+  }}
+  rootAttributes={{ 'data-key': reader.id }}
+>
+  {reader.content}
+</DialogSurface>;
+```
+
+Call `wireDialogStack(container)` once on a stable ancestor after rendering and
+call its returned cleanup when that ancestor unmounts; cleanup closes its open
+layers. It observes subsequent
+renders and calls `syncDialogStack(container)` to open layers back to front in
+the browser's native top layer. `position` is a unique 1-based order within the
+stack; `count` includes closed layers that remain rendered. Exactly one open
+layer must be `active`, and it must have the highest open position. An inactive
+layer has `aria-hidden` and `inert`, and only the active layer has
+`aria-modal="true"`. The optional typed `offset` translates inactive layers on
+roomy screens; compact screens stay aligned. Stacked modals default to a 24px
+desktop and 16px phone viewport gutter, overridable with `viewportGutter`.
+
+Handle `kui-request-close` by updating application state to close the top
+layer; the stack controller then reconciles it. It never closes a controlled
+layer on its own. A reorder may briefly close and reopen moved native dialogs
+to establish browser top-layer order, so do not treat the native `close` event
+as a user dismissal. Each dialog retains its own in-dialog overlay host for
+popups and menus. The catalog's **Controlled Reader Stack** demonstrates push,
+reorder, Escape, and close at desktop and phone widths.
+
 ### Modal viewport bounds
 
 `viewportGutter` accepts a branded `CssLength` from `@kerfjs/ui/css-values`.

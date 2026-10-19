@@ -10,6 +10,8 @@ export {
   type DialogCloseSource,
   type DialogRequestCloseDetail,
   openDialog,
+  syncDialogStack,
+  wireDialogStack,
 } from './internal/dialog-surface-controller.js';
 
 export type DialogSurfaceSize = 'small' | 'medium' | 'large';
@@ -82,6 +84,10 @@ const DIALOG_SURFACE_PROTECTED = new Set([
   'data-enter-motion',
   'data-exit-motion',
   'data-light-dismiss',
+  'data-stack-open',
+  'data-stack-active',
+  'data-stack-position',
+  'data-stack-count',
 ]);
 
 /**
@@ -92,6 +98,20 @@ export type DialogSurfaceName =
   { label: string; labelledBy?: never } | { label?: never; labelledBy: string };
 
 export type DialogSurfaceProps = DialogSurfaceName & DialogSurfaceOptions;
+
+/** Controlled state of one native modal layer inside a `wireDialogStack` root. */
+export interface DialogSurfaceStack {
+  /** Whether this layer belongs in the native top layer. */
+  open: boolean;
+  /** The one frontmost open layer; it owns modal focus and accessibility. */
+  active: boolean;
+  /** One-based order from the back to the front. */
+  position: number;
+  /** Number of layers in the stack, including closed layers still rendered. */
+  count: number;
+  /** Optional vertical offset for an inactive layer; omitted on phones. */
+  offset?: CssLength;
+}
 
 export interface DialogSurfaceOptions {
   /** The dialog's id, for `openDialog(document.getElementById(id))`. */
@@ -112,6 +132,8 @@ export interface DialogSurfaceOptions {
   alert?: boolean;
   /** The body content. */
   children: KerfUiContent;
+  /** Controlled modal stack state; call `wireDialogStack` on the containing root. */
+  stack?: DialogSurfaceStack;
   /**
    * Header title content in place of the `label` text, such as an xl
    * `ToolbarText` with a description. The dialog keeps its `label` (or
@@ -241,6 +263,7 @@ export function DialogSurface({
   closeLabel = 'Close',
   closeEmphasis = 'normal',
   children,
+  stack,
   size = 'medium',
   presentation = 'modal',
   preferredWidth,
@@ -261,6 +284,18 @@ export function DialogSurface({
   className = '',
   slot,
 }: DialogSurfaceProps) {
+  if (
+    stack &&
+    (!Number.isInteger(stack.position) ||
+      !Number.isInteger(stack.count) ||
+      stack.count < 1 ||
+      stack.position < 1 ||
+      stack.position > stack.count ||
+      (stack.active && !stack.open))
+  )
+    throw new RangeError(
+      'DialogSurface stack needs a valid frontmost active layer',
+    );
   const style = [
     preferredWidth === undefined
       ? ''
@@ -280,6 +315,9 @@ export function DialogSurface({
     minHeight === undefined
       ? ''
       : `--_kui-dialog-surface-min-height:${minHeight}`,
+    stack?.offset === undefined
+      ? ''
+      : `--_kui-dialog-surface-stack-offset:${stack.offset}`,
   ]
     .filter(Boolean)
     .join(';');
@@ -292,15 +330,28 @@ export function DialogSurface({
       aria-label={label}
       aria-labelledby={labelledBy}
       aria-describedby={describedBy}
+      aria-modal={
+        stack ? (stack.open && stack.active ? 'true' : 'false') : undefined
+      }
+      aria-hidden={
+        stack ? (stack.open && stack.active ? 'false' : 'true') : undefined
+      }
+      inert={stack && (!stack.open || !stack.active) ? true : undefined}
       tabindex={-1}
       data-light-dismiss={lightDismiss ? '' : undefined}
       data-component="dialog-surface"
+      data-stack-open={stack ? String(stack.open) : undefined}
+      data-stack-active={stack ? String(stack.active) : undefined}
+      data-stack-position={stack?.position}
+      data-stack-count={stack?.count}
       data-size={size}
       data-presentation={presentation}
       data-preferred-width={preferredWidth === undefined ? undefined : ''}
       data-body-inset={bodyInset}
       data-footer-inset={footerInset}
-      data-viewport-gutter={viewportGutter === undefined ? undefined : ''}
+      data-viewport-gutter={
+        viewportGutter === undefined && !stack ? undefined : ''
+      }
       data-max-height={maxHeight === undefined ? undefined : ''}
       data-height={height === undefined ? undefined : ''}
       data-body-layout={bodyLayout === 'flow' ? undefined : bodyLayout}

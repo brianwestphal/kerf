@@ -248,9 +248,13 @@ import {
   CHAT_DIALOG_ID,
   discardDraftSheet,
   openUpNextSheet,
+  popDialogStackDemo,
+  pushDialogStackDemo,
+  reorderDialogStackDemo,
   resetSurfaceScaffoldDemo,
   SEND_CHAT_DIALOG_MESSAGE_ACTION,
   sendSurfaceScaffoldChatMessage,
+  wireDialogStackDemo,
 } from './demos/surface-scaffold.js';
 import {
   popNestedTabNavigatorDemo,
@@ -784,6 +788,9 @@ const stopActions = delegateActions(app, 'click', {
     );
     if (dialog instanceof HTMLDialogElement) openDialog(dialog);
   },
+  'push-dialog-stack': () => pushDialogStackDemo(),
+  'reorder-dialog-stack': () => reorderDialogStackDemo(),
+  'pop-dialog-stack': () => popDialogStackDemo(),
   'save-choice-chips-dialog': () => {
     const form = document.querySelector<HTMLFormElement>(
       '#choice-chips-dialog-form',
@@ -1778,7 +1785,7 @@ const routeWires: Partial<Record<string, RouteWire>> = {
   'surface-scaffold': {
     reset: resetSurfaceScaffoldDemo,
     target: 'canvas',
-    wire: () => () => {},
+    wire: (canvas) => wireDialogStackDemo(canvas),
   },
   'split-view': {
     reset: resetSplitViewDemo,

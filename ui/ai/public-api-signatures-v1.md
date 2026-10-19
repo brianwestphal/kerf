@@ -4716,6 +4716,15 @@ declare function openDialog(dialog: HTMLDialogElement): void;
  * `close` event fires once it has closed.
  */
 declare function closeDialog(dialog: HTMLDialogElement): void;
+/**
+ * Reconcile one controlled stack after rendering its DialogSurface layers.
+ * Opening back-to-front establishes native top-layer order; unchanged layers
+ * keep their DOM nodes and focus. The application owns `stack.open` and handles
+ * `kui-request-close` to update that state before calling this again.
+ */
+declare function syncDialogStack(root: ParentNode): void;
+/** Follow a controlled stack's render updates until the returned stop runs. */
+declare function wireDialogStack(root: ParentNode): () => void;
 
 type DialogSurfaceSize = 'small' | 'medium' | 'large';
 /**
@@ -4775,6 +4784,19 @@ type DialogSurfaceName = {
     labelledBy: string;
 };
 type DialogSurfaceProps = DialogSurfaceName & DialogSurfaceOptions;
+/** Controlled state of one native modal layer inside a `wireDialogStack` root. */
+interface DialogSurfaceStack {
+    /** Whether this layer belongs in the native top layer. */
+    open: boolean;
+    /** The one frontmost open layer; it owns modal focus and accessibility. */
+    active: boolean;
+    /** One-based order from the back to the front. */
+    position: number;
+    /** Number of layers in the stack, including closed layers still rendered. */
+    count: number;
+    /** Optional vertical offset for an inactive layer; omitted on phones. */
+    offset?: CssLength;
+}
 interface DialogSurfaceOptions {
     /** The dialog's id, for `openDialog(document.getElementById(id))`. */
     id?: string;
@@ -4794,6 +4816,8 @@ interface DialogSurfaceOptions {
     alert?: boolean;
     /** The body content. */
     children: KerfUiContent;
+    /** Controlled modal stack state; call `wireDialogStack` on the containing root. */
+    stack?: DialogSurfaceStack;
     /**
      * Header title content in place of the `label` text, such as an xl
      * `ToolbarText` with a description. The dialog keeps its `label` (or
@@ -4908,7 +4932,7 @@ interface DialogSurfaceOptions {
  * floating header and footer measurement, the bottom sheet's keyboard
  * clearance and grabber, and re-render resilience while open.
  */
-declare function DialogSurface({ id, label, labelledBy, describedBy, alert, heading, headerActions, footer, withoutHeader, lightDismiss, closeLabel, closeEmphasis, children, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, minHeight, resizable, enterMotion, exitMotion, bodyLayout, headerPresentation, footerPresentation, footerOffset, rootAttributes, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
+declare function DialogSurface({ id, label, labelledBy, describedBy, alert, heading, headerActions, footer, withoutHeader, lightDismiss, closeLabel, closeEmphasis, children, stack, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, minHeight, resizable, enterMotion, exitMotion, bodyLayout, headerPresentation, footerPresentation, footerOffset, rootAttributes, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
 /** Where a PopoverDialogSurface appears: the top layer, or in flow. */
 type PopoverDialogSurfacePresentation = 'overlay' | 'embedded';
 /** Application `data-*` metadata on the surface root. */
@@ -4975,7 +4999,7 @@ interface PopupSurfaceProps {
 /** Configure recurring Web Awesome dropdown-menu geometry without consumer ::part() CSS. */
 declare function PopupSurface({ children, inset, className, slot, }: PopupSurfaceProps): kerfjs.SafeHtml;
 
-export { type DialogCloseSource, type DialogRequestCloseDetail, DialogSurface, type DialogSurfaceBodyLayout, type DialogSurfaceCloseEmphasis, type DialogSurfaceFooterPresentation, type DialogSurfaceHeaderPresentation, type DialogSurfaceHeight, type DialogSurfaceMaxHeight, type DialogSurfaceName, type DialogSurfaceOptions, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceRootAttributes, type DialogSurfaceSheetMotion, type DialogSurfaceSize, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset, closeDialog, openDialog };
+export { type DialogCloseSource, type DialogRequestCloseDetail, DialogSurface, type DialogSurfaceBodyLayout, type DialogSurfaceCloseEmphasis, type DialogSurfaceFooterPresentation, type DialogSurfaceHeaderPresentation, type DialogSurfaceHeight, type DialogSurfaceMaxHeight, type DialogSurfaceName, type DialogSurfaceOptions, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceRootAttributes, type DialogSurfaceSheetMotion, type DialogSurfaceSize, type DialogSurfaceStack, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset, closeDialog, openDialog, syncDialogStack, wireDialogStack };
 ```
 
 ## `@kerfjs/ui/list-detail-dialog`

@@ -52,6 +52,22 @@
     light-dark(rgb(29 29 31 / 0.34), rgb(0 0 0 / 0.6))
   );
 }
+.kui-dialog-surface[data-stack-active="false"] {
+  pointer-events: none;
+  transform: translateY(var(--_kui-dialog-surface-stack-offset, 0px));
+}
+.kui-dialog-surface[data-stack-position] {
+  --_kui-dialog-surface-gutter: 1.5rem;
+}
+.kui-dialog-surface[data-stack-active="false"]::backdrop {
+  background: transparent;
+}
+@media screen and (max-width: remify(768px)) {
+  .kui-dialog-surface[data-stack-position] {
+    --_kui-dialog-surface-gutter: 1rem;
+    transform: none;
+  }
+}
 /* Room for phones whose viewport height ignores the browser chrome. */
 @media screen and (max-width: remify(420px)) {
   .kui-dialog-surface {

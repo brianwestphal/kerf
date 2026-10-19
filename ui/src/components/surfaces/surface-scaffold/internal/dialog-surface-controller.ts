@@ -54,6 +54,7 @@ interface OpenState {
 
 const states = new WeakMap<HTMLDialogElement, OpenState>();
 const installed = new WeakSet<Document>();
+const stackOrders = new WeakMap<ParentNode, HTMLDialogElement[]>();
 
 const isSurface = (target: EventTarget | null): target is HTMLDialogElement =>
   target instanceof Element && target.matches(SURFACE);
@@ -310,6 +311,90 @@ export function closeDialog(dialog: HTMLDialogElement): void {
 }
 
 /**
+ * Reconcile one controlled stack after rendering its DialogSurface layers.
+ * Opening back-to-front establishes native top-layer order; unchanged layers
+ * keep their DOM nodes and focus. The application owns `stack.open` and handles
+ * `kui-request-close` to update that state before calling this again.
+ */
+export function syncDialogStack(root: ParentNode): void {
+  const layers = [
+    ...root.querySelectorAll<HTMLDialogElement>(
+      'dialog.kui-dialog-surface[data-stack-position]',
+    ),
+  ];
+  const desired = layers
+    .filter((dialog) => dialog.getAttribute('data-stack-open') === 'true')
+    .sort(
+      (a, b) =>
+        Number(a.getAttribute('data-stack-position')) -
+        Number(b.getAttribute('data-stack-position')),
+    );
+  const positions = desired.map((dialog) =>
+    Number(dialog.getAttribute('data-stack-position')),
+  );
+  const active = desired.filter(
+    (dialog) => dialog.getAttribute('data-stack-active') === 'true',
+  );
+  if (
+    positions.some(
+      (position, index) =>
+        !Number.isInteger(position) ||
+        position < 1 ||
+        (index > 0 && position === positions[index - 1]),
+    ) ||
+    (desired.length > 0 &&
+      (active.length !== 1 || active[0] !== desired[desired.length - 1]))
+  )
+    throw new RangeError(
+      'DialogSurface stack needs one frontmost active layer and unique positions',
+    );
+
+  const previous = stackOrders.get(root) ?? [];
+  let prefix = 0;
+  while (
+    prefix < previous.length &&
+    prefix < desired.length &&
+    previous[prefix] === desired[prefix] &&
+    desired[prefix]!.open
+  )
+    prefix += 1;
+  for (const dialog of previous.slice(prefix).reverse()) {
+    if (dialog.open) dialog.close();
+    settle(dialog);
+  }
+  for (const dialog of desired.slice(prefix)) openDialog(dialog);
+  stackOrders.set(root, desired);
+  const top = desired[desired.length - 1];
+  if (top && !top.contains(top.ownerDocument.activeElement))
+    top.focus({ preventScroll: true });
+}
+
+/** Follow a controlled stack's render updates until the returned stop runs. */
+export function wireDialogStack(root: ParentNode): () => void {
+  const observer = new MutationObserver(() => syncDialogStack(root));
+  observer.observe(root as Node, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: [
+      'data-stack-open',
+      'data-stack-active',
+      'data-stack-position',
+      'data-stack-count',
+    ],
+  });
+  syncDialogStack(root);
+  return () => {
+    observer.disconnect();
+    for (const dialog of (stackOrders.get(root) ?? []).reverse()) {
+      if (dialog.open) dialog.close();
+      settle(dialog);
+    }
+    stackOrders.delete(root);
+  };
+}
+
+/**
  * A person asked to close the dialog: dispatch the cancelable
  * `kui-request-close`; refused, the panel pulses, otherwise it closes.
  */
@@ -324,8 +409,9 @@ function requestClose(
       detail: { source },
     }),
   );
-  if (allowed) closeDialog(dialog);
-  else runMotion(dialog, 'pulse');
+  if (allowed) {
+    if (!dialog.hasAttribute('data-stack-position')) closeDialog(dialog);
+  } else runMotion(dialog, 'pulse');
 }
 
 const outside = (dialog: HTMLElement, event: MouseEvent): boolean => {

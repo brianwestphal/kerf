@@ -1138,6 +1138,15 @@ tracking) that clicks the first trailing action. Tests:
 `ui/tests/unit/wire-message-composers.test.tsx`, the submitOnEnter case in
 `ui/tests/browser/message-composer.spec.ts`, and the chat dialog case in
 `ui/tests/browser/surface-scaffold.spec.ts`.
+
+Controlled modal stacks use `DialogSurface.stack` (`open`, `active`, `position`,
+`count`, optional typed `offset`) and `wireDialogStack` /
+`syncDialogStack` from the same surface-scaffold entry. The controller
+reconciles native `<dialog>` top-layer order after application renders; the
+application handles `kui-request-close` and updates its state. See
+`ui/docs/surface-scaffold.md` "Controlled modal stacks",
+`ui/tests/unit/dialog-surface-controller.test.tsx`, and
+`ui/tests/browser/dialog-stack.spec.ts`.
 `ui/src/components/forms/select/select.tsx` renders disabled choices and opt-in multiple-select action
 buttons; the Select controller applies select-all or clear and publishes a
 `change` event for changed values.

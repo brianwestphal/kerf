@@ -15,6 +15,7 @@ import {
   DialogSurface,
   PopoverDialogSurface,
   PopupSurface,
+  wireDialogStack,
 } from '@kerfjs/ui/surface-scaffold';
 import { Text } from '@kerfjs/ui/text';
 import { TextField } from '@kerfjs/ui/text-field';
@@ -41,6 +42,43 @@ const QUEUE = [
 ];
 
 const PROJECTS = ['Atlas', 'Borealis', 'Cirrus', 'Delta', 'Ember', 'Fjord'];
+
+type ReaderId = 'atlas' | 'borealis';
+const readerOrder = signal<readonly ReaderId[]>([]);
+
+export function pushDialogStackDemo(): void {
+  const current = readerOrder.value;
+  if (current.length === 0) readerOrder.value = ['atlas'];
+  else if (current.length === 1)
+    readerOrder.value = [
+      current[0]!,
+      current[0] === 'atlas' ? 'borealis' : 'atlas',
+    ];
+}
+
+export function popDialogStackDemo(): void {
+  readerOrder.value = readerOrder.value.slice(0, -1);
+}
+
+export function reorderDialogStackDemo(): void {
+  if (readerOrder.value.length === 2)
+    readerOrder.value = [...readerOrder.value].reverse();
+}
+
+export function wireDialogStackDemo(root: ParentNode): () => void {
+  const onClose = (event: Event) => {
+    const dialog = event.target;
+    if (!(dialog instanceof HTMLDialogElement)) return;
+    if (readerOrder.value.at(-1) === dialog.getAttribute('data-reader-id'))
+      popDialogStackDemo();
+  };
+  root.addEventListener('kui-request-close', onClose);
+  const stop = wireDialogStack(root);
+  return () => {
+    stop();
+    root.removeEventListener('kui-request-close', onClose);
+  };
+}
 
 /** A list-detail SplitView that fills whichever surface it is given. */
 function projectSplit(id: string) {
@@ -254,6 +292,7 @@ export function sendSurfaceScaffoldChatMessage(
 
 /** Restore the chat-style examples' opening transcripts. */
 export function resetSurfaceScaffoldDemo(): void {
+  readerOrder.value = [];
   transcripts[CHAT_DIALOG_ID].value = INITIAL_CHAT;
   transcripts[THREAD_DIALOG_ID].value = INITIAL_THREAD;
 }
@@ -271,11 +310,73 @@ function chatBubbles(messages: readonly ChatMessage[]) {
 }
 
 export function SurfaceScaffoldDemo() {
+  const readers = readerOrder.value;
   return (
     <CatalogExampleStack
       label="Surface Scaffold Demo"
       rootAttributes={{ 'data-demo': 'surface-scaffold' }}
     >
+      <CatalogExample
+        label="Controlled Reader Stack"
+        note="Two native modal dialogs share one controlled reader stack. Open, push, reorder, close, and Escape keep focus and the top layer in sync."
+        align="inline-control"
+      >
+        <div data-dialog-stack-demo>
+          <Button action="push-dialog-stack" disabled={readers.length === 2}>
+            {readers.length === 0 ? 'Open Reader' : 'Push Reader'}
+          </Button>
+          <Button action="reorder-dialog-stack" disabled={readers.length !== 2}>
+            Swap Order
+          </Button>
+          {(['atlas', 'borealis'] as const).map((id) => {
+            const position = readers.indexOf(id) + 1;
+            return (
+              <DialogSurface
+                id={`catalog-reader-${id}`}
+                label={`${id === 'atlas' ? 'Atlas' : 'Borealis'} Reader`}
+                preferredWidth={remify(1024)}
+                height="viewport"
+                bodyInset="none"
+                bodyLayout="fill"
+                stack={{
+                  open: position > 0,
+                  active: position === readers.length && position > 0,
+                  position:
+                    position > 0
+                      ? position
+                      : readers.length === 0 && id === 'atlas'
+                        ? 1
+                        : 2,
+                  count: 2,
+                  offset: remify(-10 * (readers.length - position)),
+                }}
+                rootAttributes={{ 'data-reader-id': id }}
+              >
+                <List>
+                  <ListInsetText>
+                    This reader occupies the dialog body and keeps its overlay
+                    host inside the native top layer.
+                  </ListInsetText>
+                  <ListItem
+                    label="Review ticket"
+                    itemId={id}
+                    action="log-more"
+                  />
+                  <ListInsetControl>
+                    <PopupMenu
+                      text="Reader Actions"
+                      items={[
+                        { label: 'Copy Link' },
+                        { label: 'View History' },
+                      ]}
+                    />
+                  </ListInsetControl>
+                </List>
+              </DialogSurface>
+            );
+          })}
+        </div>
+      </CatalogExample>
       <CatalogExample
         label="Medium Dialog"
         note="closeEmphasis=quiet softens the built-in close glyph while retaining its target, accessible name, keyboard focus, and close request."
