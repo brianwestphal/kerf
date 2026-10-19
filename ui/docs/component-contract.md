@@ -709,6 +709,10 @@ item padding, omit an internal separator, and let the raised selected item paint
 over the outer border instead of shrinking to an inset highlight. The
 PopupMenu trigger sizes to max-content, so icons, localized text, and the caret
 determine the width without a fixed measurement.
+Inside a `single` icon `ToolbarControlGroup`, an icon-only PopupMenu trigger
+fills the group's control slot, keeping its glyph centered and the full
+40px hit target in enabled and disabled states. Text and mixed-content triggers
+continue to size to their content.
 At viewport widths of 480px or less, `PopupMenu` places an open submenu above
 or below its parent menu, choosing the side with room and constraining the
 submenu to the viewport. It never paints over the parent list. The reverse

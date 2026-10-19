@@ -1450,6 +1450,11 @@ remove the internal separator, and paint raised selected chrome over the outer
 border. Nested Web Awesome dropdown triggers size from their shadow base's
 max-content icon/text/caret geometry rather than fixed host widths. Single avatar
 hover changes only the color layer so its contained image fit remains stable.
+An icon-only PopupMenu in a single icon ToolbarControlGroup fills the group's
+control slot, centering its glyph and retaining the 40px trigger hit target
+even when disabled; text and mixed triggers keep intrinsic width. Its CSS
+lives in `ui/src/components/actions/popup-menu/popup-menu.css`, with three-engine
+geometry coverage in `ui/tests/browser/toolbar-popup-centering.spec.ts`.
 
 NavStack overlay chrome (`NavStack.chromePresentation="overlay"`, KF-1N0S19: a translucent top bar over the active view): `wireNavStack` measures the live `[data-nav-stack-chrome]` (never a `data-nav-chrome-copy`) with a border-box `ResizeObserver`, writes the stack-private `--_kui-nav-stack-chrome-block-size` plus the `data-chrome-overlay="measured"` gate on the stack root, and a root `MutationObserver` (child list, presentation/gate/`style` attributes) re-syncs and restores them before paint; `nav-stack.css` then positions the chrome over the viewport and sets the viewport's `--kui-edge-inset-block-start` to the measured size, so views clear it through the safe-area edge context. It also measures the active scroller's classic scrollbar (the view, or a sole header-less Pane's content) into `--_kui-nav-stack-scrollbar-inline-size`, which the measured chrome's `inset-inline-end` takes so the track stays uncovered (`ui/tests/browser/overlay-nav-stack-classic-scrollbar.spec.ts`). Unit coverage in `ui/tests/unit/nav-stack.test.tsx` and `ui/tests/unit/nav-stack-css.test.ts`; three-engine geometry, transition, safe-area, and contrast coverage in `ui/tests/browser/overlay-nav-stack.spec.ts` (fixture `ui/tests/browser/fixtures/overlay-nav-stack.tsx`).
 

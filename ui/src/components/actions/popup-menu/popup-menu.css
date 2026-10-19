@@ -402,7 +402,7 @@
   > .kui-popup-menu {
   margin: -2px;
 }
-.kui-toolbar-control-group:is([data-single="true"], [data-content="mixed"])
+.kui-toolbar-control-group[data-content="mixed"]
   > .kui-popup-menu
   > .kui-popup-menu__trigger {
   min-width: max-content;

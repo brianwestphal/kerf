@@ -355,6 +355,11 @@ item padding. The selected item already overlays the outer border, and the
 component omits an internal separator; do not recreate either treatment in app
 CSS.
 
+For a More or Sort menu with only an icon, put `PopupMenu` in a
+`ToolbarControlGroup` with `single` and `nestedDropdown`. The trigger fills the
+group's 40px control slot and centers its icon in enabled and disabled states;
+no application sizing CSS is needed.
+
 Prefer an equivalent component prop or semantic token before writing an
 anatomy selector. When composition-specific layout still needs one, the
 machine catalog's `publicClasses` arrays are the exact supported boundary:

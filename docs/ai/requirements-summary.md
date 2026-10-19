@@ -516,6 +516,10 @@ accept action items, headings, and dividers; the latter two separate groups
 visually while keyboard navigation remains on commands. A choice dispatches
 the item's `data-action` and a `kui-menu-select` event; checkbox state stays
 application-owned.
+An icon-only PopupMenu inside a single icon ToolbarControlGroup fills the
+group's control slot so the glyph stays centered and the 40px trigger hit
+target survives in enabled and disabled states; text and mixed triggers size
+to their content.
 AnchoredSurface is shipped for app-owned interactive help or arbitrary popup
 content near an element or pointer. It provides Kerf UI surface tokens and
 delegates viewport placement, top-layer/modal hosting, focus, and dismissal to

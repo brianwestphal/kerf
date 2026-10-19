@@ -180,6 +180,7 @@ export function ToolbarControlGroupDemo() {
           <PopupMenu
             label="Sort Tickets"
             icon={<LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />}
+            caret={false}
             items={[
               { label: 'Recently Updated', action: 'sort-recent' },
               { label: 'Priority', action: 'sort-priority' },
