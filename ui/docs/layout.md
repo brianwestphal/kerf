@@ -466,6 +466,8 @@ card with no `media` keeps the existing surface and geometry. Do not create a
 scroller inside each card. A source link or multiple actions belong inside a
 static ContentItem so each retains native keyboard behavior.
 
+For long image-led feeds, see the [200-card scroll performance investigation](investigations/content-item-media-scroll-performance.md) before choosing media effects. Its controlled measurements and warmup limit are recorded there; optimization is tracked separately.
+
 The image stays sharp and static under reduced motion, the static-effects
 switch, a slow-update display, or missing scroll-timeline support. Reduced
 transparency and increased contrast also stop the movement and blur; forced

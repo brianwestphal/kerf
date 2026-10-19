@@ -1,0 +1,16 @@
+# ContentItem media scroll performance investigation
+
+`ContentItem.media` composes `BackdropImage` for image-led cards. A recorded Newsmonger feed with 200 image-backed cards exposed a Chromium scroll regression under fourfold CPU throttling (KF-NMB087, 200-card media performance investigation). The comparison used the former feed image nodes as its baseline and the public beta.111 media composition as its effect. Both loaded the same server data and 200 unique image URLs; all images decoded before scrolling, and neither run reported page errors. The baseline bundle override was checked for raw story images and zero `BackdropImage` nodes, and the effect for the inverse.
+
+| 200 cards, 240 forward/reverse frames | Former feed p95 | Media effect p95 | Frames over 50 ms, former → effect |
+| ------------------------------------- | --------------: | ---------------: | ---------------------------------: |
+| 1440px, 2400px local crossing         |         19.0 ms |          50.9 ms |                             0 → 13 |
+| 390px, 2400px local crossing          |         19.0 ms |          26.7 ms |                              0 → 0 |
+| 1440px, rapid full-feed sweep         |         23.6 ms |          73.0 ms |                            0 → 123 |
+| 390px, rapid full-feed sweep          |         18.8 ms |          42.4 ms |                              0 → 1 |
+
+The rapid desktop trace increased Layerize from 389 to 3621 ms, PrePaint from 55 to 629 ms, Paint from 2704 to 3346 ms, raster from 1065 to 1870 ms, and peak observed layers from 9 to 141. These event durations overlap and cannot be summed as CPU time. The trace recorded no geometric Layout events, and app JavaScript was comparatively small. Layer construction, prepaint, and raster are leading suspects; the trace does not isolate parallax, blur, fade, mask, tint, or image memory. The 432 MB unique-source RGBA figure is an estimate from natural image sizes, not measured GPU allocation.
+
+A browser-side CSS ablation toggled the moving, blurred, filtered, and masked layers without changing component source. It did not establish a causal ranking: in a single page of 200 cards (396 image elements, because two media blocks were absent), the unchanged desktop effect measured 43.1 ms p95 on its first pass and 22.6 ms when repeated after the variants. That run requested decode for every present image but did not separately record the decoded count. The two completed fresh-context variants were not counterbalanced. Each toggle's computed animation, filter, and mask state was checked, and no page errors occurred. The narrow, warmed passes clustered near 19 ms p95. One-pass toggles therefore cannot justify a component change or an application CSS workaround.
+
+**Next step:** KF-J5SAFS (reduce long-feed ContentItem media scroll cost) tracks randomized, repeated cold and warm comparisons, including a public low-resolution `blurredSrc` ablation, then a shared-component optimization with visual and performance verification. Preserve the common Pane scrollport, accessibility fallbacks, and compositor-driven effects without per-frame application JavaScript. The raw traces and harnesses are attached to KF-NMB087.
