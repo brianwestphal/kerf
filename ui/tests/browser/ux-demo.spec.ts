@@ -7637,6 +7637,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Corner Count',
     'Segmented Choices',
     'Popup Menu',
+    'Popup Menu (Icon Only)',
     'Action Link',
     'Button Group',
     'Select Beside Actions',
@@ -7656,7 +7657,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Wrapping Zone Sizing',
   ]);
   const groups = demo.locator('[data-component="toolbar-control-group"]');
-  const expectedGroupCount = 33;
+  const expectedGroupCount = 34;
   await expect(groups).toHaveCount(expectedGroupCount);
   const standardGroups = demo.locator(
     '[data-component="toolbar-control-group"]:not([data-size="compact"])',
