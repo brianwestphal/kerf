@@ -513,6 +513,7 @@ kerf/
 │   ├── 24-ai-first-setup.md       ← deterministic project detection and transactional AI-first setup contract
 │   ├── 25-ticket-timing.md        ← durable Hot Sheet phase records and process-review summaries without raw output or machine-specific paths
 │   ├── companion-utilities-design.md ← design history for the optional companion subpaths
+│   ├── view-transitions-design.md ← KF-XN0WMQ design decision: app-owned state-update boundary for optional list View Transitions; browser recipe pending
 │   ├── graphics/                  ← editable logo sources plus the published SVG
 │   ├── technical-changelog/      ← long-form release migration notes
 │   │   └── v0.16.0-v1.0.0.md      ← historical version migration record
