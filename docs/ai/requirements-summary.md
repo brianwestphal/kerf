@@ -404,6 +404,10 @@ recipes, and apps no longer hand-write `.kui-content-item` modifier classes.
 `success`, `warning`, and `danger` coordinate quiet semantic fills, borders,
 and foregrounds with `StateBanner`. `transparent` is the default. A lowered
 inset surface around a stack remains `SunkenPanel`.
+`ValuePreview` (shipped, `ui/docs/value-preview.md`) renders a literal,
+read-only multiline string as a labelled, keyboard-scrollable `output` with
+bounded height, preserved newlines, and long-token wrapping. It composes
+inside SunkenPanel without adding a second frame.
 Image-led feed cards are shipped through `ContentItem.media` composed with
 `BackdropImage` and an optional per-card `SurfaceTint`: each reserved, lazy
 image has its own view timeline in

@@ -3050,6 +3050,71 @@
       }
     },
     {
+      "id": "value-preview",
+      "name": "ValuePreview",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A bounded, read-only multiline text value with keyboard scrolling.",
+      "uses": [
+        "sunken-panel"
+      ],
+      "purpose": "Display a literal long value with line breaks and long tokens inside a bounded scroll region.",
+      "publicExports": [
+        "ValuePreview"
+      ],
+      "useWhen": [
+        "A read-only value may have multiple lines or long unbroken text and needs bounded scrolling, such as a conflict version."
+      ],
+      "avoidWhen": [
+        "Do not use for editing; use a multiline TextField.",
+        "Do not use for short label/value facts; use ValueTable."
+      ],
+      "alternatives": [
+        {
+          "id": "value-table",
+          "relationship": "nearest",
+          "when": "Use ValueTable for rows of short labelled facts."
+        }
+      ],
+      "appOwns": [
+        "value",
+        "empty wording"
+      ],
+      "variants": [
+        "typed minimum and maximum height"
+      ],
+      "accessibility": [
+        "Give the focusable output a label so keyboard and screen-reader users can identify and scroll it."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none"
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/value-preview",
+        "manualCssImport": "@kerfjs/ui/value-preview.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-value-preview"
+      ],
+      "publicTokens": [
+        "--kui-color-text",
+        "--kui-font-xs",
+        "--kui-focus-ring"
+      ],
+      "links": {
+        "catalogRoute": "?component=value-preview",
+        "documentation": "docs/value-preview.md",
+        "recipe": "docs/value-preview.md"
+      }
+    },
+    {
       "id": "value-table",
       "name": "ValueTable",
       "category": "Structure",

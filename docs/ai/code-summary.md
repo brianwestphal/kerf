@@ -1528,6 +1528,10 @@ Badge, Chip, StateBanner, and ContentItem use its six roles (`info` maps to bran
 color tokens); `BadgeTone` and `StateBannerTone` are deprecated aliases.
 
 The UI shared theme and foundation define translucent lowered surfaces and neutral decorative fills/borders; the SunkenPanel catalog composes public components directly without prototype CSS.
+`ui/src/components/data-display/value-preview/` owns the `ValuePreview`
+read-only output and bounded scrolling styles. Public subpath and catalog demo
+compose it with `SunkenPanel`; unit and browser tests cover escaped literal
+content, height bounds, and wide/narrow keyboard scrolling.
 
 Toolbar width visibility (`KF-MXE9YV`): `ui/src/wiring/wire-toolbar-visibility.ts` implements disposer-returning nearest-content-box thresholds, exported through `ui/src/wire-toolbar-visibility.ts`. `ui/tests/unit/toolbar-width-visibility.test.ts` covers transitions and cleanup; `ui/tests/browser/toolbar-width-visibility.spec.ts` exercises real CSS resolution, responsive actions, fonts/tokens, rendering and nested relocation across three engines. `KF-JVWC92` makes probe style reconciliation idempotent after CSSOM normalization; `ui/tests/browser/toolbar-visibility-idle.spec.ts` pins idle behavior through real token and width transitions.
 

@@ -340,6 +340,20 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "value-preview",
+    "name": "ValuePreview",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Display a literal long value with line breaks and long tokens inside a bounded scroll region.",
+    "uses": [
+      "sunken-panel"
+    ],
+    "demoSource": "ui/ux-demo/demos/value-preview.tsx",
+    "componentSource": "ui/src/components/data-display/value-preview/value-preview.tsx",
+    "documentation": "ui/docs/value-preview.md"
+  },
+  {
     "id": "value-table",
     "name": "ValueTable",
     "category": "Structure",

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 433400,
-  "measuredLargestJavaScriptGzip": 164543,
-  "measuredTotalJavaScriptGzip": 433386,
+  "totalJavaScriptGzip": 434000,
+  "measuredLargestJavaScriptGzip": 164544,
+  "measuredTotalJavaScriptGzip": 433984,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6195,6 +6195,22 @@
         "measuredTotalJavaScriptGzip": 433386,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 433400
+      }
+    },
+    {
+      "at": "2026-10-19T11:01:55.961Z",
+      "reason": "ValuePreview adds a public read-only multiline display component and catalog demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 433386,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 433400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164544,
+        "measuredTotalJavaScriptGzip": 433984,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 434000
       }
     }
   ]

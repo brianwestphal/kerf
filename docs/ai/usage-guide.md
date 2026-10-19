@@ -391,6 +391,9 @@ For image-led cards, wire `wireContentItems(root)` once; it reconciles native
 image load/error state after card attribute rerenders as well as image changes.
 For a compact info Badge on a light image tint, rely on the scoped brand
 on-fill token; it keeps the Badge text AA-readable without an app accent.
+For a read-only multiline value, put `ValuePreview label="…" value={text}`
+inside `SunkenPanel`. It owns a bounded scroll area, literal line breaks,
+long-token wrapping, and compact text; the app chooses any empty wording.
 
 The package keeps app policy outside components: wire emitted `data-action`
 hooks at the mount root, retain every disposer, and let the app own menu/tab

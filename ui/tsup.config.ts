@@ -107,6 +107,7 @@ const entries = [
   'wire-corner-status',
   'empty-state',
   'value-table',
+  'value-preview',
 ];
 
 export default defineConfig({

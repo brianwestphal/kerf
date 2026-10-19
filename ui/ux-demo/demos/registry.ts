@@ -73,6 +73,7 @@ import { ToolbarDemo } from './toolbar.js';
 import { ToolbarControlGroupDemo } from './toolbar-control-group.js';
 import { ToolbarTextDemo } from './toolbar-text.js';
 import { TooltipDemo } from './tooltip.js';
+import { ValuePreviewDemo } from './value-preview.js';
 import { ValueTableDemo } from './value-table.js';
 import { WorkbenchDemo } from './workbench.js';
 import { WorkbenchDialogDemo } from './workbench-dialog.js';
@@ -128,6 +129,7 @@ export const demos = {
   workbench: WorkbenchDemo,
   'collapsible-panel': CollapsiblePanelDemo,
   'value-table': ValueTableDemo,
+  'value-preview': ValuePreviewDemo,
   resize: ResizeDemo,
   select: SelectDemo,
   feedback: FeedbackDemo,

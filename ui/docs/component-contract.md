@@ -761,6 +761,11 @@ action on click or keyboard activation. The application owns the editing control
 and the swap between display and edit states. An actionable title is a button,
 so place any required heading landmark on another element in the view.
 
+`ValuePreview` displays a literal read-only string in a bounded, keyboard-scrollable
+`output` with an accessible label. It preserves line breaks and wraps long
+tokens without painting a second surface; compose it inside `SunkenPanel` for
+a lowered frame. See [ValuePreview](value-preview.md).
+
 `ValueTable` composes typed `ValueTableRow` entries. A row owns its `dt`/`dd`
 semantics and may receive a leading `SafeHtml` icon. Every row keeps 8px of
 root-scaled padding above and below its content; the shared item-padding token

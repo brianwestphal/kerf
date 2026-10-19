@@ -1,0 +1,18 @@
+.kui-value-preview {
+  display: block;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: var(--_kui-value-preview-min-height, remify(48px));
+  max-height: var(--_kui-value-preview-max-height, remify(96px));
+  overflow: auto;
+  color: var(--kui-color-text);
+  font-size: var(--kui-font-xs);
+  line-height: 1.4;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.kui-value-preview:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: -2px;
+}

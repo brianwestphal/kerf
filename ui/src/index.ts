@@ -120,6 +120,10 @@ export {
   type SummaryRowProps,
 } from './components/collections/summary-row/summary-row.js';
 export {
+  ValuePreview,
+  type ValuePreviewProps,
+} from './components/data-display/value-preview/value-preview.js';
+export {
   ValueTable,
   type ValueTablePresentation,
   type ValueTableProps,

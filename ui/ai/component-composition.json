@@ -2710,6 +2710,53 @@
       }
     },
     {
+      "key": "@kerfjs/ui:value-preview",
+      "package": "@kerfjs/ui",
+      "id": "value-preview",
+      "name": "ValuePreview",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "value", "owner": "application", "required": false },
+        { "id": "empty wording", "owner": "application", "required": false }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Give the focusable output a label so keyboard and screen-reader users can identify and scroll it."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-value-preview",
+        "publicClasses": ["kui-value-preview"],
+        "publicTokens": [
+          "--kui-color-text",
+          "--kui-font-xs",
+          "--kui-focus-ring"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:value-table",
       "package": "@kerfjs/ui",
       "id": "value-table",

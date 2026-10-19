@@ -323,6 +323,9 @@ For a lowered background behind an entire scrolling work area, choose
 `Pane appearance="sunken"` or the appearance option on the layout that owns
 the scroll viewport. Use `SunkenPanel` for a padded content group that does
 not introduce scrolling. See [Lowered work surfaces](./layout.md#lowered-work-surfaces).
+For a long read-only value inside that panel, use `ValuePreview`
+([guide](./value-preview.md))
+to preserve line breaks and keep the value's own scroll region bounded.
 
 Set `ResizableRegion`'s `--kui-resizable-region-background` for an inline
 surface. A `PopupMenu` opens in the browser top layer, so the region keeps

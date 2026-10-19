@@ -5322,6 +5322,32 @@ declare function Text({ variant: Variant, tone, color, size, font, border, flush
 export { FieldLabel, type FieldLabelProps, Sides, Text, type TextAlign, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextTruncate, type TextTruncateKeep, type TextVariant, type TextWrap };
 ```
 
+## `@kerfjs/ui/value-preview`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { CssLength } from './css-values.js';
+
+interface ValuePreviewProps {
+    /** Accessible name for the keyboard-scrollable value. */
+    label: string;
+    /** Literal plain-text value, including newlines and long unbroken text. */
+    value: string;
+    /** Minimum height; defaults to 48px. */
+    minHeight?: CssLength;
+    /** Maximum height before the value scrolls; defaults to 96px. */
+    maxHeight?: CssLength;
+    id?: string;
+    className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/** Read-only, bounded multiline text for a containing surface such as SunkenPanel. */
+declare function ValuePreview({ label, value, minHeight, maxHeight, id, className, slot, }: ValuePreviewProps): kerfjs.SafeHtml;
+
+export { ValuePreview, type ValuePreviewProps };
+```
+
 ## `@kerfjs/ui/framed-list`
 
 ```ts
