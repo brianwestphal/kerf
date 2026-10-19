@@ -563,3 +563,27 @@ focus, and stack have already moved on.
   `tests/browser/overlay-anchored-exit.spec.ts` runs a real CSS fade on a
   popover (close and outside click) and a tooltip re-hovered mid-exit in all
   three engines.
+
+## 19.11 CSS Anchor Positioning candidate (design pending)
+
+> **Status: investigation complete; no API or behavior change.** KF-PB0627
+> revisited the browser-support premise in October 2026. A CSS-backed mode is
+> tracked for design in KF-NM7Y6M.
+
+CSS Anchor Positioning is now available in all three major engines: Chromium
+shipped it in [Chrome 125](https://developer.chrome.com/blog/anchor-positioning-api),
+[Safari 26](https://webkit.org/blog/17333/webkit-features-in-safari-26-0/)
+shipped it in September 2025, and
+[Firefox 147](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/147)
+enabled it by default in January 2026. The original reason to monitor for
+Safari and Firefox support has therefore expired. Safari subsequently refined
+its [position fallbacks](https://webkit.org/blog/17640/webkit-features-for-safari-26-2/).
+
+Support for the syntax alone does not establish parity with the current
+`positionAnchored` / `autoReposition` contract. The JavaScript path handles
+`placement`, `align`, `gap`, and `viewportMargin`, chooses the roomier side and
+publishes `--kerf-anchor-available-height` for `fitHeight`, compensates for a
+transformed fixed-position containing block, and watches both element sizes in
+addition to scroll and resize. A CSS mode must be designed and tested against
+those behaviors, including native top-layer hosts and older-browser fallback,
+before it can replace any listener or placement calculation.
