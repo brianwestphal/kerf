@@ -106,6 +106,11 @@ For many image-led `ContentItem` cards in one feed, opt into
 card's reserved height and the shared scroll owner. `BackdropImage` exposes
 the same `deferOffscreen` option directly; leave it off for a single page hero.
 
+`SummaryRow` is an option in a labeled listbox by default. For a diagnostic
+row with a nested recovery action, use `semanticRole="group"` and a required
+`ariaLabel`; only the nested native button takes focus and activates, while
+the row/card surface, rail, and selected visual fill remain available.
+
 ## Components own their styles; configure, never override
 
 This is the rule every Kerf UI surface follows, and applications and

@@ -29,7 +29,7 @@ type SummaryRowRootAttributes = Readonly<
   }
 >;
 
-export interface SummaryRowProps {
+interface SummaryRowBaseProps {
   /** The identity line: an identifier, inline status glyphs, and the title. */
   title: KerfUiContent;
   /** Optional leading glyph, such as a category icon. */
@@ -44,7 +44,7 @@ export interface SummaryRowProps {
   titleLines?: number;
   /** A leading state rail in a semantic tone (Up Next, blocked, …). */
   rail?: SemanticTone;
-  /** Selected state, exposed as `aria-selected`. */
+  /** Selected visual state; also exposed as `aria-selected` for an option. */
   selected?: boolean;
   /** Dim a finished or cut item; hover and selection restore it. */
   dimmed?: boolean;
@@ -52,20 +52,31 @@ export interface SummaryRowProps {
   listEdge?: SummaryRowListEdge;
   /** Skip rendering while off screen in long lists (`content-visibility`). */
   deferRendering?: boolean;
-  /** Accessible name when the visible content is not a good one. */
-  ariaLabel?: string;
   id?: string;
   className?: string;
-  /** Safe `data-*` identity (an item id or delegated action) on the option. */
+  /** Safe `data-*` identity (an item id or delegated action) on the root. */
   rootAttributes?: SummaryRowRootAttributes;
 }
 
+export type SummaryRowProps = SummaryRowBaseProps &
+  (
+    | {
+        /** Selectable option, the default; place it in a labeled listbox. */
+        semanticRole?: 'option';
+        /** Accessible name when the visible content is not a good one. */
+        ariaLabel?: string;
+      }
+    | {
+        /** Static labeled group; nested actions own focus and activation. */
+        semanticRole: 'group';
+        ariaLabel: string;
+      }
+  );
+
 /**
- * A selectable, keyboard-focusable summary of one item, as a list row or a
- * board card: an optional leading glyph and state rail, a clamped identity line
- * with trailing quiet metadata, and a wrapping metadata line. It is a
- * `role="option"`; place rows in a labeled `role="listbox"` and own selection
- * and keyboard movement in the application.
+ * A list row or board card with a clamped identity line, metadata, and state
+ * rail. The default is a focusable `role="option"` for a labeled listbox;
+ * `semanticRole="group"` gives a static labeled row for nested actions.
  */
 export function SummaryRow({
   title,
@@ -79,6 +90,7 @@ export function SummaryRow({
   dimmed = false,
   listEdge,
   deferRendering = false,
+  semanticRole = 'option',
   ariaLabel,
   id,
   className = '',
@@ -101,9 +113,11 @@ export function SummaryRow({
       data-selected={selected ? 'true' : undefined}
       data-dimmed={dimmed ? 'true' : undefined}
       data-defer={deferRendering ? 'true' : undefined}
-      role="option"
-      tabindex="0"
-      aria-selected={selected ? 'true' : 'false'}
+      role={semanticRole}
+      tabindex={semanticRole === 'option' ? '0' : undefined}
+      aria-selected={
+        semanticRole === 'option' ? (selected ? 'true' : 'false') : undefined
+      }
       aria-label={ariaLabel}
       style={
         titleLines === undefined

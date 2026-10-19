@@ -50,3 +50,33 @@ test('SummaryRow selects, clamps, and rounds by presentation', async ({
     ).toBeGreaterThan(0);
   }
 });
+
+test('a static diagnostic group keeps visual state while its nested action owns focus', async ({
+  page,
+}, testInfo) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?component=summary-row');
+    const group = page.getByRole('group', {
+      name: 'Unreadable ticket diagnostic',
+    });
+    await expect(group).toHaveAttribute('data-selected', 'true');
+    await expect(group).toHaveAttribute('data-rail', 'danger');
+    await expect(group).toHaveAttribute('data-list-edge', 'only');
+    await expect(group).not.toHaveAttribute('tabindex');
+    await expect(group).not.toHaveAttribute('aria-selected');
+    const open = group.getByRole('button', { name: 'Open' });
+    await open.focus();
+    await expect(open).toBeFocused();
+    await expect(group).not.toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('.catalog-log')).toHaveText(
+      'More actions requested',
+    );
+    if (testInfo.project.name === 'chromium') {
+      await group.screenshot({
+        path: testInfo.outputPath(`summary-row-diagnostic-${width}.png`),
+      });
+    }
+  }
+});

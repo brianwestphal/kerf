@@ -1,4 +1,5 @@
 import { Badge } from '@kerfjs/ui/badge';
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { Chip } from '@kerfjs/ui/chip';
 import { List } from '@kerfjs/ui/list';
@@ -104,6 +105,35 @@ export function SummaryRowDemo() {
             {rows('card')}
           </List>
         </div>
+      </CatalogExample>
+      <CatalogExample
+        label="Diagnostic Group"
+        note="A labeled static row keeps the danger rail and selection fill while its nested Open button owns keyboard focus and activation."
+        viewport={{ width: 'compact', surface: 'lowered', frame: 'solid' }}
+      >
+        <SummaryRow
+          semanticRole="group"
+          ariaLabel="Unreadable ticket diagnostic"
+          presentation="row"
+          listEdge="only"
+          rail="danger"
+          selected
+          leading={<LucideIcon icon={Bug} name="bug" />}
+          title={
+            <>
+              <strong>Unreadable ticket</strong>
+              {'\u00a0'}
+              <Button size="compact" emphasis="secondary" action="log-more">
+                Open
+              </Button>
+            </>
+          }
+          metadata={
+            <Badge tone="danger" size="compact">
+              Needs recovery
+            </Badge>
+          }
+        />
       </CatalogExample>
     </CatalogExampleStack>
   );

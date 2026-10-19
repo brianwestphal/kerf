@@ -425,6 +425,10 @@ Dense feeds may opt into `media.deferOffscreen`, which defers offscreen hero
 painting while preserving card height and the shared scrollport.
 On light image tints without an accent, compact info Badges retain AA text
 contrast through the scoped brand on-fill token.
+`SummaryRow` (shipped) presents selectable list rows or board cards with a
+rail, metadata, and clamped title. Its `semanticRole="group"` mode supports a
+labeled static diagnostic with a nested recovery action, while preserving
+the same visual row states without option selection semantics.
 The List UX demo now exposes the shipped opt-in document View Transitions
 recipe with interactive reorder, insert, remove, and reset controls; it uses
 `each()` and keeps names, motion, scroll-position preservation, the visible

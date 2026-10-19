@@ -1,4 +1,4 @@
-/* A selectable summary: a full-width option on the base surface, a container
+/* A summary surface: a full-width option or static group on the base surface, a container
    for its own compaction, with a hairline divider below each list row. */
 .kui-summary-row {
   --_kui-summary-row-rail: transparent;
@@ -18,7 +18,7 @@
   border-radius: 0;
   color: var(--kui-color-text);
   background: var(--kui-color-surface);
-  cursor: pointer;
+  cursor: default;
   outline: none;
   container-type: inline-size;
   user-select: none;
@@ -47,7 +47,11 @@
   contain-intrinsic-size: auto remify(72px);
 }
 
-.kui-summary-row:hover {
+.kui-summary-row[role="option"] {
+  cursor: pointer;
+}
+
+.kui-summary-row[role="option"]:hover {
   border-color: var(--kui-color-brand-border-normal);
 }
 

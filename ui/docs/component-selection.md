@@ -823,6 +823,13 @@ are distinct interaction contracts: a command menu still uses `PopupMenu`.
 
 ## Configuring recurring list rows
 
+`SummaryRow` is a selectable `role="option"` by default. For an unreadable
+item diagnostic with a recovery button inside the title, set
+`semanticRole="group"` and a required `ariaLabel`. The row keeps its `row` or
+`card` chrome, rail, list-edge rounding, and selected visual fill, but it has
+no root Tab stop or `aria-selected`; the nested button owns keyboard focus and
+activation. Keep option rows in the app's labeled listbox.
+
 Configure the List family instead of selecting its descendant classes. Use
 `density="compact"` for result-heavy panes, `description` for the secondary
 label line, `status` for dormant state text, and `busy` for known progress that

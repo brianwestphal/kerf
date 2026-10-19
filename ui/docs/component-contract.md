@@ -432,9 +432,11 @@ content surface's fill: a `SunkenPanel`, a sunken `Disclosure`, a lowered
 `ContentItem`, a `TabBar` strip, and translucent glass chrome at rest — a
 `Pane` overlay header, `NavStack` overlay chrome or bottom toolbar, a
 `TabNavigator` overlay bar, and a dialog's floating header; clear chrome
-paints nothing and keeps the inherited context). Interactive rows (`ListItem`,
-`ListActionRow`, `SummaryRow`) are buttons or links themselves, so no control
-nests on their hover or selection fill and they publish nothing. They are undeclared at `:root`
+paints nothing and keeps the inherited context). Interactive `ListItem` and
+`ListActionRow` actions are buttons or links themselves, so no control nests on
+their hover or selection fill. A default `SummaryRow` is a selectable option;
+`semanticRole="group"` makes it a static labeled group whose title may contain
+a nested native action. These rows publish nothing. They are undeclared at `:root`
 and a scoped `[data-kui-tint]` resets them. A control that must match what
 lies behind it (the inset focus ring's inner line on `Button` and
 `SplitButton`) layers tint over region over the opaque color, falling back to

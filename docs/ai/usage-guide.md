@@ -275,6 +275,11 @@ For a dense image-led feed, `ContentItem.media.deferOffscreen` (or
 changing the card's reserved height or its scroll owner. Enable it only after
 checking visible image readiness in the target feed.
 
+Use `SummaryRow` for selectable list or board summaries. Its default root is
+an option; for a diagnostic row with a nested recovery button, set
+`semanticRole="group"` and `ariaLabel`. The group keeps the row's visual state
+without entering the option Tab order or exposing `aria-selected`.
+
 Use `ChoiceChips` (`@kerfjs/ui/choice-chips`) when one value is chosen from a
 visible set too large for `SegmentedControl` and the options must wrap, such as
 a labeled color palette. Pass a form `name`, a `label` or `labelledBy`, the

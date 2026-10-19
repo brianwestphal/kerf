@@ -56,4 +56,25 @@ describe('SummaryRow', () => {
         RangeError,
       );
   });
+
+  it('renders a labeled static group with a nested native action and visual selection only', () => {
+    const html = String(
+      SummaryRow({
+        semanticRole: 'group',
+        ariaLabel: 'Unreadable ticket',
+        title: <button type="button">Open</button>,
+        presentation: 'card',
+        rail: 'danger',
+        selected: true,
+        listEdge: 'only',
+      }),
+    );
+    expect(html).toContain('role="group" aria-label="Unreadable ticket"');
+    expect(html).not.toContain('aria-selected');
+    expect(html).not.toContain('tabindex=');
+    expect(html).toContain('data-selected="true"');
+    expect(html).toContain('data-rail="danger"');
+    expect(html).toContain('data-list-edge="only"');
+    expect(html).toContain('<button type="button">Open</button>');
+  });
 });

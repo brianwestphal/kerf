@@ -4,13 +4,14 @@
 
 `@kerfjs/ui:summary-row` · Kerf UI · component · Structure
 
-A selectable, focusable summary of one item as a list row or a board card, with a state rail, a clamped title, trailing meta, and a metadata line.
+A selectable option or static diagnostic group as a list row or board card, with a state rail, a clamped title, trailing meta, and a metadata line.
 
 ## When to use
 
 Present dense item summaries (tickets, tasks, messages) as selectable list rows or board cards with Kerf-owned selection, hover, focus, rail, clamping, list-edge rounding, and narrow compaction, without app row CSS.
 
 - A list or board shows many items as dense, selectable summaries with an identifier, a title, a timestamp, and metadata.
+- An unreadable item needs the same summary chrome with a nested recovery action but must be a labeled non-option group.
 
 **Not when:**
 
@@ -43,6 +44,7 @@ Exact prop names and types: [`@kerfjs/ui/summary-row`](../public-api-signatures-
 - list edge start, end, or only
 - title line budget
 - deferred rendering
+- static labeled group with a nested action (semanticRole=group)
 
 ## Composition
 
@@ -64,7 +66,7 @@ Margin: none · border: self · padding: self (layout role: structure). `self` m
 
 ## Accessibility
 
-- Each SummaryRow is role=option with tabindex=0 and aria-selected; place rows in a labeled role=listbox and move focus with the arrow keys in the app. The rail is decorative; carry its meaning in text.
+- By default SummaryRow is role=option with tabindex=0 and aria-selected; place options in a labeled role=listbox and move focus with the arrow keys in the app. semanticRole=group requires ariaLabel and omits the root Tab stop and aria-selected, so a nested native action owns focus and activation. The rail is decorative; carry its meaning in text.
 
 ## Styling boundary
 

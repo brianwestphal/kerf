@@ -3004,7 +3004,7 @@
       },
       "accessibility": {
         "obligations": [
-          "Each SummaryRow is role=option with tabindex=0 and aria-selected; place rows in a labeled role=listbox and move focus with the arrow keys in the app. The rail is decorative; carry its meaning in text."
+          "By default SummaryRow is role=option with tabindex=0 and aria-selected; place options in a labeled role=listbox and move focus with the arrow keys in the app. semanticRole=group requires ariaLabel and omits the root Tab stop and aria-selected, so a nested native action owns focus and activation. The rail is decorative; carry its meaning in text."
         ]
       },
       "cssValueProps": [],

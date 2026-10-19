@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 435000,
-  "measuredLargestJavaScriptGzip": 164545,
-  "measuredTotalJavaScriptGzip": 434934,
+  "totalJavaScriptGzip": 435200,
+  "measuredLargestJavaScriptGzip": 164544,
+  "measuredTotalJavaScriptGzip": 435105,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6243,6 +6243,38 @@
         "measuredTotalJavaScriptGzip": 434934,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 435000
+      }
+    },
+    {
+      "at": "2026-10-19T13:03:28.542Z",
+      "reason": "SummaryRow catalog adds a static diagnostic group with a nested recovery action",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 434934,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 435000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164544,
+        "measuredTotalJavaScriptGzip": 435094,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 435100
+      }
+    },
+    {
+      "at": "2026-10-19T13:07:10.212Z",
+      "reason": "SummaryRow diagnostic specimen adds accessible static group and nested recovery button",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164544,
+        "measuredTotalJavaScriptGzip": 435094,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 435100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164544,
+        "measuredTotalJavaScriptGzip": 435105,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 435200
       }
     }
   ]
