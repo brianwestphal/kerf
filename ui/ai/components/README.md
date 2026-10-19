@@ -35,6 +35,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [ToolbarText](./toolbar-text.md) — Extra-large through extra-small toolbar identity text.
 - [Text](./text.md) — Render paragraph semantics by default, h1 through h6 when selected, or geometry-free inline secondary text as a span while independently configuring quiet or danger tone, compact through extra-large size, or monospace font.
 - [Headers](./headers.md) — Page, dialog, and definition-list hierarchy.
+- [EditorFrame](./editor-frame.md) — Own a framed or embedded writing surface while the app owns its native textarea, draft, and rendered preview.
 - [ValuePreview](./value-preview.md) — Display a literal long value with line breaks and long tokens inside a bounded scroll region.
 - [ValueTable](./value-table.md) — Key/value rows with optional icons and aligned separators.
 - [FramedList](./framed-list.md) — Group settings-style rows of arbitrary content (copy, keycaps, controls) in one framed surface with between-row dividers and an optional highlighted row, without app list CSS.

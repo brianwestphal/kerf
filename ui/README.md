@@ -274,6 +274,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `Skeleton`                                                   | `@kerfjs/ui/skeleton`                   | `@kerfjs/ui/skeleton.css`                |
 | `SunkenPanel`                                                | `@kerfjs/ui/sunken-panel`               | `@kerfjs/ui/sunken-panel.css`            |
 | `ValuePreview`                                               | `@kerfjs/ui/value-preview`              | `@kerfjs/ui/value-preview.css`           |
+| `EditorFrame`                                                | `@kerfjs/ui/editor-frame`               | `@kerfjs/ui/editor-frame.css`            |
 | `BackdropImage`                                              | `@kerfjs/ui/backdrop-image`             | `@kerfjs/ui/backdrop-image.css`          |
 | `Select`                                                     | `@kerfjs/ui/select`                     | `@kerfjs/ui/select.css`                  |
 | `SegmentedControl`                                           | `@kerfjs/ui/segmented-control`          | `@kerfjs/ui/segmented-control.css`       |

@@ -326,6 +326,8 @@ not introduce scrolling. See [Lowered work surfaces](./layout.md#lowered-work-su
 For a long read-only value inside that panel, use `ValuePreview`
 ([guide](./value-preview.md))
 to preserve line breaks and keep the value's own scroll region bounded.
+For a toolbar above a native editing or preview surface, use `EditorFrame`
+([guide](./editor-frame.md)); it owns the bounded frame and one scroll owner.
 
 Set `ResizableRegion`'s `--kui-resizable-region-background` for an inline
 surface. A `PopupMenu` opens in the browser top layer, so the region keeps

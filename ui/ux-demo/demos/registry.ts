@@ -22,6 +22,7 @@ import { DisclosureDemo } from './disclosure.js';
 import { DisclosureArrowDemo } from './disclosure-arrow.js';
 import { DocumentBaselineDemo } from './document-baseline.js';
 import { EdgeActivityIndicatorDemo } from './edge-activity-indicator.js';
+import { EditorFrameDemo } from './editor-frame.js';
 import { EmptyStateDemo } from './empty-state.js';
 import { FeedbackDemo } from './feedback.js';
 import { FilePickerDemo } from './file-picker.js';
@@ -130,6 +131,7 @@ export const demos = {
   'collapsible-panel': CollapsiblePanelDemo,
   'value-table': ValueTableDemo,
   'value-preview': ValuePreviewDemo,
+  'editor-frame': EditorFrameDemo,
   resize: ResizeDemo,
   select: SelectDemo,
   feedback: FeedbackDemo,

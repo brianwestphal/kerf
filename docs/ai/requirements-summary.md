@@ -408,6 +408,10 @@ inset surface around a stack remains `SunkenPanel`.
 read-only multiline string as a labelled, keyboard-scrollable `output` with
 bounded height, preserved newlines, and long-token wrapping. It composes
 inside SunkenPanel without adding a second frame.
+`EditorFrame` (shipped, `ui/docs/editor-frame.md`) owns a bounded editor frame,
+fixed Toolbar row, and one scroll owner: native textarea in source mode or
+rendered content in preview mode. Embedded and flush variants remove duplicate
+host framing; expanded mode positions the same editor over the viewport.
 Image-led feed cards are shipped through `ContentItem.media` composed with
 `BackdropImage` and an optional per-card `SurfaceTint`: each reserved, lazy
 image has its own view timeline in

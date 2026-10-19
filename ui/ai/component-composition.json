@@ -2710,6 +2710,69 @@
       }
     },
     {
+      "key": "@kerfjs/ui:editor-frame",
+      "package": "@kerfjs/ui",
+      "id": "editor-frame",
+      "name": "EditorFrame",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "draft value", "owner": "application", "required": false },
+        { "id": "editing actions", "owner": "application", "required": false },
+        {
+          "id": "preview rendering",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "recovery and focus management",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Give the editor frame a label when it is a distinct region; the app labels its native textarea and supplies toolbar controls."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-editor-frame",
+        "publicClasses": [
+          "kui-editor-frame",
+          "kui-editor-frame__toolbar",
+          "kui-editor-frame__surface"
+        ],
+        "publicTokens": [
+          "--kui-color-neutral-border-normal",
+          "--kui-color-neutral-on-normal",
+          "--kui-color-surface",
+          "--kui-radius-l",
+          "--kui-shadow-l"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:value-preview",
       "package": "@kerfjs/ui",
       "id": "value-preview",

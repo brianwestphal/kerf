@@ -340,6 +340,20 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "editor-frame",
+    "name": "EditorFrame",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Own a framed or embedded writing surface while the app owns its native textarea, draft, and rendered preview.",
+    "uses": [
+      "toolbar"
+    ],
+    "demoSource": "ui/ux-demo/demos/editor-frame.tsx",
+    "componentSource": "ui/src/components/surfaces/editor-frame/editor-frame.tsx",
+    "documentation": "ui/docs/editor-frame.md"
+  },
+  {
     "id": "value-preview",
     "name": "ValuePreview",
     "category": "Structure",

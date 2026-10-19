@@ -555,6 +555,7 @@ describe('UX catalog metadata', () => {
       'FloatingToolbar',
       'ToolbarText',
       'Text',
+      'EditorFrame',
       'ValuePreview',
       'ValueTable',
       'FramedList',

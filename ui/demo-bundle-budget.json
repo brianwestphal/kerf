@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 434000,
+  "totalJavaScriptGzip": 434900,
   "measuredLargestJavaScriptGzip": 164544,
-  "measuredTotalJavaScriptGzip": 433984,
+  "measuredTotalJavaScriptGzip": 434828,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6211,6 +6211,22 @@
         "measuredTotalJavaScriptGzip": 433984,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 434000
+      }
+    },
+    {
+      "at": "2026-10-19T11:09:45.395Z",
+      "reason": "EditorFrame adds a public fixed-toolbar editor surface and catalog demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164544,
+        "measuredTotalJavaScriptGzip": 433984,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 434000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164544,
+        "measuredTotalJavaScriptGzip": 434828,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 434900
       }
     }
   ]

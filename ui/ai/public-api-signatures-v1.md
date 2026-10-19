@@ -5322,6 +5322,52 @@ declare function Text({ variant: Variant, tone, color, size, font, border, flush
 export { FieldLabel, type FieldLabelProps, Sides, Text, type TextAlign, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextTruncate, type TextTruncateKeep, type TextVariant, type TextWrap };
 ```
 
+## `@kerfjs/ui/editor-frame`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { CssLength } from './css-values.js';
+
+type EditorFrameMode = 'source' | 'preview';
+type EditorFrameAppearance = 'framed' | 'embedded';
+type EditorFrameInset = 'padded' | 'flush';
+interface EditorFrameProps {
+    /** A Toolbar or other fixed controls above the writing surface. */
+    toolbar?: KerfUiContent;
+    /** A native textarea in source mode, or rendered content in preview mode. */
+    children: KerfUiContent;
+    mode: EditorFrameMode;
+    /** Framed fixed-height card (default) or unframed content within a host. */
+    appearance?: EditorFrameAppearance;
+    /** Remove the writing surface inset when the host owns the text column. */
+    inset?: EditorFrameInset;
+    /** Fill the viewport inset as a raised editor overlay. */
+    expanded?: boolean;
+    /** Framed block size; defaults to 320px. Ignored while expanded or embedded. */
+    height?: CssLength;
+    /** Maximum framed inline size; defaults to 672px. */
+    maxWidth?: CssLength;
+    /** Embedded source height restored by the app. */
+    sourceHeight?: CssLength;
+    /** Let an embedded native textarea grow with its content. */
+    sourceAutosize?: boolean;
+    /** Name a distinct editor region for assistive technology. */
+    label?: string;
+    /** App-owned root identity for delegation or a stable morph key. */
+    rootAttributes?: Readonly<Record<`data-${string}`, string | undefined>>;
+    slot?: string;
+}
+/**
+ * A fixed toolbar over one writing surface. Source mode gives a native
+ * textarea the scrollport; preview mode scrolls the surface around rendered
+ * content. The app owns editing, draft restoration, and preview actions.
+ */
+declare function EditorFrame({ toolbar, children, mode, appearance, inset, expanded, height, maxWidth, sourceHeight, sourceAutosize, label, rootAttributes, slot, }: EditorFrameProps): kerfjs.SafeHtml;
+
+export { EditorFrame, type EditorFrameAppearance, type EditorFrameInset, type EditorFrameMode, type EditorFrameProps };
+```
+
 ## `@kerfjs/ui/value-preview`
 
 ```ts

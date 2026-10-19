@@ -394,6 +394,9 @@ on-fill token; it keeps the Badge text AA-readable without an app accent.
 For a read-only multiline value, put `ValuePreview label="…" value={text}`
 inside `SunkenPanel`. It owns a bounded scroll area, literal line breaks,
 long-token wrapping, and compact text; the app chooses any empty wording.
+For a full editor, use `EditorFrame mode="source"` around a native `<textarea>`
+and supply a Kerf `Toolbar`; switch to `mode="preview"` for rendered content.
+Use `appearance="embedded"` and `inset="flush"` when a host owns the frame.
 
 The package keeps app policy outside components: wire emitted `data-action`
 hooks at the mount root, retain every disposer, and let the app own menu/tab

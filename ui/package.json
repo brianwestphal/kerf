@@ -566,6 +566,11 @@
       "browser": "./dist/browser/value-preview.js",
       "import": "./dist/value-preview.js"
     },
+    "./editor-frame": {
+      "types": "./dist/editor-frame.d.ts",
+      "browser": "./dist/browser/editor-frame.js",
+      "import": "./dist/editor-frame.js"
+    },
     "./unstyled": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
@@ -648,6 +653,7 @@
     "./empty-state.css": "./dist/styles/empty-state.css",
     "./value-table.css": "./dist/styles/value-table.css",
     "./value-preview.css": "./dist/styles/value-preview.css",
+    "./editor-frame.css": "./dist/styles/editor-frame.css",
     "./ai/*": "./ai/*",
     "./docs/*": "./docs/*"
   },

@@ -3050,6 +3050,82 @@
       }
     },
     {
+      "id": "editor-frame",
+      "name": "EditorFrame",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A bounded editor surface with a fixed toolbar and one native source or preview scroll owner.",
+      "uses": [
+        "toolbar"
+      ],
+      "purpose": "Own a framed or embedded writing surface while the app owns its native textarea, draft, and rendered preview.",
+      "publicExports": [
+        "EditorFrame"
+      ],
+      "useWhen": [
+        "A standalone Markdown or text editor needs a fixed toolbar above a bounded native textarea or preview.",
+        "An embedded editor needs the same source/preview anatomy without a second frame."
+      ],
+      "avoidWhen": [
+        "Do not use for an ordinary single form field; use TextField.",
+        "Do not replace the app's draft, recovery, focus, or preview behavior."
+      ],
+      "alternatives": [
+        {
+          "id": "text-field",
+          "relationship": "nearest",
+          "when": "Use TextField for a conventional form value without editor toolbar and preview."
+        }
+      ],
+      "appOwns": [
+        "draft value",
+        "editing actions",
+        "preview rendering",
+        "recovery and focus management"
+      ],
+      "variants": [
+        "source and preview modes",
+        "framed and embedded appearances",
+        "padded and flush insets",
+        "expanded overlay",
+        "embedded autosize or restored source height"
+      ],
+      "accessibility": [
+        "Give the editor frame a label when it is a distinct region; the app labels its native textarea and supplies toolbar controls."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/editor-frame",
+        "manualCssImport": "@kerfjs/ui/editor-frame.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-editor-frame",
+        "kui-editor-frame__toolbar",
+        "kui-editor-frame__surface"
+      ],
+      "publicTokens": [
+        "--kui-color-neutral-border-normal",
+        "--kui-color-neutral-on-normal",
+        "--kui-color-surface",
+        "--kui-radius-l",
+        "--kui-shadow-l"
+      ],
+      "links": {
+        "catalogRoute": "?component=editor-frame",
+        "documentation": "docs/editor-frame.md",
+        "recipe": "docs/editor-frame.md"
+      }
+    },
+    {
       "id": "value-preview",
       "name": "ValuePreview",
       "category": "Structure",

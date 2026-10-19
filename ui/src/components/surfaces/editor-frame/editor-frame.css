@@ -1,0 +1,121 @@
+.kui-editor-frame {
+  display: flex;
+  width: min(100%, var(--_kui-editor-frame-max-width, remify(672px)));
+  height: var(--_kui-editor-frame-height, remify(320px));
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: var(--kui-radius-l);
+  color: var(--kui-color-neutral-on-normal);
+  background: var(--kui-color-surface);
+  flex-direction: column;
+}
+
+.kui-editor-frame__toolbar {
+  flex: none;
+}
+
+.kui-editor-frame__surface {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  padding: remify(16px);
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.kui-editor-frame[data-mode="source"] > .kui-editor-frame__surface {
+  overflow: hidden;
+}
+
+.kui-editor-frame[data-mode="preview"] > .kui-editor-frame__surface {
+  overflow: auto;
+}
+
+.kui-editor-frame[data-mode="source"] > .kui-editor-frame__surface > textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  padding: 0;
+  overflow: auto;
+  border: 0;
+  outline: 0;
+  color: inherit;
+  background: transparent;
+  flex: 1 1 auto;
+  font: inherit;
+  line-height: 1.6;
+  resize: none;
+}
+
+.kui-editor-frame[data-inset="flush"] > .kui-editor-frame__surface {
+  padding: 0;
+}
+
+.kui-editor-frame[data-appearance="embedded"]:not([data-expanded="true"]) {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.kui-editor-frame[data-appearance="embedded"]:not([data-expanded="true"])
+  > .kui-editor-frame__surface {
+  min-height: remify(48px);
+  padding: remify(12px);
+  overflow: visible;
+}
+
+.kui-editor-frame[data-appearance="embedded"]:not(
+    [data-expanded="true"]
+  )[data-inset="flush"]
+  > .kui-editor-frame__surface {
+  padding: 0;
+}
+
+.kui-editor-frame[data-appearance="embedded"]:not(
+    [data-expanded="true"]
+  )[data-mode="source"]
+  > .kui-editor-frame__surface
+  > textarea {
+  height: var(--_kui-editor-frame-source-height, auto);
+  min-height: remify(48px);
+  padding: 0;
+  overflow: auto;
+  flex: none;
+  resize: vertical;
+}
+
+.kui-editor-frame[data-appearance="embedded"]:not(
+    [data-expanded="true"]
+  )[data-mode="source"][data-source-autosize="true"]
+  > .kui-editor-frame__surface
+  > textarea {
+  field-sizing: content;
+  resize: none;
+}
+
+@supports not (field-sizing: content) {
+  .kui-editor-frame[data-appearance="embedded"]:not(
+      [data-expanded="true"]
+    )[data-mode="source"][data-source-autosize="true"]
+    > .kui-editor-frame__surface
+    > textarea {
+    resize: vertical;
+  }
+}
+
+.kui-editor-frame[data-expanded="true"] {
+  position: fixed;
+  z-index: 40;
+  inset: remify(32px);
+  width: auto;
+  height: auto;
+  box-shadow: var(--kui-shadow-l);
+}

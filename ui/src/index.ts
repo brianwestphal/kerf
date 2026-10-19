@@ -425,6 +425,13 @@ export {
   type ContentItemShape,
 } from './components/surfaces/content-item/content-item.js';
 export {
+  EditorFrame,
+  type EditorFrameAppearance,
+  type EditorFrameInset,
+  type EditorFrameMode,
+  type EditorFrameProps,
+} from './components/surfaces/editor-frame/editor-frame.js';
+export {
   ensureSunkenTexture,
   SunkenPanel,
   type SunkenPanelProps,

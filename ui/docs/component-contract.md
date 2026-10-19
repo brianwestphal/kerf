@@ -765,6 +765,10 @@ so place any required heading landmark on another element in the view.
 `output` with an accessible label. It preserves line breaks and wraps long
 tokens without painting a second surface; compose it inside `SunkenPanel` for
 a lowered frame. See [ValuePreview](value-preview.md).
+`EditorFrame` owns a fixed Toolbar row over a native textarea in source mode
+or a scrolling rendered preview. Its framed, embedded, flush, autosize, and
+expanded variants keep editing and draft policy in the application. See
+[EditorFrame](editor-frame.md).
 
 `ValueTable` composes typed `ValueTableRow` entries. A row owns its `dt`/`dd`
 semantics and may receive a leading `SafeHtml` icon. Every row keeps 8px of

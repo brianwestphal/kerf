@@ -108,6 +108,7 @@ const entries = [
   'empty-state',
   'value-table',
   'value-preview',
+  'editor-frame',
 ];
 
 export default defineConfig({
