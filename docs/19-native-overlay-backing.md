@@ -564,11 +564,11 @@ focus, and stack have already moved on.
   popover (close and outside click) and a tooltip re-hovered mid-exit in all
   three engines.
 
-## 19.11 CSS Anchor Positioning candidate (design pending)
+## 19.11 CSS Anchor Positioning candidate (design only)
 
-> **Status: investigation complete; no API or behavior change.** KF-PB0627
-> revisited the browser-support premise in October 2026. A CSS-backed mode is
-> tracked for design in KF-NM7Y6M.
+> **Status: design for KF-NM7Y6M; no API or behavior change.** The JavaScript
+> positioning path remains the shipped contract. A CSS-backed mode needs the
+> parity gates below before implementation.
 
 CSS Anchor Positioning is now available in all three major engines: Chromium
 shipped it in [Chrome 125](https://developer.chrome.com/blog/anchor-positioning-api),
@@ -584,6 +584,102 @@ Support for the syntax alone does not establish parity with the current
 `placement`, `align`, `gap`, and `viewportMargin`, chooses the roomier side and
 publishes `--kerf-anchor-available-height` for `fitHeight`, compensates for a
 transformed fixed-position containing block, and watches both element sizes in
-addition to scroll and resize. A CSS mode must be designed and tested against
-those behaviors, including native top-layer hosts and older-browser fallback,
-before it can replace any listener or placement calculation.
+addition to scroll and resize.
+
+### Scope and option mapping
+
+Keep `positionAnchored(el, anchor, options)` **one-shot and JavaScript-backed**.
+CSS positioning would continue to react after that function returned, changing
+its public semantics. A future private CSS strategy may back
+`autoReposition()`, hence `popover()` and `tooltip()`, without adding a public
+option or changing their handle, dismissal, focus, stack, or exit behavior. The
+existing JavaScript strategy remains the default until the tests below pass.
+
+| Contract                                                              | CSS candidate                                                                                                                                                                                                                                                                                                                                      | Initial decision                                                                                                                        |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `placement: bottom/top`, `gap`                                        | A named anchor on the trigger, physical edge inset via `anchor()`, and a vertical `position-try-fallbacks: flip-block` with the same gap. Reset the UA popover's `inset` and `margin`.                                                                                                                                                             | Candidate for CSS after geometry tests. `position-area` may be useful, but its safe-overflow shift must match Kerf's top/bottom choice. |
+| `align: start/end`                                                    | Anchor the popup's left or right edge to the corresponding physical trigger edge.                                                                                                                                                                                                                                                                  | Candidate after left/right edge and content-width tests. These names are physical, not writing-mode-relative.                           |
+| `viewportMargin`                                                      | CSS position areas can shift an overflowing box toward the containing-block edge, but do not by themselves prove Kerf's exact pixel gutter.                                                                                                                                                                                                        | Use JavaScript for any nonzero value until both horizontal clamp and vertical side-fit thresholds match.                                |
+| `fitHeight`                                                           | `position-try-order: most-height` and scrollable fallback options can choose the roomier side in the [CSS Working Draft example](https://drafts.csswg.org/css-anchor-position/#position-try-order). They do not publish Kerf's exact `--kerf-anchor-available-height` value or prove its app `max-height`, transition, and upward-growth behavior. | Use JavaScript for `fitHeight: true` until that whole contract, including the custom property, is reproduced.                           |
+| Scroll, viewport resize, anchor and popup growth/shrink               | Anchor layout follows geometry in CSS.                                                                                                                                                                                                                                                                                                             | Candidate only after real-browser transition tests, including an above/end aligned popup.                                               |
+| Transformed fixed containing block; modal host slot; native top layer | A named anchor must remain a [valid anchor](https://drafts.csswg.org/css-anchor-position/#anchor-valid) across containing blocks, flat-tree order, and top-layer boundaries.                                                                                                                                                                       | Use JavaScript in these contexts until separate host tests prove exact placement and interactivity.                                     |
+
+The CSS rules are **instance-scoped**: generate one unique dashed identifier,
+append it to the trigger's existing `anchor-name` list without losing an app
+name, and set that identifier on the popup's `position-anchor`. Save and restore
+both elements' prior inline declarations and priorities on disposal. Never use
+one package-wide anchor name: multiple open popovers would resolve to the wrong
+trigger. Do not rely on a native popover's implicit invoker anchor: Kerf opens
+overlays programmatically, so the invoker relationship is not guaranteed.
+[MDN's Popover guide](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API/Using#popover_anchor_positioning)
+describes that implicit relationship and the need to reset UA `inset` and
+`margin` when anchoring a popover.
+
+CSS should own one overlay's positioning at a time. Before activating it,
+remove the old JavaScript `top`/`right`/`bottom`/`left`, available-height, and
+containing-block compensation values so stale inline styles cannot override
+the anchor rules. If a guard fails or CSS layout is invalid, restore the exact
+prior inline state and start the existing `autoReposition()` listener/observer
+path before the surface is shown. The returned disposer must remove CSS rules
+and the generated name, or the JavaScript listeners and observer, exactly once;
+`popover()`/`tooltip()` still dispose it when the handle settles, including
+construction failure, exit, anchor removal, and re-hover during exit. A
+CSS-backed surface needs no Kerf scroll/resize listener or size observer.
+
+### Capability and fallback gate
+
+Check **all syntax used by the chosen CSS recipe**, not only
+`CSS.supports('anchor-name: --x')`: `position-anchor`, the particular `anchor()`
+inset expression, `position-try-fallbacks: flip-block`, and any `position-area`,
+`position-try-order`, or `@position-try` features the final recipe actually uses.
+The spelling is `position-try-fallbacks`; Chrome 125's old
+`position-try-options` spelling was [renamed in Chrome 129](https://developer.chrome.com/blog/anchor-syntax-changes).
+Then perform a small, isolated **layout probe** in the same document: verify
+that a named anchor places a fixed popup on the requested edge and flips at a
+viewport boundary. `CSS.supports()` alone accepts syntax without proving
+layout, and `@position-try` cannot be checked as a declaration. Cache a passing
+probe per document/strategy; never cache a failing result across a newly loaded
+document. If any capability, probe, host condition, or requested option is not
+covered, take the current JavaScript path atomically. Older engines therefore
+keep their current behavior. No style-only `@supports` fallback should leave an
+unpositioned or briefly double-positioned overlay.
+
+### Implementation test plan
+
+Add isolated unit tests for strategy selection, unique anchor names, preservation
+of author `anchor-name` and inline styles (including `!important`), partial
+setup rollback, idempotent disposal, and absence/presence of JavaScript
+listeners and `ResizeObserver` in CSS/JS modes. Stub individual capabilities
+and the layout probe independently; verify that each missing feature falls
+back. Keep the existing `positionAnchored()` one-shot tests unchanged.
+
+Run the same real-browser geometry cases in Chromium, Firefox, and WebKit for
+the CSS candidate and the JavaScript baseline, at wide and phone viewports:
+
+1. Bottom/top preference; flip only when the preferred side overflows and the
+   other fits; when neither fits, retain the preferred side for `fitHeight:
+false`. Check exact `gap` and physical start/end alignment.
+2. Horizontal left/right clamp and the top/bottom fit boundary at `0` and a
+   nonzero `viewportMargin`; test a popup wider than its remaining space. A
+   nonzero-margin case must prove parity before that guard can be lifted.
+3. Scroll the window and a nested scroller in both directions, resize the
+   viewport, grow and shrink the anchor and popup, then repeat after a flip.
+   Check above/end placement and no gap drift or popup overlap while growing.
+4. Exercise `fitHeight` with neither side fitting, an app `max-height`, a
+   scrolled popup, and an in-progress height transition. Assert the chosen side,
+   upward growth, retained `scrollTop`, and the exact published height in CSS
+   pixels before considering this option for CSS.
+5. Repeat inside translated and scaled containing blocks, a native `<dialog>`
+   host slot, a slotted Web Awesome dialog, and an actual top-layer popover.
+   Check geometry, focus and pointer interaction, stack order, Escape, and
+   cleanup after each host closes. A CSS validity failure must use JavaScript.
+6. Force each feature/probe failure and an older engine with no Anchor
+   Positioning. Verify immediate JavaScript placement, scroll/resize listeners
+   and observer lifecycle, no orphaned names/rules after close or failed open,
+   and no visible first-frame jump between strategies.
+
+Measure rectangle edges with a small pixel tolerance and inspect wide/narrow
+screenshots; do not use computed-style support as a substitute for geometry.
+The CSS candidate may ship only for the exact option and host subset that
+passes this matrix. Expand that subset through further tests rather than
+silently changing `AnchorPositionOptions` semantics.
