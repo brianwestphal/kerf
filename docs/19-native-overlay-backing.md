@@ -567,8 +567,9 @@ focus, and stack have already moved on.
 ## 19.11 CSS Anchor Positioning candidate (design only)
 
 > **Status: design for KF-NM7Y6M; no API or behavior change.** The JavaScript
-> positioning path remains the shipped contract. A CSS-backed mode needs the
-> parity gates below before implementation.
+> positioning path remains the shipped contract. The KF-16YSSH three-engine
+> prototype found geometry differences in the candidate CSS recipes below, so
+> no CSS-backed mode is enabled. The parity gates remain required.
 
 CSS Anchor Positioning is now available in all three major engines: Chromium
 shipped it in [Chrome 125](https://developer.chrome.com/blog/anchor-positioning-api),
@@ -683,3 +684,30 @@ screenshots; do not use computed-style support as a substitute for geometry.
 The CSS candidate may ship only for the exact option and host subset that
 passes this matrix. Expand that subset through further tests rather than
 silently changing `AnchorPositionOptions` semantics.
+
+### KF-16YSSH parity result (October 2026)
+
+`tests/browser/anchor-positioning-parity.spec.ts` runs the CSS candidates next
+to the shipped `positionAnchored()` geometry in Chromium, Firefox, and WebKit,
+with basic edge/flip cases at phone and wide viewport widths.
+All three accept the tested `anchor-name`, `position-anchor`, `position-area`,
+`anchor()` inset, and `position-try-fallbacks: flip-block` declarations. Basic
+bottom/top flipping and physical start/end alignment match for small popups.
+That is not enough to select CSS for `autoReposition()`:
+
+- `position-area: bottom span-right` / `top span-left` gives the desired
+  horizontal clamp, but its safe-overflow alignment shifts a 500px-high popup
+  upward over its anchor when neither vertical side fits. JavaScript retains
+  the preferred side for `fitHeight: false`.
+- A wide, end-aligned popup near the viewport bottom is shifted into its
+  anchor instead of flipping above it. The resulting top coordinate differs
+  between Firefox and Chromium/WebKit as well as from JavaScript.
+- Explicit `anchor()` edge insets with `flip-block` retain the preferred side
+  when neither fits and flip correctly for a small popup, but a wide popup can
+  extend past the viewport left edge and, at that edge, fail to flip above the
+  anchor. JavaScript clamps it to zero and flips.
+
+These are layout differences after syntax support succeeds, including in an
+ordinary body host at a phone viewport. The current JS strategy remains active
+for every option and host. A later CSS recipe needs to pass the full geometry,
+host, lifecycle, and first-frame matrix above before changing that choice.
