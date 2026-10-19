@@ -110,9 +110,15 @@ async function readTypeScriptImplementation(sourcePath) {
 
 async function readCssImplementation(sourcePath) {
   const facade = await readFile(sourcePath, 'utf8');
-  const imported = facade.match(
-    /^\/\* Public stylesheet entry; implementation is colocated with the component\. \*\/\s+@import ["']([^"']+)["'];\s*$/,
-  );
+  if (
+    !facade.startsWith(
+      '/* Public stylesheet entry; implementation is colocated with the component. */',
+    )
+  )
+    return { sourcePath, source: facade };
+  const imports = [...facade.matchAll(/@import ["'](\.\/[^"']+\.css)["'];/g)];
+  const component = sourcePath.split('/').pop();
+  const imported = imports.find((match) => match[1]?.endsWith(`/${component}`));
   if (!imported) return { sourcePath, source: facade };
   const implementationPath = resolve(dirname(sourcePath), imported[1]);
   return {

@@ -1196,10 +1196,10 @@ export { ListInsetText, type ListInsetTextProps, Sides };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { CssColor } from './css-values.js';
 import { S as SemanticTone } from './semantic-tone-CdW013KF.js';
 import { S as SurfaceTint } from './surface-tint-DQgYCaP9.js';
-import { BackdropImagePosition, BackdropImageParallax } from './backdrop-image.js';
-import './css-values.js';
+import { BackdropImagePosition, BackdropImageParallax, BackdropImageBlur, BackdropImageScrim } from './backdrop-image.js';
 import './extension-attributes-mu8MFUl0.js';
 
 /**
@@ -1232,6 +1232,16 @@ interface ContentItemMedia {
     parallax?: BackdropImageParallax;
     /** App-supplied soft copy; its opacity changes, never its blur filter. */
     blurredSrc?: string;
+    /** Shared BackdropImage blur behavior; use instead of `blurredSrc`. */
+    blur?: BackdropImageBlur;
+    /** Color the image dissolves into and the card body continues on. */
+    fadeTo?: CssColor;
+    /** Content layered over the image, including native controls. */
+    overlay?: KerfUiContent;
+    /** Dim the image behind overlay content. */
+    scrim?: BackdropImageScrim;
+    /** Extend the image to the card's top, left, and right inner edges. */
+    edgeToEdge?: boolean;
 }
 type ContentItemRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -1240,6 +1250,8 @@ type ContentItemRootAttributes = Readonly<Record<`data-${string}`, string | unde
     'data-bubble'?: never;
     'data-grid-row'?: never;
     'data-media-state'?: never;
+    'data-media-edge'?: never;
+    'data-media-fade'?: never;
     'data-kui-tint'?: never;
     'data-kui-tint-accent'?: never;
 }>;
@@ -1250,6 +1262,8 @@ type ContentItemInteractiveRootAttributes = Readonly<Record<`data-${string}`, st
     'data-bubble'?: never;
     'data-grid-row'?: never;
     'data-media-state'?: never;
+    'data-media-edge'?: never;
+    'data-media-fade'?: never;
     'data-kui-tint'?: never;
     'data-kui-tint-accent'?: never;
     'data-action'?: never;
@@ -4562,6 +4576,8 @@ type BackdropImageRootAttributes = StructuralRootAttributes & Readonly<{
     'data-fade'?: never;
     'data-repeat'?: never;
     'data-under-chrome'?: never;
+    'data-aspect-ratio'?: never;
+    'data-inline-bleed'?: never;
 }>;
 interface BackdropImageCommonProps {
     /** Image URL. */
@@ -4575,6 +4591,12 @@ interface BackdropImageCommonProps {
     position?: BackdropImagePosition;
     /** Height of the image block. Default 320px (`remify(320)`). */
     height?: CssLength;
+    /** Reserve image height from its width, useful for an inline card. Cannot be combined with `height`. */
+    aspectRatio?: number;
+    /** Native image loading behavior. Omit for the browser default. */
+    loading?: 'eager' | 'lazy';
+    /** Bleed to a Pane's inline content edges. Set false when embedded in a card. Defaults to true. */
+    bleedInline?: boolean;
     /** How far the image lags the scroll. Default `none`. */
     parallax?: BackdropImageParallax;
     /**

@@ -51,7 +51,7 @@ export function ContentItemDemo() {
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'content-item' }}>
       <CatalogExample
         label="Image-Tinted Feed Cards"
-        note="Each ContentItem reserves its lead image, derives readable colors from an app-supplied tint, and scrolls its own image against the shared Pane scroller. The source link and card action remain independent."
+        note="Each ContentItem composes BackdropImage for its lead media, with an independent scroll timeline in the shared Pane. The last card adds an edge-to-edge image, fade, scrim, and overlay."
         align="none"
         viewport={{
           layout: 'grid',
@@ -75,6 +75,14 @@ export function ContentItemDemo() {
                   blurredSrc: svgUrl(SKYLINE_BLURRED),
                   aspectRatio: 16 / 9,
                   parallax: 'subtle',
+                  ...(index === 2
+                    ? {
+                        fadeTo: fillColor('#283a54'),
+                        overlay: <Button action="log-more">Explore</Button>,
+                        scrim: 'bottom' as const,
+                        edgeToEdge: true,
+                      }
+                    : {}),
                 }}
                 tint={{
                   color: fillColor(index === 1 ? '#dad9c8' : '#283a54'),

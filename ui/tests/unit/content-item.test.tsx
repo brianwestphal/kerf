@@ -130,10 +130,10 @@ describe('ContentItem', () => {
     );
     expect(html).toContain('data-media-state="pending"');
     expect(html).toContain('data-kui-tint="dark"');
-    expect(html).toContain('--_kui-content-item-media-ratio:2');
-    expect(html).toContain('--_kui-content-item-media-parallax:0.5');
+    expect(html).toContain('--_kui-backdrop-image-ratio:2');
+    expect(html).toContain('--_kui-backdrop-image-parallax:0.5');
     expect(html).toContain('src="/art.jpg"');
-    expect(html).toContain('alt="Harbor" loading="lazy" decoding="async"');
+    expect(html).toContain('alt="Harbor" decoding="async" loading="lazy"');
     expect(html).toContain('src="/art-soft.jpg" alt="" aria-hidden="true"');
     expect(html).toContain('<a href="/source">Source</a>');
     expect(
@@ -150,6 +150,41 @@ describe('ContentItem', () => {
     expect(() =>
       ContentItem({
         media: { src: 'x', alt: '', position: 'left;bad' as never },
+      }),
+    ).toThrow(TypeError);
+  });
+
+  it('composes BackdropImage overlay, fade, blur, and edge bleed', () => {
+    const html = String(
+      ContentItem({
+        media: {
+          src: '/art.jpg',
+          alt: '',
+          blur: { dim: 0.2 },
+          fadeTo: fillColor('#283a54'),
+          overlay: <button>Explore</button>,
+          scrim: 'bottom',
+          edgeToEdge: true,
+        },
+        children: 'Story',
+      }),
+    );
+    expect(html).toContain('data-media-edge="true"');
+    expect(html).toContain('data-media-fade="true"');
+    expect(html).toContain('--_kui-content-item-media-fade-to:#283a54');
+    expect(html).toContain('class="kui-content-item__media"');
+    expect(html).toContain('data-inline-bleed="false"');
+    expect(html).toContain('data-scrim="bottom"');
+    expect(html).toContain('data-blur="filter"');
+    expect(html).toContain('<button>Explore</button>');
+    expect(() =>
+      ContentItem({
+        media: {
+          src: '/art.jpg',
+          alt: '',
+          blur: {},
+          blurredSrc: '/soft.jpg',
+        },
       }),
     ).toThrow(TypeError);
   });

@@ -83,10 +83,10 @@ async function ownStyles(moduleName, sourceRoot) {
     const publicUrl = new URL(`${publicName}.css`, sourceRoot);
     if (await exists(publicUrl)) {
       const publicCss = await readFile(publicUrl, 'utf8');
-      const target = publicCss.match(
-        /@import\s+["']\.\/([^"']+)\.css["']/,
-      )?.[1];
-      if (target === moduleName) return [publicName];
+      const targets = [
+        ...publicCss.matchAll(/@import\s+["']\.\/([^"']+)\.css["']/g),
+      ].map((match) => match[1]);
+      if (targets.includes(moduleName)) return [publicName];
     }
   }
   const url = new URL(`${moduleName}.css`, sourceRoot);

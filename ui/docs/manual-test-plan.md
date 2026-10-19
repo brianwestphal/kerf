@@ -34,6 +34,9 @@ colors. Wide and narrow light/dark captures were inspected for text, controls,
 image clipping, and card spacing. A 50/200-card Chromium trace checks node and
 listener growth; it uses repeated sample artwork, so a production feed with
 unique high-resolution assets still needs its own image-cache profiling.
+The composed BackdropImage card has browser checks for its edge geometry,
+fade, scrim, and focusable overlay at wide and narrow sizes; inspect the same
+states in both captured WebKit views.
 
 The remaining device-only checks above require a real mobile keyboard.
 The List View Transitions catalog example has unit coverage for its row edits,

@@ -27,6 +27,11 @@
   isolation: isolate;
 }
 
+.kui-backdrop-image[data-inline-bleed="false"] {
+  --_kui-backdrop-image-inset-start: 0px;
+  --_kui-backdrop-image-inset-end: 0px;
+}
+
 /* `underChrome`: the block runs up beneath the scroller's block-start inset
    (overlay or clear chrome clearance plus the top safe area, as the Pane
    publishes it) and the hero grows by the same amount, so the visible image
@@ -60,6 +65,11 @@
   view-timeline: --kui-backdrop-image block;
 }
 
+.kui-backdrop-image[data-aspect-ratio="true"] .kui-backdrop-image__hero {
+  min-height: 0;
+  aspect-ratio: var(--_kui-backdrop-image-ratio);
+}
+
 .kui-backdrop-image__backdrop {
   position: absolute;
   inset: 0;
@@ -87,6 +97,10 @@
   object-fit: var(--_kui-backdrop-image-fit);
   object-position: var(--_kui-backdrop-image-position);
   background-position: var(--_kui-backdrop-image-position);
+}
+
+.kui-backdrop-image__blurred[data-image-error="true"] {
+  display: none;
 }
 
 /* Progressive blur: a copy over the sharp image, blurred once and hidden
@@ -208,7 +222,10 @@
   animation: none;
 }
 
-@media (update: slow) {
+@media (update: slow),
+  (prefers-reduced-transparency: reduce),
+  (prefers-contrast: more),
+  (forced-colors: active) {
   .kui-backdrop-image[data-parallax="scroll"] .kui-backdrop-image__layers,
   .kui-backdrop-image[data-blur]
     :is(.kui-backdrop-image__blurred, .kui-backdrop-image__dim) {

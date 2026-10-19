@@ -404,12 +404,14 @@ recipes, and apps no longer hand-write `.kui-content-item` modifier classes.
 `success`, `warning`, and `danger` coordinate quiet semantic fills, borders,
 and foregrounds with `StateBanner`. `transparent` is the default. A lowered
 inset surface around a stack remains `SunkenPanel`.
-Image-led feed cards are shipped through `ContentItem.media` and an optional
-per-card `SurfaceTint`: each reserved, lazy image has its own view timeline in
+Image-led feed cards are shipped through `ContentItem.media` composed with
+`BackdropImage` and an optional per-card `SurfaceTint`: each reserved, lazy
+image has its own view timeline in
 the feed's shared scrollport, and `wireContentItems` handles failed and
 replaced sources without leaving a broken image or tint. The catalog and
 browser tests cover per-row motion, light/dark AA tokens, missing-image and
-accessibility fallbacks; `BackdropImage` remains the first-child page hero.
+accessibility fallbacks. Media also supports BackdropImage's overlay, scrim,
+progressive blur, and typed fade, plus optional top/inline edge bleed.
 The List UX demo now exposes the shipped opt-in document View Transitions
 recipe with interactive reorder, insert, remove, and reset controls; it uses
 `each()` and keeps names, motion, scroll-position preservation, the visible

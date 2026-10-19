@@ -43,6 +43,10 @@ import { remify, uiColor } from '@kerfjs/ui/css-values';
   `role="img"`; `srcset`, `sizes`, and `fit` do not apply.
 - `height` is a typed `CssLength` (default 320px). The block grows when the
   overlay content is taller.
+- `aspectRatio` reserves the block from its width for inline media; it cannot
+  be combined with `height`. `ContentItem.media` uses this form at 16:9 by
+  default and sets `loading="lazy"`. A direct `BackdropImage` can set native
+  `loading` to `lazy` or `eager`.
 - `parallax`: `none` (default) scrolls the image with the content, `subtle`
   lags by 35%, and a number from 0 to 1 is the lag factor.
 - `fadeTo` is a typed `CssColor` (`uiColor()`, `colorVar()`, `fillColor()`).

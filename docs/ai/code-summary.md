@@ -1079,7 +1079,8 @@ chip stays Badge-height. Design templates: `ui/docs/design/templates/chip/`.
 Tests: `ui/tests/unit/chip-link.test.tsx`, `ui/tests/unit/chip-action.test.tsx`,
 `ui/tests/unit/chip-icon-truncate.test.tsx`, `ui/tests/browser/chip.spec.ts`.
 `ui/src/components/surfaces/backdrop-image/backdrop-image.tsx` (`@kerfjs/ui/backdrop-image`)
-renders a scrolling view's hero or tiled image: a hero block (a named
+renders a scrolling view's hero, an inline ContentItem media block, or tiled
+image: a hero block (a named
 `view-timeline`) holding a clipped, masked backdrop whose `__layers` animate
 only `transform` over the block's `exit-crossing` range for parallax, a
 `blur` copy (`__blurred`, filtered once or an app `blurredSrc`) and `__dim`
@@ -1090,8 +1091,9 @@ support, reduced motion, `:root[data-kui-effects="static"]`, `update: slow`;
 reduced transparency/increased contrast drop the mask. Tests:
 `ui/tests/unit/backdrop-image.test.tsx`, `ui/tests/browser/backdrop-image.spec.ts`.
 `ui/src/components/surfaces/content-item/content-item.tsx` owns optional feed
-`media` (lazy lead image, pre-blurred decorative copy, reserved ratio, and a
-per-image view timeline) and a card-scoped app `SurfaceTint`. Its existing
+`media` by composing `BackdropImage` (lazy lead image, blur, fade, overlay,
+scrim, reserved ratio, and a per-image view timeline), optional top/inline
+edge bleed, and a card-scoped app `SurfaceTint`. Its existing
 geometry and selection roles remain on the root. The shared
 `wireContentItems` root installer delegates image load/error through
 `wiring/wire-content-item-media.ts`, removes the tint and media on lead-image

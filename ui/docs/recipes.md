@@ -225,7 +225,8 @@ app-sampled `tint` inside one scrolling Pane. Each image reserves its size and
 animates on its own view timeline as it crosses that Pane's top edge. Use
 `wireContentItems` on the stable app root for image load/error as well as card
 keyboard behavior. Put source links and actions inside static cards. Use
-`BackdropImage` for a first-child page hero, not for each feed row. See
+`ContentItem.media` composes `BackdropImage` for each feed row; use the public
+`BackdropImage` directly for a page hero. See
 [Content items](layout.md#content-items) and [BackdropImage](backdrop-image.md).
 
 - Import `@kerfjs/ui/layout.css`; keep every pane unpadded and use exactly one

@@ -133,6 +133,31 @@ describe('BackdropImage', () => {
     ).toContain('--_kui-backdrop-image-fade-to:var(--app-hero, #123456)');
   });
 
+  it('reserves an inline image ratio and forwards native lazy loading', () => {
+    const html = String(
+      BackdropImage({
+        src: '/art.jpg',
+        alt: '',
+        aspectRatio: 2,
+        loading: 'lazy',
+      }),
+    );
+    expect(html).toContain('data-aspect-ratio="true"');
+    expect(html).toContain('--_kui-backdrop-image-ratio:2');
+    expect(html).toContain('loading="lazy"');
+    expect(() =>
+      BackdropImage({ src: '/art.jpg', alt: '', aspectRatio: 0 }),
+    ).toThrow(RangeError);
+    expect(() =>
+      BackdropImage({
+        src: '/art.jpg',
+        alt: '',
+        aspectRatio: 2,
+        height: remify(10),
+      }),
+    ).toThrow(TypeError);
+  });
+
   it('tiles the image as an escaped background and exposes alt text as an image', () => {
     const html = String(
       BackdropImage({
@@ -286,7 +311,7 @@ describe('BackdropImage stylesheet', () => {
     };
     for (const rule of [
       block(/:root\[data-kui-effects="static"\]/),
-      block(/@media \(update: slow\) \{/),
+      block(/@media \(update: slow\),/),
     ]) {
       expect(rule).toContain('.kui-backdrop-image[data-parallax="scroll"]');
       expect(rule).toContain('.kui-backdrop-image__layers');

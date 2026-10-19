@@ -1,6 +1,6 @@
 const CARD = '[data-component="content-item"][data-media-state]';
-const LEAD = '.kui-content-item__media-image';
-const BLURRED = '.kui-content-item__media-blurred';
+const LEAD = '.kui-content-item__media .kui-backdrop-image__media';
+const BLURRED = '.kui-content-item__media .kui-backdrop-image__blurred';
 
 /** Image state uses one load/error listener pair and one observer per feed root. */
 export function wireContentItemMedia(root: HTMLElement): () => void {

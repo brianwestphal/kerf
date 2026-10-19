@@ -1,13 +1,17 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
+import type { CssColor } from '../../../shared/styles/css-values.js';
 import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
 import {
   type SurfaceTint,
   surfaceTintAttributes,
 } from '../../../shared/styles/surface-tint.js';
-import type {
-  BackdropImageParallax,
-  BackdropImagePosition,
+import {
+  BackdropImage,
+  type BackdropImageBlur,
+  type BackdropImageParallax,
+  type BackdropImagePosition,
+  type BackdropImageScrim,
 } from '../backdrop-image/backdrop-image.js';
 
 export type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
@@ -48,6 +52,16 @@ export interface ContentItemMedia {
   parallax?: BackdropImageParallax;
   /** App-supplied soft copy; its opacity changes, never its blur filter. */
   blurredSrc?: string;
+  /** Shared BackdropImage blur behavior; use instead of `blurredSrc`. */
+  blur?: BackdropImageBlur;
+  /** Color the image dissolves into and the card body continues on. */
+  fadeTo?: CssColor;
+  /** Content layered over the image, including native controls. */
+  overlay?: KerfUiContent;
+  /** Dim the image behind overlay content. */
+  scrim?: BackdropImageScrim;
+  /** Extend the image to the card's top, left, and right inner edges. */
+  edgeToEdge?: boolean;
 }
 
 function mediaParallax(value: BackdropImageParallax): number {
@@ -91,6 +105,8 @@ const contentItemProtectedAttributes = new Set([
   'data-bubble',
   'data-grid-row',
   'data-media-state',
+  'data-media-edge',
+  'data-media-fade',
   'data-kui-tint',
   'data-kui-tint-accent',
 ]);
@@ -101,6 +117,8 @@ const interactiveProtectedAttributes = new Set([
   'data-bubble',
   'data-grid-row',
   'data-media-state',
+  'data-media-edge',
+  'data-media-fade',
   'data-kui-tint',
   'data-kui-tint-accent',
   'data-action',
@@ -120,6 +138,8 @@ type ContentItemRootAttributes = Readonly<
     'data-bubble'?: never;
     'data-grid-row'?: never;
     'data-media-state'?: never;
+    'data-media-edge'?: never;
+    'data-media-fade'?: never;
     'data-kui-tint'?: never;
     'data-kui-tint-accent'?: never;
   }
@@ -133,6 +153,8 @@ type ContentItemInteractiveRootAttributes = Readonly<
     'data-bubble'?: never;
     'data-grid-row'?: never;
     'data-media-state'?: never;
+    'data-media-edge'?: never;
+    'data-media-fade'?: never;
     'data-kui-tint'?: never;
     'data-kui-tint-accent'?: never;
     'data-action'?: never;
@@ -284,11 +306,16 @@ export function ContentItem({
     throw new TypeError(
       'ContentItem media.position must be a supported position.',
     );
-  const factor = mediaParallax(media?.parallax ?? 'subtle');
+  if (media?.blur !== undefined && media.blurredSrc !== undefined)
+    throw new TypeError(
+      'ContentItem media.blur and blurredSrc cannot be combined.',
+    );
+  if (media) mediaParallax(media.parallax ?? 'subtle');
   const tinted = surfaceTintAttributes(media ? tint : undefined);
-  const mediaStyle = media
-    ? `--_kui-content-item-media-ratio:${String(media.aspectRatio ?? 16 / 9)};--_kui-content-item-media-parallax:${String(factor)};--_kui-content-item-media-position:${media.position ?? 'center'}`
-    : undefined;
+  const fadeStyle =
+    media?.fadeTo === undefined
+      ? undefined
+      : `--_kui-content-item-media-fade-to:${media.fadeTo}`;
   const cls = [
     'kui-content-item',
     shape === 'pill' ? 'kui-content-item--pill' : '',
@@ -320,7 +347,7 @@ export function ContentItem({
       {...safeRootAttributes}
       {...interactiveAttributes}
       class={cls}
-      style={[tinted.style, mediaStyle].filter(Boolean).join(';') || undefined}
+      style={[tinted.style, fadeStyle].filter(Boolean).join(';') || undefined}
       title={title}
       data-component="content-item"
       data-appearance={appearance}
@@ -328,6 +355,8 @@ export function ContentItem({
       data-bubble={bubble}
       data-grid-row={!interactive && gridRow ? 'true' : undefined}
       data-media-state={media ? 'pending' : undefined}
+      data-media-edge={media?.edgeToEdge ? 'true' : undefined}
+      data-media-fade={media?.fadeTo === undefined ? undefined : 'true'}
       data-kui-tint={tinted['data-kui-tint']}
       data-kui-tint-accent={tinted['data-kui-tint-accent']}
       role={role}
@@ -357,27 +386,24 @@ export function ContentItem({
           data-tint-scheme={tinted['data-kui-tint']}
           data-tint-accent={tinted['data-kui-tint-accent']}
         >
-          <div class="kui-content-item__media-layers">
-            <img
-              class="kui-content-item__media-image"
-              src={media.src}
-              srcSet={media.srcset}
-              sizes={media.sizes}
-              alt={media.alt}
-              loading="lazy"
-              decoding="async"
-            />
-            {media.blurredSrc ? (
-              <img
-                class="kui-content-item__media-blurred"
-                src={media.blurredSrc}
-                alt=""
-                aria-hidden="true"
-                loading="lazy"
-                decoding="async"
-              />
-            ) : null}
-          </div>
+          <BackdropImage
+            src={media.src}
+            srcset={media.srcset}
+            sizes={media.sizes}
+            alt={media.alt}
+            aspectRatio={media.aspectRatio ?? 16 / 9}
+            position={media.position}
+            parallax={media.parallax ?? 'subtle'}
+            blur={
+              media.blur ??
+              (media.blurredSrc ? { blurredSrc: media.blurredSrc } : undefined)
+            }
+            fadeTo={media.fadeTo}
+            overlay={media.overlay}
+            scrim={media.scrim}
+            loading="lazy"
+            bleedInline={false}
+          />
         </div>
       ) : null}
       {media ? (

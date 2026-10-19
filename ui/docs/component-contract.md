@@ -595,8 +595,10 @@ neutral fill so it remains visible on a lowered surface. For a card with
 multiple actions, put sibling buttons in a static ContentItem (or use
 `ListActionRow` for a simple two-action row).
 An image-led feed card uses `ContentItem.media` and an optional app-supplied
-`SurfaceTint` in `tint`. The image's reserved aspect-ratio block stays inside
-the item geometry and runs a per-image view timeline in the shared scrollport;
+`SurfaceTint` in `tint`. Its media composes `BackdropImage`, reserving an aspect
+ratio and running a per-image view timeline in the shared scrollport. Optional
+`overlay`, `scrim`, `fadeTo`, and `blur` use the same behavior as a page hero;
+`edgeToEdge` extends media to the card's top and inline inner edges;
 `wireContentItems` handles load/error and restores the normal surface when the
 lead image fails. See [Content items](layout.md#content-items).
 For an interactive ContentItem, `wireContentItems` activates the card on Enter

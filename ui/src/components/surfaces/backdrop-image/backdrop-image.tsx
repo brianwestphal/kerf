@@ -71,6 +71,8 @@ const backdropImageProtected = new Set([
   'data-fade',
   'data-repeat',
   'data-under-chrome',
+  'data-aspect-ratio',
+  'data-inline-bleed',
 ]);
 
 type BackdropImageRootAttributes = StructuralRootAttributes &
@@ -82,6 +84,8 @@ type BackdropImageRootAttributes = StructuralRootAttributes &
     'data-fade'?: never;
     'data-repeat'?: never;
     'data-under-chrome'?: never;
+    'data-aspect-ratio'?: never;
+    'data-inline-bleed'?: never;
   }>;
 
 interface BackdropImageCommonProps {
@@ -96,6 +100,12 @@ interface BackdropImageCommonProps {
   position?: BackdropImagePosition;
   /** Height of the image block. Default 320px (`remify(320)`). */
   height?: CssLength;
+  /** Reserve image height from its width, useful for an inline card. Cannot be combined with `height`. */
+  aspectRatio?: number;
+  /** Native image loading behavior. Omit for the browser default. */
+  loading?: 'eager' | 'lazy';
+  /** Bleed to a Pane's inline content edges. Set false when embedded in a card. Defaults to true. */
+  bleedInline?: boolean;
   /** How far the image lags the scroll. Default `none`. */
   parallax?: BackdropImageParallax;
   /**
@@ -208,6 +218,9 @@ export function BackdropImage(props: BackdropImageProps) {
     alt,
     position = 'center',
     height,
+    aspectRatio,
+    loading,
+    bleedInline = true,
     parallax = 'none',
     blur,
     fadeTo,
@@ -221,6 +234,15 @@ export function BackdropImage(props: BackdropImageProps) {
     slot,
   } = props;
   const factor = parallaxFactor(parallax);
+  if (
+    aspectRatio !== undefined &&
+    (!Number.isFinite(aspectRatio) || aspectRatio <= 0)
+  )
+    throw new RangeError('BackdropImage aspectRatio must be positive.');
+  if (aspectRatio !== undefined && height !== undefined)
+    throw new TypeError(
+      'BackdropImage height and aspectRatio cannot be combined.',
+    );
   const dim = blurDim(blur?.dim);
   const blurRadius =
     blur === undefined
@@ -231,6 +253,9 @@ export function BackdropImage(props: BackdropImageProps) {
     height === undefined
       ? ''
       : `--_kui-backdrop-image-height:${styleValue(height, 'height')}`,
+    aspectRatio === undefined
+      ? ''
+      : `--_kui-backdrop-image-ratio:${String(aspectRatio)}`,
     fadeTo === undefined
       ? ''
       : `--_kui-backdrop-image-fade-to:${styleValue(fadeTo, 'fadeTo')}`,
@@ -256,6 +281,7 @@ export function BackdropImage(props: BackdropImageProps) {
         alt={copy ? '' : alt}
         aria-hidden={copy ? 'true' : undefined}
         decoding="async"
+        loading={loading}
       />
     ) : (
       <div
@@ -288,6 +314,8 @@ export function BackdropImage(props: BackdropImageProps) {
       data-scrim={scrim === 'none' ? undefined : scrim}
       data-repeat={props.repeat}
       data-under-chrome={underChrome ? 'true' : undefined}
+      data-aspect-ratio={aspectRatio === undefined ? undefined : 'true'}
+      data-inline-bleed={bleedInline ? undefined : 'false'}
       style={style || undefined}
       slot={slot}
     >

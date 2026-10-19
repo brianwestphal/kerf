@@ -15,7 +15,7 @@ async function feed(page: Page, waitReady = true) {
 }
 
 async function offset(card: Locator) {
-  return card.locator('.kui-content-item__media-layers').evaluate((element) => {
+  return card.locator('.kui-backdrop-image__layers').evaluate((element) => {
     const matrix = window.getComputedStyle(element).transform;
     return matrix === 'none' ? 0 : new DOMMatrixReadOnly(matrix).m42;
   });
@@ -69,12 +69,75 @@ test('feed cards have independent image timelines in one scroller and reverse on
   );
 });
 
+test('edge-to-edge media composes fade, scrim, and a usable overlay control', async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1200, height: 900 });
+  const { cards } = await feed(page);
+  const card = cards.nth(2);
+  const media = card.locator('.kui-content-item__media');
+  await expect(card).toHaveAttribute('data-media-edge', 'true');
+  await expect(card).toHaveAttribute('data-media-fade', 'true');
+  await expect(media.locator('.kui-backdrop-image')).toHaveAttribute(
+    'data-scrim',
+    'bottom',
+  );
+  const geometry = await card.evaluate((element) => {
+    const card = element.getBoundingClientRect();
+    const media = element
+      .querySelector('.kui-content-item__media')!
+      .getBoundingClientRect();
+    return {
+      left: media.left - card.left,
+      right: card.right - media.right,
+      top: media.top - card.top,
+    };
+  });
+  expect(geometry.left).toBeCloseTo(1, 0);
+  expect(geometry.right).toBeCloseTo(1, 0);
+  expect(geometry.top).toBeCloseTo(1, 0);
+  expect(
+    await card.evaluate(
+      (element) => window.getComputedStyle(element).backgroundColor,
+    ),
+  ).toBe('rgb(40, 58, 84)');
+  const overlay = media.getByRole('button', { name: 'Explore' });
+  await overlay.focus();
+  await expect(overlay).toBeFocused();
+  await expect(overlay).toBeVisible();
+  if (testInfo.project.name === 'webkit')
+    await page.screenshot({
+      path: testInfo.outputPath('content-item-media-1200.png'),
+    });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const narrow = await feed(page);
+  const narrowCard = narrow.cards.nth(2);
+  await expect(
+    narrowCard.getByRole('button', { name: 'Explore' }),
+  ).toBeVisible();
+  const narrowWidth = await narrowCard.evaluate((element) => {
+    const card = element.getBoundingClientRect();
+    const media = element
+      .querySelector('.kui-content-item__media')!
+      .getBoundingClientRect();
+    return card.width - media.width;
+  });
+  expect(narrowWidth).toBeCloseTo(2, 0);
+  if (testInfo.project.name === 'webkit') {
+    await narrowCard.scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: testInfo.outputPath('content-item-media-390.png'),
+    });
+  }
+});
+
 test('broken and replaced images switch between ordinary and tinted card surfaces', async ({
   page,
 }) => {
   const { cards } = await feed(page);
   const card = cards.nth(0);
-  const image = card.locator('.kui-content-item__media-image');
+  const image = card.locator('.kui-backdrop-image__media');
   const normal = await cards
     .nth(3)
     .evaluate((element) => window.getComputedStyle(element).backgroundColor);
@@ -111,7 +174,7 @@ test('reduced motion leaves feed images sharp and static', async ({ page }) => {
   expect(
     await cards
       .nth(0)
-      .locator('.kui-content-item__media-blurred')
+      .locator('.kui-backdrop-image__blurred')
       .evaluate((element) => window.getComputedStyle(element).opacity),
   ).toBe('0');
 });

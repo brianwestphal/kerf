@@ -28,10 +28,10 @@ describe('ContentItem image state wiring', () => {
     const item = card();
     root.append(item);
     const lead = item.querySelector<HTMLImageElement>(
-      '.kui-content-item__media-image',
+      '.kui-content-item__media .kui-backdrop-image__media',
     )!;
     const soft = item.querySelector<HTMLImageElement>(
-      '.kui-content-item__media-blurred',
+      '.kui-content-item__media .kui-backdrop-image__blurred',
     )!;
     let complete = false;
     let width = 0;

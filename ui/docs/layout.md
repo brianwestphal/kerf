@@ -449,10 +449,14 @@ preview that must reach the item's top and bottom edges. `title` passes through
 to the root element as a native tooltip.
 
 For an image-led feed card, pass `media={{ src, alt, aspectRatio?, srcset?,
-sizes?, position?, parallax?, blurredSrc? }}` and an optional app-sampled
+sizes?, position?, parallax?, blurredSrc?, blur?, fadeTo?, overlay?, scrim?,
+edgeToEdge? }}` and an optional app-sampled
 `tint={{ color, scheme, accent? }}`. The image reserves a 16:9 block by default,
 loads lazily with async decode, and stays inside the item's existing border and
-padding. `blurredSrc` is a pre-blurred decorative copy; the browser animates
+padding by default. `edgeToEdge` reaches the top, left, and right inner edges.
+The card composes `BackdropImage` for its scroll timeline, optional overlay and
+scrim, progressive `blur`, and typed `fadeTo` that continues behind its body.
+`blurredSrc` is a pre-blurred decorative copy; the browser animates
 only its opacity and the image layer's transform. Each image has its own view
 timeline in the containing Pane's shared vertical scroller. `wireContentItems`
 also listens for image load/error from one containing root: a broken lead image
