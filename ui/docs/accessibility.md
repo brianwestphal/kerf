@@ -948,6 +948,12 @@ and genuinely insufficient contrast. Background images (including the catalog
 checkerboard), filters, and group opacity remain separate visual-review concerns;
 this helper measures only the solid CSS color layers.
 
+The shared light quiet and dark danger text colors also clear AA when `Text` is
+composed into a lowered `ValueTable` row or a `ListHeader` status badge on a
+document using `document.css`. `tests/browser/tone-contrast.spec.ts` covers both
+original compositions in light and dark schemes, with the Web Awesome theme
+and the foundation fallback kept in parity.
+
 Separator checks resolve the documented semantic border token in the component's
 context instead of pinning an old opaque palette value, while still verifying
 that the line has its intended width and a visible color.

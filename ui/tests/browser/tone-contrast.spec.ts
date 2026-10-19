@@ -3,7 +3,10 @@ import { resolve } from 'node:path';
 
 import type { Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
+import axe from 'axe-core';
 import { build } from 'esbuild';
+
+import { minPaintedTextContrast } from './painted-contrast.js';
 
 /** WCAG AA for body text; badge text and banner detail are small type. */
 const TEXT_AA = 4.5;
@@ -317,6 +320,57 @@ async function mountToneText(
     ),
   });
   await page.addScriptTag({ content: javascript.text });
+}
+
+for (const colorScheme of ['light', 'dark'] as const) {
+  test(`quiet and danger Text keep AA in lowered ValueTable and ListHeader compositions (${colorScheme})`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize({ width: 900, height: 700 });
+    await mountToneText(page, true, colorScheme);
+    const compositions = page.locator('[data-lowered-tone-compositions]');
+    const values = compositions.locator(
+      '.kui-value-table .kui-text[data-tone]',
+    );
+    const statuses = compositions.locator(
+      '.kui-list-header .kui-badge .kui-text[data-tone]',
+    );
+    await expect(values).toHaveCount(2);
+    await expect(statuses).toHaveCount(2);
+    for (const text of [values, statuses])
+      expect(await minPaintedTextContrast(text)).toBeGreaterThanOrEqual(
+        TEXT_AA,
+      );
+
+    await page.addScriptTag({ content: axe.source });
+    const contrastViolations = await compositions.evaluate(async (element) => {
+      const a11y = (window as unknown as { axe: typeof axe }).axe;
+      const result = await a11y.run(element, {
+        runOnly: { type: 'rule', values: ['color-contrast'] },
+      });
+      return result.violations.map(({ id, nodes }) => ({
+        id,
+        targets: nodes.map(({ target }) => target),
+      }));
+    });
+    expect(contrastViolations).toEqual([]);
+
+    await page.addStyleTag({
+      content:
+        '[data-lowered-tone-compositions] ~ * { display: none !important; }',
+    });
+    await page.screenshot({
+      path: testInfo.outputPath(`lowered-tones-${colorScheme}-wide.png`),
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    for (const text of [values, statuses])
+      expect(await minPaintedTextContrast(text)).toBeGreaterThanOrEqual(
+        TEXT_AA,
+      );
+    await compositions.screenshot({
+      path: testInfo.outputPath(`lowered-tones-${colorScheme}-narrow.png`),
+    });
+  });
 }
 
 /** Tones Web Awesome's theme also defines; pop is Kerf-only. */

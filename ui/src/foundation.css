@@ -223,7 +223,7 @@
   --kui-color-text: var(--wa-color-text-normal, light-dark(#1d1d1f, #f5f5f7));
   --kui-color-text-quiet: var(
     --wa-color-text-quiet,
-    light-dark(#6e6e73, #aeaeb2)
+    light-dark(#646469, #aeaeb2)
   );
   --kui-color-text-link: var(
     --wa-color-text-link,
@@ -525,7 +525,7 @@
   );
   --kui-color-danger-on-quiet: var(
     --wa-color-danger-on-quiet,
-    light-dark(#c20b20, #ff696c)
+    light-dark(#c20b20, #ff8588)
   );
   --kui-color-danger-on-normal: var(
     --wa-color-danger-on-normal,
@@ -538,8 +538,8 @@
   /* Danger text placed ON a danger fill (e.g. the danger StateBanner) and the
      danger Badge's solid fill. The light value matches danger-on-quiet, which
      already clears WCAG AA (5.7:1) over danger-fill-quiet. The dark value is
-     lighter than danger-on-quiet (#ff696c), which reached only 5.7:1 over the
-     dark fill-quiet (4.0:1 as dimmed banner detail) and left the solid badge's
+     lighter than danger-on-quiet (#ff8588); the former #ff696c reached only
+     5.7:1 over the dark fill-quiet (4.0:1 as dimmed banner detail) and left the solid badge's
      dark text and placeholder skeleton the weakest of any tone on a mid-red
      fill; #ffa0a2 matches the other tones' pale dark on-fill values. */
   --kui-color-danger-on-fill: light-dark(#c20b20, #ffa0a2);

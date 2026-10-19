@@ -38,7 +38,7 @@
     );
 
     --wa-color-text-normal: light-dark(#1d1d1f, #f5f5f7);
-    --wa-color-text-quiet: light-dark(#6e6e73, #aeaeb2);
+    --wa-color-text-quiet: light-dark(#646469, #aeaeb2);
     --wa-color-text-link: var(--wa-color-brand-on-quiet);
 
     --wa-color-overlay-modal: light-dark(
@@ -203,7 +203,7 @@
       var(--wa-color-danger-fill-loud) 78%,
       var(--wa-color-neutral-on-normal)
     );
-    --wa-color-danger-on-quiet: light-dark(#c20b20, #ff696c);
+    --wa-color-danger-on-quiet: light-dark(#c20b20, #ff8588);
     --wa-color-danger-on-normal: light-dark(#8e0717, #ff8a8c);
     --wa-color-danger-on-loud: light-dark(#fff, #111113);
 
