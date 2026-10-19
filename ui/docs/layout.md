@@ -474,6 +474,8 @@ transparency and increased contrast also stop the movement and blur; forced
 colors hides the image and uses system surface colors. The tint uses the same
 light/dark AA-clamped tokens as a tinted Pane, including quiet text, links,
 controls, and focus. The application provides the sampled color and scheme.
+On a light tint without an accent, the brand on-fill color is capped at 30%
+OKLCH lightness so a compact info Badge remains AA-readable on its pale fill.
 
 For a static item that needs focus, set `tabIndex={0}` for a Tab stop or
 `tabIndex={-1}` for programmatic focus. Set `outlined` for a persistent focus

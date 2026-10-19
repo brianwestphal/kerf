@@ -413,6 +413,8 @@ image or tint. The catalog and
 browser tests cover per-row motion, light/dark AA tokens, missing-image and
 accessibility fallbacks. Media also supports BackdropImage's overlay, scrim,
 progressive blur, and typed fade, plus optional top/inline edge bleed.
+On light image tints without an accent, compact info Badges retain AA text
+contrast through the scoped brand on-fill token.
 The List UX demo now exposes the shipped opt-in document View Transitions
 recipe with interactive reorder, insert, remove, and reset controls; it uses
 `each()` and keeps names, motion, scroll-position preservation, the visible

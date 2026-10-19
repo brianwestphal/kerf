@@ -661,6 +661,11 @@
       --wa-color-brand-on-quiet: oklch(
         from var(--_kui-tint-brand-source) min(l, 0.45) c h
       );
+      /* The global on-fill blue is too light over saturated light tints when
+         the app does not supply an accent. Keep compact info badges at AA. */
+      --kui-color-brand-on-fill: oklch(
+        from var(--_kui-tint-brand-source) min(l, 0.3) c h
+      );
     }
 
     [data-kui-tint="dark"] {

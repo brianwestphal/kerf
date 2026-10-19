@@ -1102,6 +1102,9 @@ native image state after morph rewrites helper-owned card attributes. Rules and 
 `ui/docs/layout.md#content-items`; unit and browser checks:
 `ui/tests/unit/content-item-media.test.tsx` and
 `ui/tests/browser/content-item-media.spec.ts`.
+The light, accentless tint rule in `ui/src/foundation.css` caps the scoped brand
+on-fill token at 30% OKLCH lightness; the browser spec checks compact info
+Badge contrast against warm and cool image tints at wide and narrow widths.
 The List catalog example in `ui/ux-demo/demos/list.tsx` uses
 `view-transition-list-state.ts` to wrap `each()` source changes in an
 app-owned document View Transition and restore ancestor scroll positions

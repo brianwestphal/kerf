@@ -602,6 +602,8 @@ ratio and running a per-image view timeline in the shared scrollport. Optional
 `wireContentItems` handles load/error and restores the normal surface when the
 lead image fails. The once-wired helper also restores the native image state
 and tint after a render rewrites card attributes without replacing the image.
+On a light card tint without an accent, the brand on-fill token is darkened for
+AA-readable compact info Badges.
 See [Content items](layout.md#content-items).
 For an interactive ContentItem, `wireContentItems` activates the card on Enter
 or Space only when the key event originated from the card itself. A nested

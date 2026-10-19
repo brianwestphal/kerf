@@ -313,6 +313,71 @@ test('card-scoped light and dark tints keep text, quiet text, links, controls, a
   }
 });
 
+test('compact info Badge stays at AA on light image tints without an accent', async ({
+  page,
+}, testInfo) => {
+  for (const width of [1200, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    const { cards } = await feed(page);
+    const card = cards.nth(1);
+    await card.evaluate((element) => {
+      element
+        .querySelector('.kui-content-item__media')!
+        .removeAttribute('data-tint-accent');
+      element.removeAttribute('data-kui-tint-accent');
+      const badge = document.createElement('span');
+      badge.className = 'kui-badge';
+      badge.dataset.component = 'badge';
+      badge.dataset.tone = 'info';
+      badge.dataset.size = 'compact';
+      badge.textContent = 'Info';
+      element.querySelector('.kui-content-item__body .kui-row')!.append(badge);
+    });
+    await expect(card).not.toHaveAttribute('data-kui-tint-accent');
+    for (const color of ['rgb(250, 196, 196)', 'rgb(186, 216, 249)']) {
+      const colors = await card.evaluate((element, tint) => {
+        element.style.setProperty('--_kui-tint-color', tint);
+        const badge = element.querySelector('.kui-badge')!;
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 1;
+        const context = canvas.getContext('2d', { willReadFrequently: true })!;
+        const rgb = () => [
+          ...context.getImageData(0, 0, 1, 1).data.slice(0, 3),
+        ];
+        context.fillStyle = window.getComputedStyle(element).backgroundColor;
+        context.fillRect(0, 0, 1, 1);
+        context.fillStyle = window.getComputedStyle(badge).backgroundColor;
+        context.fillRect(0, 0, 1, 1);
+        const background = rgb();
+        context.fillStyle = window.getComputedStyle(badge).color;
+        context.fillRect(0, 0, 1, 1);
+        return { background, foreground: rgb() };
+      }, color);
+      expect(
+        contrastRatio(colors.foreground, colors.background),
+      ).toBeGreaterThanOrEqual(4.5);
+    }
+    await card.evaluate((element) => {
+      const capture = element.cloneNode(true) as HTMLElement;
+      capture.dataset.contrastCapture = 'true';
+      capture.style.position = 'fixed';
+      capture.style.inset = '20px auto auto 20px';
+      capture.style.width = 'min(624px, calc(100vw - 40px))';
+      capture.style.margin = '0';
+      capture.style.zIndex = '10000';
+      document.body.append(capture);
+    });
+    const capture = page.locator('[data-contrast-capture]');
+    await (
+      width === 1200
+        ? capture.locator('.kui-content-item__body .kui-row')
+        : capture
+    ).screenshot({
+      path: testInfo.outputPath(`content-item-info-badge-${width}.png`),
+    });
+  }
+});
+
 test('increased contrast and forced colors stop feed image movement', async ({
   page,
 }) => {
