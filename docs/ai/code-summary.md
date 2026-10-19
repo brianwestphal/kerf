@@ -1102,7 +1102,9 @@ failure, and restores them when a replacement loads. Rules and composition:
 The List catalog example in `ui/ux-demo/demos/list.tsx` uses
 `view-transition-list-state.ts` to wrap `each()` source changes in an
 app-owned document View Transition and restore ancestor scroll positions
-around each source write. `ui/ux-demo/view-transition-list-row.tsx`
+around each source write. It also bounds the document snapshot overlay to the
+visible specimen; `ui/ux-demo/style.css` applies that clip and suppresses the
+unnamed root animation. `ui/ux-demo/view-transition-list-row.tsx`
 owns each wrapper and its finite CSS names;
 `ui/tests/browser/list-view-transitions.spec.ts`
 exercises the real controls.

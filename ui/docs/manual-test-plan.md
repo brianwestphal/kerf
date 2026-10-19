@@ -36,9 +36,12 @@ listener growth; it uses repeated sample artwork, so a production feed with
 unique high-resolution assets still needs its own image-cache profiling.
 
 The remaining device-only checks above require a real mobile keyboard.
-The List View Transitions catalog example has unit coverage for its row edits
-and pending-snapshot queue, with browser coverage for real controls, fallback,
+The List View Transitions catalog example has unit coverage for its row edits,
+pending-snapshot queue, and clip lifecycle, with browser coverage for real controls, fallback,
 reduced motion, and wide/narrow layout. Its animation was visually inspected
 at both widths; the browser tests verify names and state after each edit.
 The real catalog scroll position is checked during and after all four List
-transition actions at wide and narrow viewports.
+transition actions at wide and narrow viewports. During motion, check that
+named rows stay within the visible example and do not cover the catalog footer
+or neighboring examples; the browser suite checks the computed transition
+clip at wide and narrow viewports.

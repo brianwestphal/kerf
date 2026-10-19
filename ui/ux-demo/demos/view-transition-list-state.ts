@@ -42,6 +42,35 @@ export function nextViewTransitionListRows(
 let pendingCapture = false;
 let active: ViewTransition | undefined;
 const queued: ViewTransitionListAction[] = [];
+const clipProperty = '--demo-list-view-transition-clip';
+
+/** Document transition snapshots live above the catalog's scrolling pane. */
+function visibleSpecimenClip(): string | undefined {
+  const specimen = document.querySelector('[data-demo-view-transitions]');
+  if (!specimen) return undefined;
+  const bounds = specimen.getBoundingClientRect();
+  let top = Math.max(0, bounds.top);
+  let right = Math.min(window.innerWidth, bounds.right);
+  let bottom = Math.min(window.innerHeight, bounds.bottom);
+  let left = Math.max(0, bounds.left);
+  for (
+    let element = specimen.parentElement;
+    element;
+    element = element.parentElement
+  ) {
+    if (
+      element.scrollHeight <= element.clientHeight &&
+      element.scrollWidth <= element.clientWidth
+    )
+      continue;
+    const rect = element.getBoundingClientRect();
+    top = Math.max(top, rect.top);
+    right = Math.min(right, rect.right);
+    bottom = Math.min(bottom, rect.bottom);
+    left = Math.max(left, rect.left);
+  }
+  return `inset(${Math.min(window.innerHeight, top)}px ${Math.max(0, window.innerWidth - right)}px ${Math.max(0, window.innerHeight - bottom)}px ${Math.min(window.innerWidth, left)}px)`;
+}
 
 function apply(action: ViewTransitionListAction) {
   const specimen = document.querySelector('[data-demo-view-transitions]');
@@ -91,6 +120,8 @@ export function changeViewTransitionList(
     apply(action);
   } else {
     pendingCapture = true;
+    const clip = visibleSpecimenClip();
+    if (clip) document.documentElement.style.setProperty(clipProperty, clip);
     const transition = document.startViewTransition(() => {
       try {
         apply(action);
@@ -101,7 +132,10 @@ export function changeViewTransitionList(
     });
     active = transition;
     const clear = () => {
-      if (active === transition) active = undefined;
+      if (active === transition) {
+        active = undefined;
+        document.documentElement.style.removeProperty(clipProperty);
+      }
     };
     void transition.finished.then(clear, clear);
   }

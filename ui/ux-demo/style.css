@@ -33,6 +33,16 @@ html.demo-reduced-motion *::after {
   transition-duration: 1ms !important;
 }
 
+/* The List example supplies a viewport clip while its document transition runs. */
+::view-transition {
+  clip-path: var(--demo-list-view-transition-clip, inset(0));
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
 button {
   font: inherit;
 }

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 432700,
-  "measuredLargestJavaScriptGzip": 164542,
-  "measuredTotalJavaScriptGzip": 432676,
+  "totalJavaScriptGzip": 433000,
+  "measuredLargestJavaScriptGzip": 164543,
+  "measuredTotalJavaScriptGzip": 432981,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6115,6 +6115,22 @@
         "measuredTotalJavaScriptGzip": 432676,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 432700
+      }
+    },
+    {
+      "at": "2026-10-19T05:01:38.525Z",
+      "reason": "Clip the List document View Transition overlay to its visible catalog specimen",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164542,
+        "measuredTotalJavaScriptGzip": 432676,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 432700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 432981,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 433000
       }
     }
   ]

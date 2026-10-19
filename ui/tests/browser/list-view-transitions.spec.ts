@@ -143,3 +143,88 @@ for (const width of [1200, 390]) {
       });
   });
 }
+
+for (const { width, height } of [
+  { width: 701, height: 626 },
+  { width: 390, height: 844 },
+]) {
+  test(`List transition snapshots stay inside the visible specimen at ${width}px`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize({ width, height });
+    const root = await example(page);
+    const pane = page.locator('.kui-pane__content').filter({ has: root });
+    await pane.evaluate((element, selector) => {
+      const specimen = element.querySelector(selector)!;
+      const paneBottom = element.getBoundingClientRect().bottom;
+      element.scrollTop +=
+        specimen.getBoundingClientRect().top - paneBottom + 250;
+    }, '[data-demo-view-transitions]');
+    const expected = await root.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      const paneRect = element
+        .closest('.kui-pane__content')!
+        .getBoundingClientRect();
+      return {
+        top: Math.max(0, rect.top, paneRect.top),
+        right: Math.min(window.innerWidth, rect.right, paneRect.right),
+        bottom: Math.min(window.innerHeight, rect.bottom, paneRect.bottom),
+        left: Math.max(0, rect.left, paneRect.left),
+      };
+    });
+    await root
+      .getByRole('button', { name: 'Reorder' })
+      .evaluate((element: HTMLElement) => element.click());
+    await expect
+      .poll(() =>
+        page.evaluate(() =>
+          document.documentElement.style.getPropertyValue(
+            '--demo-list-view-transition-clip',
+          ),
+        ),
+      )
+      .toContain('inset(');
+    const state = await page.evaluate(() => ({
+      requestedClip: document.documentElement.style.getPropertyValue(
+        '--demo-list-view-transition-clip',
+      ),
+      clip: window.getComputedStyle(
+        document.documentElement,
+        '::view-transition',
+      ).clipPath,
+      rootOldAnimation: window.getComputedStyle(
+        document.documentElement,
+        '::view-transition-old(root)',
+      ).animationName,
+      rootNewAnimation: window.getComputedStyle(
+        document.documentElement,
+        '::view-transition-new(root)',
+      ).animationName,
+    }));
+    expect(state.rootOldAnimation).toBe('none');
+    expect(state.rootNewAnimation).toBe('none');
+    expect(state.clip).toMatch(/^inset\(/);
+    const numbers = [...state.requestedClip.matchAll(/([\d.]+)px/g)].map(
+      (match) => Number(match[1]),
+    );
+    expect(numbers[0]).toBeCloseTo(expected.top, 0);
+    expect(width - numbers[1]).toBeCloseTo(expected.right, 0);
+    expect(height - numbers[2]).toBeCloseTo(expected.bottom, 0);
+    expect(numbers[3]).toBeCloseTo(expected.left, 0);
+    if (testInfo.project.name === 'webkit')
+      await page.screenshot({
+        path: testInfo.outputPath(
+          `list-transition-clipped-${width}-motion.png`,
+        ),
+      });
+    await expect
+      .poll(() =>
+        page.evaluate(() =>
+          document.documentElement.style.getPropertyValue(
+            '--demo-list-view-transition-clip',
+          ),
+        ),
+      )
+      .toBe('');
+  });
+}

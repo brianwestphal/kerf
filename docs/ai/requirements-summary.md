@@ -412,8 +412,8 @@ browser tests cover per-row motion, light/dark AA tokens, missing-image and
 accessibility fallbacks; `BackdropImage` remains the first-child page hero.
 The List UX demo now exposes the shipped opt-in document View Transitions
 recipe with interactive reorder, insert, remove, and reset controls; it uses
-`each()` and keeps names, motion, scroll-position preservation, and fallback
-policy in the demo app.
+`each()` and keeps names, motion, scroll-position preservation, the visible
+specimen clip for document snapshots, and fallback policy in the demo app.
 
 The root `@kerfjs/ui` declaration barrel re-exports the named TabBarItem, TabBar,
 ToolbarControlGroup, and Select presentation axes; source and packed-tarball

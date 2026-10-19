@@ -10,7 +10,10 @@ Try the interactive [List View Transitions catalog example](../ui/ux-demo/?compo
 its Reorder, Insert Delta, Remove Last, and Reset controls use this recipe in a
 real `each()` list. The named-row CSS and transition coordinator belong to the
 catalog app. It also restores its scrollable ancestors around each source write
-so moving rows cannot shift the catalog pane while the action runs.
+so moving rows cannot shift the catalog pane while the action runs. Because a
+document View Transition renders above the page, the catalog example clips its
+snapshot overlay to the visible intersection of the specimen and its scrolling
+pane. This keeps moving rows clear of the fixed catalog footer.
 
 ## Render rows with stable names
 

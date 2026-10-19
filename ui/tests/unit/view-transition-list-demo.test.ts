@@ -20,6 +20,9 @@ const startDescriptor = Object.getOwnPropertyDescriptor(
 afterEach(() => {
   viewTransitionListRows.value = initial;
   document.documentElement.classList.remove('demo-reduced-motion');
+  document.documentElement.style.removeProperty(
+    '--demo-list-view-transition-clip',
+  );
   if (startDescriptor)
     Object.defineProperty(document, 'startViewTransition', startDescriptor);
   else Reflect.deleteProperty(document, 'startViewTransition');
@@ -89,6 +92,61 @@ describe('List View Transitions demo actions', () => {
       expect(pane.scrollTop).toBe(187);
     } finally {
       stop();
+      pane.remove();
+    }
+  });
+
+  it('clips document snapshots to the visible specimen and clears the clip', async () => {
+    const pane = document.createElement('div');
+    const specimen = document.createElement('div');
+    specimen.dataset.demoViewTransitions = '';
+    pane.append(specimen);
+    document.body.append(pane);
+    Object.defineProperties(pane, {
+      scrollHeight: { configurable: true, value: 500 },
+      clientHeight: { configurable: true, value: 100 },
+    });
+    vi.spyOn(pane, 'getBoundingClientRect').mockReturnValue({
+      top: 20,
+      right: 180,
+      bottom: 120,
+      left: 10,
+    } as DOMRect);
+    vi.spyOn(specimen, 'getBoundingClientRect').mockReturnValue({
+      top: 30,
+      right: 200,
+      bottom: 180,
+      left: 20,
+    } as DOMRect);
+    let finish!: () => void;
+    const finished = new Promise<void>((resolve) => {
+      finish = resolve;
+    });
+    Object.defineProperty(document, 'startViewTransition', {
+      configurable: true,
+      value: vi.fn((update: () => void) => {
+        update();
+        return { finished } as ViewTransition;
+      }),
+    });
+    try {
+      changeViewTransitionList('reorder');
+      expect(
+        document.documentElement.style.getPropertyValue(
+          '--demo-list-view-transition-clip',
+        ),
+      ).toBe(
+        `inset(30px ${window.innerWidth - 180}px ${window.innerHeight - 120}px 20px)`,
+      );
+      finish();
+      await finished;
+      await Promise.resolve();
+      expect(
+        document.documentElement.style.getPropertyValue(
+          '--demo-list-view-transition-clip',
+        ),
+      ).toBe('');
+    } finally {
       pane.remove();
     }
   });
