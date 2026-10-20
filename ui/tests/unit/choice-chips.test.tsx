@@ -1,5 +1,9 @@
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+
 import { mount, signal } from 'kerfjs';
 import { Circle } from 'lucide';
+import postcss from 'postcss';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {
@@ -33,6 +37,54 @@ afterEach(() => {
 });
 
 describe('ChoiceChips', () => {
+  it('scopes the forced-colors backplate fix to selected pills with system focus and border colors', async () => {
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/components/forms/choice-chips/choice-chips.css',
+    );
+    const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const forced = root.nodes.find(
+      (node): node is postcss.AtRule =>
+        node.type === 'atrule' &&
+        node.name === 'media' &&
+        node.params === '(forced-colors: active)',
+    )!;
+    const rules = forced.nodes!.filter(
+      (node): node is postcss.Rule => node.type === 'rule',
+    );
+    const declarations = (rule: postcss.Rule) =>
+      Object.fromEntries(
+        rule.nodes
+          .filter((node): node is postcss.Declaration => node.type === 'decl')
+          .map(({ prop, value }) => [prop, value]),
+      );
+    const selected = rules.find((rule) =>
+      rule.selector.includes('[aria-selected="true"]'),
+    )!;
+    expect(selected.selector).toContain('.kui-choice-chips__input:checked');
+    expect(declarations(selected)).toMatchObject({
+      color: 'HighlightText',
+      background: 'Highlight',
+      'border-color': 'Highlight',
+      'box-shadow': 'inset 0 0 0 1px HighlightText',
+      'forced-color-adjust': 'none',
+    });
+    expect(
+      rules.some(
+        (rule) =>
+          rule.selector.includes(':focus-visible') &&
+          declarations(rule)['outline-color'] === 'Highlight',
+      ),
+    ).toBe(true);
+    expect(
+      rules.some(
+        (rule) =>
+          declarations(rule)['forced-color-adjust'] === 'none' &&
+          rule.selector === '.kui-choice-chips__chip',
+      ),
+    ).toBe(false);
+  });
+
   it('renders a named radiogroup of native radios with the controlled value checked', () => {
     const host = render(
       ChoiceChips({

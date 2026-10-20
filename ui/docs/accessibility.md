@@ -503,7 +503,10 @@ radio's accessible name is the visible label; a `swatch` or `icon` is
 `aria-hidden` decoration. The focus ring is drawn on the pill around the
 focused radio, and the checked pill adds a second pixel of border so the
 selection does not rely on hue alone; forced-colors mode paints it with
-`Highlight`.
+`Highlight` and `HighlightText`. Selected pills opt out of the browser's
+automatic color adjustment only within the pill: Chromium otherwise paints a
+backplate over the label and icon. The selected edge and focus ring use system
+colors; unselected and disabled pills retain normal forced-colors adjustment.
 
 With `multiple: 'toggle'`, the group renders `role="group"` with the same
 naming, and each choice is a native `<input type="checkbox">` inside its pill.

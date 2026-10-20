@@ -314,3 +314,80 @@ test('an icon ChoiceChips grid picks with the arrows, names each icon, and scrol
     await expect(last.locator('xpath=..')).toBeInViewport();
   }
 });
+
+test('ChoiceChips keeps selected text, icons, focus, and disabled choices legible in forced colors', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(
+    browserName !== 'chromium',
+    'Chromium forced-colors backplate regression',
+  );
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ forcedColors: 'active', colorScheme: scheme });
+    for (const width of [1440, 390]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/?component=choice-chips');
+      const demo = page.locator('[data-demo="choice-chips"]');
+      const radio = demo.getByRole('radiogroup', { name: 'Command Color' });
+      const selected = radio.locator('[data-choice-value="blue"]');
+      const unselected = radio.locator('[data-choice-value="green"]');
+      const system = await page.evaluate(() => {
+        const probe = document.createElement('div');
+        probe.style.color = 'HighlightText';
+        probe.style.backgroundColor = 'Highlight';
+        document.body.append(probe);
+        const style = globalThis.getComputedStyle(probe);
+        const colors = {
+          color: style.color,
+          background: style.backgroundColor,
+        };
+        probe.remove();
+        return colors;
+      });
+      await expect(selected.locator('input')).toBeChecked();
+      await expect(selected).toHaveCSS('forced-color-adjust', 'none');
+      await expect(unselected).toHaveCSS('forced-color-adjust', 'auto');
+      await expect(selected).toHaveCSS('color', system.color);
+      await expect(selected).toHaveCSS('background-color', system.background);
+      await selected.locator('input').focus();
+      await page.keyboard.press('ArrowRight');
+      await expect(unselected.locator('input')).toBeChecked();
+      await expect(unselected).toHaveCSS('forced-color-adjust', 'none');
+      await expect(selected).toHaveCSS('forced-color-adjust', 'auto');
+      await page.keyboard.press('ArrowLeft');
+      await expect(selected.locator('input')).toBeChecked();
+      await expect(selected).toHaveCSS('outline-color', system.background);
+
+      const icons = demo.getByRole('radiogroup', { name: 'Board View' });
+      await expect(icons.locator('[data-choice-value="board"]')).toHaveCSS(
+        'forced-color-adjust',
+        'none',
+      );
+      await expect(
+        icons.getByRole('radio', { name: 'Calendar' }),
+      ).toBeDisabled();
+      const toggles = demo.getByRole('group', { name: 'Labels', exact: true });
+      const feature = toggles.locator('[data-choice-value="feature"]');
+      await feature.click();
+      await expect(feature.locator('input')).toBeChecked();
+      await expect(feature).toHaveCSS('forced-color-adjust', 'none');
+      const listbox = demo.getByRole('listbox', { name: 'Workspaces' });
+      const cirrus = listbox.locator('[data-choice-value="cirrus"]');
+      await cirrus.click();
+      await expect(cirrus).toHaveAttribute('aria-selected', 'true');
+      await expect(cirrus).toHaveCSS('forced-color-adjust', 'none');
+
+      for (const [mode, group] of [
+        ['radio', radio],
+        ['icons', icons],
+        ['toggle', toggles],
+        ['listbox', listbox],
+      ] as const) {
+        await group.screenshot({
+          path: `test-results/choice-chips-forced-${mode}-${scheme}-${width}.png`,
+        });
+      }
+    }
+  }
+});

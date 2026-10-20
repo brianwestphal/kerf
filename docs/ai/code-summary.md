@@ -601,6 +601,12 @@ kerf/
 └── README.md
 ```
 
+`ui/src/components/forms/choice-chips/choice-chips.css` owns the selected-pill
+forced-colors treatment for radio, checkbox, and listbox modes. Its system
+color and focus contract is checked in `ui/tests/unit/choice-chips.test.tsx`;
+the rendered transitions and wide/narrow captures are in
+`ui/tests/browser/choice-chips.spec.ts`.
+
 TabBar action-zone composition is declared in
 `ui/ai/component-composition-rules.json`: `trailing` and `end` each accept one
 ToolbarControlGroup, Kerf Button, or Web Awesome button. The compiled contract

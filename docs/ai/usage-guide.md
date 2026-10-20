@@ -295,7 +295,9 @@ Set `multiple` with a `readonly Value[]` `value` when any number may be on
 a Tab stop that Space toggles, and every checked value submits under `name`;
 read the checked boxes by name in the change handler. A multiple group takes no
 `required`. On dark inverse chrome, place the chips in a dark appearance scope
-(`.wa-dark`) instead of restyling them.
+(`.wa-dark`) instead of restyling them. The component handles forced-colors
+selection text, icon, and focus contrast across its radio, checkbox, and
+listbox modes; applications should not override those state selectors.
 
 Use `MessageComposer` (`@kerfjs/ui/message-composer`) for a chat message or assistant prompt:
 a raised frame whose border turns brand while focus is within, a borderless

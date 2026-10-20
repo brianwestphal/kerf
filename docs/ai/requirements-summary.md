@@ -575,6 +575,9 @@ large for SegmentedControl: separate pills over native radios (one Tab stop,
 arrow-key selection, real form value), with color swatches including a
 struck-through transparent swatch, or icons; `label`/`labelledBy`, controlled
 `value`, delegated `change` action, compact size, required, and disabled.
+Selected pills use `Highlight`/`HighlightText` with a local forced-colors
+adjustment that prevents Chromium's text and icon backplate; focus and selection
+edges keep system colors while unselected/disabled pills keep UA adjustment.
 With `multiple` (array `value`, typed by a discriminated union) the same pills
 are native checkboxes in a `role="group"`: each a Tab stop that Space toggles,
 every checked value submitted under `name`, no `required`; the token palette

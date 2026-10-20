@@ -347,7 +347,10 @@ slot without mixing authoring rules into the per-entry component catalog.
   arrow-key selection) or, with `multiple`, a `role="group"` of native
   checkboxes (each pill a Tab stop that Space toggles, native checked state).
   Every checked value submits under `name`; a multiple group takes no
-  `required`. Swatches and icons are decorative; labels stay visible.
+  `required`. Swatches and icons are decorative; labels stay visible. In forced
+  colors, selected radio, checkbox, and listbox pills paint system selection
+  colors without Chromium's text backplate; the system focus ring and
+  unselected/disabled adjustments remain visible.
 - Managed Select All deletion keeps the controlled replacement editor open and
   focused before the next keystroke. Applications persist both query and remaining
   tokens from the DOM read; outside blur and empty Escape retain normal collapse.

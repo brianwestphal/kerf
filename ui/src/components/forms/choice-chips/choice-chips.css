@@ -153,9 +153,23 @@
     :has(> .kui-choice-chips__input:checked),
     [aria-selected="true"]
   ) {
+    --_kui-choice-chips-border: Highlight;
+
     border-color: Highlight;
     color: HighlightText;
     background: Highlight;
+    /* Chromium otherwise paints a contrast backplate over the selected text
+       and icon despite the system-color pair above. Keep the opt-out local to
+       the selected pill so the remaining controls retain UA adjustments. */
+    box-shadow: inset 0 0 0 1px HighlightText;
+    forced-color-adjust: none;
+  }
+
+  .kui-choice-chips__chip:is(
+      :has(> .kui-choice-chips__input:checked),
+      [aria-selected="true"]
+    ):is(:has(> .kui-choice-chips__input:focus-visible), :focus-visible) {
+    outline-color: Highlight;
   }
 
   .kui-choice-chips__swatch {
