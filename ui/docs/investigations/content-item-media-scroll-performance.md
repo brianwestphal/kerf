@@ -24,3 +24,23 @@ Applying `content-visibility: auto` only to the `BackdropImage` hero preserved t
 An exact 50-card counterbalanced follow-up found first-pass p95 of 18.7 ms unchanged versus 18.6 ms with hero deferral at 1440px, and 18.2 versus 18.6 ms at 390px. All four runs preserved feed scroll height; peak layers were 97 versus 33 on desktop and 44 versus 16 on narrow. The 50-card feed is near the display cadence floor, so deferral provides no measurable frame-time gain at that size. The earlier mismatched 50/52-card block is excluded from this conclusion.
 
 The 200-card hero ablation decoded 324/396 images before traversal on desktop and 352/396 on narrow, versus all images in the unchanged effect. Browser checks therefore verify that visible images are ready after scrolling to them and that feed geometry remains stable. These numbers measure a specific seeded local feed and CPU setting, not a general frame-time guarantee.
+
+## Residual dense-feed investigation
+
+KF-CG0G0S used the NM-PSF3FN production bundle and seeded real server to probe the remaining 200-card cost. The published comparison had already shown that replacing the 16px CSS blur with independent 64px pre-blurred assets did not help: at 1440px and Chromium CPU4x, local p95 was 39.4–40.2ms with the filter and 42.0–49.8ms with the asset, versus 18.1–19.6ms for the archived plain-image control. Both effect modes peaked at 33 layers, versus 9 for the control. That control is historical, so this gap is not an isolated estimate of any one CSS property.
+
+The follow-up used the same current effect bundle, 200 seeded cards, fresh browser contexts, decoded images, a 240-frame 2400px forward/reverse local path, and CPU4x. Each CSS variant was injected before warmup and run in counterbalanced order. These probes omitted CDP tracing to keep the experiment bounded; peak layer counts came from `LayerTree` and p95 from animation frames. The raw scripts and results are attached to KF-CG0G0S.
+
+| CSS probe                                                  | 1440px local p95, two contexts | 390px local p95, two contexts | Peak layers, wide / narrow | Finding                                          |
+| ---------------------------------------------------------- | -----------------------------: | ----------------------------: | -------------------------: | ------------------------------------------------ |
+| Current effect (containment block)                         |                    34.5–46.0ms |                   36.0–37.8ms |                    33 / 16 | Counterbalanced reference                        |
+| `contain: paint` on hero                                   |                    39.4–48.4ms |                   34.0–35.7ms |                    33 / 16 | No consistent gain; same layer count             |
+| `contain: paint` on backdrop                               |                    45.8–46.7ms |                   32.4–37.6ms |                    33 / 16 | No consistent gain; same layer count             |
+| Current effect (root-deferral block)                       |                    44.9–46.4ms |                   31.1–38.1ms |                    33 / 16 | Counterbalanced reference                        |
+| `content-visibility: auto` plus aspect ratio on media root |                    45.0–45.3ms |                   32.1–36.9ms |                    33 / 16 | Exact feed height, but no demonstrated reduction |
+
+In the root-deferral block, initial, warmed, and post-scroll heights matched the control exactly: 56,353px wide and 157,333px narrow. This does not justify moving deferral from the hero: it adds a second offscreen containment boundary without lowering layer count or showing a repeatable p95 gain.
+
+A separate wide-only block isolated the animated parts. Current effect p95 was 43.0–43.8ms with 33 peak layers. Hiding the dim layer yielded 38.5 and 46.1ms with 33 layers: inconclusive. Hiding the blurred copy yielded 38.9 and 40.7ms with 27 layers. Disabling parallax yielded 36.8 and 37.2ms with 27 layers. The latter two changes remove required visible behavior, so neither is a component fix. They do support the layer/timeline composition as the next investigation target rather than mutation-rescan wiring, whose cost was not implicated by this scroll experiment.
+
+No public component change is justified by these probes. KF-QX18S3 tracks target-device validation and a lower-layer design that retains independent reverse transitions, progressive blur/dim, static fallbacks, controls, focus, and feed geometry. A physical device/browser and normal-scroll frame budget are needed before a headless Mac CPU4x result can serve as acceptance evidence.
