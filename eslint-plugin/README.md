@@ -79,6 +79,8 @@ settings: {
 
 For deterministic generated configs, the same settings accept parsed `catalog`, `selectionCatalog`, and `profile` objects. File-based precedence is package defaults, then workspace profile, then root-to-leaf directory profiles. The rules load `application-ui-profile-sync.cjs` from the installed `@kerfjs/ui` package by default because ESLint rule creation is synchronous; `profileContractPath` is only needed when artifacts are vendored, and then its directory must also hold `application-ui-diagnostic-ids-v1.json` and `component-class-owners.cjs` (the class-to-component rule `KUI-L103` shares with `@kerfjs/ui`'s generated component pages) from the same `@kerfjs/ui` release. Every raw layer is schema- and catalog-reference-validated before merge, so a child cannot hide malformed or stale parent policy. Exceptions use exact `KUI-L*` diagnostic ids and repository-relative file or directory targets.
 
+When linting a nested workspace package, set `workspaceRoot` to the repository root. Installed `@kerfjs/ui` assets still resolve from ESLint's package `cwd`, while profile discovery and exception targets use the workspace root.
+
 `ui-css-values` consumes each catalog entry's property-specific grammar and
 emits `KUI-L013`–`KUI-L016` with a preferred shorthand or helper. It covers JSX,
 direct component calls, nested catalog paths, and explicitly configured

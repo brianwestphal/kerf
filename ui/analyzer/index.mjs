@@ -1846,6 +1846,7 @@ function inspectTsx(
 
 export async function analyzeUiProject({
   root: requestedRoot = process.cwd(),
+  workspaceRoot: requestedWorkspaceRoot = requestedRoot,
   paths,
   knownRules = [],
   adoption = false,
@@ -1859,6 +1860,7 @@ export async function analyzeUiProject({
   ),
 } = {}) {
   const root = resolve(requestedRoot);
+  const workspaceRoot = resolve(requestedWorkspaceRoot);
   const files = await collectFiles(root, paths);
   const diagnosticDecisions = new Map();
   const contents = new Map(
@@ -1912,7 +1914,7 @@ export async function analyzeUiProject({
         startDirectory,
         (async () => {
           const profileResult = await loadApplicationUiProfile({
-            workspaceRoot: root,
+            workspaceRoot,
             startDirectory,
             packageProfile,
             knownRules: [...Object.keys(UI_ANALYSIS_RULES), ...knownRules],
@@ -2093,7 +2095,7 @@ export async function analyzeUiProject({
       };
       const consumer =
         relative(root, context.startDirectory).replaceAll('\\', '/') || '.';
-      if (isSuppressed(item, context.profileResult.profile, root)) {
+      if (isSuppressed(item, context.profileResult.profile, workspaceRoot)) {
         decision.suppressed = true;
         decision.suppressedConsumers.add(consumer);
       } else {

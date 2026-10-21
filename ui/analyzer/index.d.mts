@@ -39,6 +39,7 @@ export const UI_ANALYSIS_ACTIONS: Readonly<Record<`KUI-L${string}`, string>>;
 
 export function analyzeUiProject(options?: {
   root?: string;
+  workspaceRoot?: string;
   paths?: string[];
   profile?: string;
   knownRules?: Iterable<string>;

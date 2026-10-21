@@ -145,7 +145,8 @@ function loadClassOwnership(profileContractPath) {
 
 export function loadUiContract(context) {
   const settings = context.settings?.kerfjs?.ui ?? {};
-  const cwd = settings.workspaceRoot ?? context.cwd ?? process.cwd();
+  const packageCwd = context.cwd ?? process.cwd();
+  const cwd = resolve(settings.workspaceRoot ?? packageCwd);
   const filename = context.filename ?? context.getFilename();
   const key = JSON.stringify([cwd, filename, settings]);
   if (cache.has(key)) return cache.get(key);
@@ -153,13 +154,14 @@ export function loadUiContract(context) {
     const catalog =
       settings.catalog ??
       readJson(
-        settings.catalogPath ?? packageAsset(cwd, 'component-composition.json'),
+        settings.catalogPath ??
+          packageAsset(packageCwd, 'component-composition.json'),
       );
     const selection =
       settings.selectionCatalog ??
       readJson(
         settings.selectionCatalogPath ??
-          packageAsset(cwd, 'component-catalog.json'),
+          packageAsset(packageCwd, 'component-catalog.json'),
       );
     const profiles = settings.profilePath
       ? [
@@ -168,10 +170,10 @@ export function loadUiContract(context) {
             profile: readJson(settings.profilePath),
           },
         ]
-      : discoveredProfiles(cwd, filename, settings);
+      : discoveredProfiles(packageCwd, filename, settings);
     const profileContractPath =
       settings.profileContractPath ??
-      packageAsset(cwd, 'application-ui-profile-sync.cjs');
+      packageAsset(packageCwd, 'application-ui-profile-sync.cjs');
     if (!profileContractPath)
       throw new Error(
         'Cannot resolve @kerfjs/ui/ai/application-ui-profile-sync.cjs; install @kerfjs/ui or set kerfjs.ui.profileContractPath.',

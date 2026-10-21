@@ -259,6 +259,135 @@ async function lintTypeScriptFixture(root: string) {
 }
 
 test(
+  'workspace doctor preserves root and nested package profile context across stages',
+  async () => {
+    const workspace = await mkdtemp(
+      resolve(tmpdir(), 'kerf-ui-doctor-workspace-'),
+    );
+    const packageRoot = resolve(workspace, 'packages/web');
+    try {
+      await mkdir(resolve(packageRoot, 'src'), { recursive: true });
+      await writeFile(
+        resolve(workspace, 'package.json'),
+        JSON.stringify({
+          private: true,
+          type: 'module',
+          workspaces: ['packages/*'],
+        }),
+      );
+      await writeFile(
+        resolve(packageRoot, 'package.json'),
+        JSON.stringify({
+          name: '@example/web',
+          private: true,
+          type: 'module',
+        }),
+      );
+      await writeFile(
+        resolve(workspace, '.kerf-ui-profile.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          scope: 'workspace',
+          catalogs: [
+            {
+              package: '@example/web',
+              selection: {
+                path: './packages/web/selection.json',
+                schemaVersion: 1,
+              },
+              composition: {
+                path: './packages/web/composition.json',
+                schemaVersion: 2,
+              },
+            },
+          ],
+          exceptions: [
+            {
+              id: 'reviewed-size',
+              rules: ['KUI-L013'],
+              target: 'packages/web/src/app.jsx',
+              rationale: 'An existing value was reviewed for this package.',
+            },
+          ],
+        }),
+      );
+      await writeFile(
+        resolve(packageRoot, '.kerf-ui-profile.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          scope: 'directory',
+          exceptions: [
+            {
+              id: 'reviewed-size-token',
+              rules: ['KUI-L017'],
+              target: 'packages/web/src/app.jsx',
+              rationale: 'An existing token was reviewed for this package.',
+            },
+          ],
+        }),
+      );
+      await writeFile(
+        resolve(packageRoot, 'selection.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          package: '@example/web',
+          entries: [],
+        }),
+      );
+      await writeFile(
+        resolve(packageRoot, 'composition.json'),
+        JSON.stringify({
+          schemaVersion: 2,
+          package: '@example/web',
+          entries: [],
+        }),
+      );
+      await writeFile(
+        resolve(packageRoot, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          stages: {
+            catalog: true,
+            typescript: false,
+            eslint: true,
+            analyzer: true,
+            browser: false,
+          },
+        }),
+      );
+      await writeFile(
+        resolve(packageRoot, 'src/app.jsx'),
+        'import { List } from \'@kerfjs/ui\'; export const App = () => <><List gap="17px" /><List gap="s" /></>;\n',
+      );
+      await link(packageRoot, 'eslint', resolve(uiRoot, 'node_modules/eslint'));
+      await link(
+        packageRoot,
+        'eslint-plugin-kerfjs',
+        resolve(repositoryRoot, 'eslint-plugin'),
+      );
+      await link(packageRoot, '@kerfjs/ui', uiRoot);
+
+      const result = await doctor(workspace, [
+        '--package',
+        '@example/web',
+        '--config',
+        'packages/web/.kerf-ui-doctor.json',
+      ]);
+      expect(result.report.diagnostics).toEqual([]);
+      expect(result.status).toBe(0);
+      expect(
+        result.report.stages
+          .filter((stage: { status: string }) => stage.status === 'ran')
+          .map((stage: { id: string }) => stage.id),
+      ).toEqual(['analyzer', 'catalog', 'eslint']);
+    } finally {
+      await rm(workspace, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);
+
+test(
   'doctor accepts the documented Pane scrollbar gutter token in consumer CSS',
   async () => {
     const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-pane-token-'));

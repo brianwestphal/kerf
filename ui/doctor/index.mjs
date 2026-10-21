@@ -497,7 +497,14 @@ async function installedPackageVersion(root, name) {
 
 async function cacheKey(root, packageRoot, mode, paths, config) {
   const files = await collectInputs(packageRoot);
-  for (const directory of new Set([root, packageRoot])) {
+  const profileDirectories = [];
+  let directory = packageRoot;
+  while (directory === root || !relative(root, directory).startsWith('..')) {
+    profileDirectories.push(directory);
+    if (directory === root) break;
+    directory = dirname(directory);
+  }
+  for (const directory of profileDirectories) {
     for (const name of [
       'package.json',
       'package-lock.json',
@@ -510,6 +517,20 @@ async function cacheKey(root, packageRoot, mode, paths, config) {
     ]) {
       const path = resolve(directory, name);
       if (!files.includes(path) && (await exists(path))) files.push(path);
+    }
+    const profilePath = resolve(directory, '.kerf-ui-profile.json');
+    if (await exists(profilePath)) {
+      try {
+        const profile = JSON.parse(await readFile(profilePath, 'utf8'));
+        for (const catalog of profile.catalogs ?? [])
+          for (const reference of [catalog.selection, catalog.composition]) {
+            if (typeof reference?.path !== 'string') continue;
+            const path = resolve(directory, reference.path);
+            if (!files.includes(path) && (await exists(path))) files.push(path);
+          }
+      } catch {
+        // The profile file itself remains in the key; validation reports bad JSON.
+      }
     }
   }
   files.sort();
@@ -935,6 +956,7 @@ function eslintSeverity(severity, code) {
 }
 
 async function runEslint({
+  root,
   packageRoot,
   paths,
   eslintConfig = 'recommended-ui',
@@ -988,6 +1010,7 @@ async function runEslint({
     });
   }
   configs.push(preset);
+  configs.push({ settings: { kerfjs: { ui: { workspaceRoot: root } } } });
   const consumerEslint = new ESLint({ cwd: packageRoot });
   if (await consumerEslint.findConfigFile()) {
     const consumerCoreConfigs = await Promise.all(
@@ -1256,6 +1279,7 @@ export async function runUiDoctor({
                   ...normalizeAnalyzer(
                     await analyzeUiProject({
                       root: packageRoot,
+                      workspaceRoot: root,
                       paths: selectedPaths,
                       ownership: config.ownership ?? 'package',
                       ownershipContext: config.ownershipContext ?? 'subject',

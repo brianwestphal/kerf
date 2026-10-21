@@ -554,6 +554,69 @@ describe('Kerf UI doctor', () => {
     expect(calls).toBe(2);
   });
 
+  it('invalidates a package cache when parent profile or referenced catalog changes', async () => {
+    const root = await fixture();
+    const packageRoot = resolve(root, 'packages/web');
+    await mkdir(resolve(packageRoot, 'src'), { recursive: true });
+    await writeFile(
+      resolve(packageRoot, 'package.json'),
+      '{"name":"@example/web"}\n',
+    );
+    await writeFile(
+      resolve(packageRoot, 'src/view.tsx'),
+      'export const view = 1;\n',
+    );
+    await writeFile(
+      resolve(root, 'package.json'),
+      '{"private":true,"workspaces":["packages/*"]}\n',
+    );
+    const catalog = resolve(root, 'catalog.json');
+    const profile = resolve(root, '.kerf-ui-profile.json');
+    await writeFile(catalog, '{"version":1}\n');
+    await writeFile(
+      profile,
+      JSON.stringify({
+        schemaVersion: 1,
+        scope: 'workspace',
+        catalogs: [
+          { package: '@example/web', selection: { path: './catalog.json' } },
+        ],
+      }),
+    );
+    let calls = 0;
+    const options = {
+      root,
+      package: '@example/web',
+      config: {
+        schemaVersion: 1 as const,
+        stages: { ...disabled, analyzer: true },
+      },
+      runners: {
+        analyzer: async () => {
+          calls += 1;
+          return { diagnostics: [] };
+        },
+      },
+    };
+    await runUiDoctor(options as never);
+    expect((await runUiDoctor(options as never)).cache.hit).toBe(true);
+    await writeFile(catalog, '{"version":2}\n');
+    expect((await runUiDoctor(options as never)).cache.hit).toBe(false);
+    await writeFile(
+      profile,
+      JSON.stringify({
+        schemaVersion: 1,
+        scope: 'workspace',
+        catalogs: [
+          { package: '@example/web', selection: { path: './catalog.json' } },
+        ],
+        preferences: { controlOrder: 'new' },
+      }),
+    );
+    expect((await runUiDoctor(options as never)).cache.hit).toBe(false);
+    expect(calls).toBe(3);
+  });
+
   it('requires explicit changed paths and resolves workspace names and paths', async () => {
     const root = await fixture();
     await mkdir(resolve(root, 'packages/app'), { recursive: true });

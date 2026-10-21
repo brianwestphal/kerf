@@ -743,6 +743,10 @@ scaffold that passes its own `check:styles` while an app restyling its Counter
 is reported.
 
 `ui/doctor/` provides the shipped `kerf-ui-doctor` repair-loop API and CLI. The
+analyzer and isolated Kerf ESLint stages share the caller's workspace root for
+profile layers and exception targets while traversing only the selected package.
+The doctor cache hashes ancestor profiles and their referenced catalogs so a
+root policy edit invalidates a nested package's report.
 `component-style-checks.mjs` pass checks paired JSX/TSX component root classes,
 stylesheet filenames, and foreign component selectors (`KUI-D030`–`KUI-D032`).
 The `copy-capitalization-checks.mjs` pass (`KUI-D040`, warning) reads string

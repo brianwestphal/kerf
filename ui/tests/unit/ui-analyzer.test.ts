@@ -71,6 +71,59 @@ describe('Kerf UI static analyzer', () => {
     '../../ai/application-ui-profile.defaults.json',
   );
 
+  it('loads workspace and package profiles while analyzing only the selected package', async () => {
+    const workspace = await mkdtemp(
+      join(tmpdir(), 'kerf-ui-analyzer-workspace-'),
+    );
+    const packageRoot = join(workspace, 'packages/web');
+    await mkdir(join(packageRoot, 'src'), { recursive: true });
+    await mkdir(join(workspace, 'packages/other/src'), { recursive: true });
+    await writeFile(
+      join(workspace, '.kerf-ui-profile.json'),
+      JSON.stringify({
+        schemaVersion: 1,
+        scope: 'workspace',
+        exceptions: [
+          {
+            id: 'reviewed-spacing',
+            rules: ['KUI-L006'],
+            target: 'packages/web/src/app.css',
+            rationale: 'Existing spacing was reviewed for this package.',
+          },
+        ],
+      }),
+    );
+    await writeFile(
+      join(packageRoot, '.kerf-ui-profile.json'),
+      JSON.stringify({ schemaVersion: 1, scope: 'directory' }),
+    );
+    await writeFile(
+      join(packageRoot, 'src/app.css'),
+      '.app { padding: 7px; }\n',
+    );
+    await writeFile(
+      join(workspace, 'packages/other/src/app.css'),
+      '.other { padding: 7px; }\n',
+    );
+
+    const report = await analyzeUiProject({
+      root: packageRoot,
+      workspaceRoot: workspace,
+      profile: packageProfile,
+    });
+    expect(report.files).toEqual(['src/app.css']);
+    expect(report.profile.diagnostics).toEqual([]);
+    expect(report.summary.suppressed).toBeGreaterThan(0);
+    expect(report.diagnostics.some(({ ruleId }) => ruleId === 'KUI-L006')).toBe(
+      false,
+    );
+    expect(
+      report.profile.files?.some((file) =>
+        file.endsWith('.kerf-ui-profile.json'),
+      ),
+    ).toBe(true);
+  });
+
   it('separates definite failures from review findings with ownership evidence', async () => {
     const report = await analyzeUiProject({
       root: await fixture(),
