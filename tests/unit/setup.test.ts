@@ -38,6 +38,48 @@ afterEach(async () => {
 });
 
 describe('AI-first setup planner', () => {
+  it('installs and retains an import-only skill for shared guidance', async () => {
+    const root = await fixture(
+      { name: 'core-app', dependencies: { kerfjs: '4.4.1' } },
+      {
+        'AGENTS.md':
+          '# App guidance\nUse Kerf UI components and run npm run check.\n',
+      },
+    );
+    const plan = await planKerfSetup({
+      root,
+      version: '4.4.1',
+      guidanceSource: 'AGENTS.md',
+    });
+    expect(plan.conflicts).toEqual([]);
+    await applyKerfSetup(plan, { install: false });
+    const skill = await readFile(
+      join(root, '.claude/skills/kerf-app/SKILL.md'),
+      'utf8',
+    );
+    expect(skill).toContain('@../../../AGENTS.md\n');
+    const rerun = await planKerfSetup({ root, version: '4.4.1' });
+    expect(rerun.conflicts).toEqual([]);
+    expect(
+      rerun.actions.some(
+        ({ path }) => path === '.claude/skills/kerf-app/SKILL.md',
+      ),
+    ).toBe(false);
+  });
+
+  it('rejects absent or ineffective shared guidance', async () => {
+    const root = await fixture({
+      name: 'core-app',
+      dependencies: { kerfjs: '4.4.1' },
+    });
+    await expect(
+      planKerfSetup({ root, version: '4.4.1', guidanceSource: 'AGENTS.md' }),
+    ).rejects.toThrow('must exist');
+    await writeFile(join(root, 'AGENTS.md'), '# Generic project\n');
+    await expect(
+      planKerfSetup({ root, version: '4.4.1', guidanceSource: 'AGENTS.md' }),
+    ).rejects.toThrow('Kerf and a project check');
+  });
   it('preserves JSONC comments, trailing commas, extends, and authored includes', async () => {
     const tsconfig = `{
   // Keep the shared base and its formatting.

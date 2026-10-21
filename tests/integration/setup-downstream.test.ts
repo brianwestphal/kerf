@@ -281,6 +281,53 @@ describe(
   { timeout: loadScaledTimeout(30_000) },
   () => {
     it(
+      'keeps shared AGENTS guidance import healthy through packed setup and lint',
+      async () => {
+        const root = resolve(temporaryRoot, 'shared-guidance-consumer');
+        await mkdir(resolve(root, 'src'), { recursive: true });
+        await writeFile(
+          resolve(root, 'package.json'),
+          `${JSON.stringify({ name: 'shared-guidance-consumer', private: true, type: 'module' })}\n`,
+        );
+        await writeFile(
+          resolve(root, 'src/index.ts'),
+          'export const ready = true;\n',
+        );
+        await writeFile(
+          resolve(root, 'AGENTS.md'),
+          '# Guidance\nUse Kerf components and run npm run check.\n',
+        );
+        await prepareModules(root);
+        await exec(
+          resolve(root, 'node_modules/.bin/kerfjs'),
+          [
+            '--core',
+            '--guidance-source',
+            'AGENTS.md',
+            '--write',
+            '--yes',
+            '--no-install',
+          ],
+          { cwd: root },
+        );
+        expect(
+          await readFile(
+            resolve(root, '.claude/skills/kerf-app/SKILL.md'),
+            'utf8',
+          ),
+        ).toContain('@../../../AGENTS.md');
+        await run('npm', ['run', 'kerf:check'], root);
+        const { stdout } = await exec(
+          resolve(root, 'node_modules/.bin/kerfjs'),
+          ['--core'],
+          { cwd: root },
+        );
+        expect(stdout).toContain('No changes.');
+      },
+      loadScaledTimeout(30_000),
+    );
+
+    it(
       'initializes a minimal core consumer that builds, lints, and discovers guidance',
       async () => {
         const root = resolve(temporaryRoot, 'core-consumer');

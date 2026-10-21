@@ -24,6 +24,7 @@
         ],
         "properties": {
           "mode": { "enum": ["core", "ui"] },
+          "guidanceSource": { "type": "string", "minLength": 1 },
           "package": { "type": "string", "minLength": 1 },
           "packagePath": { "type": "string", "minLength": 1 },
           "managed": {

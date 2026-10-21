@@ -159,6 +159,91 @@ function cleanup(root) {
   rmSync(root, { recursive: true, force: true });
 }
 
+test('shared import skill validates its source on every check', () => {
+  const shared =
+    '---\nname: kerf-app\ndescription: Use the shared workspace guidance for Kerf application work.\n---\n\n@../../../AGENTS.md\n';
+  const { root } = setupProject({ withClaude: true, skillBody: shared });
+  try {
+    const skill = () =>
+      runCheck(root).results.find((item) => item.file.name === 'skill').result;
+    assert.match(skill().reason, /missing/);
+    writeFileSync(join(root, 'AGENTS.md'), '# Generic project\n');
+    assert.match(skill().reason, /lacks Kerf/);
+    writeFileSync(
+      join(root, 'AGENTS.md'),
+      'Use Kerf UI components and run npm run check.\n',
+    );
+    assert.equal(skill().state, 'ok');
+    writeFileSync(
+      join(root, '.claude/skills/kerf-app/SKILL.md'),
+      shared.replace('../../../AGENTS.md', '../../../../outside.md'),
+    );
+    assert.match(skill().reason, /escapes/);
+  } finally {
+    cleanup(root);
+  }
+});
+
+test('shared setup state makes --fix restore the import, not the bundled copy', () => {
+  const { root, manifest } = setupProject({ withClaude: true });
+  try {
+    writeFileSync(
+      join(root, 'AGENTS.md'),
+      'Use Kerf UI and run npm run check.\n',
+    );
+    writeFileSync(
+      join(root, '.kerf-ai-setup.json'),
+      JSON.stringify({ packages: { '.': { guidanceSource: 'AGENTS.md' } } }),
+    );
+    const file = manifest.files.find((item) => item.name === 'skill');
+    applyFix(file, join(root, 'node_modules/kerfjs/ai'), root, '');
+    assert.equal(
+      runCheck(root).results.find((item) => item.file.name === 'skill').result
+        .state,
+      'ok',
+    );
+    const installed = readFileSync(join(root, file.dest), 'utf8');
+    assert.match(installed, /@\.\.\/\.\.\/\.\.\/AGENTS\.md/);
+    assert.doesNotMatch(installed, /KERF-APP-CANONICAL-END/);
+  } finally {
+    cleanup(root);
+  }
+});
+
+test('workspace package lint checks shared guidance at the workspace root', () => {
+  const shared =
+    '---\nname: kerf-app\ndescription: Use the shared workspace guidance for Kerf application work.\n---\n\n@../../../AGENTS.md\n';
+  const { root } = setupProject({ withClaude: true, skillBody: shared });
+  try {
+    writeFileSync(
+      join(root, 'AGENTS.md'),
+      'Use Kerf UI and run npm run check.\n',
+    );
+    writeFileSync(
+      join(root, '.kerf-ai-setup.json'),
+      JSON.stringify({
+        packages: { 'packages/app': { guidanceSource: 'AGENTS.md' } },
+      }),
+    );
+    const packageRoot = join(root, 'packages/app');
+    mkdirSync(packageRoot, { recursive: true });
+    assert.equal(runCheck(packageRoot).guidanceRoot, root);
+    assert.equal(
+      runCheck(packageRoot).results.find((item) => item.file.name === 'skill')
+        .result.state,
+      'ok',
+    );
+    writeFileSync(join(root, 'AGENTS.md'), '# Empty\n');
+    assert.match(
+      runCheck(packageRoot).results.find((item) => item.file.name === 'skill')
+        .result.reason,
+      /lacks Kerf/,
+    );
+  } finally {
+    cleanup(root);
+  }
+});
+
 async function lintProject(root, fix) {
   const eslint = new ESLint({
     cwd: root,

@@ -29,6 +29,8 @@ try {
 Options:
   --root <path>       Workspace root (default: current directory)
   --package <name>    Select a workspace package by name or relative path
+  --guidance-source <path>
+                       Use shared workspace guidance, e.g. AGENTS.md
   --core | --ui       Choose a mode when it cannot be detected
   --resolve <id>=<choice>
                        Resolve one conflict with keep or kerf (repeatable)
@@ -48,6 +50,7 @@ Options:
   const noInstall = args.includes('--no-install');
   const root = take('--root');
   const packageSelector = take('--package');
+  const guidanceSource = take('--guidance-source');
   const resolutions = {};
   for (const entry of takeAll('--resolve')) {
     const index = entry.lastIndexOf('=');
@@ -74,6 +77,7 @@ Options:
     package: packageSelector,
     mode: ui ? 'ui' : core ? 'core' : undefined,
     resolutions,
+    guidanceSource,
   });
   console.log(formatSetupPlan(plan));
   if (plan.conflicts.length) {

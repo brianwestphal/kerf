@@ -46,6 +46,8 @@ preserves tsconfig comments, trailing commas, and line endings), and wires the
 shipped guidance plus TypeScript/ESLint/catalog/doctor feedback without
 generating an application. In UI mode, the generated `kerf:check` runs all
 four checks; focused catalog and doctor scripts remain available separately.
+An optional shared-guidance source produces an import-only Claude skill; the
+ESLint hygiene rule validates the import and source instead of a copied skill.
 Workspace profile composition/selection paths and missing metadata sources
 follow the resolved `kerfComponentCatalog` declaration, including retained
 authored paths.

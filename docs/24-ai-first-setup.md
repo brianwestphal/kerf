@@ -14,11 +14,17 @@ npx kerfjs setup
 npx kerfjs setup --package @acme/app
 npx kerfjs setup --ui
 npx kerfjs setup --root ../monorepo --package @acme/app
+npx kerfjs setup --guidance-source AGENTS.md
 ```
 
 `--root <path>` names the workspace root (default: the current directory);
 workspace discovery, the lock, and `.kerf-ai-setup.json` are all relative to
 it.
+`--guidance-source <path>` selects an existing shared workspace document such as
+`AGENTS.md`. Setup then writes an import-only Claude skill that points to that
+document. The document must be inside the workspace and mention Kerf and either
+`kerf:check` or the project's `npm run check` gate. The choice persists across setup runs. The lint rule
+checks the import and its source; the shared document remains project-owned.
 
 Nothing is written until both `--write` and `--yes` are present:
 

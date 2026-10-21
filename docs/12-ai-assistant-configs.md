@@ -34,6 +34,9 @@ independent improvements:
    append zone untouched.
 
 Consumers normally install and update this contract with `npx kerfjs setup`.
+Projects with a shared `AGENTS.md` can use `npx kerfjs setup --guidance-source AGENTS.md`
+to install an import-only Claude skill. The lint rule validates the import and
+the shared source rather than a copied canonical skill in that mode.
 The safe planner also configures the matching TypeScript/ESLint feedback and,
 for UI projects, catalog/profile/doctor discovery. See
 [`docs/24-ai-first-setup.md`](./24-ai-first-setup.md).

@@ -647,6 +647,7 @@ export async function planKerfSetup({
   mode: requestedMode,
   version,
   resolutions = {},
+  guidanceSource,
 } = {}) {
   root = resolve(root);
   const selected = await selectPackage(root, selector, requestedMode);
@@ -670,6 +671,32 @@ export async function planKerfSetup({
     priorState.packagePath === packageKey ? priorState : {};
   const priorPackageState =
     priorState.packages?.[packageKey] ?? legacyPackageState;
+  guidanceSource ??= priorPackageState.guidanceSource;
+  if (guidanceSource) {
+    const sourcePath = resolve(root, guidanceSource);
+    if (!sourcePath.startsWith(`${root}/`))
+      throw new Error(
+        'Shared guidance source must be inside the workspace root.',
+      );
+    const actualSourcePath = await realpath(sourcePath).catch(() => null);
+    if (
+      actualSourcePath &&
+      !actualSourcePath.startsWith(`${await realpath(root)}/`)
+    )
+      throw new Error(
+        'Shared guidance source must resolve inside the workspace root.',
+      );
+    const source = await readText(sourcePath);
+    if (
+      !source ||
+      !/\bkerf(?:js)?\b/i.test(source) ||
+      !/(?:kerf:check|npm run check)/i.test(source)
+    )
+      throw new Error(
+        'Shared guidance source must exist and describe Kerf and a project check command.',
+      );
+    guidanceSource = portable(root, sourcePath);
+  }
   if (
     priorPackageState.package &&
     priorPackageState.package !== (selected.manifest.name ?? packageKey)
@@ -724,6 +751,33 @@ export async function planKerfSetup({
       continue;
     const destination = resolve(root, file.dest);
     const bundled = await readFile(resolve(packageRoot, file.bundle), 'utf8');
+    if (file.name === 'skill' && guidanceSource) {
+      const sourcePath = resolve(root, guidanceSource);
+      const importPath = relative(dirname(destination), sourcePath).replaceAll(
+        '\\',
+        '/',
+      );
+      const shared = `---\nname: kerf-app\ndescription: Use the shared workspace guidance for Kerf application work.\n---\n\n@${importPath}\n`;
+      const current = await readText(destination);
+      knownResolutionIds.add(file.dest);
+      if (current !== null && current !== shared && !resolutions[file.dest]) {
+        activeConflictIds.add(file.dest);
+        conflicts.push({
+          id: file.dest,
+          message: 'shared guidance import differs from existing skill',
+        });
+      } else if (
+        current === null ||
+        current === shared ||
+        resolutions[file.dest] === 'kerf'
+      ) {
+        await addAction(destination, shared, 'canonical');
+        managedAfter[file.dest] = { sha256: sha256(shared) };
+      } else {
+        activeConflictIds.add(file.dest);
+      }
+      continue;
+    }
     const merged = mergeCanonical(
       await readText(destination),
       bundled,
@@ -1085,6 +1139,9 @@ export async function planKerfSetup({
                 mode: priorState.mode,
                 package: priorState.package,
                 packagePath: priorState.packagePath,
+                ...(priorState.guidanceSource
+                  ? { guidanceSource: priorState.guidanceSource }
+                  : {}),
                 managed: priorState.managed ?? {},
                 resolutions: priorState.resolutions ?? {},
               },
@@ -1094,6 +1151,7 @@ export async function planKerfSetup({
         mode,
         package: nextManifest.name ?? packageKey,
         packagePath: packageKey,
+        ...(guidanceSource ? { guidanceSource } : {}),
         managed: managedAfter,
         resolutions: Object.fromEntries(
           [...activeConflictIds]

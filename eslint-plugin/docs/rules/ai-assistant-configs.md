@@ -17,6 +17,16 @@ The rule resolves `kerfjs/ai/manifest.json` from the consumer's installed `kerfj
 
 A triggered file is then classified into one of three reported states (a fourth, "up-to-date," is silent):
 
+With `--guidance-source AGENTS.md`, setup writes an import-only Claude skill.
+The rule accepts its generated form and checks that the import resolves within
+the workspace to a readable document containing Kerf and a project check command
+instructions. A missing, malformed, or ineffective source is reported as
+forked. This authored guidance mode does not compare the source to the bundled
+skill version; review its Kerf instructions during upgrades.
+When lint runs inside a workspace package, the rule finds setup state in a
+parent directory and checks the workspace-root guidance. `eslint --fix`
+restores the import-only skill when that mode is recorded in setup state.
+
 - **Missing** — the consumer's `dest` doesn't exist.
 - **Stale** — exists, parses cleanly, its `kerf-skill-version` line is older than the bundle's, and its canonical-section hash matches that version in the manifest's history.
 - **Forked** — the consumer's file no longer matches the canonical layout: marker is missing, marker appears more than once, `kerf-skill-version` line is missing, or the content above the marker has been edited.

@@ -14,13 +14,55 @@
  * flag.
  */
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  realpathSync,
+  writeFileSync,
+} from 'node:fs';
 import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve, relative } from 'node:path';
 
 const MARKER = '<!-- KERF-APP-CANONICAL-END · your customizations below -->';
 const VERSION_RE = /kerf-skill-version:\s*(\d+\.\d+\.\d+(?:-[\w.]+)?)/;
 const VERSION_SCAN_BYTES = 512;
+const SHARED_SKILL_PREFIX =
+  '---\nname: kerf-app\ndescription: Use the shared workspace guidance for Kerf application work.\n---\n\n@';
+
+function sharedGuidanceSource(cwd) {
+  try {
+    const state = JSON.parse(
+      readFileSync(join(cwd, '.kerf-ai-setup.json'), 'utf8'),
+    );
+    const sources = new Set(
+      Object.values(state.packages ?? {})
+        .map((entry) => entry.guidanceSource)
+        .filter(Boolean),
+    );
+    return sources.size === 1 ? [...sources][0] : null;
+  } catch {
+    return null;
+  }
+}
+
+function guidanceRoot(cwd) {
+  let current = cwd;
+  while (true) {
+    if (existsSync(join(current, '.kerf-ai-setup.json'))) return current;
+    const parent = dirname(current);
+    if (parent === current) return cwd;
+    current = parent;
+  }
+}
+
+function sharedSkill(file, cwd, source) {
+  const importPath = relative(
+    dirname(join(cwd, file.dest)),
+    join(cwd, source),
+  ).replaceAll('\\', '/');
+  return `${SHARED_SKILL_PREFIX}${importPath}\n`;
+}
 
 // Module-level once-per-lint-run guard. ESLint instantiates the rule
 // per-file; we do the project-level filesystem check the first time the
@@ -105,6 +147,50 @@ export function classifyFile(file, bundleDir, cwd) {
     return { state: 'missing' };
   }
 
+  if (
+    file.name === 'skill' &&
+    /^---\nname: kerf-app\n/.test(consumer) &&
+    /\n@[^\n]+\n$/.test(consumer)
+  ) {
+    const match = consumer.match(
+      /^---\nname: kerf-app\ndescription: Use the shared workspace guidance for Kerf application work\.\n---\n\n@([^\n]+)\n$/,
+    );
+    if (!match)
+      return { state: 'forked', reason: 'malformed shared guidance import' };
+    const sourcePath = resolve(dirname(destAbs), match[1]);
+    const sourceRelative = relative(cwd, sourcePath);
+    if (sourceRelative === '..' || sourceRelative.startsWith('../'))
+      return {
+        state: 'forked',
+        reason: 'shared guidance import escapes the workspace',
+      };
+    let source;
+    try {
+      const actualRelative = relative(
+        realpathSync(cwd),
+        realpathSync(sourcePath),
+      );
+      if (actualRelative === '..' || actualRelative.startsWith('../'))
+        return {
+          state: 'forked',
+          reason: 'shared guidance import escapes the workspace',
+        };
+      source = readFileSync(sourcePath, 'utf8');
+    } catch {
+      return { state: 'forked', reason: 'shared guidance source is missing' };
+    }
+    if (
+      !/\bkerf(?:js)?\b/i.test(source) ||
+      !/(?:kerf:check|npm run check)/i.test(source)
+    )
+      return {
+        state: 'forked',
+        reason:
+          'shared guidance source lacks Kerf or project check instructions',
+      };
+    return { state: 'ok' };
+  }
+
   const markerIdx = findMarkerIndex(consumer);
   if (markerIdx === -1)
     return { state: 'forked', reason: 'no canonical-end marker' };
@@ -183,12 +269,23 @@ function isTriggered(name, cwd) {
 export function runCheck(cwd) {
   const bundle = loadBundle(cwd);
   if (!bundle) return null;
+  const root = guidanceRoot(cwd);
   const results = [];
+  const sharedSource = sharedGuidanceSource(root);
   for (const file of bundle.manifest.files) {
-    if (!isTriggered(file.name, cwd)) continue;
-    results.push({ file, result: classifyFile(file, bundle.bundleDir, cwd) });
+    if (!isTriggered(file.name, root)) continue;
+    let result = classifyFile(file, bundle.bundleDir, root);
+    if (file.name === 'skill' && sharedSource && result.state === 'ok') {
+      const actual = readFileSync(join(root, file.dest), 'utf8');
+      if (actual !== sharedSkill(file, root, sharedSource))
+        result = {
+          state: 'forked',
+          reason: 'expected the configured shared guidance import',
+        };
+    }
+    results.push({ file, result });
   }
-  return { results, bundleDir: bundle.bundleDir };
+  return { results, bundleDir: bundle.bundleDir, guidanceRoot: root };
 }
 
 /**
@@ -198,7 +295,10 @@ export function runCheck(cwd) {
  */
 export function applyFix(file, bundleDir, cwd, appendZone) {
   const bundlePath = join(bundleDir, file.bundle.replace(/^ai\//, ''));
-  const canonical = readFileSync(bundlePath, 'utf8');
+  const sharedSource = file.name === 'skill' && sharedGuidanceSource(cwd);
+  const canonical = sharedSource
+    ? sharedSkill(file, cwd, sharedSource)
+    : readFileSync(bundlePath, 'utf8');
   const dest = join(cwd, file.dest);
   mkdirSync(dirname(dest), { recursive: true });
   writeFileSync(dest, canonical + (appendZone || ''));
@@ -267,7 +367,8 @@ function create(context) {
             messageId: 'missing',
             data,
             fix() {
-              if (isFixCliRun()) applyFix(file, checked.bundleDir, cwd, '');
+              if (isFixCliRun())
+                applyFix(file, checked.bundleDir, checked.guidanceRoot, '');
               return null;
             },
           });
@@ -282,7 +383,12 @@ function create(context) {
             },
             fix() {
               if (isFixCliRun()) {
-                applyFix(file, checked.bundleDir, cwd, result.appendZone);
+                applyFix(
+                  file,
+                  checked.bundleDir,
+                  checked.guidanceRoot,
+                  result.appendZone,
+                );
               }
               return null;
             },

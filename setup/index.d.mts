@@ -28,6 +28,7 @@ export function planKerfSetup(options?: {
   package?: string;
   mode?: 'core' | 'ui';
   version?: string;
+  guidanceSource?: string;
   resolutions?: Record<string, 'keep' | 'kerf'>;
 }): Promise<KerfSetupPlan>;
 export function formatSetupPlan(plan: KerfSetupPlan): string;
