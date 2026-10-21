@@ -8568,7 +8568,7 @@ test('separates focused TabBarItem and TabBar specimens from the application-tab
     'composition',
   );
   await expect(
-    page.locator('[data-demo="application-tabs"] [role="tabpanel"]'),
+    page.locator('[data-demo="application-tabs"] #catalog-active-panel'),
   ).toContainText('components');
 });
 
@@ -9021,7 +9021,7 @@ test('opens an added tab pending with a placeholder panel, selectable until it l
   await expect(added).toBeEnabled();
   await expect(added).toHaveCSS('opacity', '1');
   await expect(root.locator('.kui-loading-spinner')).toBeVisible();
-  const panel = demo.getByRole('tabpanel');
+  const panel = demo.locator('#catalog-active-panel');
   await expect(panel).toHaveAttribute('aria-busy', 'true');
   await expect(panel.locator('.kui-skeleton')).toBeVisible();
   // The application's selection of the added tab scrolls the strip to it.
