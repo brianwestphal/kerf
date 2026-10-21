@@ -12,7 +12,7 @@ This skill is the kerf-specific equivalent of Hot Sheet's stock `/hotsheet` skil
 1. Read `.hotsheet2/worklist.md` for the current Up Next list. (Skip the channel server's Up Next semantics — kerf doesn't run a Claude channel.)
 2. For each ticket in priority order:
    - Mark it `started` via the Hot Sheet API.
-   - Implement the work, following the conventions in `CLAUDE.md`.
+   - Implement the work, following the conventions in `AGENTS.md`.
    - Run the gates: `npm run typecheck`, `npm run lint`, `npm test`. All must pass.
    - Mark the ticket `completed` with notes summarising what shipped.
 3. Stop when the Up Next list is exhausted OR when a ticket needs feedback.

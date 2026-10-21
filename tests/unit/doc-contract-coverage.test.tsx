@@ -306,7 +306,7 @@ describe('Doc contract coverage (KF-104)', () => {
       // happy-dom's `DOMParser('image/svg+xml')` is broken for SVG (returns
       // a document with null documentElement); jsdom and real browsers get
       // it right. The dedicated `tests/unit/toElement.test.ts` uses jsdom
-      // for that reason — see CLAUDE.md "tech stack" notes. Here we assert
+      // for that reason — see AGENTS.md "tech stack" notes. Here we assert
       // basic structural integrity.
       const el = toElement(
         '<svg viewBox="0 0 10 10"><circle cx="5" cy="5" r="4"/></svg>',

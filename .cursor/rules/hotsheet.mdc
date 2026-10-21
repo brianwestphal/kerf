@@ -73,7 +73,7 @@ for a ticket attachment. If capture or attachment is genuinely impossible after 
 safe alternatives, state the specific reason in the completion note. Screenshots supplement
 behavioral assertions; they do not replace them.
 
-Before attaching correctness evidence, apply `CLAUDE.md`'s visual-QA policy to the actual
+Before attaching correctness evidence, apply `AGENTS.md`'s visual-QA policy to the actual
 capture, not just its assertions: critically inspect readability, usability, contextual
 aesthetic fit and flow/order, clipping or truncation, icon-label alignment, spacing,
 responsive behavior, and any other obvious defect. Fix every defect found, rerun affected

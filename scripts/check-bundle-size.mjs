@@ -443,12 +443,12 @@ const DOC_CLAIMS = [
   },
   { file: 'README.md', pattern: /min%2Bgzip-~([\d.]+)%20KB/, figure: 'main' },
   {
-    file: 'CLAUDE.md',
+    file: 'AGENTS.md',
     pattern: /roughly ([\d.]+) KB minified \+ gzipped without `arraySignal`/,
     figure: 'main',
   },
   {
-    file: 'CLAUDE.md',
+    file: 'AGENTS.md',
     pattern: /without `arraySignal`, ([\d.]+) KB with it/,
     figure: 'withArraySignal',
   },
@@ -785,7 +785,7 @@ async function main() {
     for (const p of claimProblems) console.error(`  - ${p}`);
     console.error(
       `\nRound to the nearest KB, and round UP rather than down — understating is the worse\n` +
-        'direction to be wrong in. Then update every surface: `grep -rn "KB" README.md CLAUDE.md\n' +
+        'direction to be wrong in. Then update every surface: `grep -rn "KB" README.md AGENTS.md\n' +
         'llms.txt docs/ site/src/content/docs/`. The migration pages also carry a Delta row\n' +
         "computed against kerf's size, which needs recalculating by hand.\n",
     );

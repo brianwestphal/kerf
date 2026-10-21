@@ -2,7 +2,7 @@
 /**
  * KF-433: fail the gate when a Hot Sheet ticket marker (`KF-<digits>`) reaches
  * a surface the site publishes. Hot Sheet is local-only, so a bare ticket
- * number is unlookable for every site reader; the CLAUDE.md convention bans
+ * number is unlookable for every site reader; the AGENTS.md convention bans
  * them from published pages. That convention was enforced only by reviewer
  * memory until now, which is how 18 markers accumulated on the dev-warnings
  * page before anyone noticed.

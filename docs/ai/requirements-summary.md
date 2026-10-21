@@ -73,7 +73,7 @@ Status markers:
 - **Design-only** — described in docs, not yet implemented.
 - **Deferred** — explicitly out of scope for now.
 
-> **Scope note.** This summary mirrors every numbered doc in `docs/`, including numbered setup and workflow contracts. Incidental tooling-meta tickets that have no numbered requirements doc — coverage-threshold adjustments, test-suite tiering, lint config, or pipeline tweaks — remain canonically recorded in `CLAUDE.md`, configuration, and `CHANGELOG.md` rather than receiving dashboard rows here.
+> **Scope note.** This summary mirrors every numbered doc in `docs/`, including numbered setup and workflow contracts. Incidental tooling-meta tickets that have no numbered requirements doc — coverage-threshold adjustments, test-suite tiering, lint config, or pipeline tweaks — remain canonically recorded in `AGENTS.md`, configuration, and `CHANGELOG.md` rather than receiving dashboard rows here.
 
 ## Dashboard
 

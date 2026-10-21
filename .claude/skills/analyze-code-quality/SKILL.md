@@ -4,7 +4,7 @@ description: Run all available tests and linters, check for anti-patterns, and g
 allowed-tools: Read, Grep, Glob, Bash, Agent
 ---
 
-> **Thresholds and file lists live in the config files, not here.** `vitest.config.ts` owns the coverage bar, `tsup.config.ts` owns the entry list, CLAUDE.md owns the conventions. Every one of those has been out of sync with a copy in this skill at least once. Read the source of truth; treat figures below as pointers to where to look. The mechanical recipes are the durable part.
+> **Thresholds and file lists live in the config files, not here.** `vitest.config.ts` owns the coverage bar, `tsup.config.ts` owns the entry list, AGENTS.md owns the conventions. Every one of those has been out of sync with a copy in this skill at least once. Read the source of truth; treat figures below as pointers to where to look. The mechanical recipes are the durable part.
 
 Analyze the overall quality of the kerf source code. Generate a comprehensive report.
 
@@ -16,7 +16,7 @@ Analyze the overall quality of the kerf source code. Generate a comprehensive re
    npm test
    ```
 
-   Report: total tests, pass/fail count, coverage percentage by file. **Read the thresholds out of `vitest.config.ts`** rather than trusting a number quoted here — they are the enforcement, so anything that passes `npm test` is by definition at or above the bar. As of writing: 100% lines / functions / statements, **99% branches**. The branch allowance is deliberate and documented in CLAUDE.md — a handful of `c8 ignore` defensive returns whose loop-completion branches v8 tracks but which cannot be exercised by construction. Do NOT flag a file for sitting under the branch bar; flag only a file that drags the total below the configured threshold — which would have failed the run anyway.
+   Report: total tests, pass/fail count, coverage percentage by file. **Read the thresholds out of `vitest.config.ts`** rather than trusting a number quoted here — they are the enforcement, so anything that passes `npm test` is by definition at or above the bar. As of writing: 100% lines / functions / statements, **99% branches**. The branch allowance is deliberate and documented in AGENTS.md — a handful of `c8 ignore` defensive returns whose loop-completion branches v8 tracks but which cannot be exercised by construction. Do NOT flag a file for sitting under the branch bar; flag only a file that drags the total below the configured threshold — which would have failed the run anyway.
 
    **Coverage is a floor, not a ceiling.** 100% line/branch coverage proves every line _executed_ — not that every _behavior_ or every _sequence_ of behaviors is _asserted_. Line coverage is structurally blind to a missing state transition (KF-125: two critical reconciler bugs shipped under 100% coverage). Do NOT treat a green coverage report as proof of correctness — treat it as the trigger for the **behavioral / state-transition audit** in step 7 below.
 
@@ -52,15 +52,15 @@ Analyze the overall quality of the kerf source code. Generate a comprehensive re
 
    Report any type errors.
 
-6. **Check for anti-patterns documented in CLAUDE.md and the design docs**
+6. **Check for anti-patterns documented in AGENTS.md and the design docs**
 
-   Read `CLAUDE.md`, `docs/8-api-reference.md`, and `docs/ai/usage-guide.md`. Look for violations in `src/` of documented conventions:
+   Read `AGENTS.md`, `docs/8-api-reference.md`, and `docs/ai/usage-guide.md`. Look for violations in `src/` of documented conventions:
 
-   - **File length**. Read CLAUDE.md § _Code Quality Gates_ for the current rule instead of a number quoted here. As of writing it is "one coherent concern per file", with ~500 LOC a _smell_ worth a second look, **not a gate** — and a large file housing one algorithm (the keyed list reconciler is named explicitly) is not a finding. Rank with `wc -l src/*.ts src/utils/*.ts | sort -rn`, then judge each large file on concern count.
-   - **Missing `.js` extension on relative imports**. CLAUDE.md says: _"Import paths use `.js` extension (TypeScript convention for ESM resolution)."_ Grep `src/` and `tests/` for relative imports without `.js`.
-   - **Files violating one-primary-export-per-file**. CLAUDE.md design rule #4. A few legitimate exceptions exist (`delegate.ts` exports the paired `delegate` + `delegateCapture`; `escapeHtml.ts` exports paired escapers; `jsx-runtime.ts` exports the JSX-spec-required cluster `jsx`/`jsxs`/`jsxDEV`/`Fragment`). Anything else with multiple unrelated exports is a violation.
+   - **File length**. Read AGENTS.md § _Code Quality Gates_ for the current rule instead of a number quoted here. As of writing it is "one coherent concern per file", with ~500 LOC a _smell_ worth a second look, **not a gate** — and a large file housing one algorithm (the keyed list reconciler is named explicitly) is not a finding. Rank with `wc -l src/*.ts src/utils/*.ts | sort -rn`, then judge each large file on concern count.
+   - **Missing `.js` extension on relative imports**. AGENTS.md says: _"Import paths use `.js` extension (TypeScript convention for ESM resolution)."_ Grep `src/` and `tests/` for relative imports without `.js`.
+   - **Files violating one-primary-export-per-file**. AGENTS.md design rule #4. A few legitimate exceptions exist (`delegate.ts` exports the paired `delegate` + `delegateCapture`; `escapeHtml.ts` exports paired escapers; `jsx-runtime.ts` exports the JSX-spec-required cluster `jsx`/`jsxs`/`jsxDEV`/`Fragment`). Anything else with multiple unrelated exports is a violation.
    - **`any` type leaks**. Grep `src/` for `: any\b`, `as any\b`, `<any>`. Permitted only behind a type guard (we use `unknown` and `isSafeHtml(...)` pattern).
-   - **Dependency creep**. CLAUDE.md § _Conventions_ scopes dependencies by side: the browser runtime (`src/`) may import only `@preact/signals-core`; the Node-only setup CLI (`setup/`) may also use `minimatch` and `yaml`. `tests/unit/dependency-contract.test.ts` enforces both allowlists and that `package.json` `dependencies` equals their union, so a green test run already covers the mechanical check. Flag any new dependency, any widening of either allowlist, and any runtime import that would pull a setup-side package into `dist/`.
+   - **Dependency creep**. AGENTS.md § _Conventions_ scopes dependencies by side: the browser runtime (`src/`) may import only `@preact/signals-core`; the Node-only setup CLI (`setup/`) may also use `minimatch` and `yaml`. `tests/unit/dependency-contract.test.ts` enforces both allowlists and that `package.json` `dependencies` equals their union, so a green test run already covers the mechanical check. Flag any new dependency, any widening of either allowlist, and any runtime import that would pull a setup-side package into `dist/`.
    - **Inline `addEventListener` calls in test/example code on morph-managed nodes**. Symptom of skipping `delegate()` / `delegateCapture()`. Grep `examples/` and `tests/` for `addEventListener` outside `data-morph-skip` regions and flag for review.
    - **Duplicate code across files**. Sample heuristic: search for repeated `DOMParser` + `parsererror` blocks (already a known pattern in `src/toElement.ts`), repeated try/catch idioms across modules, or any source-line matched ≥3× by `grep -c`.
 

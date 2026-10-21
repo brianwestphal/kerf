@@ -34,7 +34,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DOC_PATH = 'docs/11-dev-warnings.md';
 const PUBLISHED_DOC_PATH = 'site/src/content/docs/docs/dev-warnings.md';
 const GATING_PROSE_PATHS = [
-  'CLAUDE.md',
+  'AGENTS.md',
   DOC_PATH,
   'docs/2-reactivity.md',
   'docs/3-stores.md',

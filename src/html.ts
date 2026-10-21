@@ -63,7 +63,7 @@ export type HtmlValue =
 const PARSE_CACHE = new WeakMap<TemplateStringsArray, ParsedTemplate>();
 
 // Module-level mutable counter, sanctioned as observability-only state (see
-// CLAUDE.md design rule 5): it feeds the `_parseCount()` test hook that pins
+// AGENTS.md design rule 5): it feeds the `_parseCount()` test hook that pins
 // the parse-once-per-callsite cache behavior and never influences rendering.
 let parseCount = 0;
 

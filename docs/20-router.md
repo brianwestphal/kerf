@@ -7,7 +7,7 @@
 
 ## 20.1 Why a router, and why it doesn't contradict "Not a router"
 
-`docs/1-overview.md` and `CLAUDE.md` say kerf is **"Not a router."** That is a
+`docs/1-overview.md` and `AGENTS.md` say kerf is **"Not a router."** That is a
 statement about the **core runtime** — kerf-the-UI-runtime is not a full
 framework. It is not a claim that no official router may exist. `kerfjs/router`
 ships the router as a _separate, opt-in subpath_, on the exact footing as

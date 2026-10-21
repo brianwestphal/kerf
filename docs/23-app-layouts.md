@@ -1519,5 +1519,5 @@ unit and three-engine Playwright coverage, a UX-demo recipe, consumer docs
 6. **AI layout-selection guidance** (§5) — decision matrix into `ui/ai/skill.md`,
    `ui/llms.txt`, decision-guidance, and consumer docs.
 
-All phases above are shipped and indexed in `CLAUDE.md` and
+All phases above are shipped and indexed in `AGENTS.md` and
 [`docs/ai/requirements-summary.md`](ai/requirements-summary.md).

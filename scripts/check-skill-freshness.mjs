@@ -4,7 +4,7 @@
  * a path that the real source of truth disagrees with.
  *
  * Three of the repo's skills had silently rotted the same way: each had COPIED
- * a number out of CLAUDE.md / `vitest.config.ts` / `tsup.config.ts` instead of
+ * a number out of AGENTS.md / `vitest.config.ts` / `tsup.config.ts` instead of
  * referencing it, the original moved, and the copy stayed. Nothing failed —
  * skills are prose, so drift only surfaces as an agent confidently reporting
  * findings that aren't real. `/check-code-hygiene` was flagging 13 of ~47
@@ -76,8 +76,8 @@ const entryNames = [
 
 const linesThreshold = /lines:\s*(\d+)/.exec(thresholdBlock)?.[1];
 
-const claudeMd = read('CLAUDE.md');
-const locSmell = /past ~(\d+) LOC is a \*smell\*/.exec(claudeMd)?.[1];
+const agentsMd = read('AGENTS.md');
+const locSmell = /past ~(\d+) LOC is a \*smell\*/.exec(agentsMd)?.[1];
 
 /**
  * Only the claim SHAPES that have actually gone stale are matched — not every
@@ -97,8 +97,8 @@ const NUMERIC_CLAIMS = [
     // "under ~200 LOC", "exceeding ~200 LOC", "past ~500 LOC"
     pattern: /(?:under|exceeding|past|over)\s+~(\d+)\s+LOC/gi,
     expected: () => locSmell,
-    owner: 'CLAUDE.md § Code Quality Gates',
-    fix: 'Reference the CLAUDE.md rule instead of quoting a number, or update the number to match.',
+    owner: 'AGENTS.md § Code Quality Gates',
+    fix: 'Reference the AGENTS.md rule instead of quoting a number, or update the number to match.',
   },
   {
     label: 'combined lines/branches coverage threshold',

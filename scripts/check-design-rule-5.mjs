@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Enforce CLAUDE.md **Design rule 5** — module-level mutable state in `src/` is
+ * Enforce AGENTS.md **Design rule 5** — module-level mutable state in `src/` is
  * restricted to the places the rule enumerates.
  *
  * The rule's entire force comes from being exhaustive: "restricted to four
@@ -12,7 +12,7 @@
  *
  * A top-level `let` in `src/` is accounted for when either:
  *
- *   1. its identifier is named in the rule-5 paragraph of CLAUDE.md, or
+ *   1. its identifier is named in the rule-5 paragraph of AGENTS.md, or
  *   2. it lives in a `dev-*.ts` module — the rule covers those categorically as
  *      dev-only bookkeeping (one-shot dedup flags, the delegate nesting
  *      counter), because naming each one would make the rule churn every time a
@@ -30,21 +30,21 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = join(ROOT, 'src');
 
-/** The text of CLAUDE.md's Design rule 5, so identifiers can be looked up in it. */
+/** The text of AGENTS.md's Design rule 5, so identifiers can be looked up in it. */
 function ruleText() {
-  const claudeMd = readFileSync(join(ROOT, 'CLAUDE.md'), 'utf8');
-  const start = claudeMd.indexOf(
+  const agentsMd = readFileSync(join(ROOT, 'AGENTS.md'), 'utf8');
+  const start = agentsMd.indexOf(
     '5. **Module-level mutable state is restricted',
   );
   if (start === -1) {
     console.error(
-      'check-design-rule-5: could not find Design rule 5 in CLAUDE.md.\n' +
+      'check-design-rule-5: could not find Design rule 5 in AGENTS.md.\n' +
         'If the rule was renumbered or reworded, update the anchor in this script.',
     );
     process.exit(1);
   }
   // The rule runs to the next numbered design rule, or to the end of the list.
-  const rest = claudeMd.slice(start + 1);
+  const rest = agentsMd.slice(start + 1);
   const end = rest.search(/\n\s*\d+\. \*\*/);
   return end === -1 ? rest : rest.slice(0, end);
 }
@@ -81,7 +81,7 @@ for (const file of sourceFiles()) {
 
 if (unaccounted.length > 0) {
   console.error(
-    '\nModule-level mutable state not accounted for by CLAUDE.md Design rule 5:\n',
+    '\nModule-level mutable state not accounted for by AGENTS.md Design rule 5:\n',
   );
   for (const hit of unaccounted)
     console.error(`  ${hit.where}  —  ${hit.name}`);

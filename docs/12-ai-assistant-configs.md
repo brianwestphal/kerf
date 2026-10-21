@@ -425,7 +425,7 @@ existing CI is already running.
 | Recommended config     | —                                                         | `eslint-plugin/index.js` `recommendedRules` table        |
 | Numbered doc           | This file (§12)                                           | This file (§12.4)                                        |
 | AI usage guide         | `docs/ai/usage-guide.md` install section                  | `docs/ai/usage-guide.md` companion-plugin section        |
-| CLAUDE.md section      | "Drop-in AI-tool config"                                  | "Drop-in AI-tool config"                                 |
+| AGENTS.md section      | "Drop-in AI-tool config"                                  | "Drop-in AI-tool config"                                 |
 
 ## 12.7 Adding a new bundled file
 
@@ -446,7 +446,7 @@ or an `.github/copilot-instructions.md`), the steps are:
    `eslint-plugin/lib/rules/ai-assistant-configs.js` —
    "if `.windsurf/` exists, also check this file."
 6. Update this doc (§12.6 table + a note in §12.4.1 if the trigger
-   logic is non-obvious), the AI usage guide, and the CLAUDE.md
+   logic is non-obvious), the AI usage guide, and the AGENTS.md
    install section.
 7. CHANGELOG entry naming the ticket and the new bundled file.
 

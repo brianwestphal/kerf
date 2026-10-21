@@ -4,7 +4,7 @@ description: Check code for standardization, readability, maintenance complexity
 allowed-tools: Read, Grep, Glob, Bash, Agent
 ---
 
-> **Thresholds live in CLAUDE.md, not here.** Every number and file list in this skill has gone stale at least once by being copied rather than referenced. Before flagging anything against a _rule_, open CLAUDE.md and read the current text; treat any figure quoted below as a pointer to the right section, never as the authority. The mechanical recipes (greps, `wc`, dependency checks) are the durable part of this skill.
+> **Thresholds live in AGENTS.md, not here.** Every number and file list in this skill has gone stale at least once by being copied rather than referenced. Before flagging anything against a _rule_, open AGENTS.md and read the current text; treat any figure quoted below as a pointer to the right section, never as the authority. The mechanical recipes (greps, `wc`, dependency checks) are the durable part of this skill.
 
 Analyze the kerf codebase for code hygiene issues. Generate a report highlighting problems with standardization, human readability, maintenance complexity, and defensive coding.
 
@@ -16,13 +16,13 @@ Scope: `src/` and (where relevant) `tests/`. Skip `examples/` unless something t
 
 - **File naming conventions**: `src/` uses kebab-case / lowercase (`mount.ts`, `jsx-runtime.ts`) by default. **camelCase is allowed when the filename matches the primary function / class / value exported from that file** — e.g. `toElement.ts` exports `toElement`, `escapeHtml.ts` exports `escapeHtml`. The principle is "filename = primary export"; that mirroring is more useful than a global casing rule. Flag a casing only if the filename matches _neither_ convention nor its primary export.
 - **Function / variable / type naming**: TypeScript identifiers use camelCase for values, PascalCase for types/classes, SCREAMING_SNAKE_CASE for module-level constants. Flag inconsistencies.
-- **One-primary-export-per-file** (CLAUDE.md design rule #4). Legitimate exceptions: `delegate.ts` (Tier 1 + Tier 2 paired), `escapeHtml.ts` (paired escapers), `jsx-runtime.ts` (the JSX runtime contract). Anything else with multiple unrelated exports is a finding.
-- **Import patterns**: All relative imports must use the `.js` extension (CLAUDE.md). eslint-plugin-simple-import-sort enforces order — if lint passes, import order is fine. The `.js` extension check is your responsibility.
+- **One-primary-export-per-file** (AGENTS.md design rule #4). Legitimate exceptions: `delegate.ts` (Tier 1 + Tier 2 paired), `escapeHtml.ts` (paired escapers), `jsx-runtime.ts` (the JSX runtime contract). Anything else with multiple unrelated exports is a finding.
+- **Import patterns**: All relative imports must use the `.js` extension (AGENTS.md). eslint-plugin-simple-import-sort enforces order — if lint passes, import order is fine. The `.js` extension check is your responsibility.
 - **Error message style**: kerf throws descriptive errors with hints (`'JSX: unsupported child of type X. Common mistakes: ...'`). New errors should follow that pattern; flag terse `throw new Error('failed')`-style throws.
 
 ### 2. Human Readability
 
-- **File length**: read the current rule under CLAUDE.md § _Code Quality Gates_ — do not trust a number quoted here. As of writing it is "one coherent concern per file", with **~500 LOC a _smell_ worth a second look for a hidden second concern, not a gate**. A large file housing a single algorithm is explicitly NOT a finding — the keyed list reconciler is called out by name. Use `wc -l src/*.ts src/utils/*.ts | sort -rn` to rank, then judge each large file on whether it holds one concern or two. `src/jsx-types.ts` is data (a per-tag attribute table), so length there says nothing.
+- **File length**: read the current rule under AGENTS.md § _Code Quality Gates_ — do not trust a number quoted here. As of writing it is "one coherent concern per file", with **~500 LOC a _smell_ worth a second look for a hidden second concern, not a gate**. A large file housing a single algorithm is explicitly NOT a finding — the keyed list reconciler is called out by name. Use `wc -l src/*.ts src/utils/*.ts | sort -rn` to rank, then judge each large file on whether it holds one concern or two. `src/jsx-types.ts` is data (a per-tag attribute table), so length there says nothing.
 - **Function length**: Flag functions over 50 lines that should be broken up.
 - **Nesting depth**: Flag code with more than 3 levels of nesting.
 - **Magic numbers / strings**: Hardcoded values that should be module-scope constants. The runtime occasionally has these (e.g. `excerpt(html)`'s 100-char limit in `toElement.ts`); flag them.
@@ -32,7 +32,7 @@ Scope: `src/` and (where relevant) `tests/`. Skip `examples/` unless something t
 ### 3. Maintenance Complexity
 
 - **Coupling**: kerf modules should be near-orthogonal, with a few deliberate hubs. Derive the current graph rather than matching a list: `grep -rhoE "from '\./[a-z-]*" src/*.ts | sort | uniq -c | sort -rn`. Expect `dev-warn-config` and `dev-hooks` at the top (the switch layer and the hook registry — every `dev-*` module reads them by design), plus the list-reconcile family's internal edges. Flag an edge that crosses concerns for no stated reason, not merely a high-degree node.
-- **Shared mutable state**: CLAUDE.md **Design rule 5** is the source of truth — read it, do not rely on a count quoted here. It enumerates the sanctioned locations AND a separate not-counted list (pure caches with GC-tied lifetimes, observability-only counters, dev-only one-shot flags). Sweep with `grep -rnE '^let |^export let ' src/` and flag only what falls outside BOTH lists. Rule 5 derives its force from being exhaustive, so a hit outside both is a finding even when the code is fine — it means the rule needs updating.
+- **Shared mutable state**: AGENTS.md **Design rule 5** is the source of truth — read it, do not rely on a count quoted here. It enumerates the sanctioned locations AND a separate not-counted list (pure caches with GC-tied lifetimes, observability-only counters, dev-only one-shot flags). Sweep with `grep -rnE '^let |^export let ' src/` and flag only what falls outside BOTH lists. Rule 5 derives its force from being exhaustive, so a hit outside both is a finding even when the code is fine — it means the rule needs updating.
 - **Callback chains / Promise chains**: kerf is synchronous; effects run sync, no schedulers. Flag any introduction of async logic that isn't isolated to a single test or example.
 - **Switch / if-else chains**: Flag complex branching. `toSegment` in `jsx-runtime.ts` has a chain of if/else-if for child-type discrimination — that's appropriate. Flag any chain > 6 branches without a lookup-table refactor.
 - **Duplicate patterns**: Code that does the same thing in slightly different ways. Use `grep` to spot-check.

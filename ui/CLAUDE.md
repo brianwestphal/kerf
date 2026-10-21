@@ -213,7 +213,7 @@ scrolling content) in full Chromium (`channel: 'chromium'`): Playwright's
 default headless shell renders in software and, at deviceScaleFactor 2, leaks
 sharp backdrop content through the blur — a false defect, reproducible with
 plain HTML. Headless WebKit paints no backdrop blur at all, so assert its
-computed styles instead. See the root `CLAUDE.md` "Visual UI validation".
+computed styles instead. See the root `AGENTS.md` "Visual UI validation".
 
 ## Keep the guidance surfaces in sync
 

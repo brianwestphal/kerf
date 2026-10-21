@@ -46,6 +46,19 @@ describe('guidance integrity snapshots', () => {
 describe('local git gate policy', () => {
   const root = join(import.meta.dirname, '../..');
 
+  it('keeps AGENTS.md as the shared guidance and Claude as an import adapter', async () => {
+    const [agents, claude, gemini] = await Promise.all([
+      readFile(join(root, 'AGENTS.md'), 'utf8'),
+      readFile(join(root, 'CLAUDE.md'), 'utf8'),
+      readFile(join(root, 'GEMINI.md'), 'utf8'),
+    ]);
+
+    expect(claude.trim()).toBe('@AGENTS.md');
+    expect(agents).toContain('5. **Module-level mutable state is restricted');
+    expect(agents).not.toContain('@CLAUDE.md');
+    expect(gemini).toContain('`AGENTS.md` is the shared source of truth');
+  });
+
   it('keeps commits fast and runs the comprehensive check once per push', async () => {
     const [preCommit, prePush] = await Promise.all([
       readFile(join(root, '.husky/pre-commit'), 'utf8'),

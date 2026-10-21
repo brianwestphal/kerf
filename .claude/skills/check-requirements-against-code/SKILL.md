@@ -4,7 +4,7 @@ description: Check requirements docs against implementation and report discrepan
 allowed-tools: Read, Grep, Glob, Bash, Agent, Edit, Write
 ---
 
-Comprehensively compare the requirements documents in `docs/` against the actual implementation. Also verify that the AI summary docs (`docs/ai/code-summary.md`, `docs/ai/requirements-summary.md`, `docs/ai/usage-guide.md`), the human-facing orientation one-pager (`docs/orientation.md`), and `CLAUDE.md` are in sync with both the requirements docs and the code. Generate a report with recommendations and questions about any discrepancies.
+Comprehensively compare the requirements documents in `docs/` against the actual implementation. Also verify that the AI summary docs (`docs/ai/code-summary.md`, `docs/ai/requirements-summary.md`, `docs/ai/usage-guide.md`), the human-facing orientation one-pager (`docs/orientation.md`), and `AGENTS.md` are in sync with both the requirements docs and the code. Generate a report with recommendations and questions about any discrepancies.
 
 ## Steps
 
@@ -19,10 +19,10 @@ Comprehensively compare the requirements documents in `docs/` against the actual
 
 4. **Check for stale documentation**: Requirements that describe behaviour that no longer exists or has changed.
 
-5. **Verify `CLAUDE.md` completeness**:
-   - Every numbered doc under `docs/` appears in CLAUDE.md's "Requirements Documentation → Reading order" list. Report any docs present on disk but missing, or listed but missing from disk.
+5. **Verify `AGENTS.md` completeness**:
+   - Every numbered doc under `docs/` appears in AGENTS.md's "Requirements Documentation → Reading order" list. Report any docs present on disk but missing, or listed but missing from disk.
    - The "Source layout" bullet list under "Architecture" lists every file under `src/` (including `src/utils/*`). Report any drift.
-   - The "Public API surface" import block matches the public exports of `src/index.ts`. Report any export missing from CLAUDE.md or vice versa.
+   - The "Public API surface" import block matches the public exports of `src/index.ts`. Report any export missing from AGENTS.md or vice versa.
    - The "Testing" section lists every `npm run test*` script that exists in `package.json`.
    - The "Coverage thresholds" sentence matches the actual thresholds in `vitest.config.ts`.
 
@@ -55,7 +55,7 @@ Comprehensively compare the requirements documents in `docs/` against the actual
    - **"Where to look next"** links resolve.
      Make the edits as part of this check. Run `wc -w docs/orientation.md` and confirm ≤ 500 afterwards. If you cannot stay under the cap without losing essential information, surface that in the report instead of silently bloating the doc.
 
-10. **Final consistency pass**: Make sure `CLAUDE.md`, `README.md`, `llms.txt`, `docs/orientation.md`, `docs/ai/code-summary.md`, `docs/ai/requirements-summary.md`, and `docs/ai/usage-guide.md` agree with each other and with the source docs / code. Any disagreement gets resolved in favor of the source doc / code, and the summaries and `CLAUDE.md` are updated accordingly. **The single most common drift in this project is when a new public export is added (e.g. `isSafeHtml`) and only `src/index.ts` + `docs/8-api-reference.md` are updated — the AI summaries and root-level files lag.** Look for that pattern explicitly.
+10. **Final consistency pass**: Make sure `AGENTS.md`, `README.md`, `llms.txt`, `docs/orientation.md`, `docs/ai/code-summary.md`, `docs/ai/requirements-summary.md`, and `docs/ai/usage-guide.md` agree with each other and with the source docs / code. Any disagreement gets resolved in favor of the source doc / code, and the summaries and `AGENTS.md` are updated accordingly. **The single most common drift in this project is when a new public export is added (e.g. `isSafeHtml`) and only `src/index.ts` + `docs/8-api-reference.md` are updated — the AI summaries and root-level files lag.** Look for that pattern explicitly.
 
 ## Report Format
 
@@ -68,16 +68,16 @@ For each discrepancy:
 - **Type**: `missing` (doc says X, code doesn't do X) | `different` (doc says X, code does Y) | `undocumented` (code does X, no doc mentions it) | `stale` (doc says X, feature was removed/changed)
 - **Recommendation**: Should the doc be updated, or should the code be fixed?
 
-For doc-vs-doc drift (e.g., the same export listed in CLAUDE.md but missing from `llms.txt`), recommend updating both to match the canonical source — usually `src/index.ts` for the export list, the numbered docs for behaviour, and `vitest.config.ts` for coverage thresholds.
+For doc-vs-doc drift (e.g., the same export listed in AGENTS.md but missing from `llms.txt`), recommend updating both to match the canonical source — usually `src/index.ts` for the export list, the numbered docs for behaviour, and `vitest.config.ts` for coverage thresholds.
 
-### CLAUDE.md Coverage Audit
+### AGENTS.md Coverage Audit
 
-- Numbered docs on disk but missing from CLAUDE.md reading order
-- Entries in CLAUDE.md reading order that no longer exist on disk
-- Source files in `src/` but missing from CLAUDE.md "Source layout"
-- Public exports in `src/index.ts` but missing from CLAUDE.md import block
-- `npm run test*` scripts in `package.json` but missing from CLAUDE.md "Testing" section
-- Coverage thresholds in `vitest.config.ts` that don't match the CLAUDE.md "Coverage thresholds" sentence
+- Numbered docs on disk but missing from AGENTS.md reading order
+- Entries in AGENTS.md reading order that no longer exist on disk
+- Source files in `src/` but missing from AGENTS.md "Source layout"
+- Public exports in `src/index.ts` but missing from AGENTS.md import block
+- `npm run test*` scripts in `package.json` but missing from AGENTS.md "Testing" section
+- Coverage thresholds in `vitest.config.ts` that don't match the AGENTS.md "Coverage thresholds" sentence
 
 ### AI Summary Synchronization
 
@@ -96,5 +96,5 @@ List any ambiguous requirements where the implementation had to make a judgment 
 - Total requirements checked
 - Requirements fully implemented
 - Discrepancies found (by type)
-- Documentation gaps (CLAUDE.md, README.md, llms.txt, and the three AI summaries)
+- Documentation gaps (AGENTS.md, README.md, llms.txt, and the three AI summaries)
 - Files edited

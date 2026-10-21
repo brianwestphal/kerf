@@ -37,7 +37,7 @@ Before touching anything, build an accurate picture of what actually changed:
    release, run the importer + commit; if the perf story changed but krausest hasn't
    re-run with the new kerf version yet, keep the qualitative framing ("same cluster
    as Vue / Lit / vanjs; Solid wins the compiler-driven benchmarks") rather than
-   inventing figures. See the **Performance comparison numbers** rules in `CLAUDE.md`.
+   inventing figures. See the **Performance comparison numbers** rules in `AGENTS.md`.
 
 ## Part 1 — all package READMEs
 
@@ -234,4 +234,4 @@ When Parts 1 and 2 are done, finish with an explicit handoff that lists, precise
 - Example apps: `site/src/examples/complete/<name>/`
 - Public API: `docs/8-api-reference.md`, `src/index.ts`
 - What changed: `CHANGELOG.md`
-- Release conventions (perf-number gating, KF-NN rules): `CLAUDE.md`
+- Release conventions (perf-number gating, KF-NN rules): `AGENTS.md`
