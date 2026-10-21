@@ -857,6 +857,37 @@ describe('AI-first setup planner', () => {
     ]);
   });
 
+  it('keeps a selected workspace package doctor config in generated scripts', async () => {
+    const root = await fixture(
+      { name: 'workspace', private: true, workspaces: ['packages/*'] },
+      {
+        "packages/app's space/package.json": JSON.stringify({
+          name: '@acme/app',
+          dependencies: { kerfjs: '4.4.1', '@kerfjs/ui': '4.4.1' },
+        }),
+        "packages/app's space/.kerf-ui-doctor.json": JSON.stringify({
+          schemaVersion: 1,
+          failOn: 'warning',
+        }),
+      },
+    );
+    const plan = await planKerfSetup({
+      root,
+      package: '@acme/app',
+      version: '4.4.1',
+    });
+    const scripts = JSON.parse(
+      plan.actions.find(
+        ({ path }) => path === "packages/app's space/package.json",
+      )!.after,
+    ).scripts;
+
+    for (const name of ['kerf:check', 'kerf:doctor', 'kerf:doctor:changed'])
+      expect(scripts[name]).toContain(
+        `--config 'packages/app'\\''s space/.kerf-ui-doctor.json'`,
+      );
+  });
+
   it('rejects stale, escaped, symlinked, and concurrent apply plans', async () => {
     const root = await fixture({
       name: 'core-app',

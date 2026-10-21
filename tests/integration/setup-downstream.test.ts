@@ -389,6 +389,17 @@ describe(
           resolve(app, 'src/index.css'),
           '.split-view { --kui-split-view-list-width: 22rem; }\n',
         );
+        await writeFile(
+          resolve(app, '.kerf-ui-doctor.json'),
+          `${JSON.stringify({
+            schemaVersion: 1,
+            failOn: 'warning',
+            ownership: 'component',
+            ownershipContext: 'any-package',
+            implicitComponentOwnership: true,
+            stages: { analyzer: false },
+          })}\n`,
+        );
         await prepareModules(root);
         await exec(
           resolve(root, 'node_modules/.bin/kerfjs'),
@@ -420,7 +431,8 @@ describe(
         await run('npm', ['run', 'catalog:generate'], app);
         await run('npm', ['run', 'catalog:check'], app);
         await run('npm', ['run', 'kerf:check'], app);
-        await run('npm', ['run', 'kerf:doctor'], app);
+        const doctor = await run('npm', ['run', 'kerf:doctor'], app);
+        expect(doctor.stdout).toContain('analyzer=skipped');
         const profile = JSON.parse(
           await readFile(resolve(root, '.kerf-ui-profile.json'), 'utf8'),
         );

@@ -43,6 +43,7 @@ const exists = async (path) => {
 
 const portable = (root, path) =>
   relative(root, path).replaceAll('\\', '/') || '.';
+const shellArg = (value) => `'${value.replaceAll("'", "'\\''")}'`;
 const contained = (root, path) => {
   const offset = relative(root, path);
   return (
@@ -753,10 +754,18 @@ export async function planKerfSetup({
   nextManifest.scripts ??= {};
   nextManifest.devDependencies ??= {};
   nextManifest.dependencies ??= {};
+  const packageDoctorConfig = resolve(
+    selected.directory,
+    '.kerf-ui-doctor.json',
+  );
   const workspaceDoctorArgs =
     selected.directory === root
       ? ''
-      : ` --root ${portable(selected.directory, root)} --package ${nextManifest.name}`;
+      : ` --root ${portable(selected.directory, root)} --package ${nextManifest.name}${
+          (await exists(packageDoctorConfig))
+            ? ` --config ${shellArg(portable(root, packageDoctorConfig))}`
+            : ''
+        }`;
   addMapValues(
     nextManifest.scripts,
     mode === 'ui'

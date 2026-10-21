@@ -49,6 +49,8 @@ four checks; focused catalog and doctor scripts remain available separately.
 Workspace profile composition/selection paths and missing metadata sources
 follow the resolved `kerfComponentCatalog` declaration, including retained
 authored paths.
+For workspace packages with an authored doctor config, the generated scripts
+pass that config explicitly while keeping the workspace root and package scope.
 Package-manager execution distinguishes npm, pnpm,
 Yarn Classic, and Yarn Berry; Berry offline mode explicitly disables network.
 `tests/unit/setup.test.ts` covers detection, merges, conflict choices,

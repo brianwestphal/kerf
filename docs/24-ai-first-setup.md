@@ -106,7 +106,10 @@ authored difference becomes a conflict):
   (`kerf-ui-doctor --changed`), `catalog:generate`
   (`kerf-component-catalog --write`), and `catalog:check`
   (`kerf-component-catalog --check`). In a workspace package the doctor
-  scripts also carry `--root <root> --package <name>`.
+  scripts also carry `--root <root> --package <name>`. If the selected package
+  already has `.kerf-ui-doctor.json`, setup passes its path with `--config` so
+  the package's fail threshold, ownership rules, and enabled stages remain in
+  force under the workspace root.
 - **`package.json` devDependencies** — `eslint-plugin-kerfjs` (the setup
   version), `@typescript-eslint/parser` `^8.0.0`, `eslint` `^9.0.0`,
   `typescript` `^5.0.0 || ^6.0.0`, and, in UI mode, `create-kerf-component`
