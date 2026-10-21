@@ -440,6 +440,98 @@ describe(
       loadScaledTimeout(60_000),
     );
 
+    it(
+      'runs workspace catalog and doctor checks with retained custom catalog paths',
+      async () => {
+        const root = resolve(temporaryRoot, 'custom-catalog-workspace');
+        const app = resolve(root, 'packages/app');
+        await mkdir(resolve(app, 'src'), { recursive: true });
+        await writeFile(
+          resolve(root, 'package.json'),
+          `${JSON.stringify({ name: 'custom-catalog-workspace', private: true, workspaces: ['packages/*'] })}\n`,
+        );
+        await writeFile(
+          resolve(app, 'package.json'),
+          `${JSON.stringify({
+            name: '@acme/custom-app',
+            private: true,
+            type: 'module',
+            dependencies: {
+              kerfjs: releaseVersion,
+              '@kerfjs/ui': releaseVersion,
+            },
+            kerfComponentCatalog: {
+              source: './ai/components.json',
+              output: './ai/component-composition.generated.json',
+              selectionOutput: './ai/component-selection.generated.json',
+            },
+          })}\n`,
+        );
+        await mkdir(resolve(app, 'ai'), { recursive: true });
+        await writeFile(
+          resolve(app, 'ai/components.json'),
+          `${JSON.stringify({
+            schemaVersion: 1,
+            description: 'Custom application components.',
+            componentCatalog: 'not-applicable',
+            components: [],
+          })}\n`,
+        );
+        await writeFile(
+          resolve(app, 'src/index.ts'),
+          'export const ready = true;\n',
+        );
+        await prepareModules(root);
+        await exec(
+          resolve(root, 'node_modules/.bin/kerfjs'),
+          [
+            '--package',
+            '@acme/custom-app',
+            '--resolve',
+            'package.json#kerfComponentCatalog=keep',
+            '--write',
+            '--yes',
+            '--no-install',
+          ],
+          { cwd: root },
+        );
+        await run('npm', ['run', 'catalog:generate'], app);
+        await run('npm', ['run', 'kerf:check'], app);
+
+        const profile = JSON.parse(
+          await readFile(resolve(root, '.kerf-ui-profile.json'), 'utf8'),
+        );
+        expect(profile.catalogs).toContainEqual({
+          package: '@acme/custom-app',
+          composition: {
+            path: './packages/app/ai/component-composition.generated.json',
+            schemaVersion: 1,
+          },
+          selection: {
+            path: './packages/app/ai/component-selection.generated.json',
+            schemaVersion: 1,
+          },
+        });
+        expect(
+          JSON.parse(
+            await readFile(
+              resolve(app, 'ai/component-composition.generated.json'),
+              'utf8',
+            ),
+          ).entries,
+        ).toEqual([]);
+        expect(
+          JSON.parse(
+            await readFile(
+              resolve(app, 'ai/component-selection.generated.json'),
+              'utf8',
+            ),
+          ).entries,
+        ).toEqual([]);
+      },
+      loadScaledTimeout(60_000),
+    );
+
     for (const managerCase of managerCases) {
       const availability = detectManager(managerCase);
       const test = availability.executable ? it : it.skip;

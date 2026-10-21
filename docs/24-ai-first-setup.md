@@ -123,8 +123,11 @@ authored difference becomes a conflict):
   `jsxImportSource: kerfjs` (a new file also gets `include: ["src"]`).
 - **ESLint config** — an existing `eslint.config.{js,mjs,cjs}` is merged;
   otherwise `eslint.config.mjs` is generated.
-- **UI catalog files** — `kerf.components.json` (only when absent) and the
-  workspace-root `.kerf-ui-profile.json`.
+- **UI catalog files** — the resolved `kerfComponentCatalog.source` (only when
+  absent) and the workspace-root `.kerf-ui-profile.json`. The profile points to
+  the resolved `kerfComponentCatalog.output` in the selected package, including
+  authored paths retained with a `keep` resolution. If `selectionOutput` is
+  configured, the profile points to that resolved selection catalog too.
 - **`.kerf-ai-setup.json`** — the state file described in §24.2.
 
 ## 24.4 Automation API

@@ -1001,6 +1001,82 @@ describe('AI-first setup planner', () => {
     );
   });
 
+  it('uses retained workspace catalog source and output paths in the generated profile', async () => {
+    const root = await fixture(
+      { name: 'workspace', private: true, workspaces: ['packages/*'] },
+      {
+        'packages/app/package.json': JSON.stringify({
+          name: '@acme/app',
+          dependencies: { kerfjs: '4.4.1', '@kerfjs/ui': '4.4.1' },
+          kerfComponentCatalog: {
+            source: './ai/components.json',
+            output: './ai/component-composition.generated.json',
+            selectionOutput: './ai/component-selection.generated.json',
+          },
+        }),
+        'packages/app/ai/components.json': JSON.stringify({
+          schemaVersion: 1,
+          description: 'Custom application components.',
+          componentCatalog: 'not-applicable',
+          components: [],
+        }),
+      },
+    );
+    const plan = await planKerfSetup({
+      root,
+      package: '@acme/app',
+      version: '4.4.1',
+      resolutions: { 'package.json#kerfComponentCatalog': 'keep' },
+    });
+
+    expect(plan.conflicts).toEqual([]);
+    expect(
+      JSON.parse(
+        plan.actions.find(({ path }) => path === '.kerf-ui-profile.json')!
+          .after,
+      ).catalogs,
+    ).toContainEqual({
+      package: '@acme/app',
+      composition: {
+        path: './packages/app/ai/component-composition.generated.json',
+        schemaVersion: 1,
+      },
+      selection: {
+        path: './packages/app/ai/component-selection.generated.json',
+        schemaVersion: 1,
+      },
+    });
+    expect(plan.actions.map(({ path }) => path)).not.toContain(
+      'packages/app/ai/components.json',
+    );
+    expect(plan.generatedPaths).toContain(
+      join(root, 'packages/app/ai/component-composition.generated.json'),
+    );
+    expect(plan.generatedPaths).toContain(
+      join(root, 'packages/app/ai/component-selection.generated.json'),
+    );
+
+    await applyKerfSetup(plan, { install: false });
+    expect(
+      JSON.parse(
+        await readFile(join(root, 'packages/app/package.json'), 'utf8'),
+      ).kerfComponentCatalog,
+    ).toEqual({
+      source: './ai/components.json',
+      output: './ai/component-composition.generated.json',
+      selectionOutput: './ai/component-selection.generated.json',
+    });
+    expect(
+      (
+        await planKerfSetup({
+          root,
+          package: '@acme/app',
+          version: '4.4.1',
+        })
+      ).actions,
+    ).toEqual([]);
+  });
+
   it('redacts credential fields and URL userinfo in plans and conflicts', async () => {
     const root = await fixture({
       name: 'core-app',

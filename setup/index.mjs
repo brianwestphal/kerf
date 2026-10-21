@@ -482,7 +482,7 @@ function mergeEslintConfig(source, mode) {
   };
 }
 
-function profileTemplate(packageName, catalogPath) {
+function profileTemplate(packageName, catalogPath, selectionPath) {
   return {
     $schema:
       'https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/application-ui-profile.schema.json',
@@ -491,6 +491,9 @@ function profileTemplate(packageName, catalogPath) {
     catalogs: [
       {
         package: packageName,
+        ...(selectionPath
+          ? { selection: { path: selectionPath, schemaVersion: 1 } }
+          : {}),
         composition: { path: catalogPath, schemaVersion: 1 },
       },
     ],
@@ -1009,27 +1012,43 @@ export async function planKerfSetup({
       currentProfileSource === null
         ? undefined
         : JSON.parse(currentProfileSource);
-    const catalogRelative = portable(
-      root,
-      resolve(selected.directory, 'component-composition.json'),
-    );
+    const profileCatalogPath = (configuredPath) => {
+      const relative = portable(
+        root,
+        resolve(selected.directory, configuredPath),
+      );
+      return relative.startsWith('.') ? relative : `./${relative}`;
+    };
     const profile = mergeProfile(
       currentProfile,
       profileTemplate(
         nextManifest.name,
-        catalogRelative.startsWith('.')
-          ? catalogRelative
-          : `./${catalogRelative}`,
+        profileCatalogPath(nextManifest.kerfComponentCatalog.output),
+        nextManifest.kerfComponentCatalog.selectionOutput
+          ? profileCatalogPath(
+              nextManifest.kerfComponentCatalog.selectionOutput,
+            )
+          : undefined,
       ),
       context,
     );
     await addAction(profilePath, stableJson(profile), 'json');
-    const metadataPath = resolve(selected.directory, 'kerf.components.json');
+    const metadataPath = resolve(
+      selected.directory,
+      nextManifest.kerfComponentCatalog.source,
+    );
     if (!(await exists(metadataPath)))
       await addAction(metadataPath, stableJson(metadataTemplate()), 'json');
     generatedPaths.push(
       resolve(selected.directory, nextManifest.kerfComponentCatalog.output),
     );
+    if (nextManifest.kerfComponentCatalog.selectionOutput)
+      generatedPaths.push(
+        resolve(
+          selected.directory,
+          nextManifest.kerfComponentCatalog.selectionOutput,
+        ),
+      );
   }
 
   for (const [id, resolution] of Object.entries(requestedResolutions)) {
