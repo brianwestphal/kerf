@@ -528,6 +528,28 @@ describe(
         );
         await mkdir(resolve(app, 'ai'), { recursive: true });
         await writeFile(
+          resolve(app, 'src/index.ts'),
+          'export const ready = true;\n',
+        );
+        await prepareModules(root);
+        await expect(
+          exec(
+            resolve(root, 'node_modules/.bin/kerfjs'),
+            [
+              '--package',
+              '@acme/custom-app',
+              '--resolve',
+              'package.json#kerfComponentCatalog=keep',
+            ],
+            { cwd: root },
+          ),
+        ).rejects.toMatchObject({
+          code: 2,
+          stderr: expect.stringContaining(
+            'selectionOutput requires an authored metadata source',
+          ),
+        });
+        await writeFile(
           resolve(app, 'ai/components.json'),
           `${JSON.stringify({
             schemaVersion: 1,
@@ -536,11 +558,6 @@ describe(
             components: [],
           })}\n`,
         );
-        await writeFile(
-          resolve(app, 'src/index.ts'),
-          'export const ready = true;\n',
-        );
-        await prepareModules(root);
         await exec(
           resolve(root, 'node_modules/.bin/kerfjs'),
           [

@@ -1100,7 +1100,17 @@ export async function planKerfSetup({
       selected.directory,
       nextManifest.kerfComponentCatalog.source,
     );
-    if (!(await exists(metadataPath)))
+    if (nextManifest.kerfComponentCatalog.selectionOutput) {
+      const metadata = await readJson(metadataPath);
+      if (
+        !metadata ||
+        typeof metadata.description !== 'string' ||
+        !metadata.description.trim()
+      )
+        throw new Error(
+          `${portable(root, metadataPath)}: selectionOutput requires an authored metadata source with a nonempty description. Add the source and description before running setup.`,
+        );
+    } else if (!(await exists(metadataPath)))
       await addAction(metadataPath, stableJson(metadataTemplate()), 'json');
     generatedPaths.push(
       resolve(selected.directory, nextManifest.kerfComponentCatalog.output),

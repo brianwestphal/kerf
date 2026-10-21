@@ -98,6 +98,9 @@ catalog scripts, an empty schema-valid `kerf.components.json`, and a
 package-qualified generated catalog in `.kerf-ui-profile.json`. The empty
 metadata source is deliberate: app components are added as authored while its
 empty composition catalog is already valid for discovery.
+If `kerfComponentCatalog.selectionOutput` is configured, the metadata source
+must already exist with an authored, nonempty `description`. Setup reports the
+missing decision before writing a plan; it does not invent selection copy.
 
 What gets written (each value is merged, never silently overwritten — an
 authored difference becomes a conflict):

@@ -51,6 +51,8 @@ ESLint hygiene rule validates the import and source instead of a copied skill.
 Workspace profile composition/selection paths and missing metadata sources
 follow the resolved `kerfComponentCatalog` declaration, including retained
 authored paths.
+Setup requires an authored metadata description when a selection catalog is
+configured; it only scaffolds an empty source for composition-only output.
 For workspace packages with an authored doctor config, the generated scripts
 pass that config explicitly while keeping the workspace root and package scope.
 Package-manager execution distinguishes npm, pnpm,

@@ -1150,6 +1150,58 @@ describe('AI-first setup planner', () => {
     ).toEqual([]);
   });
 
+  it('requires authored metadata and description for a retained selection catalog', async () => {
+    const root = await fixture(
+      { name: 'workspace', private: true, workspaces: ['packages/*'] },
+      {
+        'packages/app/package.json': JSON.stringify({
+          name: '@acme/app',
+          dependencies: { kerfjs: '4.4.1', '@kerfjs/ui': '4.4.1' },
+          kerfComponentCatalog: {
+            source: './ai/components.json',
+            output: './ai/composition.json',
+            selectionOutput: './ai/selection.json',
+          },
+        }),
+      },
+    );
+    const options = {
+      root,
+      package: '@acme/app',
+      version: '4.4.1',
+      resolutions: { 'package.json#kerfComponentCatalog': 'keep' as const },
+    };
+    await expect(planKerfSetup(options)).rejects.toThrow(
+      'packages/app/ai/components.json: selectionOutput requires an authored metadata source',
+    );
+    await mkdir(join(root, 'packages/app/ai'), { recursive: true });
+    await writeFile(
+      join(root, 'packages/app/ai/components.json'),
+      JSON.stringify({
+        schemaVersion: 1,
+        componentCatalog: 'not-applicable',
+        components: [],
+      }),
+    );
+    await expect(planKerfSetup(options)).rejects.toThrow(
+      'nonempty description',
+    );
+    await writeFile(
+      join(root, 'packages/app/ai/components.json'),
+      JSON.stringify({
+        schemaVersion: 1,
+        description: 'App components.',
+        componentCatalog: 'not-applicable',
+        components: [],
+      }),
+    );
+    const plan = await planKerfSetup(options);
+    expect(plan.conflicts).toEqual([]);
+    expect(plan.actions.map(({ path }) => path)).not.toContain(
+      'packages/app/ai/components.json',
+    );
+  });
+
   it('redacts credential fields and URL userinfo in plans and conflicts', async () => {
     const root = await fixture({
       name: 'core-app',
