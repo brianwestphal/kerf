@@ -395,6 +395,12 @@ describe('AI-first setup planner', () => {
     expect(plan.mode).toBe('ui');
     expect(plan.conflicts).toEqual([]);
     await applyKerfSetup(plan, { install: false });
+    const manifest = JSON.parse(
+      await readFile(join(root, 'package.json'), 'utf8'),
+    );
+    expect(manifest.scripts['kerf:check']).toBe(
+      'tsc --noEmit && eslint . && kerf-component-catalog --check && kerf-ui-doctor --full',
+    );
     const profile = JSON.parse(
       await readFile(join(root, '.kerf-ui-profile.json'), 'utf8'),
     );

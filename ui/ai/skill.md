@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.63.0
+kerf-ui-skill-version: 1.64.0
 ---
 
 # Building with @kerfjs/ui
@@ -33,6 +33,14 @@ supplies that job. Plan one owner for the surface, inset, scrollport, and gaps.
 Use the shared spacing scale by relationship and preserve useful empty space.
 Compare the result with adjacent screens and inspect real wide/narrow browser
 states before treating a passing analyzer or test as a design approval.
+For a consuming app, run its `kerf:check` after the change; UI setup makes that
+one command run TypeScript, Kerf ESLint, catalog freshness, and the full UI
+doctor. A project's existing `lint` script may omit some of these checks.
+For a Workbench shell, inspect its `toolbar`/`mainToolbar`/panel `toggle` API
+before filling a rail's `content`; a custom header or collapse control inside
+`content` duplicates behavior the component already owns. For a component
+showcase, inspect `Catalog` and `wireCatalog` before constructing a local demo
+shell. A clean doctor cannot prove that the right component was selected.
 
 ### Shared semantic tones
 

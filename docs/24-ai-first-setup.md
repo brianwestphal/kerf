@@ -99,8 +99,10 @@ authored difference becomes a conflict):
 - **Guidance** — `.claude/skills/kerf-app/SKILL.md` always, and `.cursorrules`
   when the workspace root already has `.cursor/` or `.cursorrules`; the
   canonical section is merged and the append zone below the marker is kept.
-- **`package.json` scripts** — `kerf:check` (`tsc --noEmit && eslint .`); UI
-  mode adds `kerf:doctor` (`kerf-ui-doctor --full`), `kerf:doctor:changed`
+- **`package.json` scripts** — core `kerf:check` runs `tsc --noEmit && eslint .`;
+  UI `kerf:check` also runs `kerf-component-catalog --check` and
+  `kerf-ui-doctor --full`, so one command checks the generated catalog and
+  component ownership. UI mode also adds `kerf:doctor` (`kerf-ui-doctor --full`), `kerf:doctor:changed`
   (`kerf-ui-doctor --changed`), `catalog:generate`
   (`kerf-component-catalog --write`), and `catalog:check`
   (`kerf-component-catalog --check`). In a workspace package the doctor

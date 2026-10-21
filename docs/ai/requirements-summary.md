@@ -692,7 +692,7 @@ deprecated in earlier 5.0 betas and removed before the 5.0 stable release; see
 
 ### §24 AI-first project setup
 
-**Shipped.** `npx kerfjs setup` configures an existing core or UI package through a bounded dry run and requires `--write --yes` before mutation. It deterministically discovers workspace packages, requires explicit choices for ambiguous packages and authored-value conflicts, preserves JSONC structure, and records package-scoped managed hashes and retained decisions in `.kerf-ai-setup.json`. Transactional writes reject stale plans and path escapes and restore planned files, lockfiles, and generated catalog output after failed installation. Offline behavior is package-manager aware. The `kerfjs/setup` subpath exposes the pure planner/formatter and transactional applier for automation.
+**Shipped.** `npx kerfjs setup` configures an existing core or UI package through a bounded dry run and requires `--write --yes` before mutation. It deterministically discovers workspace packages, requires explicit choices for ambiguous packages and authored-value conflicts, preserves JSONC structure, and records package-scoped managed hashes and retained decisions in `.kerf-ai-setup.json`. UI `kerf:check` runs TypeScript, Kerf ESLint, catalog freshness, and full UI doctor in one gate. Transactional writes reject stale plans and path escapes and restore planned files, lockfiles, and generated catalog output after failed installation. Offline behavior is package-manager aware. The `kerfjs/setup` subpath exposes the pure planner/formatter and transactional applier for automation.
 
 ### §25 Ticket phase timing
 

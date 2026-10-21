@@ -758,7 +758,7 @@ export async function planKerfSetup({
     nextManifest.scripts,
     mode === 'ui'
       ? {
-          'kerf:check': 'tsc --noEmit && eslint .',
+          'kerf:check': `tsc --noEmit && eslint . && kerf-component-catalog --check && kerf-ui-doctor --full${workspaceDoctorArgs}`,
           'kerf:doctor': `kerf-ui-doctor --full${workspaceDoctorArgs}`,
           'kerf:doctor:changed': `kerf-ui-doctor --changed${workspaceDoctorArgs}`,
           'catalog:generate': 'kerf-component-catalog --write',

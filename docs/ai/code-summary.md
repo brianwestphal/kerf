@@ -44,7 +44,9 @@ with containment and ambiguity checks, performs state-backed three-way
 structural merges (including the focused `setup/jsonc.mjs` parser/editor that
 preserves tsconfig comments, trailing commas, and line endings), and wires the
 shipped guidance plus TypeScript/ESLint/catalog/doctor feedback without
-generating an application. Package-manager execution distinguishes npm, pnpm,
+generating an application. In UI mode, the generated `kerf:check` runs all
+four checks; focused catalog and doctor scripts remain available separately.
+Package-manager execution distinguishes npm, pnpm,
 Yarn Classic, and Yarn Berry; Berry offline mode explicitly disables network.
 `tests/unit/setup.test.ts` covers detection, merges, conflict choices,
 state-backed upgrades, JSONC preservation and malformed-container decisions,

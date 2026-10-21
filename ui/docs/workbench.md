@@ -9,6 +9,7 @@ desktop-class devices.
 
 ```ts
 import { Workbench } from "@kerfjs/ui/workbench";
+import { ToolbarText } from "@kerfjs/ui/toolbar-text";
 ```
 
 In a browser bundler that honors the `browser` export condition (Vite, esbuild, and
@@ -55,6 +56,10 @@ const navCollapsed = signal(false);
   leftRail={{
     content: <Navigator />,
     label: "Navigator",
+    toolbar: {
+      title: <ToolbarText text="Navigator" />,
+      toggle: { action: "toggle-navigator", name: "Navigator" },
+    },
     collapsed: navCollapsed.value,
     size: 280,
   }}
