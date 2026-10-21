@@ -313,6 +313,121 @@ describe('TabBar wiring', () => {
     stop();
   });
 
+  it('skips disabled tabs through disable, empty, refill, and controlled selection', async () => {
+    const root = bar();
+    const onReorder = vi.fn();
+    const stop = wireTabBars(root, { onReorder });
+    let tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    tabs[1]!.disabled = true;
+    tabs[1]!.tabIndex = -1;
+    tabs[0]!.focus();
+    tabs[0]!.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+    );
+    expect(document.activeElement).toBe(tabs[2]);
+    tabs[2]!.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Home', bubbles: true }),
+    );
+    expect(document.activeElement).toBe(tabs[0]);
+    tabs[0]!.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'End', bubbles: true }),
+    );
+    expect(document.activeElement).toBe(tabs[2]);
+    tabs[0]!.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'ArrowRight',
+        altKey: true,
+        shiftKey: true,
+        bubbles: true,
+      }),
+    );
+    expect(onReorder).toHaveBeenCalledWith(
+      expect.objectContaining({ targetId: 'three' }),
+    );
+
+    tabs.forEach((tab) => {
+      tab.disabled = true;
+      tab.tabIndex = -1;
+    });
+    const unchanged = document.activeElement;
+    tabs[2]!.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }),
+    );
+    expect(document.activeElement).toBe(unchanged);
+    root.querySelector('[data-component="tab-bar"]')!.remove();
+    root.innerHTML = String(
+      TabBar({
+        id: 'documents',
+        label: 'Documents',
+        children: [
+          TabBarItem({
+            id: 'one',
+            name: 'One',
+            disabled: true,
+            selected: true,
+          }),
+          TabBarItem({ id: 'two', name: 'Two', selected: false }),
+        ],
+      }),
+    );
+    tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    expect(tabs[0]!.getAttribute('aria-selected')).toBe('true');
+    expect(tabs[0]!.disabled).toBe(true);
+    tabs[1]!.focus();
+    tabs[1]!.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+    );
+    expect(document.activeElement).toBe(tabs[1]);
+    tabs[0]!.disabled = false;
+    tabs[0]!.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+    );
+    tabs[1]!.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }),
+    );
+    expect(document.activeElement).toBe(tabs[0]);
+    await Promise.resolve();
+    stop();
+  });
+
+  it('rejects pointer reordering when a source or target becomes disabled', () => {
+    const root = bar();
+    const onReorder = vi.fn();
+    const stop = wireTabBars(root, { onReorder });
+    const source = root.querySelector<HTMLElement>(
+      '.kui-tab-bar-item[data-tab-id="one"]',
+    )!;
+    const target = root.querySelector<HTMLElement>(
+      '.kui-tab-bar-item[data-tab-id="two"]',
+    )!;
+    const third = root.querySelector<HTMLElement>(
+      '.kui-tab-bar-item[data-tab-id="three"]',
+    )!;
+    const sourceButton =
+      source.querySelector<HTMLButtonElement>('[role="tab"]')!;
+    const targetButton =
+      target.querySelector<HTMLButtonElement>('[role="tab"]')!;
+    sourceButton.disabled = true;
+    source.dispatchEvent(new Event('dragstart', { bubbles: true }));
+    expect(source.hasAttribute('data-tab-dragging')).toBe(false);
+    sourceButton.disabled = false;
+    source.dispatchEvent(new Event('dragstart', { bubbles: true }));
+    targetButton.disabled = true;
+    target.dispatchEvent(
+      new Event('dragover', { bubbles: true, cancelable: true }),
+    );
+    expect(target.hasAttribute('data-tab-drop-position')).toBe(false);
+    target.dispatchEvent(
+      new Event('drop', { bubbles: true, cancelable: true }),
+    );
+    expect(onReorder).not.toHaveBeenCalled();
+    source.dispatchEvent(new Event('dragstart', { bubbles: true }));
+    sourceButton.disabled = true;
+    third.dispatchEvent(new Event('drop', { bubbles: true, cancelable: true }));
+    expect(onReorder).not.toHaveBeenCalled();
+    stop();
+  });
+
   function activationBar(id: string, activation?: 'automatic' | 'manual') {
     const root = document.createElement('div');
     root.innerHTML = String(

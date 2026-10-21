@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 436400,
-  "measuredLargestJavaScriptGzip": 164544,
-  "measuredTotalJavaScriptGzip": 436344,
+  "totalJavaScriptGzip": 436800,
+  "measuredLargestJavaScriptGzip": 164545,
+  "measuredTotalJavaScriptGzip": 436735,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6307,6 +6307,54 @@
         "measuredTotalJavaScriptGzip": 436344,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 436400
+      }
+    },
+    {
+      "at": "2026-10-21T05:28:59.576Z",
+      "reason": "Named disabled-tab and tabpanel association example in Application Tabs demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164544,
+        "measuredTotalJavaScriptGzip": 436344,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 436400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 436609,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 436700
+      }
+    },
+    {
+      "at": "2026-10-21T05:35:32.248Z",
+      "reason": "Controlled disabled-tab and tabpanel association example in Application Tabs demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 436609,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 436700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 436670,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 436700
+      }
+    },
+    {
+      "at": "2026-10-21T05:45:30.855Z",
+      "reason": "Allow controlled tab example against rebuilt root peer in integrated gate",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164543,
+        "measuredTotalJavaScriptGzip": 436670,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 436700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 436735,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 436800
       }
     }
   ]

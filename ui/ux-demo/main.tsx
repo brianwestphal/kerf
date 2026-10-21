@@ -220,6 +220,7 @@ import {
   reorderCommands,
   reorderFiles,
   reorderSelection,
+  reportTabActive,
   searchFieldHelpOpen,
   searchFieldQuery,
   searchFieldTokens,
@@ -983,6 +984,10 @@ const stopActions = delegateActions(app, 'click', {
   'select-reorder-tab': (_event, element) => {
     tabBarActive.value = element.getAttribute('data-tab-id') ?? 'components';
     actionLog.value = `Selected ${tabBarActive.value}`;
+  },
+  'select-report-tab': (_event, element) => {
+    const id = element.getAttribute('data-tab-id');
+    if (id === 'overview' || id === 'history') reportTabActive.value = id;
   },
   'close-tab': (_event, element) => {
     actionLog.value = `Close requested for ${element.getAttribute('data-tab-id')}`;

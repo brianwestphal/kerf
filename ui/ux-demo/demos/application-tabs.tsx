@@ -11,7 +11,7 @@ import { Text } from '@kerfjs/ui/text';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { PanelLeft, Plus } from 'lucide';
 
-import { tabBarActive, tabBarTabs } from './state.js';
+import { reportTabActive, tabBarActive, tabBarTabs } from './state.js';
 
 export function ApplicationTabsDemo() {
   const activeName = tabBarActive.value;
@@ -57,6 +57,8 @@ export function ApplicationTabsDemo() {
               {tabBarTabs.value.map((tab) => (
                 <TabBarItem
                   id={tab.id}
+                  tabId={`catalog-tab-${tab.id}`}
+                  panelId="catalog-active-panel"
                   name={tab.name}
                   selected={tabBarActive.value === tab.id}
                   pending={tab.pending}
@@ -86,8 +88,9 @@ export function ApplicationTabsDemo() {
           <ListInsetText>
             <Text
               variant="h3"
+              id="catalog-active-panel"
               role="tabpanel"
-              aria-label={activeTab?.name ?? activeName}
+              aria-labelledby={`catalog-tab-${activeName}`}
               aria-busy={activeTab?.pending ? 'true' : undefined}
             >
               {activeTab?.pending ? (
@@ -98,6 +101,68 @@ export function ApplicationTabsDemo() {
             </Text>
           </ListInsetText>
         </Pane>
+      </CatalogExample>
+      <CatalogExample
+        label="Named Disabled Tab"
+        viewport={{ width: 'medium', frame: 'solid' }}
+      >
+        <TabBar
+          id="catalog-disabled-tabs"
+          label="Report Tabs"
+          activation="manual"
+        >
+          <TabBarItem
+            id="overview"
+            name="Overview"
+            selected={reportTabActive.value === 'overview'}
+            closable={false}
+            selectAction="select-report-tab"
+            tabId="report-overview-tab"
+            panelId="report-overview-panel"
+          />
+          <TabBarItem
+            id="loading"
+            name="Preparing Report"
+            disabled
+            closable={false}
+            selectAction="select-report-tab"
+            tabId="report-loading-tab"
+            panelId="report-loading-panel"
+          />
+          <TabBarItem
+            id="history"
+            name="History"
+            selected={reportTabActive.value === 'history'}
+            closable={false}
+            selectAction="select-report-tab"
+            tabId="report-history-tab"
+            panelId="report-history-panel"
+          />
+        </TabBar>
+        <section
+          id="report-overview-panel"
+          role="tabpanel"
+          aria-labelledby="report-overview-tab"
+          hidden={reportTabActive.value !== 'overview'}
+        >
+          Overview report
+        </section>
+        <section
+          id="report-loading-panel"
+          role="tabpanel"
+          aria-labelledby="report-loading-tab"
+          hidden
+        >
+          Report unavailable
+        </section>
+        <section
+          id="report-history-panel"
+          role="tabpanel"
+          aria-labelledby="report-history-tab"
+          hidden={reportTabActive.value !== 'history'}
+        >
+          Report history
+        </section>
       </CatalogExample>
     </CatalogExampleStack>
   );

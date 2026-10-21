@@ -67,6 +67,12 @@ function tabId(tab: TabRoot): string | undefined {
   return tab.dataset.tabId || undefined;
 }
 
+function tabEnabled(tab: TabRoot): boolean {
+  return (
+    tab.querySelector<HTMLButtonElement>('[role="tab"]')?.disabled === false
+  );
+}
+
 function barId(bar: TabBarRoot): string | undefined {
   return bar.dataset.tabBarId || undefined;
 }
@@ -79,7 +85,7 @@ function positionFor(event: DragEvent, tab: TabRoot): TabDropPosition {
 function tabsIn(bar: TabBarRoot): HTMLButtonElement[] {
   return [
     ...bar.querySelectorAll<HTMLButtonElement>(
-      '[data-kui-tab-list] [role="tab"]',
+      '[data-kui-tab-list] [role="tab"]:not(:disabled)',
     ),
   ];
 }
@@ -470,7 +476,7 @@ export function wireTabBars(
     strip.dataset.tabAutoscroll = direction < 0 ? 'start' : 'end';
     autoScroll.frame ??= view.requestAnimationFrame(runAutoScroll);
   };
-  let dragged: { barId: string; tabId: string } | undefined;
+  let dragged: { barId: string; tabId: string; tab: TabRoot } | undefined;
   const clearDropPositions = () =>
     root
       .querySelectorAll<HTMLElement>('[data-tab-drop-position]')
@@ -502,8 +508,10 @@ export function wireTabBars(
         );
       });
       const button = tab?.querySelector<HTMLButtonElement>('[role="tab"]');
-      button?.focus();
-      reveal(button);
+      if (button && !button.disabled) {
+        button.focus();
+        reveal(button);
+      }
     });
 
   const onDragStart = (event: Event) => {
@@ -514,12 +522,13 @@ export function wireTabBars(
     const sourceBarId = bar && barId(bar);
     if (
       !tab ||
+      !tabEnabled(tab) ||
       tab.getAttribute('draggable') !== 'true' ||
       !sourceId ||
       !sourceBarId
     )
       return;
-    dragged = { barId: sourceBarId, tabId: sourceId };
+    dragged = { barId: sourceBarId, tabId: sourceId, tab };
     tab.dataset.tabDragging = 'true';
     if (dragEvent.dataTransfer) {
       dragEvent.dataTransfer.effectAllowed = 'move';
@@ -549,7 +558,8 @@ export function wireTabBars(
     if (strip) updateAutoScroll(dragEvent, strip);
     else stopAutoScroll();
     clearDropPositions();
-    if (!tab || !targetId || targetId === dragged.tabId) return;
+    if (!tab || !tabEnabled(tab) || !targetId || targetId === dragged.tabId)
+      return;
     tab.dataset.tabDropPosition = positionFor(dragEvent, tab);
     if (dragEvent.dataTransfer) dragEvent.dataTransfer.dropEffect = 'move';
   };
@@ -561,7 +571,10 @@ export function wireTabBars(
     const targetBarId = bar && barId(bar);
     if (
       !dragged ||
+      !dragged.tab.isConnected ||
+      !tabEnabled(dragged.tab) ||
       !tab ||
+      !tabEnabled(tab) ||
       !targetId ||
       targetId === dragged.tabId ||
       targetBarId !== dragged.barId
@@ -589,7 +602,7 @@ export function wireTabBars(
         : null;
     const tab = button && tabRoot(button);
     const bar = tab && tabBar(tab);
-    if (!button || !tab || !bar) return;
+    if (!button || button.disabled || !tab || !bar) return;
     if (keyboardEvent.key === 'Delete' || keyboardEvent.key === 'Backspace') {
       const close = tab.querySelector<HTMLButtonElement>(
         '.kui-tab-bar-item__close',

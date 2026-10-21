@@ -98,3 +98,54 @@ test('disposing the demo wiring cancels pending tab focus restoration', async ({
     ).toBeFocused();
   }
 });
+
+test('named disabled tabs keep their labels and panel links while keyboard focus skips them', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 900, height: 700 });
+  await page.goto('/?component=application-tabs');
+  const bar = page.locator('[data-tab-bar-id="catalog-disabled-tabs"]');
+  const tabs = bar.getByRole('tab', { includeHidden: true });
+  await expect(tabs).toHaveCount(3);
+  const disabled = tabs.nth(1);
+  await expect(disabled).toHaveText('Preparing Report');
+  await expect(disabled).toBeDisabled();
+  await expect(disabled).toHaveAttribute(
+    'aria-controls',
+    'report-loading-panel',
+  );
+  await expect(page.locator('#report-loading-panel')).toHaveAttribute(
+    'aria-labelledby',
+    'report-loading-tab',
+  );
+  await expect(
+    bar.locator('[data-tab-id="loading"][draggable="false"]'),
+  ).toHaveCount(1);
+  await tabs.first().focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(tabs.last()).toBeFocused();
+  await page.keyboard.press('Home');
+  await expect(tabs.first()).toBeFocused();
+  await page.keyboard.press('End');
+  await expect(tabs.last()).toBeFocused();
+  await page.keyboard.press('ArrowRight');
+  await expect(tabs.first()).toBeFocused();
+  if (browserName === 'chromium')
+    await bar
+      .locator('..')
+      .screenshot({ path: 'test-results/tab-bar-disabled-wide.png' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(disabled).toBeVisible();
+  if (browserName === 'chromium')
+    await bar
+      .locator('..')
+      .screenshot({ path: 'test-results/tab-bar-disabled-narrow.png' });
+  await tabs.last().click();
+  await expect(tabs.last()).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('#report-history-panel')).toBeVisible();
+  await expect(page.locator('#report-overview-panel')).toBeHidden();
+  await tabs.first().click();
+  await expect(tabs.first()).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('#report-overview-panel')).toBeVisible();
+});

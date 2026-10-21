@@ -46,6 +46,7 @@ Exact prop names and types: [`@kerfjs/ui/tab-bar-item`](../public-api-signatures
 - drop-target highlight
 - pinned leading position within a scrolling tablist
 - attention name color
+- named disabled tab and explicit tab/panel association
 
 ## Composition
 
@@ -62,7 +63,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 ## State and wiring
 
-**The app owns:** tab identity; selection; drop-target state; close policy; content; application data attribute values; outer placement.
+**The app owns:** tab identity; selection; disabled state and tab/panel DOM IDs; drop-target state; close policy; content; application data attribute values; outer placement.
 
 No wiring helper.
 
@@ -72,7 +73,8 @@ Margin: none · border: self · padding: self (layout role: navigation). `self` 
 
 ## Accessibility
 
-- Compose in a tablist and pair with an application-owned tabpanel.
+- Compose in a tablist and pair with an application-owned tabpanel using tabId on the tab button and panelId for aria-controls; the panel uses role=tabpanel and aria-labelledby=tabId.
+- Use disabled for a known named tab that cannot be selected, focused, closed, or reordered; placeholder and pending keep their distinct loading semantics.
 - Keep closeIcon decorative and free of interactive descendants; the owning close button supplies its accessible name and interaction.
 - Use rootAttributes only for application data-\* metadata; component-owned identity, state, action, and role semantics are protected at runtime.
 

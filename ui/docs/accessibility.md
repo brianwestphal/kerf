@@ -439,6 +439,13 @@ show placeholder content in its panel until loading completes; its close
 button is disabled and hidden and it is not draggable. A `placeholder` tab
 (unknown) is instead disabled, out of the tab order, and not draggable. These props own
 component appearance only; the application still owns the bar's outer placement.
+Set `disabled` for a known tab that must keep its visible name while unavailable.
+It leaves controlled `selected` state intact but disables selection, closing,
+dragging, and roving keyboard focus; it does not imply loading or `aria-busy`.
+For an application-owned panel, pass the tab button's DOM ID as `tabId` and the
+panel's DOM ID as `panelId`. The tab then renders `aria-controls=panelId`; set
+`role="tabpanel"` and `aria-labelledby=tabId` on the panel. These DOM IDs are
+distinct from `id`, which remains the application's tab identity for actions.
 `TabBarItem.rootAttributes` accepts application `data-*` metadata only; runtime
 filtering rejects roles plus case variants of component- or wiring-owned
 action, identity, selection, drag, drop, and component attributes. An optional
@@ -455,6 +462,9 @@ activation, same-bar pointer reordering, `Alt+Shift+ArrowLeft/ArrowRight`
 reordering, focus restoration, scroll-into-view, and pointer-proximity
 autoscroll at either horizontal edge. Edge autoscroll is direct manipulation,
 stops on drop/drag end/disposal, and does not change keyboard behavior. When
+tabs are disabled, arrow/Home/End traversal and keyboard reordering skip them;
+pointer drops cannot target one, and controlled replacement never restores
+focus to a disabled tab. When
 the application changes a bar's selected tab without focus (adding and
 selecting a tab), the wiring scrolls that tab's strip — never the page — so
 the new selection is fully visible; a re-render that keeps the same selection

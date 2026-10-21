@@ -387,6 +387,50 @@ describe('component placeholder mode', () => {
     expect(html).not.toMatch(/role="tab"[^>]*aria-label=/);
   });
 
+  it('TabBarItem disables a named tab and associates its button with a panel', () => {
+    const host = document.createElement('div');
+    host.innerHTML = asHtml(
+      TabBarItem({
+        id: 'report',
+        name: 'Report',
+        selected: true,
+        disabled: true,
+        draggable: true,
+        tabId: 'report-tab',
+        panelId: 'report-panel',
+      }),
+    );
+    const root = host.querySelector<HTMLElement>(
+      '[data-component="tab-bar-item"]',
+    )!;
+    const tab = root.querySelector<HTMLButtonElement>('[role="tab"]')!;
+    const close = root.querySelector<HTMLButtonElement>(
+      '.kui-tab-bar-item__close',
+    )!;
+    expect(root.dataset.tabId).toBe('report');
+    expect(root.dataset.disabled).toBe('true');
+    expect(root.getAttribute('draggable')).toBe('false');
+    expect(tab.textContent).toContain('Report');
+    expect(tab.id).toBe('report-tab');
+    expect(tab.getAttribute('aria-controls')).toBe('report-panel');
+    expect(tab.getAttribute('aria-selected')).toBe('true');
+    expect(tab.disabled).toBe(true);
+    expect(tab.tabIndex).toBe(-1);
+    expect(tab.hasAttribute('data-action')).toBe(false);
+    expect(tab.hasAttribute('aria-keyshortcuts')).toBe(false);
+    expect(close.disabled).toBe(true);
+    expect(close.hasAttribute('data-action')).toBe(false);
+    const panel = document.createElement('section');
+    panel.id = 'report-panel';
+    panel.setAttribute('role', 'tabpanel');
+    panel.setAttribute('aria-labelledby', tab.id);
+    host.append(panel);
+    expect(host.querySelector(`#${tab.getAttribute('aria-controls')}`)).toBe(
+      panel,
+    );
+    expect(panel.getAttribute('aria-labelledby')).toBe(tab.id);
+  });
+
   it('SegmentedControl disables every segment, keeps its choices, and selects none', () => {
     const html = asHtml(
       SegmentedControl({

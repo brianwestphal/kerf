@@ -2536,6 +2536,7 @@ describe('production UI primitives', () => {
       'data-Drop-Target': 'false',
       'data-Name-Overflow': 'ellipsis',
       'data-Pinned': 'false',
+      'data-Disabled': 'true',
       'data-Tab-Dragging': 'true',
       'data-Tab-Drop-Position': 'before',
       role: 'menuitem',
@@ -2579,6 +2580,7 @@ describe('production UI primitives', () => {
     expect(selected).not.toContain('ignored-case-variant');
     expect(selected).not.toContain('data-drop-target="false"');
     expect(selected).not.toContain('data-pinned="false"');
+    expect(selected).not.toContain('data-disabled="true"');
     expect(selected).not.toContain('data-name-overflow="ellipsis"');
     expect(selected).not.toContain('unsafe-root-action');
     expect(selected).not.toContain('unsafe-component');

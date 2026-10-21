@@ -16,6 +16,7 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-drop-target',
   'data-name-overflow',
   'data-pinned',
+  'data-disabled',
 ]);
 
 type TabBarItemRootAttributes = Readonly<
@@ -30,6 +31,7 @@ type TabBarItemRootAttributes = Readonly<
     'data-drop-target'?: never;
     'data-name-overflow'?: never;
     'data-pinned'?: never;
+    'data-disabled'?: never;
   }
 >;
 
@@ -41,6 +43,12 @@ export interface TabBarItemProps {
   id: string;
   name: string;
   selected?: boolean;
+  /** Keep the visible name while excluding the tab from selection, focus, closing, and reordering. */
+  disabled?: boolean;
+  /** DOM ID of the role=tab button, for an application-owned tabpanel's aria-labelledby. */
+  tabId?: string;
+  /** DOM ID of the application-owned tabpanel controlled by this tab. */
+  panelId?: string;
   /** Emphasize the visible tab name with the attention color token. */
   attention?: boolean;
   /** Highlight this tab as the target of a drag over its content. */
@@ -102,6 +110,9 @@ export function TabBarItem({
   id,
   name,
   selected = false,
+  disabled = false,
+  tabId,
+  panelId,
   attention = false,
   dropTarget = false,
   pinned = false,
@@ -126,10 +137,14 @@ export function TabBarItem({
   // tab) is also unselectable and hides its name, while a `pending` (known,
   // still opening) tab stays selectable so its panel can show placeholders.
   const dormant = placeholder || pending;
+  const unavailable = disabled || placeholder;
+  const closeUnavailable = disabled || dormant;
   const named = pending && !placeholder;
   const keyshortcuts = [
-    closable && !dormant ? 'Delete Backspace' : '',
-    draggable && !dormant ? 'Alt+Shift+ArrowLeft Alt+Shift+ArrowRight' : '',
+    closable && !closeUnavailable ? 'Delete Backspace' : '',
+    draggable && !closeUnavailable
+      ? 'Alt+Shift+ArrowLeft Alt+Shift+ArrowRight'
+      : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -152,7 +167,8 @@ export function TabBarItem({
       data-size={size}
       data-placeholder={placeholder ? 'true' : undefined}
       data-pending={named ? 'true' : undefined}
-      draggable={dormant ? 'false' : draggable ? 'true' : 'false'}
+      data-disabled={disabled ? 'true' : undefined}
+      draggable={closeUnavailable ? 'false' : draggable ? 'true' : 'false'}
       aria-busy={dormant ? 'true' : undefined}
       style={
         labelMaxWidth === undefined
@@ -166,9 +182,9 @@ export function TabBarItem({
           type="button"
           tabindex="-1"
           class="kui-tab-bar-item__close"
-          data-action={dormant ? undefined : closeAction}
+          data-action={closeUnavailable ? undefined : closeAction}
           data-tab-id={id}
-          disabled={dormant || undefined}
+          disabled={closeUnavailable || undefined}
           aria-label={`Close ${name}`}
           title={`Close ${name}`}
         >
@@ -181,13 +197,15 @@ export function TabBarItem({
         type="button"
         class="kui-tab-bar-item__select"
         role="tab"
+        id={tabId}
+        aria-controls={panelId}
         aria-selected={String(selected)}
         aria-label={presentation === 'icon-only' || named ? name : undefined}
         aria-keyshortcuts={keyshortcuts || undefined}
-        data-action={placeholder ? undefined : selectAction}
+        data-action={unavailable ? undefined : selectAction}
         data-tab-id={id}
-        disabled={placeholder || undefined}
-        tabindex={!placeholder && selected ? '0' : '-1'}
+        disabled={unavailable || undefined}
+        tabindex={!unavailable && selected ? '0' : '-1'}
       >
         {leading}
         <span

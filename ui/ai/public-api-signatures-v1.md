@@ -1436,6 +1436,7 @@ type TabBarItemRootAttributes = Readonly<Record<`data-${string}`, string | undef
     'data-drop-target'?: never;
     'data-name-overflow'?: never;
     'data-pinned'?: never;
+    'data-disabled'?: never;
 }>;
 type TabBarItemPresentation = 'pill' | 'segmented' | 'icon-only';
 type TabBarItemSize = 'default' | 'compact';
@@ -1444,6 +1445,12 @@ interface TabBarItemProps {
     id: string;
     name: string;
     selected?: boolean;
+    /** Keep the visible name while excluding the tab from selection, focus, closing, and reordering. */
+    disabled?: boolean;
+    /** DOM ID of the role=tab button, for an application-owned tabpanel's aria-labelledby. */
+    tabId?: string;
+    /** DOM ID of the application-owned tabpanel controlled by this tab. */
+    panelId?: string;
     /** Emphasize the visible tab name with the attention color token. */
     attention?: boolean;
     /** Highlight this tab as the target of a drag over its content. */
@@ -1484,7 +1491,7 @@ interface TabBarItemProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function TabBarItem({ id, name, selected, attention, dropTarget, pinned, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, nameOverflow, closeIcon, selectAction, closeAction, className, placeholder, pending, rootAttributes, slot, }: TabBarItemProps): SafeHtml;
+declare function TabBarItem({ id, name, selected, disabled, tabId, panelId, attention, dropTarget, pinned, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, nameOverflow, closeIcon, selectAction, closeAction, className, placeholder, pending, rootAttributes, slot, }: TabBarItemProps): SafeHtml;
 
 export { TabBarItem, type TabBarItemNameOverflow, type TabBarItemPresentation, type TabBarItemProps, type TabBarItemSize };
 ```

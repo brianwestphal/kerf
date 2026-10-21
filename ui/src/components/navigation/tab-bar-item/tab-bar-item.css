@@ -352,9 +352,19 @@
 }
 /* A dormant tab keeps its close button's space, so it matches the live tab's
    geometry, but never shows a control it has disabled. */
-.kui-tab-bar-item:is([data-placeholder="true"], [data-pending="true"])
+.kui-tab-bar-item:is(
+    [data-placeholder="true"],
+    [data-pending="true"],
+    [data-disabled="true"]
+  )
   .kui-tab-bar-item__close {
   visibility: hidden;
+}
+.kui-tab-bar-item[data-disabled="true"] .kui-tab-bar-item__name {
+  color: var(--kui-color-text-quiet);
+}
+.kui-tab-bar-item[data-disabled="true"] .kui-tab-bar-item__select {
+  cursor: default;
 }
 .kui-tab-bar-item[data-pending="true"] .kui-tab-bar-item__name {
   color: var(--kui-color-text-quiet);
