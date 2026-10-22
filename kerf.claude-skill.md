@@ -21,8 +21,9 @@ kerf is a ~15 KB reactive UI framework (still ~15 KB with `arraySignal`): signal
   installs the matching AI skill, Kerf ESLint preset, TypeScript settings,
   and `kerf:check`; UI projects also get catalog and doctor checks. Run
   `npm run kerf:check` in the selected package after UI changes, alongside
-  the project's own lint and tests. If setup is intentionally not used,
-  install and configure these checks explicitly before coding; a generic
+  the project's own lint and tests. For package upgrades, follow the
+  `node_modules/@kerfjs/ui/docs/upgrading.md` lockstep checklist. If setup is
+  intentionally not used, install and configure these checks explicitly before coding; a generic
   ESLint preset does not check Kerf contracts.
 - Install: `npm install kerfjs`
 - `tsconfig.json`: `"jsx": "react-jsx"`, `"jsxImportSource": "kerfjs"`
