@@ -27,6 +27,12 @@ import {
   jsoncValueEdit,
   parseJsoncDocument,
 } from './jsonc.mjs';
+import {
+  uiAppFiles,
+  uiDoctorConfig,
+  uiEslintTemplate,
+  uiPrettierConfig,
+} from './ui-baseline.mjs';
 
 const execFileAsync = promisify(execFile);
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -450,6 +456,7 @@ function addMapValues(target, additions, path, context) {
 }
 
 function eslintTemplate(mode, format = 'module') {
+  if (mode === 'ui') return uiEslintTemplate(format);
   const preset = mode === 'ui' ? 'recommended-ui' : 'recommended';
   if (format === 'commonjs')
     return `module.exports = (async () => {\n  const { default: parser } = await import('@typescript-eslint/parser');\n  const { default: kerfjs } = await import('eslint-plugin-kerfjs');\n  return [\n    { files: ['**/*.{ts,tsx}'], languageOptions: { parser } },\n    kerfjs.configs['${preset}'],\n  ];\n})();\n`;
@@ -809,6 +816,19 @@ export async function planKerfSetup({
 
   const packagePath = resolve(selected.directory, 'package.json');
   const nextManifest = JSON.parse(JSON.stringify(selected.manifest));
+  const freshUiApp =
+    mode === 'ui' &&
+    !(await exists(resolve(selected.directory, 'src'))) &&
+    !(await exists(resolve(selected.directory, 'index.html'))) &&
+    !(await exists(resolve(selected.directory, 'vite.config.mjs'))) &&
+    !(await exists(resolve(selected.directory, 'app')));
+  const scaffoldUiApp =
+    freshUiApp ||
+    Boolean(
+      priorPackageState.managed?.[
+        `${packageKey === '.' ? '' : `${packageKey}/`}src/app/main.tsx`
+      ],
+    );
   nextManifest.scripts ??= {};
   nextManifest.devDependencies ??= {};
   nextManifest.dependencies ??= {};
@@ -820,7 +840,7 @@ export async function planKerfSetup({
     selected.directory === root
       ? ''
       : ` --root ${portable(selected.directory, root)} --package ${nextManifest.name}${
-          (await exists(packageDoctorConfig))
+          mode === 'ui' || (await exists(packageDoctorConfig))
             ? ` --config ${shellArg(portable(root, packageDoctorConfig))}`
             : ''
         }`;
@@ -828,11 +848,21 @@ export async function planKerfSetup({
     nextManifest.scripts,
     mode === 'ui'
       ? {
-          'kerf:check': `tsc --noEmit && eslint . && kerf-component-catalog --check && kerf-ui-doctor --full${workspaceDoctorArgs}`,
+          lint: 'prettier --check . --ignore-unknown && eslint . --max-warnings 0',
+          typecheck: 'tsc --noEmit',
+          check: `prettier --check . --ignore-unknown && eslint . --max-warnings 0 && tsc --noEmit && kerf-component-catalog --check && kerf-ui-doctor --full${workspaceDoctorArgs}${scaffoldUiApp ? ' && node --test tests/structure.test.mjs && vite build' : ''}`,
+          'kerf:check': `prettier --check . --ignore-unknown && eslint . --max-warnings 0 && tsc --noEmit && kerf-component-catalog --check && kerf-ui-doctor --full${workspaceDoctorArgs}${scaffoldUiApp ? ' && node --test tests/structure.test.mjs && vite build' : ''}`,
           'kerf:doctor': `kerf-ui-doctor --full${workspaceDoctorArgs}`,
           'kerf:doctor:changed': `kerf-ui-doctor --changed${workspaceDoctorArgs}`,
           'catalog:generate': 'kerf-component-catalog --write',
           'catalog:check': 'kerf-component-catalog --check',
+          ...(scaffoldUiApp
+            ? {
+                dev: 'vite',
+                build: 'vite build',
+                'test:structure': 'node --test tests/structure.test.mjs',
+              }
+            : {}),
         }
       : { 'kerf:check': 'tsc --noEmit && eslint .' },
     'package.json#scripts',
@@ -846,6 +876,16 @@ export async function planKerfSetup({
       eslint: '^9.0.0',
       typescript: '^5.0.0 || ^6.0.0',
       ...(mode === 'ui' ? { 'create-kerf-component': setupVersion } : {}),
+      ...(mode === 'ui'
+        ? {
+            '@eslint/js': '^9.0.0',
+            '@stylistic/eslint-plugin': '^5.0.0',
+            'eslint-plugin-simple-import-sort': '^12.1.1',
+            prettier: '^3.0.0',
+            'typescript-eslint': '^8.65.0',
+            ...(scaffoldUiApp ? { vite: '^7.0.0' } : {}),
+          }
+        : {}),
     },
     'package.json#devDependencies',
     context,
@@ -918,6 +958,7 @@ export async function planKerfSetup({
     module: 'ESNext',
     moduleResolution: 'Bundler',
     strict: true,
+    ...(mode === 'ui' ? { noUncheckedIndexedAccess: true } : {}),
     jsx: 'react-jsx',
     jsxImportSource: 'kerfjs',
   };
@@ -1045,12 +1086,19 @@ export async function planKerfSetup({
       ? { value: template }
       : wasEditedManaged
         ? { conflict: 'setup-authored config was customized' }
-        : commonjs
-          ? {
-              conflict:
-                'CommonJS config requires an explicit Kerf preset merge',
-            }
-          : mergeEslintConfig(source, mode);
+        : mode === 'ui'
+          ? source === template
+            ? { value: source }
+            : {
+                conflict:
+                  'existing UI ESLint config needs the full typed Kerf baseline',
+              }
+          : commonjs
+            ? {
+                conflict:
+                  'CommonJS config requires an explicit Kerf preset merge',
+              }
+            : mergeEslintConfig(source, mode);
     if (merged.conflict) {
       activeConflictIds.add(id);
       if (!resolutions[id])
@@ -1069,6 +1117,54 @@ export async function planKerfSetup({
     }
   }
   if (mode === 'ui') {
+    const prettierFiles = [
+      'prettier.config.mjs',
+      'prettier.config.js',
+      '.prettierrc',
+      '.prettierrc.json',
+      '.prettierrc.js',
+      '.prettierrc.mjs',
+    ];
+    if (
+      !(
+        await Promise.all(
+          prettierFiles.map((name) =>
+            exists(resolve(selected.directory, name)),
+          ),
+        )
+      ).some(Boolean)
+    ) {
+      await addAction(
+        resolve(selected.directory, 'prettier.config.mjs'),
+        uiPrettierConfig,
+      );
+    }
+    if (!(await exists(packageDoctorConfig)))
+      await addAction(packageDoctorConfig, stableJson(uiDoctorConfig), 'json');
+    if (scaffoldUiApp)
+      for (const [path, content] of Object.entries(uiAppFiles())) {
+        const destination = resolve(selected.directory, path);
+        const id = portable(root, destination);
+        const current = await readText(destination);
+        knownResolutionIds.add(id);
+        if (
+          current !== null &&
+          current !== content &&
+          managedBefore[id]?.sha256 !== sha256(current)
+        ) {
+          activeConflictIds.add(id);
+          if (!resolutions[id]) {
+            conflicts.push({
+              id,
+              message: 'app scaffold file was customized; choose keep or kerf',
+            });
+            continue;
+          }
+          if (resolutions[id] === 'keep') continue;
+        }
+        await addAction(destination, content);
+        managedAfter[id] = { sha256: sha256(content) };
+      }
     if (!nextManifest.name)
       throw new Error(
         'UI setup requires package.json name for catalog identity.',

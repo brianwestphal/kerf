@@ -415,6 +415,37 @@ describe(
     );
 
     it(
+      'scaffolds a fresh UI app with a runnable catalog page and structure gate',
+      async () => {
+        const app = resolve(temporaryRoot, 'fresh-ui-app');
+        await mkdir(app, { recursive: true });
+        await writeFile(
+          resolve(app, 'package.json'),
+          `${JSON.stringify({ name: '@acme/fresh-ui-app', private: true, type: 'module' })}\n`,
+        );
+        await prepareModules(app);
+        const cli = resolve(app, 'node_modules/.bin/kerfjs');
+        const dryRun = await run(cli, ['--ui'], app);
+        expect(dryRun.stdout).toContain('CREATE ux-demo/index.html');
+        await expect(
+          readFile(resolve(app, 'index.html'), 'utf8'),
+        ).rejects.toMatchObject({ code: 'ENOENT' });
+        await run(cli, ['--ui', '--write', '--yes', '--no-install'], app);
+        expect(
+          await readFile(resolve(app, 'src/ux-demo/main.tsx'), 'utf8'),
+        ).toContain('<Catalog');
+        expect(
+          await readFile(resolve(app, 'src/ux-demo/demos/button.tsx'), 'utf8'),
+        ).toContain('<Button');
+        await run('npm', ['run', 'test:structure'], app);
+        await run('prettier', ['--check', '.', '--ignore-unknown'], app);
+        const again = await run(cli, ['--ui'], app);
+        expect(again.stdout).toContain('No changes.');
+      },
+      loadScaledTimeout(30_000),
+    );
+
+    it(
       'initializes a selected UI monorepo package with catalog and doctor discovery',
       async () => {
         const root = resolve(temporaryRoot, 'ui-workspace');
@@ -477,6 +508,7 @@ describe(
         );
         await run('npm', ['run', 'catalog:generate'], app);
         await run('npm', ['run', 'catalog:check'], app);
+        await run('prettier', ['--write', '.', '--ignore-unknown'], app);
         await run('npm', ['run', 'kerf:check'], app);
         const doctor = await run('npm', ['run', 'kerf:doctor'], app);
         expect(doctor.stdout).toContain('analyzer=skipped');
@@ -572,6 +604,13 @@ describe(
           { cwd: root },
         );
         await run('npm', ['run', 'catalog:generate'], app);
+        // This fixture provisions only the legacy lint bridge; keep this test
+        // focused on custom catalog paths and doctor discovery.
+        await writeFile(
+          resolve(app, 'eslint.config.mjs'),
+          "import parser from '@typescript-eslint/parser';\nimport kerfjs from 'eslint-plugin-kerfjs';\nexport default [{ files: ['**/*.{ts,tsx}'], languageOptions: { parser } }, kerfjs.configs['recommended-ui']];\n",
+        );
+        await run('prettier', ['--write', '.', '--ignore-unknown'], app);
         await run('npm', ['run', 'kerf:check'], app);
 
         const profile = JSON.parse(

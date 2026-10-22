@@ -490,7 +490,12 @@ describe('AI-first setup planner', () => {
       await readFile(join(root, 'package.json'), 'utf8'),
     );
     expect(manifest.scripts['kerf:check']).toBe(
-      'tsc --noEmit && eslint . && kerf-component-catalog --check && kerf-ui-doctor --full',
+      'prettier --check . --ignore-unknown && eslint . --max-warnings 0 && tsc --noEmit && kerf-component-catalog --check && kerf-ui-doctor --full',
+    );
+    expect(manifest.scripts.lint).toMatch(/^prettier --check/);
+    expect(manifest.scripts.check).toContain('kerf-ui-doctor --full');
+    expect(await readFile(join(root, 'src/main.ts'), 'utf8')).toContain(
+      '@kerfjs/ui/pane',
     );
     const profile = JSON.parse(
       await readFile(join(root, '.kerf-ui-profile.json'), 'utf8'),
@@ -506,6 +511,63 @@ describe('AI-first setup planner', () => {
       JSON.parse(await readFile(join(root, 'kerf.components.json'), 'utf8'))
         .components,
     ).toEqual([]);
+  });
+
+  it('dry-runs a fresh UI app, then creates a rerunnable app and catalog skeleton', async () => {
+    const root = await fixture({
+      name: '@acme/new-app',
+      private: true,
+      type: 'module',
+    });
+    const plan = await planKerfSetup({ root, mode: 'ui', version: '4.4.1' });
+    expect(plan.conflicts).toEqual([]);
+    expect(plan.actions.map(({ path }) => path)).toEqual(
+      expect.arrayContaining([
+        'index.html',
+        'ux-demo/index.html',
+        'src/app/main.tsx',
+        'src/ux-demo/main.tsx',
+        'src/ux-demo/demos/button.tsx',
+        'tests/structure.test.mjs',
+        'prettier.config.mjs',
+        '.kerf-ui-doctor.json',
+      ]),
+    );
+    await expect(
+      readFile(join(root, 'index.html'), 'utf8'),
+    ).rejects.toMatchObject({ code: 'ENOENT' });
+    await applyKerfSetup(plan, { install: false });
+    const manifest = JSON.parse(
+      await readFile(join(root, 'package.json'), 'utf8'),
+    );
+    expect(manifest.scripts.check).toContain('vite build');
+    expect(manifest.scripts.lint).toMatch(
+      /^prettier .* && eslint .*--max-warnings 0$/,
+    );
+    expect(manifest.devDependencies).toHaveProperty('typescript-eslint');
+    expect(
+      JSON.parse(await readFile(join(root, '.kerf-ui-doctor.json'), 'utf8')),
+    ).toMatchObject({
+      failOn: 'warning',
+      suppressions: [],
+    });
+    expect(
+      (await planKerfSetup({ root, mode: 'ui', version: '4.4.1' })).actions,
+    ).toEqual([]);
+
+    await writeFile(
+      join(root, 'src/app/main.tsx'),
+      '// app-owned replacement\n',
+    );
+    const changed = await planKerfSetup({ root, mode: 'ui', version: '4.4.1' });
+    expect(changed.conflicts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: 'src/app/main.tsx' }),
+      ]),
+    );
+    expect(
+      changed.actions.some(({ path }) => path === 'src/app/main.tsx'),
+    ).toBe(false);
   });
 
   it('discovers pnpm workspaces and requires an exact package selection', async () => {
@@ -1056,8 +1118,19 @@ describe('AI-first setup planner', () => {
       },
     );
     const uiPlan = await planKerfSetup({ root: uiRoot, version: '4.4.1' });
+    expect(uiPlan.conflicts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: 'eslint.config.mjs' }),
+      ]),
+    );
+    const uiReplacement = await planKerfSetup({
+      root: uiRoot,
+      version: '4.4.1',
+      resolutions: { 'eslint.config.mjs': 'kerf' },
+    });
     expect(
-      uiPlan.actions.find(({ path }) => path === 'eslint.config.mjs')?.after,
+      uiReplacement.actions.find(({ path }) => path === 'eslint.config.mjs')
+        ?.after,
     ).toContain("kerfjs.configs['recommended-ui']");
 
     const cjsRoot = await fixture(

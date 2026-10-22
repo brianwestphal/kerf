@@ -13,6 +13,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { cwd } from 'node:process';
 
+import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 
 const REPO_ROOT = cwd();
@@ -26,20 +27,25 @@ function walk(dir: string, ext: RegExp): string[] {
     .map((entry) => join(entry.parentPath, entry.name));
 }
 
-// Real module statements only: comments are stripped first so JSDoc examples
-// (` * import { … } from 'kerfjs'`) don't count, and a statement may not span
-// a `;`, so generated-config template strings further down don't either.
-const BLOCK_COMMENT = /\/\*[\s\S]*?\*\//g;
-const STATIC_IMPORT =
-  /^\s*(?:import|export)\b[^'";]*?\bfrom\s+['"]([^'"]+)['"]/gm;
-
 function bareImports(files: string[]): Set<string> {
   const packages = new Set<string>();
   for (const file of files) {
-    for (const match of readFileSync(file, 'utf8')
-      .replace(BLOCK_COMMENT, '')
-      .matchAll(STATIC_IMPORT)) {
-      const specifier = match[1]!;
+    const source = ts.createSourceFile(
+      file,
+      readFileSync(file, 'utf8'),
+      ts.ScriptTarget.Latest,
+      false,
+      /\.tsx$/.test(file) ? ts.ScriptKind.TSX : undefined,
+    );
+    for (const statement of source.statements) {
+      if (
+        !ts.isImportDeclaration(statement) &&
+        !ts.isExportDeclaration(statement)
+      )
+        continue;
+      const moduleSpecifier = statement.moduleSpecifier;
+      if (!moduleSpecifier || !ts.isStringLiteral(moduleSpecifier)) continue;
+      const specifier = moduleSpecifier.text;
       if (specifier.startsWith('.') || specifier.startsWith('node:')) continue;
       const parts = specifier.split('/');
       packages.add(

@@ -1,9 +1,9 @@
 # 24. AI-first project setup
 
-`npx kerfjs setup` installs Kerf's authoring contract into an existing project.
-It is a project configurator, not an application generator: it merges the
+`npx kerfjs setup` installs Kerf's authoring contract into a project. It merges
 guidance, TypeScript, ESLint, catalog, and doctor surfaces that give humans and
-AI contributors immediate deterministic feedback.
+AI contributors immediate deterministic feedback. UI mode also creates a
+runnable application and UX demo when the selected package has no app source.
 
 ## 24.1 Safe by default
 
@@ -100,8 +100,10 @@ versus Berry, setup fails with guidance to declare `packageManager` as a numeric
 ## 24.3 Installed surfaces
 
 Core setup adds the shipped guidance, strict JSX-oriented TypeScript options,
-the Kerf ESLint preset, and `kerf:check`. UI setup additionally adds doctor and
-catalog scripts, an empty schema-valid `kerf.components.json`, and a
+the Kerf ESLint preset, and `kerf:check`. UI setup additionally adds a full
+`check` gate, Prettier (120 columns and single quotes), typed strict ESLint,
+`noUncheckedIndexedAccess`, a zero-warning doctor configuration, catalog scripts,
+an empty schema-valid `kerf.components.json`, and a
 package-qualified generated catalog in `.kerf-ui-profile.json`. The empty
 metadata source is deliberate: app components are added as authored while its
 empty composition catalog is already valid for discovery.
@@ -116,9 +118,10 @@ authored difference becomes a conflict):
   when the workspace root already has `.cursor/` or `.cursorrules`; the
   canonical section is merged and the append zone below the marker is kept.
 - **`package.json` scripts** — core `kerf:check` runs `tsc --noEmit && eslint .`;
-  UI `kerf:check` also runs `kerf-component-catalog --check` and
-  `kerf-ui-doctor --full`, so one command checks the generated catalog and
-  component ownership. UI mode also adds `kerf:doctor` (`kerf-ui-doctor --full`), `kerf:doctor:changed`
+  UI `check` and `kerf:check` run Prettier, ESLint with zero warnings,
+  TypeScript, `kerf-component-catalog --check`, and `kerf-ui-doctor --full`.
+  The `lint` script runs Prettier before ESLint. A newly generated app also
+  runs its structural test and Vite build in `check`. UI mode also adds `kerf:doctor` (`kerf-ui-doctor --full`), `kerf:doctor:changed`
   (`kerf-ui-doctor --changed`), `catalog:generate`
   (`kerf-component-catalog --write`), and `catalog:check`
   (`kerf-component-catalog --check`). In a workspace package the doctor
@@ -139,9 +142,27 @@ authored difference becomes a conflict):
   both paths must stay inside the selected package.
 - **`tsconfig.json`** — `target: ES2022`, `module: ESNext`,
   `moduleResolution: Bundler`, `strict: true`, `jsx: react-jsx`,
-  `jsxImportSource: kerfjs` (a new file also gets `include: ["src"]`).
-- **ESLint config** — an existing `eslint.config.{js,mjs,cjs}` is merged;
-  otherwise `eslint.config.mjs` is generated.
+  `jsxImportSource: kerfjs` (a new file also gets `include: ["src"]`). UI mode
+  additionally enables `noUncheckedIndexedAccess`.
+- **ESLint config** — core setup merges an existing
+  `eslint.config.{js,mjs,cjs}`. UI setup requires an explicit `keep` or `kerf`
+  choice for an authored config that differs from its full baseline; it never
+  treats a preset-only merge as the complete gate. Otherwise
+  `eslint.config.mjs` is generated. A fresh UI config uses
+  `typescript-eslint` `strictTypeChecked`, the Kerf UI preset, strict boolean
+  and exhaustive switch rules, sorted imports, self-closing JSX, unused-disable
+  errors, and a ban on `prettier-ignore` comments.
+- **UI formatter and doctor** — a missing `prettier.config.mjs` sets 120 columns
+  and single quotes unless the package already has a Prettier config. A missing
+  `.kerf-ui-doctor.json` sets `failOn: warning` and empty suppressions. Existing
+  files are preserved.
+- **Fresh UI app** — if no `src/`, root `index.html`, Vite config, or `app/`
+  exists, setup adds `src/app`, `src/components`, `src/features`, `src/platform`,
+  `src/shared`, `src/ux-demo/demos`, an ownership structure test, Vite entries,
+  and a `/ux-demo/` page mounting the public Kerf `Catalog` with a Button
+  specimen. Reruns update unchanged setup-managed files and require an explicit
+  `keep` or `kerf` choice before replacing a customized scaffold file. Existing
+  app routes and sources are left in place.
 - **UI catalog files** — the resolved `kerfComponentCatalog.source` (only when
   absent) and the workspace-root `.kerf-ui-profile.json`. The profile points to
   the resolved `kerfComponentCatalog.output` in the selected package, including
