@@ -276,6 +276,22 @@ A suppression requires a stable id, one or more exact diagnostic ids, an exact p
 
 KUI suppression ids are checked against the analyzer, evaluator, doctor, installed ESLint-rule metadata, and diagnostics emitted by available tools. An unknown or stale id is a configuration error rather than a silent no-op. TypeScript `TS####` and namespaced `eslint:*` ids remain valid even when that particular run does not emit them.
 
+### Component gaps and exception budgets
+
+When a needed appearance or behavior cannot be expressed through a Kerf component's public props, slots, or documented composition, first check the current component reference and selection guide. If the capability is still missing, record a component-gap request upstream with the task, affected component, desired public contract, and a small reproduction. Link that request from the application task. Do not bypass the component with a local CSS selector, private token, raw discouraged element, or a diagnostic suppression. Keep the application task blocked on the upstream capability and ask the maintainer for a decision if timing or design must change. This applies even when a visual request comes directly from a maintainer; the missing package capability remains a separate decision.
+
+Projects using Hot Sheet can create the upstream request in the Kerf store, for example:
+
+```sh
+hotsheet-cli -C <kerf-store> new --category feature \
+  --title 'Expose <capability> on <component>' \
+  --details '<use case, current limitation, proposed public contract, reproduction>'
+```
+
+When the Kerf capability ships, upgrade in [lockstep](./upgrading.md), remove the local workaround or exception, and close the linked application task against the public API. If a project deliberately chooses a different design, document that project-level convention and give any necessary profile exception an exact target, rationale, owner, and removal condition. An exception documents a reviewed deviation; it does not turn a component gap into a supported API.
+
+Keep the doctor at `"failOn": "warning"` for a zero-warning gate. Treat suppressions, profile exceptions, and any accepted warning or review count as a **shrinking budget**: each cleanup should reduce them; an upgrade should never expand them. Review any proposed replacement explicitly, keep it source-located and temporary, and remove stale entries as soon as the public capability or code change makes them unnecessary. If a new finding cannot be repaired within the existing budget, keep the application task blocked for a maintainer decision. A green doctor report with suppressed findings is not a zero-debt report.
+
 The content-addressed cache lives at `.kerf-cache/ui-doctor-v1.json`. Its key covers selected source/config/catalog JSON, package manifests, root and package lockfiles, mode, paths, and configuration. Browser results are never cached. Use `--no-cache` when investigating tool installation changes not yet reflected in a lockfile.
 
 Reports replace the workspace's absolute path with `<repo-root>` and express in-workspace files as portable relative paths. External paths are reduced to `<external>/<basename>`. URLs are excluded from the cache key. Tool messages and evidence receive the same root redaction before output or caching.

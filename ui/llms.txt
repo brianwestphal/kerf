@@ -988,6 +988,7 @@ shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelTogg
 - [interaction-conventions.md](./docs/interaction-conventions.md): the consumer house grammar for chrome, actions, lists, input, responsive layout, roles, and review.
 - [testing-applications.md](./docs/testing-applications.md): unit and browser evidence through shipped application parents, lifecycle assertions, and evaluator limits.
 - [upgrading.md](./docs/upgrading.md): the consumer checklist for lockstep package upgrades, setup, catalog regeneration, and cleanup.
+- [ui-doctor.md#component-gaps-and-exception-budgets](./docs/ui-doctor.md#component-gaps-and-exception-budgets): how to raise missing component capabilities and govern doctor exceptions.
 - [writing.md](./docs/writing.md): interface copy — the title-style vs. sentence-style capitalization rule per element, from Apple's guidance.
 - [layout.md](./docs/layout.md): the pane/content-item geometry, public roles/tokens, and the spacing scale.
 - [component-contract.md](./docs/component-contract.md): what a component owns vs. what the app owns.

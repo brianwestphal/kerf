@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.64.0
+kerf-ui-skill-version: 1.65.0
 ---
 
 # Building with @kerfjs/ui
@@ -163,7 +163,8 @@ Pane override to imitate the Kerf UI UX demo.
   children are custom properties named after the parent.
 - **Missing configuration is a component gap.** When no prop gives you what
   you need, report it (open an upstream feature request) instead of
-  overriding. Your own components follow the same rule: expose configuration,
+  overriding. Follow the [consumer gap and exception workflow](../docs/ui-doctor.md#component-gaps-and-exception-budgets), including the shrinking doctor budget.
+  Your own components follow the same rule: expose configuration,
   and let each component own its styles.
 - **Thin compositions usually need no CSS.** A component that only chooses and
   connects other components should configure their props and slots without a
