@@ -441,7 +441,7 @@ describe('Kerf UI doctor', () => {
     ).toBe(false);
   });
 
-  it('projects consumer core ESLint rules and suppression options without plugin rules', () => {
+  it('projects consumer core rules, globals, and suppression options without plugin rules', () => {
     expect(
       projectConsumerCoreConfig(
         {
@@ -450,6 +450,10 @@ describe('Kerf UI doctor', () => {
             '@typescript-eslint/no-empty-object-type': 'warn',
           },
           linterOptions: { reportUnusedDisableDirectives: 'error' },
+          languageOptions: {
+            globals: { console: 'readonly', process: 'writable' },
+            parser: { parse: () => ({}) },
+          },
         },
         'src/playwright.spec.js',
       ),
@@ -457,6 +461,18 @@ describe('Kerf UI doctor', () => {
       files: ['src/playwright.spec.js'],
       rules: { 'no-empty-pattern': 'error' },
       linterOptions: { reportUnusedDisableDirectives: 'error' },
+      languageOptions: {
+        globals: { console: 'readonly', process: 'writable' },
+      },
+    });
+    expect(
+      projectConsumerCoreConfig(
+        { languageOptions: { globals: { console: 'readonly' } } },
+        'scripts/allowed.mjs',
+      ),
+    ).toEqual({
+      files: ['scripts/allowed.mjs'],
+      languageOptions: { globals: { console: 'readonly' } },
     });
     expect(
       projectConsumerCoreConfig(

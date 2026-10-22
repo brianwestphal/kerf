@@ -15,10 +15,15 @@ export function projectConsumerCoreConfig(config, file) {
   const linterOptions = config?.linterOptions
     ? { ...config.linterOptions }
     : undefined;
-  if (Object.keys(rules).length === 0 && !linterOptions) return undefined;
+  const globals = config?.languageOptions?.globals
+    ? { ...config.languageOptions.globals }
+    : undefined;
+  if (Object.keys(rules).length === 0 && !linterOptions && !globals)
+    return undefined;
   return {
     files: [file],
     ...(Object.keys(rules).length > 0 ? { rules } : {}),
     ...(linterOptions ? { linterOptions } : {}),
+    ...(globals ? { languageOptions: { globals } } : {}),
   };
 }

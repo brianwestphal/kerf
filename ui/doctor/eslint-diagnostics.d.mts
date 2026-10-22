@@ -10,12 +10,16 @@ export function isForeignRuleDefinitionDiagnostic(
 export interface ConsumerEslintConfigLike {
   rules?: Record<string, unknown>;
   linterOptions?: Record<string, unknown>;
+  languageOptions?: Record<string, unknown> & {
+    globals?: Record<string, unknown>;
+  };
 }
 
 export interface ProjectedConsumerCoreConfig {
   files: string[];
   rules?: Record<string, unknown>;
   linterOptions?: Record<string, unknown>;
+  languageOptions?: { globals: Record<string, unknown> };
 }
 
 export function projectConsumerCoreConfig(

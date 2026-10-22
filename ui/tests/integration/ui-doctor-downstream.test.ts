@@ -430,6 +430,62 @@ test(
 );
 
 test(
+  'doctor honors glob-scoped consumer globals alongside no-undef',
+  async () => {
+    const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-globals-'));
+    try {
+      await mkdir(resolve(root, 'scripts'));
+      await writeFile(
+        resolve(root, 'package.json'),
+        '{"name":"globals-app","private":true,"type":"module"}\n',
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          stages: {
+            catalog: false,
+            typescript: false,
+            eslint: true,
+            analyzer: false,
+            browser: false,
+          },
+        }),
+      );
+      await writeFile(
+        resolve(root, 'eslint.config.mjs'),
+        "export default [{ rules: { 'no-undef': 'error' } }, { files: ['scripts/allowed.mjs'], languageOptions: { globals: { console: 'readonly' } } }];\n",
+      );
+      await writeFile(
+        resolve(root, 'scripts/allowed.mjs'),
+        'console.log(1);\n',
+      );
+      await writeFile(
+        resolve(root, 'scripts/undeclared.mjs'),
+        'process.exit(1);\n',
+      );
+      await link(root, 'eslint', resolve(uiRoot, 'node_modules/eslint'));
+      await link(
+        root,
+        'eslint-plugin-kerfjs',
+        resolve(repositoryRoot, 'eslint-plugin'),
+      );
+
+      const result = await doctor(root);
+      expect(result.status).toBe(1);
+      expect(
+        result.report.diagnostics.filter(
+          (item: { id: string }) => item.id === 'eslint:no-undef',
+        ),
+      ).toMatchObject([{ location: { file: 'scripts/undeclared.mjs' } }]);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);
+
+test(
   'a downstream app moves from broken to clean using the supported doctor loop',
   async () => {
     const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-downstream-'));
