@@ -262,7 +262,10 @@ export function loadUiContract(context) {
         for (const helper of entry.wiring?.sources ?? [])
           helperSourceFiles.set(
             `${resolve(root, helper.source)}\0${helper.export}`,
-            helper.export,
+            {
+              imported: helper.export,
+              returnsDisposer: helper.returnsDisposer !== false,
+            },
           );
       }
     const imports = new Map();
@@ -560,7 +563,7 @@ export function helperCall(callee, registry, contract, filename) {
       imported,
       new Set(),
     );
-    if (resolved) return { imported: resolved, source };
+    if (resolved) return { ...resolved, source };
   }
   return undefined;
 }

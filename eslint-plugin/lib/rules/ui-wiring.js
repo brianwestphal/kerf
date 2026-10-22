@@ -250,7 +250,10 @@ export default {
         const imported = helperCall(node.callee, registry, contract, filename);
         if (!imported) return;
         const list = calls.get(imported.imported) ?? [];
-        list.push({ node, source: imported.source });
+        list.push({
+          node,
+          returnsDisposer: imported.returnsDisposer !== false,
+        });
         calls.set(imported.imported, list);
       },
       'Program:exit'(node) {
@@ -337,8 +340,8 @@ export default {
           );
           for (const [helper, helperCalls] of calls)
             if (disposerHelpers.has(helper))
-              for (const { node: call } of helperCalls)
-                if (!retained(call))
+              for (const { node: call, returnsDisposer } of helperCalls)
+                if (returnsDisposer && !retained(call))
                   context.report({
                     node: call,
                     messageId: 'cleanup',

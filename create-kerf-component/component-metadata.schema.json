@@ -352,7 +352,8 @@
                 "required": ["export", "source"],
                 "properties": {
                   "export": { "type": "string", "minLength": 1 },
-                  "source": { "type": "string", "minLength": 1 }
+                  "source": { "type": "string", "minLength": 1 },
+                  "returnsDisposer": { "type": "boolean" }
                 },
                 "additionalProperties": false
               }

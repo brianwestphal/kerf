@@ -467,6 +467,11 @@ function validateComposition(component, at, diagnostics, packageRoot) {
       diagnostics.push(
         `${sourceAt}: ${helperSource?.export} is not listed in composition.wiring.helpers`,
       );
+    if (
+      helperSource?.returnsDisposer !== undefined &&
+      typeof helperSource.returnsDisposer !== 'boolean'
+    )
+      diagnostics.push(`${sourceAt}.returnsDisposer: expected boolean`);
     const file = resolve(packageRoot, helperSource?.source ?? '');
     if (!helperSource?.source || !existsSync(file))
       diagnostics.push(

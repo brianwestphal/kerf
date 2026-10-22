@@ -59,9 +59,18 @@ describe('component composition catalog contract', () => {
       (item) => item.id === 'search-field',
     )!;
     entry.wiring.sources = [
-      { export: entry.wiring.helpers[0], source: 'src/interactions/search.ts' },
+      {
+        export: entry.wiring.helpers[0],
+        source: 'src/interactions/search.ts',
+        returnsDisposer: false,
+      },
     ];
     expect(validateComposition(composition)).toEqual([]);
+    entry.wiring.sources[0].returnsDisposer = 'no' as unknown as boolean;
+    expect(validateComposition(composition)).toContain(
+      `${entry.key} wiring source ${entry.wiring.helpers[0]} returnsDisposer must be boolean`,
+    );
+    entry.wiring.sources[0].returnsDisposer = false;
     entry.wiring.sources.push({ ...entry.wiring.sources[0] });
     expect(validateComposition(composition)).toContain(
       `${entry.key} wiring source export ${entry.wiring.helpers[0]} is declared twice`,

@@ -227,6 +227,13 @@ export function validateComposition(catalog, options = {}) {
           fail(
             `${at} wiring source ${helper?.export} needs a non-empty source`,
           );
+        if (
+          helper?.returnsDisposer !== undefined &&
+          typeof helper.returnsDisposer !== 'boolean'
+        )
+          fail(
+            `${at} wiring source ${helper?.export} returnsDisposer must be boolean`,
+          );
       }
     }
     const stateAttributes = entry?.wiring?.stateAttributes;

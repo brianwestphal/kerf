@@ -719,6 +719,20 @@ writeJson('component-composition.json', {
         ],
       },
     }),
+    wrapper('review-pane', 'ReviewPane', undefined, {
+      publicExports: [{ name: 'ReviewPane' }],
+      wiring: {
+        required: true,
+        helpers: ['mountReview'],
+        sources: [
+          {
+            export: 'mountReview',
+            source: 'src/interactions/review.ts',
+            returnsDisposer: false,
+          },
+        ],
+      },
+    }),
   ],
 });
 writeJson('vendor/acme/catalog.json', {
@@ -778,7 +792,7 @@ writeJson('.kerf-ui-profile.json', {
       composition: { path: './vendor/acme/catalog.json', schemaVersion: 1 },
     },
   ],
-  wiring: { entries: ['src/wiring-entry.tsx'] },
+  wiring: { entries: ['src/wiring-entry.tsx', 'src/review-entry.tsx'] },
 });
 // Barrels that re-export cataloged wrappers (and one that is not cataloged),
 // as an app imports them: `import { X } from './components/index.js'`.
@@ -815,6 +829,22 @@ writeSource('src/cycle-b.ts', "export * from './cycle-a.js';\n");
 writeSource(
   'src/interactions/ticket-search.ts',
   'export function wireTicketSearch() {}\n',
+);
+writeSource(
+  'src/interactions/review.ts',
+  'export function mountReview(): void {}\n',
+);
+writeSource(
+  'src/interactions/review-index.ts',
+  "export { mountReview as startReview } from './review.js';\n",
+);
+writeSource(
+  'src/review-view.tsx',
+  "import { ReviewPane } from './review-pane.js'; export const View = () => <ReviewPane />;\n",
+);
+writeSource(
+  'src/review-entry.tsx',
+  "import './review-view.js'; import { startReview } from './interactions/review-index.js'; startReview();\n",
 );
 writeSource(
   'src/interactions/index.ts',
@@ -1445,6 +1475,18 @@ tester.run('ui-preferences discouraged Web Awesome tags', preferences, {
 tester.run('ui-wiring', wiring, {
   valid: [
     {
+      // This app-owned root is explicitly typed void. Its one page-lifetime
+      // call satisfies L401 without a meaningless void operator or L402.
+      code: "import './review-view.js'; import { startReview } from './interactions/review-index.js'; startReview();",
+      filename: join(appRoot, 'src/review-entry.tsx'),
+      settings: appSettings,
+    },
+    {
+      code: "import { mountReview as start } from './interactions/review.js'; start();",
+      filename: join(appRoot, 'src/review-setup.ts'),
+      settings: appSettings,
+    },
+    {
       code: "import { Pane } from '@kerfjs/ui'; import { wireCatalog } from '@kerfjs/ui/wire-catalog'; const stop = wireCatalog(root, options); <Pane />;",
       settings: catalogProviderSettings,
     },
@@ -1545,6 +1587,12 @@ tester.run('ui-wiring', wiring, {
     },
   ],
   invalid: [
+    {
+      code: "import './review-view.js';",
+      filename: join(appRoot, 'src/review-entry.tsx'),
+      settings: appSettings,
+      errors: [{ messageId: 'missing' }],
+    },
     {
       code: "import { Pane } from '@kerfjs/ui'; import { wireCatalog } from 'other-ui'; const stop = wireCatalog(root, options); <Pane />;",
       settings: catalogProviderSettings,

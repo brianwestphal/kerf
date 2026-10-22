@@ -1191,14 +1191,32 @@ test('passes verified wiring sources and scope through to the composition catalo
     const value = metadata(target);
     const wiring = value.components[0].composition.wiring;
     wiring.scope = 'module';
-    wiring.sources = [{ export: 'wireCounter', source: 'src/counter.tsx' }];
+    wiring.sources = [
+      {
+        export: 'wireCounter',
+        source: 'src/counter.tsx',
+        returnsDisposer: false,
+      },
+    ];
     writeMetadata(target, value);
     const [result] = generateCatalogs(target);
     assert.equal(result.catalog.entries[0].wiring.scope, 'module');
     assert.deepEqual(result.catalog.entries[0].wiring.sources, [
-      { export: 'wireCounter', source: 'src/counter.tsx' },
+      {
+        export: 'wireCounter',
+        source: 'src/counter.tsx',
+        returnsDisposer: false,
+      },
     ]);
     assert.deepEqual(validateComposition(result.catalog), []);
+
+    wiring.sources[0].returnsDisposer = 'no';
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      'composition.wiring.sources[0].returnsDisposer: expected boolean',
+    );
+    wiring.sources[0].returnsDisposer = false;
 
     const at = 'composition.wiring.sources';
     wiring.sources = [{ export: 'wireCounter', source: 'src/missing.ts' }];

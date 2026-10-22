@@ -97,7 +97,12 @@ export interface CatalogCompositionEntry {
     required: boolean;
     helpers: string[];
     /** Defining source files for application-owned helpers, relative to the catalog package root. */
-    sources?: Array<{ export: string; source: string }>;
+    sources?: Array<{
+      export: string;
+      source: string;
+      /** Defaults to true. Set false for a void helper with no cleanup handle. */
+      returnsDisposer?: boolean;
+    }>;
     /** `data-action` values the application handles with a root-delegated
      *  listener (`delegate` / `delegateActions`) instead of a named helper. */
     actions?: string[];

@@ -1,6 +1,6 @@
 # `ui-wiring`
 
-Checks wiring obligations published by the versioned composition catalog. `KUI-L401` reports a used component whose required helper or side-effect registration import is absent. `KUI-L402` reports a helper call whose disposer is discarded.
+Checks wiring obligations published by the versioned composition catalog. `KUI-L401` reports a used component whose required helper or side-effect registration import is absent. `KUI-L402` reports a disposer-returning helper call whose disposer is discarded.
 
 Declare application entry modules in the application UI profile to check root wiring once per entry:
 
@@ -29,6 +29,8 @@ Consumer composition catalogs can name an application helper's defining file in 
 ```
 
 The source path is relative to the catalog package root. The rule resolves relative imports, aliases, and re-export barrels to that file, so another function with the same name does not satisfy the obligation.
+
+Application-owned helpers default to returning a disposer. If a composition root is typed `void` and owns page-lifetime wiring internally, set `"returnsDisposer": false` on its `wiring.sources` entry. A direct call then satisfies `KUI-L401` without triggering `KUI-L402` or requiring a meaningless `void` operator. Set this only when the exported helper genuinely has no cleanup handle; disposer-returning helpers still need their return value retained or returned.
 
 Required wiring can instead be the application's own root-delegated handlers. List the `data-action` values in `wiring.actions` (required wiring names at least one helper or action):
 
