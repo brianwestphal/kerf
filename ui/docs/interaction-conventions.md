@@ -27,13 +27,13 @@ Use the spacing scale by relationship: 8px within a group, 16px between like gro
 ## Lists and selection
 
 - Use ordinary row selection for browsing. Checkboxes mean multi-selection for a bulk task, not the default way to open an item. Keep selected, focused, disabled, loading, and error cues distinct and accessible without color alone.
-- Put secondary row actions in a meaningful “…” menu and expose the same actions through the row's context menu. Every actionable menu entry has an icon from the application's shared icon set. Double-click may open an edit flow where the platform and product make that gesture discoverable; always offer a keyboard and visible route too.
+- Put secondary row actions in a meaningful “…” menu and expose the same actions through the row's context menu. Every actionable menu entry has an icon from the application's shared icon set. Double-click opens an editable item; always offer a keyboard and visible edit route too.
 - Reordering uses drag and drop when the order has meaning. Supply an accessible keyboard route and visible position feedback. Do not expose internal database or provider IDs as ordinary row copy.
 - Reuse a semantic component for the same feature in different contexts, with explicit presentation or read-only variants. A list row and a board card should keep the same identity and actions. An enabled control in a demo must work in its shipped parent composition.
 
 ## Text, state, and continuity
 
-- Persist routine edits on blur, page hide, or an explicit finish. Keep the user's draft visible while saving and keep a scoped recovery copy. Do not add routine Save/Cancel buttons to an editor whose action is simply to persist text. Explicit submit controls are appropriate when creating an object or completing a workflow.
+- Persist routine edits after a short debounce, and flush on blur, page hide, or an explicit finish. Keep the user's draft visible while saving and keep a scoped recovery copy. Do not add routine Save/Cancel buttons to an editor whose action is simply to persist text. Explicit submit controls are appropriate when creating an object or completing a workflow.
 - Keystrokes update the controlled draft, never a network write on each character. Treat the value at edit start as the merge base so the user's own typing does not become a conflict. Recover the draft after navigation or reload when practical.
 - Unrelated renders must not close a popup, move focus, reset a draft, replace selection, or jump scroll. Application signals own durable and user-visible interaction state; a `wire…` helper owns only the mechanics its API documents. Preserve node identity when meaning has not changed.
 - Scope background synchronization separately from foreground blocking work. Keep the interface usable while data refreshes, and show a clear status only where it changes a decision.
