@@ -67,6 +67,55 @@ describe('AI-first setup planner', () => {
     ).toBe(false);
   });
 
+  it('installs UI guidance in UI mode and prints the retrieval paths', async () => {
+    const root = await fixture({
+      name: 'ui-app',
+      dependencies: { kerfjs: '4.4.1', '@kerfjs/ui': '4.4.1' },
+    });
+    const plan = await planKerfSetup({ root, version: '4.4.1' });
+    expect(formatSetupPlan(plan)).toContain(
+      'CREATE .claude/skills/kerf-ui/SKILL.md',
+    );
+    expect(formatSetupPlan(plan)).toContain(
+      'Read first: node_modules/@kerfjs/ui/llms.txt',
+    );
+    await applyKerfSetup(plan, { install: false });
+    const skill = await readFile(
+      join(root, '.claude/skills/kerf-ui/SKILL.md'),
+      'utf8',
+    );
+    expect(skill).toContain('node_modules/@kerfjs/ui/llms.txt');
+    expect(skill).toContain('node_modules/@kerfjs/ui/ai/skill.md');
+    expect((await planKerfSetup({ root, version: '4.4.1' })).actions).toEqual(
+      [],
+    );
+  });
+
+  it('points the UI skill at shared guidance while keeping the UI retrieval order', async () => {
+    const root = await fixture(
+      {
+        name: 'ui-app',
+        dependencies: { kerfjs: '4.4.1', '@kerfjs/ui': '4.4.1' },
+      },
+      { 'AGENTS.md': 'Use Kerf UI and run npm run check.\n' },
+    );
+    const plan = await planKerfSetup({
+      root,
+      version: '4.4.1',
+      guidanceSource: 'AGENTS.md',
+    });
+    await applyKerfSetup(plan, { install: false });
+    const skill = await readFile(
+      join(root, '.claude/skills/kerf-ui/SKILL.md'),
+      'utf8',
+    );
+    expect(skill).toContain('@../../../AGENTS.md\n');
+    expect(skill).toContain('read `node_modules/@kerfjs/ui/llms.txt` first');
+    expect((await planKerfSetup({ root, version: '4.4.1' })).conflicts).toEqual(
+      [],
+    );
+  });
+
   it('rejects absent or ineffective shared guidance', async () => {
     const root = await fixture({
       name: 'core-app',
@@ -918,6 +967,9 @@ describe('AI-first setup planner', () => {
       package: '@acme/app',
       version: '4.4.1',
     });
+    expect(formatSetupPlan(plan)).toContain(
+      "Read first: packages/app's space/node_modules/@kerfjs/ui/llms.txt",
+    );
     const scripts = JSON.parse(
       plan.actions.find(
         ({ path }) => path === "packages/app's space/package.json",

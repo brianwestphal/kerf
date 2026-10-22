@@ -429,18 +429,19 @@ Update all three whenever the corresponding source / design changes. The repo-ro
 
 ### Drop-in AI-tool config
 
-Two pre-baked config files at the repo root that condense `docs/ai/usage-guide.md` into the format each tool expects:
+Three pre-baked config files at the repo root provide each tool's Kerf guidance:
 
 - `kerf.cursorrules` — copy into a project as `.cursorrules`; Cursor picks it up automatically.
 - `kerf.claude-skill.md` — copy into `~/.claude/skills/kerf-app/SKILL.md` (or `your-project/.claude/skills/kerf-app/SKILL.md`); Claude Code activates the skill whenever it spots a `kerfjs` import.
+- `kerf.ui-skill.md` — `kerfjs setup --ui` installs it at `.claude/skills/kerf-ui/SKILL.md`; it points to the installed `@kerfjs/ui` retrieval order and skill.
 
-Both mirror the hard rules + canonical patterns + common errors from the AI usage guide.
+The core files mirror hard rules, canonical patterns, and common errors from the AI usage guide. The UI skill points to the installed UI package's versioned guidance.
 
-These root files are the **source of truth**. A `npm install kerfjs` lands generated mirrors at `node_modules/kerfjs/ai/skill.md` and `node_modules/kerfjs/ai/cursorrules` (plus an `ai/manifest.json` with per-file `kerf-skill-version` + sha256 — the version that the shipped `kerfjs/ai-assistant-configs` ESLint rule reads to detect drift). The bundling, the canonical-file contract (version line + `KERF-APP-CANONICAL-END` marker), and the eslint rule are all designed together in [`docs/12-ai-assistant-configs.md`](docs/12-ai-assistant-configs.md).
+These root files, plus `kerf.ui-skill.md`, are the **source of truth**. A `npm install kerfjs` lands generated mirrors at `node_modules/kerfjs/ai/skill.md`, `node_modules/kerfjs/ai/ui-skill.md`, and `node_modules/kerfjs/ai/cursorrules` (plus an `ai/manifest.json` with per-file `kerf-skill-version` + sha256 — the version that the shipped `kerfjs/ai-assistant-configs` ESLint rule reads to detect drift). The bundling, the canonical-file contract (version line + `KERF-APP-CANONICAL-END` marker), and the eslint rule are all designed together in [`docs/12-ai-assistant-configs.md`](docs/12-ai-assistant-configs.md).
 
-**Editing workflow.** Only edit the root files. After any change, run `npm run ai-bundle:sync` to regenerate `ai/skill.md` / `ai/cursorrules` / `ai/manifest.json`, then commit the regenerated mirror alongside your edit. `npm run check` runs `check:ai-bundle-in-sync` (`scripts/check-ai-bundle.mjs`) which fails the pre-push gate if you forgot.
+**Editing workflow.** Only edit the root files. After any change, run `npm run ai-bundle:sync` to regenerate `ai/skill.md` / `ai/ui-skill.md` / `ai/cursorrules` / `ai/manifest.json`, then commit the regenerated mirror alongside your edit. `npm run check` runs `check:ai-bundle-in-sync` (`scripts/check-ai-bundle.mjs`) which fails the pre-push gate if you forgot.
 
-**Versioning the canonical content.** Each root file has a `kerf-skill-version: <semver>` line — inside the YAML frontmatter for `kerf.claude-skill.md`, inside a top-of-file HTML comment for `kerf.cursorrules`. Bump this version whenever the canonical content changes in a way a consumer would benefit from re-syncing (hard-rule additions/renumberings, new canonical patterns, API-surface changes, new common-error rows). Skip bumps for typos, grammar, and comment-only changes. See §12.3.2 of the doc for the full rubric.
+**Versioning the canonical content.** Each root file has a `kerf-skill-version: <semver>` line — inside the YAML frontmatter for `kerf.claude-skill.md` and `kerf.ui-skill.md`, inside a top-of-file HTML comment for `kerf.cursorrules`. Bump this version whenever the canonical content changes in a way a consumer would benefit from re-syncing (hard-rule additions/renumberings, new canonical patterns, API-surface changes, new common-error rows). Skip bumps for typos, grammar, and comment-only changes. See §12.3.2 of the doc for the full rubric.
 
 **The marker.** The last line of each root file's canonical content is `<!-- KERF-APP-CANONICAL-END · your customizations below -->`. Don't restyle or rephrase it — the eslint rule's parser is a strict-text match. Add or remove content above the marker; the consumer's append zone lives below it in _their_ installed copy.
 

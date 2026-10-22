@@ -29,6 +29,10 @@ const VERSION_RE = /kerf-skill-version:\s*(\d+\.\d+\.\d+(?:-[\w.]+)?)/;
 const VERSION_SCAN_BYTES = 512;
 const SHARED_SKILL_PREFIX =
   '---\nname: kerf-app\ndescription: Use the shared workspace guidance for Kerf application work.\n---\n\n@';
+const SHARED_UI_SKILL_PREFIX =
+  '---\nname: kerf-ui\ndescription: Use shared workspace guidance and the installed @kerfjs/ui instructions.\n---\n\n@';
+const SHARED_UI_SKILL_SUFFIX =
+  '\n\nIn the selected package, read `node_modules/@kerfjs/ui/llms.txt` first, then `node_modules/@kerfjs/ui/ai/skill.md` and the component references they name.\n';
 
 function sharedGuidanceSource(cwd) {
   try {
@@ -61,7 +65,33 @@ function sharedSkill(file, cwd, source) {
     dirname(join(cwd, file.dest)),
     join(cwd, source),
   ).replaceAll('\\', '/');
-  return `${SHARED_SKILL_PREFIX}${importPath}\n`;
+  return file.name === 'ui-skill'
+    ? `${SHARED_UI_SKILL_PREFIX}${importPath}${SHARED_UI_SKILL_SUFFIX}`
+    : `${SHARED_SKILL_PREFIX}${importPath}\n`;
+}
+
+function usesUi(cwd) {
+  try {
+    const state = JSON.parse(
+      readFileSync(join(cwd, '.kerf-ai-setup.json'), 'utf8'),
+    );
+    if (
+      Object.values(state.packages ?? {}).some((entry) => entry.mode === 'ui')
+    )
+      return true;
+  } catch {
+    // A consumer may not have run setup yet.
+  }
+  try {
+    const manifest = JSON.parse(
+      readFileSync(join(cwd, 'package.json'), 'utf8'),
+    );
+    return ['dependencies', 'devDependencies', 'peerDependencies'].some(
+      (group) => Boolean(manifest[group]?.['@kerfjs/ui']),
+    );
+  } catch {
+    return false;
+  }
 }
 
 // Module-level once-per-lint-run guard. ESLint instantiates the rule
@@ -148,13 +178,17 @@ export function classifyFile(file, bundleDir, cwd) {
   }
 
   if (
-    file.name === 'skill' &&
-    /^---\nname: kerf-app\n/.test(consumer) &&
-    /\n@[^\n]+\n$/.test(consumer)
+    (file.name === 'skill' || file.name === 'ui-skill') &&
+    /^---\nname: kerf-(?:app|ui)\n/.test(consumer) &&
+    /\n@[^\n]+\n/.test(consumer)
   ) {
-    const match = consumer.match(
-      /^---\nname: kerf-app\ndescription: Use the shared workspace guidance for Kerf application work\.\n---\n\n@([^\n]+)\n$/,
-    );
+    const prefix =
+      file.name === 'ui-skill' ? SHARED_UI_SKILL_PREFIX : SHARED_SKILL_PREFIX;
+    const suffix = file.name === 'ui-skill' ? SHARED_UI_SKILL_SUFFIX : '\n';
+    const match =
+      consumer.startsWith(prefix) && consumer.endsWith(suffix)
+        ? [null, consumer.slice(prefix.length, -suffix.length)]
+        : null;
     if (!match)
       return { state: 'forked', reason: 'malformed shared guidance import' };
     const sourcePath = resolve(dirname(destAbs), match[1]);
@@ -254,6 +288,8 @@ function loadBundle(cwd) {
 
 function isTriggered(name, cwd) {
   if (name === 'skill') return existsSync(join(cwd, '.claude'));
+  if (name === 'ui-skill')
+    return existsSync(join(cwd, '.claude')) && usesUi(cwd);
   if (name === 'cursorrules') {
     return (
       existsSync(join(cwd, '.cursorrules')) || existsSync(join(cwd, '.cursor'))
@@ -275,7 +311,11 @@ export function runCheck(cwd) {
   for (const file of bundle.manifest.files) {
     if (!isTriggered(file.name, root)) continue;
     let result = classifyFile(file, bundle.bundleDir, root);
-    if (file.name === 'skill' && sharedSource && result.state === 'ok') {
+    if (
+      (file.name === 'skill' || file.name === 'ui-skill') &&
+      sharedSource &&
+      result.state === 'ok'
+    ) {
       const actual = readFileSync(join(root, file.dest), 'utf8');
       if (actual !== sharedSkill(file, root, sharedSource))
         result = {
@@ -295,7 +335,9 @@ export function runCheck(cwd) {
  */
 export function applyFix(file, bundleDir, cwd, appendZone) {
   const bundlePath = join(bundleDir, file.bundle.replace(/^ai\//, ''));
-  const sharedSource = file.name === 'skill' && sharedGuidanceSource(cwd);
+  const sharedSource =
+    (file.name === 'skill' || file.name === 'ui-skill') &&
+    sharedGuidanceSource(cwd);
   const canonical = sharedSource
     ? sharedSkill(file, cwd, sharedSource)
     : readFileSync(bundlePath, 'utf8');
@@ -350,14 +392,20 @@ function create(context) {
       if (!checked) return;
 
       for (const { file, result } of checked.results) {
-        if (file.name === 'skill' && !claudeEnabled) continue;
+        if (
+          (file.name === 'skill' || file.name === 'ui-skill') &&
+          !claudeEnabled
+        )
+          continue;
         if (file.name === 'cursorrules' && !cursorEnabled) continue;
         if (result.state === 'ok') continue;
 
         const tool =
           file.name === 'skill'
             ? 'Claude Code kerf-app skill'
-            : 'Cursor kerf rules';
+            : file.name === 'ui-skill'
+              ? 'Claude Code kerf-ui skill'
+              : 'Cursor kerf rules';
         const bundle = file.bundle; // e.g. 'ai/skill.md'
         const data = { tool, dest: file.dest, bundle };
 

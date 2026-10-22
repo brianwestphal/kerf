@@ -1,6 +1,6 @@
 # `kerfjs/ai-assistant-configs`
 
-Check that the [kerf-app Claude Code skill](https://github.com/brianwestphal/kerf/blob/main/kerf.claude-skill.md) and [Cursor rules](https://github.com/brianwestphal/kerf/blob/main/kerf.cursorrules) drop-ins are installed in the project and up-to-date with the canonical files bundled inside the consumer's installed `kerfjs` package.
+Check that the [kerf-app Claude Code skill](https://github.com/brianwestphal/kerf/blob/main/kerf.claude-skill.md), [kerf-ui skill](https://github.com/brianwestphal/kerf/blob/main/kerf.ui-skill.md), and [Cursor rules](https://github.com/brianwestphal/kerf/blob/main/kerf.cursorrules) drop-ins are installed in the project and up-to-date with the canonical files bundled inside the consumer's installed `kerfjs` package.
 
 Unlike the other AST-based rules in this plugin, this rule reads the **filesystem**, not source code. It runs once per lint pass and reports project-level hygiene issues rather than per-file code defects. Severity in `kerfjs.configs.recommended` is `warn`, not `error` — a missing skill file shouldn't fail CI.
 
@@ -10,10 +10,11 @@ Maps to design doc [`docs/12-ai-assistant-configs.md`](https://github.com/brianw
 
 The rule resolves `kerfjs/ai/manifest.json` from the consumer's installed `kerfjs` (silently no-ops if `kerfjs` isn't a dep). For each bundled file, it picks a trigger heuristic — "is this project using the tool this file is for?" — and only nudges the consumer when the trigger says yes:
 
-| Bundled file                | Triggers when                                      | Installed to                       |
-| --------------------------- | -------------------------------------------------- | ---------------------------------- |
-| `ai/skill.md` (Claude Code) | `.claude/` directory exists at the project root    | `.claude/skills/kerf-app/SKILL.md` |
-| `ai/cursorrules` (Cursor)   | `.cursorrules` file or `.cursor/` directory exists | `.cursorrules`                     |
+| Bundled file                   | Triggers when                                                                          | Installed to                       |
+| ------------------------------ | -------------------------------------------------------------------------------------- | ---------------------------------- |
+| `ai/skill.md` (Claude Code)    | `.claude/` directory exists at the project root                                        | `.claude/skills/kerf-app/SKILL.md` |
+| `ai/ui-skill.md` (Claude Code) | `.claude/` exists and the project declares `@kerfjs/ui` or setup state records UI mode | `.claude/skills/kerf-ui/SKILL.md`  |
+| `ai/cursorrules` (Cursor)      | `.cursorrules` file or `.cursor/` directory exists                                     | `.cursorrules`                     |
 
 A triggered file is then classified into one of three reported states (a fourth, "up-to-date," is silent):
 

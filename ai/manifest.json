@@ -47,6 +47,17 @@
       }
     },
     {
+      "name": "ui-skill",
+      "source": "kerf.ui-skill.md",
+      "bundle": "ai/ui-skill.md",
+      "dest": ".claude/skills/kerf-ui/SKILL.md",
+      "version": "1.0.0",
+      "sha256": "ee6e0e1d4028c37c3cc868ec12459e23cfa42c9dcaac791011c656984ae19310",
+      "history": {
+        "1.0.0": "ee6e0e1d4028c37c3cc868ec12459e23cfa42c9dcaac791011c656984ae19310"
+      }
+    },
+    {
       "name": "cursorrules",
       "source": "kerf.cursorrules",
       "bundle": "ai/cursorrules",

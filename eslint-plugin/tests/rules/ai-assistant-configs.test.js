@@ -51,6 +51,10 @@ function makeSkillBody(version) {
   );
 }
 
+function makeUiSkillBody(version) {
+  return `---\nname: kerf-ui\nkerf-skill-version: ${version}\n---\n\nRead node_modules/@kerfjs/ui/llms.txt first.\n\n${MARKER}\n`;
+}
+
 function makeCursorrulesBody(version) {
   return (
     `<!-- kerf-skill-version: ${version} -->\n` +
@@ -72,6 +76,7 @@ function setupProject({
   cursorVersion = '1.0.0',
   withClaude = false,
   withCursor = false,
+  withUi = false,
   skillBody,
   cursorBody,
   skillHistory = skillVersion === '1.0.0'
@@ -92,9 +97,11 @@ function setupProject({
   // Build the bundled kerfjs at node_modules/kerfjs/ai/.
   const bundledSkill = makeSkillBody(skillVersion);
   const bundledCursor = makeCursorrulesBody(cursorVersion);
+  const bundledUiSkill = makeUiSkillBody(skillVersion);
   const aiDir = join(root, 'node_modules', 'kerfjs', 'ai');
   mkdirSync(aiDir, { recursive: true });
   writeFileSync(join(aiDir, 'skill.md'), bundledSkill);
+  if (withUi) writeFileSync(join(aiDir, 'ui-skill.md'), bundledUiSkill);
   writeFileSync(join(aiDir, 'cursorrules'), bundledCursor);
   const manifest = {
     kerfjsVersion: '0.8.2',
@@ -119,6 +126,22 @@ function setupProject({
       },
     ],
   };
+  if (withUi) {
+    manifest.files.push({
+      name: 'ui-skill',
+      source: 'kerf.ui-skill.md',
+      bundle: 'ai/ui-skill.md',
+      dest: '.claude/skills/kerf-ui/SKILL.md',
+      version: skillVersion,
+      sha256: sha256(bundledUiSkill),
+      history: {},
+    });
+    const project = JSON.parse(
+      readFileSync(join(root, 'package.json'), 'utf8'),
+    );
+    project.dependencies = { '@kerfjs/ui': '1.0.0' };
+    writeFileSync(join(root, 'package.json'), JSON.stringify(project) + '\n');
+  }
   writeFileSync(
     join(aiDir, 'manifest.json'),
     JSON.stringify(manifest, null, 2) + '\n',
@@ -152,12 +175,90 @@ function setupProject({
     }
   }
 
-  return { root, manifest, bundledSkill, bundledCursor };
+  return { root, manifest, bundledSkill, bundledCursor, bundledUiSkill };
 }
 
 function cleanup(root) {
   rmSync(root, { recursive: true, force: true });
 }
+
+test('UI skill is scoped to UI consumers and its canonical content is checked', () => {
+  const { root, manifest, bundledUiSkill } = setupProject({
+    withClaude: true,
+    withUi: true,
+  });
+  const file = manifest.files.find((item) => item.name === 'ui-skill');
+  try {
+    assert.equal(
+      runCheck(root).results.find((item) => item.file.name === 'ui-skill')
+        .result.state,
+      'missing',
+    );
+    applyFix(file, join(root, 'node_modules/kerfjs/ai'), root, '');
+    assert.equal(readFileSync(join(root, file.dest), 'utf8'), bundledUiSkill);
+    assert.equal(
+      runCheck(root).results.find((item) => item.file.name === 'ui-skill')
+        .result.state,
+      'ok',
+    );
+    writeFileSync(
+      join(root, file.dest),
+      bundledUiSkill.replace('llms.txt', 'README.md'),
+    );
+    assert.equal(
+      runCheck(root).results.find((item) => item.file.name === 'ui-skill')
+        .result.state,
+      'forked',
+    );
+    const manifestPath = join(root, 'package.json');
+    const project = JSON.parse(readFileSync(manifestPath, 'utf8'));
+    delete project.dependencies;
+    writeFileSync(manifestPath, JSON.stringify(project) + '\n');
+    assert.equal(
+      runCheck(root).results.find((item) => item.file.name === 'ui-skill'),
+      undefined,
+    );
+  } finally {
+    cleanup(root);
+  }
+});
+
+test('shared UI skill validates its import and installed UI retrieval pointers', () => {
+  const { root, manifest } = setupProject({ withClaude: true, withUi: true });
+  try {
+    writeFileSync(
+      join(root, 'AGENTS.md'),
+      'Use Kerf UI and run npm run check.\n',
+    );
+    writeFileSync(
+      join(root, '.kerf-ai-setup.json'),
+      JSON.stringify({
+        packages: { '.': { mode: 'ui', guidanceSource: 'AGENTS.md' } },
+      }),
+    );
+    const file = manifest.files.find((item) => item.name === 'ui-skill');
+    applyFix(file, join(root, 'node_modules/kerfjs/ai'), root, '');
+    const installed = readFileSync(join(root, file.dest), 'utf8');
+    assert.match(installed, /@\.\.\/\.\.\/\.\.\/AGENTS\.md/);
+    assert.match(installed, /node_modules\/@kerfjs\/ui\/llms\.txt/);
+    assert.equal(
+      runCheck(root).results.find((item) => item.file.name === 'ui-skill')
+        .result.state,
+      'ok',
+    );
+    writeFileSync(
+      join(root, file.dest),
+      installed.replace('llms.txt', 'README.md'),
+    );
+    assert.equal(
+      runCheck(root).results.find((item) => item.file.name === 'ui-skill')
+        .result.state,
+      'forked',
+    );
+  } finally {
+    cleanup(root);
+  }
+});
 
 test('shared import skill validates its source on every check', () => {
   const shared =

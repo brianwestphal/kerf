@@ -25,6 +25,13 @@ it.
 document. The document must be inside the workspace and mention Kerf and either
 `kerf:check` or the project's `npm run check` gate. The choice persists across setup runs. The lint rule
 checks the import and its source; the shared document remains project-owned.
+In UI mode, setup also installs `.claude/skills/kerf-ui/SKILL.md`. It directs
+contributors to read the installed `node_modules/@kerfjs/ui/llms.txt` first,
+then `node_modules/@kerfjs/ui/ai/skill.md` and the referenced component
+contracts. With shared guidance, the UI skill imports that document and keeps
+the same retrieval pointers. The dry-run summary prints these paths relative
+to the selected package, including its workspace path when applicable, and
+`kerfjs/ai-assistant-configs` checks the UI skill for missing or drifted content.
 
 Nothing is written until both `--write` and `--yes` are present:
 

@@ -22,6 +22,12 @@ export const FILES = [
     dest: '.claude/skills/kerf-app/SKILL.md',
   },
   {
+    name: 'ui-skill',
+    source: 'kerf.ui-skill.md',
+    bundle: 'ai/ui-skill.md',
+    dest: '.claude/skills/kerf-ui/SKILL.md',
+  },
+  {
     name: 'cursorrules',
     source: 'kerf.cursorrules',
     bundle: 'ai/cursorrules',

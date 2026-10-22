@@ -743,6 +743,7 @@ export async function planKerfSetup({
       });
   }
   for (const file of aiManifest.files) {
+    if (file.name === 'ui-skill' && mode !== 'ui') continue;
     if (
       file.name === 'cursorrules' &&
       !(await exists(resolve(root, '.cursor'))) &&
@@ -751,13 +752,16 @@ export async function planKerfSetup({
       continue;
     const destination = resolve(root, file.dest);
     const bundled = await readFile(resolve(packageRoot, file.bundle), 'utf8');
-    if (file.name === 'skill' && guidanceSource) {
+    if ((file.name === 'skill' || file.name === 'ui-skill') && guidanceSource) {
       const sourcePath = resolve(root, guidanceSource);
       const importPath = relative(dirname(destination), sourcePath).replaceAll(
         '\\',
         '/',
       );
-      const shared = `---\nname: kerf-app\ndescription: Use the shared workspace guidance for Kerf application work.\n---\n\n@${importPath}\n`;
+      const shared =
+        file.name === 'ui-skill'
+          ? `---\nname: kerf-ui\ndescription: Use shared workspace guidance and the installed @kerfjs/ui instructions.\n---\n\n@${importPath}\n\nIn the selected package, read \`node_modules/@kerfjs/ui/llms.txt\` first, then \`node_modules/@kerfjs/ui/ai/skill.md\` and the component references they name.\n`
+          : `---\nname: kerf-app\ndescription: Use the shared workspace guidance for Kerf application work.\n---\n\n@${importPath}\n`;
       const current = await readText(destination);
       knownResolutionIds.add(file.dest);
       if (current !== null && current !== shared && !resolutions[file.dest]) {
@@ -1255,6 +1259,16 @@ export function formatSetupPlan(plan) {
       `CONFLICT ${conflict.id}: ${conflict.message} (use --resolve ${conflict.id}=keep|kerf)`,
     );
   if (!plan.actions.length && !plan.conflicts.length) lines.push('No changes.');
+  lines.push('AI guidance: .claude/skills/kerf-app/SKILL.md');
+  if (plan.mode === 'ui') {
+    lines.push('AI UI guidance: .claude/skills/kerf-ui/SKILL.md');
+    lines.push(
+      `Read first: ${portable(plan.root, resolve(plan.packageRoot, 'node_modules/@kerfjs/ui/llms.txt'))}`,
+    );
+    lines.push(
+      `Then read: ${portable(plan.root, resolve(plan.packageRoot, 'node_modules/@kerfjs/ui/ai/skill.md'))}`,
+    );
+  }
   return lines.join('\n');
 }
 
