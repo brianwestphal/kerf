@@ -6,6 +6,11 @@ kerf-ui-skill-version: 1.64.0
 
 # Building with @kerfjs/ui
 
+Read the [consumer house grammar](../docs/interaction-conventions.md) before
+composing a screen. Its defaults govern chrome, actions, lists, input, latency,
+responsive layout, and roles. A project may deviate for a compelling reason
+recorded in its own UI conventions document.
+
 Read `../docs/component-selection.md` first, then the component reference index
 `./components/README.md` and the `./components/<id>.md` page of every component
 you use (selection, imports, props link, composition, state and wiring,
