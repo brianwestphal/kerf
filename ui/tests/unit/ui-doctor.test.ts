@@ -23,6 +23,7 @@ import {
   runUiDoctor,
   validateUiDoctorConfig,
 } from '../../doctor/index.mjs';
+import { checkProjectGuidance } from '../../doctor/project-guidance-checks.mjs';
 // Shared build-tool module; no public declaration file is needed.
 // @ts-expect-error JavaScript-only internal module
 import * as traversalExclusions from '../../traversal-exclusions.mjs';
@@ -72,6 +73,120 @@ const diagnostic = (stage: string, message = 'Broken') => ({
 });
 
 describe('Kerf UI doctor', () => {
+  it('warns for guidance without a retrieval pointer, but not a generic UI mention', async () => {
+    const root = await fixture();
+    await writeFile(
+      resolve(root, 'AGENTS.md'),
+      'Build with @kerfjs/ui and run kerf-ui-doctor.\n',
+    );
+    const findings = await checkProjectGuidance(root);
+    expect(findings).toMatchObject([
+      {
+        id: 'KUI-D041',
+        severity: 'warning',
+        stage: 'catalog',
+        location: { file: 'AGENTS.md' },
+        evidence: { instructionFiles: ['AGENTS.md'] },
+      },
+    ]);
+    expect(await checkProjectGuidance(await fixture())).toEqual([]);
+    await mkdir(resolve(root, '.claude/skills/kerf-ui'), { recursive: true });
+    await writeFile(
+      resolve(root, '.claude/skills/kerf-ui/SKILL.md'),
+      'Read node_modules/@kerfjs/ui/llms.txt.\n',
+    );
+    expect((await checkProjectGuidance(root)).map((item) => item.id)).toEqual([
+      'KUI-D041',
+    ]);
+    await writeFile(
+      resolve(root, 'AGENTS.md'),
+      'Use $kerf-ui before changing UI.\n',
+    );
+    expect(await checkProjectGuidance(root)).toEqual([]);
+    await writeFile(
+      resolve(root, 'AGENTS.md'),
+      'Read node_modules/@kerfjs/ui/llms.txt first.\n',
+    );
+    expect(await checkProjectGuidance(root)).toEqual([]);
+    await writeFile(
+      resolve(root, 'AGENTS.md'),
+      'Read @kerfjs/ui/llms.txt first.\n',
+    );
+    expect(await checkProjectGuidance(root)).toEqual([]);
+    await writeFile(
+      resolve(root, 'AGENTS.md'),
+      'Read .claude/skills/kerf-ui/SKILL.md first.\n',
+    );
+    expect(await checkProjectGuidance(root)).toEqual([]);
+  });
+
+  it('scans only conventional instruction files at workspace and package roots', async () => {
+    const root = await fixture();
+    const packageRoot = resolve(root, 'packages/app');
+    await mkdir(packageRoot, { recursive: true });
+    await mkdir(resolve(root, '.cursor/rules'), { recursive: true });
+    await mkdir(resolve(root, 'src/nested'), { recursive: true });
+    await writeFile(resolve(root, 'AGENTS.md'), 'No UI guidance yet.\n');
+    await writeFile(resolve(root, 'src/nested/AGENTS.md'), '$kerf-ui\n');
+    await writeFile(resolve(root, '.cursor/rules/ui.mdc'), 'Use $kerf-ui.\n');
+    expect(await checkProjectGuidance(root, packageRoot)).toEqual([]);
+    await writeFile(resolve(root, '.cursor/rules/ui.mdc'), 'Other rules.\n');
+    await writeFile(resolve(packageRoot, 'CLAUDE.md'), 'Package rules.\n');
+    expect((await checkProjectGuidance(root, packageRoot))[0].evidence).toEqual(
+      {
+        instructionFiles: [
+          '.cursor/rules/ui.mdc',
+          'AGENTS.md',
+          'packages/app/CLAUDE.md',
+        ],
+      },
+    );
+    await writeFile(
+      resolve(packageRoot, 'CLAUDE.md'),
+      'Use .claude/skills/kerf-ui/SKILL.md.\n',
+    );
+    expect(await checkProjectGuidance(root, packageRoot)).toEqual([]);
+  });
+
+  it('does not warn from an incomplete or symlinked instruction scan', async () => {
+    const root = await fixture();
+    const outside = await fixture();
+    await writeFile(resolve(root, 'AGENTS.md'), 'General guidance.\n');
+    await writeFile(resolve(outside, 'CLAUDE.md'), '$kerf-ui\n');
+    await symlink(resolve(outside, 'CLAUDE.md'), resolve(root, 'CLAUDE.md'));
+    expect(await checkProjectGuidance(root)).toEqual([]);
+    await rm(resolve(root, 'CLAUDE.md'));
+    await writeFile(resolve(root, 'CLAUDE.md'), 'x'.repeat(256 * 1024 + 1));
+    expect(await checkProjectGuidance(root)).toEqual([]);
+  });
+
+  it('invalidates cached catalog guidance findings when instruction text changes', async () => {
+    const root = await fixture();
+    const config = {
+      schemaVersion: 1 as const,
+      stages: { ...disabled, catalog: true },
+    };
+    const runners = {
+      catalog: () =>
+        checkProjectGuidance(root).then((diagnostics) => ({ diagnostics })),
+    };
+    await writeFile(resolve(root, 'AGENTS.md'), 'General project guidance.\n');
+    const first = await runUiDoctor({ root, config, runners } as never);
+    expect(first.diagnostics.some((item) => item.id === 'KUI-D041')).toBe(true);
+    expect(
+      (await runUiDoctor({ root, config, runners } as never)).cache.hit,
+    ).toBe(true);
+    await writeFile(
+      resolve(root, 'AGENTS.md'),
+      'Read node_modules/@kerfjs/ui/llms.txt.\n',
+    );
+    const repaired = await runUiDoctor({ root, config, runners } as never);
+    expect(repaired.cache.hit).toBe(false);
+    expect(repaired.diagnostics.some((item) => item.id === 'KUI-D041')).toBe(
+      false,
+    );
+  });
+
   it('projects every shared traversal exclusion into the ESLint boundary', () => {
     const root = resolve('/workspace/app');
     for (const name of UI_TRAVERSAL_IGNORED_DIRECTORY_NAMES) {

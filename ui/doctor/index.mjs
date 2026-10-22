@@ -30,6 +30,10 @@ import { evaluateUi, UI_EVALUATION_RULES } from '../evaluator/index.mjs';
 import { checkComponentStyles } from './component-style-checks.mjs';
 import { checkCopyCapitalization } from './copy-capitalization-checks.mjs';
 import {
+  checkProjectGuidance,
+  collectProjectGuidanceFiles,
+} from './project-guidance-checks.mjs';
+import {
   isForeignRuleDefinitionDiagnostic,
   projectConsumerCoreConfig,
 } from './eslint-diagnostics.mjs';
@@ -67,6 +71,10 @@ export const UI_DOCTOR_RULES = Object.freeze({
   'KUI-D040': {
     severity: 'warning',
     title: 'Visible label is not title-style capitalized',
+  },
+  'KUI-D041': {
+    severity: 'warning',
+    title: 'Project guidance omits the UI retrieval order',
   },
 });
 
@@ -497,6 +505,8 @@ async function installedPackageVersion(root, name) {
 
 async function cacheKey(root, packageRoot, mode, paths, config) {
   const files = await collectInputs(packageRoot);
+  const guidance = await collectProjectGuidanceFiles(root, packageRoot);
+  files.push(...guidance.files.filter((path) => !files.includes(path)));
   const profileDirectories = [];
   let directory = packageRoot;
   while (directory === root || !relative(root, directory).startsWith('..')) {
@@ -555,6 +565,7 @@ async function cacheKey(root, packageRoot, mode, paths, config) {
         mode,
         paths,
         config,
+        guidanceScanComplete: guidance.complete,
         toolVersions,
       }),
     )
@@ -562,6 +573,7 @@ async function cacheKey(root, packageRoot, mode, paths, config) {
   for (const module of [
     'component-style-checks.mjs',
     'copy-capitalization-checks.mjs',
+    'project-guidance-checks.mjs',
   ])
     hash.update(
       await readFile(resolve(dirname(fileURLToPath(import.meta.url)), module)),
@@ -1221,6 +1233,7 @@ export async function runUiDoctor({
                       normalizeProfile(item, root),
                     ),
                     ...local.diagnostics,
+                    ...(await checkProjectGuidance(root, packageRoot)),
                   ],
                   detail: local.detail,
                 };
