@@ -986,6 +986,7 @@ shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelTogg
 - [skill.md](./ai/skill.md): the full rule set + a common-mistakes table (the shipped AI skill).
 - [design-philosophy.md](./docs/design-philosophy.md): why kerf UI is shaped this way — the decision principles behind the rules above.
 - [interaction-conventions.md](./docs/interaction-conventions.md): the consumer house grammar for chrome, actions, lists, input, responsive layout, roles, and review.
+- [testing-applications.md](./docs/testing-applications.md): unit and browser evidence through shipped application parents, lifecycle assertions, and evaluator limits.
 - [writing.md](./docs/writing.md): interface copy — the title-style vs. sentence-style capitalization rule per element, from Apple's guidance.
 - [layout.md](./docs/layout.md): the pane/content-item geometry, public roles/tokens, and the spacing scale.
 - [component-contract.md](./docs/component-contract.md): what a component owns vs. what the app owns.
