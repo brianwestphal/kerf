@@ -31,6 +31,6 @@ public/icon-512.png
 public/mask-icon.svg
 public/site.webmanifest
 
-# Mirror of the repo-root llms.txt, regenerated on every site:build by
-# scripts/gen-llms-txt.mjs so /kerf/llms.txt resolves.
+# Mirrors of the llms.txt indexes, regenerated on every site build.
 public/llms.txt
+public/ui/llms.txt
