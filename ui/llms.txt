@@ -989,6 +989,9 @@ shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelTogg
 - [testing-applications.md](./docs/testing-applications.md): unit and browser evidence through shipped application parents, lifecycle assertions, and evaluator limits.
 - [upgrading.md](./docs/upgrading.md): the consumer checklist for lockstep package upgrades, setup, catalog regeneration, and cleanup.
 - [ui-doctor.md#component-gaps-and-exception-budgets](./docs/ui-doctor.md#component-gaps-and-exception-budgets): how to raise missing component capabilities and govern doctor exceptions.
+- [forms-and-validation.md](./docs/forms-and-validation.md): field layout, error placement, submission, and draft continuity.
+- [data-tables-and-lists.md](./docs/data-tables-and-lists.md): choose ValueTable, FramedList, SummaryRow, List, a native table, or `bindList`.
+- [dark-mode-checklist.md](./docs/dark-mode-checklist.md): review semantic color, tint, contrast, overlays, and scheme changes on real backdrops.
 - [writing.md](./docs/writing.md): interface copy — the title-style vs. sentence-style capitalization rule per element, from Apple's guidance.
 - [layout.md](./docs/layout.md): the pane/content-item geometry, public roles/tokens, and the spacing scale.
 - [component-contract.md](./docs/component-contract.md): what a component owns vs. what the app owns.
