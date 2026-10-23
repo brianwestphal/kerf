@@ -131,6 +131,7 @@ describe('UI browser failure evidence', () => {
           steps: Array<{ run?: string }>;
         };
         'ui-browser': {
+          container: { image: string; options: string };
           strategy: { matrix: { browser: string[] }; 'fail-fast': boolean };
           steps: Array<{
             id?: string;
@@ -151,7 +152,24 @@ describe('UI browser failure evidence', () => {
       'webkit',
     ]);
     expect(workflow.jobs['ui-browser'].strategy['fail-fast']).toBe(false);
+    const playwrightVersion = (
+      JSON.parse(
+        readFileSync(
+          resolve(workflowDirectory, '../../ui/package-lock.json'),
+          'utf8',
+        ),
+      ) as {
+        packages: Record<string, { version?: string }>;
+      }
+    ).packages['node_modules/playwright']?.version;
+    expect(workflow.jobs['ui-browser'].container).toEqual({
+      image: `mcr.microsoft.com/playwright:v${playwrightVersion}-noble`,
+      options: '--user 1001',
+    });
     const steps = workflow.jobs['ui-browser'].steps;
+    expect(steps.some((step) => step.run?.includes('playwright install'))).toBe(
+      false,
+    );
     const browserStep = steps.find((step) => step.id === 'ui_browser');
     const uploadStep = steps.find((step) =>
       step.uses?.startsWith('actions/upload-artifact@'),

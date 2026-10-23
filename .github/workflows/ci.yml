@@ -161,6 +161,11 @@ jobs:
   # remains the stable `ui` status check; each browser reports its own result.
   ui-browser:
     runs-on: ubuntu-latest
+    # KF-CKCT2J: the release-matched image already contains browsers and OS
+    # dependencies; hosted-runner apt downloads intermittently took 20–40m.
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --user 1001
     strategy:
       fail-fast: false
       matrix:
@@ -182,14 +187,6 @@ jobs:
         working-directory: .
         run: npm run build
       - run: npm ci
-      - name: Cache UI Playwright browser
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-ui-${{ matrix.browser }}-${{ runner.os }}-${{ hashFiles('ui/package-lock.json') }}
-          restore-keys: |
-            playwright-ui-${{ matrix.browser }}-${{ runner.os }}-
-      - run: npx playwright install --with-deps ${{ matrix.browser }}
       - run: npm run build
       - name: Run UI browser tests
         id: ui_browser
