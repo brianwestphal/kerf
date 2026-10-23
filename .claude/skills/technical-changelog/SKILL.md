@@ -1,111 +1,128 @@
 ---
 name: technical-changelog
-description: Generate a diff-grounded, one-page technical changelog for a release — from the actual code changes between the last production tag and HEAD (the next, still-unreleased version). Asks for the next version number, since HEAD is not yet in package.json.
+description: Generate a diff-grounded, one-page technical changelog for a release from the real code changes between the last production tag and HEAD, with measured numbers and every claim verified against the base tree; asks for the next version when it cannot be inferred.
 allowed-tools: Read, Grep, Glob, Bash, Edit, Write
 ---
 
-Produce a **one-page technical report** of what changed for a release, stored in
-`docs/technical-changelog/<base>-<next>.md`. The report must be grounded in the **real
-diff** — added/modified/removed code, export/dep deltas, measured size/coverage — **not**
-commit messages, the CHANGELOG, or the requirements docs (those describe the _end state_
-and the _whole_ feature history, so they routinely credit the range with work that predates
-it, or describe posture that was already true). Every claim is a verified delta between the
-base tag and HEAD.
+<!-- ai-playbook:skill name=technical-changelog v=1 -->
 
-## The two facts that make this skill necessary
+Produce a **one-page technical report** of what changed for a release and store it where the
+project keeps release documents (`docs/technical-changelog/<base>-<next>.md` unless the docs
+index names another place). The report is grounded in the **real diff**: added, modified, and
+removed code, export and dependency deltas, measured test and coverage figures. It is never
+written from commit messages, `CHANGELOG.md`, or the requirements docs; those describe the end
+state and the whole feature history, so they routinely credit a range with work that predates
+it or describe posture that was already true. Every claim is a verified delta between the base
+tag and HEAD.
 
-1. **HEAD is the next, unreleased version.** `package.json` still holds the _last_ released
-   version, so the release number can't be read from the repo — **you must ask the user**
-   what the next planned version is.
-2. **The base is always the most recent production release tag** (e.g. `v0.16.0`), and the
-   range is `<base>..HEAD`. Pre-release tags (`-beta`, `-rc`) are never the base.
+## Two facts that make this skill necessary
+
+1. **HEAD may be the next, unreleased version.** Some release scripts bump the manifest before
+   tagging, so the manifest often already holds the upcoming number; others bump at tag time.
+   Check whether `v<manifest version>` is already a tag: if it is, the manifest holds the *last
+   released* version and you must ask for the next one; if it is not, the manifest *is* the
+   upcoming release. Say which case you hit.
+2. **The base is the most recent production tag** and the range is `<base>..HEAD`. Pre-release
+   tags (`-beta.N`, `-rc.N`) are never the base. If the repository has no production tag, the
+   base is the root commit; say so, because then everything is new and the report is an
+   initial-release summary.
 
 ## Steps
 
-1. **Ask for the next release number first.** Use `AskUserQuestion` (or ask in prose):
-   _"What's the next planned release version for this changelog?"_ Do not guess and do not
-   read it from `package.json` (that's the previous release). Accept e.g. `1.0.0` / `v1.0.0`.
-
-2. **Run the analysis script** — it does the deterministic git work:
+1. **Establish the version and the base.** Read the version from the project's manifest
+   (`package.json`, `Cargo.toml` `[package]`, `pyproject.toml`, a `VERSION` file) or, for a
+   tag-only project, from the tags alone.
 
    ```bash
-   node scripts/changelog-analysis.mjs --next <version>
+   version=<read it from the manifest>
+   if git rev-parse "v$version" >/dev/null 2>&1; then
+     echo "v$version is already tagged: ask for the next version"
+   fi
+   base=$(git describe --tags --abbrev=0 --match 'v*' --exclude='*-*' 2>/dev/null \
+          || git rev-list --max-parents=0 HEAD)
+   echo "base=$base range=${base}..HEAD commits=$(git rev-list --count "${base}..HEAD")"
    ```
 
-   It auto-detects the base as the newest production `vX.Y.Z` tag that is an ancestor of
-   HEAD, buckets the line delta **by area** (`src` runtime vs sub-packages vs tests vs bench
-   vs docs vs site vs agent/skill scaffolding vs generated `ai/`/`assets`), gives a
-   **product-only** total, lists **added/removed** files and candidate **new subsystems**,
-   and extracts the **barrel-export** (`src/index.ts`), **subpath-export** (`package.json
-exports`), and **dependency** deltas. Override the base with `--base <tag>` only if the
-   user asks (it warns if a newer production tag exists than the one it picked).
+   When the next version cannot be inferred, ask (`AskUserQuestion` in an interactive session,
+   a `FEEDBACK NEEDED` note on the ticket otherwise). Do not guess.
 
-3. **Read the real diffs — do not stop at the script.** The script tells you _where_ to
-   look; the narrative comes from the actual changes. For each non-trivial area:
+2. **Bucket the line delta by area.** Derive the areas from the top-level directories; the raw
+   total is inflated by docs and agent scaffolding, so never present it as engineering effort:
 
    ```bash
-   git diff <base>..HEAD -- <path>          # what actually changed
+   for area in $(git ls-tree -d --name-only HEAD) .github .claude .agents .codex .rulesync .hotsheet2; do
+     printf '%-14s %s\n' "$area" "$(git diff --shortstat "${base}..HEAD" -- "$area" 2>/dev/null || echo '-')"
+   done
+   git diff --shortstat "${base}..HEAD" -- <product directories only>
    ```
 
-   And **verify every "new" claim against the base tree** rather than trusting a commit
-   subject:
+   Label `docs` and the `.claude`, `.agents`, `.codex`, `.rulesync`, and `.hotsheet2`
+   scaffolding as non-engineering.
+
+3. **List added and removed files**, the honest signal for "new subsystem":
 
    ```bash
-   git cat-file -e <base>:<file>            # non-zero exit → file is genuinely new
-   git show <base>:<file> | grep -c <sym>   # 0 → the symbol/behavior was added in range
-   git ls-tree -r --name-only <base> -- src/   # what the tree looked like at the base
+   git diff --diff-filter=A --name-only "${base}..HEAD"
+   git diff --diff-filter=D --name-only "${base}..HEAD"
    ```
 
-   Classic traps to check: a module that looks new but existed at the base; a feature added
-   **and removed within the same range** (nets to zero at HEAD — say so); posture like "no
-   virtual DOM" / "one dependency" that was **already true at the base** (baseline, not a
-   change); a dependency bumped in **two hops** (report the full base→HEAD delta).
-
-4. **Measure — never quote.** Numbers that aren't line-deltas come from a real run, not from
-   a doc or a commit message:
+4. **Extract the public-surface deltas.** The codebase map names the entry points; typical
+   ones are the export barrel, CLI options and exit codes, HTTP routes, schema and file-format
+   definitions, and the dependency manifest:
 
    ```bash
-   npm run build && node -e "const z=require('zlib'),fs=require('fs');console.log((z.gzipSync(fs.readFileSync('dist/index.js')).length/1024).toFixed(1)+' KB gzip')"
-   npm test # for the real test count + coverage
+   git diff "${base}..HEAD" -- <barrel or public API file>
+   git diff "${base}..HEAD" -- <cli args file> | grep -E '^[+-].*--[a-z-]+' | head -40
+   git diff "${base}..HEAD" -- <manifest> | grep -E '^[+-]' | grep -viE 'version|lock'
    ```
 
-   (The kerf-specific trap: the fine-grained-bindings work is **additive behavior on the
-   existing JSX surface** — the script will show _zero_ `src/index.ts` export changes. Don't
-   describe it as a new export; describe it as new behavior when a signal is placed in a hole.)
+   A dependency change is headline material when the project documents a dependency
+   invariant (zero runtime dependencies, a pinned toolchain).
 
-5. **Write the report** to `docs/technical-changelog/<base>-<next>.md` (the script prints
-   the exact suggested path). Keep it to ~one page. It must contain, in this spirit:
-   - **Header:** the range (`<base>..HEAD`), commit count, and a note that HEAD is untagged
-     / the "next" number is a label. State it's derived from the diff, not commit prose.
-   - **Honest size:** the area-by-area split from the script, and the **product-only** +/-
-     total called out separately from the raw total (which is inflated by docs, `site/`,
-     generated `ai/`/`assets`, and `.claude`/`.agents`/`.cursor`/`.hotsheet2` scaffolding —
-     never present the raw number as engineering effort). Note the single biggest bucket.
-   - **Baseline note:** one line on what already shipped at the base (so nothing
-     pre-existing reads as new).
-   - **Per-change sections** for the genuine deltas, each carrying its **diff evidence**
-     (new files, the export/dep delta, `0-hits → present` for behavior, measured size).
-     Order by significance (a net-new subsystem before a doc sync).
-   - **Mermaid diagrams as needed** (not gratuitously): a component/flow diagram for a new
-     runtime tier/subsystem, a sequence diagram for a new interaction. Use `<br/>` for line
-     breaks in node labels (not `\n`) and quote labels containing spaces/punctuation.
+5. **Read the real diffs; do not stop at the summaries.** The commands above say where to
+   look; the narrative comes from the changes themselves (`git diff "${base}..HEAD" -- <path>`).
+   Verify every "new" claim against the base tree rather than trusting a commit subject:
 
-6. **Validate + finish.**
-   - Sanity-check the mermaid blocks (balanced `[]`/`()`/quotes; standard `flowchart` /
-     `sequenceDiagram` syntax). If a renderer is available, render to confirm; otherwise a
-     structural check is fine.
-   - Re-read the draft against the script output and your `git show <base>:…` probes: is
-     **every** claim a real delta? Cut or re-label anything that describes the baseline.
-   - Committing is optional and follows the repo's git rules (commit when it's a clean unit;
-     the husky pre-commit `npm run check` will run; never `git push` without explicit
-     permission).
+   ```bash
+   git cat-file -e "${base}:<file>"                 # non-zero exit: genuinely new
+   git show "${base}:<file>" | grep -c '<symbol>'   # 0: added in range
+   git ls-tree -r --name-only "$base" -- <dir>
+   ```
+
+   Classic traps: a module that looks new but existed at the base; a feature added and removed
+   within the same range (nets to zero; say so); posture that was already true at the base
+   (baseline, not a change); a default that changed in two hops (report the full base-to-HEAD
+   delta).
+
+6. **Measure, never quote.** Any number that is not a line delta comes from a real run of the
+   project's own gates: unit and end-to-end test counts, coverage, build or pack size. Read the
+   commands from `AGENTS.md` and the CI workflow; keep output quiet and record the summary
+   lines.
+
+7. **Write the report**, roughly one page:
+   - **Header**: the range, the commit count, and whether HEAD is untagged (so the "next"
+     number is a label). State that the report is derived from the diff, not from commit prose.
+   - **Honest size**: the area split with a product-only total called out separately from the
+     raw total; name the biggest bucket.
+   - **Baseline note**: one line on what already shipped at the base, so nothing pre-existing
+     reads as new.
+   - **Per-change sections** for the genuine deltas, each carrying its diff evidence (new
+     files, the option or route delta, "0 hits at base, present now" for behavior, measured
+     test counts). Order by significance: a new flag, route, or exit code before a doc sync.
+   - **Contract changes**: a dedicated section whenever exit codes, CLI options, wire shapes,
+     file formats, or environment contracts changed; downstream scripts break on those.
+   - **Diagrams** only when they earn their place (a new subsystem, a changed decision order),
+     rendered rather than drawn in text, with labels quoted when they contain punctuation.
+
+8. **Validate and finish.** Sanity-check any diagram syntax; re-read the draft against your
+   base-tree probes and cut or relabel anything that describes the baseline. Committing
+   follows the project's git rules and its declared push policy.
 
 ## Guardrails
 
-- **Diff over prose.** If a claim isn't backed by a file/line change you actually read,
-  don't make it. Commit subjects, the CHANGELOG, and `docs/` are leads to verify, not
-  sources to quote.
-- **Never inflate.** Lead with product-only line counts; label docs, `site/`, and
-  agent/skill scaffolding as non-engineering.
-- **Attribute to the range only.** When unsure whether something is new, run the
-  `git cat-file -e <base>:<file>` / `git show <base>:<file>` probe before writing it up.
+- **Diff over prose.** If a claim is not backed by a file or line change you read, do not make
+  it. Commit subjects, `CHANGELOG.md`, and the docs are leads to verify, not sources to quote.
+- **Never inflate.** Lead with product-only line counts; label docs and agent scaffolding as
+  non-engineering.
+- **Attribute to the range only.** When unsure whether something is new, run the base-tree
+  probe before writing it up.
