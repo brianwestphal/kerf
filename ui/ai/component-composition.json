@@ -6514,6 +6514,11 @@
         { "id": "state mapping", "owner": "application", "required": false },
         { "id": "message lifetime", "owner": "application", "required": false },
         { "id": "retry behavior", "owner": "application", "required": false },
+        {
+          "id": "stable identity for conditional siblings",
+          "owner": "application",
+          "required": false
+        },
         { "id": "copy", "owner": "application", "required": false }
       ],
       "wiring": {

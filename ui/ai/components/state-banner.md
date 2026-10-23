@@ -64,7 +64,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 ## State and wiring
 
-**The app owns:** badge content; state mapping; message lifetime; retry behavior; copy.
+**The app owns:** badge content; state mapping; message lifetime; retry behavior; stable identity for conditional siblings; copy.
 
 No wiring helper.
 

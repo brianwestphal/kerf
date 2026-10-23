@@ -1,6 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
 import type { Sides } from '../../../shared/layout/sides.js';
 import { em } from '../../../shared/styles/css-values.js';
 import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
@@ -14,6 +15,27 @@ export type StateBannerUrgency = 'status' | 'alert';
 export type StateBannerCopyLayout = 'inline' | 'stacked';
 export type StateBannerActionPlacement = 'trailing' | 'below';
 export type StateBannerPresentation = 'card' | 'strip';
+
+const STATE_BANNER_PROTECTED = new Set([
+  'data-component',
+  'data-tone',
+  'data-copy-layout',
+  'data-action-placement',
+  'data-presentation',
+  'data-placeholder',
+]);
+
+/** Application `data-*` identity on the banner root; component markers stay protected. */
+export type StateBannerRootAttributes = Readonly<
+  Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-tone'?: never;
+    'data-copy-layout'?: never;
+    'data-action-placement'?: never;
+    'data-presentation'?: never;
+    'data-placeholder'?: never;
+  }
+>;
 
 export interface StateBannerProps {
   title: string;
@@ -47,6 +69,8 @@ export interface StateBannerProps {
    */
   dividerSides?: Sides;
   className?: string;
+  /** Safe `data-*` identity, such as `data-key` for conditional siblings. */
+  rootAttributes?: StateBannerRootAttributes;
   /** Render the title, badge, and detail as unanimated loading skeletons, keeping the icon and tone. The detail line appears only when `detail` is set, as in the live banner. */
   placeholder?: boolean;
   /** Native named-slot assignment when composed inside a web component. */
@@ -66,11 +90,13 @@ export function StateBanner({
   presentation = 'card',
   dividerSides = 'b',
   className = '',
+  rootAttributes = {},
   placeholder = false,
   slot,
 }: StateBannerProps) {
   return (
     <section
+      {...filterDataAttributes(rootAttributes, STATE_BANNER_PROTECTED)}
       class={`kui-state-banner ${className}`.trim()}
       data-component="state-banner"
       data-tone={tone}

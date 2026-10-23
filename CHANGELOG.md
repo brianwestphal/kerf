@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Stable `StateBanner` root identity.** `rootAttributes` accepts a safe `data-key` so a conditional status banner can disappear before a sibling without replacing the sibling's focused action (`KF-KDF5YG`).
 - **Native drag on `SummaryRow` options.** `draggable` writes the native attribute on the selectable row or board card root, preserving its option semantics and delegated identity across rerenders (`KF-NHPCWZ`).
 - **Static diagnostic `SummaryRow`.** `semanticRole="group"` renders a labeled, non-option list row or board card that retains rail and selected visuals while a nested native recovery action owns focus and activation (`KF-H32FQY`).
 - **Dense-feed media deferral.** `BackdropImage.deferOffscreen` and `ContentItem.media.deferOffscreen` opt into skipping offscreen hero painting while retaining card height and the shared scrollport. The 200-card constrained-CPU feed improved in both desktop and narrow measurements; the default remains unchanged (`KF-J5SAFS`).

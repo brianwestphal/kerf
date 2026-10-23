@@ -179,6 +179,7 @@ export {
 export {
   StateBanner,
   type StateBannerProps,
+  type StateBannerRootAttributes,
   type StateBannerTone,
   type StateBannerUrgency,
 } from './components/feedback/state-banner/state-banner.js';

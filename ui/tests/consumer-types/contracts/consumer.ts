@@ -1249,6 +1249,14 @@ const dividerSides: Sides = 'tr';
 const insetSides: Sides = 'tbl';
 TabBar({ id: 'tabs', label: 'Tabs', activation, children: icon });
 StateBanner({ title: 'Featured', badge: '3', tone: stateBannerTone, urgency });
+StateBanner({ title: 'Prepared', rootAttributes: { 'data-key': 'prepared' } });
+StateBanner({
+  title: 'Prepared',
+  rootAttributes: {
+    // @ts-expect-error Component-owned state markers cannot be overridden.
+    'data-tone': 'danger',
+  },
+});
 ToolbarControlGroup({
   children: icon,
   appearance,

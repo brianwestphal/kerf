@@ -1556,6 +1556,9 @@ Update this doc whenever you:
 The UI shared type `SemanticTone` lives in `ui/src/shared/styles/semantic-tone.ts`. `ui/src/shared/styles/sunken-texture.ts` draws the seeded sunken-surface grain tile on a canvas once per document (`ensureSunkenTexture`, called by SunkenPanel, sunken Pane, Workbench, TabNavigator, and the catalog's lowered viewport) and stores it in the private `--_kui-sunken-texture-generated` property that `foundation.css`'s public `--kui-sunken-texture` / `--kui-sunken-surface` tokens layer over the lowered color.
 Badge, Chip, StateBanner, and ContentItem use its six roles (`info` maps to brand
 color tokens); `BadgeTone` and `StateBannerTone` are deprecated aliases.
+`StateBanner.rootAttributes` filters application `data-*` metadata and accepts
+`data-key` to keep a focused action in a surviving conditional sibling banner
+when an earlier banner disappears (`KF-KDF5YG`).
 
 The UI shared theme and foundation define translucent lowered surfaces and neutral decorative fills/borders; the SunkenPanel catalog composes public components directly without prototype CSS.
 `ui/src/components/data-display/value-preview/` owns the `ValuePreview`

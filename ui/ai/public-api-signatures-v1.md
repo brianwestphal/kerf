@@ -3901,6 +3901,15 @@ type StateBannerUrgency = 'status' | 'alert';
 type StateBannerCopyLayout = 'inline' | 'stacked';
 type StateBannerActionPlacement = 'trailing' | 'below';
 type StateBannerPresentation = 'card' | 'strip';
+/** Application `data-*` identity on the banner root; component markers stay protected. */
+type StateBannerRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-tone'?: never;
+    'data-copy-layout'?: never;
+    'data-action-placement'?: never;
+    'data-presentation'?: never;
+    'data-placeholder'?: never;
+}>;
 interface StateBannerProps {
     title: string;
     detail?: string;
@@ -3933,14 +3942,16 @@ interface StateBannerProps {
      */
     dividerSides?: Sides;
     className?: string;
+    /** Safe `data-*` identity, such as `data-key` for conditional siblings. */
+    rootAttributes?: StateBannerRootAttributes;
     /** Render the title, badge, and detail as unanimated loading skeletons, keeping the icon and tone. The detail line appears only when `detail` is set, as in the live banner. */
     placeholder?: boolean;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function StateBanner({ title, detail, badge, icon, action, tone, urgency, copyLayout, actionPlacement, presentation, dividerSides, className, placeholder, slot, }: StateBannerProps): SafeHtml;
+declare function StateBanner({ title, detail, badge, icon, action, tone, urgency, copyLayout, actionPlacement, presentation, dividerSides, className, rootAttributes, placeholder, slot, }: StateBannerProps): SafeHtml;
 
-export { SemanticTone, StateBanner, type StateBannerActionPlacement, type StateBannerCopyLayout, type StateBannerPresentation, type StateBannerProps, type StateBannerTone, type StateBannerUrgency };
+export { SemanticTone, StateBanner, type StateBannerActionPlacement, type StateBannerCopyLayout, type StateBannerPresentation, type StateBannerProps, type StateBannerRootAttributes, type StateBannerTone, type StateBannerUrgency };
 ```
 
 ## `@kerfjs/ui/empty-state`

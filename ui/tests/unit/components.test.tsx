@@ -31,7 +31,10 @@ import { Badge } from '../../src/components/feedback/badge/badge.js';
 import { Chip } from '../../src/components/feedback/chip/chip.js';
 import { EmptyState } from '../../src/components/feedback/empty-state/empty-state.js';
 import { LoadingSpinner } from '../../src/components/feedback/loading-spinner/loading-spinner.js';
-import { StateBanner } from '../../src/components/feedback/state-banner/state-banner.js';
+import {
+  StateBanner,
+  type StateBannerProps,
+} from '../../src/components/feedback/state-banner/state-banner.js';
 import { SegmentedControl } from '../../src/components/forms/segmented-control/segmented-control.js';
 import {
   Select,
@@ -2878,6 +2881,22 @@ describe('production UI primitives', () => {
     expect(asHtml(StateBanner({ title: 'Ready' }))).toContain(
       'data-tone="info" data-copy-layout="inline" data-action-placement="trailing"',
     );
+    const keyedBanner = asHtml(
+      StateBanner({
+        title: 'Prepared',
+        rootAttributes: {
+          'data-key': 'prepared',
+          'data-state': 'ready',
+          'data-tone': 'danger',
+          'data-component': 'other',
+        } as unknown as StateBannerProps['rootAttributes'],
+      }),
+    );
+    expect(keyedBanner).toContain('data-key="prepared"');
+    expect(keyedBanner).toContain('data-state="ready"');
+    expect(keyedBanner).toContain('data-component="state-banner"');
+    expect(keyedBanner).toContain('data-tone="info"');
+    expect(keyedBanner).not.toContain('data-tone="danger"');
     expect(
       asHtml(
         StateBanner({

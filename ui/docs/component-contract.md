@@ -326,6 +326,11 @@ component or helper writes its protected attributes after the accepted metadata.
 structurally widened, and JavaScript callers therefore cannot replace its
 contract.
 
+`StateBanner.rootAttributes` accepts safe `data-*` metadata, including a stable
+`data-key` for conditional sibling banners. Key each sibling so removing an
+earlier status preserves the surviving banner's action node and focus. The
+component's tone, layout, presentation, and placeholder markers stay protected.
+
 `TabBarItem.closeIcon` and `ResizableRegion.handleIcon` replace dormant decorative
 glyph content only. They must not contain controls or interactive roles. The
 component continues to own the named close button or focusable separator, and

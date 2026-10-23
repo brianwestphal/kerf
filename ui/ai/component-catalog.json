@@ -8151,6 +8151,7 @@
         "state mapping",
         "message lifetime",
         "retry behavior",
+        "stable identity for conditional siblings",
         "copy"
       ],
       "variants": [

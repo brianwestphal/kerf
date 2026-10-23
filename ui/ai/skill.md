@@ -57,6 +57,10 @@ Use `info` for the role backed by the existing `--kui-color-brand-*` tokens.
 Migrate Badge/Chip `tone="brand"` to `tone="info"`; `BadgeTone` and
 `StateBannerTone` remain deprecated aliases of `SemanticTone`.
 
+When conditional `StateBanner` siblings share a parent, give each a stable
+`rootAttributes={{ 'data-key': key }}` so removing an earlier status keeps a
+surviving banner's action and focus on the same DOM nodes.
+
 ### Lowered surfaces are translucent
 
 The sunken/lowered background is a semi-transparent color, not a solid canvas.
