@@ -11,6 +11,10 @@ export type TextFieldSize = 'default' | 'compact';
 export type TextFieldType =
   'text' | 'email' | 'password' | 'search' | 'url' | 'tel' | 'number' | 'date';
 
+/** Native virtual-keyboard hint for an input or textarea. */
+export type TextFieldInputMode =
+  'none' | 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url';
+
 const TEXT_FIELD_PROTECTED = new Set([
   'data-component',
   'data-size',
@@ -84,6 +88,14 @@ export interface TextFieldOptions {
   /** Request native focus on insertion or when the containing dialog opens. */
   autofocus?: boolean;
   autocomplete?: string;
+  /** Native capitalization behavior for exact or prose entry. */
+  autocapitalize?: 'off' | 'none' | 'on' | 'sentences' | 'words' | 'characters';
+  /** Native autocorrection hint. */
+  autocorrect?: 'on' | 'off';
+  /** Native virtual-keyboard hint. */
+  inputMode?: TextFieldInputMode;
+  /** Native spelling check; serialized as the enumerated HTML value. */
+  spellcheck?: boolean;
   /** The input's id, for an external label or form. */
   id?: string;
   className?: string;
@@ -126,6 +138,10 @@ export function TextField({
   required = false,
   autofocus = false,
   autocomplete,
+  autocapitalize,
+  autocorrect,
+  inputMode,
+  spellcheck,
   id,
   className = '',
   rootAttributes = {},
@@ -144,6 +160,11 @@ export function TextField({
     required,
     autofocus,
     autocomplete,
+    autocapitalize,
+    autocorrect,
+    inputmode: inputMode,
+    spellcheck:
+      spellcheck === undefined ? undefined : spellcheck ? 'true' : 'false',
     maxlength: maxLength,
     // The label element also wraps the clear button and the count, so the
     // input takes its name explicitly rather than from the label's text.

@@ -48,6 +48,10 @@ describe('TextField', () => {
       'autofocus',
       'name',
       'id',
+      'autocapitalize',
+      'autocorrect',
+      'inputmode',
+      'spellcheck',
     ])
       expect(control.hasAttribute(attribute)).toBe(false);
     for (const attribute of ['data-invalid', 'data-multiline', 'style', 'slot'])
@@ -188,6 +192,30 @@ describe('TextField', () => {
     expect(area.autofocus).toBe(true);
     expect(area.hasAttribute('autofocus')).toBe(true);
   });
+
+  it.each([false, true])(
+    'forwards exact-entry hints to native input and textarea (spellcheck %s)',
+    (spellcheck) => {
+      for (const multiline of [false, true]) {
+        const field = render(
+          TextField({
+            label: 'Exact Phrase',
+            multiline,
+            autocapitalize: 'off',
+            autocorrect: 'off',
+            inputMode: 'numeric',
+            spellcheck,
+          }),
+        );
+        const control = field.querySelector('input, textarea')!;
+        expect(control.getAttribute('autocapitalize')).toBe('off');
+        expect(control.getAttribute('autocorrect')).toBe('off');
+        expect(control.getAttribute('inputmode')).toBe('numeric');
+        expect(control.getAttribute('spellcheck')).toBe(String(spellcheck));
+        expect(field.hasAttribute('spellcheck')).toBe(false);
+      }
+    },
+  );
 
   it('carries input attributes, an accessible name, and protected metadata', () => {
     const field = render(

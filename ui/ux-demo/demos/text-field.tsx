@@ -46,6 +46,35 @@ export function TextFieldDemo() {
         </List>
       </CatalogExample>
       <CatalogExample
+        label="Exact Entry"
+        note="Native spelling, correction, capitalization, and keyboard hints pass through to the control."
+        align="inline-control"
+      >
+        <List gap="xs">
+          <TextField
+            label="Confirmation Phrase"
+            placeholder="Type the phrase exactly"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck={false}
+          />
+          <TextField
+            label="Card Number"
+            inputMode="numeric"
+            autocorrect="off"
+            spellcheck={false}
+          />
+          <TextField
+            label="Place Names"
+            multiline
+            rows={2}
+            autocapitalize="words"
+            autocorrect="off"
+            spellcheck={false}
+          />
+        </List>
+      </CatalogExample>
+      <CatalogExample
         label="Compact"
         note="The compact size matches compact Buttons and Selects."
         align="inline-control"

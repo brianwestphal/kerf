@@ -309,6 +309,7 @@ export {
 } from './components/forms/switch/switch.js';
 export {
   TextField,
+  type TextFieldInputMode,
   type TextFieldName,
   type TextFieldOptions,
   type TextFieldProps,

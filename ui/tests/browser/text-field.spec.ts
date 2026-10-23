@@ -13,6 +13,46 @@ async function openDemo(page: Page, width = 1100) {
   return page.locator('[data-demo="text-field"]');
 }
 
+test('exact-entry controls keep native editing hints on the live control', async ({
+  page,
+}, testInfo) => {
+  const demo = await openDemo(page);
+  const phrase = demo.getByRole('textbox', { name: 'Confirmation Phrase' });
+  await expect(phrase).toHaveAttribute('autocapitalize', 'off');
+  await expect(phrase).toHaveAttribute('autocorrect', 'off');
+  await expect(phrase).toHaveAttribute('spellcheck', 'false');
+  await phrase.fill('KEEP Exact Case');
+  await expect(phrase).toHaveValue('KEEP Exact Case');
+
+  const card = demo.getByRole('textbox', { name: 'Card Number' });
+  await expect(card).toHaveAttribute('inputmode', 'numeric');
+  await expect(card).toHaveAttribute('spellcheck', 'false');
+  await card.fill('00123');
+  await expect(card).toHaveValue('00123');
+
+  const places = demo.getByRole('textbox', { name: 'Place Names' });
+  await expect(places).toHaveAttribute('autocapitalize', 'words');
+  await expect(places).toHaveAttribute('autocorrect', 'off');
+  await expect(places).toHaveAttribute('spellcheck', 'false');
+  await places.fill('São Paulo');
+  await expect(places).toHaveValue('São Paulo');
+
+  if (testInfo.project.name === 'chromium') {
+    await page.screenshot({
+      path: testInfo.outputPath('KF-0PXRHB-exact-entry-1100.png'),
+      animations: 'disabled',
+      fullPage: true,
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(places).toBeVisible();
+    await phrase.scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: testInfo.outputPath('KF-0PXRHB-exact-entry-390.png'),
+      animations: 'disabled',
+    });
+  }
+});
+
 test('the label names the field, and the hint and error describe it', async ({
   page,
 }) => {

@@ -6299,6 +6299,8 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 type TextFieldSize = 'default' | 'compact';
 /** The kinds of single-line value a TextField takes. */
 type TextFieldType = 'text' | 'email' | 'password' | 'search' | 'url' | 'tel' | 'number' | 'date';
+/** Native virtual-keyboard hint for an input or textarea. */
+type TextFieldInputMode = 'none' | 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url';
 /** Application `data-*` metadata; the TextField's own markers stay protected. */
 type TextFieldRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
 /**
@@ -6365,6 +6367,14 @@ interface TextFieldOptions {
     /** Request native focus on insertion or when the containing dialog opens. */
     autofocus?: boolean;
     autocomplete?: string;
+    /** Native capitalization behavior for exact or prose entry. */
+    autocapitalize?: 'off' | 'none' | 'on' | 'sentences' | 'words' | 'characters';
+    /** Native autocorrection hint. */
+    autocorrect?: 'on' | 'off';
+    /** Native virtual-keyboard hint. */
+    inputMode?: TextFieldInputMode;
+    /** Native spelling check; serialized as the enumerated HTML value. */
+    spellcheck?: boolean;
     /** The input's id, for an external label or form. */
     id?: string;
     className?: string;
@@ -6380,9 +6390,9 @@ interface TextFieldOptions {
  * The whole field is one `<label>`, so clicking anywhere on it focuses the
  * input; the input is named by `label` (or `ariaLabel`) directly.
  */
-declare function TextField({ label, ariaLabel, value, name, placeholder, hint, error, size, icon, clearable, clearLabel, maxLength, showCount, type, min, max, step, multiline, rows, maxRows, disabled, readOnly, required, autofocus, autocomplete, id, className, rootAttributes, slot, }: TextFieldProps): kerfjs.SafeHtml;
+declare function TextField({ label, ariaLabel, value, name, placeholder, hint, error, size, icon, clearable, clearLabel, maxLength, showCount, type, min, max, step, multiline, rows, maxRows, disabled, readOnly, required, autofocus, autocomplete, autocapitalize, autocorrect, inputMode, spellcheck, id, className, rootAttributes, slot, }: TextFieldProps): kerfjs.SafeHtml;
 
-export { TextField, type TextFieldName, type TextFieldOptions, type TextFieldProps, type TextFieldRootAttributes, type TextFieldSize, type TextFieldType };
+export { TextField, type TextFieldInputMode, type TextFieldName, type TextFieldOptions, type TextFieldProps, type TextFieldRootAttributes, type TextFieldSize, type TextFieldType };
 ```
 
 ## `@kerfjs/ui/checkbox`
