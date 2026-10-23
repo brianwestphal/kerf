@@ -14,13 +14,14 @@ Use the spacing scale by relationship: 8px within a group, 16px between like gro
 - Compose headings with `Toolbar` and direct `ToolbarText`; group related controls with `ToolbarControlGroup`. Keep a control near the surface it affects. A panel's collapse toggle belongs with that panel, and exactly one control owns the action.
 - A toolbar or dialog header has no decorative divider by default. Use a divider only for a real boundary, such as pinned chrome over scrolling content, with the component's documented API. Do not add persistent instruction copy to explain an ordinary control.
 - Keep controls mounted when a capability or state temporarily disables them, so neighboring groups do not jump. Disable with a truthful explanation. Hide a control only when the whole capability is absent or the responsive composition deliberately moves it.
+- Remove, rather than disable, a recovery action whose use in the current state would be unsafe or misleading, and let the state's banner say what to do instead; disable only for temporary conditions such as busy or not yet loaded.
 - Use `SegmentedControl` for a short exclusive view choice, in its own group. Put `SearchField` in the relevant toolbar and make it filter the visible collection. A search control is not a substitute for navigation.
 
 ## Actions, feedback, and dialogs
 
 - Label a command that opens a dialog with an ellipsis: “Add Ticket…”. The dialog title names the task. For adding an object, use a “+ Thing” toolbar action and a dialog; do not leave an inline creation form in a collection view.
 - Order dialog actions consistently. Cancel is the leading action, separated from the trailing primary action by a spacer. Negative actions precede positive actions. Mark a destructive action clearly and require confirmation only when undo or recovery cannot safely cover it.
-- Use a toast for a transient confirmation. Use `StateBanner` in the affected region's header area for a persistent problem or status that requires attention. Show recovery beside the problem. Do not use a toast as the only record of failure.
+- Use a toast for a transient confirmation. Use `StateBanner` in the affected region's header area for a persistent problem or status that requires attention. Show safe recovery beside the problem; remove an unsafe recovery action as described under Chrome and hierarchy. Do not use a toast as the only record of failure.
 - Distinguish an empty collection, no search matches, loading, missing setup, offline state, and an error. Never show “no items” while loading. The empty state states what can happen next and offers a relevant action when one exists.
 - A user action should show its safe local consequence within 100 ms, then reconcile with authoritative data without flicker. Do not block a click on unrelated data. Preserve the pending action and report a rejection where it can be corrected.
 
