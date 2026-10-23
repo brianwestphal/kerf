@@ -175,6 +175,38 @@ const twoEntrySettings = uiSettings({
   workspaceRoot: wiringRoot,
   profile: { ...profile, wiring: { entries: ['main.tsx', 'other.tsx'] } },
 });
+const choiceEntry = join(wiringRoot, 'choice-entry.tsx');
+const choiceLeaf = join(wiringRoot, 'choice-leaf.tsx');
+const choiceListboxEntry = join(wiringRoot, 'choice-listbox-entry.tsx');
+const choiceListboxLeaf = join(wiringRoot, 'choice-listbox-leaf.tsx');
+writeFileSync(choiceEntry, "import './choice-leaf';\n");
+writeFileSync(
+  choiceLeaf,
+  "import { ChoiceChips } from '@kerfjs/ui'; export const View = () => <><ChoiceChips choices={options} /><ChoiceChips multiple='toggle' choices={options} /></>;\n",
+);
+writeFileSync(choiceListboxEntry, "import './choice-listbox-leaf';\n");
+writeFileSync(
+  choiceListboxLeaf,
+  "import { ChoiceChips } from '@kerfjs/ui'; export const View = () => <ChoiceChips choices={options.filter((item) => item.value > 0)} multiple={true} />;\n",
+);
+const choiceEntrySettings = uiSettings({
+  workspaceRoot: wiringRoot,
+  catalog: undefined,
+  selectionCatalog: undefined,
+  catalogPath: join(
+    import.meta.dirname,
+    '../../../ui/ai/component-composition.json',
+  ),
+  selectionCatalogPath: join(
+    import.meta.dirname,
+    '../../../ui/ai/component-catalog.json',
+  ),
+  profile: { ...profile, wiring: { entries: ['choice-entry.tsx'] } },
+});
+const choiceListboxEntrySettings = uiSettings({
+  ...choiceEntrySettings.kerfjs.ui,
+  profile: { ...profile, wiring: { entries: ['choice-listbox-entry.tsx'] } },
+});
 const moduleScopeSettings = uiSettings({
   workspaceRoot: wiringRoot,
   profile: { ...profile, wiring: { entries: ['main.tsx'] } },
@@ -1475,6 +1507,20 @@ tester.run('ui-preferences discouraged Web Awesome tags', preferences, {
 tester.run('ui-wiring', wiring, {
   valid: [
     {
+      code: "import { ChoiceChips } from '@kerfjs/ui'; <ChoiceChips choices={options} />; <ChoiceChips multiple='toggle' choices={options} />; <ChoiceChips multiple={false} choices={options} />;",
+      settings: shippedUiSettings,
+    },
+    {
+      code: "import './choice-leaf';",
+      filename: choiceEntry,
+      settings: choiceEntrySettings,
+    },
+    {
+      code: "import { ChoiceChips } from '@kerfjs/ui'; <ChoiceChips multiple='toggle' choices={options} />;",
+      filename: choiceLeaf,
+      settings: choiceEntrySettings,
+    },
+    {
       // This app-owned root is explicitly typed void. Its one page-lifetime
       // call satisfies L401 without a meaningless void operator or L402.
       code: "import './review-view.js'; import { startReview } from './interactions/review-index.js'; startReview();",
@@ -1587,6 +1633,22 @@ tester.run('ui-wiring', wiring, {
     },
   ],
   invalid: [
+    {
+      code: "import { ChoiceChips } from '@kerfjs/ui'; <ChoiceChips multiple choices={options} />;",
+      settings: shippedUiSettings,
+      errors: [{ messageId: 'missing' }],
+    },
+    {
+      code: "import { ChoiceChips } from '@kerfjs/ui'; <ChoiceChips multiple={mode} choices={options} />;",
+      settings: shippedUiSettings,
+      errors: [{ messageId: 'missing' }],
+    },
+    {
+      code: "import './choice-listbox-leaf';",
+      filename: choiceListboxEntry,
+      settings: choiceListboxEntrySettings,
+      errors: [{ messageId: 'missing' }],
+    },
     {
       code: "import './review-view.js';",
       filename: join(appRoot, 'src/review-entry.tsx'),

@@ -58,6 +58,56 @@ function entryModules(entryFile, currentFile, currentText) {
   return modules;
 }
 
+// Only the listbox mode needs wireChoiceChips. Static radio and toggle groups
+// use native inputs; an expression whose value is unknown still needs wiring.
+function choiceChipsNeedsWiring(attributes) {
+  const multiple = attributes.find(
+    (attribute) => attribute.name?.name === 'multiple',
+  );
+  if (!multiple) return false;
+  if (!multiple.value) return true;
+  if (multiple.value.type === 'Literal')
+    return multiple.value.value !== 'toggle';
+  const expression = multiple.value.expression;
+  if (expression?.type === 'Literal')
+    return expression.value !== 'toggle' && expression.value !== false;
+  return true;
+}
+
+function sourceChoiceChipsNeedsWiring(source, name) {
+  const opening = new RegExp(`<${name}(?=[\\s/>])`, 'g');
+  for (const match of source.matchAll(opening)) {
+    let braces = 0;
+    let quote;
+    let end = match.index + match[0].length;
+    for (; end < source.length; end++) {
+      const char = source[end];
+      if (quote) {
+        if (char === '\\') end++;
+        else if (char === quote) quote = undefined;
+      } else if (char === '"' || char === "'" || char === '`') quote = char;
+      else if (char === '{') braces++;
+      else if (char === '}') braces--;
+      else if (char === '>' && braces === 0) break;
+    }
+    if (end === source.length) continue;
+    const attributes = source.slice(match.index + match[0].length, end);
+    const multiple = attributes.match(
+      /(?:^|\s)multiple(?:\s*=\s*(?:\{\s*([^}]*)\s*\}|(["'])(.*?)\2))?(?=\s|\/|$)/,
+    );
+    if (!multiple) continue;
+    if (
+      multiple[3] === 'toggle' ||
+      multiple[1]?.trim() === "'toggle'" ||
+      multiple[1]?.trim() === '"toggle"' ||
+      multiple[1]?.trim() === 'false'
+    )
+      continue;
+    return true;
+  }
+  return false;
+}
+
 // The entry graph is read from disk because ESLint visits one source file at a
 // time. Match only imported JSX names; an unrelated local tag cannot satisfy a
 // catalog obligation. The current entry's in-memory text covers editor linting.
@@ -84,7 +134,12 @@ function moduleUses(source, file, contract) {
         if (!match) continue;
         const [, imported, local = imported] = match;
         const key = keyFor(imported);
-        if (key && new RegExp(`<${local}(?=[\\s/>])`).test(source))
+        if (
+          key &&
+          new RegExp(`<${local}(?=[\\s/>])`).test(source) &&
+          (key !== '@kerfjs/ui:choice-chips' ||
+            sourceChoiceChipsNeedsWiring(source, local))
+        )
           uses.add(key);
       }
     const namespace = bindings.match(/\*\s+as\s+(\w+)/)?.[1];
@@ -97,7 +152,9 @@ function moduleUses(source, file, contract) {
         const key = keyFor(name);
         if (
           key &&
-          new RegExp(`<${namespace}\\.${name}(?=[\\s/>])`).test(source)
+          new RegExp(`<${namespace}\\.${name}(?=[\\s/>])`).test(source) &&
+          (key !== '@kerfjs/ui:choice-chips' ||
+            sourceChoiceChipsNeedsWiring(source, `${namespace}\\.${name}`))
         )
           uses.add(key);
       }
@@ -243,7 +300,13 @@ export default {
       JSXOpeningElement(node) {
         if (!registry) return;
         const key = jsxKey(node.name, registry, contract);
-        if (key && !used.has(key)) used.set(key, node.name);
+        if (
+          key &&
+          !used.has(key) &&
+          (key !== '@kerfjs/ui:choice-chips' ||
+            choiceChipsNeedsWiring(node.attributes))
+        )
+          used.set(key, node.name);
       },
       CallExpression(node) {
         if (!registry) return;

@@ -18,6 +18,8 @@ For a page-lifetime root helper, declare the actual app entry in the workspace `
 
 The entry graph then covers a `SearchField` in an imported view without duplicate wiring in that view. Include every independently mounted application entry. The path must resolve through relative imports from each entry to both the view and the helper; merely naming the helper in the profile does not count as invoking it.
 
+For `ChoiceChips`, only `multiple={true}` needs `wireChoiceChips`. The default radio group and `multiple="toggle"` use native inputs, so they create no wiring finding. A dynamic `multiple` expression still requires wiring because it may render the listbox mode.
+
 Consumer composition catalogs can name an application helper's defining file in `wiring.sources`:
 
 ```json
