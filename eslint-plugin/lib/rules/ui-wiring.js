@@ -254,11 +254,21 @@ function handlesAction(modules, action, contract) {
 function applicationEntries(contract, filename, source) {
   const root = resolve(contract.cwd);
   const entries = [];
-  for (const path of contract.profile.wiring?.entries ?? []) {
-    const file = resolve(root, path);
-    if (relative(root, file).startsWith('..')) continue;
-    const modules = entryModules(file, filename, source);
-    if (modules.size) entries.push({ file, modules });
+  for (const entry of contract.profile.wiring?.entries ?? []) {
+    const client = typeof entry === 'string' ? [entry] : entry.client;
+    const render = typeof entry === 'string' ? [] : entry.render;
+    const roots = [...render, ...client].map((path) => resolve(root, path));
+    if (roots.some((file) => relative(root, file).startsWith('..'))) continue;
+    const modules = new Map();
+    const wiringModules = new Map();
+    for (const file of roots)
+      for (const [module, text] of entryModules(file, filename, source)) {
+        modules.set(module, text);
+        if (client.some((path) => resolve(root, path) === file))
+          wiringModules.set(module, text);
+      }
+    if (modules.size && wiringModules.size)
+      entries.push({ file: resolve(root, client[0]), modules, wiringModules });
   }
   return entries;
 }
@@ -333,7 +343,7 @@ export default {
         const reachableCalls = new Set(calls.keys());
         const reachableImports = new Set(registry.sources);
         if (ownEntry)
-          for (const [file, source] of ownEntry.modules)
+          for (const [file, source] of ownEntry.wiringModules)
             if (file !== filename) {
               for (const imported of moduleImportSources(source))
                 reachableImports.add(imported);
@@ -353,7 +363,7 @@ export default {
             continue;
           const actionModules =
             entry.wiring.scope !== 'module' && ownEntry
-              ? ownEntry.modules
+              ? ownEntry.wiringModules
               : new Map([[filename, context.sourceCode.text]]);
           for (const action of entry.wiring.actions ?? [])
             if (

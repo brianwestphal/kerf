@@ -227,6 +227,11 @@ application-scoped helper calls and registration imports once at each entry
 that reaches a rendering module, while a composition entry with
 `wiring.scope: "module"` keeps a local obligation. See the
 [`ui-wiring` rule](../../eslint-plugin/docs/rules/ui-wiring.md).
+For server-rendered pages, an entry can instead pair `render` module roots with
+the browser `client` roots their documents load, for example
+`{ "render": ["src/routes/admin/index.tsx"], "client": ["src/client/app/admin.ts"] }`.
+Application-scoped obligations from the render graph are satisfied by wiring
+in the same item's client graph. String entries retain the single-graph rule.
 Every resolved field retains its source file. The shipped
 `application-ui-profile.mjs` API implements discovery, merge, loading, and
 validation and reports actionable originating file + JSON-path diagnostics for stale

@@ -29,8 +29,15 @@
       "type": "object",
       "properties": {
         "entries": {
-          "description": "Application entry modules, relative to the workspace root, where application-scoped wiring is installed.",
-          "$ref": "#/$defs/stringList"
+          "description": "Application entry modules or paired server-render and browser-client module roots, relative to the workspace root.",
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "string", "minLength": 1 },
+              { "$ref": "#/$defs/wiringPair" }
+            ]
+          },
+          "uniqueItems": true
         }
       },
       "additionalProperties": false
@@ -45,6 +52,21 @@
     "stringList": {
       "type": "array",
       "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "wiringPair": {
+      "type": "object",
+      "required": ["render", "client"],
+      "properties": {
+        "render": { "$ref": "#/$defs/nonemptyStringList" },
+        "client": { "$ref": "#/$defs/nonemptyStringList" }
+      },
+      "additionalProperties": false
+    },
+    "nonemptyStringList": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1,
       "uniqueItems": true
     },
     "catalogLocation": {

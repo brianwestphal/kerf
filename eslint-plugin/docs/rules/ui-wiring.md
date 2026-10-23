@@ -10,6 +10,14 @@ Declare application entry modules in the application UI profile to check root wi
 
 Entry paths are relative to the workspace root. The rule follows relative imports, re-exports, and literal dynamic imports from each entry. An application-scoped obligation is checked at the entry if any reachable module renders its component; a recognized helper call or required registration import in any reachable module satisfies it. Reachable leaf modules need no duplicate wiring. A module outside every declared entry keeps the per-file check. A composition entry can set `wiring.scope` to `"module"` for wiring that must be installed beside its rendering code; omitted scope means `"application"`. Computed import paths and unresolved modules stay outside the static graph, so put them in a declared entry or check them separately. `KUI-L402` still checks the helper's call site.
 
+For server-rendered pages whose document loads a separate browser entry, pair the roots in one item:
+
+```json
+{ "wiring": { "entries": [{ "render": ["src/routes/admin/index.tsx"], "client": ["src/client/app/admin.ts"] }] } }
+```
+
+The rule checks an application-scoped obligation raised by any module reachable from `render` against helper calls and registration imports reachable from any `client` root in the same item. It reports a missing obligation at the first client entry. Each pair is isolated; another pair's client wiring does not satisfy it. String entries keep their existing single-graph behavior. List every server page that loads that browser entry in `render`; the HTML document's script URL is not an import edge the rule can discover. `wiring.scope: "module"` obligations remain local to the rendering module.
+
 For a page-lifetime root helper, declare the actual app entry in the workspace `.kerf-ui-profile.json`. For example, if `src/client/app.tsx` imports `init.ts`, `init.ts` calls `wireShellSearch(root)`, and that imported helper calls `wireSearchFields(root)`, use:
 
 ```json

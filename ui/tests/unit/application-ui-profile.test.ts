@@ -44,6 +44,45 @@ describe('application UI profile policy', () => {
     ).toContain('$.wiring.entries');
   });
 
+  it('accepts paired render/client entries and rejects malformed or unsafe pairs', () => {
+    const entries = [
+      'src/main.tsx',
+      {
+        render: ['src/routes/admin/index.tsx', 'src/routes/admin/list.tsx'],
+        client: ['src/client/app/admin.ts'],
+      },
+    ];
+    const profile: ApplicationUiProfile = {
+      schemaVersion: 1,
+      scope: 'workspace',
+      wiring: { entries },
+    };
+    expect(validateApplicationUiProfile(profile)).toEqual([]);
+    expect(syncProfileContract.validateApplicationUiProfile(profile)).toEqual(
+      [],
+    );
+
+    for (const invalid of [
+      { render: [], client: ['src/client.ts'] },
+      { render: ['src/page.tsx'], client: [] },
+      { render: ['../page.tsx'], client: ['src/client.ts'] },
+      { render: ['src/page.tsx'], client: ['src/*.ts'] },
+      { render: ['src/page.tsx'], client: ['src/client.ts'], extra: true },
+      { render: ['src/page.tsx', 'src/page.tsx'], client: ['src/client.ts'] },
+    ]) {
+      const candidate = {
+        ...profile,
+        wiring: { entries: [invalid] },
+      } as unknown as ApplicationUiProfile;
+      expect(
+        validateApplicationUiProfile(candidate).map(({ code }) => code),
+      ).toContain('KUI-P030');
+      expect(
+        syncProfileContract.validateApplicationUiProfile(candidate),
+      ).toEqual(validateApplicationUiProfile(candidate));
+    }
+  });
+
   it('keeps the synchronous ESLint projection behaviorally aligned', () => {
     const layers = [
       layer('/package/default.json', {

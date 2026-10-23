@@ -148,6 +148,11 @@ explains when to reuse, compose, extend, or use native HTML.
    tokens, layout conventions, and narrow source-located exceptions. Validation
    is catalog-aware per layer, including parent values later overridden by a
    child; synchronous hosts use [application-ui-profile-sync.cjs](./ai/application-ui-profile-sync.cjs).
+   In `wiring.entries`, use a plain path for one client import graph, or pair
+   server-rendered roots and the browser entries their documents load as
+   `{ "render": ["src/routes/admin/index.tsx"], "client": ["src/client/app/admin.ts"] }`.
+   The `ui-wiring` rule checks application-scoped render obligations against
+   wiring reachable from a client root in the same pair.
    See the
    [workspace profile example](./docs/examples/application-ui-profile.json).
    A zone's optional `jsx.prop` is its only authoritative JSX binding; never

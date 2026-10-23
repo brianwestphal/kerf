@@ -124,6 +124,10 @@ const registrationEntry = join(wiringRoot, 'registration-entry.tsx');
 const registrationLeaf = join(wiringRoot, 'registration-leaf.tsx');
 const registrationInit = join(wiringRoot, 'registration-init.ts');
 const registrationUnrelated = join(wiringRoot, 'registration-unrelated.ts');
+const serverPage = join(wiringRoot, 'server-page.tsx');
+const serverPageTwo = join(wiringRoot, 'server-page-two.tsx');
+const browserEntry = join(wiringRoot, 'browser-entry.ts');
+const otherBrowserEntry = join(wiringRoot, 'other-browser-entry.ts');
 writeFileSync(
   wiringEntry,
   "import './leaf'; import '@kerfjs/ui/select/register'; import { wireSearchFields } from '@kerfjs/ui/wire-search-fields'; const dispose = wireSearchFields(root);\n",
@@ -159,6 +163,16 @@ writeFileSync(
   registrationUnrelated,
   "import '@kerfjs/ui/popup-menu/register';\n",
 );
+writeFileSync(
+  serverPage,
+  "import { Select } from '@kerfjs/ui/select'; export const Page = () => <Select />;\n",
+);
+writeFileSync(
+  serverPageTwo,
+  "import { Select } from '@kerfjs/ui/select'; export const PageTwo = () => <Select />;\n",
+);
+writeFileSync(browserEntry, "import '@kerfjs/ui/select/register';\n");
+writeFileSync(otherBrowserEntry, "import '@kerfjs/ui/select/register';\n");
 const entrySettings = uiSettings({
   workspaceRoot: wiringRoot,
   profile: { ...profile, wiring: { entries: ['main.tsx'] } },
@@ -170,6 +184,46 @@ const rootHelperSettings = uiSettings({
 const registrationSettings = uiSettings({
   workspaceRoot: wiringRoot,
   profile: { ...profile, wiring: { entries: ['registration-entry.tsx'] } },
+});
+const pairedSettings = uiSettings({
+  workspaceRoot: wiringRoot,
+  profile: {
+    ...profile,
+    wiring: {
+      entries: [
+        {
+          render: ['server-page.tsx', 'server-page-two.tsx'],
+          client: ['browser-entry.ts'],
+        },
+      ],
+    },
+  },
+});
+const unrelatedPairSettings = uiSettings({
+  workspaceRoot: wiringRoot,
+  profile: {
+    ...profile,
+    wiring: {
+      entries: [
+        { render: ['server-page.tsx'], client: ['browser-entry.ts'] },
+        'other-browser-entry.ts',
+      ],
+    },
+  },
+});
+const multiClientPairSettings = uiSettings({
+  workspaceRoot: wiringRoot,
+  profile: {
+    ...profile,
+    wiring: {
+      entries: [
+        {
+          render: ['server-page.tsx'],
+          client: ['browser-entry.ts', 'other-browser-entry.ts'],
+        },
+      ],
+    },
+  },
 });
 const twoEntrySettings = uiSettings({
   workspaceRoot: wiringRoot,
@@ -1589,6 +1643,26 @@ tester.run('ui-wiring', wiring, {
       settings: registrationSettings,
     },
     {
+      code: "import '@kerfjs/ui/select/register';",
+      filename: browserEntry,
+      settings: pairedSettings,
+    },
+    {
+      code: 'export const ready = true;',
+      filename: browserEntry,
+      settings: multiClientPairSettings,
+    },
+    {
+      code: "import { Select } from '@kerfjs/ui/select'; export const Page = () => <Select />;",
+      filename: serverPage,
+      settings: pairedSettings,
+    },
+    {
+      code: "import { Select } from '@kerfjs/ui/select'; export const PageTwo = () => <Select />;",
+      filename: serverPageTwo,
+      settings: pairedSettings,
+    },
+    {
       code: "import { SearchField, Select } from '@kerfjs/ui'; <><SearchField /><Select /></>;",
       filename: wiringLeaf,
       settings: twoEntrySettings,
@@ -1720,6 +1794,18 @@ tester.run('ui-wiring', wiring, {
       code: "import './registration-leaf';",
       filename: registrationEntry,
       settings: registrationSettings,
+      errors: [{ messageId: 'missing' }],
+    },
+    {
+      code: 'export const ready = true;',
+      filename: browserEntry,
+      settings: pairedSettings,
+      errors: [{ messageId: 'missing' }],
+    },
+    {
+      code: 'export const ready = true;',
+      filename: browserEntry,
+      settings: unrelatedPairSettings,
       errors: [{ messageId: 'missing' }],
     },
     {

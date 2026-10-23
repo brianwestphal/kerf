@@ -116,6 +116,37 @@ const stringList = (value) =>
   value.every((item) => typeof item === 'string' && item.length > 0) &&
   new Set(value).size === value.length;
 
+const wiringPath = (path) =>
+  typeof path === 'string' &&
+  path.length > 0 &&
+  !isAbsolute(path) &&
+  !path.split('/').includes('..') &&
+  !/[*?]/.test(path);
+
+const wiringEntries = (entries) =>
+  Array.isArray(entries) &&
+  entries.every((entry) =>
+    typeof entry === 'string'
+      ? wiringPath(entry)
+      : entry &&
+        typeof entry === 'object' &&
+        !Array.isArray(entry) &&
+        Object.keys(entry).every((key) => ['render', 'client'].includes(key)) &&
+        stringList(entry.render) &&
+        entry.render.length > 0 &&
+        entry.render.every(wiringPath) &&
+        stringList(entry.client) &&
+        entry.client.length > 0 &&
+        entry.client.every(wiringPath),
+  ) &&
+  new Set(
+    entries.map((entry) =>
+      typeof entry === 'string'
+        ? `string:${entry}`
+        : JSON.stringify([entry.render, entry.client]),
+    ),
+  ).size === entries.length;
+
 function validateApplicationUiProfile(profile, options = {}) {
   const {
     source = '<profile>',
@@ -188,19 +219,11 @@ function validateApplicationUiProfile(profile, options = {}) {
   const exceptions = arrayAt(profile.exceptions, '$.exceptions');
   rejectUnknown(wiring, ['entries'], '$.wiring');
   if (wiring?.entries !== undefined) {
-    if (
-      !stringList(wiring.entries) ||
-      wiring.entries.some(
-        (entry) =>
-          isAbsolute(entry) ||
-          entry.split('/').includes('..') ||
-          /[*?]/.test(entry),
-      )
-    )
+    if (!wiringEntries(wiring.entries))
       add(
         'KUI-P030',
         '$.wiring.entries',
-        'Wiring entries must be unique workspace-relative paths without traversal or wildcards.',
+        'Wiring entries must be unique workspace-relative paths or render/client pairs without traversal or wildcards.',
       );
   }
   const packages = new Set();

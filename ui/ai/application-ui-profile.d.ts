@@ -40,8 +40,8 @@ export interface ApplicationUiProfile {
     spacingScale?: 'kerf-five-step' | 'application';
   };
   wiring?: {
-    /** Static application entry modules, relative to the workspace root. */
-    entries?: string[];
+    /** Static application entries or paired server-render/client roots, relative to the workspace root. */
+    entries?: Array<string | { render: string[]; client: string[] }>;
   };
   exceptions?: Array<{
     id: string;

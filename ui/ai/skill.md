@@ -276,6 +276,13 @@ Each layer is checked against its then-effective catalogs; later overrides do
 not excuse broken catalogs or stale references in a parent layer. Synchronous
 ESLint integrations use `./application-ui-profile-sync.cjs` and surface any
 failure as `KUI-L090`.
+Declare `wiring.entries` for application-scoped UI obligations. A plain path
+checks one client import graph. If a server-rendered page loads a separate
+browser entry by URL, pair the roots in one item, for example
+`{ "render": ["src/routes/admin/index.tsx"], "client": ["src/client/app/admin.ts"] }`.
+The `ui-wiring` rule checks render-side component use against helper calls and
+registration imports in that pair's client graph; list every server page that
+loads the entry. Module-scoped obligations still belong in the rendering module.
 
 Choose from the need, not from visual resemblance:
 
