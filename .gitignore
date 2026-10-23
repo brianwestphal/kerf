@@ -25,6 +25,10 @@ opencode.json
 # Retired HS1 runtime artifacts may remain locally after migration.
 /.hotsheet2/*
 !/.hotsheet2/settings.json
+!/.hotsheet2/guidance-owner.json
+!/.hotsheet2/guidance-sources.json
+!/.hotsheet2/rulesync.generated.jsonc
+/.rulesync/rules/.curated/
 /.glassbox/*
 !/.glassbox/settings.json
 

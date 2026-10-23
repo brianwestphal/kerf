@@ -9,6 +9,7 @@ test-results/
 .agents/
 **/.claude/
 .codex/
+.rulesync/
 .cursor/
 .gemini/
 .husky/_/
@@ -17,6 +18,8 @@ test-results/
 **/AGENTS.md
 **/CLAUDE.md
 **/GEMINI.md
+.hotsheet2/guidance-sources.json
+.hotsheet2/rulesync.generated.jsonc
 
 # Generated mirrors, reports, captures, and fixtures
 /ai/

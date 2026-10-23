@@ -113,6 +113,7 @@
       "target": "shell"
     }
   ],
+  "push_policy": "push-per-batch",
   "terminals": [
     {
       "command": "{{claudeCommand}}",
