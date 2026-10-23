@@ -835,6 +835,34 @@ or repeat the full suite for every ticket; keep each ticket's affected local gat
 **Pushing is up to this repository.** Follow whatever push/PR/review conventions this project
 already uses; this default guidance does not require or forbid pushing on its own.
 
+<!-- hotsheet:begin section=kerf-ui-catalog-demos v=2 -->
+
+## Kerf UI Catalog Demos
+
+The `/ux-demo` route mounts Kerf's `Catalog` with production components. It is absent from production builds and is the first place to look before composing a screen.
+
+- Every exported component has its own demo file that renders the production component with deterministic fixtures (no API calls), exposes every variant and state through settings with a reset, opens dialogs from a visible trigger and lets them dismiss, and runs live behavior (timers, drag, validation) for real.
+- When a change adds or alters states its component's demo cannot show, extend the demo in the same change; when that needs a structural extraction, file the follow-up before completing and name it in the completing note.
+- Demos reuse production CSS and wiring and never own interaction behavior; a demo that reimplements a fake version of a screen is misinformation and is removed.
+- An application-views group mounts the real root for every routed state so the whole app is reviewable without setup.
+- A structural test enforces export-level demo coverage and signal resets; the catalog manifest (`kerf.components.json` → `component-composition.json`) is regenerated in the same change and byte-checked in CI.
+- An enabled control that works only in the demo is a production bug: end-to-end tests exercise child actions through each shipped parent, and unsupported controls are disabled with a reason.
+
+<!-- hotsheet:end section=kerf-ui-catalog-demos -->
+
+<!-- hotsheet:begin section=playwright-operations v=2 -->
+
+## Playwright Operations
+
+- **Isolation.** Each worker gets its own server, port, and data directory (keyed on `parallelIndex`); each spec seeds its own data and addresses it by id; nothing shares state across specs or depends on order. Build the client once in global setup.
+- **Waiting.** Wait on events, readiness signals, or state, never `waitForTimeout`. Route fixtures gate pending responses behind a promise, not a timer, and mirror the real endpoints' fields, optional values, and status codes.
+- **Realism.** Interaction tests hit real targets (the glyph, the line number), use real pointer events rather than synthesized shortcuts, assert positive fitted geometry and distinct drag coordinates, hit-test overlays for clipping, and assert live `value`, focus, and emitted events rather than attributes. Resize wide to narrow to wide inside the test when layout is under test.
+- **Engines and fonts.** Include WebKit for sizing, overflow, sticky layers, and focus rings; pin CI fonts to match local metrics when specs measure text.
+- **Flakes.** A flake fix is done when `--repeat-each=N --workers=M --retries=0` passes under full-suite load; retries only in the full CI job, bounded at two, with a ticket per retried test; quarantine with a tagged title naming the fix ticket (see `test-operations`).
+- **Captures.** Write screenshots to the runner's output directory as `<slug>-<state>-<width>.png`; wait for the state's settled readiness signal (enabled controls, finished transitions) and disable animations before capturing; attach the inspected captures to the ticket and never commit them; do not add snapshot diffing by default; review captures per `ui-evaluation`.
+
+<!-- hotsheet:end section=playwright-operations -->
+
 <!-- hotsheet:begin section=release-scripts v=1 -->
 
 ## Release Scripts
@@ -854,3 +882,19 @@ A release is one command, run from a clean checkout of the shipping branch, that
 Deviate only at the project level for a compelling or necessary reason, recorded in the project's conventions document.
 
 <!-- hotsheet:end section=release-scripts -->
+
+<!-- hotsheet:begin section=ui-composition v=3 -->
+
+## UI Composition
+
+Build interfaces from the design system's components, configured through their public API, and from the project's existing patterns. The design system's own guidance governs selection, layout, the styling boundary, and the interaction defaults (Kerf: see `kerf-ui-usage` and `kerf-ui-interaction-defaults`); this rule governs the process around it.
+
+- **Look it up before you build it.** Before writing any UI, read the library guidance in its retrieval order, the project's component catalog and demo route, and the named reference project's same surface. Copy a working reference implementation rather than approximating it, and cite the paths you read in the preliminary note.
+- **Name the owner of every region.** For a screen or redesign, the preliminary note lists each region and the public component that owns it: shell and rails, toolbars, search, tabs, columns, popups, banners, empty states, dialogs, the demo route. A handwritten `nav`, `button`, or `input` with CSS for border, selected, hover, or disabled state, position, or z-index is a defect unless the catalog has no component; then file the gap upstream and say so in the ticket. Raw `div`, `p`, or `span` where the library has a primitive is the same defect.
+- **Configure, never override.** A missing prop, variant, or token is an upstream ticket referenced from the app ticket, which stays blocked rather than shipping an override. This holds even when the maintainer asks for the visual directly: name the conflict and the missing API, and file the gap.
+- **Earn every control.** Every control, container, and line of copy traces to a human requirement or a reference precedent. Do not add explanatory paragraphs, permanent caveats, counts, "view options" menus, custom back and forward, theme toggles, duplicate titles, nested boxes, or editable fields for values the interaction already knows; use browser history and `prefers-color-scheme`. When a human says remove, remove; do not relocate.
+- **Human words are the spec.** Carry the human's exact component, placement, state, and viewport nouns into derived tickets and test names. AI notes, preliminary thoughts, and rewritten requirements never supersede them; when a phrase admits two behaviors, ask with a `CHOICE` note before building.
+- **Sign off before fanning out.** For a new screen or redesign, especially from a title-only ticket, post the region plan or wide and narrow captures and wait for feedback before building further; never fan dozens of tickets off an unreviewed layout. A bounded redesign of one screen whose ticket states the intent may proceed once the region plan is posted in the preliminary note; the wait applies before deriving further tickets or screens from an unreviewed layout.
+- **Reuse semantics.** The same feature uses the same component everywhere, in a read-only variant when needed, never a copy; new lists inherit the app's selection, context-menu, edit, and autosave grammar; one concept per indicator and one name per concept.
+
+<!-- hotsheet:end section=ui-composition -->
