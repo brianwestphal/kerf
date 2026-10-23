@@ -8,7 +8,8 @@ targets: ['*']
 This is the shared source of truth for Kerf's engineering guidance.
 `CLAUDE.md` imports this file; other tool adapters should point here directly.
 Use this repository's skills under each tool's provider directory for workflows.
-The canonical shared workflow source is `.claude/skills/`; keep adapters in sync.
+Selected shared skills are pinned in `.hotsheet2/guidance-sources.json` and installed
+into both `.claude/skills/` and `.agents/skills/`; keep project-owned adapters in sync.
 Provider-specific configuration belongs in its provider directory.
 
 ## Project Overview
@@ -504,24 +505,3 @@ The `gitgist.exclude` list in `package.json` keeps Kerf's generated/imported art
 | `bench/results.{json,md}`      | Imported from the upstream krausest benchmark, not authored here.                                                               |
 
 The site's doc pages under `site/src/content/docs/` are hand-authored consumer content (no longer generated from `docs/*.md`), so they carry a normal diff body like any other source.
-
-## Visual UI validation
-
-Every change that can affect rendered client visuals requires a deliberate visual QA
-pass in a real browser through Playwright before completion. Automated DOM,
-accessibility, computed-style, and geometry assertions remain necessary, but are not
-substitutes for looking at the rendered result. Exercise the affected demo states and
-transitions at representative wide and narrow viewport sizes; capture screenshots when
-they make comparison easier. An existing problem or design screenshot makes a
-corresponding after screenshot a required part of the visual QA pass, not merely an
-optional aid.
-
-Review critically for correctness, readability, usability, contextual aesthetic fit and
-flow/order, clipping or truncation, icon-label alignment, spacing, typography, contrast,
-icon rendering, responsive behavior, platform/design-system conformance, and consistency
-with adjacent components. Fix every defect found, rerun affected behavioral tests, and
-recapture. Record the visual states and viewports inspected on the ticket. If Playwright
-or a usable browser is unavailable after exhausting safe alternatives, do not claim
-visual validation or complete the visual ticket: record `FEEDBACK NEEDED` with the
-outstanding review and leave it open. Dependency presence alone is not visual
-validation.
