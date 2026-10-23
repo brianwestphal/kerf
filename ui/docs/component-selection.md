@@ -790,6 +790,8 @@ bubbling, cancelable `kui-menu-select` event, alongside `detail.item` and its
 renders it. Commands still dispatch their own `data-action` once on pointer and
 keyboard selection; canceling `kui-menu-select` keeps the menu open.
 
+For primary selectable content with a right-click context menu, also provide a primary-toolbar overflow `PopupMenu` for the applicable actions, especially when multiple items can be selected. Derive both menus' enabled state, labels, and handlers from the current selection so touch and keyboard users get the same commands. A prominent command may have its own toolbar button; keep it in overflow or omit that duplicate as the application needs. The two menus can be separate instances with shared action policy.
+
 For a row opened by right-click, render `PopupMenu` with `context`, `label`,
 `anchor`, and a stable root `data-*` marker. Its trigger is an invisible anchor
 removed from the accessibility tree; a separate visible button may stay

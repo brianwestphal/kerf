@@ -473,6 +473,12 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   should normally offer search or filtering; omit search where there is no
   searchable content. The application owns the query target; `SearchField`
   supplies the editor.
+- **Expose selection actions without right-click.** When primary selectable
+  content has a context menu, especially with multiselect, put its applicable
+  actions in a primary-toolbar overflow `PopupMenu` too. Keep both menus'
+  enabled state and behavior tied to the current selection. A key action may
+  also have its own toolbar button; the application may keep or omit that
+  duplicate in overflow.
 - **Change the brand with `--kui-color-brand`.** Set it once on `:root` (any
   color): Kerf derives the brand fill, brand text and links, text on brand
   fills, and the focus ring at WCAG AA, and Web Awesome's brand tokens follow.

@@ -26,6 +26,8 @@ Establish one reading order and one dominant action per decision point. Group fi
 
 A search control in the primary toolbar serves the primary searchable content of the current page or view. When navigation changes that content, change the search target and available filters with it. Potentially long lists, especially dynamic or user-generated lists, should normally offer search or filtering; a page without searchable content does not need a search control.
 
+When primary selectable content has a context menu, especially for multiple selection, expose its applicable actions through a primary-toolbar overflow menu too. People on touch or keyboard-only devices must be able to reach those actions without right-click. A frequently used context action may also have a dedicated toolbar button; the application may keep or omit that duplicate in overflow. Both paths follow the same selection and action policy.
+
 ### Reach for the primitive, not for CSS
 
 The package is designed to look right _unstyled_. A screen built from the
