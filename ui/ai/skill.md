@@ -438,6 +438,8 @@ meaning) to an icon-only `Button`, or put a `Badge placement="corner"` inside a
 `ToolbarControlGroup` button and name the count in its `aria-label`; never
 position a badge with application CSS.
 
+If the primary toolbar has search, make it search or filter the primary searchable content of the current page or view. Rebind its scope and available filters on sub-pages and alternate views; do not wire it only to the first view. Potentially long lists, especially dynamic or user-generated ones, should normally be searchable or filterable. Omit search where the page has no searchable content. `SearchField` supplies the editor; the application owns which content the query filters.
+
 For a page's content column, give the `List` `contentWidth` (`compact` 440px,
 `medium` 640px, `wide` 864px; centered by default, `contentAlign="start"`
 otherwise) instead of an application `max-width` wrapper; it composes with

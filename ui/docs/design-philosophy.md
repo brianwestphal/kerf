@@ -24,6 +24,8 @@ Unrelated updates must not close controls, move focus, reset a draft, replace a 
 
 Establish one reading order and one dominant action per decision point. Group first with alignment, spacing, typography, and shared surfaces. A border, fill, badge, or nested card must communicate a real distinction. A divider is chrome too: a line between a pane's own header and its list, or under a toolbar whose content already spaces itself, marks nothing and is dropped (`dividerSides=""`), never padded around. Put a control near where its effect appears — a collapsed drawer's restore beside the drawer, not in a distant top toolbar.
 
+A search control in the primary toolbar serves the primary searchable content of the current page or view. When navigation changes that content, change the search target and available filters with it. Potentially long lists, especially dynamic or user-generated lists, should normally offer search or filtering; a page without searchable content does not need a search control.
+
 ### Reach for the primitive, not for CSS
 
 The package is designed to look right _unstyled_. A screen built from the

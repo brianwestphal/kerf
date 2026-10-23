@@ -560,6 +560,8 @@ still owns the controlled `value` and localized action labels.
   hidden compact replacement and keeps compact overlays exclusive by default.
 - `SearchField` is a structured editor. A `TextField` is the right answer for ordinary text.
 
+When a `SearchField` sits in the primary toolbar, connect it to the current page or view's primary searchable content, including sub-pages and alternate views. Update its query scope and filters as that content changes; do not leave it wired only to the first view. Offer search or filtering for potentially long lists, especially dynamic or user-generated ones. Omit the control on pages without searchable content.
+
 For common structured search, use `createSearchFieldModel` from `@kerfjs/ui/search-field-model`, pass the model to `SearchField`, and register it under the field id in `wireSearchFields(root, { models })`. Rules parse `name:value` expressions and provide suggestions; the model owns chips, selection, removal, clear, and an optional evaluation result. The field subscribes only to `model.structure`, so typing plain text does not re-run the host render; read `model.state.peek()` in the host's render and bind `model.result` as a signal hole instead of reading `model.state.value`. Omit `model` and `models` for full manual control.
 
 In a form, use `SearchField presentation="form-field"` with its `label`,

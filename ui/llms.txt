@@ -466,6 +466,13 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   whose strict "below" is one pixel off the Toolbar's inclusive width), or
   gather them behind a "…" `PopupMenu` overflow group. The app decides which
   controls yield.
+- **Search the current view.** A primary-toolbar search filters the primary
+  searchable content on the current page or view, including sub-pages and
+  alternate views. Rebind its scope and filters when navigation changes that
+  content. Potentially long lists, especially dynamic or user-generated lists,
+  should normally offer search or filtering; omit search where there is no
+  searchable content. The application owns the query target; `SearchField`
+  supplies the editor.
 - **Change the brand with `--kui-color-brand`.** Set it once on `:root` (any
   color): Kerf derives the brand fill, brand text and links, text on brand
   fills, and the focus ring at WCAG AA, and Web Awesome's brand tokens follow.
