@@ -189,11 +189,10 @@ jobs:
           key: playwright-ui-${{ matrix.browser }}-${{ runner.os }}-${{ hashFiles('ui/package-lock.json') }}
           restore-keys: |
             playwright-ui-${{ matrix.browser }}-${{ runner.os }}-
-      # KF-CKCT2J: Azure's Ubuntu mirror fetched WebKit's 117 MB of packages at
-      # 49–90 kB/s in two runs. Keep the host browser environment but use the
-      # primary Ubuntu archive for this dependency-heavy engine.
-      - name: Use Ubuntu archive for WebKit dependencies
-        if: matrix.browser == 'webkit'
+      # KF-CKCT2J: Azure's Ubuntu mirror intermittently delayed browser OS
+      # packages by 10–40m. Keep the host browser environment and use the
+      # primary Ubuntu archive for every engine.
+      - name: Use Ubuntu archive for browser dependencies
         run: sudo sed -i 's#azure.archive.ubuntu.com#archive.ubuntu.com#g' /etc/apt/apt-mirrors.txt
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - run: npm run build

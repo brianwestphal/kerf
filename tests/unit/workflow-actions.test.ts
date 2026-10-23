@@ -158,7 +158,7 @@ describe('UI browser failure evidence', () => {
     const installStep = steps.find((step) =>
       step.run?.startsWith('npx playwright install --with-deps'),
     );
-    expect(mirrorStep?.if).toBe("matrix.browser == 'webkit'");
+    expect(mirrorStep?.if).toBeUndefined();
     expect(mirrorStep?.run).toContain('/etc/apt/apt-mirrors.txt');
     expect(steps.indexOf(mirrorStep!)).toBeLessThan(
       steps.indexOf(installStep!),
