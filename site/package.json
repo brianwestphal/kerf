@@ -29,7 +29,7 @@
   "dependencies": {
     "@astrojs/starlight": "^0.42.0",
     "astro": "^7.3.2",
-    "dompurify": "^3.4.15",
+    "dompurify": "^3.4.17",
     "kerfjs": "file:..",
     "marked": "^15.0.0",
     "sharp": "^0.35.5"
