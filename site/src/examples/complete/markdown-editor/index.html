@@ -95,6 +95,16 @@
         background: var(--bg-elev);
         border-right: 1px solid var(--border);
       }
+      @media (max-width: 700px) {
+        .editor {
+          grid-template-columns: minmax(0, 1fr);
+          grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+        }
+        .editor-pane {
+          border-right: 0;
+          border-bottom: 1px solid var(--border);
+        }
+      }
       .editor-input {
         color: var(--text);
         font-family:

@@ -148,6 +148,40 @@ test.describe('kanban', () => {
 });
 
 test.describe('markdown-editor', () => {
+  test('gives editor and preview full width on a phone, and columns on larger screens', async ({
+    page,
+  }) => {
+    for (const width of [390, 834, 1440]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto(`${BASE}/markdown-editor/`);
+      const editor = page.locator('.editor-pane');
+      const preview = page.locator('.preview');
+      await expect(editor).toBeVisible();
+      await expect(preview).toBeVisible();
+      const editorBox = (await editor.boundingBox())!;
+      const previewBox = (await preview.boundingBox())!;
+      const documentWidth = await page.evaluate(
+        () => document.documentElement.scrollWidth,
+      );
+      expect(documentWidth).toBeLessThanOrEqual(width);
+      if (width === 390) {
+        expect(editorBox.width).toBeGreaterThan(300);
+        expect(previewBox.width).toBeGreaterThan(300);
+        expect(previewBox.y).toBeGreaterThanOrEqual(
+          editorBox.y + editorBox.height - 1,
+        );
+        const input = page.locator('.editor-input');
+        await input.click();
+        await expect(input).toBeFocused();
+      } else {
+        expect(previewBox.y).toBeCloseTo(editorBox.y, 0);
+        expect(previewBox.x).toBeGreaterThanOrEqual(
+          editorBox.x + editorBox.width - 1,
+        );
+      }
+    }
+  });
+
   test('typing into the contenteditable flows through to the preview', async ({
     page,
   }) => {

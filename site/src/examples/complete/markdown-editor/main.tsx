@@ -9,7 +9,7 @@ if (import.meta.env.DEV) await import('kerfjs/dev');
 
 const SAMPLE = `# Type fast. The cursor stays put.
 
-This is the live preview on the right. The editor on the left is a
+The live preview follows your edits. The editor is a
 \`contenteditable\` — kerf preserves your caret and selection on every
 re-render, so you can edit in the *middle* of a line and never
 get bumped to the end.

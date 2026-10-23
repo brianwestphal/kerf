@@ -157,6 +157,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Live Markdown editor at phone width.** The editor and preview stack into full-width, independently scrolling panes on narrow screens; tablet and desktop keep the side-by-side layout (`KF-HR730P`).
 - **UI doctor KUI-L401 respects `ChoiceChips` modes.** Radio and toggle modes no longer require `wireChoiceChips`; listbox and dynamic modes still do. Entry-point wiring remains recognized when bundle entries are declared in `.kerf-ui-profile.json` (`KF-KCM28K`, `KF-CYYR43`).
 - **Site audit accepts the patched DOMPurify release.** The documentation site's direct dependency and lockfile now use DOMPurify 3.4.17, resolving the reported sanitizer advisories while keeping the audit policy and Markdown editor behavior intact (`KF-VB4EXK`).
 - **Quiet and danger Text contrast on lowered surfaces.** The shared light quiet and dark danger colors now clear WCAG AA when `Text` appears in a lowered `ValueTableRow` or `ListHeader` status over the document baseline, in both the foundation fallback and Web Awesome theme (`KF-CQWA7G`).
