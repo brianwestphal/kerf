@@ -195,6 +195,8 @@
    clip, which is what `frame`'s 4px inset is for. */
 .kui-list[data-scrollable="true"] {
   --_kui-list-ring-room: calc(var(--kui-space-2xs) + 2px);
+  /* Keep absolute descendants, including hidden control labels, inside the clip. */
+  position: relative;
   overflow-y: auto;
   overscroll-behavior-y: contain;
 }
