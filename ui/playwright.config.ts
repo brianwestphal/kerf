@@ -38,6 +38,7 @@ export default defineConfig({
     command: 'npm run test:e2e:serve',
     url: 'http://127.0.0.1:42817',
     reuseExistingServer: false,
+    timeout: 180_000,
   },
   projects: [
     { name: 'chromium', use: { browserName: 'chromium' } },

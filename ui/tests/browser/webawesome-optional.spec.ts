@@ -1,14 +1,15 @@
 import { expect, test } from '@playwright/test';
 
-test('Text and ValueTable typography survives removing Web Awesome styles', async ({
-  page,
-}, testInfo) => {
-  for (const width of [1280, 390]) {
-    await page.setViewportSize({ width, height: 900 });
-    for (const [component, selector] of [
-      ['text', '[data-demo-section="semantic-variants"] > .kui-text'],
-      ['value-table', '[data-demo="value-table"] .kui-value-table__row dt'],
-    ] as const) {
+for (const width of [1280, 390]) {
+  for (const [component, selector] of [
+    ['text', '[data-demo-section="semantic-variants"] > .kui-text'],
+    ['value-table', '[data-demo="value-table"] .kui-value-table__row dt'],
+  ] as const) {
+    test(`${component} typography survives removing Web Awesome styles at ${width}px`, async ({
+      page,
+    }, testInfo) => {
+      test.slow(); // CSSOM rule deletion is notably slower in CI WebKit.
+      await page.setViewportSize({ width, height: 900 });
       await page.goto(`/?component=${component}`);
       const report = await page.evaluate((target) => {
         const measure = () =>
@@ -77,9 +78,9 @@ test('Text and ValueTable typography survives removing Web Awesome styles', asyn
         .screenshot({
           path: testInfo.outputPath(`${component}-${width}-no-wa.png`),
         });
-    }
+    });
   }
-});
+}
 
 // Web Awesome is an optional integration. Every Kerf token that can follow a
 // Web Awesome theme variable falls back to the value the shipped Kerf theme
