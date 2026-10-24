@@ -117,7 +117,12 @@ test('names plain and custom Select comboboxes without adding visible label geom
     await page.keyboard.press('Enter');
     await expect(control).toHaveAttribute('aria-expanded', 'true');
     await page.keyboard.press('End');
-    await page.keyboard.press('Enter');
+    const lastOption = demo.getByRole('option', {
+      name: 'Explicit',
+      exact: true,
+    });
+    await expect(lastOption).toBeFocused();
+    await lastOption.press('Enter');
     await expect(valueOf(control)).toHaveText('Explicit');
     await expect(customSelected).toHaveText('Explicit');
   }
