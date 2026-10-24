@@ -1,5 +1,86 @@
 import { expect, test } from '@playwright/test';
 
+test('Text and ValueTable typography survives removing Web Awesome styles', async ({
+  page,
+}, testInfo) => {
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const [component, selector] of [
+      ['text', '[data-demo-section="semantic-variants"] > .kui-text'],
+      ['value-table', '[data-demo="value-table"] .kui-value-table__row dt'],
+    ] as const) {
+      await page.goto(`/?component=${component}`);
+      const report = await page.evaluate((target) => {
+        const measure = () =>
+          [...document.querySelectorAll<HTMLElement>(target)].map((element) => {
+            const css = window.getComputedStyle(element);
+            return {
+              fontFamily: css.fontFamily,
+              fontSize: css.fontSize,
+              fontWeight: css.fontWeight,
+              lineHeight: css.lineHeight,
+              textWrap: css.textWrap,
+            };
+          });
+        const withWebAwesome = measure();
+        // The catalog build folds all CSS into one file. Remove only the
+        // native typography rules Web Awesome contributes, and invalidate its
+        // theme variables to exercise Kerf's standalone fallbacks.
+        let removedNativeRules = 0;
+        const nativeSelectors = new Set([
+          'h1,h2,h3,h4,h5,h6',
+          'h1',
+          'h2',
+          'h3',
+          'h4',
+          'h5',
+          'h6',
+          'p',
+          'dt',
+        ]);
+        const strip = (container: CSSStyleSheet | CSSGroupingRule) => {
+          const rules = container.cssRules;
+          for (let index = rules.length - 1; index >= 0; index--) {
+            const rule = rules[index];
+            if (
+              rule instanceof CSSStyleRule &&
+              nativeSelectors.has(rule.selectorText.replaceAll(' ', '')) &&
+              (rule.cssText.includes('--wa-') ||
+                rule.cssText.includes('text-wrap:'))
+            ) {
+              container.deleteRule(index);
+              removedNativeRules++;
+            } else if ('cssRules' in rule) strip(rule as CSSGroupingRule);
+          }
+        };
+        for (const sheet of document.styleSheets) strip(sheet);
+        const rootStyle = window.getComputedStyle(document.documentElement);
+        for (const name of rootStyle)
+          if (name.startsWith('--wa-'))
+            document.documentElement.style.setProperty(name, 'initial');
+        return {
+          removedNativeRules,
+          withWebAwesome,
+          standalone: measure(),
+        };
+      }, selector);
+      expect(report.removedNativeRules).toBeGreaterThan(0);
+      expect(report.withWebAwesome.length).toBeGreaterThan(0);
+      expect(report.standalone).toEqual(report.withWebAwesome);
+      await page
+        .locator(
+          component === 'text'
+            ? '[data-demo-section="semantic-variants"]'
+            : '[data-demo="value-table"] .kui-value-table',
+        )
+        .first()
+        .screenshot({
+          path: testInfo.outputPath(`${component}-${width}-no-wa.png`),
+        });
+    }
+  }
+});
+
 // Web Awesome is an optional integration. Every Kerf token that can follow a
 // Web Awesome theme variable falls back to the value the shipped Kerf theme
 // gives it, so a Kerf-only application (no Web Awesome, no theme bridge)

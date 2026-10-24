@@ -7,6 +7,44 @@
   overflow-wrap: normal;
 }
 
+/* Native heading and paragraph typography belongs to Text. Web Awesome's
+   native.css supplies these rules when installed, but Text also works without
+   that optional stylesheet. Size props below still override the tag defaults. */
+:is(h1, h2, h3, h4, h5, h6).kui-text {
+  font-family: var(--wa-font-family-heading, var(--kui-font-sans));
+  font-weight: var(--wa-font-weight-heading, 600);
+  line-height: var(--wa-line-height-condensed, 1.2);
+  text-wrap: balance;
+}
+
+h1.kui-text {
+  font-size: var(--wa-font-size-3xl, 41px);
+}
+
+h2.kui-text {
+  font-size: var(--kui-font-2xl);
+}
+
+h3.kui-text {
+  font-size: var(--kui-font-xl);
+}
+
+h4.kui-text {
+  font-size: var(--kui-font-l);
+}
+
+h5.kui-text {
+  font-size: var(--kui-font-m);
+}
+
+h6.kui-text {
+  font-size: var(--kui-font-xs);
+}
+
+p.kui-text {
+  text-wrap: pretty;
+}
+
 /* Match every Kerf form control's label (TextField, Select) without
    introducing a native <label> that would falsely point at a non-form
    preview. */

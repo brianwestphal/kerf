@@ -74,8 +74,10 @@ Once no `wa-*` element remains in the application:
    `import type {} from "@kerfjs/ui/webawesome"` line.
 3. Remove `@awesome.me/webawesome` from `package.json`.
 4. Keep `@kerfjs/ui/foundation.css` (or your theme entry). Its tokens fall back
-   to the same values the Web Awesome theme gave them, so the application
-   renders identically.
+   to the same values the Web Awesome theme gave them. Kerf's `Text` and
+   `ValueTable` styles also own their native heading, paragraph, and label
+   typography, so these components render identically without Web Awesome's
+   `native.css`.
 
 If the application keeps a few specialized elements (Tree, Carousel, Rating,
 and so on), keep steps 1–3 only for those elements; the integration's theme

@@ -71,6 +71,7 @@
   min-width: 0;
   justify-self: start;
   color: var(--kui-color-text);
+  font-weight: var(--wa-font-weight-bold, 600);
   align-items: center;
   gap: var(--kui-layout-item-gap, remify(8px));
 }
