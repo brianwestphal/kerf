@@ -58,6 +58,8 @@ test('pointer location clamps into a narrow viewport and dismisses outside', asy
 test('interactive help remains usable inside a DialogSurface', async ({
   page,
 }, testInfo) => {
+  // Two full dialog interactions and screenshots can exceed 30s under load.
+  test.slow();
   for (const width of [1180, 390]) {
     await page.setViewportSize({ width, height: 760 });
     await page.goto('/?component=anchored-surface');

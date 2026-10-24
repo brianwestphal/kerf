@@ -16,9 +16,10 @@ test('quiet close emphasis keeps its target, name, focus, and close request', as
     await expect(close).toHaveAttribute('data-emphasis', 'quiet');
     await expect(close.locator('svg')).toHaveAttribute('data-size', 'm');
     const quietBox = (await close.boundingBox())!;
-    await close.focus();
+    // Enter keyboard modality, then focus the target directly. Reverse-tab
+    // traversal from this scripted starting point differs across engines.
     await page.keyboard.press('Tab');
-    await page.keyboard.press('Shift+Tab');
+    await close.focus();
     await expect(close).toBeFocused();
     await expect(close).toHaveCSS('outline-style', 'solid');
     await dialog.evaluate((element) => {

@@ -204,9 +204,9 @@ test('managed clear keeps immediate typing and later focus ownership before dela
   browserName,
 }, testInfo) => {
   // A 3-width x 3-query matrix of clicks, typing, and focus handoffs. Firefox
-  // runs it in ~22s unloaded (Chromium ~6s, WebKit ~8s), so full-suite load
-  // pushed it past the 30s default; give Firefox the triple "slow" budget.
-  test.slow(browserName === 'firefox', 'long input matrix; ~22s unloaded');
+  // runs it in ~22s unloaded, and Chromium also exceeded 30s under full-suite
+  // load. Give every engine room to finish the matrix without weakening checks.
+  test.slow();
   await page.goto('/?component=search-field');
   const demo = page
     .locator('[data-demo="search-field"] [data-catalog-example]')

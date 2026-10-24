@@ -230,6 +230,8 @@ const flatSunken = async (page: Page) => {
 test('an inset focus ring line matches the sunken surface it sits on', async ({
   page,
 }) => {
+  // Pixel sampling across eight button/theme combinations can exceed 30s under load.
+  test.slow();
   for (const colorScheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme });
     const demo = await openDemo(page);

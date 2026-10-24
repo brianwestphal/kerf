@@ -135,9 +135,20 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
       name: 'Project Library',
       exact: true,
     });
+    await narrowStack.evaluate((element) => {
+      const stack = element as HTMLElement;
+      new MutationObserver(() => {
+        if (stack.dataset.navChromeTransition === 'true')
+          stack.dataset.testSawChromeTransition = 'true';
+      }).observe(stack, {
+        attributes: true,
+        attributeFilter: ['data-nav-chrome-transition'],
+      });
+    });
     await narrowStack.getByText('Project Relay', { exact: true }).click();
+    await expect(narrowStack).toHaveAttribute('data-depth', '2');
     await expect(narrowStack).toHaveAttribute(
-      'data-nav-chrome-transition',
+      'data-test-saw-chrome-transition',
       'true',
     );
     await expect(narrowStack).not.toHaveAttribute(

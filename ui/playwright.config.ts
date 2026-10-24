@@ -28,6 +28,9 @@ if (process.env.NO_COLOR !== undefined) {
 export default defineConfig({
   testDir: './tests/browser',
   fullyParallel: false,
+  // The full three-engine local run can starve visual tests at Playwright's
+  // five-worker default. Match the two-worker CI browser jobs.
+  workers: 2,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: 'http://127.0.0.1:42817',
