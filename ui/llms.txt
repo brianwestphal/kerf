@@ -269,7 +269,8 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   container padding on top of a content-item's own margin — pick one owner. Use
   `.kui-content` for 24px major vertical rhythm.
 - **Opt into document globals explicitly.** Import `@kerfjs/ui/document.css`
-  once for border-box sizing, token-backed body/link presentation, inherited
+  once for border-box sizing, token-backed body/link presentation, Web Awesome-compatible
+  font smoothing, text-size adjustment and strong weight, inherited
   native table-cell and form-control font metrics, zero body margin, and
   zero-specificity semantic cursors for native controls (pointer, not-allowed
   when disabled, text on text inputs). Put `.kui-app-root` on the one direct mount container only when a

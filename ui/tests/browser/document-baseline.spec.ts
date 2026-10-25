@@ -166,6 +166,64 @@ test('native table cells and controls inherit document typography', async ({
   }
 });
 
+test('document typography keeps Web Awesome native defaults without native.css', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=document-baseline');
+  await page.evaluate(() => {
+    document.documentElement.style.colorScheme = 'dark';
+    const fixture = document.createElement('section');
+    fixture.dataset.nativeTypographyFixture = '';
+    fixture.style.cssText =
+      'position:fixed;top:24px;left:24px;z-index:9999;display:grid;gap:16px;justify-items:start;padding:24px;width:max-content;max-width:calc(100% - 48px);background:#29292d;color:#fff;--kui-color-brand-fill-loud:#2050a0;--kui-color-brand-on-loud:#fff';
+    fixture.innerHTML = `
+      <button type="button" class="kui-button" data-tone="brand"><span class="kui-button__label">Upgrade Plan</span></button>
+      <p class="kui-text" data-flush="true">Reader <strong>emphasis</strong> and <b>bold</b></p>`;
+    document.body.append(fixture);
+  });
+
+  const typography = await page.evaluate(() => {
+    const body = globalThis.getComputedStyle(document.body);
+    const fixture = document.querySelector('[data-native-typography-fixture]')!;
+    const button = globalThis.getComputedStyle(
+      fixture.querySelector('button')!,
+    );
+    return {
+      smoothing: body.getPropertyValue('-webkit-font-smoothing'),
+      macSmoothing: body.getPropertyValue('-moz-osx-font-smoothing'),
+      strongWeight: globalThis.getComputedStyle(
+        fixture.querySelector('strong')!,
+      ).fontWeight,
+      boldWeight: globalThis.getComputedStyle(fixture.querySelector('b')!)
+        .fontWeight,
+      buttonSmoothing: button.getPropertyValue('-webkit-font-smoothing'),
+    };
+  });
+  expect(typography.strongWeight).toBe('600');
+  expect(typography.boldWeight).toBe('600');
+  if (testInfo.project.name !== 'firefox') {
+    expect(typography.smoothing).toBe('antialiased');
+    expect(typography.buttonSmoothing).toBe('antialiased');
+  } else {
+    expect(typography.macSmoothing).toBe('grayscale');
+  }
+
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 850 });
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) =>
+          globalThis.requestAnimationFrame(() =>
+            globalThis.requestAnimationFrame(() => resolve()),
+          ),
+        ),
+    );
+    await page.locator('[data-native-typography-fixture]').screenshot({
+      path: testInfo.outputPath(`document-native-typography-${width}.png`),
+    });
+  }
+});
+
 test('native controls get semantic cursors that components can override', async ({
   page,
 }) => {

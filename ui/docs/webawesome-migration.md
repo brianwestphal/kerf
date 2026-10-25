@@ -76,8 +76,16 @@ Once no `wa-*` element remains in the application:
 4. Keep `@kerfjs/ui/foundation.css` (or your theme entry). Its tokens fall back
    to the same values the Web Awesome theme gave them. Kerf's `Text` and
    `ValueTable` styles also own their native heading, paragraph, and label
-   typography, so these components render identically without Web Awesome's
-   `native.css`.
+   typography.
+5. If Web Awesome's `native.css` supplied the application's document defaults,
+   import `@kerfjs/ui/document.css`. It preserves body font smoothing and
+   text-size adjustment, plus the 600-weight `strong`/`b` rule used inside
+   `Text` and application prose. `foundation.css` supplies tokens, not these global rules.
+   If the host page owns its document styles, carry these rules into that
+   baseline instead of importing Kerf's opt-in baseline.
+
+With the document baseline in place, Kerf components retain their typography
+when Web Awesome is removed.
 
 If the application keeps a few specialized elements (Tree, Carousel, Rating,
 and so on), keep steps 1–3 only for those elements; the integration's theme

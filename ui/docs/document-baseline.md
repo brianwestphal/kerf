@@ -17,6 +17,11 @@ The opt-in stylesheet applies `border-box` sizing to every element and
 pseudo-element, removes the body margin, and gives the body the foundation
 font, foreground, lowered surface, and `1.45` line height. Plain links use the
 semantic `--kui-color-text-link` token with zero selector specificity.
+The body also uses antialiased font smoothing on WebKit, grayscale smoothing
+on macOS Firefox, and disables automatic text-size inflation on mobile browsers,
+matching Web Awesome's former `native.css` defaults. Native `strong` and `b`
+use weight 600 (or `--wa-font-weight-bold` when a Web Awesome theme supplies it)
+through a zero-specificity selector, so application typography can override it.
 Native table cells (`th`, `td`) and form controls (`button`, `input`, `select`,
 `textarea`) inherit the surrounding font family, size, and line height through
 zero-specificity selectors. Table headers keep their native bold weight and

@@ -20,6 +20,15 @@ body {
   background: var(--kui-color-surface-lowered);
   font-family: var(--kui-font-sans);
   line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-size-adjust: none;
+  -webkit-text-size-adjust: none;
+  -moz-text-size-adjust: none;
+}
+
+:where(strong, b) {
+  font-weight: var(--wa-font-weight-bold, 600);
 }
 
 /* Opt-in viewport lock for a full-viewport application shell: the dynamic

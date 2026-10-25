@@ -36,6 +36,14 @@ describe('opt-in document baseline', () => {
       background: 'var(--kui-color-surface-lowered)',
       'font-family': 'var(--kui-font-sans)',
       'line-height': '1.45',
+      '-webkit-font-smoothing': 'antialiased',
+      '-moz-osx-font-smoothing': 'grayscale',
+      'text-size-adjust': 'none',
+      '-webkit-text-size-adjust': 'none',
+      '-moz-text-size-adjust': 'none',
+    });
+    expect(declarations(':where(strong, b)')).toEqual({
+      'font-weight': 'var(--wa-font-weight-bold, 600)',
     });
     expect(declarations(':where(a)')).toEqual({
       color: 'var(--kui-color-text-link)',
