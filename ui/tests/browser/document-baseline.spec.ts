@@ -189,6 +189,7 @@ test('document typography keeps Web Awesome native defaults without native.css',
       fixture.querySelector('button')!,
     );
     return {
+      platform: globalThis.navigator.platform,
       smoothing: body.getPropertyValue('-webkit-font-smoothing'),
       macSmoothing: body.getPropertyValue('-moz-osx-font-smoothing'),
       strongWeight: globalThis.getComputedStyle(
@@ -204,7 +205,7 @@ test('document typography keeps Web Awesome native defaults without native.css',
   if (testInfo.project.name !== 'firefox') {
     expect(typography.smoothing).toBe('antialiased');
     expect(typography.buttonSmoothing).toBe('antialiased');
-  } else {
+  } else if (/mac/i.test(typography.platform)) {
     expect(typography.macSmoothing).toBe('grayscale');
   }
 
