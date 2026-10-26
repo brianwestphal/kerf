@@ -40,7 +40,7 @@
           },
           "resolutions": {
             "type": "object",
-            "additionalProperties": { "enum": ["keep", "kerf"] }
+            "additionalProperties": { "enum": ["keep", "kerf", "skip"] }
           }
         },
         "additionalProperties": false

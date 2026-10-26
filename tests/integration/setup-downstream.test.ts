@@ -280,6 +280,75 @@ describe(
   'packed AI-first setup',
   { timeout: loadScaledTimeout(30_000) },
   () => {
+    it('persists declined UI proposals through the packed CLI and adopts one explicitly', async () => {
+      const root = resolve(temporaryRoot, 'declined-ui-proposals');
+      await mkdir(resolve(root, 'src'), { recursive: true });
+      await writeFile(
+        resolve(root, 'package.json'),
+        JSON.stringify({
+          name: 'declined-ui-proposals',
+          private: true,
+          type: 'module',
+        }),
+      );
+      await writeFile(resolve(root, 'src/index.ts'), 'export {};\n');
+      await prepareModules(root);
+      const cli = resolve(root, 'node_modules/.bin/kerfjs');
+      const ids = [
+        'package.json#devDependencies.@typescript-eslint/parser',
+        'package.json#devDependencies.@stylistic/eslint-plugin',
+        'package.json#scripts.catalog:generate',
+        'package.json#scripts.catalog:check',
+      ];
+      const dry = await exec(cli, ['--ui'], { cwd: root });
+      for (const id of ids) expect(dry.stdout).toContain(`PROPOSAL ${id}`);
+      await expect(
+        readFile(resolve(root, '.kerf-ai-setup.json')),
+      ).rejects.toMatchObject({ code: 'ENOENT' });
+      await exec(
+        cli,
+        [
+          '--ui',
+          ...ids.flatMap((id) => ['--resolve', `${id}=skip`]),
+          '--write',
+          '--yes',
+          '--no-install',
+        ],
+        { cwd: root },
+      );
+      const manifest = JSON.parse(
+        await readFile(resolve(root, 'package.json'), 'utf8'),
+      );
+      expect(manifest.devDependencies).not.toHaveProperty(
+        '@typescript-eslint/parser',
+      );
+      expect(manifest.devDependencies).not.toHaveProperty(
+        '@stylistic/eslint-plugin',
+      );
+      expect(manifest.scripts).not.toHaveProperty('catalog:generate');
+      expect(manifest.scripts).not.toHaveProperty('catalog:check');
+      expect((await exec(cli, [], { cwd: root })).stdout).toContain(
+        'No changes.',
+      );
+      await exec(
+        cli,
+        ['--resolve', `${ids[0]}=kerf`, '--write', '--yes', '--no-install'],
+        { cwd: root },
+      );
+      const adopted = JSON.parse(
+        await readFile(resolve(root, 'package.json'), 'utf8'),
+      );
+      expect(adopted.devDependencies['@typescript-eslint/parser']).toBe(
+        '^8.0.0',
+      );
+      expect(adopted.devDependencies).not.toHaveProperty(
+        '@stylistic/eslint-plugin',
+      );
+      expect((await exec(cli, [], { cwd: root })).stdout).toContain(
+        'No changes.',
+      );
+    });
+
     it(
       'keeps shared AGENTS guidance import healthy through packed setup and lint',
       async () => {

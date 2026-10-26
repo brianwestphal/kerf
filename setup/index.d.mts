@@ -20,6 +20,7 @@ export interface KerfSetupPlan {
   mode: 'core' | 'ui';
   setupVersion: string;
   actions: SetupAction[];
+  proposalIds: string[];
   conflicts: SetupConflict[];
   generatedPaths: string[];
 }
@@ -29,7 +30,7 @@ export function planKerfSetup(options?: {
   mode?: 'core' | 'ui';
   version?: string;
   guidanceSource?: string;
-  resolutions?: Record<string, 'keep' | 'kerf'>;
+  resolutions?: Record<string, 'keep' | 'kerf' | 'skip'>;
 }): Promise<KerfSetupPlan>;
 export function formatSetupPlan(plan: KerfSetupPlan): string;
 export function applyKerfSetup(

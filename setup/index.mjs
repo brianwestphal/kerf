@@ -133,7 +133,7 @@ function validateSetupState(state) {
     )
       throw new Error(`Invalid setup state for package ${key}.`);
     for (const resolution of Object.values(value.resolutions ?? {}))
-      if (!['keep', 'kerf'].includes(resolution))
+      if (!['keep', 'kerf', 'skip'].includes(resolution))
         throw new Error(`Invalid persisted resolution for package ${key}.`);
     for (const item of Object.values(value.managed ?? {}))
       if (!item || !/^[a-f0-9]{64}$/.test(item.sha256 ?? ''))
@@ -429,6 +429,7 @@ function reconcileValue({
   managedAfter,
   resolutions,
   activeConflictIds,
+  activeProposalIds,
   knownResolutionIds,
 }) {
   knownResolutionIds.add(id);
@@ -436,7 +437,8 @@ function reconcileValue({
   const previouslyManaged = managedBefore[id]?.sha256 === hashValue(current);
   const divergent = key in target && current !== value && !previouslyManaged;
   if (divergent) activeConflictIds.add(id);
-  const resolution = resolutions[id];
+  const resolution =
+    resolutions[id] === 'skip' && divergent ? undefined : resolutions[id];
   if (divergent && !resolution) {
     conflicts.push({
       id,
@@ -445,6 +447,13 @@ function reconcileValue({
     return;
   }
   if (divergent && resolution === 'keep') return;
+  if (!divergent && hashValue(current) !== hashValue(value)) {
+    activeProposalIds.add(id);
+    if (resolution === 'skip') {
+      if (previouslyManaged) managedAfter[id] = managedBefore[id];
+      return;
+    }
+  }
   target[key] = value;
   managedAfter[id] = { sha256: hashValue(value) };
 }
@@ -573,17 +582,7 @@ async function installedVersion(directory, name) {
 }
 
 function mergeProfile(current, recommended, context) {
-  if (current === undefined) {
-    for (const key of ['$schema', 'schemaVersion', 'scope'])
-      context.managedAfter[`.kerf-ui-profile.json#${key}`] = {
-        sha256: hashValue(recommended[key]),
-      };
-    const local = recommended.catalogs[0];
-    context.managedAfter[`.kerf-ui-profile.json#catalogs.${local.package}`] = {
-      sha256: hashValue(local),
-    };
-    return recommended;
-  }
+  if (current === undefined) current = {};
   const idPrefix = '.kerf-ui-profile.json';
   if (!current || typeof current !== 'object' || Array.isArray(current)) {
     context.knownResolutionIds.add(idPrefix);
@@ -627,20 +626,33 @@ function mergeProfile(current, recommended, context) {
   const id = `.kerf-ui-profile.json#catalogs.${local.package}`;
   context.knownResolutionIds.add(id);
   if (!existing) {
-    output.catalogs.push(local);
-    context.managedAfter[id] = { sha256: hashValue(local) };
+    context.activeProposalIds.add(id);
+    if (context.resolutions[id] !== 'skip') {
+      output.catalogs.push(local);
+      context.managedAfter[id] = { sha256: hashValue(local) };
+    }
   } else {
     const previouslyManaged =
       context.managedBefore[id]?.sha256 === hashValue(existing);
     const divergent =
       JSON.stringify(existing) !== JSON.stringify(local) && !previouslyManaged;
     if (divergent) context.activeConflictIds.add(id);
-    if (divergent && !context.resolutions[id])
+    if (
+      divergent &&
+      (!context.resolutions[id] || context.resolutions[id] === 'skip')
+    )
       context.conflicts.push({
         id,
         message: 'existing catalog declaration differs',
       });
     else if (!divergent || context.resolutions[id] === 'kerf') {
+      if (hashValue(existing) !== hashValue(local)) {
+        context.activeProposalIds.add(id);
+        if (context.resolutions[id] === 'skip') {
+          context.managedAfter[id] = context.managedBefore[id];
+          return output;
+        }
+      }
       output.catalogs[output.catalogs.indexOf(existing)] = local;
       context.managedAfter[id] = { sha256: hashValue(local) };
     }
@@ -715,6 +727,7 @@ export async function planKerfSetup({
   const managedAfter = {};
   const knownResolutionIds = new Set();
   const activeConflictIds = new Set();
+  const activeProposalIds = new Set();
   const context = {
     conflicts,
     managedBefore,
@@ -722,6 +735,7 @@ export async function planKerfSetup({
     resolutions,
     knownResolutionIds,
     activeConflictIds,
+    activeProposalIds,
   };
   const addAction = async (path, value, kind = 'write') => {
     const before = await readText(path);
@@ -910,7 +924,7 @@ export async function planKerfSetup({
             ...context,
             resolutions: {
               ...resolutions,
-              [id]: resolutions['kerfjs-version'],
+              [id]: requestedResolutions[id] ?? resolutions['kerfjs-version'],
             },
           }
         : context;
@@ -936,7 +950,7 @@ export async function planKerfSetup({
       ...context,
     });
     for (const [key, configuredPath] of Object.entries(
-      nextManifest.kerfComponentCatalog,
+      nextManifest.kerfComponentCatalog ?? {},
     ))
       if (
         typeof configuredPath !== 'string' ||
@@ -1169,69 +1183,83 @@ export async function planKerfSetup({
       throw new Error(
         'UI setup requires package.json name for catalog identity.',
       );
-    const profilePath = resolve(root, '.kerf-ui-profile.json');
-    const currentProfileSource = await readText(profilePath);
-    const currentProfile =
-      currentProfileSource === null
-        ? undefined
-        : JSON.parse(currentProfileSource);
-    const profileCatalogPath = (configuredPath) => {
-      const relative = portable(
-        root,
-        resolve(selected.directory, configuredPath),
-      );
-      return relative.startsWith('.') ? relative : `./${relative}`;
-    };
-    const profile = mergeProfile(
-      currentProfile,
-      profileTemplate(
-        nextManifest.name,
-        profileCatalogPath(nextManifest.kerfComponentCatalog.output),
-        nextManifest.kerfComponentCatalog.selectionOutput
-          ? profileCatalogPath(
-              nextManifest.kerfComponentCatalog.selectionOutput,
-            )
-          : undefined,
-      ),
-      context,
-    );
-    await addAction(profilePath, stableJson(profile), 'json');
-    const metadataPath = resolve(
-      selected.directory,
-      nextManifest.kerfComponentCatalog.source,
-    );
-    if (nextManifest.kerfComponentCatalog.selectionOutput) {
-      const metadata = await readJson(metadataPath);
-      if (
-        !metadata ||
-        typeof metadata.description !== 'string' ||
-        !metadata.description.trim()
-      )
-        throw new Error(
-          `${portable(root, metadataPath)}: selectionOutput requires an authored metadata source with a nonempty description. Add the source and description before running setup.`,
+    if (nextManifest.kerfComponentCatalog !== undefined) {
+      const profilePath = resolve(root, '.kerf-ui-profile.json');
+      const currentProfileSource = await readText(profilePath);
+      const currentProfile =
+        currentProfileSource === null
+          ? undefined
+          : JSON.parse(currentProfileSource);
+      const profileCatalogPath = (configuredPath) => {
+        const relative = portable(
+          root,
+          resolve(selected.directory, configuredPath),
         );
-    } else if (!(await exists(metadataPath)))
-      await addAction(metadataPath, stableJson(metadataTemplate()), 'json');
-    generatedPaths.push(
-      resolve(selected.directory, nextManifest.kerfComponentCatalog.output),
-    );
-    if (nextManifest.kerfComponentCatalog.selectionOutput)
-      generatedPaths.push(
-        resolve(
-          selected.directory,
-          nextManifest.kerfComponentCatalog.selectionOutput,
+        return relative.startsWith('.') ? relative : `./${relative}`;
+      };
+      const profile = mergeProfile(
+        currentProfile,
+        profileTemplate(
+          nextManifest.name,
+          profileCatalogPath(nextManifest.kerfComponentCatalog.output),
+          nextManifest.kerfComponentCatalog.selectionOutput
+            ? profileCatalogPath(
+                nextManifest.kerfComponentCatalog.selectionOutput,
+              )
+            : undefined,
         ),
+        context,
       );
+      await addAction(profilePath, stableJson(profile), 'json');
+      const metadataPath = resolve(
+        selected.directory,
+        nextManifest.kerfComponentCatalog.source,
+      );
+      if (nextManifest.kerfComponentCatalog.selectionOutput) {
+        const metadata = await readJson(metadataPath);
+        if (
+          !metadata ||
+          typeof metadata.description !== 'string' ||
+          !metadata.description.trim()
+        )
+          throw new Error(
+            `${portable(root, metadataPath)}: selectionOutput requires an authored metadata source with a nonempty description. Add the source and description before running setup.`,
+          );
+      } else if (!(await exists(metadataPath)))
+        await addAction(metadataPath, stableJson(metadataTemplate()), 'json');
+      if (
+        nextManifest.scripts['catalog:generate'] &&
+        dependencies(nextManifest)['create-kerf-component']
+      ) {
+        generatedPaths.push(
+          resolve(selected.directory, nextManifest.kerfComponentCatalog.output),
+        );
+        if (nextManifest.kerfComponentCatalog.selectionOutput)
+          generatedPaths.push(
+            resolve(
+              selected.directory,
+              nextManifest.kerfComponentCatalog.selectionOutput,
+            ),
+          );
+      }
+    }
   }
 
   for (const [id, resolution] of Object.entries(requestedResolutions)) {
-    if (!['keep', 'kerf'].includes(resolution))
-      throw new Error(`Resolution ${id} must be keep or kerf.`);
+    if (!['keep', 'kerf', 'skip'].includes(resolution))
+      throw new Error(`Resolution ${id} must be keep, kerf, or skip.`);
     if (!knownResolutionIds.has(id))
       throw new Error(`Unknown resolution id ${id}.`);
-    if (!activeConflictIds.has(id))
+    if (resolution === 'skip' && activeConflictIds.has(id))
       throw new Error(
-        `Stale resolution id ${id}; the value no longer conflicts.`,
+        `Resolution ${id} cannot skip a conflict; choose keep or kerf.`,
+      );
+    if (
+      !activeConflictIds.has(id) &&
+      !(resolution !== 'keep' && activeProposalIds.has(id))
+    )
+      throw new Error(
+        `Stale resolution id ${id}; there is no applicable conflict or proposal.`,
       );
   }
   const manager = await packageManagerInfo(root);
@@ -1264,8 +1292,12 @@ export async function planKerfSetup({
         ...(guidanceSource ? { guidanceSource } : {}),
         managed: managedAfter,
         resolutions: Object.fromEntries(
-          [...activeConflictIds]
-            .filter((id) => resolutions[id] === 'keep')
+          [...new Set([...activeConflictIds, ...activeProposalIds])]
+            .filter(
+              (id) =>
+                (activeConflictIds.has(id) && resolutions[id] === 'keep') ||
+                (activeProposalIds.has(id) && resolutions[id] === 'skip'),
+            )
             .map((id) => [id, resolutions[id]]),
         ),
       },
@@ -1283,6 +1315,9 @@ export async function planKerfSetup({
     mode,
     setupVersion,
     actions,
+    proposalIds: [...activeProposalIds].filter(
+      (id) => resolutions[id] !== 'skip',
+    ),
     conflicts,
     generatedPaths,
   };
@@ -1354,6 +1389,8 @@ export function formatSetupPlan(plan) {
     lines.push(
       `CONFLICT ${conflict.id}: ${conflict.message} (use --resolve ${conflict.id}=keep|kerf)`,
     );
+  for (const id of plan.proposalIds ?? [])
+    lines.push(`PROPOSAL ${id} (use --resolve ${id}=skip to decline)`);
   if (!plan.actions.length && !plan.conflicts.length) lines.push('No changes.');
   lines.push('AI guidance: .claude/skills/kerf-app/SKILL.md');
   if (plan.mode === 'ui') {
@@ -1511,7 +1548,7 @@ export async function applyKerfSetup(
           ? { env: { ...process.env, YARN_ENABLE_NETWORK: '0' } }
           : {}),
       });
-      if (plan.mode === 'ui') {
+      if (plan.mode === 'ui' && plan.generatedPaths?.length) {
         for (const path of plan.generatedPaths ?? [])
           await validateGeneratedPath(path);
         await runner(plan.packageManager, ['run', 'catalog:generate'], {

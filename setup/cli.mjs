@@ -33,7 +33,8 @@ Options:
                        Use shared workspace guidance, e.g. AGENTS.md
   --core | --ui       Choose a mode when it cannot be detected
   --resolve <id>=<choice>
-                       Resolve one conflict with keep or kerf (repeatable)
+                       Resolve a conflict with keep or kerf, or decline a
+                       value proposal with skip (repeatable)
   --write             Apply the displayed plan (default is dry-run)
   --yes               Required with --write in non-interactive use
   --offline           Forbid registry access during dependency installation
@@ -54,7 +55,7 @@ Options:
   const resolutions = {};
   for (const entry of takeAll('--resolve')) {
     const index = entry.lastIndexOf('=');
-    if (index < 1) throw new Error('--resolve requires <id>=keep|kerf.');
+    if (index < 1) throw new Error('--resolve requires <id>=keep|kerf|skip.');
     const id = entry.slice(0, index);
     const choice = entry.slice(index + 1);
     if (id in resolutions && resolutions[id] !== choice)

@@ -51,6 +51,10 @@ ESLint hygiene rule validates the import and source instead of a copied skill.
 Workspace profile composition/selection paths and missing metadata sources
 follow the resolved `kerfComponentCatalog` declaration, including retained
 authored paths.
+Value proposals expose stable ids and accept package-scoped persisted `skip`
+decisions. `kerf` adopts a declined value later; a new authored conflict still
+requires `keep` or `kerf`. Catalog generation runs only when its script,
+generator dependency, and catalog configuration remain available.
 Setup requires an authored metadata description when a selection catalog is
 configured; it only scaffolds an empty source for composition-only output.
 For workspace packages with an authored doctor config, the generated scripts
@@ -60,6 +64,8 @@ Yarn Classic, and Yarn Berry; Berry offline mode explicitly disables network.
 `tests/unit/setup.test.ts` covers detection, merges, conflict choices,
 state-backed upgrades, JSONC preservation and malformed-container decisions,
 safety/rollback transitions, redaction, and adversarial inputs.
+`tests/unit/setup-declines.test.ts` covers decline/adopt transitions, managed
+upgrade holds, newly authored conflicts, profile values, and workspace isolation.
 `tests/integration/setup-downstream.test.ts` packs the shipped packages and
 proves the CLI through minimal-core and selected-UI-monorepo consumer flows,
 including a commented/trailing-comma tsconfig that still builds and lints plus
@@ -250,6 +256,7 @@ kerf/
 │   │   ├── guidance-integrity.test.ts ← guard for tracked guidance snapshots and command wrapper.
 │   │   ├── package-gates.test.ts ← package-gate selection and red-CI evidence logic.
 │   │   ├── setup.test.ts ← setup detection, plans, conflicts, and rollback.
+│   │   ├── setup-declines.test.ts ← persisted value-proposal declines, adoption, managed upgrades, catalog generation, and workspace isolation.
 │   │   ├── ticket-timing.test.ts ← phase-note parsing and active-time state transitions.
 │   │   ├── ticket-timing-aggregate.test.ts ← cross-ticket process summaries.
 │   │   ├── ticket-timing-check-pass.test.ts ← verified-tree skip and invalidation.

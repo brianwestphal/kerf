@@ -60,6 +60,32 @@ npx kerfjs setup \
 `keep` records the project decision; `kerf` applies the recommendation.
 Unknown, stale, or invalid decisions fail. There is no blanket force flag.
 
+Non-conflict value proposals print a `PROPOSAL <id>` line. A project can decline
+an unused dependency, script, compiler option, or catalog/profile value with
+`skip`, even when the value is missing:
+
+```sh
+npx kerfjs setup --ui \
+  --resolve 'package.json#devDependencies.@stylistic/eslint-plugin=skip' \
+  --resolve 'package.json#scripts.catalog:generate=skip' \
+  --resolve 'package.json#scripts.catalog:check=skip' \
+  --write --yes
+```
+
+The decision persists for the selected package; subsequent dry runs leave the
+declined value alone. To adopt it later, use the same id with `=kerf`. `skip`
+also holds an unchanged managed value at its current version instead of
+upgrading it. An authored change that introduces a conflict still requires
+`keep` or `kerf`; `skip` cannot conceal that conflict. Satisfied or no-longer-
+applicable declines are removed from state on the next write. File creation
+and canonical guidance merges do not expose value-proposal ids.
+
+Declines are individual project decisions: setup does not rewrite the other
+recommended scripts or ESLint configuration to compensate for omitted tools.
+Keep or adapt those surfaces to the project's own gate. Setup does not run
+catalog generation when its script, generator dependency, or catalog
+configuration is absent after applying the plan.
+
 One conflict id is not a path: **`kerfjs-version`** fires when the running
 setup's version differs from the `kerfjs` already installed in the selected
 package. Rerun with the matching `npx kerfjs@<installed>` setup, or resolve it —
@@ -79,7 +105,7 @@ conflict and must be resolved with `keep` or `kerf`.
 `.kerf-ai-setup.json` schema v2 (its JSON Schema ships as the
 `kerfjs/setup/state.schema.json` export) stores package-scoped hashes for managed fields
 and files, the running Kerf version, package paths, package manager, and retained
-`keep` decisions. Schema-v1 state files (a single package's state at the top
+`keep` and `skip` decisions. Schema-v1 state files (a single package's state at the top
 level) are still read and are rewritten as v2 on the next write. An unchanged
 managed value upgrades automatically. A value
 changed after setup becomes a conflict. Guidance below
