@@ -44,6 +44,7 @@ ui/ux-demo/catalog.generated.ts
 ui/docs/design/sketch/button/*.json
 ui/docs/design/sketch/button/*.html
 ui/docs/design/sketch/button/inputs/
+ui/docs/design/sketch/button/fill-browser/
 
 # Parser-incompatible source fixtures and scripts with literal control bytes
 tests/unit/url-screen-corpus.internal.test.ts

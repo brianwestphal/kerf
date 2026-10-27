@@ -1,0 +1,1730 @@
+{
+  "cases": [
+    {
+      "id": "primary-brand-short-light-above",
+      "instanceId": "2CD933BF-C4D6-480D-A5D1-0B2B489AD116",
+      "symbolId": "1F6D939C-2C8A-4A8B-80F4-ECC9D9542187",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "width": 133,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 40.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-short-light-equal",
+      "instanceId": "8580CD77-AA9F-4EAE-A9AB-AC234757D064",
+      "symbolId": "1F6D939C-2C8A-4A8B-80F4-ECC9D9542187",
+      "frame": {
+        "x": 340,
+        "y": 0,
+        "width": 69,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 8.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-short-light-below",
+      "instanceId": "7D27D361-7040-4F6D-9E3F-0E4B4D68701B",
+      "symbolId": "1F6D939C-2C8A-4A8B-80F4-ECC9D9542187",
+      "frame": {
+        "x": 680,
+        "y": 0,
+        "width": 48,
+        "height": 44
+      },
+      "label": "C…",
+      "labelFrame": {
+        "x": 11.5,
+        "y": 13,
+        "width": 25,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-long-light-above",
+      "instanceId": "9AE94BF4-B2D8-4ACA-96B4-CDD98D0C7EF9",
+      "symbolId": "1F6D939C-2C8A-4A8B-80F4-ECC9D9542187",
+      "frame": {
+        "x": 0,
+        "y": 80,
+        "width": 275,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 40.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-long-light-equal",
+      "instanceId": "51C5297E-232F-4065-93E0-1ECFAA8777BB",
+      "symbolId": "1F6D939C-2C8A-4A8B-80F4-ECC9D9542187",
+      "frame": {
+        "x": 340,
+        "y": 80,
+        "width": 211,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 8.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-long-light-below",
+      "instanceId": "82BEED99-DD79-4836-89A0-D14965937342",
+      "symbolId": "1F6D939C-2C8A-4A8B-80F4-ECC9D9542187",
+      "frame": {
+        "x": 680,
+        "y": 80,
+        "width": 147,
+        "height": 44
+      },
+      "label": "Save All Pendin…",
+      "labelFrame": {
+        "x": 9.5,
+        "y": 13,
+        "width": 128,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-short-light-above",
+      "instanceId": "ACACD368-4A2E-4639-9595-35E74FC79FFD",
+      "symbolId": "2B3BBB0D-E781-4013-9DD4-20B7256F3143",
+      "frame": {
+        "x": 0,
+        "y": 160,
+        "width": 133,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 40.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-short-light-equal",
+      "instanceId": "5D29C06A-8177-4835-A219-134901D64556",
+      "symbolId": "2B3BBB0D-E781-4013-9DD4-20B7256F3143",
+      "frame": {
+        "x": 340,
+        "y": 160,
+        "width": 69,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 8.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-short-light-below",
+      "instanceId": "4F12B983-3436-4F3E-9779-EB41BA48C95B",
+      "symbolId": "2B3BBB0D-E781-4013-9DD4-20B7256F3143",
+      "frame": {
+        "x": 680,
+        "y": 160,
+        "width": 48,
+        "height": 44
+      },
+      "label": "C…",
+      "labelFrame": {
+        "x": 11.5,
+        "y": 13,
+        "width": 25,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-long-light-above",
+      "instanceId": "BA128DA4-71C8-4179-8F50-1C0C91D864F0",
+      "symbolId": "2B3BBB0D-E781-4013-9DD4-20B7256F3143",
+      "frame": {
+        "x": 0,
+        "y": 240,
+        "width": 275,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 40.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-long-light-equal",
+      "instanceId": "93FD0BBF-4DE6-44D8-A626-9C9CA0B24371",
+      "symbolId": "2B3BBB0D-E781-4013-9DD4-20B7256F3143",
+      "frame": {
+        "x": 340,
+        "y": 240,
+        "width": 211,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 8.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-long-light-below",
+      "instanceId": "7D576AF2-6779-45AD-AB07-AADA5F912FEA",
+      "symbolId": "2B3BBB0D-E781-4013-9DD4-20B7256F3143",
+      "frame": {
+        "x": 680,
+        "y": 240,
+        "width": 147,
+        "height": 44
+      },
+      "label": "Save All Pendin…",
+      "labelFrame": {
+        "x": 9.5,
+        "y": 13,
+        "width": 128,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "icon-brand-short-light-above",
+      "instanceId": "53F063CD-F8EB-45FC-8778-144EAE8793E1",
+      "symbolId": "6C68467B-0D4B-4D41-ADE9-6A39B3478179",
+      "frame": {
+        "x": 0,
+        "y": 320,
+        "width": 157,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 64.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 40.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-short-light-equal",
+      "instanceId": "02A9D5BA-64A1-4913-B5DF-6AE55D757B50",
+      "symbolId": "6C68467B-0D4B-4D41-ADE9-6A39B3478179",
+      "frame": {
+        "x": 340,
+        "y": 320,
+        "width": 93,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 32.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 8.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-short-light-below",
+      "instanceId": "AE2E46E8-9B1D-4B0B-945D-C4AD3F642E23",
+      "symbolId": "6C68467B-0D4B-4D41-ADE9-6A39B3478179",
+      "frame": {
+        "x": 680,
+        "y": 320,
+        "width": 74,
+        "height": 44
+      },
+      "label": "C…",
+      "labelFrame": {
+        "x": 36.5,
+        "y": 13,
+        "width": 25,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 12.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-long-light-above",
+      "instanceId": "B93C0B46-69B7-4325-B658-9266DEC56538",
+      "symbolId": "6C68467B-0D4B-4D41-ADE9-6A39B3478179",
+      "frame": {
+        "x": 0,
+        "y": 400,
+        "width": 299,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 64.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 40.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-long-light-equal",
+      "instanceId": "61B28B1A-A53C-451E-8E15-9E72FEDDA4BC",
+      "symbolId": "6C68467B-0D4B-4D41-ADE9-6A39B3478179",
+      "frame": {
+        "x": 340,
+        "y": 400,
+        "width": 235,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 32.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 8.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-long-light-below",
+      "instanceId": "13CC6210-4E4B-42B8-993B-2A39A3D821CC",
+      "symbolId": "6C68467B-0D4B-4D41-ADE9-6A39B3478179",
+      "frame": {
+        "x": 680,
+        "y": 400,
+        "width": 164,
+        "height": 44
+      },
+      "label": "Save All Pendi…",
+      "labelFrame": {
+        "x": 35,
+        "y": 13,
+        "width": 118,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 11,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "primary-brand-short-dark-above",
+      "instanceId": "DAA23280-B323-4044-9275-7326A35629B5",
+      "symbolId": "282EB15C-D7F5-491C-9847-716AE480CAD8",
+      "frame": {
+        "x": 0,
+        "y": 480,
+        "width": 133,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 40.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-short-dark-equal",
+      "instanceId": "60F91596-FF98-476A-BEE1-91564E30781A",
+      "symbolId": "282EB15C-D7F5-491C-9847-716AE480CAD8",
+      "frame": {
+        "x": 340,
+        "y": 480,
+        "width": 69,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 8.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-short-dark-below",
+      "instanceId": "857EEA84-F574-4CFD-B791-92869D05E844",
+      "symbolId": "282EB15C-D7F5-491C-9847-716AE480CAD8",
+      "frame": {
+        "x": 680,
+        "y": 480,
+        "width": 48,
+        "height": 44
+      },
+      "label": "C…",
+      "labelFrame": {
+        "x": 11.5,
+        "y": 13,
+        "width": 25,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-long-dark-above",
+      "instanceId": "3ABBBA0B-E0D5-4C3D-8A4C-12609E068700",
+      "symbolId": "282EB15C-D7F5-491C-9847-716AE480CAD8",
+      "frame": {
+        "x": 0,
+        "y": 560,
+        "width": 275,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 40.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-long-dark-equal",
+      "instanceId": "E9B4349C-73AA-47CF-B296-BAEA5B9FB0CA",
+      "symbolId": "282EB15C-D7F5-491C-9847-716AE480CAD8",
+      "frame": {
+        "x": 340,
+        "y": 560,
+        "width": 211,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 8.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-long-dark-below",
+      "instanceId": "C4E92C91-4B94-42AE-ACAC-55B828001423",
+      "symbolId": "282EB15C-D7F5-491C-9847-716AE480CAD8",
+      "frame": {
+        "x": 680,
+        "y": 560,
+        "width": 147,
+        "height": 44
+      },
+      "label": "Save All Pendin…",
+      "labelFrame": {
+        "x": 9.5,
+        "y": 13,
+        "width": 128,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-short-dark-above",
+      "instanceId": "E9DC230F-0CB8-46BF-B9A7-C962C55FAA2F",
+      "symbolId": "3A806949-988A-4B96-A740-1581C632EA42",
+      "frame": {
+        "x": 0,
+        "y": 640,
+        "width": 133,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 40.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-short-dark-equal",
+      "instanceId": "8FAFCFBE-0D1F-4ED2-91C1-2912A7E031B4",
+      "symbolId": "3A806949-988A-4B96-A740-1581C632EA42",
+      "frame": {
+        "x": 340,
+        "y": 640,
+        "width": 69,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 8.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-short-dark-below",
+      "instanceId": "C983704E-3C32-45D0-B9C5-1F7C13F11577",
+      "symbolId": "3A806949-988A-4B96-A740-1581C632EA42",
+      "frame": {
+        "x": 680,
+        "y": 640,
+        "width": 48,
+        "height": 44
+      },
+      "label": "C…",
+      "labelFrame": {
+        "x": 11.5,
+        "y": 13,
+        "width": 25,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-long-dark-above",
+      "instanceId": "0F7A21E7-9D60-4863-8855-6E0DFECE52AE",
+      "symbolId": "3A806949-988A-4B96-A740-1581C632EA42",
+      "frame": {
+        "x": 0,
+        "y": 720,
+        "width": 275,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 40.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-long-dark-equal",
+      "instanceId": "A5B25161-59F2-484E-B503-E7740E3B1DC8",
+      "symbolId": "3A806949-988A-4B96-A740-1581C632EA42",
+      "frame": {
+        "x": 340,
+        "y": 720,
+        "width": 211,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 8.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-long-dark-below",
+      "instanceId": "F1D5FB93-F538-4275-BAD5-88DB736C0FA8",
+      "symbolId": "3A806949-988A-4B96-A740-1581C632EA42",
+      "frame": {
+        "x": 680,
+        "y": 720,
+        "width": 147,
+        "height": 44
+      },
+      "label": "Save All Pendin…",
+      "labelFrame": {
+        "x": 9.5,
+        "y": 13,
+        "width": 128,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "icon-brand-short-dark-above",
+      "instanceId": "5550E448-0E49-4048-B988-D1D69BAAAED6",
+      "symbolId": "14FD4EA5-164F-4850-8A4C-671DDC8857A0",
+      "frame": {
+        "x": 0,
+        "y": 800,
+        "width": 157,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 64.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 40.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-short-dark-equal",
+      "instanceId": "87FA61C3-543C-4499-A2CB-D9F876915002",
+      "symbolId": "14FD4EA5-164F-4850-8A4C-671DDC8857A0",
+      "frame": {
+        "x": 340,
+        "y": 800,
+        "width": 93,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 32.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 8.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-short-dark-below",
+      "instanceId": "AA5A428B-1866-4601-8374-9619E8DE09E5",
+      "symbolId": "14FD4EA5-164F-4850-8A4C-671DDC8857A0",
+      "frame": {
+        "x": 680,
+        "y": 800,
+        "width": 74,
+        "height": 44
+      },
+      "label": "C…",
+      "labelFrame": {
+        "x": 36.5,
+        "y": 13,
+        "width": 25,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 12.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-long-dark-above",
+      "instanceId": "2A7B68C1-0C01-4328-833D-B9BB50E31F18",
+      "symbolId": "14FD4EA5-164F-4850-8A4C-671DDC8857A0",
+      "frame": {
+        "x": 0,
+        "y": 880,
+        "width": 299,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 64.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 40.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-long-dark-equal",
+      "instanceId": "F39AE890-4328-4CAF-B1D7-3D9AAB3BEBDE",
+      "symbolId": "14FD4EA5-164F-4850-8A4C-671DDC8857A0",
+      "frame": {
+        "x": 340,
+        "y": 880,
+        "width": 235,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 32.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 8.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-long-dark-below",
+      "instanceId": "8308DA14-7A9A-4E91-9455-BB195B21768A",
+      "symbolId": "14FD4EA5-164F-4850-8A4C-671DDC8857A0",
+      "frame": {
+        "x": 680,
+        "y": 880,
+        "width": 164,
+        "height": 44
+      },
+      "label": "Save All Pendi…",
+      "labelFrame": {
+        "x": 35,
+        "y": 13,
+        "width": 118,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 11,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    }
+  ],
+  "reopened": [
+    {
+      "id": "primary-brand-short-light-above",
+      "instanceId": "2CD933BF-C4D6-480D-A5D1-0B2B489AD116",
+      "symbolId": "1F6D939C-2C8A-4A8B-80F4-ECC9D9542187",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "width": 133,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 40.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-short-light-equal",
+      "instanceId": "8580CD77-AA9F-4EAE-A9AB-AC234757D064",
+      "symbolId": "1F6D939C-2C8A-4A8B-80F4-ECC9D9542187",
+      "frame": {
+        "x": 340,
+        "y": 0,
+        "width": 69,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 8.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-short-light-below",
+      "instanceId": "7D27D361-7040-4F6D-9E3F-0E4B4D68701B",
+      "symbolId": "1F6D939C-2C8A-4A8B-80F4-ECC9D9542187",
+      "frame": {
+        "x": 680,
+        "y": 0,
+        "width": 48,
+        "height": 44
+      },
+      "label": "C…",
+      "labelFrame": {
+        "x": 11.5,
+        "y": 13,
+        "width": 25,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-long-light-above",
+      "instanceId": "9AE94BF4-B2D8-4ACA-96B4-CDD98D0C7EF9",
+      "symbolId": "1F6D939C-2C8A-4A8B-80F4-ECC9D9542187",
+      "frame": {
+        "x": 0,
+        "y": 80,
+        "width": 275,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 40.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-long-light-equal",
+      "instanceId": "51C5297E-232F-4065-93E0-1ECFAA8777BB",
+      "symbolId": "1F6D939C-2C8A-4A8B-80F4-ECC9D9542187",
+      "frame": {
+        "x": 340,
+        "y": 80,
+        "width": 211,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 8.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-long-light-below",
+      "instanceId": "82BEED99-DD79-4836-89A0-D14965937342",
+      "symbolId": "1F6D939C-2C8A-4A8B-80F4-ECC9D9542187",
+      "frame": {
+        "x": 680,
+        "y": 80,
+        "width": 147,
+        "height": 44
+      },
+      "label": "Save All Pendin…",
+      "labelFrame": {
+        "x": 9.5,
+        "y": 13,
+        "width": 128,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-short-light-above",
+      "instanceId": "ACACD368-4A2E-4639-9595-35E74FC79FFD",
+      "symbolId": "2B3BBB0D-E781-4013-9DD4-20B7256F3143",
+      "frame": {
+        "x": 0,
+        "y": 160,
+        "width": 133,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 40.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-short-light-equal",
+      "instanceId": "5D29C06A-8177-4835-A219-134901D64556",
+      "symbolId": "2B3BBB0D-E781-4013-9DD4-20B7256F3143",
+      "frame": {
+        "x": 340,
+        "y": 160,
+        "width": 69,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 8.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-short-light-below",
+      "instanceId": "4F12B983-3436-4F3E-9779-EB41BA48C95B",
+      "symbolId": "2B3BBB0D-E781-4013-9DD4-20B7256F3143",
+      "frame": {
+        "x": 680,
+        "y": 160,
+        "width": 48,
+        "height": 44
+      },
+      "label": "C…",
+      "labelFrame": {
+        "x": 11.5,
+        "y": 13,
+        "width": 25,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-long-light-above",
+      "instanceId": "BA128DA4-71C8-4179-8F50-1C0C91D864F0",
+      "symbolId": "2B3BBB0D-E781-4013-9DD4-20B7256F3143",
+      "frame": {
+        "x": 0,
+        "y": 240,
+        "width": 275,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 40.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-long-light-equal",
+      "instanceId": "93FD0BBF-4DE6-44D8-A626-9C9CA0B24371",
+      "symbolId": "2B3BBB0D-E781-4013-9DD4-20B7256F3143",
+      "frame": {
+        "x": 340,
+        "y": 240,
+        "width": 211,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 8.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-long-light-below",
+      "instanceId": "7D576AF2-6779-45AD-AB07-AADA5F912FEA",
+      "symbolId": "2B3BBB0D-E781-4013-9DD4-20B7256F3143",
+      "frame": {
+        "x": 680,
+        "y": 240,
+        "width": 147,
+        "height": 44
+      },
+      "label": "Save All Pendin…",
+      "labelFrame": {
+        "x": 9.5,
+        "y": 13,
+        "width": 128,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "icon-brand-short-light-above",
+      "instanceId": "53F063CD-F8EB-45FC-8778-144EAE8793E1",
+      "symbolId": "6C68467B-0D4B-4D41-ADE9-6A39B3478179",
+      "frame": {
+        "x": 0,
+        "y": 320,
+        "width": 157,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 64.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 40.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-short-light-equal",
+      "instanceId": "02A9D5BA-64A1-4913-B5DF-6AE55D757B50",
+      "symbolId": "6C68467B-0D4B-4D41-ADE9-6A39B3478179",
+      "frame": {
+        "x": 340,
+        "y": 320,
+        "width": 93,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 32.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 8.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-short-light-below",
+      "instanceId": "AE2E46E8-9B1D-4B0B-945D-C4AD3F642E23",
+      "symbolId": "6C68467B-0D4B-4D41-ADE9-6A39B3478179",
+      "frame": {
+        "x": 680,
+        "y": 320,
+        "width": 74,
+        "height": 44
+      },
+      "label": "C…",
+      "labelFrame": {
+        "x": 36.5,
+        "y": 13,
+        "width": 25,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 12.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-long-light-above",
+      "instanceId": "B93C0B46-69B7-4325-B658-9266DEC56538",
+      "symbolId": "6C68467B-0D4B-4D41-ADE9-6A39B3478179",
+      "frame": {
+        "x": 0,
+        "y": 400,
+        "width": 299,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 64.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 40.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-long-light-equal",
+      "instanceId": "61B28B1A-A53C-451E-8E15-9E72FEDDA4BC",
+      "symbolId": "6C68467B-0D4B-4D41-ADE9-6A39B3478179",
+      "frame": {
+        "x": 340,
+        "y": 400,
+        "width": 235,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 32.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 8.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-long-light-below",
+      "instanceId": "13CC6210-4E4B-42B8-993B-2A39A3D821CC",
+      "symbolId": "6C68467B-0D4B-4D41-ADE9-6A39B3478179",
+      "frame": {
+        "x": 680,
+        "y": 400,
+        "width": 164,
+        "height": 44
+      },
+      "label": "Save All Pendi…",
+      "labelFrame": {
+        "x": 35,
+        "y": 13,
+        "width": 118,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 11,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "primary-brand-short-dark-above",
+      "instanceId": "DAA23280-B323-4044-9275-7326A35629B5",
+      "symbolId": "282EB15C-D7F5-491C-9847-716AE480CAD8",
+      "frame": {
+        "x": 0,
+        "y": 480,
+        "width": 133,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 40.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-short-dark-equal",
+      "instanceId": "60F91596-FF98-476A-BEE1-91564E30781A",
+      "symbolId": "282EB15C-D7F5-491C-9847-716AE480CAD8",
+      "frame": {
+        "x": 340,
+        "y": 480,
+        "width": 69,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 8.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-short-dark-below",
+      "instanceId": "857EEA84-F574-4CFD-B791-92869D05E844",
+      "symbolId": "282EB15C-D7F5-491C-9847-716AE480CAD8",
+      "frame": {
+        "x": 680,
+        "y": 480,
+        "width": 48,
+        "height": 44
+      },
+      "label": "C…",
+      "labelFrame": {
+        "x": 11.5,
+        "y": 13,
+        "width": 25,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-long-dark-above",
+      "instanceId": "3ABBBA0B-E0D5-4C3D-8A4C-12609E068700",
+      "symbolId": "282EB15C-D7F5-491C-9847-716AE480CAD8",
+      "frame": {
+        "x": 0,
+        "y": 560,
+        "width": 275,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 40.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-long-dark-equal",
+      "instanceId": "E9B4349C-73AA-47CF-B296-BAEA5B9FB0CA",
+      "symbolId": "282EB15C-D7F5-491C-9847-716AE480CAD8",
+      "frame": {
+        "x": 340,
+        "y": 560,
+        "width": 211,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 8.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "primary-brand-long-dark-below",
+      "instanceId": "C4E92C91-4B94-42AE-ACAC-55B828001423",
+      "symbolId": "282EB15C-D7F5-491C-9847-716AE480CAD8",
+      "frame": {
+        "x": 680,
+        "y": 560,
+        "width": 147,
+        "height": 44
+      },
+      "label": "Save All Pendin…",
+      "labelFrame": {
+        "x": 9.5,
+        "y": 13,
+        "width": 128,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-short-dark-above",
+      "instanceId": "E9DC230F-0CB8-46BF-B9A7-C962C55FAA2F",
+      "symbolId": "3A806949-988A-4B96-A740-1581C632EA42",
+      "frame": {
+        "x": 0,
+        "y": 640,
+        "width": 133,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 40.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-short-dark-equal",
+      "instanceId": "8FAFCFBE-0D1F-4ED2-91C1-2912A7E031B4",
+      "symbolId": "3A806949-988A-4B96-A740-1581C632EA42",
+      "frame": {
+        "x": 340,
+        "y": 640,
+        "width": 69,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 8.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-short-dark-below",
+      "instanceId": "C983704E-3C32-45D0-B9C5-1F7C13F11577",
+      "symbolId": "3A806949-988A-4B96-A740-1581C632EA42",
+      "frame": {
+        "x": 680,
+        "y": 640,
+        "width": 48,
+        "height": 44
+      },
+      "label": "C…",
+      "labelFrame": {
+        "x": 11.5,
+        "y": 13,
+        "width": 25,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-long-dark-above",
+      "instanceId": "0F7A21E7-9D60-4863-8855-6E0DFECE52AE",
+      "symbolId": "3A806949-988A-4B96-A740-1581C632EA42",
+      "frame": {
+        "x": 0,
+        "y": 720,
+        "width": 275,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 40.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-long-dark-equal",
+      "instanceId": "A5B25161-59F2-484E-B503-E7740E3B1DC8",
+      "symbolId": "3A806949-988A-4B96-A740-1581C632EA42",
+      "frame": {
+        "x": 340,
+        "y": 720,
+        "width": 211,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 8.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "secondary-long-dark-below",
+      "instanceId": "F1D5FB93-F538-4275-BAD5-88DB736C0FA8",
+      "symbolId": "3A806949-988A-4B96-A740-1581C632EA42",
+      "frame": {
+        "x": 680,
+        "y": 720,
+        "width": 147,
+        "height": 44
+      },
+      "label": "Save All Pendin…",
+      "labelFrame": {
+        "x": 9.5,
+        "y": 13,
+        "width": 128,
+        "height": 18
+      },
+      "iconFrame": null,
+      "linked": true
+    },
+    {
+      "id": "icon-brand-short-dark-above",
+      "instanceId": "5550E448-0E49-4048-B988-D1D69BAAAED6",
+      "symbolId": "14FD4EA5-164F-4850-8A4C-671DDC8857A0",
+      "frame": {
+        "x": 0,
+        "y": 800,
+        "width": 157,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 64.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 40.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-short-dark-equal",
+      "instanceId": "87FA61C3-543C-4499-A2CB-D9F876915002",
+      "symbolId": "14FD4EA5-164F-4850-8A4C-671DDC8857A0",
+      "frame": {
+        "x": 340,
+        "y": 800,
+        "width": 93,
+        "height": 44
+      },
+      "label": "Cancel",
+      "labelFrame": {
+        "x": 32.5,
+        "y": 13,
+        "width": 52,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 8.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-short-dark-below",
+      "instanceId": "AA5A428B-1866-4601-8374-9619E8DE09E5",
+      "symbolId": "14FD4EA5-164F-4850-8A4C-671DDC8857A0",
+      "frame": {
+        "x": 680,
+        "y": 800,
+        "width": 74,
+        "height": 44
+      },
+      "label": "C…",
+      "labelFrame": {
+        "x": 36.5,
+        "y": 13,
+        "width": 25,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 12.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-long-dark-above",
+      "instanceId": "2A7B68C1-0C01-4328-833D-B9BB50E31F18",
+      "symbolId": "14FD4EA5-164F-4850-8A4C-671DDC8857A0",
+      "frame": {
+        "x": 0,
+        "y": 880,
+        "width": 299,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 64.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 40.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-long-dark-equal",
+      "instanceId": "F39AE890-4328-4CAF-B1D7-3D9AAB3BEBDE",
+      "symbolId": "14FD4EA5-164F-4850-8A4C-671DDC8857A0",
+      "frame": {
+        "x": 340,
+        "y": 880,
+        "width": 235,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "labelFrame": {
+        "x": 32.5,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 8.5,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    },
+    {
+      "id": "icon-brand-long-dark-below",
+      "instanceId": "8308DA14-7A9A-4E91-9455-BB195B21768A",
+      "symbolId": "14FD4EA5-164F-4850-8A4C-671DDC8857A0",
+      "frame": {
+        "x": 680,
+        "y": 880,
+        "width": 164,
+        "height": 44
+      },
+      "label": "Save All Pendi…",
+      "labelFrame": {
+        "x": 35,
+        "y": 13,
+        "width": 118,
+        "height": 18
+      },
+      "iconFrame": {
+        "x": 11,
+        "y": 14,
+        "width": 16,
+        "height": 16
+      },
+      "linked": true
+    }
+  ],
+  "transitions": [
+    {
+      "id": "primary-brand-long-light-below",
+      "narrow": {
+        "x": 680,
+        "y": 80,
+        "width": 147,
+        "height": 44
+      },
+      "widened": {
+        "x": 680,
+        "y": 80,
+        "width": 275,
+        "height": 44
+      },
+      "edited": {
+        "x": 680,
+        "y": 80,
+        "width": 275,
+        "height": 44
+      },
+      "fit": {
+        "x": 711.5,
+        "y": 80,
+        "width": 212,
+        "height": 44
+      }
+    },
+    {
+      "id": "secondary-long-light-below",
+      "narrow": {
+        "x": 680,
+        "y": 240,
+        "width": 147,
+        "height": 44
+      },
+      "widened": {
+        "x": 680,
+        "y": 240,
+        "width": 275,
+        "height": 44
+      },
+      "edited": {
+        "x": 680,
+        "y": 240,
+        "width": 275,
+        "height": 44
+      },
+      "fit": {
+        "x": 711.5,
+        "y": 240,
+        "width": 212,
+        "height": 44
+      }
+    },
+    {
+      "id": "icon-brand-long-light-below",
+      "narrow": {
+        "x": 680,
+        "y": 400,
+        "width": 164,
+        "height": 44
+      },
+      "widened": {
+        "x": 680,
+        "y": 400,
+        "width": 299,
+        "height": 44
+      },
+      "edited": {
+        "x": 680,
+        "y": 400,
+        "width": 299,
+        "height": 44
+      },
+      "fit": {
+        "x": 711.5,
+        "y": 400,
+        "width": 236,
+        "height": 44
+      }
+    },
+    {
+      "id": "primary-brand-long-dark-below",
+      "narrow": {
+        "x": 680,
+        "y": 560,
+        "width": 147,
+        "height": 44
+      },
+      "widened": {
+        "x": 680,
+        "y": 560,
+        "width": 275,
+        "height": 44
+      },
+      "edited": {
+        "x": 680,
+        "y": 560,
+        "width": 275,
+        "height": 44
+      },
+      "fit": {
+        "x": 711.5,
+        "y": 560,
+        "width": 212,
+        "height": 44
+      }
+    },
+    {
+      "id": "secondary-long-dark-below",
+      "narrow": {
+        "x": 680,
+        "y": 720,
+        "width": 147,
+        "height": 44
+      },
+      "widened": {
+        "x": 680,
+        "y": 720,
+        "width": 275,
+        "height": 44
+      },
+      "edited": {
+        "x": 680,
+        "y": 720,
+        "width": 275,
+        "height": 44
+      },
+      "fit": {
+        "x": 711.5,
+        "y": 720,
+        "width": 212,
+        "height": 44
+      }
+    },
+    {
+      "id": "icon-brand-long-dark-below",
+      "narrow": {
+        "x": 680,
+        "y": 880,
+        "width": 164,
+        "height": 44
+      },
+      "widened": {
+        "x": 680,
+        "y": 880,
+        "width": 299,
+        "height": 44
+      },
+      "edited": {
+        "x": 680,
+        "y": 880,
+        "width": 299,
+        "height": 44
+      },
+      "fit": {
+        "x": 711.5,
+        "y": 880,
+        "width": 236,
+        "height": 44
+      }
+    }
+  ]
+}

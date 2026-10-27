@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "browserSource": "Button({ fill: true })",
+  "modes": [
+    "natural-content",
+    "fixed-fill-with-manual-ellipsis"
+  ],
+  "cases": 36,
+  "reopened": 36,
+  "resizeCycles": 6,
+  "checks": [
+    "real Button(fill:true) browser source",
+    "above, equal, and below intrinsic widths",
+    "short and long labels, with and without icon, light and dark",
+    "editable label overrides with no content spill",
+    "centered content group, fixed 16px icon, 8px gap",
+    "resize, override edit, widen, and reset to Fit",
+    "Library links and overrides after save/reopen"
+  ]
+}

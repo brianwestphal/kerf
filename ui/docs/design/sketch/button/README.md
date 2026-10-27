@@ -34,9 +34,10 @@ for the native steps:
 npm run sketch:button -- generate
 npm run sketch:button -- verify
 npm run sketch:button -- render
+npm run sketch:button -- fill
 ```
 
-`npm run sketch:button -- all` performs the same capture, native, and render
+`npm run sketch:button -- all` performs the capture, native, fill-width, and render
 steps in order after `npm run build`. The native commands refuse to start
 without an existing Sketch process and fail explicitly if Sketch or its
 license is unavailable. They use the serial runner documented in
@@ -94,7 +95,35 @@ refresh, and save/reopen. The `verify` command covers fresh imports and saved
 text overrides. A separate scratch regeneration also preserved a user-added
 Text layer outside the generated Symbols.
 
-These six Symbols model content-fit Button width. The web Button's fill mode
-with ellipsis below the label's intrinsic width is tracked in KF-CAZ8YB;
-additional Button states in KF-NQ80Y0, shared color and typography assets in
-KF-R5DMGJ, and the wider component catalog in KF-P8AS51.
+## Fill-width instances
+
+The six Library Symbols remain content-fit masters. `fill-layout.json` records
+36 real `Button({ fill: true })` browser references: short and long labels,
+primary, secondary, and icon variants in light and dark, at widths above, equal to, and
+below natural content width. `Button-Fill-Test.sketch` contains editable,
+Library-linked fixed-width instances for those cases. `fill-checks.json` and
+the two `fill-comparison*.png` captures verify the supported workflow.
+
+To make a fill-width Button in Sketch, import the matching Symbol, set the
+instance's horizontal size to **Fixed**, and set its width to the parent
+track. Keep the label override as the full source text while it fits. Below
+its natural width, shorten the editable label override to a prefix followed
+by `…` that fits between the 9px side insets (and the fixed 16px icon plus
+8px gap, if present). Keep the full text separately in the design annotation
+or handoff data; `fill-layout.json` records both `sourceLabel` and
+`displayLabel` for the verified examples. On widening, restore the full
+label override. To return to natural width, set horizontal size to **Fit**
+and run Sketch's Smart Layout resize.
+
+Sketch 2026.3.1 wraps a long editable Text override inside a narrowed Stack;
+it does not reproduce CSS `text-overflow: ellipsis` automatically. The manual
+override keeps the 44px frame, unscaled 16px text and icon, 8px gap, centered
+content group, original border, and editable text without spill. Extremely narrow widths that
+cannot fit the icon plus a readable ellipsis need a different product label
+or a wider track. The 36-case native/browser review and six resize cycles
+are the supported bounds of this template; automatic truncation after any
+arbitrary override or resize is not implied.
+
+Additional Button states are tracked in KF-NQ80Y0, shared color and
+typography assets in KF-R5DMGJ, and the wider component catalog in
+KF-P8AS51.

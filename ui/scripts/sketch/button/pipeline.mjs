@@ -16,6 +16,7 @@ import { promisify } from 'node:util';
 import { requireExistingSketchProcess } from '../check-runner-process.mjs';
 import { runSketchJob } from '../runner.mjs';
 import { captureButtons, defaultOutput } from './capture.mjs';
+import { captureFillCases } from './fill-capture.mjs';
 
 const exec = promisify(execFile);
 const scriptDirectory = fileURLToPath(new URL('./', import.meta.url));
@@ -24,6 +25,9 @@ const task = (name) => join(scriptDirectory, 'tasks', `${name}.js`);
 const output = resolve(process.env.KERF_SKETCH_BUTTON_OUTPUT ?? defaultOutput);
 const paths = {
   fixturesPath: join(output, 'fixtures.json'),
+  fillLayoutPath: join(output, 'fill-layout.json'),
+  fillDocumentPath: join(output, 'Button-Fill-Test.sketch'),
+  fillExportsPath: join(output, 'fill-exports'),
   identitiesPath: join(output, 'identity-manifest.json'),
   libraryPath: join(output, 'Kerf-Button.sketch'),
   consumerPath: join(output, 'Button-Consumer-Test.sketch'),
@@ -88,6 +92,7 @@ async function runNative(names, parameters = paths) {
     layout: 'layout-report.json',
     verify: 'verification.json',
     resize: 'resizing-verification.json',
+    fill: 'fill-verification.json',
   };
   let nativePid;
   for (const name of names) {
@@ -231,21 +236,33 @@ async function updateIdentityManifest(libraryPath) {
 
 async function prepareOutput() {
   await mkdir(output, { recursive: true });
-  for (const directory of ['exports', 'consumer-exports', 'resize-exports'])
+  for (const directory of [
+    'exports',
+    'consumer-exports',
+    'resize-exports',
+    'fill-exports',
+  ])
     await mkdir(join(output, directory), { recursive: true });
 }
 
 const command = process.argv[2];
 if (
-  !['capture', 'check-source', 'generate', 'verify', 'render', 'all'].includes(
-    command,
-  )
+  ![
+    'capture',
+    'check-source',
+    'generate',
+    'verify',
+    'render',
+    'fill',
+    'all',
+  ].includes(command)
 )
   throw new Error(
-    'Usage: npm run sketch:button -- capture|check-source|generate|verify|render|all',
+    'Usage: npm run sketch:button -- capture|check-source|generate|verify|render|fill|all',
   );
 await prepareOutput();
 if (command === 'capture' || command === 'all') await captureButtons(output);
+if (command === 'fill' || command === 'all') await captureFillCases(output);
 if (command === 'capture' || command === 'check-source') await verifySource();
 if (command === 'generate' || command === 'all') {
   await verifySource();
@@ -297,4 +314,12 @@ if (command === 'generate' || command === 'all') {
 }
 if (command === 'verify' || command === 'all')
   await runNative(['verify', 'resize']);
+if (command === 'fill' || command === 'all') await runNative(['fill']);
 if (command === 'render' || command === 'all') await renderComparisons();
+if (command === 'fill' || command === 'all') {
+  await exec(process.execPath, [
+    join(scriptDirectory, 'fill-compare.mjs'),
+    output,
+  ]);
+  console.log('Real Button(fill:true) and native fill-width checks passed.');
+}

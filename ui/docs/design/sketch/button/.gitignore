@@ -4,6 +4,10 @@
 /consumer-exports/
 /resize-exports/
 /resize-browser/
+/fill-browser/
+/fill-exports/
 /comparison.html
 /resizing-comparison.html
+/fill-comparison.html
+/fill-comparison-narrow.html
 /.Kerf-Button-*.sketch
