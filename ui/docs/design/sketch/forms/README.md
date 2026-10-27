@@ -19,9 +19,16 @@ This file was created and tested with Sketch 2026.3.1. Install a copy at a
 stable path through Sketch Settings → Libraries. Update that same installed
 file when a new version is published, then refresh the Library and sync
 consumer instances. Do not change Symbol or shared asset IDs: linked
-instances rely on them. The exporter checks previously published IDs. A
-changed source SVG currently requires an explicit native layer migration;
-the exporter stops before replacing a Symbol with fresh IDs.
+instances rely on them. The exporter checks previously published IDs.
+
+When a source SVG changes, `generate` imports it into a temporary master,
+applies the same layout, and updates the published layers in place, so the
+Symbol, Text override, and layer IDs stay the same. Unchanged paint colors
+keep their Color Variables; run `assets` afterward to bind changed colors.
+Published Color Variables stay in the library even when no Symbol uses them.
+A changed layer count, layer or shape type, or a reordered label is rejected
+with the fixture and tree path before any published layer changes; such an
+edit needs a deliberate override-key migration.
 
 ## Regenerate and verify
 
