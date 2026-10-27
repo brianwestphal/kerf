@@ -3,12 +3,14 @@ import { expect, test } from '@playwright/test';
 test('standalone tab bar actions stay visible while the tabs scroll', async ({
   page,
 }, testInfo) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.setViewportSize({ width: 1646, height: 900 });
   await page.goto('/?component=tab-bar');
   const bar = page.locator('[data-tab-bar-id="raw-action-tab-bar"]');
   const tabs = bar.locator('.kui-tab-bar__tabs');
   const adjacent = bar.locator('.kui-tab-bar__trailing > .kui-button');
   const primary = bar.locator('.kui-tab-bar__end > .kui-button');
+
+  await expect(tabs).toHaveCSS('border-radius', '0px');
 
   await expect(adjacent).toHaveText('Add Tab');
   await expect(primary).toHaveText('New Ticket…');
@@ -20,6 +22,27 @@ test('standalone tab bar actions stay visible while the tabs scroll', async ({
       '.kui-tab-bar__trailing .kui-toolbar-control-group, .kui-tab-bar__end .kui-toolbar-control-group',
     ),
   ).toHaveCount(0);
+  await bar.evaluate((element) => {
+    element.style.width = '100%';
+  });
+  await expect
+    .poll(() =>
+      tabs.evaluate((element) => element.scrollWidth > element.clientWidth),
+    )
+    .toBe(true);
+  await tabs.evaluate((element) => {
+    element.scrollLeft = 45;
+  });
+  if (testInfo.project.name === 'chromium') {
+    const example = bar.locator('xpath=ancestor::*[@data-catalog-example][1]');
+    await example.scrollIntoViewIfNeeded();
+    const bounds = await example.boundingBox();
+    expect(bounds).not.toBeNull();
+    await page.screenshot({
+      path: testInfo.outputPath('tab-bar-overflow-square-wide.png'),
+      clip: bounds!,
+    });
+  }
   await bar.evaluate((element) => {
     element.style.width = '680px';
   });

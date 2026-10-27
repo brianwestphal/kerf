@@ -30,10 +30,7 @@
   box-sizing: border-box;
   border: var(--kui-tab-bar-strip-border-width, 1px) solid
     var(--kui-tab-bar-border);
-  border-radius: var(
-    --kui-tab-bar-strip-radius,
-    var(--kui-layout-pill-radius, calc(1px + remify(21px)))
-  );
+  border-radius: var(--kui-tab-bar-strip-radius, 0);
   background: var(
     --kui-tab-bar-strip-background,
     var(--kui-tab-bar-background)
@@ -76,6 +73,12 @@
 .kui-tab-bar[data-presentation="inspector"] {
   --kui-tab-bar-background: var(--kui-color-neutral-fill-quiet);
   --kui-tab-bar-border: var(--kui-color-neutral-border-quiet);
+}
+.kui-tab-bar[data-presentation="segmented"] .kui-tab-bar__tabs {
+  border-radius: var(
+    --kui-tab-bar-strip-radius,
+    var(--kui-layout-pill-radius, calc(1px + remify(21px)))
+  );
 }
 /* A segmented strip's outer ends follow the pill track: a compact tab is inset
    from the track's ends by the same distance as from its top and bottom, so
