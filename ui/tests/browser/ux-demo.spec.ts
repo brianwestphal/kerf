@@ -8481,8 +8481,8 @@ test('separates focused TabBarItem and TabBar specimens from the application-tab
 
   await page.goto('/?component=tab-bar');
   const tabBars = page.locator('[data-demo="tab-bar"]');
-  await expect(tabBars.locator('[data-catalog-example]')).toHaveCount(8);
-  await expect(tabBars.locator('[data-component="tab-bar"]')).toHaveCount(8);
+  await expect(tabBars.locator('[data-catalog-example]')).toHaveCount(7);
+  await expect(tabBars.locator('[data-component="tab-bar"]')).toHaveCount(7);
   const splitBar = tabBars.locator('[data-tab-bar-id="inspector-tab-bar"]');
   const splitTabs = splitBar.locator('[data-kui-tab-list]');
   const adjacentAction = splitBar.getByRole('button', {
