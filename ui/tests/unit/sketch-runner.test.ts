@@ -224,6 +224,36 @@ describe('Sketch runner lifecycle', () => {
     ).rejects.toThrow('reserved');
   });
 
+  it('keeps polling a slow launch once the plugin reports this run', async () => {
+    let job: { jobDirectory: string; runId: string } | undefined;
+    const result = runSketchJob({
+      ...options(),
+      invoke: async (_tool: string, args: string[]) => {
+        job = await jobFrom(args);
+        await status(job, { state: 'running', cleanupComplete: false });
+        throw Object.assign(new Error('Command failed'), { killed: true });
+      },
+    });
+    const finish = setInterval(() => {
+      if (job) void status(job, { result: 'built' });
+    }, 5);
+    try {
+      await expect(result).resolves.toMatchObject({ result: 'built' });
+    } finally {
+      clearInterval(finish);
+    }
+    await expect(
+      readFile(join(job!.jobDirectory, 'cancel.json'), 'utf8'),
+    ).rejects.toThrow();
+    await expect(
+      runSketchJob({
+        ...options(),
+        invoke: async (_tool: string, args: string[]) =>
+          status(await jobFrom(args)),
+      }),
+    ).resolves.toMatchObject({ state: 'succeeded' });
+  });
+
   it('releases a missing-tool launch and never dispatches a pre-cancelled job', async () => {
     await expect(
       runSketchJob({

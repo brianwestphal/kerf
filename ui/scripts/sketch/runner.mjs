@@ -133,13 +133,21 @@ export async function runSketchJob({
     } catch (error) {
       if (error.code === 'ENOENT') launched = false;
       if (!launched) throw error;
-      const detail = error.killed
-        ? 'The Sketch command timed out before acknowledging launch.'
-        : `The Sketch command failed: ${error.stderr?.trim() || error.message}`;
-      throw new Error(
-        `${detail} The cleanup journal remains at ${stateDirectory}/active. Check the existing Sketch instance for a modal dialog, then recover this run; do not launch another instance.`,
-        { cause: error },
-      );
+      // A first-time build runs synchronously inside the plugin, so the
+      // launch command can outlast its timeout while the job is healthy.
+      // Once the plugin has written this run's status, poll it normally.
+      const started =
+        error.killed &&
+        (await json(join(jobDirectory, 'status.json')))?.runId === runId;
+      if (!started) {
+        const detail = error.killed
+          ? 'The Sketch command timed out before acknowledging launch.'
+          : `The Sketch command failed: ${error.stderr?.trim() || error.message}`;
+        throw new Error(
+          `${detail} The cleanup journal remains at ${stateDirectory}/active. Check the existing Sketch instance for a modal dialog, then recover this run; do not launch another instance.`,
+          { cause: error },
+        );
+      }
     }
     let cancelDeadline;
     while (true) {
