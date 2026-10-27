@@ -10,7 +10,8 @@ icons remain vector paths, and the Symbol frame owns its fill, border, and
 The library is part of the `@kerfjs/ui` package under
 `docs/design/sketch/button/`. It targets Sketch 2026.3.1, which was used for
 the native save/reopen and Library import checks. A licensed macOS Sketch
-installation is required for native generation and verification. Browser
+installation and Python 3 are required for native generation and verification.
+Python restores the Library document ID in the staged Sketch archive. Browser
 capture and source checks need the repository's Node toolchain and Playwright
 Chromium, but no Sketch installation.
 
@@ -48,7 +49,15 @@ Regeneration builds into a uniquely named sibling `.sketch` file, then
 replaces the published library only after native build and layout both finish.
 This avoids Sketch's modal overwrite panel and preserves the previous library
 if generation fails. Recover the runner before inspecting a leftover staged
-file after any interrupted job.
+file after any interrupted job. When a library already exists, the staged file
+starts as a copy of it. The generator matches each Button variant by its
+stable fixture key in `identity-manifest.json`, updates the master and existing
+Text/Icon layers in place, and rejects a changed master, Symbol, or nested
+layer ID before replacing the published file. The staged archive retains the
+original document ID, which is the consumer's Library link; the manifest
+checks that ID too. Renamed variants keep their key
+and IDs. Removed variants remain in the library and are marked `retired` in
+the manifest, so their IDs cannot silently move to another component.
 
 The capture uses a normal 600×200 browser viewport for domotion, then crops
 each SVG to the measured control bounds without scaling. `fixtures.json`
@@ -56,12 +65,15 @@ holds the six appearance captures; `layout.json` records separate semantic
 layout values measured from resolved production CSS. The native generator
 maps the CSS system font to Sketch's system font at 16px medium and constructs
 a centered horizontal Stack with a fixed 16px icon, 8px gap, and 9px insets
-(8px padding plus the border). The documented `generate` command creates
-new Symbol IDs. Stable IDs across regeneration are tracked in KF-TWZV8K.
+(8px padding plus the border). Existing icon vector paths retain their IDs,
+and their paint follows the production text color. A change to the icon's
+vector geometry is rejected before publication until in-place path updates
+are implemented in KF-9MAP88.
 
 ## Outputs and checks
 
 - `Kerf-Button.sketch`: six-Symbol library to copy or import.
+- `identity-manifest.json`: stable variant keys and recursive native layer IDs.
 - `Button-Consumer-Test.sketch`: linked instances with saved text overrides.
 - `Button-Resizing-Test.sketch`: five layouts per Symbol, 30 in total.
 - `verification.json`, `resizing-verification.json`, and
@@ -76,6 +88,11 @@ location outside a versioned package directory, then add that copy in Sketch
 Settings → Libraries. When regenerating, update that same stable file and
 refresh the Library. The verification command uses a temporary registration
 and removes it after the job; it never changes an existing registration.
+In the native update check, a separate saved consumer retained its Library
+link plus text and icon-color overrides after a source-fill change, Library
+refresh, and save/reopen. The `verify` command covers fresh imports and saved
+text overrides. A separate scratch regeneration also preserved a user-added
+Text layer outside the generated Symbols.
 
 These six Symbols model content-fit Button width. The web Button's fill mode
 with ellipsis below the label's intrinsic width is tracked in KF-CAZ8YB;

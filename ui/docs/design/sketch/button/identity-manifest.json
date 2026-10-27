@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "libraryDocumentId": "C843286F-8ACC-48E8-9252-DC1F0BB709B3",
+  "variants": {
+    "primary-brand-light": {
+      "name": "Button / Primary Brand / Light",
+      "id": "2E054880-303B-4D6B-AE53-F67A9B7545BC",
+      "symbolId": "80E82AF9-BF60-4B08-9634-D5507EDE2757",
+      "layers": [
+        {
+          "id": "F177073A-6A08-44FB-BB74-400AFFA1C353",
+          "name": "Label",
+          "type": "Text",
+          "children": []
+        }
+      ],
+      "iconGeometryHash": null,
+      "retired": false
+    },
+    "secondary-light": {
+      "name": "Button / Secondary / Light",
+      "id": "02B59DB9-2A72-4DA1-8452-54DBB6E139F7",
+      "symbolId": "A7014053-526D-4155-9572-3CDC1352A5FF",
+      "layers": [
+        {
+          "id": "CF7D1C0C-C62B-43C1-80FA-03F975694BD0",
+          "name": "Label",
+          "type": "Text",
+          "children": []
+        }
+      ],
+      "iconGeometryHash": null,
+      "retired": false
+    },
+    "icon-brand-light": {
+      "name": "Button / Primary with Icon / Light",
+      "id": "F989BAB0-1909-49F9-AB07-C7BCDEE8CF35",
+      "symbolId": "A5F66729-88F1-4F6D-AB8D-E5437433663D",
+      "layers": [
+        {
+          "id": "E76D6F1A-66E0-4182-842C-57F2FA0AFCB8",
+          "name": "Label",
+          "type": "Text",
+          "children": []
+        },
+        {
+          "id": "F164CF5D-4BF1-48BF-87E7-8D1A8CA83C25",
+          "name": "Icon",
+          "type": "Group",
+          "children": [
+            {
+              "id": "27AC9117-2F20-4302-B7A1-3EAA9C17F325",
+              "name": "Group",
+              "type": "Group",
+              "children": [
+                {
+                  "id": "696308A3-93F0-42F4-B8E3-74905792EC4D",
+                  "name": "Path",
+                  "type": "ShapePath",
+                  "children": []
+                },
+                {
+                  "id": "D4B2F4DC-864B-4929-AB1C-60E74BF28D00",
+                  "name": "Path",
+                  "type": "ShapePath",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "iconGeometryHash": "0a647565802af0f1e8485a3df076f020319e034ea152f60889b61e089fce89ef",
+      "retired": false
+    },
+    "primary-brand-dark": {
+      "name": "Button / Primary Brand / Dark",
+      "id": "C033B6D7-E56A-49B5-A283-BB25A293CA3F",
+      "symbolId": "073049EF-DFA6-4078-BFB6-AA35997202BB",
+      "layers": [
+        {
+          "id": "F1938F37-33EF-4F8F-B57B-4E49692E0954",
+          "name": "Label",
+          "type": "Text",
+          "children": []
+        }
+      ],
+      "iconGeometryHash": null,
+      "retired": false
+    },
+    "secondary-dark": {
+      "name": "Button / Secondary / Dark",
+      "id": "2BDF018D-C0A7-4738-8A8F-2728F3C7939D",
+      "symbolId": "A719738E-7002-4900-913D-D671DD7B99BA",
+      "layers": [
+        {
+          "id": "84045700-C25F-4308-8D95-105AB1BFC4B2",
+          "name": "Label",
+          "type": "Text",
+          "children": []
+        }
+      ],
+      "iconGeometryHash": null,
+      "retired": false
+    },
+    "icon-brand-dark": {
+      "name": "Button / Primary with Icon / Dark",
+      "id": "86BCDE49-2F51-45C8-B092-B115597BE803",
+      "symbolId": "1E43DFF4-774D-4D40-B277-85066273ED60",
+      "layers": [
+        {
+          "id": "B284F609-868D-4B54-9586-E6034B5E457C",
+          "name": "Label",
+          "type": "Text",
+          "children": []
+        },
+        {
+          "id": "238B43AF-4181-4DBC-B215-A36968E18182",
+          "name": "Icon",
+          "type": "Group",
+          "children": [
+            {
+              "id": "1321C125-39E6-4935-9832-6798DC02A7BF",
+              "name": "Group",
+              "type": "Group",
+              "children": [
+                {
+                  "id": "55430DD7-4B31-43F3-88B6-D73322844045",
+                  "name": "Path",
+                  "type": "ShapePath",
+                  "children": []
+                },
+                {
+                  "id": "6220FA1C-63A7-4939-9023-3852B319DE1B",
+                  "name": "Path",
+                  "type": "ShapePath",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "iconGeometryHash": "0a647565802af0f1e8485a3df076f020319e034ea152f60889b61e089fce89ef",
+      "retired": false
+    }
+  }
+}

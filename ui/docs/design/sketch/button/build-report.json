@@ -30,7 +30,7 @@
         }
       ],
       "bitmaps": 0,
-      "shapePaths": 2
+      "shapePaths": 0
     },
     {
       "id": "02B59DB9-2A72-4DA1-8452-54DBB6E139F7",
@@ -49,15 +49,15 @@
           "fontFamily": "system",
           "fontSize": 16,
           "frame": {
-            "x": 8.5,
-            "y": 12.5,
+            "x": 9,
+            "y": 13,
             "width": 49,
             "height": 18
           }
         }
       ],
       "bitmaps": 0,
-      "shapePaths": 1
+      "shapePaths": 0
     },
     {
       "id": "F989BAB0-1909-49F9-AB07-C7BCDEE8CF35",
@@ -84,7 +84,7 @@
         }
       ],
       "bitmaps": 0,
-      "shapePaths": 6
+      "shapePaths": 2
     },
     {
       "id": "C033B6D7-E56A-49B5-A283-BB25A293CA3F",
@@ -111,7 +111,7 @@
         }
       ],
       "bitmaps": 0,
-      "shapePaths": 2
+      "shapePaths": 0
     },
     {
       "id": "2BDF018D-C0A7-4738-8A8F-2728F3C7939D",
@@ -130,15 +130,15 @@
           "fontFamily": "system",
           "fontSize": 16,
           "frame": {
-            "x": 8.5,
-            "y": 12.5,
+            "x": 9,
+            "y": 13,
             "width": 49,
             "height": 18
           }
         }
       ],
       "bitmaps": 0,
-      "shapePaths": 1
+      "shapePaths": 0
     },
     {
       "id": "86BCDE49-2F51-45C8-B092-B115597BE803",
@@ -165,7 +165,7 @@
         }
       ],
       "bitmaps": 0,
-      "shapePaths": 6
+      "shapePaths": 2
     }
   ]
 }

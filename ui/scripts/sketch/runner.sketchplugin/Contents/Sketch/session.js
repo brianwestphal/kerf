@@ -180,10 +180,19 @@ module.exports = function createSession(adapter, job) {
         },
       );
     },
-    saveDocument: function (document, path, callback) {
+    saveDocument: function (document, path, callback, options) {
       operation(
         function (done) {
-          document.save(path, { saveMode: dom.Document.SaveMode.SaveTo }, done);
+          document.save(
+            path,
+            {
+              saveMode:
+                options && options.inPlace
+                  ? dom.Document.SaveMode.Save
+                  : dom.Document.SaveMode.SaveTo,
+            },
+            done,
+          );
         },
         function (error) {
           if (outcome) return;

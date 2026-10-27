@@ -1,7 +1,14 @@
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
-import { randomUUID } from 'node:crypto';
-import { access, mkdir, readFile, rename, writeFile } from 'node:fs/promises';
+import { createHash, randomUUID } from 'node:crypto';
+import {
+  access,
+  copyFile,
+  mkdir,
+  readFile,
+  rename,
+  writeFile,
+} from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
@@ -17,6 +24,7 @@ const task = (name) => join(scriptDirectory, 'tasks', `${name}.js`);
 const output = resolve(process.env.KERF_SKETCH_BUTTON_OUTPUT ?? defaultOutput);
 const paths = {
   fixturesPath: join(output, 'fixtures.json'),
+  identitiesPath: join(output, 'identity-manifest.json'),
   libraryPath: join(output, 'Kerf-Button.sketch'),
   consumerPath: join(output, 'Button-Consumer-Test.sketch'),
   resizingPath: join(output, 'Button-Resizing-Test.sketch'),
@@ -119,6 +127,108 @@ async function renderComparisons() {
   console.log('Browser/native comparison and 30 resizing checks passed.');
 }
 
+function identityTree(layers) {
+  return layers.map((layer) => ({
+    id: layer.id,
+    name: layer.name,
+    type: layer.type,
+    children: identityTree(layer.children ?? []),
+  }));
+}
+
+function identityIds(layers) {
+  return layers.map((layer) => ({
+    id: layer.id,
+    type: layer.type,
+    children: identityIds(layer.children),
+  }));
+}
+
+function iconGeometryHash(icon) {
+  if (!icon) return null;
+  const geometry = [
+    ...icon.svg.matchAll(
+      /<(?:path|line|polyline|polygon|rect|circle|ellipse)\b[^>]*>/g,
+    ),
+  ]
+    .map(([tag]) =>
+      tag.replace(/\s+(?:stroke|fill|color)="[^"]*"/g, '').replace(/\s+/g, ' '),
+    )
+    .join('');
+  assert.ok(geometry, 'Icon SVG has no vector geometry.');
+  return createHash('sha256').update(geometry).digest('hex');
+}
+
+async function updateIdentityManifest(libraryPath) {
+  const fixtures = JSON.parse(await readFile(paths.fixturesPath, 'utf8'));
+  const report = JSON.parse(
+    await readFile(join(output, 'layout-report.json'), 'utf8'),
+  );
+  const previous = await readFile(paths.identitiesPath, 'utf8').then(
+    (content) => JSON.parse(content),
+    (error) => {
+      if (error.code === 'ENOENT') return { version: 1, variants: {} };
+      throw error;
+    },
+  );
+  const libraryDocumentId = (
+    await exec('python3', [
+      join(scriptDirectory, 'document-id.py'),
+      libraryPath,
+    ])
+  ).stdout.trim();
+  if (previous.libraryDocumentId)
+    assert.equal(
+      libraryDocumentId,
+      previous.libraryDocumentId,
+      'Library document ID changed',
+    );
+  const variants = { ...previous.variants };
+  for (const fixture of fixtures) {
+    const current = report.find((entry) => entry.fixtureId === fixture.id);
+    assert.ok(current, `Missing identity report for ${fixture.id}`);
+    const identity = {
+      name: current.name,
+      id: current.id,
+      symbolId: current.symbolId,
+      layers: identityTree(current.layers),
+      iconGeometryHash: iconGeometryHash(fixture.layout.icon),
+      retired: false,
+    };
+    const before = previous.variants[fixture.id];
+    if (before) {
+      assert.equal(identity.id, before.id, `${fixture.id} master ID changed`);
+      assert.equal(
+        identity.symbolId,
+        before.symbolId,
+        `${fixture.id} Symbol ID changed`,
+      );
+      assert.deepEqual(
+        identityIds(identity.layers),
+        identityIds(before.layers),
+        `${fixture.id} layer identities changed`,
+      );
+      if (before.iconGeometryHash)
+        assert.equal(
+          identity.iconGeometryHash,
+          before.iconGeometryHash,
+          `${fixture.id} icon geometry changed; update the existing vector paths in place before publishing`,
+        );
+    }
+    variants[fixture.id] = identity;
+  }
+  const active = new Set(fixtures.map((fixture) => fixture.id));
+  for (const id of Object.keys(variants)) {
+    if (!active.has(id)) variants[id] = { ...variants[id], retired: true };
+  }
+  const temporary = `${paths.identitiesPath}.${randomUUID()}.tmp`;
+  await writeFile(
+    temporary,
+    `${JSON.stringify({ version: 1, libraryDocumentId, variants }, null, 2)}\n`,
+  );
+  return temporary;
+}
+
 async function prepareOutput() {
   await mkdir(output, { recursive: true });
   for (const directory of ['exports', 'consumer-exports', 'resize-exports'])
@@ -143,10 +253,29 @@ if (command === 'generate' || command === 'all') {
   // blocking Save panel. Build to a unique sibling, then atomically replace
   // the published library only after both native jobs finish and clean up.
   const stagingPath = join(output, `.Kerf-Button-${randomUUID()}.sketch`);
+  const seedExisting = await access(paths.libraryPath).then(
+    () => true,
+    () => false,
+  );
+  if (seedExisting) await copyFile(paths.libraryPath, stagingPath);
+  const originalDocumentId = seedExisting
+    ? (
+        await exec('python3', [
+          join(scriptDirectory, 'document-id.py'),
+          paths.libraryPath,
+        ])
+      ).stdout.trim()
+    : null;
+  const hasIdentityManifest = await access(paths.identitiesPath).then(
+    () => true,
+    () => false,
+  );
   try {
     await runNative(['build', 'layout'], {
       ...paths,
       libraryPath: stagingPath,
+      seedExisting,
+      hasIdentityManifest,
     });
   } catch (error) {
     throw new Error(
@@ -154,7 +283,17 @@ if (command === 'generate' || command === 'all') {
       { cause: error },
     );
   }
+  // Sketch's staged SaveTo and Save operations can assign the copied document
+  // a new ID. Imported consumers use that ID as their Library link.
+  if (originalDocumentId)
+    await exec('python3', [
+      join(scriptDirectory, 'document-id.py'),
+      stagingPath,
+      originalDocumentId,
+    ]);
+  const identityStagingPath = await updateIdentityManifest(stagingPath);
   await rename(stagingPath, paths.libraryPath);
+  await rename(identityStagingPath, paths.identitiesPath);
 }
 if (command === 'verify' || command === 'all')
   await runNative(['verify', 'resize']);
