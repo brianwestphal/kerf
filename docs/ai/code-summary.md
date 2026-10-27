@@ -91,6 +91,8 @@ push-hook fan-out bound;
 pre-push skip decision (tree, runtime, platform/arch, install fingerprint), the
 install fingerprint's lockfile/installed-tree/absence inputs, and the
 `KERF_FORCE_CHECK` override;
+`tests/unit/push-command.test.ts` covers dirty-checkout early failure,
+same-tree publication after a recorded pass, and rejected unverified refs;
 `tests/unit/ticket-timing-steps-ci.test.ts` covers check-chain splitting and
 step naming against the real `check:core`, step-log sanitizing, and CI run
 record mapping, predecessor pairing, and idempotency (by run id and by
@@ -258,6 +260,7 @@ kerf/
 │   ├── unit/
 │   │   ├── guidance-integrity.test.ts ← guard for tracked guidance snapshots and command wrapper.
 │   │   ├── package-gates.test.ts ← package-gate selection and red-CI evidence logic.
+│   │   ├── push-command.test.ts ← pre-connection push checks and exact-tree verification.
 │   │   ├── setup.test.ts ← setup detection, plans, conflicts, and rollback.
 │   │   ├── setup-declines.test.ts ← persisted value-proposal declines, adoption, managed upgrades, catalog generation, and workspace isolation.
 │   │   ├── ticket-timing.test.ts ← phase-note parsing and active-time state transitions.

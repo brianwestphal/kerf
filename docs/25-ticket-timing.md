@@ -284,10 +284,22 @@ status 141 (`SIGPIPE`) right after the gate's step summary, and nothing is
 pushed (`KF-8MFKZM`: pushes failed with a 175 s and a 194 s package-gate step
 and succeeded with a 110 s one).
 
-- **Prefer `npm run push`** (`npm run check && git push`; arguments follow
-  `--`, e.g. `npm run push -- origin main`). The gate runs before git connects,
-  records its pass, and the hook then skips the identical rerun, so the
-  connection is open only for the transfer.
+- **Use `npm run push`** (arguments follow `--`, e.g. `npm run push -- origin
+main`). It requires a clean worktree, checks that the ref being pushed has
+  HEAD's tree, runs `npm run check` before git connects, and confirms the
+  hook can reuse that pass before opening SSH. Without arguments it pushes
+  HEAD to its configured upstream branch. The hook still verifies every
+  outgoing ref. A dirty checkout fails before the long gate starts, because
+  the clean-tree cache cannot record a reusable pass.
+- **For unrelated local edits**, make a temporary detached worktree at the
+  verified commit, install this repository's dependencies there, and push from
+  that clean checkout. For example, `git worktree add --detach <temporary-path>
+HEAD`, followed by `npm ci` in the worktree and each package with a lockfile
+  required by `npm run check`, then `npm run push -- origin HEAD:main` there.
+  Remove the temporary worktree after the push. This leaves the original
+  checkout and its uncommitted guidance edits untouched. Never link another
+  worktree's `node_modules`: the pass fingerprint must describe the actual
+  installed dependencies used by its gate.
 - **After a 141 that follows a green gate**, run the same `git push` again:
   the hook's own `npm run check` recorded the pass, so the retry skips the gate
   and pushes in seconds. A 141 that follows a _failed_ gate is just the failure.
