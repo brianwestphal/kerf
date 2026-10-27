@@ -1,0 +1,1445 @@
+{
+  "version": 1,
+  "symbols": {
+    "split-button-tones-deploy-light": {
+      "id": "split-button-tones-deploy-light",
+      "name": "Split Button / Tones / Deploy / Light",
+      "symbolId": "5BB4DD0B-7E14-4EE6-8B95-24A37430D1EF",
+      "layerId": "EFEFB657-9423-4269-A69F-43A2C83649A4",
+      "width": 139.65625,
+      "height": 44,
+      "text": [
+        {
+          "id": "1C6988EA-7C3F-4C83-8054-055BA47784A7",
+          "value": "Deploy"
+        }
+      ],
+      "paths": 14,
+      "bitmaps": 0,
+      "sourceHash": "76e2a659f8fd9f732c72df4f2e6cec7972b3fcbec99e11af6a43a8f462cca649"
+    },
+    "split-button-tones-run-checks-light": {
+      "id": "split-button-tones-run-checks-light",
+      "name": "Split Button / Tones / Run Checks / Light",
+      "symbolId": "B8C4B815-8A39-4245-90F2-D4B904E3D906",
+      "layerId": "76DC1268-E385-4310-B8D3-82D53D477EBA",
+      "width": 151.984375,
+      "height": 44,
+      "text": [
+        {
+          "id": "3A18E561-6CF0-4E89-9048-993E3077A58E",
+          "value": "Run Checks"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "5ad5cb915dfb514ed6ea4d38ce3df0c38ca1a44193c853a9fe7db81a21281c02"
+    },
+    "split-button-tones-delete-light": {
+      "id": "split-button-tones-delete-light",
+      "name": "Split Button / Tones / Delete / Light",
+      "symbolId": "45C944A2-9350-405D-BF5F-EB564DBD7152",
+      "layerId": "66E033D8-FFE5-498C-8F6C-506802E11AAF",
+      "width": 112.015625,
+      "height": 44,
+      "text": [
+        {
+          "id": "9740530C-F847-475D-B681-465AA5AF2783",
+          "value": "Delete"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "5ccf8872dc254e6f53579b7807adb46da0402b86faaacb7a022021193d91fb54"
+    },
+    "split-button-tones-deploy-dark": {
+      "id": "split-button-tones-deploy-dark",
+      "name": "Split Button / Tones / Deploy / Dark",
+      "symbolId": "5748F133-A2EC-475C-A1F1-A7977AF90342",
+      "layerId": "CDDDE917-B2BD-44F9-918E-09D6FA3C48E0",
+      "width": 139.65625,
+      "height": 44,
+      "text": [
+        {
+          "id": "C1C98733-D4D2-4635-9E92-3FC1B2D10CB7",
+          "value": "Deploy"
+        }
+      ],
+      "paths": 14,
+      "bitmaps": 0,
+      "sourceHash": "debb9c38de89aa26a972a301edef3baed603bdd44bdd264ff71062b4cec8dc08"
+    },
+    "split-button-tones-run-checks-dark": {
+      "id": "split-button-tones-run-checks-dark",
+      "name": "Split Button / Tones / Run Checks / Dark",
+      "symbolId": "13043C30-6058-45A2-BE61-F15877DEBF6A",
+      "layerId": "380A2A76-8BFD-469B-AE30-8E5D9621E757",
+      "width": 151.984375,
+      "height": 44,
+      "text": [
+        {
+          "id": "6516B4BC-029F-4B42-B25C-FA13D6FEF282",
+          "value": "Run Checks"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "8d172c7743d5fc3a89d6d986b7c5ba80ede27c6edccff840741e6a646d20cc27"
+    },
+    "split-button-tones-delete-dark": {
+      "id": "split-button-tones-delete-dark",
+      "name": "Split Button / Tones / Delete / Dark",
+      "symbolId": "58D32892-1591-4764-85BD-A9B0FFF9B570",
+      "layerId": "FBE1E066-7516-47E0-80D9-F50D014A300F",
+      "width": 112.015625,
+      "height": 44,
+      "text": [
+        {
+          "id": "94BE46C2-93D3-4683-8777-6A9C57083539",
+          "value": "Delete"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "9ce01b32092905554f8b757c0f1ff7364b32f34f41ffc070438a676e82ed20e1"
+    },
+    "split-button-pill-export-light": {
+      "id": "split-button-pill-export-light",
+      "name": "Split Button / Pill / Export / Light",
+      "symbolId": "70954911-1D92-4DA6-BE3D-58E08F88945C",
+      "layerId": "977DA371-1F2E-4CF4-96BA-49C2C3468C6A",
+      "width": 136.6875,
+      "height": 44,
+      "text": [
+        {
+          "id": "F322429F-35E1-4529-ADCC-C92A2CEFBD63",
+          "value": "Export"
+        }
+      ],
+      "paths": 13,
+      "bitmaps": 0,
+      "sourceHash": "2e1a06804d85348f1254ffe6833b5edb750d3b9f34607d43e0841401db5d39b6"
+    },
+    "split-button-pill-run-checks-light": {
+      "id": "split-button-pill-run-checks-light",
+      "name": "Split Button / Pill / Run Checks / Light",
+      "symbolId": "1A6923AF-F23A-441C-A162-9FF1BC4ABDCA",
+      "layerId": "86562ECF-A4A8-40FF-A588-6F24AFA5D948",
+      "width": 151.984375,
+      "height": 44,
+      "text": [
+        {
+          "id": "17284FB7-D58D-4505-A43C-A47BF0360DA3",
+          "value": "Run Checks"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "6653f7332304a36aedecd75cb826f0ca47e50accd5ed33595b69a9ca6dd52a5b"
+    },
+    "split-button-pill-delete-light": {
+      "id": "split-button-pill-delete-light",
+      "name": "Split Button / Pill / Delete / Light",
+      "symbolId": "DE189961-A233-4907-BEA0-7317A4E7137A",
+      "layerId": "AC01566C-3F70-491D-B0C6-6D5B5E055C47",
+      "width": 112.015625,
+      "height": 44,
+      "text": [
+        {
+          "id": "5E5A1D9D-B1DC-4463-B01D-1F4BA0814867",
+          "value": "Delete"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "e85638c67fd527c85ea80f4b8cc348150d88322e4e8a9a151a30de69937f1216"
+    },
+    "split-button-pill-export-dark": {
+      "id": "split-button-pill-export-dark",
+      "name": "Split Button / Pill / Export / Dark",
+      "symbolId": "74465AD9-8563-454B-8786-A2DF51ADF8F5",
+      "layerId": "2B69B278-3F91-40AB-AB31-FF5937CD4827",
+      "width": 136.6875,
+      "height": 44,
+      "text": [
+        {
+          "id": "11FB5613-E6C6-4D5E-8AA0-B4F05BCA9E4E",
+          "value": "Export"
+        }
+      ],
+      "paths": 13,
+      "bitmaps": 0,
+      "sourceHash": "8c500de7fb79cb1bdb449b4b0ea90ab23432f358cfef0e9d9e300bd8d4e8e0ab"
+    },
+    "split-button-pill-run-checks-dark": {
+      "id": "split-button-pill-run-checks-dark",
+      "name": "Split Button / Pill / Run Checks / Dark",
+      "symbolId": "17FCFC0F-5794-4757-8CFF-3CA5FEC287FE",
+      "layerId": "C4B26B8A-0190-4506-91A9-98565F05B927",
+      "width": 151.984375,
+      "height": 44,
+      "text": [
+        {
+          "id": "2A03C79B-1F77-4A90-9374-177EC8584169",
+          "value": "Run Checks"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "f2e040ec5999339a89d3c8a69bc4dc1f08b71a00112be890c65b7a2e7055da28"
+    },
+    "split-button-pill-delete-dark": {
+      "id": "split-button-pill-delete-dark",
+      "name": "Split Button / Pill / Delete / Dark",
+      "symbolId": "EF940FBF-2017-4E53-BCF5-F3D267927ADA",
+      "layerId": "13C9C840-2C29-49FF-BC86-2426E3EBCC63",
+      "width": 112.015625,
+      "height": 44,
+      "text": [
+        {
+          "id": "FBB04397-3BF1-47B3-B4A8-E22CB4DF413A",
+          "value": "Delete"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "4ce835a78a9f57d825f29ac4a2f2dd2ed37890c6fc452ec364efec2a585f97bf"
+    },
+    "split-button-states-deploying-light": {
+      "id": "split-button-states-deploying-light",
+      "name": "Split Button / States / Deploying / Light",
+      "symbolId": "0BE2E2DF-D30B-4724-8674-16642E91E23D",
+      "layerId": "EEA175EA-88B0-46D4-BF2A-89BE8919FB91",
+      "width": 162.40625,
+      "height": 44,
+      "text": [
+        {
+          "id": "D82ECA40-483E-4FA3-B256-74CBCCCA094C",
+          "value": "Deploying"
+        }
+      ],
+      "paths": 9,
+      "bitmaps": 0,
+      "sourceHash": "b01a27c7ede491766f327cc523e7e260c9d3d6472d93c6fab630d01e41c97495"
+    },
+    "split-button-states-publish-disabled-light": {
+      "id": "split-button-states-publish-disabled-light",
+      "name": "Split Button / States / Publish Disabled / Light",
+      "symbolId": "D86B9D79-7CF9-4AA4-8A7B-837DF49CD6C2",
+      "layerId": "C8124F57-95AF-456B-9677-C021DDB33017",
+      "width": 118.46875,
+      "height": 44,
+      "text": [
+        {
+          "id": "3E997761-A7A7-48AB-9CB4-79B4DE9C4747",
+          "value": "Publish"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "8847026595bf3afe1c70b5ec6b2cef858cba3ed4b73eca0e32b17b2e46a087a5"
+    },
+    "split-button-states-deploying-dark": {
+      "id": "split-button-states-deploying-dark",
+      "name": "Split Button / States / Deploying / Dark",
+      "symbolId": "260105F1-F6AE-4E0B-ABAC-7C3F6D49F4CE",
+      "layerId": "CE95A303-DFA5-43FB-9078-94ACEDD05236",
+      "width": 162.40625,
+      "height": 44,
+      "text": [
+        {
+          "id": "DED5DA1A-78A1-42BC-A6EC-225F920C9BE2",
+          "value": "Deploying"
+        }
+      ],
+      "paths": 9,
+      "bitmaps": 0,
+      "sourceHash": "7389f42d86a864e1575c5d1c149bc510bd63e47421836f27a5b4b1b03798dc64"
+    },
+    "split-button-states-publish-disabled-dark": {
+      "id": "split-button-states-publish-disabled-dark",
+      "name": "Split Button / States / Publish Disabled / Dark",
+      "symbolId": "CE279F64-C7EF-4B01-9CA3-1AD669711B48",
+      "layerId": "6218AB9B-2150-4948-B1A1-0C4E0DF1D1A8",
+      "width": 118.46875,
+      "height": 44,
+      "text": [
+        {
+          "id": "319C06F7-D764-48A1-8390-98D72FC48EDF",
+          "value": "Publish"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "1dc11aaedf052d4e40e75027e55bb01ca81e6885593bc6d1208ba1cfadd476e0"
+    },
+    "split-button-full-width-drive-light": {
+      "id": "split-button-full-width-drive-light",
+      "name": "Split Button / Full Width / Drive / Light",
+      "symbolId": "90969DD6-DF54-42F7-B5AA-621630C854E3",
+      "layerId": "2489E327-7403-4A8F-A17A-52A703A44C1B",
+      "width": 440,
+      "height": 44,
+      "text": [
+        {
+          "id": "3B798E0B-AF22-4D63-BEC6-B4208257E095",
+          "value": "Drive with Codex"
+        }
+      ],
+      "paths": 11,
+      "bitmaps": 0,
+      "sourceHash": "0884ee5927e8b33cdb44527983d2f4f39ab27d4c00a6d4e3d008c42559fa67e2"
+    },
+    "split-button-full-width-drive-dark": {
+      "id": "split-button-full-width-drive-dark",
+      "name": "Split Button / Full Width / Drive / Dark",
+      "symbolId": "996E745B-0955-4ED5-8C5F-F14F96CE5F0A",
+      "layerId": "EA7093F2-CE62-4D75-868B-2B35FC72A1D2",
+      "width": 440,
+      "height": 44,
+      "text": [
+        {
+          "id": "BA17EEA9-B0EF-4D88-B71C-5F936B5D0F16",
+          "value": "Drive with Codex"
+        }
+      ],
+      "paths": 11,
+      "bitmaps": 0,
+      "sourceHash": "0884ee5927e8b33cdb44527983d2f4f39ab27d4c00a6d4e3d008c42559fa67e2"
+    },
+    "text-field-labeled-project-name-light": {
+      "id": "text-field-labeled-project-name-light",
+      "name": "Text Field / Labeled / Project Name / Light",
+      "symbolId": "C973205A-6E42-491D-8020-42C8FD4FFBBC",
+      "layerId": "10BF952A-656D-4D50-AC84-500D9875658C",
+      "width": 360,
+      "height": 93.78125,
+      "text": [
+        {
+          "id": "3318639C-34A8-4E27-8DAA-351F3706798F",
+          "value": "PROJECT NAME"
+        },
+        {
+          "id": "E7B3E112-726A-4994-A806-70A65D59768B",
+          "value": "Northstar Migration"
+        },
+        {
+          "id": "2A07B8AC-9799-4551-9229-B76DB3C6598B",
+          "value": "Visible to collaborators."
+        }
+      ],
+      "paths": 9,
+      "bitmaps": 0,
+      "sourceHash": "a5af680b61d715c28ff6f37dca77aead4fd132e86d44268d6548b69e307c64ae"
+    },
+    "text-field-labeled-project-name-dark": {
+      "id": "text-field-labeled-project-name-dark",
+      "name": "Text Field / Labeled / Project Name / Dark",
+      "symbolId": "A1265A1E-CF26-42B6-8750-43A236DDCBA3",
+      "layerId": "108E2C7F-F13B-4DA7-9E4D-EC27D9E53FAB",
+      "width": 360,
+      "height": 93.78125,
+      "text": [
+        {
+          "id": "7AEF7352-8711-4ABB-98BB-153DC784527D",
+          "value": "PROJECT NAME"
+        },
+        {
+          "id": "1A53FA21-385E-454E-96C4-9D717C1006CD",
+          "value": "Northstar Migration"
+        },
+        {
+          "id": "5F546032-FEE8-461D-9AD7-D4984082B90F",
+          "value": "Visible to collaborators."
+        }
+      ],
+      "paths": 9,
+      "bitmaps": 0,
+      "sourceHash": "635eaea89f5ad9906b30b727ba144173ee28fad62d76f2ed72b8bea284681d6f"
+    },
+    "text-field-search-search-tickets-light": {
+      "id": "text-field-search-search-tickets-light",
+      "name": "Text Field / Search / Search Tickets / Light",
+      "symbolId": "0A133692-5E3D-4AD7-9EA8-60002683187F",
+      "layerId": "5747D3B5-4CCE-438B-99A3-58C3C11B72DB",
+      "width": 360,
+      "height": 44,
+      "text": [
+        {
+          "id": "00583877-54F2-4A8D-8E06-093203CB4A1E",
+          "value": "Search tickets"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "ca5cec3d0e7012492870288c97df7c6c9ca49126af0810555b4d671772515154"
+    },
+    "text-field-search-search-tickets-dark": {
+      "id": "text-field-search-search-tickets-dark",
+      "name": "Text Field / Search / Search Tickets / Dark",
+      "symbolId": "819A32B3-B835-4BD1-BCF2-EA258B3C8EFE",
+      "layerId": "F4F04F50-2E0A-4C87-A420-E104346291FD",
+      "width": 360,
+      "height": 44,
+      "text": [
+        {
+          "id": "45E66CCE-6E1E-4FD7-907F-3973481366A3",
+          "value": "Search tickets"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "1cce8eb569be04d081fc306f3d369403948fdac2b5909e4c3c5381f5abc25702"
+    },
+    "text-field-error-email-error-light": {
+      "id": "text-field-error-email-error-light",
+      "name": "Text Field / Error / Email Error / Light",
+      "symbolId": "8323C41B-9324-459D-91EA-831BE15AE31C",
+      "layerId": "33C013E7-FAE9-4FDB-9896-6240BAD41080",
+      "width": 360,
+      "height": 93.78125,
+      "text": [
+        {
+          "id": "2878766B-7D9C-47A4-9EA2-9A50CA0D810F",
+          "value": "EMAIL"
+        },
+        {
+          "id": "7760C29E-43D4-4622-9DAD-8B68BDC69402",
+          "value": "*"
+        },
+        {
+          "id": "199166CA-839D-4A3F-B111-D221FF0844BE",
+          "value": "robin@"
+        },
+        {
+          "id": "D3BA7188-8A53-4E38-AE13-E320574B47C9",
+          "value": "Enter a complete email address."
+        }
+      ],
+      "paths": 4,
+      "bitmaps": 0,
+      "sourceHash": "2c4f1334188e25e8d62cb2a8100d72a2a35c8ffc1bdd8190dc34697292acc79d"
+    },
+    "text-field-error-email-error-dark": {
+      "id": "text-field-error-email-error-dark",
+      "name": "Text Field / Error / Email Error / Dark",
+      "symbolId": "CE23BB24-4801-4220-B707-D3A74729479C",
+      "layerId": "C42B0146-7975-464E-B1D6-C690278E8E52",
+      "width": 360,
+      "height": 93.78125,
+      "text": [
+        {
+          "id": "51F41EF4-1261-4B92-AFB6-B8359E12EAC8",
+          "value": "EMAIL"
+        },
+        {
+          "id": "DBF3C922-E259-4F2F-8A29-7D0AC18431CB",
+          "value": "*"
+        },
+        {
+          "id": "8CEAAFB2-6198-455D-880D-BF3AC81FBF87",
+          "value": "robin@"
+        },
+        {
+          "id": "1E0D1767-08C9-4377-B992-8F57CE942CE5",
+          "value": "Enter a complete email address."
+        }
+      ],
+      "paths": 4,
+      "bitmaps": 0,
+      "sourceHash": "890131d9e5153dbb9967be34e0dca9cdc72ca7d5b328986c8996f508f8e57b72"
+    },
+    "text-field-multiline-release-note-light": {
+      "id": "text-field-multiline-release-note-light",
+      "name": "Text Field / Multiline / Release Note / Light",
+      "symbolId": "683D7B21-DF1C-4014-8E35-5D4ED0142F15",
+      "layerId": "06DC758A-265B-4F5B-BB41-B7AF74826C1A",
+      "width": 360,
+      "height": 126.9375,
+      "text": [
+        {
+          "id": "3A5F6219-A49E-4C13-BD78-BAFE563B71BB",
+          "value": "RELEASE NOTE"
+        },
+        {
+          "id": "53931FC4-2447-459F-81DA-32513636E73B",
+          "value": "Summarize what changed"
+        },
+        {
+          "id": "63B4FD28-FC7D-4D35-BA94-FAA770D41727",
+          "value": "0 / 200"
+        }
+      ],
+      "paths": 4,
+      "bitmaps": 0,
+      "sourceHash": "253c26435cfb3e7178f6dcab00e6897cb1b29f5a98c8ad66e787fe4e7ec3c689"
+    },
+    "text-field-multiline-release-note-dark": {
+      "id": "text-field-multiline-release-note-dark",
+      "name": "Text Field / Multiline / Release Note / Dark",
+      "symbolId": "6A89BB6F-2C34-4CD2-8638-D9FD01CEF324",
+      "layerId": "A50AE609-F3F9-4559-8616-CE7F6043BA98",
+      "width": 360,
+      "height": 126.9375,
+      "text": [
+        {
+          "id": "514B18E5-36AE-4DDA-B49E-0CDBCC0C016B",
+          "value": "RELEASE NOTE"
+        },
+        {
+          "id": "E7246E2F-03B2-4BC3-8BEB-D4BE4C2C99DD",
+          "value": "Summarize what changed"
+        },
+        {
+          "id": "88F7980D-02E3-4A61-8E8A-7ADBAB9C9A16",
+          "value": "0 / 200"
+        }
+      ],
+      "paths": 4,
+      "bitmaps": 0,
+      "sourceHash": "5b6fd10a01f9fec10a3efc067d589ba054fc9b50a7bcb454a94b20ba617f17cf"
+    },
+    "text-field-compact-tag-light": {
+      "id": "text-field-compact-tag-light",
+      "name": "Text Field / Compact / Tag / Light",
+      "symbolId": "E9C3F139-E40E-4DBD-9EC0-A1ED3AA1126D",
+      "layerId": "D553D1E5-665F-4242-AFD3-ACE637001CBE",
+      "width": 360,
+      "height": 53.390625,
+      "text": [
+        {
+          "id": "7904783E-C435-47A1-8E9D-F7F5D382D85B",
+          "value": "TAG"
+        },
+        {
+          "id": "E8574855-8C92-4388-BAF5-0B3B98BD1EF7",
+          "value": "design"
+        }
+      ],
+      "paths": 4,
+      "bitmaps": 0,
+      "sourceHash": "e8acb7d16f876066ddc5258cd4c7c654b5acd1e1d9edef69b5794e77b8ea38b8"
+    },
+    "text-field-compact-tag-dark": {
+      "id": "text-field-compact-tag-dark",
+      "name": "Text Field / Compact / Tag / Dark",
+      "symbolId": "7AAB89BE-F65C-4BFA-AD7A-AAEEF1EF8A7D",
+      "layerId": "97F70098-C4CB-48E4-84CE-0D5ACC6D015B",
+      "width": 360,
+      "height": 53.390625,
+      "text": [
+        {
+          "id": "BC9A7CB9-B3E4-42A3-AD88-FAD7673007AB",
+          "value": "TAG"
+        },
+        {
+          "id": "5C91D925-480B-4574-AD10-F388F5773B7D",
+          "value": "design"
+        }
+      ],
+      "paths": 4,
+      "bitmaps": 0,
+      "sourceHash": "494d2d55835de8aae7367c368628b41d6112738b5ab7415321ea021c25729a08"
+    },
+    "text-field-number-customs-duty-light": {
+      "id": "text-field-number-customs-duty-light",
+      "name": "Text Field / Number / Customs Duty / Light",
+      "symbolId": "207E3120-29D1-4E75-8982-574257452BFD",
+      "layerId": "1EFF9E3D-40E8-479E-93A7-563D69EDCB78",
+      "width": 360,
+      "height": 64.390625,
+      "text": [
+        {
+          "id": "B24BB24B-15CD-4E54-8EAD-0BDC4BC77A6F",
+          "value": "CUSTOMS DUTY"
+        },
+        {
+          "id": "A4665DAF-0953-4E4A-85DD-6034F7696092",
+          "value": "12.50"
+        }
+      ],
+      "paths": 4,
+      "bitmaps": 0,
+      "sourceHash": "9c4dad4f3d9afe6821764b5d848773b55f7070e31436e893a48f740b9a347a72"
+    },
+    "text-field-number-customs-duty-dark": {
+      "id": "text-field-number-customs-duty-dark",
+      "name": "Text Field / Number / Customs Duty / Dark",
+      "symbolId": "C410DA0D-8960-470F-8EB5-781B7F7E6487",
+      "layerId": "3E4CD400-A3A6-41D6-BB82-8EB92C8DF929",
+      "width": 360,
+      "height": 64.390625,
+      "text": [
+        {
+          "id": "021A4D0D-DFC7-4AFE-BB55-7B39D089FF83",
+          "value": "CUSTOMS DUTY"
+        },
+        {
+          "id": "3155A3BB-F805-4A6A-BC1A-7D6588990192",
+          "value": "12.50"
+        }
+      ],
+      "paths": 4,
+      "bitmaps": 0,
+      "sourceHash": "762f29d7671acd7a89b7eba2f7040d53249198b8a8a7a413c74cd40e065ff6b4"
+    },
+    "checkbox-states-include-release-light": {
+      "id": "checkbox-states-include-release-light",
+      "name": "Checkbox / States / Include Release / Light",
+      "symbolId": "F3236071-BF1D-4437-9F93-D222CFC26E19",
+      "layerId": "BE12D2E7-19BC-48FA-ADBA-B7AA204EDCDB",
+      "width": 360,
+      "height": 20,
+      "text": [
+        {
+          "id": "E909A083-A5D5-424F-8508-C7A0AF1154BC",
+          "value": "Include in release"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "511aa09682048f0a19b443f315a05e951709adb481b6557a94f236923fe21470"
+    },
+    "checkbox-states-email-summaries-light": {
+      "id": "checkbox-states-email-summaries-light",
+      "name": "Checkbox / States / Email Summaries / Light",
+      "symbolId": "530F99C5-0190-4C5E-A80B-4D348D43F17C",
+      "layerId": "1B063C89-6379-4C1F-86DA-AAA49DAAB6CA",
+      "width": 360,
+      "height": 42.390625,
+      "text": [
+        {
+          "id": "92024F8E-17C5-460E-981D-74B51EF58AF6",
+          "value": "Email summaries"
+        },
+        {
+          "id": "46A4D5E3-6D10-42DA-83A1-676BA984FF2F",
+          "value": "Sent every Monday morning."
+        }
+      ],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "2163610cdac571aab575245bfe57210dfa58de00b4b1f5eef4d9aef0b85ecbc6"
+    },
+    "checkbox-states-locked-setting-light": {
+      "id": "checkbox-states-locked-setting-light",
+      "name": "Checkbox / States / Locked Setting / Light",
+      "symbolId": "248A443B-DA94-4E2C-B32A-CC241CA0A7CA",
+      "layerId": "0F2616E2-4998-429E-AE4C-3DDE2DD08BAD",
+      "width": 360,
+      "height": 20,
+      "text": [
+        {
+          "id": "EBE393FC-94F3-44AC-9530-AD88FE8ADC6B",
+          "value": "Locked setting"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "229e48c0f44764cf022413420ab109aa7208784681221c1518d5e1675cf474cc"
+    },
+    "checkbox-states-include-release-dark": {
+      "id": "checkbox-states-include-release-dark",
+      "name": "Checkbox / States / Include Release / Dark",
+      "symbolId": "49E1EF67-0490-43D1-84F2-6C0B528E8C09",
+      "layerId": "F362977C-B773-4447-9428-33823DBD498A",
+      "width": 360,
+      "height": 20,
+      "text": [
+        {
+          "id": "CC940B83-5E3D-46D6-975B-4E291C212F54",
+          "value": "Include in release"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "15eb4a6141a7f089bb615f3578c7b66a31ede6f1f820faf6e826227becab9df6"
+    },
+    "checkbox-states-email-summaries-dark": {
+      "id": "checkbox-states-email-summaries-dark",
+      "name": "Checkbox / States / Email Summaries / Dark",
+      "symbolId": "9B03EBAD-17DE-4EE6-B169-05AE8D437923",
+      "layerId": "02FDE6D4-5FCE-43C3-8F5E-1A1D3D080F65",
+      "width": 360,
+      "height": 42.390625,
+      "text": [
+        {
+          "id": "E9785DD8-EB16-45A9-9B53-F827B7F97487",
+          "value": "Email summaries"
+        },
+        {
+          "id": "26655594-98C7-46D3-8835-5E6FB7689640",
+          "value": "Sent every Monday morning."
+        }
+      ],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "aabc23afae848ae5a74f5af33985802825636a3fa37d0bd5f5981248bb17e417"
+    },
+    "checkbox-states-locked-setting-dark": {
+      "id": "checkbox-states-locked-setting-dark",
+      "name": "Checkbox / States / Locked Setting / Dark",
+      "symbolId": "CEDF52D1-CF93-444E-96F5-1949CB968D6D",
+      "layerId": "A5B9FBF0-AB82-4855-9A55-170E2B0995AB",
+      "width": 360,
+      "height": 20,
+      "text": [
+        {
+          "id": "45C57C71-BB64-43F6-8AEA-002A5302824A",
+          "value": "Locked setting"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "54c8e010c21370796fb5c67b90dedce8e4c99759f20606fe1397a1e34fabcc35"
+    },
+    "checkbox-mixed-all-tasks-light": {
+      "id": "checkbox-mixed-all-tasks-light",
+      "name": "Checkbox / Mixed / All Tasks / Light",
+      "symbolId": "36C5071B-A789-4A98-9FD1-A9F5D21D5C48",
+      "layerId": "77D8730B-5167-4619-91B2-2CE26B8A40EC",
+      "width": 360,
+      "height": 20,
+      "text": [
+        {
+          "id": "DFB9FBDE-1185-4E60-866E-77C0C62B7060",
+          "value": "All tasks"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "c4a1e871193e965047a1a15644de53720b31b45f9a2dda954a937eb60127c747"
+    },
+    "checkbox-mixed-design-review-light": {
+      "id": "checkbox-mixed-design-review-light",
+      "name": "Checkbox / Mixed / Design Review / Light",
+      "symbolId": "FA52D1AA-0460-47F3-B7BB-2E1541E5F558",
+      "layerId": "CC6B0A20-CC8B-4835-A1FB-AF4EF99A47F8",
+      "width": 360,
+      "height": 20,
+      "text": [
+        {
+          "id": "150AB9DE-D365-4032-9A98-104A659FA263",
+          "value": "Design review"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "2998377eae38e8a026904e0f7957c6d9e4c56064444677576b2db8851abb9475"
+    },
+    "checkbox-mixed-build-release-light": {
+      "id": "checkbox-mixed-build-release-light",
+      "name": "Checkbox / Mixed / Build Release / Light",
+      "symbolId": "F3C73C85-1D72-4820-8018-390154017148",
+      "layerId": "E03E9A63-7CC6-485C-A967-93522BB48875",
+      "width": 360,
+      "height": 20,
+      "text": [
+        {
+          "id": "601117BE-042E-4A83-94BD-81D5BB169267",
+          "value": "Build release"
+        }
+      ],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "721856a2686f5165423a0d75b004904805ac1d90f256a299c37c055a748bbd45"
+    },
+    "checkbox-mixed-all-tasks-dark": {
+      "id": "checkbox-mixed-all-tasks-dark",
+      "name": "Checkbox / Mixed / All Tasks / Dark",
+      "symbolId": "7393370E-BA2D-4453-8A7A-480CA3F3AF9A",
+      "layerId": "BF1F9228-8E89-4890-9C65-DB426EFC1F95",
+      "width": 360,
+      "height": 20,
+      "text": [
+        {
+          "id": "B2E6CE9E-52E8-423A-B1FC-A7E1F141EC9B",
+          "value": "All tasks"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "01bdc0713e0f7ccfc990aafc74cd69e5392b63c92daba374eff9795df9cfb396"
+    },
+    "checkbox-mixed-design-review-dark": {
+      "id": "checkbox-mixed-design-review-dark",
+      "name": "Checkbox / Mixed / Design Review / Dark",
+      "symbolId": "444F4F5B-DA0D-4624-A247-C663E19BD2E9",
+      "layerId": "3F5FAEB6-3920-44F8-9966-85CE1354AE78",
+      "width": 360,
+      "height": 20,
+      "text": [
+        {
+          "id": "CB84ACBA-1F74-486F-BAE6-65E3AE3E2C8E",
+          "value": "Design review"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "5b563a2f5ac0cf0eaa5223556d68541c14415b6a69f5e3330c6438133eac241e"
+    },
+    "checkbox-mixed-build-release-dark": {
+      "id": "checkbox-mixed-build-release-dark",
+      "name": "Checkbox / Mixed / Build Release / Dark",
+      "symbolId": "3E62A7E0-4318-4FA2-925D-26DDF87CA9FE",
+      "layerId": "93DFD049-F348-4280-9326-919460208329",
+      "width": 360,
+      "height": 20,
+      "text": [
+        {
+          "id": "22CDE048-B26A-4806-8EE2-C39FACD8B332",
+          "value": "Build release"
+        }
+      ],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "b3458cffb7f9946f85b48e1fa76fd1d6e4ee06fbbd2fcf2d8baeada6bc81754f"
+    },
+    "checkbox-error-accept-terms-light": {
+      "id": "checkbox-error-accept-terms-light",
+      "name": "Checkbox / Error / Accept Terms / Light",
+      "symbolId": "6AEFA522-168E-485C-8C0C-BCE9E2970ECE",
+      "layerId": "42D532C3-7D5E-42F1-8A6C-618DF70C4B47",
+      "width": 360,
+      "height": 42.390625,
+      "text": [
+        {
+          "id": "752DE109-576A-40FC-996B-BCAEF6EEF2E7",
+          "value": "I accept the release terms"
+        },
+        {
+          "id": "72ED5574-374C-4558-9D1E-19362D72AE7B",
+          "value": "Accept the terms to continue."
+        }
+      ],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "d669061f98c2a9e2ca566ff4c8dae76080e5c2910f9d86ad702fb45fc479a51e"
+    },
+    "checkbox-error-accept-terms-dark": {
+      "id": "checkbox-error-accept-terms-dark",
+      "name": "Checkbox / Error / Accept Terms / Dark",
+      "symbolId": "09F2B6A6-5FD7-4C0F-8591-AC05596A036D",
+      "layerId": "817ED346-AC2D-49D1-932B-31048A2ED8CE",
+      "width": 360,
+      "height": 42.390625,
+      "text": [
+        {
+          "id": "7668B272-D715-4154-987E-AE8B371A0B08",
+          "value": "I accept the release terms"
+        },
+        {
+          "id": "5FBD2348-B5E9-49B7-9725-96E03416E3C5",
+          "value": "Accept the terms to continue."
+        }
+      ],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "ad8f390756ba0a6350512098ca56b9d14450a374532404c41fcc4ae6d1780155"
+    },
+    "checkbox-compact-show-archived-light": {
+      "id": "checkbox-compact-show-archived-light",
+      "name": "Checkbox / Compact / Show Archived / Light",
+      "symbolId": "378E23AF-5FAC-416E-9517-DE48AB8224DD",
+      "layerId": "8E598DAE-D867-4B07-AB31-EE616A3B7A4B",
+      "width": 360,
+      "height": 18,
+      "text": [
+        {
+          "id": "35901556-5906-4A20-83AC-915338B334EC",
+          "value": "Show archived"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "a83dafa42806fe12aa82fc8efbedac7b5deebe0d9ef67437c8551a0f7d8f9c1a"
+    },
+    "checkbox-compact-show-drafts-light": {
+      "id": "checkbox-compact-show-drafts-light",
+      "name": "Checkbox / Compact / Show Drafts / Light",
+      "symbolId": "00B9C56B-0F1D-40DC-877A-DDACE88BB1A6",
+      "layerId": "2CA238B3-3785-4491-A319-53AD32206D83",
+      "width": 360,
+      "height": 18,
+      "text": [
+        {
+          "id": "B40F0482-1220-4C72-815F-CD938DECA7E6",
+          "value": "Show drafts"
+        }
+      ],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "378936343dd62648f51f965a1f5e42353aca83e68b69c2a26649c05ad9f7c7f0"
+    },
+    "checkbox-compact-show-archived-dark": {
+      "id": "checkbox-compact-show-archived-dark",
+      "name": "Checkbox / Compact / Show Archived / Dark",
+      "symbolId": "2E9CFA2F-CA4C-4841-B9FB-17A6ECA2B168",
+      "layerId": "35377395-0E52-4831-9902-238BE2D0F673",
+      "width": 360,
+      "height": 18,
+      "text": [
+        {
+          "id": "BB9F0FCF-B233-4B73-8506-475E299BF3AF",
+          "value": "Show archived"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "f9987f515caf9496443596fe39921204a1f466a369e50dc89645600dca1b95d7"
+    },
+    "checkbox-compact-show-drafts-dark": {
+      "id": "checkbox-compact-show-drafts-dark",
+      "name": "Checkbox / Compact / Show Drafts / Dark",
+      "symbolId": "88616002-B45F-45AF-80A9-52FDD7A769EA",
+      "layerId": "2C4B903C-F84E-4722-85F9-B08C4B79C3E7",
+      "width": 360,
+      "height": 18,
+      "text": [
+        {
+          "id": "F229E1D0-4ADA-4CFA-A7E0-EB28FD561E2E",
+          "value": "Show drafts"
+        }
+      ],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "7c31058f3542f4b79f69e79315172cb34d124a601e8b4e667850e42aece0b61f"
+    },
+    "checkbox-group-vertical-notification-channels-light": {
+      "id": "checkbox-group-vertical-notification-channels-light",
+      "name": "Checkbox Group / Vertical / Notification Channels / Light",
+      "symbolId": "37472929-6B61-4AD0-A867-2B48C0F16036",
+      "layerId": "BC8C0953-88CC-4649-A662-7941BC70563B",
+      "width": 360,
+      "height": 176.171875,
+      "text": [
+        {
+          "id": "15D88C29-68F8-4E55-9E11-9EDE6251A6D8",
+          "value": "NOTIFICATION CHANNELS"
+        },
+        {
+          "id": "10951492-0FC7-4A9A-A1CE-FF1C7F9AE0DD",
+          "value": "Email"
+        },
+        {
+          "id": "F07817E1-BE64-4E16-BD81-DEC918359725",
+          "value": "Push notifications"
+        },
+        {
+          "id": "81CBA142-7B50-47F1-9933-867673792A3F",
+          "value": "On devices where you are signed in."
+        },
+        {
+          "id": "3201DC6D-EE36-4941-B033-0C9D821BA63D",
+          "value": "Weekly digest"
+        },
+        {
+          "id": "FC71751E-D50F-440B-80F4-BB6FC92178C9",
+          "value": "Text messages"
+        },
+        {
+          "id": "D9FFB95A-383C-4108-B666-553FBB7A8B7A",
+          "value": "Sent to your work account."
+        }
+      ],
+      "paths": 14,
+      "bitmaps": 0,
+      "sourceHash": "970b619b5d2dbc1d88e2f92368a621022c0914773df79b711b73c117b6ad1dbe"
+    },
+    "checkbox-group-vertical-notification-channels-dark": {
+      "id": "checkbox-group-vertical-notification-channels-dark",
+      "name": "Checkbox Group / Vertical / Notification Channels / Dark",
+      "symbolId": "0C8E67A5-77CB-4C59-96EC-FD4ECFCDFC1B",
+      "layerId": "4F46536B-98B3-4333-8642-22DA82148166",
+      "width": 360,
+      "height": 176.171875,
+      "text": [
+        {
+          "id": "27B1D8D9-ECBD-4635-9110-B7F2C9983503",
+          "value": "NOTIFICATION CHANNELS"
+        },
+        {
+          "id": "3FA3CDBB-0EFA-40A4-9354-E66DF0A07AE7",
+          "value": "Email"
+        },
+        {
+          "id": "7DD6BA53-CF6D-43D7-A0AE-482036E51D25",
+          "value": "Push notifications"
+        },
+        {
+          "id": "7BE30426-BB91-4055-9590-F7DBA107FF97",
+          "value": "On devices where you are signed in."
+        },
+        {
+          "id": "A6A9D2D4-A708-4B96-98BB-020CAA17F677",
+          "value": "Weekly digest"
+        },
+        {
+          "id": "0679467E-8372-4FF3-B347-015A7FD0FF84",
+          "value": "Text messages"
+        },
+        {
+          "id": "4A7AED7F-0D59-4AF2-BD56-6359E1F5F61B",
+          "value": "Sent to your work account."
+        }
+      ],
+      "paths": 14,
+      "bitmaps": 0,
+      "sourceHash": "41c9ef72a3d2af660305bcac3ab14895a2ccfdc408b269cfa8ab196441036509"
+    },
+    "checkbox-group-horizontal-platforms-light": {
+      "id": "checkbox-group-horizontal-platforms-light",
+      "name": "Checkbox Group / Horizontal / Platforms / Light",
+      "symbolId": "D7389102-96AB-4A64-9CD4-2C4E5A21DD7C",
+      "layerId": "54E486E6-5793-403B-A7BC-D5F15C7DC04A",
+      "width": 360,
+      "height": 64.578125,
+      "text": [
+        {
+          "id": "304D3C74-7B6A-47E4-884D-E4C6F83D553D",
+          "value": "PLATFORMS"
+        },
+        {
+          "id": "64FC648D-EB7A-4A90-B563-4523DDE6A18E",
+          "value": "macOS"
+        },
+        {
+          "id": "4CB8365F-A9B9-4B62-B149-D1EB244E5459",
+          "value": "Windows"
+        },
+        {
+          "id": "E5D216ED-1A5D-44A2-A995-31AEBFF332B6",
+          "value": "Linux"
+        },
+        {
+          "id": "8E390D23-D14C-4B78-B1C6-0E4AF326097B",
+          "value": "Choose a platform."
+        }
+      ],
+      "paths": 6,
+      "bitmaps": 0,
+      "sourceHash": "62a2d36430552714ce44811376904ee34ac1c6a9d9299e26198e321462357752"
+    },
+    "checkbox-group-horizontal-platforms-dark": {
+      "id": "checkbox-group-horizontal-platforms-dark",
+      "name": "Checkbox Group / Horizontal / Platforms / Dark",
+      "symbolId": "BE911031-307C-4A65-A233-56018E858A8A",
+      "layerId": "5764FF42-F9C0-46C7-A9F7-5110F67616B4",
+      "width": 360,
+      "height": 64.578125,
+      "text": [
+        {
+          "id": "CEA0985B-48AB-40A6-814C-F983A61F0D6C",
+          "value": "PLATFORMS"
+        },
+        {
+          "id": "42AEFA2B-CA2C-445D-9D09-E93A90FBFD46",
+          "value": "macOS"
+        },
+        {
+          "id": "0049643B-7C07-4156-B2A2-CFE10FA82D2C",
+          "value": "Windows"
+        },
+        {
+          "id": "8702E3CD-DB36-43A2-B3F4-71730667A0B0",
+          "value": "Linux"
+        },
+        {
+          "id": "DFA87037-9489-4C29-BC4D-F817DEFDA9FC",
+          "value": "Choose a platform."
+        }
+      ],
+      "paths": 6,
+      "bitmaps": 0,
+      "sourceHash": "2dc87480257398f5d1da2205cf964c6a7d71ee9e089fa958d21dc004c467d354"
+    },
+    "radio-group-vertical-layout-density-light": {
+      "id": "radio-group-vertical-layout-density-light",
+      "name": "Radio Group / Vertical / Layout Density / Light",
+      "symbolId": "19F2FC68-5C08-4D3A-B36F-D3A0565B4500",
+      "layerId": "4E834710-BE3E-4A0A-876C-C2F4E2972212",
+      "width": 360,
+      "height": 176.171875,
+      "text": [
+        {
+          "id": "A2F75627-8C30-4188-835E-48ACBB70E5A8",
+          "value": "LAYOUT DENSITY"
+        },
+        {
+          "id": "29CBE251-EAEE-431A-9391-5CFC5E7AB9D5",
+          "value": "Compact"
+        },
+        {
+          "id": "7042E8DC-D851-4E19-B80F-BEC9CD72D6E4",
+          "value": "Balanced"
+        },
+        {
+          "id": "72A0EF1D-2A79-40DD-9766-897BB90FD547",
+          "value": "Roomy"
+        },
+        {
+          "id": "89C06477-C9C0-4D1E-A5DE-515E72786DCD",
+          "value": "Larger rows for touch screens."
+        },
+        {
+          "id": "6A6C9DD0-EAC3-456B-9A36-3394775058D0",
+          "value": "Custom"
+        },
+        {
+          "id": "2B6ED3D8-1123-4408-9096-984489F0363A",
+          "value": "Applies to every list."
+        }
+      ],
+      "paths": 9,
+      "bitmaps": 0,
+      "sourceHash": "1c335818076304c2fdd718bbb7fe270bde09cee379efa4bf4d29b6bb721d62d1"
+    },
+    "radio-group-vertical-layout-density-dark": {
+      "id": "radio-group-vertical-layout-density-dark",
+      "name": "Radio Group / Vertical / Layout Density / Dark",
+      "symbolId": "90F9472B-B474-47E0-BADF-69BC562E539B",
+      "layerId": "CE428225-6C24-494A-926D-A86E96AEF4A3",
+      "width": 360,
+      "height": 176.171875,
+      "text": [
+        {
+          "id": "CCC10D43-0244-483E-B77F-E76A41239730",
+          "value": "LAYOUT DENSITY"
+        },
+        {
+          "id": "FA4F7AE9-6C32-443C-8488-C75FD41252C1",
+          "value": "Compact"
+        },
+        {
+          "id": "D0749DC4-24AE-476E-89C6-D5C970DA32F9",
+          "value": "Balanced"
+        },
+        {
+          "id": "FEAB5BB9-FA28-46B7-B826-4A22F8349C35",
+          "value": "Roomy"
+        },
+        {
+          "id": "56F6BA97-ECC1-45D1-8BBD-F9A839FB6FE6",
+          "value": "Larger rows for touch screens."
+        },
+        {
+          "id": "ACA1650B-BE0E-47BA-9B8A-B10C9069B156",
+          "value": "Custom"
+        },
+        {
+          "id": "47677CAB-2E94-4356-B4BE-C3E4E38D1321",
+          "value": "Applies to every list."
+        }
+      ],
+      "paths": 9,
+      "bitmaps": 0,
+      "sourceHash": "ecd2712647881d6321caa8019932eb6ecdac9726730d2d33d8777f9214277447"
+    },
+    "radio-group-horizontal-release-channel-light": {
+      "id": "radio-group-horizontal-release-channel-light",
+      "name": "Radio Group / Horizontal / Release Channel / Light",
+      "symbolId": "39DDCFE3-F5DC-4FC6-935B-6EEF48B5015A",
+      "layerId": "821D72F6-9E00-4258-BDFA-0456DBA99D08",
+      "width": 360,
+      "height": 64.578125,
+      "text": [
+        {
+          "id": "82D3E802-826F-4914-AC68-1618E1F445B7",
+          "value": "RELEASE CHANNEL"
+        },
+        {
+          "id": "432AE6A2-F408-4061-BEAF-CB5812B7E3D1",
+          "value": "Stable"
+        },
+        {
+          "id": "07E9981E-6561-4BE8-8115-13E3CE994273",
+          "value": "Beta"
+        },
+        {
+          "id": "1BDC54A1-21C6-4358-897E-0AA6E14D94FC",
+          "value": "Nightly"
+        },
+        {
+          "id": "02611509-7664-414E-A0AA-A07D4A662588",
+          "value": "Choose a channel."
+        }
+      ],
+      "paths": 6,
+      "bitmaps": 0,
+      "sourceHash": "6f63ce4c51643413bf0a3f545d339d050e9e18e5e1da450566928fc2c19a2ced"
+    },
+    "radio-group-horizontal-release-channel-dark": {
+      "id": "radio-group-horizontal-release-channel-dark",
+      "name": "Radio Group / Horizontal / Release Channel / Dark",
+      "symbolId": "2215D2AA-C058-4B6D-8120-8BFFBEB715F8",
+      "layerId": "0202C157-E0F9-47E4-88C4-B47550915C45",
+      "width": 360,
+      "height": 64.578125,
+      "text": [
+        {
+          "id": "A21021A7-1ED6-4197-BB6C-908331D919C7",
+          "value": "RELEASE CHANNEL"
+        },
+        {
+          "id": "191B780B-1B87-4731-A562-7B94A301FFAD",
+          "value": "Stable"
+        },
+        {
+          "id": "B521893A-69D1-4BB0-BAE5-89452A848FC2",
+          "value": "Beta"
+        },
+        {
+          "id": "7DEBB92B-7C06-479D-A56A-4AFC5AB1F669",
+          "value": "Nightly"
+        },
+        {
+          "id": "C4078241-9426-431A-8418-7860A359AD42",
+          "value": "Choose a channel."
+        }
+      ],
+      "paths": 6,
+      "bitmaps": 0,
+      "sourceHash": "5982385f262702750be66d116ac30a6438769586f75a2bfc754260498845932a"
+    },
+    "switch-states-live-updates-light": {
+      "id": "switch-states-live-updates-light",
+      "name": "Switch / States / Live Updates / Light",
+      "symbolId": "25F93487-1FF9-4A11-8529-A85A74491557",
+      "layerId": "97A6E175-C872-4B74-B5B3-D49875D7A7B8",
+      "width": 360,
+      "height": 42.390625,
+      "text": [
+        {
+          "id": "863777FF-B918-4AE9-B7B9-22B4248A1D78",
+          "value": "Live updates"
+        },
+        {
+          "id": "B413CA39-B2FE-4E42-8CBE-25FAC1857906",
+          "value": "The list refreshes as tickets change."
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "fa73883af0aefa8c91c18d732cae10895179558a86198a73a9e896294d64e740"
+    },
+    "switch-states-compact-navigation-light": {
+      "id": "switch-states-compact-navigation-light",
+      "name": "Switch / States / Compact Navigation / Light",
+      "symbolId": "6FC9AA75-2B43-4C38-A191-A5D04014163A",
+      "layerId": "95C4E2B1-C904-4521-B6B6-CFEEEACEE3D0",
+      "width": 360,
+      "height": 20,
+      "text": [
+        {
+          "id": "095E7D23-BADC-4AF8-93EE-446AB39DAABF",
+          "value": "Compact navigation"
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "8dd8bf09ce579bc07b57199fbbf8d3509174a093a7155d40e886cc1710efb539"
+    },
+    "switch-states-managed-setting-light": {
+      "id": "switch-states-managed-setting-light",
+      "name": "Switch / States / Managed Setting / Light",
+      "symbolId": "6E32F84F-6852-481D-AA75-284C1A55031E",
+      "layerId": "9404DF3E-9793-4594-8440-B71838A0CC03",
+      "width": 360,
+      "height": 20,
+      "text": [
+        {
+          "id": "4D077491-96D7-4C9A-B095-12CEE55B05EA",
+          "value": "Managed setting"
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "14801d6e8d08347068b172c880ae5d96154f8f17e29794c92bef17f9010146c8"
+    },
+    "switch-states-live-updates-dark": {
+      "id": "switch-states-live-updates-dark",
+      "name": "Switch / States / Live Updates / Dark",
+      "symbolId": "CE0C7EDF-7253-4557-901C-E76D4B906889",
+      "layerId": "F0D01197-5BF1-4323-AAC5-99E776CE5C22",
+      "width": 360,
+      "height": 42.390625,
+      "text": [
+        {
+          "id": "BEEC0758-7C7C-4C2B-9DD9-CB1FEC06FBBC",
+          "value": "Live updates"
+        },
+        {
+          "id": "FFE38860-EADD-46BE-8EE8-046FC86706F2",
+          "value": "The list refreshes as tickets change."
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "287d07f7b00b2771a25954fa45c60bbb3e350b061656f8a39e23b8a6b4614136"
+    },
+    "switch-states-compact-navigation-dark": {
+      "id": "switch-states-compact-navigation-dark",
+      "name": "Switch / States / Compact Navigation / Dark",
+      "symbolId": "836AC67B-BA61-4B7C-A771-B1506DB94742",
+      "layerId": "88EC00EA-E76B-475F-9924-9C66F769E25B",
+      "width": 360,
+      "height": 20,
+      "text": [
+        {
+          "id": "1C053C43-6092-43D7-9353-74ED6972FF0A",
+          "value": "Compact navigation"
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "f696467b3672912a13dc85383b1a0abe49e8d530add432a12516b73a78603b9c"
+    },
+    "switch-states-managed-setting-dark": {
+      "id": "switch-states-managed-setting-dark",
+      "name": "Switch / States / Managed Setting / Dark",
+      "symbolId": "F9983194-A8BE-4417-AFF8-EEC076A47541",
+      "layerId": "54593E14-1773-4676-B687-57E40EA70C2B",
+      "width": 360,
+      "height": 20,
+      "text": [
+        {
+          "id": "14152AAE-202E-4F53-98AE-EB511231EAF0",
+          "value": "Managed setting"
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "b70205467d7f92652c5a677ac893a32d8df0fb71638083684a980e0764adb3fb"
+    },
+    "switch-compact-show-archived-light": {
+      "id": "switch-compact-show-archived-light",
+      "name": "Switch / Compact / Show Archived / Light",
+      "symbolId": "3CCD2435-428E-474A-BC3D-DDB6C3B08648",
+      "layerId": "14C05C6F-6233-44EC-A588-577FE57F138D",
+      "width": 360,
+      "height": 18,
+      "text": [
+        {
+          "id": "0A6DB959-FE00-408B-840E-93C9993AD1FB",
+          "value": "Show archived"
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "728332a4925d80917203c15b67f932b75992f6effdd10ac852cb82b2be645fe6"
+    },
+    "switch-compact-show-drafts-light": {
+      "id": "switch-compact-show-drafts-light",
+      "name": "Switch / Compact / Show Drafts / Light",
+      "symbolId": "E352796C-634C-444E-9822-D862ED166F93",
+      "layerId": "BCBEBB05-0DF5-4D31-B663-8B0D9F1FEE3C",
+      "width": 360,
+      "height": 18,
+      "text": [
+        {
+          "id": "C4DD18DA-D638-44FF-A4DF-B7057EFB87D7",
+          "value": "Show drafts"
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "2ac77b9814cb6428d52e71de7b1a4c5d0f36f631223e4b370608e30563bc2115"
+    },
+    "switch-compact-show-archived-dark": {
+      "id": "switch-compact-show-archived-dark",
+      "name": "Switch / Compact / Show Archived / Dark",
+      "symbolId": "BBB7EF63-7C13-4278-AEA1-BA72E327C169",
+      "layerId": "72839659-D343-464D-A3F2-3BB258B54286",
+      "width": 360,
+      "height": 18,
+      "text": [
+        {
+          "id": "4FA15BBD-5ECB-401A-9A22-ECE1A957F5B8",
+          "value": "Show archived"
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "1f3cf95a5199b35ab675eff0bca89e2884c52d14216fd8f392c6adc03dd27473"
+    },
+    "switch-compact-show-drafts-dark": {
+      "id": "switch-compact-show-drafts-dark",
+      "name": "Switch / Compact / Show Drafts / Dark",
+      "symbolId": "A1D84B01-D3DF-43F0-B2F2-3FDD0953675E",
+      "layerId": "04F3FD5F-033D-42FB-A2DA-62864C9F4791",
+      "width": 360,
+      "height": 18,
+      "text": [
+        {
+          "id": "2352C5F1-0008-4016-9F72-8B6A9D74DE02",
+          "value": "Show drafts"
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "33753d455b8ef601d6ead19928753cd94e3a8c0051950c9c57e534fd30abb7c1"
+    }
+  },
+  "assets": {
+    "light.brand-fill-loud": {
+      "id": "494DEB5C-4EBF-49D9-BAD3-ABC8F7DD96E2",
+      "name": "Kerf/Forms/light/brand-fill-loud",
+      "color": "#0075dbff"
+    },
+    "light.neutral-fill-loud": {
+      "id": "6FC0DD25-A64C-424D-8F6B-AC9187D81438",
+      "name": "Kerf/Forms/light/neutral-fill-loud",
+      "color": "#48484aff"
+    },
+    "dark.brand-fill-loud": {
+      "id": "B02DC539-7585-42C8-B00D-34FFDE3F8649",
+      "name": "Kerf/Forms/dark/brand-fill-loud",
+      "color": "#64d2ffff"
+    },
+    "dark.neutral-fill-loud": {
+      "id": "F1A332A7-26AD-4BCF-8E12-827A0F00E808",
+      "name": "Kerf/Forms/dark/neutral-fill-loud",
+      "color": "#e5e5eaff"
+    },
+    "light.success-fill-loud": {
+      "id": "F2AFF85B-D30A-4C0B-A115-E23916F5EE23",
+      "name": "Kerf/Forms/light/success-fill-loud",
+      "color": "#34c759ff"
+    },
+    "dark.success-fill-loud": {
+      "id": "352C1EE4-0CA7-489C-A338-2C56536EF751",
+      "name": "Kerf/Forms/dark/success-fill-loud",
+      "color": "#34c759ff"
+    },
+    "light.neutral-border-normal": {
+      "id": "76283ACE-293A-4FAD-B587-E066C702A073",
+      "name": "Kerf/Forms/light/neutral-border-normal",
+      "color": "#00001c2e"
+    },
+    "light.neutral-on-quiet": {
+      "id": "B21540F2-19AE-4900-86A2-C64F2F978216",
+      "name": "Kerf/Forms/light/neutral-on-quiet",
+      "color": "#626267ff"
+    },
+    "dark.neutral-border-normal": {
+      "id": "E8EE0BD4-0DCA-4106-B47A-C754FD05C137",
+      "name": "Kerf/Forms/dark/neutral-border-normal",
+      "color": "#fdfdff32"
+    },
+    "dark.neutral-on-quiet": {
+      "id": "8FEE4B25-112F-43C2-BD2E-5FD93D35F9BF",
+      "name": "Kerf/Forms/dark/neutral-on-quiet",
+      "color": "#c2c2c6ff"
+    },
+    "light.danger-fill-loud": {
+      "id": "4138DBB9-5FDF-40B0-AC56-ADD077D221B9",
+      "name": "Kerf/Forms/light/danger-fill-loud",
+      "color": "#be060bff"
+    },
+    "dark.danger-fill-loud": {
+      "id": "A177A0F8-A74A-4EA9-9D55-576D1237988D",
+      "name": "Kerf/Forms/dark/danger-fill-loud",
+      "color": "#fd6265ff"
+    }
+  }
+}

@@ -19,7 +19,10 @@ export default [
     },
   },
   {
-    files: ['scripts/sketch/button/tasks/*.js'],
+    files: [
+      'scripts/sketch/button/tasks/*.js',
+      'scripts/sketch/forms/tasks/*.js',
+    ],
     languageOptions: {
       sourceType: 'commonjs',
       globals: {

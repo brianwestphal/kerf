@@ -103,7 +103,7 @@ const outRoot = process.env.DESIGN_TEMPLATES_OUT
   ? resolve(process.env.DESIGN_TEMPLATES_OUT)
   : resolve(root, 'docs/design/templates');
 
-async function resolveDomotion() {
+export async function resolveDomotion() {
   if (process.env.DOMOTION_BIN) return process.env.DOMOTION_BIN;
   for (const candidate of [
     resolve(root, 'node_modules/.bin/domotion'),
@@ -2265,7 +2265,7 @@ export const THEMES = [
 // theme is driven by domotion's `--color-scheme` (prefers-color-scheme), which
 // foundation.css's `color-scheme: light dark` responds to via its `light-dark()`
 // tokens — so we don't override `color-scheme` here.
-const frameCss = (theme) => `
+export const frameCss = (theme) => `
 * { box-sizing: border-box; }
 body { margin: 0; padding: 20px; background: ${theme.pageBackground}; font-family: system-ui, -apple-system, sans-serif; }
 .dt-button { min-height: 32px; padding: 0 12px; border: 1px solid var(--kui-color-border); border-radius: var(--kui-radius-pill); color: var(--kui-color-text); background: var(--kui-color-surface-raised); font: inherit; cursor: pointer; }
@@ -2403,7 +2403,7 @@ function staticSwatch(markup) {
 // A running animation would be captured at whatever frame the capture lands
 // on, so a busy spinner's angle drifted on every rebuild; the template shows
 // the spinner's own reduced-motion presentation instead (loading-spinner.css).
-const captureCss = `:root { --kui-font-mono: "Courier New", monospace; } button { appearance: none; } .kui-loading-spinner path { animation: none; }`;
+export const captureCss = `:root { --kui-font-mono: "Courier New", monospace; } button { appearance: none; } .kui-loading-spinner path { animation: none; }`;
 
 const escapeHtml = (value) =>
   String(value)

@@ -14,18 +14,19 @@ variant may be a multi-control showcase; a family ticket must export its actual
 individual component states and retain the sheet only as a catalog page.
 
 The Button pilot covers seven source showcase variants with 40 editable
-appearance Symbols in [Kerf-Button.sketch](button/README.md). Its Symbols are
-the first published native batch. The five pending family tickets cover the
+appearance Symbols in [Kerf-Button.sketch](button/README.md). The Form controls
+batch covers 20 showcase variants with 66 individual light/dark Symbols in
+[Kerf-Forms.sketch](forms/README.md). The four pending family tickets cover the
 other source variants, including ColorSwatches; they must update this matrix
 as they ship. The catalog's [install and update guide](README.md) identifies
-the current library and supported Sketch version.
+the current libraries and supported Sketch version.
 
 ## Family batches
 
 | Family                  | Components | Source variants | Status    | Ticket    |
 | ----------------------- | ---------: | --------------: | --------- | --------- |
 | Button pilot            |          1 |               7 | supported | KF-MKW7QZ |
-| Form controls           |          6 |              20 | pending   | KF-8VXPDP |
+| Form controls           |          6 |              20 | supported | KF-8VXPDP |
 | Advanced inputs         |          7 |              17 | pending   | KF-6CC071 |
 | Toolbars and navigation |          7 |              25 | pending   | KF-6Q8S95 |
 | Lists and data          |          5 |              21 | pending   | KF-83M2MW |
@@ -42,26 +43,26 @@ the current library and supported Sketch version.
 | button                | toggles              | Toggle, Resting and Pressed                 | supported     | KF-MKW7QZ |
 | button                | pill                 | Pill Shape                                  | supported     | KF-MKW7QZ |
 | button                | full-width           | Full-Width Primary Action                   | supported     | KF-MKW7QZ |
-| split-button          | tones                | Rounded Tones                               | pending       | KF-8VXPDP |
-| split-button          | pill                 | Pill Shape                                  | pending       | KF-8VXPDP |
-| split-button          | states               | Busy and Disabled                           | pending       | KF-8VXPDP |
-| split-button          | full-width           | Full-Width Primary Action                   | pending       | KF-8VXPDP |
-| text-field            | labeled              | Label, Value, and Hint                      | pending       | KF-8VXPDP |
-| text-field            | search               | Search with an Icon                         | pending       | KF-8VXPDP |
-| text-field            | error                | Required with an Error                      | pending       | KF-8VXPDP |
-| text-field            | multiline            | Growing Multi-Line with a Count             | pending       | KF-8VXPDP |
-| text-field            | compact              | Compact                                     | pending       | KF-8VXPDP |
-| text-field            | number               | Bounded Decimal                             | pending       | KF-8VXPDP |
-| checkbox              | states               | Checked, Unchecked, and Disabled            | pending       | KF-8VXPDP |
-| checkbox              | mixed                | Mixed Parent                                | pending       | KF-8VXPDP |
-| checkbox              | error                | Required with an Error                      | pending       | KF-8VXPDP |
-| checkbox              | compact              | Compact                                     | pending       | KF-8VXPDP |
-| checkbox-group        | vertical             | Stacked Choices with Hints                  | pending       | KF-8VXPDP |
-| checkbox-group        | horizontal           | Horizontal, Compact, with an Error          | pending       | KF-8VXPDP |
-| radio-group           | vertical             | Stacked Choices with Hints                  | pending       | KF-8VXPDP |
-| radio-group           | horizontal           | Horizontal, Compact, with an Error          | pending       | KF-8VXPDP |
-| switch                | states               | On, Off, and Disabled                       | pending       | KF-8VXPDP |
-| switch                | compact              | Compact                                     | pending       | KF-8VXPDP |
+| split-button          | tones                | Rounded Tones                               | supported     | KF-8VXPDP |
+| split-button          | pill                 | Pill Shape                                  | supported     | KF-8VXPDP |
+| split-button          | states               | Busy and Disabled                           | supported     | KF-8VXPDP |
+| split-button          | full-width           | Full-Width Primary Action                   | supported     | KF-8VXPDP |
+| text-field            | labeled              | Label, Value, and Hint                      | supported     | KF-8VXPDP |
+| text-field            | search               | Search with an Icon                         | supported     | KF-8VXPDP |
+| text-field            | error                | Required with an Error                      | supported     | KF-8VXPDP |
+| text-field            | multiline            | Growing Multi-Line with a Count             | supported     | KF-8VXPDP |
+| text-field            | compact              | Compact                                     | supported     | KF-8VXPDP |
+| text-field            | number               | Bounded Decimal                             | supported     | KF-8VXPDP |
+| checkbox              | states               | Checked, Unchecked, and Disabled            | supported     | KF-8VXPDP |
+| checkbox              | mixed                | Mixed Parent                                | supported     | KF-8VXPDP |
+| checkbox              | error                | Required with an Error                      | supported     | KF-8VXPDP |
+| checkbox              | compact              | Compact                                     | supported     | KF-8VXPDP |
+| checkbox-group        | vertical             | Stacked Choices with Hints                  | supported     | KF-8VXPDP |
+| checkbox-group        | horizontal           | Horizontal, Compact, with an Error          | supported     | KF-8VXPDP |
+| radio-group           | vertical             | Stacked Choices with Hints                  | supported     | KF-8VXPDP |
+| radio-group           | horizontal           | Horizontal, Compact, with an Error          | supported     | KF-8VXPDP |
+| switch                | states               | On, Off, and Disabled                       | supported     | KF-8VXPDP |
+| switch                | compact              | Compact                                     | supported     | KF-8VXPDP |
 | select                | form                 | Labeled Form Field                          | pending       | KF-6CC071 |
 | select                | icons                | Choices with Icons                          | pending       | KF-6CC071 |
 | select                | compact              | Compact, Disabled                           | pending       | KF-6CC071 |

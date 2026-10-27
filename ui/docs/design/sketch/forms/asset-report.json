@@ -1,0 +1,69 @@
+{
+  "swatches": {
+    "light.brand-fill-loud": {
+      "id": "494DEB5C-4EBF-49D9-BAD3-ABC8F7DD96E2",
+      "name": "Kerf/Forms/light/brand-fill-loud",
+      "color": "#0075dbff"
+    },
+    "light.neutral-fill-loud": {
+      "id": "6FC0DD25-A64C-424D-8F6B-AC9187D81438",
+      "name": "Kerf/Forms/light/neutral-fill-loud",
+      "color": "#48484aff"
+    },
+    "dark.brand-fill-loud": {
+      "id": "B02DC539-7585-42C8-B00D-34FFDE3F8649",
+      "name": "Kerf/Forms/dark/brand-fill-loud",
+      "color": "#64d2ffff"
+    },
+    "dark.neutral-fill-loud": {
+      "id": "F1A332A7-26AD-4BCF-8E12-827A0F00E808",
+      "name": "Kerf/Forms/dark/neutral-fill-loud",
+      "color": "#e5e5eaff"
+    },
+    "light.success-fill-loud": {
+      "id": "F2AFF85B-D30A-4C0B-A115-E23916F5EE23",
+      "name": "Kerf/Forms/light/success-fill-loud",
+      "color": "#34c759ff"
+    },
+    "dark.success-fill-loud": {
+      "id": "352C1EE4-0CA7-489C-A338-2C56536EF751",
+      "name": "Kerf/Forms/dark/success-fill-loud",
+      "color": "#34c759ff"
+    },
+    "light.neutral-border-normal": {
+      "id": "76283ACE-293A-4FAD-B587-E066C702A073",
+      "name": "Kerf/Forms/light/neutral-border-normal",
+      "color": "#00001c2e"
+    },
+    "light.neutral-on-quiet": {
+      "id": "B21540F2-19AE-4900-86A2-C64F2F978216",
+      "name": "Kerf/Forms/light/neutral-on-quiet",
+      "color": "#626267ff"
+    },
+    "dark.neutral-border-normal": {
+      "id": "E8EE0BD4-0DCA-4106-B47A-C754FD05C137",
+      "name": "Kerf/Forms/dark/neutral-border-normal",
+      "color": "#fdfdff32"
+    },
+    "dark.neutral-on-quiet": {
+      "id": "8FEE4B25-112F-43C2-BD2E-5FD93D35F9BF",
+      "name": "Kerf/Forms/dark/neutral-on-quiet",
+      "color": "#c2c2c6ff"
+    },
+    "light.danger-fill-loud": {
+      "id": "4138DBB9-5FDF-40B0-AC56-ADD077D221B9",
+      "name": "Kerf/Forms/light/danger-fill-loud",
+      "color": "#be060bff"
+    },
+    "dark.danger-fill-loud": {
+      "id": "A177A0F8-A74A-4EA9-9D55-576D1237988D",
+      "name": "Kerf/Forms/dark/danger-fill-loud",
+      "color": "#fd6265ff"
+    }
+  },
+  "bindings": {
+    "text": 0,
+    "fills": 40,
+    "borders": 78
+  }
+}

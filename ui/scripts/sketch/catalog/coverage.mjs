@@ -22,7 +22,7 @@ const families = [
   {
     name: 'Form controls',
     ticket: 'KF-8VXPDP',
-    status: 'pending',
+    status: 'supported',
     components: [
       'split-button',
       'text-field',
@@ -117,8 +117,8 @@ const rows = families.flatMap((family) =>
   ),
 );
 assert.equal(rows.length, 110, 'Reconcile catalog count and ticket batches');
-assert.equal(rows.filter((row) => row.status === 'supported').length, 7);
-assert.equal(rows.filter((row) => row.status === 'pending').length, 103);
+assert.equal(rows.filter((row) => row.status === 'supported').length, 27);
+assert.equal(rows.filter((row) => row.status === 'pending').length, 83);
 assert.equal(
   new Set(rows.map((row) => `${row.component}/${row.variant}`)).size,
   rows.length,
@@ -149,11 +149,12 @@ variant may be a multi-control showcase; a family ticket must export its actual
 individual component states and retain the sheet only as a catalog page.
 
 The Button pilot covers seven source showcase variants with 40 editable
-appearance Symbols in [Kerf-Button.sketch](button/README.md). Its Symbols are
-the first published native batch. The five pending family tickets cover the
+appearance Symbols in [Kerf-Button.sketch](button/README.md). The Form controls
+batch covers 20 showcase variants with 66 individual light/dark Symbols in
+[Kerf-Forms.sketch](forms/README.md). The four pending family tickets cover the
 other source variants, including ColorSwatches; they must update this matrix
 as they ship. The catalog's [install and update guide](README.md) identifies
-the current library and supported Sketch version.
+the current libraries and supported Sketch version.
 
 ## Family batches
 

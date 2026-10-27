@@ -735,7 +735,8 @@
     "check:design-templates": "node scripts/check-design-templates.mjs",
     "check:design-templates:drift": "node scripts/check-design-templates-drift.mjs",
     "design-templates:build": "node scripts/build-design-templates.mjs",
-    "sketch:button": "node scripts/sketch/button/pipeline.mjs"
+    "sketch:button": "node scripts/sketch/button/pipeline.mjs",
+    "sketch:forms": "node scripts/sketch/forms/pipeline.mjs"
   },
   "peerDependencies": {
     "@awesome.me/webawesome": "^3.14.0",

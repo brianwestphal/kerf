@@ -1,0 +1,200 @@
+{
+  "symbols": 66,
+  "nativeText": 130,
+  "nativePaths": 406,
+  "bitmaps": 0,
+  "assets": 12,
+  "assetBindings": 118,
+  "instances": [
+    {
+      "id": "split-button-tones-deploy-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 139.65625,
+      "fitWidth": 139.65625,
+      "wideWidth": 219.65625,
+      "height": 44
+    },
+    {
+      "id": "split-button-tones-deploy-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 139.65625,
+      "fitWidth": 139.65625,
+      "wideWidth": 219.65625,
+      "height": 44
+    },
+    {
+      "id": "text-field-labeled-project-name-light",
+      "linked": true,
+      "override": "Updated text-field",
+      "naturalWidth": 360,
+      "fitWidth": 360,
+      "wideWidth": 440,
+      "height": 93.78125
+    },
+    {
+      "id": "text-field-labeled-project-name-dark",
+      "linked": true,
+      "override": "Updated text-field",
+      "naturalWidth": 360,
+      "fitWidth": 360,
+      "wideWidth": 440,
+      "height": 93.78125
+    },
+    {
+      "id": "checkbox-states-include-release-light",
+      "linked": true,
+      "override": "Updated checkbox",
+      "naturalWidth": 360,
+      "fitWidth": 360,
+      "wideWidth": 440,
+      "height": 20
+    },
+    {
+      "id": "checkbox-states-include-release-dark",
+      "linked": true,
+      "override": "Updated checkbox",
+      "naturalWidth": 360,
+      "fitWidth": 360,
+      "wideWidth": 440,
+      "height": 20
+    },
+    {
+      "id": "checkbox-group-vertical-notification-channels-light",
+      "linked": true,
+      "override": "Updated checkbox-group",
+      "naturalWidth": 360,
+      "fitWidth": 360,
+      "wideWidth": 440,
+      "height": 176.171875
+    },
+    {
+      "id": "checkbox-group-vertical-notification-channels-dark",
+      "linked": true,
+      "override": "Updated checkbox-group",
+      "naturalWidth": 360,
+      "fitWidth": 360,
+      "wideWidth": 440,
+      "height": 176.171875
+    },
+    {
+      "id": "radio-group-vertical-layout-density-light",
+      "linked": true,
+      "override": "Updated",
+      "naturalWidth": 360,
+      "fitWidth": 360,
+      "wideWidth": 440,
+      "height": 176.171875
+    },
+    {
+      "id": "radio-group-vertical-layout-density-dark",
+      "linked": true,
+      "override": "Updated",
+      "naturalWidth": 360,
+      "fitWidth": 360,
+      "wideWidth": 440,
+      "height": 176.171875
+    },
+    {
+      "id": "switch-states-live-updates-light",
+      "linked": true,
+      "override": "Updated switch",
+      "naturalWidth": 360,
+      "fitWidth": 360,
+      "wideWidth": 440,
+      "height": 42.390625
+    },
+    {
+      "id": "switch-states-live-updates-dark",
+      "linked": true,
+      "override": "Updated switch",
+      "naturalWidth": 360,
+      "fitWidth": 360,
+      "wideWidth": 440,
+      "height": 42.390625
+    }
+  ],
+  "reopened": [
+    {
+      "name": "Split Button / Tones / Deploy / Light",
+      "overrides": ["Done"]
+    },
+    {
+      "name": "Split Button / Tones / Deploy / Dark",
+      "overrides": ["Done"]
+    },
+    {
+      "name": "Text Field / Labeled / Project Name / Light",
+      "overrides": ["Updated text-field", "Northstar Migration", "PROJECT NAME"]
+    },
+    {
+      "name": "Text Field / Labeled / Project Name / Dark",
+      "overrides": ["Updated text-field", "Northstar Migration", "PROJECT NAME"]
+    },
+    {
+      "name": "Checkbox / States / Include Release / Light",
+      "overrides": ["Updated checkbox"]
+    },
+    {
+      "name": "Checkbox / States / Include Release / Dark",
+      "overrides": ["Updated checkbox"]
+    },
+    {
+      "name": "Checkbox Group / Vertical / Notification Channels / Light",
+      "overrides": [
+        "Updated checkbox-group",
+        "Text messages",
+        "Weekly digest",
+        "On devices where you are signed in.",
+        "Push notifications",
+        "Email",
+        "NOTIFICATION CHANNELS"
+      ]
+    },
+    {
+      "name": "Checkbox Group / Vertical / Notification Channels / Dark",
+      "overrides": [
+        "Updated checkbox-group",
+        "Text messages",
+        "Weekly digest",
+        "On devices where you are signed in.",
+        "Push notifications",
+        "Email",
+        "NOTIFICATION CHANNELS"
+      ]
+    },
+    {
+      "name": "Radio Group / Vertical / Layout Density / Light",
+      "overrides": [
+        "Updated",
+        "Custom",
+        "Larger rows for touch screens.",
+        "Roomy",
+        "Balanced",
+        "Compact",
+        "LAYOUT DENSITY"
+      ]
+    },
+    {
+      "name": "Radio Group / Vertical / Layout Density / Dark",
+      "overrides": [
+        "Updated",
+        "Custom",
+        "Larger rows for touch screens.",
+        "Roomy",
+        "Balanced",
+        "Compact",
+        "LAYOUT DENSITY"
+      ]
+    },
+    {
+      "name": "Switch / States / Live Updates / Light",
+      "overrides": ["Updated switch", "Live updates"]
+    },
+    {
+      "name": "Switch / States / Live Updates / Dark",
+      "overrides": ["Updated switch", "Live updates"]
+    }
+  ]
+}
