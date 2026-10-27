@@ -12,26 +12,7 @@ function descendants(layer, dom, type) {
   return dom.find(type, layer);
 }
 
-function updateVectorGeometry(existing, incoming, fixtureId) {
-  if (existing.type !== incoming.type)
-    throw new Error('Vector layer type changed: ' + fixtureId);
-  if (existing.type === 'ShapePath') {
-    if (existing.shapeType !== incoming.shapeType)
-      throw new Error('Vector path type changed: ' + fixtureId);
-    existing.points = incoming.points;
-    existing.closed = incoming.closed;
-    existing.frame = incoming.frame.toJSON();
-    return;
-  }
-  if (!existing.layers || !incoming.layers)
-    throw new Error('Unsupported vector layer type: ' + fixtureId);
-  if (existing.layers.length !== incoming.layers.length)
-    throw new Error('Vector layer count changed: ' + fixtureId);
-  existing.frame = incoming.frame.toJSON();
-  existing.layers.forEach(function (child, index) {
-    updateVectorGeometry(child, incoming.layers[index], fixtureId);
-  });
-}
+var iconPaths = require('./icon-paths');
 
 function build(session, parameters, document) {
   var dom = session.dom;
@@ -39,6 +20,7 @@ function build(session, parameters, document) {
   var previous = parameters.hasVariantManifest
     ? readJSON(parameters.variantManifestPath).variants
     : {};
+  var pathMappings = readJSON(parameters.iconPathIdentitiesPath).fixtures;
   var report = [];
   fixtures.forEach(function (fixture, index) {
     session.check();
@@ -111,18 +93,17 @@ function build(session, parameters, document) {
       return layer.name === 'Icon';
     })[0];
     if (layout.icon) {
-      if (!icon) {
-        icon = dom.createLayerFromData(layout.icon.svg, 'svg');
-        if (!icon) throw new Error('Cannot import icon: ' + fixture.id);
-        icon.parent = symbol;
-      } else if (
-        parameters.variantIconGeometryUpdates &&
-        parameters.variantIconGeometryUpdates.indexOf(fixture.id) !== -1
-      ) {
+      if (pathMappings[fixture.id]) {
         var sourceIcon = dom.createLayerFromData(layout.icon.svg, 'svg');
-        if (!sourceIcon)
-          throw new Error('Cannot import updated icon: ' + fixture.id);
-        updateVectorGeometry(icon, sourceIcon, fixture.id);
+        if (!sourceIcon) throw new Error('Cannot import icon: ' + fixture.id);
+        icon = iconPaths.reconcile(
+          icon,
+          sourceIcon,
+          fixture.id,
+          pathMappings[fixture.id],
+          old && old.iconPaths,
+        );
+        if (!icon.parent) icon.parent = symbol;
       }
       icon.name = 'Icon';
       icon.nameIsFixed = true;
@@ -387,7 +368,7 @@ function build(session, parameters, document) {
       }),
       iconPaths: icon
         ? descendants(icon, dom, 'ShapePath').map(function (path) {
-            return { id: path.id, svg: path.getSVGPath() };
+            return { id: path.id, name: path.name, svg: path.getSVGPath() };
           })
         : [],
       stack: symbol.stackLayout.toJSON(),

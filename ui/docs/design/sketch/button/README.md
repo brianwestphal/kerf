@@ -55,7 +55,7 @@ if generation fails. Recover the runner before inspecting a leftover staged
 file after any interrupted job. When a library already exists, the staged file
 starts as a copy of it. The generator matches each Button variant by its
 stable fixture key in `identity-manifest.json`, updates the master and existing
-Text/Icon layers in place, and rejects a changed master, Symbol, or nested
+Text/Icon layers in place, and rejects a changed master, Symbol, or non-path
 layer ID before replacing the published file. The staged archive retains the
 original document ID, which is the consumer's Library link; the manifest
 checks that ID too. Renamed variants keep their key
@@ -69,14 +69,17 @@ layout values measured from resolved production CSS. The native generator
 maps the CSS system font to Sketch's system font at 16px medium and constructs
 a centered horizontal Stack with a fixed 16px icon, 8px gap, and 9px insets
 (8px padding plus the border). Existing icon vector paths retain their IDs,
-and their paint follows the production text color. When SVG path geometry
-changes, regeneration updates compatible native vector paths in place. The
-identity manifest records the ordered SVG geometry and path structure so
-repeat generation keeps the same IDs. Added or removed paths, changed path
-commands or types, reordered paths, and simultaneous edits to multiple paths
-with the same command structure are rejected before staging; they need an
-explicit identity mapping so consumer path overrides cannot silently move to
-a different vector.
+and their paint follows the production text color. `icon-path-identities.json`
+assigns an author key to each source SVG path in source order. Add a new key
+at the path's position; move a removed path's key from `active` to `retired`.
+Retired keys and IDs cannot be reused. Reorder the keys when reordering paths.
+The generator reconciles by key, preserving native IDs and consumer overrides
+even when multiple paths have identical commands. The identity and variant
+manifests record active key-to-ID bindings and retired tombstones. A changed
+native shape type under an existing key is rejected; retire that key and add
+a new one. Run a baseline generation before making structural edits to a
+library whose manifest does not yet have `iconPaths`. The importer currently
+expects one vector group directly under `Icon`, with ShapePaths under it.
 
 ## Outputs and checks
 

@@ -18,7 +18,8 @@
       "iconSourceHash": null,
       "iconGeometryParts": null,
       "iconStructure": null,
-      "retired": false
+      "retired": false,
+      "iconPaths": null
     },
     "secondary-light": {
       "name": "Button / Secondary / Light",
@@ -36,7 +37,8 @@
       "iconSourceHash": null,
       "iconGeometryParts": null,
       "iconStructure": null,
-      "retired": false
+      "retired": false,
+      "iconPaths": null
     },
     "icon-brand-light": {
       "name": "Button / Primary with Icon / Light",
@@ -61,13 +63,13 @@
               "children": [
                 {
                   "id": "696308A3-93F0-42F4-B8E3-74905792EC4D",
-                  "name": "Path",
+                  "name": "Icon Path / plus-horizontal",
                   "type": "ShapePath",
                   "children": []
                 },
                 {
                   "id": "D4B2F4DC-864B-4929-AB1C-60E74BF28D00",
-                  "name": "Path",
+                  "name": "Icon Path / plus-vertical",
                   "type": "ShapePath",
                   "children": []
                 }
@@ -86,7 +88,20 @@
         "path:Mh",
         "path:Mv"
       ],
-      "retired": false
+      "retired": false,
+      "iconPaths": {
+        "active": [
+          {
+            "key": "plus-horizontal",
+            "id": "696308A3-93F0-42F4-B8E3-74905792EC4D"
+          },
+          {
+            "key": "plus-vertical",
+            "id": "D4B2F4DC-864B-4929-AB1C-60E74BF28D00"
+          }
+        ],
+        "retired": []
+      }
     },
     "primary-brand-dark": {
       "name": "Button / Primary Brand / Dark",
@@ -104,7 +119,8 @@
       "iconSourceHash": null,
       "iconGeometryParts": null,
       "iconStructure": null,
-      "retired": false
+      "retired": false,
+      "iconPaths": null
     },
     "secondary-dark": {
       "name": "Button / Secondary / Dark",
@@ -122,7 +138,8 @@
       "iconSourceHash": null,
       "iconGeometryParts": null,
       "iconStructure": null,
-      "retired": false
+      "retired": false,
+      "iconPaths": null
     },
     "icon-brand-dark": {
       "name": "Button / Primary with Icon / Dark",
@@ -147,13 +164,13 @@
               "children": [
                 {
                   "id": "55430DD7-4B31-43F3-88B6-D73322844045",
-                  "name": "Path",
+                  "name": "Icon Path / plus-horizontal",
                   "type": "ShapePath",
                   "children": []
                 },
                 {
                   "id": "6220FA1C-63A7-4939-9023-3852B319DE1B",
-                  "name": "Path",
+                  "name": "Icon Path / plus-vertical",
                   "type": "ShapePath",
                   "children": []
                 }
@@ -172,7 +189,20 @@
         "path:Mh",
         "path:Mv"
       ],
-      "retired": false
+      "retired": false,
+      "iconPaths": {
+        "active": [
+          {
+            "key": "plus-horizontal",
+            "id": "55430DD7-4B31-43F3-88B6-D73322844045"
+          },
+          {
+            "key": "plus-vertical",
+            "id": "6220FA1C-63A7-4939-9023-3852B319DE1B"
+          }
+        ],
+        "retired": []
+      }
     }
   },
   "assets": {

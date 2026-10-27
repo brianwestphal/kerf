@@ -358,10 +358,12 @@
     "iconPaths": [
       {
         "id": "53197DBE-6A9C-4CFF-B650-097184B4E65C",
+        "name": "Icon Path / plus-horizontal",
         "svg": "M0,4.66666667 L9.33333333,4.66666667"
       },
       {
         "id": "82EDE803-C525-44FA-BCA6-F408466B00B0",
+        "name": "Icon Path / plus-vertical",
         "svg": "M4.66666667,0 L4.66666667,9.33333333"
       }
     ],
@@ -1222,10 +1224,12 @@
     "iconPaths": [
       {
         "id": "945DEAEB-6905-4DBB-8EF2-28069473E025",
+        "name": "Icon Path / plus-horizontal",
         "svg": "M0,4.66666667 L9.33333333,4.66666667"
       },
       {
         "id": "1F6DF3B1-EC1A-46EE-846B-6653C87C5748",
+        "name": "Icon Path / plus-vertical",
         "svg": "M4.66666667,0 L4.66666667,9.33333333"
       }
     ],

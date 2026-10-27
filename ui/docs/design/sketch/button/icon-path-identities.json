@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "fixtures": {
+    "icon-brand-light": { "active": ["plus-horizontal", "plus-vertical"], "retired": [] },
+    "icon-brand-dark": { "active": ["plus-horizontal", "plus-vertical"], "retired": [] },
+    "icon-only-light": { "active": ["plus-horizontal", "plus-vertical"], "retired": [] },
+    "icon-only-dark": { "active": ["plus-horizontal", "plus-vertical"], "retired": [] }
+  }
+}

@@ -15,7 +15,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "primary-success-light": {
       "masterId": "15F07818-47C7-4915-AA44-BA87BF46EDF2",
@@ -31,7 +32,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "primary-danger-light": {
       "masterId": "34DE25E1-AFBD-4578-912A-F2B2A97E698E",
@@ -47,7 +49,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "secondary-danger-light": {
       "masterId": "F7B7A302-C401-4665-AC6A-1FED0CCF72B2",
@@ -63,7 +66,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "plain-neutral-light": {
       "masterId": "07E65578-FEBA-4665-9788-CCD1481D03A6",
@@ -79,7 +83,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "compact-neutral-light": {
       "masterId": "525E5A91-1576-4200-AA43-9C37A0D62D2A",
@@ -95,7 +100,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "pill-brand-light": {
       "masterId": "AE5DF29F-C5EB-441A-93C4-C2937D2485B6",
@@ -111,7 +117,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "icon-only-light": {
       "masterId": "CF5275B3-D03C-4B7C-9C43-A85EEAA06A95",
@@ -133,7 +140,20 @@
       "iconStructure": [
         "path:Mh",
         "path:Mv"
-      ]
+      ],
+      "iconPaths": {
+        "active": [
+          {
+            "key": "plus-horizontal",
+            "id": "53197DBE-6A9C-4CFF-B650-097184B4E65C"
+          },
+          {
+            "key": "plus-vertical",
+            "id": "82EDE803-C525-44FA-BCA6-F408466B00B0"
+          }
+        ],
+        "retired": []
+      }
     },
     "disabled-neutral-light": {
       "masterId": "ED939306-CE70-449F-BB2C-4C914CDEB948",
@@ -149,7 +169,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "disabled-success-light": {
       "masterId": "27A82E55-A7E4-49CD-B139-0E2B76852241",
@@ -165,7 +186,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "pressed-neutral-light": {
       "masterId": "00B8E15C-FB3C-49CC-B47E-454061DCB63E",
@@ -181,7 +203,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "pressed-secondary-light": {
       "masterId": "10233613-F7DA-40F5-A52D-1AB3D1EF7A35",
@@ -197,7 +220,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "loading-brand-light": {
       "masterId": "11848BB5-6F07-4051-ACE7-05ACA0B59AFA",
@@ -218,7 +242,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "badge-brand-light": {
       "masterId": "2C26848F-85FD-4E78-834A-DD984EFB8588",
@@ -244,7 +269,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "badge-dot-light": {
       "masterId": "D0B79829-C084-42DD-8A2A-DE75282E0390",
@@ -265,7 +291,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "focus-standard-light": {
       "masterId": "2CE03D0B-66C2-40C7-9049-E60C405A8095",
@@ -281,7 +308,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "focus-brand-light": {
       "masterId": "70EB33AB-AE26-4B2E-84E2-793754773D8E",
@@ -297,7 +325,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "primary-neutral-dark": {
       "masterId": "CE3AC45C-8AB0-4059-811B-B3EB521E2999",
@@ -313,7 +342,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "primary-success-dark": {
       "masterId": "3A689FB1-306B-4524-9012-D7589C14EC7A",
@@ -329,7 +359,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "primary-danger-dark": {
       "masterId": "BD3085FD-835F-4331-AC69-81D516F52E7C",
@@ -345,7 +376,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "secondary-danger-dark": {
       "masterId": "F18E7033-88E9-4528-90CE-7465B96FF75D",
@@ -361,7 +393,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "plain-neutral-dark": {
       "masterId": "B78940DC-B2C0-4D63-8ABB-7105A991ECE6",
@@ -377,7 +410,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "compact-neutral-dark": {
       "masterId": "D63F2763-DEEB-4CC2-B867-9947F28613DB",
@@ -393,7 +427,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "pill-brand-dark": {
       "masterId": "BA1F32A1-E01F-453E-BD6C-907C99C22B2C",
@@ -409,7 +444,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "icon-only-dark": {
       "masterId": "C39E129F-EE15-415C-BD9D-505AA7933D2C",
@@ -431,7 +467,20 @@
       "iconStructure": [
         "path:Mh",
         "path:Mv"
-      ]
+      ],
+      "iconPaths": {
+        "active": [
+          {
+            "key": "plus-horizontal",
+            "id": "945DEAEB-6905-4DBB-8EF2-28069473E025"
+          },
+          {
+            "key": "plus-vertical",
+            "id": "1F6DF3B1-EC1A-46EE-846B-6653C87C5748"
+          }
+        ],
+        "retired": []
+      }
     },
     "disabled-neutral-dark": {
       "masterId": "9D3ACF8A-39EE-483F-9733-A71E29F4E720",
@@ -447,7 +496,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "disabled-success-dark": {
       "masterId": "C0F532C7-0E68-4AAE-BC7D-2F54EE233769",
@@ -463,7 +513,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "pressed-neutral-dark": {
       "masterId": "F355F494-B502-4A0F-AC34-89F9D83A4E62",
@@ -479,7 +530,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "pressed-secondary-dark": {
       "masterId": "E87A7EB1-7E54-4CF7-9166-FDF8807772E4",
@@ -495,7 +547,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "loading-brand-dark": {
       "masterId": "6AB32C16-7A16-4570-B70B-200CB17ACEFD",
@@ -516,7 +569,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "badge-brand-dark": {
       "masterId": "5887E135-EA03-4E91-AFBD-766554A8737A",
@@ -542,7 +596,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "badge-dot-dark": {
       "masterId": "C924F38C-13EE-48B1-A1D1-C7071B5AB382",
@@ -563,7 +618,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "focus-standard-dark": {
       "masterId": "B246EFC6-9EBF-4F0F-83CC-EE89696225C0",
@@ -579,7 +635,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     },
     "focus-brand-dark": {
       "masterId": "D2E3861E-207B-45FF-AB29-1FBB05DCB20C",
@@ -595,7 +652,8 @@
       "iconGeometryHash": null,
       "iconSourceHash": null,
       "iconGeometryParts": null,
-      "iconStructure": null
+      "iconStructure": null,
+      "iconPaths": null
     }
   }
 }

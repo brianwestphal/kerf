@@ -36,6 +36,7 @@ const paths = {
   assetReportPath: join(output, 'asset-report.json'),
   variantFixturesPath: join(output, 'variant-fixtures.json'),
   variantManifestPath: join(output, 'variant-manifest.json'),
+  iconPathIdentitiesPath: join(output, 'icon-path-identities.json'),
   variantExportsPath: join(output, 'variant-exports'),
   variantConsumerPath: join(output, 'Button-Variant-Consumer-Test.sketch'),
   variantConsumerExportsPath: join(output, 'variant-consumer-exports'),
@@ -196,11 +197,114 @@ function identityTree(layers) {
 }
 
 function identityIds(layers) {
-  return layers.map((layer) => ({
-    id: layer.id,
-    type: layer.type,
-    children: identityIds(layer.children),
-  }));
+  return layers
+    .filter((layer) => layer.type !== 'ShapePath')
+    .map((layer) => ({
+      id: layer.id,
+      type: layer.type,
+      children: identityIds(layer.children),
+    }));
+}
+
+function nativeIconPaths(layers) {
+  const icon = layers.find((layer) => layer.name === 'Icon');
+  if (!icon) return [];
+  assert.equal(icon.children.length, 1, 'Icon needs one vector group');
+  const result = icon.children[0].children;
+  assert.ok(result.every((layer) => layer.type === 'ShapePath'));
+  return result;
+}
+
+async function pathMappings() {
+  const data = JSON.parse(await readFile(paths.iconPathIdentitiesPath, 'utf8'));
+  assert.equal(data.version, 1);
+  return data.fixtures;
+}
+
+function validatePathMapping(fixture, mapping, before) {
+  const geometry = iconGeometry(fixture.layout.icon);
+  if (!geometry) {
+    assert.equal(mapping, undefined, `${fixture.id} has keys but no icon`);
+    return;
+  }
+  assert.ok(mapping, `${fixture.id} needs explicit icon path keys`);
+  assert.equal(
+    mapping.active.length,
+    geometry.parts.length,
+    `${fixture.id} key count`,
+  );
+  for (const list of [mapping.active, mapping.retired]) {
+    assert.ok(Array.isArray(list));
+    for (const key of list) assert.match(key, /^[a-z][a-z0-9-]*$/);
+  }
+  assert.equal(
+    new Set([...mapping.active, ...mapping.retired]).size,
+    mapping.active.length + mapping.retired.length,
+    `${fixture.id} duplicate/reused key`,
+  );
+  if (!before?.iconPaths) {
+    if (before?.iconGeometryParts)
+      assert.deepEqual(
+        geometry.parts,
+        before.iconGeometryParts,
+        `${fixture.id} must migrate baseline keys before structural edits`,
+      );
+    return;
+  }
+  const active = new Set(before.iconPaths.active.map(({ key }) => key));
+  for (const { key } of before.iconPaths.retired) {
+    assert.ok(
+      mapping.retired.includes(key),
+      `${fixture.id} lost retired key ${key}`,
+    );
+    assert.ok(
+      !mapping.active.includes(key),
+      `${fixture.id} reused retired key ${key}`,
+    );
+  }
+  for (const key of active)
+    assert.ok(
+      mapping.active.includes(key) || mapping.retired.includes(key),
+      `${fixture.id} must retire removed key ${key}`,
+    );
+}
+
+function keyedPathState(fixture, mapping, layers, before) {
+  if (!fixture.layout.icon) return null;
+  const current = nativeIconPaths(layers);
+  assert.equal(
+    current.length,
+    mapping.active.length,
+    `${fixture.id} native path count`,
+  );
+  const oldActive = new Map(
+    (before?.iconPaths?.active ?? []).map((entry) => [entry.key, entry.id]),
+  );
+  const oldRetired = before?.iconPaths?.retired ?? [];
+  const active = current.map((layer, index) => {
+    const key = mapping.active[index];
+    assert.equal(layer.name, `Icon Path / ${key}`);
+    if (oldActive.has(key))
+      assert.equal(
+        layer.id,
+        oldActive.get(key),
+        `${fixture.id}/${key} path ID changed`,
+      );
+    assert.ok(
+      !oldRetired.some(({ id }) => id === layer.id),
+      `${fixture.id} reused retired ID`,
+    );
+    return { key, id: layer.id };
+  });
+  const retired = [...oldRetired];
+  for (const entry of before?.iconPaths?.active ?? [])
+    if (!mapping.active.includes(entry.key)) retired.push(entry);
+  assert.deepEqual(
+    retired.map(({ key }) => key).toSorted(),
+    mapping.retired.toSorted(),
+    `${fixture.id} retired key record disagrees`,
+  );
+  return { active, retired };
 }
 
 function iconGeometry(icon) {
@@ -246,9 +350,11 @@ async function readIdentityManifest() {
 async function changedIconFixtures() {
   const fixtures = JSON.parse(await readFile(paths.fixturesPath, 'utf8'));
   const previous = await readIdentityManifest();
+  const mappings = await pathMappings();
   const changed = [];
   for (const fixture of fixtures) {
     const before = previous.variants[fixture.id];
+    validatePathMapping(fixture, mappings[fixture.id], before);
     if (!before) continue;
     const next = iconGeometry(fixture.layout.icon);
     if (
@@ -261,33 +367,6 @@ async function changedIconFixtures() {
       before.iconGeometryParts && next,
       `${fixture.id} added/removed an icon or lacks a geometry baseline`,
     );
-    assert.equal(
-      next.parts.length,
-      before.iconGeometryParts.length,
-      `${fixture.id} added/removed vector paths; explicit ID mapping is required`,
-    );
-    assert.deepEqual(
-      next.structure,
-      before.iconStructure,
-      `${fixture.id} changed path types or commands; explicit ID mapping is required`,
-    );
-    if (next.hash !== before.iconGeometryHash)
-      assert.notDeepEqual(
-        next.parts.toSorted(),
-        before.iconGeometryParts.toSorted(),
-        `${fixture.id} reordered vector paths; consumer path overrides must not remap`,
-      );
-    const changedByStructure = new Map();
-    next.parts.forEach((part, index) => {
-      if (part === before.iconGeometryParts[index]) return;
-      const signature = next.structure[index];
-      const count = (changedByStructure.get(signature) ?? 0) + 1;
-      assert.ok(
-        count <= 1,
-        `${fixture.id} changed multiple ${signature} paths; explicit ID mapping is required to distinguish edits from reordering`,
-      );
-      changedByStructure.set(signature, count);
-    });
     changed.push(fixture.id);
   }
   return changed;
@@ -300,6 +379,7 @@ async function updateIdentityManifest(libraryPath, assetReportPath) {
   );
   const previous = await readIdentityManifest();
   const assets = JSON.parse(await readFile(assetReportPath, 'utf8'));
+  const mappings = await pathMappings();
   for (const kind of ['swatches', 'layerStyles', 'textStyles']) {
     for (const [key, oldAsset] of Object.entries(
       previous.assets?.[kind] ?? {},
@@ -340,6 +420,12 @@ async function updateIdentityManifest(libraryPath, assetReportPath) {
       retired: false,
     };
     const before = previous.variants[fixture.id];
+    identity.iconPaths = keyedPathState(
+      fixture,
+      mappings[fixture.id],
+      identity.layers,
+      before,
+    );
     if (before) {
       assert.equal(identity.id, before.id, `${fixture.id} master ID changed`);
       assert.equal(
@@ -383,11 +469,33 @@ async function updateVariantManifest() {
   );
   assert.equal(report.length, fixtures.length);
   const variants = {};
+  const mappings = await pathMappings();
   for (const fixture of fixtures) {
     const current = report.find((entry) => entry.id === fixture.id);
     assert.ok(current, `Missing native variant ${fixture.id}`);
     const icon = iconGeometry(fixture.layout.icon);
     const before = previous.variants[fixture.id];
+    const iconPaths = fixture.layout.icon
+      ? keyedPathState(
+          fixture,
+          mappings[fixture.id],
+          [
+            {
+              name: 'Icon',
+              children: [
+                {
+                  children: current.iconPaths.map(({ id, name }) => ({
+                    id,
+                    name,
+                    type: 'ShapePath',
+                  })),
+                },
+              ],
+            },
+          ],
+          before,
+        )
+      : null;
     if (before) {
       assert.equal(
         current.masterId,
@@ -418,6 +526,7 @@ async function updateVariantManifest() {
       iconSourceHash: icon?.sourceHash ?? null,
       iconGeometryParts: icon?.parts ?? null,
       iconStructure: icon?.structure ?? null,
+      iconPaths,
     };
   }
   return `${JSON.stringify({ version: 1, variants }, null, 2)}\n`;
@@ -435,8 +544,10 @@ async function changedVariantIcons() {
     },
   );
   const changed = [];
+  const mappings = await pathMappings();
   for (const fixture of fixtures) {
     const before = previous.variants[fixture.id];
+    validatePathMapping(fixture, mappings[fixture.id], before);
     if (!before?.iconGeometryParts) continue;
     const next = iconGeometry(fixture.layout.icon);
     if (
@@ -445,33 +556,6 @@ async function changedVariantIcons() {
     )
       continue;
     assert.ok(next, `${fixture.id} removed its icon`);
-    assert.equal(
-      next.parts.length,
-      before.iconGeometryParts.length,
-      `${fixture.id} added/removed vector paths; explicit ID mapping is required`,
-    );
-    assert.deepEqual(
-      next.structure,
-      before.iconStructure,
-      `${fixture.id} changed path types or commands; explicit ID mapping is required`,
-    );
-    if (next.hash !== before.iconGeometryHash)
-      assert.notDeepEqual(
-        next.parts.toSorted(),
-        before.iconGeometryParts.toSorted(),
-        `${fixture.id} reordered vector paths; consumer overrides must not remap`,
-      );
-    const changes = new Map();
-    next.parts.forEach((part, index) => {
-      if (part === before.iconGeometryParts[index]) return;
-      const signature = next.structure[index];
-      const count = (changes.get(signature) ?? 0) + 1;
-      assert.ok(
-        count <= 1,
-        `${fixture.id} changed multiple ${signature} paths; explicit ID mapping is required`,
-      );
-      changes.set(signature, count);
-    });
     changed.push(fixture.id);
   }
   return changed;
@@ -555,6 +639,7 @@ if (command === 'generate' || command === 'all') {
       iconGeometryUpdates,
       hasVariantManifest,
       variantIconGeometryUpdates,
+      iconPathIdentitiesPath: paths.iconPathIdentitiesPath,
     });
   } catch (error) {
     throw new Error(
