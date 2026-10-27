@@ -17,6 +17,27 @@ function layerIdentity(layer) {
   };
 }
 
+function updateIconGeometry(existing, incoming, fixtureId) {
+  if (existing.type !== incoming.type)
+    throw new Error('Icon layer type changed: ' + fixtureId);
+  if (existing.type === 'ShapePath') {
+    if (existing.shapeType !== incoming.shapeType)
+      throw new Error('Icon path shape type changed: ' + fixtureId);
+    existing.points = incoming.points;
+    existing.closed = incoming.closed;
+    existing.frame = incoming.frame.toJSON();
+    return;
+  }
+  if (!existing.layers || !incoming.layers)
+    throw new Error('Unsupported icon layer type: ' + fixtureId);
+  if (existing.layers.length !== incoming.layers.length)
+    throw new Error('Icon layer count changed: ' + fixtureId);
+  existing.frame = incoming.frame.toJSON();
+  existing.layers.forEach(function (child, index) {
+    updateIconGeometry(child, incoming.layers[index], fixtureId);
+  });
+}
+
 function applyLayout(session, parameters, document) {
   var dom = session.dom;
   var fixtures = readJSON(parameters.fixturesPath);
@@ -63,6 +84,14 @@ function applyLayout(session, parameters, document) {
         icon = dom.createLayerFromData(layout.icon.svg, 'svg');
         if (!icon) throw new Error('Cannot import icon in ' + fixture.name);
         icon.parent = symbol;
+      } else if (
+        parameters.iconGeometryUpdates &&
+        parameters.iconGeometryUpdates.indexOf(fixture.id) !== -1
+      ) {
+        var sourceIcon = dom.createLayerFromData(layout.icon.svg, 'svg');
+        if (!sourceIcon)
+          throw new Error('Cannot import updated icon in ' + fixture.name);
+        updateIconGeometry(icon, sourceIcon, fixture.id);
       }
       icon.name = 'Icon';
       icon.nameIsFixed = true;

@@ -15,6 +15,9 @@
         }
       ],
       "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null,
       "retired": false
     },
     "secondary-light": {
@@ -30,6 +33,9 @@
         }
       ],
       "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null,
       "retired": false
     },
     "icon-brand-light": {
@@ -71,6 +77,15 @@
         }
       ],
       "iconGeometryHash": "0a647565802af0f1e8485a3df076f020319e034ea152f60889b61e089fce89ef",
+      "iconSourceHash": "de4413916212fa74580dde74b17f71ff25543c703e5014c68b89c7b068443fa3",
+      "iconGeometryParts": [
+        "<path d=\"M5 12h14\">",
+        "<path d=\"M12 5v14\">"
+      ],
+      "iconStructure": [
+        "path:Mh",
+        "path:Mv"
+      ],
       "retired": false
     },
     "primary-brand-dark": {
@@ -86,6 +101,9 @@
         }
       ],
       "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null,
       "retired": false
     },
     "secondary-dark": {
@@ -101,6 +119,9 @@
         }
       ],
       "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null,
       "retired": false
     },
     "icon-brand-dark": {
@@ -142,6 +163,15 @@
         }
       ],
       "iconGeometryHash": "0a647565802af0f1e8485a3df076f020319e034ea152f60889b61e089fce89ef",
+      "iconSourceHash": "ee5895c039a05352b279c55a9e2da23163917319cafb30bbd7982b5c47e4a1cc",
+      "iconGeometryParts": [
+        "<path d=\"M5 12h14\">",
+        "<path d=\"M12 5v14\">"
+      ],
+      "iconStructure": [
+        "path:Mh",
+        "path:Mv"
+      ],
       "retired": false
     }
   }

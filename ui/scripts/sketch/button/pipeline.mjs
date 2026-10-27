@@ -149,19 +149,94 @@ function identityIds(layers) {
   }));
 }
 
-function iconGeometryHash(icon) {
+function iconGeometry(icon) {
   if (!icon) return null;
-  const geometry = [
+  const parts = [
     ...icon.svg.matchAll(
       /<(?:path|line|polyline|polygon|rect|circle|ellipse)\b[^>]*>/g,
     ),
-  ]
-    .map(([tag]) =>
-      tag.replace(/\s+(?:stroke|fill|color)="[^"]*"/g, '').replace(/\s+/g, ' '),
+  ].map(([tag]) =>
+    tag.replace(/\s+(?:stroke|fill|color)="[^"]*"/g, '').replace(/\s+/g, ' '),
+  );
+  assert.ok(parts.length, 'Icon SVG has no vector geometry.');
+  const structure = parts.map((part) => {
+    const tag = part.match(/^<([a-z]+)/)?.[1];
+    if (tag === 'path') {
+      const data = part.match(/\bd="([^"]*)"/)?.[1];
+      assert.ok(data, 'Icon path has no SVG data.');
+      return `path:${[...data.matchAll(/[a-zA-Z]/g)].map(([command]) => command).join('')}`;
+    }
+    return `${tag}:${[...part.matchAll(/\s([a-z][a-z0-9-]*)=/g)]
+      .map(([, name]) => name)
+      .sort()
+      .join(',')}`;
+  });
+  return {
+    parts,
+    structure,
+    hash: createHash('sha256').update(parts.join('')).digest('hex'),
+    sourceHash: createHash('sha256').update(icon.svg).digest('hex'),
+  };
+}
+
+async function readIdentityManifest() {
+  return readFile(paths.identitiesPath, 'utf8').then(
+    (content) => JSON.parse(content),
+    (error) => {
+      if (error.code === 'ENOENT') return { version: 1, variants: {} };
+      throw error;
+    },
+  );
+}
+
+async function changedIconFixtures() {
+  const fixtures = JSON.parse(await readFile(paths.fixturesPath, 'utf8'));
+  const previous = await readIdentityManifest();
+  const changed = [];
+  for (const fixture of fixtures) {
+    const before = previous.variants[fixture.id];
+    if (!before) continue;
+    const next = iconGeometry(fixture.layout.icon);
+    if (
+      (next?.hash ?? null) === before.iconGeometryHash &&
+      (!before.iconSourceHash ||
+        (next?.sourceHash ?? null) === before.iconSourceHash)
     )
-    .join('');
-  assert.ok(geometry, 'Icon SVG has no vector geometry.');
-  return createHash('sha256').update(geometry).digest('hex');
+      continue;
+    assert.ok(
+      before.iconGeometryParts && next,
+      `${fixture.id} added/removed an icon or lacks a geometry baseline`,
+    );
+    assert.equal(
+      next.parts.length,
+      before.iconGeometryParts.length,
+      `${fixture.id} added/removed vector paths; explicit ID mapping is required`,
+    );
+    assert.deepEqual(
+      next.structure,
+      before.iconStructure,
+      `${fixture.id} changed path types or commands; explicit ID mapping is required`,
+    );
+    if (next.hash !== before.iconGeometryHash)
+      assert.notDeepEqual(
+        next.parts.toSorted(),
+        before.iconGeometryParts.toSorted(),
+        `${fixture.id} reordered vector paths; consumer path overrides must not remap`,
+      );
+    const changedByStructure = new Map();
+    next.parts.forEach((part, index) => {
+      if (part === before.iconGeometryParts[index]) return;
+      const signature = next.structure[index];
+      const count = (changedByStructure.get(signature) ?? 0) + 1;
+      assert.ok(
+        count <= 1,
+        `${fixture.id} changed multiple ${signature} paths; explicit ID mapping is required to distinguish edits from reordering`,
+      );
+      changedByStructure.set(signature, count);
+    });
+    changed.push(fixture.id);
+  }
+  return changed;
 }
 
 async function updateIdentityManifest(libraryPath) {
@@ -169,13 +244,7 @@ async function updateIdentityManifest(libraryPath) {
   const report = JSON.parse(
     await readFile(join(output, 'layout-report.json'), 'utf8'),
   );
-  const previous = await readFile(paths.identitiesPath, 'utf8').then(
-    (content) => JSON.parse(content),
-    (error) => {
-      if (error.code === 'ENOENT') return { version: 1, variants: {} };
-      throw error;
-    },
-  );
+  const previous = await readIdentityManifest();
   const libraryDocumentId = (
     await exec('python3', [
       join(scriptDirectory, 'document-id.py'),
@@ -192,12 +261,16 @@ async function updateIdentityManifest(libraryPath) {
   for (const fixture of fixtures) {
     const current = report.find((entry) => entry.fixtureId === fixture.id);
     assert.ok(current, `Missing identity report for ${fixture.id}`);
+    const icon = iconGeometry(fixture.layout.icon);
     const identity = {
       name: current.name,
       id: current.id,
       symbolId: current.symbolId,
       layers: identityTree(current.layers),
-      iconGeometryHash: iconGeometryHash(fixture.layout.icon),
+      iconGeometryHash: icon?.hash ?? null,
+      iconSourceHash: icon?.sourceHash ?? null,
+      iconGeometryParts: icon?.parts ?? null,
+      iconStructure: icon?.structure ?? null,
       retired: false,
     };
     const before = previous.variants[fixture.id];
@@ -213,12 +286,6 @@ async function updateIdentityManifest(libraryPath) {
         identityIds(before.layers),
         `${fixture.id} layer identities changed`,
       );
-      if (before.iconGeometryHash)
-        assert.equal(
-          identity.iconGeometryHash,
-          before.iconGeometryHash,
-          `${fixture.id} icon geometry changed; update the existing vector paths in place before publishing`,
-        );
     }
     variants[fixture.id] = identity;
   }
@@ -274,6 +341,13 @@ if (command === 'generate' || command === 'all') {
     () => true,
     () => false,
   );
+  const hasIdentityManifest = await access(paths.identitiesPath).then(
+    () => true,
+    () => false,
+  );
+  const iconGeometryUpdates = hasIdentityManifest
+    ? await changedIconFixtures()
+    : [];
   if (seedExisting) await copyFile(paths.libraryPath, stagingPath);
   const originalDocumentId = seedExisting
     ? (
@@ -283,16 +357,13 @@ if (command === 'generate' || command === 'all') {
         ])
       ).stdout.trim()
     : null;
-  const hasIdentityManifest = await access(paths.identitiesPath).then(
-    () => true,
-    () => false,
-  );
   try {
     await runNative(['build', 'layout'], {
       ...paths,
       libraryPath: stagingPath,
       seedExisting,
       hasIdentityManifest,
+      iconGeometryUpdates,
     });
   } catch (error) {
     throw new Error(

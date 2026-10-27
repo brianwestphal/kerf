@@ -67,9 +67,14 @@ layout values measured from resolved production CSS. The native generator
 maps the CSS system font to Sketch's system font at 16px medium and constructs
 a centered horizontal Stack with a fixed 16px icon, 8px gap, and 9px insets
 (8px padding plus the border). Existing icon vector paths retain their IDs,
-and their paint follows the production text color. A change to the icon's
-vector geometry is rejected before publication until in-place path updates
-are implemented in KF-9MAP88.
+and their paint follows the production text color. When SVG path geometry
+changes, regeneration updates compatible native vector paths in place. The
+identity manifest records the ordered SVG geometry and path structure so
+repeat generation keeps the same IDs. Added or removed paths, changed path
+commands or types, reordered paths, and simultaneous edits to multiple paths
+with the same command structure are rejected before staging; they need an
+explicit identity mapping so consumer path overrides cannot silently move to
+a different vector.
 
 ## Outputs and checks
 
