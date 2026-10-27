@@ -24,6 +24,7 @@ export default [
       'scripts/sketch/forms/tasks/*.js',
       'scripts/sketch/advanced/tasks/*.js',
       'scripts/sketch/lists/tasks/*.js',
+      'scripts/sketch/toolbar/tasks/*.js',
     ],
     languageOptions: {
       sourceType: 'commonjs',

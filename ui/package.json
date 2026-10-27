@@ -739,7 +739,8 @@
     "sketch:button": "node scripts/sketch/button/pipeline.mjs",
     "sketch:forms": "node scripts/sketch/forms/pipeline.mjs",
     "sketch:advanced": "node scripts/sketch/advanced/pipeline.mjs",
-    "sketch:lists": "node scripts/sketch/lists/pipeline.mjs"
+    "sketch:lists": "node scripts/sketch/lists/pipeline.mjs",
+    "sketch:toolbar": "node scripts/sketch/toolbar/pipeline.mjs"
   },
   "peerDependencies": {
     "@awesome.me/webawesome": "^3.14.0",

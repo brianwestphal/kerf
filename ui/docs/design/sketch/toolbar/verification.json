@@ -1,0 +1,214 @@
+{
+  "symbols": 70,
+  "nativeText": 90,
+  "nativePaths": 916,
+  "bitmaps": 0,
+  "assets": 23,
+  "assetBindings": 314,
+  "instances": [
+    {
+      "id": "toolbar-control-group-with-text-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 126.234375,
+      "fitWidth": 126.234375,
+      "wideWidth": 206.234375,
+      "height": 44
+    },
+    {
+      "id": "toolbar-control-group-with-text-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 126.234375,
+      "fitWidth": 126.234375,
+      "wideWidth": 206.234375,
+      "height": 44
+    },
+    {
+      "id": "toolbar-title-and-actions-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 600,
+      "fitWidth": 600,
+      "wideWidth": 680,
+      "height": 60
+    },
+    {
+      "id": "toolbar-title-and-actions-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 600,
+      "fitWidth": 600,
+      "wideWidth": 680,
+      "height": 60
+    },
+    {
+      "id": "toolbar-text-large-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 162.625,
+      "fitWidth": 162.625,
+      "wideWidth": 242.625,
+      "height": 40
+    },
+    {
+      "id": "toolbar-text-large-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 162.625,
+      "fitWidth": 162.625,
+      "wideWidth": 242.625,
+      "height": 40
+    },
+    {
+      "id": "tab-bar-workspace-tabs-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 600,
+      "fitWidth": 600,
+      "wideWidth": 680,
+      "height": 60
+    },
+    {
+      "id": "tab-bar-workspace-tabs-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 600,
+      "fitWidth": 600,
+      "wideWidth": 680,
+      "height": 60
+    },
+    {
+      "id": "segmented-control-equal-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 204.578125,
+      "fitWidth": 204.578125,
+      "wideWidth": 284.578125,
+      "height": 44
+    },
+    {
+      "id": "segmented-control-equal-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 204.578125,
+      "fitWidth": 204.578125,
+      "wideWidth": 284.578125,
+      "height": 44
+    },
+    {
+      "id": "choice-chips-color-palette-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 560,
+      "fitWidth": 560,
+      "wideWidth": 640,
+      "height": 72
+    },
+    {
+      "id": "choice-chips-color-palette-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 560,
+      "fitWidth": 560,
+      "wideWidth": 640,
+      "height": 72
+    },
+    {
+      "id": "chip-tags-urgent-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 83.15625,
+      "fitWidth": 83.15625,
+      "wideWidth": 163.15625,
+      "height": 28
+    },
+    {
+      "id": "chip-tags-urgent-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 83.15625,
+      "fitWidth": 83.15625,
+      "wideWidth": 163.15625,
+      "height": 28
+    }
+  ],
+  "reopened": [
+    {
+      "name": "Toolbar Control Group / With Text / Control / Light",
+      "overrides": ["Done"]
+    },
+    {
+      "name": "Toolbar Control Group / With Text / Control / Dark",
+      "overrides": ["Done"]
+    },
+    {
+      "name": "Toolbar / Title And Actions / Control / Light",
+      "overrides": ["Done"]
+    },
+    {
+      "name": "Toolbar / Title And Actions / Control / Dark",
+      "overrides": ["Done"]
+    },
+    {
+      "name": "Toolbar Text / Large / Control / Light",
+      "overrides": ["Done"]
+    },
+    {
+      "name": "Toolbar Text / Large / Control / Dark",
+      "overrides": ["Done"]
+    },
+    {
+      "name": "Tab Bar / Workspace Tabs / Control / Light",
+      "overrides": ["Done", "index.ts", "README.md"]
+    },
+    {
+      "name": "Tab Bar / Workspace Tabs / Control / Dark",
+      "overrides": ["Done", "index.ts", "README.md"]
+    },
+    {
+      "name": "Segmented Control / Equal / Control / Light",
+      "overrides": ["Done", "List", "Board"]
+    },
+    {
+      "name": "Segmented Control / Equal / Control / Dark",
+      "overrides": ["Done", "List", "Board"]
+    },
+    {
+      "name": "Choice Chips / Color Palette / Control / Light",
+      "overrides": [
+        "Done",
+        "Teal",
+        "Pink",
+        "Purple",
+        "Red",
+        "Orange",
+        "Green",
+        "Blue",
+        "Transparent"
+      ]
+    },
+    {
+      "name": "Choice Chips / Color Palette / Control / Dark",
+      "overrides": [
+        "Done",
+        "Teal",
+        "Pink",
+        "Purple",
+        "Red",
+        "Orange",
+        "Green",
+        "Blue",
+        "Transparent"
+      ]
+    },
+    {
+      "name": "Chip / Tags / Urgent / Light",
+      "overrides": ["Done"]
+    },
+    {
+      "name": "Chip / Tags / Urgent / Dark",
+      "overrides": ["Done"]
+    }
+  ]
+}

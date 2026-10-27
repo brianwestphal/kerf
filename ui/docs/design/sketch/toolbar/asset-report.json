@@ -1,0 +1,124 @@
+{
+  "swatches": {
+    "light.neutral-on-quiet": {
+      "id": "CE49113C-6750-4345-B68C-D4AB578AC1D8",
+      "name": "Kerf/Toolbar/light/neutral-on-quiet",
+      "color": "#626267ff"
+    },
+    "dark.neutral-on-quiet": {
+      "id": "14F0BBA6-0156-4326-A4F5-67F6A079E721",
+      "name": "Kerf/Toolbar/dark/neutral-on-quiet",
+      "color": "#c2c2c6ff"
+    },
+    "light.selected-icon": {
+      "id": "099E569D-5844-4FAC-BC7F-570897B1C6A2",
+      "name": "Kerf/Toolbar/light/selected-icon",
+      "color": "#a6cff2ff"
+    },
+    "light.brand-icon": {
+      "id": "67109559-0D28-440A-BB2B-810E9E1E0F4E",
+      "name": "Kerf/Toolbar/light/brand-icon",
+      "color": "#0c62f3ff"
+    },
+    "dark.selected-icon": {
+      "id": "54974A1D-0407-4940-BE4D-C3CAB7439A6A",
+      "name": "Kerf/Toolbar/dark/selected-icon",
+      "color": "#355c6dff"
+    },
+    "dark.brand-icon": {
+      "id": "BA04BF8E-4C47-486F-8CAA-32AD8ABE2C3C",
+      "name": "Kerf/Toolbar/dark/brand-icon",
+      "color": "#8acbffff"
+    },
+    "light.success-on-quiet": {
+      "id": "E026448B-DBA2-4613-8FCF-B24DD29E24E5",
+      "name": "Kerf/Toolbar/light/success-on-quiet",
+      "color": "#007f2eff"
+    },
+    "dark.success-on-quiet": {
+      "id": "A90804F2-79F2-4EB2-AD9B-C56D7654134E",
+      "name": "Kerf/Toolbar/dark/success-on-quiet",
+      "color": "#63e685ff"
+    },
+    "light.warning-on-quiet": {
+      "id": "0E8E569A-010E-40B9-BD50-C5B46CC037D7",
+      "name": "Kerf/Toolbar/light/warning-on-quiet",
+      "color": "#966200ff"
+    },
+    "dark.warning-on-quiet": {
+      "id": "D2EE715E-C418-40D8-A568-14129352E8D8",
+      "name": "Kerf/Toolbar/dark/warning-on-quiet",
+      "color": "#ffd84aff"
+    },
+    "light.danger-on-quiet": {
+      "id": "F3010DFC-8A56-4975-9CBC-0DCBA2C4F845",
+      "name": "Kerf/Toolbar/light/danger-on-quiet",
+      "color": "#c20b20ff"
+    },
+    "dark.danger-on-quiet": {
+      "id": "2496729F-FF84-44D8-AD75-2E9C6F5599B6",
+      "name": "Kerf/Toolbar/dark/danger-on-quiet",
+      "color": "#ff8588ff"
+    },
+    "light.neutral-border-normal": {
+      "id": "23D43C34-FD5C-45CB-9C9E-C7F2270A1F9F",
+      "name": "Kerf/Toolbar/light/neutral-border-normal",
+      "color": "#00001c2e"
+    },
+    "dark.neutral-border-normal": {
+      "id": "03367C94-B667-4523-8905-80C82C78EC3A",
+      "name": "Kerf/Toolbar/dark/neutral-border-normal",
+      "color": "#fdfdff32"
+    },
+    "light.on-loud": {
+      "id": "1B97675F-2E60-4474-9210-8B44C3A51AAE",
+      "name": "Kerf/Toolbar/light/on-loud",
+      "color": "#ffffffff"
+    },
+    "dark.on-loud": {
+      "id": "8DA4553D-D444-418E-97E9-A97BF62E0F00",
+      "name": "Kerf/Toolbar/dark/on-loud",
+      "color": "#1c1c1eff"
+    },
+    "light.text": {
+      "id": "7F35FFE4-6667-465D-9691-C83399D22A53",
+      "name": "Kerf/Toolbar/light/text",
+      "color": "#1d1d1fff"
+    },
+    "dark.text": {
+      "id": "D6872DE4-95B9-4C35-8729-A8A27760163F",
+      "name": "Kerf/Toolbar/dark/text",
+      "color": "#f5f5f7ff"
+    },
+    "light.brand-on-quiet": {
+      "id": "A094262A-0B58-48A5-A4E8-D991EDF134A1",
+      "name": "Kerf/Toolbar/light/brand-on-quiet",
+      "color": "#1a5dcfff"
+    },
+    "light.selected-surface": {
+      "id": "60F40097-B00D-4FA2-B6D6-3A403E60A53D",
+      "name": "Kerf/Toolbar/light/selected-surface",
+      "color": "#d6e9f9ff"
+    },
+    "light.brand-fill-loud": {
+      "id": "35FB53BE-C3E5-4ECF-98B5-53B5A95398DA",
+      "name": "Kerf/Toolbar/light/brand-fill-loud",
+      "color": "#0075dbff"
+    },
+    "dark.selected-surface": {
+      "id": "7EB4EB86-11BF-4A74-9B59-3982F12192CD",
+      "name": "Kerf/Toolbar/dark/selected-surface",
+      "color": "#283942ff"
+    },
+    "dark.brand-fill-loud": {
+      "id": "DBEE6FE7-174B-4D73-939F-02E00118BCF0",
+      "name": "Kerf/Toolbar/dark/brand-fill-loud",
+      "color": "#64d2ffff"
+    }
+  },
+  "bindings": {
+    "text": 90,
+    "fills": 10,
+    "borders": 214
+  }
+}

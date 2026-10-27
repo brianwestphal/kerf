@@ -2,11 +2,12 @@
 
 The native libraries are [Kerf-Button.sketch](button/Kerf-Button.sketch),
 [Kerf-Forms.sketch](forms/Kerf-Forms.sketch),
-[Kerf-Advanced.sketch](advanced/Kerf-Advanced.sketch), and
-[Kerf-Lists.sketch](lists/Kerf-Lists.sketch). They contain 40 Button,
-66 form-control, 34 advanced-input, and 42 list/data light/dark Symbols with stable identities
+[Kerf-Advanced.sketch](advanced/Kerf-Advanced.sketch),
+[Kerf-Lists.sketch](lists/Kerf-Lists.sketch), and
+[Kerf-Toolbar.sketch](toolbar/Kerf-Toolbar.sketch). They contain 40 Button,
+66 form-control, 34 advanced-input, 42 list/data, and 70 toolbar/navigation light/dark Symbols with stable identities
 and shared assets. Their [Button](button/README.md), [Forms](forms/README.md),
-[Advanced inputs](advanced/README.md), and [Lists and Data](lists/README.md) guides cover regeneration,
+[Advanced inputs](advanced/README.md), [Lists and Data](lists/README.md), and [Toolbars and navigation](toolbar/README.md) guides cover regeneration,
 verification, and Library import. [Coverage](coverage.md) accounts for all 110
 source variants and names the implementation ticket for each pending family.
 Source SVG sheets in [templates](../templates.md) are review material, not

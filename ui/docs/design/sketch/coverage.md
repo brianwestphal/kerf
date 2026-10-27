@@ -19,7 +19,9 @@ batch covers 20 showcase variants with 66 individual light/dark Symbols in
 [Kerf-Forms.sketch](forms/README.md). The Advanced inputs batch covers 17
 variants with 34 light/dark Symbols in [Kerf-Advanced.sketch](advanced/README.md).
 The Lists and data batch covers 21 variants with 42 light/dark Symbols in
-[Kerf-Lists.sketch](lists/README.md). The two pending family tickets cover the other source variants and must update this matrix
+[Kerf-Lists.sketch](lists/README.md). The Toolbars and navigation batch covers
+25 variants with 70 light/dark Symbols for 35 individual controls in
+[Kerf-Toolbar.sketch](toolbar/README.md). The pending family ticket covers the other source variants and must update this matrix
 as they ship. The catalog's [install and update guide](README.md) identifies
 the current libraries and supported Sketch version.
 
@@ -30,7 +32,7 @@ the current libraries and supported Sketch version.
 | Button pilot            |          1 |               7 | supported | KF-MKW7QZ |
 | Form controls           |          6 |              20 | supported | KF-8VXPDP |
 | Advanced inputs         |          7 |              17 | supported | KF-6CC071 |
-| Toolbars and navigation |          7 |              25 | pending   | KF-6Q8S95 |
+| Toolbars and navigation |          7 |              25 | supported | KF-6Q8S95 |
 | Lists and data          |          5 |              21 | supported | KF-83M2MW |
 | Content and feedback    |          7 |              20 | pending   | KF-P0X4R9 |
 
@@ -82,31 +84,31 @@ the current libraries and supported Sketch version.
 | color-picker          | hsb                  | HSB with Opacity                            | supported     | KF-6CC071 |
 | color-picker          | gray                 | Opaque Grayscale                            | supported     | KF-6CC071 |
 | color-swatches        | palette              | Palette with a Choice                       | supported     | KF-6CC071 |
-| toolbar-control-group | icon-tile-neutral    | Neutral Quiet Icon Tile                     | pending       | KF-6Q8S95 |
-| toolbar-control-group | icon-tile-brand      | Brand Quiet Icon Tile                       | pending       | KF-6Q8S95 |
-| toolbar-control-group | icon-tile-success    | Success Quiet Icon Tile                     | pending       | KF-6Q8S95 |
-| toolbar-control-group | icon-tile-warning    | Warning Quiet Icon Tile                     | pending       | KF-6Q8S95 |
-| toolbar-control-group | icon-tile-danger     | Danger Quiet Icon Tile                      | pending       | KF-6Q8S95 |
-| toolbar-control-group | icon-buttons         | Bordered Group of Icon Buttons              | pending       | KF-6Q8S95 |
-| toolbar-control-group | borderless-single    | Borderless Single Control                   | pending       | KF-6Q8S95 |
-| toolbar-control-group | with-text            | Label Text Beside a Control                 | pending       | KF-6Q8S95 |
-| toolbar-control-group | glass                | Glass Material Over Artwork                 | pending       | KF-6Q8S95 |
-| toolbar-control-group | push-buttons         | Push-Appearance Buttons                     | pending       | KF-6Q8S95 |
-| toolbar               | title-and-actions    | Title with a Trailing Group                 | pending       | KF-6Q8S95 |
-| toolbar               | width-visibility-600 | Width Visibility (600px)                    | pending       | KF-6Q8S95 |
-| toolbar               | width-visibility-320 | Width Visibility (320px)                    | pending       | KF-6Q8S95 |
-| toolbar-text          | dark-tone            | Dark Toolbar Tone                           | pending       | KF-6Q8S95 |
-| toolbar-text          | large                | Large (Title)                               | pending       | KF-6Q8S95 |
-| toolbar-text          | default              | Default                                     | pending       | KF-6Q8S95 |
-| toolbar-text          | small                | Small (Label)                               | pending       | KF-6Q8S95 |
-| tab-bar               | workspace-tabs       | Selected Tab Among Peers                    | pending       | KF-6Q8S95 |
-| segmented-control     | equal                | Equal-Width Rounded                         | pending       | KF-6Q8S95 |
-| segmented-control     | pill-small           | Pill, Small                                 | pending       | KF-6Q8S95 |
-| choice-chips          | color-palette        | Wrapping Color Palette                      | pending       | KF-6Q8S95 |
-| choice-chips          | compact-icons        | Compact with Icons                          | pending       | KF-6Q8S95 |
-| choice-chips          | multiple             | Multiple Selection                          | pending       | KF-6Q8S95 |
-| chip                  | tags                 | Removable, Link, and Plain Tags             | pending       | KF-6Q8S95 |
-| chip                  | action-filters       | Action Chips in a Compact Value Table       | pending       | KF-6Q8S95 |
+| toolbar-control-group | icon-tile-neutral    | Neutral Quiet Icon Tile                     | supported     | KF-6Q8S95 |
+| toolbar-control-group | icon-tile-brand      | Brand Quiet Icon Tile                       | supported     | KF-6Q8S95 |
+| toolbar-control-group | icon-tile-success    | Success Quiet Icon Tile                     | supported     | KF-6Q8S95 |
+| toolbar-control-group | icon-tile-warning    | Warning Quiet Icon Tile                     | supported     | KF-6Q8S95 |
+| toolbar-control-group | icon-tile-danger     | Danger Quiet Icon Tile                      | supported     | KF-6Q8S95 |
+| toolbar-control-group | icon-buttons         | Bordered Group of Icon Buttons              | supported     | KF-6Q8S95 |
+| toolbar-control-group | borderless-single    | Borderless Single Control                   | supported     | KF-6Q8S95 |
+| toolbar-control-group | with-text            | Label Text Beside a Control                 | supported     | KF-6Q8S95 |
+| toolbar-control-group | glass                | Glass Material Over Artwork                 | supported     | KF-6Q8S95 |
+| toolbar-control-group | push-buttons         | Push-Appearance Buttons                     | supported     | KF-6Q8S95 |
+| toolbar               | title-and-actions    | Title with a Trailing Group                 | supported     | KF-6Q8S95 |
+| toolbar               | width-visibility-600 | Width Visibility (600px)                    | supported     | KF-6Q8S95 |
+| toolbar               | width-visibility-320 | Width Visibility (320px)                    | supported     | KF-6Q8S95 |
+| toolbar-text          | dark-tone            | Dark Toolbar Tone                           | supported     | KF-6Q8S95 |
+| toolbar-text          | large                | Large (Title)                               | supported     | KF-6Q8S95 |
+| toolbar-text          | default              | Default                                     | supported     | KF-6Q8S95 |
+| toolbar-text          | small                | Small (Label)                               | supported     | KF-6Q8S95 |
+| tab-bar               | workspace-tabs       | Selected Tab Among Peers                    | supported     | KF-6Q8S95 |
+| segmented-control     | equal                | Equal-Width Rounded                         | supported     | KF-6Q8S95 |
+| segmented-control     | pill-small           | Pill, Small                                 | supported     | KF-6Q8S95 |
+| choice-chips          | color-palette        | Wrapping Color Palette                      | supported     | KF-6Q8S95 |
+| choice-chips          | compact-icons        | Compact with Icons                          | supported     | KF-6Q8S95 |
+| choice-chips          | multiple             | Multiple Selection                          | supported     | KF-6Q8S95 |
+| chip                  | tags                 | Removable, Link, and Plain Tags             | supported     | KF-6Q8S95 |
+| chip                  | action-filters       | Action Chips in a Compact Value Table       | supported     | KF-6Q8S95 |
 | list                  | stack                | Standard Gap and Four Dividers              | supported     | KF-83M2MW |
 | list                  | compact              | Compact, No Gap                             | supported     | KF-83M2MW |
 | list-item             | default              | Icon and Label                              | supported     | KF-83M2MW |
