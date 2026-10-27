@@ -1,0 +1,975 @@
+{
+  "sketchPid": 67482,
+  "symbols": [
+    {
+      "id": "color-field-compact-control-dark",
+      "name": "Color Field / Compact / Control / Dark",
+      "symbolId": "81290917-93C4-435B-AA76-CC5945BAA850",
+      "layerId": "710F586B-41C9-4E2F-9E41-40F611F4D105",
+      "width": 420,
+      "height": 53.390625,
+      "text": [
+        {
+          "id": "CB707394-ED81-462C-B643-AB170E731645",
+          "value": "BORDER"
+        },
+        {
+          "id": "81D4C658-4C6C-4394-9C14-73DB56736AF9",
+          "value": "1C1C1E80"
+        }
+      ],
+      "paths": 16,
+      "bitmaps": 0,
+      "sourceHash": "1b7a0c70293abb2a71821c0a498e71414ebef2e96b62ed9dc0e11732dccb1bd1"
+    },
+    {
+      "id": "color-field-compact-control-light",
+      "name": "Color Field / Compact / Control / Light",
+      "symbolId": "CEE0E3C5-CA75-4429-B3F7-1B2BD7205AAB",
+      "layerId": "F4B5F2EE-34E5-4413-A1C7-0FE0D6A035BE",
+      "width": 420,
+      "height": 53.390625,
+      "text": [
+        {
+          "id": "A3D266F0-0E8B-440B-A810-01682F956013",
+          "value": "BORDER"
+        },
+        {
+          "id": "D019FC88-0F4E-4742-B7FC-ECE6F8C841F5",
+          "value": "1C1C1E80"
+        }
+      ],
+      "paths": 16,
+      "bitmaps": 0,
+      "sourceHash": "49441e8dcd5ed779aeecaf7032ccc89c85cdc685375fd3767ca6542da1cdefc0"
+    },
+    {
+      "id": "color-field-error-control-dark",
+      "name": "Color Field / Error / Control / Dark",
+      "symbolId": "A0B3B7EE-5626-4A99-9627-071D02B75CF4",
+      "layerId": "95DD4143-ED9D-4FFF-A317-907CCFDEAE80",
+      "width": 420,
+      "height": 89.984375,
+      "text": [
+        {
+          "id": "DBC0C609-AB22-4B3F-9FD4-0A735E8FC923",
+          "value": "THEME ACCENT"
+        },
+        {
+          "id": "6E25ECFF-4484-46B1-8D54-BB2002264B2E",
+          "value": "The theme locks this color."
+        },
+        {
+          "id": "5ED05E74-FC04-4EDE-B4FE-BEB74F005F98",
+          "value": "BF5AF2"
+        }
+      ],
+      "paths": 16,
+      "bitmaps": 0,
+      "sourceHash": "e7daafbc28898e3e9d1efba6c1981175e3716213cfe7be2e32b415741e2efb21"
+    },
+    {
+      "id": "color-field-error-control-light",
+      "name": "Color Field / Error / Control / Light",
+      "symbolId": "0BC8011A-5183-4EA1-81EA-27DC2643B8CD",
+      "layerId": "A19B2621-12D7-4112-BA97-B6667E318B2C",
+      "width": 420,
+      "height": 89.984375,
+      "text": [
+        {
+          "id": "F7F401D5-0AA4-4D59-9B17-2313BC88439F",
+          "value": "THEME ACCENT"
+        },
+        {
+          "id": "34E8E460-65D5-4D1B-AA40-F23E5B3007AC",
+          "value": "The theme locks this color."
+        },
+        {
+          "id": "FA6C7351-55B4-4B69-8A08-4E4345CA02A4",
+          "value": "BF5AF2"
+        }
+      ],
+      "paths": 16,
+      "bitmaps": 0,
+      "sourceHash": "7372fa163a5b2c5adf6ac0371c859a01b7b9c7166f46cb7cd31470e03bbb3026"
+    },
+    {
+      "id": "color-field-hint-control-dark",
+      "name": "Color Field / Hint / Control / Dark",
+      "symbolId": "F018714E-3F4F-40B0-A13B-2693918B2EBC",
+      "layerId": "F72C80AA-2401-4669-87B7-8B0B9A5F193C",
+      "width": 420,
+      "height": 89.984375,
+      "text": [
+        {
+          "id": "9DDF7492-669F-4DE6-835E-DB605AABADE2",
+          "value": "FILL"
+        },
+        {
+          "id": "9FB962EB-9C16-4ED1-97ED-962607BAFE52",
+          "value": "0A84FF"
+        },
+        {
+          "id": "967F5DF2-E372-4826-BDBA-5FCFE7F1D9AB",
+          "value": "Applies to the selected shapes."
+        }
+      ],
+      "paths": 16,
+      "bitmaps": 0,
+      "sourceHash": "5a6e53bafd7e5e2652a14448b9d018a9057d7a9bfa53a50213713817d7b2acdb"
+    },
+    {
+      "id": "color-field-hint-control-light",
+      "name": "Color Field / Hint / Control / Light",
+      "symbolId": "95967C1D-41E5-4582-8CE2-BB94AAE499C7",
+      "layerId": "A3BEC0EF-E064-4635-B94E-DF37B6D0F713",
+      "width": 420,
+      "height": 89.984375,
+      "text": [
+        {
+          "id": "96FD8A7B-42DF-4456-9AC9-3513AD9248AE",
+          "value": "FILL"
+        },
+        {
+          "id": "5AAA8782-A8C8-407B-ACC7-2D710BC13345",
+          "value": "0A84FF"
+        },
+        {
+          "id": "6388CC05-4174-4098-84E5-24AF8D060495",
+          "value": "Applies to the selected shapes."
+        }
+      ],
+      "paths": 16,
+      "bitmaps": 0,
+      "sourceHash": "c31ab87ab8d3ee7960ca1f5d612a040ac6c35b94317125da1afbd0a4cae2e52e"
+    },
+    {
+      "id": "color-picker-gray-control-dark",
+      "name": "Color Picker / Gray / Control / Dark",
+      "symbolId": "4B1B0B49-056C-477C-8106-05016009D6B3",
+      "layerId": "9C75ECCF-5B7B-4F06-85AF-45CBD88E6BFA",
+      "width": 320,
+      "height": 416.5,
+      "text": [
+        {
+          "id": "A32A1E78-751F-4AB0-8C7D-86C036E20E45",
+          "value": "W"
+        },
+        {
+          "id": "ED442F2A-E6D1-4847-984E-6AA6FCB9E3C7",
+          "value": "42"
+        },
+        {
+          "id": "3E874A78-B180-4FFA-A5D9-01E73AF254E6",
+          "value": "#"
+        },
+        {
+          "id": "3E229998-ED6A-4282-8946-855447DADFFD",
+          "value": "6B6B6B"
+        },
+        {
+          "id": "8857F0A4-83EC-4865-ABEE-BB474F04B30C",
+          "value": "Grayscale"
+        }
+      ],
+      "paths": 41,
+      "bitmaps": 0,
+      "sourceHash": "f85d24c42985dfc7024ec6b89b0a9f0ec8fc86d628d1d97bd35328876daa9bbe"
+    },
+    {
+      "id": "color-picker-gray-control-light",
+      "name": "Color Picker / Gray / Control / Light",
+      "symbolId": "3E68AD9A-904E-4752-9234-26A6855242BC",
+      "layerId": "424803DA-59E2-4589-96DA-18F86889A2C8",
+      "width": 320,
+      "height": 416.5,
+      "text": [
+        {
+          "id": "F89DAE34-B475-47D2-89AE-F68CF4B07369",
+          "value": "W"
+        },
+        {
+          "id": "E28C8815-F24B-44A9-9F2F-D60503AF93C4",
+          "value": "42"
+        },
+        {
+          "id": "96E6791E-5F8A-49FB-898C-622E11EADA59",
+          "value": "#"
+        },
+        {
+          "id": "0FAC707A-C15E-40E9-B948-F514187DB9A9",
+          "value": "6B6B6B"
+        },
+        {
+          "id": "3525D002-966B-4C64-994D-9DC08C822E18",
+          "value": "Grayscale"
+        }
+      ],
+      "paths": 41,
+      "bitmaps": 0,
+      "sourceHash": "13f8c90b39e1bc96ae7d30c3664b6b1d2c04f863169efa59133e8b11ef382c4b"
+    },
+    {
+      "id": "color-picker-hsb-control-dark",
+      "name": "Color Picker / Hsb / Control / Dark",
+      "symbolId": "DFBB3B8E-1084-4CDA-A4E1-6E0F2774A9B8",
+      "layerId": "CFB6078A-56F3-4B3E-8421-09DF968F4D32",
+      "width": 320,
+      "height": 500.5,
+      "text": [
+        {
+          "id": "39E52BC3-59B5-4FCF-A935-856877183F44",
+          "value": "H"
+        },
+        {
+          "id": "1CD76CE1-2EBE-4B1D-9480-2928DDC356F8",
+          "value": "135"
+        },
+        {
+          "id": "7E2A8B3E-CD09-48BC-A2BE-D43C93DEC71E",
+          "value": "S"
+        },
+        {
+          "id": "B1BF1A62-55C2-4B0B-88D4-2AC1B565AA45",
+          "value": "74"
+        },
+        {
+          "id": "35B45F51-73F6-4A9C-A1D5-AF45158FF601",
+          "value": "B"
+        },
+        {
+          "id": "1BDF7CE5-27E3-4B38-824F-723CF51B5361",
+          "value": "78"
+        },
+        {
+          "id": "1156138B-B6D2-4624-8742-93869D3D9247",
+          "value": "#"
+        },
+        {
+          "id": "89A3CE05-EB5E-4DA2-9AB7-B02813CA439B",
+          "value": "34C759"
+        },
+        {
+          "id": "5FC0F1B2-7766-479F-9D99-BE5D84838828",
+          "value": "A"
+        },
+        {
+          "id": "AEB6631B-7114-4122-9F00-6A999FF194CD",
+          "value": "100%"
+        },
+        {
+          "id": "4F64015C-2A0F-4AD5-8D34-432459DE3943",
+          "value": "HSBA"
+        }
+      ],
+      "paths": 140,
+      "bitmaps": 0,
+      "sourceHash": "9ab54f558961527046b4503e5fac5d1193c260a3963f6cc281813c35429dd9d2"
+    },
+    {
+      "id": "color-picker-hsb-control-light",
+      "name": "Color Picker / Hsb / Control / Light",
+      "symbolId": "3F7C0D95-14DE-4E8A-B2D4-885ABC91530D",
+      "layerId": "1FEC7F9F-7840-4F06-8A09-684535EBD8DF",
+      "width": 320,
+      "height": 500.5,
+      "text": [
+        {
+          "id": "603A7769-7CA1-453B-864E-95225347FD64",
+          "value": "H"
+        },
+        {
+          "id": "D083A1C5-9AEE-4B41-B22C-C3F975A2D2AD",
+          "value": "135"
+        },
+        {
+          "id": "D11D6601-2A60-4715-9C11-FEE997F29923",
+          "value": "S"
+        },
+        {
+          "id": "DF5A47E1-BFE4-481E-8123-F87DCCFEA7F1",
+          "value": "74"
+        },
+        {
+          "id": "8A66DC21-A6EA-465D-972D-620DE887523B",
+          "value": "B"
+        },
+        {
+          "id": "93C95B02-0064-4AC5-A1B0-CCC5D877ADBD",
+          "value": "78"
+        },
+        {
+          "id": "623F91F0-14FA-409C-9CC2-CE3C69F5F608",
+          "value": "#"
+        },
+        {
+          "id": "17A8687B-9CAF-4D78-8FD9-C178561AAE4F",
+          "value": "34C759"
+        },
+        {
+          "id": "757AB096-9059-4997-AD76-3D71D355E3F6",
+          "value": "A"
+        },
+        {
+          "id": "DE0D0419-ED95-4587-8F0E-506BC6EBE43B",
+          "value": "100%"
+        },
+        {
+          "id": "673CB969-1614-4460-B8AA-9E761AF5C1B0",
+          "value": "HSBA"
+        }
+      ],
+      "paths": 140,
+      "bitmaps": 0,
+      "sourceHash": "438dbe622a559b73f6a3987c543df4a3f7cc6f10a99396d098219f3b41ad519d"
+    },
+    {
+      "id": "color-picker-rgb-control-dark",
+      "name": "Color Picker / Rgb / Control / Dark",
+      "symbolId": "3056F626-28A0-402B-A9F0-F25CA1FAA762",
+      "layerId": "C66BA88B-86F0-4A95-A569-033645D8DC90",
+      "width": 320,
+      "height": 558.5,
+      "text": [
+        {
+          "id": "DDBAEA66-BE86-4FE5-939F-5C82978B70AE",
+          "value": "R"
+        },
+        {
+          "id": "56CA7E7B-6698-416B-930B-C27D8C027472",
+          "value": "10"
+        },
+        {
+          "id": "3E343FD9-97FA-4CD4-BF34-A50DC57B43AB",
+          "value": "G"
+        },
+        {
+          "id": "6781EE14-6B5A-47CC-9D3F-D3850FF05075",
+          "value": "132"
+        },
+        {
+          "id": "E1B80FE7-7EEC-434A-8F08-54ABCF34C30B",
+          "value": "B"
+        },
+        {
+          "id": "5278EC67-A97E-4DCC-A4A5-0AB8A805B9BF",
+          "value": "255"
+        },
+        {
+          "id": "B2D78131-8B49-4F81-90CD-B1CA4A3300B7",
+          "value": "#"
+        },
+        {
+          "id": "CE9C229B-0636-45B4-9519-902C2A4AD75A",
+          "value": "0A84FFCC"
+        },
+        {
+          "id": "EA48A864-18FF-4029-A3FE-4279DD7E72C6",
+          "value": "A"
+        },
+        {
+          "id": "FCDA9836-13FF-4775-8981-ABB213B07846",
+          "value": "80%"
+        },
+        {
+          "id": "68E39B6A-F9A0-42EE-A3DC-E06BFF9B575D",
+          "value": "RGBA"
+        }
+      ],
+      "paths": 168,
+      "bitmaps": 0,
+      "sourceHash": "43e7194a90e3a27c008465a11fea6acaf43ffba325cfd15f065d849e8ec1b054"
+    },
+    {
+      "id": "color-picker-rgb-control-light",
+      "name": "Color Picker / Rgb / Control / Light",
+      "symbolId": "132CF82C-5A29-4624-AEA3-28F93736DBC2",
+      "layerId": "28E1C9EF-3278-4A82-8A59-EB3B5F7A2076",
+      "width": 320,
+      "height": 558.5,
+      "text": [
+        {
+          "id": "145AC38E-BF5F-4519-A247-3D75CB4685B1",
+          "value": "R"
+        },
+        {
+          "id": "320EA950-165C-4023-838A-8B5230CB0CA9",
+          "value": "10"
+        },
+        {
+          "id": "07825B0D-B78F-4A45-8E00-2361CBBD20BF",
+          "value": "G"
+        },
+        {
+          "id": "E069C8EB-A22E-4661-A00F-EE48D91B926E",
+          "value": "132"
+        },
+        {
+          "id": "8A74DE88-E38E-4CF9-95A7-288514CB4A57",
+          "value": "B"
+        },
+        {
+          "id": "763154CB-8B81-4CF2-8156-AFB322A24E32",
+          "value": "255"
+        },
+        {
+          "id": "EFEAC96D-F927-49F4-BC38-D2A8289F5473",
+          "value": "#"
+        },
+        {
+          "id": "52BAEDF3-37FB-41A4-931F-AE1F2CC23AED",
+          "value": "0A84FFCC"
+        },
+        {
+          "id": "04C041FB-3D56-4A6D-9A15-A83F0651D18F",
+          "value": "A"
+        },
+        {
+          "id": "7F4C2125-B32D-4EAF-B239-FCD04100FADB",
+          "value": "80%"
+        },
+        {
+          "id": "AA54132D-AA94-401E-B8DF-30F1D614A70B",
+          "value": "RGBA"
+        }
+      ],
+      "paths": 168,
+      "bitmaps": 0,
+      "sourceHash": "a06cece2a40d16db88868d6b468b316c78c1aef483f14911bdde31616bf41d42"
+    },
+    {
+      "id": "color-swatches-palette-control-dark",
+      "name": "Color Swatches / Palette / Control / Dark",
+      "symbolId": "3D76D8F9-79B5-43C1-B6AE-2E30F294CB2D",
+      "layerId": "5BC6F571-4AB3-46B2-B0FD-1A3AF9DE4118",
+      "width": 242,
+      "height": 75,
+      "text": [
+        {
+          "id": "B69D75BE-9D99-4C94-A055-8A9A8684C84E",
+          "value": "Command Color"
+        }
+      ],
+      "paths": 28,
+      "bitmaps": 0,
+      "sourceHash": "ac5396ea01e65be52abf2cf1aa19863c33b822107653820a78fb000b841de518"
+    },
+    {
+      "id": "color-swatches-palette-control-light",
+      "name": "Color Swatches / Palette / Control / Light",
+      "symbolId": "0DEF9DE2-7A38-4A30-9B52-CAF169F0C235",
+      "layerId": "6AB8C0D5-F50D-47C8-9D79-C241E7DB3145",
+      "width": 242,
+      "height": 75,
+      "text": [
+        {
+          "id": "B5B2797D-9EBA-48BD-AA99-0E618AF70242",
+          "value": "Command Color"
+        }
+      ],
+      "paths": 28,
+      "bitmaps": 0,
+      "sourceHash": "0d2dcd57294d3a5802fda493fe51a34a93a4e0bd17179b0510b46f19c800c473"
+    },
+    {
+      "id": "search-field-empty-control-dark",
+      "name": "Search Field / Empty / Control / Dark",
+      "symbolId": "43542DBF-2F9E-420D-9373-356C44E23C68",
+      "layerId": "32138A41-F40C-4F71-9BF2-EB112B22B800",
+      "width": 520,
+      "height": 44,
+      "text": [
+        {
+          "id": "093DD20E-D573-4B38-99AD-E7BA315FF631",
+          "value": "Search tickets"
+        }
+      ],
+      "paths": 6,
+      "bitmaps": 0,
+      "sourceHash": "f4bf90021b803694d1381ecfb2ac1f696fc918b224ca151a66ae2c1ece8a6973"
+    },
+    {
+      "id": "search-field-empty-control-light",
+      "name": "Search Field / Empty / Control / Light",
+      "symbolId": "FB5DC9FE-BF12-4C58-96A8-61A029311F0A",
+      "layerId": "096EBF52-6956-4167-94EC-6E9C5BB547EF",
+      "width": 520,
+      "height": 44,
+      "text": [
+        {
+          "id": "6F477212-A5E6-4F4D-932F-770D039CAB96",
+          "value": "Search tickets"
+        }
+      ],
+      "paths": 6,
+      "bitmaps": 0,
+      "sourceHash": "1d28a392b123fc6e6fd836e79ed5db4c872758165d6380f4bc77295c21be7e63"
+    },
+    {
+      "id": "search-field-tokens-control-dark",
+      "name": "Search Field / Tokens / Control / Dark",
+      "symbolId": "D03BAA0C-96FF-4B43-9B03-286BCD57A7EA",
+      "layerId": "78664CA9-75A3-4102-ABC5-09733B845E2D",
+      "width": 520,
+      "height": 44,
+      "text": [
+        {
+          "id": "E573C8F6-FCF4-4D34-A41C-BFE187115869",
+          "value": "payments"
+        },
+        {
+          "id": "DEAF05B3-D883-4701-B998-A39FC3DE1C3F",
+          "value": "is:open"
+        },
+        {
+          "id": "003CB75F-8709-4DE2-B241-85259F5EA69C",
+          "value": "is:open"
+        }
+      ],
+      "paths": 15,
+      "bitmaps": 0,
+      "sourceHash": "a7b851045ff8363bcd2c0d3bdbea0e966932216f5ce41ced22604f9098bb0e06"
+    },
+    {
+      "id": "search-field-tokens-control-light",
+      "name": "Search Field / Tokens / Control / Light",
+      "symbolId": "893143E9-79FA-4F9F-B64A-8725AE7B2FE9",
+      "layerId": "B7918860-CCED-4CAE-84C3-06F92DF9DD4D",
+      "width": 520,
+      "height": 44,
+      "text": [
+        {
+          "id": "55261BF5-7F44-4876-8B42-2903EA9B34C2",
+          "value": "payments"
+        },
+        {
+          "id": "BA1EF416-86AC-4E45-B21B-98F664C7C49B",
+          "value": "is:open"
+        },
+        {
+          "id": "48D3A9DA-FB77-4829-A74B-D05E89AC230E",
+          "value": "is:open"
+        }
+      ],
+      "paths": 15,
+      "bitmaps": 0,
+      "sourceHash": "1dd5116ec22200e26e4bedab9800342bdae3755bfd39ee242acff0720700e01f"
+    },
+    {
+      "id": "select-compact-control-dark",
+      "name": "Select / Compact / Control / Dark",
+      "symbolId": "94F311AE-F9A8-40DE-ABFF-CEC78F8373CD",
+      "layerId": "DF7F9481-349D-49FD-A6E7-5161AEC8416E",
+      "width": 360,
+      "height": 52.390625,
+      "text": [
+        {
+          "id": "1E8391E1-2C3E-469B-8B17-DE5CA5BA968A",
+          "value": "REGION"
+        },
+        {
+          "id": "27DA44E9-2E95-482E-8E45-0B200C69208F",
+          "value": "US East"
+        }
+      ],
+      "paths": 9,
+      "bitmaps": 0,
+      "sourceHash": "10543882f44067dc2a865f8b03404638ec5b9967a6d8f706bf6d26586b251323"
+    },
+    {
+      "id": "select-compact-control-light",
+      "name": "Select / Compact / Control / Light",
+      "symbolId": "77A3B34F-962C-4502-BE0D-2D215163CEF5",
+      "layerId": "6FDCD6BB-9FD8-453B-81D6-8F57AAB28F4B",
+      "width": 360,
+      "height": 52.390625,
+      "text": [
+        {
+          "id": "0E531678-69CE-46E2-A167-71427AF61E77",
+          "value": "REGION"
+        },
+        {
+          "id": "CB3F7B69-BDF8-4B91-B273-2BDD7E9D12C0",
+          "value": "US East"
+        }
+      ],
+      "paths": 9,
+      "bitmaps": 0,
+      "sourceHash": "f55d58101cd395539c4cca6a4ef0b682406061e118a374749f76404c96871103"
+    },
+    {
+      "id": "select-form-control-dark",
+      "name": "Select / Form / Control / Dark",
+      "symbolId": "60A4E016-9C51-447F-88A0-169D4F0D20D5",
+      "layerId": "F03FFEB5-1923-4689-9217-0A2B6280C191",
+      "width": 360,
+      "height": 93.78125,
+      "text": [
+        {
+          "id": "D99681C4-87BF-442E-99B5-EFF1B67CD7C3",
+          "value": "STATUS"
+        },
+        {
+          "id": "A7812E91-DE6D-4459-B034-44275A897DA9",
+          "value": "Moves the ticket on the board."
+        },
+        {
+          "id": "BE47EF7D-D915-4466-B4B6-811DC7F3A87E",
+          "value": "In Review"
+        }
+      ],
+      "paths": 9,
+      "bitmaps": 0,
+      "sourceHash": "d33ee036181edb9f9f45b4b61b7d381b5f554ab49ebaf037a81ff799176302b8"
+    },
+    {
+      "id": "select-form-control-light",
+      "name": "Select / Form / Control / Light",
+      "symbolId": "441A4B1D-17EC-4BAC-8655-D4411DC794C6",
+      "layerId": "5BFE01DF-6E8B-4A9D-83D2-84B8D45BEF99",
+      "width": 360,
+      "height": 93.78125,
+      "text": [
+        {
+          "id": "DF85AC77-2328-48B8-A000-D87F499442CF",
+          "value": "STATUS"
+        },
+        {
+          "id": "6C7BBAE8-9E36-4B28-8502-29252D964D70",
+          "value": "Moves the ticket on the board."
+        },
+        {
+          "id": "89393E4D-C5EA-4DA8-B509-DF0791B7A0E0",
+          "value": "In Review"
+        }
+      ],
+      "paths": 9,
+      "bitmaps": 0,
+      "sourceHash": "4ea26135690096e1d57f8c4c467b5d52a73fb5db4075c314e8f05f808daa0a9e"
+    },
+    {
+      "id": "select-icons-control-dark",
+      "name": "Select / Icons / Control / Dark",
+      "symbolId": "02CC141A-C5C4-4542-94AD-3C0CCF1A24A1",
+      "layerId": "F9EF2663-632D-48DA-B7AF-A606235DF94B",
+      "width": 360,
+      "height": 64.390625,
+      "text": [
+        {
+          "id": "489D9E45-BFDF-43FF-8594-517ED2D7E51A",
+          "value": "NOTIFY"
+        },
+        {
+          "id": "2941289A-3419-4FFA-B697-529970A413DD",
+          "value": "Mentions Only"
+        }
+      ],
+      "paths": 12,
+      "bitmaps": 0,
+      "sourceHash": "f59b50d9e15beb3140811c90cdec201585ca1f22493080426af5c575028debdd"
+    },
+    {
+      "id": "select-icons-control-light",
+      "name": "Select / Icons / Control / Light",
+      "symbolId": "FDD2B527-089C-464F-99BA-2A832DC581F0",
+      "layerId": "6F32C00E-2AEB-4E67-8283-FC450B4899B4",
+      "width": 360,
+      "height": 64.390625,
+      "text": [
+        {
+          "id": "5FA5F9A1-3992-47F1-8DF4-2F69559ADF4A",
+          "value": "NOTIFY"
+        },
+        {
+          "id": "E0EBA35F-DEFC-4776-8BDD-90647BAD7659",
+          "value": "Mentions Only"
+        }
+      ],
+      "paths": 12,
+      "bitmaps": 0,
+      "sourceHash": "b1d4b92518fbe7b6b2640a042afde982b370f1179f5d39893530e6b2f7263a1a"
+    },
+    {
+      "id": "slider-compact-control-dark",
+      "name": "Slider / Compact / Control / Dark",
+      "symbolId": "A7ED21E7-B9F1-44B1-B8A1-26916CAA9529",
+      "layerId": "9CC89274-870E-4331-A66F-CB39C734A0D2",
+      "width": 420,
+      "height": 57.59375,
+      "text": [
+        {
+          "id": "B907EE5C-67E9-493E-8075-BD81A00EA8DE",
+          "value": "Layer Opacity"
+        },
+        {
+          "id": "6632FC69-893F-448F-885B-B77EAE732CBC",
+          "value": "80%"
+        }
+      ],
+      "paths": 6,
+      "bitmaps": 0,
+      "sourceHash": "0e1be5f9b875e5143ac352796bbd68e5600b031e24a60425f5dd8ee15e150c25"
+    },
+    {
+      "id": "slider-compact-control-light",
+      "name": "Slider / Compact / Control / Light",
+      "symbolId": "4E2A44FB-7AD6-4074-8F48-7B062431B7CF",
+      "layerId": "B5CB156A-3977-413C-9EDE-581F8FC10A66",
+      "width": 420,
+      "height": 57.59375,
+      "text": [
+        {
+          "id": "45049240-FE5B-43A5-8A5B-7D3C0FBF6A9B",
+          "value": "Layer Opacity"
+        },
+        {
+          "id": "F1EEFEB7-577E-4097-904D-D918E0BBA249",
+          "value": "80%"
+        }
+      ],
+      "paths": 6,
+      "bitmaps": 0,
+      "sourceHash": "c5f0dc25102788ea9b18d1f8d1521776a3b29662f96c14710966978c73b8bb82"
+    },
+    {
+      "id": "slider-readout-control-dark",
+      "name": "Slider / Readout / Control / Dark",
+      "symbolId": "11ACAA7F-7D5B-4553-90BF-ABF055C3F800",
+      "layerId": "7DCBF003-21CD-46D9-BB39-B7AB43415C83",
+      "width": 420,
+      "height": 90.78125,
+      "text": [
+        {
+          "id": "FAA5AE6F-8341-434A-BC53-863BCDA67B61",
+          "value": "Volume"
+        },
+        {
+          "id": "D07FCAFE-2F5E-4C6D-8FB0-987AE2B013DA",
+          "value": "35%"
+        },
+        {
+          "id": "623F7C89-8F81-4998-AAFE-D8A2D76BBC0A",
+          "value": "Applies to every output device."
+        }
+      ],
+      "paths": 6,
+      "bitmaps": 0,
+      "sourceHash": "a282e9940985ca4701d646fab02f70d057598b316972d8726c73bf0ef5564ce9"
+    },
+    {
+      "id": "slider-readout-control-light",
+      "name": "Slider / Readout / Control / Light",
+      "symbolId": "515BB523-CAAA-4575-BBBC-749D9C25C608",
+      "layerId": "93D6709B-D42A-472E-B350-A89194BF6B29",
+      "width": 420,
+      "height": 90.78125,
+      "text": [
+        {
+          "id": "EDFBBA55-E0F6-4C9A-B9C4-F30BC2D53D2A",
+          "value": "Volume"
+        },
+        {
+          "id": "95A33D38-3FE3-4DF9-84B1-A5A2569576A6",
+          "value": "35%"
+        },
+        {
+          "id": "EFE61638-D9EA-4F45-BF4E-322A3FE33B23",
+          "value": "Applies to every output device."
+        }
+      ],
+      "paths": 6,
+      "bitmaps": 0,
+      "sourceHash": "262fe091d9ffbdc16263c01c6b51ebbb3c0ace98ed9c3a9d6342ffe89f30e7f2"
+    },
+    {
+      "id": "slider-ticks-control-dark",
+      "name": "Slider / Ticks / Control / Dark",
+      "symbolId": "52EAF623-0CA8-402B-870A-42C3FEFED620",
+      "layerId": "4CC8E1EC-0A3F-48D5-B1D6-DD8EBB9911DE",
+      "width": 420,
+      "height": 87.984375,
+      "text": [
+        {
+          "id": "D404A825-7E3B-41D0-BC4D-32304697B0E3",
+          "value": "Zoom"
+        },
+        {
+          "id": "F1D7BD24-10EE-41CA-AEA4-8BA7D881F1D2",
+          "value": "100%"
+        },
+        {
+          "id": "25296EEF-F52F-428A-8BCF-C626BEF62432",
+          "value": "50%"
+        },
+        {
+          "id": "7E5AE2F3-63E7-4183-B763-6A091C0751B6",
+          "value": "100%"
+        },
+        {
+          "id": "9847CCF0-38B4-4AB9-AF2A-311CCBB51AFD",
+          "value": "150%"
+        },
+        {
+          "id": "79457727-FED9-474D-AC83-08A0223F9918",
+          "value": "200%"
+        }
+      ],
+      "paths": 6,
+      "bitmaps": 0,
+      "sourceHash": "49e7de81cc78847d56850560db1f6fe8dc8ef95947f5d281cdb76c4ea475370d"
+    },
+    {
+      "id": "slider-ticks-control-light",
+      "name": "Slider / Ticks / Control / Light",
+      "symbolId": "1024246C-F78F-4F88-89B1-A8F000F4CA9E",
+      "layerId": "89BEA0B0-4BE3-4E63-8111-D8020BBB591F",
+      "width": 420,
+      "height": 87.984375,
+      "text": [
+        {
+          "id": "A3F2655F-0448-4154-B0F5-48648F21B9F3",
+          "value": "Zoom"
+        },
+        {
+          "id": "05DB31D9-3A6E-4B1D-9987-8751558DE06E",
+          "value": "100%"
+        },
+        {
+          "id": "823B83FF-3079-43BB-B839-01EF14954565",
+          "value": "50%"
+        },
+        {
+          "id": "49BC5EDE-3156-442E-827C-4E38B1023470",
+          "value": "100%"
+        },
+        {
+          "id": "D84AFB8D-57A2-45C5-9DF2-0B38A425F89C",
+          "value": "150%"
+        },
+        {
+          "id": "6AD036BB-851F-4DCE-AE5C-2178AEE8CD55",
+          "value": "200%"
+        }
+      ],
+      "paths": 6,
+      "bitmaps": 0,
+      "sourceHash": "e3787b0c120fe61b57587305d222f07203800d7f1009d59e76a0119ccbbeac3a"
+    },
+    {
+      "id": "tag-field-error-control-dark",
+      "name": "Tag Field / Error / Control / Dark",
+      "symbolId": "1422269E-F923-4C06-83CA-0CD7E5E5148F",
+      "layerId": "8D098442-E53F-41E7-84BA-A76BA8604D40",
+      "width": 420,
+      "height": 88.78125,
+      "text": [
+        {
+          "id": "3FB3C82D-F7C4-41B4-A7BD-E98228CD4BC8",
+          "value": "RECIPIENTS"
+        },
+        {
+          "id": "B8B98A42-24ED-4DA8-9CC7-60FF72C77B23",
+          "value": "Remove a recipient to add another."
+        },
+        {
+          "id": "5307F687-1030-46D1-976A-414763995A05",
+          "value": "mara@example.com"
+        }
+      ],
+      "paths": 15,
+      "bitmaps": 0,
+      "sourceHash": "903ca904a847614d4d3309025e7645068cfebd04f97fb1b6581efe14898218ea"
+    },
+    {
+      "id": "tag-field-error-control-light",
+      "name": "Tag Field / Error / Control / Light",
+      "symbolId": "49A4C664-FDF9-49D4-9F2B-FB1C1F70983A",
+      "layerId": "6A0F6648-599D-4335-86A0-F19383C6CEC7",
+      "width": 420,
+      "height": 88.78125,
+      "text": [
+        {
+          "id": "CC62D238-8BE9-4BEA-A17C-A7DFE3BAB1E0",
+          "value": "RECIPIENTS"
+        },
+        {
+          "id": "7065AC95-8172-4301-9837-6749C1A3FF95",
+          "value": "Remove a recipient to add another."
+        },
+        {
+          "id": "019513B7-DDFC-4EAD-AAC3-BBFED20009D7",
+          "value": "mara@example.com"
+        }
+      ],
+      "paths": 15,
+      "bitmaps": 0,
+      "sourceHash": "aafb6e7d054aead624b6f413100e5720de5c1e94c2e6ac45fcda4cbc27649b50"
+    },
+    {
+      "id": "tag-field-tags-control-dark",
+      "name": "Tag Field / Tags / Control / Dark",
+      "symbolId": "827780F6-CB70-4B64-9F28-4C23B393FBD7",
+      "layerId": "B409330F-9492-4EF9-83D4-5549C55E9A30",
+      "width": 420,
+      "height": 88.78125,
+      "text": [
+        {
+          "id": "F0CF35CD-B11E-4D5E-B906-2921932E7CFF",
+          "value": "LABELS"
+        },
+        {
+          "id": "5AA234F9-117D-48F7-9179-C9AF5124370F",
+          "value": "Press Enter or a comma to add a label."
+        },
+        {
+          "id": "CD3B468A-AD84-459C-841B-8DA331B3AFE0",
+          "value": "bug"
+        },
+        {
+          "id": "BBD3DCAE-022E-44DC-8C60-FC179AAD9721",
+          "value": "docs"
+        },
+        {
+          "id": "1C214B8A-00F9-49B0-B9BF-920BA82BFA59",
+          "value": "perf"
+        }
+      ],
+      "paths": 25,
+      "bitmaps": 0,
+      "sourceHash": "30e9c8ab74cebe32c7abf5cdeb6e9465944ccb6d8121adfda329f0e3de7c0423"
+    },
+    {
+      "id": "tag-field-tags-control-light",
+      "name": "Tag Field / Tags / Control / Light",
+      "symbolId": "C5FB95DB-6E08-4DD2-ADE7-E888B6EEC38C",
+      "layerId": "7718E042-C986-4BC7-BA0A-B67C71FDF537",
+      "width": 420,
+      "height": 88.78125,
+      "text": [
+        {
+          "id": "428D49F8-A446-434C-A185-33DD3B6D7917",
+          "value": "LABELS"
+        },
+        {
+          "id": "9AA36D73-05D3-4586-B39E-60518F334FA3",
+          "value": "Press Enter or a comma to add a label."
+        },
+        {
+          "id": "4B74BFFB-D223-4E12-BD34-112EE7880424",
+          "value": "bug"
+        },
+        {
+          "id": "FD3F8174-AABB-4D87-849B-0CAAC3935116",
+          "value": "docs"
+        },
+        {
+          "id": "3C59797E-D632-40B3-A8A8-B709877C4E45",
+          "value": "perf"
+        }
+      ],
+      "paths": 25,
+      "bitmaps": 0,
+      "sourceHash": "58f633fabf7bb2af1e0eca28102cea3f84a01f990c0e78b92be5daea102d6d03"
+    }
+  ]
+}

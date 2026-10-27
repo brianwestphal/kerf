@@ -16,8 +16,9 @@ individual component states and retain the sheet only as a catalog page.
 The Button pilot covers seven source showcase variants with 40 editable
 appearance Symbols in [Kerf-Button.sketch](button/README.md). The Form controls
 batch covers 20 showcase variants with 66 individual light/dark Symbols in
-[Kerf-Forms.sketch](forms/README.md). The four pending family tickets cover the
-other source variants, including ColorSwatches; they must update this matrix
+[Kerf-Forms.sketch](forms/README.md). The Advanced inputs batch covers 17
+variants with 34 light/dark Symbols in [Kerf-Advanced.sketch](advanced/README.md).
+The three pending family tickets cover the other source variants and must update this matrix
 as they ship. The catalog's [install and update guide](README.md) identifies
 the current libraries and supported Sketch version.
 
@@ -27,7 +28,7 @@ the current libraries and supported Sketch version.
 | ----------------------- | ---------: | --------------: | --------- | --------- |
 | Button pilot            |          1 |               7 | supported | KF-MKW7QZ |
 | Form controls           |          6 |              20 | supported | KF-8VXPDP |
-| Advanced inputs         |          7 |              17 | pending   | KF-6CC071 |
+| Advanced inputs         |          7 |              17 | supported | KF-6CC071 |
 | Toolbars and navigation |          7 |              25 | pending   | KF-6Q8S95 |
 | Lists and data          |          5 |              21 | pending   | KF-83M2MW |
 | Content and feedback    |          7 |              20 | pending   | KF-P0X4R9 |
@@ -63,23 +64,23 @@ the current libraries and supported Sketch version.
 | radio-group           | horizontal           | Horizontal, Compact, with an Error          | supported     | KF-8VXPDP |
 | switch                | states               | On, Off, and Disabled                       | supported     | KF-8VXPDP |
 | switch                | compact              | Compact                                     | supported     | KF-8VXPDP |
-| select                | form                 | Labeled Form Field                          | pending       | KF-6CC071 |
-| select                | icons                | Choices with Icons                          | pending       | KF-6CC071 |
-| select                | compact              | Compact, Disabled                           | pending       | KF-6CC071 |
-| search-field          | tokens               | Text with Atomic Tokens                     | pending       | KF-6CC071 |
-| search-field          | empty                | Empty, Expanded                             | pending       | KF-6CC071 |
-| tag-field             | tags                 | Label, Tags, and Hint                       | pending       | KF-6CC071 |
-| tag-field             | error                | Error                                       | pending       | KF-6CC071 |
-| slider                | readout              | Label, Readout, and Hint                    | pending       | KF-6CC071 |
-| slider                | ticks                | Stepped with Ticks                          | pending       | KF-6CC071 |
-| slider                | compact              | Compact                                     | pending       | KF-6CC071 |
-| color-field           | hint                 | Label, Color, and Hint                      | pending       | KF-6CC071 |
-| color-field           | compact              | Compact with Opacity                        | pending       | KF-6CC071 |
-| color-field           | error                | Disabled with an Error                      | pending       | KF-6CC071 |
-| color-picker          | rgb                  | RGB with Presets                            | pending       | KF-6CC071 |
-| color-picker          | hsb                  | HSB with Opacity                            | pending       | KF-6CC071 |
-| color-picker          | gray                 | Opaque Grayscale                            | pending       | KF-6CC071 |
-| color-swatches        | palette              | Palette with a Choice                       | pending       | KF-6CC071 |
+| select                | form                 | Labeled Form Field                          | supported     | KF-6CC071 |
+| select                | icons                | Choices with Icons                          | supported     | KF-6CC071 |
+| select                | compact              | Compact, Disabled                           | supported     | KF-6CC071 |
+| search-field          | tokens               | Text with Atomic Tokens                     | supported     | KF-6CC071 |
+| search-field          | empty                | Empty, Expanded                             | supported     | KF-6CC071 |
+| tag-field             | tags                 | Label, Tags, and Hint                       | supported     | KF-6CC071 |
+| tag-field             | error                | Error                                       | supported     | KF-6CC071 |
+| slider                | readout              | Label, Readout, and Hint                    | supported     | KF-6CC071 |
+| slider                | ticks                | Stepped with Ticks                          | supported     | KF-6CC071 |
+| slider                | compact              | Compact                                     | supported     | KF-6CC071 |
+| color-field           | hint                 | Label, Color, and Hint                      | supported     | KF-6CC071 |
+| color-field           | compact              | Compact with Opacity                        | supported     | KF-6CC071 |
+| color-field           | error                | Disabled with an Error                      | supported     | KF-6CC071 |
+| color-picker          | rgb                  | RGB with Presets                            | supported     | KF-6CC071 |
+| color-picker          | hsb                  | HSB with Opacity                            | supported     | KF-6CC071 |
+| color-picker          | gray                 | Opaque Grayscale                            | supported     | KF-6CC071 |
+| color-swatches        | palette              | Palette with a Choice                       | supported     | KF-6CC071 |
 | toolbar-control-group | icon-tile-neutral    | Neutral Quiet Icon Tile                     | pending       | KF-6Q8S95 |
 | toolbar-control-group | icon-tile-brand      | Brand Quiet Icon Tile                       | pending       | KF-6Q8S95 |
 | toolbar-control-group | icon-tile-success    | Success Quiet Icon Tile                     | pending       | KF-6Q8S95 |

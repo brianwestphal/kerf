@@ -35,7 +35,7 @@ const families = [
   {
     name: 'Advanced inputs',
     ticket: 'KF-6CC071',
-    status: 'pending',
+    status: 'supported',
     components: [
       'select',
       'search-field',
@@ -117,8 +117,8 @@ const rows = families.flatMap((family) =>
   ),
 );
 assert.equal(rows.length, 110, 'Reconcile catalog count and ticket batches');
-assert.equal(rows.filter((row) => row.status === 'supported').length, 27);
-assert.equal(rows.filter((row) => row.status === 'pending').length, 83);
+assert.equal(rows.filter((row) => row.status === 'supported').length, 44);
+assert.equal(rows.filter((row) => row.status === 'pending').length, 66);
 assert.equal(
   new Set(rows.map((row) => `${row.component}/${row.variant}`)).size,
   rows.length,
@@ -151,8 +151,9 @@ individual component states and retain the sheet only as a catalog page.
 The Button pilot covers seven source showcase variants with 40 editable
 appearance Symbols in [Kerf-Button.sketch](button/README.md). The Form controls
 batch covers 20 showcase variants with 66 individual light/dark Symbols in
-[Kerf-Forms.sketch](forms/README.md). The four pending family tickets cover the
-other source variants, including ColorSwatches; they must update this matrix
+[Kerf-Forms.sketch](forms/README.md). The Advanced inputs batch covers 17
+variants with 34 light/dark Symbols in [Kerf-Advanced.sketch](advanced/README.md).
+The three pending family tickets cover the other source variants and must update this matrix
 as they ship. The catalog's [install and update guide](README.md) identifies
 the current libraries and supported Sketch version.
 

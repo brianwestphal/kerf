@@ -1,0 +1,230 @@
+{
+  "symbols": 34,
+  "nativeText": 132,
+  "nativePaths": 1068,
+  "bitmaps": 0,
+  "assets": 16,
+  "assetBindings": 110,
+  "instances": [
+    {
+      "id": "color-field-hint-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 420,
+      "fitWidth": 420,
+      "wideWidth": 500,
+      "height": 89.984375
+    },
+    {
+      "id": "color-field-hint-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 420,
+      "fitWidth": 420,
+      "wideWidth": 500,
+      "height": 89.984375
+    },
+    {
+      "id": "color-picker-rgb-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 320,
+      "fitWidth": 320,
+      "wideWidth": 400,
+      "height": 558.5
+    },
+    {
+      "id": "color-picker-rgb-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 320,
+      "fitWidth": 320,
+      "wideWidth": 400,
+      "height": 558.5
+    },
+    {
+      "id": "color-swatches-palette-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 242,
+      "fitWidth": 242,
+      "wideWidth": 322,
+      "height": 75
+    },
+    {
+      "id": "color-swatches-palette-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 242,
+      "fitWidth": 242,
+      "wideWidth": 322,
+      "height": 75
+    },
+    {
+      "id": "search-field-tokens-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 520,
+      "fitWidth": 520,
+      "wideWidth": 600,
+      "height": 44
+    },
+    {
+      "id": "search-field-tokens-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 520,
+      "fitWidth": 520,
+      "wideWidth": 600,
+      "height": 44
+    },
+    {
+      "id": "select-form-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 360,
+      "fitWidth": 360,
+      "wideWidth": 440,
+      "height": 93.78125
+    },
+    {
+      "id": "select-form-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 360,
+      "fitWidth": 360,
+      "wideWidth": 440,
+      "height": 93.78125
+    },
+    {
+      "id": "slider-readout-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 420,
+      "fitWidth": 420,
+      "wideWidth": 500,
+      "height": 90.78125
+    },
+    {
+      "id": "slider-readout-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 420,
+      "fitWidth": 420,
+      "wideWidth": 500,
+      "height": 90.78125
+    },
+    {
+      "id": "tag-field-tags-control-dark",
+      "linked": true,
+      "override": "Go",
+      "naturalWidth": 420,
+      "fitWidth": 420,
+      "wideWidth": 500,
+      "height": 88.78125
+    },
+    {
+      "id": "tag-field-tags-control-light",
+      "linked": true,
+      "override": "Go",
+      "naturalWidth": 420,
+      "fitWidth": 420,
+      "wideWidth": 500,
+      "height": 88.78125
+    }
+  ],
+  "reopened": [
+    {
+      "name": "Color Field / Hint / Control / Dark",
+      "overrides": ["Done", "0A84FF", "FILL"]
+    },
+    {
+      "name": "Color Field / Hint / Control / Light",
+      "overrides": ["Done", "0A84FF", "FILL"]
+    },
+    {
+      "name": "Color Picker / Rgb / Control / Dark",
+      "overrides": [
+        "Done",
+        "80%",
+        "A",
+        "0A84FFCC",
+        "#",
+        "255",
+        "B",
+        "132",
+        "G",
+        "10",
+        "R"
+      ]
+    },
+    {
+      "name": "Color Picker / Rgb / Control / Light",
+      "overrides": [
+        "Done",
+        "80%",
+        "A",
+        "0A84FFCC",
+        "#",
+        "255",
+        "B",
+        "132",
+        "G",
+        "10",
+        "R"
+      ]
+    },
+    {
+      "name": "Color Swatches / Palette / Control / Dark",
+      "overrides": ["Done"]
+    },
+    {
+      "name": "Color Swatches / Palette / Control / Light",
+      "overrides": ["Done"]
+    },
+    {
+      "name": "Search Field / Tokens / Control / Dark",
+      "overrides": ["Done", "is:open", "payments"]
+    },
+    {
+      "name": "Search Field / Tokens / Control / Light",
+      "overrides": ["Done", "is:open", "payments"]
+    },
+    {
+      "name": "Select / Form / Control / Dark",
+      "overrides": ["Done", "Moves the ticket on the board.", "STATUS"]
+    },
+    {
+      "name": "Select / Form / Control / Light",
+      "overrides": ["Done", "Moves the ticket on the board.", "STATUS"]
+    },
+    {
+      "name": "Slider / Readout / Control / Dark",
+      "overrides": ["Done", "35%", "Volume"]
+    },
+    {
+      "name": "Slider / Readout / Control / Light",
+      "overrides": ["Done", "35%", "Volume"]
+    },
+    {
+      "name": "Tag Field / Tags / Control / Dark",
+      "overrides": [
+        "Go",
+        "docs",
+        "bug",
+        "Press Enter or a comma to add a label.",
+        "LABELS"
+      ]
+    },
+    {
+      "name": "Tag Field / Tags / Control / Light",
+      "overrides": [
+        "Go",
+        "docs",
+        "bug",
+        "Press Enter or a comma to add a label.",
+        "LABELS"
+      ]
+    }
+  ]
+}

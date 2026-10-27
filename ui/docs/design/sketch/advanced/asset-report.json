@@ -1,0 +1,89 @@
+{
+  "swatches": {
+    "dark.neutral-border-normal": {
+      "id": "BCD389BB-F9AE-41C1-9996-D982FA0EC05C",
+      "name": "Kerf/Advanced/dark/neutral-border-normal",
+      "color": "#fdfdff32"
+    },
+    "dark.neutral-on-quiet": {
+      "id": "28D3DDA0-709D-41EB-80C6-9F920F543D2A",
+      "name": "Kerf/Advanced/dark/neutral-on-quiet",
+      "color": "#c2c2c6ff"
+    },
+    "light.neutral-border-normal": {
+      "id": "20B1FAE6-E59A-44CC-A7C6-0148C357D971",
+      "name": "Kerf/Advanced/light/neutral-border-normal",
+      "color": "#00001c2e"
+    },
+    "light.neutral-on-quiet": {
+      "id": "D6F912A5-D9C1-4403-B127-3E56B6E8D928",
+      "name": "Kerf/Advanced/light/neutral-on-quiet",
+      "color": "#626267ff"
+    },
+    "dark.danger-fill-loud": {
+      "id": "BDC590B6-7141-46C2-B68D-969D8C72855E",
+      "name": "Kerf/Advanced/dark/danger-fill-loud",
+      "color": "#fd6265ff"
+    },
+    "light.danger-fill-loud": {
+      "id": "BE77B6D6-6082-4246-8094-B439315C76AD",
+      "name": "Kerf/Advanced/light/danger-fill-loud",
+      "color": "#be060bff"
+    },
+    "dark.brand-input": {
+      "id": "1426C048-0F4F-4600-9B44-ED60D680C9A1",
+      "name": "Kerf/Advanced/dark/brand-input",
+      "color": "#0a84ffff"
+    },
+    "light.brand-input": {
+      "id": "606A15F4-E208-4CA7-8354-6B3841EF8DBC",
+      "name": "Kerf/Advanced/light/brand-input",
+      "color": "#0a84ffff"
+    },
+    "dark.success-fill-loud": {
+      "id": "FD4DBF42-02CE-4EA9-AD00-BCBAE2551FC6",
+      "name": "Kerf/Advanced/dark/success-fill-loud",
+      "color": "#34c759ff"
+    },
+    "light.success-fill-loud": {
+      "id": "29AF9647-C5E2-463B-9AF6-41E9130D48C3",
+      "name": "Kerf/Advanced/light/success-fill-loud",
+      "color": "#34c759ff"
+    },
+    "dark.danger-on-quiet": {
+      "id": "B692B996-53A6-43E7-B9C8-FF9C583C06E7",
+      "name": "Kerf/Advanced/dark/danger-on-quiet",
+      "color": "#ff8588ff"
+    },
+    "light.danger-on-quiet": {
+      "id": "07730461-BDA0-463A-ABFA-A5634F38FA7D",
+      "name": "Kerf/Advanced/light/danger-on-quiet",
+      "color": "#c20b20ff"
+    },
+    "dark.text-quiet": {
+      "id": "E82D57C8-BD76-493E-914E-BADE99DF77E0",
+      "name": "Kerf/Advanced/dark/text-quiet",
+      "color": "#aeaeb2ff"
+    },
+    "light.text-quiet": {
+      "id": "F050BF0D-4AAB-435F-B36F-D907A83BDFF7",
+      "name": "Kerf/Advanced/light/text-quiet",
+      "color": "#646469ff"
+    },
+    "dark.brand-fill-loud": {
+      "id": "106FD778-E464-4F46-80B9-6D494CA85C08",
+      "name": "Kerf/Advanced/dark/brand-fill-loud",
+      "color": "#64d2ffff"
+    },
+    "light.brand-fill-loud": {
+      "id": "38959BB3-67DA-4FC1-8983-46619B541466",
+      "name": "Kerf/Advanced/light/brand-fill-loud",
+      "color": "#0075dbff"
+    }
+  },
+  "bindings": {
+    "text": 0,
+    "fills": 42,
+    "borders": 68
+  }
+}

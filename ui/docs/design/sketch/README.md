@@ -1,9 +1,11 @@
 # Kerf UI Sketch catalog
 
-The native libraries are [Kerf-Button.sketch](button/Kerf-Button.sketch) and
-[Kerf-Forms.sketch](forms/Kerf-Forms.sketch). They contain 40 Button and 66 form
-control light/dark Symbols with stable identities and shared assets. Their
-[Button](button/README.md) and [Forms](forms/README.md) guides cover regeneration,
+The native libraries are [Kerf-Button.sketch](button/Kerf-Button.sketch),
+[Kerf-Forms.sketch](forms/Kerf-Forms.sketch), and
+[Kerf-Advanced.sketch](advanced/Kerf-Advanced.sketch). They contain 40 Button,
+66 form-control, and 34 advanced-input light/dark Symbols with stable identities
+and shared assets. Their [Button](button/README.md), [Forms](forms/README.md),
+and [Advanced inputs](advanced/README.md) guides cover regeneration,
 verification, and Library import. [Coverage](coverage.md) accounts for all 110
 source variants and names the implementation ticket for each pending family.
 Source SVG sheets in [templates](../templates.md) are review material, not
@@ -15,7 +17,8 @@ These libraries were created and verified with **Sketch 2026.3.1**. Copy each
 published `.sketch` file to a stable location outside a versioned package or
 repository checkout. In Sketch Settings → Libraries, add those copies. Use the
 `Button / … / Light|Dark` and form component names such as
-`Text Field / … / Light|Dark` in the component browser;
+`Text Field / … / Light|Dark` and `Color Picker / … / Light|Dark` in the
+component browser;
 the light and dark appearances are distinct masters.
 
 For an update, copy the new published file over that same installed path and
