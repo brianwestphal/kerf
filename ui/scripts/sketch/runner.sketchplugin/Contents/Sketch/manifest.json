@@ -1,0 +1,19 @@
+{
+  "name": "Kerf Design Export Runner",
+  "identifier": "org.kerf.ui.design-runner",
+  "version": "0.1.0",
+  "commands": [
+    {
+      "name": "Run",
+      "identifier": "run",
+      "script": "main.js",
+      "handler": "onRun"
+    },
+    {
+      "name": "Recover",
+      "identifier": "recover",
+      "script": "main.js",
+      "handler": "onRecover"
+    }
+  ]
+}
