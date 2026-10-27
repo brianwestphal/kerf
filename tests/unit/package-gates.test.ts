@@ -13,6 +13,7 @@ import process, { execPath } from 'node:process';
 
 import { describe, expect, it } from 'vitest';
 
+import { splitCheckChain } from '../../scripts/lib/check-steps.mjs';
 import {
   ciStatusWarning,
   PACKAGE_GATES,
@@ -79,6 +80,26 @@ describe('selectPackageGates', () => {
   it('runs every gate when the changed set is unknown', () => {
     expect(names(null)).toEqual(PACKAGE_GATES.map((gate) => gate.name));
   });
+});
+
+it('builds UI output before catalog checks and only once in the package check', () => {
+  const { scripts } = JSON.parse(
+    readFileSync(join(process.cwd(), 'ui/package.json'), 'utf8'),
+  ) as { scripts: Record<string, string> };
+  function expand(name: string): string[] {
+    return splitCheckChain(scripts[name]).flatMap((step) => {
+      const nested = /^npm run ([\w:-]+)$/.exec(step);
+      return nested ? expand(nested[1]) : [step];
+    });
+  }
+  const steps = expand('check');
+  const build = steps.indexOf('tsup');
+  const catalog = steps.indexOf(
+    'node scripts/sync-component-catalog.mjs --check',
+  );
+  expect(build).toBe(0);
+  expect(catalog).toBeGreaterThan(build);
+  expect(steps.filter((step) => step === 'tsup')).toHaveLength(1);
 });
 
 describe(
