@@ -17,6 +17,7 @@ var COLORS = {
     surface: '#ffffffff',
     'brand-fill-loud': '#0075dbff',
     'brand-input': '#0a84ffff',
+    'brand-text': '#0c62f3ff',
     'danger-fill-loud': '#be060bff',
     'danger-on-quiet': '#c20b20ff',
     'neutral-fill-loud': '#48484aff',
@@ -31,6 +32,7 @@ var COLORS = {
     surface: '#1c1c1eff',
     'brand-fill-loud': '#64d2ffff',
     'brand-input': '#0a84ffff',
+    'brand-text': '#8acbffff',
     'danger-fill-loud': '#fd6265ff',
     'danger-on-quiet': '#ff8588ff',
     'neutral-fill-loud': '#e5e5eaff',
@@ -119,11 +121,13 @@ module.exports.run = function (session, parameters, done) {
         if (!master)
           throw new Error('Missing advanced Symbol for assets: ' + fixture.id);
         dom.find('Text', master).forEach(function (layer) {
-          var role = roleOf(fixture.theme, layer.style.textColor, true);
-          if (role) {
-            layer.style.textSwatch = swatch(fixture.theme, role);
+          layer.style.fills.forEach(function (fill) {
+            var role = roleOf(fixture.theme, fill.color, true);
+            if (!role)
+              throw new Error('Unmapped advanced Text color: ' + fill.color);
+            fill.swatch = swatch(fixture.theme, role);
             counts.text++;
-          }
+          });
         });
         dom.find('ShapePath', master).forEach(function (layer) {
           layer.style.fills.forEach(function (fill) {
@@ -142,7 +146,11 @@ module.exports.run = function (session, parameters, done) {
           });
         });
       });
-      if (counts.fills < 30 || Object.keys(assets).length < 8)
+      if (
+        counts.text < 132 ||
+        counts.fills < 30 ||
+        Object.keys(assets).length < 8
+      )
         throw new Error(
           'Advanced shared assets did not bind across families: ' +
             JSON.stringify({ counts: counts, swatches: Object.keys(assets) }),

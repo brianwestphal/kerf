@@ -49,6 +49,7 @@ module.exports.run = function (session, parameters, done) {
           bitmaps: dom.find('Image', libraryDocument).length,
           assets: Object.keys(manifestFile.assets || {}).length,
           assetBindings: 0,
+          textAssetBindings: 0,
           instances: [],
         };
         if (
@@ -79,7 +80,18 @@ module.exports.run = function (session, parameters, done) {
               if (paint.swatch) report.assetBindings++;
             });
         });
-        if (report.assetBindings < 100)
+        dom.find('Text', libraryDocument).forEach(function (layer) {
+          layer.style.fills.forEach(function (paint) {
+            if (paint.swatch) {
+              report.assetBindings++;
+              report.textAssetBindings++;
+            }
+          });
+        });
+        if (
+          report.assetBindings < 200 ||
+          report.textAssetBindings !== report.nativeText
+        )
           throw new Error('Saved advanced asset bindings missing.');
         fixtures.forEach(function (fixture) {
           var old = manifest[fixture.id];
@@ -94,6 +106,20 @@ module.exports.run = function (session, parameters, done) {
             throw new Error(
               'Saved advanced Symbol identity changed: ' + fixture.id,
             );
+          var textIds = dom.find('Text', master).map(function (layer) {
+            return layer.id;
+          });
+          if (
+            JSON.stringify(textIds.sort()) !==
+            JSON.stringify(
+              old.text
+                .map(function (item) {
+                  return item.id;
+                })
+                .sort(),
+            )
+          )
+            throw new Error('Saved advanced Text IDs changed: ' + fixture.id);
         });
         session.closeDocument(libraryDocument);
         var consumer = session.createDocument();

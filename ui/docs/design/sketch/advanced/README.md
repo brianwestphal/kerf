@@ -4,8 +4,8 @@
 dark Symbols for 17 source variants across Select, SearchField, TagField,
 Slider, ColorField, ColorPicker, and ColorSwatches. Each template variant has
 its own master in each theme. All imported content remains native Text and
-vector paths, with no bitmap layers. Sixteen shared Color Variables bind
-matching input fills and borders; [the manifest](symbol-manifest.json) pins
+vector paths, with no bitmap layers. Shared Color Variables bind native text,
+input fills, and borders; [the manifest](symbol-manifest.json) pins
 Symbol, Text, and Color Variable IDs.
 
 This library was created and tested with Sketch 2026.3.1. Install a copy at a

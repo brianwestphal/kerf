@@ -7,8 +7,8 @@ showcase sheets contain 33 controls per theme; the library exports those
 controls separately so a designer can place and override one state at a time.
 
 The Symbols contain native Text and vector paths, with no bitmap layers.
-Shared Color Variables cover brand, danger, success, neutral fill, and border
-colors. [The manifest](symbol-manifest.json) records stable Symbol, Text, and
+Shared Color Variables cover editable text, brand, danger, success, neutral
+fill, and border colors. [The manifest](symbol-manifest.json) records stable Symbol, Text, and
 Color Variable IDs. Text overrides work in linked Library instances. TextField
 borders stretch and its trailing icon stays pinned; checkboxes, radio groups,
 and switches keep their controls at a fixed left position as the instance grows.

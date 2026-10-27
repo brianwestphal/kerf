@@ -3,8 +3,9 @@
   "nativeText": 132,
   "nativePaths": 1068,
   "bitmaps": 0,
-  "assets": 16,
-  "assetBindings": 110,
+  "assets": 20,
+  "assetBindings": 262,
+  "textAssetBindings": 132,
   "instances": [
     {
       "id": "color-field-hint-control-dark",

@@ -27,6 +27,7 @@ var COLORS = {
     'text-quiet': '#aeaeb2ff',
     'neutral-on-quiet': '#c2c2c6ff',
     'on-loud': '#111113ff',
+    'on-brand': '#1c1c1eff',
     surface: '#1c1c1eff',
     'brand-fill-loud': '#64d2ffff',
     'danger-fill-loud': '#fd6265ff',
@@ -34,6 +35,7 @@ var COLORS = {
     'neutral-fill-loud': '#e5e5eaff',
     'neutral-border-normal': '#fdfdff32',
     'success-fill-loud': '#34c759ff',
+    'success-on-loud': '#1d1d1fff',
   },
 };
 
@@ -115,11 +117,13 @@ module.exports.run = function (session, parameters, done) {
         if (!master)
           throw new Error('Missing form Symbol for assets: ' + fixture.id);
         dom.find('Text', master).forEach(function (layer) {
-          var role = roleOf(fixture.theme, layer.style.textColor, true);
-          if (role) {
-            layer.style.textSwatch = swatch(fixture.theme, role);
+          layer.style.fills.forEach(function (fill) {
+            var role = roleOf(fixture.theme, fill.color, true);
+            if (!role)
+              throw new Error('Unmapped form Text color: ' + fill.color);
+            fill.swatch = swatch(fixture.theme, role);
             counts.text++;
-          }
+          });
         });
         dom.find('ShapePath', master).forEach(function (layer) {
           layer.style.fills.forEach(function (fill) {
@@ -138,7 +142,11 @@ module.exports.run = function (session, parameters, done) {
           });
         });
       });
-      if (counts.fills < 30 || Object.keys(assets).length < 8)
+      if (
+        counts.text < 130 ||
+        counts.fills < 30 ||
+        Object.keys(assets).length < 8
+      )
         throw new Error(
           'Form shared assets did not bind across families: ' +
             JSON.stringify({ counts: counts, swatches: Object.keys(assets) }),

@@ -3,8 +3,9 @@
   "nativeText": 130,
   "nativePaths": 406,
   "bitmaps": 0,
-  "assets": 12,
-  "assetBindings": 118,
+  "assets": 22,
+  "assetBindings": 281,
+  "textAssetBindings": 130,
   "instances": [
     {
       "id": "split-button-tones-deploy-light",

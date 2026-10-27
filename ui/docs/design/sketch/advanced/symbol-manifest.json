@@ -973,40 +973,70 @@
     }
   },
   "assets": {
-    "dark.neutral-border-normal": {
-      "id": "BCD389BB-F9AE-41C1-9996-D982FA0EC05C",
-      "name": "Kerf/Advanced/dark/neutral-border-normal",
-      "color": "#fdfdff32"
-    },
     "dark.neutral-on-quiet": {
       "id": "28D3DDA0-709D-41EB-80C6-9F920F543D2A",
       "name": "Kerf/Advanced/dark/neutral-on-quiet",
       "color": "#c2c2c6ff"
     },
-    "light.neutral-border-normal": {
-      "id": "20B1FAE6-E59A-44CC-A7C6-0148C357D971",
-      "name": "Kerf/Advanced/light/neutral-border-normal",
-      "color": "#00001c2e"
+    "dark.text": {
+      "id": "BA57AE74-397E-4AA9-BD44-4723A327A414",
+      "name": "Kerf/Advanced/dark/text",
+      "color": "#f5f5f7ff"
+    },
+    "dark.neutral-border-normal": {
+      "id": "BCD389BB-F9AE-41C1-9996-D982FA0EC05C",
+      "name": "Kerf/Advanced/dark/neutral-border-normal",
+      "color": "#fdfdff32"
     },
     "light.neutral-on-quiet": {
       "id": "D6F912A5-D9C1-4403-B127-3E56B6E8D928",
       "name": "Kerf/Advanced/light/neutral-on-quiet",
       "color": "#626267ff"
     },
+    "light.text": {
+      "id": "363EC731-1D6A-4012-8168-C726168698EA",
+      "name": "Kerf/Advanced/light/text",
+      "color": "#1d1d1fff"
+    },
+    "light.neutral-border-normal": {
+      "id": "20B1FAE6-E59A-44CC-A7C6-0148C357D971",
+      "name": "Kerf/Advanced/light/neutral-border-normal",
+      "color": "#00001c2e"
+    },
+    "dark.danger-on-quiet": {
+      "id": "B692B996-53A6-43E7-B9C8-FF9C583C06E7",
+      "name": "Kerf/Advanced/dark/danger-on-quiet",
+      "color": "#ff8588ff"
+    },
     "dark.danger-fill-loud": {
       "id": "BDC590B6-7141-46C2-B68D-969D8C72855E",
       "name": "Kerf/Advanced/dark/danger-fill-loud",
       "color": "#fd6265ff"
+    },
+    "light.danger-on-quiet": {
+      "id": "07730461-BDA0-463A-ABFA-A5634F38FA7D",
+      "name": "Kerf/Advanced/light/danger-on-quiet",
+      "color": "#c20b20ff"
     },
     "light.danger-fill-loud": {
       "id": "BE77B6D6-6082-4246-8094-B439315C76AD",
       "name": "Kerf/Advanced/light/danger-fill-loud",
       "color": "#be060bff"
     },
+    "dark.text-quiet": {
+      "id": "E82D57C8-BD76-493E-914E-BADE99DF77E0",
+      "name": "Kerf/Advanced/dark/text-quiet",
+      "color": "#aeaeb2ff"
+    },
     "dark.brand-input": {
       "id": "1426C048-0F4F-4600-9B44-ED60D680C9A1",
       "name": "Kerf/Advanced/dark/brand-input",
       "color": "#0a84ffff"
+    },
+    "light.text-quiet": {
+      "id": "F050BF0D-4AAB-435F-B36F-D907A83BDFF7",
+      "name": "Kerf/Advanced/light/text-quiet",
+      "color": "#646469ff"
     },
     "light.brand-input": {
       "id": "606A15F4-E208-4CA7-8354-6B3841EF8DBC",
@@ -1023,25 +1053,15 @@
       "name": "Kerf/Advanced/light/success-fill-loud",
       "color": "#34c759ff"
     },
-    "dark.danger-on-quiet": {
-      "id": "B692B996-53A6-43E7-B9C8-FF9C583C06E7",
-      "name": "Kerf/Advanced/dark/danger-on-quiet",
-      "color": "#ff8588ff"
+    "dark.brand-text": {
+      "id": "6E57B9F3-B319-437C-8B2B-AAD41A9EF27E",
+      "name": "Kerf/Advanced/dark/brand-text",
+      "color": "#8acbffff"
     },
-    "light.danger-on-quiet": {
-      "id": "07730461-BDA0-463A-ABFA-A5634F38FA7D",
-      "name": "Kerf/Advanced/light/danger-on-quiet",
-      "color": "#c20b20ff"
-    },
-    "dark.text-quiet": {
-      "id": "E82D57C8-BD76-493E-914E-BADE99DF77E0",
-      "name": "Kerf/Advanced/dark/text-quiet",
-      "color": "#aeaeb2ff"
-    },
-    "light.text-quiet": {
-      "id": "F050BF0D-4AAB-435F-B36F-D907A83BDFF7",
-      "name": "Kerf/Advanced/light/text-quiet",
-      "color": "#646469ff"
+    "light.brand-text": {
+      "id": "73774840-8189-424E-B097-518CB1DD6F3D",
+      "name": "Kerf/Advanced/light/brand-text",
+      "color": "#0c62f3ff"
     },
     "dark.brand-fill-loud": {
       "id": "106FD778-E464-4F46-80B9-6D494CA85C08",
