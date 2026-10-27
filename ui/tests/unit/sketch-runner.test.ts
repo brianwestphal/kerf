@@ -192,6 +192,28 @@ describe('Sketch runner lifecycle', () => {
     ).toBeTruthy();
   });
 
+  it('quarantines an ambiguous launch timeout and explains safe recovery', async () => {
+    await expect(
+      runSketchJob({
+        ...options(),
+        invoke: async () => {
+          throw Object.assign(new Error('Command failed'), { killed: true });
+        },
+      }),
+    ).rejects.toThrow('Check the existing Sketch instance for a modal dialog');
+    const owner = JSON.parse(
+      await readFile(join(root, 'active', 'owner.json'), 'utf8'),
+    );
+    expect(
+      JSON.parse(
+        await readFile(join(owner.jobDirectory, 'cancel.json'), 'utf8'),
+      ).runId,
+    ).toBe(owner.runId);
+    await expect(
+      runSketchJob({ ...options(), invoke: async () => {} }),
+    ).rejects.toThrow('reserved');
+  });
+
   it('releases a missing-tool launch and never dispatches a pre-cancelled job', async () => {
     await expect(
       runSketchJob({

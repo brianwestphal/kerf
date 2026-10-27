@@ -51,8 +51,10 @@ for (const mode of ['success', 'failure', 'cancel', 'deadline', 'success']) {
   } finally {
     clearTimeout(timer);
   }
-  if (mode === 'success') assert.equal(failure, undefined);
-  else assert.ok(failure, `${mode} must fail explicitly`);
+  if (mode === 'success') {
+    if (failure)
+      throw new Error(`Sketch lifecycle success check failed: ${failure}`);
+  } else assert.ok(failure, `${mode} must fail explicitly`);
   const directories = (
     await readdir(join(defaultStateDirectory, 'jobs'))
   ).filter((name) => !before.has(name));

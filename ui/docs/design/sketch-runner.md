@@ -73,5 +73,10 @@ If Sketch crashed, recovery acknowledges that the old process and its resources
 are gone. Another running Sketch process cannot clean up a live owner's resources.
 Do not manually delete an active lock to force another job through.
 
+An existing modal file dialog in Sketch can prevent plugin dispatch. A bounded
+launch failure retains the cleanup journal because delivery may be ambiguous.
+Finish or dismiss that dialog yourself, run `recover`, and wait for cleanup
+acknowledgement before retrying. The runner must not dismiss user dialogs.
+
 The export pipeline and generated Symbols are tracked separately in KF-MKW7QZ;
 this runner alone does not generate the component catalog.

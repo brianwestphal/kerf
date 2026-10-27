@@ -133,7 +133,14 @@ export async function runSketchJob({
       );
     } catch (error) {
       if (error.code === 'ENOENT') launched = false;
-      throw error;
+      if (!launched) throw error;
+      const detail = error.killed
+        ? 'The Sketch command timed out before acknowledging launch.'
+        : `The Sketch command failed: ${error.stderr?.trim() || error.message}`;
+      throw new Error(
+        `${detail} The cleanup journal remains at ${stateDirectory}/active. Check the existing Sketch instance for a modal dialog, then recover this run; do not launch another instance.`,
+        { cause: error },
+      );
     }
     let cancelDeadline;
     while (true) {
