@@ -42,10 +42,12 @@ detects core/UI source or dependency use, selects one workspace package,
 evaluates ordered globstar/brace/negated npm/Yarn and pnpm workspace patterns
 with containment and ambiguity checks, performs state-backed three-way
 structural merges (including the focused `setup/jsonc.mjs` parser/editor that
-preserves tsconfig comments, trailing commas, and line endings), and wires the
-shipped guidance plus TypeScript/ESLint/catalog/doctor feedback without
-generating an application. In UI mode, the generated `kerf:check` runs all
-four checks; focused catalog and doctor scripts remain available separately.
+preserves tsconfig comments, trailing commas, and line endings). For an
+existing app, setup wires shipped guidance plus TypeScript/ESLint/catalog/doctor
+feedback into the selected package. For a fresh UI package (`freshUiApp`), it
+also scaffolds a runnable Vite app with a Kerf catalog page and structure test.
+In UI mode, the generated `kerf:check` runs all four feedback checks; focused
+catalog and doctor scripts remain available separately.
 An optional shared-guidance source produces an import-only Claude skill; the
 ESLint hygiene rule validates the import and source instead of a copied skill.
 Workspace profile composition/selection paths and missing metadata sources
@@ -75,7 +77,8 @@ one shared real packed local-tarball hit/missing-artifact rollback flow for npm,
 pnpm, Yarn Classic, and Yarn Berry. Each manager case runs only when its exact
 pinned binary/version is detected; otherwise its non-empty test is skipped with
 the detected reason. These fixtures prove no-network local-artifact behavior,
-not a registry-cache implementation.
+not a registry-cache implementation. The fresh UI app fixture also verifies
+the generated catalog page, structure test, and Vite build.
 `tests/helpers/load-scaled-timeout.ts` (with a `ui/tests/helpers` twin) stretches the subprocess-heavy integration suites' fixed timeouts by the one-minute load average per core (1..4x, 1 in CI, `KERF_TEST_TIMEOUT_SCALE` overrides) so a busy machine does not fail the pre-push gate (KF-S4XNEM); `tests/unit/load-scaled-timeout.test.ts` covers the factor.
 `tests/unit/guidance-integrity.test.ts` covers byte snapshots and the
 changed/created/deleted comparison matrix, while
