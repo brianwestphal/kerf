@@ -17,9 +17,12 @@ node scripts/sketch/runner.mjs run scripts/sketch/runner.sketchplugin/Contents/S
 node scripts/sketch/check-runner.mjs
 ```
 
-The second command verifies repeated success, deliberate failure, cancellation,
-and deadline runs. It compares app process IDs and native document/Library
-inventories, and writes a report in the runner's temporary state directory.
+Open Sketch normally before the second command. The lifecycle check refuses to
+start with no running Sketch process, so it never leaves a newly launched test
+instance behind. It verifies repeated success, deliberate failure,
+cancellation, and deadline runs, compares app process IDs and native
+document/Library inventories, and writes a report in the runner's temporary
+state directory. It leaves the preexisting app open.
 Native verification is a separate explicit command: an unavailable Sketch
 installation or blocked app access is an error, never an automatic pass in CI.
 

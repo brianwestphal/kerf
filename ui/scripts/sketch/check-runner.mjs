@@ -6,6 +6,7 @@ import { clearTimeout, setTimeout } from 'node:timers';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 
+import { requireExistingSketchProcess } from './check-runner-process.mjs';
 import { defaultStateDirectory, runSketchJob } from './runner.mjs';
 
 const exec = promisify(execFile);
@@ -23,7 +24,7 @@ const processIds = async () => {
     .map((line) => Number(line.trim().split(/\s+/)[0]))
     .sort((a, b) => a - b);
 };
-const beforeProcesses = await processIds();
+const beforeProcesses = requireExistingSketchProcess(await processIds());
 const records = [];
 for (const mode of ['success', 'failure', 'cancel', 'deadline', 'success']) {
   const controller = new AbortController();
@@ -71,10 +72,8 @@ for (const mode of ['success', 'failure', 'cancel', 'deadline', 'success']) {
   records.push({ mode, failure, ...status });
 }
 const afterProcesses = await processIds();
-// With an existing app, no extra instance may be created. With no app initially,
-// the first launch is allowed and subsequent runs must reuse that single app.
-if (beforeProcesses.length) assert.deepEqual(afterProcesses, beforeProcesses);
-else assert.equal(afterProcesses.length, 1);
+// The preflight requires an existing app, so no test-owned app remains open.
+assert.deepEqual(afterProcesses, beforeProcesses);
 assert.equal(new Set(records.map((r) => r.processId)).size, 1);
 const report = { passed: true, beforeProcesses, afterProcesses, records };
 const reportPath = resolve(

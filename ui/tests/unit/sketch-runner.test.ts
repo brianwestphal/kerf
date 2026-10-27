@@ -6,6 +6,7 @@ import { clearInterval, setInterval } from 'node:timers';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { requireExistingSketchProcess } from '../../scripts/sketch/check-runner-process.mjs';
 import {
   recoverSketchJob,
   runSketchJob,
@@ -56,6 +57,13 @@ const options = () => ({
 });
 
 describe('Sketch runner lifecycle', () => {
+  it('requires an existing app before any lifecycle job can launch Sketch', () => {
+    expect(() => requireExistingSketchProcess([])).toThrow(
+      'Open Sketch before running the lifecycle check',
+    );
+    expect(requireExistingSketchProcess([120, 121])).toEqual([120, 121]);
+  });
+
   it('reuses Sketch and serializes jobs through native cleanup acknowledgement', async () => {
     let started!: (job: Awaited<ReturnType<typeof jobFrom>>) => void;
     const launch = new Promise<Awaited<ReturnType<typeof jobFrom>>>(
