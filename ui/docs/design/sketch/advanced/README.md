@@ -11,8 +11,16 @@ Symbol, Text, and Color Variable IDs.
 This library was created and tested with Sketch 2026.3.1. Install a copy at a
 stable path through Sketch Settings → Libraries. Update that same installed
 file, refresh the Library, and sync consumer instances on a later release.
-The exporter checks previously published identities and stops if a source SVG
-changes before its native layers can be migrated safely (`KF-E7DE7P`).
+The exporter checks previously published identities.
+
+When a source SVG changes, `generate` updates the published layers in place,
+including text, geometry, gradients, and checkerboard paints, so the Symbol,
+Text override, and layer IDs stay the same. Unchanged paint colors keep their
+Color Variables; run `assets` afterward to bind changed colors. Published
+Color Variables stay in the library even when no Symbol uses them. A changed
+layer count, layer or path type, or a reordered label is rejected before any
+published layer changes; such an edit needs a deliberate override-key
+migration.
 
 ## Regenerate and verify
 

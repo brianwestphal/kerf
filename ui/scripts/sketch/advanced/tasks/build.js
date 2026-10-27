@@ -9,6 +9,7 @@ function readJSON(path) {
 }
 
 var semanticLayout = require('./semantic-layout');
+var migration = require('./migrate');
 
 module.exports.run = function (session, parameters, done) {
   var dom = session.dom;
@@ -36,10 +37,28 @@ module.exports.run = function (session, parameters, done) {
         var symbol = matches[0];
         if (old && !symbol)
           throw new Error('Previously published Symbol missing: ' + fixture.id);
-        if (old && old.sourceHash !== fixture.sourceHash)
-          throw new Error(
-            'Source structure changed; migrate native layer IDs: ' + fixture.id,
+        if (old && old.sourceHash !== fixture.sourceHash) {
+          var source = dom.createLayerFromData(fixture.svg, 'svg');
+          if (!source)
+            throw new Error('Edited SVG import failed: ' + fixture.id);
+          // Measure Text frames in the published font, as a fresh import
+          // does, so migrated fixed-width text is not clipped.
+          dom.find('Text', source).forEach(function (text) {
+            text.style.fontFamily = 'system';
+          });
+          if (symbol.layers.length !== 1)
+            throw new Error('Published Advanced root changed: ' + fixture.id);
+          var pairs = migration.plan(
+            symbol.layers[0],
+            source,
+            fixture.id,
+            old.text,
           );
+          migration.apply(pairs);
+          symbol.frame.width = fixture.box.width;
+          symbol.frame.height = fixture.box.height;
+          semanticLayout.apply(symbol, fixture, dom);
+        }
         if (!symbol) {
           symbol = new dom.SymbolMaster({
             name: fixture.name,

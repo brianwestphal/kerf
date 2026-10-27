@@ -146,6 +146,12 @@ module.exports.run = function (session, parameters, done) {
           });
         });
       });
+      // An edited source can stop using a published Color Variable; keep it
+      // so consumer documents that bind it never lose their reference.
+      Object.keys(oldAssets).forEach(function (key) {
+        var parts = key.split('.');
+        swatch(parts[0], parts.slice(1).join('.'));
+      });
       if (
         counts.text < 132 ||
         counts.fills < 30 ||
