@@ -1,0 +1,160 @@
+{
+  "symbols": 42,
+  "nativeText": 72,
+  "nativePaths": 510,
+  "bitmaps": 0,
+  "assets": 10,
+  "assetBindings": 101,
+  "instances": [
+    {
+      "id": "list-stack-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 340,
+      "fitWidth": 340,
+      "wideWidth": 420,
+      "height": 148
+    },
+    {
+      "id": "list-stack-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 340,
+      "fitWidth": 340,
+      "wideWidth": 420,
+      "height": 148
+    },
+    {
+      "id": "list-item-multiline-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 304,
+      "fitWidth": 304,
+      "wideWidth": 384,
+      "height": 54
+    },
+    {
+      "id": "list-item-multiline-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 304,
+      "fitWidth": 304,
+      "wideWidth": 384,
+      "height": 54
+    },
+    {
+      "id": "list-header-action-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 364,
+      "fitWidth": 364,
+      "wideWidth": 444,
+      "height": 44
+    },
+    {
+      "id": "list-header-action-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 364,
+      "fitWidth": 364,
+      "wideWidth": 444,
+      "height": 44
+    },
+    {
+      "id": "list-action-row-trailing-menu-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 364,
+      "fitWidth": 364,
+      "wideWidth": 444,
+      "height": 44
+    },
+    {
+      "id": "list-action-row-trailing-menu-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 364,
+      "fitWidth": 364,
+      "wideWidth": 444,
+      "height": 44
+    },
+    {
+      "id": "value-table-details-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 404,
+      "fitWidth": 404,
+      "wideWidth": 484,
+      "height": 165.1875
+    },
+    {
+      "id": "value-table-details-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 404,
+      "fitWidth": 404,
+      "wideWidth": 484,
+      "height": 165.1875
+    }
+  ],
+  "reopened": [
+    {
+      "name": "List / Stack / Control / Light",
+      "overrides": ["Done", "Inbox", "2", "WORKSPACE"]
+    },
+    {
+      "name": "List / Stack / Control / Dark",
+      "overrides": ["Done", "Inbox", "2", "WORKSPACE"]
+    },
+    {
+      "name": "List Item / Multiline / Control / Light",
+      "overrides": ["Done", "Migrate the legacy billing pipeline"]
+    },
+    {
+      "name": "List Item / Multiline / Control / Dark",
+      "overrides": ["Done", "Migrate the legacy billing pipeline"]
+    },
+    {
+      "name": "List Header / Action / Control / Light",
+      "overrides": ["Done"]
+    },
+    {
+      "name": "List Header / Action / Control / Dark",
+      "overrides": ["Done"]
+    },
+    {
+      "name": "List Action Row / Trailing Menu / Control / Light",
+      "overrides": ["Done"]
+    },
+    {
+      "name": "List Action Row / Trailing Menu / Control / Dark",
+      "overrides": ["Done"]
+    },
+    {
+      "name": "Value Table / Details / Control / Light",
+      "overrides": [
+        "Done",
+        "Last Deploy",
+        "us-east-1",
+        "Region",
+        "Production",
+        "Environment",
+        "Live",
+        "Status"
+      ]
+    },
+    {
+      "name": "Value Table / Details / Control / Dark",
+      "overrides": [
+        "Done",
+        "Last Deploy",
+        "us-east-1",
+        "Region",
+        "Production",
+        "Environment",
+        "Live",
+        "Status"
+      ]
+    }
+  ]
+}

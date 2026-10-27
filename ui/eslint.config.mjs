@@ -23,6 +23,7 @@ export default [
       'scripts/sketch/button/tasks/*.js',
       'scripts/sketch/forms/tasks/*.js',
       'scripts/sketch/advanced/tasks/*.js',
+      'scripts/sketch/lists/tasks/*.js',
     ],
     languageOptions: {
       sourceType: 'commonjs',

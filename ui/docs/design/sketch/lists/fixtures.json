@@ -1,0 +1,1220 @@
+[
+  {
+    "id": "list-stack-control-light",
+    "component": "list",
+    "variant": "stack",
+    "key": "control",
+    "theme": "light",
+    "name": "List / Stack / Control / Light",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 340,
+      "height": 148
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "column",
+      "align": "stretch",
+      "justify": "flex-start",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 340 148\" width=\"340\" height=\"148\"><defs><clipPath id=\"cp0\"><rect x=\"8\" y=\"52\" width=\"324\" height=\"44\"/></clipPath><clipPath id=\"ov1\"><rect x=\"9\" y=\"53\" width=\"322\" height=\"42\" rx=\"11\"/></clipPath><clipPath id=\"cp2\"><rect x=\"8\" y=\"104\" width=\"324\" height=\"44\"/></clipPath><clipPath id=\"ov3\"><rect x=\"9\" y=\"105\" width=\"322\" height=\"42\" rx=\"11\"/></clipPath><clipPath id=\"cp4\"><rect x=\"9\" y=\"6.8\" width=\"97.8\" height=\"30.4\"/></clipPath><clipPath id=\"ct5\"><rect x=\"9\" y=\"6.8\" width=\"97.8\" height=\"30.4\"/></clipPath><clipPath id=\"ct6\"><rect x=\"114.8\" y=\"12\" width=\"20.3\" height=\"20\"/></clipPath><clipPath id=\"cp7\"><rect x=\"17\" y=\"65\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"cp9\"><rect x=\"43\" y=\"65\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"ov10\"><rect x=\"43\" y=\"65\" width=\"272\" height=\"18\" rx=\"0\"/></clipPath><clipPath id=\"cp11\"><rect x=\"43\" y=\"65\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"ct12\"><rect x=\"43\" y=\"65\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"cp13\"><rect x=\"17\" y=\"117\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"cp15\"><rect x=\"43\" y=\"117\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"ov16\"><rect x=\"43\" y=\"117\" width=\"272\" height=\"18\" rx=\"0\"/></clipPath><clipPath id=\"cp17\"><rect x=\"43\" y=\"117\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"ct18\"><rect x=\"43\" y=\"117\" width=\"272\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><rect x=\"8\" y=\"52\" width=\"324\" height=\"44\" rx=\"12\" fill=\"rgb(214,233,249)\"/><rect x=\"8.5\" y=\"52.5\" width=\"323\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgb(166,207,242)\" stroke-width=\"1\"/></g><g clip-path=\"url(#cp2)\"><rect x=\"8.5\" y=\"104.5\" width=\"323\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/></g><rect x=\"8.5\" y=\"0.5\" width=\"323\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp4)\"><g clip-path=\"url(#ct5)\"><text x=\"17\" y=\"25.8\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"12\" font-weight=\"650\" fill=\"rgb(98,98,103)\">WORKSPACE</text></g></g><rect x=\"114.8\" y=\"12\" width=\"20.3\" height=\"20\" rx=\"10\" fill=\"rgba(0,0,98,0.05)\"/><rect x=\"115.5\" y=\"12.5\" width=\"19\" height=\"19\" rx=\"9.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"121.41\" y=\"26.5\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(98,98,103)\">2</text><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp7)\"><g color=\"rgb(29, 29, 31)\"><clipPath id=\"svgic8\"><rect x=\"17\" y=\"65\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic8)\"><g transform=\"matrix(.75 0 0 .75 17 65)\"><polyline points=\"22 12 16 12 14 15 10 15 8 12 2 12\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.4-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp9)\"><g clip-path=\"url(#ov10)\"><g clip-path=\"url(#cp11)\"><g clip-path=\"url(#ct12)\"><text x=\"43\" y=\"80\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"650\" fill=\"rgb(29,29,31)\">Inbox</text></g></g></g></g></g></g><g clip-path=\"url(#cp2)\"><g clip-path=\"url(#ov3)\"><g clip-path=\"url(#cp13)\"><g color=\"rgb(29, 29, 31)\"><clipPath id=\"svgic14\"><rect x=\"17\" y=\"117\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic14)\"><g transform=\"matrix(.75 0 0 .75 17 117)\"><path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9l-.8-1.2A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp15)\"><g clip-path=\"url(#ov16)\"><g clip-path=\"url(#cp17)\"><g clip-path=\"url(#ct18)\"><text x=\"43\" y=\"132\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(29,29,31)\">Projects</text></g></g></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-stack-control-dark",
+    "component": "list",
+    "variant": "stack",
+    "key": "control",
+    "theme": "dark",
+    "name": "List / Stack / Control / Dark",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 340,
+      "height": 148
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "column",
+      "align": "stretch",
+      "justify": "flex-start",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 340 148\" width=\"340\" height=\"148\"><defs><clipPath id=\"cp0\"><rect x=\"8\" y=\"52\" width=\"324\" height=\"44\"/></clipPath><clipPath id=\"ov1\"><rect x=\"9\" y=\"53\" width=\"322\" height=\"42\" rx=\"11\"/></clipPath><clipPath id=\"cp2\"><rect x=\"8\" y=\"104\" width=\"324\" height=\"44\"/></clipPath><clipPath id=\"ov3\"><rect x=\"9\" y=\"105\" width=\"322\" height=\"42\" rx=\"11\"/></clipPath><clipPath id=\"cp4\"><rect x=\"9\" y=\"6.8\" width=\"97.8\" height=\"30.4\"/></clipPath><clipPath id=\"ct5\"><rect x=\"9\" y=\"6.8\" width=\"97.8\" height=\"30.4\"/></clipPath><clipPath id=\"ct6\"><rect x=\"114.8\" y=\"12\" width=\"20.3\" height=\"20\"/></clipPath><clipPath id=\"cp7\"><rect x=\"17\" y=\"65\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"cp9\"><rect x=\"43\" y=\"65\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"ov10\"><rect x=\"43\" y=\"65\" width=\"272\" height=\"18\" rx=\"0\"/></clipPath><clipPath id=\"cp11\"><rect x=\"43\" y=\"65\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"ct12\"><rect x=\"43\" y=\"65\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"cp13\"><rect x=\"17\" y=\"117\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"cp15\"><rect x=\"43\" y=\"117\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"ov16\"><rect x=\"43\" y=\"117\" width=\"272\" height=\"18\" rx=\"0\"/></clipPath><clipPath id=\"cp17\"><rect x=\"43\" y=\"117\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"ct18\"><rect x=\"43\" y=\"117\" width=\"272\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><rect x=\"8\" y=\"52\" width=\"324\" height=\"44\" rx=\"12\" fill=\"rgb(40,57,66)\"/><rect x=\"8.5\" y=\"52.5\" width=\"323\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgb(53,92,109)\" stroke-width=\"1\"/></g><g clip-path=\"url(#cp2)\"><rect x=\"8.5\" y=\"104.5\" width=\"323\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/></g><rect x=\"8.5\" y=\"0.5\" width=\"323\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp4)\"><g clip-path=\"url(#ct5)\"><text x=\"17\" y=\"25.8\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"12\" font-weight=\"650\" fill=\"rgb(194,194,198)\">WORKSPACE</text></g></g><rect x=\"114.8\" y=\"12\" width=\"20.3\" height=\"20\" rx=\"10\" fill=\"rgba(228,228,255,0.075)\"/><rect x=\"115.5\" y=\"12.5\" width=\"19\" height=\"19\" rx=\"9.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"121.41\" y=\"26.5\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(194,194,198)\">2</text><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp7)\"><g color=\"rgb(245, 245, 247)\"><clipPath id=\"svgic8\"><rect x=\"17\" y=\"65\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic8)\"><g transform=\"matrix(.75 0 0 .75 17 65)\"><polyline points=\"22 12 16 12 14 15 10 15 8 12 2 12\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.4-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp9)\"><g clip-path=\"url(#ov10)\"><g clip-path=\"url(#cp11)\"><g clip-path=\"url(#ct12)\"><text x=\"43\" y=\"80\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"650\" fill=\"rgb(245,245,247)\">Inbox</text></g></g></g></g></g></g><g clip-path=\"url(#cp2)\"><g clip-path=\"url(#ov3)\"><g clip-path=\"url(#cp13)\"><g color=\"rgb(245, 245, 247)\"><clipPath id=\"svgic14\"><rect x=\"17\" y=\"117\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic14)\"><g transform=\"matrix(.75 0 0 .75 17 117)\"><path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9l-.8-1.2A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp15)\"><g clip-path=\"url(#ov16)\"><g clip-path=\"url(#cp17)\"><g clip-path=\"url(#ct18)\"><text x=\"43\" y=\"132\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(245,245,247)\">Projects</text></g></g></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-compact-control-light",
+    "component": "list",
+    "variant": "compact",
+    "key": "control",
+    "theme": "light",
+    "name": "List / Compact / Control / Light",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 340,
+      "height": 88
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "column",
+      "align": "stretch",
+      "justify": "flex-start",
+      "gap": "0px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 340 88\" width=\"340\" height=\"88\"><defs><clipPath id=\"cp0\"><rect x=\"8\" y=\"0\" width=\"324\" height=\"44\"/></clipPath><clipPath id=\"ov1\"><rect x=\"9\" y=\"1\" width=\"322\" height=\"42\" rx=\"11\"/></clipPath><clipPath id=\"cp2\"><rect x=\"8\" y=\"44\" width=\"324\" height=\"44\"/></clipPath><clipPath id=\"ov3\"><rect x=\"9\" y=\"45\" width=\"322\" height=\"42\" rx=\"11\"/></clipPath><clipPath id=\"cp4\"><rect x=\"17\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"cp6\"><rect x=\"43\" y=\"13\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"ov7\"><rect x=\"43\" y=\"13\" width=\"272\" height=\"18\" rx=\"0\"/></clipPath><clipPath id=\"cp8\"><rect x=\"43\" y=\"13\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"ct9\"><rect x=\"43\" y=\"13\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"cp10\"><rect x=\"17\" y=\"57\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"cp12\"><rect x=\"43\" y=\"57\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"ov13\"><rect x=\"43\" y=\"57\" width=\"272\" height=\"18\" rx=\"0\"/></clipPath><clipPath id=\"cp14\"><rect x=\"43\" y=\"57\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"ct15\"><rect x=\"43\" y=\"57\" width=\"272\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><rect x=\"8.5\" y=\"0.5\" width=\"323\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/></g><g clip-path=\"url(#cp2)\"><rect x=\"8.5\" y=\"44.5\" width=\"323\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/></g><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp4)\"><g color=\"rgb(29, 29, 31)\"><clipPath id=\"svgic5\"><rect x=\"17\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic5)\"><g transform=\"matrix(.75 0 0 .75 17 13)\"><path d=\"M11.5 2.3a.5.5 0 0 1 1 0L14.8 7a2 2 0 0 0 1.6 1l5.1.8a.5.5 0 0 1 .3.9l-3.7 3.6a2 2 0 0 0-.6 2l.9 5a.5.5 0 0 1-.8.6L13 18.6a2 2 0 0 0-2 0L6.4 21a.5.5 0 0 1-.8-.6l1-5a2 2 0 0 0-.7-2L2.2 9.8a.5.5 0 0 1 .3-1l5.1-.7A2 2 0 0 0 9.2 7Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp6)\"><g clip-path=\"url(#ov7)\"><g clip-path=\"url(#cp8)\"><g clip-path=\"url(#ct9)\"><text x=\"43\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(29,29,31)\">Priority</text></g></g></g></g></g></g><g clip-path=\"url(#cp2)\"><g clip-path=\"url(#ov3)\"><g clip-path=\"url(#cp10)\"><g color=\"rgb(29, 29, 31)\"><clipPath id=\"svgic11\"><rect x=\"17\" y=\"57\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic11)\"><g transform=\"matrix(.75 0 0 .75 17 57)\"><path d=\"M3 5z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M3 12z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M3 19z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M8 5h13\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M8 12h13\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M8 19h13\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp12)\"><g clip-path=\"url(#ov13)\"><g clip-path=\"url(#cp14)\"><g clip-path=\"url(#ct15)\"><text x=\"43\" y=\"72\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(29,29,31)\">All Work</text></g></g></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-compact-control-dark",
+    "component": "list",
+    "variant": "compact",
+    "key": "control",
+    "theme": "dark",
+    "name": "List / Compact / Control / Dark",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 340,
+      "height": 88
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "column",
+      "align": "stretch",
+      "justify": "flex-start",
+      "gap": "0px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 340 88\" width=\"340\" height=\"88\"><defs><clipPath id=\"cp0\"><rect x=\"8\" y=\"0\" width=\"324\" height=\"44\"/></clipPath><clipPath id=\"ov1\"><rect x=\"9\" y=\"1\" width=\"322\" height=\"42\" rx=\"11\"/></clipPath><clipPath id=\"cp2\"><rect x=\"8\" y=\"44\" width=\"324\" height=\"44\"/></clipPath><clipPath id=\"ov3\"><rect x=\"9\" y=\"45\" width=\"322\" height=\"42\" rx=\"11\"/></clipPath><clipPath id=\"cp4\"><rect x=\"17\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"cp6\"><rect x=\"43\" y=\"13\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"ov7\"><rect x=\"43\" y=\"13\" width=\"272\" height=\"18\" rx=\"0\"/></clipPath><clipPath id=\"cp8\"><rect x=\"43\" y=\"13\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"ct9\"><rect x=\"43\" y=\"13\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"cp10\"><rect x=\"17\" y=\"57\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"cp12\"><rect x=\"43\" y=\"57\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"ov13\"><rect x=\"43\" y=\"57\" width=\"272\" height=\"18\" rx=\"0\"/></clipPath><clipPath id=\"cp14\"><rect x=\"43\" y=\"57\" width=\"272\" height=\"18\"/></clipPath><clipPath id=\"ct15\"><rect x=\"43\" y=\"57\" width=\"272\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><rect x=\"8.5\" y=\"0.5\" width=\"323\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/></g><g clip-path=\"url(#cp2)\"><rect x=\"8.5\" y=\"44.5\" width=\"323\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/></g><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp4)\"><g color=\"rgb(245, 245, 247)\"><clipPath id=\"svgic5\"><rect x=\"17\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic5)\"><g transform=\"matrix(.75 0 0 .75 17 13)\"><path d=\"M11.5 2.3a.5.5 0 0 1 1 0L14.8 7a2 2 0 0 0 1.6 1l5.1.8a.5.5 0 0 1 .3.9l-3.7 3.6a2 2 0 0 0-.6 2l.9 5a.5.5 0 0 1-.8.6L13 18.6a2 2 0 0 0-2 0L6.4 21a.5.5 0 0 1-.8-.6l1-5a2 2 0 0 0-.7-2L2.2 9.8a.5.5 0 0 1 .3-1l5.1-.7A2 2 0 0 0 9.2 7Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp6)\"><g clip-path=\"url(#ov7)\"><g clip-path=\"url(#cp8)\"><g clip-path=\"url(#ct9)\"><text x=\"43\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(245,245,247)\">Priority</text></g></g></g></g></g></g><g clip-path=\"url(#cp2)\"><g clip-path=\"url(#ov3)\"><g clip-path=\"url(#cp10)\"><g color=\"rgb(245, 245, 247)\"><clipPath id=\"svgic11\"><rect x=\"17\" y=\"57\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic11)\"><g transform=\"matrix(.75 0 0 .75 17 57)\"><path d=\"M3 5z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M3 12z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M3 19z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M8 5h13\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M8 12h13\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M8 19h13\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp12)\"><g clip-path=\"url(#ov13)\"><g clip-path=\"url(#cp14)\"><g clip-path=\"url(#ct15)\"><text x=\"43\" y=\"72\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(245,245,247)\">All Work</text></g></g></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-item-default-control-light",
+    "component": "list-item",
+    "variant": "default",
+    "key": "control",
+    "theme": "light",
+    "name": "List Item / Default / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 304,
+      "height": 44
+    },
+    "layout": {
+      "display": "grid",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "normal 8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "hidden",
+      "component": "list-item"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 304 44\" width=\"304\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"0\" y=\"0\" width=\"304\" height=\"44\"/></clipPath><clipPath id=\"ov1\"><rect x=\"1\" y=\"1\" width=\"302\" height=\"42\" rx=\"11\"/></clipPath><clipPath id=\"cp2\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"cp4\"><rect x=\"35\" y=\"13\" width=\"252\" height=\"18\"/></clipPath><clipPath id=\"ov5\"><rect x=\"35\" y=\"13\" width=\"252\" height=\"18\" rx=\"0\"/></clipPath><clipPath id=\"cp6\"><rect x=\"35\" y=\"13\" width=\"252\" height=\"18\"/></clipPath><clipPath id=\"ct7\"><rect x=\"35\" y=\"13\" width=\"252\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><rect x=\"0.5\" y=\"0.5\" width=\"303\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/></g><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp2)\"><g color=\"rgb(29, 29, 31)\"><clipPath id=\"svgic3\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic3)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2 2 0 0 1 1.7.7l3.6 3.6A2 2 0 0 1 20 8v12a2 2 0 0 1-2 2Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M14 2v5a1 1 0 0 0 1 1h5\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M10 9H8\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M16 13H8\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M16 17H8\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp4)\"><g clip-path=\"url(#ov5)\"><g clip-path=\"url(#cp6)\"><g clip-path=\"url(#ct7)\"><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(29,29,31)\">Overview</text></g></g></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-item-default-control-dark",
+    "component": "list-item",
+    "variant": "default",
+    "key": "control",
+    "theme": "dark",
+    "name": "List Item / Default / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 304,
+      "height": 44
+    },
+    "layout": {
+      "display": "grid",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "normal 8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "hidden",
+      "component": "list-item"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 304 44\" width=\"304\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"0\" y=\"0\" width=\"304\" height=\"44\"/></clipPath><clipPath id=\"ov1\"><rect x=\"1\" y=\"1\" width=\"302\" height=\"42\" rx=\"11\"/></clipPath><clipPath id=\"cp2\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"cp4\"><rect x=\"35\" y=\"13\" width=\"252\" height=\"18\"/></clipPath><clipPath id=\"ov5\"><rect x=\"35\" y=\"13\" width=\"252\" height=\"18\" rx=\"0\"/></clipPath><clipPath id=\"cp6\"><rect x=\"35\" y=\"13\" width=\"252\" height=\"18\"/></clipPath><clipPath id=\"ct7\"><rect x=\"35\" y=\"13\" width=\"252\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><rect x=\"0.5\" y=\"0.5\" width=\"303\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/></g><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp2)\"><g color=\"rgb(245, 245, 247)\"><clipPath id=\"svgic3\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic3)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2 2 0 0 1 1.7.7l3.6 3.6A2 2 0 0 1 20 8v12a2 2 0 0 1-2 2Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M14 2v5a1 1 0 0 0 1 1h5\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M10 9H8\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M16 13H8\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M16 17H8\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp4)\"><g clip-path=\"url(#ov5)\"><g clip-path=\"url(#cp6)\"><g clip-path=\"url(#ct7)\"><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(245,245,247)\">Overview</text></g></g></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-item-selected-control-light",
+    "component": "list-item",
+    "variant": "selected",
+    "key": "control",
+    "theme": "light",
+    "name": "List Item / Selected / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 304,
+      "height": 44
+    },
+    "layout": {
+      "display": "grid",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "normal 8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "hidden",
+      "component": "list-item"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 304 44\" width=\"304\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"0\" y=\"0\" width=\"304\" height=\"44\"/></clipPath><clipPath id=\"ov1\"><rect x=\"1\" y=\"1\" width=\"302\" height=\"42\" rx=\"11\"/></clipPath><clipPath id=\"cp2\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"cp4\"><rect x=\"35\" y=\"13\" width=\"252\" height=\"18\"/></clipPath><clipPath id=\"ov5\"><rect x=\"35\" y=\"13\" width=\"252\" height=\"18\" rx=\"0\"/></clipPath><clipPath id=\"cp6\"><rect x=\"35\" y=\"13\" width=\"252\" height=\"18\"/></clipPath><clipPath id=\"ct7\"><rect x=\"35\" y=\"13\" width=\"252\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><rect x=\"0\" y=\"0\" width=\"304\" height=\"44\" rx=\"12\" fill=\"rgb(214,233,249)\"/><rect x=\"0.5\" y=\"0.5\" width=\"303\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgb(166,207,242)\" stroke-width=\"1\"/></g><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp2)\"><g color=\"rgb(29, 29, 31)\"><clipPath id=\"svgic3\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic3)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"M9.7 4.1a2.3 2.3 0 0 1 4.6 0 2.3 2.3 0 0 0 3.3 2 2.3 2.3 0 0 1 2.4 4 2.3 2.3 0 0 0 0 3.8 2.3 2.3 0 0 1-2.4 4 2.3 2.3 0 0 0-3.3 2 2.3 2.3 0 0 1-4.6 0 2.3 2.3 0 0 0-3.3-2A2.3 2.3 0 0 1 4 14a2.3 2.3 0 0 0 0-3.8 2.3 2.3 0 0 1 2.3-4 2.3 2.3 0 0 0 3.4-2\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><circle cx=\"12\" cy=\"12\" r=\"3\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp4)\"><g clip-path=\"url(#ov5)\"><g clip-path=\"url(#cp6)\"><g clip-path=\"url(#ct7)\"><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"650\" fill=\"rgb(29,29,31)\">Billing &amp; Plans</text></g></g></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-item-selected-control-dark",
+    "component": "list-item",
+    "variant": "selected",
+    "key": "control",
+    "theme": "dark",
+    "name": "List Item / Selected / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 304,
+      "height": 44
+    },
+    "layout": {
+      "display": "grid",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "normal 8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "hidden",
+      "component": "list-item"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 304 44\" width=\"304\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"0\" y=\"0\" width=\"304\" height=\"44\"/></clipPath><clipPath id=\"ov1\"><rect x=\"1\" y=\"1\" width=\"302\" height=\"42\" rx=\"11\"/></clipPath><clipPath id=\"cp2\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"cp4\"><rect x=\"35\" y=\"13\" width=\"252\" height=\"18\"/></clipPath><clipPath id=\"ov5\"><rect x=\"35\" y=\"13\" width=\"252\" height=\"18\" rx=\"0\"/></clipPath><clipPath id=\"cp6\"><rect x=\"35\" y=\"13\" width=\"252\" height=\"18\"/></clipPath><clipPath id=\"ct7\"><rect x=\"35\" y=\"13\" width=\"252\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><rect x=\"0\" y=\"0\" width=\"304\" height=\"44\" rx=\"12\" fill=\"rgb(40,57,66)\"/><rect x=\"0.5\" y=\"0.5\" width=\"303\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgb(53,92,109)\" stroke-width=\"1\"/></g><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp2)\"><g color=\"rgb(245, 245, 247)\"><clipPath id=\"svgic3\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic3)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"M9.7 4.1a2.3 2.3 0 0 1 4.6 0 2.3 2.3 0 0 0 3.3 2 2.3 2.3 0 0 1 2.4 4 2.3 2.3 0 0 0 0 3.8 2.3 2.3 0 0 1-2.4 4 2.3 2.3 0 0 0-3.3 2 2.3 2.3 0 0 1-4.6 0 2.3 2.3 0 0 0-3.3-2A2.3 2.3 0 0 1 4 14a2.3 2.3 0 0 0 0-3.8 2.3 2.3 0 0 1 2.3-4 2.3 2.3 0 0 0 3.4-2\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><circle cx=\"12\" cy=\"12\" r=\"3\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp4)\"><g clip-path=\"url(#ov5)\"><g clip-path=\"url(#cp6)\"><g clip-path=\"url(#ct7)\"><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"650\" fill=\"rgb(245,245,247)\">Billing &amp; Plans</text></g></g></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-item-trailing-control-light",
+    "component": "list-item",
+    "variant": "trailing",
+    "key": "control",
+    "theme": "light",
+    "name": "List Item / Trailing / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 304,
+      "height": 44
+    },
+    "layout": {
+      "display": "grid",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "normal 8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "hidden",
+      "component": "list-item"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 304 44\" width=\"304\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"0\" y=\"0\" width=\"304\" height=\"44\"/></clipPath><clipPath id=\"ov1\"><rect x=\"1\" y=\"1\" width=\"302\" height=\"42\" rx=\"11\"/></clipPath><clipPath id=\"cp2\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"cp4\"><rect x=\"35\" y=\"13\" width=\"242.3\" height=\"18\"/></clipPath><clipPath id=\"ov5\"><rect x=\"35\" y=\"13\" width=\"242.3\" height=\"18\" rx=\"0\"/></clipPath><clipPath id=\"cp6\"><rect x=\"35\" y=\"13\" width=\"242.3\" height=\"18\"/></clipPath><clipPath id=\"ct7\"><rect x=\"35\" y=\"13\" width=\"242.3\" height=\"18\"/></clipPath><clipPath id=\"ct8\"><rect x=\"285.3\" y=\"13\" width=\"9.7\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><rect x=\"0.5\" y=\"0.5\" width=\"303\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/></g><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp2)\"><g color=\"rgb(29, 29, 31)\"><clipPath id=\"svgic3\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic3)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"M10.3 21a2 2 0 0 0 3.4 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M3.3 15.3A1 1 0 0 0 4 17h16a1 1 0 0 0 .7-1.7C19.4 14 18 12.5 18 8A6 6 0 0 0 6 8c0 4.5-1.4 6-2.7 7.3\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp4)\"><g clip-path=\"url(#ov5)\"><g clip-path=\"url(#cp6)\"><g clip-path=\"url(#ct7)\"><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(29,29,31)\">Notifications</text></g></g></g></g><text x=\"285.28\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(29,29,31)\">3</text></g></g></svg>"
+  },
+  {
+    "id": "list-item-trailing-control-dark",
+    "component": "list-item",
+    "variant": "trailing",
+    "key": "control",
+    "theme": "dark",
+    "name": "List Item / Trailing / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 304,
+      "height": 44
+    },
+    "layout": {
+      "display": "grid",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "normal 8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "hidden",
+      "component": "list-item"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 304 44\" width=\"304\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"0\" y=\"0\" width=\"304\" height=\"44\"/></clipPath><clipPath id=\"ov1\"><rect x=\"1\" y=\"1\" width=\"302\" height=\"42\" rx=\"11\"/></clipPath><clipPath id=\"cp2\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"cp4\"><rect x=\"35\" y=\"13\" width=\"242.3\" height=\"18\"/></clipPath><clipPath id=\"ov5\"><rect x=\"35\" y=\"13\" width=\"242.3\" height=\"18\" rx=\"0\"/></clipPath><clipPath id=\"cp6\"><rect x=\"35\" y=\"13\" width=\"242.3\" height=\"18\"/></clipPath><clipPath id=\"ct7\"><rect x=\"35\" y=\"13\" width=\"242.3\" height=\"18\"/></clipPath><clipPath id=\"ct8\"><rect x=\"285.3\" y=\"13\" width=\"9.7\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><rect x=\"0.5\" y=\"0.5\" width=\"303\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/></g><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp2)\"><g color=\"rgb(245, 245, 247)\"><clipPath id=\"svgic3\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic3)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"M10.3 21a2 2 0 0 0 3.4 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M3.3 15.3A1 1 0 0 0 4 17h16a1 1 0 0 0 .7-1.7C19.4 14 18 12.5 18 8A6 6 0 0 0 6 8c0 4.5-1.4 6-2.7 7.3\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp4)\"><g clip-path=\"url(#ov5)\"><g clip-path=\"url(#cp6)\"><g clip-path=\"url(#ct7)\"><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(245,245,247)\">Notifications</text></g></g></g></g><text x=\"285.28\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(245,245,247)\">3</text></g></g></svg>"
+  },
+  {
+    "id": "list-item-multiline-control-light",
+    "component": "list-item",
+    "variant": "multiline",
+    "key": "control",
+    "theme": "light",
+    "name": "List Item / Multiline / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 304,
+      "height": 54
+    },
+    "layout": {
+      "display": "grid",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "normal 8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "hidden",
+      "component": "list-item"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 304 54\" width=\"304\" height=\"54\"><defs><clipPath id=\"cp0\"><rect x=\"0\" y=\"0\" width=\"304\" height=\"54\"/></clipPath><clipPath id=\"ov1\"><rect x=\"1\" y=\"1\" width=\"302\" height=\"52\" rx=\"11\"/></clipPath><clipPath id=\"cp2\"><rect x=\"9\" y=\"9\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"ct4\"><rect x=\"35\" y=\"9\" width=\"252\" height=\"36\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><rect x=\"0.5\" y=\"0.5\" width=\"303\" height=\"53\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/></g><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp2)\"><g color=\"rgb(29, 29, 31)\"><clipPath id=\"svgic3\"><rect x=\"9\" y=\"9\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic3)\"><g transform=\"matrix(.75 0 0 .75 9 9)\"><path d=\"M11.5 2.3a.5.5 0 0 1 1 0L14.8 7a2 2 0 0 0 1.6 1l5.1.8a.5.5 0 0 1 .3.9l-3.7 3.6a2 2 0 0 0-.6 2l.9 5a.5.5 0 0 1-.8.6L13 18.6a2 2 0 0 0-2 0L6.4 21a.5.5 0 0 1-.8-.6l1-5a2 2 0 0 0-.7-2L2.2 9.8a.5.5 0 0 1 .3-1l5.1-.7A2 2 0 0 0 9.2 7Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"35\" y=\"24\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(29,29,31)\">Migrate the legacy billing pipeline</text><text x=\"35\" y=\"42\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(29,29,31)\">to the new ledger service</text></g></g></svg>"
+  },
+  {
+    "id": "list-item-multiline-control-dark",
+    "component": "list-item",
+    "variant": "multiline",
+    "key": "control",
+    "theme": "dark",
+    "name": "List Item / Multiline / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 304,
+      "height": 54
+    },
+    "layout": {
+      "display": "grid",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "normal 8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "hidden",
+      "component": "list-item"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 304 54\" width=\"304\" height=\"54\"><defs><clipPath id=\"cp0\"><rect x=\"0\" y=\"0\" width=\"304\" height=\"54\"/></clipPath><clipPath id=\"ov1\"><rect x=\"1\" y=\"1\" width=\"302\" height=\"52\" rx=\"11\"/></clipPath><clipPath id=\"cp2\"><rect x=\"9\" y=\"9\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"ct4\"><rect x=\"35\" y=\"9\" width=\"252\" height=\"36\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><rect x=\"0.5\" y=\"0.5\" width=\"303\" height=\"53\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/></g><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp2)\"><g color=\"rgb(245, 245, 247)\"><clipPath id=\"svgic3\"><rect x=\"9\" y=\"9\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic3)\"><g transform=\"matrix(.75 0 0 .75 9 9)\"><path d=\"M11.5 2.3a.5.5 0 0 1 1 0L14.8 7a2 2 0 0 0 1.6 1l5.1.8a.5.5 0 0 1 .3.9l-3.7 3.6a2 2 0 0 0-.6 2l.9 5a.5.5 0 0 1-.8.6L13 18.6a2 2 0 0 0-2 0L6.4 21a.5.5 0 0 1-.8-.6l1-5a2 2 0 0 0-.7-2L2.2 9.8a.5.5 0 0 1 .3-1l5.1-.7A2 2 0 0 0 9.2 7Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"35\" y=\"24\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(245,245,247)\">Migrate the legacy billing pipeline</text><text x=\"35\" y=\"42\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(245,245,247)\">to the new ledger service</text></g></g></svg>"
+  },
+  {
+    "id": "list-item-icon-tile-control-light",
+    "component": "list-item",
+    "variant": "icon-tile",
+    "key": "control",
+    "theme": "light",
+    "name": "List Item / Icon Tile / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 304,
+      "height": 44
+    },
+    "layout": {
+      "display": "grid",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "normal 8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "hidden",
+      "component": "list-item"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 304 44\" width=\"304\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"0\" y=\"0\" width=\"304\" height=\"44\"/></clipPath><clipPath id=\"ov1\"><rect x=\"1\" y=\"1\" width=\"302\" height=\"42\" rx=\"11\"/></clipPath><clipPath id=\"ishc2\"><rect x=\"9\" y=\"6\" width=\"32\" height=\"32\" rx=\"6\"/></clipPath><clipPath id=\"cp3\"><rect x=\"16\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"cp5\"><rect x=\"49\" y=\"13\" width=\"238\" height=\"18\"/></clipPath><clipPath id=\"ov6\"><rect x=\"49\" y=\"13\" width=\"238\" height=\"18\" rx=\"0\"/></clipPath><clipPath id=\"cp7\"><rect x=\"49\" y=\"13\" width=\"238\" height=\"18\"/></clipPath><clipPath id=\"ct8\"><rect x=\"49\" y=\"13\" width=\"238\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><rect x=\"0.5\" y=\"0.5\" width=\"303\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/></g><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ov1)\"><rect x=\"9\" y=\"6\" width=\"32\" height=\"32\" rx=\"6\" fill=\"rgb(235,244,252)\"/><g clip-path=\"url(#ishc2)\"><path d=\"M5 2h40v40H5zm10 5h20a5 5 0 0 1 5 5v20a5 5 0 0 1-5 5H15a5 5 0 0 1-5-5V12a5 5 0 0 1 5-5\" fill=\"rgb(166,207,242)\" fill-rule=\"evenodd\"/></g><g clip-path=\"url(#cp3)\"><g color=\"rgb(12, 98, 243)\"><clipPath id=\"svgic4\"><rect x=\"16\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic4)\"><g transform=\"matrix(.75 0 0 .75 16 13)\"><path d=\"M10.3 21a2 2 0 0 0 3.4 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(12, 98, 243)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M3.3 15.3A1 1 0 0 0 4 17h16a1 1 0 0 0 .7-1.7C19.4 14 18 12.5 18 8A6 6 0 0 0 6 8c0 4.5-1.4 6-2.7 7.3\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(12, 98, 243)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp5)\"><g clip-path=\"url(#ov6)\"><g clip-path=\"url(#cp7)\"><g clip-path=\"url(#ct8)\"><text x=\"49\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(29,29,31)\">Notifications</text></g></g></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-item-icon-tile-control-dark",
+    "component": "list-item",
+    "variant": "icon-tile",
+    "key": "control",
+    "theme": "dark",
+    "name": "List Item / Icon Tile / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 304,
+      "height": 44
+    },
+    "layout": {
+      "display": "grid",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "normal 8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "hidden",
+      "component": "list-item"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 304 44\" width=\"304\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"0\" y=\"0\" width=\"304\" height=\"44\"/></clipPath><clipPath id=\"ov1\"><rect x=\"1\" y=\"1\" width=\"302\" height=\"42\" rx=\"11\"/></clipPath><clipPath id=\"ishc2\"><rect x=\"9\" y=\"6\" width=\"32\" height=\"32\" rx=\"6\"/></clipPath><clipPath id=\"cp3\"><rect x=\"16\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"cp5\"><rect x=\"49\" y=\"13\" width=\"238\" height=\"18\"/></clipPath><clipPath id=\"ov6\"><rect x=\"49\" y=\"13\" width=\"238\" height=\"18\" rx=\"0\"/></clipPath><clipPath id=\"cp7\"><rect x=\"49\" y=\"13\" width=\"238\" height=\"18\"/></clipPath><clipPath id=\"ct8\"><rect x=\"49\" y=\"13\" width=\"238\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><rect x=\"0.5\" y=\"0.5\" width=\"303\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/></g><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ov1)\"><rect x=\"9\" y=\"6\" width=\"32\" height=\"32\" rx=\"6\" fill=\"rgb(34,43,48)\"/><g clip-path=\"url(#ishc2)\"><path d=\"M5 2h40v40H5zm10 5h20a5 5 0 0 1 5 5v20a5 5 0 0 1-5 5H15a5 5 0 0 1-5-5V12a5 5 0 0 1 5-5\" fill=\"rgb(53,92,109)\" fill-rule=\"evenodd\"/></g><g clip-path=\"url(#cp3)\"><g color=\"rgb(138, 203, 255)\"><clipPath id=\"svgic4\"><rect x=\"16\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic4)\"><g transform=\"matrix(.75 0 0 .75 16 13)\"><path d=\"M10.3 21a2 2 0 0 0 3.4 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(138, 203, 255)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M3.3 15.3A1 1 0 0 0 4 17h16a1 1 0 0 0 .7-1.7C19.4 14 18 12.5 18 8A6 6 0 0 0 6 8c0 4.5-1.4 6-2.7 7.3\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(138, 203, 255)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp5)\"><g clip-path=\"url(#ov6)\"><g clip-path=\"url(#cp7)\"><g clip-path=\"url(#ct8)\"><text x=\"49\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(245,245,247)\">Notifications</text></g></g></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-header-action-control-light",
+    "component": "list-header",
+    "variant": "action",
+    "key": "control",
+    "theme": "light",
+    "name": "List Header / Action / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-header"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"1\" y=\"6.8\" width=\"120.6\" height=\"30.4\"/></clipPath><clipPath id=\"ct1\"><rect x=\"1\" y=\"6.8\" width=\"120.6\" height=\"30.4\"/></clipPath><clipPath id=\"cp2\"><rect x=\"333\" y=\"13\" width=\"18\" height=\"18\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"315\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ct1)\"><text x=\"9\" y=\"25.8\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"12\" font-weight=\"650\" fill=\"rgb(98,98,103)\">TEAM MEMBERS</text></g></g><rect x=\"324.5\" y=\"4.5\" width=\"35\" height=\"35\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp2)\"><g color=\"rgb(98, 98, 103)\"><clipPath id=\"svgic3\"><rect x=\"333\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic3)\"><g transform=\"matrix(.75 0 0 .75 333 13)\"><path d=\"M5 12h14\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(98, 98, 103)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M12 5v14\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(98, 98, 103)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g data-domotion-pseudo-source=\"blink-pseudo-fragment-v1\" data-domotion-pseudo=\"::before\" data-domotion-pseudo-owner=\"source-fragments\"><g transform=\"translate(-28 -20)\"/></g></svg>"
+  },
+  {
+    "id": "list-header-action-control-dark",
+    "component": "list-header",
+    "variant": "action",
+    "key": "control",
+    "theme": "dark",
+    "name": "List Header / Action / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-header"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"1\" y=\"6.8\" width=\"120.6\" height=\"30.4\"/></clipPath><clipPath id=\"ct1\"><rect x=\"1\" y=\"6.8\" width=\"120.6\" height=\"30.4\"/></clipPath><clipPath id=\"cp2\"><rect x=\"333\" y=\"13\" width=\"18\" height=\"18\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"315\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ct1)\"><text x=\"9\" y=\"25.8\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"12\" font-weight=\"650\" fill=\"rgb(194,194,198)\">TEAM MEMBERS</text></g></g><rect x=\"324.5\" y=\"4.5\" width=\"35\" height=\"35\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp2)\"><g color=\"rgb(194, 194, 198)\"><clipPath id=\"svgic3\"><rect x=\"333\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic3)\"><g transform=\"matrix(.75 0 0 .75 333 13)\"><path d=\"M5 12h14\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(194, 194, 198)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M12 5v14\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(194, 194, 198)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g data-domotion-pseudo-source=\"blink-pseudo-fragment-v1\" data-domotion-pseudo=\"::before\" data-domotion-pseudo-owner=\"source-fragments\"><g transform=\"translate(-28 -20)\"/></g></svg>"
+  },
+  {
+    "id": "list-header-count-control-light",
+    "component": "list-header",
+    "variant": "count",
+    "key": "control",
+    "theme": "light",
+    "name": "List Header / Count / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-header"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"1\" y=\"6.8\" width=\"111\" height=\"30.4\"/></clipPath><clipPath id=\"ct1\"><rect x=\"1\" y=\"6.8\" width=\"111\" height=\"30.4\"/></clipPath><clipPath id=\"ct2\"><rect x=\"120\" y=\"12\" width=\"25.9\" height=\"20\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"363\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ct1)\"><text x=\"9\" y=\"25.8\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"12\" font-weight=\"650\" fill=\"rgb(98,98,103)\">OPEN TICKETS</text></g></g><rect x=\"120\" y=\"12\" width=\"25.9\" height=\"20\" rx=\"10\" fill=\"rgba(0,0,98,0.05)\"/><rect x=\"120.5\" y=\"12.5\" width=\"25\" height=\"19\" rx=\"9.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"126.64\" y=\"26.5\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(98,98,103)\">12</text></svg>"
+  },
+  {
+    "id": "list-header-count-control-dark",
+    "component": "list-header",
+    "variant": "count",
+    "key": "control",
+    "theme": "dark",
+    "name": "List Header / Count / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-header"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"1\" y=\"6.8\" width=\"111\" height=\"30.4\"/></clipPath><clipPath id=\"ct1\"><rect x=\"1\" y=\"6.8\" width=\"111\" height=\"30.4\"/></clipPath><clipPath id=\"ct2\"><rect x=\"120\" y=\"12\" width=\"25.9\" height=\"20\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"363\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ct1)\"><text x=\"9\" y=\"25.8\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"12\" font-weight=\"650\" fill=\"rgb(194,194,198)\">OPEN TICKETS</text></g></g><rect x=\"120\" y=\"12\" width=\"25.9\" height=\"20\" rx=\"10\" fill=\"rgba(228,228,255,0.075)\"/><rect x=\"120.5\" y=\"12.5\" width=\"25\" height=\"19\" rx=\"9.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"126.64\" y=\"26.5\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(194,194,198)\">12</text></svg>"
+  },
+  {
+    "id": "list-header-size-xs-control-light",
+    "component": "list-header",
+    "variant": "size-xs",
+    "key": "control",
+    "theme": "light",
+    "name": "List Header / Size Xs / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-header"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"1\" y=\"7.4\" width=\"105.2\" height=\"29.2\"/></clipPath><clipPath id=\"ct1\"><rect x=\"1\" y=\"7.4\" width=\"105.2\" height=\"29.2\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"363\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ct1)\"><text x=\"9\" y=\"26.41\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(98,98,103)\">Team Members</text></g></g></svg>"
+  },
+  {
+    "id": "list-header-size-xs-control-dark",
+    "component": "list-header",
+    "variant": "size-xs",
+    "key": "control",
+    "theme": "dark",
+    "name": "List Header / Size Xs / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-header"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"1\" y=\"7.4\" width=\"105.2\" height=\"29.2\"/></clipPath><clipPath id=\"ct1\"><rect x=\"1\" y=\"7.4\" width=\"105.2\" height=\"29.2\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"363\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ct1)\"><text x=\"9\" y=\"26.41\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(194,194,198)\">Team Members</text></g></g></svg>"
+  },
+  {
+    "id": "list-header-size-m-control-light",
+    "component": "list-header",
+    "variant": "size-m",
+    "key": "control",
+    "theme": "light",
+    "name": "List Header / Size M / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-header"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"1\" y=\"4.4\" width=\"132.1\" height=\"35.2\"/></clipPath><clipPath id=\"ct1\"><rect x=\"1\" y=\"4.4\" width=\"132.1\" height=\"35.2\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"363\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ct1)\"><text x=\"9\" y=\"27.41\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"16\" font-weight=\"600\" fill=\"rgb(98,98,103)\">Team Members</text></g></g></svg>"
+  },
+  {
+    "id": "list-header-size-m-control-dark",
+    "component": "list-header",
+    "variant": "size-m",
+    "key": "control",
+    "theme": "dark",
+    "name": "List Header / Size M / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-header"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"1\" y=\"4.4\" width=\"132.1\" height=\"35.2\"/></clipPath><clipPath id=\"ct1\"><rect x=\"1\" y=\"4.4\" width=\"132.1\" height=\"35.2\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"363\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ct1)\"><text x=\"9\" y=\"27.41\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"16\" font-weight=\"600\" fill=\"rgb(194,194,198)\">Team Members</text></g></g></svg>"
+  },
+  {
+    "id": "list-header-size-l-control-light",
+    "component": "list-header",
+    "variant": "size-l",
+    "key": "control",
+    "theme": "light",
+    "name": "List Header / Size L / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-header"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"1\" y=\"2\" width=\"157.1\" height=\"40\"/></clipPath><clipPath id=\"ct1\"><rect x=\"1\" y=\"2\" width=\"157.1\" height=\"40\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"363\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ct1)\"><text x=\"9\" y=\"29\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"20\" font-weight=\"600\" fill=\"rgb(98,98,103)\">Team Members</text></g></g></svg>"
+  },
+  {
+    "id": "list-header-size-l-control-dark",
+    "component": "list-header",
+    "variant": "size-l",
+    "key": "control",
+    "theme": "dark",
+    "name": "List Header / Size L / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-header"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"1\" y=\"2\" width=\"157.1\" height=\"40\"/></clipPath><clipPath id=\"ct1\"><rect x=\"1\" y=\"2\" width=\"157.1\" height=\"40\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"363\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ct1)\"><text x=\"9\" y=\"29\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"20\" font-weight=\"600\" fill=\"rgb(194,194,198)\">Team Members</text></g></g></svg>"
+  },
+  {
+    "id": "list-header-size-xl-control-light",
+    "component": "list-header",
+    "variant": "size-xl",
+    "key": "control",
+    "theme": "light",
+    "name": "List Header / Size Xl / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 48
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-header"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 48\" width=\"364\" height=\"48\"><defs><clipPath id=\"cp0\"><rect x=\"1\" y=\"1\" width=\"189.8\" height=\"46\"/></clipPath><clipPath id=\"ct1\"><rect x=\"1\" y=\"1\" width=\"189.8\" height=\"46\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"363\" height=\"47\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ct1)\"><text x=\"9\" y=\"33\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"25\" font-weight=\"600\" fill=\"rgb(98,98,103)\">Team Members</text></g></g></svg>"
+  },
+  {
+    "id": "list-header-size-xl-control-dark",
+    "component": "list-header",
+    "variant": "size-xl",
+    "key": "control",
+    "theme": "dark",
+    "name": "List Header / Size Xl / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 48
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-header"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 48\" width=\"364\" height=\"48\"><defs><clipPath id=\"cp0\"><rect x=\"1\" y=\"1\" width=\"189.8\" height=\"46\"/></clipPath><clipPath id=\"ct1\"><rect x=\"1\" y=\"1\" width=\"189.8\" height=\"46\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"363\" height=\"47\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ct1)\"><text x=\"9\" y=\"33\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"25\" font-weight=\"600\" fill=\"rgb(194,194,198)\">Team Members</text></g></g></svg>"
+  },
+  {
+    "id": "list-header-inline-action-control-light",
+    "component": "list-header",
+    "variant": "inline-action",
+    "key": "control",
+    "theme": "light",
+    "name": "List Header / Inline Action / Control / Light",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 124.1875,
+      "height": 44
+    },
+    "layout": {
+      "display": "inline-flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-header"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 124.1875 44\" width=\"124.1875\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"1\" y=\"6.8\" width=\"70.2\" height=\"30.4\"/></clipPath><clipPath id=\"ct1\"><rect x=\"1\" y=\"6.8\" width=\"70.2\" height=\"30.4\"/></clipPath><clipPath id=\"cp2\"><rect x=\"97\" y=\"13\" width=\"18.2\" height=\"18\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"71\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ct1)\"><text x=\"9\" y=\"25.8\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"12\" font-weight=\"650\" fill=\"rgb(98,98,103)\">QUEUED</text></g></g><rect x=\"88.5\" y=\"4.5\" width=\"35\" height=\"35\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp2)\"><g color=\"rgb(98, 98, 103)\"><clipPath id=\"svgic3\"><rect x=\"97.2\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic3)\"><g transform=\"matrix(.75 0 0 .75 97.188 13)\"><path d=\"M5 12h14\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(98, 98, 103)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M12 5v14\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(98, 98, 103)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g data-domotion-pseudo-source=\"blink-pseudo-fragment-v1\" data-domotion-pseudo=\"::before\" data-domotion-pseudo-owner=\"source-fragments\"><g transform=\"translate(-20 -20)\"/></g></svg>"
+  },
+  {
+    "id": "list-header-inline-action-control-dark",
+    "component": "list-header",
+    "variant": "inline-action",
+    "key": "control",
+    "theme": "dark",
+    "name": "List Header / Inline Action / Control / Dark",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 124.1875,
+      "height": 44
+    },
+    "layout": {
+      "display": "inline-flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-header"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 124.1875 44\" width=\"124.1875\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"1\" y=\"6.8\" width=\"70.2\" height=\"30.4\"/></clipPath><clipPath id=\"ct1\"><rect x=\"1\" y=\"6.8\" width=\"70.2\" height=\"30.4\"/></clipPath><clipPath id=\"cp2\"><rect x=\"97\" y=\"13\" width=\"18.2\" height=\"18\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"71\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ct1)\"><text x=\"9\" y=\"25.8\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"12\" font-weight=\"650\" fill=\"rgb(194,194,198)\">QUEUED</text></g></g><rect x=\"88.5\" y=\"4.5\" width=\"35\" height=\"35\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp2)\"><g color=\"rgb(194, 194, 198)\"><clipPath id=\"svgic3\"><rect x=\"97.2\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic3)\"><g transform=\"matrix(.75 0 0 .75 97.188 13)\"><path d=\"M5 12h14\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(194, 194, 198)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M12 5v14\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(194, 194, 198)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g data-domotion-pseudo-source=\"blink-pseudo-fragment-v1\" data-domotion-pseudo=\"::before\" data-domotion-pseudo-owner=\"source-fragments\"><g transform=\"translate(-20 -20)\"/></g></svg>"
+  },
+  {
+    "id": "list-header-toggle-collapsed-control-light",
+    "component": "list-header",
+    "variant": "toggle-collapsed",
+    "key": "control",
+    "theme": "light",
+    "name": "List Header / Toggle Collapsed / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-header"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"9\" y=\"14.5\" width=\"67.5\" height=\"15\"/></clipPath><clipPath id=\"ct1\"><rect x=\"9\" y=\"14.5\" width=\"67.5\" height=\"15\"/></clipPath><clipPath id=\"cp2\"><rect x=\"334\" y=\"13\" width=\"18\" height=\"18\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"363\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ct1)\"><text x=\"9\" y=\"26.5\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"12\" font-weight=\"650\" fill=\"rgb(98,98,103)\">ARCHIVED</text></g></g><g clip-path=\"url(#cp2)\"><g color=\"rgb(98, 98, 103)\"><clipPath id=\"svgic3\"><rect x=\"334\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic3)\"><g transform=\"matrix(.75 0 0 .75 334 13)\"><path d=\"m9 18 6-6-6-6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(98, 98, 103)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-header-toggle-collapsed-control-dark",
+    "component": "list-header",
+    "variant": "toggle-collapsed",
+    "key": "control",
+    "theme": "dark",
+    "name": "List Header / Toggle Collapsed / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-header"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"9\" y=\"14.5\" width=\"67.5\" height=\"15\"/></clipPath><clipPath id=\"ct1\"><rect x=\"9\" y=\"14.5\" width=\"67.5\" height=\"15\"/></clipPath><clipPath id=\"cp2\"><rect x=\"334\" y=\"13\" width=\"18\" height=\"18\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"363\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ct1)\"><text x=\"9\" y=\"26.5\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"12\" font-weight=\"650\" fill=\"rgb(194,194,198)\">ARCHIVED</text></g></g><g clip-path=\"url(#cp2)\"><g color=\"rgb(194, 194, 198)\"><clipPath id=\"svgic3\"><rect x=\"334\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic3)\"><g transform=\"matrix(.75 0 0 .75 334 13)\"><path d=\"m9 18 6-6-6-6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(194, 194, 198)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-header-toggle-expanded-control-light",
+    "component": "list-header",
+    "variant": "toggle-expanded",
+    "key": "control",
+    "theme": "light",
+    "name": "List Header / Toggle Expanded / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-header"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"9\" y=\"14.5\" width=\"51.8\" height=\"15\"/></clipPath><clipPath id=\"ct1\"><rect x=\"9\" y=\"14.5\" width=\"51.8\" height=\"15\"/></clipPath><clipPath id=\"ct2\"><rect x=\"68.8\" y=\"12\" width=\"20.5\" height=\"20\"/></clipPath><clipPath id=\"cp3\"><rect x=\"334\" y=\"13\" width=\"18\" height=\"18\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"363\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ct1)\"><text x=\"9\" y=\"26.5\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"12\" font-weight=\"650\" fill=\"rgb(98,98,103)\">RECENT</text></g></g><rect x=\"68.8\" y=\"12\" width=\"20.5\" height=\"20\" rx=\"10\" fill=\"rgba(0,0,98,0.05)\"/><rect x=\"69.5\" y=\"12.5\" width=\"19\" height=\"19\" rx=\"9.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"75.44\" y=\"26.5\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(98,98,103)\">5</text><g transform=\"rotate(90 343 22)\"><g clip-path=\"url(#cp3)\"><g color=\"rgb(98, 98, 103)\"><clipPath id=\"svgic4\"><rect x=\"334\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic4)\"><g transform=\"matrix(.75 0 0 .75 334 13)\"><path d=\"m9 18 6-6-6-6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(98, 98, 103)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-header-toggle-expanded-control-dark",
+    "component": "list-header",
+    "variant": "toggle-expanded",
+    "key": "control",
+    "theme": "dark",
+    "name": "List Header / Toggle Expanded / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-header"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"9\" y=\"14.5\" width=\"51.8\" height=\"15\"/></clipPath><clipPath id=\"ct1\"><rect x=\"9\" y=\"14.5\" width=\"51.8\" height=\"15\"/></clipPath><clipPath id=\"ct2\"><rect x=\"68.8\" y=\"12\" width=\"20.5\" height=\"20\"/></clipPath><clipPath id=\"cp3\"><rect x=\"334\" y=\"13\" width=\"18\" height=\"18\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"363\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g clip-path=\"url(#ct1)\"><text x=\"9\" y=\"26.5\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"12\" font-weight=\"650\" fill=\"rgb(194,194,198)\">RECENT</text></g></g><rect x=\"68.8\" y=\"12\" width=\"20.5\" height=\"20\" rx=\"10\" fill=\"rgba(228,228,255,0.075)\"/><rect x=\"69.5\" y=\"12.5\" width=\"19\" height=\"19\" rx=\"9.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"75.44\" y=\"26.5\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(194,194,198)\">5</text><g transform=\"rotate(90 343 22)\"><g clip-path=\"url(#cp3)\"><g color=\"rgb(194, 194, 198)\"><clipPath id=\"svgic4\"><rect x=\"334\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic4)\"><g transform=\"matrix(.75 0 0 .75 334 13)\"><path d=\"m9 18 6-6-6-6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(194, 194, 198)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-action-row-default-control-light",
+    "component": "list-action-row",
+    "variant": "default",
+    "key": "control",
+    "theme": "light",
+    "name": "List Action Row / Default / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-action-row"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"334\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><clipPath id=\"cp2\"><rect x=\"35\" y=\"8\" width=\"277\" height=\"28\"/></clipPath><clipPath id=\"ov3\"><rect x=\"35\" y=\"8\" width=\"277\" height=\"28\" rx=\"0\"/></clipPath><clipPath id=\"cp4\"><rect x=\"35\" y=\"13\" width=\"277\" height=\"18\"/></clipPath><clipPath id=\"ct5\"><rect x=\"35\" y=\"13\" width=\"277\" height=\"18\"/></clipPath><clipPath id=\"cp6\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><g color=\"rgb(29, 29, 31)\"><clipPath id=\"svgic1\"><rect x=\"334\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(334 14)scale(.66667)\"><path d=\"M10 11v6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M14 11v6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M3 6h18\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp2)\"><g clip-path=\"url(#ov3)\"><g clip-path=\"url(#cp4)\"><g clip-path=\"url(#ct5)\"><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(29,29,31)\">staging.example.com</text></g></g></g></g><g clip-path=\"url(#cp6)\"><g color=\"rgb(29, 29, 31)\"><clipPath id=\"svgic7\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic7)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"M12 15v5s3-.6 4-2c1-1.6 0-5 0-5\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-3a2 2 0 0 0-3 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12a22 22 0 0 1 2-4 13 13 0 0 1 11-6c0 2.7-.8 7.5-6 11a22 22 0 0 1-4 2Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12H4s.5-3 2-4c1.6-1 5 0 5 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-action-row-default-control-dark",
+    "component": "list-action-row",
+    "variant": "default",
+    "key": "control",
+    "theme": "dark",
+    "name": "List Action Row / Default / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-action-row"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"334\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><clipPath id=\"cp2\"><rect x=\"35\" y=\"8\" width=\"277\" height=\"28\"/></clipPath><clipPath id=\"ov3\"><rect x=\"35\" y=\"8\" width=\"277\" height=\"28\" rx=\"0\"/></clipPath><clipPath id=\"cp4\"><rect x=\"35\" y=\"13\" width=\"277\" height=\"18\"/></clipPath><clipPath id=\"ct5\"><rect x=\"35\" y=\"13\" width=\"277\" height=\"18\"/></clipPath><clipPath id=\"cp6\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><g color=\"rgb(245, 245, 247)\"><clipPath id=\"svgic1\"><rect x=\"334\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(334 14)scale(.66667)\"><path d=\"M10 11v6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M14 11v6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M3 6h18\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp2)\"><g clip-path=\"url(#ov3)\"><g clip-path=\"url(#cp4)\"><g clip-path=\"url(#ct5)\"><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(245,245,247)\">staging.example.com</text></g></g></g></g><g clip-path=\"url(#cp6)\"><g color=\"rgb(245, 245, 247)\"><clipPath id=\"svgic7\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic7)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"M12 15v5s3-.6 4-2c1-1.6 0-5 0-5\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-3a2 2 0 0 0-3 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12a22 22 0 0 1 2-4 13 13 0 0 1 11-6c0 2.7-.8 7.5-6 11a22 22 0 0 1-4 2Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12H4s.5-3 2-4c1.6-1 5 0 5 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-action-row-selected-control-light",
+    "component": "list-action-row",
+    "variant": "selected",
+    "key": "control",
+    "theme": "light",
+    "name": "List Action Row / Selected / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-action-row"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"ishc0\"><rect x=\"0\" y=\"0\" width=\"364\" height=\"44\" rx=\"12\"/></clipPath><clipPath id=\"cp1\"><rect x=\"334\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><clipPath id=\"cp3\"><rect x=\"35\" y=\"8\" width=\"277\" height=\"28\"/></clipPath><clipPath id=\"ov4\"><rect x=\"35\" y=\"8\" width=\"277\" height=\"28\" rx=\"0\"/></clipPath><clipPath id=\"cp5\"><rect x=\"35\" y=\"13\" width=\"277\" height=\"18\"/></clipPath><clipPath id=\"ct6\"><rect x=\"35\" y=\"13\" width=\"277\" height=\"18\"/></clipPath><clipPath id=\"cp7\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"364\" height=\"44\" rx=\"12\" fill=\"rgb(214,233,249)\"/><g clip-path=\"url(#ishc0)\"><path d=\"M-4-4h372v52H-4zm16 5h340a11 11 0 0 1 11 11v20a11 11 0 0 1-11 11H12A11 11 0 0 1 1 32V12A11 11 0 0 1 12 1\" fill=\"rgb(166,207,242)\" fill-rule=\"evenodd\"/></g><g clip-path=\"url(#cp1)\"><g color=\"rgb(29, 29, 31)\"><clipPath id=\"svgic2\"><rect x=\"334\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic2)\"><g transform=\"translate(334 14)scale(.66667)\"><path d=\"M21.2 6.8a1 1 0 0 0-4-4L3.8 16.2l-.5.8L2 21.4a.5.5 0 0 0 .6.6L7 20.7l.8-.5Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"m15 5 4 4\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp3)\"><g clip-path=\"url(#ov4)\"><g clip-path=\"url(#cp5)\"><g clip-path=\"url(#ct6)\"><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"650\" fill=\"rgb(29,29,31)\">production.example.com</text></g></g></g></g><g clip-path=\"url(#cp7)\"><g color=\"rgb(29, 29, 31)\"><clipPath id=\"svgic8\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic8)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"M12 15v5s3-.6 4-2c1-1.6 0-5 0-5\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-3a2 2 0 0 0-3 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12a22 22 0 0 1 2-4 13 13 0 0 1 11-6c0 2.7-.8 7.5-6 11a22 22 0 0 1-4 2Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12H4s.5-3 2-4c1.6-1 5 0 5 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-action-row-selected-control-dark",
+    "component": "list-action-row",
+    "variant": "selected",
+    "key": "control",
+    "theme": "dark",
+    "name": "List Action Row / Selected / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-action-row"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"ishc0\"><rect x=\"0\" y=\"0\" width=\"364\" height=\"44\" rx=\"12\"/></clipPath><clipPath id=\"cp1\"><rect x=\"334\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><clipPath id=\"cp3\"><rect x=\"35\" y=\"8\" width=\"277\" height=\"28\"/></clipPath><clipPath id=\"ov4\"><rect x=\"35\" y=\"8\" width=\"277\" height=\"28\" rx=\"0\"/></clipPath><clipPath id=\"cp5\"><rect x=\"35\" y=\"13\" width=\"277\" height=\"18\"/></clipPath><clipPath id=\"ct6\"><rect x=\"35\" y=\"13\" width=\"277\" height=\"18\"/></clipPath><clipPath id=\"cp7\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"364\" height=\"44\" rx=\"12\" fill=\"rgb(40,57,66)\"/><g clip-path=\"url(#ishc0)\"><path d=\"M-4-4h372v52H-4zm16 5h340a11 11 0 0 1 11 11v20a11 11 0 0 1-11 11H12A11 11 0 0 1 1 32V12A11 11 0 0 1 12 1\" fill=\"rgb(53,92,109)\" fill-rule=\"evenodd\"/></g><g clip-path=\"url(#cp1)\"><g color=\"rgb(245, 245, 247)\"><clipPath id=\"svgic2\"><rect x=\"334\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic2)\"><g transform=\"translate(334 14)scale(.66667)\"><path d=\"M21.2 6.8a1 1 0 0 0-4-4L3.8 16.2l-.5.8L2 21.4a.5.5 0 0 0 .6.6L7 20.7l.8-.5Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"m15 5 4 4\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp3)\"><g clip-path=\"url(#ov4)\"><g clip-path=\"url(#cp5)\"><g clip-path=\"url(#ct6)\"><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"650\" fill=\"rgb(245,245,247)\">production.example.com</text></g></g></g></g><g clip-path=\"url(#cp7)\"><g color=\"rgb(245, 245, 247)\"><clipPath id=\"svgic8\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic8)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"M12 15v5s3-.6 4-2c1-1.6 0-5 0-5\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-3a2 2 0 0 0-3 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12a22 22 0 0 1 2-4 13 13 0 0 1 11-6c0 2.7-.8 7.5-6 11a22 22 0 0 1-4 2Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12H4s.5-3 2-4c1.6-1 5 0 5 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-action-row-trailing-menu-control-light",
+    "component": "list-action-row",
+    "variant": "trailing-menu",
+    "key": "control",
+    "theme": "light",
+    "name": "List Action Row / Trailing Menu / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-action-row"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"334\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><clipPath id=\"cp2\"><rect x=\"35\" y=\"8\" width=\"277\" height=\"28\"/></clipPath><clipPath id=\"ov3\"><rect x=\"35\" y=\"8\" width=\"277\" height=\"28\" rx=\"0\"/></clipPath><clipPath id=\"cp4\"><rect x=\"35\" y=\"13\" width=\"277\" height=\"18\"/></clipPath><clipPath id=\"ct5\"><rect x=\"35\" y=\"13\" width=\"277\" height=\"18\"/></clipPath><clipPath id=\"cp6\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><g color=\"rgb(29, 29, 31)\"><clipPath id=\"svgic1\"><rect x=\"334\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(334 14)scale(.66667)\"><circle cx=\"12\" cy=\"12\" r=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><circle cx=\"19\" cy=\"12\" r=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><circle cx=\"5\" cy=\"12\" r=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp2)\"><g clip-path=\"url(#ov3)\"><g clip-path=\"url(#cp4)\"><g clip-path=\"url(#ct5)\"><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(29,29,31)\">preview.example.com</text></g></g></g></g><g clip-path=\"url(#cp6)\"><g color=\"rgb(29, 29, 31)\"><clipPath id=\"svgic7\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic7)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"M12 15v5s3-.6 4-2c1-1.6 0-5 0-5\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-3a2 2 0 0 0-3 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12a22 22 0 0 1 2-4 13 13 0 0 1 11-6c0 2.7-.8 7.5-6 11a22 22 0 0 1-4 2Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12H4s.5-3 2-4c1.6-1 5 0 5 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-action-row-trailing-menu-control-dark",
+    "component": "list-action-row",
+    "variant": "trailing-menu",
+    "key": "control",
+    "theme": "dark",
+    "name": "List Action Row / Trailing Menu / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-action-row"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"334\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><clipPath id=\"cp2\"><rect x=\"35\" y=\"8\" width=\"277\" height=\"28\"/></clipPath><clipPath id=\"ov3\"><rect x=\"35\" y=\"8\" width=\"277\" height=\"28\" rx=\"0\"/></clipPath><clipPath id=\"cp4\"><rect x=\"35\" y=\"13\" width=\"277\" height=\"18\"/></clipPath><clipPath id=\"ct5\"><rect x=\"35\" y=\"13\" width=\"277\" height=\"18\"/></clipPath><clipPath id=\"cp6\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><g color=\"rgb(245, 245, 247)\"><clipPath id=\"svgic1\"><rect x=\"334\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(334 14)scale(.66667)\"><circle cx=\"12\" cy=\"12\" r=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><circle cx=\"19\" cy=\"12\" r=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><circle cx=\"5\" cy=\"12\" r=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp2)\"><g clip-path=\"url(#ov3)\"><g clip-path=\"url(#cp4)\"><g clip-path=\"url(#ct5)\"><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(245,245,247)\">preview.example.com</text></g></g></g></g><g clip-path=\"url(#cp6)\"><g color=\"rgb(245, 245, 247)\"><clipPath id=\"svgic7\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic7)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"M12 15v5s3-.6 4-2c1-1.6 0-5 0-5\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-3a2 2 0 0 0-3 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12a22 22 0 0 1 2-4 13 13 0 0 1 11-6c0 2.7-.8 7.5-6 11a22 22 0 0 1-4 2Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12H4s.5-3 2-4c1.6-1 5 0 5 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-action-row-icon-tile-control-light",
+    "component": "list-action-row",
+    "variant": "icon-tile",
+    "key": "control",
+    "theme": "light",
+    "name": "List Action Row / Icon Tile / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-action-row"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"334\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><clipPath id=\"cp2\"><rect x=\"49\" y=\"8\" width=\"263\" height=\"28\"/></clipPath><clipPath id=\"ov3\"><rect x=\"49\" y=\"8\" width=\"263\" height=\"28\" rx=\"0\"/></clipPath><clipPath id=\"cp4\"><rect x=\"49\" y=\"13\" width=\"263\" height=\"18\"/></clipPath><clipPath id=\"ct5\"><rect x=\"49\" y=\"13\" width=\"263\" height=\"18\"/></clipPath><clipPath id=\"ishc6\"><rect x=\"9\" y=\"6\" width=\"32\" height=\"32\" rx=\"6\"/></clipPath><clipPath id=\"cp7\"><rect x=\"16\" y=\"13\" width=\"18\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><g color=\"rgb(29, 29, 31)\"><clipPath id=\"svgic1\"><rect x=\"334\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(334 14)scale(.66667)\"><path d=\"M21.2 6.8a1 1 0 0 0-4-4L3.8 16.2l-.5.8L2 21.4a.5.5 0 0 0 .6.6L7 20.7l.8-.5Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"m15 5 4 4\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp2)\"><g clip-path=\"url(#ov3)\"><g clip-path=\"url(#cp4)\"><g clip-path=\"url(#ct5)\"><text x=\"49\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(29,29,31)\">Deploy Preview</text></g></g></g></g><rect x=\"9\" y=\"6\" width=\"32\" height=\"32\" rx=\"6\" fill=\"rgb(0,144,255)\"/><g clip-path=\"url(#ishc6)\"><path d=\"M5 2h40v40H5zm10 5h20a5 5 0 0 1 5 5v20a5 5 0 0 1-5 5H15a5 5 0 0 1-5-5V12a5 5 0 0 1 5-5\" fill=\"rgba(0,0,0,0)\" fill-rule=\"evenodd\"/></g><g clip-path=\"url(#cp7)\"><g color=\"color(srgb 0.999871 1.00005 1.00007)\"><clipPath id=\"svgic8\"><rect x=\"16\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic8)\"><g transform=\"matrix(.75 0 0 .75 16 13)\"><path d=\"M12 15v5s3-.6 4-2c1-1.6 0-5 0-5\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"oklch(1 0 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-3a2 2 0 0 0-3 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"oklch(1 0 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12a22 22 0 0 1 2-4 13 13 0 0 1 11-6c0 2.7-.8 7.5-6 11a22 22 0 0 1-4 2Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"oklch(1 0 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12H4s.5-3 2-4c1.6-1 5 0 5 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"oklch(1 0 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></svg>"
+  },
+  {
+    "id": "list-action-row-icon-tile-control-dark",
+    "component": "list-action-row",
+    "variant": "icon-tile",
+    "key": "control",
+    "theme": "dark",
+    "name": "List Action Row / Icon Tile / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 364,
+      "height": 44
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "stretch",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "list-action-row"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 364 44\" width=\"364\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"334\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><clipPath id=\"cp2\"><rect x=\"49\" y=\"8\" width=\"263\" height=\"28\"/></clipPath><clipPath id=\"ov3\"><rect x=\"49\" y=\"8\" width=\"263\" height=\"28\" rx=\"0\"/></clipPath><clipPath id=\"cp4\"><rect x=\"49\" y=\"13\" width=\"263\" height=\"18\"/></clipPath><clipPath id=\"ct5\"><rect x=\"49\" y=\"13\" width=\"263\" height=\"18\"/></clipPath><clipPath id=\"ishc6\"><rect x=\"9\" y=\"6\" width=\"32\" height=\"32\" rx=\"6\"/></clipPath><clipPath id=\"cp7\"><rect x=\"16\" y=\"13\" width=\"18\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><g color=\"rgb(245, 245, 247)\"><clipPath id=\"svgic1\"><rect x=\"334\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(334 14)scale(.66667)\"><path d=\"M21.2 6.8a1 1 0 0 0-4-4L3.8 16.2l-.5.8L2 21.4a.5.5 0 0 0 .6.6L7 20.7l.8-.5Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"m15 5 4 4\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp2)\"><g clip-path=\"url(#ov3)\"><g clip-path=\"url(#cp4)\"><g clip-path=\"url(#ct5)\"><text x=\"49\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(245,245,247)\">Deploy Preview</text></g></g></g></g><rect x=\"9\" y=\"6\" width=\"32\" height=\"32\" rx=\"6\" fill=\"rgb(0,144,255)\"/><g clip-path=\"url(#ishc6)\"><path d=\"M5 2h40v40H5zm10 5h20a5 5 0 0 1 5 5v20a5 5 0 0 1-5 5H15a5 5 0 0 1-5-5V12a5 5 0 0 1 5-5\" fill=\"rgba(0,0,0,0)\" fill-rule=\"evenodd\"/></g><g clip-path=\"url(#cp7)\"><g color=\"color(srgb 0.999871 1.00005 1.00007)\"><clipPath id=\"svgic8\"><rect x=\"16\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic8)\"><g transform=\"matrix(.75 0 0 .75 16 13)\"><path d=\"M12 15v5s3-.6 4-2c1-1.6 0-5 0-5\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"oklch(1 0 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-3a2 2 0 0 0-3 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"oklch(1 0 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12a22 22 0 0 1 2-4 13 13 0 0 1 11-6c0 2.7-.8 7.5-6 11a22 22 0 0 1-4 2Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"oklch(1 0 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12H4s.5-3 2-4c1.6-1 5 0 5 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"oklch(1 0 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></svg>"
+  },
+  {
+    "id": "value-table-details-control-light",
+    "component": "value-table",
+    "variant": "details",
+    "key": "control",
+    "theme": "light",
+    "name": "Value Table / Details / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 404,
+      "height": 165.1875
+    },
+    "layout": {
+      "display": "grid",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "hidden",
+      "component": "value-table"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 404 165.1875\" width=\"404\" height=\"165.1875\"><defs><clipPath id=\"cp0\"><rect x=\"0\" y=\"0\" width=\"404\" height=\"165.2\"/></clipPath><clipPath id=\"ov1\"><rect x=\"1\" y=\"1\" width=\"402\" height=\"163.2\" rx=\"11\"/></clipPath><clipPath id=\"cp2\"><rect x=\"9\" y=\"12.4\" width=\"49.3\" height=\"18\"/></clipPath><clipPath id=\"ct3\"><rect x=\"9\" y=\"12.4\" width=\"49.3\" height=\"18\"/></clipPath><clipPath id=\"ct4\"><rect x=\"215.6\" y=\"12.4\" width=\"179.4\" height=\"18\"/></clipPath><clipPath id=\"cp5\"><rect x=\"9\" y=\"50\" width=\"24\" height=\"24.2\"/></clipPath><clipPath id=\"cp7\"><rect x=\"41\" y=\"53.2\" width=\"95.6\" height=\"18\"/></clipPath><clipPath id=\"ct8\"><rect x=\"41\" y=\"53.2\" width=\"95.6\" height=\"18\"/></clipPath><clipPath id=\"ct9\"><rect x=\"229.2\" y=\"53.2\" width=\"165.8\" height=\"18\"/></clipPath><clipPath id=\"cp10\"><rect x=\"9\" y=\"94\" width=\"52.3\" height=\"18\"/></clipPath><clipPath id=\"ct11\"><rect x=\"9\" y=\"94\" width=\"52.3\" height=\"18\"/></clipPath><clipPath id=\"ct12\"><rect x=\"196.7\" y=\"94\" width=\"198.3\" height=\"18\"/></clipPath><clipPath id=\"cp13\"><rect x=\"9\" y=\"134.8\" width=\"89.2\" height=\"18\"/></clipPath><clipPath id=\"ct14\"><rect x=\"9\" y=\"134.8\" width=\"89.2\" height=\"18\"/></clipPath><clipPath id=\"ct15\"><rect x=\"206.9\" y=\"134.8\" width=\"188.1\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><rect x=\"0\" y=\"0\" width=\"404\" height=\"165.2\" rx=\"12\" fill=\"rgba(0,0,98,0.05)\"/><rect x=\"0.5\" y=\"0.5\" width=\"403\" height=\"164\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,28,0.18)\" stroke-width=\"1\"/></g><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp2)\"><g clip-path=\"url(#ct3)\"><text x=\"9\" y=\"27.39\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"600\" fill=\"rgb(29,29,31)\">Status</text></g></g><text x=\"364.98\" y=\"27.39\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(29,29,31)\">Live</text></g><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp5)\"><g color=\"rgb(29, 29, 31)\"><clipPath id=\"svgic6\"><rect x=\"9\" y=\"50.2\" width=\"24\" height=\"24\"/></clipPath><g clip-path=\"url(#svgic6)\"><g transform=\"translate(9 50.188)\"><path d=\"M12 15v5s3-.6 4-2c1-1.6 0-5 0-5\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-3a2 2 0 0 0-3 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12a22 22 0 0 1 2-4 13 13 0 0 1 11-6c0 2.7-.8 7.5-6 11a22 22 0 0 1-4 2Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12H4s.5-3 2-4c1.6-1 5 0 5 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp7)\"><g clip-path=\"url(#ct8)\"><text x=\"41\" y=\"68.19\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"600\" fill=\"rgb(29,29,31)\">Environment</text></g></g><text x=\"313.73\" y=\"68.19\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(29,29,31)\">Production</text><g data-domotion-pseudo-source=\"blink-pseudo-fragment-v1\" data-domotion-pseudo=\"::before\" data-domotion-pseudo-owner=\"source-fragments\"><g transform=\"translate(-28 -20)\"><line x1=\"69\" y1=\"62.5\" x2=\"423\" y2=\"62.5\" stroke=\"rgba(0, 0, 28, 0.18)\" stroke-width=\"1\"/></g></g></g><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp10)\"><g clip-path=\"url(#ct11)\"><text x=\"9\" y=\"108.98\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"600\" fill=\"rgb(29,29,31)\">Region</text></g></g><text x=\"324.03\" y=\"108.98\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(29,29,31)\">us-east-1</text><g data-domotion-pseudo-source=\"blink-pseudo-fragment-v1\" data-domotion-pseudo=\"::before\" data-domotion-pseudo-owner=\"source-fragments\"><g transform=\"translate(-28 -20)\"><line x1=\"37\" y1=\"103.5\" x2=\"423\" y2=\"103.5\" stroke=\"rgba(0, 0, 28, 0.18)\" stroke-width=\"1\"/></g></g></g><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp13)\"><g clip-path=\"url(#ct14)\"><text x=\"9\" y=\"149.78\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"600\" fill=\"rgb(29,29,31)\">Last Deploy</text></g></g><text x=\"307.58\" y=\"149.78\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(29,29,31)\">2 hours ago</text><g data-domotion-pseudo-source=\"blink-pseudo-fragment-v1\" data-domotion-pseudo=\"::before\" data-domotion-pseudo-owner=\"source-fragments\"><g transform=\"translate(-28 -20)\"><line x1=\"37\" y1=\"143.5\" x2=\"423\" y2=\"143.5\" stroke=\"rgba(0, 0, 28, 0.18)\" stroke-width=\"1\"/></g></g></g></svg>"
+  },
+  {
+    "id": "value-table-details-control-dark",
+    "component": "value-table",
+    "variant": "details",
+    "key": "control",
+    "theme": "dark",
+    "name": "Value Table / Details / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 404,
+      "height": 165.1875
+    },
+    "layout": {
+      "display": "grid",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "hidden",
+      "component": "value-table"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 404 165.1875\" width=\"404\" height=\"165.1875\"><defs><clipPath id=\"cp0\"><rect x=\"0\" y=\"0\" width=\"404\" height=\"165.2\"/></clipPath><clipPath id=\"ov1\"><rect x=\"1\" y=\"1\" width=\"402\" height=\"163.2\" rx=\"11\"/></clipPath><clipPath id=\"cp2\"><rect x=\"9\" y=\"12.4\" width=\"49.3\" height=\"18\"/></clipPath><clipPath id=\"ct3\"><rect x=\"9\" y=\"12.4\" width=\"49.3\" height=\"18\"/></clipPath><clipPath id=\"ct4\"><rect x=\"215.6\" y=\"12.4\" width=\"179.4\" height=\"18\"/></clipPath><clipPath id=\"cp5\"><rect x=\"9\" y=\"50\" width=\"24\" height=\"24.2\"/></clipPath><clipPath id=\"cp7\"><rect x=\"41\" y=\"53.2\" width=\"95.6\" height=\"18\"/></clipPath><clipPath id=\"ct8\"><rect x=\"41\" y=\"53.2\" width=\"95.6\" height=\"18\"/></clipPath><clipPath id=\"ct9\"><rect x=\"229.2\" y=\"53.2\" width=\"165.8\" height=\"18\"/></clipPath><clipPath id=\"cp10\"><rect x=\"9\" y=\"94\" width=\"52.3\" height=\"18\"/></clipPath><clipPath id=\"ct11\"><rect x=\"9\" y=\"94\" width=\"52.3\" height=\"18\"/></clipPath><clipPath id=\"ct12\"><rect x=\"196.7\" y=\"94\" width=\"198.3\" height=\"18\"/></clipPath><clipPath id=\"cp13\"><rect x=\"9\" y=\"134.8\" width=\"89.2\" height=\"18\"/></clipPath><clipPath id=\"ct14\"><rect x=\"9\" y=\"134.8\" width=\"89.2\" height=\"18\"/></clipPath><clipPath id=\"ct15\"><rect x=\"206.9\" y=\"134.8\" width=\"188.1\" height=\"18\"/></clipPath></defs><g clip-path=\"url(#cp0)\"><rect x=\"0\" y=\"0\" width=\"404\" height=\"165.2\" rx=\"12\" fill=\"rgba(228,228,255,0.075)\"/><rect x=\"0.5\" y=\"0.5\" width=\"403\" height=\"164\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(253,253,255,0.196)\" stroke-width=\"1\"/></g><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp2)\"><g clip-path=\"url(#ct3)\"><text x=\"9\" y=\"27.39\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"600\" fill=\"rgb(245,245,247)\">Status</text></g></g><text x=\"364.98\" y=\"27.39\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(245,245,247)\">Live</text></g><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp5)\"><g color=\"rgb(245, 245, 247)\"><clipPath id=\"svgic6\"><rect x=\"9\" y=\"50.2\" width=\"24\" height=\"24\"/></clipPath><g clip-path=\"url(#svgic6)\"><g transform=\"translate(9 50.188)\"><path d=\"M12 15v5s3-.6 4-2c1-1.6 0-5 0-5\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1 0-3a2 2 0 0 0-3 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12a22 22 0 0 1 2-4 13 13 0 0 1 11-6c0 2.7-.8 7.5-6 11a22 22 0 0 1-4 2Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M9 12H4s.5-3 2-4c1.6-1 5 0 5 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><g clip-path=\"url(#cp7)\"><g clip-path=\"url(#ct8)\"><text x=\"41\" y=\"68.19\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"600\" fill=\"rgb(245,245,247)\">Environment</text></g></g><text x=\"313.73\" y=\"68.19\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(245,245,247)\">Production</text><g data-domotion-pseudo-source=\"blink-pseudo-fragment-v1\" data-domotion-pseudo=\"::before\" data-domotion-pseudo-owner=\"source-fragments\"><g transform=\"translate(-28 -20)\"><line x1=\"69\" y1=\"62.5\" x2=\"423\" y2=\"62.5\" stroke=\"rgba(253, 253, 255, 0.196)\" stroke-width=\"1\"/></g></g></g><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp10)\"><g clip-path=\"url(#ct11)\"><text x=\"9\" y=\"108.98\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"600\" fill=\"rgb(245,245,247)\">Region</text></g></g><text x=\"324.03\" y=\"108.98\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(245,245,247)\">us-east-1</text><g data-domotion-pseudo-source=\"blink-pseudo-fragment-v1\" data-domotion-pseudo=\"::before\" data-domotion-pseudo-owner=\"source-fragments\"><g transform=\"translate(-28 -20)\"><line x1=\"37\" y1=\"103.5\" x2=\"423\" y2=\"103.5\" stroke=\"rgba(253, 253, 255, 0.196)\" stroke-width=\"1\"/></g></g></g><g clip-path=\"url(#ov1)\"><g clip-path=\"url(#cp13)\"><g clip-path=\"url(#ct14)\"><text x=\"9\" y=\"149.78\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"600\" fill=\"rgb(245,245,247)\">Last Deploy</text></g></g><text x=\"307.58\" y=\"149.78\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(245,245,247)\">2 hours ago</text><g data-domotion-pseudo-source=\"blink-pseudo-fragment-v1\" data-domotion-pseudo=\"::before\" data-domotion-pseudo-owner=\"source-fragments\"><g transform=\"translate(-28 -20)\"><line x1=\"37\" y1=\"143.5\" x2=\"423\" y2=\"143.5\" stroke=\"rgba(253, 253, 255, 0.196)\" stroke-width=\"1\"/></g></g></g></svg>"
+  }
+]

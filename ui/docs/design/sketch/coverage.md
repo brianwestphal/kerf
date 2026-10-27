@@ -18,7 +18,8 @@ appearance Symbols in [Kerf-Button.sketch](button/README.md). The Form controls
 batch covers 20 showcase variants with 66 individual light/dark Symbols in
 [Kerf-Forms.sketch](forms/README.md). The Advanced inputs batch covers 17
 variants with 34 light/dark Symbols in [Kerf-Advanced.sketch](advanced/README.md).
-The three pending family tickets cover the other source variants and must update this matrix
+The Lists and data batch covers 21 variants with 42 light/dark Symbols in
+[Kerf-Lists.sketch](lists/README.md). The two pending family tickets cover the other source variants and must update this matrix
 as they ship. The catalog's [install and update guide](README.md) identifies
 the current libraries and supported Sketch version.
 
@@ -30,7 +31,7 @@ the current libraries and supported Sketch version.
 | Form controls           |          6 |              20 | supported | KF-8VXPDP |
 | Advanced inputs         |          7 |              17 | supported | KF-6CC071 |
 | Toolbars and navigation |          7 |              25 | pending   | KF-6Q8S95 |
-| Lists and data          |          5 |              21 | pending   | KF-83M2MW |
+| Lists and data          |          5 |              21 | supported | KF-83M2MW |
 | Content and feedback    |          7 |              20 | pending   | KF-P0X4R9 |
 
 ## Variant inventory
@@ -106,27 +107,27 @@ the current libraries and supported Sketch version.
 | choice-chips          | multiple             | Multiple Selection                          | pending       | KF-6Q8S95 |
 | chip                  | tags                 | Removable, Link, and Plain Tags             | pending       | KF-6Q8S95 |
 | chip                  | action-filters       | Action Chips in a Compact Value Table       | pending       | KF-6Q8S95 |
-| list                  | stack                | Standard Gap and Four Dividers              | pending       | KF-83M2MW |
-| list                  | compact              | Compact, No Gap                             | pending       | KF-83M2MW |
-| list-item             | default              | Icon and Label                              | pending       | KF-83M2MW |
-| list-item             | selected             | Selected (aria-current)                     | pending       | KF-83M2MW |
-| list-item             | trailing             | Trailing Metadata                           | pending       | KF-83M2MW |
-| list-item             | multiline            | Multiline Label (Icon Aligns to First Line) | pending       | KF-83M2MW |
-| list-item             | icon-tile            | Tone Icon Tile                              | pending       | KF-83M2MW |
-| list-header           | action               | Label with an Action                        | pending       | KF-83M2MW |
-| list-header           | count                | Label with a Count Pill                     | pending       | KF-83M2MW |
-| list-header           | size-xs              | Label Size XS                               | pending       | KF-83M2MW |
-| list-header           | size-m               | Label Size M                                | pending       | KF-83M2MW |
-| list-header           | size-l               | Label Size L                                | pending       | KF-83M2MW |
-| list-header           | size-xl              | Label Size XL                               | pending       | KF-83M2MW |
-| list-header           | inline-action        | Inline Label with an Action                 | pending       | KF-83M2MW |
-| list-header           | toggle-collapsed     | Disclosure Toggle, Collapsed                | pending       | KF-83M2MW |
-| list-header           | toggle-expanded      | Disclosure Toggle, Expanded                 | pending       | KF-83M2MW |
-| list-action-row       | default              | Primary with a Trailing Action              | pending       | KF-83M2MW |
-| list-action-row       | selected             | Selected Primary                            | pending       | KF-83M2MW |
-| list-action-row       | trailing-menu        | Trailing Overflow Menu                      | pending       | KF-83M2MW |
-| list-action-row       | icon-tile            | Colored Icon Tile                           | pending       | KF-83M2MW |
-| value-table           | details              | Key/Value Detail Rows                       | pending       | KF-83M2MW |
+| list                  | stack                | Standard Gap and Four Dividers              | supported     | KF-83M2MW |
+| list                  | compact              | Compact, No Gap                             | supported     | KF-83M2MW |
+| list-item             | default              | Icon and Label                              | supported     | KF-83M2MW |
+| list-item             | selected             | Selected (aria-current)                     | supported     | KF-83M2MW |
+| list-item             | trailing             | Trailing Metadata                           | supported     | KF-83M2MW |
+| list-item             | multiline            | Multiline Label (Icon Aligns to First Line) | supported     | KF-83M2MW |
+| list-item             | icon-tile            | Tone Icon Tile                              | supported     | KF-83M2MW |
+| list-header           | action               | Label with an Action                        | supported     | KF-83M2MW |
+| list-header           | count                | Label with a Count Pill                     | supported     | KF-83M2MW |
+| list-header           | size-xs              | Label Size XS                               | supported     | KF-83M2MW |
+| list-header           | size-m               | Label Size M                                | supported     | KF-83M2MW |
+| list-header           | size-l               | Label Size L                                | supported     | KF-83M2MW |
+| list-header           | size-xl              | Label Size XL                               | supported     | KF-83M2MW |
+| list-header           | inline-action        | Inline Label with an Action                 | supported     | KF-83M2MW |
+| list-header           | toggle-collapsed     | Disclosure Toggle, Collapsed                | supported     | KF-83M2MW |
+| list-header           | toggle-expanded      | Disclosure Toggle, Expanded                 | supported     | KF-83M2MW |
+| list-action-row       | default              | Primary with a Trailing Action              | supported     | KF-83M2MW |
+| list-action-row       | selected             | Selected Primary                            | supported     | KF-83M2MW |
+| list-action-row       | trailing-menu        | Trailing Overflow Menu                      | supported     | KF-83M2MW |
+| list-action-row       | icon-tile            | Colored Icon Tile                           | supported     | KF-83M2MW |
+| value-table           | details              | Key/Value Detail Rows                       | supported     | KF-83M2MW |
 | disclosure            | plain                | Closed and Open                             | pending       | KF-P0X4R9 |
 | disclosure            | framed-sunken        | Framed and Sunken                           | pending       | KF-P0X4R9 |
 | disclosure            | embedded             | Embedded in a Content Item                  | pending       | KF-P0X4R9 |

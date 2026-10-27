@@ -1,0 +1,891 @@
+{
+  "version": 1,
+  "symbols": {
+    "list-stack-control-light": {
+      "id": "list-stack-control-light",
+      "name": "List / Stack / Control / Light",
+      "symbolId": "EA1CB2C1-6F03-4878-9426-B577C4346BAD",
+      "layerId": "FE00796C-1807-4EB7-BC6D-1D25511B7F89",
+      "width": 340,
+      "height": 148,
+      "text": [
+        {
+          "id": "077A03F4-536F-4F46-8723-B3F2C9E6EC5A",
+          "value": "WORKSPACE"
+        },
+        {
+          "id": "49A049FA-7240-4B17-AB3B-E6308F326BE0",
+          "value": "2"
+        },
+        {
+          "id": "6BC1DEB2-57CC-4633-82B5-673AFBBEE341",
+          "value": "Inbox"
+        },
+        {
+          "id": "CD1F0D0C-A88C-4C4D-AC42-0E10468AA4A8",
+          "value": "Projects"
+        }
+      ],
+      "paths": 29,
+      "bitmaps": 0,
+      "sourceHash": "ac9120a65c4afa3cb2df1ee6352e1414019a184fc9204b60ecc9dca8047bb250"
+    },
+    "list-stack-control-dark": {
+      "id": "list-stack-control-dark",
+      "name": "List / Stack / Control / Dark",
+      "symbolId": "9D7F6DD9-FFA0-4C57-B2DA-328D1E6719DD",
+      "layerId": "D042B0A0-3A14-4F85-BBCB-D9683EA198FB",
+      "width": 340,
+      "height": 148,
+      "text": [
+        {
+          "id": "2CD4F5F1-5662-4CEA-AF45-41BE64D302ED",
+          "value": "WORKSPACE"
+        },
+        {
+          "id": "B13F6B27-6E25-456D-818E-6BBF2A3484CD",
+          "value": "2"
+        },
+        {
+          "id": "47BF6329-D852-45DA-886B-F07B2C0979A2",
+          "value": "Inbox"
+        },
+        {
+          "id": "2FDE6EE9-AEFD-4FFD-8E9C-0184426ADB7A",
+          "value": "Projects"
+        }
+      ],
+      "paths": 29,
+      "bitmaps": 0,
+      "sourceHash": "b0a4b04c9880d66764d12b346c90b8a10b9e4543b1489a6bbabce1c06e952e06"
+    },
+    "list-compact-control-light": {
+      "id": "list-compact-control-light",
+      "name": "List / Compact / Control / Light",
+      "symbolId": "79A44F4C-02F0-48AC-B88F-06DBFF4B5EF0",
+      "layerId": "EE2BB8B1-F662-4816-AA96-AA850CACF52C",
+      "width": 340,
+      "height": 88,
+      "text": [
+        {
+          "id": "87D1B100-4417-4527-A280-C21BBF7ED8BC",
+          "value": "Priority"
+        },
+        {
+          "id": "B771EC34-E395-4DE0-BA50-5EF36560E906",
+          "value": "All Work"
+        }
+      ],
+      "paths": 24,
+      "bitmaps": 0,
+      "sourceHash": "b7b9e1d10dde7243c3d0c6aad789058bb2bfdcb0f736c7b3a82d70563a66d715"
+    },
+    "list-compact-control-dark": {
+      "id": "list-compact-control-dark",
+      "name": "List / Compact / Control / Dark",
+      "symbolId": "42F26302-C6DD-40B9-9B70-4DDED8CB32A8",
+      "layerId": "814E77E5-46B5-45C5-A62D-D5E73A8C1CCC",
+      "width": 340,
+      "height": 88,
+      "text": [
+        {
+          "id": "EB5BAE24-6183-40CB-9F3C-38AC6EDF635C",
+          "value": "Priority"
+        },
+        {
+          "id": "8DC6942B-9F7F-4375-9CAC-56E85D21F709",
+          "value": "All Work"
+        }
+      ],
+      "paths": 24,
+      "bitmaps": 0,
+      "sourceHash": "2623f226ec6790caad30264e78d55b983ee37164b94047801ec82f22e4a2be14"
+    },
+    "list-item-default-control-light": {
+      "id": "list-item-default-control-light",
+      "name": "List Item / Default / Control / Light",
+      "symbolId": "8C77F74E-4617-4EAA-8D87-B150EA5E52D9",
+      "layerId": "7D4F90FB-04AA-4526-B77D-FA462D5751C0",
+      "width": 304,
+      "height": 44,
+      "text": [
+        {
+          "id": "C0789122-FD09-425A-807F-7F2E1D0F9C7F",
+          "value": "Overview"
+        }
+      ],
+      "paths": 15,
+      "bitmaps": 0,
+      "sourceHash": "f2826d51cf35863e58281c785f328dc3c8f409c2d5eaf916c3c8899f8c83fb80"
+    },
+    "list-item-default-control-dark": {
+      "id": "list-item-default-control-dark",
+      "name": "List Item / Default / Control / Dark",
+      "symbolId": "2F0B3D9B-6FE7-4C7B-8DE7-F5C71B3DAD5C",
+      "layerId": "1B5B888B-2EBE-4EE2-9FFB-E35F4C1EF4EB",
+      "width": 304,
+      "height": 44,
+      "text": [
+        {
+          "id": "B30AD7A6-7A96-4816-A4CF-253079D4C8DA",
+          "value": "Overview"
+        }
+      ],
+      "paths": 15,
+      "bitmaps": 0,
+      "sourceHash": "94ac57a6b51cb2db8b17d505bd5d7c4369647ac67623a6698cea0748ba97345f"
+    },
+    "list-item-selected-control-light": {
+      "id": "list-item-selected-control-light",
+      "name": "List Item / Selected / Control / Light",
+      "symbolId": "98B8F4D6-55E6-4B72-A01E-532C785706D5",
+      "layerId": "650441CC-0B86-46D5-A81B-37427939C88B",
+      "width": 304,
+      "height": 44,
+      "text": [
+        {
+          "id": "0D812AFC-FB95-419A-80D3-66557875EFA0",
+          "value": "Billing & Plans"
+        }
+      ],
+      "paths": 13,
+      "bitmaps": 0,
+      "sourceHash": "1f2fe8d4ef1df521acbbc4a4d1cacc2e81e5dfcda9afea1b62050ff3afa5c58b"
+    },
+    "list-item-selected-control-dark": {
+      "id": "list-item-selected-control-dark",
+      "name": "List Item / Selected / Control / Dark",
+      "symbolId": "F0100AEF-68D3-4053-9FD3-0B1FC21DAACB",
+      "layerId": "A0E62CA0-5843-4D1D-B233-FA53B6E7FAB4",
+      "width": 304,
+      "height": 44,
+      "text": [
+        {
+          "id": "F58FDB0C-D0EF-4E34-AB9B-F4E01B84AC46",
+          "value": "Billing & Plans"
+        }
+      ],
+      "paths": 13,
+      "bitmaps": 0,
+      "sourceHash": "0da054483f73492352320144b981bc3f357e8e9c2b9b2d7e408ce56b3af1c40c"
+    },
+    "list-item-trailing-control-light": {
+      "id": "list-item-trailing-control-light",
+      "name": "List Item / Trailing / Control / Light",
+      "symbolId": "00B33760-8CE3-4F6F-B5D6-40807F348CDD",
+      "layerId": "3E505FF6-486D-4A8B-BB8C-0B9D9640C611",
+      "width": 304,
+      "height": 44,
+      "text": [
+        {
+          "id": "6AF4F04E-6ADE-4A80-A334-E0905C9500AC",
+          "value": "Notifications"
+        },
+        {
+          "id": "6280956C-BC02-412C-B200-F69F846E8F7A",
+          "value": "3"
+        }
+      ],
+      "paths": 12,
+      "bitmaps": 0,
+      "sourceHash": "3f1cc434fc78339b70e7a969de2065647cc96e7bbfe4dec5aae2b2c1dd265a2b"
+    },
+    "list-item-trailing-control-dark": {
+      "id": "list-item-trailing-control-dark",
+      "name": "List Item / Trailing / Control / Dark",
+      "symbolId": "577EE12F-7762-42D4-8D1B-6F06FCECDC9D",
+      "layerId": "0EE5500E-868C-40BF-BF3D-590A25632F78",
+      "width": 304,
+      "height": 44,
+      "text": [
+        {
+          "id": "3BD5F0AD-5838-416A-9D17-A8D04B8B0250",
+          "value": "Notifications"
+        },
+        {
+          "id": "C93441C7-47F1-4291-BCE2-7F72AD97FF84",
+          "value": "3"
+        }
+      ],
+      "paths": 12,
+      "bitmaps": 0,
+      "sourceHash": "30e08fd88c634dfb540e87f74ccb0d3cd3428a964cf37c206a65961a1266bbae"
+    },
+    "list-item-multiline-control-light": {
+      "id": "list-item-multiline-control-light",
+      "name": "List Item / Multiline / Control / Light",
+      "symbolId": "54D72B42-F81E-4424-80BA-5FDCBC272DAE",
+      "layerId": "95298C47-5CA6-43E1-876D-D69D9FA3BB16",
+      "width": 304,
+      "height": 54,
+      "text": [
+        {
+          "id": "54F4C75D-B1B9-4112-A236-AF0631B6DC20",
+          "value": "Migrate the legacy billing pipeline"
+        },
+        {
+          "id": "3D4FD833-5142-425D-BBAF-FFD5B28E7B60",
+          "value": "to the new ledger service"
+        }
+      ],
+      "paths": 7,
+      "bitmaps": 0,
+      "sourceHash": "2cbc99e1a49a78276674faf28131bd8de78a9a6e52c7fbfe327d151d037e72e5"
+    },
+    "list-item-multiline-control-dark": {
+      "id": "list-item-multiline-control-dark",
+      "name": "List Item / Multiline / Control / Dark",
+      "symbolId": "E17FFBEC-C6B7-40EA-8B0B-BAE40FD0C8F1",
+      "layerId": "1F8884E8-3DD6-43CD-8838-03CCE3229F61",
+      "width": 304,
+      "height": 54,
+      "text": [
+        {
+          "id": "AD1FC674-B678-41D5-935D-05FE15F4AC5A",
+          "value": "Migrate the legacy billing pipeline"
+        },
+        {
+          "id": "A18FFA03-8F3A-4807-BBFC-11E37A3C8D5A",
+          "value": "to the new ledger service"
+        }
+      ],
+      "paths": 7,
+      "bitmaps": 0,
+      "sourceHash": "82bfadd989ed5277a386a344df75dcc53900023b7549024fcdb93adcc011842b"
+    },
+    "list-item-icon-tile-control-light": {
+      "id": "list-item-icon-tile-control-light",
+      "name": "List Item / Icon Tile / Control / Light",
+      "symbolId": "6B5911C2-C8C8-4B9B-ADE2-CB2A0D4817E1",
+      "layerId": "66DE2E37-9FEC-4C73-9AA8-7FE769E8B344",
+      "width": 304,
+      "height": 44,
+      "text": [
+        {
+          "id": "91524C4D-A720-45AE-89FE-5D44ED96CDDC",
+          "value": "Notifications"
+        }
+      ],
+      "paths": 16,
+      "bitmaps": 0,
+      "sourceHash": "939fa182bbc6d0ac3026302a8c7485f941c50ee8bb80cb8a90620b64263cf1fd"
+    },
+    "list-item-icon-tile-control-dark": {
+      "id": "list-item-icon-tile-control-dark",
+      "name": "List Item / Icon Tile / Control / Dark",
+      "symbolId": "BB7B6A0E-5B47-4B03-848A-89C41F1352FF",
+      "layerId": "D67A53D3-8F56-4C11-A290-B0A03B87A7A3",
+      "width": 304,
+      "height": 44,
+      "text": [
+        {
+          "id": "E5D6ACC4-4040-4AF5-AF00-04E017E3F1CB",
+          "value": "Notifications"
+        }
+      ],
+      "paths": 16,
+      "bitmaps": 0,
+      "sourceHash": "dff66304924242f73a2a11610348a34ff5812a3edcd2a99a0280e2846a9b6f32"
+    },
+    "list-header-action-control-light": {
+      "id": "list-header-action-control-light",
+      "name": "List Header / Action / Control / Light",
+      "symbolId": "9199A8A7-B493-44F0-84DF-E37852AE0EE1",
+      "layerId": "6F6C7D17-4C8D-4B17-9116-AE1F96531FBB",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "15FA6146-A3F6-447A-A8DB-89A31B6D0B98",
+          "value": "TEAM MEMBERS"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "86137fd09bb3f845d3f90296198386eb5ac5ebcaaabf525235cf396c182182d5"
+    },
+    "list-header-action-control-dark": {
+      "id": "list-header-action-control-dark",
+      "name": "List Header / Action / Control / Dark",
+      "symbolId": "C30FE970-929D-4FF6-B129-6D44CA0F7524",
+      "layerId": "6A97A35F-90B5-4652-8716-C0F0BAA9E990",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "BED47340-F132-449D-8CD8-036C809B737A",
+          "value": "TEAM MEMBERS"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "897f5da0e9ec04692bb4904c8951997a7ca3dff53eee99b448200be1eafddb25"
+    },
+    "list-header-count-control-light": {
+      "id": "list-header-count-control-light",
+      "name": "List Header / Count / Control / Light",
+      "symbolId": "057A268D-C300-415A-AB8E-949EF97484DF",
+      "layerId": "BE88BED6-D7D0-44F0-B57E-85B4A6FE6BDD",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "E72E370F-0679-4044-99F8-FC05C45561DB",
+          "value": "OPEN TICKETS"
+        },
+        {
+          "id": "27FD62B5-498F-4496-B6AA-BCC6A5C51FE9",
+          "value": "12"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "c0ed8bc2b88d0febf8220f8cda79951331fac27c3cbf30bc9006f11d545efe03"
+    },
+    "list-header-count-control-dark": {
+      "id": "list-header-count-control-dark",
+      "name": "List Header / Count / Control / Dark",
+      "symbolId": "E3376139-83B2-4C36-BB0A-F94085715DE8",
+      "layerId": "937D7080-382F-4E6E-9F32-8ABB7A2AF43C",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "5A858AD7-059C-40B7-88C4-162651C15A3F",
+          "value": "OPEN TICKETS"
+        },
+        {
+          "id": "BF9703D6-BEF3-4BF5-A5EE-EE897219B8AF",
+          "value": "12"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "dc0c679755742cf142427539133bb1b5e5131ba0ace14c6c15384752094c284c"
+    },
+    "list-header-size-xs-control-light": {
+      "id": "list-header-size-xs-control-light",
+      "name": "List Header / Size Xs / Control / Light",
+      "symbolId": "C507AE94-B4F7-4DD9-8F42-81C36BC751EE",
+      "layerId": "CB48D8AD-718F-460E-BEFE-DA08169F11F4",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "4C00BD70-D075-47FA-9C3C-60147FE145EF",
+          "value": "Team Members"
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "b8a3a4cfc186c039536b5a3f449c02bc4de4c714bcf3cc9b1e84bc669c3a02af"
+    },
+    "list-header-size-xs-control-dark": {
+      "id": "list-header-size-xs-control-dark",
+      "name": "List Header / Size Xs / Control / Dark",
+      "symbolId": "4C253A76-E497-4E58-9827-C2650112AC02",
+      "layerId": "0F447F88-5596-44BE-B61E-179C879C6907",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "843AD0FB-77F5-43D8-A231-D85E4EEEB003",
+          "value": "Team Members"
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "4b5cf32fa5a6ed800067f86ee6f8f9c5cf2f428fa193c783cedbaf66b520afbc"
+    },
+    "list-header-size-m-control-light": {
+      "id": "list-header-size-m-control-light",
+      "name": "List Header / Size M / Control / Light",
+      "symbolId": "D7AA03B1-D7FA-4DE2-8EEC-F9E023AA6AA5",
+      "layerId": "FA55EE27-9445-4F90-AB5B-FFF7EC09BCD9",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "9493F8BC-C157-4824-B255-23575F33B144",
+          "value": "Team Members"
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "a5cdab8e3c255511c307d6e60ca2c907f0a1a39d3104e2aabeddd5d3a4b27a58"
+    },
+    "list-header-size-m-control-dark": {
+      "id": "list-header-size-m-control-dark",
+      "name": "List Header / Size M / Control / Dark",
+      "symbolId": "3D1C441E-84D8-4B9F-973E-1B8923754134",
+      "layerId": "EF75D19D-5431-486B-8DAB-699E37F0D7E3",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "44179201-E566-41DF-8724-B244F6C8368E",
+          "value": "Team Members"
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "6e4f29f8dd11e5823a75615a209eeccb233e227ddab76a29f4f7047107f570ae"
+    },
+    "list-header-size-l-control-light": {
+      "id": "list-header-size-l-control-light",
+      "name": "List Header / Size L / Control / Light",
+      "symbolId": "6259BFF7-8490-4D27-8B2F-42C7344BD2CE",
+      "layerId": "C5051575-9FDC-4EB5-BAA9-F02F78673483",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "9097C16D-4E94-49DA-85F3-B60C64EEAD18",
+          "value": "Team Members"
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "d6ac85fc816825ca019cc68683abe40b77e9d0c1f7a83d48da9588caebfb6eaa"
+    },
+    "list-header-size-l-control-dark": {
+      "id": "list-header-size-l-control-dark",
+      "name": "List Header / Size L / Control / Dark",
+      "symbolId": "CEACFBB2-A166-4675-A2F2-CDA40A5CADEB",
+      "layerId": "28722BB1-9D19-4752-899D-A51891316682",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "442D4625-DEB3-4379-8B50-88069210E04D",
+          "value": "Team Members"
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "8cb15b88b654b0a54e3d75ec7b91e9c95324670ce97ecda1f185c69a9dd50734"
+    },
+    "list-header-size-xl-control-light": {
+      "id": "list-header-size-xl-control-light",
+      "name": "List Header / Size Xl / Control / Light",
+      "symbolId": "214CE6C1-3C0D-479E-8F06-DCE8725AA638",
+      "layerId": "949BE6F7-0A33-4008-B3EC-CDAB0DFF2602",
+      "width": 364,
+      "height": 48,
+      "text": [
+        {
+          "id": "AFAF3271-8F05-4E72-83F5-E6A3A862C524",
+          "value": "Team Members"
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "f6b85e0f3e7913403f8d87ae39ae6961188d342d1d25a1c121c8f17073ec4b5a"
+    },
+    "list-header-size-xl-control-dark": {
+      "id": "list-header-size-xl-control-dark",
+      "name": "List Header / Size Xl / Control / Dark",
+      "symbolId": "5CA65D61-D883-4D96-A141-F16821101659",
+      "layerId": "81E73BB0-1EDD-49DF-B71D-FC355E51C269",
+      "width": 364,
+      "height": 48,
+      "text": [
+        {
+          "id": "036B6901-5615-4FB5-82E3-66747049E714",
+          "value": "Team Members"
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "f4c40cb790d67a864c9c9a763cb758cd727c6da5c633901d51cc57dfed886eb7"
+    },
+    "list-header-inline-action-control-light": {
+      "id": "list-header-inline-action-control-light",
+      "name": "List Header / Inline Action / Control / Light",
+      "symbolId": "1D0CC534-756C-44C2-A75B-D66BD669FD86",
+      "layerId": "E5A71CF2-274B-48BA-9DED-F447BE5DD0A7",
+      "width": 124.1875,
+      "height": 44,
+      "text": [
+        {
+          "id": "C76D2EBF-17F3-48A7-B3CF-9A837955DC43",
+          "value": "QUEUED"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "c8376c00846b0061df2c1506e4bb297dc239083ee779b73d6205c18f66cc3308"
+    },
+    "list-header-inline-action-control-dark": {
+      "id": "list-header-inline-action-control-dark",
+      "name": "List Header / Inline Action / Control / Dark",
+      "symbolId": "A23D67B7-895E-48B8-8192-A1BBBC91D56A",
+      "layerId": "71C3434D-2D78-4F1B-80F5-83D08F48D48D",
+      "width": 124.1875,
+      "height": 44,
+      "text": [
+        {
+          "id": "8A98141A-46C1-4790-9F9E-0948F209EF94",
+          "value": "QUEUED"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "421a792cb3658103de5cf7509e5ea9a7ee648f0e1a5d2316515dda021b84e427"
+    },
+    "list-header-toggle-collapsed-control-light": {
+      "id": "list-header-toggle-collapsed-control-light",
+      "name": "List Header / Toggle Collapsed / Control / Light",
+      "symbolId": "CACA3F50-C5EB-44F4-9FFD-18EFE21CC6AB",
+      "layerId": "88164922-E76B-42FE-9A05-3DB1AC9EC238",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "D34E0011-9C0C-45CD-AAF7-00A24BAD4A29",
+          "value": "ARCHIVED"
+        }
+      ],
+      "paths": 6,
+      "bitmaps": 0,
+      "sourceHash": "1572c996b003837f90318f02d33064c986b59742637b38163731f836fe876b96"
+    },
+    "list-header-toggle-collapsed-control-dark": {
+      "id": "list-header-toggle-collapsed-control-dark",
+      "name": "List Header / Toggle Collapsed / Control / Dark",
+      "symbolId": "A2649B30-6E32-4E32-BF8C-0021B7A8F521",
+      "layerId": "36C3E52C-5F0E-47B0-804D-85406B184AF4",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "DA5C3E0A-57A7-4B6A-8E26-E25D82C7AC03",
+          "value": "ARCHIVED"
+        }
+      ],
+      "paths": 6,
+      "bitmaps": 0,
+      "sourceHash": "ae0c27f3bb10ae07b2b9d71b4459fe76c2c4e53b7ec520d1cb2ba95a31b52bc0"
+    },
+    "list-header-toggle-expanded-control-light": {
+      "id": "list-header-toggle-expanded-control-light",
+      "name": "List Header / Toggle Expanded / Control / Light",
+      "symbolId": "EC20166C-54BF-46F4-AE14-273C2CC1EE7B",
+      "layerId": "73CE7B93-358B-4D27-BEBB-242E37307204",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "10329397-1CAD-4355-9401-83AD1C0B7C91",
+          "value": "RECENT"
+        },
+        {
+          "id": "30585CA2-4AC2-4210-8825-9EC813CC5D8B",
+          "value": "5"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "a630edcb4310465bdff4701043d384b51fd48b8472c855d5fcb5012de0d2979c"
+    },
+    "list-header-toggle-expanded-control-dark": {
+      "id": "list-header-toggle-expanded-control-dark",
+      "name": "List Header / Toggle Expanded / Control / Dark",
+      "symbolId": "D347741A-1D85-4B16-9A99-5F7FB5222E36",
+      "layerId": "8BC96FFC-0ABF-4133-92B3-DC964D5F4B4A",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "35736988-CE4D-48E6-9C4B-6961F72FC5CA",
+          "value": "RECENT"
+        },
+        {
+          "id": "9321900B-3E03-4DF9-8DB5-064A9FE2ECF7",
+          "value": "5"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "c94293780dcbf7c86714e6b22929b063975d975c120d42ca1c66d5245d02b912"
+    },
+    "list-action-row-default-control-light": {
+      "id": "list-action-row-default-control-light",
+      "name": "List Action Row / Default / Control / Light",
+      "symbolId": "C026F4B8-FA0F-4F6A-B04A-34B502540386",
+      "layerId": "2659E94B-34E0-4178-AF26-2B16CFD7EB7E",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "FE111614-FB5F-43E0-9279-51A6A79D72FE",
+          "value": "staging.example.com"
+        }
+      ],
+      "paths": 17,
+      "bitmaps": 0,
+      "sourceHash": "3da2c01a4f2d1560c8a745d1d606e661f99fedbe08e69c4222fb48327f0ac477"
+    },
+    "list-action-row-default-control-dark": {
+      "id": "list-action-row-default-control-dark",
+      "name": "List Action Row / Default / Control / Dark",
+      "symbolId": "2C96EA4A-07E6-4BFF-A86C-45DB6CD002EE",
+      "layerId": "7ABAEA84-476D-4878-A63A-C40BE29905D8",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "6A8D46F2-D997-49CB-9DBB-DC2AED2426D7",
+          "value": "staging.example.com"
+        }
+      ],
+      "paths": 17,
+      "bitmaps": 0,
+      "sourceHash": "8bfcb33f0e10c97307587bf3e6af7bcf03832c7fd18ae55b6ac54b045b5da32f"
+    },
+    "list-action-row-selected-control-light": {
+      "id": "list-action-row-selected-control-light",
+      "name": "List Action Row / Selected / Control / Light",
+      "symbolId": "898475AD-48F8-426B-B546-93DA8E6FEF81",
+      "layerId": "A07BF24C-26C6-443B-A412-E5064B342F87",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "79ED9898-706D-4D99-B52F-AE02C895180A",
+          "value": "production.example.com"
+        }
+      ],
+      "paths": 18,
+      "bitmaps": 0,
+      "sourceHash": "f8eba1c87904ac051abcab71ab4184c9f95c5023a860fec7a324d4cecf9d2082"
+    },
+    "list-action-row-selected-control-dark": {
+      "id": "list-action-row-selected-control-dark",
+      "name": "List Action Row / Selected / Control / Dark",
+      "symbolId": "C9C8176E-FE9E-4BF6-B9C3-5B287C6AA68B",
+      "layerId": "7FDAE7E7-773A-4D63-B112-E63217243DF4",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "7FE4D81B-838C-476D-9DC6-8711E225029E",
+          "value": "production.example.com"
+        }
+      ],
+      "paths": 18,
+      "bitmaps": 0,
+      "sourceHash": "efb20de3b7c70436487e990139895308843071c6a2397929341a457a1532b3e3"
+    },
+    "list-action-row-trailing-menu-control-light": {
+      "id": "list-action-row-trailing-menu-control-light",
+      "name": "List Action Row / Trailing Menu / Control / Light",
+      "symbolId": "2BADC37C-13CA-484E-8195-B0EA72D42F89",
+      "layerId": "97240538-4F55-4D53-AA0D-8D91AB92F797",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "F61B5202-7D5F-4F23-8F74-5B857A2600B8",
+          "value": "preview.example.com"
+        }
+      ],
+      "paths": 15,
+      "bitmaps": 0,
+      "sourceHash": "ea78a4920211eea7bd62573779d0e3d7943ec6028ba7a9d0f72cd82da71208d9"
+    },
+    "list-action-row-trailing-menu-control-dark": {
+      "id": "list-action-row-trailing-menu-control-dark",
+      "name": "List Action Row / Trailing Menu / Control / Dark",
+      "symbolId": "B5255DB8-B84A-485D-A531-2DC1D30A996E",
+      "layerId": "16013612-306B-40CD-86F1-57A32483EBC3",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "15426A79-FD03-4A22-8C2A-087124795D42",
+          "value": "preview.example.com"
+        }
+      ],
+      "paths": 15,
+      "bitmaps": 0,
+      "sourceHash": "724c964b8e98a775be33b330ae28a7f8d5d337ac997ca5858d191447a4e515c2"
+    },
+    "list-action-row-icon-tile-control-light": {
+      "id": "list-action-row-icon-tile-control-light",
+      "name": "List Action Row / Icon Tile / Control / Light",
+      "symbolId": "27EC6442-31BD-4D57-B44B-00A0695F0146",
+      "layerId": "D9A2186C-A5BF-4139-A198-D47A5DD1370E",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "D75213CF-6CFB-45DB-B1D2-D0024339C461",
+          "value": "Deploy Preview"
+        }
+      ],
+      "paths": 18,
+      "bitmaps": 0,
+      "sourceHash": "5f0a02dd70362cd24640983d3636ca67538ce7e8377b0e20cf564ca9fbac2dd0"
+    },
+    "list-action-row-icon-tile-control-dark": {
+      "id": "list-action-row-icon-tile-control-dark",
+      "name": "List Action Row / Icon Tile / Control / Dark",
+      "symbolId": "104B55DB-7869-45ED-BC3D-5397FB8C5F88",
+      "layerId": "B6A25AFC-A1B8-455B-907C-8149B822C637",
+      "width": 364,
+      "height": 44,
+      "text": [
+        {
+          "id": "895DAB47-4D35-4DF1-B2EE-E1107F206353",
+          "value": "Deploy Preview"
+        }
+      ],
+      "paths": 18,
+      "bitmaps": 0,
+      "sourceHash": "3f63ba4d2a2ed910c5f79baed67b0f74b9026a23b7f0358a4b2fcb8eb137831c"
+    },
+    "value-table-details-control-light": {
+      "id": "value-table-details-control-light",
+      "name": "Value Table / Details / Control / Light",
+      "symbolId": "626BD10F-DF2C-4194-9FB2-00A7E85FE976",
+      "layerId": "43DAFBE3-DC7C-4832-AEDF-CD5981A1F0D3",
+      "width": 404,
+      "height": 165.1875,
+      "text": [
+        {
+          "id": "19CFBE5E-06A5-4DDA-8AC4-1E0CD30B09AE",
+          "value": "Status"
+        },
+        {
+          "id": "9F1F4642-A563-4CEE-9FF4-CDA178F3A5F2",
+          "value": "Live"
+        },
+        {
+          "id": "9BB4E233-5EF4-4CBC-A2EB-0E997428D1FC",
+          "value": "Environment"
+        },
+        {
+          "id": "7026A693-F773-4225-A728-12CC11706AD7",
+          "value": "Production"
+        },
+        {
+          "id": "8690A37A-4004-4B4D-AC94-49B1EA232332",
+          "value": "Region"
+        },
+        {
+          "id": "6E699863-3297-448F-8E3A-3768B2650406",
+          "value": "us-east-1"
+        },
+        {
+          "id": "EED4583D-1CA3-4021-83B9-8446AC3A9F25",
+          "value": "Last Deploy"
+        },
+        {
+          "id": "CC03AD48-626B-4E09-A4D9-EB335BD84995",
+          "value": "2 hours ago"
+        }
+      ],
+      "paths": 24,
+      "bitmaps": 0,
+      "sourceHash": "f4066594ae6fda2c7644676496a152baa9ab812dcc15f6dbcae2aba0e9e6f525"
+    },
+    "value-table-details-control-dark": {
+      "id": "value-table-details-control-dark",
+      "name": "Value Table / Details / Control / Dark",
+      "symbolId": "232E685C-CCC7-4CFB-9FEC-ACF2926BBA6E",
+      "layerId": "413EBE99-F2EC-4A30-91ED-92ACF71A4733",
+      "width": 404,
+      "height": 165.1875,
+      "text": [
+        {
+          "id": "B0709639-D3E0-4C66-9CB3-1ADAB27BFCB2",
+          "value": "Status"
+        },
+        {
+          "id": "28C3E1F0-2A25-47E1-AABE-815ECF9BF543",
+          "value": "Live"
+        },
+        {
+          "id": "7B0C082C-B361-49C8-83D8-83B4D69A8EBA",
+          "value": "Environment"
+        },
+        {
+          "id": "C5A1BF0A-7F98-460E-A59B-A6C9D38B07D0",
+          "value": "Production"
+        },
+        {
+          "id": "2272345C-188D-4935-8D8F-DAA0FB868B04",
+          "value": "Region"
+        },
+        {
+          "id": "2C08FF72-5C5A-4CE7-B31C-457FF209653E",
+          "value": "us-east-1"
+        },
+        {
+          "id": "347C7247-9E54-489B-BC15-176A2D2095B3",
+          "value": "Last Deploy"
+        },
+        {
+          "id": "ED21E3D6-B9BB-434E-8C2B-1BF92CEE0DC7",
+          "value": "2 hours ago"
+        }
+      ],
+      "paths": 24,
+      "bitmaps": 0,
+      "sourceHash": "4981186024558d190ea8ee41b7a72a75ebac9b7ee757161cb9ce05a4e1faf962"
+    }
+  },
+  "assets": {
+    "light.neutral-on-quiet": {
+      "id": "C18E4873-2C73-4EC4-80E0-CFB181AFC960",
+      "name": "Kerf/Lists/light/neutral-on-quiet",
+      "color": "#626267ff"
+    },
+    "light.text": {
+      "id": "B7FA013A-1F96-47E0-90E6-4C455682BEF2",
+      "name": "Kerf/Lists/light/text",
+      "color": "#1d1d1fff"
+    },
+    "light.selected-surface": {
+      "id": "6D35C662-FC67-4FDA-BDAA-4601BAB38A52",
+      "name": "Kerf/Lists/light/selected-surface",
+      "color": "#d6e9f9ff"
+    },
+    "light.selected-icon": {
+      "id": "00B14EEE-31F1-4403-BF0F-E314FAC3D987",
+      "name": "Kerf/Lists/light/selected-icon",
+      "color": "#a6cff2ff"
+    },
+    "dark.neutral-on-quiet": {
+      "id": "E5C6D471-B48F-44BB-9DF1-617FF7E00622",
+      "name": "Kerf/Lists/dark/neutral-on-quiet",
+      "color": "#c2c2c6ff"
+    },
+    "dark.text": {
+      "id": "179EF85E-98B5-4C5F-919A-2EB6431E3592",
+      "name": "Kerf/Lists/dark/text",
+      "color": "#f5f5f7ff"
+    },
+    "dark.selected-icon": {
+      "id": "4166A05C-7AB4-4E6C-B2E5-7FCDC986B2DD",
+      "name": "Kerf/Lists/dark/selected-icon",
+      "color": "#355c6dff"
+    },
+    "light.brand-icon": {
+      "id": "ED60B94F-D336-4C1A-898F-DA44C89A3044",
+      "name": "Kerf/Lists/light/brand-icon",
+      "color": "#0c62f3ff"
+    },
+    "light.neutral-border-normal": {
+      "id": "0C40DC9B-33E8-4995-8F13-513CDAEAFC5C",
+      "name": "Kerf/Lists/light/neutral-border-normal",
+      "color": "#00001c2e"
+    },
+    "dark.neutral-border-normal": {
+      "id": "E6608ADC-1AFD-4B34-B59E-69BED3D2B3A8",
+      "name": "Kerf/Lists/dark/neutral-border-normal",
+      "color": "#fdfdff32"
+    }
+  }
+}

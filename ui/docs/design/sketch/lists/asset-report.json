@@ -1,0 +1,59 @@
+{
+  "swatches": {
+    "light.neutral-on-quiet": {
+      "id": "C18E4873-2C73-4EC4-80E0-CFB181AFC960",
+      "name": "Kerf/Lists/light/neutral-on-quiet",
+      "color": "#626267ff"
+    },
+    "light.text": {
+      "id": "B7FA013A-1F96-47E0-90E6-4C455682BEF2",
+      "name": "Kerf/Lists/light/text",
+      "color": "#1d1d1fff"
+    },
+    "light.selected-surface": {
+      "id": "6D35C662-FC67-4FDA-BDAA-4601BAB38A52",
+      "name": "Kerf/Lists/light/selected-surface",
+      "color": "#d6e9f9ff"
+    },
+    "light.selected-icon": {
+      "id": "00B14EEE-31F1-4403-BF0F-E314FAC3D987",
+      "name": "Kerf/Lists/light/selected-icon",
+      "color": "#a6cff2ff"
+    },
+    "dark.neutral-on-quiet": {
+      "id": "E5C6D471-B48F-44BB-9DF1-617FF7E00622",
+      "name": "Kerf/Lists/dark/neutral-on-quiet",
+      "color": "#c2c2c6ff"
+    },
+    "dark.text": {
+      "id": "179EF85E-98B5-4C5F-919A-2EB6431E3592",
+      "name": "Kerf/Lists/dark/text",
+      "color": "#f5f5f7ff"
+    },
+    "dark.selected-icon": {
+      "id": "4166A05C-7AB4-4E6C-B2E5-7FCDC986B2DD",
+      "name": "Kerf/Lists/dark/selected-icon",
+      "color": "#355c6dff"
+    },
+    "light.brand-icon": {
+      "id": "ED60B94F-D336-4C1A-898F-DA44C89A3044",
+      "name": "Kerf/Lists/light/brand-icon",
+      "color": "#0c62f3ff"
+    },
+    "light.neutral-border-normal": {
+      "id": "0C40DC9B-33E8-4995-8F13-513CDAEAFC5C",
+      "name": "Kerf/Lists/light/neutral-border-normal",
+      "color": "#00001c2e"
+    },
+    "dark.neutral-border-normal": {
+      "id": "E6608ADC-1AFD-4B34-B59E-69BED3D2B3A8",
+      "name": "Kerf/Lists/dark/neutral-border-normal",
+      "color": "#fdfdff32"
+    }
+  },
+  "bindings": {
+    "text": 72,
+    "fills": 3,
+    "borders": 26
+  }
+}

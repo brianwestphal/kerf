@@ -63,7 +63,7 @@ const families = [
   {
     name: 'Lists and data',
     ticket: 'KF-83M2MW',
-    status: 'pending',
+    status: 'supported',
     components: [
       'list',
       'list-item',
@@ -117,8 +117,8 @@ const rows = families.flatMap((family) =>
   ),
 );
 assert.equal(rows.length, 110, 'Reconcile catalog count and ticket batches');
-assert.equal(rows.filter((row) => row.status === 'supported').length, 44);
-assert.equal(rows.filter((row) => row.status === 'pending').length, 66);
+assert.equal(rows.filter((row) => row.status === 'supported').length, 65);
+assert.equal(rows.filter((row) => row.status === 'pending').length, 45);
 assert.equal(
   new Set(rows.map((row) => `${row.component}/${row.variant}`)).size,
   rows.length,
@@ -153,7 +153,8 @@ appearance Symbols in [Kerf-Button.sketch](button/README.md). The Form controls
 batch covers 20 showcase variants with 66 individual light/dark Symbols in
 [Kerf-Forms.sketch](forms/README.md). The Advanced inputs batch covers 17
 variants with 34 light/dark Symbols in [Kerf-Advanced.sketch](advanced/README.md).
-The three pending family tickets cover the other source variants and must update this matrix
+The Lists and data batch covers 21 variants with 42 light/dark Symbols in
+[Kerf-Lists.sketch](lists/README.md). The two pending family tickets cover the other source variants and must update this matrix
 as they ship. The catalog's [install and update guide](README.md) identifies
 the current libraries and supported Sketch version.
 
