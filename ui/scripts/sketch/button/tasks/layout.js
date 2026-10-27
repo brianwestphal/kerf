@@ -118,6 +118,12 @@ function createAssets(document, dom, fixtures, previous) {
         return item.name === name;
       })[0];
     }
+    if (
+      document.swatches.some(function (item) {
+        return item.name === name && item.id !== swatch.id;
+      })
+    )
+      throw new Error('Duplicate Color Variable name: ' + name);
     swatch.name = name;
     swatch.color = color;
     swatches[key] = swatch;
@@ -167,6 +173,12 @@ function createAssets(document, dom, fixtures, previous) {
         document: document,
       });
     }
+    if (
+      collection.some(function (item) {
+        return item.name === name && item.id !== style.id;
+      })
+    )
+      throw new Error('Duplicate shared style name: ' + name);
     style.name = name;
     style.style = layer.style;
     layer.sharedStyle = style;
