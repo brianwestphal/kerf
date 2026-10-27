@@ -1435,7 +1435,6 @@ type TabBarItemRootAttributes = Readonly<Record<`data-${string}`, string | undef
     'data-attention'?: never;
     'data-drop-target'?: never;
     'data-name-overflow'?: never;
-    'data-pinned'?: never;
     'data-disabled'?: never;
 }>;
 type TabBarItemPresentation = 'pill' | 'segmented' | 'icon-only';
@@ -1455,8 +1454,6 @@ interface TabBarItemProps {
     attention?: boolean;
     /** Highlight this tab as the target of a drag over its content. */
     dropTarget?: boolean;
-    /** Keep the leading tab visible within its TabBar tablist while peers scroll. */
-    pinned?: boolean;
     closable?: boolean;
     draggable?: boolean;
     leading?: KerfUiContent;
@@ -1491,7 +1488,7 @@ interface TabBarItemProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function TabBarItem({ id, name, selected, disabled, tabId, panelId, attention, dropTarget, pinned, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, nameOverflow, closeIcon, selectAction, closeAction, className, placeholder, pending, rootAttributes, slot, }: TabBarItemProps): SafeHtml;
+declare function TabBarItem({ id, name, selected, disabled, tabId, panelId, attention, dropTarget, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, nameOverflow, closeIcon, selectAction, closeAction, className, placeholder, pending, rootAttributes, slot, }: TabBarItemProps): SafeHtml;
 
 export { TabBarItem, type TabBarItemNameOverflow, type TabBarItemPresentation, type TabBarItemProps, type TabBarItemSize };
 ```
@@ -1537,7 +1534,7 @@ interface TabBarProps {
     iconOnlyAt?: TabBarIconOnlyAt;
     /** Keep a trailing action beside the final tab or at the far edge of the bar. */
     trailingPlacement?: TabBarTrailingPlacement;
-    /** Settle scrolling peers at whole-tab starts; wireTabBars measures a pinned leading tab's inset. */
+    /** Settle scrolling peers at whole-tab starts; the first visible tab aligns with the strip edge. */
     snapTabs?: boolean;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;

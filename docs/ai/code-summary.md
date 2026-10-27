@@ -981,9 +981,9 @@ action while an adjacent `trailing` action follows its shrinkable, horizontally
 scrolling tabs; the component owns that split geometry. `TabBarItem.dropTarget`
 paints its highlight through public tokens independently of `aria-selected`,
 while `nameOverflow="visible"` removes the label width cap and ellipsis.
-`TabBarItem.pinned` uses sticky positioning and an opaque surface token within the
-scroll strip. `wireTabBars` accounts for its width when revealing focused or
-selected peers, including in right-to-left strips.
+Fixed controls compose through `TabBar.leading`, `trailing`, and `end` outside
+the scrolling tablist; ordinary tabs have no pinned/sticky special case.
+Snap geometry and selection reveal use the strip's inline-start edge.
 `wireTabBars` resolves replacement focus by logical
 bar/tab identity after automatic keyboard activation synchronously rerenders a strip.
 Unit coverage in `ui/tests/unit/wire-tab-bars.test.ts` and the real-browser
@@ -991,7 +991,7 @@ Unit coverage in `ui/tests/unit/wire-tab-bars.test.ts` and the real-browser
 transitions and duplicate tab IDs in independent bars.
 Its root `MutationObserver` re-measures only the bars a batch touched (a change
 inside a bar, an inserted bar, a `dir` change above one), and one
-`ResizeObserver` serves both snap strips and pinned strips, so unrelated content
+`ResizeObserver` serves snap strips, so unrelated content
 mutations do no style or layout reads (KF-8H2MH2).
 `ui/src/wiring/wire-scroll-dividers.ts` (`@kerfjs/ui/wire-scroll-dividers`,
 `wireScrollDividers(root, { targets? })`) makes the divider between pinned chrome

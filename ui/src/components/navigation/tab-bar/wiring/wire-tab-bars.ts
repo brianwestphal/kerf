@@ -92,12 +92,6 @@ function tabsIn(bar: TabBarRoot): HTMLButtonElement[] {
 
 function reveal(tab: HTMLElement | null | undefined): void {
   tab?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-  if (
-    tab
-      ?.closest('[data-kui-tab-list]')
-      ?.querySelector(':scope > .kui-tab-bar-item[data-pinned="true"]')
-  )
-    revealInStrip(tab);
 }
 
 /**
@@ -115,24 +109,17 @@ function revealInStrip(tab: HTMLElement): void {
     ? (tab.closest<HTMLElement>('.kui-tab-bar-item')?.getBoundingClientRect() ??
       tab.getBoundingClientRect())
     : tab.getBoundingClientRect();
-  const pinned = strip.querySelector<HTMLElement>(
-    ':scope > .kui-tab-bar-item[data-pinned="true"]',
-  );
-  if (pinned?.contains(tab)) return;
-  const pinnedBox = pinned?.getBoundingClientRect();
   if (
     strip.ownerDocument.defaultView?.getComputedStyle(strip).direction === 'rtl'
   ) {
-    const right = pinnedBox
-      ? Math.min(bounds.right, pinnedBox.left)
-      : bounds.right;
+    const right = bounds.right;
     if (snap) strip.scrollLeft += box.right - right;
     else if (box.right > right) strip.scrollLeft += box.right - right;
     else if (box.left < bounds.left)
       strip.scrollLeft -= Math.min(bounds.left - box.left, right - box.right);
     return;
   }
-  const left = pinnedBox ? Math.max(bounds.left, pinnedBox.right) : bounds.left;
+  const left = bounds.left;
   if (snap) strip.scrollLeft += box.left - left;
   else if (box.left < left) strip.scrollLeft -= left - box.left;
   else if (box.right > bounds.right)
@@ -201,11 +188,6 @@ export function wireTabBars(
     root.nodeType === 9 ? (root as Document) : root.ownerDocument
   )!;
   const view = ownerDocument.defaultView!;
-  // WebKit positions an RTL sticky flex child as though the negative scroll
-  // offset were added to its inline-start inset. Measure the actual pinned
-  // edge and correct only the displacement; Chromium and Firefox stay at 0.
-  const pinnedOffsets = new WeakMap<HTMLElement, number>();
-  const adjustedPinned = new Set<HTMLElement>();
   const snapExtras = new WeakMap<HTMLElement, number>();
   const snapStrips = new Set<HTMLElement>();
   const snapObserved = new Set<HTMLElement>();
@@ -217,35 +199,24 @@ export function wireTabBars(
       if (!disposed) syncSnapInRoot();
     });
   };
-  // A pinned strip's correction depends on its own box, which can change
-  // without a mutation inside it (a sibling panel collapsing), so resizes
-  // re-sync it directly; unrelated mutations elsewhere never have to.
-  const pinnedObserved = new Set<HTMLElement>();
   const resizeObserver = view.ResizeObserver
     ? new view.ResizeObserver((entries: ResizeObserverEntry[]) => {
         if (disposed) return;
         let snap = false;
         for (const { target } of entries) {
-          if (pinnedObserved.has(target as HTMLElement))
-            syncPinned(target as HTMLElement);
           if (snapObserved.has(target as HTMLElement)) snap = true;
         }
         if (snap) scheduleSnapSync();
       })
     : undefined;
-  const observe = (element: HTMLElement) => {
-    if (!snapObserved.has(element) && !pinnedObserved.has(element))
-      resizeObserver?.observe(element);
-  };
   const observeSnap = (element: HTMLElement) => {
     if (snapObserved.has(element)) return;
-    observe(element);
+    resizeObserver?.observe(element);
     snapObserved.add(element);
   };
   const syncSnap = (strip: HTMLElement) => {
     const previousExtra = snapExtras.get(strip) ?? 0;
     if (strip.dataset.snapTabs !== 'true') {
-      strip.style.removeProperty('--kui-tab-bar-snap-inset');
       strip.style.removeProperty('--kui-tab-bar-snap-end-extra');
       snapExtras.delete(strip);
       snapStrips.delete(strip);
@@ -257,36 +228,19 @@ export function wireTabBars(
       ...strip.querySelectorAll<HTMLElement>(':scope > .kui-tab-bar-item'),
     ];
     tabs.forEach(observeSnap);
-    const pinned = tabs.find(
-      (candidate) => candidate.dataset.pinned === 'true',
-    );
     const last = tabs.at(-1);
     const bounds = strip.getBoundingClientRect();
-    const pinnedBox = pinned?.getBoundingClientRect();
     const rtl = view.getComputedStyle(strip).direction === 'rtl';
-    const inset = pinnedBox
-      ? rtl
-        ? bounds.right - pinnedBox.left
-        : pinnedBox.right - bounds.left
-      : 0;
-    strip.style.setProperty(
-      '--kui-tab-bar-snap-inset',
-      `${Math.max(0, inset)}px`,
-    );
     const baseMaximum = Math.max(
       0,
       strip.scrollWidth - strip.clientWidth - previousExtra,
     );
     let extra = 0;
-    if (baseMaximum > 0 && last && last !== pinned) {
+    if (baseMaximum > 0 && last) {
       const lastBox = last.getBoundingClientRect();
       const desired = rtl
-        ? -(
-            strip.scrollLeft +
-            lastBox.right -
-            (pinnedBox?.left ?? bounds.right)
-          )
-        : strip.scrollLeft + lastBox.left - (pinnedBox?.right ?? bounds.left);
+        ? -(strip.scrollLeft + lastBox.right - bounds.right)
+        : strip.scrollLeft + lastBox.left - bounds.left;
       extra = Math.max(0, desired - baseMaximum);
     }
     if (Math.abs(extra - previousExtra) >= 0.5) {
@@ -294,22 +248,19 @@ export function wireTabBars(
       snapExtras.set(strip, extra);
       // The room is scroll content after the last tab, so writing it never
       // resizes the strip and no ResizeObserver notification follows. A room
-      // measured mid-settle (a WebKit pinned tab still displaced by the
-      // scroll) is re-measured next frame until it holds.
+      // measured during layout is re-measured next frame until it holds.
       scheduleSnapSync();
     }
   };
   /** Release observers and inline geometry of strips that left the root. */
   const releaseDetached = () => {
-    for (const element of new Set([...pinnedObserved, ...snapObserved]))
+    for (const element of snapObserved)
       if (!root.contains(element)) {
         resizeObserver?.unobserve(element);
-        pinnedObserved.delete(element);
         snapObserved.delete(element);
       }
     for (const strip of snapStrips)
       if (!root.contains(strip)) {
-        strip.style.removeProperty('--kui-tab-bar-snap-inset');
         strip.style.removeProperty('--kui-tab-bar-snap-end-extra');
         snapStrips.delete(strip);
       }
@@ -318,47 +269,9 @@ export function wireTabBars(
     releaseDetached();
     root.querySelectorAll<HTMLElement>(TAB_LIST).forEach(syncSnap);
   };
-  const syncPinned = (strip: HTMLElement) => {
-    const pinned = strip.querySelector<HTMLElement>(
-      ':scope > .kui-tab-bar-item[data-pinned="true"]',
-    );
-    if (!pinned) return;
-    if (!pinnedObserved.has(strip)) {
-      observe(strip);
-      pinnedObserved.add(strip);
-    }
-    const previous = pinned.style.translate
-      ? (pinnedOffsets.get(pinned) ?? 0)
-      : 0;
-    const style = view.getComputedStyle(strip);
-    if (style.direction !== 'rtl' || strip.scrollWidth <= strip.clientWidth) {
-      if (previous !== 0) pinned.style.translate = '';
-      pinnedOffsets.set(pinned, 0);
-      return;
-    }
-    const targetRight =
-      strip.getBoundingClientRect().right -
-      (Number.parseFloat(style.borderRightWidth) || 0) -
-      (Number.parseFloat(style.paddingRight) || 0);
-    const rawRight = pinned.getBoundingClientRect().right - previous;
-    const delta = targetRight - rawRight;
-    const next = Math.abs(delta) < 0.5 ? 0 : delta;
-    if (next !== previous) pinned.style.translate = next ? `${next}px 0` : '';
-    pinnedOffsets.set(pinned, next);
-    adjustedPinned.add(pinned);
-  };
-  const syncPinnedInRoot = () =>
-    root
-      .querySelectorAll<HTMLElement>('[data-kui-tab-list]')
-      .forEach(syncPinned);
-  const onStripScroll = (event: Event) => {
-    const target = event.target;
-    if (target instanceof HTMLElement && target.matches('[data-kui-tab-list]'))
-      syncPinned(target);
-  };
   // CSS snap settles direct gestures in most engines. WebKit can leave a
   // programmatic smooth scroll between snap points, so normalize its final
-  // position to the nearest whole peer at the pinned inset.
+  // position to the nearest whole tab at the strip edge.
   const onStripScrollEnd = (event: Event) => {
     const strip = event.target;
     if (
@@ -368,20 +281,12 @@ export function wireTabBars(
     )
       return;
     const peers = [
-      ...strip.querySelectorAll<HTMLElement>(
-        ':scope > .kui-tab-bar-item:not([data-pinned="true"])',
-      ),
+      ...strip.querySelectorAll<HTMLElement>(':scope > .kui-tab-bar-item'),
     ];
     if (!peers.length) return;
     const bounds = strip.getBoundingClientRect();
-    const pinned = strip.querySelector<HTMLElement>(
-      ':scope > .kui-tab-bar-item[data-pinned="true"]',
-    );
-    const pinnedBox = pinned?.getBoundingClientRect();
     const rtl = view.getComputedStyle(strip).direction === 'rtl';
-    const edge = rtl
-      ? (pinnedBox?.left ?? bounds.right)
-      : (pinnedBox?.right ?? bounds.left);
+    const edge = rtl ? bounds.right : bounds.left;
     const distances = peers.map((peer) => {
       const box = peer.getBoundingClientRect();
       return rtl ? box.right - edge : box.left - edge;
@@ -688,7 +593,6 @@ export function wireTabBars(
   root.addEventListener('dragend', clear);
   root.addEventListener('keydown', onKeyDown);
   root.addEventListener('focusin', onFocusIn);
-  root.addEventListener('scroll', onStripScroll, true);
   root.addEventListener('scrollend', onStripScrollEnd, true);
   syncSnapInRoot();
   root
@@ -716,7 +620,6 @@ export function wireTabBars(
     return changed;
   };
   recordSelection([root]);
-  syncPinnedInRoot();
   // Only the bars the records touched are re-measured: this observer watches
   // the whole application root, so most of its batches are unrelated content.
   const selectionObserver = new view.MutationObserver((records) => {
@@ -732,13 +635,12 @@ export function wireTabBars(
     strips.forEach(syncSnap);
     for (const button of recordSelection(bars))
       if (ownerDocument.activeElement !== button) revealInStrip(button);
-    strips.forEach(syncPinned);
   });
   selectionObserver.observe(root, {
     subtree: true,
     childList: true,
     attributes: true,
-    attributeFilter: ['aria-selected', 'dir', 'data-snap-tabs', 'data-pinned'],
+    attributeFilter: ['aria-selected', 'dir', 'data-snap-tabs'],
   });
 
   return () => {
@@ -746,9 +648,7 @@ export function wireTabBars(
     if (snapFrame !== undefined) view.cancelAnimationFrame(snapFrame);
     selectionObserver.disconnect();
     resizeObserver?.disconnect();
-    pinnedObserved.clear();
     for (const strip of snapStrips) {
-      strip.style.removeProperty('--kui-tab-bar-snap-inset');
       strip.style.removeProperty('--kui-tab-bar-snap-end-extra');
     }
     snapStrips.clear();
@@ -760,9 +660,6 @@ export function wireTabBars(
     root.removeEventListener('dragend', clear);
     root.removeEventListener('keydown', onKeyDown);
     root.removeEventListener('focusin', onFocusIn);
-    root.removeEventListener('scroll', onStripScroll, true);
     root.removeEventListener('scrollend', onStripScrollEnd, true);
-    for (const pinned of adjustedPinned) pinned.style.translate = '';
-    adjustedPinned.clear();
   };
 }

@@ -4,11 +4,11 @@
 
 `@kerfjs/ui:tabs` · Kerf UI · component · Navigation
 
-Roving-tabindex-ready tabs with typed compact, segmented, icon-only, drop-target, pinned, and name-overflow presentations.
+Roving-tabindex-ready tabs with typed compact, segmented, icon-only, drop-target, and name-overflow presentations.
 
 ## When to use
 
-Render a controlled application tab with compact or icon-only presentation, a visible drop target, optional full-name display, and an optional pinned leading position.
+Render a controlled application tab with compact or icon-only presentation, a visible drop target, and optional full-name display.
 
 - Render one controlled application tab inside TabBar.
 
@@ -44,7 +44,6 @@ Exact prop names and types: [`@kerfjs/ui/tab-bar-item`](../public-api-signatures
 - icon-only accessible presentation
 - label maximum width and ellipsis or visible name overflow
 - drop-target highlight
-- pinned leading position within a scrolling tablist
 - attention name color
 - named disabled tab and explicit tab/panel association
 
@@ -86,7 +85,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-tab-bar-item`, `kui-tab-bar-item__close`, `kui-tab-bar-item__close-icon`, `kui-tab-bar-item__name`, `kui-tab-bar-item__select`, `kui-tab-bar-item__trailing` on an element you write; render `TabBarItem` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-tab-bar-item-attention-color`, `--kui-tab-bar-item-color`, `--kui-tab-bar-item-drop-indicator`, `--kui-tab-bar-item-drop-target-background`, `--kui-tab-bar-item-drop-target-color`, `--kui-tab-bar-item-drop-target-ring`, `--kui-tab-bar-item-hover-background`, `--kui-tab-bar-item-pinned-background`, `--kui-tab-bar-item-pinned-hover-background`, `--kui-tab-bar-item-selected-background`, `--kui-tab-bar-item-selected-border`, `--kui-tab-bar-item-selected-color`, `--kui-color-brand-border-normal`, `--kui-color-brand-on-quiet`, `--kui-color-neutral-border-normal`, `--kui-color-neutral-on-quiet`, `--kui-color-surface`, `--kui-color-text`, `--kui-focus-ring`, `--kui-font-xs`, `--kui-radius-pill`, `--kui-shadow-s`, `--kui-space-2xs`, `--kui-space-xs`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-tab-bar-item-attention-color`, `--kui-tab-bar-item-color`, `--kui-tab-bar-item-drop-indicator`, `--kui-tab-bar-item-drop-target-background`, `--kui-tab-bar-item-drop-target-color`, `--kui-tab-bar-item-drop-target-ring`, `--kui-tab-bar-item-hover-background`, `--kui-tab-bar-item-selected-background`, `--kui-tab-bar-item-selected-border`, `--kui-tab-bar-item-selected-color`, `--kui-color-brand-border-normal`, `--kui-color-brand-on-quiet`, `--kui-color-neutral-border-normal`, `--kui-color-neutral-on-quiet`, `--kui-color-surface`, `--kui-color-text`, `--kui-focus-ring`, `--kui-font-xs`, `--kui-radius-pill`, `--kui-shadow-s`, `--kui-space-2xs`, `--kui-space-xs`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

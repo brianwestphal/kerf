@@ -180,10 +180,9 @@ Use TabBarItem's `dropTarget` while content is dragged over a tab; it highlights
 target independently of selection. For an inline loading treatment that needs
 an untruncated label, use `nameOverflow="visible"` instead of changing the
 tab's accessible name.
-Set `pinned` on the first TabBarItem when it must remain visible as other tabs
-scroll; it stays within TabBar's tablist and keyboard order. Its opaque
-background can be matched to the surrounding surface through
-`--kui-tab-bar-item-pinned-background`.
+Put fixed controls in `TabBar.leading`, `trailing`, or `end`, outside the
+scrolling tablist. `snapTabs` settles ordinary tabs at the strip edge in LTR
+and RTL; tabs have no sticky positioning mode.
 `ListItem.trailing` is dormant content. When the trailing region must be a
 separate native control, use `ListActionRow`; its noninteractive root contains
 primary and trailing sibling buttons with independent action, name, disabled,

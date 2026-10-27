@@ -29,65 +29,8 @@
   align-items: center;
   flex: none;
 }
-.kui-tab-bar-item[data-pinned="true"] {
-  position: sticky;
-  z-index: 1;
-  inset-inline-start: 0;
-  background: var(
-    --kui-tab-bar-item-pinned-background,
-    var(--_kui-tab-bar-item-pinned-default-background, var(--kui-color-surface))
-  );
-}
-.kui-tab-bar__tabs[data-snap-tabs="true"]
-  > .kui-tab-bar-item:not([data-pinned="true"]) {
+.kui-tab-bar__tabs[data-snap-tabs="true"] > .kui-tab-bar-item {
   scroll-snap-align: start;
-}
-.kui-tab-bar-item[data-pinned="true"]::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset-block: 0;
-  inset-inline-start: calc(
-    -1 *
-      (
-        var(--kui-tab-bar-strip-padding, 1px) +
-          var(--kui-tab-bar-strip-border-width, 1px)
-      )
-  );
-  inset-inline-end: 0;
-  /* Keep the opaque scroll backing inside the tab's pill silhouette so it
-     cannot square off a selected tab's trailing corner and shadow. */
-  border-radius: inherit;
-  background: var(
-    --kui-tab-bar-item-pinned-background,
-    var(--_kui-tab-bar-item-pinned-default-background, var(--kui-color-surface))
-  );
-}
-/* The leading overflow line belongs after the pinned tab, where its scrolling
-   peers disappear. Reuse the opaque backing so drag indicators can still use
-   ::after. */
-.kui-tab-bar__tabs:dir(ltr)[data-scroll-overflow*="l"]
-  > .kui-tab-bar-item[data-pinned="true"]::before,
-.kui-tab-bar__tabs:dir(rtl)[data-scroll-overflow*="r"]
-  > .kui-tab-bar-item[data-pinned="true"]::before {
-  inset-inline-end: -1px;
-  border-inline-end: 1px solid
-    var(--kui-tab-bar-divider-color, var(--kui-color-neutral-border-normal));
-}
-.kui-tab-bar[data-presentation="segmented"]
-  .kui-tab-bar-item[data-pinned="true"],
-.kui-tab-bar[data-presentation="inspector"]
-  .kui-tab-bar-item[data-pinned="true"] {
-  --_kui-tab-bar-item-pinned-default-background: var(
-    --kui-tab-bar-strip-background,
-    var(--kui-color-neutral-fill-quiet)
-  );
-}
-.kui-tab-bar-item[data-pinned="true"]:not([data-selected="true"]):hover {
-  background: var(
-    --kui-tab-bar-item-pinned-hover-background,
-    var(--kui-color-neutral-fill-quiet)
-  );
 }
 .kui-tab-bar-item[data-size="compact"] {
   height: remify(32px);

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Removed
+
+- **Pinned TabBarItem support.** Removed `pinned` and its sticky/backdrop tokens and RTL compensation. Put fixed controls in TabBar's existing `leading`, `trailing`, or `end` zones outside the scrolling tablist. Ordinary tabs retain keyboard navigation, selection reveal, reordering, scroll dividers, and optional whole-tab snapping (`KF-K6GKN3`).
+
 ### Added
 
 - **Decline setup value proposals.** `kerfjs setup --resolve <id>=skip` remembers an unused dependency, script, compiler option, or catalog/profile value per package. Dry runs expose proposal ids, `=kerf` adopts a declined value later, and new authored conflicts still require an explicit conflict resolution (`KF-0TTETG`).

@@ -884,9 +884,9 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   and inset segmented tabs; an ordinary segmented TabBar keeps pill ends and
   smaller interior tab corners. Configure the presentation instead of
   restyling TabBarItem.
-  Set `pinned` on the first TabBarItem to keep it visible within a scrolling
-  tablist; it remains in keyboard order. Use `--kui-tab-bar-item-pinned-background`
-  for the surrounding surface and keep that backdrop opaque.
+  Put fixed controls in TabBar's `leading`, `trailing`, or `end` zones outside
+  the scrolling tablist. `snapTabs` settles ordinary tabs at the strip's
+  inline-start edge; there is no pinned-tab special case.
 - **Use `Badge` for compact non-interactive metadata.** Configure its semantic
   tone, appearance, shape, and size instead of creating badge CSS in an app or
   consuming component. Use a real button or link for interactive content.

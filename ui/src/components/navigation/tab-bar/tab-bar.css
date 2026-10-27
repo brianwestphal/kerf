@@ -53,7 +53,6 @@
 }
 .kui-tab-bar__tabs[data-snap-tabs="true"] {
   scroll-snap-type: x mandatory;
-  scroll-padding-inline-start: var(--kui-tab-bar-snap-inset, 0px);
 }
 /* The snap end room is scrollable content after the last tab, not padding on
    the strip: padding is part of the strip's box, which a flex item cannot
@@ -164,12 +163,12 @@
   margin-inline-start: calc(-1px - var(--kui-toolbar-gap, remify(8px)));
 }
 
-.kui-tab-bar[data-presentation="rail"]:dir(ltr):not(
-    :has(> .kui-tab-bar__tabs > .kui-tab-bar-item[data-pinned="true"])
-  ):has(> .kui-tab-bar__tabs[data-scroll-overflow*="l"])::before,
-.kui-tab-bar[data-presentation="rail"]:dir(rtl):not(
-    :has(> .kui-tab-bar__tabs > .kui-tab-bar-item[data-pinned="true"])
-  ):has(> .kui-tab-bar__tabs[data-scroll-overflow*="r"])::before,
+.kui-tab-bar[data-presentation="rail"]:dir(ltr):has(
+    > .kui-tab-bar__tabs[data-scroll-overflow*="l"]
+  )::before,
+.kui-tab-bar[data-presentation="rail"]:dir(rtl):has(
+    > .kui-tab-bar__tabs[data-scroll-overflow*="r"]
+  )::before,
 .kui-tab-bar[data-presentation="rail"]:dir(ltr):has(
     > .kui-tab-bar__tabs[data-scroll-overflow*="r"]
   )::after,
@@ -183,9 +182,7 @@
 }
 
 .kui-tab-bar:not([data-presentation="rail"])
-  > .kui-tab-bar__tabs[data-scroll-overflow*="l"]:not(
-    :dir(ltr):has(> .kui-tab-bar-item[data-pinned="true"])
-  ) {
+  > .kui-tab-bar__tabs[data-scroll-overflow*="l"] {
   border-left-color: var(
     --kui-tab-bar-divider-color,
     var(--kui-color-neutral-border-normal)
@@ -193,9 +190,7 @@
 }
 
 .kui-tab-bar:not([data-presentation="rail"])
-  > .kui-tab-bar__tabs[data-scroll-overflow*="r"]:not(
-    :dir(rtl):has(> .kui-tab-bar-item[data-pinned="true"])
-  ) {
+  > .kui-tab-bar__tabs[data-scroll-overflow*="r"] {
   border-right-color: var(
     --kui-tab-bar-divider-color,
     var(--kui-color-neutral-border-normal)

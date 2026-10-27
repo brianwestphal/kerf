@@ -455,25 +455,17 @@ For a distinct application action, use `end` to pin it at the far edge; use
 strip. Each zone accepts one `ToolbarControlGroup` or one standalone
 `Button` for a primary action with its own chrome. Avoid wrappers and
 application flex overrides.
-Set `pinned` on the first `TabBarItem` when that tab must remain visible as peers
-scroll. It stays inside the tablist and keyboard order. Set the `TabBar`
-`snapTabs` prop when scrolling peers should settle at whole-tab starts
-beside that pinned tab. `wireTabBars` measures the pinned inset and provides
-enough end scroll room for the last peer to align there; a partial peer can
-still appear at the trailing edge as an overflow cue. This mode also aligns a
-newly selected tab at the pinned edge in LTR and RTL. Set the prop on the bar,
-without styling its strip or tab internals. With `snapTabs`, keep the trailing
-zone non-shrinking (the default `--kui-tab-bar-trailing-flex`): the reserved
-end room counts toward the strip's share when both zones shrink.
-Set the public
-`--kui-tab-bar-item-pinned-background` token if the surrounding surface differs from
-the default; the pinned tab must cover peers as they scroll beneath it. Its
-background also covers the strip's inline padding and border so scrolled labels
-cannot paint beside the pinned edge, including in right-to-left strips. The
-backing follows the tab's pill radius, keeping a selected pinned tab's corners
-and shadow whole beside the overflow divider. Call
-`wireTabBars` for keyboard selection and reorder behavior and its WebKit RTL
-scroll correction.
+Put controls that must stay visible outside the scrolling tabs in `leading`,
+`trailing`, or `end`. Use a `ToolbarControlGroup` with a button or a standalone
+`Button` for a fixed action, rather than a sticky TabBarItem inside the tablist.
+Set `snapTabs` when scrolling tabs should settle at whole-tab starts.
+`wireTabBars` aligns the selected tab with the strip's inline-start edge in LTR
+and RTL and reserves enough end scroll room for the final tab to align there.
+A partial tab can still appear at the trailing edge as an overflow cue.
+Keep the trailing zone non-shrinking (the default
+`--kui-tab-bar-trailing-flex`) when using `snapTabs`: the reserved end room
+counts toward the strip's share when both zones shrink.
+Call `wireTabBars` for keyboard selection and reorder behavior.
 
 - `StateBanner` persists beside affected work; `EmptyState` replaces absent content; a `kerfjs/overlay` `toast()` is transient and must not carry the only copy of important state. With the Web Awesome integration, `wa-callout` is contextual ecosystem content and `wa-toast` is the transient equivalent.
 

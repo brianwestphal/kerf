@@ -887,11 +887,10 @@ the only shrinking, horizontally scrolling region; `leading`, `trailing`, and
 trailing action belongs immediately after the final tab and use `end` for a
 separate action pinned to the far edge. Applications own the action content,
 but must not restyle TabBar descendants to recreate that allocation.
-When a leading TabBarItem is pinned, the leading scroll divider appears at that
-tab's trailing edge while peer tabs scroll beneath it, including in RTL.
-With `snapTabs`, `wireTabBars` measures the pinned tab and settles peers at
-whole-tab starts after scroll and selection changes, reserving end room so the
-last peer can align there. That room is scrollable content after the last tab,
+Fixed controls belong in those outer zones, outside the scrolling tablist.
+With `snapTabs`, `wireTabBars` settles tabs at whole-tab starts after scroll and
+selection changes, reserving end room so the last tab can align with the strip's
+inline-start edge in LTR and RTL. That room is scrollable content after the last tab,
 inside the strip, so it lengthens the scroll range without widening the strip:
 the strip still shrinks to its allocation, and `trailing` and `end` stay inside
 the bar. The room is still in-flow content, so it counts toward the strip's
@@ -902,11 +901,11 @@ frames and never pushes `trailing` or `end` out of the bar; keep the trailing
 zone non-shrinking with `snapTabs` to avoid it. The application still owns
 selection and tab order.
 ResizeObserver notifications coalesce snap measurements into the next animation
-frame, so inset writes cannot resize the observed strip during observer delivery.
+frame, so geometry writes cannot resize the observed strip during observer delivery.
 `wireTabBars` watches the whole root it is given, but a mutation re-measures only
 the bars it touched: a change inside a bar, a newly inserted bar, or a `dir`
 change on an element above one. Content elsewhere in the root (terminal output,
-list updates, streamed text) triggers no style or layout reads. A pinned strip
+list updates, streamed text) triggers no style or layout reads. A snap strip
 re-measures when its own size changes, so a layout change outside the bar still
 reaches it.
 

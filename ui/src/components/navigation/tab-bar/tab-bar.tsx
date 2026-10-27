@@ -36,7 +36,7 @@ export interface TabBarProps {
   iconOnlyAt?: TabBarIconOnlyAt;
   /** Keep a trailing action beside the final tab or at the far edge of the bar. */
   trailingPlacement?: TabBarTrailingPlacement;
-  /** Settle scrolling peers at whole-tab starts; wireTabBars measures a pinned leading tab's inset. */
+  /** Settle scrolling peers at whole-tab starts; the first visible tab aligns with the strip edge. */
   snapTabs?: boolean;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;

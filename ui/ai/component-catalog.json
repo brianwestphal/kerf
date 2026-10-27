@@ -5314,11 +5314,11 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "Roving-tabindex-ready tabs with typed compact, segmented, icon-only, drop-target, pinned, and name-overflow presentations.",
+      "description": "Roving-tabindex-ready tabs with typed compact, segmented, icon-only, drop-target, and name-overflow presentations.",
       "uses": [
         "lucide-icon"
       ],
-      "purpose": "Render a controlled application tab with compact or icon-only presentation, a visible drop target, optional full-name display, and an optional pinned leading position.",
+      "purpose": "Render a controlled application tab with compact or icon-only presentation, a visible drop target, and optional full-name display.",
       "publicExports": [
         "TabBarItem"
       ],
@@ -5357,7 +5357,6 @@
         "icon-only accessible presentation",
         "label maximum width and ellipsis or visible name overflow",
         "drop-target highlight",
-        "pinned leading position within a scrolling tablist",
         "attention name color",
         "named disabled tab and explicit tab/panel association"
       ],
@@ -5396,8 +5395,6 @@
         "--kui-tab-bar-item-drop-target-color",
         "--kui-tab-bar-item-drop-target-ring",
         "--kui-tab-bar-item-hover-background",
-        "--kui-tab-bar-item-pinned-background",
-        "--kui-tab-bar-item-pinned-hover-background",
         "--kui-tab-bar-item-selected-background",
         "--kui-tab-bar-item-selected-border",
         "--kui-tab-bar-item-selected-color",
@@ -5481,7 +5478,7 @@
       ],
       "accessibility": [
         "Keep exactly one selected tab at tabindex 0 and preserve the wiring keyboard model.",
-        "Call wireTabBars for keyboard focus and selection, including the pinned leading tab's WebKit RTL scroll correction."
+        "Call wireTabBars for keyboard focus, selection reveal, and whole-tab snapping; put fixed controls in the outer leading, trailing, or end zones."
       ],
       "geometry": {
         "margin": "none",

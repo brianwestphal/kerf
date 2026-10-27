@@ -512,9 +512,9 @@ strip.
 The app can set `TabBarItem.dropTarget` during content drag-over to show a themed
 highlight independently of selection, and `nameOverflow="visible"` to display
 the full name during inline loading instead of the default ellipsis.
-`TabBarItem.pinned` keeps the leading tab visible inside the scrolling TabBar
-tablist, including its keyboard and selection semantics. Focus and controlled
-selection reveal peers beyond the pinned tab.
+Fixed controls use `TabBar.leading`, `trailing`, or `end`, outside the scrolling
+tablist. `snapTabs` aligns scrolling tabs with the strip edge in LTR and RTL;
+individual tabs have no pinned positioning mode.
 Each TabBar `trailing` and `end` action zone accepts one ToolbarControlGroup,
 Kerf Button, or Web Awesome button while the tabs alone shrink and scroll.
 

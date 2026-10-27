@@ -141,6 +141,17 @@ export function TabBarDemo() {
         <TabBar
           id="raw-action-tab-bar"
           label="Project Tabs with Primary Action"
+          leading={
+            <ToolbarControlGroup appearance="borderless" single>
+              <button
+                type="button"
+                aria-label="Project Grid"
+                data-action="log-more"
+              >
+                <LucideIcon icon={LayoutGrid} name="layout-grid" />
+              </button>
+            </ToolbarControlGroup>
+          }
           trailingPlacement="adjacent"
           trailing={
             <Button emphasis="plain" action="log-more">
@@ -215,48 +226,6 @@ export function TabBarDemo() {
           }
         >
           {overflowTabs}
-        </TabBar>
-      </CatalogExample>
-      <CatalogExample
-        label="Pinned Leading Tab"
-        note="The compact icon-only Project grid tab remains visible while labeled tabs scroll beneath it."
-        align="none"
-        viewport={{
-          width: 'compact',
-          tokens: {
-            '--kui-tab-bar-strip-padding': '4px',
-            '--kui-tab-bar-strip-gap': '8px',
-          },
-        }}
-      >
-        <TabBar id="pinned-tab-bar" label="Pinned Project Tabs">
-          <TabBarItem
-            id="project-grid"
-            name="Project Grid"
-            pinned
-            selected
-            closable={false}
-            presentation="icon-only"
-            size="compact"
-            leading={<LucideIcon icon={LayoutGrid} name="layout-grid" />}
-          />
-          {[
-            'Claude 1',
-            'Backlog',
-            'Activity',
-            'Automations',
-            'Settings',
-            'Releases',
-            'Milestones',
-            'Reports',
-          ].map((name) => (
-            <TabBarItem
-              id={`pinned-${name.toLowerCase().replaceAll(' ', '-')}`}
-              name={name}
-              closable={false}
-              size="compact"
-            />
-          ))}
         </TabBar>
       </CatalogExample>
     </CatalogExampleStack>

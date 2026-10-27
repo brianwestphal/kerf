@@ -12,7 +12,14 @@ test('standalone tab bar actions stay visible while the tabs scroll', async ({
 
   await expect(adjacent).toHaveText('Add Tab');
   await expect(primary).toHaveText('New Ticket…');
-  await expect(bar.locator('.kui-toolbar-control-group')).toHaveCount(0);
+  await expect(
+    bar.locator('.kui-tab-bar__leading .kui-toolbar-control-group'),
+  ).toHaveCount(1);
+  await expect(
+    bar.locator(
+      '.kui-tab-bar__trailing .kui-toolbar-control-group, .kui-tab-bar__end .kui-toolbar-control-group',
+    ),
+  ).toHaveCount(0);
   await bar.evaluate((element) => {
     element.style.width = '680px';
   });
@@ -91,7 +98,7 @@ test('snap tabs settle without a ResizeObserver loop error', async ({
   });
   await page.setViewportSize({ width: 390, height: 800 });
   await page.goto('/?component=tab-bar');
-  const bar = page.locator('[data-tab-bar-id="pinned-tab-bar"]');
+  const bar = page.locator('[data-tab-bar-id="overflow-tab-bar"]');
   const strip = bar.locator('[data-kui-tab-list]');
   await expect(strip).toBeVisible();
   await strip.evaluate((element) => {

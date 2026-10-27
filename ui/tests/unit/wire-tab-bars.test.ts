@@ -58,86 +58,6 @@ afterEach(() => {
 });
 
 describe('TabBar wiring', () => {
-  it('corrects an RTL pinned tab through scroll, controlled render, direction change, and disposal', async () => {
-    const root = bar();
-    const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
-    const pinned = root.querySelector<HTMLElement>('[data-tab-id="one"]')!;
-    pinned.dataset.pinned = 'true';
-    strip.dir = 'rtl';
-    strip.style.direction = 'rtl';
-    strip.style.borderRight = '1px solid black';
-    strip.style.paddingRight = '1px';
-    Object.defineProperties(strip, {
-      scrollWidth: { configurable: true, value: 600 },
-      clientWidth: { configurable: true, value: 300 },
-    });
-    vi.spyOn(strip, 'getBoundingClientRect').mockReturnValue({
-      left: 0,
-      right: 300,
-    } as DOMRect);
-    let emulateBrokenSticky = true;
-    vi.spyOn(pinned, 'getBoundingClientRect').mockImplementation(
-      () =>
-        ({
-          right:
-            298 -
-            (emulateBrokenSticky ? strip.scrollLeft : 0) +
-            (Number.parseFloat(pinned.style.translate) || 0),
-        }) as DOMRect,
-    );
-    pinned.style.translate = '20px 0';
-    const stop = wireTabBars(root, { onReorder: vi.fn() });
-    expect(pinned.style.translate).toBe('-20px 0');
-    for (const [scrollLeft, translate] of [
-      [-100, '-100px 0'],
-      [-200, '-200px 0'],
-      [0, ''],
-      [-200, '-200px 0'],
-    ] as const) {
-      strip.scrollLeft = scrollLeft;
-      strip.dispatchEvent(new Event('scroll'));
-      expect(pinned.style.translate).toBe(translate);
-    }
-    strip.dispatchEvent(new Event('scroll'));
-    expect(pinned.style.translate).toBe('-200px 0');
-    root.dispatchEvent(new Event('scroll'));
-    expect(pinned.style.translate).toBe('-200px 0');
-    pinned.style.translate = '';
-    pinned
-      .querySelector('[role="tab"]')!
-      .setAttribute('aria-selected', 'false');
-    await Promise.resolve();
-    expect(pinned.style.translate).toBe('-200px 0');
-    emulateBrokenSticky = false;
-    strip.dispatchEvent(new Event('scroll'));
-    expect(pinned.style.translate).toBe('');
-    emulateBrokenSticky = true;
-    strip.dispatchEvent(new Event('scroll'));
-    expect(pinned.style.translate).toBe('-200px 0');
-    Object.defineProperty(strip, 'scrollWidth', {
-      configurable: true,
-      value: 200,
-    });
-    strip.dispatchEvent(new Event('scroll'));
-    expect(pinned.style.translate).toBe('');
-    Object.defineProperty(strip, 'scrollWidth', {
-      configurable: true,
-      value: 600,
-    });
-    strip.dispatchEvent(new Event('scroll'));
-    expect(pinned.style.translate).toBe('-200px 0');
-    strip.dir = 'ltr';
-    strip.style.direction = 'ltr';
-    strip.dispatchEvent(new Event('scroll'));
-    expect(pinned.style.translate).toBe('');
-    strip.dir = 'rtl';
-    strip.style.direction = 'rtl';
-    strip.dispatchEvent(new Event('scroll'));
-    expect(pinned.style.translate).toBe('-200px 0');
-    stop();
-    expect(pinned.style.translate).toBe('');
-  });
-
   it('reorders immutably before and after and leaves invalid requests unchanged', () => {
     const items = ['one', 'two', 'three'];
     expect(
@@ -851,7 +771,6 @@ describe('TabBar wiring', () => {
       const tabs = [
         ...strip.querySelectorAll<HTMLElement>('.kui-tab-bar-item'),
       ];
-      tabs[0]!.dataset.pinned = 'true';
       Object.defineProperty(strip, 'scrollWidth', {
         get: () =>
           260 +
@@ -871,18 +790,18 @@ describe('TabBar wiring', () => {
       const stop = wireTabBars(root, { onReorder: vi.fn() });
       expect(observed).toEqual([strip, ...tabs]);
       expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
-        '40px',
+        '100px',
       );
       lastLeft = 200;
       resized?.([{ target: strip }]);
       resized?.([{ target: strip }]);
       expect(requestFrame).toHaveBeenCalledOnce();
       expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
-        '40px',
+        '100px',
       );
       frame?.(0);
       expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
-        '60px',
+        '120px',
       );
       // A resize leaves a frame pending across the removal; disposal cancels it.
       resized?.([{ target: strip }]);
@@ -890,7 +809,6 @@ describe('TabBar wiring', () => {
       strip.remove();
       await Promise.resolve();
       expect(unobserved).toEqual([strip, ...tabs]);
-      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-inset')).toBe('');
       expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
         '',
       );
@@ -902,55 +820,7 @@ describe('TabBar wiring', () => {
       expect(disconnected).toHaveBeenCalledOnce();
     });
 
-    it('re-measures a newly written end room next frame until it holds', () => {
-      const frames: FrameRequestCallback[] = [];
-      const requestFrame = vi
-        .spyOn(window, 'requestAnimationFrame')
-        .mockImplementation((callback) => {
-          frames.push(callback);
-          return frames.length;
-        });
-      // The room is scroll content, so writing it resizes nothing and no
-      // ResizeObserver report would trigger the follow-up measurement.
-      vi.stubGlobal('ResizeObserver', undefined);
-      const root = bar('settling', true);
-      const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
-      const tabs = [
-        ...strip.querySelectorAll<HTMLElement>('.kui-tab-bar-item'),
-      ];
-      tabs[0]!.dataset.pinned = 'true';
-      const extra = () =>
-        strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra');
-      Object.defineProperty(strip, 'scrollWidth', {
-        get: () => 260 + (Number.parseFloat(extra()) || 0),
-      });
-      Object.defineProperty(strip, 'clientWidth', { value: 180 });
-      const rect = (left: number, right: number) =>
-        ({ left, right }) as DOMRect;
-      vi.spyOn(strip, 'getBoundingClientRect').mockReturnValue(rect(0, 180));
-      // A pinned tab still displaced mid-settle reports the wrong edge first.
-      let pinnedRight = 40;
-      vi.spyOn(tabs[0]!, 'getBoundingClientRect').mockImplementation(() =>
-        rect(0, pinnedRight),
-      );
-      vi.spyOn(tabs[2]!, 'getBoundingClientRect').mockReturnValue(
-        rect(180, 260),
-      );
-      const stop = wireTabBars(root, { onReorder: vi.fn() });
-      expect(extra()).toBe('60px');
-      expect(requestFrame).toHaveBeenCalledOnce();
-      pinnedRight = 60;
-      frames.at(-1)!(0);
-      expect(extra()).toBe('40px');
-      expect(requestFrame).toHaveBeenCalledTimes(2);
-      // An unchanged measurement writes nothing and schedules no more frames.
-      frames.at(-1)!(0);
-      expect(extra()).toBe('40px');
-      expect(requestFrame).toHaveBeenCalledTimes(2);
-      stop();
-    });
-
-    it('aligns RTL snap peers and handles empty and unpinned strips', async () => {
+    it('aligns RTL snap tabs and handles an empty strip', async () => {
       const root = bar('rtl-snap', true);
       const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
       const tabs = [
@@ -963,9 +833,8 @@ describe('TabBar wiring', () => {
       const rect = (left: number, right: number) =>
         ({ left, right }) as DOMRect;
       vi.spyOn(strip, 'getBoundingClientRect').mockReturnValue(rect(0, 180));
-      tabs[0]!.dataset.pinned = 'true';
-      vi.spyOn(tabs[0]!, 'getBoundingClientRect').mockReturnValue(
-        rect(120, 180),
+      vi.spyOn(tabs[0]!, 'getBoundingClientRect').mockImplementation(() =>
+        rect(120 - strip.scrollLeft, 180 - strip.scrollLeft),
       );
       vi.spyOn(tabs[1]!, 'getBoundingClientRect').mockImplementation(() =>
         rect(40 - strip.scrollLeft, 120 - strip.scrollLeft),
@@ -974,27 +843,19 @@ describe('TabBar wiring', () => {
         rect(-40 - strip.scrollLeft, 40 - strip.scrollLeft),
       );
       const stop = wireTabBars(root, { onReorder: vi.fn() });
-      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-inset')).toBe(
-        '60px',
-      );
       expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
-        '40px',
+        '100px',
       );
       buttons[0]!.setAttribute('aria-selected', 'false');
       buttons[2]!.setAttribute('aria-selected', 'true');
       await Promise.resolve();
-      expect(strip.scrollLeft).toBe(-80);
-      strip.scrollLeft = -47;
+      expect(strip.scrollLeft).toBe(-140);
+      strip.scrollLeft = -127;
       strip.dispatchEvent(new Event('scrollend'));
-      expect(strip.scrollLeft).toBe(-80);
+      expect(strip.scrollLeft).toBe(-140);
       strip.scrollLeft = 0;
       strip.dispatchEvent(new Event('scrollend'));
       expect(strip.scrollLeft).toBe(0);
-      tabs[0]!.removeAttribute('data-pinned');
-      await Promise.resolve();
-      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-inset')).toBe(
-        '0px',
-      );
       buttons[2]!.setAttribute('aria-selected', 'false');
       buttons[1]!.setAttribute('aria-selected', 'true');
       await Promise.resolve();
@@ -1009,7 +870,7 @@ describe('TabBar wiring', () => {
       stop();
     });
 
-    it('snaps unpinned LTR peers without a ResizeObserver', async () => {
+    it('snaps LTR tabs without a ResizeObserver', async () => {
       vi.stubGlobal('ResizeObserver', undefined);
       const root = bar('no-resize-observer', true);
       const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
@@ -1025,9 +886,6 @@ describe('TabBar wiring', () => {
         rect(180 - strip.scrollLeft, 260 - strip.scrollLeft),
       );
       const stop = wireTabBars(root, { onReorder: vi.fn() });
-      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-inset')).toBe(
-        '0px',
-      );
       const buttons = root.querySelectorAll<HTMLElement>('[role="tab"]');
       buttons[0]!.setAttribute('aria-selected', 'false');
       buttons[2]!.setAttribute('aria-selected', 'true');
@@ -1037,62 +895,6 @@ describe('TabBar wiring', () => {
       stop();
     });
 
-    it('reserves end room and aligns a selected peer beside a pinned tab in snap mode', async () => {
-      const root = bar('snap', true);
-      const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
-      const tabs = [...root.querySelectorAll<HTMLElement>('.kui-tab-bar-item')];
-      tabs[0]!.dataset.pinned = 'true';
-      Object.defineProperty(strip, 'scrollWidth', {
-        get: () =>
-          220 +
-            Number.parseFloat(
-              strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra'),
-            ) || 220,
-      });
-      Object.defineProperty(strip, 'clientWidth', { value: 180 });
-      const rect = (left: number, width: number) =>
-        ({ left, right: left + width, width }) as DOMRect;
-      vi.spyOn(strip, 'getBoundingClientRect').mockReturnValue(rect(0, 180));
-      vi.spyOn(tabs[0]!, 'getBoundingClientRect').mockReturnValue(rect(0, 60));
-      vi.spyOn(tabs[1]!, 'getBoundingClientRect').mockImplementation(() =>
-        rect(60 - strip.scrollLeft, 80),
-      );
-      vi.spyOn(tabs[2]!, 'getBoundingClientRect').mockImplementation(() =>
-        rect(140 - strip.scrollLeft, 80),
-      );
-      const stop = wireTabBars(root, { onReorder: vi.fn() });
-      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-inset')).toBe(
-        '60px',
-      );
-      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
-        '40px',
-      );
-      const buttons = root.querySelectorAll<HTMLElement>('[role="tab"]');
-      buttons[0]!.setAttribute('aria-selected', 'false');
-      buttons[2]!.setAttribute('aria-selected', 'true');
-      await Promise.resolve();
-      expect(strip.scrollLeft).toBe(80);
-      buttons[2]!.setAttribute('aria-selected', 'false');
-      buttons[0]!.setAttribute('aria-selected', 'true');
-      await Promise.resolve();
-      expect(strip.scrollLeft).toBe(80);
-      strip.scrollLeft = 47;
-      strip.dispatchEvent(new Event('scrollend'));
-      expect(strip.scrollLeft).toBe(80);
-      strip.removeAttribute('data-snap-tabs');
-      await Promise.resolve();
-      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-inset')).toBe('');
-      strip.setAttribute('data-snap-tabs', 'true');
-      await Promise.resolve();
-      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
-        '40px',
-      );
-      stop();
-      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-inset')).toBe('');
-      expect(strip.style.getPropertyValue('--kui-tab-bar-snap-end-extra')).toBe(
-        '',
-      );
-    });
     /** Lay the strip out 100px wide with 80px tabs side by side. */
     function layout(root: HTMLElement) {
       const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
@@ -1135,46 +937,39 @@ describe('TabBar wiring', () => {
       stop();
     });
 
-    it('reveals a selected peer beyond a pinned leading tab', async () => {
-      const root = bar();
-      const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
-      const pinned = root.querySelector<HTMLElement>(
-        '.kui-tab-bar-item[data-tab-id="one"]',
-      )!;
-      pinned.dataset.pinned = 'true';
-      Object.defineProperty(strip, 'scrollWidth', { value: 300 });
-      Object.defineProperty(strip, 'clientWidth', { value: 180 });
-      const rect = (left: number, width: number) =>
-        ({ left, right: left + width, width }) as DOMRect;
-      vi.spyOn(strip, 'getBoundingClientRect').mockReturnValue(rect(0, 180));
-      vi.spyOn(pinned, 'getBoundingClientRect').mockReturnValue(rect(0, 60));
-      root
-        .querySelectorAll<HTMLElement>('[role="tab"]')
-        .forEach((tab, index) =>
-          vi
-            .spyOn(tab, 'getBoundingClientRect')
-            .mockImplementation(() => rect(index * 60 - strip.scrollLeft, 60)),
-        );
-      const stop = wireTabBars(root, { onReorder: vi.fn() });
-      strip.scrollLeft = 100;
-      select(root, 'two');
-      await settle();
-      expect(strip.scrollLeft).toBe(0);
-      select(root, 'three');
-      await settle();
-      expect(strip.scrollLeft).toBe(0);
-      select(root, 'one');
-      await settle();
-      expect(strip.scrollLeft).toBe(0);
-      stop();
-    });
+    for (const direction of ['ltr', 'rtl']) {
+      it(`keeps an already visible controlled selection in place (${direction})`, async () => {
+        const root = bar();
+        const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
+        strip.style.direction = direction;
+        Object.defineProperties(strip, {
+          scrollWidth: { value: 600 },
+          clientWidth: { value: 300 },
+        });
+        vi.spyOn(strip, 'getBoundingClientRect').mockReturnValue({
+          left: 0,
+          right: 300,
+        } as DOMRect);
+        root
+          .querySelectorAll<HTMLElement>('[role="tab"]')
+          .forEach((tab, index) =>
+            vi.spyOn(tab, 'getBoundingClientRect').mockReturnValue({
+              left: index * 80,
+              right: index * 80 + 80,
+              width: 80,
+            } as DOMRect),
+          );
+        const stop = wireTabBars(root, { onReorder: vi.fn() });
+        select(root, 'two');
+        await settle();
+        expect(strip.scrollLeft).toBe(0);
+        stop();
+      });
+    }
 
-    it('reveals both edges of a right-to-left strip behind a pinned tab', async () => {
+    it('reveals both edges of a right-to-left strip', async () => {
       const root = bar();
       const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
-      const pinned = root.querySelector<HTMLElement>(
-        '.kui-tab-bar-item[data-tab-id="one"]',
-      )!;
       const second = root.querySelector<HTMLElement>(
         '.kui-tab-bar-item[data-tab-id="two"] [role="tab"]',
       )!;
@@ -1182,23 +977,21 @@ describe('TabBar wiring', () => {
         '.kui-tab-bar-item[data-tab-id="three"] [role="tab"]',
       )!;
       strip.style.direction = 'rtl';
-      pinned.dataset.pinned = 'true';
       Object.defineProperty(strip, 'scrollWidth', { value: 300 });
       Object.defineProperty(strip, 'clientWidth', { value: 180 });
       const rect = (left: number, width: number) =>
         ({ left, right: left + width, width }) as DOMRect;
       vi.spyOn(strip, 'getBoundingClientRect').mockReturnValue(rect(0, 180));
-      vi.spyOn(pinned, 'getBoundingClientRect').mockReturnValue(rect(120, 60));
       vi.spyOn(second, 'getBoundingClientRect').mockReturnValue(rect(130, 60));
       vi.spyOn(third, 'getBoundingClientRect').mockReturnValue(rect(-30, 60));
       const stop = wireTabBars(root, { onReorder: vi.fn() });
       strip.scrollLeft = -100;
       select(root, 'two');
       await settle();
-      expect(strip.scrollLeft).toBe(-30);
+      expect(strip.scrollLeft).toBe(-90);
       select(root, 'three');
       await settle();
-      expect(strip.scrollLeft).toBe(-60);
+      expect(strip.scrollLeft).toBe(-120);
       stop();
     });
 
@@ -1246,52 +1039,33 @@ describe('TabBar wiring', () => {
   });
 
   describe('scoping mutation work to the tab bars it touches', () => {
-    /** An RTL, overflowing strip whose pinned tab WebKit-style sticky shifts. */
-    function rtlPinned(root: HTMLElement) {
+    function snapStrip(root: HTMLElement) {
       const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
-      const pinned = root.querySelector<HTMLElement>('[data-tab-id="one"]')!;
-      pinned.dataset.pinned = 'true';
-      strip.style.direction = 'rtl';
+      strip.dataset.snapTabs = 'true';
       Object.defineProperties(strip, {
         scrollWidth: { configurable: true, value: 600 },
         clientWidth: { configurable: true, value: 300 },
       });
-      let right = 300;
-      vi.spyOn(strip, 'getBoundingClientRect').mockImplementation(
-        () => ({ left: right - 300, right }) as DOMRect,
-      );
-      vi.spyOn(pinned, 'getBoundingClientRect').mockImplementation(
-        () =>
-          ({
-            right: 280 + (Number.parseFloat(pinned.style.translate) || 0),
-          }) as DOMRect,
-      );
-      return {
-        strip,
-        pinned,
-        moveStrip: (next: number) => {
-          right = next;
-        },
-      };
+      vi.spyOn(strip, 'getBoundingClientRect').mockReturnValue({
+        left: 0,
+        right: 300,
+      } as DOMRect);
+      return strip;
     }
-
     it('reads no layout for a mutation outside every tab bar', async () => {
       const root = bar();
-      const { strip } = rtlPinned(root);
+      const strip = snapStrip(root);
       const log = document.createElement('pre');
       root.append(log);
       const stop = wireTabBars(root, { onReorder: vi.fn() });
       const style = vi.spyOn(window, 'getComputedStyle');
       const measure = vi.mocked(strip.getBoundingClientRect);
       measure.mockClear();
-      // Streamed output beside the bar: appended lines and a removal.
       for (let n = 0; n < 5; n++) log.append(document.createElement('div'));
       log.firstElementChild!.remove();
       await Promise.resolve();
       expect(style).not.toHaveBeenCalled();
       expect(measure).not.toHaveBeenCalled();
-      // A mutation inside the bar still re-syncs it.
-      strip.querySelector('[data-tab-id="two"] [role="tab"]')!.ariaLabel = 'x';
       strip
         .querySelector('[data-tab-id="two"]')!
         .append(document.createElement('span'));
@@ -1299,61 +1073,25 @@ describe('TabBar wiring', () => {
       expect(measure).toHaveBeenCalled();
       stop();
     });
-
-    it('re-syncs a pinned strip that resizes without any mutation', () => {
-      let resized: ((entries: Array<{ target: Element }>) => void) | undefined;
-      const observed: Element[] = [];
-      vi.stubGlobal(
-        'ResizeObserver',
-        class {
-          constructor(callback: (entries: Array<{ target: Element }>) => void) {
-            resized = callback;
-          }
-          observe(element: Element) {
-            observed.push(element);
-          }
-          unobserve() {}
-          disconnect() {}
-        },
-      );
+    it('re-syncs every snap strip below an ancestor whose dir changes', async () => {
       const root = bar();
-      const { strip, pinned, moveStrip } = rtlPinned(root);
+      const strip = snapStrip(root);
       const stop = wireTabBars(root, { onReorder: vi.fn() });
-      expect(observed).toEqual([strip]);
-      expect(pinned.style.translate).toBe('20px 0');
-      // A sibling panel collapses: the strip's box moves, nothing inside it.
-      moveStrip(340);
-      resized?.([{ target: strip }]);
-      expect(pinned.style.translate).toBe('60px 0');
-      stop();
-      expect(pinned.style.translate).toBe('');
-    });
-
-    it('re-syncs every bar below an ancestor whose dir changes', async () => {
-      const root = bar();
-      const { pinned } = rtlPinned(root);
-      const host = root.querySelector<HTMLElement>(
-        '[data-component="tab-bar"]',
-      )!.parentElement!;
-      const stop = wireTabBars(root, { onReorder: vi.fn() });
-      expect(pinned.style.translate).toBe('20px 0');
-      const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
-      strip.style.direction = 'ltr';
-      host.setAttribute('dir', 'ltr');
+      const measure = vi.mocked(strip.getBoundingClientRect);
+      measure.mockClear();
+      root.setAttribute('dir', 'rtl');
       await Promise.resolve();
-      expect(pinned.style.translate).toBe('');
+      expect(measure).toHaveBeenCalled();
       stop();
     });
-
     it('syncs a bar inserted after wiring', async () => {
       const root = bar('first');
       const stop = wireTabBars(root, { onReorder: vi.fn() });
       const later = bar('second');
-      const nav = later.querySelector('[data-component="tab-bar"]')!;
-      const { pinned } = rtlPinned(later);
-      root.append(nav);
+      const strip = snapStrip(later);
+      root.append(later.querySelector('[data-component="tab-bar"]')!);
       await Promise.resolve();
-      expect(pinned.style.translate).toBe('20px 0');
+      expect(strip.getBoundingClientRect).toHaveBeenCalled();
       stop();
     });
   });

@@ -609,7 +609,7 @@ export const generatedKerfCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "kerf",
-    "description": "Render a controlled application tab with compact or icon-only presentation, a visible drop target, optional full-name display, and an optional pinned leading position.",
+    "description": "Render a controlled application tab with compact or icon-only presentation, a visible drop target, and optional full-name display.",
     "uses": [
       "lucide-icon"
     ],

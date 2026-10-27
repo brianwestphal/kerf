@@ -691,9 +691,10 @@ UI.TabBarItem({
   id: 'drop',
   name: 'Drop target',
   dropTarget: true,
-  pinned: true,
   nameOverflow: tabBarItemNameOverflow,
 });
+// @ts-expect-error Fixed controls compose through TabBar's outer zones.
+UI.TabBarItem({ id: 'fixed', name: 'Fixed', pinned: true });
 // @ts-expect-error TabBarItem name overflow has a finite public vocabulary.
 UI.TabBarItem({ id: 'bad-overflow', name: 'Bad', nameOverflow: 'wrap' });
 UI.Badge({ children: '1', slot: 'named' });

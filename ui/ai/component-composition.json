@@ -4444,8 +4444,6 @@
           "--kui-tab-bar-item-drop-target-color",
           "--kui-tab-bar-item-drop-target-ring",
           "--kui-tab-bar-item-hover-background",
-          "--kui-tab-bar-item-pinned-background",
-          "--kui-tab-bar-item-pinned-hover-background",
           "--kui-tab-bar-item-selected-background",
           "--kui-tab-bar-item-selected-border",
           "--kui-tab-bar-item-selected-color",
