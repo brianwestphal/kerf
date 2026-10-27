@@ -49,42 +49,42 @@
   "instances": [
     {
       "name": "Button / Primary Brand / Light",
-      "id": "295D1AE5-328A-435A-B6D4-CFE9598E48B5",
+      "id": "43318481-8E75-4F4A-8234-3D39403D1894",
       "linked": true,
       "override": "Save Draft",
       "masterText": "Save Changes"
     },
     {
       "name": "Button / Secondary / Light",
-      "id": "F72F5EE3-EEC0-4B9D-A6D9-9DBB69B4D727",
+      "id": "94B33589-370F-4249-A21B-7822FF9552A7",
       "linked": true,
       "override": "Done",
       "masterText": "Export"
     },
     {
       "name": "Button / Primary with Icon / Light",
-      "id": "811D98BC-0283-4B89-B000-12DCE428EC22",
+      "id": "844F1C9A-1A38-44AB-8388-E7AE0E088D76",
       "linked": true,
       "override": "Save Draft",
       "masterText": "New Ticket"
     },
     {
       "name": "Button / Primary Brand / Dark",
-      "id": "796DF0F2-71A1-4164-81C1-C16D9451D3CF",
+      "id": "84411BA1-B6A9-4D24-9A22-CC806A1EF139",
       "linked": true,
       "override": "Save Draft",
       "masterText": "Save Changes"
     },
     {
       "name": "Button / Secondary / Dark",
-      "id": "378776C2-8881-43C4-9D54-78B46C02D034",
+      "id": "DF78FCBA-6946-42B8-9917-A208719999CD",
       "linked": true,
       "override": "Done",
       "masterText": "Export"
     },
     {
       "name": "Button / Primary with Icon / Dark",
-      "id": "1EDD5E69-4446-46E2-96C1-20EA97B97288",
+      "id": "2E287E07-C9F3-4900-A007-EF0741932EB9",
       "linked": true,
       "override": "Save Draft",
       "masterText": "New Ticket"

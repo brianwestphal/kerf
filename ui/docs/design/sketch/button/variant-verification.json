@@ -285,8 +285,8 @@
     {
       "id": "primary-neutral-light",
       "step": 0,
-      "instanceId": "C3A0DC39-88E2-49EE-AB73-F4113B754327",
-      "symbolId": "5CCF1A64-A4D7-4BDE-98EA-1A84CB482DB6",
+      "instanceId": "6FA9CC11-1D6A-4B05-825E-E901B6417B64",
+      "symbolId": "78BCD68E-DF02-46C7-9BA4-1407E21B1693",
       "linked": true,
       "frame": {
         "x": 0,
@@ -311,8 +311,8 @@
     {
       "id": "primary-neutral-light",
       "step": 1,
-      "instanceId": "5A09018B-D4C7-4541-976D-24AA4624FC6C",
-      "symbolId": "5CCF1A64-A4D7-4BDE-98EA-1A84CB482DB6",
+      "instanceId": "C0BC2665-2CAA-4A27-82A1-98ABC30314FC",
+      "symbolId": "78BCD68E-DF02-46C7-9BA4-1407E21B1693",
       "linked": true,
       "frame": {
         "x": 300,
@@ -337,8 +337,8 @@
     {
       "id": "primary-neutral-light",
       "step": 2,
-      "instanceId": "4191F8AF-BF59-4A9E-993D-F11520D1D59A",
-      "symbolId": "5CCF1A64-A4D7-4BDE-98EA-1A84CB482DB6",
+      "instanceId": "94D6D654-9630-420F-B194-87598C3CDC24",
+      "symbolId": "78BCD68E-DF02-46C7-9BA4-1407E21B1693",
       "linked": true,
       "frame": {
         "x": 600,
@@ -363,8 +363,8 @@
     {
       "id": "primary-success-light",
       "step": 0,
-      "instanceId": "F69C0E9E-0EC0-4EEE-BB07-0AE916F416BE",
-      "symbolId": "80EEF6D3-FDCA-4198-A1AE-6D14D8D1D57D",
+      "instanceId": "4D565D3B-F9C6-456E-867D-6C9063B1F601",
+      "symbolId": "845E9AFA-6AAE-449A-BAA0-66B22C2F86BE",
       "linked": true,
       "frame": {
         "x": 0,
@@ -389,8 +389,8 @@
     {
       "id": "primary-success-light",
       "step": 1,
-      "instanceId": "74BACD65-AB33-4FC0-8B3A-12F5C94D9B3A",
-      "symbolId": "80EEF6D3-FDCA-4198-A1AE-6D14D8D1D57D",
+      "instanceId": "45A484CF-8DF4-4B4A-917A-501449684900",
+      "symbolId": "845E9AFA-6AAE-449A-BAA0-66B22C2F86BE",
       "linked": true,
       "frame": {
         "x": 300,
@@ -415,8 +415,8 @@
     {
       "id": "primary-success-light",
       "step": 2,
-      "instanceId": "B4E44A87-85EC-4236-96CA-4B19E61C8F5E",
-      "symbolId": "80EEF6D3-FDCA-4198-A1AE-6D14D8D1D57D",
+      "instanceId": "285ECF5F-1B14-461A-8C52-B244B01EDA40",
+      "symbolId": "845E9AFA-6AAE-449A-BAA0-66B22C2F86BE",
       "linked": true,
       "frame": {
         "x": 600,
@@ -441,8 +441,8 @@
     {
       "id": "primary-danger-light",
       "step": 0,
-      "instanceId": "64A11B5B-045E-41F6-86B3-48483F1D6C9F",
-      "symbolId": "431F2464-C173-4A3F-88D8-94B80D464D54",
+      "instanceId": "6D5D82B9-3E30-4CE1-BBED-6FEC17827195",
+      "symbolId": "8C26886C-5D33-4D35-A4BD-8009D55EAB8C",
       "linked": true,
       "frame": {
         "x": 0,
@@ -467,8 +467,8 @@
     {
       "id": "primary-danger-light",
       "step": 1,
-      "instanceId": "CDC645C1-65A1-4A22-BDAA-11D8665ADBA9",
-      "symbolId": "431F2464-C173-4A3F-88D8-94B80D464D54",
+      "instanceId": "0B030D0F-156A-41E5-8BC7-7D24E6F5FE3E",
+      "symbolId": "8C26886C-5D33-4D35-A4BD-8009D55EAB8C",
       "linked": true,
       "frame": {
         "x": 300,
@@ -493,8 +493,8 @@
     {
       "id": "primary-danger-light",
       "step": 2,
-      "instanceId": "8AEEC4EB-AA79-4427-AE67-5D08ED518199",
-      "symbolId": "431F2464-C173-4A3F-88D8-94B80D464D54",
+      "instanceId": "D79F4098-CE9A-4365-BB0D-9F1DAE90BB4F",
+      "symbolId": "8C26886C-5D33-4D35-A4BD-8009D55EAB8C",
       "linked": true,
       "frame": {
         "x": 600,
@@ -519,8 +519,8 @@
     {
       "id": "secondary-danger-light",
       "step": 0,
-      "instanceId": "B9003524-348C-45D3-B830-34E2F0AB54A8",
-      "symbolId": "7FC8F5F9-CB6F-408B-93D9-225C3572049F",
+      "instanceId": "8EBEF72D-0DA1-4FB3-BD1B-A6839D1B4BC3",
+      "symbolId": "87384213-DC91-46BB-8A26-056734AC8C52",
       "linked": true,
       "frame": {
         "x": 0,
@@ -545,8 +545,8 @@
     {
       "id": "secondary-danger-light",
       "step": 1,
-      "instanceId": "27BAF03B-0860-4FA6-898B-BF7D2C8B2C0D",
-      "symbolId": "7FC8F5F9-CB6F-408B-93D9-225C3572049F",
+      "instanceId": "DE476F74-B0F7-495D-8DB4-6DDB939B44C9",
+      "symbolId": "87384213-DC91-46BB-8A26-056734AC8C52",
       "linked": true,
       "frame": {
         "x": 300,
@@ -571,8 +571,8 @@
     {
       "id": "secondary-danger-light",
       "step": 2,
-      "instanceId": "BCDEB1E7-1526-4054-A379-37E209004675",
-      "symbolId": "7FC8F5F9-CB6F-408B-93D9-225C3572049F",
+      "instanceId": "96AC70AB-F76E-485E-B80E-4474D0CCB55B",
+      "symbolId": "87384213-DC91-46BB-8A26-056734AC8C52",
       "linked": true,
       "frame": {
         "x": 600,
@@ -597,8 +597,8 @@
     {
       "id": "plain-neutral-light",
       "step": 0,
-      "instanceId": "FB65C014-69C7-4E0A-83FD-02493AC99AC3",
-      "symbolId": "3B15E66E-B875-438D-9DF3-F78FCFD400FE",
+      "instanceId": "BE82B85F-27F6-4850-9CF4-6DE668D25CBF",
+      "symbolId": "097D11F7-BCB6-4473-80E9-D446F7C84F89",
       "linked": true,
       "frame": {
         "x": 0,
@@ -623,8 +623,8 @@
     {
       "id": "plain-neutral-light",
       "step": 1,
-      "instanceId": "B79E64B7-83BB-47B5-84BE-0998EF6EF4D8",
-      "symbolId": "3B15E66E-B875-438D-9DF3-F78FCFD400FE",
+      "instanceId": "401FF6BF-96A4-47AE-B79D-5452C348C607",
+      "symbolId": "097D11F7-BCB6-4473-80E9-D446F7C84F89",
       "linked": true,
       "frame": {
         "x": 300,
@@ -649,8 +649,8 @@
     {
       "id": "plain-neutral-light",
       "step": 2,
-      "instanceId": "A34319F6-3096-4846-BB2F-39BB8145613D",
-      "symbolId": "3B15E66E-B875-438D-9DF3-F78FCFD400FE",
+      "instanceId": "A7C5A6B7-D6F9-4D42-BADA-B5396D71B3AB",
+      "symbolId": "097D11F7-BCB6-4473-80E9-D446F7C84F89",
       "linked": true,
       "frame": {
         "x": 600,
@@ -675,8 +675,8 @@
     {
       "id": "compact-neutral-light",
       "step": 0,
-      "instanceId": "1AD5E662-83C4-4802-A613-CE834E469985",
-      "symbolId": "9316170D-EA6B-4812-AB16-9F68EAE52A65",
+      "instanceId": "7873827E-D628-4F29-93E6-124CA892BD65",
+      "symbolId": "2909B3AD-99E3-46D4-971C-77A09F36BCD5",
       "linked": true,
       "frame": {
         "x": 0,
@@ -701,8 +701,8 @@
     {
       "id": "compact-neutral-light",
       "step": 1,
-      "instanceId": "B8E1F195-149C-45F4-B080-ECB614B44314",
-      "symbolId": "9316170D-EA6B-4812-AB16-9F68EAE52A65",
+      "instanceId": "9BB7D641-6F29-43D4-884A-87DE497B2671",
+      "symbolId": "2909B3AD-99E3-46D4-971C-77A09F36BCD5",
       "linked": true,
       "frame": {
         "x": 300,
@@ -727,8 +727,8 @@
     {
       "id": "compact-neutral-light",
       "step": 2,
-      "instanceId": "6594F682-A61A-405E-BF9F-182D8B5166CC",
-      "symbolId": "9316170D-EA6B-4812-AB16-9F68EAE52A65",
+      "instanceId": "E9292FC7-B502-4E38-8508-2C78BE2CF45F",
+      "symbolId": "2909B3AD-99E3-46D4-971C-77A09F36BCD5",
       "linked": true,
       "frame": {
         "x": 600,
@@ -753,8 +753,8 @@
     {
       "id": "pill-brand-light",
       "step": 0,
-      "instanceId": "DC59620F-F525-453D-A6E8-83B00B81DEC0",
-      "symbolId": "637346A5-EA7B-4618-B62D-EC9E8EC30246",
+      "instanceId": "83EEE69F-9081-465D-BE0F-C892C7A61D17",
+      "symbolId": "14057A20-5858-4EE1-BF59-6E19D2881BB6",
       "linked": true,
       "frame": {
         "x": 0,
@@ -779,8 +779,8 @@
     {
       "id": "pill-brand-light",
       "step": 1,
-      "instanceId": "23979BC2-6777-4A57-B4CE-A111D18D24B3",
-      "symbolId": "637346A5-EA7B-4618-B62D-EC9E8EC30246",
+      "instanceId": "E79E8625-0F09-4280-802A-76EB95F0489D",
+      "symbolId": "14057A20-5858-4EE1-BF59-6E19D2881BB6",
       "linked": true,
       "frame": {
         "x": 300,
@@ -805,8 +805,8 @@
     {
       "id": "pill-brand-light",
       "step": 2,
-      "instanceId": "1FDDA123-742C-43CF-91B4-8F004909F876",
-      "symbolId": "637346A5-EA7B-4618-B62D-EC9E8EC30246",
+      "instanceId": "A0B1E4F0-6BAB-4838-8397-928D7607417A",
+      "symbolId": "14057A20-5858-4EE1-BF59-6E19D2881BB6",
       "linked": true,
       "frame": {
         "x": 600,
@@ -831,8 +831,8 @@
     {
       "id": "icon-only-light",
       "step": 0,
-      "instanceId": "BBDE5F99-851A-4E5D-8C9B-5E46764CB933",
-      "symbolId": "0C80198F-752B-4F6F-80D4-E75CA5728AC3",
+      "instanceId": "CF80E3D3-5F52-459F-8FE3-8251B9BFAEE0",
+      "symbolId": "404DF905-8DF1-4E0C-A44B-D8015BDF6D03",
       "linked": true,
       "frame": {
         "x": 0,
@@ -867,8 +867,8 @@
     {
       "id": "icon-only-light",
       "step": 1,
-      "instanceId": "97FD16A1-B96E-40DE-8C0D-585A54A42176",
-      "symbolId": "0C80198F-752B-4F6F-80D4-E75CA5728AC3",
+      "instanceId": "57A6F9D2-5705-4717-A5C7-CCF7DDF8BD3B",
+      "symbolId": "404DF905-8DF1-4E0C-A44B-D8015BDF6D03",
       "linked": true,
       "frame": {
         "x": 300,
@@ -903,8 +903,8 @@
     {
       "id": "icon-only-light",
       "step": 2,
-      "instanceId": "51864C8B-0BEC-4A9A-AEE3-CE9BEE842AAC",
-      "symbolId": "0C80198F-752B-4F6F-80D4-E75CA5728AC3",
+      "instanceId": "96ED006C-0EB9-464F-8702-1BC81A5BAC29",
+      "symbolId": "404DF905-8DF1-4E0C-A44B-D8015BDF6D03",
       "linked": true,
       "frame": {
         "x": 600,
@@ -939,8 +939,8 @@
     {
       "id": "disabled-neutral-light",
       "step": 0,
-      "instanceId": "449152CA-8EA3-449A-AD6F-D655C1C6795E",
-      "symbolId": "28ADACE2-383B-44EC-8303-EB634247FE34",
+      "instanceId": "114884F5-D038-4379-BD6B-A7EF231AD49E",
+      "symbolId": "398AC7E4-9A5D-4303-B7B1-5E425B1F5A7E",
       "linked": true,
       "frame": {
         "x": 0,
@@ -965,8 +965,8 @@
     {
       "id": "disabled-neutral-light",
       "step": 1,
-      "instanceId": "20A6C9A4-C52E-46F1-B434-56F03E18348A",
-      "symbolId": "28ADACE2-383B-44EC-8303-EB634247FE34",
+      "instanceId": "DAAAC037-C6F6-42F0-A676-000A5AD79F14",
+      "symbolId": "398AC7E4-9A5D-4303-B7B1-5E425B1F5A7E",
       "linked": true,
       "frame": {
         "x": 300,
@@ -991,8 +991,8 @@
     {
       "id": "disabled-neutral-light",
       "step": 2,
-      "instanceId": "F27D91BD-7789-4E68-833B-D7110D800AF6",
-      "symbolId": "28ADACE2-383B-44EC-8303-EB634247FE34",
+      "instanceId": "31326F76-E221-47D1-99A3-72D2A81FD6CC",
+      "symbolId": "398AC7E4-9A5D-4303-B7B1-5E425B1F5A7E",
       "linked": true,
       "frame": {
         "x": 600,
@@ -1017,8 +1017,8 @@
     {
       "id": "disabled-success-light",
       "step": 0,
-      "instanceId": "79B2E596-7C37-4127-B0E5-541869901559",
-      "symbolId": "38CD2792-37F0-4F2A-BEB8-4A6C6026B126",
+      "instanceId": "F9C400B8-40C7-4BC5-8000-90DB860F3C78",
+      "symbolId": "B743537E-EB12-44E1-B7F4-B405E4E32C47",
       "linked": true,
       "frame": {
         "x": 0,
@@ -1043,8 +1043,8 @@
     {
       "id": "disabled-success-light",
       "step": 1,
-      "instanceId": "6C494216-DEC4-4B71-B3B6-000B5231CBC5",
-      "symbolId": "38CD2792-37F0-4F2A-BEB8-4A6C6026B126",
+      "instanceId": "D662B982-547E-4FD0-AE87-0A2F669F62FB",
+      "symbolId": "B743537E-EB12-44E1-B7F4-B405E4E32C47",
       "linked": true,
       "frame": {
         "x": 300,
@@ -1069,8 +1069,8 @@
     {
       "id": "disabled-success-light",
       "step": 2,
-      "instanceId": "E8352169-DB15-4604-852D-6B60FCD90961",
-      "symbolId": "38CD2792-37F0-4F2A-BEB8-4A6C6026B126",
+      "instanceId": "61B9CDDD-8BE8-43AC-AEC7-25CC6D0EDA9A",
+      "symbolId": "B743537E-EB12-44E1-B7F4-B405E4E32C47",
       "linked": true,
       "frame": {
         "x": 600,
@@ -1095,8 +1095,8 @@
     {
       "id": "pressed-neutral-light",
       "step": 0,
-      "instanceId": "4FA39A35-D846-452D-93E4-F6BB1E1E6522",
-      "symbolId": "E29A6727-9D92-4ED6-AA2B-13C752517940",
+      "instanceId": "3A7AC1BE-4CAA-41C7-9D5D-FE04FA2320E3",
+      "symbolId": "BB8B9E61-29A4-41AE-8C5F-5E05CB48B048",
       "linked": true,
       "frame": {
         "x": 0,
@@ -1121,8 +1121,8 @@
     {
       "id": "pressed-neutral-light",
       "step": 1,
-      "instanceId": "3740D167-8B19-4315-82EC-CB60BE0D2A7B",
-      "symbolId": "E29A6727-9D92-4ED6-AA2B-13C752517940",
+      "instanceId": "970E1FC7-985F-459B-B484-CB519A0BF3ED",
+      "symbolId": "BB8B9E61-29A4-41AE-8C5F-5E05CB48B048",
       "linked": true,
       "frame": {
         "x": 300,
@@ -1147,8 +1147,8 @@
     {
       "id": "pressed-neutral-light",
       "step": 2,
-      "instanceId": "D68B9BB6-BFF1-42E1-A46C-70D134CCB231",
-      "symbolId": "E29A6727-9D92-4ED6-AA2B-13C752517940",
+      "instanceId": "BEFDA6A9-4170-4454-9C71-E0706924EDD3",
+      "symbolId": "BB8B9E61-29A4-41AE-8C5F-5E05CB48B048",
       "linked": true,
       "frame": {
         "x": 600,
@@ -1173,8 +1173,8 @@
     {
       "id": "pressed-secondary-light",
       "step": 0,
-      "instanceId": "AB20C329-742F-47D9-A2D4-DCA7160F5877",
-      "symbolId": "2033B271-1EBB-4062-A4FD-8989438FC47E",
+      "instanceId": "FD61BEC0-4BBE-432F-A474-99D5F2A89AFB",
+      "symbolId": "1BC465A2-8496-44AC-B05C-5451FACA5D6D",
       "linked": true,
       "frame": {
         "x": 0,
@@ -1199,8 +1199,8 @@
     {
       "id": "pressed-secondary-light",
       "step": 1,
-      "instanceId": "C1FCA1EC-B66A-42E4-85B3-168D6394C772",
-      "symbolId": "2033B271-1EBB-4062-A4FD-8989438FC47E",
+      "instanceId": "1645FF01-2292-49C0-A68C-2D737C91F27D",
+      "symbolId": "1BC465A2-8496-44AC-B05C-5451FACA5D6D",
       "linked": true,
       "frame": {
         "x": 300,
@@ -1225,8 +1225,8 @@
     {
       "id": "pressed-secondary-light",
       "step": 2,
-      "instanceId": "ECEF6F1B-C02C-43EC-899D-C875BED9F0C1",
-      "symbolId": "2033B271-1EBB-4062-A4FD-8989438FC47E",
+      "instanceId": "9B688F24-6DEB-45C1-A864-555C88DA35EA",
+      "symbolId": "1BC465A2-8496-44AC-B05C-5451FACA5D6D",
       "linked": true,
       "frame": {
         "x": 600,
@@ -1251,8 +1251,8 @@
     {
       "id": "loading-brand-light",
       "step": 0,
-      "instanceId": "600B6EE7-D807-458C-B6A2-EA3C797F8801",
-      "symbolId": "D7E71596-E261-47F1-8DED-E19F8EBAE795",
+      "instanceId": "8D4C7DE6-416C-44FF-A152-9F0AB9E19CA1",
+      "symbolId": "304B1716-AD3D-4C86-AE0D-4637000F0156",
       "linked": true,
       "frame": {
         "x": 0,
@@ -1297,8 +1297,8 @@
     {
       "id": "loading-brand-light",
       "step": 1,
-      "instanceId": "DEFF912A-6E97-45D4-9892-AC0E2727F4A1",
-      "symbolId": "D7E71596-E261-47F1-8DED-E19F8EBAE795",
+      "instanceId": "2D613AF7-9369-48F2-89C9-08D685ED2965",
+      "symbolId": "304B1716-AD3D-4C86-AE0D-4637000F0156",
       "linked": true,
       "frame": {
         "x": 300,
@@ -1343,8 +1343,8 @@
     {
       "id": "loading-brand-light",
       "step": 2,
-      "instanceId": "0A06A899-BDBE-424D-8984-F65E5288175F",
-      "symbolId": "D7E71596-E261-47F1-8DED-E19F8EBAE795",
+      "instanceId": "A3419050-A677-4AF9-8C25-FF4697F7B65D",
+      "symbolId": "304B1716-AD3D-4C86-AE0D-4637000F0156",
       "linked": true,
       "frame": {
         "x": 600,
@@ -1389,8 +1389,8 @@
     {
       "id": "badge-brand-light",
       "step": 0,
-      "instanceId": "F1723AD3-B71D-4C2A-ACD6-3E51658604FB",
-      "symbolId": "0717C560-D1C2-44BD-83EB-712B3E2426E9",
+      "instanceId": "CFB53F48-277D-45B2-BD65-D5D808D25BC5",
+      "symbolId": "CFBA88DC-BDC2-4C07-A228-7F0990F4CF24",
       "linked": true,
       "frame": {
         "x": 0,
@@ -1445,8 +1445,8 @@
     {
       "id": "badge-brand-light",
       "step": 1,
-      "instanceId": "B9CAC81D-C5CE-47BF-B65F-18E89E2E6110",
-      "symbolId": "0717C560-D1C2-44BD-83EB-712B3E2426E9",
+      "instanceId": "99340BC2-A398-4D40-9BA2-0382B22D52BD",
+      "symbolId": "CFBA88DC-BDC2-4C07-A228-7F0990F4CF24",
       "linked": true,
       "frame": {
         "x": 300,
@@ -1501,8 +1501,8 @@
     {
       "id": "badge-brand-light",
       "step": 2,
-      "instanceId": "0C7AAEBC-893F-444F-9918-709C461022A0",
-      "symbolId": "0717C560-D1C2-44BD-83EB-712B3E2426E9",
+      "instanceId": "01AD0699-7469-4141-ADA9-CDF659FF4C0D",
+      "symbolId": "CFBA88DC-BDC2-4C07-A228-7F0990F4CF24",
       "linked": true,
       "frame": {
         "x": 600,
@@ -1557,8 +1557,8 @@
     {
       "id": "badge-dot-light",
       "step": 0,
-      "instanceId": "BD73A1F7-6B64-4CD1-AF47-BC9D3395AF5E",
-      "symbolId": "47E37BEC-3152-42C3-8036-483BB42DC0F4",
+      "instanceId": "589B5337-DBBB-4FF6-8862-9F895F66C73D",
+      "symbolId": "A3AE51FD-08A4-4F41-BA37-E5638D154E2F",
       "linked": true,
       "frame": {
         "x": 0,
@@ -1603,8 +1603,8 @@
     {
       "id": "badge-dot-light",
       "step": 1,
-      "instanceId": "7F6493CB-D397-4F69-8898-A1CD36AA01AF",
-      "symbolId": "47E37BEC-3152-42C3-8036-483BB42DC0F4",
+      "instanceId": "1A2A7058-C4D3-4302-99BA-715346B45C32",
+      "symbolId": "A3AE51FD-08A4-4F41-BA37-E5638D154E2F",
       "linked": true,
       "frame": {
         "x": 300,
@@ -1649,8 +1649,8 @@
     {
       "id": "badge-dot-light",
       "step": 2,
-      "instanceId": "25959C04-4B1B-4A7F-A790-9A7EBB072B18",
-      "symbolId": "47E37BEC-3152-42C3-8036-483BB42DC0F4",
+      "instanceId": "EDE435C6-E037-4AEB-B427-702A621FA044",
+      "symbolId": "A3AE51FD-08A4-4F41-BA37-E5638D154E2F",
       "linked": true,
       "frame": {
         "x": 600,
@@ -1695,8 +1695,8 @@
     {
       "id": "focus-standard-light",
       "step": 0,
-      "instanceId": "5285C45D-E5D6-400E-BA77-9F15514B9B0E",
-      "symbolId": "9520A4D5-53D4-41F8-B004-5C75F5DEADC5",
+      "instanceId": "F20D2694-D1CC-42FB-ABF6-6D9AC10C0CBD",
+      "symbolId": "4E592F07-0A3F-497E-8D3C-1DB3D3160691",
       "linked": true,
       "frame": {
         "x": 0,
@@ -1721,8 +1721,8 @@
     {
       "id": "focus-standard-light",
       "step": 1,
-      "instanceId": "AB80BD3F-8C92-4906-A386-E6B37257F7B0",
-      "symbolId": "9520A4D5-53D4-41F8-B004-5C75F5DEADC5",
+      "instanceId": "A4FE0580-A54A-420F-B7BD-3FE37C537EC0",
+      "symbolId": "4E592F07-0A3F-497E-8D3C-1DB3D3160691",
       "linked": true,
       "frame": {
         "x": 300,
@@ -1747,8 +1747,8 @@
     {
       "id": "focus-standard-light",
       "step": 2,
-      "instanceId": "BF5F3107-B3A5-4229-BD51-6C77F50297FE",
-      "symbolId": "9520A4D5-53D4-41F8-B004-5C75F5DEADC5",
+      "instanceId": "BED2FF7B-A5E6-43EF-80E0-6B51ADEA10A7",
+      "symbolId": "4E592F07-0A3F-497E-8D3C-1DB3D3160691",
       "linked": true,
       "frame": {
         "x": 600,
@@ -1773,8 +1773,8 @@
     {
       "id": "focus-brand-light",
       "step": 0,
-      "instanceId": "6474809A-DA86-46FA-A3A0-D3C531C0AC34",
-      "symbolId": "F260E50D-7773-49DD-8BFE-7FB871AD4A32",
+      "instanceId": "A6E5E197-345B-4E9C-9C5D-06CE887B08C6",
+      "symbolId": "739DF475-1751-42DB-8021-2EC03B0A2D33",
       "linked": true,
       "frame": {
         "x": 0,
@@ -1799,8 +1799,8 @@
     {
       "id": "focus-brand-light",
       "step": 1,
-      "instanceId": "B95A2C68-E9F7-4208-BC38-63177FA9E530",
-      "symbolId": "F260E50D-7773-49DD-8BFE-7FB871AD4A32",
+      "instanceId": "4A4A083C-A662-4E80-BD49-6D96B8A3A057",
+      "symbolId": "739DF475-1751-42DB-8021-2EC03B0A2D33",
       "linked": true,
       "frame": {
         "x": 300,
@@ -1825,8 +1825,8 @@
     {
       "id": "focus-brand-light",
       "step": 2,
-      "instanceId": "5E73975D-6385-4844-A29F-1C203B954AFB",
-      "symbolId": "F260E50D-7773-49DD-8BFE-7FB871AD4A32",
+      "instanceId": "6890279A-A82D-4EAB-B0C2-46A605191C1D",
+      "symbolId": "739DF475-1751-42DB-8021-2EC03B0A2D33",
       "linked": true,
       "frame": {
         "x": 600,
@@ -1851,8 +1851,8 @@
     {
       "id": "primary-neutral-dark",
       "step": 0,
-      "instanceId": "E6688A5A-DEC4-4C4B-98B2-C533C1168C87",
-      "symbolId": "34E5D4E0-708C-4100-A3BB-F0E308825CBF",
+      "instanceId": "07F0BD05-8523-4F91-A47B-84224C221C75",
+      "symbolId": "6D79A447-65B5-4255-AA49-6EC6DB0754EB",
       "linked": true,
       "frame": {
         "x": 0,
@@ -1877,8 +1877,8 @@
     {
       "id": "primary-neutral-dark",
       "step": 1,
-      "instanceId": "6D41E837-E8F9-47D0-A802-5BFDD9493E6B",
-      "symbolId": "34E5D4E0-708C-4100-A3BB-F0E308825CBF",
+      "instanceId": "186AAD89-B7F6-49D9-8996-9903538BB21A",
+      "symbolId": "6D79A447-65B5-4255-AA49-6EC6DB0754EB",
       "linked": true,
       "frame": {
         "x": 300,
@@ -1903,8 +1903,8 @@
     {
       "id": "primary-neutral-dark",
       "step": 2,
-      "instanceId": "6F8463A1-80C6-4F42-9DCC-A83E19ABA35F",
-      "symbolId": "34E5D4E0-708C-4100-A3BB-F0E308825CBF",
+      "instanceId": "2D370978-58AE-4B1D-B34C-6BF82ECC1125",
+      "symbolId": "6D79A447-65B5-4255-AA49-6EC6DB0754EB",
       "linked": true,
       "frame": {
         "x": 600,
@@ -1929,8 +1929,8 @@
     {
       "id": "primary-success-dark",
       "step": 0,
-      "instanceId": "75F320C0-9C69-402F-91AE-48095C77BE0C",
-      "symbolId": "DFED5227-90DF-44B4-B3AE-7D760AB22B24",
+      "instanceId": "7220F87E-A74F-45E1-B9F5-32455BB1ECC3",
+      "symbolId": "D3D091FC-3848-4759-878B-3B6790EF6E74",
       "linked": true,
       "frame": {
         "x": 0,
@@ -1955,8 +1955,8 @@
     {
       "id": "primary-success-dark",
       "step": 1,
-      "instanceId": "63732F6F-8C44-493C-80F9-310D4D77BFB2",
-      "symbolId": "DFED5227-90DF-44B4-B3AE-7D760AB22B24",
+      "instanceId": "4134116F-CEAD-4CE4-8C2A-495783C65B46",
+      "symbolId": "D3D091FC-3848-4759-878B-3B6790EF6E74",
       "linked": true,
       "frame": {
         "x": 300,
@@ -1981,8 +1981,8 @@
     {
       "id": "primary-success-dark",
       "step": 2,
-      "instanceId": "EC91A0E5-8D65-44F9-A523-D9C269E959DB",
-      "symbolId": "DFED5227-90DF-44B4-B3AE-7D760AB22B24",
+      "instanceId": "65650EF9-D742-4A61-9B58-036C2C2A3325",
+      "symbolId": "D3D091FC-3848-4759-878B-3B6790EF6E74",
       "linked": true,
       "frame": {
         "x": 600,
@@ -2007,8 +2007,8 @@
     {
       "id": "primary-danger-dark",
       "step": 0,
-      "instanceId": "AFB7892E-0DA2-45C8-B7CE-67DE69453A09",
-      "symbolId": "EF6F5DC8-BB9E-41E2-961B-1DB71E541594",
+      "instanceId": "3514222B-6BE9-496C-8C8E-5DF12CC05945",
+      "symbolId": "CEEC60CD-F83A-4D26-9C95-2164CFD5F3C8",
       "linked": true,
       "frame": {
         "x": 0,
@@ -2033,8 +2033,8 @@
     {
       "id": "primary-danger-dark",
       "step": 1,
-      "instanceId": "F36950CB-CBB9-4E83-94D1-B3C51757BD03",
-      "symbolId": "EF6F5DC8-BB9E-41E2-961B-1DB71E541594",
+      "instanceId": "7615D382-99A4-4406-A50D-AF8F1627E532",
+      "symbolId": "CEEC60CD-F83A-4D26-9C95-2164CFD5F3C8",
       "linked": true,
       "frame": {
         "x": 300,
@@ -2059,8 +2059,8 @@
     {
       "id": "primary-danger-dark",
       "step": 2,
-      "instanceId": "BE38D9AF-D6FD-4A18-A69E-96509528ED66",
-      "symbolId": "EF6F5DC8-BB9E-41E2-961B-1DB71E541594",
+      "instanceId": "0F2BE631-65BA-4D15-8680-1E6796D2B213",
+      "symbolId": "CEEC60CD-F83A-4D26-9C95-2164CFD5F3C8",
       "linked": true,
       "frame": {
         "x": 600,
@@ -2085,8 +2085,8 @@
     {
       "id": "secondary-danger-dark",
       "step": 0,
-      "instanceId": "C69D177E-90EC-435A-928C-0158824E24A5",
-      "symbolId": "A986E19A-3CCD-467E-91B5-D91571A33393",
+      "instanceId": "9F30D643-68B9-413C-8D4D-63D679DB9D8A",
+      "symbolId": "62800ED3-BF18-4C64-BF59-7F8488F2A878",
       "linked": true,
       "frame": {
         "x": 0,
@@ -2111,8 +2111,8 @@
     {
       "id": "secondary-danger-dark",
       "step": 1,
-      "instanceId": "F6986165-A535-4BF2-9E0F-60C357869D02",
-      "symbolId": "A986E19A-3CCD-467E-91B5-D91571A33393",
+      "instanceId": "C710F8B5-09F2-425A-8013-E43BBE1D2735",
+      "symbolId": "62800ED3-BF18-4C64-BF59-7F8488F2A878",
       "linked": true,
       "frame": {
         "x": 300,
@@ -2137,8 +2137,8 @@
     {
       "id": "secondary-danger-dark",
       "step": 2,
-      "instanceId": "8D229860-7922-4564-97BF-EAFBAFE8E214",
-      "symbolId": "A986E19A-3CCD-467E-91B5-D91571A33393",
+      "instanceId": "5E7B4D51-2DAE-4F21-9176-819D57F7C577",
+      "symbolId": "62800ED3-BF18-4C64-BF59-7F8488F2A878",
       "linked": true,
       "frame": {
         "x": 600,
@@ -2163,8 +2163,8 @@
     {
       "id": "plain-neutral-dark",
       "step": 0,
-      "instanceId": "AD63C731-AA4E-4567-8FFE-953CBF18E3A3",
-      "symbolId": "0CFDA180-F568-4FEF-B338-090D4CF599D7",
+      "instanceId": "CD4BC6B6-9A60-4644-8964-D2A6A4DDF397",
+      "symbolId": "708B7048-0284-4BCD-9217-A1D06ACF5255",
       "linked": true,
       "frame": {
         "x": 0,
@@ -2189,8 +2189,8 @@
     {
       "id": "plain-neutral-dark",
       "step": 1,
-      "instanceId": "77B824AD-7FDE-4FEC-AFAA-0CA2E590EB18",
-      "symbolId": "0CFDA180-F568-4FEF-B338-090D4CF599D7",
+      "instanceId": "6F601BEB-F385-40CE-A884-CE7C77BAD8E5",
+      "symbolId": "708B7048-0284-4BCD-9217-A1D06ACF5255",
       "linked": true,
       "frame": {
         "x": 300,
@@ -2215,8 +2215,8 @@
     {
       "id": "plain-neutral-dark",
       "step": 2,
-      "instanceId": "60C5A7F5-C365-4368-B8A4-33C5A3082796",
-      "symbolId": "0CFDA180-F568-4FEF-B338-090D4CF599D7",
+      "instanceId": "784EFDBF-D7B1-44B1-A5CB-2A69499121D5",
+      "symbolId": "708B7048-0284-4BCD-9217-A1D06ACF5255",
       "linked": true,
       "frame": {
         "x": 600,
@@ -2241,8 +2241,8 @@
     {
       "id": "compact-neutral-dark",
       "step": 0,
-      "instanceId": "5CE3211A-E67A-43BE-AACE-96CF168A1F1C",
-      "symbolId": "29471885-05CD-40E5-B226-112389A42E22",
+      "instanceId": "A16F8C83-E1F0-44A4-8C74-2168988F702D",
+      "symbolId": "1B2E11DB-6CC0-41AD-A4A3-8072D657E741",
       "linked": true,
       "frame": {
         "x": 0,
@@ -2267,8 +2267,8 @@
     {
       "id": "compact-neutral-dark",
       "step": 1,
-      "instanceId": "2A211479-2032-4BA7-86C1-1694FC0AA94A",
-      "symbolId": "29471885-05CD-40E5-B226-112389A42E22",
+      "instanceId": "F7B350D5-30FA-497F-A530-9C0D86A967D9",
+      "symbolId": "1B2E11DB-6CC0-41AD-A4A3-8072D657E741",
       "linked": true,
       "frame": {
         "x": 300,
@@ -2293,8 +2293,8 @@
     {
       "id": "compact-neutral-dark",
       "step": 2,
-      "instanceId": "E2648002-93F7-469A-BA5C-DE08655F73B9",
-      "symbolId": "29471885-05CD-40E5-B226-112389A42E22",
+      "instanceId": "E5C2D3F9-738C-4029-A6BF-347728031942",
+      "symbolId": "1B2E11DB-6CC0-41AD-A4A3-8072D657E741",
       "linked": true,
       "frame": {
         "x": 600,
@@ -2319,8 +2319,8 @@
     {
       "id": "pill-brand-dark",
       "step": 0,
-      "instanceId": "CF606640-A279-4D75-8E21-63B7A50FB558",
-      "symbolId": "C65D0E28-2BCB-4BE8-B722-A017090D3992",
+      "instanceId": "34278126-EEF3-4FF1-BF39-1FCA7859D55A",
+      "symbolId": "9DB8BFFB-4FB7-4F51-9891-9668A1EFC821",
       "linked": true,
       "frame": {
         "x": 0,
@@ -2345,8 +2345,8 @@
     {
       "id": "pill-brand-dark",
       "step": 1,
-      "instanceId": "982FA9F2-D1F7-4518-8F64-2A8CB2F01154",
-      "symbolId": "C65D0E28-2BCB-4BE8-B722-A017090D3992",
+      "instanceId": "248EEABC-CAAA-4E88-BFEB-CD642FE5DFF8",
+      "symbolId": "9DB8BFFB-4FB7-4F51-9891-9668A1EFC821",
       "linked": true,
       "frame": {
         "x": 300,
@@ -2371,8 +2371,8 @@
     {
       "id": "pill-brand-dark",
       "step": 2,
-      "instanceId": "47F03491-72C9-429D-81A5-F1E482943121",
-      "symbolId": "C65D0E28-2BCB-4BE8-B722-A017090D3992",
+      "instanceId": "2D9D0D90-7635-4F1F-8B6D-9C94A3F53740",
+      "symbolId": "9DB8BFFB-4FB7-4F51-9891-9668A1EFC821",
       "linked": true,
       "frame": {
         "x": 600,
@@ -2397,8 +2397,8 @@
     {
       "id": "icon-only-dark",
       "step": 0,
-      "instanceId": "B1E0A349-BD60-4CE7-A8BE-9113F45E2C01",
-      "symbolId": "B822FA29-6986-4B84-8F7C-6A57DF5658C5",
+      "instanceId": "46445F9E-8863-4AD1-BB10-8C41270CB326",
+      "symbolId": "D2109EFA-8041-4C9B-A5C2-9BB91E7774E2",
       "linked": true,
       "frame": {
         "x": 0,
@@ -2433,8 +2433,8 @@
     {
       "id": "icon-only-dark",
       "step": 1,
-      "instanceId": "FED0E405-FE72-4300-9FCE-E9876ABADE52",
-      "symbolId": "B822FA29-6986-4B84-8F7C-6A57DF5658C5",
+      "instanceId": "C5C80167-F496-49DC-9555-B16D324BD7E8",
+      "symbolId": "D2109EFA-8041-4C9B-A5C2-9BB91E7774E2",
       "linked": true,
       "frame": {
         "x": 300,
@@ -2469,8 +2469,8 @@
     {
       "id": "icon-only-dark",
       "step": 2,
-      "instanceId": "966B922E-D58E-4E24-81D3-1BFC88631EB0",
-      "symbolId": "B822FA29-6986-4B84-8F7C-6A57DF5658C5",
+      "instanceId": "E3FFFDF5-0005-4169-A2FA-58FB0A10BBF9",
+      "symbolId": "D2109EFA-8041-4C9B-A5C2-9BB91E7774E2",
       "linked": true,
       "frame": {
         "x": 600,
@@ -2505,8 +2505,8 @@
     {
       "id": "disabled-neutral-dark",
       "step": 0,
-      "instanceId": "EDDB6D98-2131-4686-81EC-23ECC748075B",
-      "symbolId": "F1D0179C-17C9-4A7D-9888-A67113CF1E58",
+      "instanceId": "B30C35B9-3960-428A-87D6-BA022A575AF1",
+      "symbolId": "BCC84A86-5F8D-4B8B-8224-0C2A6C5D44EB",
       "linked": true,
       "frame": {
         "x": 0,
@@ -2531,8 +2531,8 @@
     {
       "id": "disabled-neutral-dark",
       "step": 1,
-      "instanceId": "DE665A25-F9FB-4CFA-AF9F-7FB402F14E26",
-      "symbolId": "F1D0179C-17C9-4A7D-9888-A67113CF1E58",
+      "instanceId": "BF7ED13A-1FC6-4256-A73A-D4622450EACB",
+      "symbolId": "BCC84A86-5F8D-4B8B-8224-0C2A6C5D44EB",
       "linked": true,
       "frame": {
         "x": 300,
@@ -2557,8 +2557,8 @@
     {
       "id": "disabled-neutral-dark",
       "step": 2,
-      "instanceId": "0B6CC8DB-39B7-4E7B-9781-167507F87A18",
-      "symbolId": "F1D0179C-17C9-4A7D-9888-A67113CF1E58",
+      "instanceId": "9437BB4F-5292-47DD-A185-745B8CA834AF",
+      "symbolId": "BCC84A86-5F8D-4B8B-8224-0C2A6C5D44EB",
       "linked": true,
       "frame": {
         "x": 600,
@@ -2583,8 +2583,8 @@
     {
       "id": "disabled-success-dark",
       "step": 0,
-      "instanceId": "2232B149-D4B0-4A9A-BB04-7EC07EF4A15E",
-      "symbolId": "D394C732-AD8B-4E70-8FC2-B80F54887F0A",
+      "instanceId": "766B44DF-F00D-4939-9180-84A0F9FD6DD6",
+      "symbolId": "CFFBEDC7-B64C-43E9-934C-B2C680EA1E7D",
       "linked": true,
       "frame": {
         "x": 0,
@@ -2609,8 +2609,8 @@
     {
       "id": "disabled-success-dark",
       "step": 1,
-      "instanceId": "DE3CAD0B-DC45-4ACC-A0EF-D037607C0BF4",
-      "symbolId": "D394C732-AD8B-4E70-8FC2-B80F54887F0A",
+      "instanceId": "D4F6586C-148B-47D5-A65A-CD4423C9166D",
+      "symbolId": "CFFBEDC7-B64C-43E9-934C-B2C680EA1E7D",
       "linked": true,
       "frame": {
         "x": 300,
@@ -2635,8 +2635,8 @@
     {
       "id": "disabled-success-dark",
       "step": 2,
-      "instanceId": "E1AD87BA-6A9A-4BC5-AAC7-2E5165338763",
-      "symbolId": "D394C732-AD8B-4E70-8FC2-B80F54887F0A",
+      "instanceId": "D2D79800-EAB4-431F-87FA-5D52197CE6EC",
+      "symbolId": "CFFBEDC7-B64C-43E9-934C-B2C680EA1E7D",
       "linked": true,
       "frame": {
         "x": 600,
@@ -2661,8 +2661,8 @@
     {
       "id": "pressed-neutral-dark",
       "step": 0,
-      "instanceId": "C82424A3-76CF-44AB-B9C5-5E49DBB72A50",
-      "symbolId": "EAC8BC40-1E57-46D2-9EFD-F7D9AF7AD4D8",
+      "instanceId": "F2292DC0-DD1D-417C-81A7-5D7B84229FBA",
+      "symbolId": "2BA5C9C5-82D1-47A5-98C7-0C7185D9B7E9",
       "linked": true,
       "frame": {
         "x": 0,
@@ -2687,8 +2687,8 @@
     {
       "id": "pressed-neutral-dark",
       "step": 1,
-      "instanceId": "4A6A426F-6DDA-47F3-B6FA-AA0118617F55",
-      "symbolId": "EAC8BC40-1E57-46D2-9EFD-F7D9AF7AD4D8",
+      "instanceId": "568CF2B6-42B5-4DD8-9410-FF62E1442079",
+      "symbolId": "2BA5C9C5-82D1-47A5-98C7-0C7185D9B7E9",
       "linked": true,
       "frame": {
         "x": 300,
@@ -2713,8 +2713,8 @@
     {
       "id": "pressed-neutral-dark",
       "step": 2,
-      "instanceId": "7E706C12-C63A-4C3C-8A6B-5A260AFBF046",
-      "symbolId": "EAC8BC40-1E57-46D2-9EFD-F7D9AF7AD4D8",
+      "instanceId": "E0E4A19D-A5D6-47F9-93C9-64DC26A8A4DB",
+      "symbolId": "2BA5C9C5-82D1-47A5-98C7-0C7185D9B7E9",
       "linked": true,
       "frame": {
         "x": 600,
@@ -2739,8 +2739,8 @@
     {
       "id": "pressed-secondary-dark",
       "step": 0,
-      "instanceId": "3C9799A4-9589-494E-949B-E0CDB19E0A44",
-      "symbolId": "40C04BDE-CD0C-4BBC-84D5-D79EB74C710A",
+      "instanceId": "CD7F6ED3-AA1E-45D6-BF96-E92BCE6BC235",
+      "symbolId": "75FBE926-F374-49D6-B14C-493C22EF53EE",
       "linked": true,
       "frame": {
         "x": 0,
@@ -2765,8 +2765,8 @@
     {
       "id": "pressed-secondary-dark",
       "step": 1,
-      "instanceId": "3D443744-C287-4277-BA37-DF553D78E0BC",
-      "symbolId": "40C04BDE-CD0C-4BBC-84D5-D79EB74C710A",
+      "instanceId": "2FA63F2B-834B-43CF-9047-7A4F4376FECF",
+      "symbolId": "75FBE926-F374-49D6-B14C-493C22EF53EE",
       "linked": true,
       "frame": {
         "x": 300,
@@ -2791,8 +2791,8 @@
     {
       "id": "pressed-secondary-dark",
       "step": 2,
-      "instanceId": "5DE65EB9-C105-4946-ABAC-7339348C6AC0",
-      "symbolId": "40C04BDE-CD0C-4BBC-84D5-D79EB74C710A",
+      "instanceId": "1FEBF1E4-E23A-4DB4-8B3B-395D24185C3E",
+      "symbolId": "75FBE926-F374-49D6-B14C-493C22EF53EE",
       "linked": true,
       "frame": {
         "x": 600,
@@ -2817,8 +2817,8 @@
     {
       "id": "loading-brand-dark",
       "step": 0,
-      "instanceId": "3B2D6D17-E396-433B-B0D9-BF79819F8237",
-      "symbolId": "C7BEEDE0-DDBF-4574-BAD0-50257BCA4C1E",
+      "instanceId": "F03A06F6-AE85-4823-9573-F856D75359D7",
+      "symbolId": "EA27881A-B0CB-4DFA-B928-A3230C94142D",
       "linked": true,
       "frame": {
         "x": 0,
@@ -2863,8 +2863,8 @@
     {
       "id": "loading-brand-dark",
       "step": 1,
-      "instanceId": "8AB4FAC2-5FE5-4067-8766-BF7C6591B87B",
-      "symbolId": "C7BEEDE0-DDBF-4574-BAD0-50257BCA4C1E",
+      "instanceId": "2A449499-4415-49B6-815B-711CE44D627E",
+      "symbolId": "EA27881A-B0CB-4DFA-B928-A3230C94142D",
       "linked": true,
       "frame": {
         "x": 300,
@@ -2909,8 +2909,8 @@
     {
       "id": "loading-brand-dark",
       "step": 2,
-      "instanceId": "D5B56DD9-B386-4523-BF5C-2819A7399251",
-      "symbolId": "C7BEEDE0-DDBF-4574-BAD0-50257BCA4C1E",
+      "instanceId": "4CDD6932-E054-4E3E-B738-E04159C2510A",
+      "symbolId": "EA27881A-B0CB-4DFA-B928-A3230C94142D",
       "linked": true,
       "frame": {
         "x": 600,
@@ -2955,8 +2955,8 @@
     {
       "id": "badge-brand-dark",
       "step": 0,
-      "instanceId": "369513D9-CC86-4A84-8814-60BD3C7A03DD",
-      "symbolId": "968F6B1A-A3C5-4C68-B0A4-A8C399C543C8",
+      "instanceId": "B78A8BC9-707A-4E28-8D3E-17B9E60DB10E",
+      "symbolId": "F0BED06C-A05C-4409-9434-90496E8721B3",
       "linked": true,
       "frame": {
         "x": 0,
@@ -3011,8 +3011,8 @@
     {
       "id": "badge-brand-dark",
       "step": 1,
-      "instanceId": "980B59DB-3BA9-4B23-8042-4F43A86B05C2",
-      "symbolId": "968F6B1A-A3C5-4C68-B0A4-A8C399C543C8",
+      "instanceId": "98F6AC1F-96E6-4CCD-890E-00490CD4751E",
+      "symbolId": "F0BED06C-A05C-4409-9434-90496E8721B3",
       "linked": true,
       "frame": {
         "x": 300,
@@ -3067,8 +3067,8 @@
     {
       "id": "badge-brand-dark",
       "step": 2,
-      "instanceId": "FD584F3E-A779-4ED8-A81A-CA84705CE640",
-      "symbolId": "968F6B1A-A3C5-4C68-B0A4-A8C399C543C8",
+      "instanceId": "3DC04BB0-A2FE-453F-AD2E-F34CB09A8B2D",
+      "symbolId": "F0BED06C-A05C-4409-9434-90496E8721B3",
       "linked": true,
       "frame": {
         "x": 600,
@@ -3123,8 +3123,8 @@
     {
       "id": "badge-dot-dark",
       "step": 0,
-      "instanceId": "2F837586-20AC-41C5-B41A-6A08F7207014",
-      "symbolId": "F94508D1-617E-4506-AA40-8ABD34E9C15A",
+      "instanceId": "F1A4B069-23EC-40D0-B643-7C82179BBAC9",
+      "symbolId": "E73707E7-CD16-4573-8864-E363E2EF6E2D",
       "linked": true,
       "frame": {
         "x": 0,
@@ -3169,8 +3169,8 @@
     {
       "id": "badge-dot-dark",
       "step": 1,
-      "instanceId": "B60413BB-7E8A-471B-B800-0496F1E1C895",
-      "symbolId": "F94508D1-617E-4506-AA40-8ABD34E9C15A",
+      "instanceId": "48DDC312-143C-4148-BA37-0CF45BEC3C76",
+      "symbolId": "E73707E7-CD16-4573-8864-E363E2EF6E2D",
       "linked": true,
       "frame": {
         "x": 300,
@@ -3215,8 +3215,8 @@
     {
       "id": "badge-dot-dark",
       "step": 2,
-      "instanceId": "34FC51EA-C7ED-4CDE-A3AF-5F7A2DC06D9A",
-      "symbolId": "F94508D1-617E-4506-AA40-8ABD34E9C15A",
+      "instanceId": "B713CEBD-F0E5-4B53-B640-D62002B4BFBF",
+      "symbolId": "E73707E7-CD16-4573-8864-E363E2EF6E2D",
       "linked": true,
       "frame": {
         "x": 600,
@@ -3261,8 +3261,8 @@
     {
       "id": "focus-standard-dark",
       "step": 0,
-      "instanceId": "D53E6914-7161-47A7-8BDB-D165C9BC601A",
-      "symbolId": "ECC87A48-D8D8-407C-A1D6-41A4406CE285",
+      "instanceId": "21B09B44-1E2F-409C-9EE5-8D8E1874E1B4",
+      "symbolId": "FAED5C80-3124-4D9D-954B-4DF2F3BB796B",
       "linked": true,
       "frame": {
         "x": 0,
@@ -3287,8 +3287,8 @@
     {
       "id": "focus-standard-dark",
       "step": 1,
-      "instanceId": "CF3D23D2-E75A-45AA-AFA9-9A189632587F",
-      "symbolId": "ECC87A48-D8D8-407C-A1D6-41A4406CE285",
+      "instanceId": "A6F253BE-01E9-4B51-8E4B-8279E1B9A2E5",
+      "symbolId": "FAED5C80-3124-4D9D-954B-4DF2F3BB796B",
       "linked": true,
       "frame": {
         "x": 300,
@@ -3313,8 +3313,8 @@
     {
       "id": "focus-standard-dark",
       "step": 2,
-      "instanceId": "0E1AF80C-0EDF-4FEF-96CF-7BE601F105E9",
-      "symbolId": "ECC87A48-D8D8-407C-A1D6-41A4406CE285",
+      "instanceId": "E53C1F69-5167-4B9B-A5C0-7A184E534796",
+      "symbolId": "FAED5C80-3124-4D9D-954B-4DF2F3BB796B",
       "linked": true,
       "frame": {
         "x": 600,
@@ -3339,8 +3339,8 @@
     {
       "id": "focus-brand-dark",
       "step": 0,
-      "instanceId": "F2F69098-5F6F-4ACD-B26A-52A4BB5F2AE3",
-      "symbolId": "C33953E0-3D8C-42DC-8B4F-5CD72DD23506",
+      "instanceId": "5978F4DB-B977-4888-9B70-A6AA392A40B9",
+      "symbolId": "FE8BCBDF-313A-4392-8C44-120D4D0D6A9A",
       "linked": true,
       "frame": {
         "x": 0,
@@ -3365,8 +3365,8 @@
     {
       "id": "focus-brand-dark",
       "step": 1,
-      "instanceId": "CB34873E-1544-40A5-9528-F2E4F3E34C60",
-      "symbolId": "C33953E0-3D8C-42DC-8B4F-5CD72DD23506",
+      "instanceId": "A09095A8-3D97-4823-9FCC-B9238FF74BB2",
+      "symbolId": "FE8BCBDF-313A-4392-8C44-120D4D0D6A9A",
       "linked": true,
       "frame": {
         "x": 300,
@@ -3391,8 +3391,8 @@
     {
       "id": "focus-brand-dark",
       "step": 2,
-      "instanceId": "A7E21E14-6AF9-4ECE-A204-F7989721CC9E",
-      "symbolId": "C33953E0-3D8C-42DC-8B4F-5CD72DD23506",
+      "instanceId": "C859AA87-EE73-4854-971B-2E6F80EE706C",
+      "symbolId": "FE8BCBDF-313A-4392-8C44-120D4D0D6A9A",
       "linked": true,
       "frame": {
         "x": 600,

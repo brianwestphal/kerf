@@ -26,6 +26,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -72,6 +73,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -118,6 +120,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -164,6 +167,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -210,6 +214,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -256,6 +261,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -302,6 +308,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -346,6 +353,16 @@
         "ignoresStackLayout": false,
         "horizontalPins": 0,
         "verticalPins": 0
+      }
+    ],
+    "iconPaths": [
+      {
+        "id": "53197DBE-6A9C-4CFF-B650-097184B4E65C",
+        "svg": "M0,4.66666667 L9.33333333,4.66666667"
+      },
+      {
+        "id": "82EDE803-C525-44FA-BCA6-F408466B00B0",
+        "svg": "M4.66666667,0 L4.66666667,9.33333333"
       }
     ],
     "stack": {
@@ -394,6 +411,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -440,6 +458,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -486,6 +505,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -532,6 +552,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -592,6 +613,7 @@
         "verticalPins": 5
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -666,6 +688,7 @@
         "verticalPins": 1
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -726,6 +749,7 @@
         "verticalPins": 1
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -772,6 +796,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -818,6 +843,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -864,6 +890,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -910,6 +937,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -956,6 +984,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -1002,6 +1031,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -1048,6 +1078,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -1094,6 +1125,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -1140,6 +1172,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -1184,6 +1217,16 @@
         "ignoresStackLayout": false,
         "horizontalPins": 0,
         "verticalPins": 0
+      }
+    ],
+    "iconPaths": [
+      {
+        "id": "945DEAEB-6905-4DBB-8EF2-28069473E025",
+        "svg": "M0,4.66666667 L9.33333333,4.66666667"
+      },
+      {
+        "id": "1F6DF3B1-EC1A-46EE-846B-6653C87C5748",
+        "svg": "M4.66666667,0 L4.66666667,9.33333333"
       }
     ],
     "stack": {
@@ -1232,6 +1275,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -1278,6 +1322,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -1324,6 +1369,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -1370,6 +1416,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -1430,6 +1477,7 @@
         "verticalPins": 5
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -1504,6 +1552,7 @@
         "verticalPins": 1
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -1564,6 +1613,7 @@
         "verticalPins": 1
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -1610,6 +1660,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,
@@ -1656,6 +1707,7 @@
         "verticalPins": 0
       }
     ],
+    "iconPaths": [],
     "stack": {
       "type": "StackLayout",
       "stackingOrder": 0,

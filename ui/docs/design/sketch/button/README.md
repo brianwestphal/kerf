@@ -195,6 +195,14 @@ presentations. Likewise, disabled, pressed, loading, and badge Symbols show
 visual states only; Sketch does not supply Button events, ARIA state, or
 spinner animation.
 
+`variant-manifest.json` preserves master, Symbol, and direct layer IDs for
+these 34 Symbols and records icon SVG path structure and geometry. A compatible
+source icon edit updates existing native vector paths in place. Added,
+removed, reordered, or ambiguous paths are rejected before staging so a
+consumer path override cannot silently remap. An isolated Plus path edit kept
+both native path IDs while changing geometry; a third path was rejected before
+any native job.
+
 `npm run sketch:button -- verify` reopens the 40-Symbol library, tests all six
 pilot imports and 30 pilot resize cases, then imports each of the 34 extra
 Symbols into a consumer document. The extra check tests its natural size, a

@@ -386,6 +386,7 @@ async function updateVariantManifest() {
   for (const fixture of fixtures) {
     const current = report.find((entry) => entry.id === fixture.id);
     assert.ok(current, `Missing native variant ${fixture.id}`);
+    const icon = iconGeometry(fixture.layout.icon);
     const before = previous.variants[fixture.id];
     if (before) {
       assert.equal(
@@ -413,9 +414,67 @@ async function updateVariantManifest() {
       symbolId: current.symbolId,
       name: current.name,
       layers: current.layers.map(({ id, name, type }) => ({ id, name, type })),
+      iconGeometryHash: icon?.hash ?? null,
+      iconSourceHash: icon?.sourceHash ?? null,
+      iconGeometryParts: icon?.parts ?? null,
+      iconStructure: icon?.structure ?? null,
     };
   }
   return `${JSON.stringify({ version: 1, variants }, null, 2)}\n`;
+}
+
+async function changedVariantIcons() {
+  const fixtures = JSON.parse(
+    await readFile(paths.variantFixturesPath, 'utf8'),
+  );
+  const previous = await readFile(paths.variantManifestPath, 'utf8').then(
+    JSON.parse,
+    (error) => {
+      if (error.code === 'ENOENT') return { variants: {} };
+      throw error;
+    },
+  );
+  const changed = [];
+  for (const fixture of fixtures) {
+    const before = previous.variants[fixture.id];
+    if (!before?.iconGeometryParts) continue;
+    const next = iconGeometry(fixture.layout.icon);
+    if (
+      (next?.hash ?? null) === before.iconGeometryHash &&
+      (next?.sourceHash ?? null) === before.iconSourceHash
+    )
+      continue;
+    assert.ok(next, `${fixture.id} removed its icon`);
+    assert.equal(
+      next.parts.length,
+      before.iconGeometryParts.length,
+      `${fixture.id} added/removed vector paths; explicit ID mapping is required`,
+    );
+    assert.deepEqual(
+      next.structure,
+      before.iconStructure,
+      `${fixture.id} changed path types or commands; explicit ID mapping is required`,
+    );
+    if (next.hash !== before.iconGeometryHash)
+      assert.notDeepEqual(
+        next.parts.toSorted(),
+        before.iconGeometryParts.toSorted(),
+        `${fixture.id} reordered vector paths; consumer overrides must not remap`,
+      );
+    const changes = new Map();
+    next.parts.forEach((part, index) => {
+      if (part === before.iconGeometryParts[index]) return;
+      const signature = next.structure[index];
+      const count = (changes.get(signature) ?? 0) + 1;
+      assert.ok(
+        count <= 1,
+        `${fixture.id} changed multiple ${signature} paths; explicit ID mapping is required`,
+      );
+      changes.set(signature, count);
+    });
+    changed.push(fixture.id);
+  }
+  return changed;
 }
 
 async function prepareOutput() {
@@ -475,6 +534,9 @@ if (command === 'generate' || command === 'all') {
     () => true,
     () => false,
   );
+  const variantIconGeometryUpdates = hasVariantManifest
+    ? await changedVariantIcons()
+    : [];
   const originalDocumentId = seedExisting
     ? (
         await exec('python3', [
@@ -492,6 +554,7 @@ if (command === 'generate' || command === 'all') {
       hasIdentityManifest,
       iconGeometryUpdates,
       hasVariantManifest,
+      variantIconGeometryUpdates,
     });
   } catch (error) {
     throw new Error(

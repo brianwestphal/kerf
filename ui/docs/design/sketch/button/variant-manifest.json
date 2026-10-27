@@ -11,7 +11,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "primary-success-light": {
       "masterId": "15F07818-47C7-4915-AA44-BA87BF46EDF2",
@@ -23,7 +27,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "primary-danger-light": {
       "masterId": "34DE25E1-AFBD-4578-912A-F2B2A97E698E",
@@ -35,7 +43,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "secondary-danger-light": {
       "masterId": "F7B7A302-C401-4665-AC6A-1FED0CCF72B2",
@@ -47,7 +59,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "plain-neutral-light": {
       "masterId": "07E65578-FEBA-4665-9788-CCD1481D03A6",
@@ -59,7 +75,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "compact-neutral-light": {
       "masterId": "525E5A91-1576-4200-AA43-9C37A0D62D2A",
@@ -71,7 +91,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "pill-brand-light": {
       "masterId": "AE5DF29F-C5EB-441A-93C4-C2937D2485B6",
@@ -83,7 +107,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "icon-only-light": {
       "masterId": "CF5275B3-D03C-4B7C-9C43-A85EEAA06A95",
@@ -95,6 +123,16 @@
           "name": "Icon",
           "type": "Group"
         }
+      ],
+      "iconGeometryHash": "0a647565802af0f1e8485a3df076f020319e034ea152f60889b61e089fce89ef",
+      "iconSourceHash": "061aa6777ecc3519f205ad41eae05f799de137a13b1212bb49e542b3d400aab3",
+      "iconGeometryParts": [
+        "<path d=\"M5 12h14\">",
+        "<path d=\"M12 5v14\">"
+      ],
+      "iconStructure": [
+        "path:Mh",
+        "path:Mv"
       ]
     },
     "disabled-neutral-light": {
@@ -107,7 +145,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "disabled-success-light": {
       "masterId": "27A82E55-A7E4-49CD-B139-0E2B76852241",
@@ -119,7 +161,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "pressed-neutral-light": {
       "masterId": "00B8E15C-FB3C-49CC-B47E-454061DCB63E",
@@ -131,7 +177,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "pressed-secondary-light": {
       "masterId": "10233613-F7DA-40F5-A52D-1AB3D1EF7A35",
@@ -143,7 +193,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "loading-brand-light": {
       "masterId": "11848BB5-6F07-4051-ACE7-05ACA0B59AFA",
@@ -160,7 +214,11 @@
           "name": "Spinner Host",
           "type": "Group"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "badge-brand-light": {
       "masterId": "2C26848F-85FD-4E78-834A-DD984EFB8588",
@@ -182,7 +240,11 @@
           "name": "Badge Count",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "badge-dot-light": {
       "masterId": "D0B79829-C084-42DD-8A2A-DE75282E0390",
@@ -199,7 +261,11 @@
           "name": "Badge Background",
           "type": "Group"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "focus-standard-light": {
       "masterId": "2CE03D0B-66C2-40C7-9049-E60C405A8095",
@@ -211,7 +277,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "focus-brand-light": {
       "masterId": "70EB33AB-AE26-4B2E-84E2-793754773D8E",
@@ -223,7 +293,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "primary-neutral-dark": {
       "masterId": "CE3AC45C-8AB0-4059-811B-B3EB521E2999",
@@ -235,7 +309,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "primary-success-dark": {
       "masterId": "3A689FB1-306B-4524-9012-D7589C14EC7A",
@@ -247,7 +325,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "primary-danger-dark": {
       "masterId": "BD3085FD-835F-4331-AC69-81D516F52E7C",
@@ -259,7 +341,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "secondary-danger-dark": {
       "masterId": "F18E7033-88E9-4528-90CE-7465B96FF75D",
@@ -271,7 +357,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "plain-neutral-dark": {
       "masterId": "B78940DC-B2C0-4D63-8ABB-7105A991ECE6",
@@ -283,7 +373,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "compact-neutral-dark": {
       "masterId": "D63F2763-DEEB-4CC2-B867-9947F28613DB",
@@ -295,7 +389,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "pill-brand-dark": {
       "masterId": "BA1F32A1-E01F-453E-BD6C-907C99C22B2C",
@@ -307,7 +405,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "icon-only-dark": {
       "masterId": "C39E129F-EE15-415C-BD9D-505AA7933D2C",
@@ -319,6 +421,16 @@
           "name": "Icon",
           "type": "Group"
         }
+      ],
+      "iconGeometryHash": "0a647565802af0f1e8485a3df076f020319e034ea152f60889b61e089fce89ef",
+      "iconSourceHash": "60bfafa8ed0b3e441e28590779a70a5decc5870f790f7cc137bc6715f0d3a320",
+      "iconGeometryParts": [
+        "<path d=\"M5 12h14\">",
+        "<path d=\"M12 5v14\">"
+      ],
+      "iconStructure": [
+        "path:Mh",
+        "path:Mv"
       ]
     },
     "disabled-neutral-dark": {
@@ -331,7 +443,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "disabled-success-dark": {
       "masterId": "C0F532C7-0E68-4AAE-BC7D-2F54EE233769",
@@ -343,7 +459,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "pressed-neutral-dark": {
       "masterId": "F355F494-B502-4A0F-AC34-89F9D83A4E62",
@@ -355,7 +475,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "pressed-secondary-dark": {
       "masterId": "E87A7EB1-7E54-4CF7-9166-FDF8807772E4",
@@ -367,7 +491,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "loading-brand-dark": {
       "masterId": "6AB32C16-7A16-4570-B70B-200CB17ACEFD",
@@ -384,7 +512,11 @@
           "name": "Spinner Host",
           "type": "Group"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "badge-brand-dark": {
       "masterId": "5887E135-EA03-4E91-AFBD-766554A8737A",
@@ -406,7 +538,11 @@
           "name": "Badge Count",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "badge-dot-dark": {
       "masterId": "C924F38C-13EE-48B1-A1D1-C7071B5AB382",
@@ -423,7 +559,11 @@
           "name": "Badge Background",
           "type": "Group"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "focus-standard-dark": {
       "masterId": "B246EFC6-9EBF-4F0F-83CC-EE89696225C0",
@@ -435,7 +575,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     },
     "focus-brand-dark": {
       "masterId": "D2E3861E-207B-45FF-AB29-1FBB05DCB20C",
@@ -447,7 +591,11 @@
           "name": "Label",
           "type": "Text"
         }
-      ]
+      ],
+      "iconGeometryHash": null,
+      "iconSourceHash": null,
+      "iconGeometryParts": null,
+      "iconStructure": null
     }
   }
 }

@@ -12,6 +12,27 @@ function descendants(layer, dom, type) {
   return dom.find(type, layer);
 }
 
+function updateVectorGeometry(existing, incoming, fixtureId) {
+  if (existing.type !== incoming.type)
+    throw new Error('Vector layer type changed: ' + fixtureId);
+  if (existing.type === 'ShapePath') {
+    if (existing.shapeType !== incoming.shapeType)
+      throw new Error('Vector path type changed: ' + fixtureId);
+    existing.points = incoming.points;
+    existing.closed = incoming.closed;
+    existing.frame = incoming.frame.toJSON();
+    return;
+  }
+  if (!existing.layers || !incoming.layers)
+    throw new Error('Unsupported vector layer type: ' + fixtureId);
+  if (existing.layers.length !== incoming.layers.length)
+    throw new Error('Vector layer count changed: ' + fixtureId);
+  existing.frame = incoming.frame.toJSON();
+  existing.layers.forEach(function (child, index) {
+    updateVectorGeometry(child, incoming.layers[index], fixtureId);
+  });
+}
+
 function build(session, parameters, document) {
   var dom = session.dom;
   var fixtures = readJSON(parameters.variantFixturesPath);
@@ -94,12 +115,28 @@ function build(session, parameters, document) {
         icon = dom.createLayerFromData(layout.icon.svg, 'svg');
         if (!icon) throw new Error('Cannot import icon: ' + fixture.id);
         icon.parent = symbol;
+      } else if (
+        parameters.variantIconGeometryUpdates &&
+        parameters.variantIconGeometryUpdates.indexOf(fixture.id) !== -1
+      ) {
+        var sourceIcon = dom.createLayerFromData(layout.icon.svg, 'svg');
+        if (!sourceIcon)
+          throw new Error('Cannot import updated icon: ' + fixture.id);
+        updateVectorGeometry(icon, sourceIcon, fixture.id);
       }
       icon.name = 'Icon';
       icon.nameIsFixed = true;
       icon.frame.width = layout.icon.width;
       icon.frame.height = layout.icon.height;
       icon.style.opacity = fixture.props.loading ? 0 : 1;
+      descendants(icon, dom, 'ShapePath').forEach(function (path) {
+        path.style.borders.forEach(function (border) {
+          border.color = layout.textColor;
+        });
+        path.style.fills.forEach(function (fill) {
+          fill.color = layout.textColor;
+        });
+      });
       icon.horizontalSizing = dom.FlexSizing.Fixed;
       icon.verticalSizing = dom.FlexSizing.Fixed;
       icon.index = 0;
@@ -348,6 +385,11 @@ function build(session, parameters, document) {
           verticalPins: layer.verticalPins,
         };
       }),
+      iconPaths: icon
+        ? descendants(icon, dom, 'ShapePath').map(function (path) {
+            return { id: path.id, svg: path.getSVGPath() };
+          })
+        : [],
       stack: symbol.stackLayout.toJSON(),
     });
     dom.export(symbol, {
