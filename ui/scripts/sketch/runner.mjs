@@ -126,8 +126,7 @@ export async function runSketchJob({
           'run',
           '--without-activating',
           '--without-waiting-for-plugin',
-          '--context',
-          JSON.stringify({ jobFile }),
+          `--context=${JSON.stringify({ kerfJobFile: jobFile })}`,
         ],
         { timeout: Math.min(timeoutMs, 30_000), maxBuffer: 1024 * 1024 },
       );
@@ -215,8 +214,7 @@ export async function recoverSketchJob({
         'recover',
         '--without-activating',
         '--without-waiting-for-plugin',
-        '--context',
-        JSON.stringify({ jobFile: join(owner.jobDirectory, 'job.json') }),
+        `--context=${JSON.stringify({ kerfJobFile: join(owner.jobDirectory, 'job.json') })}`,
       ],
       { timeout: 30_000 },
     );

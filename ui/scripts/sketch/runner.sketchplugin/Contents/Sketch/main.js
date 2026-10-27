@@ -1,5 +1,6 @@
 var sketch = require('sketch/dom');
 var async = require('sketch/async');
+var timers = require('timers');
 var createSession = require('./session');
 var settings = require('sketch/settings');
 var activeKey = 'kerfDesignActiveJob';
@@ -26,7 +27,7 @@ function write(path, value) {
 }
 // eslint-disable-next-line no-unused-vars -- Invoked by Sketch's manifest handler.
 function onRun(context) {
-  var job = read(String(context.jobFile));
+  var job = read(String(context.kerfJobFile));
   if (!job || !job.runId || !job.jobDirectory)
     throw new Error('Invalid Sketch job.');
   var active = settings.sessionVariable(activeKey);
@@ -64,11 +65,12 @@ function onRun(context) {
         return !!request && request.runId === job.runId;
       },
       every: function (callback) {
-        return NSTimer.scheduledTimerWithTimeInterval_repeats_block(
-          0.1,
-          true,
-          callback,
-        );
+        var interval = timers.setInterval(callback, 100);
+        return {
+          invalidate: function () {
+            timers.clearInterval(interval);
+          },
+        };
       },
       finished: function (clean) {
         var current = settings.sessionVariable(activeKey);
@@ -92,8 +94,8 @@ function onRun(context) {
 }
 // eslint-disable-next-line no-unused-vars -- Invoked by Sketch's manifest handler.
 function onRecover(context) {
-  var job = read(String(context.jobFile));
-  if (!job) throw new Error('Cannot recover a missing job.');
+  var job = read(String(context.kerfJobFile));
+  if (!job) throw new Error('Cannot recover a missing Sketch job.');
   var resources = read(job.jobDirectory + '/resources.json');
   var status = read(job.jobDirectory + '/status.json');
   if (status && status.runId === job.runId && status.cleanupComplete) return;

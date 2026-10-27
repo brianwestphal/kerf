@@ -26,8 +26,10 @@ afterEach(async () => {
 });
 
 async function jobFrom(args: string[]) {
-  const context = JSON.parse(args.at(-1)!);
-  return JSON.parse(await readFile(context.jobFile, 'utf8'));
+  const encoded = args.find((arg) => arg.startsWith('--context='));
+  expect(encoded).toBeDefined();
+  const context = JSON.parse(encoded!.slice('--context='.length));
+  return JSON.parse(await readFile(context.kerfJobFile, 'utf8'));
 }
 async function status(
   job: { jobDirectory: string; runId: string },
