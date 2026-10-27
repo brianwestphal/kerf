@@ -1,0 +1,1806 @@
+{
+  "cases": [
+    {
+      "name": "Button / Primary Brand / Light",
+      "case": "hug-long",
+      "id": "033FE9D7-4551-48E3-A1BD-5268ECB4E1C9",
+      "symbolId": "1D070FD2-E9A3-465D-A4B0-6951F968C953",
+      "label": "Save All Pending Changes",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "width": 212,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 9,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "horizontalSizing": 1,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 194,
+            "height": 18
+          },
+          "text": "Save All Pending Changes",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary Brand / Light",
+      "case": "wide-short",
+      "id": "51521F92-7E36-441D-88F5-B07505DEA436",
+      "symbolId": "1D070FD2-E9A3-465D-A4B0-6951F968C953",
+      "label": "Go",
+      "frame": {
+        "x": 380,
+        "y": 0,
+        "width": 280,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 129,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 129,
+            "y": 13,
+            "width": 22,
+            "height": 18
+          },
+          "text": "Go",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary Brand / Light",
+      "case": "wide-long",
+      "id": "53A6AEAE-808B-4555-BB16-478D799F5360",
+      "symbolId": "1D070FD2-E9A3-465D-A4B0-6951F968C953",
+      "label": "Save All Pending Changes",
+      "frame": {
+        "x": 760,
+        "y": 0,
+        "width": 320,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 63,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 63,
+            "y": 13,
+            "width": 194,
+            "height": 18
+          },
+          "text": "Save All Pending Changes",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary Brand / Light",
+      "case": "tall",
+      "id": "215C0F33-11B9-4CED-800C-C2A6961FA901",
+      "symbolId": "1D070FD2-E9A3-465D-A4B0-6951F968C953",
+      "label": "Save Draft",
+      "frame": {
+        "x": 1140,
+        "y": 0,
+        "width": 280,
+        "height": 64
+      },
+      "textFrame": {
+        "x": 101,
+        "y": 23,
+        "width": 78,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 101,
+            "y": 23,
+            "width": 78,
+            "height": 18
+          },
+          "text": "Save Draft",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary Brand / Light",
+      "case": "narrow",
+      "id": "9E41FBA1-1563-42EA-A480-62A573CC973B",
+      "symbolId": "1D070FD2-E9A3-465D-A4B0-6951F968C953",
+      "label": "Go",
+      "frame": {
+        "x": 1520,
+        "y": 0,
+        "width": 100,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 39,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 39,
+            "y": 13,
+            "width": 22,
+            "height": 18
+          },
+          "text": "Go",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Secondary / Light",
+      "case": "hug-long",
+      "id": "5FEE7C06-B20E-4027-B435-BC6F814D9D23",
+      "symbolId": "F1C86FC2-D731-4F94-A292-34872695A84C",
+      "label": "Save All Pending Changes",
+      "frame": {
+        "x": 0,
+        "y": 130,
+        "width": 212,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 9,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "horizontalSizing": 1,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 194,
+            "height": 18
+          },
+          "text": "Save All Pending Changes",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Secondary / Light",
+      "case": "wide-short",
+      "id": "C9533EA3-CA32-4F20-A4D6-12D20C86DC01",
+      "symbolId": "F1C86FC2-D731-4F94-A292-34872695A84C",
+      "label": "Go",
+      "frame": {
+        "x": 380,
+        "y": 130,
+        "width": 280,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 129,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 129,
+            "y": 13,
+            "width": 22,
+            "height": 18
+          },
+          "text": "Go",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Secondary / Light",
+      "case": "wide-long",
+      "id": "0526DEEB-82A9-402D-B144-36AF24114DCF",
+      "symbolId": "F1C86FC2-D731-4F94-A292-34872695A84C",
+      "label": "Save All Pending Changes",
+      "frame": {
+        "x": 760,
+        "y": 130,
+        "width": 320,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 63,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 63,
+            "y": 13,
+            "width": 194,
+            "height": 18
+          },
+          "text": "Save All Pending Changes",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Secondary / Light",
+      "case": "tall",
+      "id": "99BE2139-D584-4BF0-8D37-9E107AD6F590",
+      "symbolId": "F1C86FC2-D731-4F94-A292-34872695A84C",
+      "label": "Save Draft",
+      "frame": {
+        "x": 1140,
+        "y": 130,
+        "width": 280,
+        "height": 64
+      },
+      "textFrame": {
+        "x": 101,
+        "y": 23,
+        "width": 78,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 101,
+            "y": 23,
+            "width": 78,
+            "height": 18
+          },
+          "text": "Save Draft",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Secondary / Light",
+      "case": "narrow",
+      "id": "8A61D794-FCBD-4B3E-9ACF-57336C15A98F",
+      "symbolId": "F1C86FC2-D731-4F94-A292-34872695A84C",
+      "label": "Go",
+      "frame": {
+        "x": 1520,
+        "y": 130,
+        "width": 100,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 39,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 39,
+            "y": 13,
+            "width": 22,
+            "height": 18
+          },
+          "text": "Go",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary with Icon / Light",
+      "case": "hug-long",
+      "id": "7BFFAC95-F1C6-40C8-A349-C3519DBFE4EA",
+      "symbolId": "88B5A62D-C426-4C88-A0A8-46525CC4C0F8",
+      "label": "Save All Pending Changes",
+      "frame": {
+        "x": 0,
+        "y": 260,
+        "width": 236,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 33,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "horizontalSizing": 1,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 33,
+            "y": 13,
+            "width": 194,
+            "height": 18
+          },
+          "text": "Save All Pending Changes",
+          "layers": []
+        },
+        {
+          "name": "Icon",
+          "type": "Group",
+          "frame": {
+            "x": 9,
+            "y": 14,
+            "width": 16,
+            "height": 16
+          },
+          "layers": [
+            {
+              "name": "Group",
+              "frame": {
+                "x": 3.33333333333333,
+                "y": 3.33333333333333,
+                "width": 9.33333333333333,
+                "height": 9.33333333333333
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary with Icon / Light",
+      "case": "wide-short",
+      "id": "C421718C-6D9B-4180-95A7-72F3D62EF399",
+      "symbolId": "88B5A62D-C426-4C88-A0A8-46525CC4C0F8",
+      "label": "Go",
+      "frame": {
+        "x": 380,
+        "y": 260,
+        "width": 280,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 141,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 141,
+            "y": 13,
+            "width": 22,
+            "height": 18
+          },
+          "text": "Go",
+          "layers": []
+        },
+        {
+          "name": "Icon",
+          "type": "Group",
+          "frame": {
+            "x": 117,
+            "y": 14,
+            "width": 16,
+            "height": 16
+          },
+          "layers": [
+            {
+              "name": "Group",
+              "frame": {
+                "x": 3.33333333333333,
+                "y": 3.33333333333333,
+                "width": 9.33333333333333,
+                "height": 9.33333333333333
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary with Icon / Light",
+      "case": "wide-long",
+      "id": "F8949961-361E-425E-AEBA-F33B6CA1D0A7",
+      "symbolId": "88B5A62D-C426-4C88-A0A8-46525CC4C0F8",
+      "label": "Save All Pending Changes",
+      "frame": {
+        "x": 760,
+        "y": 260,
+        "width": 320,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 75,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 75,
+            "y": 13,
+            "width": 194,
+            "height": 18
+          },
+          "text": "Save All Pending Changes",
+          "layers": []
+        },
+        {
+          "name": "Icon",
+          "type": "Group",
+          "frame": {
+            "x": 51,
+            "y": 14,
+            "width": 16,
+            "height": 16
+          },
+          "layers": [
+            {
+              "name": "Group",
+              "frame": {
+                "x": 3.33333333333333,
+                "y": 3.33333333333333,
+                "width": 9.33333333333333,
+                "height": 9.33333333333333
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary with Icon / Light",
+      "case": "tall",
+      "id": "E04F61BB-3CC8-4E70-919E-7E63C6113F50",
+      "symbolId": "88B5A62D-C426-4C88-A0A8-46525CC4C0F8",
+      "label": "Save Draft",
+      "frame": {
+        "x": 1140,
+        "y": 260,
+        "width": 280,
+        "height": 64
+      },
+      "textFrame": {
+        "x": 113,
+        "y": 23,
+        "width": 78,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 113,
+            "y": 23,
+            "width": 78,
+            "height": 18
+          },
+          "text": "Save Draft",
+          "layers": []
+        },
+        {
+          "name": "Icon",
+          "type": "Group",
+          "frame": {
+            "x": 89,
+            "y": 24,
+            "width": 16,
+            "height": 16
+          },
+          "layers": [
+            {
+              "name": "Group",
+              "frame": {
+                "x": 3.33333333333333,
+                "y": 3.33333333333333,
+                "width": 9.33333333333333,
+                "height": 9.33333333333333
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary with Icon / Light",
+      "case": "narrow",
+      "id": "1A6AD3FF-987B-4A48-8A6A-F2924E9D48D0",
+      "symbolId": "88B5A62D-C426-4C88-A0A8-46525CC4C0F8",
+      "label": "Go",
+      "frame": {
+        "x": 1520,
+        "y": 260,
+        "width": 100,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 51,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 51,
+            "y": 13,
+            "width": 22,
+            "height": 18
+          },
+          "text": "Go",
+          "layers": []
+        },
+        {
+          "name": "Icon",
+          "type": "Group",
+          "frame": {
+            "x": 27,
+            "y": 14,
+            "width": 16,
+            "height": 16
+          },
+          "layers": [
+            {
+              "name": "Group",
+              "frame": {
+                "x": 3.33333333333333,
+                "y": 3.33333333333333,
+                "width": 9.33333333333333,
+                "height": 9.33333333333333
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary Brand / Dark",
+      "case": "hug-long",
+      "id": "85FB8450-E55C-4094-93DD-43F2F310C410",
+      "symbolId": "A33C95BF-7FCC-4BCE-A250-6EE860AA926D",
+      "label": "Save All Pending Changes",
+      "frame": {
+        "x": 0,
+        "y": 390,
+        "width": 212,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 9,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "horizontalSizing": 1,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 194,
+            "height": 18
+          },
+          "text": "Save All Pending Changes",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary Brand / Dark",
+      "case": "wide-short",
+      "id": "9AE63BFD-C791-412F-AF93-45BE792A7968",
+      "symbolId": "A33C95BF-7FCC-4BCE-A250-6EE860AA926D",
+      "label": "Go",
+      "frame": {
+        "x": 380,
+        "y": 390,
+        "width": 280,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 129,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 129,
+            "y": 13,
+            "width": 22,
+            "height": 18
+          },
+          "text": "Go",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary Brand / Dark",
+      "case": "wide-long",
+      "id": "9966A244-44EB-4D88-BAD1-C813A207F147",
+      "symbolId": "A33C95BF-7FCC-4BCE-A250-6EE860AA926D",
+      "label": "Save All Pending Changes",
+      "frame": {
+        "x": 760,
+        "y": 390,
+        "width": 320,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 63,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 63,
+            "y": 13,
+            "width": 194,
+            "height": 18
+          },
+          "text": "Save All Pending Changes",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary Brand / Dark",
+      "case": "tall",
+      "id": "5A2D3FE1-2D3B-48B8-8062-64FF9FE2953D",
+      "symbolId": "A33C95BF-7FCC-4BCE-A250-6EE860AA926D",
+      "label": "Save Draft",
+      "frame": {
+        "x": 1140,
+        "y": 390,
+        "width": 280,
+        "height": 64
+      },
+      "textFrame": {
+        "x": 101,
+        "y": 23,
+        "width": 78,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 101,
+            "y": 23,
+            "width": 78,
+            "height": 18
+          },
+          "text": "Save Draft",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary Brand / Dark",
+      "case": "narrow",
+      "id": "0D1F33A0-742F-4BF2-A5DD-51D15E967793",
+      "symbolId": "A33C95BF-7FCC-4BCE-A250-6EE860AA926D",
+      "label": "Go",
+      "frame": {
+        "x": 1520,
+        "y": 390,
+        "width": 100,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 39,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 39,
+            "y": 13,
+            "width": 22,
+            "height": 18
+          },
+          "text": "Go",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Secondary / Dark",
+      "case": "hug-long",
+      "id": "5664F6F6-52B7-47E3-ADB8-A74CD03525E5",
+      "symbolId": "06C03D7F-FF5C-492E-8C4B-1364184A19E6",
+      "label": "Save All Pending Changes",
+      "frame": {
+        "x": 0,
+        "y": 520,
+        "width": 212,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 9,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "horizontalSizing": 1,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 194,
+            "height": 18
+          },
+          "text": "Save All Pending Changes",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Secondary / Dark",
+      "case": "wide-short",
+      "id": "4F6B2987-468D-4E00-81D3-0AF411CEAF14",
+      "symbolId": "06C03D7F-FF5C-492E-8C4B-1364184A19E6",
+      "label": "Go",
+      "frame": {
+        "x": 380,
+        "y": 520,
+        "width": 280,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 129,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 129,
+            "y": 13,
+            "width": 22,
+            "height": 18
+          },
+          "text": "Go",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Secondary / Dark",
+      "case": "wide-long",
+      "id": "3BAAB4AF-BFA7-44B4-B13E-8722C250CE27",
+      "symbolId": "06C03D7F-FF5C-492E-8C4B-1364184A19E6",
+      "label": "Save All Pending Changes",
+      "frame": {
+        "x": 760,
+        "y": 520,
+        "width": 320,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 63,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 63,
+            "y": 13,
+            "width": 194,
+            "height": 18
+          },
+          "text": "Save All Pending Changes",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Secondary / Dark",
+      "case": "tall",
+      "id": "CE6A615B-F8DA-4A99-9396-8CAAF33864E4",
+      "symbolId": "06C03D7F-FF5C-492E-8C4B-1364184A19E6",
+      "label": "Save Draft",
+      "frame": {
+        "x": 1140,
+        "y": 520,
+        "width": 280,
+        "height": 64
+      },
+      "textFrame": {
+        "x": 101,
+        "y": 23,
+        "width": 78,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 101,
+            "y": 23,
+            "width": 78,
+            "height": 18
+          },
+          "text": "Save Draft",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Secondary / Dark",
+      "case": "narrow",
+      "id": "8EA1635D-E696-4572-ACD4-5463F4EF3EEE",
+      "symbolId": "06C03D7F-FF5C-492E-8C4B-1364184A19E6",
+      "label": "Go",
+      "frame": {
+        "x": 1520,
+        "y": 520,
+        "width": 100,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 39,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 39,
+            "y": 13,
+            "width": 22,
+            "height": 18
+          },
+          "text": "Go",
+          "layers": []
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary with Icon / Dark",
+      "case": "hug-long",
+      "id": "74B5AA50-DE25-44A3-A376-C545A12763C2",
+      "symbolId": "B1B83B9C-308C-4DDF-B424-B9C53378AB50",
+      "label": "Save All Pending Changes",
+      "frame": {
+        "x": 0,
+        "y": 650,
+        "width": 236,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 33,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "horizontalSizing": 1,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 33,
+            "y": 13,
+            "width": 194,
+            "height": 18
+          },
+          "text": "Save All Pending Changes",
+          "layers": []
+        },
+        {
+          "name": "Icon",
+          "type": "Group",
+          "frame": {
+            "x": 9,
+            "y": 14,
+            "width": 16,
+            "height": 16
+          },
+          "layers": [
+            {
+              "name": "Group",
+              "frame": {
+                "x": 3.33333333333333,
+                "y": 3.33333333333333,
+                "width": 9.33333333333333,
+                "height": 9.33333333333333
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary with Icon / Dark",
+      "case": "wide-short",
+      "id": "A9FECCBB-44F1-4451-A08D-64493C58BBD5",
+      "symbolId": "B1B83B9C-308C-4DDF-B424-B9C53378AB50",
+      "label": "Go",
+      "frame": {
+        "x": 380,
+        "y": 650,
+        "width": 280,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 141,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 141,
+            "y": 13,
+            "width": 22,
+            "height": 18
+          },
+          "text": "Go",
+          "layers": []
+        },
+        {
+          "name": "Icon",
+          "type": "Group",
+          "frame": {
+            "x": 117,
+            "y": 14,
+            "width": 16,
+            "height": 16
+          },
+          "layers": [
+            {
+              "name": "Group",
+              "frame": {
+                "x": 3.33333333333333,
+                "y": 3.33333333333333,
+                "width": 9.33333333333333,
+                "height": 9.33333333333333
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary with Icon / Dark",
+      "case": "wide-long",
+      "id": "1966F89F-227A-43A0-8B45-D460EA48F4DB",
+      "symbolId": "B1B83B9C-308C-4DDF-B424-B9C53378AB50",
+      "label": "Save All Pending Changes",
+      "frame": {
+        "x": 760,
+        "y": 650,
+        "width": 320,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 75,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 75,
+            "y": 13,
+            "width": 194,
+            "height": 18
+          },
+          "text": "Save All Pending Changes",
+          "layers": []
+        },
+        {
+          "name": "Icon",
+          "type": "Group",
+          "frame": {
+            "x": 51,
+            "y": 14,
+            "width": 16,
+            "height": 16
+          },
+          "layers": [
+            {
+              "name": "Group",
+              "frame": {
+                "x": 3.33333333333333,
+                "y": 3.33333333333333,
+                "width": 9.33333333333333,
+                "height": 9.33333333333333
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary with Icon / Dark",
+      "case": "tall",
+      "id": "D4A5ED9F-A07A-4C2E-B660-F2EF33E36111",
+      "symbolId": "B1B83B9C-308C-4DDF-B424-B9C53378AB50",
+      "label": "Save Draft",
+      "frame": {
+        "x": 1140,
+        "y": 650,
+        "width": 280,
+        "height": 64
+      },
+      "textFrame": {
+        "x": 113,
+        "y": 23,
+        "width": 78,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 113,
+            "y": 23,
+            "width": 78,
+            "height": 18
+          },
+          "text": "Save Draft",
+          "layers": []
+        },
+        {
+          "name": "Icon",
+          "type": "Group",
+          "frame": {
+            "x": 89,
+            "y": 24,
+            "width": 16,
+            "height": 16
+          },
+          "layers": [
+            {
+              "name": "Group",
+              "frame": {
+                "x": 3.33333333333333,
+                "y": 3.33333333333333,
+                "width": 9.33333333333333,
+                "height": 9.33333333333333
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Button / Primary with Icon / Dark",
+      "case": "narrow",
+      "id": "C06600B2-3164-476F-BF92-2BCFDA054F6A",
+      "symbolId": "B1B83B9C-308C-4DDF-B424-B9C53378AB50",
+      "label": "Go",
+      "frame": {
+        "x": 1520,
+        "y": 650,
+        "width": 100,
+        "height": 44
+      },
+      "textFrame": {
+        "x": 51,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      },
+      "horizontalSizing": 0,
+      "verticalSizing": 0,
+      "linked": true,
+      "expanded": [
+        {
+          "name": "Label",
+          "type": "Text",
+          "frame": {
+            "x": 51,
+            "y": 13,
+            "width": 22,
+            "height": 18
+          },
+          "text": "Go",
+          "layers": []
+        },
+        {
+          "name": "Icon",
+          "type": "Group",
+          "frame": {
+            "x": 27,
+            "y": 14,
+            "width": 16,
+            "height": 16
+          },
+          "layers": [
+            {
+              "name": "Group",
+              "frame": {
+                "x": 3.33333333333333,
+                "y": 3.33333333333333,
+                "width": 9.33333333333333,
+                "height": 9.33333333333333
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "reopened": [
+    {
+      "id": "033FE9D7-4551-48E3-A1BD-5268ECB4E1C9",
+      "name": "Button / Primary Brand / Light / hug-long",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "width": 212,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "textFrame": {
+        "x": 9,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      }
+    },
+    {
+      "id": "51521F92-7E36-441D-88F5-B07505DEA436",
+      "name": "Button / Primary Brand / Light / wide-short",
+      "frame": {
+        "x": 380,
+        "y": 0,
+        "width": 280,
+        "height": 44
+      },
+      "label": "Go",
+      "textFrame": {
+        "x": 129,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      }
+    },
+    {
+      "id": "53A6AEAE-808B-4555-BB16-478D799F5360",
+      "name": "Button / Primary Brand / Light / wide-long",
+      "frame": {
+        "x": 760,
+        "y": 0,
+        "width": 320,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "textFrame": {
+        "x": 63,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      }
+    },
+    {
+      "id": "215C0F33-11B9-4CED-800C-C2A6961FA901",
+      "name": "Button / Primary Brand / Light / tall",
+      "frame": {
+        "x": 1140,
+        "y": 0,
+        "width": 280,
+        "height": 64
+      },
+      "label": "Save Draft",
+      "textFrame": {
+        "x": 101,
+        "y": 23,
+        "width": 78,
+        "height": 18
+      }
+    },
+    {
+      "id": "9E41FBA1-1563-42EA-A480-62A573CC973B",
+      "name": "Button / Primary Brand / Light / narrow",
+      "frame": {
+        "x": 1520,
+        "y": 0,
+        "width": 100,
+        "height": 44
+      },
+      "label": "Go",
+      "textFrame": {
+        "x": 39,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      }
+    },
+    {
+      "id": "5FEE7C06-B20E-4027-B435-BC6F814D9D23",
+      "name": "Button / Secondary / Light / hug-long",
+      "frame": {
+        "x": 0,
+        "y": 130,
+        "width": 212,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "textFrame": {
+        "x": 9,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      }
+    },
+    {
+      "id": "C9533EA3-CA32-4F20-A4D6-12D20C86DC01",
+      "name": "Button / Secondary / Light / wide-short",
+      "frame": {
+        "x": 380,
+        "y": 130,
+        "width": 280,
+        "height": 44
+      },
+      "label": "Go",
+      "textFrame": {
+        "x": 129,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      }
+    },
+    {
+      "id": "0526DEEB-82A9-402D-B144-36AF24114DCF",
+      "name": "Button / Secondary / Light / wide-long",
+      "frame": {
+        "x": 760,
+        "y": 130,
+        "width": 320,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "textFrame": {
+        "x": 63,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      }
+    },
+    {
+      "id": "99BE2139-D584-4BF0-8D37-9E107AD6F590",
+      "name": "Button / Secondary / Light / tall",
+      "frame": {
+        "x": 1140,
+        "y": 130,
+        "width": 280,
+        "height": 64
+      },
+      "label": "Save Draft",
+      "textFrame": {
+        "x": 101,
+        "y": 23,
+        "width": 78,
+        "height": 18
+      }
+    },
+    {
+      "id": "8A61D794-FCBD-4B3E-9ACF-57336C15A98F",
+      "name": "Button / Secondary / Light / narrow",
+      "frame": {
+        "x": 1520,
+        "y": 130,
+        "width": 100,
+        "height": 44
+      },
+      "label": "Go",
+      "textFrame": {
+        "x": 39,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      }
+    },
+    {
+      "id": "7BFFAC95-F1C6-40C8-A349-C3519DBFE4EA",
+      "name": "Button / Primary with Icon / Light / hug-long",
+      "frame": {
+        "x": 0,
+        "y": 260,
+        "width": 236,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "textFrame": {
+        "x": 33,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      }
+    },
+    {
+      "id": "C421718C-6D9B-4180-95A7-72F3D62EF399",
+      "name": "Button / Primary with Icon / Light / wide-short",
+      "frame": {
+        "x": 380,
+        "y": 260,
+        "width": 280,
+        "height": 44
+      },
+      "label": "Go",
+      "textFrame": {
+        "x": 141,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      }
+    },
+    {
+      "id": "F8949961-361E-425E-AEBA-F33B6CA1D0A7",
+      "name": "Button / Primary with Icon / Light / wide-long",
+      "frame": {
+        "x": 760,
+        "y": 260,
+        "width": 320,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "textFrame": {
+        "x": 75,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      }
+    },
+    {
+      "id": "E04F61BB-3CC8-4E70-919E-7E63C6113F50",
+      "name": "Button / Primary with Icon / Light / tall",
+      "frame": {
+        "x": 1140,
+        "y": 260,
+        "width": 280,
+        "height": 64
+      },
+      "label": "Save Draft",
+      "textFrame": {
+        "x": 113,
+        "y": 23,
+        "width": 78,
+        "height": 18
+      }
+    },
+    {
+      "id": "1A6AD3FF-987B-4A48-8A6A-F2924E9D48D0",
+      "name": "Button / Primary with Icon / Light / narrow",
+      "frame": {
+        "x": 1520,
+        "y": 260,
+        "width": 100,
+        "height": 44
+      },
+      "label": "Go",
+      "textFrame": {
+        "x": 51,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      }
+    },
+    {
+      "id": "85FB8450-E55C-4094-93DD-43F2F310C410",
+      "name": "Button / Primary Brand / Dark / hug-long",
+      "frame": {
+        "x": 0,
+        "y": 390,
+        "width": 212,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "textFrame": {
+        "x": 9,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      }
+    },
+    {
+      "id": "9AE63BFD-C791-412F-AF93-45BE792A7968",
+      "name": "Button / Primary Brand / Dark / wide-short",
+      "frame": {
+        "x": 380,
+        "y": 390,
+        "width": 280,
+        "height": 44
+      },
+      "label": "Go",
+      "textFrame": {
+        "x": 129,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      }
+    },
+    {
+      "id": "9966A244-44EB-4D88-BAD1-C813A207F147",
+      "name": "Button / Primary Brand / Dark / wide-long",
+      "frame": {
+        "x": 760,
+        "y": 390,
+        "width": 320,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "textFrame": {
+        "x": 63,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      }
+    },
+    {
+      "id": "5A2D3FE1-2D3B-48B8-8062-64FF9FE2953D",
+      "name": "Button / Primary Brand / Dark / tall",
+      "frame": {
+        "x": 1140,
+        "y": 390,
+        "width": 280,
+        "height": 64
+      },
+      "label": "Save Draft",
+      "textFrame": {
+        "x": 101,
+        "y": 23,
+        "width": 78,
+        "height": 18
+      }
+    },
+    {
+      "id": "0D1F33A0-742F-4BF2-A5DD-51D15E967793",
+      "name": "Button / Primary Brand / Dark / narrow",
+      "frame": {
+        "x": 1520,
+        "y": 390,
+        "width": 100,
+        "height": 44
+      },
+      "label": "Go",
+      "textFrame": {
+        "x": 39,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      }
+    },
+    {
+      "id": "5664F6F6-52B7-47E3-ADB8-A74CD03525E5",
+      "name": "Button / Secondary / Dark / hug-long",
+      "frame": {
+        "x": 0,
+        "y": 520,
+        "width": 212,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "textFrame": {
+        "x": 9,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      }
+    },
+    {
+      "id": "4F6B2987-468D-4E00-81D3-0AF411CEAF14",
+      "name": "Button / Secondary / Dark / wide-short",
+      "frame": {
+        "x": 380,
+        "y": 520,
+        "width": 280,
+        "height": 44
+      },
+      "label": "Go",
+      "textFrame": {
+        "x": 129,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      }
+    },
+    {
+      "id": "3BAAB4AF-BFA7-44B4-B13E-8722C250CE27",
+      "name": "Button / Secondary / Dark / wide-long",
+      "frame": {
+        "x": 760,
+        "y": 520,
+        "width": 320,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "textFrame": {
+        "x": 63,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      }
+    },
+    {
+      "id": "CE6A615B-F8DA-4A99-9396-8CAAF33864E4",
+      "name": "Button / Secondary / Dark / tall",
+      "frame": {
+        "x": 1140,
+        "y": 520,
+        "width": 280,
+        "height": 64
+      },
+      "label": "Save Draft",
+      "textFrame": {
+        "x": 101,
+        "y": 23,
+        "width": 78,
+        "height": 18
+      }
+    },
+    {
+      "id": "8EA1635D-E696-4572-ACD4-5463F4EF3EEE",
+      "name": "Button / Secondary / Dark / narrow",
+      "frame": {
+        "x": 1520,
+        "y": 520,
+        "width": 100,
+        "height": 44
+      },
+      "label": "Go",
+      "textFrame": {
+        "x": 39,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      }
+    },
+    {
+      "id": "74B5AA50-DE25-44A3-A376-C545A12763C2",
+      "name": "Button / Primary with Icon / Dark / hug-long",
+      "frame": {
+        "x": 0,
+        "y": 650,
+        "width": 236,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "textFrame": {
+        "x": 33,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      }
+    },
+    {
+      "id": "A9FECCBB-44F1-4451-A08D-64493C58BBD5",
+      "name": "Button / Primary with Icon / Dark / wide-short",
+      "frame": {
+        "x": 380,
+        "y": 650,
+        "width": 280,
+        "height": 44
+      },
+      "label": "Go",
+      "textFrame": {
+        "x": 141,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      }
+    },
+    {
+      "id": "1966F89F-227A-43A0-8B45-D460EA48F4DB",
+      "name": "Button / Primary with Icon / Dark / wide-long",
+      "frame": {
+        "x": 760,
+        "y": 650,
+        "width": 320,
+        "height": 44
+      },
+      "label": "Save All Pending Changes",
+      "textFrame": {
+        "x": 75,
+        "y": 13,
+        "width": 194,
+        "height": 18
+      }
+    },
+    {
+      "id": "D4A5ED9F-A07A-4C2E-B660-F2EF33E36111",
+      "name": "Button / Primary with Icon / Dark / tall",
+      "frame": {
+        "x": 1140,
+        "y": 650,
+        "width": 280,
+        "height": 64
+      },
+      "label": "Save Draft",
+      "textFrame": {
+        "x": 113,
+        "y": 23,
+        "width": 78,
+        "height": 18
+      }
+    },
+    {
+      "id": "C06600B2-3164-476F-BF92-2BCFDA054F6A",
+      "name": "Button / Primary with Icon / Dark / narrow",
+      "frame": {
+        "x": 1520,
+        "y": 650,
+        "width": 100,
+        "height": 44
+      },
+      "label": "Go",
+      "textFrame": {
+        "x": 51,
+        "y": 13,
+        "width": 22,
+        "height": 18
+      }
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "reopenedSymbols": 6,
+  "editableText": 6,
+  "bitmaps": 0,
+  "importableSymbols": 6,
+  "instances": [
+    {
+      "name": "Button / Primary Brand / Light",
+      "id": "FF29E48A-B4F9-4ABD-8AA2-3A6B776441F9",
+      "linked": true,
+      "override": "Save Draft",
+      "masterText": "Save Changes"
+    },
+    {
+      "name": "Button / Secondary / Light",
+      "id": "4BE5410A-E089-4175-BA33-072BDF22D82B",
+      "linked": true,
+      "override": "Done",
+      "masterText": "Export"
+    },
+    {
+      "name": "Button / Primary with Icon / Light",
+      "id": "B771DD62-08F5-4217-B95F-99378AE908D5",
+      "linked": true,
+      "override": "Save Draft",
+      "masterText": "New Ticket"
+    },
+    {
+      "name": "Button / Primary Brand / Dark",
+      "id": "81602F68-B19E-44E8-B506-425631ADC2DA",
+      "linked": true,
+      "override": "Save Draft",
+      "masterText": "Save Changes"
+    },
+    {
+      "name": "Button / Secondary / Dark",
+      "id": "0D73AAC6-4560-4C2C-8B68-6D601FAD1138",
+      "linked": true,
+      "override": "Done",
+      "masterText": "Export"
+    },
+    {
+      "name": "Button / Primary with Icon / Dark",
+      "id": "3B8F48A9-1238-4C15-B57E-09566B794DDE",
+      "linked": true,
+      "override": "Save Draft",
+      "masterText": "New Ticket"
+    }
+  ],
+  "reopenedInstances": [
+    {
+      "name": "Button / Primary Brand / Light",
+      "overrides": [
+        "Save Draft"
+      ]
+    },
+    {
+      "name": "Button / Secondary / Light",
+      "overrides": [
+        "Done"
+      ]
+    },
+    {
+      "name": "Button / Primary with Icon / Light",
+      "overrides": [
+        "Save Draft"
+      ]
+    },
+    {
+      "name": "Button / Primary Brand / Dark",
+      "overrides": [
+        "Save Draft"
+      ]
+    },
+    {
+      "name": "Button / Secondary / Dark",
+      "overrides": [
+        "Done"
+      ]
+    },
+    {
+      "name": "Button / Primary with Icon / Dark",
+      "overrides": [
+        "Save Draft"
+      ]
+    }
+  ]
+}

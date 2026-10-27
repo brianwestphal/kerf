@@ -1,5 +1,11 @@
 # Design templates — components as self-contained SVGs
 
+The SVG sheets remain the broad, static catalog. The six-variant native
+[Sketch Button library](sketch/button/README.md) adds editable Symbols,
+production CSS capture, and save/reopen and resizing verification. Its
+`.sketch` file ships with the UI package under `docs/design/sketch/button/`;
+the linked instructions cover regeneration and durable Library installation.
+
 `docs/design/templates/` holds **SVG design templates** for `@kerfjs/ui`
 components: a faithful, self-contained picture of each component in its common
 presentation combinations, captured from the real rendered HTML/CSS (production

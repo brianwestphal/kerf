@@ -6,13 +6,27 @@ import simpleImportSort from 'eslint-plugin-simple-import-sort';
 export default [
   js.configs.recommended,
   {
-    files: ['scripts/sketch/*.mjs'],
+    files: ['scripts/sketch/**/*.mjs'],
     languageOptions: {
       globals: {
         process: 'readonly',
         console: 'readonly',
         URL: 'readonly',
         AbortController: 'readonly',
+        document: 'readonly',
+        getComputedStyle: 'readonly',
+      },
+    },
+  },
+  {
+    files: ['scripts/sketch/button/tasks/*.js'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      globals: {
+        NSString: 'readonly',
+        NSUTF8StringEncoding: 'readonly',
+        NSFont: 'readonly',
+        NSBundle: 'readonly',
       },
     },
   },

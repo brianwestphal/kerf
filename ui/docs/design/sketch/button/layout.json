@@ -1,0 +1,196 @@
+[
+  {
+    "id": "primary-brand-light",
+    "theme": "light",
+    "label": "Primary Brand",
+    "name": "Button / Primary Brand / Light",
+    "width": 124,
+    "height": 44,
+    "layout": {
+      "width": 123.28125,
+      "height": 44,
+      "alignItems": "center",
+      "justifyContent": "center",
+      "textAlign": "center",
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "radius": 12,
+      "borderWidth": 1,
+      "borderColor": "#00000000",
+      "fill": "#0075dbff",
+      "textColor": "#ffffffff",
+      "fontFamily": "system-ui, -apple-system, sans-serif",
+      "fontSize": 16,
+      "fontWeight": "500",
+      "whiteSpace": "nowrap",
+      "label": "Save Changes",
+      "icon": null
+    }
+  },
+  {
+    "id": "secondary-light",
+    "theme": "light",
+    "label": "Secondary",
+    "name": "Button / Secondary / Light",
+    "width": 67,
+    "height": 44,
+    "layout": {
+      "width": 66.6875,
+      "height": 44,
+      "alignItems": "center",
+      "justifyContent": "center",
+      "textAlign": "center",
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "radius": 12,
+      "borderWidth": 1,
+      "borderColor": "#00000d51",
+      "fill": "#00000000",
+      "textColor": "#626267ff",
+      "fontFamily": "system-ui, -apple-system, sans-serif",
+      "fontSize": 16,
+      "fontWeight": "500",
+      "whiteSpace": "nowrap",
+      "label": "Export",
+      "icon": null
+    }
+  },
+  {
+    "id": "icon-brand-light",
+    "theme": "light",
+    "label": "Primary with Icon",
+    "name": "Button / Primary with Icon / Light",
+    "width": 125,
+    "height": 44,
+    "layout": {
+      "width": 124.640625,
+      "height": 44,
+      "alignItems": "center",
+      "justifyContent": "center",
+      "textAlign": "center",
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "radius": 12,
+      "borderWidth": 1,
+      "borderColor": "#00000000",
+      "fill": "#0075dbff",
+      "textColor": "#ffffffff",
+      "fontFamily": "system-ui, -apple-system, sans-serif",
+      "fontSize": 16,
+      "fontWeight": "500",
+      "whiteSpace": "nowrap",
+      "label": "New Ticket",
+      "icon": {
+        "svg": "<svg data-lucide=\"plus\" aria-hidden=\"true\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"rgb(255, 255, 255)\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path d=\"M5 12h14\"></path><path d=\"M12 5v14\"></path></svg>",
+        "width": 16,
+        "height": 16
+      }
+    }
+  },
+  {
+    "id": "primary-brand-dark",
+    "theme": "dark",
+    "label": "Primary Brand",
+    "name": "Button / Primary Brand / Dark",
+    "width": 124,
+    "height": 44,
+    "layout": {
+      "width": 123.28125,
+      "height": 44,
+      "alignItems": "center",
+      "justifyContent": "center",
+      "textAlign": "center",
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "radius": 12,
+      "borderWidth": 1,
+      "borderColor": "#00000000",
+      "fill": "#64d2ffff",
+      "textColor": "#111113ff",
+      "fontFamily": "system-ui, -apple-system, sans-serif",
+      "fontSize": 16,
+      "fontWeight": "500",
+      "whiteSpace": "nowrap",
+      "label": "Save Changes",
+      "icon": null
+    }
+  },
+  {
+    "id": "secondary-dark",
+    "theme": "dark",
+    "label": "Secondary",
+    "name": "Button / Secondary / Dark",
+    "width": 67,
+    "height": 44,
+    "layout": {
+      "width": 66.6875,
+      "height": 44,
+      "alignItems": "center",
+      "justifyContent": "center",
+      "textAlign": "center",
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "radius": 12,
+      "borderWidth": 1,
+      "borderColor": "#f9f9ff52",
+      "fill": "#00000000",
+      "textColor": "#c2c2c6ff",
+      "fontFamily": "system-ui, -apple-system, sans-serif",
+      "fontSize": 16,
+      "fontWeight": "500",
+      "whiteSpace": "nowrap",
+      "label": "Export",
+      "icon": null
+    }
+  },
+  {
+    "id": "icon-brand-dark",
+    "theme": "dark",
+    "label": "Primary with Icon",
+    "name": "Button / Primary with Icon / Dark",
+    "width": 125,
+    "height": 44,
+    "layout": {
+      "width": 124.640625,
+      "height": 44,
+      "alignItems": "center",
+      "justifyContent": "center",
+      "textAlign": "center",
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "radius": 12,
+      "borderWidth": 1,
+      "borderColor": "#00000000",
+      "fill": "#64d2ffff",
+      "textColor": "#111113ff",
+      "fontFamily": "system-ui, -apple-system, sans-serif",
+      "fontSize": 16,
+      "fontWeight": "500",
+      "whiteSpace": "nowrap",
+      "label": "New Ticket",
+      "icon": {
+        "svg": "<svg data-lucide=\"plus\" aria-hidden=\"true\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"rgb(17, 17, 19)\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path d=\"M5 12h14\"></path><path d=\"M12 5v14\"></path></svg>",
+        "width": 16,
+        "height": 16
+      }
+    }
+  }
+]

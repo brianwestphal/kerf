@@ -1,0 +1,202 @@
+[
+  {
+    "id": "primary-brand-light",
+    "theme": "light",
+    "label": "Primary Brand",
+    "name": "Button / Primary Brand / Light",
+    "width": 124,
+    "height": 44,
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 124 44\" width=\"124\" height=\"44\"><defs><clipPath id=\"ct0\"><rect x=\"9\" y=\"13\" width=\"105.3\" height=\"18\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"123.3\" height=\"44\" rx=\"12\" fill=\"rgb(0,117,219)\"/><rect x=\"0.5\" y=\"0.5\" width=\"122\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"9\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(255,255,255)\">Save Changes</text></svg>",
+    "layout": {
+      "width": 123.28125,
+      "height": 44,
+      "alignItems": "center",
+      "justifyContent": "center",
+      "textAlign": "center",
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "radius": 12,
+      "borderWidth": 1,
+      "borderColor": "#00000000",
+      "fill": "#0075dbff",
+      "textColor": "#ffffffff",
+      "fontFamily": "system-ui, -apple-system, sans-serif",
+      "fontSize": 16,
+      "fontWeight": "500",
+      "whiteSpace": "nowrap",
+      "label": "Save Changes",
+      "icon": null
+    }
+  },
+  {
+    "id": "secondary-light",
+    "theme": "light",
+    "label": "Secondary",
+    "name": "Button / Secondary / Light",
+    "width": 67,
+    "height": 44,
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 67 44\" width=\"67\" height=\"44\"><defs><clipPath id=\"ct0\"><rect x=\"9\" y=\"13\" width=\"48.7\" height=\"18\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"66\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,13,0.318)\" stroke-width=\"1\"/><text x=\"9\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(98,98,103)\">Export</text></svg>",
+    "layout": {
+      "width": 66.6875,
+      "height": 44,
+      "alignItems": "center",
+      "justifyContent": "center",
+      "textAlign": "center",
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "radius": 12,
+      "borderWidth": 1,
+      "borderColor": "#00000d51",
+      "fill": "#00000000",
+      "textColor": "#626267ff",
+      "fontFamily": "system-ui, -apple-system, sans-serif",
+      "fontSize": 16,
+      "fontWeight": "500",
+      "whiteSpace": "nowrap",
+      "label": "Export",
+      "icon": null
+    }
+  },
+  {
+    "id": "icon-brand-light",
+    "theme": "light",
+    "label": "Primary with Icon",
+    "name": "Button / Primary with Icon / Light",
+    "width": 125,
+    "height": 44,
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 125 44\" width=\"125\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"9\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><clipPath id=\"ct2\"><rect x=\"33\" y=\"13\" width=\"82.6\" height=\"18\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"124.6\" height=\"44\" rx=\"12\" fill=\"rgb(0,117,219)\"/><rect x=\"0.5\" y=\"0.5\" width=\"124\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g color=\"rgb(255, 255, 255)\"><clipPath id=\"svgic1\"><rect x=\"9\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(9 14)scale(.66667)\"><path d=\"M5 12h14\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 255, 255)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M12 5v14\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 255, 255)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"33\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(255,255,255)\">New Ticket</text></svg>",
+    "layout": {
+      "width": 124.640625,
+      "height": 44,
+      "alignItems": "center",
+      "justifyContent": "center",
+      "textAlign": "center",
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "radius": 12,
+      "borderWidth": 1,
+      "borderColor": "#00000000",
+      "fill": "#0075dbff",
+      "textColor": "#ffffffff",
+      "fontFamily": "system-ui, -apple-system, sans-serif",
+      "fontSize": 16,
+      "fontWeight": "500",
+      "whiteSpace": "nowrap",
+      "label": "New Ticket",
+      "icon": {
+        "svg": "<svg data-lucide=\"plus\" aria-hidden=\"true\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"rgb(255, 255, 255)\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path d=\"M5 12h14\"></path><path d=\"M12 5v14\"></path></svg>",
+        "width": 16,
+        "height": 16
+      }
+    }
+  },
+  {
+    "id": "primary-brand-dark",
+    "theme": "dark",
+    "label": "Primary Brand",
+    "name": "Button / Primary Brand / Dark",
+    "width": 124,
+    "height": 44,
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 124 44\" width=\"124\" height=\"44\"><defs><clipPath id=\"ct0\"><rect x=\"9\" y=\"13\" width=\"105.3\" height=\"18\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"123.3\" height=\"44\" rx=\"12\" fill=\"rgb(100,210,255)\"/><rect x=\"0.5\" y=\"0.5\" width=\"122\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"9\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(17,17,19)\">Save Changes</text></svg>",
+    "layout": {
+      "width": 123.28125,
+      "height": 44,
+      "alignItems": "center",
+      "justifyContent": "center",
+      "textAlign": "center",
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "radius": 12,
+      "borderWidth": 1,
+      "borderColor": "#00000000",
+      "fill": "#64d2ffff",
+      "textColor": "#111113ff",
+      "fontFamily": "system-ui, -apple-system, sans-serif",
+      "fontSize": 16,
+      "fontWeight": "500",
+      "whiteSpace": "nowrap",
+      "label": "Save Changes",
+      "icon": null
+    }
+  },
+  {
+    "id": "secondary-dark",
+    "theme": "dark",
+    "label": "Secondary",
+    "name": "Button / Secondary / Dark",
+    "width": 67,
+    "height": 44,
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 67 44\" width=\"67\" height=\"44\"><defs><clipPath id=\"ct0\"><rect x=\"9\" y=\"13\" width=\"48.7\" height=\"18\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"66\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(250,250,255,0.32)\" stroke-width=\"1\"/><text x=\"9\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(194,194,198)\">Export</text></svg>",
+    "layout": {
+      "width": 66.6875,
+      "height": 44,
+      "alignItems": "center",
+      "justifyContent": "center",
+      "textAlign": "center",
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "radius": 12,
+      "borderWidth": 1,
+      "borderColor": "#f9f9ff52",
+      "fill": "#00000000",
+      "textColor": "#c2c2c6ff",
+      "fontFamily": "system-ui, -apple-system, sans-serif",
+      "fontSize": 16,
+      "fontWeight": "500",
+      "whiteSpace": "nowrap",
+      "label": "Export",
+      "icon": null
+    }
+  },
+  {
+    "id": "icon-brand-dark",
+    "theme": "dark",
+    "label": "Primary with Icon",
+    "name": "Button / Primary with Icon / Dark",
+    "width": 125,
+    "height": 44,
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 125 44\" width=\"125\" height=\"44\"><defs><clipPath id=\"cp0\"><rect x=\"9\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><clipPath id=\"ct2\"><rect x=\"33\" y=\"13\" width=\"82.6\" height=\"18\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"124.6\" height=\"44\" rx=\"12\" fill=\"rgb(100,210,255)\"/><rect x=\"0.5\" y=\"0.5\" width=\"124\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g color=\"rgb(17, 17, 19)\"><clipPath id=\"svgic1\"><rect x=\"9\" y=\"14\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(9 14)scale(.66667)\"><path d=\"M5 12h14\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(17, 17, 19)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M12 5v14\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(17, 17, 19)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"33\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(17,17,19)\">New Ticket</text></svg>",
+    "layout": {
+      "width": 124.640625,
+      "height": 44,
+      "alignItems": "center",
+      "justifyContent": "center",
+      "textAlign": "center",
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "radius": 12,
+      "borderWidth": 1,
+      "borderColor": "#00000000",
+      "fill": "#64d2ffff",
+      "textColor": "#111113ff",
+      "fontFamily": "system-ui, -apple-system, sans-serif",
+      "fontSize": 16,
+      "fontWeight": "500",
+      "whiteSpace": "nowrap",
+      "label": "New Ticket",
+      "icon": {
+        "svg": "<svg data-lucide=\"plus\" aria-hidden=\"true\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"rgb(17, 17, 19)\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path d=\"M5 12h14\"></path><path d=\"M12 5v14\"></path></svg>",
+        "width": 16,
+        "height": 16
+      }
+    }
+  }
+]

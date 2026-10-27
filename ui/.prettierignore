@@ -18,6 +18,9 @@ ai-regressions/response.schema.json
 ai-regressions/run*.schema.json
 ux-demo/catalog.generated.ts
 scripts/check-design-templates-drift.mjs
+docs/design/sketch/button/*.json
+docs/design/sketch/button/*.html
+docs/design/sketch/button/inputs/
 
 **/*.svg
 **/*.gif

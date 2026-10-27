@@ -81,5 +81,7 @@ launch failure retains the cleanup journal because delivery may be ambiguous.
 Finish or dismiss that dialog yourself, run `recover`, and wait for cleanup
 acknowledgement before retrying. The runner must not dismiss user dialogs.
 
-The export pipeline and generated Symbols are tracked separately in KF-MKW7QZ;
-this runner alone does not generate the component catalog.
+The [Button export pipeline](sketch/button/README.md) uses this runner for
+repository-owned capture, Symbol generation, Library/consumer verification,
+and resizing checks. This runner alone does not generate the broader component
+catalog.

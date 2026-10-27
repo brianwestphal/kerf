@@ -1,0 +1,9 @@
+/inputs/*.html
+/inputs/*.png
+/exports/
+/consumer-exports/
+/resize-exports/
+/resize-browser/
+/comparison.html
+/resizing-comparison.html
+/.Kerf-Button-*.sketch

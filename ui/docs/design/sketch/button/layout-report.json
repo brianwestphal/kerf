@@ -1,0 +1,326 @@
+[
+  {
+    "name": "Button / Primary Brand / Light",
+    "id": "2E054880-303B-4D6B-AE53-F67A9B7545BC",
+    "symbolId": "80E82AF9-BF60-4B08-9634-D5507EDE2757",
+    "frame": {
+      "x": 0,
+      "y": 0,
+      "width": 124,
+      "height": 44
+    },
+    "horizontalSizing": 1,
+    "verticalSizing": 0,
+    "stack": {
+      "type": "StackLayout",
+      "stackingOrder": 0,
+      "bordersAffectLayout": false,
+      "direction": 0,
+      "justifyContent": 1,
+      "alignItems": 1,
+      "gap": 8,
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 9,
+        "right": 9
+      },
+      "wraps": false,
+      "alignContent": 0,
+      "crossAxisGap": 0
+    },
+    "text": {
+      "id": "F177073A-6A08-44FB-BB74-400AFFA1C353",
+      "frame": {
+        "x": 9,
+        "y": 13,
+        "width": 106,
+        "height": 18
+      },
+      "alignment": "center",
+      "verticalAlignment": "center",
+      "fontWeight": 6,
+      "horizontalSizing": 1,
+      "verticalSizing": 1
+    },
+    "corners": {
+      "style": 0,
+      "radii": [
+        12
+      ],
+      "hasRadii": true,
+      "concentric": false,
+      "smoothing": 0.6
+    }
+  },
+  {
+    "name": "Button / Secondary / Light",
+    "id": "02B59DB9-2A72-4DA1-8452-54DBB6E139F7",
+    "symbolId": "A7014053-526D-4155-9572-3CDC1352A5FF",
+    "frame": {
+      "x": 250,
+      "y": 0,
+      "width": 67,
+      "height": 44
+    },
+    "horizontalSizing": 1,
+    "verticalSizing": 0,
+    "stack": {
+      "type": "StackLayout",
+      "stackingOrder": 0,
+      "bordersAffectLayout": false,
+      "direction": 0,
+      "justifyContent": 1,
+      "alignItems": 1,
+      "gap": 8,
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 9,
+        "right": 9
+      },
+      "wraps": false,
+      "alignContent": 0,
+      "crossAxisGap": 0
+    },
+    "text": {
+      "id": "CF7D1C0C-C62B-43C1-80FA-03F975694BD0",
+      "frame": {
+        "x": 9,
+        "y": 13,
+        "width": 49,
+        "height": 18
+      },
+      "alignment": "center",
+      "verticalAlignment": "center",
+      "fontWeight": 6,
+      "horizontalSizing": 1,
+      "verticalSizing": 1
+    },
+    "corners": {
+      "style": 0,
+      "radii": [
+        12
+      ],
+      "hasRadii": true,
+      "concentric": false,
+      "smoothing": 0.6
+    }
+  },
+  {
+    "name": "Button / Primary with Icon / Light",
+    "id": "F989BAB0-1909-49F9-AB07-C7BCDEE8CF35",
+    "symbolId": "A5F66729-88F1-4F6D-AB8D-E5437433663D",
+    "frame": {
+      "x": 500,
+      "y": 0,
+      "width": 125,
+      "height": 44
+    },
+    "horizontalSizing": 1,
+    "verticalSizing": 0,
+    "stack": {
+      "type": "StackLayout",
+      "stackingOrder": 0,
+      "bordersAffectLayout": false,
+      "direction": 0,
+      "justifyContent": 1,
+      "alignItems": 1,
+      "gap": 8,
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 9,
+        "right": 9
+      },
+      "wraps": false,
+      "alignContent": 0,
+      "crossAxisGap": 0
+    },
+    "text": {
+      "id": "E76D6F1A-66E0-4182-842C-57F2FA0AFCB8",
+      "frame": {
+        "x": 33,
+        "y": 13,
+        "width": 83,
+        "height": 18
+      },
+      "alignment": "center",
+      "verticalAlignment": "center",
+      "fontWeight": 6,
+      "horizontalSizing": 1,
+      "verticalSizing": 1
+    },
+    "corners": {
+      "style": 0,
+      "radii": [
+        12
+      ],
+      "hasRadii": true,
+      "concentric": false,
+      "smoothing": 0.6
+    }
+  },
+  {
+    "name": "Button / Primary Brand / Dark",
+    "id": "C033B6D7-E56A-49B5-A283-BB25A293CA3F",
+    "symbolId": "073049EF-DFA6-4078-BFB6-AA35997202BB",
+    "frame": {
+      "x": 0,
+      "y": 150,
+      "width": 124,
+      "height": 44
+    },
+    "horizontalSizing": 1,
+    "verticalSizing": 0,
+    "stack": {
+      "type": "StackLayout",
+      "stackingOrder": 0,
+      "bordersAffectLayout": false,
+      "direction": 0,
+      "justifyContent": 1,
+      "alignItems": 1,
+      "gap": 8,
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 9,
+        "right": 9
+      },
+      "wraps": false,
+      "alignContent": 0,
+      "crossAxisGap": 0
+    },
+    "text": {
+      "id": "F1938F37-33EF-4F8F-B57B-4E49692E0954",
+      "frame": {
+        "x": 9,
+        "y": 13,
+        "width": 106,
+        "height": 18
+      },
+      "alignment": "center",
+      "verticalAlignment": "center",
+      "fontWeight": 6,
+      "horizontalSizing": 1,
+      "verticalSizing": 1
+    },
+    "corners": {
+      "style": 0,
+      "radii": [
+        12
+      ],
+      "hasRadii": true,
+      "concentric": false,
+      "smoothing": 0.6
+    }
+  },
+  {
+    "name": "Button / Secondary / Dark",
+    "id": "2BDF018D-C0A7-4738-8A8F-2728F3C7939D",
+    "symbolId": "A719738E-7002-4900-913D-D671DD7B99BA",
+    "frame": {
+      "x": 250,
+      "y": 150,
+      "width": 67,
+      "height": 44
+    },
+    "horizontalSizing": 1,
+    "verticalSizing": 0,
+    "stack": {
+      "type": "StackLayout",
+      "stackingOrder": 0,
+      "bordersAffectLayout": false,
+      "direction": 0,
+      "justifyContent": 1,
+      "alignItems": 1,
+      "gap": 8,
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 9,
+        "right": 9
+      },
+      "wraps": false,
+      "alignContent": 0,
+      "crossAxisGap": 0
+    },
+    "text": {
+      "id": "84045700-C25F-4308-8D95-105AB1BFC4B2",
+      "frame": {
+        "x": 9,
+        "y": 13,
+        "width": 49,
+        "height": 18
+      },
+      "alignment": "center",
+      "verticalAlignment": "center",
+      "fontWeight": 6,
+      "horizontalSizing": 1,
+      "verticalSizing": 1
+    },
+    "corners": {
+      "style": 0,
+      "radii": [
+        12
+      ],
+      "hasRadii": true,
+      "concentric": false,
+      "smoothing": 0.6
+    }
+  },
+  {
+    "name": "Button / Primary with Icon / Dark",
+    "id": "86BCDE49-2F51-45C8-B092-B115597BE803",
+    "symbolId": "1E43DFF4-774D-4D40-B277-85066273ED60",
+    "frame": {
+      "x": 500,
+      "y": 150,
+      "width": 125,
+      "height": 44
+    },
+    "horizontalSizing": 1,
+    "verticalSizing": 0,
+    "stack": {
+      "type": "StackLayout",
+      "stackingOrder": 0,
+      "bordersAffectLayout": false,
+      "direction": 0,
+      "justifyContent": 1,
+      "alignItems": 1,
+      "gap": 8,
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 9,
+        "right": 9
+      },
+      "wraps": false,
+      "alignContent": 0,
+      "crossAxisGap": 0
+    },
+    "text": {
+      "id": "B284F609-868D-4B54-9586-E6034B5E457C",
+      "frame": {
+        "x": 33,
+        "y": 13,
+        "width": 83,
+        "height": 18
+      },
+      "alignment": "center",
+      "verticalAlignment": "center",
+      "fontWeight": 6,
+      "horizontalSizing": 1,
+      "verticalSizing": 1
+    },
+    "corners": {
+      "style": 0,
+      "radii": [
+        12
+      ],
+      "hasRadii": true,
+      "concentric": false,
+      "smoothing": 0.6
+    }
+  }
+]

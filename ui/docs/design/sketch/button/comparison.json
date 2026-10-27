@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Button / Primary Brand / Light",
+    "meanChannelError": 3.6071870417888565,
+    "differentPixelPercent": 6.314149560117302
+  },
+  {
+    "name": "Button / Secondary / Light",
+    "meanChannelError": 1.4418461668928086,
+    "differentPixelPercent": 3.5193351424694708
+  },
+  {
+    "name": "Button / Primary with Icon / Light",
+    "meanChannelError": 1.4436136363636363,
+    "differentPixelPercent": 3.359090909090909
+  },
+  {
+    "name": "Button / Primary Brand / Dark",
+    "meanChannelError": 4.10590405058651,
+    "differentPixelPercent": 6.630315249266862
+  },
+  {
+    "name": "Button / Secondary / Dark",
+    "meanChannelError": 2.5530868385346,
+    "differentPixelPercent": 4.045115332428765
+  },
+  {
+    "name": "Button / Primary with Icon / Dark",
+    "meanChannelError": 1.1441704545454545,
+    "differentPixelPercent": 3.3727272727272726
+  }
+]

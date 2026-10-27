@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "symbols": 6,
+  "resizingCases": 30,
+  "reopenedInstances": 30,
+  "checks": [
+    "content-fit growth",
+    "manual wider and narrower widths",
+    "taller instances",
+    "horizontal content-group centering",
+    "vertical centering",
+    "fixed icon size",
+    "8px icon gap",
+    "minimum insets",
+    "centered text attributes",
+    "12px corners",
+    "preserved overrides and dimensions after reopening"
+  ]
+}
