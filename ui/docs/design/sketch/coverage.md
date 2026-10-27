@@ -1,0 +1,147 @@
+# Native Sketch coverage
+
+Generated from `scripts/build-design-templates.mjs` by
+`scripts/sketch/catalog/coverage.mjs`. Run with `--write` after changing
+the template manifest or a family assignment. The offline
+`check:design-templates` gate compares this file with the current tree.
+
+The source inventory has **33 components**, **110 variants**,
+and **220 light/dark SVG captures**. Supported means that an editable
+native Symbol batch passed its own browser, override, resize, imported consumer,
+and save/reopen checks. Pending means the SVG exists but its reusable Sketch
+component boundary and semantic layout have not passed those checks. A source
+variant may be a multi-control showcase; a family ticket must export its actual
+individual component states and retain the sheet only as a catalog page.
+
+The Button pilot covers seven source showcase variants with 40 editable
+appearance Symbols in [Kerf-Button.sketch](button/README.md). Its Symbols are
+the first published native batch. The five pending family tickets cover the
+other source variants, including ColorSwatches; they must update this matrix
+as they ship. The catalog's [install and update guide](README.md) identifies
+the current library and supported Sketch version.
+
+## Family batches
+
+| Family                  | Components | Source variants | Status    | Ticket    |
+| ----------------------- | ---------: | --------------: | --------- | --------- |
+| Button pilot            |          1 |               7 | supported | KF-MKW7QZ |
+| Form controls           |          6 |              20 | pending   | KF-8VXPDP |
+| Advanced inputs         |          7 |              17 | pending   | KF-6CC071 |
+| Toolbars and navigation |          7 |              25 | pending   | KF-6Q8S95 |
+| Lists and data          |          5 |              21 | pending   | KF-83M2MW |
+| Content and feedback    |          7 |              20 | pending   | KF-P0X4R9 |
+
+## Variant inventory
+
+| Component             | Source variant       | Presentation                                | Native status | Ticket    |
+| --------------------- | -------------------- | ------------------------------------------- | ------------- | --------- |
+| button                | tones                | Primary Tones                               | supported     | KF-MKW7QZ |
+| button                | emphasis             | Secondary and Plain Emphasis                | supported     | KF-MKW7QZ |
+| button                | icons                | With an Icon, and Icon Only                 | supported     | KF-MKW7QZ |
+| button                | states               | Compact and Disabled                        | supported     | KF-MKW7QZ |
+| button                | toggles              | Toggle, Resting and Pressed                 | supported     | KF-MKW7QZ |
+| button                | pill                 | Pill Shape                                  | supported     | KF-MKW7QZ |
+| button                | full-width           | Full-Width Primary Action                   | supported     | KF-MKW7QZ |
+| split-button          | tones                | Rounded Tones                               | pending       | KF-8VXPDP |
+| split-button          | pill                 | Pill Shape                                  | pending       | KF-8VXPDP |
+| split-button          | states               | Busy and Disabled                           | pending       | KF-8VXPDP |
+| split-button          | full-width           | Full-Width Primary Action                   | pending       | KF-8VXPDP |
+| text-field            | labeled              | Label, Value, and Hint                      | pending       | KF-8VXPDP |
+| text-field            | search               | Search with an Icon                         | pending       | KF-8VXPDP |
+| text-field            | error                | Required with an Error                      | pending       | KF-8VXPDP |
+| text-field            | multiline            | Growing Multi-Line with a Count             | pending       | KF-8VXPDP |
+| text-field            | compact              | Compact                                     | pending       | KF-8VXPDP |
+| text-field            | number               | Bounded Decimal                             | pending       | KF-8VXPDP |
+| checkbox              | states               | Checked, Unchecked, and Disabled            | pending       | KF-8VXPDP |
+| checkbox              | mixed                | Mixed Parent                                | pending       | KF-8VXPDP |
+| checkbox              | error                | Required with an Error                      | pending       | KF-8VXPDP |
+| checkbox              | compact              | Compact                                     | pending       | KF-8VXPDP |
+| checkbox-group        | vertical             | Stacked Choices with Hints                  | pending       | KF-8VXPDP |
+| checkbox-group        | horizontal           | Horizontal, Compact, with an Error          | pending       | KF-8VXPDP |
+| radio-group           | vertical             | Stacked Choices with Hints                  | pending       | KF-8VXPDP |
+| radio-group           | horizontal           | Horizontal, Compact, with an Error          | pending       | KF-8VXPDP |
+| switch                | states               | On, Off, and Disabled                       | pending       | KF-8VXPDP |
+| switch                | compact              | Compact                                     | pending       | KF-8VXPDP |
+| select                | form                 | Labeled Form Field                          | pending       | KF-6CC071 |
+| select                | icons                | Choices with Icons                          | pending       | KF-6CC071 |
+| select                | compact              | Compact, Disabled                           | pending       | KF-6CC071 |
+| search-field          | tokens               | Text with Atomic Tokens                     | pending       | KF-6CC071 |
+| search-field          | empty                | Empty, Expanded                             | pending       | KF-6CC071 |
+| tag-field             | tags                 | Label, Tags, and Hint                       | pending       | KF-6CC071 |
+| tag-field             | error                | Error                                       | pending       | KF-6CC071 |
+| slider                | readout              | Label, Readout, and Hint                    | pending       | KF-6CC071 |
+| slider                | ticks                | Stepped with Ticks                          | pending       | KF-6CC071 |
+| slider                | compact              | Compact                                     | pending       | KF-6CC071 |
+| color-field           | hint                 | Label, Color, and Hint                      | pending       | KF-6CC071 |
+| color-field           | compact              | Compact with Opacity                        | pending       | KF-6CC071 |
+| color-field           | error                | Disabled with an Error                      | pending       | KF-6CC071 |
+| color-picker          | rgb                  | RGB with Presets                            | pending       | KF-6CC071 |
+| color-picker          | hsb                  | HSB with Opacity                            | pending       | KF-6CC071 |
+| color-picker          | gray                 | Opaque Grayscale                            | pending       | KF-6CC071 |
+| color-swatches        | palette              | Palette with a Choice                       | pending       | KF-6CC071 |
+| toolbar-control-group | icon-tile-neutral    | Neutral Quiet Icon Tile                     | pending       | KF-6Q8S95 |
+| toolbar-control-group | icon-tile-brand      | Brand Quiet Icon Tile                       | pending       | KF-6Q8S95 |
+| toolbar-control-group | icon-tile-success    | Success Quiet Icon Tile                     | pending       | KF-6Q8S95 |
+| toolbar-control-group | icon-tile-warning    | Warning Quiet Icon Tile                     | pending       | KF-6Q8S95 |
+| toolbar-control-group | icon-tile-danger     | Danger Quiet Icon Tile                      | pending       | KF-6Q8S95 |
+| toolbar-control-group | icon-buttons         | Bordered Group of Icon Buttons              | pending       | KF-6Q8S95 |
+| toolbar-control-group | borderless-single    | Borderless Single Control                   | pending       | KF-6Q8S95 |
+| toolbar-control-group | with-text            | Label Text Beside a Control                 | pending       | KF-6Q8S95 |
+| toolbar-control-group | glass                | Glass Material Over Artwork                 | pending       | KF-6Q8S95 |
+| toolbar-control-group | push-buttons         | Push-Appearance Buttons                     | pending       | KF-6Q8S95 |
+| toolbar               | title-and-actions    | Title with a Trailing Group                 | pending       | KF-6Q8S95 |
+| toolbar               | width-visibility-600 | Width Visibility (600px)                    | pending       | KF-6Q8S95 |
+| toolbar               | width-visibility-320 | Width Visibility (320px)                    | pending       | KF-6Q8S95 |
+| toolbar-text          | dark-tone            | Dark Toolbar Tone                           | pending       | KF-6Q8S95 |
+| toolbar-text          | large                | Large (Title)                               | pending       | KF-6Q8S95 |
+| toolbar-text          | default              | Default                                     | pending       | KF-6Q8S95 |
+| toolbar-text          | small                | Small (Label)                               | pending       | KF-6Q8S95 |
+| tab-bar               | workspace-tabs       | Selected Tab Among Peers                    | pending       | KF-6Q8S95 |
+| segmented-control     | equal                | Equal-Width Rounded                         | pending       | KF-6Q8S95 |
+| segmented-control     | pill-small           | Pill, Small                                 | pending       | KF-6Q8S95 |
+| choice-chips          | color-palette        | Wrapping Color Palette                      | pending       | KF-6Q8S95 |
+| choice-chips          | compact-icons        | Compact with Icons                          | pending       | KF-6Q8S95 |
+| choice-chips          | multiple             | Multiple Selection                          | pending       | KF-6Q8S95 |
+| chip                  | tags                 | Removable, Link, and Plain Tags             | pending       | KF-6Q8S95 |
+| chip                  | action-filters       | Action Chips in a Compact Value Table       | pending       | KF-6Q8S95 |
+| list                  | stack                | Standard Gap and Four Dividers              | pending       | KF-83M2MW |
+| list                  | compact              | Compact, No Gap                             | pending       | KF-83M2MW |
+| list-item             | default              | Icon and Label                              | pending       | KF-83M2MW |
+| list-item             | selected             | Selected (aria-current)                     | pending       | KF-83M2MW |
+| list-item             | trailing             | Trailing Metadata                           | pending       | KF-83M2MW |
+| list-item             | multiline            | Multiline Label (Icon Aligns to First Line) | pending       | KF-83M2MW |
+| list-item             | icon-tile            | Tone Icon Tile                              | pending       | KF-83M2MW |
+| list-header           | action               | Label with an Action                        | pending       | KF-83M2MW |
+| list-header           | count                | Label with a Count Pill                     | pending       | KF-83M2MW |
+| list-header           | size-xs              | Label Size XS                               | pending       | KF-83M2MW |
+| list-header           | size-m               | Label Size M                                | pending       | KF-83M2MW |
+| list-header           | size-l               | Label Size L                                | pending       | KF-83M2MW |
+| list-header           | size-xl              | Label Size XL                               | pending       | KF-83M2MW |
+| list-header           | inline-action        | Inline Label with an Action                 | pending       | KF-83M2MW |
+| list-header           | toggle-collapsed     | Disclosure Toggle, Collapsed                | pending       | KF-83M2MW |
+| list-header           | toggle-expanded      | Disclosure Toggle, Expanded                 | pending       | KF-83M2MW |
+| list-action-row       | default              | Primary with a Trailing Action              | pending       | KF-83M2MW |
+| list-action-row       | selected             | Selected Primary                            | pending       | KF-83M2MW |
+| list-action-row       | trailing-menu        | Trailing Overflow Menu                      | pending       | KF-83M2MW |
+| list-action-row       | icon-tile            | Colored Icon Tile                           | pending       | KF-83M2MW |
+| value-table           | details              | Key/Value Detail Rows                       | pending       | KF-83M2MW |
+| disclosure            | plain                | Closed and Open                             | pending       | KF-P0X4R9 |
+| disclosure            | framed-sunken        | Framed and Sunken                           | pending       | KF-P0X4R9 |
+| disclosure            | embedded             | Embedded in a Content Item                  | pending       | KF-P0X4R9 |
+| message-composer      | chat                 | Chat MessageComposer with Hint              | pending       | KF-P0X4R9 |
+| message-composer      | prompt               | Prompt with Taller Bounds                   | pending       | KF-P0X4R9 |
+| progress-bar          | determinate          | Labeled with a Readout                      | pending       | KF-P0X4R9 |
+| progress-bar          | tones                | Tones and Compact                           | pending       | KF-P0X4R9 |
+| progress-ring         | sizes                | Small, Medium, and Large                    | pending       | KF-P0X4R9 |
+| progress-ring         | tones                | Tones                                       | pending       | KF-P0X4R9 |
+| state-banner          | info                 | Info                                        | pending       | KF-P0X4R9 |
+| state-banner          | info-badge           | Info with Badge                             | pending       | KF-P0X4R9 |
+| state-banner          | success              | Success                                     | pending       | KF-P0X4R9 |
+| state-banner          | warning              | Warning                                     | pending       | KF-P0X4R9 |
+| state-banner          | danger               | Danger (Alert)                              | pending       | KF-P0X4R9 |
+| state-banner          | strip                | Strip (Full-Width Band)                     | pending       | KF-P0X4R9 |
+| empty-state           | with-action          | Icon, Title, Detail, and Action             | pending       | KF-P0X4R9 |
+| empty-state           | filtered             | No Results for a Filter                     | pending       | KF-P0X4R9 |
+| skeleton              | block                | Single Block                                | pending       | KF-P0X4R9 |
+| skeleton              | lines                | Paragraph Lines                             | pending       | KF-P0X4R9 |
+| skeleton              | avatar               | Circular (Avatar)                           | pending       | KF-P0X4R9 |

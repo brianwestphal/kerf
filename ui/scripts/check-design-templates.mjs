@@ -96,3 +96,5 @@ const variantCount = Object.values(COMPONENTS).reduce(
 console.log(
   `[check-design-templates] OK — ${Object.keys(COMPONENTS).length} components, ${variantCount} variants, light + dark each, libraries present.`,
 );
+
+await import('./sketch/catalog/coverage.mjs');

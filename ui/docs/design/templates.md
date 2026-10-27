@@ -5,6 +5,9 @@ The SVG sheets remain the broad, static catalog. The 40-Symbol native
 production CSS capture, and save/reopen and resizing verification. Its
 `.sketch` file ships with the UI package under `docs/design/sketch/button/`;
 the linked instructions cover regeneration and durable Library installation.
+The [native Sketch coverage matrix](sketch/coverage.md) tracks each current
+template variant and its implementation family. The [Sketch catalog guide](sketch/README.md)
+names the published library, its supported version, and update steps.
 
 `docs/design/templates/` holds **SVG design templates** for `@kerfjs/ui`
 components: a faithful, self-contained picture of each component in its common
