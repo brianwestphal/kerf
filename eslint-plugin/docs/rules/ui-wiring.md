@@ -10,6 +10,8 @@ Declare application entry modules in the application UI profile to check root wi
 
 Entry paths are relative to the workspace root. The rule follows relative imports, re-exports, and literal dynamic imports from each entry. An application-scoped obligation is checked at the entry if any reachable module renders its component; a recognized helper call or required registration import in any reachable module satisfies it. Reachable leaf modules need no duplicate wiring. A module outside every declared entry keeps the per-file check. A composition entry can set `wiring.scope` to `"module"` for wiring that must be installed beside its rendering code; omitted scope means `"application"`. Computed import paths and unresolved modules stay outside the static graph, so put them in a declared entry or check them separately. `KUI-L402` still checks the helper's call site.
 
+An entry-level `KUI-L401` finding is reported at the entry, but exceptions are matched against the modules that render the component. A narrow exception on a view suppresses its missing-wiring obligation; if another reachable view uses the same component without an exception, the entry still reports it. Module-scoped wiring keeps its per-file exception behavior.
+
 For server-rendered pages whose document loads a separate browser entry, pair the roots in one item:
 
 ```json

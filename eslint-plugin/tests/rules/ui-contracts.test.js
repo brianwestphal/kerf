@@ -1558,8 +1558,68 @@ tester.run('ui-preferences discouraged Web Awesome tags', preferences, {
   }),
 });
 
+// An application entry sees the FilePicker wiring in init.ts while a narrow
+// SplitView exception belongs to the view that renders it, not to the entry.
+const wiringExceptionRoot = mkdtempSync(join(tmpdir(), 'kerf-wiring-source-'));
+const wiringExceptionSource = (name, source) =>
+  writeFileSync(join(wiringExceptionRoot, name), source);
+wiringExceptionSource(
+  'picker.tsx',
+  "import { FilePicker } from '@kerfjs/ui'; export const Picker = () => <FilePicker />;\n",
+);
+wiringExceptionSource(
+  'excepted-split.tsx',
+  "import { SplitView } from '@kerfjs/ui'; export const Split = () => <SplitView />;\n",
+);
+wiringExceptionSource(
+  'plain-split.tsx',
+  "import { SplitView } from '@kerfjs/ui'; export const Split = () => <SplitView />;\n",
+);
+wiringExceptionSource(
+  'init.ts',
+  "import { wireFilePickers } from '@kerfjs/ui/wire-file-pickers'; export const dispose = wireFilePickers(root);\n",
+);
+wiringExceptionSource(
+  'excepted-entry.tsx',
+  "import './picker.js'; import './excepted-split.js'; import './init.js';\n",
+);
+wiringExceptionSource(
+  'plain-entry.tsx',
+  "import './picker.js'; import './excepted-split.js'; import './plain-split.js'; import './init.js';\n",
+);
+writeFileSync(
+  join(wiringExceptionRoot, '.kerf-ui-profile.json'),
+  JSON.stringify({
+    schemaVersion: 1,
+    scope: 'workspace',
+    wiring: { entries: ['excepted-entry.tsx', 'plain-entry.tsx'] },
+    exceptions: [
+      {
+        id: 'fixed-split',
+        rules: ['KUI-L401'],
+        target: 'excepted-split.tsx',
+        rationale: 'The split has a fixed width.',
+      },
+    ],
+  }),
+);
+const wiringExceptionSettings = uiSettings({
+  ...shippedUiSettings.kerfjs.ui,
+  workspaceRoot: wiringExceptionRoot,
+  profile: undefined,
+  profileDefaultsPath: join(
+    import.meta.dirname,
+    '../../../ui/ai/application-ui-profile.defaults.json',
+  ),
+});
+
 tester.run('ui-wiring', wiring, {
   valid: [
+    {
+      code: "import './picker.js'; import './excepted-split.js'; import './init.js';",
+      filename: join(wiringExceptionRoot, 'excepted-entry.tsx'),
+      settings: wiringExceptionSettings,
+    },
     {
       code: "import { ChoiceChips } from '@kerfjs/ui'; <ChoiceChips choices={options} />; <ChoiceChips multiple='toggle' choices={options} />; <ChoiceChips multiple={false} choices={options} />;",
       settings: shippedUiSettings,
@@ -1707,6 +1767,12 @@ tester.run('ui-wiring', wiring, {
     },
   ],
   invalid: [
+    {
+      code: "import './picker.js'; import './excepted-split.js'; import './plain-split.js'; import './init.js';",
+      filename: join(wiringExceptionRoot, 'plain-entry.tsx'),
+      settings: wiringExceptionSettings,
+      errors: [{ messageId: 'missing' }, { messageId: 'missing' }],
+    },
     {
       code: "import { ChoiceChips } from '@kerfjs/ui'; <ChoiceChips multiple choices={options} />;",
       settings: shippedUiSettings,

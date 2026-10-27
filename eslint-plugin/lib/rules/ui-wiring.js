@@ -351,16 +351,29 @@ export default {
                 reachableCalls.add(helper);
             }
         const required = new Map(used);
+        const requiredSources = new Map(
+          [...used.keys()].map((key) => [key, new Set([filename])]),
+        );
         if (ownEntry)
           for (const [file, source] of ownEntry.modules)
-            for (const key of moduleUses(source, file, contract))
+            for (const key of moduleUses(source, file, contract)) {
               if (!required.has(key)) required.set(key, node);
+              const sources = requiredSources.get(key) ?? new Set();
+              sources.add(file);
+              requiredSources.set(key, sources);
+            }
         for (const [key, usage] of required) {
           const entry = contract.entries.get(key);
           if (!entry?.wiring.required) continue;
           if (entry.wiring.scope === 'module' && !used.has(key)) continue;
           if (entry.wiring.scope !== 'module' && reachable.length && !ownEntry)
             continue;
+          const missingIsExcepted =
+            entry.wiring.scope === 'module'
+              ? isExcepted(contract, MISSING_CODE, filename)
+              : [...requiredSources.get(key)].every((file) =>
+                  isExcepted(contract, MISSING_CODE, file),
+                );
           const actionModules =
             entry.wiring.scope !== 'module' && ownEntry
               ? ownEntry.wiringModules
@@ -368,7 +381,7 @@ export default {
           for (const action of entry.wiring.actions ?? [])
             if (
               !handlesAction(actionModules, action, contract) &&
-              !isExcepted(contract, MISSING_CODE, filename)
+              !missingIsExcepted
             )
               context.report({
                 node: usage,
@@ -383,7 +396,7 @@ export default {
                     ? registry.sources
                     : reachableImports
                 ).has(helper) &&
-                !isExcepted(contract, MISSING_CODE, filename)
+                !missingIsExcepted
               )
                 context.report({
                   node: usage,
@@ -396,7 +409,7 @@ export default {
             const provided = [helper, ...providers].some((name) =>
               ownEntry ? reachableCalls.has(name) : calls.has(name),
             );
-            if (!provided && !isExcepted(contract, MISSING_CODE, filename))
+            if (!provided && !missingIsExcepted)
               context.report({
                 node: usage,
                 messageId: 'missing',
