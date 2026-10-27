@@ -11,7 +11,9 @@ function readJSON(path) {
 module.exports.run = function (session, parameters, done) {
   var dom = session.dom;
   var fixtures = readJSON(parameters.variantFixturesPath);
-  var manifest = readJSON(parameters.variantManifestPath).variants;
+  var manifestData = readJSON(parameters.variantManifestPath);
+  var manifest = manifestData.variants;
+  var assets = manifestData.assets;
   session.openDocument(
     parameters.libraryPath,
     function (openError, libraryDocument) {
@@ -19,12 +21,50 @@ module.exports.run = function (session, parameters, done) {
       try {
         var masters = dom.find('SymbolMaster', libraryDocument);
         var reports = [];
+        if (!assets) throw new Error('Missing variant semantic assets');
+        ['swatches', 'layerStyles', 'textStyles'].forEach(function (kind) {
+          var collection =
+            kind === 'swatches'
+              ? libraryDocument.swatches
+              : kind === 'layerStyles'
+                ? libraryDocument.sharedLayerStyles
+                : libraryDocument.sharedTextStyles;
+          Object.keys(assets[kind]).forEach(function (key) {
+            var expected = assets[kind][key];
+            var found = collection.filter(function (item) {
+              return item.id === expected.id;
+            })[0];
+            if (
+              !found ||
+              found.name !== expected.name ||
+              (kind === 'swatches' && found.color !== expected.color)
+            )
+              throw new Error('Variant semantic asset differs: ' + key);
+          });
+        });
         fixtures.forEach(function (fixture) {
           var master = masters.filter(function (item) {
             return item.symbolId === manifest[fixture.id].symbolId;
           })[0];
           if (!master || master.name !== fixture.name)
             throw new Error('Variant master missing: ' + fixture.id);
+          var id = fixture.id;
+          if (
+            !master.sharedStyle ||
+            master.sharedStyle.id !== assets.layerStyles[id + '.Surface'].id ||
+            !master.style.fills[0].swatch ||
+            master.style.fills[0].swatch.id !==
+              assets.swatches[id + '.Fill'].id ||
+            master.style.fills[0].color !== fixture.layout.fill
+          )
+            throw new Error('Variant surface asset binding differs: ' + id);
+          if (
+            master.style.borders.length &&
+            (!master.style.borders[0].swatch ||
+              master.style.borders[0].swatch.id !==
+                assets.swatches[id + '.Border'].id)
+          )
+            throw new Error('Variant border asset binding differs: ' + id);
           if (dom.find('Image', master).length)
             throw new Error('Bitmap variant: ' + fixture.id);
           var label = master.layers.filter(function (layer) {
@@ -38,6 +78,33 @@ module.exports.run = function (session, parameters, done) {
               label.style.fontSize !== fixture.layout.fontSize)
           )
             throw new Error('Variant typography differs: ' + fixture.id);
+          if (
+            label &&
+            (!label.sharedStyle ||
+              label.sharedStyle.id !== assets.textStyles[id + '.Label'].id ||
+              !label.style.textSwatch ||
+              label.style.textSwatch.id !== assets.swatches[id + '.Text'].id ||
+              label.style.textColor !== fixture.layout.textColor)
+          )
+            throw new Error('Variant label asset binding differs: ' + id);
+          dom
+            .find('ShapePath', master)
+            .filter(function (path) {
+              return path.name.indexOf('Icon Path / ') === 0;
+            })
+            .forEach(function (path) {
+              path.style.borders
+                .concat(path.style.fills)
+                .forEach(function (paint) {
+                  if (
+                    !paint.swatch ||
+                    paint.swatch.id !== assets.swatches[id + '.Text'].id
+                  )
+                    throw new Error(
+                      'Variant icon asset binding differs: ' + id,
+                    );
+                });
+            });
           if (Math.abs(master.frame.height - fixture.layout.height) > 0.01)
             throw new Error('Variant height differs: ' + fixture.id);
           for (var name in {
@@ -61,6 +128,39 @@ module.exports.run = function (session, parameters, done) {
             })
           )
             throw new Error('Badge missing: ' + fixture.id);
+          if (fixture.layout.badge) {
+            var badgeBackground = master.layers.filter(function (item) {
+              return item.name === 'Badge Background';
+            })[0];
+            dom.find('ShapePath', badgeBackground).forEach(function (path) {
+              if (
+                !path.sharedStyle ||
+                path.sharedStyle.id !==
+                  assets.layerStyles[id + '.Badge Background'].id ||
+                !path.style.fills[0].swatch ||
+                path.style.fills[0].swatch.id !==
+                  assets.swatches[id + '.Badge Fill'].id
+              )
+                throw new Error(
+                  'Badge background asset binding differs: ' + id,
+                );
+            });
+            if (!fixture.layout.badge.dot) {
+              var badgeCount = master.layers.filter(function (item) {
+                return item.name === 'Badge Count';
+              })[0];
+              if (
+                !badgeCount ||
+                !badgeCount.sharedStyle ||
+                badgeCount.sharedStyle.id !==
+                  assets.textStyles[id + '.Badge Count'].id ||
+                !badgeCount.style.textSwatch ||
+                badgeCount.style.textSwatch.id !==
+                  assets.swatches[id + '.Badge Text'].id
+              )
+                throw new Error('Badge count asset binding differs: ' + id);
+            }
+          }
           if (
             fixture.layout.spinner &&
             !master.layers.some(function (item) {
@@ -73,6 +173,26 @@ module.exports.run = function (session, parameters, done) {
             })
           )
             throw new Error('Spinner missing: ' + fixture.id);
+          if (fixture.layout.spinner) {
+            var spinner = master.layers
+              .filter(function (item) {
+                return item.name === 'Spinner Host';
+              })[0]
+              .layers.filter(function (item) {
+                return item.name === 'Spinner';
+              })[0];
+            dom.find('ShapePath', spinner).forEach(function (path) {
+              path.style.borders
+                .concat(path.style.fills)
+                .forEach(function (paint) {
+                  if (
+                    !paint.swatch ||
+                    paint.swatch.id !== assets.swatches[id + '.Text'].id
+                  )
+                    throw new Error('Spinner asset binding differs: ' + id);
+                });
+            });
+          }
           if (
             fixture.focus &&
             (fixture.props.focusRingInset
@@ -80,6 +200,30 @@ module.exports.run = function (session, parameters, done) {
               : master.style.shadows.length !== 2)
           )
             throw new Error('Focus ring style missing: ' + fixture.id);
+          if (fixture.focus) {
+            var shadows = fixture.props.focusRingInset
+              ? master.style.innerShadows
+              : master.style.shadows;
+            var outlineIndex = fixture.props.focusRingInset ? 1 : 0;
+            var contrastIndex = 1 - outlineIndex;
+            if (
+              !shadows[outlineIndex].swatch ||
+              shadows[outlineIndex].swatch.id !==
+                assets.swatches[id + '.Focus Outline'].id ||
+              !shadows[contrastIndex].swatch ||
+              shadows[contrastIndex].swatch.id !==
+                assets.swatches[id + '.Focus Contrast'].id
+            )
+              throw new Error('Focus shadow asset binding differs: ' + id);
+          }
+          if (
+            fixture.props.pressed &&
+            fixture.layout.shadowColor &&
+            (!master.style.innerShadows[0].swatch ||
+              master.style.innerShadows[0].swatch.id !==
+                assets.swatches[id + '.Pressed Shadow'].id)
+          )
+            throw new Error('Pressed shadow asset binding differs: ' + id);
           reports.push({
             id: fixture.id,
             symbolId: master.symbolId,
@@ -232,6 +376,11 @@ module.exports.run = function (session, parameters, done) {
                       symbols: reports,
                       cases: cases,
                       reopenedInstances: instances.length,
+                      assets: {
+                        swatches: Object.keys(assets.swatches).length,
+                        layerStyles: Object.keys(assets.layerStyles).length,
+                        textStyles: Object.keys(assets.textStyles).length,
+                      },
                     });
                   } catch (failure) {
                     done(failure);

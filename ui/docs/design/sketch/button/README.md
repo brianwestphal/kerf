@@ -95,7 +95,8 @@ expects one vector group directly under `Icon`, with ShapePaths under it.
   for visual review. Text rasterization differs slightly between Chromium and
   Sketch; the comparison metrics are descriptive, not a pixel-perfect gate.
 - `variant-fixtures.json`, `variant-manifest.json`, `variant-build-report.json`,
-  `variant-verification.json`, and `Button-Variant-Consumer-Test.sketch`: source
+  `variant-asset-report.json`, `variant-verification.json`, and
+  `Button-Variant-Consumer-Test.sketch`: source
   measurements, stable new Symbol IDs, editable layers, 102 imported instance
   checks, and save/reopen evidence for the added variants.
 - `variant-comparison-light.png`, `variant-comparison-dark.png`, and
@@ -117,7 +118,9 @@ Text layer outside the generated Symbols.
 ## Shared colors and styles
 
 The Library includes eight Color Variables, four shared layer styles, and four
-shared text styles for the six Button presentations. Names follow semantic
+shared text styles for the six pilot Button presentations, plus 92 Color
+Variables, 38 shared layer styles, and 34 shared text styles for the 34 expanded
+light/dark variants. Pilot names follow semantic
 roles and theme: `Kerf/Light/Brand/Fill Loud`,
 `Kerf/Dark/Neutral/Border Loud`, and so on. Light and dark assets remain
 separate even if their resolved colors match. The two brand presentations
@@ -128,6 +131,18 @@ The mapped source roles are `--kui-color-brand-fill-loud`,
 `--kui-color-brand-on-loud`, `--kui-color-neutral-border-loud`, and
 `--kui-color-neutral-on-quiet` in each theme context; their values come from
 the real rendered Button, not a separate Sketch palette.
+
+Expanded variant assets have stable role names under each semantic appearance,
+such as `Kerf/Button/Primary Success/Light/Fill`,
+`Kerf/Button/Primary Success/Light/Surface`, and
+`Kerf/Button/Focus Brand/Dark/Focus Outline`. Surface fill, visible border,
+label, icon, loading spinner, badge, focus contrast/outline, and pressed-shadow
+colors bind to Color Variables; the surface, label, and badge layers use shared
+styles. `variant-manifest.json` records every asset ID, and
+`variant-asset-report.json` records current source colors. Regeneration updates
+these assets in place and refuses missing IDs or duplicate names. The native
+`verify-variants` command reopens the saved Library, checks the bindings, then
+imports and reopens linked light/dark instances.
 
 Choose the Light or Dark Symbol for the corresponding product theme. Its
 background, border, label, and icon paths reference the appropriate Color
@@ -146,7 +161,11 @@ refresh its linked Symbols in consumer documents. A saved consumer retained
 its Library link, text override, and icon color override after a brand fill
 and foreground token update; the regenerated Symbol picked up both new
 semantic colors on save/reopen. The native `verify` command checks serialized
-asset IDs and bindings after reopening the Library.
+pilot asset IDs and bindings after reopening the Library. An isolated
+light/dark success-token change kept all 164 expanded asset IDs and the
+affected Symbol IDs; a saved consumer adopted the new source fill while
+keeping an explicit fill override, text override, and Library link through
+sync and save/reopen.
 
 Sketch creates a private linked copy of a shared style for each imported
 Symbol. Those consumer IDs include the source style ID in brackets and may

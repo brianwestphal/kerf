@@ -36,6 +36,7 @@ const paths = {
   assetReportPath: join(output, 'asset-report.json'),
   variantFixturesPath: join(output, 'variant-fixtures.json'),
   variantManifestPath: join(output, 'variant-manifest.json'),
+  variantAssetReportPath: join(output, 'variant-asset-report.json'),
   iconPathIdentitiesPath: join(output, 'icon-path-identities.json'),
   variantExportsPath: join(output, 'variant-exports'),
   variantConsumerPath: join(output, 'Button-Variant-Consumer-Test.sketch'),
@@ -151,7 +152,12 @@ async function runNative(names, parameters = paths) {
     );
     if (nativePid !== undefined) assert.equal(status.processId, nativePid);
     nativePid = status.processId;
-    const result = name === 'layout' ? status.result.layout : status.result;
+    const result =
+      name === 'layout'
+        ? status.result.layout
+        : name === 'variants'
+          ? status.result.variants
+          : status.result;
     await writeFile(
       join(output, reports[name]),
       `${JSON.stringify(result, null, 2)}\n`,
@@ -159,6 +165,11 @@ async function runNative(names, parameters = paths) {
     if (name === 'layout')
       await writeFile(
         parameters.assetReportPath,
+        `${JSON.stringify(status.result.assets, null, 2)}\n`,
+      );
+    if (name === 'variants')
+      await writeFile(
+        parameters.variantAssetReportPath,
         `${JSON.stringify(status.result.assets, null, 2)}\n`,
       );
     console.log(
@@ -453,7 +464,7 @@ async function updateIdentityManifest(libraryPath, assetReportPath) {
   return temporary;
 }
 
-async function updateVariantManifest() {
+async function updateVariantManifest(assetReportPath) {
   const fixtures = JSON.parse(
     await readFile(paths.variantFixturesPath, 'utf8'),
   );
@@ -467,6 +478,14 @@ async function updateVariantManifest() {
       throw error;
     },
   );
+  const assets = JSON.parse(await readFile(assetReportPath, 'utf8'));
+  for (const kind of ['swatches', 'layerStyles', 'textStyles'])
+    for (const [key, before] of Object.entries(previous.assets?.[kind] ?? {}))
+      assert.equal(
+        assets[kind]?.[key]?.id,
+        before.id,
+        `${kind} ${key} identity changed`,
+      );
   assert.equal(report.length, fixtures.length);
   const variants = {};
   const mappings = await pathMappings();
@@ -529,7 +548,7 @@ async function updateVariantManifest() {
       iconPaths,
     };
   }
-  return `${JSON.stringify({ version: 1, variants }, null, 2)}\n`;
+  return `${JSON.stringify({ version: 2, variants, assets }, null, 2)}\n`;
 }
 
 async function changedVariantIcons() {
@@ -602,6 +621,10 @@ if (command === 'generate' || command === 'all') {
   // the published library only after both native jobs finish and clean up.
   const stagingPath = join(output, `.Kerf-Button-${randomUUID()}.sketch`);
   const assetStagingPath = join(output, `.asset-report-${randomUUID()}.json`);
+  const variantAssetStagingPath = join(
+    output,
+    `.variant-asset-report-${randomUUID()}.json`,
+  );
   const seedExisting = await access(paths.libraryPath).then(
     () => true,
     () => false,
@@ -634,6 +657,7 @@ if (command === 'generate' || command === 'all') {
       ...paths,
       libraryPath: stagingPath,
       assetReportPath: assetStagingPath,
+      variantAssetReportPath: variantAssetStagingPath,
       seedExisting,
       hasIdentityManifest,
       iconGeometryUpdates,
@@ -659,10 +683,11 @@ if (command === 'generate' || command === 'all') {
     stagingPath,
     assetStagingPath,
   );
-  const variantManifest = await updateVariantManifest();
+  const variantManifest = await updateVariantManifest(variantAssetStagingPath);
   await rename(stagingPath, paths.libraryPath);
   await rename(identityStagingPath, paths.identitiesPath);
   await rename(assetStagingPath, paths.assetReportPath);
+  await rename(variantAssetStagingPath, paths.variantAssetReportPath);
   await writeFile(paths.variantManifestPath, variantManifest);
 }
 if (command === 'verify' || command === 'all')

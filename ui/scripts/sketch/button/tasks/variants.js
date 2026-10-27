@@ -13,13 +13,20 @@ function descendants(layer, dom, type) {
 }
 
 var iconPaths = require('./icon-paths');
+var createVariantAssets = require('./variant-assets').createVariantAssets;
 
 function build(session, parameters, document) {
   var dom = session.dom;
   var fixtures = readJSON(parameters.variantFixturesPath);
-  var previous = parameters.hasVariantManifest
-    ? readJSON(parameters.variantManifestPath).variants
+  var previousManifest = parameters.hasVariantManifest
+    ? readJSON(parameters.variantManifestPath)
     : {};
+  var previous = previousManifest.variants || {};
+  var assets = createVariantAssets(
+    document,
+    dom,
+    previousManifest.assets || {},
+  );
   var pathMappings = readJSON(parameters.iconPathIdentitiesPath).fixtures;
   var report = [];
   fixtures.forEach(function (fixture, index) {
@@ -44,13 +51,15 @@ function build(session, parameters, document) {
       });
     symbol.name = fixture.name;
     symbol.background.enabled = false;
-    symbol.style.fills = [{ color: layout.fill }];
+    var fillSwatch = assets.swatch(fixture, 'Fill', layout.fill);
+    var textSwatch = assets.swatch(fixture, 'Text', layout.textColor);
+    symbol.style.fills = [{ swatch: fillSwatch }];
     symbol.style.borders =
       layout.borderColor.slice(-2) === '00'
         ? []
         : [
             {
-              color: layout.borderColor,
+              swatch: assets.swatch(fixture, 'Border', layout.borderColor),
               thickness: layout.borderWidth,
               position: dom.Style.BorderPosition.Inside,
             },
@@ -76,7 +85,7 @@ function build(session, parameters, document) {
       label.style.fontFamily = 'system';
       label.style.fontWeight = 6;
       label.style.fontSize = layout.fontSize;
-      label.style.textColor = layout.textColor;
+      label.style.textSwatch = textSwatch;
       label.style.opacity = fixture.props.loading ? 0 : 1;
       label.style.alignment = dom.Text.Alignment.center;
       label.style.verticalAlignment = dom.Text.VerticalAlignment.center;
@@ -112,10 +121,10 @@ function build(session, parameters, document) {
       icon.style.opacity = fixture.props.loading ? 0 : 1;
       descendants(icon, dom, 'ShapePath').forEach(function (path) {
         path.style.borders.forEach(function (border) {
-          border.color = layout.textColor;
+          border.swatch = textSwatch;
         });
         path.style.fills.forEach(function (fill) {
-          fill.color = layout.textColor;
+          fill.swatch = textSwatch;
         });
       });
       icon.horizontalSizing = dom.FlexSizing.Fixed;
@@ -200,8 +209,11 @@ function build(session, parameters, document) {
         height: badge.height,
       };
       descendants(badgeShape, dom, 'ShapePath').forEach(function (path) {
-        path.style.fills = [{ color: badge.fill }];
+        path.style.fills = [
+          { swatch: assets.swatch(fixture, 'Badge Fill', badge.fill) },
+        ];
         path.style.borders = [];
+        assets.shared('layerStyles', fixture, 'Badge Background', path);
       });
       badgeShape.name = 'Badge Background';
       badgeShape.ignoresStackLayout = true;
@@ -220,7 +232,11 @@ function build(session, parameters, document) {
         badgeText.style.fontFamily = 'system';
         badgeText.style.fontWeight = 8;
         badgeText.style.fontSize = badge.fontSize;
-        badgeText.style.textColor = badge.textColor;
+        badgeText.style.textSwatch = assets.swatch(
+          fixture,
+          'Badge Text',
+          badge.textColor,
+        );
         badgeText.style.alignment = dom.Text.Alignment.center;
         badgeText.style.verticalAlignment = dom.Text.VerticalAlignment.center;
         badgeText.frame = {
@@ -234,6 +250,7 @@ function build(session, parameters, document) {
         badgeText.horizontalPins = dom.Pin.Max;
         badgeText.verticalPins = dom.Pin.Min;
         badgeText.moveToFront();
+        assets.shared('textStyles', fixture, 'Badge Count', badgeText);
       }
     } else {
       if (badgeShape) badgeShape.remove();
@@ -283,6 +300,14 @@ function build(session, parameters, document) {
       }
       spinner.parent = spinnerHost;
       spinner.name = 'Spinner';
+      descendants(spinner, dom, 'ShapePath').forEach(function (path) {
+        path.style.borders.forEach(function (border) {
+          border.swatch = textSwatch;
+        });
+        path.style.fills.forEach(function (fill) {
+          fill.swatch = textSwatch;
+        });
+      });
       spinner.frame = {
         x: 0,
         y: 0,
@@ -312,7 +337,11 @@ function build(session, parameters, document) {
       symbol.style.innerShadows = layout.shadowColor
         ? [
             {
-              color: layout.shadowColor,
+              swatch: assets.swatch(
+                fixture,
+                'Pressed Shadow',
+                layout.shadowColor,
+              ),
               x: 0,
               y: 0,
               blur: 0,
@@ -321,24 +350,34 @@ function build(session, parameters, document) {
           ]
         : [];
     } else if (fixture.focus) {
+      var focusContrast = assets.swatch(
+        fixture,
+        'Focus Contrast',
+        fixture.theme === 'dark' ? '#1c1c1eff' : '#ffffffff',
+      );
+      var focusOutline = assets.swatch(
+        fixture,
+        'Focus Outline',
+        layout.outlineColor,
+      );
       if (fixture.props.focusRingInset) {
         symbol.style.innerShadows = [
           {
-            color: fixture.theme === 'dark' ? '#1c1c1eff' : '#ffffffff',
+            swatch: focusContrast,
             x: 0,
             y: 0,
             blur: 0,
             spread: 5,
           },
-          { color: layout.outlineColor, x: 0, y: 0, blur: 0, spread: 3 },
+          { swatch: focusOutline, x: 0, y: 0, blur: 0, spread: 3 },
         ];
         symbol.style.shadows = [];
       } else {
         symbol.style.innerShadows = [];
         symbol.style.shadows = [
-          { color: layout.outlineColor, x: 0, y: 0, blur: 0, spread: 3 },
+          { swatch: focusOutline, x: 0, y: 0, blur: 0, spread: 3 },
           {
-            color: fixture.theme === 'dark' ? '#1c1c1eff' : '#ffffffff',
+            swatch: focusContrast,
             x: 0,
             y: 0,
             blur: 0,
@@ -347,6 +386,8 @@ function build(session, parameters, document) {
         ];
       }
     } else symbol.style.innerShadows = [];
+    assets.shared('layerStyles', fixture, 'Surface', symbol);
+    if (label) assets.shared('textStyles', fixture, 'Label', label);
     if (descendants(symbol, dom, 'Image').length)
       throw new Error('Bitmap in variant ' + fixture.id);
     report.push({
@@ -381,7 +422,7 @@ function build(session, parameters, document) {
       overwriting: true,
     });
   });
-  return report;
+  return { variants: report, assets: assets.result() };
 }
 
 module.exports.run = function (session, parameters, done) {

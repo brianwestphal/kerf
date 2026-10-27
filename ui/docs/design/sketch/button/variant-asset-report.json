@@ -1,0 +1,756 @@
+{
+  "swatches": {
+    "primary-neutral-light.Fill": {
+      "id": "59572FF2-44F3-40B3-B461-99D0F04DA1D2",
+      "name": "Kerf/Button/Primary Neutral/Light/Fill",
+      "color": "#48484aff"
+    },
+    "primary-neutral-light.Text": {
+      "id": "A8A23559-E20F-425D-8C0C-49524C7B4C0C",
+      "name": "Kerf/Button/Primary Neutral/Light/Text",
+      "color": "#ffffffff"
+    },
+    "primary-success-light.Fill": {
+      "id": "B8E2AE95-CBCD-48B0-8C74-CA493D98410F",
+      "name": "Kerf/Button/Primary Success/Light/Fill",
+      "color": "#34c759ff"
+    },
+    "primary-success-light.Text": {
+      "id": "EDD4EB94-847B-4B53-9ECD-50EEE16686BC",
+      "name": "Kerf/Button/Primary Success/Light/Text",
+      "color": "#1d1d1fff"
+    },
+    "primary-danger-light.Fill": {
+      "id": "5ED961DB-35F4-4458-8513-CCE31C53E117",
+      "name": "Kerf/Button/Primary Danger/Light/Fill",
+      "color": "#eb0005ff"
+    },
+    "primary-danger-light.Text": {
+      "id": "8A26C621-C375-4DEC-81F7-D313305535ED",
+      "name": "Kerf/Button/Primary Danger/Light/Text",
+      "color": "#ffffffff"
+    },
+    "secondary-danger-light.Fill": {
+      "id": "D3BF6541-BB9E-47DA-8568-E67F25201A68",
+      "name": "Kerf/Button/Secondary Danger/Light/Fill",
+      "color": "#00000000"
+    },
+    "secondary-danger-light.Text": {
+      "id": "EEF7EED9-C234-40C9-A27A-D6834220F345",
+      "name": "Kerf/Button/Secondary Danger/Light/Text",
+      "color": "#c20b20ff"
+    },
+    "secondary-danger-light.Border": {
+      "id": "F5269D88-AE90-4816-BCC3-E910BBD8D2A9",
+      "name": "Kerf/Button/Secondary Danger/Light/Border",
+      "color": "#be060bff"
+    },
+    "plain-neutral-light.Fill": {
+      "id": "286DC2EE-6E73-43E9-99A4-940C29045DEF",
+      "name": "Kerf/Button/Plain Neutral/Light/Fill",
+      "color": "#00000000"
+    },
+    "plain-neutral-light.Text": {
+      "id": "78FD6003-67E0-4F48-9C6A-7F90AFEEBB97",
+      "name": "Kerf/Button/Plain Neutral/Light/Text",
+      "color": "#626267ff"
+    },
+    "compact-neutral-light.Fill": {
+      "id": "4862058A-B96B-40C5-B54D-544A09CB723B",
+      "name": "Kerf/Button/Compact Neutral/Light/Fill",
+      "color": "#48484aff"
+    },
+    "compact-neutral-light.Text": {
+      "id": "DDE57740-02CC-43FB-9021-6A21F79284FE",
+      "name": "Kerf/Button/Compact Neutral/Light/Text",
+      "color": "#ffffffff"
+    },
+    "pill-brand-light.Fill": {
+      "id": "BDE334DF-B6D1-49CB-B94A-33204CC2048F",
+      "name": "Kerf/Button/Pill Brand/Light/Fill",
+      "color": "#0075dbff"
+    },
+    "pill-brand-light.Text": {
+      "id": "1B0ACBD7-42D2-4F70-A85D-BFB2C9890168",
+      "name": "Kerf/Button/Pill Brand/Light/Text",
+      "color": "#ffffffff"
+    },
+    "icon-only-light.Fill": {
+      "id": "4FAC06D5-E98A-42CB-B98D-B78AF85CBC10",
+      "name": "Kerf/Button/Icon Only/Light/Fill",
+      "color": "#0075dbff"
+    },
+    "icon-only-light.Text": {
+      "id": "34078C24-6F0A-4967-8DEE-BA738F68775C",
+      "name": "Kerf/Button/Icon Only/Light/Text",
+      "color": "#ffffffff"
+    },
+    "disabled-neutral-light.Fill": {
+      "id": "75653E3F-0AD0-4581-AB9F-CFC6CBC1C339",
+      "name": "Kerf/Button/Disabled Neutral/Light/Fill",
+      "color": "#48484aff"
+    },
+    "disabled-neutral-light.Text": {
+      "id": "B412BE2F-F0AA-4D41-9C23-133EF63625AE",
+      "name": "Kerf/Button/Disabled Neutral/Light/Text",
+      "color": "#ffffffff"
+    },
+    "disabled-success-light.Fill": {
+      "id": "F583A8CD-578C-440C-9AAC-EADB52B1B26F",
+      "name": "Kerf/Button/Disabled Success/Light/Fill",
+      "color": "#e3f7e8ff"
+    },
+    "disabled-success-light.Text": {
+      "id": "2C4CE26E-7D88-4B8A-8C6A-9061D69EF602",
+      "name": "Kerf/Button/Disabled Success/Light/Text",
+      "color": "#00792cff"
+    },
+    "disabled-success-light.Border": {
+      "id": "31F76EE9-2F61-466B-BB0A-F1A5E5B6DE0D",
+      "name": "Kerf/Button/Disabled Success/Light/Border",
+      "color": "#beedcaff"
+    },
+    "pressed-neutral-light.Fill": {
+      "id": "FB20EE7B-C744-43AA-AB87-860446D8BAA6",
+      "name": "Kerf/Button/Pressed Neutral/Light/Fill",
+      "color": "#0075dbff"
+    },
+    "pressed-neutral-light.Text": {
+      "id": "D7D54C02-0214-40FB-89AA-4DD1B9106147",
+      "name": "Kerf/Button/Pressed Neutral/Light/Text",
+      "color": "#ffffffff"
+    },
+    "pressed-neutral-light.Pressed Shadow": {
+      "id": "B435EA11-358D-4E14-B8F2-2DAA1F597113",
+      "name": "Kerf/Button/Pressed Neutral/Light/Pressed Shadow",
+      "color": "#ffffff73"
+    },
+    "pressed-secondary-light.Fill": {
+      "id": "8BC94CD4-B3A9-47A3-A1F0-1D6C907BF5AC",
+      "name": "Kerf/Button/Pressed Secondary Brand/Light/Fill",
+      "color": "#ebf4fcff"
+    },
+    "pressed-secondary-light.Text": {
+      "id": "8F313320-CECD-4049-976C-B355F772E580",
+      "name": "Kerf/Button/Pressed Secondary Brand/Light/Text",
+      "color": "#0025b9ff"
+    },
+    "pressed-secondary-light.Border": {
+      "id": "05D2F78E-37F2-4FAB-B8BB-2335AAE492E3",
+      "name": "Kerf/Button/Pressed Secondary Brand/Light/Border",
+      "color": "#0075dbff"
+    },
+    "pressed-secondary-light.Pressed Shadow": {
+      "id": "B128C942-44B1-46F5-A596-C0D92152D143",
+      "name": "Kerf/Button/Pressed Secondary Brand/Light/Pressed Shadow",
+      "color": "#0075dbff"
+    },
+    "loading-brand-light.Fill": {
+      "id": "79E5F0D8-22C5-4FD2-9143-949E76ED8187",
+      "name": "Kerf/Button/Loading Brand/Light/Fill",
+      "color": "#0075dbff"
+    },
+    "loading-brand-light.Text": {
+      "id": "70A29760-93EE-46EB-8BC5-9818533AC7C7",
+      "name": "Kerf/Button/Loading Brand/Light/Text",
+      "color": "#ffffffff"
+    },
+    "badge-brand-light.Fill": {
+      "id": "4FD5CDB0-4544-4EF8-B42C-8A751E778D61",
+      "name": "Kerf/Button/Badge Brand/Light/Fill",
+      "color": "#0075dbff"
+    },
+    "badge-brand-light.Text": {
+      "id": "0CF61D8F-F467-4AD8-B47B-D8FFC263E04F",
+      "name": "Kerf/Button/Badge Brand/Light/Text",
+      "color": "#ffffffff"
+    },
+    "badge-brand-light.Badge Fill": {
+      "id": "9151A306-1E92-4EBA-9687-C8AA6DEA1E3A",
+      "name": "Kerf/Button/Badge Brand/Light/Badge Fill",
+      "color": "#c20b20ff"
+    },
+    "badge-brand-light.Badge Text": {
+      "id": "09614DC0-AE4B-4C92-A2B6-A8BC13310548",
+      "name": "Kerf/Button/Badge Brand/Light/Badge Text",
+      "color": "#ffffffff"
+    },
+    "badge-dot-light.Fill": {
+      "id": "448207DD-1DC1-427A-8893-A8A16F1A7D75",
+      "name": "Kerf/Button/Badge Dot/Light/Fill",
+      "color": "#0075dbff"
+    },
+    "badge-dot-light.Text": {
+      "id": "70043A13-16C3-41B6-B6F7-12E735E7B234",
+      "name": "Kerf/Button/Badge Dot/Light/Text",
+      "color": "#ffffffff"
+    },
+    "badge-dot-light.Badge Fill": {
+      "id": "D71700AA-E3FA-4F4C-B627-7FE9EFC03373",
+      "name": "Kerf/Button/Badge Dot/Light/Badge Fill",
+      "color": "#c20b20ff"
+    },
+    "focus-standard-light.Fill": {
+      "id": "187346CB-B1ED-4E1C-8548-A49AB18BDD05",
+      "name": "Kerf/Button/Focus Standard/Light/Fill",
+      "color": "#0075dbff"
+    },
+    "focus-standard-light.Text": {
+      "id": "CD83223A-C967-4ACD-9948-65933804AB55",
+      "name": "Kerf/Button/Focus Standard/Light/Text",
+      "color": "#ffffffff"
+    },
+    "focus-standard-light.Focus Contrast": {
+      "id": "B14719CC-0D4F-435C-AF5E-9766A482BB0A",
+      "name": "Kerf/Button/Focus Standard/Light/Focus Contrast",
+      "color": "#ffffffff"
+    },
+    "focus-standard-light.Focus Outline": {
+      "id": "45B082C5-76DF-4D81-96C5-B760F2791C63",
+      "name": "Kerf/Button/Focus Standard/Light/Focus Outline",
+      "color": "#007affff"
+    },
+    "focus-brand-light.Fill": {
+      "id": "44D0FB4B-B826-49E8-BCAB-8B6BEB8BEA63",
+      "name": "Kerf/Button/Focus Brand/Light/Fill",
+      "color": "#0075dbff"
+    },
+    "focus-brand-light.Text": {
+      "id": "5ADEBF24-5A81-464F-A5D3-A17CB3368EDE",
+      "name": "Kerf/Button/Focus Brand/Light/Text",
+      "color": "#ffffffff"
+    },
+    "focus-brand-light.Focus Contrast": {
+      "id": "C731CFFB-7361-447F-BA53-31C930F99B1D",
+      "name": "Kerf/Button/Focus Brand/Light/Focus Contrast",
+      "color": "#ffffffff"
+    },
+    "focus-brand-light.Focus Outline": {
+      "id": "651A19A0-7CC9-4999-88C1-66750BD16746",
+      "name": "Kerf/Button/Focus Brand/Light/Focus Outline",
+      "color": "#007affff"
+    },
+    "primary-neutral-dark.Fill": {
+      "id": "0D072D3D-B60C-4F44-BC96-6821A319A53B",
+      "name": "Kerf/Button/Primary Neutral/Dark/Fill",
+      "color": "#e5e5eaff"
+    },
+    "primary-neutral-dark.Text": {
+      "id": "34EE4E2B-60EC-4550-96D0-62C8F466CBD1",
+      "name": "Kerf/Button/Primary Neutral/Dark/Text",
+      "color": "#1c1c1eff"
+    },
+    "primary-success-dark.Fill": {
+      "id": "D4CC97A2-0F67-4F73-BC0D-2A54D939457B",
+      "name": "Kerf/Button/Primary Success/Dark/Fill",
+      "color": "#34c759ff"
+    },
+    "primary-success-dark.Text": {
+      "id": "AACD8228-18B4-4385-893C-3B98D75840FF",
+      "name": "Kerf/Button/Primary Success/Dark/Text",
+      "color": "#1d1d1fff"
+    },
+    "primary-danger-dark.Fill": {
+      "id": "D4D03B4D-4916-416B-A28B-83BFBAD1DDF9",
+      "name": "Kerf/Button/Primary Danger/Dark/Fill",
+      "color": "#ff383cff"
+    },
+    "primary-danger-dark.Text": {
+      "id": "0FB7CFD0-1F3D-4AC6-9A23-AB75AE492D5B",
+      "name": "Kerf/Button/Primary Danger/Dark/Text",
+      "color": "#111113ff"
+    },
+    "secondary-danger-dark.Fill": {
+      "id": "7764B1C7-DD74-4CBF-A216-E689223442CB",
+      "name": "Kerf/Button/Secondary Danger/Dark/Fill",
+      "color": "#00000000"
+    },
+    "secondary-danger-dark.Text": {
+      "id": "A0902182-E2DF-46B6-99A1-10A3640C462E",
+      "name": "Kerf/Button/Secondary Danger/Dark/Text",
+      "color": "#ff8588ff"
+    },
+    "secondary-danger-dark.Border": {
+      "id": "BAB981CF-F805-411D-AA77-D4353DA9EED2",
+      "name": "Kerf/Button/Secondary Danger/Dark/Border",
+      "color": "#fd6265ff"
+    },
+    "plain-neutral-dark.Fill": {
+      "id": "A809C354-9AF1-42F3-9BAA-7D745DB1E62D",
+      "name": "Kerf/Button/Plain Neutral/Dark/Fill",
+      "color": "#00000000"
+    },
+    "plain-neutral-dark.Text": {
+      "id": "F5943D05-B66D-4FDF-B2FB-9BB4713B8740",
+      "name": "Kerf/Button/Plain Neutral/Dark/Text",
+      "color": "#c2c2c6ff"
+    },
+    "compact-neutral-dark.Fill": {
+      "id": "2F9ED17B-E906-41A3-903A-37D56247CFCD",
+      "name": "Kerf/Button/Compact Neutral/Dark/Fill",
+      "color": "#e5e5eaff"
+    },
+    "compact-neutral-dark.Text": {
+      "id": "397F2839-120D-404C-B064-82D5ABFB30DF",
+      "name": "Kerf/Button/Compact Neutral/Dark/Text",
+      "color": "#1c1c1eff"
+    },
+    "pill-brand-dark.Fill": {
+      "id": "DA81C996-1B99-4A37-8CE4-40082F93BCE3",
+      "name": "Kerf/Button/Pill Brand/Dark/Fill",
+      "color": "#64d2ffff"
+    },
+    "pill-brand-dark.Text": {
+      "id": "A031985F-45A7-44C9-9401-2980056D8619",
+      "name": "Kerf/Button/Pill Brand/Dark/Text",
+      "color": "#111113ff"
+    },
+    "icon-only-dark.Fill": {
+      "id": "DEEDF0A0-FAE9-4BF8-94FC-4C20D31383D3",
+      "name": "Kerf/Button/Icon Only/Dark/Fill",
+      "color": "#64d2ffff"
+    },
+    "icon-only-dark.Text": {
+      "id": "B0700C52-D228-45DA-8176-40FED6FC52C3",
+      "name": "Kerf/Button/Icon Only/Dark/Text",
+      "color": "#111113ff"
+    },
+    "disabled-neutral-dark.Fill": {
+      "id": "23A86DB7-8E9E-4158-BC44-FABA099F48C8",
+      "name": "Kerf/Button/Disabled Neutral/Dark/Fill",
+      "color": "#e5e5eaff"
+    },
+    "disabled-neutral-dark.Text": {
+      "id": "E1926B68-D2A3-4C22-88B6-A4BF64D0EF5D",
+      "name": "Kerf/Button/Disabled Neutral/Dark/Text",
+      "color": "#1c1c1eff"
+    },
+    "disabled-success-dark.Fill": {
+      "id": "8043736E-B198-4D03-9D02-C6DC798B5333",
+      "name": "Kerf/Button/Disabled Success/Dark/Fill",
+      "color": "#1f3426ff"
+    },
+    "disabled-success-dark.Text": {
+      "id": "447F5289-51FF-430C-BB7F-4D550ABBF8DE",
+      "name": "Kerf/Button/Disabled Success/Dark/Text",
+      "color": "#63e685ff"
+    },
+    "disabled-success-dark.Border": {
+      "id": "C53960F0-8E4E-4E0E-B009-11565268EB02",
+      "name": "Kerf/Button/Disabled Success/Dark/Border",
+      "color": "#245331ff"
+    },
+    "pressed-neutral-dark.Fill": {
+      "id": "F2CE0458-FEE1-4318-9178-613B7E14C505",
+      "name": "Kerf/Button/Pressed Neutral/Dark/Fill",
+      "color": "#64d2ffff"
+    },
+    "pressed-neutral-dark.Text": {
+      "id": "B15CEF81-2D60-43C8-A276-09667CCB393F",
+      "name": "Kerf/Button/Pressed Neutral/Dark/Text",
+      "color": "#111113ff"
+    },
+    "pressed-neutral-dark.Pressed Shadow": {
+      "id": "43BB951F-805A-4DD0-8A1A-DDEA43E30991",
+      "name": "Kerf/Button/Pressed Neutral/Dark/Pressed Shadow",
+      "color": "#12121473"
+    },
+    "pressed-secondary-dark.Fill": {
+      "id": "B238C68D-31DC-4637-B0BB-98696D0B51EA",
+      "name": "Kerf/Button/Pressed Secondary Brand/Dark/Fill",
+      "color": "#222b30ff"
+    },
+    "pressed-secondary-dark.Text": {
+      "id": "02B5B0D5-CE70-4682-A526-A24590695CDF",
+      "name": "Kerf/Button/Pressed Secondary Brand/Dark/Text",
+      "color": "#8acbffff"
+    },
+    "pressed-secondary-dark.Border": {
+      "id": "68901F81-77B5-42E7-B2C3-AE436671A115",
+      "name": "Kerf/Button/Pressed Secondary Brand/Dark/Border",
+      "color": "#64d2ffff"
+    },
+    "pressed-secondary-dark.Pressed Shadow": {
+      "id": "4C0C535B-5D64-47D0-95A3-43F4402F0C46",
+      "name": "Kerf/Button/Pressed Secondary Brand/Dark/Pressed Shadow",
+      "color": "#64d2ffff"
+    },
+    "loading-brand-dark.Fill": {
+      "id": "019C7F18-8D12-42D7-AE4C-CAF78450A5E7",
+      "name": "Kerf/Button/Loading Brand/Dark/Fill",
+      "color": "#64d2ffff"
+    },
+    "loading-brand-dark.Text": {
+      "id": "07EE3D6E-B8B8-47BD-A82D-6BE15660F757",
+      "name": "Kerf/Button/Loading Brand/Dark/Text",
+      "color": "#111113ff"
+    },
+    "badge-brand-dark.Fill": {
+      "id": "B067E3B9-2E17-4F86-86F3-66EBA8461DFC",
+      "name": "Kerf/Button/Badge Brand/Dark/Fill",
+      "color": "#64d2ffff"
+    },
+    "badge-brand-dark.Text": {
+      "id": "FB91613C-B03F-4AB8-BF2C-C8E439546B75",
+      "name": "Kerf/Button/Badge Brand/Dark/Text",
+      "color": "#111113ff"
+    },
+    "badge-brand-dark.Badge Fill": {
+      "id": "24391F83-D9EE-4692-BA1C-D99387C702A2",
+      "name": "Kerf/Button/Badge Brand/Dark/Badge Fill",
+      "color": "#ffa0a2ff"
+    },
+    "badge-brand-dark.Badge Text": {
+      "id": "C7149A7B-3518-4E3F-8419-406DF272C374",
+      "name": "Kerf/Button/Badge Brand/Dark/Badge Text",
+      "color": "#1c1c1eff"
+    },
+    "badge-dot-dark.Fill": {
+      "id": "B2D22762-DA9C-41F6-A797-4D63CDF24681",
+      "name": "Kerf/Button/Badge Dot/Dark/Fill",
+      "color": "#64d2ffff"
+    },
+    "badge-dot-dark.Text": {
+      "id": "5A713D0E-7AC5-4CFF-9B70-7A42539323E9",
+      "name": "Kerf/Button/Badge Dot/Dark/Text",
+      "color": "#111113ff"
+    },
+    "badge-dot-dark.Badge Fill": {
+      "id": "FC6D9B33-A833-4D81-B17E-9899ED0A607F",
+      "name": "Kerf/Button/Badge Dot/Dark/Badge Fill",
+      "color": "#ffa0a2ff"
+    },
+    "focus-standard-dark.Fill": {
+      "id": "2BE6875F-9819-455D-A052-CC7E4CA18E7D",
+      "name": "Kerf/Button/Focus Standard/Dark/Fill",
+      "color": "#64d2ffff"
+    },
+    "focus-standard-dark.Text": {
+      "id": "03D20426-AB39-4F14-BDEF-E38ACEF883FE",
+      "name": "Kerf/Button/Focus Standard/Dark/Text",
+      "color": "#111113ff"
+    },
+    "focus-standard-dark.Focus Contrast": {
+      "id": "209A36BB-3DC3-47BA-982B-D134E75F65B6",
+      "name": "Kerf/Button/Focus Standard/Dark/Focus Contrast",
+      "color": "#1c1c1eff"
+    },
+    "focus-standard-dark.Focus Outline": {
+      "id": "078E4013-7F00-463C-B4CA-0B6C76D3DBBA",
+      "name": "Kerf/Button/Focus Standard/Dark/Focus Outline",
+      "color": "#64d2ffff"
+    },
+    "focus-brand-dark.Fill": {
+      "id": "8D9CFF91-2A02-497F-AA0E-590F717A98AE",
+      "name": "Kerf/Button/Focus Brand/Dark/Fill",
+      "color": "#64d2ffff"
+    },
+    "focus-brand-dark.Text": {
+      "id": "C94497C9-D135-4F75-B28D-4BA6B96A7E13",
+      "name": "Kerf/Button/Focus Brand/Dark/Text",
+      "color": "#111113ff"
+    },
+    "focus-brand-dark.Focus Contrast": {
+      "id": "4A651E7D-3206-4D2C-91C0-6BA6AEB40BE4",
+      "name": "Kerf/Button/Focus Brand/Dark/Focus Contrast",
+      "color": "#1c1c1eff"
+    },
+    "focus-brand-dark.Focus Outline": {
+      "id": "2FF5D5BB-D7E8-4322-9C86-63938EF7CBBC",
+      "name": "Kerf/Button/Focus Brand/Dark/Focus Outline",
+      "color": "#64d2ffff"
+    }
+  },
+  "layerStyles": {
+    "primary-neutral-light.Surface": {
+      "id": "B672F766-2C10-4765-94C1-926948CD8E88",
+      "name": "Kerf/Button/Primary Neutral/Light/Surface"
+    },
+    "primary-success-light.Surface": {
+      "id": "C4BFF4CC-1CEC-4727-8BD4-6099ED44481B",
+      "name": "Kerf/Button/Primary Success/Light/Surface"
+    },
+    "primary-danger-light.Surface": {
+      "id": "FDFB5012-6B99-431E-A379-B870AB66ADEB",
+      "name": "Kerf/Button/Primary Danger/Light/Surface"
+    },
+    "secondary-danger-light.Surface": {
+      "id": "E7A28754-F557-496D-9A70-40CDEDCCFC83",
+      "name": "Kerf/Button/Secondary Danger/Light/Surface"
+    },
+    "plain-neutral-light.Surface": {
+      "id": "FEF2CB43-55AF-4D96-A79E-A71570A534B4",
+      "name": "Kerf/Button/Plain Neutral/Light/Surface"
+    },
+    "compact-neutral-light.Surface": {
+      "id": "9C89CE81-CDE8-4CED-85BF-FBA0CC4A2FCB",
+      "name": "Kerf/Button/Compact Neutral/Light/Surface"
+    },
+    "pill-brand-light.Surface": {
+      "id": "358B301F-A2FB-4356-9BEF-0FDE284F09B4",
+      "name": "Kerf/Button/Pill Brand/Light/Surface"
+    },
+    "icon-only-light.Surface": {
+      "id": "D48ED6FD-029D-4F40-9C13-A286EE92A9B8",
+      "name": "Kerf/Button/Icon Only/Light/Surface"
+    },
+    "disabled-neutral-light.Surface": {
+      "id": "D73F64B4-F5D9-420C-AD13-9EA68D012B8C",
+      "name": "Kerf/Button/Disabled Neutral/Light/Surface"
+    },
+    "disabled-success-light.Surface": {
+      "id": "16D592CF-22E0-4EF3-9FE6-6281C03BFB38",
+      "name": "Kerf/Button/Disabled Success/Light/Surface"
+    },
+    "pressed-neutral-light.Surface": {
+      "id": "CD68203C-284F-4065-8286-13BE6535CCBB",
+      "name": "Kerf/Button/Pressed Neutral/Light/Surface"
+    },
+    "pressed-secondary-light.Surface": {
+      "id": "607F5A1E-7D7F-4CED-A884-3CBFE5232C5F",
+      "name": "Kerf/Button/Pressed Secondary Brand/Light/Surface"
+    },
+    "loading-brand-light.Surface": {
+      "id": "7307B7B2-F686-489E-A588-F5C09BDD1635",
+      "name": "Kerf/Button/Loading Brand/Light/Surface"
+    },
+    "badge-brand-light.Badge Background": {
+      "id": "1B5E0FFD-A2E1-4FDC-BF3E-A0AFA2332F6C",
+      "name": "Kerf/Button/Badge Brand/Light/Badge Background"
+    },
+    "badge-brand-light.Surface": {
+      "id": "557B3186-E234-4355-8232-B049A1D15BD1",
+      "name": "Kerf/Button/Badge Brand/Light/Surface"
+    },
+    "badge-dot-light.Badge Background": {
+      "id": "7A983018-E0FA-4D06-88D4-16AD904365A5",
+      "name": "Kerf/Button/Badge Dot/Light/Badge Background"
+    },
+    "badge-dot-light.Surface": {
+      "id": "6F3C7911-AD3F-4AAB-ADEA-55DA4D761444",
+      "name": "Kerf/Button/Badge Dot/Light/Surface"
+    },
+    "focus-standard-light.Surface": {
+      "id": "784ADDC0-547B-4CF4-A5A8-312E8C4FC4AC",
+      "name": "Kerf/Button/Focus Standard/Light/Surface"
+    },
+    "focus-brand-light.Surface": {
+      "id": "90F6D998-7F70-4329-80A3-DBEAB728D5EC",
+      "name": "Kerf/Button/Focus Brand/Light/Surface"
+    },
+    "primary-neutral-dark.Surface": {
+      "id": "A8D19275-86B4-4DD7-A5C2-D2B2442E513E",
+      "name": "Kerf/Button/Primary Neutral/Dark/Surface"
+    },
+    "primary-success-dark.Surface": {
+      "id": "24A6A98E-FE09-4F1C-8AD6-72AE33435C8A",
+      "name": "Kerf/Button/Primary Success/Dark/Surface"
+    },
+    "primary-danger-dark.Surface": {
+      "id": "DFA23463-B690-4F25-8A7B-4ABC29DAF408",
+      "name": "Kerf/Button/Primary Danger/Dark/Surface"
+    },
+    "secondary-danger-dark.Surface": {
+      "id": "23BFE2C9-CD89-4E39-9F23-C114F91BF29C",
+      "name": "Kerf/Button/Secondary Danger/Dark/Surface"
+    },
+    "plain-neutral-dark.Surface": {
+      "id": "30939FC6-97B0-4A72-BE2A-84074B2B1A00",
+      "name": "Kerf/Button/Plain Neutral/Dark/Surface"
+    },
+    "compact-neutral-dark.Surface": {
+      "id": "10F64B75-F4A7-460F-86BD-A324B242D479",
+      "name": "Kerf/Button/Compact Neutral/Dark/Surface"
+    },
+    "pill-brand-dark.Surface": {
+      "id": "7FF21610-31FD-4A9A-9DAE-CB1BAA0B64A2",
+      "name": "Kerf/Button/Pill Brand/Dark/Surface"
+    },
+    "icon-only-dark.Surface": {
+      "id": "4088608B-C55B-41E0-819E-51199A074A31",
+      "name": "Kerf/Button/Icon Only/Dark/Surface"
+    },
+    "disabled-neutral-dark.Surface": {
+      "id": "3D800575-5F75-430D-9011-4BAFA9D9B8C8",
+      "name": "Kerf/Button/Disabled Neutral/Dark/Surface"
+    },
+    "disabled-success-dark.Surface": {
+      "id": "EE03AB95-3E8E-4108-A29B-C24AD934B92E",
+      "name": "Kerf/Button/Disabled Success/Dark/Surface"
+    },
+    "pressed-neutral-dark.Surface": {
+      "id": "7D6671C5-595F-4946-B010-2C49EFAD3508",
+      "name": "Kerf/Button/Pressed Neutral/Dark/Surface"
+    },
+    "pressed-secondary-dark.Surface": {
+      "id": "F96928FE-026D-44DB-B301-F135BC8A0C26",
+      "name": "Kerf/Button/Pressed Secondary Brand/Dark/Surface"
+    },
+    "loading-brand-dark.Surface": {
+      "id": "B280374A-9E97-4089-B398-84B5E48B2EDE",
+      "name": "Kerf/Button/Loading Brand/Dark/Surface"
+    },
+    "badge-brand-dark.Badge Background": {
+      "id": "53968E08-7E52-4C83-844A-522FAE8D8591",
+      "name": "Kerf/Button/Badge Brand/Dark/Badge Background"
+    },
+    "badge-brand-dark.Surface": {
+      "id": "10EA085B-3CC0-40DF-BBBD-2CC9BC24CD3D",
+      "name": "Kerf/Button/Badge Brand/Dark/Surface"
+    },
+    "badge-dot-dark.Badge Background": {
+      "id": "5DA5F06C-DE01-4AB7-9461-AE8C2F69A0AB",
+      "name": "Kerf/Button/Badge Dot/Dark/Badge Background"
+    },
+    "badge-dot-dark.Surface": {
+      "id": "FE922924-EEC4-4797-98B8-65E97B945F65",
+      "name": "Kerf/Button/Badge Dot/Dark/Surface"
+    },
+    "focus-standard-dark.Surface": {
+      "id": "D071D931-6B38-43F6-A207-D1221ED163EF",
+      "name": "Kerf/Button/Focus Standard/Dark/Surface"
+    },
+    "focus-brand-dark.Surface": {
+      "id": "E081D4E5-6083-4EB5-954E-0B1310B4B1A6",
+      "name": "Kerf/Button/Focus Brand/Dark/Surface"
+    }
+  },
+  "textStyles": {
+    "primary-neutral-light.Label": {
+      "id": "892F79E1-318B-495B-9C37-3A83CDF3212A",
+      "name": "Kerf/Button/Primary Neutral/Light/Label"
+    },
+    "primary-success-light.Label": {
+      "id": "D678D17D-46A7-4222-9A72-84C7845CDE76",
+      "name": "Kerf/Button/Primary Success/Light/Label"
+    },
+    "primary-danger-light.Label": {
+      "id": "0B5F7235-925D-446A-B67A-6179FAF256BB",
+      "name": "Kerf/Button/Primary Danger/Light/Label"
+    },
+    "secondary-danger-light.Label": {
+      "id": "E7CEED3D-E10C-4B6F-8A9F-1BE40F22B89E",
+      "name": "Kerf/Button/Secondary Danger/Light/Label"
+    },
+    "plain-neutral-light.Label": {
+      "id": "45BD8598-BC42-449A-8018-F8AE1D119E30",
+      "name": "Kerf/Button/Plain Neutral/Light/Label"
+    },
+    "compact-neutral-light.Label": {
+      "id": "D087EA14-7BD5-4FDE-B5FC-F96AA4E893A8",
+      "name": "Kerf/Button/Compact Neutral/Light/Label"
+    },
+    "pill-brand-light.Label": {
+      "id": "AC7FF995-04F2-4ABE-B8AF-541709F544CE",
+      "name": "Kerf/Button/Pill Brand/Light/Label"
+    },
+    "disabled-neutral-light.Label": {
+      "id": "3AC1725A-9124-4EC0-8084-56090B6B71B0",
+      "name": "Kerf/Button/Disabled Neutral/Light/Label"
+    },
+    "disabled-success-light.Label": {
+      "id": "C2340F9D-F18A-46EF-A498-62A1FA1F6253",
+      "name": "Kerf/Button/Disabled Success/Light/Label"
+    },
+    "pressed-neutral-light.Label": {
+      "id": "3219EE98-B852-4B7C-A37C-282D85FD645F",
+      "name": "Kerf/Button/Pressed Neutral/Light/Label"
+    },
+    "pressed-secondary-light.Label": {
+      "id": "EA3A1852-6B10-41D9-BFBD-DA8CF3124EEE",
+      "name": "Kerf/Button/Pressed Secondary Brand/Light/Label"
+    },
+    "loading-brand-light.Label": {
+      "id": "42BC7AF1-8D3B-4A20-AA3F-FA339637F55F",
+      "name": "Kerf/Button/Loading Brand/Light/Label"
+    },
+    "badge-brand-light.Badge Count": {
+      "id": "B7EA9365-67FE-48F5-9654-27E29860D64B",
+      "name": "Kerf/Button/Badge Brand/Light/Badge Count"
+    },
+    "badge-brand-light.Label": {
+      "id": "F73FB866-A5D6-4140-ACBE-4A7330660463",
+      "name": "Kerf/Button/Badge Brand/Light/Label"
+    },
+    "badge-dot-light.Label": {
+      "id": "257A0629-0250-45EC-9C0E-BD50A6A6C6EB",
+      "name": "Kerf/Button/Badge Dot/Light/Label"
+    },
+    "focus-standard-light.Label": {
+      "id": "D8C0BF51-02E9-4A53-9875-B3F8DB01F384",
+      "name": "Kerf/Button/Focus Standard/Light/Label"
+    },
+    "focus-brand-light.Label": {
+      "id": "DFD688F2-B312-4428-8755-8AEA7E6F2826",
+      "name": "Kerf/Button/Focus Brand/Light/Label"
+    },
+    "primary-neutral-dark.Label": {
+      "id": "D3063BB5-19D0-44E1-A66C-0ACABB8E94AE",
+      "name": "Kerf/Button/Primary Neutral/Dark/Label"
+    },
+    "primary-success-dark.Label": {
+      "id": "0163500A-4319-41AE-9BAC-13EF44061AC1",
+      "name": "Kerf/Button/Primary Success/Dark/Label"
+    },
+    "primary-danger-dark.Label": {
+      "id": "C5250CFF-0D9E-493B-A80D-4AA24B1A4ED5",
+      "name": "Kerf/Button/Primary Danger/Dark/Label"
+    },
+    "secondary-danger-dark.Label": {
+      "id": "9D20DF13-9FEC-4FB0-B3D6-7EBCBF28B5C5",
+      "name": "Kerf/Button/Secondary Danger/Dark/Label"
+    },
+    "plain-neutral-dark.Label": {
+      "id": "E44EBF4D-1002-410A-A6F1-A2444E57E13D",
+      "name": "Kerf/Button/Plain Neutral/Dark/Label"
+    },
+    "compact-neutral-dark.Label": {
+      "id": "0F3FBE4D-FA0A-48FA-9434-1202F7DF7ECA",
+      "name": "Kerf/Button/Compact Neutral/Dark/Label"
+    },
+    "pill-brand-dark.Label": {
+      "id": "2DECF76D-CCBE-448F-BFBB-86454A3093A6",
+      "name": "Kerf/Button/Pill Brand/Dark/Label"
+    },
+    "disabled-neutral-dark.Label": {
+      "id": "47B18153-A872-40D7-9FB8-9455C630682B",
+      "name": "Kerf/Button/Disabled Neutral/Dark/Label"
+    },
+    "disabled-success-dark.Label": {
+      "id": "A8135D0C-600F-423E-8806-64FB06550E0B",
+      "name": "Kerf/Button/Disabled Success/Dark/Label"
+    },
+    "pressed-neutral-dark.Label": {
+      "id": "36AD220E-9A20-4F50-8BCB-B1DBE13FA571",
+      "name": "Kerf/Button/Pressed Neutral/Dark/Label"
+    },
+    "pressed-secondary-dark.Label": {
+      "id": "EEC481B0-4FDA-42A7-B7E3-A4B780F6295A",
+      "name": "Kerf/Button/Pressed Secondary Brand/Dark/Label"
+    },
+    "loading-brand-dark.Label": {
+      "id": "401A11D8-E0EA-4C76-B055-DD72E08CE012",
+      "name": "Kerf/Button/Loading Brand/Dark/Label"
+    },
+    "badge-brand-dark.Badge Count": {
+      "id": "24503074-AD9D-4307-A0AF-15927A8C4E02",
+      "name": "Kerf/Button/Badge Brand/Dark/Badge Count"
+    },
+    "badge-brand-dark.Label": {
+      "id": "1D4C9E3B-506A-489D-8DD2-D760AF7CD757",
+      "name": "Kerf/Button/Badge Brand/Dark/Label"
+    },
+    "badge-dot-dark.Label": {
+      "id": "00FC0820-812C-47EF-8BAA-5F86F0A67FEC",
+      "name": "Kerf/Button/Badge Dot/Dark/Label"
+    },
+    "focus-standard-dark.Label": {
+      "id": "0DA92885-8110-482E-ABC2-04E1C6049BCC",
+      "name": "Kerf/Button/Focus Standard/Dark/Label"
+    },
+    "focus-brand-dark.Label": {
+      "id": "188DF831-3D26-40D6-AA69-146DC67D1964",
+      "name": "Kerf/Button/Focus Brand/Dark/Label"
+    }
+  }
+}
