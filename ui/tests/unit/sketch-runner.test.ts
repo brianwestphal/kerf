@@ -229,8 +229,9 @@ describe('Sketch runner lifecycle', () => {
     const result = runSketchJob({
       ...options(),
       invoke: async (_tool: string, args: string[]) => {
-        job = await jobFrom(args);
-        await status(job, { state: 'running', cleanupComplete: false });
+        const started = await jobFrom(args);
+        job = started;
+        await status(started, { state: 'running', cleanupComplete: false });
         throw Object.assign(new Error('Command failed'), { killed: true });
       },
     });
