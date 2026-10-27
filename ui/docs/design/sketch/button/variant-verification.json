@@ -1,0 +1,3419 @@
+{
+  "symbols": [
+    {
+      "id": "primary-neutral-light",
+      "symbolId": "164A76F7-7581-449B-801B-34D2690BAB73",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "primary-success-light",
+      "symbolId": "440B3D7B-9E0E-4A1F-A3BD-817309878694",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "primary-danger-light",
+      "symbolId": "CF187C5F-FAFC-44EC-A9A8-F72AFAEB397D",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "secondary-danger-light",
+      "symbolId": "2E1884EC-BD17-42C5-8B76-81FE1115BE38",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "plain-neutral-light",
+      "symbolId": "7EA87C09-C629-4DC1-8365-052506FB20FB",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "compact-neutral-light",
+      "symbolId": "5AA664C8-03FB-4F95-93E4-B3CADCDC1F09",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "pill-brand-light",
+      "symbolId": "758579DC-E5DE-415B-A288-914F62393F6B",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "icon-only-light",
+      "symbolId": "95D89E2D-E3F1-47E8-9EC3-ABB56D4F4E66",
+      "editableLabel": false,
+      "layers": [
+        "Icon"
+      ]
+    },
+    {
+      "id": "disabled-neutral-light",
+      "symbolId": "1A9D6E60-7C59-41A8-9FB2-AFD1B9BB815E",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "disabled-success-light",
+      "symbolId": "1AFA44FC-5D53-4E31-8F58-B52F3D28FA1A",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "pressed-neutral-light",
+      "symbolId": "C090CC83-74D3-417C-97D8-20F28F2DEF28",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "pressed-secondary-light",
+      "symbolId": "1A90FE0D-C782-4226-9A9B-084BFFA8D5C1",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "loading-brand-light",
+      "symbolId": "93EF26A9-BA2E-4AF3-9694-48D82CCAE627",
+      "editableLabel": true,
+      "layers": [
+        "Label",
+        "Spinner Host"
+      ]
+    },
+    {
+      "id": "badge-brand-light",
+      "symbolId": "FD69FB50-D899-4D96-A1B2-7101C7412106",
+      "editableLabel": true,
+      "layers": [
+        "Label",
+        "Badge Background",
+        "Badge Count"
+      ]
+    },
+    {
+      "id": "badge-dot-light",
+      "symbolId": "7267E4DF-984D-4628-8E0E-1C35289176D0",
+      "editableLabel": true,
+      "layers": [
+        "Label",
+        "Badge Background"
+      ]
+    },
+    {
+      "id": "focus-standard-light",
+      "symbolId": "29A2A021-B8F4-4F6C-A51C-39A9AC9E1CB1",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "focus-brand-light",
+      "symbolId": "9A4A25BE-C975-4EA5-903D-DC6603BE777B",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "primary-neutral-dark",
+      "symbolId": "1A7911E4-18E2-4804-A7A9-14AA6C82648B",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "primary-success-dark",
+      "symbolId": "53DD7796-FBBA-417F-A6BC-D9AFD6E369A7",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "primary-danger-dark",
+      "symbolId": "865B5E93-56AD-4B0C-AE56-52BBDD96CCEA",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "secondary-danger-dark",
+      "symbolId": "FBC4B718-98C0-4D75-843C-79C1B6EE835E",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "plain-neutral-dark",
+      "symbolId": "DF576745-BE97-4BF9-BE82-BF97860FDEE1",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "compact-neutral-dark",
+      "symbolId": "0759487E-00FF-4A2C-BC2A-E672A8E2DA25",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "pill-brand-dark",
+      "symbolId": "A9FA3F23-1711-4F7B-B906-4CB5A009F5FD",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "icon-only-dark",
+      "symbolId": "3DE21C0D-1189-49E4-91A4-0E03BEF123DE",
+      "editableLabel": false,
+      "layers": [
+        "Icon"
+      ]
+    },
+    {
+      "id": "disabled-neutral-dark",
+      "symbolId": "19975BFE-ED19-4305-AC94-1C946F2EBEB9",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "disabled-success-dark",
+      "symbolId": "0C81CA0A-881C-41FB-93B6-110E1E45B38C",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "pressed-neutral-dark",
+      "symbolId": "892D2725-A274-4C4C-8C5D-AB6E06058EBE",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "pressed-secondary-dark",
+      "symbolId": "0C8ED924-984B-4BE0-B571-CF25D5509FE8",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "loading-brand-dark",
+      "symbolId": "9E17F8AE-A60F-43C8-9351-5A19D52B7BB4",
+      "editableLabel": true,
+      "layers": [
+        "Label",
+        "Spinner Host"
+      ]
+    },
+    {
+      "id": "badge-brand-dark",
+      "symbolId": "417443AB-4ABA-42DC-8A83-BB29699DB377",
+      "editableLabel": true,
+      "layers": [
+        "Label",
+        "Badge Background",
+        "Badge Count"
+      ]
+    },
+    {
+      "id": "badge-dot-dark",
+      "symbolId": "236F2838-1126-4AC2-8345-F97DEA690FC1",
+      "editableLabel": true,
+      "layers": [
+        "Label",
+        "Badge Background"
+      ]
+    },
+    {
+      "id": "focus-standard-dark",
+      "symbolId": "AB2A4285-2C68-499E-8C50-4E8E59C94A36",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    },
+    {
+      "id": "focus-brand-dark",
+      "symbolId": "2116011A-F4BD-4050-A074-DD9D2ECD8AEF",
+      "editableLabel": true,
+      "layers": [
+        "Label"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "primary-neutral-light",
+      "step": 0,
+      "instanceId": "C3A0DC39-88E2-49EE-AB73-F4113B754327",
+      "symbolId": "5CCF1A64-A4D7-4BDE-98EA-1A84CB482DB6",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "width": 86,
+        "height": 44
+      },
+      "override": "Continue",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 68,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "primary-neutral-light",
+      "step": 1,
+      "instanceId": "5A09018B-D4C7-4541-976D-24AA4624FC6C",
+      "symbolId": "5CCF1A64-A4D7-4BDE-98EA-1A84CB482DB6",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 0,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "primary-neutral-light",
+      "step": 2,
+      "instanceId": "4191F8AF-BF59-4A9E-993D-F11520D1D59A",
+      "symbolId": "5CCF1A64-A4D7-4BDE-98EA-1A84CB482DB6",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 0,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Continue",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 56,
+            "y": 13,
+            "width": 68,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "primary-success-light",
+      "step": 0,
+      "instanceId": "F69C0E9E-0EC0-4EEE-BB07-0AE916F416BE",
+      "symbolId": "80EEF6D3-FDCA-4198-A1AE-6D14D8D1D57D",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 110,
+        "width": 78,
+        "height": 44
+      },
+      "override": "Confirm",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 60,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "primary-success-light",
+      "step": 1,
+      "instanceId": "74BACD65-AB33-4FC0-8B3A-12F5C94D9B3A",
+      "symbolId": "80EEF6D3-FDCA-4198-A1AE-6D14D8D1D57D",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 110,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "primary-success-light",
+      "step": 2,
+      "instanceId": "B4E44A87-85EC-4236-96CA-4B19E61C8F5E",
+      "symbolId": "80EEF6D3-FDCA-4198-A1AE-6D14D8D1D57D",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 110,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Confirm",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 60,
+            "y": 13,
+            "width": 60,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "primary-danger-light",
+      "step": 0,
+      "instanceId": "64A11B5B-045E-41F6-86B3-48483F1D6C9F",
+      "symbolId": "431F2464-C173-4A3F-88D8-94B80D464D54",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 220,
+        "width": 67,
+        "height": 44
+      },
+      "override": "Delete",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 49,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "primary-danger-light",
+      "step": 1,
+      "instanceId": "CDC645C1-65A1-4A22-BDAA-11D8665ADBA9",
+      "symbolId": "431F2464-C173-4A3F-88D8-94B80D464D54",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 220,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "primary-danger-light",
+      "step": 2,
+      "instanceId": "8AEEC4EB-AA79-4427-AE67-5D08ED518199",
+      "symbolId": "431F2464-C173-4A3F-88D8-94B80D464D54",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 220,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Delete",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 65.5,
+            "y": 13,
+            "width": 49,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "secondary-danger-light",
+      "step": 0,
+      "instanceId": "B9003524-348C-45D3-B830-34E2F0AB54A8",
+      "symbolId": "7FC8F5F9-CB6F-408B-93D9-225C3572049F",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 330,
+        "width": 78,
+        "height": 44
+      },
+      "override": "Remove",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 60,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "secondary-danger-light",
+      "step": 1,
+      "instanceId": "27BAF03B-0860-4FA6-898B-BF7D2C8B2C0D",
+      "symbolId": "7FC8F5F9-CB6F-408B-93D9-225C3572049F",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 330,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "secondary-danger-light",
+      "step": 2,
+      "instanceId": "BCDEB1E7-1526-4054-A379-37E209004675",
+      "symbolId": "7FC8F5F9-CB6F-408B-93D9-225C3572049F",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 330,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Remove",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 60,
+            "y": 13,
+            "width": 60,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "plain-neutral-light",
+      "step": 0,
+      "instanceId": "FB65C014-69C7-4E0A-83FD-02493AC99AC3",
+      "symbolId": "3B15E66E-B875-438D-9DF3-F78FCFD400FE",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 440,
+        "width": 70,
+        "height": 44
+      },
+      "override": "Cancel",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 52,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "plain-neutral-light",
+      "step": 1,
+      "instanceId": "B79E64B7-83BB-47B5-84BE-0998EF6EF4D8",
+      "symbolId": "3B15E66E-B875-438D-9DF3-F78FCFD400FE",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 440,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "plain-neutral-light",
+      "step": 2,
+      "instanceId": "A34319F6-3096-4846-BB2F-39BB8145613D",
+      "symbolId": "3B15E66E-B875-438D-9DF3-F78FCFD400FE",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 440,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Cancel",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 64,
+            "y": 13,
+            "width": 52,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "compact-neutral-light",
+      "step": 0,
+      "instanceId": "1AD5E662-83C4-4802-A613-CE834E469985",
+      "symbolId": "9316170D-EA6B-4812-AB16-9F68EAE52A65",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 550,
+        "width": 52,
+        "height": 33
+      },
+      "override": "Filter",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 8,
+            "width": 34,
+            "height": 17
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "compact-neutral-light",
+      "step": 1,
+      "instanceId": "B8E1F195-149C-45F4-B080-ECB614B44314",
+      "symbolId": "9316170D-EA6B-4812-AB16-9F68EAE52A65",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 550,
+        "width": 166,
+        "height": 33
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 8,
+            "width": 148,
+            "height": 17
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "compact-neutral-light",
+      "step": 2,
+      "instanceId": "6594F682-A61A-405E-BF9F-182D8B5166CC",
+      "symbolId": "9316170D-EA6B-4812-AB16-9F68EAE52A65",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 550,
+        "width": 180,
+        "height": 33
+      },
+      "override": "Filter",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 73,
+            "y": 8,
+            "width": 34,
+            "height": 17
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "pill-brand-light",
+      "step": 0,
+      "instanceId": "DC59620F-F525-453D-A6E8-83B00B81DEC0",
+      "symbolId": "637346A5-EA7B-4618-B62D-EC9E8EC30246",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 660,
+        "width": 68,
+        "height": 44
+      },
+      "override": "Create",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 50,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "pill-brand-light",
+      "step": 1,
+      "instanceId": "23979BC2-6777-4A57-B4CE-A111D18D24B3",
+      "symbolId": "637346A5-EA7B-4618-B62D-EC9E8EC30246",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 660,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "pill-brand-light",
+      "step": 2,
+      "instanceId": "1FDDA123-742C-43CF-91B4-8F004909F876",
+      "symbolId": "637346A5-EA7B-4618-B62D-EC9E8EC30246",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 660,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Create",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 65,
+            "y": 13,
+            "width": 50,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "icon-only-light",
+      "step": 0,
+      "instanceId": "BBDE5F99-851A-4E5D-8C9B-5E46764CB933",
+      "symbolId": "0C80198F-752B-4F6F-80D4-E75CA5728AC3",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 770,
+        "width": 44,
+        "height": 44
+      },
+      "override": null,
+      "expanded": [
+        {
+          "name": "Icon",
+          "frame": {
+            "x": 14,
+            "y": 14,
+            "width": 16,
+            "height": 16
+          },
+          "children": [
+            {
+              "name": "Group",
+              "frame": {
+                "x": 3.33333333333333,
+                "y": 3.33333333333333,
+                "width": 9.33333333333333,
+                "height": 9.33333333333333
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "icon-only-light",
+      "step": 1,
+      "instanceId": "97FD16A1-B96E-40DE-8C0D-585A54A42176",
+      "symbolId": "0C80198F-752B-4F6F-80D4-E75CA5728AC3",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 770,
+        "width": 44,
+        "height": 44
+      },
+      "override": null,
+      "expanded": [
+        {
+          "name": "Icon",
+          "frame": {
+            "x": 14,
+            "y": 14,
+            "width": 16,
+            "height": 16
+          },
+          "children": [
+            {
+              "name": "Group",
+              "frame": {
+                "x": 3.33333333333333,
+                "y": 3.33333333333333,
+                "width": 9.33333333333333,
+                "height": 9.33333333333333
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "icon-only-light",
+      "step": 2,
+      "instanceId": "51864C8B-0BEC-4A9A-AEE3-CE9BEE842AAC",
+      "symbolId": "0C80198F-752B-4F6F-80D4-E75CA5728AC3",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 770,
+        "width": 180,
+        "height": 44
+      },
+      "override": null,
+      "expanded": [
+        {
+          "name": "Icon",
+          "frame": {
+            "x": 82,
+            "y": 14,
+            "width": 16,
+            "height": 16
+          },
+          "children": [
+            {
+              "name": "Group",
+              "frame": {
+                "x": 3.33333333333333,
+                "y": 3.33333333333333,
+                "width": 9.33333333333333,
+                "height": 9.33333333333333
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "disabled-neutral-light",
+      "step": 0,
+      "instanceId": "449152CA-8EA3-449A-AD6F-D655C1C6795E",
+      "symbolId": "28ADACE2-383B-44EC-8303-EB634247FE34",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 880,
+        "width": 86,
+        "height": 44
+      },
+      "override": "Continue",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 68,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "disabled-neutral-light",
+      "step": 1,
+      "instanceId": "20A6C9A4-C52E-46F1-B434-56F03E18348A",
+      "symbolId": "28ADACE2-383B-44EC-8303-EB634247FE34",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 880,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "disabled-neutral-light",
+      "step": 2,
+      "instanceId": "F27D91BD-7789-4E68-833B-D7110D800AF6",
+      "symbolId": "28ADACE2-383B-44EC-8303-EB634247FE34",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 880,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Continue",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 56,
+            "y": 13,
+            "width": 68,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "disabled-success-light",
+      "step": 0,
+      "instanceId": "79B2E596-7C37-4127-B0E5-541869901559",
+      "symbolId": "38CD2792-37F0-4F2A-BEB8-4A6C6026B126",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 990,
+        "width": 78,
+        "height": 44
+      },
+      "override": "Confirm",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 60,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "disabled-success-light",
+      "step": 1,
+      "instanceId": "6C494216-DEC4-4B71-B3B6-000B5231CBC5",
+      "symbolId": "38CD2792-37F0-4F2A-BEB8-4A6C6026B126",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 990,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "disabled-success-light",
+      "step": 2,
+      "instanceId": "E8352169-DB15-4604-852D-6B60FCD90961",
+      "symbolId": "38CD2792-37F0-4F2A-BEB8-4A6C6026B126",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 990,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Confirm",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 60,
+            "y": 13,
+            "width": 60,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "pressed-neutral-light",
+      "step": 0,
+      "instanceId": "4FA39A35-D846-452D-93E4-F6BB1E1E6522",
+      "symbolId": "E29A6727-9D92-4ED6-AA2B-13C752517940",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 1100,
+        "width": 84,
+        "height": 44
+      },
+      "override": "Selected",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 66,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "pressed-neutral-light",
+      "step": 1,
+      "instanceId": "3740D167-8B19-4315-82EC-CB60BE0D2A7B",
+      "symbolId": "E29A6727-9D92-4ED6-AA2B-13C752517940",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 1100,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "pressed-neutral-light",
+      "step": 2,
+      "instanceId": "D68B9BB6-BFF1-42E1-A46C-70D134CCB231",
+      "symbolId": "E29A6727-9D92-4ED6-AA2B-13C752517940",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 1100,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Selected",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 57,
+            "y": 13,
+            "width": 66,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "pressed-secondary-light",
+      "step": 0,
+      "instanceId": "AB20C329-742F-47D9-A2D4-DCA7160F5877",
+      "symbolId": "2033B271-1EBB-4062-A4FD-8989438FC47E",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 1210,
+        "width": 84,
+        "height": 44
+      },
+      "override": "Selected",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 66,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "pressed-secondary-light",
+      "step": 1,
+      "instanceId": "C1FCA1EC-B66A-42E4-85B3-168D6394C772",
+      "symbolId": "2033B271-1EBB-4062-A4FD-8989438FC47E",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 1210,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "pressed-secondary-light",
+      "step": 2,
+      "instanceId": "ECEF6F1B-C02C-43EC-899D-C875BED9F0C1",
+      "symbolId": "2033B271-1EBB-4062-A4FD-8989438FC47E",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 1210,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Selected",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 57,
+            "y": 13,
+            "width": 66,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "loading-brand-light",
+      "step": 0,
+      "instanceId": "600B6EE7-D807-458C-B6A2-EA3C797F8801",
+      "symbolId": "D7E71596-E261-47F1-8DED-E19F8EBAE795",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 1320,
+        "width": 68,
+        "height": 44
+      },
+      "override": "Saving",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 50,
+            "height": 18
+          },
+          "children": []
+        },
+        {
+          "name": "Spinner Host",
+          "frame": {
+            "x": 26,
+            "y": 14,
+            "width": 16,
+            "height": 16
+          },
+          "children": [
+            {
+              "name": "Spinner",
+              "frame": {
+                "x": 0,
+                "y": 0,
+                "width": 16,
+                "height": 16
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "loading-brand-light",
+      "step": 1,
+      "instanceId": "DEFF912A-6E97-45D4-9892-AC0E2727F4A1",
+      "symbolId": "D7E71596-E261-47F1-8DED-E19F8EBAE795",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 1320,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        },
+        {
+          "name": "Spinner Host",
+          "frame": {
+            "x": 26,
+            "y": 14,
+            "width": 132,
+            "height": 16
+          },
+          "children": [
+            {
+              "name": "Spinner",
+              "frame": {
+                "x": 58,
+                "y": 0,
+                "width": 16,
+                "height": 16
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "loading-brand-light",
+      "step": 2,
+      "instanceId": "0A06A899-BDBE-424D-8984-F65E5288175F",
+      "symbolId": "D7E71596-E261-47F1-8DED-E19F8EBAE795",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 1320,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Saving",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 65,
+            "y": 13,
+            "width": 50,
+            "height": 18
+          },
+          "children": []
+        },
+        {
+          "name": "Spinner Host",
+          "frame": {
+            "x": 26,
+            "y": 14,
+            "width": 128,
+            "height": 16
+          },
+          "children": [
+            {
+              "name": "Spinner",
+              "frame": {
+                "x": 56,
+                "y": 0,
+                "width": 16,
+                "height": 16
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "badge-brand-light",
+      "step": 0,
+      "instanceId": "F1723AD3-B71D-4C2A-ACD6-3E51658604FB",
+      "symbolId": "0717C560-D1C2-44BD-83EB-712B3E2426E9",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 1430,
+        "width": 64,
+        "height": 44
+      },
+      "override": "Filters",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 46,
+            "height": 18
+          },
+          "children": []
+        },
+        {
+          "name": "Badge Background",
+          "frame": {
+            "x": 46.09375,
+            "y": -3,
+            "width": 20.546875,
+            "height": 20
+          },
+          "children": [
+            {
+              "name": "Rectangle",
+              "frame": {
+                "x": 0,
+                "y": 0,
+                "width": 20.546875,
+                "height": 20
+              }
+            }
+          ]
+        },
+        {
+          "name": "Badge Count",
+          "frame": {
+            "x": 46.09375,
+            "y": -3,
+            "width": 20.546875,
+            "height": 13
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "badge-brand-light",
+      "step": 1,
+      "instanceId": "B9CAC81D-C5CE-47BF-B65F-18E89E2E6110",
+      "symbolId": "0717C560-D1C2-44BD-83EB-712B3E2426E9",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 1430,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        },
+        {
+          "name": "Badge Background",
+          "frame": {
+            "x": 166.09375,
+            "y": -3,
+            "width": 20.546875,
+            "height": 20
+          },
+          "children": [
+            {
+              "name": "Rectangle",
+              "frame": {
+                "x": 0,
+                "y": 0,
+                "width": 20.546875,
+                "height": 20
+              }
+            }
+          ]
+        },
+        {
+          "name": "Badge Count",
+          "frame": {
+            "x": 166.09375,
+            "y": -3,
+            "width": 20.546875,
+            "height": 13
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "badge-brand-light",
+      "step": 2,
+      "instanceId": "0C7AAEBC-893F-444F-9918-709C461022A0",
+      "symbolId": "0717C560-D1C2-44BD-83EB-712B3E2426E9",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 1430,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Filters",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 67,
+            "y": 13,
+            "width": 46,
+            "height": 18
+          },
+          "children": []
+        },
+        {
+          "name": "Badge Background",
+          "frame": {
+            "x": 162.09375,
+            "y": -3,
+            "width": 20.546875,
+            "height": 20
+          },
+          "children": [
+            {
+              "name": "Rectangle",
+              "frame": {
+                "x": 0,
+                "y": 0,
+                "width": 20.546875,
+                "height": 20
+              }
+            }
+          ]
+        },
+        {
+          "name": "Badge Count",
+          "frame": {
+            "x": 162.09375,
+            "y": -3,
+            "width": 20.546875,
+            "height": 13
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "badge-dot-light",
+      "step": 0,
+      "instanceId": "BD73A1F7-6B64-4CD1-AF47-BC9D3395AF5E",
+      "symbolId": "47E37BEC-3152-42C3-8036-483BB42DC0F4",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 1540,
+        "width": 81,
+        "height": 44
+      },
+      "override": "Updates",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 63,
+            "height": 18
+          },
+          "children": []
+        },
+        {
+          "name": "Badge Background",
+          "frame": {
+            "x": 69.640625,
+            "y": 3,
+            "width": 8,
+            "height": 8
+          },
+          "children": [
+            {
+              "name": "Rectangle",
+              "frame": {
+                "x": 0,
+                "y": 0,
+                "width": 8,
+                "height": 8
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "badge-dot-light",
+      "step": 1,
+      "instanceId": "7F6493CB-D397-4F69-8898-A1CD36AA01AF",
+      "symbolId": "47E37BEC-3152-42C3-8036-483BB42DC0F4",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 1540,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        },
+        {
+          "name": "Badge Background",
+          "frame": {
+            "x": 172.640625,
+            "y": 3,
+            "width": 8,
+            "height": 8
+          },
+          "children": [
+            {
+              "name": "Rectangle",
+              "frame": {
+                "x": 0,
+                "y": 0,
+                "width": 8,
+                "height": 8
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "badge-dot-light",
+      "step": 2,
+      "instanceId": "25959C04-4B1B-4A7F-A790-9A7EBB072B18",
+      "symbolId": "47E37BEC-3152-42C3-8036-483BB42DC0F4",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 1540,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Updates",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 58.5,
+            "y": 13,
+            "width": 63,
+            "height": 18
+          },
+          "children": []
+        },
+        {
+          "name": "Badge Background",
+          "frame": {
+            "x": 168.640625,
+            "y": 3,
+            "width": 8,
+            "height": 8
+          },
+          "children": [
+            {
+              "name": "Rectangle",
+              "frame": {
+                "x": 0,
+                "y": 0,
+                "width": 8,
+                "height": 8
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "focus-standard-light",
+      "step": 0,
+      "instanceId": "5285C45D-E5D6-400E-BA77-9F15514B9B0E",
+      "symbolId": "9520A4D5-53D4-41F8-B004-5C75F5DEADC5",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 1650,
+        "width": 54,
+        "height": 44
+      },
+      "override": "Save",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 36,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "focus-standard-light",
+      "step": 1,
+      "instanceId": "AB80BD3F-8C92-4906-A386-E6B37257F7B0",
+      "symbolId": "9520A4D5-53D4-41F8-B004-5C75F5DEADC5",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 1650,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "focus-standard-light",
+      "step": 2,
+      "instanceId": "BF5F3107-B3A5-4229-BD51-6C77F50297FE",
+      "symbolId": "9520A4D5-53D4-41F8-B004-5C75F5DEADC5",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 1650,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Save",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 72,
+            "y": 13,
+            "width": 36,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "focus-brand-light",
+      "step": 0,
+      "instanceId": "6474809A-DA86-46FA-A3A0-D3C531C0AC34",
+      "symbolId": "F260E50D-7773-49DD-8BFE-7FB871AD4A32",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 1760,
+        "width": 54,
+        "height": 44
+      },
+      "override": "Save",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 36,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "focus-brand-light",
+      "step": 1,
+      "instanceId": "B95A2C68-E9F7-4208-BC38-63177FA9E530",
+      "symbolId": "F260E50D-7773-49DD-8BFE-7FB871AD4A32",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 1760,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "focus-brand-light",
+      "step": 2,
+      "instanceId": "5E73975D-6385-4844-A29F-1C203B954AFB",
+      "symbolId": "F260E50D-7773-49DD-8BFE-7FB871AD4A32",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 1760,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Save",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 72,
+            "y": 13,
+            "width": 36,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "primary-neutral-dark",
+      "step": 0,
+      "instanceId": "E6688A5A-DEC4-4C4B-98B2-C533C1168C87",
+      "symbolId": "34E5D4E0-708C-4100-A3BB-F0E308825CBF",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 1870,
+        "width": 86,
+        "height": 44
+      },
+      "override": "Continue",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 68,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "primary-neutral-dark",
+      "step": 1,
+      "instanceId": "6D41E837-E8F9-47D0-A802-5BFDD9493E6B",
+      "symbolId": "34E5D4E0-708C-4100-A3BB-F0E308825CBF",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 1870,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "primary-neutral-dark",
+      "step": 2,
+      "instanceId": "6F8463A1-80C6-4F42-9DCC-A83E19ABA35F",
+      "symbolId": "34E5D4E0-708C-4100-A3BB-F0E308825CBF",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 1870,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Continue",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 56,
+            "y": 13,
+            "width": 68,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "primary-success-dark",
+      "step": 0,
+      "instanceId": "75F320C0-9C69-402F-91AE-48095C77BE0C",
+      "symbolId": "DFED5227-90DF-44B4-B3AE-7D760AB22B24",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 1980,
+        "width": 78,
+        "height": 44
+      },
+      "override": "Confirm",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 60,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "primary-success-dark",
+      "step": 1,
+      "instanceId": "63732F6F-8C44-493C-80F9-310D4D77BFB2",
+      "symbolId": "DFED5227-90DF-44B4-B3AE-7D760AB22B24",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 1980,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "primary-success-dark",
+      "step": 2,
+      "instanceId": "EC91A0E5-8D65-44F9-A523-D9C269E959DB",
+      "symbolId": "DFED5227-90DF-44B4-B3AE-7D760AB22B24",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 1980,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Confirm",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 60,
+            "y": 13,
+            "width": 60,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "primary-danger-dark",
+      "step": 0,
+      "instanceId": "AFB7892E-0DA2-45C8-B7CE-67DE69453A09",
+      "symbolId": "EF6F5DC8-BB9E-41E2-961B-1DB71E541594",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 2090,
+        "width": 67,
+        "height": 44
+      },
+      "override": "Delete",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 49,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "primary-danger-dark",
+      "step": 1,
+      "instanceId": "F36950CB-CBB9-4E83-94D1-B3C51757BD03",
+      "symbolId": "EF6F5DC8-BB9E-41E2-961B-1DB71E541594",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 2090,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "primary-danger-dark",
+      "step": 2,
+      "instanceId": "BE38D9AF-D6FD-4A18-A69E-96509528ED66",
+      "symbolId": "EF6F5DC8-BB9E-41E2-961B-1DB71E541594",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 2090,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Delete",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 65.5,
+            "y": 13,
+            "width": 49,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "secondary-danger-dark",
+      "step": 0,
+      "instanceId": "C69D177E-90EC-435A-928C-0158824E24A5",
+      "symbolId": "A986E19A-3CCD-467E-91B5-D91571A33393",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 2200,
+        "width": 78,
+        "height": 44
+      },
+      "override": "Remove",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 60,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "secondary-danger-dark",
+      "step": 1,
+      "instanceId": "F6986165-A535-4BF2-9E0F-60C357869D02",
+      "symbolId": "A986E19A-3CCD-467E-91B5-D91571A33393",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 2200,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "secondary-danger-dark",
+      "step": 2,
+      "instanceId": "8D229860-7922-4564-97BF-EAFBAFE8E214",
+      "symbolId": "A986E19A-3CCD-467E-91B5-D91571A33393",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 2200,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Remove",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 60,
+            "y": 13,
+            "width": 60,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "plain-neutral-dark",
+      "step": 0,
+      "instanceId": "AD63C731-AA4E-4567-8FFE-953CBF18E3A3",
+      "symbolId": "0CFDA180-F568-4FEF-B338-090D4CF599D7",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 2310,
+        "width": 70,
+        "height": 44
+      },
+      "override": "Cancel",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 52,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "plain-neutral-dark",
+      "step": 1,
+      "instanceId": "77B824AD-7FDE-4FEC-AFAA-0CA2E590EB18",
+      "symbolId": "0CFDA180-F568-4FEF-B338-090D4CF599D7",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 2310,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "plain-neutral-dark",
+      "step": 2,
+      "instanceId": "60C5A7F5-C365-4368-B8A4-33C5A3082796",
+      "symbolId": "0CFDA180-F568-4FEF-B338-090D4CF599D7",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 2310,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Cancel",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 64,
+            "y": 13,
+            "width": 52,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "compact-neutral-dark",
+      "step": 0,
+      "instanceId": "5CE3211A-E67A-43BE-AACE-96CF168A1F1C",
+      "symbolId": "29471885-05CD-40E5-B226-112389A42E22",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 2420,
+        "width": 52,
+        "height": 33
+      },
+      "override": "Filter",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 8,
+            "width": 34,
+            "height": 17
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "compact-neutral-dark",
+      "step": 1,
+      "instanceId": "2A211479-2032-4BA7-86C1-1694FC0AA94A",
+      "symbolId": "29471885-05CD-40E5-B226-112389A42E22",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 2420,
+        "width": 166,
+        "height": 33
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 8,
+            "width": 148,
+            "height": 17
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "compact-neutral-dark",
+      "step": 2,
+      "instanceId": "E2648002-93F7-469A-BA5C-DE08655F73B9",
+      "symbolId": "29471885-05CD-40E5-B226-112389A42E22",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 2420,
+        "width": 180,
+        "height": 33
+      },
+      "override": "Filter",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 73,
+            "y": 8,
+            "width": 34,
+            "height": 17
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "pill-brand-dark",
+      "step": 0,
+      "instanceId": "CF606640-A279-4D75-8E21-63B7A50FB558",
+      "symbolId": "C65D0E28-2BCB-4BE8-B722-A017090D3992",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 2530,
+        "width": 68,
+        "height": 44
+      },
+      "override": "Create",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 50,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "pill-brand-dark",
+      "step": 1,
+      "instanceId": "982FA9F2-D1F7-4518-8F64-2A8CB2F01154",
+      "symbolId": "C65D0E28-2BCB-4BE8-B722-A017090D3992",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 2530,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "pill-brand-dark",
+      "step": 2,
+      "instanceId": "47F03491-72C9-429D-81A5-F1E482943121",
+      "symbolId": "C65D0E28-2BCB-4BE8-B722-A017090D3992",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 2530,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Create",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 65,
+            "y": 13,
+            "width": 50,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "icon-only-dark",
+      "step": 0,
+      "instanceId": "B1E0A349-BD60-4CE7-A8BE-9113F45E2C01",
+      "symbolId": "B822FA29-6986-4B84-8F7C-6A57DF5658C5",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 2640,
+        "width": 44,
+        "height": 44
+      },
+      "override": null,
+      "expanded": [
+        {
+          "name": "Icon",
+          "frame": {
+            "x": 14,
+            "y": 14,
+            "width": 16,
+            "height": 16
+          },
+          "children": [
+            {
+              "name": "Group",
+              "frame": {
+                "x": 3.33333333333333,
+                "y": 3.33333333333333,
+                "width": 9.33333333333333,
+                "height": 9.33333333333333
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "icon-only-dark",
+      "step": 1,
+      "instanceId": "FED0E405-FE72-4300-9FCE-E9876ABADE52",
+      "symbolId": "B822FA29-6986-4B84-8F7C-6A57DF5658C5",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 2640,
+        "width": 44,
+        "height": 44
+      },
+      "override": null,
+      "expanded": [
+        {
+          "name": "Icon",
+          "frame": {
+            "x": 14,
+            "y": 14,
+            "width": 16,
+            "height": 16
+          },
+          "children": [
+            {
+              "name": "Group",
+              "frame": {
+                "x": 3.33333333333333,
+                "y": 3.33333333333333,
+                "width": 9.33333333333333,
+                "height": 9.33333333333333
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "icon-only-dark",
+      "step": 2,
+      "instanceId": "966B922E-D58E-4E24-81D3-1BFC88631EB0",
+      "symbolId": "B822FA29-6986-4B84-8F7C-6A57DF5658C5",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 2640,
+        "width": 180,
+        "height": 44
+      },
+      "override": null,
+      "expanded": [
+        {
+          "name": "Icon",
+          "frame": {
+            "x": 82,
+            "y": 14,
+            "width": 16,
+            "height": 16
+          },
+          "children": [
+            {
+              "name": "Group",
+              "frame": {
+                "x": 3.33333333333333,
+                "y": 3.33333333333333,
+                "width": 9.33333333333333,
+                "height": 9.33333333333333
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "disabled-neutral-dark",
+      "step": 0,
+      "instanceId": "EDDB6D98-2131-4686-81EC-23ECC748075B",
+      "symbolId": "F1D0179C-17C9-4A7D-9888-A67113CF1E58",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 2750,
+        "width": 86,
+        "height": 44
+      },
+      "override": "Continue",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 68,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "disabled-neutral-dark",
+      "step": 1,
+      "instanceId": "DE665A25-F9FB-4CFA-AF9F-7FB402F14E26",
+      "symbolId": "F1D0179C-17C9-4A7D-9888-A67113CF1E58",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 2750,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "disabled-neutral-dark",
+      "step": 2,
+      "instanceId": "0B6CC8DB-39B7-4E7B-9781-167507F87A18",
+      "symbolId": "F1D0179C-17C9-4A7D-9888-A67113CF1E58",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 2750,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Continue",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 56,
+            "y": 13,
+            "width": 68,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "disabled-success-dark",
+      "step": 0,
+      "instanceId": "2232B149-D4B0-4A9A-BB04-7EC07EF4A15E",
+      "symbolId": "D394C732-AD8B-4E70-8FC2-B80F54887F0A",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 2860,
+        "width": 78,
+        "height": 44
+      },
+      "override": "Confirm",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 60,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "disabled-success-dark",
+      "step": 1,
+      "instanceId": "DE3CAD0B-DC45-4ACC-A0EF-D037607C0BF4",
+      "symbolId": "D394C732-AD8B-4E70-8FC2-B80F54887F0A",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 2860,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "disabled-success-dark",
+      "step": 2,
+      "instanceId": "E1AD87BA-6A9A-4BC5-AAC7-2E5165338763",
+      "symbolId": "D394C732-AD8B-4E70-8FC2-B80F54887F0A",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 2860,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Confirm",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 60,
+            "y": 13,
+            "width": 60,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "pressed-neutral-dark",
+      "step": 0,
+      "instanceId": "C82424A3-76CF-44AB-B9C5-5E49DBB72A50",
+      "symbolId": "EAC8BC40-1E57-46D2-9EFD-F7D9AF7AD4D8",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 2970,
+        "width": 84,
+        "height": 44
+      },
+      "override": "Selected",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 66,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "pressed-neutral-dark",
+      "step": 1,
+      "instanceId": "4A6A426F-6DDA-47F3-B6FA-AA0118617F55",
+      "symbolId": "EAC8BC40-1E57-46D2-9EFD-F7D9AF7AD4D8",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 2970,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "pressed-neutral-dark",
+      "step": 2,
+      "instanceId": "7E706C12-C63A-4C3C-8A6B-5A260AFBF046",
+      "symbolId": "EAC8BC40-1E57-46D2-9EFD-F7D9AF7AD4D8",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 2970,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Selected",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 57,
+            "y": 13,
+            "width": 66,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "pressed-secondary-dark",
+      "step": 0,
+      "instanceId": "3C9799A4-9589-494E-949B-E0CDB19E0A44",
+      "symbolId": "40C04BDE-CD0C-4BBC-84D5-D79EB74C710A",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 3080,
+        "width": 84,
+        "height": 44
+      },
+      "override": "Selected",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 66,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "pressed-secondary-dark",
+      "step": 1,
+      "instanceId": "3D443744-C287-4277-BA37-DF553D78E0BC",
+      "symbolId": "40C04BDE-CD0C-4BBC-84D5-D79EB74C710A",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 3080,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "pressed-secondary-dark",
+      "step": 2,
+      "instanceId": "5DE65EB9-C105-4946-ABAC-7339348C6AC0",
+      "symbolId": "40C04BDE-CD0C-4BBC-84D5-D79EB74C710A",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 3080,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Selected",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 57,
+            "y": 13,
+            "width": 66,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "loading-brand-dark",
+      "step": 0,
+      "instanceId": "3B2D6D17-E396-433B-B0D9-BF79819F8237",
+      "symbolId": "C7BEEDE0-DDBF-4574-BAD0-50257BCA4C1E",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 3190,
+        "width": 68,
+        "height": 44
+      },
+      "override": "Saving",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 50,
+            "height": 18
+          },
+          "children": []
+        },
+        {
+          "name": "Spinner Host",
+          "frame": {
+            "x": 26,
+            "y": 14,
+            "width": 16,
+            "height": 16
+          },
+          "children": [
+            {
+              "name": "Spinner",
+              "frame": {
+                "x": 0,
+                "y": 0,
+                "width": 16,
+                "height": 16
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "loading-brand-dark",
+      "step": 1,
+      "instanceId": "8AB4FAC2-5FE5-4067-8766-BF7C6591B87B",
+      "symbolId": "C7BEEDE0-DDBF-4574-BAD0-50257BCA4C1E",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 3190,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        },
+        {
+          "name": "Spinner Host",
+          "frame": {
+            "x": 26,
+            "y": 14,
+            "width": 132,
+            "height": 16
+          },
+          "children": [
+            {
+              "name": "Spinner",
+              "frame": {
+                "x": 58,
+                "y": 0,
+                "width": 16,
+                "height": 16
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "loading-brand-dark",
+      "step": 2,
+      "instanceId": "D5B56DD9-B386-4523-BF5C-2819A7399251",
+      "symbolId": "C7BEEDE0-DDBF-4574-BAD0-50257BCA4C1E",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 3190,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Saving",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 65,
+            "y": 13,
+            "width": 50,
+            "height": 18
+          },
+          "children": []
+        },
+        {
+          "name": "Spinner Host",
+          "frame": {
+            "x": 26,
+            "y": 14,
+            "width": 128,
+            "height": 16
+          },
+          "children": [
+            {
+              "name": "Spinner",
+              "frame": {
+                "x": 56,
+                "y": 0,
+                "width": 16,
+                "height": 16
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "badge-brand-dark",
+      "step": 0,
+      "instanceId": "369513D9-CC86-4A84-8814-60BD3C7A03DD",
+      "symbolId": "968F6B1A-A3C5-4C68-B0A4-A8C399C543C8",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 3300,
+        "width": 64,
+        "height": 44
+      },
+      "override": "Filters",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 46,
+            "height": 18
+          },
+          "children": []
+        },
+        {
+          "name": "Badge Background",
+          "frame": {
+            "x": 46.09375,
+            "y": -3,
+            "width": 20.546875,
+            "height": 20
+          },
+          "children": [
+            {
+              "name": "Rectangle",
+              "frame": {
+                "x": 0,
+                "y": 0,
+                "width": 20.546875,
+                "height": 20
+              }
+            }
+          ]
+        },
+        {
+          "name": "Badge Count",
+          "frame": {
+            "x": 46.09375,
+            "y": -3,
+            "width": 20.546875,
+            "height": 13
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "badge-brand-dark",
+      "step": 1,
+      "instanceId": "980B59DB-3BA9-4B23-8042-4F43A86B05C2",
+      "symbolId": "968F6B1A-A3C5-4C68-B0A4-A8C399C543C8",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 3300,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        },
+        {
+          "name": "Badge Background",
+          "frame": {
+            "x": 166.09375,
+            "y": -3,
+            "width": 20.546875,
+            "height": 20
+          },
+          "children": [
+            {
+              "name": "Rectangle",
+              "frame": {
+                "x": 0,
+                "y": 0,
+                "width": 20.546875,
+                "height": 20
+              }
+            }
+          ]
+        },
+        {
+          "name": "Badge Count",
+          "frame": {
+            "x": 166.09375,
+            "y": -3,
+            "width": 20.546875,
+            "height": 13
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "badge-brand-dark",
+      "step": 2,
+      "instanceId": "FD584F3E-A779-4ED8-A81A-CA84705CE640",
+      "symbolId": "968F6B1A-A3C5-4C68-B0A4-A8C399C543C8",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 3300,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Filters",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 67,
+            "y": 13,
+            "width": 46,
+            "height": 18
+          },
+          "children": []
+        },
+        {
+          "name": "Badge Background",
+          "frame": {
+            "x": 162.09375,
+            "y": -3,
+            "width": 20.546875,
+            "height": 20
+          },
+          "children": [
+            {
+              "name": "Rectangle",
+              "frame": {
+                "x": 0,
+                "y": 0,
+                "width": 20.546875,
+                "height": 20
+              }
+            }
+          ]
+        },
+        {
+          "name": "Badge Count",
+          "frame": {
+            "x": 162.09375,
+            "y": -3,
+            "width": 20.546875,
+            "height": 13
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "badge-dot-dark",
+      "step": 0,
+      "instanceId": "2F837586-20AC-41C5-B41A-6A08F7207014",
+      "symbolId": "F94508D1-617E-4506-AA40-8ABD34E9C15A",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 3410,
+        "width": 81,
+        "height": 44
+      },
+      "override": "Updates",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 63,
+            "height": 18
+          },
+          "children": []
+        },
+        {
+          "name": "Badge Background",
+          "frame": {
+            "x": 69.640625,
+            "y": 3,
+            "width": 8,
+            "height": 8
+          },
+          "children": [
+            {
+              "name": "Rectangle",
+              "frame": {
+                "x": 0,
+                "y": 0,
+                "width": 8,
+                "height": 8
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "badge-dot-dark",
+      "step": 1,
+      "instanceId": "B60413BB-7E8A-471B-B800-0496F1E1C895",
+      "symbolId": "F94508D1-617E-4506-AA40-8ABD34E9C15A",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 3410,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        },
+        {
+          "name": "Badge Background",
+          "frame": {
+            "x": 172.640625,
+            "y": 3,
+            "width": 8,
+            "height": 8
+          },
+          "children": [
+            {
+              "name": "Rectangle",
+              "frame": {
+                "x": 0,
+                "y": 0,
+                "width": 8,
+                "height": 8
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "badge-dot-dark",
+      "step": 2,
+      "instanceId": "34FC51EA-C7ED-4CDE-A3AF-5F7A2DC06D9A",
+      "symbolId": "F94508D1-617E-4506-AA40-8ABD34E9C15A",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 3410,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Updates",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 58.5,
+            "y": 13,
+            "width": 63,
+            "height": 18
+          },
+          "children": []
+        },
+        {
+          "name": "Badge Background",
+          "frame": {
+            "x": 168.640625,
+            "y": 3,
+            "width": 8,
+            "height": 8
+          },
+          "children": [
+            {
+              "name": "Rectangle",
+              "frame": {
+                "x": 0,
+                "y": 0,
+                "width": 8,
+                "height": 8
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "focus-standard-dark",
+      "step": 0,
+      "instanceId": "D53E6914-7161-47A7-8BDB-D165C9BC601A",
+      "symbolId": "ECC87A48-D8D8-407C-A1D6-41A4406CE285",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 3520,
+        "width": 54,
+        "height": 44
+      },
+      "override": "Save",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 36,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "focus-standard-dark",
+      "step": 1,
+      "instanceId": "CF3D23D2-E75A-45AA-AFA9-9A189632587F",
+      "symbolId": "ECC87A48-D8D8-407C-A1D6-41A4406CE285",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 3520,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "focus-standard-dark",
+      "step": 2,
+      "instanceId": "0E1AF80C-0EDF-4FEF-96CF-7BE601F105E9",
+      "symbolId": "ECC87A48-D8D8-407C-A1D6-41A4406CE285",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 3520,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Save",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 72,
+            "y": 13,
+            "width": 36,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "focus-brand-dark",
+      "step": 0,
+      "instanceId": "F2F69098-5F6F-4ACD-B26A-52A4BB5F2AE3",
+      "symbolId": "C33953E0-3D8C-42DC-8B4F-5CD72DD23506",
+      "linked": true,
+      "frame": {
+        "x": 0,
+        "y": 3630,
+        "width": 54,
+        "height": 44
+      },
+      "override": "Save",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 36,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "focus-brand-dark",
+      "step": 1,
+      "instanceId": "CB34873E-1544-40A5-9528-F2E4F3E34C60",
+      "symbolId": "C33953E0-3D8C-42DC-8B4F-5CD72DD23506",
+      "linked": true,
+      "frame": {
+        "x": 300,
+        "y": 3630,
+        "width": 184,
+        "height": 44
+      },
+      "override": "A longer editable label",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 9,
+            "y": 13,
+            "width": 166,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "focus-brand-dark",
+      "step": 2,
+      "instanceId": "A7E21E14-6AF9-4ECE-A204-F7989721CC9E",
+      "symbolId": "C33953E0-3D8C-42DC-8B4F-5CD72DD23506",
+      "linked": true,
+      "frame": {
+        "x": 600,
+        "y": 3630,
+        "width": 180,
+        "height": 44
+      },
+      "override": "Save",
+      "expanded": [
+        {
+          "name": "Label",
+          "frame": {
+            "x": 72,
+            "y": 13,
+            "width": 36,
+            "height": 18
+          },
+          "children": []
+        }
+      ]
+    }
+  ],
+  "reopenedInstances": 102
+}

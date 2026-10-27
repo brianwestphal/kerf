@@ -1,6 +1,6 @@
 # Design templates — components as self-contained SVGs
 
-The SVG sheets remain the broad, static catalog. The six-variant native
+The SVG sheets remain the broad, static catalog. The 40-Symbol native
 [Sketch Button library](sketch/button/README.md) adds editable Symbols,
 production CSS capture, and save/reopen and resizing verification. Its
 `.sketch` file ships with the UI package under `docs/design/sketch/button/`;

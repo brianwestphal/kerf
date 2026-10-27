@@ -1,0 +1,410 @@
+[
+  {
+    "id": "primary-neutral-light",
+    "browser": [
+      170,
+      88
+    ],
+    "sketch": [
+      174,
+      88
+    ],
+    "meanChannelError": 8.468816844919786
+  },
+  {
+    "id": "primary-success-light",
+    "browser": [
+      156,
+      88
+    ],
+    "sketch": [
+      158,
+      88
+    ],
+    "meanChannelError": 5.234247523310024
+  },
+  {
+    "id": "primary-danger-light",
+    "browser": [
+      134,
+      88
+    ],
+    "sketch": [
+      136,
+      88
+    ],
+    "meanChannelError": 9.577531377204885
+  },
+  {
+    "id": "secondary-danger-light",
+    "browser": [
+      156,
+      88
+    ],
+    "sketch": [
+      158,
+      88
+    ],
+    "meanChannelError": 11.421929632867133
+  },
+  {
+    "id": "plain-neutral-light",
+    "browser": [
+      138,
+      88
+    ],
+    "sketch": [
+      142,
+      88
+    ],
+    "meanChannelError": 6.5353260869565215
+  },
+  {
+    "id": "compact-neutral-light",
+    "browser": [
+      104,
+      66
+    ],
+    "sketch": [
+      106,
+      66
+    ],
+    "meanChannelError": 10.579108391608392
+  },
+  {
+    "id": "pill-brand-light",
+    "browser": [
+      136,
+      88
+    ],
+    "sketch": [
+      138,
+      88
+    ],
+    "meanChannelError": 9.876336898395722
+  },
+  {
+    "id": "icon-only-light",
+    "browser": [
+      88,
+      88
+    ],
+    "sketch": [
+      88,
+      88
+    ],
+    "meanChannelError": 0.14630681818181818
+  },
+  {
+    "id": "disabled-neutral-light",
+    "browser": [
+      170,
+      88
+    ],
+    "sketch": [
+      174,
+      88
+    ],
+    "meanChannelError": 8.115073529411765
+  },
+  {
+    "id": "disabled-success-light",
+    "browser": [
+      156,
+      88
+    ],
+    "sketch": [
+      158,
+      88
+    ],
+    "meanChannelError": 10.29345134032634
+  },
+  {
+    "id": "pressed-neutral-light",
+    "browser": [
+      168,
+      88
+    ],
+    "sketch": [
+      170,
+      88
+    ],
+    "meanChannelError": 15.380698728354979
+  },
+  {
+    "id": "pressed-secondary-light",
+    "browser": [
+      168,
+      88
+    ],
+    "sketch": [
+      170,
+      88
+    ],
+    "meanChannelError": 16.574320211038962
+  },
+  {
+    "id": "loading-brand-light",
+    "browser": [
+      136,
+      88
+    ],
+    "sketch": [
+      138,
+      88
+    ],
+    "meanChannelError": 3.7578751671122994
+  },
+  {
+    "id": "badge-brand-light",
+    "browser": [
+      134,
+      96
+    ],
+    "sketch": [
+      136,
+      94
+    ],
+    "meanChannelError": 15.223781359161638
+  },
+  {
+    "id": "badge-dot-light",
+    "browser": [
+      162,
+      88
+    ],
+    "sketch": [
+      164,
+      88
+    ],
+    "meanChannelError": 7.588138327721661
+  },
+  {
+    "id": "focus-standard-light",
+    "browser": [
+      122,
+      104
+    ],
+    "sketch": [
+      122,
+      100
+    ],
+    "meanChannelError": 21.935081967213115
+  },
+  {
+    "id": "focus-brand-light",
+    "browser": [
+      108,
+      88
+    ],
+    "sketch": [
+      110,
+      88
+    ],
+    "meanChannelError": 16.717934553872055
+  },
+  {
+    "id": "primary-neutral-dark",
+    "browser": [
+      170,
+      88
+    ],
+    "sketch": [
+      174,
+      88
+    ],
+    "meanChannelError": 10.060344251336899
+  },
+  {
+    "id": "primary-success-dark",
+    "browser": [
+      156,
+      88
+    ],
+    "sketch": [
+      158,
+      88
+    ],
+    "meanChannelError": 5.234247523310024
+  },
+  {
+    "id": "primary-danger-dark",
+    "browser": [
+      134,
+      88
+    ],
+    "sketch": [
+      136,
+      88
+    ],
+    "meanChannelError": 7.762911295793758
+  },
+  {
+    "id": "secondary-danger-dark",
+    "browser": [
+      156,
+      88
+    ],
+    "sketch": [
+      158,
+      88
+    ],
+    "meanChannelError": 18.02760780885781
+  },
+  {
+    "id": "plain-neutral-dark",
+    "browser": [
+      138,
+      88
+    ],
+    "sketch": [
+      142,
+      88
+    ],
+    "meanChannelError": 9.996232707509881
+  },
+  {
+    "id": "compact-neutral-dark",
+    "browser": [
+      104,
+      66
+    ],
+    "sketch": [
+      106,
+      66
+    ],
+    "meanChannelError": 13.874125874125873
+  },
+  {
+    "id": "pill-brand-dark",
+    "browser": [
+      136,
+      88
+    ],
+    "sketch": [
+      138,
+      88
+    ],
+    "meanChannelError": 12.569393382352942
+  },
+  {
+    "id": "icon-only-dark",
+    "browser": [
+      88,
+      88
+    ],
+    "sketch": [
+      88,
+      88
+    ],
+    "meanChannelError": 0.16173811983471073
+  },
+  {
+    "id": "disabled-neutral-dark",
+    "browser": [
+      170,
+      88
+    ],
+    "sketch": [
+      174,
+      88
+    ],
+    "meanChannelError": 9.7305314171123
+  },
+  {
+    "id": "disabled-success-dark",
+    "browser": [
+      156,
+      88
+    ],
+    "sketch": [
+      158,
+      88
+    ],
+    "meanChannelError": 6.192125582750583
+  },
+  {
+    "id": "pressed-neutral-dark",
+    "browser": [
+      168,
+      88
+    ],
+    "sketch": [
+      170,
+      88
+    ],
+    "meanChannelError": 17.039333062770563
+  },
+  {
+    "id": "pressed-secondary-dark",
+    "browser": [
+      168,
+      88
+    ],
+    "sketch": [
+      170,
+      88
+    ],
+    "meanChannelError": 17.4255275974026
+  },
+  {
+    "id": "loading-brand-dark",
+    "browser": [
+      136,
+      88
+    ],
+    "sketch": [
+      138,
+      88
+    ],
+    "meanChannelError": 4.878028910427807
+  },
+  {
+    "id": "badge-brand-dark",
+    "browser": [
+      134,
+      96
+    ],
+    "sketch": [
+      136,
+      94
+    ],
+    "meanChannelError": 17.970724833280407
+  },
+  {
+    "id": "badge-dot-dark",
+    "browser": [
+      162,
+      88
+    ],
+    "sketch": [
+      164,
+      88
+    ],
+    "meanChannelError": 9.047295875420875
+  },
+  {
+    "id": "focus-standard-dark",
+    "browser": [
+      122,
+      104
+    ],
+    "sketch": [
+      122,
+      100
+    ],
+    "meanChannelError": 23.43895491803279
+  },
+  {
+    "id": "focus-brand-dark",
+    "browser": [
+      108,
+      88
+    ],
+    "sketch": [
+      110,
+      88
+    ],
+    "meanChannelError": 19.689762205387204
+  }
+]

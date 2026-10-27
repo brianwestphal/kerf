@@ -1,0 +1,1266 @@
+[
+  {
+    "id": "primary-neutral-light",
+    "theme": "light",
+    "name": "Button / Primary Neutral / Light",
+    "props": {
+      "children": "Continue"
+    },
+    "focus": false,
+    "layout": {
+      "width": 84.953125,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#48484aff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#ffffffff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#ffffffff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Continue",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "primary-success-light",
+    "theme": "light",
+    "name": "Button / Primary Success / Light",
+    "props": {
+      "tone": "success",
+      "children": "Confirm"
+    },
+    "focus": false,
+    "layout": {
+      "width": 77.546875,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#34c759ff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#1d1d1fff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#1d1d1fff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Confirm",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "primary-danger-light",
+    "theme": "light",
+    "name": "Button / Primary Danger / Light",
+    "props": {
+      "tone": "danger",
+      "children": "Delete"
+    },
+    "focus": false,
+    "layout": {
+      "width": 66.015625,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#eb0005ff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#ffffffff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#ffffffff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Delete",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "secondary-danger-light",
+    "theme": "light",
+    "name": "Button / Secondary Danger / Light",
+    "props": {
+      "tone": "danger",
+      "emphasis": "secondary",
+      "children": "Remove"
+    },
+    "focus": false,
+    "layout": {
+      "width": 77.25,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#00000000",
+      "borderColor": "#be060bff",
+      "borderWidth": 1,
+      "textColor": "#c20b20ff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#c20b20ff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Remove",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "plain-neutral-light",
+    "theme": "light",
+    "name": "Button / Plain Neutral / Light",
+    "props": {
+      "emphasis": "plain",
+      "children": "Cancel"
+    },
+    "focus": false,
+    "layout": {
+      "width": 68.984375,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#00000000",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#626267ff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#626267ff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Cancel",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "compact-neutral-light",
+    "theme": "light",
+    "name": "Button / Compact Neutral / Light",
+    "props": {
+      "size": "compact",
+      "children": "Filter"
+    },
+    "focus": false,
+    "layout": {
+      "width": 51.5625,
+      "height": 33,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#48484aff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#ffffffff",
+      "fontSize": 14,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#ffffffff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Filter",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "pill-brand-light",
+    "theme": "light",
+    "name": "Button / Pill Brand / Light",
+    "props": {
+      "tone": "brand",
+      "shape": "pill",
+      "children": "Create"
+    },
+    "focus": false,
+    "layout": {
+      "width": 67.484375,
+      "height": 44,
+      "radius": 22,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#0075dbff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#ffffffff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#ffffffff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Create",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "icon-only-light",
+    "theme": "light",
+    "name": "Button / Icon Only / Light",
+    "props": {
+      "tone": "brand",
+      "icon": true,
+      "ariaLabel": "Add"
+    },
+    "focus": false,
+    "layout": {
+      "width": 44,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 1,
+        "right": 1
+      },
+      "fill": "#0075dbff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#ffffffff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#ffffffff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": null,
+      "icon": {
+        "svg": "<svg data-lucide=\"plus\" aria-hidden=\"true\" viewBox=\"0 0 24 24\" fill=\"rgb(255, 255, 255)\" stroke=\"rgb(255, 255, 255)\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path d=\"M5 12h14\"></path><path d=\"M12 5v14\"></path></svg>",
+        "width": 16,
+        "height": 16
+      },
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "disabled-neutral-light",
+    "theme": "light",
+    "name": "Button / Disabled Neutral / Light",
+    "props": {
+      "children": "Continue",
+      "disabled": true
+    },
+    "focus": false,
+    "layout": {
+      "width": 84.953125,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#48484aff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#ffffffff",
+      "fontSize": 16,
+      "opacity": 0.5,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#ffffffff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Continue",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "disabled-success-light",
+    "theme": "light",
+    "name": "Button / Disabled Success / Light",
+    "props": {
+      "tone": "success",
+      "children": "Confirm",
+      "disabled": true
+    },
+    "focus": false,
+    "layout": {
+      "width": 77.546875,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#e3f7e8ff",
+      "borderColor": "#beedcaff",
+      "borderWidth": 1,
+      "textColor": "#00792cff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#00792cff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Confirm",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "pressed-neutral-light",
+    "theme": "light",
+    "name": "Button / Pressed Neutral / Light",
+    "props": {
+      "children": "Selected",
+      "pressed": true
+    },
+    "focus": false,
+    "layout": {
+      "width": 83.3125,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#0075dbff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#ffffffff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "oklab(0.999994 0.0000455678 0.0000200868 / 0.45) 0px 0px 0px 2px inset",
+      "shadowColor": "#ffffff73",
+      "outlineColor": "#ffffffff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Selected",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "pressed-secondary-light",
+    "theme": "light",
+    "name": "Button / Pressed Secondary Brand / Light",
+    "props": {
+      "tone": "brand",
+      "emphasis": "secondary",
+      "children": "Selected",
+      "pressed": true
+    },
+    "focus": false,
+    "layout": {
+      "width": 83.3125,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#ebf4fcff",
+      "borderColor": "#0075dbff",
+      "borderWidth": 1,
+      "textColor": "#0025b9ff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "rgb(0, 117, 219) 0px 0px 0px 1px inset",
+      "shadowColor": "#0075dbff",
+      "outlineColor": "#0025b9ff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Selected",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "loading-brand-light",
+    "theme": "light",
+    "name": "Button / Loading Brand / Light",
+    "props": {
+      "tone": "brand",
+      "children": "Saving",
+      "loading": true
+    },
+    "focus": false,
+    "layout": {
+      "width": 67.8125,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#0075dbff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#ffffffff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#ffffffff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Saving",
+      "icon": null,
+      "spinner": {
+        "svg": "<svg class=\"kui-loading-spinner\" data-component=\"loading-spinner\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" stroke=\"rgb(255, 255, 255)\" fill=\"rgb(255, 255, 255)\" width=\"16\" height=\"16\"><path d=\"M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z\"></path></svg>",
+        "width": 16,
+        "height": 16
+      },
+      "badge": null
+    }
+  },
+  {
+    "id": "badge-brand-light",
+    "theme": "light",
+    "name": "Button / Badge Brand / Light",
+    "props": {
+      "tone": "brand",
+      "children": "Filters",
+      "badge": 3
+    },
+    "focus": false,
+    "layout": {
+      "width": 63.640625,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#0075dbff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#ffffffff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#ffffffff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Filters",
+      "icon": null,
+      "spinner": null,
+      "badge": {
+        "text": "3",
+        "dot": false,
+        "width": 20.546875,
+        "height": 20,
+        "x": 46.09375,
+        "y": -3,
+        "fill": "#c20b20ff",
+        "textColor": "#ffffffff",
+        "fontSize": 11
+      }
+    }
+  },
+  {
+    "id": "badge-dot-light",
+    "theme": "light",
+    "name": "Button / Badge Dot / Light",
+    "props": {
+      "tone": "brand",
+      "children": "Updates",
+      "badge": true
+    },
+    "focus": false,
+    "layout": {
+      "width": 80.640625,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#0075dbff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#ffffffff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#ffffffff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Updates",
+      "icon": null,
+      "spinner": null,
+      "badge": {
+        "text": "",
+        "dot": true,
+        "width": 8,
+        "height": 8,
+        "x": 69.640625,
+        "y": 3,
+        "fill": "#c20b20ff",
+        "textColor": "#ffffffff",
+        "fontSize": 12
+      }
+    }
+  },
+  {
+    "id": "focus-standard-light",
+    "theme": "light",
+    "name": "Button / Focus Standard / Light",
+    "props": {
+      "tone": "brand",
+      "children": "Save"
+    },
+    "focus": true,
+    "layout": {
+      "width": 53.71875,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#0075dbff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#ffffffff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#007affff",
+      "outlineWidth": 3,
+      "outlineOffset": 1,
+      "label": "Save",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "focus-brand-light",
+    "theme": "light",
+    "name": "Button / Focus Brand / Light",
+    "props": {
+      "tone": "brand",
+      "children": "Save",
+      "focusRingInset": true
+    },
+    "focus": true,
+    "layout": {
+      "width": 53.71875,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#0075dbff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#ffffffff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 5px inset, rgba(0, 0, 0, 0) 0px 0px 0px 5px inset, rgb(255, 255, 255) 0px 0px 0px 5px inset",
+      "shadowColor": "#00000000",
+      "outlineColor": "#007affff",
+      "outlineWidth": 3,
+      "outlineOffset": -3,
+      "label": "Save",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "primary-neutral-dark",
+    "theme": "dark",
+    "name": "Button / Primary Neutral / Dark",
+    "props": {
+      "children": "Continue"
+    },
+    "focus": false,
+    "layout": {
+      "width": 84.953125,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#e5e5eaff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#1c1c1eff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#1c1c1eff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Continue",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "primary-success-dark",
+    "theme": "dark",
+    "name": "Button / Primary Success / Dark",
+    "props": {
+      "tone": "success",
+      "children": "Confirm"
+    },
+    "focus": false,
+    "layout": {
+      "width": 77.546875,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#34c759ff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#1d1d1fff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#1d1d1fff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Confirm",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "primary-danger-dark",
+    "theme": "dark",
+    "name": "Button / Primary Danger / Dark",
+    "props": {
+      "tone": "danger",
+      "children": "Delete"
+    },
+    "focus": false,
+    "layout": {
+      "width": 66.015625,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#ff383cff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#111113ff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#111113ff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Delete",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "secondary-danger-dark",
+    "theme": "dark",
+    "name": "Button / Secondary Danger / Dark",
+    "props": {
+      "tone": "danger",
+      "emphasis": "secondary",
+      "children": "Remove"
+    },
+    "focus": false,
+    "layout": {
+      "width": 77.25,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#00000000",
+      "borderColor": "#fd6265ff",
+      "borderWidth": 1,
+      "textColor": "#ff8588ff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#ff8588ff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Remove",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "plain-neutral-dark",
+    "theme": "dark",
+    "name": "Button / Plain Neutral / Dark",
+    "props": {
+      "emphasis": "plain",
+      "children": "Cancel"
+    },
+    "focus": false,
+    "layout": {
+      "width": 68.984375,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#00000000",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#c2c2c6ff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#c2c2c6ff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Cancel",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "compact-neutral-dark",
+    "theme": "dark",
+    "name": "Button / Compact Neutral / Dark",
+    "props": {
+      "size": "compact",
+      "children": "Filter"
+    },
+    "focus": false,
+    "layout": {
+      "width": 51.5625,
+      "height": 33,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#e5e5eaff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#1c1c1eff",
+      "fontSize": 14,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#1c1c1eff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Filter",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "pill-brand-dark",
+    "theme": "dark",
+    "name": "Button / Pill Brand / Dark",
+    "props": {
+      "tone": "brand",
+      "shape": "pill",
+      "children": "Create"
+    },
+    "focus": false,
+    "layout": {
+      "width": 67.484375,
+      "height": 44,
+      "radius": 22,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#64d2ffff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#111113ff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#111113ff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Create",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "icon-only-dark",
+    "theme": "dark",
+    "name": "Button / Icon Only / Dark",
+    "props": {
+      "tone": "brand",
+      "icon": true,
+      "ariaLabel": "Add"
+    },
+    "focus": false,
+    "layout": {
+      "width": 44,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 1,
+        "right": 1
+      },
+      "fill": "#64d2ffff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#111113ff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#111113ff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": null,
+      "icon": {
+        "svg": "<svg data-lucide=\"plus\" aria-hidden=\"true\" viewBox=\"0 0 24 24\" fill=\"rgb(17, 17, 19)\" stroke=\"rgb(17, 17, 19)\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path d=\"M5 12h14\"></path><path d=\"M12 5v14\"></path></svg>",
+        "width": 16,
+        "height": 16
+      },
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "disabled-neutral-dark",
+    "theme": "dark",
+    "name": "Button / Disabled Neutral / Dark",
+    "props": {
+      "children": "Continue",
+      "disabled": true
+    },
+    "focus": false,
+    "layout": {
+      "width": 84.953125,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#e5e5eaff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#1c1c1eff",
+      "fontSize": 16,
+      "opacity": 0.5,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#1c1c1eff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Continue",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "disabled-success-dark",
+    "theme": "dark",
+    "name": "Button / Disabled Success / Dark",
+    "props": {
+      "tone": "success",
+      "children": "Confirm",
+      "disabled": true
+    },
+    "focus": false,
+    "layout": {
+      "width": 77.546875,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#1f3426ff",
+      "borderColor": "#245331ff",
+      "borderWidth": 1,
+      "textColor": "#63e685ff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#63e685ff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Confirm",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "pressed-neutral-dark",
+    "theme": "dark",
+    "name": "Button / Pressed Neutral / Dark",
+    "props": {
+      "children": "Selected",
+      "pressed": true
+    },
+    "focus": false,
+    "layout": {
+      "width": 83.3125,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#64d2ffff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#111113ff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "oklab(0.178528 0.00112759 -0.00390549 / 0.45) 0px 0px 0px 2px inset",
+      "shadowColor": "#12121473",
+      "outlineColor": "#111113ff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Selected",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "pressed-secondary-dark",
+    "theme": "dark",
+    "name": "Button / Pressed Secondary Brand / Dark",
+    "props": {
+      "tone": "brand",
+      "emphasis": "secondary",
+      "children": "Selected",
+      "pressed": true
+    },
+    "focus": false,
+    "layout": {
+      "width": 83.3125,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#222b30ff",
+      "borderColor": "#64d2ffff",
+      "borderWidth": 1,
+      "textColor": "#8acbffff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "rgb(100, 210, 255) 0px 0px 0px 1px inset",
+      "shadowColor": "#64d2ffff",
+      "outlineColor": "#8acbffff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Selected",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "loading-brand-dark",
+    "theme": "dark",
+    "name": "Button / Loading Brand / Dark",
+    "props": {
+      "tone": "brand",
+      "children": "Saving",
+      "loading": true
+    },
+    "focus": false,
+    "layout": {
+      "width": 67.8125,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#64d2ffff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#111113ff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#111113ff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Saving",
+      "icon": null,
+      "spinner": {
+        "svg": "<svg class=\"kui-loading-spinner\" data-component=\"loading-spinner\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" stroke=\"rgb(17, 17, 19)\" fill=\"rgb(17, 17, 19)\" width=\"16\" height=\"16\"><path d=\"M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z\"></path></svg>",
+        "width": 16,
+        "height": 16
+      },
+      "badge": null
+    }
+  },
+  {
+    "id": "badge-brand-dark",
+    "theme": "dark",
+    "name": "Button / Badge Brand / Dark",
+    "props": {
+      "tone": "brand",
+      "children": "Filters",
+      "badge": 3
+    },
+    "focus": false,
+    "layout": {
+      "width": 63.640625,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#64d2ffff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#111113ff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#111113ff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Filters",
+      "icon": null,
+      "spinner": null,
+      "badge": {
+        "text": "3",
+        "dot": false,
+        "width": 20.546875,
+        "height": 20,
+        "x": 46.09375,
+        "y": -3,
+        "fill": "#ffa0a2ff",
+        "textColor": "#1c1c1eff",
+        "fontSize": 11
+      }
+    }
+  },
+  {
+    "id": "badge-dot-dark",
+    "theme": "dark",
+    "name": "Button / Badge Dot / Dark",
+    "props": {
+      "tone": "brand",
+      "children": "Updates",
+      "badge": true
+    },
+    "focus": false,
+    "layout": {
+      "width": 80.640625,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#64d2ffff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#111113ff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#111113ff",
+      "outlineWidth": 3,
+      "outlineOffset": 0,
+      "label": "Updates",
+      "icon": null,
+      "spinner": null,
+      "badge": {
+        "text": "",
+        "dot": true,
+        "width": 8,
+        "height": 8,
+        "x": 69.640625,
+        "y": 3,
+        "fill": "#ffa0a2ff",
+        "textColor": "#1c1c1eff",
+        "fontSize": 12
+      }
+    }
+  },
+  {
+    "id": "focus-standard-dark",
+    "theme": "dark",
+    "name": "Button / Focus Standard / Dark",
+    "props": {
+      "tone": "brand",
+      "children": "Save"
+    },
+    "focus": true,
+    "layout": {
+      "width": 53.71875,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#64d2ffff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#111113ff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "none",
+      "shadowColor": null,
+      "outlineColor": "#64d2ffff",
+      "outlineWidth": 3,
+      "outlineOffset": 1,
+      "label": "Save",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  },
+  {
+    "id": "focus-brand-dark",
+    "theme": "dark",
+    "name": "Button / Focus Brand / Dark",
+    "props": {
+      "tone": "brand",
+      "children": "Save",
+      "focusRingInset": true
+    },
+    "focus": true,
+    "layout": {
+      "width": 53.71875,
+      "height": 44,
+      "radius": 12,
+      "gap": 8,
+      "padding": {
+        "left": 9,
+        "right": 9
+      },
+      "fill": "#64d2ffff",
+      "borderColor": "#00000000",
+      "borderWidth": 1,
+      "textColor": "#111113ff",
+      "fontSize": 16,
+      "opacity": 1,
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 5px inset, rgba(0, 0, 0, 0) 0px 0px 0px 5px inset, rgb(28, 28, 30) 0px 0px 0px 5px inset",
+      "shadowColor": "#00000000",
+      "outlineColor": "#64d2ffff",
+      "outlineWidth": 3,
+      "outlineOffset": -3,
+      "label": "Save",
+      "icon": null,
+      "spinner": null,
+      "badge": null
+    }
+  }
+]

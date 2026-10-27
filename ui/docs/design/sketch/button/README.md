@@ -1,6 +1,8 @@
 # Native Sketch Button library
 
-`Kerf-Button.sketch` contains six editable native Symbols: primary brand,
+`Kerf-Button.sketch` contains 40 editable native Symbols: the six pilot
+presentations plus 34 visual variants, each captured in light and dark from
+the production Button. The original six are primary brand,
 secondary, and primary brand with a Plus icon, each in light and dark. They are
 captured from the production `Button` and `LucideIcon` components, not from
 the multi-control SVG design-template sheet. Text remains a native Text layer,
@@ -60,7 +62,7 @@ checks that ID too. Renamed variants keep their key
 and IDs. Removed variants remain in the library and are marked `retired` in
 the manifest, so their IDs cannot silently move to another component.
 
-The capture uses a normal 600×200 browser viewport for domotion, then crops
+The pilot capture uses a normal 600×200 browser viewport for domotion, then crops
 each SVG to the measured control bounds without scaling. `fixtures.json`
 holds the six appearance captures; `layout.json` records separate semantic
 layout values measured from resolved production CSS. The native generator
@@ -78,7 +80,7 @@ a different vector.
 
 ## Outputs and checks
 
-- `Kerf-Button.sketch`: six-Symbol library to copy or import.
+- `Kerf-Button.sketch`: 40-Symbol library to copy or import.
 - `identity-manifest.json`: stable variant, layer, Color Variable, and shared
   style IDs; `asset-report.json` lists the current semantic assets and colors.
 - `Button-Consumer-Test.sketch`: linked instances with saved text overrides.
@@ -89,6 +91,14 @@ a different vector.
 - `comparison.png` and `resizing-comparison.png`: browser and native renders
   for visual review. Text rasterization differs slightly between Chromium and
   Sketch; the comparison metrics are descriptive, not a pixel-perfect gate.
+- `variant-fixtures.json`, `variant-manifest.json`, `variant-build-report.json`,
+  `variant-verification.json`, and `Button-Variant-Consumer-Test.sketch`: source
+  measurements, stable new Symbol IDs, editable layers, 102 imported instance
+  checks, and save/reopen evidence for the added variants.
+- `variant-comparison-light.png`, `variant-comparison-dark.png`, and
+  `variant-comparison.json`: side-by-side production/Sketch appearance review.
+- `variant-resize-comparison.png`: 12 wide browser/linked-instance comparisons
+  for icon-only, loading, badges, and both focus appearances in light/dark.
 
 Install the library durably by copying `Kerf-Button.sketch` to a stable
 location outside a versioned package directory, then add that copy in Sketch
@@ -141,6 +151,63 @@ repeat a style name across separate Symbols; they are Sketch's sync records,
 not duplicate assets in the source Library. Import a Color Variable explicitly
 from the Library when using it on a new consumer-owned layer.
 
+## Visual variant coverage
+
+The variant matrix is deliberately a covering set of Button visual options,
+not every combination of its independent props. Every row exists in Light
+and Dark. The six pilot Symbols remain available with their original IDs.
+
+| Public visual option              | Source-backed Symbols                                                                          |
+| --------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Four tones, primary emphasis      | Primary Brand (pilot), Primary Neutral, Primary Success, Primary Danger                        |
+| Secondary and plain emphasis      | Secondary Neutral (pilot), Secondary Danger, Pressed Secondary Brand, Plain Neutral            |
+| Default and compact size          | All default rows, Compact Neutral                                                              |
+| Rounded and pill shape            | Rounded rows, Pill Brand                                                                       |
+| Label, icon with label, icon only | Labeled rows, Primary with Icon (pilot), Icon Only                                             |
+| Disabled                          | Disabled Neutral at 50% opacity, Disabled Success with quiet fill and full contrast            |
+| Pressed                           | Pressed Neutral with brand accent, Pressed Secondary Brand with quiet fill and doubled outline |
+| Loading                           | Loading Brand with its original label width retained and a centered 16px static spinner vector |
+| Badge                             | Badge Brand with editable count, Badge Dot; both follow the top-trailing corner at fixed size  |
+| Focus                             | Focus Standard outside the frame, Focus Brand with the two-tone inset ring                     |
+| Full width                        | Use the separate fill-width instance workflow below; width is not a Symbol variant             |
+
+The matrix names ready-to-import presentations, not all combinations of the
+independent props. The default danger badge tone is represented by count and
+dot examples; other `badgeTone` values use the Badge component's own palette
+and are not separate Button Symbols. `currentStep`, form behavior, link target,
+action, title, and accessible labels do not add a visual Button treatment.
+Hover and active transitions remain browser behavior rather than static
+Library presentations.
+
+The `variant-capture.mjs` case table is the source of the 17 named extra
+presentations per theme. It renders the real `Button`, `Badge`, `LoadingSpinner`,
+and `LucideIcon` with production CSS, measuring fill, border, typography,
+size, spacing, opacity, and state colors. The native generator creates editable
+Text, vector icon/spinner/badge, and frame styles; no raster layers are used.
+The content Stack keeps the label on one line and centers it with a fixed icon
+and 8px gap. The icon-only Symbol is a fixed 44px square, independent of a
+label. A loading Symbol keeps the editable label at zero opacity to retain its
+width; its fixed-size spinner is centered through an overlay host. Badge
+vectors and the editable count stay outside the content Stack and pin to the
+trailing edge. The focus rings belong to the Symbol frame style, so they
+follow resizing. Both regular and inset focus appearances are static Sketch
+presentations. Likewise, disabled, pressed, loading, and badge Symbols show
+visual states only; Sketch does not supply Button events, ARIA state, or
+spinner animation.
+
+`npm run sketch:button -- verify` reopens the 40-Symbol library, tests all six
+pilot imports and 30 pilot resize cases, then imports each of the 34 extra
+Symbols into a consumer document. The extra check tests its natural size, a
+longer editable label, and a fixed-width instance: 102 linked instances in
+all. It asserts badge anchoring, fixed badge dimensions, fixed-size centered
+spinner, source height/typography, editable label presence, and save/reopen
+override persistence. `npm run sketch:button -- render` generates the two
+variant comparison sheets alongside the pilot review; the screenshots include
+the badge's protrusion and the outside focus ring. It also captures 12 fixed
+180px state comparisons to show that icon, spinner, badge, and focus treatments
+remain aligned after widening. The color differences from
+browser and Sketch text antialiasing remain descriptive metrics.
+
 ## Fill-width instances
 
 The six Library Symbols remain content-fit masters. `fill-layout.json` records
@@ -170,6 +237,4 @@ or a wider track. The 36-case native/browser review and six resize cycles
 are the supported bounds of this template; automatic truncation after any
 arbitrary override or resize is not implied.
 
-Additional Button states are tracked in KF-NQ80Y0, shared color and
-typography assets in KF-R5DMGJ, and the wider component catalog in
-KF-P8AS51.
+The wider component catalog is tracked in KF-P8AS51.

@@ -11,7 +11,19 @@ module.exports.run = function (session, parameters, done) {
     var document = session.createDocument();
     document.selectedPage.name = 'Resizing Tests';
     var library = session.library(parameters.libraryPath);
-    var refs = library.getImportableSymbolReferencesForDocument(document);
+    var fixtureText = NSString.stringWithContentsOfFile_encoding_error(
+      parameters.fixturesPath,
+      NSUTF8StringEncoding,
+      null,
+    );
+    var fixtures = JSON.parse(String(fixtureText));
+    var refs = library
+      .getImportableSymbolReferencesForDocument(document)
+      .filter(function (ref) {
+        return fixtures.some(function (fixture) {
+          return fixture.name === ref.name;
+        });
+      });
     if (refs.length !== 6) throw new Error('Expected six importable Symbols.');
     var report = [];
     refs.forEach(function (ref, symbolIndex) {

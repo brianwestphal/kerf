@@ -17,6 +17,10 @@ import { requireExistingSketchProcess } from '../check-runner-process.mjs';
 import { runSketchJob } from '../runner.mjs';
 import { captureButtons, defaultOutput } from './capture.mjs';
 import { captureFillCases } from './fill-capture.mjs';
+import {
+  captureVariants,
+  variants as variantCases,
+} from './variant-capture.mjs';
 
 const exec = promisify(execFile);
 const scriptDirectory = fileURLToPath(new URL('./', import.meta.url));
@@ -30,6 +34,11 @@ const paths = {
   fillExportsPath: join(output, 'fill-exports'),
   identitiesPath: join(output, 'identity-manifest.json'),
   assetReportPath: join(output, 'asset-report.json'),
+  variantFixturesPath: join(output, 'variant-fixtures.json'),
+  variantManifestPath: join(output, 'variant-manifest.json'),
+  variantExportsPath: join(output, 'variant-exports'),
+  variantConsumerPath: join(output, 'Button-Variant-Consumer-Test.sketch'),
+  variantConsumerExportsPath: join(output, 'variant-consumer-exports'),
   libraryPath: join(output, 'Kerf-Button.sketch'),
   consumerPath: join(output, 'Button-Consumer-Test.sketch'),
   resizingPath: join(output, 'Button-Resizing-Test.sketch'),
@@ -79,6 +88,32 @@ async function verifySource() {
   console.log(
     'Six production Button captures passed browser-only source checks.',
   );
+  const extra = JSON.parse(await readFile(paths.variantFixturesPath, 'utf8'));
+  assert.equal(extra.length, variantCases.length * 2);
+  assert.equal(new Set(extra.map((fixture) => fixture.id)).size, extra.length);
+  for (const fixture of extra) {
+    assert.ok(
+      variantCases.some((item) => `${item.id}-${fixture.theme}` === fixture.id),
+    );
+    assert.ok(fixture.layout.width > 0);
+    assert.equal(
+      fixture.layout.height,
+      fixture.props.size === 'compact' ? 33 : 44,
+    );
+    assert.equal(
+      fixture.layout.label === null,
+      fixture.props.children === undefined,
+    );
+    if (fixture.props.children === undefined)
+      assert.equal(fixture.layout.width, fixture.layout.height);
+    assert.ok(fixture.layout.icon || fixture.layout.label);
+    assert.ok(
+      !fixture.layout.icon || !fixture.layout.icon.svg.includes('<image'),
+    );
+  }
+  console.log(
+    `${extra.length} production visual variants passed source checks.`,
+  );
 }
 
 async function runNative(names, parameters = paths) {
@@ -94,6 +129,8 @@ async function runNative(names, parameters = paths) {
     verify: 'verification.json',
     resize: 'resizing-verification.json',
     fill: 'fill-verification.json',
+    variants: 'variant-build-report.json',
+    'verify-variants': 'variant-verification.json',
   };
   let nativePid;
   for (const name of names) {
@@ -136,7 +173,17 @@ async function renderComparisons() {
     join(scriptDirectory, 'resize-review.mjs'),
     output,
   ]);
-  console.log('Browser/native comparison and 30 resizing checks passed.');
+  await exec(process.execPath, [
+    join(scriptDirectory, 'variant-compare.mjs'),
+    output,
+  ]);
+  await exec(process.execPath, [
+    join(scriptDirectory, 'variant-resize-review.mjs'),
+    output,
+  ]);
+  console.log(
+    'Browser/native pilot and variant comparisons, and resizing checks passed.',
+  );
 }
 
 function identityTree(layers) {
@@ -320,6 +367,57 @@ async function updateIdentityManifest(libraryPath, assetReportPath) {
   return temporary;
 }
 
+async function updateVariantManifest() {
+  const fixtures = JSON.parse(
+    await readFile(paths.variantFixturesPath, 'utf8'),
+  );
+  const report = JSON.parse(
+    await readFile(join(output, 'variant-build-report.json'), 'utf8'),
+  );
+  const previous = await readFile(paths.variantManifestPath, 'utf8').then(
+    JSON.parse,
+    (error) => {
+      if (error.code === 'ENOENT') return { version: 1, variants: {} };
+      throw error;
+    },
+  );
+  assert.equal(report.length, fixtures.length);
+  const variants = {};
+  for (const fixture of fixtures) {
+    const current = report.find((entry) => entry.id === fixture.id);
+    assert.ok(current, `Missing native variant ${fixture.id}`);
+    const before = previous.variants[fixture.id];
+    if (before) {
+      assert.equal(
+        current.masterId,
+        before.masterId,
+        `${fixture.id} master changed`,
+      );
+      assert.equal(
+        current.symbolId,
+        before.symbolId,
+        `${fixture.id} Symbol changed`,
+      );
+      for (const layer of current.layers) {
+        const prior = before.layers.find((entry) => entry.name === layer.name);
+        if (prior)
+          assert.equal(
+            layer.id,
+            prior.id,
+            `${fixture.id}/${layer.name} changed`,
+          );
+      }
+    }
+    variants[fixture.id] = {
+      masterId: current.masterId,
+      symbolId: current.symbolId,
+      name: current.name,
+      layers: current.layers.map(({ id, name, type }) => ({ id, name, type })),
+    };
+  }
+  return `${JSON.stringify({ version: 1, variants }, null, 2)}\n`;
+}
+
 async function prepareOutput() {
   await mkdir(output, { recursive: true });
   for (const directory of [
@@ -327,6 +425,8 @@ async function prepareOutput() {
     'consumer-exports',
     'resize-exports',
     'fill-exports',
+    'variant-exports',
+    'variant-consumer-exports',
   ])
     await mkdir(join(output, directory), { recursive: true });
 }
@@ -338,16 +438,18 @@ if (
     'check-source',
     'generate',
     'verify',
+    'verify-variants',
     'render',
     'fill',
     'all',
   ].includes(command)
 )
   throw new Error(
-    'Usage: npm run sketch:button -- capture|check-source|generate|verify|render|fill|all',
+    'Usage: npm run sketch:button -- capture|check-source|generate|verify|verify-variants|render|fill|all',
   );
 await prepareOutput();
 if (command === 'capture' || command === 'all') await captureButtons(output);
+if (command === 'capture' || command === 'all') await captureVariants(output);
 if (command === 'fill' || command === 'all') await captureFillCases(output);
 if (command === 'capture' || command === 'check-source') await verifySource();
 if (command === 'generate' || command === 'all') {
@@ -369,6 +471,10 @@ if (command === 'generate' || command === 'all') {
     ? await changedIconFixtures()
     : [];
   if (seedExisting) await copyFile(paths.libraryPath, stagingPath);
+  const hasVariantManifest = await access(paths.variantManifestPath).then(
+    () => true,
+    () => false,
+  );
   const originalDocumentId = seedExisting
     ? (
         await exec('python3', [
@@ -378,13 +484,14 @@ if (command === 'generate' || command === 'all') {
       ).stdout.trim()
     : null;
   try {
-    await runNative(['build', 'layout'], {
+    await runNative(['build', 'layout', 'variants'], {
       ...paths,
       libraryPath: stagingPath,
       assetReportPath: assetStagingPath,
       seedExisting,
       hasIdentityManifest,
       iconGeometryUpdates,
+      hasVariantManifest,
     });
   } catch (error) {
     throw new Error(
@@ -404,12 +511,15 @@ if (command === 'generate' || command === 'all') {
     stagingPath,
     assetStagingPath,
   );
+  const variantManifest = await updateVariantManifest();
   await rename(stagingPath, paths.libraryPath);
   await rename(identityStagingPath, paths.identitiesPath);
   await rename(assetStagingPath, paths.assetReportPath);
+  await writeFile(paths.variantManifestPath, variantManifest);
 }
 if (command === 'verify' || command === 'all')
-  await runNative(['verify', 'resize']);
+  await runNative(['verify', 'resize', 'verify-variants']);
+if (command === 'verify-variants') await runNative(['verify-variants']);
 if (command === 'fill' || command === 'all') await runNative(['fill']);
 if (command === 'render' || command === 'all') await renderComparisons();
 if (command === 'fill' || command === 'all') {

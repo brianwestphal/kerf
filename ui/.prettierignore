@@ -21,6 +21,7 @@ scripts/check-design-templates-drift.mjs
 docs/design/sketch/button/*.json
 docs/design/sketch/button/*.html
 docs/design/sketch/button/inputs/
+docs/design/sketch/button/variant-inputs/
 docs/design/sketch/button/fill-browser/
 
 **/*.svg

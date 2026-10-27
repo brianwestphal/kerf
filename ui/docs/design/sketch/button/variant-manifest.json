@@ -1,0 +1,453 @@
+{
+  "version": 1,
+  "variants": {
+    "primary-neutral-light": {
+      "masterId": "1C2095A2-95BA-4F12-8E28-EB323455CE00",
+      "symbolId": "164A76F7-7581-449B-801B-34D2690BAB73",
+      "name": "Button / Primary Neutral / Light",
+      "layers": [
+        {
+          "id": "5F83B7B8-A3D3-4024-9541-88EF9F8D08CE",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "primary-success-light": {
+      "masterId": "15F07818-47C7-4915-AA44-BA87BF46EDF2",
+      "symbolId": "440B3D7B-9E0E-4A1F-A3BD-817309878694",
+      "name": "Button / Primary Success / Light",
+      "layers": [
+        {
+          "id": "54A52C59-9309-472A-8676-B69C978281CE",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "primary-danger-light": {
+      "masterId": "34DE25E1-AFBD-4578-912A-F2B2A97E698E",
+      "symbolId": "CF187C5F-FAFC-44EC-A9A8-F72AFAEB397D",
+      "name": "Button / Primary Danger / Light",
+      "layers": [
+        {
+          "id": "DE3E03C1-1AC3-4992-9C91-2CD18D253988",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "secondary-danger-light": {
+      "masterId": "F7B7A302-C401-4665-AC6A-1FED0CCF72B2",
+      "symbolId": "2E1884EC-BD17-42C5-8B76-81FE1115BE38",
+      "name": "Button / Secondary Danger / Light",
+      "layers": [
+        {
+          "id": "994258A1-28F9-4DA0-98D9-B93FC3D9BE69",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "plain-neutral-light": {
+      "masterId": "07E65578-FEBA-4665-9788-CCD1481D03A6",
+      "symbolId": "7EA87C09-C629-4DC1-8365-052506FB20FB",
+      "name": "Button / Plain Neutral / Light",
+      "layers": [
+        {
+          "id": "171F07E7-CA79-471B-BFBF-C4BC6FC9D048",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "compact-neutral-light": {
+      "masterId": "525E5A91-1576-4200-AA43-9C37A0D62D2A",
+      "symbolId": "5AA664C8-03FB-4F95-93E4-B3CADCDC1F09",
+      "name": "Button / Compact Neutral / Light",
+      "layers": [
+        {
+          "id": "04B05495-8855-461B-9ADF-130CF589BE73",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "pill-brand-light": {
+      "masterId": "AE5DF29F-C5EB-441A-93C4-C2937D2485B6",
+      "symbolId": "758579DC-E5DE-415B-A288-914F62393F6B",
+      "name": "Button / Pill Brand / Light",
+      "layers": [
+        {
+          "id": "BF9D8FB1-F961-4F4F-AB90-6EA31210969C",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "icon-only-light": {
+      "masterId": "CF5275B3-D03C-4B7C-9C43-A85EEAA06A95",
+      "symbolId": "95D89E2D-E3F1-47E8-9EC3-ABB56D4F4E66",
+      "name": "Button / Icon Only / Light",
+      "layers": [
+        {
+          "id": "40034F91-869F-440A-8D12-32A51A035B18",
+          "name": "Icon",
+          "type": "Group"
+        }
+      ]
+    },
+    "disabled-neutral-light": {
+      "masterId": "ED939306-CE70-449F-BB2C-4C914CDEB948",
+      "symbolId": "1A9D6E60-7C59-41A8-9FB2-AFD1B9BB815E",
+      "name": "Button / Disabled Neutral / Light",
+      "layers": [
+        {
+          "id": "00599A84-A2BF-4017-AB44-C7F91A0426B7",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "disabled-success-light": {
+      "masterId": "27A82E55-A7E4-49CD-B139-0E2B76852241",
+      "symbolId": "1AFA44FC-5D53-4E31-8F58-B52F3D28FA1A",
+      "name": "Button / Disabled Success / Light",
+      "layers": [
+        {
+          "id": "9479EFCB-3CB8-47B8-8EF1-145B2121698D",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "pressed-neutral-light": {
+      "masterId": "00B8E15C-FB3C-49CC-B47E-454061DCB63E",
+      "symbolId": "C090CC83-74D3-417C-97D8-20F28F2DEF28",
+      "name": "Button / Pressed Neutral / Light",
+      "layers": [
+        {
+          "id": "D70612C3-5C20-468D-ABFC-88C5CE559BE6",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "pressed-secondary-light": {
+      "masterId": "10233613-F7DA-40F5-A52D-1AB3D1EF7A35",
+      "symbolId": "1A90FE0D-C782-4226-9A9B-084BFFA8D5C1",
+      "name": "Button / Pressed Secondary Brand / Light",
+      "layers": [
+        {
+          "id": "DF51690B-858B-4C3B-A95F-44E3EAF01505",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "loading-brand-light": {
+      "masterId": "11848BB5-6F07-4051-ACE7-05ACA0B59AFA",
+      "symbolId": "93EF26A9-BA2E-4AF3-9694-48D82CCAE627",
+      "name": "Button / Loading Brand / Light",
+      "layers": [
+        {
+          "id": "73034E43-17F9-40F9-9BC2-5871DEF4FF19",
+          "name": "Label",
+          "type": "Text"
+        },
+        {
+          "id": "766E0EAC-D972-4496-8AEA-399F05252871",
+          "name": "Spinner Host",
+          "type": "Group"
+        }
+      ]
+    },
+    "badge-brand-light": {
+      "masterId": "2C26848F-85FD-4E78-834A-DD984EFB8588",
+      "symbolId": "FD69FB50-D899-4D96-A1B2-7101C7412106",
+      "name": "Button / Badge Brand / Light",
+      "layers": [
+        {
+          "id": "6E3B29CA-0EFB-410E-884F-D7ADA95FA512",
+          "name": "Label",
+          "type": "Text"
+        },
+        {
+          "id": "B1050D90-1FB7-475A-94D4-2AC076C39DC4",
+          "name": "Badge Background",
+          "type": "Group"
+        },
+        {
+          "id": "FE1F8AFA-A66A-4A46-B936-90E4AC280028",
+          "name": "Badge Count",
+          "type": "Text"
+        }
+      ]
+    },
+    "badge-dot-light": {
+      "masterId": "D0B79829-C084-42DD-8A2A-DE75282E0390",
+      "symbolId": "7267E4DF-984D-4628-8E0E-1C35289176D0",
+      "name": "Button / Badge Dot / Light",
+      "layers": [
+        {
+          "id": "8A482684-65AA-444B-9A16-4CE1CADF5080",
+          "name": "Label",
+          "type": "Text"
+        },
+        {
+          "id": "0F80F114-2122-4C28-BB55-89FE1EB4271E",
+          "name": "Badge Background",
+          "type": "Group"
+        }
+      ]
+    },
+    "focus-standard-light": {
+      "masterId": "2CE03D0B-66C2-40C7-9049-E60C405A8095",
+      "symbolId": "29A2A021-B8F4-4F6C-A51C-39A9AC9E1CB1",
+      "name": "Button / Focus Standard / Light",
+      "layers": [
+        {
+          "id": "A0E5D012-6ABA-42EE-8620-781962AD6781",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "focus-brand-light": {
+      "masterId": "70EB33AB-AE26-4B2E-84E2-793754773D8E",
+      "symbolId": "9A4A25BE-C975-4EA5-903D-DC6603BE777B",
+      "name": "Button / Focus Brand / Light",
+      "layers": [
+        {
+          "id": "28425513-AECF-4ED2-80AD-93931F350D5E",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "primary-neutral-dark": {
+      "masterId": "CE3AC45C-8AB0-4059-811B-B3EB521E2999",
+      "symbolId": "1A7911E4-18E2-4804-A7A9-14AA6C82648B",
+      "name": "Button / Primary Neutral / Dark",
+      "layers": [
+        {
+          "id": "A139A512-CAE4-4560-B2FE-0E2B3FD766AA",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "primary-success-dark": {
+      "masterId": "3A689FB1-306B-4524-9012-D7589C14EC7A",
+      "symbolId": "53DD7796-FBBA-417F-A6BC-D9AFD6E369A7",
+      "name": "Button / Primary Success / Dark",
+      "layers": [
+        {
+          "id": "FA41664A-8BA3-4460-B0D5-4E8F80A3BDC3",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "primary-danger-dark": {
+      "masterId": "BD3085FD-835F-4331-AC69-81D516F52E7C",
+      "symbolId": "865B5E93-56AD-4B0C-AE56-52BBDD96CCEA",
+      "name": "Button / Primary Danger / Dark",
+      "layers": [
+        {
+          "id": "65A1F56C-35F5-4CAC-A182-ED9DD85DE721",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "secondary-danger-dark": {
+      "masterId": "F18E7033-88E9-4528-90CE-7465B96FF75D",
+      "symbolId": "FBC4B718-98C0-4D75-843C-79C1B6EE835E",
+      "name": "Button / Secondary Danger / Dark",
+      "layers": [
+        {
+          "id": "2910D1D4-8603-47AD-BF0B-DFE9710218FD",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "plain-neutral-dark": {
+      "masterId": "B78940DC-B2C0-4D63-8ABB-7105A991ECE6",
+      "symbolId": "DF576745-BE97-4BF9-BE82-BF97860FDEE1",
+      "name": "Button / Plain Neutral / Dark",
+      "layers": [
+        {
+          "id": "23C22AE9-D359-4BC3-A6B5-D1CA9BC4F92B",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "compact-neutral-dark": {
+      "masterId": "D63F2763-DEEB-4CC2-B867-9947F28613DB",
+      "symbolId": "0759487E-00FF-4A2C-BC2A-E672A8E2DA25",
+      "name": "Button / Compact Neutral / Dark",
+      "layers": [
+        {
+          "id": "8763262D-809E-4096-958E-D9871E2C06C0",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "pill-brand-dark": {
+      "masterId": "BA1F32A1-E01F-453E-BD6C-907C99C22B2C",
+      "symbolId": "A9FA3F23-1711-4F7B-B906-4CB5A009F5FD",
+      "name": "Button / Pill Brand / Dark",
+      "layers": [
+        {
+          "id": "C097C606-88F7-4BEF-94DC-D61648B3BDC4",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "icon-only-dark": {
+      "masterId": "C39E129F-EE15-415C-BD9D-505AA7933D2C",
+      "symbolId": "3DE21C0D-1189-49E4-91A4-0E03BEF123DE",
+      "name": "Button / Icon Only / Dark",
+      "layers": [
+        {
+          "id": "17BC7B1D-F3B2-49C0-9174-CB0C9D95F54C",
+          "name": "Icon",
+          "type": "Group"
+        }
+      ]
+    },
+    "disabled-neutral-dark": {
+      "masterId": "9D3ACF8A-39EE-483F-9733-A71E29F4E720",
+      "symbolId": "19975BFE-ED19-4305-AC94-1C946F2EBEB9",
+      "name": "Button / Disabled Neutral / Dark",
+      "layers": [
+        {
+          "id": "3F6F67B1-6C9F-4C8E-A3DA-C5EA58144E3E",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "disabled-success-dark": {
+      "masterId": "C0F532C7-0E68-4AAE-BC7D-2F54EE233769",
+      "symbolId": "0C81CA0A-881C-41FB-93B6-110E1E45B38C",
+      "name": "Button / Disabled Success / Dark",
+      "layers": [
+        {
+          "id": "18843709-54D5-4447-AFE2-C776528F9BC3",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "pressed-neutral-dark": {
+      "masterId": "F355F494-B502-4A0F-AC34-89F9D83A4E62",
+      "symbolId": "892D2725-A274-4C4C-8C5D-AB6E06058EBE",
+      "name": "Button / Pressed Neutral / Dark",
+      "layers": [
+        {
+          "id": "4A4B1E28-DE9A-45D9-B6AE-DF0EE78F5EA6",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "pressed-secondary-dark": {
+      "masterId": "E87A7EB1-7E54-4CF7-9166-FDF8807772E4",
+      "symbolId": "0C8ED924-984B-4BE0-B571-CF25D5509FE8",
+      "name": "Button / Pressed Secondary Brand / Dark",
+      "layers": [
+        {
+          "id": "1A33616A-AB8D-42E6-B8C1-76071BB648C1",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "loading-brand-dark": {
+      "masterId": "6AB32C16-7A16-4570-B70B-200CB17ACEFD",
+      "symbolId": "9E17F8AE-A60F-43C8-9351-5A19D52B7BB4",
+      "name": "Button / Loading Brand / Dark",
+      "layers": [
+        {
+          "id": "7EF38B45-68DC-45EF-BE02-D2B055B1394B",
+          "name": "Label",
+          "type": "Text"
+        },
+        {
+          "id": "C78C4FA3-6F51-425C-9A5A-4846B5BAD5E8",
+          "name": "Spinner Host",
+          "type": "Group"
+        }
+      ]
+    },
+    "badge-brand-dark": {
+      "masterId": "5887E135-EA03-4E91-AFBD-766554A8737A",
+      "symbolId": "417443AB-4ABA-42DC-8A83-BB29699DB377",
+      "name": "Button / Badge Brand / Dark",
+      "layers": [
+        {
+          "id": "660CA9C0-C23F-491E-BCEB-88A5735B993E",
+          "name": "Label",
+          "type": "Text"
+        },
+        {
+          "id": "0962757B-7867-496B-92F4-B3F32ECEC3C4",
+          "name": "Badge Background",
+          "type": "Group"
+        },
+        {
+          "id": "8BCF9EE5-2907-4628-9E7C-AFBD6375E623",
+          "name": "Badge Count",
+          "type": "Text"
+        }
+      ]
+    },
+    "badge-dot-dark": {
+      "masterId": "C924F38C-13EE-48B1-A1D1-C7071B5AB382",
+      "symbolId": "236F2838-1126-4AC2-8345-F97DEA690FC1",
+      "name": "Button / Badge Dot / Dark",
+      "layers": [
+        {
+          "id": "FB4B13AC-8AC8-468E-83F0-E8E96CD2C23E",
+          "name": "Label",
+          "type": "Text"
+        },
+        {
+          "id": "1CF907AD-BC0D-4320-B695-7712F7764B5B",
+          "name": "Badge Background",
+          "type": "Group"
+        }
+      ]
+    },
+    "focus-standard-dark": {
+      "masterId": "B246EFC6-9EBF-4F0F-83CC-EE89696225C0",
+      "symbolId": "AB2A4285-2C68-499E-8C50-4E8E59C94A36",
+      "name": "Button / Focus Standard / Dark",
+      "layers": [
+        {
+          "id": "6E3D146F-5CBC-4DF0-BD17-A78C89C2A8CC",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    },
+    "focus-brand-dark": {
+      "masterId": "D2E3861E-207B-45FF-AB29-1FBB05DCB20C",
+      "symbolId": "2116011A-F4BD-4050-A074-DD9D2ECD8AEF",
+      "name": "Button / Focus Brand / Dark",
+      "layers": [
+        {
+          "id": "2A0AF53B-0C5C-47B9-A597-3AA359556B08",
+          "name": "Label",
+          "type": "Text"
+        }
+      ]
+    }
+  }
+}

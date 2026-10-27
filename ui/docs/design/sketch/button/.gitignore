@@ -6,8 +6,13 @@
 /resize-browser/
 /fill-browser/
 /fill-exports/
+/variant-inputs/
+/variant-exports/
+/variant-consumer-exports/
 /comparison.html
 /resizing-comparison.html
 /fill-comparison.html
 /fill-comparison-narrow.html
+/variant-comparison-*.html
+/variant-resize-comparison.html
 /.Kerf-Button-*.sketch
