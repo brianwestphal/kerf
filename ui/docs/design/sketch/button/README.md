@@ -79,7 +79,8 @@ a different vector.
 ## Outputs and checks
 
 - `Kerf-Button.sketch`: six-Symbol library to copy or import.
-- `identity-manifest.json`: stable variant keys and recursive native layer IDs.
+- `identity-manifest.json`: stable variant, layer, Color Variable, and shared
+  style IDs; `asset-report.json` lists the current semantic assets and colors.
 - `Button-Consumer-Test.sketch`: linked instances with saved text overrides.
 - `Button-Resizing-Test.sketch`: five layouts per Symbol, 30 in total.
 - `verification.json`, `resizing-verification.json`, and
@@ -99,6 +100,46 @@ link plus text and icon-color overrides after a source-fill change, Library
 refresh, and save/reopen. The `verify` command covers fresh imports and saved
 text overrides. A separate scratch regeneration also preserved a user-added
 Text layer outside the generated Symbols.
+
+## Shared colors and styles
+
+The Library includes eight Color Variables, four shared layer styles, and four
+shared text styles for the six Button presentations. Names follow semantic
+roles and theme: `Kerf/Light/Brand/Fill Loud`,
+`Kerf/Dark/Neutral/Border Loud`, and so on. Light and dark assets remain
+separate even if their resolved colors match. The two brand presentations
+share their theme's assets. Secondary Buttons use the neutral `On Quiet` text
+and `Border Loud` variables; their transparent fill stays transparent. The
+border variables retain their alpha from the production capture.
+The mapped source roles are `--kui-color-brand-fill-loud`,
+`--kui-color-brand-on-loud`, `--kui-color-neutral-border-loud`, and
+`--kui-color-neutral-on-quiet` in each theme context; their values come from
+the real rendered Button, not a separate Sketch palette.
+
+Choose the Light or Dark Symbol for the corresponding product theme. Its
+background, border, label, and icon paths reference the appropriate Color
+Variables. Shared layer styles own visual paint, border, and corners; shared
+text styles own the system family, 16px medium weight, centered alignment,
+automatic line height, and semantic text color. The Symbol's Stack owns the
+44px control height, gap, insets, and Fit/Fixed sizing. Instance label and icon
+color overrides remain available. An explicit icon color override wins over
+a later source token change when that Library Symbol is refreshed.
+
+`identity-manifest.json` records stable IDs for each Color Variable and
+shared style. Regeneration updates these assets in place and rejects missing
+IDs or name collisions. To propagate a theme token change, recapture the
+production Button, regenerate the Library at its installed stable path, and
+refresh its linked Symbols in consumer documents. A saved consumer retained
+its Library link, text override, and icon color override after a brand fill
+and foreground token update; the regenerated Symbol picked up both new
+semantic colors on save/reopen. The native `verify` command checks serialized
+asset IDs and bindings after reopening the Library.
+
+Sketch creates a private linked copy of a shared style for each imported
+Symbol. Those consumer IDs include the source style ID in brackets and may
+repeat a style name across separate Symbols; they are Sketch's sync records,
+not duplicate assets in the source Library. Import a Color Variable explicitly
+from the Library when using it on a new consumer-owned layer.
 
 ## Fill-width instances
 

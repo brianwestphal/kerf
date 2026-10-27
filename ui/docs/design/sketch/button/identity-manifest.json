@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "libraryDocumentId": "C843286F-8ACC-48E8-9252-DC1F0BB709B3",
   "variants": {
     "primary-brand-light": {
@@ -173,6 +173,86 @@
         "path:Mv"
       ],
       "retired": false
+    }
+  },
+  "assets": {
+    "swatches": {
+      "light.brand.fill-loud": {
+        "id": "D75164C3-874D-4E30-8D2F-E99D21BF09D0",
+        "name": "Kerf/Light/Brand/Fill Loud",
+        "color": "#0075dbff"
+      },
+      "light.brand.on-loud": {
+        "id": "0C1F814C-0E4C-4C97-BD32-F8C475750BBB",
+        "name": "Kerf/Light/Brand/On Loud",
+        "color": "#ffffffff"
+      },
+      "light.neutral.border-loud": {
+        "id": "C4E0CD82-1A1D-4176-9551-9A6C37C54BF6",
+        "name": "Kerf/Light/Neutral/Border Loud",
+        "color": "#00000d51"
+      },
+      "light.neutral.on-quiet": {
+        "id": "ABFE1D8B-F33D-4E61-923A-80D5410262F7",
+        "name": "Kerf/Light/Neutral/On Quiet",
+        "color": "#626267ff"
+      },
+      "dark.brand.fill-loud": {
+        "id": "49A4DD1A-9202-41B8-978C-4535A032DB52",
+        "name": "Kerf/Dark/Brand/Fill Loud",
+        "color": "#64d2ffff"
+      },
+      "dark.brand.on-loud": {
+        "id": "F06FE7CD-28D5-45EC-9436-6E3CC237AC7E",
+        "name": "Kerf/Dark/Brand/On Loud",
+        "color": "#111113ff"
+      },
+      "dark.neutral.border-loud": {
+        "id": "18DF7506-3689-44D5-9E89-4BBB34089B27",
+        "name": "Kerf/Dark/Neutral/Border Loud",
+        "color": "#f9f9ff52"
+      },
+      "dark.neutral.on-quiet": {
+        "id": "4729CEC5-511B-483B-BB03-DDC8BB43858E",
+        "name": "Kerf/Dark/Neutral/On Quiet",
+        "color": "#c2c2c6ff"
+      }
+    },
+    "layerStyles": {
+      "light.brand-primary": {
+        "id": "1D86CE0E-177F-452A-937A-9321B47CA7B5",
+        "name": "Kerf/Button/Primary Brand/Light"
+      },
+      "light.neutral-secondary": {
+        "id": "2759C9C5-54D5-43A8-B8C9-4286C23A30D4",
+        "name": "Kerf/Button/Secondary Neutral/Light"
+      },
+      "dark.brand-primary": {
+        "id": "68FBDED7-712D-4D8C-82FC-E6F0E531E4F3",
+        "name": "Kerf/Button/Primary Brand/Dark"
+      },
+      "dark.neutral-secondary": {
+        "id": "7E25B9AB-41E5-4D2A-ADE5-8226764F9594",
+        "name": "Kerf/Button/Secondary Neutral/Dark"
+      }
+    },
+    "textStyles": {
+      "light.brand-primary": {
+        "id": "DB512CC8-36E8-4967-A4D1-774B4B17F514",
+        "name": "Kerf/Button/Label Brand/Light"
+      },
+      "light.neutral-secondary": {
+        "id": "83C1C0AE-6FE5-4C65-BA91-B9EF23447A64",
+        "name": "Kerf/Button/Label Neutral/Light"
+      },
+      "dark.brand-primary": {
+        "id": "6AEEC6D1-456E-4C18-883A-73F682CAD208",
+        "name": "Kerf/Button/Label Brand/Dark"
+      },
+      "dark.neutral-secondary": {
+        "id": "B64AA01D-5298-4F02-92BD-CBB1442E5781",
+        "name": "Kerf/Button/Label Neutral/Dark"
+      }
     }
   }
 }

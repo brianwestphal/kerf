@@ -29,6 +29,7 @@ const paths = {
   fillDocumentPath: join(output, 'Button-Fill-Test.sketch'),
   fillExportsPath: join(output, 'fill-exports'),
   identitiesPath: join(output, 'identity-manifest.json'),
+  assetReportPath: join(output, 'asset-report.json'),
   libraryPath: join(output, 'Kerf-Button.sketch'),
   consumerPath: join(output, 'Button-Consumer-Test.sketch'),
   resizingPath: join(output, 'Button-Resizing-Test.sketch'),
@@ -112,10 +113,16 @@ async function runNative(names, parameters = paths) {
     );
     if (nativePid !== undefined) assert.equal(status.processId, nativePid);
     nativePid = status.processId;
+    const result = name === 'layout' ? status.result.layout : status.result;
     await writeFile(
       join(output, reports[name]),
-      `${JSON.stringify(status.result, null, 2)}\n`,
+      `${JSON.stringify(result, null, 2)}\n`,
     );
+    if (name === 'layout')
+      await writeFile(
+        parameters.assetReportPath,
+        `${JSON.stringify(status.result.assets, null, 2)}\n`,
+      );
     console.log(
       `${name}: native cleanup acknowledged in Sketch PID ${nativePid}`,
     );
@@ -239,12 +246,24 @@ async function changedIconFixtures() {
   return changed;
 }
 
-async function updateIdentityManifest(libraryPath) {
+async function updateIdentityManifest(libraryPath, assetReportPath) {
   const fixtures = JSON.parse(await readFile(paths.fixturesPath, 'utf8'));
   const report = JSON.parse(
     await readFile(join(output, 'layout-report.json'), 'utf8'),
   );
   const previous = await readIdentityManifest();
+  const assets = JSON.parse(await readFile(assetReportPath, 'utf8'));
+  for (const kind of ['swatches', 'layerStyles', 'textStyles']) {
+    for (const [key, oldAsset] of Object.entries(
+      previous.assets?.[kind] ?? {},
+    )) {
+      assert.equal(
+        assets[kind]?.[key]?.id,
+        oldAsset.id,
+        `${kind} ${key} identity changed`,
+      );
+    }
+  }
   const libraryDocumentId = (
     await exec('python3', [
       join(scriptDirectory, 'document-id.py'),
@@ -296,7 +315,7 @@ async function updateIdentityManifest(libraryPath) {
   const temporary = `${paths.identitiesPath}.${randomUUID()}.tmp`;
   await writeFile(
     temporary,
-    `${JSON.stringify({ version: 1, libraryDocumentId, variants }, null, 2)}\n`,
+    `${JSON.stringify({ version: 2, libraryDocumentId, variants, assets }, null, 2)}\n`,
   );
   return temporary;
 }
@@ -337,6 +356,7 @@ if (command === 'generate' || command === 'all') {
   // blocking Save panel. Build to a unique sibling, then atomically replace
   // the published library only after both native jobs finish and clean up.
   const stagingPath = join(output, `.Kerf-Button-${randomUUID()}.sketch`);
+  const assetStagingPath = join(output, `.asset-report-${randomUUID()}.json`);
   const seedExisting = await access(paths.libraryPath).then(
     () => true,
     () => false,
@@ -361,6 +381,7 @@ if (command === 'generate' || command === 'all') {
     await runNative(['build', 'layout'], {
       ...paths,
       libraryPath: stagingPath,
+      assetReportPath: assetStagingPath,
       seedExisting,
       hasIdentityManifest,
       iconGeometryUpdates,
@@ -379,9 +400,13 @@ if (command === 'generate' || command === 'all') {
       stagingPath,
       originalDocumentId,
     ]);
-  const identityStagingPath = await updateIdentityManifest(stagingPath);
+  const identityStagingPath = await updateIdentityManifest(
+    stagingPath,
+    assetStagingPath,
+  );
   await rename(stagingPath, paths.libraryPath);
   await rename(identityStagingPath, paths.identitiesPath);
+  await rename(assetStagingPath, paths.assetReportPath);
 }
 if (command === 'verify' || command === 'all')
   await runNative(['verify', 'resize']);

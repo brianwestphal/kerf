@@ -2,46 +2,89 @@
   "reopenedSymbols": 6,
   "editableText": 6,
   "bitmaps": 0,
+  "assets": {
+    "swatches": 8,
+    "layerStyles": 4,
+    "textStyles": 4,
+    "bindings": [
+      {
+        "name": "Button / Primary Brand / Light",
+        "layerStyle": "1D86CE0E-177F-452A-937A-9321B47CA7B5",
+        "textStyle": "DB512CC8-36E8-4967-A4D1-774B4B17F514",
+        "textSwatch": "0C1F814C-0E4C-4C97-BD32-F8C475750BBB"
+      },
+      {
+        "name": "Button / Secondary / Light",
+        "layerStyle": "2759C9C5-54D5-43A8-B8C9-4286C23A30D4",
+        "textStyle": "83C1C0AE-6FE5-4C65-BA91-B9EF23447A64",
+        "textSwatch": "ABFE1D8B-F33D-4E61-923A-80D5410262F7"
+      },
+      {
+        "name": "Button / Primary with Icon / Light",
+        "layerStyle": "1D86CE0E-177F-452A-937A-9321B47CA7B5",
+        "textStyle": "DB512CC8-36E8-4967-A4D1-774B4B17F514",
+        "textSwatch": "0C1F814C-0E4C-4C97-BD32-F8C475750BBB"
+      },
+      {
+        "name": "Button / Primary Brand / Dark",
+        "layerStyle": "68FBDED7-712D-4D8C-82FC-E6F0E531E4F3",
+        "textStyle": "6AEEC6D1-456E-4C18-883A-73F682CAD208",
+        "textSwatch": "F06FE7CD-28D5-45EC-9436-6E3CC237AC7E"
+      },
+      {
+        "name": "Button / Secondary / Dark",
+        "layerStyle": "7E25B9AB-41E5-4D2A-ADE5-8226764F9594",
+        "textStyle": "B64AA01D-5298-4F02-92BD-CBB1442E5781",
+        "textSwatch": "4729CEC5-511B-483B-BB03-DDC8BB43858E"
+      },
+      {
+        "name": "Button / Primary with Icon / Dark",
+        "layerStyle": "68FBDED7-712D-4D8C-82FC-E6F0E531E4F3",
+        "textStyle": "6AEEC6D1-456E-4C18-883A-73F682CAD208",
+        "textSwatch": "F06FE7CD-28D5-45EC-9436-6E3CC237AC7E"
+      }
+    ]
+  },
   "importableSymbols": 6,
   "instances": [
     {
       "name": "Button / Primary Brand / Light",
-      "id": "FF29E48A-B4F9-4ABD-8AA2-3A6B776441F9",
+      "id": "FC442082-66E4-4080-BDF9-6F6888390B16",
       "linked": true,
       "override": "Save Draft",
       "masterText": "Save Changes"
     },
     {
       "name": "Button / Secondary / Light",
-      "id": "4BE5410A-E089-4175-BA33-072BDF22D82B",
+      "id": "8B8638EB-84DA-4DD5-8385-5A7A11EA4993",
       "linked": true,
       "override": "Done",
       "masterText": "Export"
     },
     {
       "name": "Button / Primary with Icon / Light",
-      "id": "B771DD62-08F5-4217-B95F-99378AE908D5",
+      "id": "E0B7C2C4-261E-4097-919A-A66477827B5A",
       "linked": true,
       "override": "Save Draft",
       "masterText": "New Ticket"
     },
     {
       "name": "Button / Primary Brand / Dark",
-      "id": "81602F68-B19E-44E8-B506-425631ADC2DA",
+      "id": "D6608BB8-6A84-47B2-A92C-300A160E9328",
       "linked": true,
       "override": "Save Draft",
       "masterText": "Save Changes"
     },
     {
       "name": "Button / Secondary / Dark",
-      "id": "0D73AAC6-4560-4C2C-8B68-6D601FAD1138",
+      "id": "AA07DE65-57D1-4A35-86B6-D960651CEC01",
       "linked": true,
       "override": "Done",
       "masterText": "Export"
     },
     {
       "name": "Button / Primary with Icon / Dark",
-      "id": "3B8F48A9-1238-4C15-B57E-09566B794DDE",
+      "id": "A09FC5E6-3A68-4EDE-AC91-0DD7A695B3B4",
       "linked": true,
       "override": "Save Draft",
       "masterText": "New Ticket"
