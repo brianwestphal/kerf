@@ -1,0 +1,73 @@
+{
+  "sketchPid": 67482,
+  "cases": [
+    {
+      "kind": "long",
+      "theme": "light",
+      "override": "Updated split-button",
+      "linked": true,
+      "labelFixedWidth": false,
+      "labelWidth": 51,
+      "naturalWidth": 139.65625,
+      "wideWidth": 219.65625,
+      "height": 44
+    },
+    {
+      "kind": "long",
+      "theme": "dark",
+      "override": "Updated split-button",
+      "linked": true,
+      "labelFixedWidth": false,
+      "labelWidth": 51,
+      "naturalWidth": 139.65625,
+      "wideWidth": 219.65625,
+      "height": 44
+    },
+    {
+      "kind": "fixed",
+      "theme": "light",
+      "override": "Updated split-button",
+      "linked": true,
+      "labelFixedWidth": true,
+      "labelWidth": 49,
+      "naturalWidth": 139.65625,
+      "wideWidth": 219.65625,
+      "height": 44
+    },
+    {
+      "kind": "fixed",
+      "theme": "dark",
+      "override": "Updated split-button",
+      "linked": true,
+      "labelFixedWidth": true,
+      "labelWidth": 49,
+      "naturalWidth": 139.65625,
+      "wideWidth": 219.65625,
+      "height": 44
+    },
+    {
+      "kind": "manual",
+      "theme": "light",
+      "override": "Upd…",
+      "linked": true,
+      "labelFixedWidth": false,
+      "labelWidth": 51,
+      "naturalWidth": 139.65625,
+      "wideWidth": 219.65625,
+      "height": 44,
+      "reopened": true
+    },
+    {
+      "kind": "manual",
+      "theme": "dark",
+      "override": "Upd…",
+      "linked": true,
+      "labelFixedWidth": false,
+      "labelWidth": 51,
+      "naturalWidth": 139.65625,
+      "wideWidth": 219.65625,
+      "height": 44,
+      "reopened": true
+    }
+  ]
+}

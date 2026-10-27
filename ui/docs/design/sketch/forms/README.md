@@ -47,7 +47,25 @@ six families and both themes, changes text, grows width by 80px, and saves
 and reopens a consumer document. The two `comparison-*.png` files juxtapose
 production capture, native Symbol, and linked wide instance for visual review.
 
-The linked wide test covers short SplitButton labels. Longer SplitButton text
-can overflow its current native Stack layout; see `KF-2QG72T`. Interactive
+The linked wide test covers short SplitButton labels. Sketch 2026.3.1 does
+not automatically ellipsize a long editable text override in this Symbol's
+centered Stack. The `KF-2QG72T` native probe tested a long label and a
+fixed-width Text layer at natural and +80px widths in both themes: both clipped
+across the primary segment. Use a manually shortened editable label ending
+in `…` when the full text cannot fit. For an icon SplitButton, keep the
+measured label width at or below **instance width − 80px**: 40px for the
+options trigger, 16px for the icon, 8px for its gap, and 16px of breathing
+room around centered content. Without an icon, use **instance width − 56px**.
+These are conservative layout bounds; inspect the result at the actual size.
+Keep the full action text in the handoff annotation and restore it when a
+wider instance can fit it. The `Upd…` probe passed native light/dark natural
+and wide exports and survived linked consumer save/reopen. Run
+`node scripts/sketch/forms/truncation.mjs` from `ui/` to reproduce it.
+
+Automatic one-line CSS ellipsis is an explicitly unsupported Sketch effect.
+Sketch's [text override guide](https://www.sketch.com/docs/symbols-and-styles/overrides/)
+documents editable instance text; its
+[Text API](https://developer.sketch.com/reference/api/#text) exposes fixed
+versus flexible width, without a one-line ellipsis setting. Interactive
 browser states, focus behavior, and event handling live in `@kerfjs/ui`, not
 the static Sketch file.
