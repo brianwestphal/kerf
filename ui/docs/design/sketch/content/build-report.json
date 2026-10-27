@@ -1,0 +1,1065 @@
+{
+  "sketchPid": 29826,
+  "symbols": [
+    {
+      "id": "disclosure-plain-advanced-settings-light",
+      "name": "Disclosure / Plain / Advanced Settings / Light",
+      "symbolId": "39FF4AC9-76EB-4018-864D-437C8536BEBF",
+      "layerId": "211E688B-9BB7-4E50-8061-A562C72A0490",
+      "width": 404,
+      "height": 44,
+      "text": [
+        {
+          "id": "0F897694-1DC3-479D-8F1C-344D399DE79C",
+          "value": "Advanced Settings"
+        },
+        {
+          "id": "8AAA41D2-8A93-4DDC-A609-628BE54B8EE2",
+          "value": "3 options"
+        }
+      ],
+      "paths": 4,
+      "bitmaps": 0,
+      "sourceHash": "a8de53166e23fd87779009cfc17b9aaa8403b5ae3a64c3bbe02fb976a829394a"
+    },
+    {
+      "id": "disclosure-plain-release-notes-light",
+      "name": "Disclosure / Plain / Release Notes / Light",
+      "symbolId": "223B1795-A2C9-48E8-8AB5-84A8F78AF9D8",
+      "layerId": "BE8ACC77-33C0-4432-9238-2E609C45F0AF",
+      "width": 404,
+      "height": 80,
+      "text": [
+        {
+          "id": "A282013E-C6DF-4EB9-BC9D-D38602168FEC",
+          "value": "Release Notes"
+        },
+        {
+          "id": "4CB1A8B6-A4CC-46A5-AF71-3DF028B381F6",
+          "value": "Faster sync and four fixes."
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "c2410034a63252721b7c142ddbd9fc4143b5d38d64432f3c5917dfc04c70e130"
+    },
+    {
+      "id": "disclosure-plain-advanced-settings-dark",
+      "name": "Disclosure / Plain / Advanced Settings / Dark",
+      "symbolId": "EBA8A186-6455-43BB-84EB-52D96D982CD4",
+      "layerId": "B5C54CA8-1A2C-4386-B2ED-924541F208C3",
+      "width": 404,
+      "height": 44,
+      "text": [
+        {
+          "id": "6196DDAD-DFD0-4B10-824C-801DC4AE6E7C",
+          "value": "Advanced Settings"
+        },
+        {
+          "id": "098B97B5-3DF8-476B-9527-5D75E989248B",
+          "value": "3 options"
+        }
+      ],
+      "paths": 4,
+      "bitmaps": 0,
+      "sourceHash": "9a80176597932b53f27314cea08e6ec7c5980dca04b49d9375f33176c3e2c2ea"
+    },
+    {
+      "id": "disclosure-plain-release-notes-dark",
+      "name": "Disclosure / Plain / Release Notes / Dark",
+      "symbolId": "F2EF1B4D-409F-4B70-8011-584867595224",
+      "layerId": "3A5A55E6-1B41-4F81-A92D-70FE536757F5",
+      "width": 404,
+      "height": 80,
+      "text": [
+        {
+          "id": "1A9680AA-0905-4126-BD76-26DEC906D074",
+          "value": "Release Notes"
+        },
+        {
+          "id": "B01008B0-B3D9-460B-BC49-716ED8346A60",
+          "value": "Faster sync and four fixes."
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "defacb1f7951e29e5ff52397f98c213d3ba60e818c03a3afa0614a82bbfbc0fd"
+    },
+    {
+      "id": "disclosure-framed-sunken-billing-light",
+      "name": "Disclosure / Framed Sunken / Billing / Light",
+      "symbolId": "A5F93521-E105-49A6-BB5B-CF1D7DFEFC90",
+      "layerId": "9009B190-F9F7-423F-B590-65D04FAC8CAE",
+      "width": 404,
+      "height": 80,
+      "text": [
+        {
+          "id": "D5C997F9-6AF5-46F9-890E-470DBCE96320",
+          "value": "When am I billed?"
+        },
+        {
+          "id": "75DF22B7-3B25-43A4-BEB8-E79160C80BE6",
+          "value": "On the first of each month."
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "6c6664b3092a42e39bc238893fdf7f1977afa7695f8eb9f84f0217135dc6187f"
+    },
+    {
+      "id": "disclosure-framed-sunken-build-log-light",
+      "name": "Disclosure / Framed Sunken / Build Log / Light",
+      "symbolId": "004929C8-0208-42EB-AAB0-DFF48ACBCEBC",
+      "layerId": "44D38AEE-CF55-45D9-A93B-8FE167D956A1",
+      "width": 404,
+      "height": 44,
+      "text": [
+        {
+          "id": "11404BB1-A284-4027-8720-816360457B01",
+          "value": "Build Log"
+        },
+        {
+          "id": "0B83D76B-9704-4AED-8B5D-4382BCCF139B",
+          "value": "412 lines"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "9a4503e9729df46e6c0578ddd0a9589ae19a5d38a03905f6f79566a2fcebddb0"
+    },
+    {
+      "id": "disclosure-framed-sunken-billing-dark",
+      "name": "Disclosure / Framed Sunken / Billing / Dark",
+      "symbolId": "D0BA012F-774E-4FD6-AE9C-B7A847672260",
+      "layerId": "ABF32F45-6697-4C61-AF7D-6AB742F3E072",
+      "width": 404,
+      "height": 80,
+      "text": [
+        {
+          "id": "94501F19-15B2-4192-9560-8514FC1E3F21",
+          "value": "When am I billed?"
+        },
+        {
+          "id": "35EB17B2-CE73-4516-AFA4-9A22016A1BB0",
+          "value": "On the first of each month."
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "17e28c7658f47858765736ca77c6ce25d72817ee45c01c06a2ec603808042831"
+    },
+    {
+      "id": "disclosure-framed-sunken-build-log-dark",
+      "name": "Disclosure / Framed Sunken / Build Log / Dark",
+      "symbolId": "EEB7105A-4BE9-4672-B953-720FC83A708E",
+      "layerId": "68AC0FED-817A-429E-891D-871183AF048D",
+      "width": 404,
+      "height": 44,
+      "text": [
+        {
+          "id": "4DFA731F-9A0F-4E0C-A072-98B88015FF2E",
+          "value": "Build Log"
+        },
+        {
+          "id": "F91649C1-C21A-4221-B7B7-429661E7064A",
+          "value": "412 lines"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "ae11de29093131c3def7ac69e913177fa6eccf73c955ea701fd0efbca0b08351"
+    },
+    {
+      "id": "disclosure-embedded-ai-feedback-light",
+      "name": "Disclosure / Embedded / Ai Feedback / Light",
+      "symbolId": "94F2200E-F9FC-4FA7-B718-2C77704A2291",
+      "layerId": "E843ED95-3295-409B-9559-034FEC4599D4",
+      "width": 386,
+      "height": 50,
+      "text": [
+        {
+          "id": "BE54BA44-1646-4359-8463-E2DB269DFCD9",
+          "value": "AI Feedback"
+        },
+        {
+          "id": "42F0A8E8-D795-4C23-974F-9D943BE5393B",
+          "value": "2 suggestions"
+        },
+        {
+          "id": "387B4F15-F5FB-4F3C-9826-0090177B8B32",
+          "value": "Group Export and Share in one group."
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "dc91b0b10325779c41ad18dab4df9c05b80e1d6003fa39708f88adca6da52fb7"
+    },
+    {
+      "id": "disclosure-embedded-ai-feedback-dark",
+      "name": "Disclosure / Embedded / Ai Feedback / Dark",
+      "symbolId": "18B173A5-2E8B-4A18-BF5E-EF057FB49CC6",
+      "layerId": "47262C8F-E1A8-4328-A5CF-0CA60D0BF92F",
+      "width": 386,
+      "height": 50,
+      "text": [
+        {
+          "id": "A695D958-764A-4890-BDAD-10B8482DCCAE",
+          "value": "AI Feedback"
+        },
+        {
+          "id": "A180CC6F-6685-422D-A356-02491F189058",
+          "value": "2 suggestions"
+        },
+        {
+          "id": "2E7EB6B9-16B8-41A9-BB8B-EBFC77491BEC",
+          "value": "Group Export and Share in one group."
+        }
+      ],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "ae07305594aad10533ecb08eef5e702ba70e6fbf89a179552751c7a8c33e0a38"
+    },
+    {
+      "id": "message-composer-chat-control-light",
+      "name": "Message Composer / Chat / Control / Light",
+      "symbolId": "7421B94B-E42C-4538-84B3-6203E697C08C",
+      "layerId": "E0496BD8-A5A8-4DA6-9C29-684EAA4ABAAB",
+      "width": 560,
+      "height": 93.59375,
+      "text": [
+        {
+          "id": "53CCB2B2-7343-4190-AF6B-599FA0DF14C0",
+          "value": "Ask about this build"
+        },
+        {
+          "id": "C2B53BD2-DAAE-48E9-A957-AA65986D8DD7",
+          "value": "Answers use the latest nightly build."
+        },
+        {
+          "id": "07B0D364-5524-485A-858D-23CF501EF053",
+          "value": "Send"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "8eb7e4829a32438dbd4a87c008826cd578ecc1ce0e28955bb3072d13f4fb9ab3"
+    },
+    {
+      "id": "message-composer-chat-control-dark",
+      "name": "Message Composer / Chat / Control / Dark",
+      "symbolId": "48453384-87F0-4AB1-811A-C8775C8B8F82",
+      "layerId": "8C37BDFA-1373-4F1B-BBDC-52C200DA5C96",
+      "width": 560,
+      "height": 93.59375,
+      "text": [
+        {
+          "id": "B48DC60B-7D7F-4528-8629-1EE043899F4D",
+          "value": "Ask about this build"
+        },
+        {
+          "id": "8C7991FE-3045-4C80-9E81-AC135A49D009",
+          "value": "Answers use the latest nightly build."
+        },
+        {
+          "id": "A578FB94-40A5-4D03-BE48-11A60E9CEA33",
+          "value": "Send"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "3c77b3812de09dc6b0abfed02eef182ef4bc0011dd674213f25a80234920a151"
+    },
+    {
+      "id": "message-composer-prompt-control-light",
+      "name": "Message Composer / Prompt / Control / Light",
+      "symbolId": "CBC38BD9-046E-412B-941D-C8AAF7FC1252",
+      "layerId": "AF606503-1A0B-4EAA-97F7-7D5B9F5FF056",
+      "width": 560,
+      "height": 144.78125,
+      "text": [
+        {
+          "id": "29F0E233-C600-409E-BD9A-2A0F611348E3",
+          "value": "Describe the change you want"
+        },
+        {
+          "id": "734F75F3-8465-47A9-A42B-012133E00512",
+          "value": "Generate"
+        }
+      ],
+      "paths": 6,
+      "bitmaps": 0,
+      "sourceHash": "8551ee95459fb87a7886892ac1facd90b59b3963b3f8231ef636f4e37bbb94b2"
+    },
+    {
+      "id": "message-composer-prompt-control-dark",
+      "name": "Message Composer / Prompt / Control / Dark",
+      "symbolId": "AAF290D4-789F-4705-BF1E-44D8DB50F811",
+      "layerId": "7DC81B5C-F092-42C6-8577-AD068443D38D",
+      "width": 560,
+      "height": 144.78125,
+      "text": [
+        {
+          "id": "7AF088EB-75AD-44F5-8ED5-2826BD8EEE78",
+          "value": "Describe the change you want"
+        },
+        {
+          "id": "46F6B9CF-751C-4607-A7CC-B205B730879F",
+          "value": "Generate"
+        }
+      ],
+      "paths": 6,
+      "bitmaps": 0,
+      "sourceHash": "e577871a97a97d534089fa46395f4ec921a3b53d0d0f88076b17d47ddb5d2d95"
+    },
+    {
+      "id": "progress-bar-determinate-control-light",
+      "name": "Progress Bar / Determinate / Control / Light",
+      "symbolId": "39C217DE-1974-4627-B9F1-0431C5294FD1",
+      "layerId": "C8C84398-DA71-44BE-B69B-248CE6035858",
+      "width": 420,
+      "height": 47.59375,
+      "text": [
+        {
+          "id": "22DCF733-69D8-4186-A2C0-D1A11A84287A",
+          "value": "Uploading Files"
+        },
+        {
+          "id": "E41A1A9D-5482-4365-BDCD-A1D947C41299",
+          "value": "4 of 12 files"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "316e5da132351371b20610e41adb783035b5a9a8624870d656f58e81deed7374"
+    },
+    {
+      "id": "progress-bar-determinate-control-dark",
+      "name": "Progress Bar / Determinate / Control / Dark",
+      "symbolId": "0B52C112-F75A-4DBB-8013-8C21763ECB8E",
+      "layerId": "F8AE3D3F-1C41-4FBE-87B1-142D464A59D6",
+      "width": 420,
+      "height": 47.59375,
+      "text": [
+        {
+          "id": "C1877CB3-44E9-4C0B-A86F-F9F8EBC91B9B",
+          "value": "Uploading Files"
+        },
+        {
+          "id": "7BBA067B-E0DE-4BD2-A652-EB947397D48A",
+          "value": "4 of 12 files"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "736d7e955cce20192b12e50ff6845e9bdc1662318762f4a6a926ad7388d8253f"
+    },
+    {
+      "id": "progress-bar-tones-confidence-light",
+      "name": "Progress Bar / Tones / Confidence / Light",
+      "symbolId": "980E13EB-C000-4619-BBD4-E6AA02B88355",
+      "layerId": "BE66389D-66A5-4BF8-BBCD-D80893B7199D",
+      "width": 420,
+      "height": 47.59375,
+      "text": [
+        {
+          "id": "CDD36DE7-6249-48E7-8C67-2B79D01F545F",
+          "value": "Confidence"
+        },
+        {
+          "id": "C062C9F2-C6E0-4E55-BB00-4CEDEBBA4237",
+          "value": "82%"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "6f100486aba7747ab8bd1a4be2ef39e765d31e1cd4acc83292819a8b897a7e82"
+    },
+    {
+      "id": "progress-bar-tones-storage-used-light",
+      "name": "Progress Bar / Tones / Storage Used / Light",
+      "symbolId": "72F8074C-4839-4181-9817-C0AEED53E57A",
+      "layerId": "1B76E11C-09F3-482C-A7DB-274B1EED6053",
+      "width": 420,
+      "height": 47.59375,
+      "text": [
+        {
+          "id": "CF6DCD6F-696D-4515-9DFE-D264152ED209",
+          "value": "Storage Used"
+        },
+        {
+          "id": "8EEB9A66-64F3-44B1-AFE6-A87271258D70",
+          "value": "93%"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "aa46ab5156b00902b07317a43e31756892badc05fe990b0b409e5daee0d46feb"
+    },
+    {
+      "id": "progress-bar-tones-unlabeled-light",
+      "name": "Progress Bar / Tones / Unlabeled / Light",
+      "symbolId": "60D2FC41-8D88-4697-A0F6-0FF7CBBEB33E",
+      "layerId": "2DEC1A83-833E-4574-A5CC-C9D5EEBD8B92",
+      "width": 420,
+      "height": 22,
+      "text": [],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "3d8c320e1ac5ca7d7435ce8d3dd6c54ad52db80b8e1533f85eeada536801889e"
+    },
+    {
+      "id": "progress-bar-tones-confidence-dark",
+      "name": "Progress Bar / Tones / Confidence / Dark",
+      "symbolId": "D6D6DF3A-74CA-4B8C-9BC5-2BDBA2C9F8F7",
+      "layerId": "DA7C5A2E-B7CF-4F26-969E-BE7B352D4301",
+      "width": 420,
+      "height": 47.59375,
+      "text": [
+        {
+          "id": "2C18ED22-62C8-4DC9-B86E-D5F60FFE2F7F",
+          "value": "Confidence"
+        },
+        {
+          "id": "62617541-8A12-40CE-9D76-AAD705E258BE",
+          "value": "82%"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "c5bbf723e7c34738ca72fe1bf63c6ff08ecb29dff4b8104438612962b8584698"
+    },
+    {
+      "id": "progress-bar-tones-storage-used-dark",
+      "name": "Progress Bar / Tones / Storage Used / Dark",
+      "symbolId": "55A78C03-9DF9-4087-AA53-D7611E5FE1FC",
+      "layerId": "3EA32507-5450-47DD-8387-BF97A7C02372",
+      "width": 420,
+      "height": 47.59375,
+      "text": [
+        {
+          "id": "5B03B991-F23A-449C-B61F-D040E436BA0E",
+          "value": "Storage Used"
+        },
+        {
+          "id": "39FE1479-248B-4357-B2DC-0576879584C2",
+          "value": "93%"
+        }
+      ],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "27e2c68d963ab135f7b088b588d15bb541b1418f9948952b333aa1eb4ab39885"
+    },
+    {
+      "id": "progress-bar-tones-unlabeled-dark",
+      "name": "Progress Bar / Tones / Unlabeled / Dark",
+      "symbolId": "04B8AB6F-B30D-4F4D-94DD-39958977A165",
+      "layerId": "D90189B2-CE42-43EE-A170-FF8AA6C4A169",
+      "width": 420,
+      "height": 22,
+      "text": [],
+      "paths": 5,
+      "bitmaps": 0,
+      "sourceHash": "bc3da1e64ec5d1bc70619036b704807ba042a9bfb7066bfd211fa7af2f0680af"
+    },
+    {
+      "id": "progress-ring-sizes-small-light",
+      "name": "Progress Ring / Sizes / Small / Light",
+      "symbolId": "80B5E9CD-599A-4A5B-A4A8-C924993FD84F",
+      "layerId": "11853248-7270-4AF5-BA5B-9B0532B2BA31",
+      "width": 16,
+      "height": 16,
+      "text": [],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "136fc577e5d968bfa90d99fcfd7ae4e71245927168bb0f4921c142463d60c79e"
+    },
+    {
+      "id": "progress-ring-sizes-medium-light",
+      "name": "Progress Ring / Sizes / Medium / Light",
+      "symbolId": "4F2474A0-C85D-41D2-8FDC-B8C3B1197159",
+      "layerId": "E0DED1DD-1D72-4F5C-9A3B-65E265B47198",
+      "width": 24,
+      "height": 24,
+      "text": [],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "0c50c1c7a2ec45bb22ea39aee1ca5fcb867b8d56241fc982ab79c1ece1920d48"
+    },
+    {
+      "id": "progress-ring-sizes-large-light",
+      "name": "Progress Ring / Sizes / Large / Light",
+      "symbolId": "4AA6EBDC-AEAC-4FB4-B6FC-BA51CDE28E13",
+      "layerId": "A013DF4C-6AB0-4130-A749-B0AD1D77DB9B",
+      "width": 40,
+      "height": 40,
+      "text": [],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "18875d326cd982be73e60edd9bf5cba1909c1053c2e8a08f3273fd1831620531"
+    },
+    {
+      "id": "progress-ring-sizes-small-dark",
+      "name": "Progress Ring / Sizes / Small / Dark",
+      "symbolId": "DE8CB64F-498C-4A9B-A920-0B7C79416357",
+      "layerId": "7C1CB2F6-5DDA-442B-9269-EDD573C34C29",
+      "width": 16,
+      "height": 16,
+      "text": [],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "e585333d8ab9de9e88b444540a4e2dca51c54bdaf07e91e6c182a1b73caceed4"
+    },
+    {
+      "id": "progress-ring-sizes-medium-dark",
+      "name": "Progress Ring / Sizes / Medium / Dark",
+      "symbolId": "5D1B2B44-A9A5-4D30-8DF4-50803B3600C3",
+      "layerId": "0201CAC6-5444-401E-9D0F-1576D2BA6687",
+      "width": 24,
+      "height": 24,
+      "text": [],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "e088cf3630e521515d29072277d8eb59fda55fff93cbebee8a03876e147fb3e5"
+    },
+    {
+      "id": "progress-ring-sizes-large-dark",
+      "name": "Progress Ring / Sizes / Large / Dark",
+      "symbolId": "7AF693C7-0310-44B9-B420-F0C454F64ABC",
+      "layerId": "B577030B-97C3-4A40-A9A6-754D3B6448E0",
+      "width": 40,
+      "height": 40,
+      "text": [],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "06e73852c789bce9b9f5f1d285e9136b49a03b614f0da894bc6a7a0a620ce96b"
+    },
+    {
+      "id": "progress-ring-tones-done-light",
+      "name": "Progress Ring / Tones / Done / Light",
+      "symbolId": "533BD095-7912-4278-928B-1BFF73797C15",
+      "layerId": "BCA74CA1-1C44-4C58-9F30-57C912D5F453",
+      "width": 24,
+      "height": 24,
+      "text": [],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "74257a5dd0bb1595637b6de5f79d0e87ab2783372cfdb6c9c9e7f6602005f79a"
+    },
+    {
+      "id": "progress-ring-tones-quota-light",
+      "name": "Progress Ring / Tones / Quota / Light",
+      "symbolId": "DEDFB9F6-1629-402E-AF72-1B34AF9786A1",
+      "layerId": "79E84177-8943-4E2D-997A-B4339F112033",
+      "width": 24,
+      "height": 24,
+      "text": [],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "2296b72921089a435f15c50f9c4c622e790055813b5c4c49e1f85d524f56bcdd"
+    },
+    {
+      "id": "progress-ring-tones-budget-light",
+      "name": "Progress Ring / Tones / Budget / Light",
+      "symbolId": "EF3F525F-81E9-4A5A-90DD-035F31DF92BD",
+      "layerId": "E5A17971-876A-4B1A-BBF7-C84660092BFE",
+      "width": 24,
+      "height": 24,
+      "text": [],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "def9559eebf76e39862845d986b93d4e088efb2bd52b106ef50cafcbb482924d"
+    },
+    {
+      "id": "progress-ring-tones-done-dark",
+      "name": "Progress Ring / Tones / Done / Dark",
+      "symbolId": "62F71A0E-7740-4F7D-BAD0-4D73DF6015CA",
+      "layerId": "666E0EBD-8A26-4EF6-9F25-B85561EC5FB8",
+      "width": 24,
+      "height": 24,
+      "text": [],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "330228e2d8c17f70b8ca138d26c1e90e428c41f6be3cfafe805054e530766256"
+    },
+    {
+      "id": "progress-ring-tones-quota-dark",
+      "name": "Progress Ring / Tones / Quota / Dark",
+      "symbolId": "C870FB31-B482-4DC8-8DE3-76265A07B1DC",
+      "layerId": "7A98B3F6-A847-4FF3-B8AE-8C2E78BF2444",
+      "width": 24,
+      "height": 24,
+      "text": [],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "0937d4e11f723fff7fb53a5216d46c7a44555d253a8acb82bab609464a8cac8d"
+    },
+    {
+      "id": "progress-ring-tones-budget-dark",
+      "name": "Progress Ring / Tones / Budget / Dark",
+      "symbolId": "D88C38EA-CBE0-4397-A6FA-6F40AE2E71C9",
+      "layerId": "55C9F2EF-78C0-4AC4-88CD-97165284093A",
+      "width": 24,
+      "height": 24,
+      "text": [],
+      "paths": 2,
+      "bitmaps": 0,
+      "sourceHash": "5101da4e7850d27de5780c4f5dc7dc627ce73001bc975ddd75733fcc07ad1aac"
+    },
+    {
+      "id": "state-banner-info-control-light",
+      "name": "State Banner / Info / Control / Light",
+      "symbolId": "82F77215-5A48-4090-80F4-9E30AD7DE5D2",
+      "layerId": "F1534AE5-10DD-41E2-BA83-3C252BB71B29",
+      "width": 484,
+      "height": 46.796875,
+      "text": [
+        {
+          "id": "621A1843-D258-44BC-91F8-18DD077994D1",
+          "value": "Draft Not Published"
+        },
+        {
+          "id": "E9944A01-C031-41FA-8ACD-8CD47BDC2A6B",
+          "value": "Changes are saved but only visible to your team."
+        },
+        {
+          "id": "13D11D4B-0068-4A1B-947F-5ABA1701EDFD",
+          "value": "Publish"
+        }
+      ],
+      "paths": 11,
+      "bitmaps": 0,
+      "sourceHash": "41e326d75bbc3574845b7d0760e23d1410fbe13dcb0a9e7f0e12b146af28154a"
+    },
+    {
+      "id": "state-banner-info-control-dark",
+      "name": "State Banner / Info / Control / Dark",
+      "symbolId": "6EB82A0A-7EA6-49EE-AD89-0128995E7021",
+      "layerId": "1FE5A37A-5000-4451-AD83-93BFD1D39061",
+      "width": 484,
+      "height": 46.796875,
+      "text": [
+        {
+          "id": "4CB6107E-3CBA-48C0-BA6C-2ADCFF5A3533",
+          "value": "Draft Not Published"
+        },
+        {
+          "id": "BE2DAAAE-D8BB-4258-A425-9C597017F7FA",
+          "value": "Changes are saved but only visible to your team."
+        },
+        {
+          "id": "AE8CC1DC-D064-4B61-B847-06599F83687A",
+          "value": "Publish"
+        }
+      ],
+      "paths": 11,
+      "bitmaps": 0,
+      "sourceHash": "e04d3399de845e5615b4fc32038b00ca46aa68bee2a0280ae7dc985d4490a2ee"
+    },
+    {
+      "id": "state-banner-info-badge-control-light",
+      "name": "State Banner / Info Badge / Control / Light",
+      "symbolId": "31E0D3D6-195F-4275-B75F-780ED6B758CA",
+      "layerId": "5D7A476D-0D7A-4031-9A37-7A4DE6B9F170",
+      "width": 484,
+      "height": 46.796875,
+      "text": [
+        {
+          "id": "69BDB3AB-8FBA-4D03-920D-EB4C1D93168D",
+          "value": "Unanswered Questions"
+        },
+        {
+          "id": "3A58D33E-E713-4EA3-94B2-7B344946C070",
+          "value": "1"
+        },
+        {
+          "id": "A4F7005A-3842-49C4-9740-1D78997C4483",
+          "value": "Answer"
+        }
+      ],
+      "paths": 11,
+      "bitmaps": 0,
+      "sourceHash": "d01b66a7607783cded89ef3a2a6fb148376899328b317746629b9c9dab718ec2"
+    },
+    {
+      "id": "state-banner-info-badge-control-dark",
+      "name": "State Banner / Info Badge / Control / Dark",
+      "symbolId": "8E53CDEE-F7BF-4C07-8A5A-F497F9EFEA0D",
+      "layerId": "27DC321B-395C-4A6D-8691-41A016C8AA79",
+      "width": 484,
+      "height": 46.796875,
+      "text": [
+        {
+          "id": "B9DDE454-E591-4B05-B70D-F8062A88A23B",
+          "value": "Unanswered Questions"
+        },
+        {
+          "id": "A7D86444-0514-411F-9432-15965502A473",
+          "value": "1"
+        },
+        {
+          "id": "D2D7650D-2181-4551-988D-F58E2F611CF7",
+          "value": "Answer"
+        }
+      ],
+      "paths": 11,
+      "bitmaps": 0,
+      "sourceHash": "cb493cc334ee2145190e2fa8e2887f25e6bcd426658c5cd44e0fd1a4db24197f"
+    },
+    {
+      "id": "state-banner-success-control-light",
+      "name": "State Banner / Success / Control / Light",
+      "symbolId": "DB362B16-843E-498A-B308-CEC1884782E9",
+      "layerId": "CFAA062D-CA6D-4EBF-B5FF-82A8A9FD3766",
+      "width": 484,
+      "height": 46,
+      "text": [
+        {
+          "id": "478DE700-2009-44CC-AC52-C74A992219B1",
+          "value": "Deployment Complete"
+        },
+        {
+          "id": "652B555E-F2C0-4F5B-B10B-CE56F43A52A7",
+          "value": "production.example.com is serving the new build."
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "6a0aebc926e0ace3f584832d7420f816942fcb83f7cdc61ebbf19d04edcf0e13"
+    },
+    {
+      "id": "state-banner-success-control-dark",
+      "name": "State Banner / Success / Control / Dark",
+      "symbolId": "73D9418E-8986-4E09-8CFA-3E257E5A257A",
+      "layerId": "4460FEC2-17C4-4719-8E3D-272429DA1D47",
+      "width": 484,
+      "height": 46,
+      "text": [
+        {
+          "id": "CCA6BA8A-F609-4130-8C79-8B2A87EB467B",
+          "value": "Deployment Complete"
+        },
+        {
+          "id": "AFF26DFE-9DA6-428A-B64D-CAB9041E0794",
+          "value": "production.example.com is serving the new build."
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "54695e2f95ac292b27b72651bbb00b04b68781c12ec28517b8400d91f3aa28a2"
+    },
+    {
+      "id": "state-banner-warning-control-light",
+      "name": "State Banner / Warning / Control / Light",
+      "symbolId": "F7FC021C-0A2E-416F-BB24-918C2A095BD3",
+      "layerId": "88458EA8-F754-4BC2-9E63-B5ACBC867DB4",
+      "width": 484,
+      "height": 46.796875,
+      "text": [
+        {
+          "id": "5758AC4A-6DF6-45BE-B929-9033FB4913E5",
+          "value": "Approaching Your Plan Limit"
+        },
+        {
+          "id": "8BA03430-87D0-4281-8DC9-C2869C252561",
+          "value": "You have used 92% of this month’s build minutes."
+        },
+        {
+          "id": "13103CAF-D659-4F35-9D69-B0C238168F8D",
+          "value": "Upgrade"
+        }
+      ],
+      "paths": 10,
+      "bitmaps": 0,
+      "sourceHash": "3911107b6efe15eb24bf4f23284db22ad852945165fe3c488b9c4ab4ef2977a9"
+    },
+    {
+      "id": "state-banner-warning-control-dark",
+      "name": "State Banner / Warning / Control / Dark",
+      "symbolId": "C649322D-2C5C-4C63-8F07-2CB97E6BCFEA",
+      "layerId": "D682CC2F-594E-4DA0-A0AD-4EA13BFEA3AF",
+      "width": 484,
+      "height": 46.796875,
+      "text": [
+        {
+          "id": "EF2CF83E-0821-4C10-B18E-A775CAE5C95F",
+          "value": "Approaching Your Plan Limit"
+        },
+        {
+          "id": "D938B0F5-9623-413C-9BAD-834E3650AB77",
+          "value": "You have used 92% of this month’s build minutes."
+        },
+        {
+          "id": "B0CFBE31-23E1-45F2-AFBB-E16F1D72636D",
+          "value": "Upgrade"
+        }
+      ],
+      "paths": 10,
+      "bitmaps": 0,
+      "sourceHash": "bb44898441944dcfe4c98737ad69ef2d26fe2966d376cccdb30d94466f78f8c0"
+    },
+    {
+      "id": "state-banner-danger-control-light",
+      "name": "State Banner / Danger / Control / Light",
+      "symbolId": "A43E5949-55C9-4220-9328-EB5F8549D7DF",
+      "layerId": "11782D59-EB24-483E-A2E9-6DB93C8D1252",
+      "width": 484,
+      "height": 46.796875,
+      "text": [
+        {
+          "id": "1989BBC5-8DA5-45DA-8093-74AE80FF2754",
+          "value": "Build Failed"
+        },
+        {
+          "id": "7ED4C338-169C-4C36-87E4-1F4A1F8117F5",
+          "value": "Step “test” exited with code 1."
+        },
+        {
+          "id": "31EA89FE-F278-457B-AD10-0E0424B9D9FC",
+          "value": "View Log"
+        }
+      ],
+      "paths": 11,
+      "bitmaps": 0,
+      "sourceHash": "c72883326653eb4eab3d1c34ea309748bbf2edc7168beca1e0f1a59f9a08f918"
+    },
+    {
+      "id": "state-banner-danger-control-dark",
+      "name": "State Banner / Danger / Control / Dark",
+      "symbolId": "C7581EBF-DD47-432D-88FD-173E6A417936",
+      "layerId": "8D9E9718-9D15-4358-BD68-545CFCC480BA",
+      "width": 484,
+      "height": 46.796875,
+      "text": [
+        {
+          "id": "FF96148A-26D9-4DDB-BB66-5D999E4C9527",
+          "value": "Build Failed"
+        },
+        {
+          "id": "807891A8-88C5-4B3D-854E-D35EFB27C52E",
+          "value": "Step “test” exited with code 1."
+        },
+        {
+          "id": "64870017-A578-4DF2-ADA0-39A6F8BD6399",
+          "value": "View Log"
+        }
+      ],
+      "paths": 11,
+      "bitmaps": 0,
+      "sourceHash": "6700a8d875e624f1870ba0f19030df3c40e47de703b4c707ccf98f1f427a94f7"
+    },
+    {
+      "id": "state-banner-strip-control-light",
+      "name": "State Banner / Strip / Control / Light",
+      "symbolId": "1BED0B22-39AA-43F7-848E-ABB95C485FD8",
+      "layerId": "C461AF0F-5A9D-4605-8261-F190E79DDC76",
+      "width": 500,
+      "height": 49,
+      "text": [
+        {
+          "id": "477FB0C0-3464-45FB-91DF-477631A3BA88",
+          "value": "Notifications Paused"
+        },
+        {
+          "id": "8EA7BB95-5BF5-4B83-9D19-C34A79FA5F4C",
+          "value": "Desktop alerts resume when you reconnect."
+        },
+        {
+          "id": "6C8CADC7-6F98-44A4-A033-E0B138E1741E",
+          "value": "Resume"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "5b043273b48c3159b3333c84fb0a0e2ca42a418c2490732dfd0a8455cb463e06"
+    },
+    {
+      "id": "state-banner-strip-control-dark",
+      "name": "State Banner / Strip / Control / Dark",
+      "symbolId": "E9DD6035-EAF9-469E-8872-5987A585C387",
+      "layerId": "EE44D27E-3A36-4D8C-87A2-66FAFCC8D52F",
+      "width": 500,
+      "height": 49,
+      "text": [
+        {
+          "id": "01A556EA-84BC-4A1B-BC0B-60A8ADC13DC9",
+          "value": "Notifications Paused"
+        },
+        {
+          "id": "06A03003-D1D3-4532-86F8-0A4A1BB2C44A",
+          "value": "Desktop alerts resume when you reconnect."
+        },
+        {
+          "id": "A8E7FD6C-F05E-487A-9AFE-C28432BA9F5B",
+          "value": "Resume"
+        }
+      ],
+      "paths": 8,
+      "bitmaps": 0,
+      "sourceHash": "6a9102634f3ea21159458fe981fa432539106d76bd462fed61b21c9110999af6"
+    },
+    {
+      "id": "empty-state-with-action-control-light",
+      "name": "Empty State / With Action / Control / Light",
+      "symbolId": "9DDAAB90-B456-4DBB-A720-093F60858CFC",
+      "layerId": "9B2F42F0-E063-4E0E-9CE1-B8049CFECD2F",
+      "width": 404,
+      "height": 213.296875,
+      "text": [
+        {
+          "id": "973F916E-3CD6-4EF4-94C7-E111D1FE4E99",
+          "value": "No Open Tickets"
+        },
+        {
+          "id": "4AE96FC5-203A-4CC9-9FA5-083F86618CB5",
+          "value": "When someone files a ticket it will show up here."
+        },
+        {
+          "id": "5AECBCE7-E7F6-40A7-84F0-5A7F7FEA3839",
+          "value": "New Ticket"
+        }
+      ],
+      "paths": 6,
+      "bitmaps": 0,
+      "sourceHash": "707a9883c0a653e52ea7b450465cacce82f4c4a08d02dcae1408bb9966e496b3"
+    },
+    {
+      "id": "empty-state-with-action-control-dark",
+      "name": "Empty State / With Action / Control / Dark",
+      "symbolId": "41C08058-5ED4-4AF4-BF56-505C56513D3B",
+      "layerId": "7A13482E-664C-4980-AD7E-5D329377247D",
+      "width": 404,
+      "height": 213.296875,
+      "text": [
+        {
+          "id": "EC9B5291-15F5-4096-8D01-6134C4A63866",
+          "value": "No Open Tickets"
+        },
+        {
+          "id": "A4729679-A098-44DE-BE8E-185C41B5EBB9",
+          "value": "When someone files a ticket it will show up here."
+        },
+        {
+          "id": "4FC7152F-5689-4258-AA3E-44BE3B49678F",
+          "value": "New Ticket"
+        }
+      ],
+      "paths": 6,
+      "bitmaps": 0,
+      "sourceHash": "b21d8c2280015370ed6d8f8ca2e87bb749b7149e0478ae47dc8cfe308b1cd1b2"
+    },
+    {
+      "id": "empty-state-filtered-control-light",
+      "name": "Empty State / Filtered / Control / Light",
+      "symbolId": "5F0D7B81-29F1-4002-9EDA-9C3EDB5EBD65",
+      "layerId": "D8BAFCFA-B169-4DD6-AFCC-DFBC316C9E8C",
+      "width": 404,
+      "height": 192,
+      "text": [
+        {
+          "id": "727920A9-C572-4B92-A433-F4FD53C64B7C",
+          "value": "No Matches"
+        },
+        {
+          "id": "83D34B08-BB1E-4197-B83E-403E64BA0CB9",
+          "value": "No tickets match the current filters."
+        }
+      ],
+      "paths": 4,
+      "bitmaps": 0,
+      "sourceHash": "239ee8c038f7b9af295e95c1149c51f6c531b5aa77a2cdc628ad89eb2a0c2185"
+    },
+    {
+      "id": "empty-state-filtered-control-dark",
+      "name": "Empty State / Filtered / Control / Dark",
+      "symbolId": "0EF9F5EE-91CA-4C23-B2E8-F3382123D9BC",
+      "layerId": "2FAD5EF1-C8F2-4944-BD16-39EC74937F9A",
+      "width": 404,
+      "height": 192,
+      "text": [
+        {
+          "id": "EEEE8E9D-39BD-4383-AC45-9DFF4A1DB9A2",
+          "value": "No Matches"
+        },
+        {
+          "id": "749ADED7-E43D-4C46-8894-D0C5E3771BFC",
+          "value": "No tickets match the current filters."
+        }
+      ],
+      "paths": 4,
+      "bitmaps": 0,
+      "sourceHash": "b9dc5b1c91b6d2d08127a3164899bfd6e51c95793b9031aa6cb9449b8d799258"
+    },
+    {
+      "id": "skeleton-block-control-light",
+      "name": "Skeleton / Block / Control / Light",
+      "symbolId": "444D6C1D-13AB-4362-9CAD-B9CC2740A5D3",
+      "layerId": "5B026A78-FD52-447C-A560-EB30C507D7DC",
+      "width": 256,
+      "height": 24,
+      "text": [],
+      "paths": 1,
+      "bitmaps": 0,
+      "sourceHash": "7c4797160c7c4bd6030353f133be55157b3e80b6ea970ba58fabd81710bab0a2"
+    },
+    {
+      "id": "skeleton-block-control-dark",
+      "name": "Skeleton / Block / Control / Dark",
+      "symbolId": "6357AB27-3830-468F-A0E4-EE5E4A6830F0",
+      "layerId": "42468CB6-B085-4BD3-A927-EF6E055BA333",
+      "width": 256,
+      "height": 24,
+      "text": [],
+      "paths": 1,
+      "bitmaps": 0,
+      "sourceHash": "c72512ed45611923a06ac2637617984f75069803691572e3b48593dd0a37c5f3"
+    },
+    {
+      "id": "skeleton-lines-control-light",
+      "name": "Skeleton / Lines / Control / Light",
+      "symbolId": "C6C0FAAE-09F5-4477-9799-1B33033BA709",
+      "layerId": "360B0829-2ABD-42C1-B94B-8F2BB04A3A1C",
+      "width": 320,
+      "height": 46.390625,
+      "text": [],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "712b6505c628f2da2213520877e61beee401ce949dcff9255d6eb652925c8ca8"
+    },
+    {
+      "id": "skeleton-lines-control-dark",
+      "name": "Skeleton / Lines / Control / Dark",
+      "symbolId": "0FF1206C-455C-4A48-A1BD-28E820362817",
+      "layerId": "6053C91E-7BB0-476F-9F82-C1544E4B7B23",
+      "width": 320,
+      "height": 46.390625,
+      "text": [],
+      "paths": 3,
+      "bitmaps": 0,
+      "sourceHash": "ea5c9fff624e1c3716205f91f018a76f4104702a8baaf7b9eb13723b71fa0bb5"
+    },
+    {
+      "id": "skeleton-avatar-control-light",
+      "name": "Skeleton / Avatar / Control / Light",
+      "symbolId": "967B0791-2DBC-4E20-A1B2-A367B90946B2",
+      "layerId": "784049D6-EEEF-4041-AC68-E6E5824D38CD",
+      "width": 48,
+      "height": 48,
+      "text": [],
+      "paths": 1,
+      "bitmaps": 0,
+      "sourceHash": "6a4e52a6973f2f95961c2d6b64937a9183c5f7ca8e9083f9f655822ed1e9891f"
+    },
+    {
+      "id": "skeleton-avatar-control-dark",
+      "name": "Skeleton / Avatar / Control / Dark",
+      "symbolId": "3B7AAF8F-D998-4231-B620-7B659012B46C",
+      "layerId": "357CA3B5-7A58-453B-BF63-52279305E4B2",
+      "width": 48,
+      "height": 48,
+      "text": [],
+      "paths": 1,
+      "bitmaps": 0,
+      "sourceHash": "d91fe4c8f116d2f29b7adf178c47205de2dd45b1d8cff1f0813c0d2804cb2e6f"
+    }
+  ]
+}

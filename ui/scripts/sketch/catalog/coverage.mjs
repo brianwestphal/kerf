@@ -75,7 +75,7 @@ const families = [
   {
     name: 'Content and feedback',
     ticket: 'KF-P0X4R9',
-    status: 'pending',
+    status: 'supported',
     components: [
       'disclosure',
       'message-composer',
@@ -117,8 +117,8 @@ const rows = families.flatMap((family) =>
   ),
 );
 assert.equal(rows.length, 110, 'Reconcile catalog count and ticket batches');
-assert.equal(rows.filter((row) => row.status === 'supported').length, 90);
-assert.equal(rows.filter((row) => row.status === 'pending').length, 20);
+assert.equal(rows.filter((row) => row.status === 'supported').length, 110);
+assert.equal(rows.filter((row) => row.status === 'pending').length, 0);
 assert.equal(
   new Set(rows.map((row) => `${row.component}/${row.variant}`)).size,
   rows.length,
@@ -156,8 +156,10 @@ variants with 34 light/dark Symbols in [Kerf-Advanced.sketch](advanced/README.md
 The Lists and data batch covers 21 variants with 42 light/dark Symbols in
 [Kerf-Lists.sketch](lists/README.md). The Toolbars and navigation batch covers
 25 variants with 70 light/dark Symbols for 35 individual controls in
-[Kerf-Toolbar.sketch](toolbar/README.md). The pending family ticket covers the other source variants and must update this matrix
-as they ship. The catalog's [install and update guide](README.md) identifies
+[Kerf-Toolbar.sketch](toolbar/README.md). The Content and feedback batch covers
+20 variants with 56 light/dark Symbols for 28 reusable roots in
+[Kerf-Content.sketch](content/README.md). Every source variant now has a
+supported native batch; a new template variant must join a family here. The catalog's [install and update guide](README.md) identifies
 the current libraries and supported Sketch version.
 
 ## Family batches

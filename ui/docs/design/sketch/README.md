@@ -3,13 +3,14 @@
 The native libraries are [Kerf-Button.sketch](button/Kerf-Button.sketch),
 [Kerf-Forms.sketch](forms/Kerf-Forms.sketch),
 [Kerf-Advanced.sketch](advanced/Kerf-Advanced.sketch),
-[Kerf-Lists.sketch](lists/Kerf-Lists.sketch), and
-[Kerf-Toolbar.sketch](toolbar/Kerf-Toolbar.sketch). They contain 40 Button,
-66 form-control, 34 advanced-input, 42 list/data, and 70 toolbar/navigation light/dark Symbols with stable identities
+[Kerf-Lists.sketch](lists/Kerf-Lists.sketch),
+[Kerf-Toolbar.sketch](toolbar/Kerf-Toolbar.sketch), and
+[Kerf-Content.sketch](content/Kerf-Content.sketch). They contain 40 Button,
+66 form-control, 34 advanced-input, 42 list/data, 70 toolbar/navigation, and 56 content/feedback light/dark Symbols with stable identities
 and shared assets. Their [Button](button/README.md), [Forms](forms/README.md),
-[Advanced inputs](advanced/README.md), [Lists and Data](lists/README.md), and [Toolbars and navigation](toolbar/README.md) guides cover regeneration,
+[Advanced inputs](advanced/README.md), [Lists and Data](lists/README.md), [Toolbars and navigation](toolbar/README.md), and [Content and feedback](content/README.md) guides cover regeneration,
 verification, and Library import. [Coverage](coverage.md) accounts for all 110
-source variants and names the implementation ticket for each pending family.
+source variants and names the implementation ticket for each family.
 Source SVG sheets in [templates](../templates.md) are review material, not
 substitutes for editable Symbols.
 

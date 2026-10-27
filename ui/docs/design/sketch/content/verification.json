@@ -1,0 +1,218 @@
+{
+  "symbols": 56,
+  "nativeText": 88,
+  "nativePaths": 284,
+  "bitmaps": 0,
+  "assets": 26,
+  "assetBindings": 172,
+  "instances": [
+    {
+      "id": "disclosure-plain-advanced-settings-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 404,
+      "fitWidth": 404,
+      "wideWidth": 484,
+      "height": 44
+    },
+    {
+      "id": "disclosure-plain-advanced-settings-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 404,
+      "fitWidth": 404,
+      "wideWidth": 484,
+      "height": 44
+    },
+    {
+      "id": "message-composer-chat-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 560,
+      "fitWidth": 560,
+      "wideWidth": 640,
+      "height": 93.59375
+    },
+    {
+      "id": "message-composer-chat-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 560,
+      "fitWidth": 560,
+      "wideWidth": 640,
+      "height": 93.59375
+    },
+    {
+      "id": "progress-bar-determinate-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 420,
+      "fitWidth": 420,
+      "wideWidth": 500,
+      "height": 47.59375
+    },
+    {
+      "id": "progress-bar-determinate-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 420,
+      "fitWidth": 420,
+      "wideWidth": 500,
+      "height": 47.59375
+    },
+    {
+      "id": "progress-ring-sizes-medium-light",
+      "linked": true,
+      "override": null,
+      "naturalWidth": 24,
+      "fitWidth": 24,
+      "wideWidth": 104,
+      "height": 24
+    },
+    {
+      "id": "progress-ring-sizes-medium-dark",
+      "linked": true,
+      "override": null,
+      "naturalWidth": 24,
+      "fitWidth": 24,
+      "wideWidth": 104,
+      "height": 24
+    },
+    {
+      "id": "state-banner-info-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 484,
+      "fitWidth": 484,
+      "wideWidth": 564,
+      "height": 46.796875
+    },
+    {
+      "id": "state-banner-info-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 484,
+      "fitWidth": 484,
+      "wideWidth": 564,
+      "height": 46.796875
+    },
+    {
+      "id": "empty-state-with-action-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 404,
+      "fitWidth": 404,
+      "wideWidth": 484,
+      "height": 213.296875
+    },
+    {
+      "id": "empty-state-with-action-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 404,
+      "fitWidth": 404,
+      "wideWidth": 484,
+      "height": 213.296875
+    },
+    {
+      "id": "skeleton-block-control-light",
+      "linked": true,
+      "override": null,
+      "naturalWidth": 256,
+      "fitWidth": 256,
+      "wideWidth": 336,
+      "height": 24
+    },
+    {
+      "id": "skeleton-block-control-dark",
+      "linked": true,
+      "override": null,
+      "naturalWidth": 256,
+      "fitWidth": 256,
+      "wideWidth": 336,
+      "height": 24
+    }
+  ],
+  "reopened": [
+    {
+      "name": "Disclosure / Plain / Advanced Settings / Light",
+      "overrides": ["Done", "Advanced Settings"]
+    },
+    {
+      "name": "Disclosure / Plain / Advanced Settings / Dark",
+      "overrides": ["Done", "Advanced Settings"]
+    },
+    {
+      "name": "Message Composer / Chat / Control / Light",
+      "overrides": [
+        "Done",
+        "Answers use the latest nightly build.",
+        "Ask about this build"
+      ]
+    },
+    {
+      "name": "Message Composer / Chat / Control / Dark",
+      "overrides": [
+        "Done",
+        "Answers use the latest nightly build.",
+        "Ask about this build"
+      ]
+    },
+    {
+      "name": "Progress Bar / Determinate / Control / Light",
+      "overrides": ["Done", "Uploading Files"]
+    },
+    {
+      "name": "Progress Bar / Determinate / Control / Dark",
+      "overrides": ["Done", "Uploading Files"]
+    },
+    {
+      "name": "Progress Ring / Sizes / Medium / Light",
+      "overrides": []
+    },
+    {
+      "name": "Progress Ring / Sizes / Medium / Dark",
+      "overrides": []
+    },
+    {
+      "name": "State Banner / Info / Control / Light",
+      "overrides": [
+        "Done",
+        "Changes are saved but only visible to your team.",
+        "Draft Not Published"
+      ]
+    },
+    {
+      "name": "State Banner / Info / Control / Dark",
+      "overrides": [
+        "Done",
+        "Changes are saved but only visible to your team.",
+        "Draft Not Published"
+      ]
+    },
+    {
+      "name": "Empty State / With Action / Control / Light",
+      "overrides": [
+        "Done",
+        "When someone files a ticket it will show up here.",
+        "No Open Tickets"
+      ]
+    },
+    {
+      "name": "Empty State / With Action / Control / Dark",
+      "overrides": [
+        "Done",
+        "When someone files a ticket it will show up here.",
+        "No Open Tickets"
+      ]
+    },
+    {
+      "name": "Skeleton / Block / Control / Light",
+      "overrides": []
+    },
+    {
+      "name": "Skeleton / Block / Control / Dark",
+      "overrides": []
+    }
+  ]
+}

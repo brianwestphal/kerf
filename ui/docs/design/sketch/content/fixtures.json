@@ -1,0 +1,1626 @@
+[
+  {
+    "id": "disclosure-plain-advanced-settings-light",
+    "component": "disclosure",
+    "variant": "plain",
+    "key": "advanced-settings",
+    "theme": "light",
+    "name": "Disclosure / Plain / Advanced Settings / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 404,
+      "height": 44
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "disclosure"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 404 44\" width=\"404\" height=\"44\"><defs><clipPath id=\"ct0\"><rect x=\"35\" y=\"13\" width=\"284.1\" height=\"18\"/></clipPath><clipPath id=\"ct1\"><rect x=\"327.1\" y=\"13\" width=\"67.9\" height=\"18\"/></clipPath><clipPath id=\"cp2\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"403\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(0,0,0)\">Advanced Settings</text><text x=\"327.13\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(100,100,105)\">3 options</text><g clip-path=\"url(#cp2)\"><g color=\"rgb(0, 0, 0)\"><clipPath id=\"svgic3\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic3)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"m9 18 6-6-6-6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(0, 0, 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></svg>"
+  },
+  {
+    "id": "disclosure-plain-release-notes-light",
+    "component": "disclosure",
+    "variant": "plain",
+    "key": "release-notes",
+    "theme": "light",
+    "name": "Disclosure / Plain / Release Notes / Light",
+    "box": {
+      "x": 28,
+      "y": 72,
+      "width": 404,
+      "height": 80
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "disclosure"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 404 80\" width=\"404\" height=\"80\"><defs><clipPath id=\"ct0\"><rect x=\"35\" y=\"13\" width=\"360\" height=\"18\"/></clipPath><clipPath id=\"cp1\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"ct3\"><rect x=\"26\" y=\"43\" width=\"377\" height=\"36\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"403\" height=\"79\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><rect x=\"26.5\" y=\"43.5\" width=\"376\" height=\"35\" rx=\"0\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(0,0,0)\">Release Notes</text><g transform=\"rotate(90 18 22)\"><g clip-path=\"url(#cp1)\"><g color=\"rgb(0, 0, 0)\"><clipPath id=\"svgic2\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic2)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"m9 18 6-6-6-6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(0, 0, 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></g><text x=\"35\" y=\"67\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(0,0,0)\">Faster sync and four fixes.</text></svg>"
+  },
+  {
+    "id": "disclosure-plain-advanced-settings-dark",
+    "component": "disclosure",
+    "variant": "plain",
+    "key": "advanced-settings",
+    "theme": "dark",
+    "name": "Disclosure / Plain / Advanced Settings / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 404,
+      "height": 44
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "disclosure"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 404 44\" width=\"404\" height=\"44\"><defs><clipPath id=\"ct0\"><rect x=\"35\" y=\"13\" width=\"284.1\" height=\"18\"/></clipPath><clipPath id=\"ct1\"><rect x=\"327.1\" y=\"13\" width=\"67.9\" height=\"18\"/></clipPath><clipPath id=\"cp2\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"403\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(255,255,255)\">Advanced Settings</text><text x=\"327.13\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(174,174,178)\">3 options</text><g clip-path=\"url(#cp2)\"><g color=\"rgb(255, 255, 255)\"><clipPath id=\"svgic3\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic3)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"m9 18 6-6-6-6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 255, 255)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></svg>"
+  },
+  {
+    "id": "disclosure-plain-release-notes-dark",
+    "component": "disclosure",
+    "variant": "plain",
+    "key": "release-notes",
+    "theme": "dark",
+    "name": "Disclosure / Plain / Release Notes / Dark",
+    "box": {
+      "x": 28,
+      "y": 72,
+      "width": 404,
+      "height": 80
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "disclosure"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 404 80\" width=\"404\" height=\"80\"><defs><clipPath id=\"ct0\"><rect x=\"35\" y=\"13\" width=\"360\" height=\"18\"/></clipPath><clipPath id=\"cp1\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"ct3\"><rect x=\"26\" y=\"43\" width=\"377\" height=\"36\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"403\" height=\"79\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><rect x=\"26.5\" y=\"43.5\" width=\"376\" height=\"35\" rx=\"0\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(255,255,255)\">Release Notes</text><g transform=\"rotate(90 18 22)\"><g clip-path=\"url(#cp1)\"><g color=\"rgb(255, 255, 255)\"><clipPath id=\"svgic2\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic2)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"m9 18 6-6-6-6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 255, 255)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></g><text x=\"35\" y=\"67\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(255,255,255)\">Faster sync and four fixes.</text></svg>"
+  },
+  {
+    "id": "disclosure-framed-sunken-billing-light",
+    "component": "disclosure",
+    "variant": "framed-sunken",
+    "key": "billing",
+    "theme": "light",
+    "name": "Disclosure / Framed Sunken / Billing / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 404,
+      "height": 80
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "disclosure"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 404 80\" width=\"404\" height=\"80\"><defs><clipPath id=\"ct0\"><rect x=\"35\" y=\"13\" width=\"360\" height=\"18\"/></clipPath><clipPath id=\"cp1\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"ct3\"><rect x=\"26\" y=\"43\" width=\"377\" height=\"36\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"403\" height=\"79\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,28,0.18)\" stroke-width=\"1\"/><rect x=\"26.5\" y=\"43.5\" width=\"376\" height=\"35\" rx=\"0\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(0,0,0)\">When am I billed?</text><g transform=\"rotate(90 18 22)\"><g clip-path=\"url(#cp1)\"><g color=\"rgb(0, 0, 0)\"><clipPath id=\"svgic2\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic2)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"m9 18 6-6-6-6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(0, 0, 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></g><text x=\"35\" y=\"67\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(0,0,0)\">On the first of each month.</text></svg>"
+  },
+  {
+    "id": "disclosure-framed-sunken-build-log-light",
+    "component": "disclosure",
+    "variant": "framed-sunken",
+    "key": "build-log",
+    "theme": "light",
+    "name": "Disclosure / Framed Sunken / Build Log / Light",
+    "box": {
+      "x": 28,
+      "y": 108,
+      "width": 404,
+      "height": 44
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "disclosure"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 404 44\" width=\"404\" height=\"44\"><defs><clipPath id=\"ct2\"><rect x=\"35\" y=\"13\" width=\"288.2\" height=\"18\"/></clipPath><clipPath id=\"ct3\"><rect x=\"331.2\" y=\"13\" width=\"63.8\" height=\"18\"/></clipPath><clipPath id=\"cp4\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"404\" height=\"44\" rx=\"12\" fill=\"rgba(0,0,98,0.05)\"/><rect x=\"0.5\" y=\"0.5\" width=\"403\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,28,0.18)\" stroke-width=\"1\"/><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(0,0,0)\">Build Log</text><text x=\"331.23\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(100,100,105)\">412 lines</text><g clip-path=\"url(#cp4)\"><g color=\"rgb(0, 0, 0)\"><clipPath id=\"svgic5\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic5)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"m9 18 6-6-6-6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(0, 0, 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></svg>"
+  },
+  {
+    "id": "disclosure-framed-sunken-billing-dark",
+    "component": "disclosure",
+    "variant": "framed-sunken",
+    "key": "billing",
+    "theme": "dark",
+    "name": "Disclosure / Framed Sunken / Billing / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 404,
+      "height": 80
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "disclosure"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 404 80\" width=\"404\" height=\"80\"><defs><clipPath id=\"ct0\"><rect x=\"35\" y=\"13\" width=\"360\" height=\"18\"/></clipPath><clipPath id=\"cp1\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"ct3\"><rect x=\"26\" y=\"43\" width=\"377\" height=\"36\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"403\" height=\"79\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(253,253,255,0.196)\" stroke-width=\"1\"/><rect x=\"26.5\" y=\"43.5\" width=\"376\" height=\"35\" rx=\"0\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(255,255,255)\">When am I billed?</text><g transform=\"rotate(90 18 22)\"><g clip-path=\"url(#cp1)\"><g color=\"rgb(255, 255, 255)\"><clipPath id=\"svgic2\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic2)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"m9 18 6-6-6-6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 255, 255)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></g><text x=\"35\" y=\"67\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(255,255,255)\">On the first of each month.</text></svg>"
+  },
+  {
+    "id": "disclosure-framed-sunken-build-log-dark",
+    "component": "disclosure",
+    "variant": "framed-sunken",
+    "key": "build-log",
+    "theme": "dark",
+    "name": "Disclosure / Framed Sunken / Build Log / Dark",
+    "box": {
+      "x": 28,
+      "y": 108,
+      "width": 404,
+      "height": 44
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "disclosure"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 404 44\" width=\"404\" height=\"44\"><defs><clipPath id=\"ct2\"><rect x=\"35\" y=\"13\" width=\"288.2\" height=\"18\"/></clipPath><clipPath id=\"ct3\"><rect x=\"331.2\" y=\"13\" width=\"63.8\" height=\"18\"/></clipPath><clipPath id=\"cp4\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"404\" height=\"44\" rx=\"12\" fill=\"rgba(228,228,255,0.075)\"/><rect x=\"0.5\" y=\"0.5\" width=\"403\" height=\"43\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(253,253,255,0.196)\" stroke-width=\"1\"/><text x=\"35\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(255,255,255)\">Build Log</text><text x=\"331.23\" y=\"28\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(174,174,178)\">412 lines</text><g clip-path=\"url(#cp4)\"><g color=\"rgb(255, 255, 255)\"><clipPath id=\"svgic5\"><rect x=\"9\" y=\"13\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic5)\"><g transform=\"matrix(.75 0 0 .75 9 13)\"><path d=\"m9 18 6-6-6-6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 255, 255)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></svg>"
+  },
+  {
+    "id": "disclosure-embedded-ai-feedback-light",
+    "component": "disclosure",
+    "variant": "embedded",
+    "key": "ai-feedback",
+    "theme": "light",
+    "name": "Disclosure / Embedded / Ai Feedback / Light",
+    "box": {
+      "x": 37,
+      "y": 55,
+      "width": 386,
+      "height": 50
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "disclosure"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 386 50\" width=\"386\" height=\"50\"><defs><clipPath id=\"ct0\"><rect x=\"26\" y=\"3\" width=\"250.3\" height=\"18\"/></clipPath><clipPath id=\"ct1\"><rect x=\"284.3\" y=\"3\" width=\"101.7\" height=\"18\"/></clipPath><clipPath id=\"cp2\"><rect x=\"0\" y=\"3\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"ct4\"><rect x=\"26\" y=\"32\" width=\"360\" height=\"18\"/></clipPath></defs><text x=\"26\" y=\"18\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(0,0,0)\">AI Feedback</text><text x=\"284.33\" y=\"18\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(100,100,105)\">2 suggestions</text><g transform=\"rotate(90 9 12)\"><g clip-path=\"url(#cp2)\"><g color=\"rgb(0, 0, 0)\"><clipPath id=\"svgic3\"><rect x=\"0\" y=\"3\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic3)\"><g transform=\"matrix(.75 0 0 .75 0 3)\"><path d=\"m9 18 6-6-6-6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(0, 0, 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></g><text x=\"26\" y=\"47\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(100,100,105)\">Group Export and Share in one group.</text></svg>"
+  },
+  {
+    "id": "disclosure-embedded-ai-feedback-dark",
+    "component": "disclosure",
+    "variant": "embedded",
+    "key": "ai-feedback",
+    "theme": "dark",
+    "name": "Disclosure / Embedded / Ai Feedback / Dark",
+    "box": {
+      "x": 37,
+      "y": 55,
+      "width": 386,
+      "height": 50
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "disclosure"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 386 50\" width=\"386\" height=\"50\"><defs><clipPath id=\"ct0\"><rect x=\"26\" y=\"3\" width=\"250.3\" height=\"18\"/></clipPath><clipPath id=\"ct1\"><rect x=\"284.3\" y=\"3\" width=\"101.7\" height=\"18\"/></clipPath><clipPath id=\"cp2\"><rect x=\"0\" y=\"3\" width=\"18\" height=\"18\"/></clipPath><clipPath id=\"ct4\"><rect x=\"26\" y=\"32\" width=\"360\" height=\"18\"/></clipPath></defs><text x=\"26\" y=\"18\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" font-weight=\"500\" fill=\"rgb(255,255,255)\">AI Feedback</text><text x=\"284.33\" y=\"18\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(174,174,178)\">2 suggestions</text><g transform=\"rotate(90 9 12)\"><g clip-path=\"url(#cp2)\"><g color=\"rgb(255, 255, 255)\"><clipPath id=\"svgic3\"><rect x=\"0\" y=\"3\" width=\"18\" height=\"18\"/></clipPath><g clip-path=\"url(#svgic3)\"><g transform=\"matrix(.75 0 0 .75 0 3)\"><path d=\"m9 18 6-6-6-6\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 255, 255)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g></g><text x=\"26\" y=\"47\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(174,174,178)\">Group Export and Share in one group.</text></svg>"
+  },
+  {
+    "id": "message-composer-chat-control-light",
+    "component": "message-composer",
+    "variant": "chat",
+    "key": "control",
+    "theme": "light",
+    "name": "Message Composer / Chat / Control / Light",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 560,
+      "height": 93.59375
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "column",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "message-composer"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 560 93.59375\" width=\"560\" height=\"93.59375\"><defs><filter id=\"sh0\" x=\"-50%\" y=\"-50%\" width=\"200%\" height=\"200%\"><feGaussianBlur stdDeviation=\"16\"/></filter><clipPath id=\"cp1\"><rect x=\"9\" y=\"9\" width=\"542\" height=\"33.6\"/></clipPath><clipPath id=\"ct2\"><rect x=\"9\" y=\"9\" width=\"542\" height=\"33.6\"/></clipPath><clipPath id=\"cp3\"><rect x=\"5\" y=\"47\" width=\"481\" height=\"42\"/></clipPath><clipPath id=\"ov4\"><rect x=\"5\" y=\"47\" width=\"481\" height=\"42\" rx=\"0\"/></clipPath><clipPath id=\"ct5\"><rect x=\"9\" y=\"60.1\" width=\"204.1\" height=\"15\"/></clipPath><clipPath id=\"ct6\"><rect x=\"489.8\" y=\"51.6\" width=\"61.3\" height=\"32\"/></clipPath></defs><rect x=\"0\" y=\"12\" width=\"560\" height=\"93.6\" rx=\"12\" fill=\"rgba(0,0,0,0.09)\" filter=\"url(#sh0)\"/><rect x=\"0\" y=\"0\" width=\"560\" height=\"93.6\" rx=\"12\" fill=\"rgb(255,255,255)\"/><rect x=\"0.5\" y=\"0.5\" width=\"559\" height=\"93\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,28,0.18)\" stroke-width=\"1\"/><g clip-path=\"url(#cp1)\"><g clip-path=\"url(#ct2)\"><text x=\"9\" y=\"31\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(98, 98, 103)\">Ask about this build</text></g></g><g clip-path=\"url(#cp3)\"><g clip-path=\"url(#ov4)\"><text x=\"9\" y=\"72.09\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"12\" fill=\"rgb(100,100,105)\">Answers use the latest nightly build.</text></g></g><rect x=\"489.8\" y=\"51.6\" width=\"61.3\" height=\"32\" rx=\"16\" fill=\"rgb(0,117,219)\"/><text x=\"501.75\" y=\"73.59\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"16\" fill=\"rgb(255,255,255)\">Send</text></svg>"
+  },
+  {
+    "id": "message-composer-chat-control-dark",
+    "component": "message-composer",
+    "variant": "chat",
+    "key": "control",
+    "theme": "dark",
+    "name": "Message Composer / Chat / Control / Dark",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 560,
+      "height": 93.59375
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "column",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "message-composer"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 560 93.59375\" width=\"560\" height=\"93.59375\"><defs><filter id=\"sh0\" x=\"-50%\" y=\"-50%\" width=\"200%\" height=\"200%\"><feGaussianBlur stdDeviation=\"16\"/></filter><clipPath id=\"cp1\"><rect x=\"9\" y=\"9\" width=\"542\" height=\"33.6\"/></clipPath><clipPath id=\"ct2\"><rect x=\"9\" y=\"9\" width=\"542\" height=\"33.6\"/></clipPath><clipPath id=\"cp3\"><rect x=\"5\" y=\"47\" width=\"481\" height=\"42\"/></clipPath><clipPath id=\"ov4\"><rect x=\"5\" y=\"47\" width=\"481\" height=\"42\" rx=\"0\"/></clipPath><clipPath id=\"ct5\"><rect x=\"9\" y=\"60.1\" width=\"204.1\" height=\"15\"/></clipPath><clipPath id=\"ct6\"><rect x=\"489.8\" y=\"51.6\" width=\"61.3\" height=\"32\"/></clipPath></defs><rect x=\"0\" y=\"12\" width=\"560\" height=\"93.6\" rx=\"12\" fill=\"rgba(0,0,0,0.32)\" filter=\"url(#sh0)\"/><rect x=\"0\" y=\"0\" width=\"560\" height=\"93.6\" rx=\"12\" fill=\"rgb(44,44,46)\"/><rect x=\"0.5\" y=\"0.5\" width=\"559\" height=\"93\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(253,253,255,0.196)\" stroke-width=\"1\"/><g clip-path=\"url(#cp1)\"><g clip-path=\"url(#ct2)\"><text x=\"9\" y=\"31\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(194, 194, 198)\">Ask about this build</text></g></g><g clip-path=\"url(#cp3)\"><g clip-path=\"url(#ov4)\"><text x=\"9\" y=\"72.09\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"12\" fill=\"rgb(174,174,178)\">Answers use the latest nightly build.</text></g></g><rect x=\"489.8\" y=\"51.6\" width=\"61.3\" height=\"32\" rx=\"16\" fill=\"rgb(100,210,255)\"/><text x=\"501.75\" y=\"73.59\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"16\" fill=\"rgb(17,17,19)\">Send</text></svg>"
+  },
+  {
+    "id": "message-composer-prompt-control-light",
+    "component": "message-composer",
+    "variant": "prompt",
+    "key": "control",
+    "theme": "light",
+    "name": "Message Composer / Prompt / Control / Light",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 560,
+      "height": 144.78125
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "column",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "message-composer"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 560 144.78125\" width=\"560\" height=\"144.78125\"><defs><filter id=\"sh0\" x=\"-50%\" y=\"-50%\" width=\"200%\" height=\"200%\"><feGaussianBlur stdDeviation=\"16\"/></filter><clipPath id=\"cp1\"><rect x=\"9\" y=\"9\" width=\"542\" height=\"84.8\"/></clipPath><clipPath id=\"ct2\"><rect x=\"9\" y=\"9\" width=\"542\" height=\"84.8\"/></clipPath><clipPath id=\"ct3\"><rect x=\"460.2\" y=\"102.8\" width=\"90.8\" height=\"32\"/></clipPath></defs><rect x=\"0\" y=\"12\" width=\"560\" height=\"144.8\" rx=\"12\" fill=\"rgba(0,0,0,0.09)\" filter=\"url(#sh0)\"/><rect x=\"0\" y=\"0\" width=\"560\" height=\"144.8\" rx=\"12\" fill=\"rgb(255,255,255)\"/><rect x=\"0.5\" y=\"0.5\" width=\"559\" height=\"144\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,28,0.18)\" stroke-width=\"1\"/><g clip-path=\"url(#cp1)\"><g clip-path=\"url(#ct2)\"><text x=\"9\" y=\"31\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(98, 98, 103)\">Describe the change you want</text></g></g><rect x=\"460.2\" y=\"102.8\" width=\"90.8\" height=\"32\" rx=\"16\" fill=\"rgb(0,117,219)\"/><text x=\"472.17\" y=\"124.78\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"16\" fill=\"rgb(255,255,255)\">Generate</text></svg>"
+  },
+  {
+    "id": "message-composer-prompt-control-dark",
+    "component": "message-composer",
+    "variant": "prompt",
+    "key": "control",
+    "theme": "dark",
+    "name": "Message Composer / Prompt / Control / Dark",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 560,
+      "height": 144.78125
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "column",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "message-composer"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 560 144.78125\" width=\"560\" height=\"144.78125\"><defs><filter id=\"sh0\" x=\"-50%\" y=\"-50%\" width=\"200%\" height=\"200%\"><feGaussianBlur stdDeviation=\"16\"/></filter><clipPath id=\"cp1\"><rect x=\"9\" y=\"9\" width=\"542\" height=\"84.8\"/></clipPath><clipPath id=\"ct2\"><rect x=\"9\" y=\"9\" width=\"542\" height=\"84.8\"/></clipPath><clipPath id=\"ct3\"><rect x=\"460.2\" y=\"102.8\" width=\"90.8\" height=\"32\"/></clipPath></defs><rect x=\"0\" y=\"12\" width=\"560\" height=\"144.8\" rx=\"12\" fill=\"rgba(0,0,0,0.32)\" filter=\"url(#sh0)\"/><rect x=\"0\" y=\"0\" width=\"560\" height=\"144.8\" rx=\"12\" fill=\"rgb(44,44,46)\"/><rect x=\"0.5\" y=\"0.5\" width=\"559\" height=\"144\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(253,253,255,0.196)\" stroke-width=\"1\"/><g clip-path=\"url(#cp1)\"><g clip-path=\"url(#ct2)\"><text x=\"9\" y=\"31\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(194, 194, 198)\">Describe the change you want</text></g></g><rect x=\"460.2\" y=\"102.8\" width=\"90.8\" height=\"32\" rx=\"16\" fill=\"rgb(100,210,255)\"/><text x=\"472.17\" y=\"124.78\" font-family=\"&quot;ui-sans-serif&quot;, system-ui, sans-serif\" font-size=\"16\" fill=\"rgb(17,17,19)\">Generate</text></svg>"
+  },
+  {
+    "id": "progress-bar-determinate-control-light",
+    "component": "progress-bar",
+    "variant": "determinate",
+    "key": "control",
+    "theme": "light",
+    "name": "Progress Bar / Determinate / Control / Light",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 420,
+      "height": 47.59375
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "column",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "4px",
+      "padding": "8px",
+      "borderRadius": "0px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-bar"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 47.59375\" width=\"420\" height=\"47.59375\"><defs><clipPath id=\"ct0\"><rect x=\"9\" y=\"9\" width=\"317\" height=\"19.6\"/></clipPath><clipPath id=\"ct1\"><rect x=\"334\" y=\"9\" width=\"77\" height=\"19.6\"/></clipPath><clipPath id=\"cp2\"><rect x=\"9\" y=\"32.6\" width=\"402\" height=\"6\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"419\" height=\"47\" rx=\"0\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"9\" y=\"24\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"14\" fill=\"rgb(0,0,0)\">Uploading Files</text><text x=\"333.95\" y=\"24\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"14\" fill=\"rgb(100,100,105)\">4 of 12 files</text><g clip-path=\"url(#cp2)\"><rect x=\"9\" y=\"32.6\" width=\"402\" height=\"6\" rx=\"3\" fill=\"rgba(0,0,49,0.1)\"/><rect x=\"9\" y=\"32.6\" width=\"402\" height=\"6\" rx=\"0\" fill=\"rgba(0, 0, 49, 0.1)\"/><rect x=\"9\" y=\"32.6\" width=\"134\" height=\"6\" rx=\"0\" fill=\"rgb(0, 117, 219)\"/></g></svg>"
+  },
+  {
+    "id": "progress-bar-determinate-control-dark",
+    "component": "progress-bar",
+    "variant": "determinate",
+    "key": "control",
+    "theme": "dark",
+    "name": "Progress Bar / Determinate / Control / Dark",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 420,
+      "height": 47.59375
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "column",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "4px",
+      "padding": "8px",
+      "borderRadius": "0px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-bar"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 47.59375\" width=\"420\" height=\"47.59375\"><defs><clipPath id=\"ct0\"><rect x=\"9\" y=\"9\" width=\"317\" height=\"19.6\"/></clipPath><clipPath id=\"ct1\"><rect x=\"334\" y=\"9\" width=\"77\" height=\"19.6\"/></clipPath><clipPath id=\"cp2\"><rect x=\"9\" y=\"32.6\" width=\"402\" height=\"6\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"419\" height=\"47\" rx=\"0\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"9\" y=\"24\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"14\" fill=\"rgb(255,255,255)\">Uploading Files</text><text x=\"333.95\" y=\"24\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"14\" fill=\"rgb(174,174,178)\">4 of 12 files</text><g clip-path=\"url(#cp2)\"><rect x=\"9\" y=\"32.6\" width=\"402\" height=\"6\" rx=\"3\" fill=\"rgba(253,253,255,0.133)\"/><rect x=\"9\" y=\"32.6\" width=\"402\" height=\"6\" rx=\"0\" fill=\"rgba(253, 253, 255, 0.133)\"/><rect x=\"9\" y=\"32.6\" width=\"134\" height=\"6\" rx=\"0\" fill=\"rgb(100, 210, 255)\"/></g></svg>"
+  },
+  {
+    "id": "progress-bar-tones-confidence-light",
+    "component": "progress-bar",
+    "variant": "tones",
+    "key": "confidence",
+    "theme": "light",
+    "name": "Progress Bar / Tones / Confidence / Light",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 420,
+      "height": 47.59375
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "column",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "4px",
+      "padding": "8px",
+      "borderRadius": "0px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-bar"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 47.59375\" width=\"420\" height=\"47.59375\"><defs><clipPath id=\"ct0\"><rect x=\"9\" y=\"9\" width=\"363.9\" height=\"19.6\"/></clipPath><clipPath id=\"ct1\"><rect x=\"380.9\" y=\"9\" width=\"30.1\" height=\"19.6\"/></clipPath><clipPath id=\"cp2\"><rect x=\"9\" y=\"32.6\" width=\"402\" height=\"6\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"419\" height=\"47\" rx=\"0\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"9\" y=\"24\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"14\" fill=\"rgb(0,0,0)\">Confidence</text><text x=\"380.86\" y=\"24\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"14\" fill=\"rgb(100,100,105)\">82%</text><g clip-path=\"url(#cp2)\"><rect x=\"9\" y=\"32.6\" width=\"402\" height=\"6\" rx=\"3\" fill=\"rgba(0,0,49,0.1)\"/><rect x=\"9\" y=\"32.6\" width=\"402\" height=\"6\" rx=\"0\" fill=\"rgba(0, 0, 49, 0.1)\"/><rect x=\"9\" y=\"32.6\" width=\"329.6\" height=\"6\" rx=\"0\" fill=\"rgb(52, 199, 89)\"/></g></svg>"
+  },
+  {
+    "id": "progress-bar-tones-storage-used-light",
+    "component": "progress-bar",
+    "variant": "tones",
+    "key": "storage-used",
+    "theme": "light",
+    "name": "Progress Bar / Tones / Storage Used / Light",
+    "box": {
+      "x": 20,
+      "y": 75.59375,
+      "width": 420,
+      "height": 47.59375
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "column",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "4px",
+      "padding": "8px",
+      "borderRadius": "0px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-bar"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 47.59375\" width=\"420\" height=\"47.59375\"><defs><clipPath id=\"ct0\"><rect x=\"9\" y=\"9\" width=\"363.9\" height=\"19.6\"/></clipPath><clipPath id=\"ct1\"><rect x=\"380.9\" y=\"9\" width=\"30.1\" height=\"19.6\"/></clipPath><clipPath id=\"cp2\"><rect x=\"9\" y=\"32.6\" width=\"402\" height=\"6\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"419\" height=\"47\" rx=\"0\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"9\" y=\"24\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"14\" fill=\"rgb(0,0,0)\">Storage Used</text><text x=\"380.86\" y=\"24\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"14\" fill=\"rgb(100,100,105)\">93%</text><g clip-path=\"url(#cp2)\"><rect x=\"9\" y=\"32.6\" width=\"402\" height=\"6\" rx=\"3\" fill=\"rgba(0,0,49,0.1)\"/><rect x=\"9\" y=\"32.6\" width=\"402\" height=\"6\" rx=\"0\" fill=\"rgba(0, 0, 49, 0.1)\"/><rect x=\"9\" y=\"32.6\" width=\"373.9\" height=\"6\" rx=\"0\" fill=\"rgb(255, 204, 0)\"/></g></svg>"
+  },
+  {
+    "id": "progress-bar-tones-unlabeled-light",
+    "component": "progress-bar",
+    "variant": "tones",
+    "key": "unlabeled",
+    "theme": "light",
+    "name": "Progress Bar / Tones / Unlabeled / Light",
+    "box": {
+      "x": 20,
+      "y": 131.1875,
+      "width": 420,
+      "height": 22
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "column",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "4px",
+      "padding": "8px",
+      "borderRadius": "0px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-bar"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 22\" width=\"420\" height=\"22\"><defs><clipPath id=\"cp0\"><rect x=\"9\" y=\"9\" width=\"402\" height=\"4\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"419\" height=\"21\" rx=\"0\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><rect x=\"9\" y=\"9\" width=\"402\" height=\"4\" rx=\"2\" fill=\"rgba(0,0,49,0.1)\"/><rect x=\"9\" y=\"9\" width=\"402\" height=\"4\" rx=\"0\" fill=\"rgba(0, 0, 49, 0.1)\"/><rect x=\"9\" y=\"9\" width=\"160.8\" height=\"4\" rx=\"0\" fill=\"rgb(0, 117, 219)\"/></g></svg>"
+  },
+  {
+    "id": "progress-bar-tones-confidence-dark",
+    "component": "progress-bar",
+    "variant": "tones",
+    "key": "confidence",
+    "theme": "dark",
+    "name": "Progress Bar / Tones / Confidence / Dark",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 420,
+      "height": 47.59375
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "column",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "4px",
+      "padding": "8px",
+      "borderRadius": "0px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-bar"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 47.59375\" width=\"420\" height=\"47.59375\"><defs><clipPath id=\"ct0\"><rect x=\"9\" y=\"9\" width=\"363.9\" height=\"19.6\"/></clipPath><clipPath id=\"ct1\"><rect x=\"380.9\" y=\"9\" width=\"30.1\" height=\"19.6\"/></clipPath><clipPath id=\"cp2\"><rect x=\"9\" y=\"32.6\" width=\"402\" height=\"6\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"419\" height=\"47\" rx=\"0\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"9\" y=\"24\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"14\" fill=\"rgb(255,255,255)\">Confidence</text><text x=\"380.86\" y=\"24\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"14\" fill=\"rgb(174,174,178)\">82%</text><g clip-path=\"url(#cp2)\"><rect x=\"9\" y=\"32.6\" width=\"402\" height=\"6\" rx=\"3\" fill=\"rgba(253,253,255,0.133)\"/><rect x=\"9\" y=\"32.6\" width=\"402\" height=\"6\" rx=\"0\" fill=\"rgba(253, 253, 255, 0.133)\"/><rect x=\"9\" y=\"32.6\" width=\"329.6\" height=\"6\" rx=\"0\" fill=\"rgb(52, 199, 89)\"/></g></svg>"
+  },
+  {
+    "id": "progress-bar-tones-storage-used-dark",
+    "component": "progress-bar",
+    "variant": "tones",
+    "key": "storage-used",
+    "theme": "dark",
+    "name": "Progress Bar / Tones / Storage Used / Dark",
+    "box": {
+      "x": 20,
+      "y": 75.59375,
+      "width": 420,
+      "height": 47.59375
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "column",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "4px",
+      "padding": "8px",
+      "borderRadius": "0px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-bar"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 47.59375\" width=\"420\" height=\"47.59375\"><defs><clipPath id=\"ct0\"><rect x=\"9\" y=\"9\" width=\"363.9\" height=\"19.6\"/></clipPath><clipPath id=\"ct1\"><rect x=\"380.9\" y=\"9\" width=\"30.1\" height=\"19.6\"/></clipPath><clipPath id=\"cp2\"><rect x=\"9\" y=\"32.6\" width=\"402\" height=\"6\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"419\" height=\"47\" rx=\"0\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"9\" y=\"24\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"14\" fill=\"rgb(255,255,255)\">Storage Used</text><text x=\"380.86\" y=\"24\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"14\" fill=\"rgb(174,174,178)\">93%</text><g clip-path=\"url(#cp2)\"><rect x=\"9\" y=\"32.6\" width=\"402\" height=\"6\" rx=\"3\" fill=\"rgba(253,253,255,0.133)\"/><rect x=\"9\" y=\"32.6\" width=\"402\" height=\"6\" rx=\"0\" fill=\"rgba(253, 253, 255, 0.133)\"/><rect x=\"9\" y=\"32.6\" width=\"373.9\" height=\"6\" rx=\"0\" fill=\"rgb(255, 204, 0)\"/></g></svg>"
+  },
+  {
+    "id": "progress-bar-tones-unlabeled-dark",
+    "component": "progress-bar",
+    "variant": "tones",
+    "key": "unlabeled",
+    "theme": "dark",
+    "name": "Progress Bar / Tones / Unlabeled / Dark",
+    "box": {
+      "x": 20,
+      "y": 131.1875,
+      "width": 420,
+      "height": 22
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "column",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "4px",
+      "padding": "8px",
+      "borderRadius": "0px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-bar"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 22\" width=\"420\" height=\"22\"><defs><clipPath id=\"cp0\"><rect x=\"9\" y=\"9\" width=\"402\" height=\"4\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"419\" height=\"21\" rx=\"0\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><rect x=\"9\" y=\"9\" width=\"402\" height=\"4\" rx=\"2\" fill=\"rgba(253,253,255,0.133)\"/><rect x=\"9\" y=\"9\" width=\"402\" height=\"4\" rx=\"0\" fill=\"rgba(253, 253, 255, 0.133)\"/><rect x=\"9\" y=\"9\" width=\"160.8\" height=\"4\" rx=\"0\" fill=\"rgb(100, 210, 255)\"/></g></svg>"
+  },
+  {
+    "id": "progress-ring-sizes-small-light",
+    "component": "progress-ring",
+    "variant": "sizes",
+    "key": "small",
+    "theme": "light",
+    "name": "Progress Ring / Sizes / Small / Light",
+    "box": {
+      "x": 20,
+      "y": 32,
+      "width": 16,
+      "height": 16
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-ring"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\" width=\"16\" height=\"16\"><g transform=\"rotate(-90 8 8)\"><g color=\"rgb(0, 0, 0)\"><g transform=\"scale(.66667)\"><circle class=\"kui-progress-ring__track\" cx=\"12\" cy=\"12\" r=\"10.5\" fill=\"none\" stroke=\"rgb(0, 0, 49)\" stroke-width=\"3px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M22.5 12A10.5 10.5 0 0 1 6.942 21.201\" fill=\"none\" stroke=\"rgb(0, 117, 219)\" stroke-width=\"3px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g></g></g></svg>"
+  },
+  {
+    "id": "progress-ring-sizes-medium-light",
+    "component": "progress-ring",
+    "variant": "sizes",
+    "key": "medium",
+    "theme": "light",
+    "name": "Progress Ring / Sizes / Medium / Light",
+    "box": {
+      "x": 52,
+      "y": 28,
+      "width": 24,
+      "height": 24
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-ring"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><g transform=\"rotate(-90 12 12)\"><g color=\"rgb(0, 0, 0)\"><g><circle class=\"kui-progress-ring__track\" cx=\"12\" cy=\"12\" r=\"10.5\" fill=\"none\" stroke=\"rgb(0, 0, 49)\" stroke-width=\"3px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M22.5 12A10.5 10.5 0 0 1 6.942 21.201\" fill=\"none\" stroke=\"rgb(0, 117, 219)\" stroke-width=\"3px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g></g></g></svg>"
+  },
+  {
+    "id": "progress-ring-sizes-large-light",
+    "component": "progress-ring",
+    "variant": "sizes",
+    "key": "large",
+    "theme": "light",
+    "name": "Progress Ring / Sizes / Large / Light",
+    "box": {
+      "x": 92,
+      "y": 20,
+      "width": 40,
+      "height": 40
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-ring"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 40 40\" width=\"40\" height=\"40\"><g transform=\"rotate(-90 20 20)\"><g color=\"rgb(0, 0, 0)\"><g transform=\"scale(1.66667)\"><circle class=\"kui-progress-ring__track\" cx=\"12\" cy=\"12\" r=\"10.5\" fill=\"none\" stroke=\"rgb(0, 0, 49)\" stroke-width=\"3px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M22.5 12A10.5 10.5 0 0 1 6.942 21.201\" fill=\"none\" stroke=\"rgb(0, 117, 219)\" stroke-width=\"3px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g></g></g></svg>"
+  },
+  {
+    "id": "progress-ring-sizes-small-dark",
+    "component": "progress-ring",
+    "variant": "sizes",
+    "key": "small",
+    "theme": "dark",
+    "name": "Progress Ring / Sizes / Small / Dark",
+    "box": {
+      "x": 20,
+      "y": 32,
+      "width": 16,
+      "height": 16
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-ring"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\" width=\"16\" height=\"16\"><g transform=\"rotate(-90 8 8)\"><g color=\"rgb(255, 255, 255)\"><g transform=\"scale(.66667)\"><circle class=\"kui-progress-ring__track\" cx=\"12\" cy=\"12\" r=\"10.5\" fill=\"none\" stroke=\"rgb(253, 253, 255)\" stroke-width=\"3px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.133\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M22.5 12A10.5 10.5 0 0 1 6.942 21.201\" fill=\"none\" stroke=\"rgb(100, 210, 255)\" stroke-width=\"3px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g></g></g></svg>"
+  },
+  {
+    "id": "progress-ring-sizes-medium-dark",
+    "component": "progress-ring",
+    "variant": "sizes",
+    "key": "medium",
+    "theme": "dark",
+    "name": "Progress Ring / Sizes / Medium / Dark",
+    "box": {
+      "x": 52,
+      "y": 28,
+      "width": 24,
+      "height": 24
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-ring"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><g transform=\"rotate(-90 12 12)\"><g color=\"rgb(255, 255, 255)\"><g><circle class=\"kui-progress-ring__track\" cx=\"12\" cy=\"12\" r=\"10.5\" fill=\"none\" stroke=\"rgb(253, 253, 255)\" stroke-width=\"3px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.133\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M22.5 12A10.5 10.5 0 0 1 6.942 21.201\" fill=\"none\" stroke=\"rgb(100, 210, 255)\" stroke-width=\"3px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g></g></g></svg>"
+  },
+  {
+    "id": "progress-ring-sizes-large-dark",
+    "component": "progress-ring",
+    "variant": "sizes",
+    "key": "large",
+    "theme": "dark",
+    "name": "Progress Ring / Sizes / Large / Dark",
+    "box": {
+      "x": 92,
+      "y": 20,
+      "width": 40,
+      "height": 40
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-ring"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 40 40\" width=\"40\" height=\"40\"><g transform=\"rotate(-90 20 20)\"><g color=\"rgb(255, 255, 255)\"><g transform=\"scale(1.66667)\"><circle class=\"kui-progress-ring__track\" cx=\"12\" cy=\"12\" r=\"10.5\" fill=\"none\" stroke=\"rgb(253, 253, 255)\" stroke-width=\"3px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.133\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M22.5 12A10.5 10.5 0 0 1 6.942 21.201\" fill=\"none\" stroke=\"rgb(100, 210, 255)\" stroke-width=\"3px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g></g></g></svg>"
+  },
+  {
+    "id": "progress-ring-tones-done-light",
+    "component": "progress-ring",
+    "variant": "tones",
+    "key": "done",
+    "theme": "light",
+    "name": "Progress Ring / Tones / Done / Light",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 24,
+      "height": 24
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-ring"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><g transform=\"rotate(-90 12 12)\"><g color=\"rgb(0, 0, 0)\"><g><circle class=\"kui-progress-ring__track\" cx=\"12\" cy=\"12\" r=\"10.5\" fill=\"none\" stroke=\"rgb(0, 0, 49)\" stroke-width=\"3px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M22.5 12A10.5 10.5 0 1 1 12 1.5\" fill=\"none\" stroke=\"rgb(52, 199, 89)\" stroke-width=\"3px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g></g></g></svg>"
+  },
+  {
+    "id": "progress-ring-tones-quota-light",
+    "component": "progress-ring",
+    "variant": "tones",
+    "key": "quota",
+    "theme": "light",
+    "name": "Progress Ring / Tones / Quota / Light",
+    "box": {
+      "x": 60,
+      "y": 20,
+      "width": 24,
+      "height": 24
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-ring"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><g transform=\"rotate(-90 12 12)\"><g color=\"rgb(0, 0, 0)\"><g><circle class=\"kui-progress-ring__track\" cx=\"12\" cy=\"12\" r=\"10.5\" fill=\"none\" stroke=\"rgb(0, 0, 49)\" stroke-width=\"3px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M22.5 12A10.5 10.5 0 1 1 20.495 5.828\" fill=\"none\" stroke=\"rgb(255, 204, 0)\" stroke-width=\"3px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g></g></g></svg>"
+  },
+  {
+    "id": "progress-ring-tones-budget-light",
+    "component": "progress-ring",
+    "variant": "tones",
+    "key": "budget",
+    "theme": "light",
+    "name": "Progress Ring / Tones / Budget / Light",
+    "box": {
+      "x": 100,
+      "y": 20,
+      "width": 24,
+      "height": 24
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-ring"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><g transform=\"rotate(-90 12 12)\"><g color=\"rgb(0, 0, 0)\"><g><circle class=\"kui-progress-ring__track\" cx=\"12\" cy=\"12\" r=\"10.5\" fill=\"none\" stroke=\"rgb(0, 0, 49)\" stroke-width=\"3px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M22.5 12A10.5 10.5 0 1 1 22.417 10.684\" fill=\"none\" stroke=\"rgb(235, 0, 5)\" stroke-width=\"3px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g></g></g></svg>"
+  },
+  {
+    "id": "progress-ring-tones-done-dark",
+    "component": "progress-ring",
+    "variant": "tones",
+    "key": "done",
+    "theme": "dark",
+    "name": "Progress Ring / Tones / Done / Dark",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 24,
+      "height": 24
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-ring"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><g transform=\"rotate(-90 12 12)\"><g color=\"rgb(255, 255, 255)\"><g><circle class=\"kui-progress-ring__track\" cx=\"12\" cy=\"12\" r=\"10.5\" fill=\"none\" stroke=\"rgb(253, 253, 255)\" stroke-width=\"3px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.133\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M22.5 12A10.5 10.5 0 1 1 12 1.5\" fill=\"none\" stroke=\"rgb(52, 199, 89)\" stroke-width=\"3px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g></g></g></svg>"
+  },
+  {
+    "id": "progress-ring-tones-quota-dark",
+    "component": "progress-ring",
+    "variant": "tones",
+    "key": "quota",
+    "theme": "dark",
+    "name": "Progress Ring / Tones / Quota / Dark",
+    "box": {
+      "x": 60,
+      "y": 20,
+      "width": 24,
+      "height": 24
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-ring"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><g transform=\"rotate(-90 12 12)\"><g color=\"rgb(255, 255, 255)\"><g><circle class=\"kui-progress-ring__track\" cx=\"12\" cy=\"12\" r=\"10.5\" fill=\"none\" stroke=\"rgb(253, 253, 255)\" stroke-width=\"3px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.133\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M22.5 12A10.5 10.5 0 1 1 20.495 5.828\" fill=\"none\" stroke=\"rgb(255, 204, 0)\" stroke-width=\"3px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g></g></g></svg>"
+  },
+  {
+    "id": "progress-ring-tones-budget-dark",
+    "component": "progress-ring",
+    "variant": "tones",
+    "key": "budget",
+    "theme": "dark",
+    "name": "Progress Ring / Tones / Budget / Dark",
+    "box": {
+      "x": 100,
+      "y": 20,
+      "width": 24,
+      "height": 24
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "progress-ring"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"24\" height=\"24\"><g transform=\"rotate(-90 12 12)\"><g color=\"rgb(255, 255, 255)\"><g><circle class=\"kui-progress-ring__track\" cx=\"12\" cy=\"12\" r=\"10.5\" fill=\"none\" stroke=\"rgb(253, 253, 255)\" stroke-width=\"3px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.133\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M22.5 12A10.5 10.5 0 1 1 22.417 10.684\" fill=\"none\" stroke=\"rgb(255, 56, 60)\" stroke-width=\"3px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g></g></g></svg>"
+  },
+  {
+    "id": "state-banner-info-control-light",
+    "component": "state-banner",
+    "variant": "info",
+    "key": "control",
+    "theme": "light",
+    "name": "State Banner / Info / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 484,
+      "height": 46.796875
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "state-banner"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 484 46.796875\" width=\"484\" height=\"46.796875\"><defs><clipPath id=\"cp0\"><rect x=\"9\" y=\"15\" width=\"16\" height=\"16.4\"/></clipPath><clipPath id=\"ct2\"><rect x=\"33\" y=\"9.4\" width=\"118.7\" height=\"15\"/></clipPath><clipPath id=\"cp3\"><rect x=\"33\" y=\"24.4\" width=\"254.4\" height=\"13\"/></clipPath><clipPath id=\"ct4\"><rect x=\"33\" y=\"24.4\" width=\"254.4\" height=\"13\"/></clipPath><clipPath id=\"ct5\"><rect x=\"409.6\" y=\"9\" width=\"65.4\" height=\"28.8\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"484\" height=\"46.8\" rx=\"12\" fill=\"rgb(235,244,252)\"/><rect x=\"0.5\" y=\"0.5\" width=\"483\" height=\"46\" rx=\"11.5\" fill=\"none\" stroke=\"rgb(166,207,242)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g color=\"rgb(26, 93, 207)\"><clipPath id=\"svgic1\"><rect x=\"9\" y=\"15.4\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(9 15.39)scale(.66667)\"><circle cx=\"12\" cy=\"12\" r=\"10\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(26, 93, 207)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line x1=\"12\" x2=\"12\" y1=\"8\" y2=\"12\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(26, 93, 207)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line x1=\"12\" x2=\"12.01\" y1=\"16\" y2=\"16\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(26, 93, 207)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"33\" y=\"21.39\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"12\" font-weight=\"700\" fill=\"rgb(26,93,207)\">Draft Not Published</text><g clip-path=\"url(#cp3)\"><g clip-path=\"url(#ct4)\"><text x=\"33\" y=\"35.39\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" fill=\"rgb(26,93,207)\">Changes are saved but only visible to your team.</text></g></g><rect x=\"409.6\" y=\"9\" width=\"65.4\" height=\"28.8\" rx=\"14.4\" fill=\"rgba(255,255,255,0.52)\"/><rect x=\"410.5\" y=\"9.5\" width=\"64\" height=\"28\" rx=\"13.9\" fill=\"none\" stroke=\"rgb(26,93,207)\" stroke-width=\"1\"/><text x=\"421.83\" y=\"27.89\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(26,93,207)\">Publish</text></svg>"
+  },
+  {
+    "id": "state-banner-info-control-dark",
+    "component": "state-banner",
+    "variant": "info",
+    "key": "control",
+    "theme": "dark",
+    "name": "State Banner / Info / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 484,
+      "height": 46.796875
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "state-banner"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 484 46.796875\" width=\"484\" height=\"46.796875\"><defs><clipPath id=\"cp0\"><rect x=\"9\" y=\"15\" width=\"16\" height=\"16.4\"/></clipPath><clipPath id=\"ct2\"><rect x=\"33\" y=\"9.4\" width=\"118.7\" height=\"15\"/></clipPath><clipPath id=\"cp3\"><rect x=\"33\" y=\"24.4\" width=\"254.4\" height=\"13\"/></clipPath><clipPath id=\"ct4\"><rect x=\"33\" y=\"24.4\" width=\"254.4\" height=\"13\"/></clipPath><clipPath id=\"ct5\"><rect x=\"409.6\" y=\"9\" width=\"65.4\" height=\"28.8\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"484\" height=\"46.8\" rx=\"12\" fill=\"rgb(34,43,48)\"/><rect x=\"0.5\" y=\"0.5\" width=\"483\" height=\"46\" rx=\"11.5\" fill=\"none\" stroke=\"rgb(53,92,109)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g color=\"rgb(138, 203, 255)\"><clipPath id=\"svgic1\"><rect x=\"9\" y=\"15.4\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(9 15.39)scale(.66667)\"><circle cx=\"12\" cy=\"12\" r=\"10\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(138, 203, 255)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line x1=\"12\" x2=\"12\" y1=\"8\" y2=\"12\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(138, 203, 255)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line x1=\"12\" x2=\"12.01\" y1=\"16\" y2=\"16\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(138, 203, 255)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"33\" y=\"21.39\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"12\" font-weight=\"700\" fill=\"rgb(138,203,255)\">Draft Not Published</text><g clip-path=\"url(#cp3)\"><g clip-path=\"url(#ct4)\"><text x=\"33\" y=\"35.39\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" fill=\"rgb(138,203,255)\">Changes are saved but only visible to your team.</text></g></g><rect x=\"409.6\" y=\"9\" width=\"65.4\" height=\"28.8\" rx=\"14.4\" fill=\"rgba(28,28,30,0.52)\"/><rect x=\"410.5\" y=\"9.5\" width=\"64\" height=\"28\" rx=\"13.9\" fill=\"none\" stroke=\"rgb(138,203,255)\" stroke-width=\"1\"/><text x=\"421.83\" y=\"27.89\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(138,203,255)\">Publish</text></svg>"
+  },
+  {
+    "id": "state-banner-info-badge-control-light",
+    "component": "state-banner",
+    "variant": "info-badge",
+    "key": "control",
+    "theme": "light",
+    "name": "State Banner / Info Badge / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 484,
+      "height": 46.796875
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "state-banner"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 484 46.796875\" width=\"484\" height=\"46.796875\"><defs><clipPath id=\"cp0\"><rect x=\"9\" y=\"15\" width=\"16\" height=\"16.4\"/></clipPath><clipPath id=\"ct2\"><rect x=\"33\" y=\"15.9\" width=\"139.3\" height=\"15\"/></clipPath><clipPath id=\"ct3\"><rect x=\"180.3\" y=\"13.4\" width=\"20\" height=\"20\"/></clipPath><clipPath id=\"ct4\"><rect x=\"409.3\" y=\"9\" width=\"65.7\" height=\"28.8\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"484\" height=\"46.8\" rx=\"12\" fill=\"rgb(235,244,252)\"/><rect x=\"0.5\" y=\"0.5\" width=\"483\" height=\"46\" rx=\"11.5\" fill=\"none\" stroke=\"rgb(166,207,242)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g color=\"rgb(26, 93, 207)\"><clipPath id=\"svgic1\"><rect x=\"9\" y=\"15.4\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(9 15.39)scale(.66667)\"><circle cx=\"12\" cy=\"12\" r=\"10\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(26, 93, 207)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line x1=\"12\" x2=\"12\" y1=\"8\" y2=\"12\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(26, 93, 207)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line x1=\"12\" x2=\"12.01\" y1=\"16\" y2=\"16\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(26, 93, 207)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"33\" y=\"27.89\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"12\" font-weight=\"700\" fill=\"rgb(26,93,207)\">Unanswered Questions</text><rect x=\"180.3\" y=\"13.4\" width=\"20\" height=\"20\" rx=\"10\" fill=\"rgb(26,93,207)\"/><rect x=\"180.5\" y=\"13.5\" width=\"19\" height=\"19\" rx=\"9.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"187.5\" y=\"27.89\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(255,255,255)\">1</text><rect x=\"409.3\" y=\"9\" width=\"65.7\" height=\"28.8\" rx=\"14.4\" fill=\"rgba(255,255,255,0.52)\"/><rect x=\"409.5\" y=\"9.5\" width=\"65\" height=\"28\" rx=\"13.9\" fill=\"none\" stroke=\"rgb(26,93,207)\" stroke-width=\"1\"/><text x=\"421.47\" y=\"27.89\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(26,93,207)\">Answer</text></svg>"
+  },
+  {
+    "id": "state-banner-info-badge-control-dark",
+    "component": "state-banner",
+    "variant": "info-badge",
+    "key": "control",
+    "theme": "dark",
+    "name": "State Banner / Info Badge / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 484,
+      "height": 46.796875
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "state-banner"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 484 46.796875\" width=\"484\" height=\"46.796875\"><defs><clipPath id=\"cp0\"><rect x=\"9\" y=\"15\" width=\"16\" height=\"16.4\"/></clipPath><clipPath id=\"ct2\"><rect x=\"33\" y=\"15.9\" width=\"139.3\" height=\"15\"/></clipPath><clipPath id=\"ct3\"><rect x=\"180.3\" y=\"13.4\" width=\"20\" height=\"20\"/></clipPath><clipPath id=\"ct4\"><rect x=\"409.3\" y=\"9\" width=\"65.7\" height=\"28.8\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"484\" height=\"46.8\" rx=\"12\" fill=\"rgb(34,43,48)\"/><rect x=\"0.5\" y=\"0.5\" width=\"483\" height=\"46\" rx=\"11.5\" fill=\"none\" stroke=\"rgb(53,92,109)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g color=\"rgb(138, 203, 255)\"><clipPath id=\"svgic1\"><rect x=\"9\" y=\"15.4\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(9 15.39)scale(.66667)\"><circle cx=\"12\" cy=\"12\" r=\"10\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(138, 203, 255)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line x1=\"12\" x2=\"12\" y1=\"8\" y2=\"12\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(138, 203, 255)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line x1=\"12\" x2=\"12.01\" y1=\"16\" y2=\"16\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(138, 203, 255)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"33\" y=\"27.89\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"12\" font-weight=\"700\" fill=\"rgb(138,203,255)\">Unanswered Questions</text><rect x=\"180.3\" y=\"13.4\" width=\"20\" height=\"20\" rx=\"10\" fill=\"rgb(138,203,255)\"/><rect x=\"180.5\" y=\"13.5\" width=\"19\" height=\"19\" rx=\"9.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><text x=\"187.5\" y=\"27.89\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(28,28,30)\">1</text><rect x=\"409.3\" y=\"9\" width=\"65.7\" height=\"28.8\" rx=\"14.4\" fill=\"rgba(28,28,30,0.52)\"/><rect x=\"409.5\" y=\"9.5\" width=\"65\" height=\"28\" rx=\"13.9\" fill=\"none\" stroke=\"rgb(138,203,255)\" stroke-width=\"1\"/><text x=\"421.47\" y=\"27.89\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(138,203,255)\">Answer</text></svg>"
+  },
+  {
+    "id": "state-banner-success-control-light",
+    "component": "state-banner",
+    "variant": "success",
+    "key": "control",
+    "theme": "light",
+    "name": "State Banner / Success / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 484,
+      "height": 46
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "state-banner"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 484 46\" width=\"484\" height=\"46\"><defs><clipPath id=\"cp0\"><rect x=\"9\" y=\"15\" width=\"16\" height=\"16\"/></clipPath><clipPath id=\"ct2\"><rect x=\"33\" y=\"9\" width=\"134\" height=\"15\"/></clipPath><clipPath id=\"cp3\"><rect x=\"33\" y=\"24\" width=\"259.7\" height=\"13\"/></clipPath><clipPath id=\"ct4\"><rect x=\"33\" y=\"24\" width=\"259.7\" height=\"13\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"484\" height=\"46\" rx=\"12\" fill=\"rgb(227,247,232)\"/><rect x=\"0.5\" y=\"0.5\" width=\"483\" height=\"45\" rx=\"11.5\" fill=\"none\" stroke=\"rgb(154,227,172)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g color=\"rgb(0, 121, 44)\"><clipPath id=\"svgic1\"><rect x=\"9\" y=\"15\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(9 15)scale(.66667)\"><circle cx=\"12\" cy=\"12\" r=\"10\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(0, 121, 44)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"m16 9-5.5 5.5L8 12\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(0, 121, 44)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"33\" y=\"21\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"12\" font-weight=\"700\" fill=\"rgb(0,121,44)\">Deployment Complete</text><g clip-path=\"url(#cp3)\"><g clip-path=\"url(#ct4)\"><text x=\"33\" y=\"35\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" fill=\"rgb(0,121,44)\">production.example.com is serving the new build.</text></g></g></svg>"
+  },
+  {
+    "id": "state-banner-success-control-dark",
+    "component": "state-banner",
+    "variant": "success",
+    "key": "control",
+    "theme": "dark",
+    "name": "State Banner / Success / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 484,
+      "height": 46
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "state-banner"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 484 46\" width=\"484\" height=\"46\"><defs><clipPath id=\"cp0\"><rect x=\"9\" y=\"15\" width=\"16\" height=\"16\"/></clipPath><clipPath id=\"ct2\"><rect x=\"33\" y=\"9\" width=\"134\" height=\"15\"/></clipPath><clipPath id=\"cp3\"><rect x=\"33\" y=\"24\" width=\"259.7\" height=\"13\"/></clipPath><clipPath id=\"ct4\"><rect x=\"33\" y=\"24\" width=\"259.7\" height=\"13\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"484\" height=\"46\" rx=\"12\" fill=\"rgb(31,52,38)\"/><rect x=\"0.5\" y=\"0.5\" width=\"483\" height=\"45\" rx=\"11.5\" fill=\"none\" stroke=\"rgb(40,113,59)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g color=\"rgb(99, 230, 133)\"><clipPath id=\"svgic1\"><rect x=\"9\" y=\"15\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(9 15)scale(.66667)\"><circle cx=\"12\" cy=\"12\" r=\"10\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(99, 230, 133)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"m16 9-5.5 5.5L8 12\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(99, 230, 133)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"33\" y=\"21\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"12\" font-weight=\"700\" fill=\"rgb(99,230,133)\">Deployment Complete</text><g clip-path=\"url(#cp3)\"><g clip-path=\"url(#ct4)\"><text x=\"33\" y=\"35\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" fill=\"rgb(99,230,133)\">production.example.com is serving the new build.</text></g></g></svg>"
+  },
+  {
+    "id": "state-banner-warning-control-light",
+    "component": "state-banner",
+    "variant": "warning",
+    "key": "control",
+    "theme": "light",
+    "name": "State Banner / Warning / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 484,
+      "height": 46.796875
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "state-banner"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 484 46.796875\" width=\"484\" height=\"46.796875\"><defs><clipPath id=\"cp0\"><rect x=\"9\" y=\"15\" width=\"16\" height=\"16.4\"/></clipPath><clipPath id=\"ct2\"><rect x=\"33\" y=\"9.4\" width=\"170.5\" height=\"15\"/></clipPath><clipPath id=\"cp3\"><rect x=\"33\" y=\"24.4\" width=\"261\" height=\"13\"/></clipPath><clipPath id=\"ct4\"><rect x=\"33\" y=\"24.4\" width=\"261\" height=\"13\"/></clipPath><clipPath id=\"ct5\"><rect x=\"403.1\" y=\"9\" width=\"71.9\" height=\"28.8\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"484\" height=\"46.8\" rx=\"12\" fill=\"rgb(255,250,232)\"/><rect x=\"0.5\" y=\"0.5\" width=\"483\" height=\"46\" rx=\"11.5\" fill=\"none\" stroke=\"rgb(160,131,13)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g color=\"rgb(143, 94, 0)\"><clipPath id=\"svgic1\"><rect x=\"9\" y=\"15.4\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(9 15.39)scale(.66667)\"><path d=\"m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(143, 94, 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M12 9v4\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(143, 94, 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M12 17z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(143, 94, 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"33\" y=\"21.39\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"12\" font-weight=\"700\" fill=\"rgb(143,94,0)\">Approaching Your Plan Limit</text><g clip-path=\"url(#cp3)\"><g clip-path=\"url(#ct4)\"><text x=\"33\" y=\"35.39\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" fill=\"rgb(143,94,0)\">You have used 92% of this month’s build minutes.</text></g></g><rect x=\"403.1\" y=\"9\" width=\"71.9\" height=\"28.8\" rx=\"14.4\" fill=\"rgba(255,255,255,0.52)\"/><rect x=\"403.5\" y=\"9.5\" width=\"71\" height=\"28\" rx=\"13.9\" fill=\"none\" stroke=\"rgb(143,94,0)\" stroke-width=\"1\"/><text x=\"415.28\" y=\"27.89\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(143,94,0)\">Upgrade</text></svg>"
+  },
+  {
+    "id": "state-banner-warning-control-dark",
+    "component": "state-banner",
+    "variant": "warning",
+    "key": "control",
+    "theme": "dark",
+    "name": "State Banner / Warning / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 484,
+      "height": 46.796875
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "state-banner"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 484 46.796875\" width=\"484\" height=\"46.796875\"><defs><clipPath id=\"cp0\"><rect x=\"9\" y=\"15\" width=\"16\" height=\"16.4\"/></clipPath><clipPath id=\"ct2\"><rect x=\"33\" y=\"9.4\" width=\"170.5\" height=\"15\"/></clipPath><clipPath id=\"cp3\"><rect x=\"33\" y=\"24.4\" width=\"261\" height=\"13\"/></clipPath><clipPath id=\"ct4\"><rect x=\"33\" y=\"24.4\" width=\"261\" height=\"13\"/></clipPath><clipPath id=\"ct5\"><rect x=\"403.1\" y=\"9\" width=\"71.9\" height=\"28.8\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"484\" height=\"46.8\" rx=\"12\" fill=\"rgb(48,44,27)\"/><rect x=\"0.5\" y=\"0.5\" width=\"483\" height=\"46\" rx=\"11.5\" fill=\"none\" stroke=\"rgb(251,221,104)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g color=\"rgb(255, 216, 74)\"><clipPath id=\"svgic1\"><rect x=\"9\" y=\"15.4\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(9 15.39)scale(.66667)\"><path d=\"m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 216, 74)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M12 9v4\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 216, 74)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M12 17z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 216, 74)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"33\" y=\"21.39\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"12\" font-weight=\"700\" fill=\"rgb(255,216,74)\">Approaching Your Plan Limit</text><g clip-path=\"url(#cp3)\"><g clip-path=\"url(#ct4)\"><text x=\"33\" y=\"35.39\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" fill=\"rgb(255,216,74)\">You have used 92% of this month’s build minutes.</text></g></g><rect x=\"403.1\" y=\"9\" width=\"71.9\" height=\"28.8\" rx=\"14.4\" fill=\"rgba(28,28,30,0.52)\"/><rect x=\"403.5\" y=\"9.5\" width=\"71\" height=\"28\" rx=\"13.9\" fill=\"none\" stroke=\"rgb(255,216,74)\" stroke-width=\"1\"/><text x=\"415.28\" y=\"27.89\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(255,216,74)\">Upgrade</text></svg>"
+  },
+  {
+    "id": "state-banner-danger-control-light",
+    "component": "state-banner",
+    "variant": "danger",
+    "key": "control",
+    "theme": "light",
+    "name": "State Banner / Danger / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 484,
+      "height": 46.796875
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "state-banner"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 484 46.796875\" width=\"484\" height=\"46.796875\"><defs><clipPath id=\"cp0\"><rect x=\"9\" y=\"15\" width=\"16\" height=\"16.4\"/></clipPath><clipPath id=\"ct2\"><rect x=\"33\" y=\"9.4\" width=\"69.7\" height=\"15\"/></clipPath><clipPath id=\"cp3\"><rect x=\"33\" y=\"24.4\" width=\"158.6\" height=\"13\"/></clipPath><clipPath id=\"ct4\"><rect x=\"33\" y=\"24.4\" width=\"158.6\" height=\"13\"/></clipPath><clipPath id=\"ct5\"><rect x=\"400.6\" y=\"9\" width=\"74.4\" height=\"28.8\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"484\" height=\"46.8\" rx=\"12\" fill=\"rgb(254,237,238)\"/><rect x=\"0.5\" y=\"0.5\" width=\"483\" height=\"46\" rx=\"11.5\" fill=\"none\" stroke=\"rgb(249,173,175)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g color=\"rgb(194, 11, 32)\"><clipPath id=\"svgic1\"><rect x=\"9\" y=\"15.4\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(9 15.39)scale(.66667)\"><circle cx=\"12\" cy=\"12\" r=\"10\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(194, 11, 32)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line x1=\"12\" x2=\"12\" y1=\"8\" y2=\"12\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(194, 11, 32)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line x1=\"12\" x2=\"12.01\" y1=\"16\" y2=\"16\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(194, 11, 32)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"33\" y=\"21.39\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"12\" font-weight=\"700\" fill=\"rgb(194,11,32)\">Build Failed</text><g clip-path=\"url(#cp3)\"><g clip-path=\"url(#ct4)\"><text x=\"33\" y=\"35.39\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" fill=\"rgb(194,11,32)\">Step “test” exited with code 1.</text></g></g><rect x=\"400.6\" y=\"9\" width=\"74.4\" height=\"28.8\" rx=\"14.4\" fill=\"rgba(255,255,255,0.52)\"/><rect x=\"401.5\" y=\"9.5\" width=\"73\" height=\"28\" rx=\"13.9\" fill=\"none\" stroke=\"rgb(194,11,32)\" stroke-width=\"1\"/><text x=\"412.81\" y=\"27.89\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(194,11,32)\">View Log</text></svg>"
+  },
+  {
+    "id": "state-banner-danger-control-dark",
+    "component": "state-banner",
+    "variant": "danger",
+    "key": "control",
+    "theme": "dark",
+    "name": "State Banner / Danger / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 484,
+      "height": 46.796875
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "8px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "state-banner"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 484 46.796875\" width=\"484\" height=\"46.796875\"><defs><clipPath id=\"cp0\"><rect x=\"9\" y=\"15\" width=\"16\" height=\"16.4\"/></clipPath><clipPath id=\"ct2\"><rect x=\"33\" y=\"9.4\" width=\"69.7\" height=\"15\"/></clipPath><clipPath id=\"cp3\"><rect x=\"33\" y=\"24.4\" width=\"158.6\" height=\"13\"/></clipPath><clipPath id=\"ct4\"><rect x=\"33\" y=\"24.4\" width=\"158.6\" height=\"13\"/></clipPath><clipPath id=\"ct5\"><rect x=\"400.6\" y=\"9\" width=\"74.4\" height=\"28.8\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"484\" height=\"46.8\" rx=\"12\" fill=\"rgb(44,30,32)\"/><rect x=\"0.5\" y=\"0.5\" width=\"483\" height=\"46\" rx=\"11.5\" fill=\"none\" stroke=\"rgb(101,37,40)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g color=\"rgb(255, 160, 162)\"><clipPath id=\"svgic1\"><rect x=\"9\" y=\"15.4\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(9 15.39)scale(.66667)\"><circle cx=\"12\" cy=\"12\" r=\"10\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 160, 162)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line x1=\"12\" x2=\"12\" y1=\"8\" y2=\"12\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 160, 162)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line x1=\"12\" x2=\"12.01\" y1=\"16\" y2=\"16\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 160, 162)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"33\" y=\"21.39\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"12\" font-weight=\"700\" fill=\"rgb(255,160,162)\">Build Failed</text><g clip-path=\"url(#cp3)\"><g clip-path=\"url(#ct4)\"><text x=\"33\" y=\"35.39\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" fill=\"rgb(255,160,162)\">Step “test” exited with code 1.</text></g></g><rect x=\"400.6\" y=\"9\" width=\"74.4\" height=\"28.8\" rx=\"14.4\" fill=\"rgba(28,28,30,0.52)\"/><rect x=\"401.5\" y=\"9.5\" width=\"73\" height=\"28\" rx=\"13.9\" fill=\"none\" stroke=\"rgb(255,160,162)\" stroke-width=\"1\"/><text x=\"412.81\" y=\"27.89\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(255,160,162)\">View Log</text></svg>"
+  },
+  {
+    "id": "state-banner-strip-control-light",
+    "component": "state-banner",
+    "variant": "strip",
+    "key": "control",
+    "theme": "light",
+    "name": "State Banner / Strip / Control / Light",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 500,
+      "height": 49
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "8px 17px",
+      "borderRadius": "0px",
+      "borderWidth": "0px 0px 1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "state-banner"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 500 49\" width=\"500\" height=\"49\"><defs><clipPath id=\"cp0\"><rect x=\"17\" y=\"16\" width=\"16\" height=\"16\"/></clipPath><clipPath id=\"ct2\"><rect x=\"41\" y=\"8\" width=\"125.1\" height=\"15\"/></clipPath><clipPath id=\"ct3\"><rect x=\"41\" y=\"27\" width=\"230.7\" height=\"13\"/></clipPath><clipPath id=\"ct4\"><rect x=\"414.6\" y=\"9.6\" width=\"68.4\" height=\"28.8\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"500\" height=\"49\" rx=\"0\" fill=\"rgb(255,250,232)\"/><polygon points=\"500,49 0,49 0,48 500,48\" fill=\"rgb(160,131,13)\"/><g clip-path=\"url(#cp0)\"><g color=\"rgb(143, 94, 0)\"><clipPath id=\"svgic1\"><rect x=\"17\" y=\"16\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(17 16)scale(.66667)\"><path d=\"m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(143, 94, 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M12 9v4\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(143, 94, 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M12 17z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(143, 94, 0)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"41\" y=\"20\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"12\" font-weight=\"700\" fill=\"rgb(143,94,0)\">Notifications Paused</text><text x=\"41\" y=\"38\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" fill=\"rgb(143,94,0)\">Desktop alerts resume when you reconnect.</text><rect x=\"414.6\" y=\"9.6\" width=\"68.4\" height=\"28.8\" rx=\"14.4\" fill=\"rgba(255,255,255,0.52)\"/><rect x=\"415.5\" y=\"10.5\" width=\"67\" height=\"27\" rx=\"13.5\" fill=\"none\" stroke=\"rgb(143,94,0)\" stroke-width=\"1\"/><text x=\"426.83\" y=\"28.48\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(143,94,0)\">Resume</text></svg>"
+  },
+  {
+    "id": "state-banner-strip-control-dark",
+    "component": "state-banner",
+    "variant": "strip",
+    "key": "control",
+    "theme": "dark",
+    "name": "State Banner / Strip / Control / Dark",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 500,
+      "height": 49
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "row",
+      "align": "center",
+      "justify": "normal",
+      "gap": "8px",
+      "padding": "8px 17px",
+      "borderRadius": "0px",
+      "borderWidth": "0px 0px 1px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "state-banner"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 500 49\" width=\"500\" height=\"49\"><defs><clipPath id=\"cp0\"><rect x=\"17\" y=\"16\" width=\"16\" height=\"16\"/></clipPath><clipPath id=\"ct2\"><rect x=\"41\" y=\"8\" width=\"125.1\" height=\"15\"/></clipPath><clipPath id=\"ct3\"><rect x=\"41\" y=\"27\" width=\"230.7\" height=\"13\"/></clipPath><clipPath id=\"ct4\"><rect x=\"414.6\" y=\"9.6\" width=\"68.4\" height=\"28.8\"/></clipPath></defs><rect x=\"0\" y=\"0\" width=\"500\" height=\"49\" rx=\"0\" fill=\"rgb(48,44,27)\"/><polygon points=\"500,49 0,49 0,48 500,48\" fill=\"rgb(251,221,104)\"/><g clip-path=\"url(#cp0)\"><g color=\"rgb(255, 216, 74)\"><clipPath id=\"svgic1\"><rect x=\"17\" y=\"16\" width=\"16\" height=\"16\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(17 16)scale(.66667)\"><path d=\"m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 216, 74)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M12 9v4\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 216, 74)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M12 17z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 216, 74)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"41\" y=\"20\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"12\" font-weight=\"700\" fill=\"rgb(255,216,74)\">Notifications Paused</text><text x=\"41\" y=\"38\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" fill=\"rgb(255,216,74)\">Desktop alerts resume when you reconnect.</text><rect x=\"414.6\" y=\"9.6\" width=\"68.4\" height=\"28.8\" rx=\"14.4\" fill=\"rgba(28,28,30,0.52)\"/><rect x=\"415.5\" y=\"10.5\" width=\"67\" height=\"27\" rx=\"13.5\" fill=\"none\" stroke=\"rgb(255,216,74)\" stroke-width=\"1\"/><text x=\"426.83\" y=\"28.48\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"11\" font-weight=\"650\" fill=\"rgb(255,216,74)\">Resume</text></svg>"
+  },
+  {
+    "id": "empty-state-with-action-control-light",
+    "component": "empty-state",
+    "variant": "with-action",
+    "key": "control",
+    "theme": "light",
+    "name": "Empty State / With Action / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 404,
+      "height": 213.296875
+    },
+    "layout": {
+      "display": "grid",
+      "direction": "row",
+      "align": "center",
+      "justify": "center",
+      "gap": "8px",
+      "padding": "32px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "center",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "empty-state"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 404 213.296875\" width=\"404\" height=\"213.296875\"><defs><clipPath id=\"cp0\"><rect x=\"186\" y=\"33\" width=\"32\" height=\"32\"/></clipPath><clipPath id=\"ct2\"><rect x=\"125.5\" y=\"81\" width=\"152.9\" height=\"23\"/></clipPath><clipPath id=\"ct3\"><rect x=\"45.7\" y=\"112\" width=\"312.7\" height=\"20.3\"/></clipPath><clipPath id=\"ct4\"><rect x=\"149.5\" y=\"148.3\" width=\"104.9\" height=\"32\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"403\" height=\"212\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g color=\"rgb(98, 98, 103)\"><clipPath id=\"svgic1\"><rect x=\"186\" y=\"33\" width=\"32\" height=\"32\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(186 33)scale(1.33333)\"><polyline points=\"22 12 16 12 14 15 10 15 8 12 2 12\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(98, 98, 103)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.4-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(98, 98, 103)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"125.55\" y=\"100\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"20\" font-weight=\"650\" fill=\"rgb(29,29,31)\">No Open Tickets</text><text x=\"45.67\" y=\"127\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"14\" fill=\"rgb(98,98,103)\">When someone files a ticket it will show up here.</text><rect x=\"149.5\" y=\"148.3\" width=\"104.9\" height=\"32\" rx=\"16\" fill=\"rgb(255,255,255)\"/><text x=\"161.53\" y=\"170.3\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(29,29,31)\">New Ticket</text></svg>"
+  },
+  {
+    "id": "empty-state-with-action-control-dark",
+    "component": "empty-state",
+    "variant": "with-action",
+    "key": "control",
+    "theme": "dark",
+    "name": "Empty State / With Action / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 404,
+      "height": 213.296875
+    },
+    "layout": {
+      "display": "grid",
+      "direction": "row",
+      "align": "center",
+      "justify": "center",
+      "gap": "8px",
+      "padding": "32px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "center",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "empty-state"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 404 213.296875\" width=\"404\" height=\"213.296875\"><defs><clipPath id=\"cp0\"><rect x=\"186\" y=\"33\" width=\"32\" height=\"32\"/></clipPath><clipPath id=\"ct2\"><rect x=\"125.5\" y=\"81\" width=\"152.9\" height=\"23\"/></clipPath><clipPath id=\"ct3\"><rect x=\"45.7\" y=\"112\" width=\"312.7\" height=\"20.3\"/></clipPath><clipPath id=\"ct4\"><rect x=\"149.5\" y=\"148.3\" width=\"104.9\" height=\"32\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"403\" height=\"212\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g color=\"rgb(194, 194, 198)\"><clipPath id=\"svgic1\"><rect x=\"186\" y=\"33\" width=\"32\" height=\"32\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(186 33)scale(1.33333)\"><polyline points=\"22 12 16 12 14 15 10 15 8 12 2 12\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(194, 194, 198)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><path d=\"M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.4-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(194, 194, 198)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"125.55\" y=\"100\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"20\" font-weight=\"650\" fill=\"rgb(245,245,247)\">No Open Tickets</text><text x=\"45.67\" y=\"127\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"14\" fill=\"rgb(194,194,198)\">When someone files a ticket it will show up here.</text><rect x=\"149.5\" y=\"148.3\" width=\"104.9\" height=\"32\" rx=\"16\" fill=\"rgb(44,44,46)\"/><text x=\"161.53\" y=\"170.3\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"16\" fill=\"rgb(245,245,247)\">New Ticket</text></svg>"
+  },
+  {
+    "id": "empty-state-filtered-control-light",
+    "component": "empty-state",
+    "variant": "filtered",
+    "key": "control",
+    "theme": "light",
+    "name": "Empty State / Filtered / Control / Light",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 404,
+      "height": 192
+    },
+    "layout": {
+      "display": "grid",
+      "direction": "row",
+      "align": "center",
+      "justify": "center",
+      "gap": "8px",
+      "padding": "32px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "center",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "empty-state"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 404 192\" width=\"404\" height=\"192\"><defs><clipPath id=\"cp0\"><rect x=\"186\" y=\"46\" width=\"32\" height=\"32.3\"/></clipPath><clipPath id=\"ct2\"><rect x=\"146.6\" y=\"94.3\" width=\"110.8\" height=\"23\"/></clipPath><clipPath id=\"ct3\"><rect x=\"87.7\" y=\"125.3\" width=\"228.6\" height=\"20.3\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"403\" height=\"191\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g color=\"rgb(98, 98, 103)\"><clipPath id=\"svgic1\"><rect x=\"186\" y=\"46.3\" width=\"32\" height=\"32\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(186 46.344)scale(1.33333)\"><path d=\"M10 20a1 1 0 0 0 .6.9l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .5-1.3l7.2-8A1 1 0 0 0 21 3H3a1 1 0 0 0-.7 1.7l7.2 8A2 2 0 0 1 10 14Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(98, 98, 103)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"146.59\" y=\"113.34\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"20\" font-weight=\"650\" fill=\"rgb(29,29,31)\">No Matches</text><text x=\"87.72\" y=\"140.34\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"14\" fill=\"rgb(98,98,103)\">No tickets match the current filters.</text></svg>"
+  },
+  {
+    "id": "empty-state-filtered-control-dark",
+    "component": "empty-state",
+    "variant": "filtered",
+    "key": "control",
+    "theme": "dark",
+    "name": "Empty State / Filtered / Control / Dark",
+    "box": {
+      "x": 28,
+      "y": 20,
+      "width": 404,
+      "height": 192
+    },
+    "layout": {
+      "display": "grid",
+      "direction": "row",
+      "align": "center",
+      "justify": "center",
+      "gap": "8px",
+      "padding": "32px",
+      "borderRadius": "12px",
+      "borderWidth": "1px",
+      "textAlign": "center",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "empty-state"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 404 192\" width=\"404\" height=\"192\"><defs><clipPath id=\"cp0\"><rect x=\"186\" y=\"46\" width=\"32\" height=\"32.3\"/></clipPath><clipPath id=\"ct2\"><rect x=\"146.6\" y=\"94.3\" width=\"110.8\" height=\"23\"/></clipPath><clipPath id=\"ct3\"><rect x=\"87.7\" y=\"125.3\" width=\"228.6\" height=\"20.3\"/></clipPath></defs><rect x=\"0.5\" y=\"0.5\" width=\"403\" height=\"191\" rx=\"11.5\" fill=\"none\" stroke=\"rgba(0,0,0,0)\" stroke-width=\"1\"/><g clip-path=\"url(#cp0)\"><g color=\"rgb(194, 194, 198)\"><clipPath id=\"svgic1\"><rect x=\"186\" y=\"46.3\" width=\"32\" height=\"32\"/></clipPath><g clip-path=\"url(#svgic1)\"><g transform=\"translate(186 46.344)scale(1.33333)\"><path d=\"M10 20a1 1 0 0 0 .6.9l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .5-1.3l7.2-8A1 1 0 0 0 21 3H3a1 1 0 0 0-.7 1.7l7.2 8A2 2 0 0 1 10 14Z\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(194, 194, 198)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/></g></g></g></g><text x=\"146.59\" y=\"113.34\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"20\" font-weight=\"650\" fill=\"rgb(245,245,247)\">No Matches</text><text x=\"87.72\" y=\"140.34\" font-family=\"system-ui, &quot;-apple-system&quot;, sans-serif\" font-size=\"14\" fill=\"rgb(194,194,198)\">No tickets match the current filters.</text></svg>"
+  },
+  {
+    "id": "skeleton-block-control-light",
+    "component": "skeleton",
+    "variant": "block",
+    "key": "control",
+    "theme": "light",
+    "name": "Skeleton / Block / Control / Light",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 256,
+      "height": 24
+    },
+    "layout": {
+      "display": "inline-block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "3px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "skeleton"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 24\" width=\"256\" height=\"24\"><rect x=\"0\" y=\"0\" width=\"256\" height=\"24\" rx=\"3\" fill=\"rgba(29,29,31,0.12)\"/></svg>"
+  },
+  {
+    "id": "skeleton-block-control-dark",
+    "component": "skeleton",
+    "variant": "block",
+    "key": "control",
+    "theme": "dark",
+    "name": "Skeleton / Block / Control / Dark",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 256,
+      "height": 24
+    },
+    "layout": {
+      "display": "inline-block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "3px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "skeleton"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 24\" width=\"256\" height=\"24\"><rect x=\"0\" y=\"0\" width=\"256\" height=\"24\" rx=\"3\" fill=\"rgba(245,245,247,0.12)\"/></svg>"
+  },
+  {
+    "id": "skeleton-lines-control-light",
+    "component": "skeleton",
+    "variant": "lines",
+    "key": "control",
+    "theme": "light",
+    "name": "Skeleton / Lines / Control / Light",
+    "box": {
+      "x": 20,
+      "y": 22.203125,
+      "width": 320,
+      "height": 46.390625
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "column",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "4px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "skeleton"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 320 46.390625\" width=\"320\" height=\"46.390625\"><rect x=\"0\" y=\"0\" width=\"320\" height=\"12.8\" rx=\"3\" fill=\"rgba(29,29,31,0.12)\"/><rect x=\"0\" y=\"16.8\" width=\"320\" height=\"12.8\" rx=\"3\" fill=\"rgba(29,29,31,0.12)\"/><rect x=\"0\" y=\"33.6\" width=\"192\" height=\"12.8\" rx=\"3\" fill=\"rgba(29,29,31,0.12)\"/></svg>"
+  },
+  {
+    "id": "skeleton-lines-control-dark",
+    "component": "skeleton",
+    "variant": "lines",
+    "key": "control",
+    "theme": "dark",
+    "name": "Skeleton / Lines / Control / Dark",
+    "box": {
+      "x": 20,
+      "y": 22.203125,
+      "width": 320,
+      "height": 46.390625
+    },
+    "layout": {
+      "display": "flex",
+      "direction": "column",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "4px",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "skeleton"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 320 46.390625\" width=\"320\" height=\"46.390625\"><rect x=\"0\" y=\"0\" width=\"320\" height=\"12.8\" rx=\"3\" fill=\"rgba(245,245,247,0.12)\"/><rect x=\"0\" y=\"16.8\" width=\"320\" height=\"12.8\" rx=\"3\" fill=\"rgba(245,245,247,0.12)\"/><rect x=\"0\" y=\"33.6\" width=\"192\" height=\"12.8\" rx=\"3\" fill=\"rgba(245,245,247,0.12)\"/></svg>"
+  },
+  {
+    "id": "skeleton-avatar-control-light",
+    "component": "skeleton",
+    "variant": "avatar",
+    "key": "control",
+    "theme": "light",
+    "name": "Skeleton / Avatar / Control / Light",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 48,
+      "height": 48
+    },
+    "layout": {
+      "display": "inline-block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "999px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "skeleton"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\"><rect x=\"0\" y=\"0\" width=\"48\" height=\"48\" rx=\"24\" fill=\"rgba(29,29,31,0.12)\"/></svg>"
+  },
+  {
+    "id": "skeleton-avatar-control-dark",
+    "component": "skeleton",
+    "variant": "avatar",
+    "key": "control",
+    "theme": "dark",
+    "name": "Skeleton / Avatar / Control / Dark",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 48,
+      "height": 48
+    },
+    "layout": {
+      "display": "inline-block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "999px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "skeleton"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\"><rect x=\"0\" y=\"0\" width=\"48\" height=\"48\" rx=\"24\" fill=\"rgba(245,245,247,0.12)\"/></svg>"
+  }
+]

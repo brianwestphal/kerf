@@ -21,8 +21,10 @@ variants with 34 light/dark Symbols in [Kerf-Advanced.sketch](advanced/README.md
 The Lists and data batch covers 21 variants with 42 light/dark Symbols in
 [Kerf-Lists.sketch](lists/README.md). The Toolbars and navigation batch covers
 25 variants with 70 light/dark Symbols for 35 individual controls in
-[Kerf-Toolbar.sketch](toolbar/README.md). The pending family ticket covers the other source variants and must update this matrix
-as they ship. The catalog's [install and update guide](README.md) identifies
+[Kerf-Toolbar.sketch](toolbar/README.md). The Content and feedback batch covers
+20 variants with 56 light/dark Symbols for 28 reusable roots in
+[Kerf-Content.sketch](content/README.md). Every source variant now has a
+supported native batch; a new template variant must join a family here. The catalog's [install and update guide](README.md) identifies
 the current libraries and supported Sketch version.
 
 ## Family batches
@@ -34,7 +36,7 @@ the current libraries and supported Sketch version.
 | Advanced inputs         |          7 |              17 | supported | KF-6CC071 |
 | Toolbars and navigation |          7 |              25 | supported | KF-6Q8S95 |
 | Lists and data          |          5 |              21 | supported | KF-83M2MW |
-| Content and feedback    |          7 |              20 | pending   | KF-P0X4R9 |
+| Content and feedback    |          7 |              20 | supported | KF-P0X4R9 |
 
 ## Variant inventory
 
@@ -130,23 +132,23 @@ the current libraries and supported Sketch version.
 | list-action-row       | trailing-menu        | Trailing Overflow Menu                      | supported     | KF-83M2MW |
 | list-action-row       | icon-tile            | Colored Icon Tile                           | supported     | KF-83M2MW |
 | value-table           | details              | Key/Value Detail Rows                       | supported     | KF-83M2MW |
-| disclosure            | plain                | Closed and Open                             | pending       | KF-P0X4R9 |
-| disclosure            | framed-sunken        | Framed and Sunken                           | pending       | KF-P0X4R9 |
-| disclosure            | embedded             | Embedded in a Content Item                  | pending       | KF-P0X4R9 |
-| message-composer      | chat                 | Chat MessageComposer with Hint              | pending       | KF-P0X4R9 |
-| message-composer      | prompt               | Prompt with Taller Bounds                   | pending       | KF-P0X4R9 |
-| progress-bar          | determinate          | Labeled with a Readout                      | pending       | KF-P0X4R9 |
-| progress-bar          | tones                | Tones and Compact                           | pending       | KF-P0X4R9 |
-| progress-ring         | sizes                | Small, Medium, and Large                    | pending       | KF-P0X4R9 |
-| progress-ring         | tones                | Tones                                       | pending       | KF-P0X4R9 |
-| state-banner          | info                 | Info                                        | pending       | KF-P0X4R9 |
-| state-banner          | info-badge           | Info with Badge                             | pending       | KF-P0X4R9 |
-| state-banner          | success              | Success                                     | pending       | KF-P0X4R9 |
-| state-banner          | warning              | Warning                                     | pending       | KF-P0X4R9 |
-| state-banner          | danger               | Danger (Alert)                              | pending       | KF-P0X4R9 |
-| state-banner          | strip                | Strip (Full-Width Band)                     | pending       | KF-P0X4R9 |
-| empty-state           | with-action          | Icon, Title, Detail, and Action             | pending       | KF-P0X4R9 |
-| empty-state           | filtered             | No Results for a Filter                     | pending       | KF-P0X4R9 |
-| skeleton              | block                | Single Block                                | pending       | KF-P0X4R9 |
-| skeleton              | lines                | Paragraph Lines                             | pending       | KF-P0X4R9 |
-| skeleton              | avatar               | Circular (Avatar)                           | pending       | KF-P0X4R9 |
+| disclosure            | plain                | Closed and Open                             | supported     | KF-P0X4R9 |
+| disclosure            | framed-sunken        | Framed and Sunken                           | supported     | KF-P0X4R9 |
+| disclosure            | embedded             | Embedded in a Content Item                  | supported     | KF-P0X4R9 |
+| message-composer      | chat                 | Chat MessageComposer with Hint              | supported     | KF-P0X4R9 |
+| message-composer      | prompt               | Prompt with Taller Bounds                   | supported     | KF-P0X4R9 |
+| progress-bar          | determinate          | Labeled with a Readout                      | supported     | KF-P0X4R9 |
+| progress-bar          | tones                | Tones and Compact                           | supported     | KF-P0X4R9 |
+| progress-ring         | sizes                | Small, Medium, and Large                    | supported     | KF-P0X4R9 |
+| progress-ring         | tones                | Tones                                       | supported     | KF-P0X4R9 |
+| state-banner          | info                 | Info                                        | supported     | KF-P0X4R9 |
+| state-banner          | info-badge           | Info with Badge                             | supported     | KF-P0X4R9 |
+| state-banner          | success              | Success                                     | supported     | KF-P0X4R9 |
+| state-banner          | warning              | Warning                                     | supported     | KF-P0X4R9 |
+| state-banner          | danger               | Danger (Alert)                              | supported     | KF-P0X4R9 |
+| state-banner          | strip                | Strip (Full-Width Band)                     | supported     | KF-P0X4R9 |
+| empty-state           | with-action          | Icon, Title, Detail, and Action             | supported     | KF-P0X4R9 |
+| empty-state           | filtered             | No Results for a Filter                     | supported     | KF-P0X4R9 |
+| skeleton              | block                | Single Block                                | supported     | KF-P0X4R9 |
+| skeleton              | lines                | Paragraph Lines                             | supported     | KF-P0X4R9 |
+| skeleton              | avatar               | Circular (Avatar)                           | supported     | KF-P0X4R9 |

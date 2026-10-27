@@ -1,0 +1,139 @@
+{
+  "swatches": {
+    "light.ink-strong": {
+      "id": "A957AB04-9448-49FB-9E54-6AEEA9A06EDF",
+      "name": "Kerf/Content/light/ink-strong",
+      "color": "#000000ff"
+    },
+    "light.text-quiet": {
+      "id": "F534F293-E631-4E3B-8B50-A68ED6893634",
+      "name": "Kerf/Content/light/text-quiet",
+      "color": "#646469ff"
+    },
+    "dark.ink-strong": {
+      "id": "DC40A782-FFB2-4120-9A46-6FC66DAE2AC9",
+      "name": "Kerf/Content/dark/ink-strong",
+      "color": "#ffffffff"
+    },
+    "dark.text-quiet": {
+      "id": "2396006C-A09F-4706-B28E-80D285931023",
+      "name": "Kerf/Content/dark/text-quiet",
+      "color": "#aeaeb2ff"
+    },
+    "light.neutral-border-normal": {
+      "id": "F572ABCC-78D5-4CD8-AB34-F3BB2FBFB6C9",
+      "name": "Kerf/Content/light/neutral-border-normal",
+      "color": "#00001c2e"
+    },
+    "dark.neutral-border-normal": {
+      "id": "798F742C-A4D4-41A3-975A-686D60653987",
+      "name": "Kerf/Content/dark/neutral-border-normal",
+      "color": "#fdfdff32"
+    },
+    "light.neutral-on-quiet": {
+      "id": "6E4B276C-9714-49B5-A58B-85BA1006A367",
+      "name": "Kerf/Content/light/neutral-on-quiet",
+      "color": "#626267ff"
+    },
+    "light.on-loud": {
+      "id": "E4885A81-37D8-4679-BF8D-A111AD69497E",
+      "name": "Kerf/Content/light/on-loud",
+      "color": "#ffffffff"
+    },
+    "light.brand-fill-loud": {
+      "id": "15868A99-071E-4573-8E25-309E76DD06B5",
+      "name": "Kerf/Content/light/brand-fill-loud",
+      "color": "#0075dbff"
+    },
+    "dark.neutral-on-quiet": {
+      "id": "C876FFD2-3F30-49B5-8892-93175C6B4E9F",
+      "name": "Kerf/Content/dark/neutral-on-quiet",
+      "color": "#c2c2c6ff"
+    },
+    "dark.on-brand": {
+      "id": "CF937853-D2C8-45E2-A2C0-4C3A1A62839A",
+      "name": "Kerf/Content/dark/on-brand",
+      "color": "#111113ff"
+    },
+    "dark.brand-fill-loud": {
+      "id": "82926C02-31AE-47C4-BBA3-B8740CC48E0B",
+      "name": "Kerf/Content/dark/brand-fill-loud",
+      "color": "#64d2ffff"
+    },
+    "light.success-fill-loud": {
+      "id": "04B4BBA5-9FB0-4441-8D25-08C5B4D46F00",
+      "name": "Kerf/Content/light/success-fill-loud",
+      "color": "#34c759ff"
+    },
+    "dark.success-fill-loud": {
+      "id": "05A70A57-1069-44B9-B7A6-B577C28EEAB7",
+      "name": "Kerf/Content/dark/success-fill-loud",
+      "color": "#34c759ff"
+    },
+    "light.info-on-quiet": {
+      "id": "5E1FCC52-9775-4E8A-8FB0-BE6BE9A3982E",
+      "name": "Kerf/Content/light/info-on-quiet",
+      "color": "#1a5dcfff"
+    },
+    "light.selected-icon": {
+      "id": "C7B5BFAC-536C-4B71-8BD8-A6318795B1E9",
+      "name": "Kerf/Content/light/selected-icon",
+      "color": "#a6cff2ff"
+    },
+    "dark.info-on-quiet": {
+      "id": "6D8FAAC5-E33E-4C10-B17F-B57A55CC4419",
+      "name": "Kerf/Content/dark/info-on-quiet",
+      "color": "#8acbffff"
+    },
+    "dark.selected-icon": {
+      "id": "E2614237-928B-47F5-B675-370765EA6BE4",
+      "name": "Kerf/Content/dark/selected-icon",
+      "color": "#355c6dff"
+    },
+    "dark.on-loud": {
+      "id": "2CD99A40-1405-4AB5-AD17-9A6A409ABF23",
+      "name": "Kerf/Content/dark/on-loud",
+      "color": "#1c1c1eff"
+    },
+    "dark.success-on-quiet": {
+      "id": "E7E2E2FF-88BB-4C70-B2AD-FADDCD6DB440",
+      "name": "Kerf/Content/dark/success-on-quiet",
+      "color": "#63e685ff"
+    },
+    "light.warning-on-quiet": {
+      "id": "13B39797-1D58-48B3-9FF2-7241548B54A0",
+      "name": "Kerf/Content/light/warning-on-quiet",
+      "color": "#8f5e00ff"
+    },
+    "dark.warning-on-quiet": {
+      "id": "E57270AF-17C2-4636-A822-3D9E4BDD6666",
+      "name": "Kerf/Content/dark/warning-on-quiet",
+      "color": "#ffd84aff"
+    },
+    "light.danger-on-quiet": {
+      "id": "2B7DA684-0BC6-4576-9F95-F9D38CC7600E",
+      "name": "Kerf/Content/light/danger-on-quiet",
+      "color": "#c20b20ff"
+    },
+    "dark.danger-text": {
+      "id": "135C9BBE-6078-4053-BE1C-EF2582EB42BE",
+      "name": "Kerf/Content/dark/danger-text",
+      "color": "#ffa0a2ff"
+    },
+    "light.text": {
+      "id": "1EF4364B-A1C7-4964-B275-5D370224BC5A",
+      "name": "Kerf/Content/light/text",
+      "color": "#1d1d1fff"
+    },
+    "dark.text": {
+      "id": "9E69D413-DE2F-4A8B-AC49-701D0B53E01D",
+      "name": "Kerf/Content/dark/text",
+      "color": "#f5f5f7ff"
+    }
+  },
+  "bindings": {
+    "text": 86,
+    "fills": 12,
+    "borders": 74
+  }
+}
