@@ -12,9 +12,10 @@
 - the `kerfjs/no-generated-view-edits` lint rule (§5.2; KF-BD3ZHQ: no-hand-edits
   lint rule);
 - the private `editor/` scaffold (KF-4NRZCV: editor scaffold): open and save,
-  canvas preview, selection, outline, and a read-only inspector.
+  canvas preview, selection, outline, a read-only inspector, and a problems list
+  linked to nodes (KF-WC0ZG3: editor problems list).
 
-Editing, a problems list, and code export in the editor are next. The
+Editing and code export in the editor are next. The
 implementation tickets are listed in [§10](#10-implementation-plan).
 
 ## 1. Purpose and decisions

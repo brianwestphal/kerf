@@ -111,3 +111,38 @@ for (const [width, height] of [
     });
   });
 }
+
+test('lists problems and selects the node a problem is about', async ({
+  page,
+}, info) => {
+  const document = JSON.parse(
+    await readFile(
+      new URL('../../src/sample.kui.json', import.meta.url),
+      'utf8',
+    ),
+  );
+  document.root.zones.header[0].zones.trailing[0].props.tone = 'purple';
+  document.params.bad = { type: { kind: 'map' } };
+  await page.locator('input[type="file"]').setInputFiles({
+    name: 'inbox.kui.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(document)),
+  });
+  const problems = page.locator('[data-action="editor-select-problem"]');
+  await expect(problems).toHaveCount(2);
+  await expect(page.getByText('2 problems in this document')).toBeVisible();
+  await problems.nth(1).click();
+  await expect(
+    page.getByText('composeButton · Button', { exact: false }),
+  ).toBeVisible();
+  // An invalid document is not previewed (interpretView refuses it), so the
+  // problem list and inspector are how its nodes are reached.
+  await expect(page.locator('[data-editor-canvas]')).toContainText(
+    'This document cannot be previewed',
+  );
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-wc0zg3-editor-problems-1440.png'),
+    animations: 'disabled',
+  });
+});

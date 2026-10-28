@@ -15,9 +15,12 @@ it uses ship from `@kerfjs/ui/view`, so tools and applications work without it.
 - **Inspect** the selected node's props, read-only and grouped by the curated
   `component-props.json` hints. Selecting a palette component documents its
   props and types instead.
-- **Problems:** a banner reports the first `validateView` diagnostic.
+- **Problems:** every `validateView` diagnostic is listed at the top of the
+  Document rail. Selecting one selects its node, and outline rows carry a
+  problem-count badge. A document with problems is not previewed until they
+  are fixed.
 
-Editing, a full problems list, and code export are later slices.
+Editing and code export are later slices.
 
 ## Develop
 

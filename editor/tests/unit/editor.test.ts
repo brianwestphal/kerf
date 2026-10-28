@@ -112,6 +112,42 @@ describe('the editor shell', () => {
     expect(root.textContent).toContain('This document cannot be previewed');
   });
 
+  it('lists problems, marks their nodes in the outline, and selects one', () => {
+    const document = structuredClone(
+      createEditor().document.value,
+    ) as unknown as {
+      root: {
+        zones: {
+          header: {
+            zones: { trailing: { props: Record<string, unknown> }[] };
+          }[];
+        };
+      };
+      params: Record<string, unknown>;
+    };
+    document.root.zones.header[0]!.zones.trailing[0]!.props.tone = 'purple';
+    document.params.bad = { type: { kind: 'map' } };
+    const { root, editor } = open({ document: document as never });
+    const rows = root.querySelectorAll<HTMLElement>(
+      '[data-action="editor-select-problem"]',
+    );
+    expect(rows).toHaveLength(2);
+    // A document-level problem has no node to select.
+    expect(rows[0]!.matches(':disabled, [aria-disabled="true"]')).toBe(true);
+    rows[1]!.click();
+    expect(editor.selection.value).toEqual({
+      kind: 'node',
+      id: '01JB8Z1M6Q8E1X9V4S7K2R3T5D',
+    });
+    const outlineRow = root.querySelector(
+      '[data-action="editor-select-node"][data-item-id="01JB8Z1M6Q8E1X9V4S7K2R3T5D"]',
+    )!;
+    expect(
+      outlineRow.closest('[data-component], li, .kui-list-item')?.textContent,
+    ).toContain('1');
+    expect(root.textContent).toContain('2 problems in this document');
+  });
+
   it('shows a selected node that has no props entry, and a stale selection', () => {
     const { root, editor } = open({
       document: {

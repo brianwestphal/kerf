@@ -271,8 +271,9 @@ export function parseCssCall(source) {
   return names;
 }
 
+// Optional props print as `T | undefined`; messages name the type itself.
 function describe(type) {
-  return type?.text ?? type?.kind ?? 'unknown';
+  return (type?.text ?? type?.kind ?? 'unknown').replace(/ \| undefined$/, '');
 }
 
 /** Validates one param or slot-input type in the document's own grammar. */

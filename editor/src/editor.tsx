@@ -9,6 +9,7 @@ import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/workbench.css';
 import './editor.css';
 
+import { Badge } from '@kerfjs/ui/badge';
 import { Button } from '@kerfjs/ui/button';
 import { EmptyState } from '@kerfjs/ui/empty-state';
 import { FilePickerTrigger } from '@kerfjs/ui/file-picker';
@@ -51,12 +52,14 @@ import {
 } from './model/document.js';
 import { inspectorSections } from './model/inspector.js';
 import { nodeTitle, outlineRows } from './model/outline.js';
+import { type Problem, problemCounts, problemsOf } from './model/problems.js';
 import { sampleInputs } from './model/sample-inputs.js';
 import sample from './sample.kui.json';
 
 export const WORKBENCH_ID = 'kerf-ui-editor';
 const OUTLINE_ACTION = 'editor-select-node';
 const PALETTE_ACTION = 'editor-show-component';
+const PROBLEM_ACTION = 'editor-select-problem';
 const SAVE_ACTION = 'editor-save';
 const DOCUMENT_TOGGLE = 'editor-toggle-document';
 const INSPECTOR_TOGGLE = 'editor-toggle-inspector';
@@ -84,7 +87,15 @@ const slots = new Proxy({} as Record<string, () => SafeHtml>, {
 });
 
 /** Renders the document onto the canvas, or explains why it cannot. */
-function canvasContent(document: ViewDocument): SafeHtml {
+function canvasContent(document: ViewDocument, problems: number): SafeHtml {
+  // interpretView refuses an invalid document; say what to do instead of
+  // repeating the first diagnostic, which the Problems list already shows.
+  if (problems) {
+    return EmptyState({
+      title: 'This document cannot be previewed',
+      detail: `Fix the ${problems === 1 ? 'problem' : `${problems} problems`} listed under Problems in the Document rail to preview it.`,
+    });
+  }
   try {
     return interpretView(document, {
       catalog: viewCatalog,
@@ -136,18 +147,47 @@ export function createEditor(options: EditorOptions = {}) {
     selection.value = next;
   };
 
-  const outline = (document: ViewDocument) => {
+  const outline = (
+    document: ViewDocument,
+    counts: ReadonlyMap<string, number>,
+  ) => {
     const current = selection.value;
-    return outlineRows(document, componentNames).map((row) => (
+    return outlineRows(document, componentNames).map((row) => {
+      const count = counts.get(row.id);
+      return (
+        <ListItem
+          action={OUTLINE_ACTION}
+          itemId={row.id}
+          label={row.label}
+          description={row.detail}
+          selected={current?.kind === 'node' && current.id === row.id}
+          status={
+            count ? (
+              <Badge
+                tone="danger"
+                label={`${count} ${count === 1 ? 'problem' : 'problems'}`}
+              >
+                {count}
+              </Badge>
+            ) : undefined
+          }
+        />
+      );
+    });
+  };
+
+  /** One row per diagnostic; a row about a node selects it. */
+  const problemRows = (problems: readonly Problem[]) =>
+    problems.map(({ diagnostic, nodeId }, index) => (
       <ListItem
-        action={OUTLINE_ACTION}
-        itemId={row.id}
-        label={row.label}
-        description={row.detail}
-        selected={current?.kind === 'node' && current.id === row.id}
+        action={PROBLEM_ACTION}
+        itemId={nodeId ?? `document-${index}`}
+        label={diagnostic.message}
+        description={`${diagnostic.code} · ${diagnostic.path}`}
+        multiline
+        disabled={!nodeId}
       />
     ));
-  };
 
   const palette = () =>
     paletteGroups().map((group) => [
@@ -217,7 +257,8 @@ export function createEditor(options: EditorOptions = {}) {
     const document = doc.value;
     const validation = validateView(document, viewCatalog);
     const nodes = outlineRows(document, componentNames).length;
-    const problems = validation.diagnostics.length;
+    const problemList = problemsOf(document, validation.diagnostics);
+    const problems = problemList.length;
     return (
       <List fill rootAttributes={{ 'data-editor': 'kerf-ui-editor' }}>
         <Toolbar
@@ -259,12 +300,22 @@ export function createEditor(options: EditorOptions = {}) {
               },
               content: (
                 <List>
+                  {problems
+                    ? [
+                        <ListHeader
+                          label="Problems"
+                          count={problems}
+                          countLabel="problems"
+                        />,
+                        problemRows(problemList),
+                      ]
+                    : undefined}
                   <ListHeader
                     label="Outline"
                     count={nodes}
                     countLabel="nodes"
                   />
-                  {outline(document)}
+                  {outline(document, problemCounts(problemList))}
                   <ListHeader label="Components" />
                   {palette()}
                 </List>
@@ -293,13 +344,13 @@ export function createEditor(options: EditorOptions = {}) {
                 <StateBanner
                   tone="warning"
                   title={`${problems} ${problems === 1 ? 'problem' : 'problems'} in this document`}
-                  detail={`${validation.diagnostics[0]!.code} at ${validation.diagnostics[0]!.path}: ${validation.diagnostics[0]!.message}`}
+                  detail="Each one is listed under Problems in the Document rail; select one to inspect its node."
                 />
               ) : undefined
             }
             main={
               <div class="editor-canvas" data-editor-canvas>
-                {canvasContent(document)}
+                {canvasContent(document, problems)}
                 <div
                   class="editor-selection"
                   data-morph-skip
@@ -365,6 +416,8 @@ export function createEditor(options: EditorOptions = {}) {
       }),
       delegateActions<HTMLElement>(root, 'click', {
         [OUTLINE_ACTION]: (_event, target) =>
+          select({ kind: 'node', id: target.dataset.itemId! }),
+        [PROBLEM_ACTION]: (_event, target) =>
           select({ kind: 'node', id: target.dataset.itemId! }),
         [PALETTE_ACTION]: (_event, target) =>
           select({ kind: 'component', key: target.dataset.itemId! }),
