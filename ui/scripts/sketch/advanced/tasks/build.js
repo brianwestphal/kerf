@@ -8,6 +8,7 @@ function readJSON(path) {
   return JSON.parse(String(content));
 }
 
+var blurShadows = require('../../shared/blur-shadows');
 var semanticLayout = require('./semantic-layout');
 var migration = require('./migrate');
 
@@ -81,6 +82,7 @@ module.exports.run = function (session, parameters, done) {
         }
         // Re-apply the idempotent layout to every master so a contract change
         // reaches published Symbols, not only new or migrated ones.
+        blurShadows.apply(symbol, fixture.svg, dom);
         semanticLayout.apply(symbol, fixture, dom);
         symbol.name = fixture.name;
         symbol.background.enabled = false;

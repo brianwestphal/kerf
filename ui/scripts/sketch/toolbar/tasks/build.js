@@ -8,6 +8,7 @@ function readJSON(path) {
   return JSON.parse(String(content));
 }
 
+var blurShadows = require('../../shared/blur-shadows');
 var semanticLayout = require('./semantic-layout');
 
 function textWeights(svg) {
@@ -74,6 +75,7 @@ module.exports.run = function (session, parameters, done) {
         }
         symbol.name = fixture.name;
         symbol.background.enabled = false;
+        blurShadows.apply(symbol, fixture.svg, dom);
         semanticLayout.apply(symbol, fixture, dom);
         var texts = dom.find('Text', symbol);
         var weights = textWeights(fixture.svg);

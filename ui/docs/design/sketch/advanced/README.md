@@ -53,7 +53,9 @@ content stays left and trailing controls stay right. ColorPicker and
 ColorSwatches are fixed-size widgets: a wider instance keeps them at their
 authored size, pinned left. The builder turns the imported capture from a
 Sketch Graphic, which would scale its contents, into a plain group so these
-pins apply, and re-applies the layout to every master on each build.
+pins apply, and re-applies the layout to every master on each build. Captured blurred box shadows import as hard offset
+rectangles, so the builder gives each imported shadow layer a native Gaussian
+blur with the captured radius.
 
 The captured Slider value, ColorPicker selection, and popup/field states are
 static design states. Browser interaction, range input behavior, and live

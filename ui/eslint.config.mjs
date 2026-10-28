@@ -26,6 +26,7 @@ export default [
       'scripts/sketch/lists/tasks/*.js',
       'scripts/sketch/toolbar/tasks/*.js',
       'scripts/sketch/content/tasks/*.js',
+      'scripts/sketch/shared/*.js',
     ],
     languageOptions: {
       sourceType: 'commonjs',

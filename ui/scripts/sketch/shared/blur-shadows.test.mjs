@@ -5,9 +5,9 @@ import vm from 'node:vm';
 
 const sketchModule = { exports: {} };
 vm.runInNewContext(
-  readFileSync(new URL('./tasks/blur-shadows.js', import.meta.url), 'utf8'),
+  readFileSync(new URL('./blur-shadows.js', import.meta.url), 'utf8'),
   { module: sketchModule },
-  { filename: 'tasks/blur-shadows.js' },
+  { filename: 'blur-shadows.js' },
 );
 const { shadowSpecs } = sketchModule.exports;
 

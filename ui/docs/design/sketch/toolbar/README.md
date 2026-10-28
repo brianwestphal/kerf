@@ -44,7 +44,9 @@ the right edge as one cluster. ToolbarControlGroup, ToolbarText, TabBar,
 SegmentedControl, ChoiceChips, and Chip hug their content, so a wider instance
 keeps them at their authored size, pinned left. The builder turns the imported
 capture from a Sketch Graphic, which would scale its contents, into a plain
-group so these pins apply.
+group so these pins apply. Captured blurred box shadows import as hard offset
+rectangles, so the builder gives each imported shadow layer a native Gaussian
+blur with the captured radius.
 
 Install a copy at a stable path through Sketch Settings → Libraries. On an
 update, replace that installed file, refresh the Library, and sync consumer

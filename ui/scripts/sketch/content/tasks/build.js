@@ -8,7 +8,7 @@ function readJSON(path) {
   return JSON.parse(String(content));
 }
 
-var blurShadows = require('./blur-shadows');
+var blurShadows = require('../../shared/blur-shadows');
 var semanticLayout = require('./semantic-layout');
 
 function textWeights(svg) {
