@@ -1,10 +1,10 @@
 {
   "symbols": 70,
   "nativeText": 90,
-  "nativePaths": 916,
+  "nativePaths": 946,
   "bitmaps": 0,
   "assets": 23,
-  "assetBindings": 314,
+  "assetBindings": 332,
   "instances": [
     {
       "id": "toolbar-control-group-with-text-control-light",

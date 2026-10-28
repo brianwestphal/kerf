@@ -24,7 +24,11 @@ applies the same layout, and updates the published layers in place
 layer IDs stay the same. Unchanged paint colors keep their Color Variables;
 run `assets` afterward to bind changed colors. A changed layer count, layer
 or shape type, or a reordered label is rejected with the fixture and tree
-path before any published layer changes.
+path before any published layer changes. When an edit only adds non-Text layers, they are
+inserted beside the matched layers. When the importer reshapes the tree so
+no layer-by-layer mapping exists but the ordered labels still match, the
+builder keeps the Symbol and moves each published Text layer (the override
+keys) into the fresh tree, and the build report flags it as `retreed`.
 
 ## Regenerate and verify
 

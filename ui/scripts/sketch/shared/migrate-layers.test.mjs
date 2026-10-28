@@ -9,7 +9,7 @@ vm.runInNewContext(
   { module: sketchModule },
   { filename: 'migrate-layers.js' },
 );
-const { migrate } = sketchModule.exports;
+const { migrate, migrationPairs, retree } = sketchModule.exports;
 
 function layer(type, id, options = {}) {
   const frame = { x: 0, y: 0, width: 20, height: 12, ...options.frame };
@@ -157,4 +157,191 @@ test('reordered sibling Text nodes cannot silently exchange override IDs', () =>
     /text may have moved.*explicit override-key migration required/,
   );
   assert.equal(existing.layers[0].layers[0].text, 'PROJECT NAME');
+});
+
+function iconTree(children) {
+  return symbol('master', [layer('Group', 'icon', { layers: children })]);
+}
+const line = (id, x = 8) =>
+  layer('ShapePath', id, {
+    shapeType: 'Custom',
+    frame: { x, width: 13, height: 0 },
+  });
+const dot = (id) =>
+  layer('ShapePath', id, {
+    shapeType: 'Custom',
+    frame: { x: 3, width: 0, height: 0 },
+  });
+
+test('inserts added non-Text layers and keeps every published layer ID', () => {
+  const existing = iconTree([line('a'), line('b'), line('c')]);
+  const incoming = iconTree([
+    dot('d1'),
+    dot('d2'),
+    line('new-a'),
+    line('new-b'),
+    line('new-c'),
+  ]);
+  const pairs = migrationPairs(
+    existing,
+    incoming,
+    'list-compact-light',
+    'list/data',
+  );
+  assert.deepEqual(
+    Array.from(pairs, (pair) => pair.existing.id),
+    ['icon', 'a', 'b', 'c'],
+  );
+  assert.deepEqual(
+    Array.from(pairs.insertions, (insertion) => [
+      insertion.layer.id,
+      insertion.index,
+    ]),
+    [
+      ['d1', 0],
+      ['d2', 1],
+    ],
+  );
+  assert.equal(
+    migrate(existing, incoming, 'list-compact-light', 'list/data'),
+    6,
+  );
+});
+
+test('rejects an added Text layer or a removed published layer', () => {
+  assert.throws(
+    () =>
+      migrate(
+        iconTree([line('a')]),
+        iconTree([line('new-a'), layer('Text', 'label', { text: 'New' })]),
+        'list-compact-light',
+        'list/data',
+      ),
+    /child count 1 -> 2/,
+  );
+  assert.throws(
+    () =>
+      migrate(
+        iconTree([line('a'), line('b', 20)]),
+        iconTree([
+          dot('d1'),
+          line('new-a'),
+          layer('ShapePath', 'x', { shapeType: 'Oval' }),
+        ]),
+        'list-compact-light',
+        'list/data',
+      ),
+    /child count 2 -> 3/,
+  );
+});
+
+// A minimal native-like tree: assigning parent moves the node, index reorders
+// it among its siblings, and remove detaches it.
+function node(type, id, options = {}) {
+  const frame = { x: 0, y: 0, width: 20, height: 12, ...options.frame };
+  const self = {
+    type,
+    id,
+    text: options.text,
+    style: options.style ?? { fills: [], borders: [] },
+    frame: { ...frame, toJSON: () => ({ ...frame }) },
+    layers: [],
+    _parent: null,
+    get parent() {
+      return this._parent;
+    },
+    set parent(next) {
+      if (this._parent)
+        this._parent.layers.splice(this._parent.layers.indexOf(this), 1);
+      this._parent = next;
+      if (next) next.layers.push(this);
+    },
+    get index() {
+      return this._parent.layers.indexOf(this);
+    },
+    set index(position) {
+      const siblings = this._parent.layers;
+      siblings.splice(siblings.indexOf(this), 1);
+      siblings.splice(position, 0, this);
+    },
+    remove() {
+      this.parent = null;
+    },
+  };
+  (options.children ?? []).forEach((child) => (child.parent = self));
+  return self;
+}
+
+test('re-tree keeps the master and its Text layer IDs when grouping changed', () => {
+  const swatch = { id: 'text' };
+  const label = node('Text', 'published-label', {
+    text: 'Notifications Paused',
+    style: { fills: [{ color: '#111', swatch }] },
+  });
+  const existing = node('SymbolMaster', 'master', {
+    children: [
+      node('Group', 'old-root', {
+        children: [
+          node('Group', 'icon', { children: [node('ShapePath', 'p'), label] }),
+        ],
+      }),
+    ],
+  });
+  const freshLabel = node('Text', 'fresh-label', {
+    text: 'Notifications Paused',
+    style: { fills: [{ color: '#111' }] },
+    frame: { x: 30 },
+  });
+  const incoming = node('SymbolMaster', 'preview', {
+    children: [
+      node('Group', 'new-root', {
+        children: [
+          node('Group', 'icon', {
+            children: [node('ShapePath', 'p'), node('ShapePath', 'dot')],
+          }),
+          freshLabel,
+        ],
+      }),
+    ],
+  });
+  assert.equal(
+    retree(
+      existing,
+      incoming,
+      'state-banner-warning-light',
+      'content/feedback',
+    ),
+    1,
+  );
+  assert.equal(existing.layers.length, 1);
+  assert.equal(existing.layers[0].id, 'new-root');
+  const moved = existing.layers[0].layers[1];
+  assert.equal(moved.id, 'published-label');
+  assert.equal(moved.frame.x, 30);
+  assert.equal(moved.style.fills[0].swatch, swatch);
+  assert.equal(incoming.layers.length, 0);
+});
+
+test('re-tree refuses a changed Text sequence before mutating', () => {
+  const build = (texts) =>
+    node('SymbolMaster', 'm', {
+      children: [
+        node('Group', 'root', {
+          children: texts.map((text, i) => node('Text', 't' + i, { text })),
+        }),
+      ],
+    });
+  const existing = build(['TITLE', 'VALUE']);
+  assert.throws(
+    () => retree(existing, build(['VALUE', 'TITLE']), 'x', 'list/data'),
+    /text may have moved/,
+  );
+  assert.throws(
+    () => retree(existing, build(['TITLE']), 'x', 'list/data'),
+    /Text count 2 -> 1/,
+  );
+  assert.deepEqual(
+    Array.from(existing.layers[0].layers, (layer) => layer.id),
+    ['t0', 't1'],
+  );
 });

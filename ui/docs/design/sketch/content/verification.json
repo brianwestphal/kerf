@@ -1,10 +1,10 @@
 {
   "symbols": 56,
   "nativeText": 88,
-  "nativePaths": 284,
+  "nativePaths": 288,
   "bitmaps": 0,
   "assets": 26,
-  "assetBindings": 172,
+  "assetBindings": 176,
   "instances": [
     {
       "id": "disclosure-plain-advanced-settings-light",

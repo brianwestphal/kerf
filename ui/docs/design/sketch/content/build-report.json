@@ -1,5 +1,5 @@
 {
-  "sketchPid": 29826,
+  "sketchPid": 43459,
   "symbols": [
     {
       "id": "disclosure-plain-advanced-settings-light",
@@ -20,6 +20,8 @@
       ],
       "paths": 4,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "a8de53166e23fd87779009cfc17b9aaa8403b5ae3a64c3bbe02fb976a829394a"
     },
     {
@@ -41,6 +43,8 @@
       ],
       "paths": 5,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "c2410034a63252721b7c142ddbd9fc4143b5d38d64432f3c5917dfc04c70e130"
     },
     {
@@ -62,6 +66,8 @@
       ],
       "paths": 4,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "9a80176597932b53f27314cea08e6ec7c5980dca04b49d9375f33176c3e2c2ea"
     },
     {
@@ -83,6 +89,8 @@
       ],
       "paths": 5,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "defacb1f7951e29e5ff52397f98c213d3ba60e818c03a3afa0614a82bbfbc0fd"
     },
     {
@@ -104,6 +112,8 @@
       ],
       "paths": 5,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "6c6664b3092a42e39bc238893fdf7f1977afa7695f8eb9f84f0217135dc6187f"
     },
     {
@@ -125,6 +135,8 @@
       ],
       "paths": 5,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "9a4503e9729df46e6c0578ddd0a9589ae19a5d38a03905f6f79566a2fcebddb0"
     },
     {
@@ -146,6 +158,8 @@
       ],
       "paths": 5,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "17e28c7658f47858765736ca77c6ce25d72817ee45c01c06a2ec603808042831"
     },
     {
@@ -167,6 +181,8 @@
       ],
       "paths": 5,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "ae11de29093131c3def7ac69e913177fa6eccf73c955ea701fd0efbca0b08351"
     },
     {
@@ -192,6 +208,8 @@
       ],
       "paths": 3,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "dc91b0b10325779c41ad18dab4df9c05b80e1d6003fa39708f88adca6da52fb7"
     },
     {
@@ -217,6 +235,8 @@
       ],
       "paths": 3,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "ae07305594aad10533ecb08eef5e702ba70e6fbf89a179552751c7a8c33e0a38"
     },
     {
@@ -242,6 +262,8 @@
       ],
       "paths": 8,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "8eb7e4829a32438dbd4a87c008826cd578ecc1ce0e28955bb3072d13f4fb9ab3"
     },
     {
@@ -267,6 +289,8 @@
       ],
       "paths": 8,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "3c77b3812de09dc6b0abfed02eef182ef4bc0011dd674213f25a80234920a151"
     },
     {
@@ -288,6 +312,8 @@
       ],
       "paths": 6,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "8551ee95459fb87a7886892ac1facd90b59b3963b3f8231ef636f4e37bbb94b2"
     },
     {
@@ -309,6 +335,8 @@
       ],
       "paths": 6,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "e577871a97a97d534089fa46395f4ec921a3b53d0d0f88076b17d47ddb5d2d95"
     },
     {
@@ -330,6 +358,8 @@
       ],
       "paths": 5,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "316e5da132351371b20610e41adb783035b5a9a8624870d656f58e81deed7374"
     },
     {
@@ -351,6 +381,8 @@
       ],
       "paths": 5,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "736d7e955cce20192b12e50ff6845e9bdc1662318762f4a6a926ad7388d8253f"
     },
     {
@@ -372,6 +404,8 @@
       ],
       "paths": 5,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "6f100486aba7747ab8bd1a4be2ef39e765d31e1cd4acc83292819a8b897a7e82"
     },
     {
@@ -393,6 +427,8 @@
       ],
       "paths": 5,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "aa46ab5156b00902b07317a43e31756892badc05fe990b0b409e5daee0d46feb"
     },
     {
@@ -405,6 +441,8 @@
       "text": [],
       "paths": 5,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "3d8c320e1ac5ca7d7435ce8d3dd6c54ad52db80b8e1533f85eeada536801889e"
     },
     {
@@ -426,6 +464,8 @@
       ],
       "paths": 5,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "c5bbf723e7c34738ca72fe1bf63c6ff08ecb29dff4b8104438612962b8584698"
     },
     {
@@ -447,6 +487,8 @@
       ],
       "paths": 5,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "27e2c68d963ab135f7b088b588d15bb541b1418f9948952b333aa1eb4ab39885"
     },
     {
@@ -459,6 +501,8 @@
       "text": [],
       "paths": 5,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "bc3da1e64ec5d1bc70619036b704807ba042a9bfb7066bfd211fa7af2f0680af"
     },
     {
@@ -471,6 +515,8 @@
       "text": [],
       "paths": 2,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "136fc577e5d968bfa90d99fcfd7ae4e71245927168bb0f4921c142463d60c79e"
     },
     {
@@ -483,6 +529,8 @@
       "text": [],
       "paths": 2,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "0c50c1c7a2ec45bb22ea39aee1ca5fcb867b8d56241fc982ab79c1ece1920d48"
     },
     {
@@ -495,6 +543,8 @@
       "text": [],
       "paths": 2,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "18875d326cd982be73e60edd9bf5cba1909c1053c2e8a08f3273fd1831620531"
     },
     {
@@ -507,6 +557,8 @@
       "text": [],
       "paths": 2,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "e585333d8ab9de9e88b444540a4e2dca51c54bdaf07e91e6c182a1b73caceed4"
     },
     {
@@ -519,6 +571,8 @@
       "text": [],
       "paths": 2,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "e088cf3630e521515d29072277d8eb59fda55fff93cbebee8a03876e147fb3e5"
     },
     {
@@ -531,6 +585,8 @@
       "text": [],
       "paths": 2,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "06e73852c789bce9b9f5f1d285e9136b49a03b614f0da894bc6a7a0a620ce96b"
     },
     {
@@ -543,6 +599,8 @@
       "text": [],
       "paths": 2,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "74257a5dd0bb1595637b6de5f79d0e87ab2783372cfdb6c9c9e7f6602005f79a"
     },
     {
@@ -555,6 +613,8 @@
       "text": [],
       "paths": 2,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "2296b72921089a435f15c50f9c4c622e790055813b5c4c49e1f85d524f56bcdd"
     },
     {
@@ -567,6 +627,8 @@
       "text": [],
       "paths": 2,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "def9559eebf76e39862845d986b93d4e088efb2bd52b106ef50cafcbb482924d"
     },
     {
@@ -579,6 +641,8 @@
       "text": [],
       "paths": 2,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "330228e2d8c17f70b8ca138d26c1e90e428c41f6be3cfafe805054e530766256"
     },
     {
@@ -591,6 +655,8 @@
       "text": [],
       "paths": 2,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "0937d4e11f723fff7fb53a5216d46c7a44555d253a8acb82bab609464a8cac8d"
     },
     {
@@ -603,6 +669,8 @@
       "text": [],
       "paths": 2,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "5101da4e7850d27de5780c4f5dc7dc627ce73001bc975ddd75733fcc07ad1aac"
     },
     {
@@ -628,6 +696,8 @@
       ],
       "paths": 11,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "41e326d75bbc3574845b7d0760e23d1410fbe13dcb0a9e7f0e12b146af28154a"
     },
     {
@@ -653,6 +723,8 @@
       ],
       "paths": 11,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "e04d3399de845e5615b4fc32038b00ca46aa68bee2a0280ae7dc985d4490a2ee"
     },
     {
@@ -678,6 +750,8 @@
       ],
       "paths": 11,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "d01b66a7607783cded89ef3a2a6fb148376899328b317746629b9c9dab718ec2"
     },
     {
@@ -703,6 +777,8 @@
       ],
       "paths": 11,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "cb493cc334ee2145190e2fa8e2887f25e6bcd426658c5cd44e0fd1a4db24197f"
     },
     {
@@ -724,6 +800,8 @@
       ],
       "paths": 8,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "6a0aebc926e0ace3f584832d7420f816942fcb83f7cdc61ebbf19d04edcf0e13"
     },
     {
@@ -745,6 +823,8 @@
       ],
       "paths": 8,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "54695e2f95ac292b27b72651bbb00b04b68781c12ec28517b8400d91f3aa28a2"
     },
     {
@@ -768,9 +848,11 @@
           "value": "Upgrade"
         }
       ],
-      "paths": 10,
+      "paths": 11,
       "bitmaps": 0,
-      "sourceHash": "3911107b6efe15eb24bf4f23284db22ad852945165fe3c488b9c4ab4ef2977a9"
+      "migratedLayers": 3,
+      "retreed": "Incompatible content/feedback SVG state-banner-warning-control-light at root/0/0/2/1/1/2: layer type Group -> ShapePath",
+      "sourceHash": "55d9a3d4bc0c34350fc5eb3ee57c15ec92b4da69a55494f9d6633f74910be95b"
     },
     {
       "id": "state-banner-warning-control-dark",
@@ -793,9 +875,11 @@
           "value": "Upgrade"
         }
       ],
-      "paths": 10,
+      "paths": 11,
       "bitmaps": 0,
-      "sourceHash": "bb44898441944dcfe4c98737ad69ef2d26fe2966d376cccdb30d94466f78f8c0"
+      "migratedLayers": 3,
+      "retreed": "Incompatible content/feedback SVG state-banner-warning-control-dark at root/0/0/2/1/1/2: layer type Group -> ShapePath",
+      "sourceHash": "4eca126a45f0dcbb84dc0a069053754e9c194cb2812d5713122f236c7853ca68"
     },
     {
       "id": "state-banner-danger-control-light",
@@ -820,6 +904,8 @@
       ],
       "paths": 11,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "c72883326653eb4eab3d1c34ea309748bbf2edc7168beca1e0f1a59f9a08f918"
     },
     {
@@ -845,6 +931,8 @@
       ],
       "paths": 11,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "6700a8d875e624f1870ba0f19030df3c40e47de703b4c707ccf98f1f427a94f7"
     },
     {
@@ -868,9 +956,11 @@
           "value": "Resume"
         }
       ],
-      "paths": 8,
+      "paths": 9,
       "bitmaps": 0,
-      "sourceHash": "5b043273b48c3159b3333c84fb0a0e2ca42a418c2490732dfd0a8455cb463e06"
+      "migratedLayers": 3,
+      "retreed": "Incompatible content/feedback SVG state-banner-strip-control-light at root/0/0/2/1/1/2: layer type Group -> ShapePath",
+      "sourceHash": "8efb71462fa96b71d7d33562fc2771841ca38264db5bf4329708f996e45ea7da"
     },
     {
       "id": "state-banner-strip-control-dark",
@@ -893,9 +983,11 @@
           "value": "Resume"
         }
       ],
-      "paths": 8,
+      "paths": 9,
       "bitmaps": 0,
-      "sourceHash": "6a9102634f3ea21159458fe981fa432539106d76bd462fed61b21c9110999af6"
+      "migratedLayers": 3,
+      "retreed": "Incompatible content/feedback SVG state-banner-strip-control-dark at root/0/0/2/1/1/2: layer type Group -> ShapePath",
+      "sourceHash": "4fd2669e6e635cb0dfd1e18abc316c237915ba643c894bf31e47d068bce4d0c5"
     },
     {
       "id": "empty-state-with-action-control-light",
@@ -920,6 +1012,8 @@
       ],
       "paths": 6,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "707a9883c0a653e52ea7b450465cacce82f4c4a08d02dcae1408bb9966e496b3"
     },
     {
@@ -945,6 +1039,8 @@
       ],
       "paths": 6,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "b21d8c2280015370ed6d8f8ca2e87bb749b7149e0478ae47dc8cfe308b1cd1b2"
     },
     {
@@ -966,6 +1062,8 @@
       ],
       "paths": 4,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "239ee8c038f7b9af295e95c1149c51f6c531b5aa77a2cdc628ad89eb2a0c2185"
     },
     {
@@ -987,6 +1085,8 @@
       ],
       "paths": 4,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "b9dc5b1c91b6d2d08127a3164899bfd6e51c95793b9031aa6cb9449b8d799258"
     },
     {
@@ -999,6 +1099,8 @@
       "text": [],
       "paths": 1,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "7c4797160c7c4bd6030353f133be55157b3e80b6ea970ba58fabd81710bab0a2"
     },
     {
@@ -1011,6 +1113,8 @@
       "text": [],
       "paths": 1,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "c72512ed45611923a06ac2637617984f75069803691572e3b48593dd0a37c5f3"
     },
     {
@@ -1023,6 +1127,8 @@
       "text": [],
       "paths": 3,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "712b6505c628f2da2213520877e61beee401ce949dcff9255d6eb652925c8ca8"
     },
     {
@@ -1035,6 +1141,8 @@
       "text": [],
       "paths": 3,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "ea5c9fff624e1c3716205f91f018a76f4104702a8baaf7b9eb13723b71fa0bb5"
     },
     {
@@ -1047,6 +1155,8 @@
       "text": [],
       "paths": 1,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "6a4e52a6973f2f95961c2d6b64937a9183c5f7ca8e9083f9f655822ed1e9891f"
     },
     {
@@ -1059,6 +1169,8 @@
       "text": [],
       "paths": 1,
       "bitmaps": 0,
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "d91fe4c8f116d2f29b7adf178c47205de2dd45b1d8cff1f0813c0d2804cb2e6f"
     }
   ]

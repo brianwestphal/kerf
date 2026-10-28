@@ -53,6 +53,7 @@ module.exports.run = function (session, parameters, done) {
           throw new Error('Previously published Symbol missing: ' + fixture.id);
         var changed = old && old.sourceHash !== fixture.sourceHash;
         var migratedLayers = 0;
+        var retreed = null;
         if (!symbol) {
           symbol = new dom.SymbolMaster({
             name: fixture.name,
@@ -96,12 +97,24 @@ module.exports.run = function (session, parameters, done) {
               text.style.fontFamily = 'system';
             });
             semanticLayout.apply(preview, fixture, dom);
-            migratedLayers = migrateLayers.migrate(
-              symbol,
-              preview,
-              fixture.id,
-              'list/data',
-            );
+            try {
+              migratedLayers = migrateLayers.migrate(
+                symbol,
+                preview,
+                fixture.id,
+                'list/data',
+              );
+            } catch (incompatible) {
+              // A tree the importer reshaped cannot map layer by layer; keep the
+              // Symbol and its Text layers (the override keys) and re-tree the rest.
+              migratedLayers = migrateLayers.retree(
+                symbol,
+                preview,
+                fixture.id,
+                'list/data',
+              );
+              retreed = String(incompatible.message || incompatible);
+            }
           } finally {
             preview.remove();
           }
@@ -139,6 +152,7 @@ module.exports.run = function (session, parameters, done) {
           paths: paths.length,
           bitmaps: bitmaps.length,
           migratedLayers: migratedLayers,
+          retreed: retreed,
           sourceHash: fixture.sourceHash,
         });
         dom.export(symbol, {

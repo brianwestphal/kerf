@@ -18,6 +18,7 @@ import {
   resolveTemplateStyles,
   THEMES,
 } from '../../build-design-templates.mjs';
+import { restoreDotPaths } from '../shared/capture-svg.mjs';
 
 const exec = promisify(execFile);
 const uiRoot = resolve(import.meta.dirname, '../../..');
@@ -223,9 +224,11 @@ export async function captureAdvanced(
                 ],
                 { env: { ...process.env, DOMOTION_NO_OPEN: '1' } },
               );
-              const svg = normalizeCheckerboard(
-                normalizeGradientStops(await readFile(svgPath, 'utf8')),
-                theme.id,
+              const svg = restoreDotPaths(
+                normalizeCheckerboard(
+                  normalizeGradientStops(await readFile(svgPath, 'utf8')),
+                  theme.id,
+                ),
               );
               assert.match(svg, /<svg\b/);
               assert.doesNotMatch(svg, /<image\b/i, `${id} gained a bitmap`);

@@ -18,6 +18,7 @@ import {
   resolveTemplateStyles,
   THEMES,
 } from '../../build-design-templates.mjs';
+import { restoreDotPaths } from '../shared/capture-svg.mjs';
 
 const exec = promisify(execFile);
 const uiRoot = resolve(import.meta.dirname, '../../..');
@@ -189,7 +190,7 @@ export async function captureLists(
                 ],
                 { env: { ...process.env, DOMOTION_NO_OPEN: '1' } },
               );
-              const svg = await readFile(svgPath, 'utf8');
+              const svg = restoreDotPaths(await readFile(svgPath, 'utf8'));
               assert.match(svg, /<svg\b/);
               assert.doesNotMatch(svg, /<image\b/i, `${id} gained a bitmap`);
               assert.doesNotMatch(

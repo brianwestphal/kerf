@@ -7,8 +7,56 @@
 // colors keep their Color Variables; changed ones are left for the asset
 // pass to rebind. Extracted from the Forms builder for the families that
 // followed it.
+//
+// Where an edit only adds non-Text layers (a capture fix that restores icon
+// dots Sketch used to drop), siblings are aligned by signature instead of
+// position: every published child must still match an unchanged sibling, and
+// each added layer is inserted at its new position with a fresh ID while
+// every existing layer keeps its own.
+function hasText(layer) {
+  return layer.type === 'Text' || (layer.layers || []).some(hasText);
+}
+
+function signature(layer) {
+  return [
+    layer.type,
+    layer.shapeType || '',
+    Math.round(layer.frame.width) + 'x' + Math.round(layer.frame.height),
+    (layer.layers || []).length,
+  ].join(':');
+}
+
+// Longest common subsequence of sibling signatures, as index pairs.
+function align(oldChildren, newChildren) {
+  var oldKeys = oldChildren.map(signature);
+  var newKeys = newChildren.map(signature);
+  var table = [];
+  for (var i = 0; i <= oldKeys.length; i++) {
+    table.push([]);
+    for (var j = 0; j <= newKeys.length; j++)
+      table[i].push(
+        i === 0 || j === 0
+          ? 0
+          : oldKeys[i - 1] === newKeys[j - 1]
+            ? table[i - 1][j - 1] + 1
+            : Math.max(table[i - 1][j], table[i][j - 1]),
+      );
+  }
+  var matches = [];
+  for (var a = oldKeys.length, b = newKeys.length; a > 0 && b > 0;) {
+    if (oldKeys[a - 1] === newKeys[b - 1]) {
+      matches.unshift([a - 1, b - 1]);
+      a--;
+      b--;
+    } else if (table[a - 1][b] >= table[a][b - 1]) a--;
+    else b--;
+  }
+  return matches;
+}
+
 function migrationPairs(existing, incoming, fixtureId, family) {
   var pairs = [];
+  var insertions = [];
   function visit(oldLayer, newLayer, path) {
     if (oldLayer.type !== newLayer.type)
       throw new Error(
@@ -41,7 +89,28 @@ function migrationPairs(existing, incoming, fixtureId, family) {
       );
     var oldChildren = oldLayer.layers || [];
     var newChildren = newLayer.layers || [];
-    if (oldChildren.length !== newChildren.length)
+    if (oldChildren.length !== newChildren.length) {
+      var matches = align(oldChildren, newChildren);
+      var added = newChildren.filter(function (child, index) {
+        return !matches.some(function (match) {
+          return match[1] === index;
+        });
+      });
+      if (matches.length === oldChildren.length && !added.some(hasText)) {
+        pairs.push({ existing: oldLayer, incoming: newLayer });
+        newChildren.forEach(function (child, index) {
+          if (added.indexOf(child) >= 0)
+            insertions.push({ parent: oldLayer, layer: child, index: index });
+        });
+        matches.forEach(function (match) {
+          visit(
+            oldChildren[match[0]],
+            newChildren[match[1]],
+            path + '/' + match[0],
+          );
+        });
+        return;
+      }
       throw new Error(
         'Incompatible ' +
           family +
@@ -54,6 +123,7 @@ function migrationPairs(existing, incoming, fixtureId, family) {
           ' -> ' +
           newChildren.length,
       );
+    }
     newChildren.forEach(function (child, index) {
       if (child.type !== 'Text' || oldChildren[index].text === child.text)
         return;
@@ -100,6 +170,7 @@ function migrationPairs(existing, incoming, fixtureId, family) {
   oldRoots.forEach(function (root, index) {
     visit(root, newRoots[index], 'root/' + index);
   });
+  pairs.insertions = insertions;
   return pairs;
 }
 
@@ -143,10 +214,89 @@ function migrate(existing, incoming, fixtureId, family) {
     }
     if (target.type === 'Text') target.text = fresh.text;
   });
+  // Insert added layers in ascending position so each lands at the index it
+  // has in the edited capture.
+  pairs.insertions.forEach(function (insertion) {
+    insertion.layer.parent = insertion.parent;
+    insertion.layer.index = insertion.index;
+  });
   existing.frame.width = incoming.frame.width;
   existing.frame.height = incoming.frame.height;
-  return pairs.length;
+  return pairs.length + pairs.insertions.length;
 }
 
 module.exports.migrationPairs = migrationPairs;
 module.exports.migrate = migrate;
+
+function textLayers(layer) {
+  var found = [];
+  (function walk(node) {
+    if (node.type === 'Text') found.push(node);
+    (node.layers || []).forEach(walk);
+  })(layer);
+  return found;
+}
+
+/**
+ * Fallback for an edit whose layer tree cannot be mapped layer by layer, for
+ * example a capture fix that restores a dot Sketch used to drop and, with it,
+ * the grouping the import had collapsed around the missing path. Consumers
+ * link to the master's Symbol ID and override its Text layers, so when the
+ * ordered Text sequence still matches, keep the master and move each
+ * published Text layer into the fresh tree in place of its counterpart; every
+ * other layer is replaced. Throws before mutating if the Text sequence
+ * changed shape or a label may have moved.
+ */
+function retree(existing, incoming, fixtureId, family) {
+  var oldTexts = textLayers(existing);
+  var newTexts = textLayers(incoming);
+  function reject(reason) {
+    throw new Error(
+      'Incompatible ' + family + ' SVG ' + fixtureId + ': ' + reason,
+    );
+  }
+  if (oldTexts.length !== newTexts.length)
+    reject(
+      'Text count ' +
+        oldTexts.length +
+        ' -> ' +
+        newTexts.length +
+        ' on re-tree',
+    );
+  newTexts.forEach(function (fresh, index) {
+    if (oldTexts[index].text === fresh.text) return;
+    oldTexts.forEach(function (previous, candidate) {
+      if (candidate !== index && previous.text === fresh.text)
+        reject(
+          'text may have moved from ' +
+            candidate +
+            ' to ' +
+            index +
+            '; explicit override-key migration required',
+        );
+    });
+  });
+  if (existing.layers.length !== 1 || incoming.layers.length !== 1)
+    reject('expected one capture root on re-tree');
+  newTexts.forEach(function (fresh, index) {
+    var target = oldTexts[index];
+    preserveMatchingSwatches(target.style, fresh.style);
+    target.parent = fresh.parent;
+    target.index = fresh.index;
+    target.style = fresh.style;
+    target.frame = fresh.frame.toJSON();
+    target.text = fresh.text;
+    target.horizontalSizing = fresh.horizontalSizing;
+    target.horizontalPins = fresh.horizontalPins;
+    target.verticalSizing = fresh.verticalSizing;
+    target.verticalPins = fresh.verticalPins;
+    fresh.remove();
+  });
+  existing.layers[0].remove();
+  incoming.layers[0].parent = existing;
+  existing.frame.width = incoming.frame.width;
+  existing.frame.height = incoming.frame.height;
+  return textLayers(existing).length;
+}
+
+module.exports.retree = retree;
