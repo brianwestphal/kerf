@@ -3401,6 +3401,11 @@
           "id": "disclosure",
           "relationship": "nearest",
           "when": "Use Disclosure to show and hide one section of content."
+        },
+        {
+          "id": "column-explorer",
+          "relationship": "nearest",
+          "when": "Use ColumnExplorer for a deep hierarchy browsed one level per column."
         }
       ],
       "appOwns": [
@@ -3448,6 +3453,97 @@
       "links": {
         "catalogRoute": "?component=tree-list",
         "documentation": "docs/tree-list.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "id": "column-explorer",
+      "name": "ColumnExplorer",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A macOS-style column explorer for a hierarchy: one column of ListItem rows per level in a ColumnTrack, where choosing a row with children opens the next column; an optional preview column shows a chosen leaf. The application owns the nodes and the chosen path.",
+      "uses": [
+        "column-track",
+        "list",
+        "list-item",
+        "lucide-icon"
+      ],
+      "purpose": "Browse a large or deep hierarchy (files, categories, settings) one level per column, keeping the chosen path visible, with a paged layout for phones.",
+      "publicExports": [
+        "ColumnExplorer",
+        "ColumnExplorerProps",
+        "explorerColumns",
+        "explorerChosen",
+        "ExplorerColumn"
+      ],
+      "useWhen": [
+        "People browse a deep hierarchy and benefit from seeing every level of the chosen path side by side: render ColumnExplorer with nodes (TreeList's TreeListNode) and path, set path to treeListPath(nodes, id) in the action handler, and wire wireColumnExplorer for the keyboard.",
+        "The same hierarchy also shows as a TreeList: both read TreeListNode, so an app can switch between them."
+      ],
+      "avoidWhen": [
+        "Do not use it for a shallow hierarchy that fits one indented list; use TreeList.",
+        "Do not build columns of Lists in a ColumnTrack by hand; use ColumnExplorer.",
+        "Do not use it for a one-level-at-a-time flow with views and toolbars; use NavStack."
+      ],
+      "alternatives": [
+        {
+          "id": "tree-list",
+          "relationship": "nearest",
+          "when": "Use TreeList when the hierarchy reads best as one indented list."
+        },
+        {
+          "id": "nav-stack",
+          "relationship": "nearest",
+          "when": "Use NavStack when each level is a full view with its own toolbar."
+        }
+      ],
+      "appOwns": [
+        "the nodes and loading their children",
+        "the chosen path (set it from action) and the preview content"
+      ],
+      "variants": [
+        "scroll layout",
+        "paged layout for phones",
+        "preview column for a chosen leaf",
+        "disabled rows",
+        "lazy children (hasChildren)",
+        "compact density"
+      ],
+      "accessibility": [
+        "The explorer is a region named by label; each column is a group named by its parent's label, and chosen rows carry aria-current. Rows that open a column show a chevron.",
+        "With wireColumnExplorer: one Tab stop per column; Up and Down move, Home and End jump, Right opens a row's column and moves into it, Left returns to the column before, Enter and Space choose, and typing finds a row in the column."
+      ],
+      "geometry": {
+        "margin": "child",
+        "border": "child",
+        "padding": "child",
+        "notes": [
+          "ColumnTrack owns the sideways scroll and column widths; each column is a scrollable List of ListItem rows that own their insets. The explorer fills its parent's height."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/column-explorer",
+        "browserImport": "@kerfjs/ui/column-explorer",
+        "manualCssImport": "@kerfjs/ui/column-explorer.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wireColumnExplorer",
+          "import": "@kerfjs/ui/wire-column-explorer",
+          "required": true
+        }
+      ],
+      "publicClasses": [
+        "kui-column-explorer"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=column-explorer",
+        "documentation": "docs/column-explorer.md",
         "recipe": "docs/component-selection.md#problem-to-component-matrix"
       }
     },

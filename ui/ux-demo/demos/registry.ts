@@ -13,6 +13,7 @@ import { CollapsiblePanelDemo } from './collapsible-panel.js';
 import { ColorFieldDemo } from './color-field.js';
 import { ColorPickerDemo } from './color-picker.js';
 import { ColorSwatchesDemo } from './color-swatches.js';
+import { ColumnExplorerDemo } from './column-explorer.js';
 import { ColumnTrackDemo } from './column-track.js';
 import { ComboboxDemo } from './combobox.js';
 import { ContentItemDemo } from './content-item.js';
@@ -106,6 +107,7 @@ export const demos = {
   slider: SliderDemo,
   'tag-field': TagFieldDemo,
   'tree-list': TreeListDemo,
+  'column-explorer': ColumnExplorerDemo,
   toast: ToastDemo,
   tooltip: TooltipDemo,
   'search-field': SearchFieldDemo,

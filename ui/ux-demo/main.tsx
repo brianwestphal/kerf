@@ -126,6 +126,10 @@ import {
   resetColorSwatchesDemo,
 } from './demos/color-swatches.js';
 import {
+  resetColumnExplorerDemo,
+  wireColumnExplorerDemo,
+} from './demos/column-explorer.js';
+import {
   popListDetailDialogDemo,
   resetListDetailDialogDemo,
   SELECT_LIST_DETAIL_PROJECT_ACTION,
@@ -1747,6 +1751,11 @@ const routeWires: Partial<Record<string, RouteWire>> = {
     wire: () => () => {},
   },
   slider: { reset: resetSliderDemo, target: 'canvas', wire: () => () => {} },
+  'column-explorer': {
+    reset: resetColumnExplorerDemo,
+    target: 'canvas',
+    wire: (canvas) => wireColumnExplorerDemo(canvas),
+  },
   'tree-list': {
     reset: resetTreeListDemo,
     target: 'canvas',

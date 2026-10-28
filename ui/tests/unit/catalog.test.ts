@@ -560,6 +560,7 @@ describe('UX catalog metadata', () => {
       'ValueTable',
       'FramedList',
       'TreeList',
+      'ColumnExplorer',
       'SummaryRow',
       'Row',
       'Grid',

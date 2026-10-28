@@ -297,6 +297,8 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `FramedList`, `FramedListRow`                                | `@kerfjs/ui/framed-list`                | `@kerfjs/ui/framed-list.css`             |
 | `TreeList`, `treeListRows`, `treeListPath`                   | `@kerfjs/ui/tree-list`                  | `@kerfjs/ui/tree-list.css`               |
 | `wireTreeList`                                               | `@kerfjs/ui/wire-tree-list`             | —                                        |
+| `ColumnExplorer`, `explorerColumns`                          | `@kerfjs/ui/column-explorer`            | `@kerfjs/ui/column-explorer.css`         |
+| `wireColumnExplorer`                                         | `@kerfjs/ui/wire-column-explorer`       | —                                        |
 | `SummaryRow`                                                 | `@kerfjs/ui/summary-row`                | `@kerfjs/ui/summary-row.css`             |
 | `ColumnTrack`                                                | `@kerfjs/ui/column-track`               | `@kerfjs/ui/column-track.css`            |
 | `ContentSwap`                                                | `@kerfjs/ui/content-swap`               | `@kerfjs/ui/content-swap.css`            |

@@ -106,6 +106,8 @@ const entries = [
   'framed-list',
   'tree-list',
   'wire-tree-list',
+  'column-explorer',
+  'wire-column-explorer',
   'summary-row',
   'wire-corner-status',
   'empty-state',

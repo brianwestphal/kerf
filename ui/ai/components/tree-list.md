@@ -24,6 +24,7 @@ Show and navigate a hierarchy (a file tree, a document outline, nested categorie
 
 - [ListItem](./list-item.md) (nearest) — Use List and ListItem when the items are not nested.
 - [Disclosure](./disclosure.md) (nearest) — Use Disclosure to show and hide one section of content.
+- [ColumnExplorer](./column-explorer.md) (nearest) — Use ColumnExplorer for a deep hierarchy browsed one level per column.
 
 ## Imports
 
@@ -82,6 +83,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [ListItem](./list-item.md), [DisclosureArrow](./disclosure-arrow.md), [Disclosure](./disclosure.md).
+- Components: [ListItem](./list-item.md), [DisclosureArrow](./disclosure-arrow.md), [Disclosure](./disclosure.md), [ColumnExplorer](./column-explorer.md).
 - Docs: [`docs/tree-list.md`](../../docs/tree-list.md), [`docs/component-selection.md#problem-to-component-matrix`](../../docs/component-selection.md#problem-to-component-matrix).
 - UX catalog route: `?component=tree-list`.

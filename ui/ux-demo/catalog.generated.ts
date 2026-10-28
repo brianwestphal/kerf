@@ -410,6 +410,23 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/tree-list.md"
   },
   {
+    "id": "column-explorer",
+    "name": "ColumnExplorer",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Browse a large or deep hierarchy (files, categories, settings) one level per column, keeping the chosen path visible, with a paged layout for phones.",
+    "uses": [
+      "column-track",
+      "list",
+      "list-item",
+      "lucide-icon"
+    ],
+    "demoSource": "ui/ux-demo/demos/column-explorer.tsx",
+    "componentSource": "ui/src/components/collections/column-explorer/column-explorer.tsx",
+    "documentation": "ui/docs/column-explorer.md"
+  },
+  {
     "id": "summary-row",
     "name": "SummaryRow",
     "category": "Structure",

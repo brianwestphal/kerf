@@ -1,0 +1,6 @@
+/* A ColumnExplorer fills its parent's height so its ColumnTrack and each
+   column's List can scroll; the track and the rows own everything else. */
+.kui-column-explorer {
+  height: 100%;
+  min-height: 0;
+}

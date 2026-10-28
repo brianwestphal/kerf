@@ -2469,6 +2469,141 @@
       "dataChannel": "rootAttributes"
     },
     {
+      "key": "@kerfjs/ui:column-explorer",
+      "id": "column-explorer",
+      "source": "kerf",
+      "import": "@kerfjs/ui/column-explorer",
+      "export": "ColumnExplorer",
+      "description": "A macOS-style column explorer for a hierarchy: one column per level in a\nColumnTrack, where choosing a row with children opens the next column of\nits children. The application owns the nodes and the chosen path and\nhandles `action`; wire the keyboard with `wireColumnExplorer`.",
+      "props": [
+        {
+          "name": "id",
+          "type": { "kind": "string", "text": "string" },
+          "required": true,
+          "description": "Identifies the explorer for `wireColumnExplorer` and in tests."
+        },
+        {
+          "name": "label",
+          "type": { "kind": "string", "text": "string" },
+          "required": true,
+          "description": "The explorer's accessible name, such as \"Files\"."
+        },
+        {
+          "name": "nodes",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "ref": "TreeListNode",
+              "text": "TreeListNode"
+            },
+            "text": "readonly TreeListNode[]"
+          },
+          "required": true,
+          "description": "The hierarchy, as TreeList's nodes. The application owns it."
+        },
+        {
+          "name": "path",
+          "type": {
+            "kind": "array",
+            "items": { "kind": "string", "text": "string" },
+            "text": "readonly string[]"
+          },
+          "required": true,
+          "description": "The chosen ids from the top level down, one per column. The application\nowns it: set it to `treeListPath(nodes, id)` when `action` reports a row."
+        },
+        {
+          "name": "action",
+          "type": { "kind": "string", "text": "string" },
+          "required": true,
+          "description": "Delegated action for choosing a row; the row's `data-item-id` names it."
+        },
+        {
+          "name": "preview",
+          "type": {
+            "kind": "content",
+            "text": "SafeHtml | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Content for a last column when the chosen node is a leaf, such as a\nfile's details.",
+          "slot": true
+        },
+        {
+          "name": "layout",
+          "type": {
+            "kind": "enum",
+            "values": ["scroll", "paged"],
+            "text": "\"scroll\" | \"paged\" | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "scroll",
+          "description": "ColumnTrack's layout: `scroll` (default) or `paged` for a phone."
+        },
+        {
+          "name": "minColumnWidth",
+          "type": {
+            "kind": "css-value",
+            "grammar": "CssLength",
+            "text": "CssLength",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Each column's minimum width (ColumnTrack's default 250px)."
+        },
+        {
+          "name": "peek",
+          "type": {
+            "kind": "css-value",
+            "grammar": "CssLength",
+            "text": "CssLength",
+            "nullable": true
+          },
+          "required": false,
+          "description": "How much of the next column a paged layout shows."
+        },
+        {
+          "name": "density",
+          "type": {
+            "kind": "enum",
+            "values": ["standard", "compact"],
+            "text": "\"compact\" | \"standard\" | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "standard",
+          "description": "Row density: `standard` (default) or `compact`."
+        },
+        {
+          "name": "className",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Safe `data-*` metadata for the explorer element.",
+          "control": "hidden"
+        },
+        {
+          "name": "slot",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
+        }
+      ],
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
+    },
+    {
       "key": "@kerfjs/ui:column-track",
       "id": "column-track",
       "source": "kerf",

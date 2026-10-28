@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 440200,
+  "totalJavaScriptGzip": 442300,
   "measuredLargestJavaScriptGzip": 164545,
-  "measuredTotalJavaScriptGzip": 440191,
+  "measuredTotalJavaScriptGzip": 442220,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6419,6 +6419,22 @@
         "measuredTotalJavaScriptGzip": 440191,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 440200
+      }
+    },
+    {
+      "at": "2026-10-28T11:13:01.353Z",
+      "reason": "KF-JY68DQ: ColumnExplorer, wireColumnExplorer, and its demo (files with preview, paged phone)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 440191,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 440200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 442220,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 442300
       }
     }
   ]

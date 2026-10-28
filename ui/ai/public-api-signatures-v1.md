@@ -5600,54 +5600,10 @@ export { FramedList, type FramedListProps, FramedListRow, type FramedListRowProp
 
 ```ts
 import * as kerfjs from 'kerfjs';
-import { SafeHtml } from 'kerfjs';
 import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
-import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-
-/** One node of a hierarchy the application owns. */
-interface TreeListNode {
-    /** Stable id: the row's `data-item-id` and its key across re-renders. */
-    readonly id: string;
-    readonly label: string | SafeHtml;
-    readonly description?: string | SafeHtml;
-    /** A leading icon, normally an unsized LucideIcon. */
-    readonly icon?: SafeHtml;
-    /** Trailing content, such as a count Badge. */
-    readonly trailing?: KerfUiContent;
-    readonly disabled?: boolean;
-    /** Child nodes. An empty array is an expandable node with no children yet. */
-    readonly children?: readonly TreeListNode[];
-    /**
-     * Marks a node expandable before its children are loaded. The application
-     * loads them when its `toggleAction` handler expands the node.
-     */
-    readonly hasChildren?: boolean;
-}
-/** One visible row: a node with its place in the hierarchy. */
-interface TreeListRow {
-    readonly node: TreeListNode;
-    /** 1 for a top-level node. */
-    readonly level: number;
-    /** 1-based position among its siblings. */
-    readonly position: number;
-    /** How many siblings it has, itself included. */
-    readonly setSize: number;
-    /** The parent's id, or undefined at the top level. */
-    readonly parentId?: string;
-    /** Whether the node can expand: it has children or `hasChildren`. */
-    readonly expandable: boolean;
-    /** Whether it is expanded (always false when not expandable). */
-    readonly expanded: boolean;
-}
-/** Whether a node can expand: it has a children array or `hasChildren`. */
-declare function isExpandable(node: TreeListNode): boolean;
-/**
- * The rows a tree shows: every top-level node, and the children of each
- * expanded node, depth first in order.
- */
-declare function treeListRows(nodes: readonly TreeListNode[], expanded: ReadonlySet<string> | readonly string[]): TreeListRow[];
-/** The ids on the path from the top level down to `id`, or [] when absent. */
-declare function treeListPath(nodes: readonly TreeListNode[], id: string): string[];
+import { T as TreeListNode } from './tree-rows-BqJQlMYP.js';
+export { a as TreeListRow, i as isExpandable, t as treeListPath, b as treeListRows } from './tree-rows-BqJQlMYP.js';
+import './semantic-content-BbzjvSu9.js';
 
 interface TreeListProps {
     /** Identifies the tree for `wireTreeList` and in tests. */
@@ -5684,7 +5640,79 @@ interface TreeListProps {
  */
 declare function TreeList({ id, label, nodes, expanded, selected, action, toggleAction, density, className, rootAttributes, slot, }: TreeListProps): kerfjs.SafeHtml;
 
-export { TreeList, type TreeListNode, type TreeListProps, type TreeListRow, isExpandable, treeListPath, treeListRows };
+export { TreeList, TreeListNode, type TreeListProps };
+```
+
+## `@kerfjs/ui/column-explorer`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
+import { CssLength } from './css-values.js';
+import { T as TreeListNode } from './tree-rows-BqJQlMYP.js';
+import './semantic-content-BbzjvSu9.js';
+
+/** One column: the children of the node chosen in the column before it. */
+interface ExplorerColumn {
+    /** 0 for the top level. */
+    readonly level: number;
+    /** The node whose children this column lists, or undefined at the top. */
+    readonly parent?: TreeListNode;
+    readonly nodes: readonly TreeListNode[];
+    /** The id chosen in this column, when the path reaches it. */
+    readonly chosen?: string;
+}
+/**
+ * The columns for `path` (ids from the top level down): the top level, then
+ * the children of each chosen node that can expand. A path id that is not a
+ * child of the column before it ends the walk there.
+ */
+declare function explorerColumns(nodes: readonly TreeListNode[], path: readonly string[]): ExplorerColumn[];
+/** The node at the end of `path`, when the whole path resolves. */
+declare function explorerChosen(nodes: readonly TreeListNode[], path: readonly string[]): TreeListNode | undefined;
+
+interface ColumnExplorerProps {
+    /** Identifies the explorer for `wireColumnExplorer` and in tests. */
+    id: string;
+    /** The explorer's accessible name, such as "Files". */
+    label: string;
+    /** The hierarchy, as TreeList's nodes. The application owns it. */
+    nodes: readonly TreeListNode[];
+    /**
+     * The chosen ids from the top level down, one per column. The application
+     * owns it: set it to `treeListPath(nodes, id)` when `action` reports a row.
+     */
+    path: readonly string[];
+    /** Delegated action for choosing a row; the row's `data-item-id` names it. */
+    action: string;
+    /**
+     * Content for a last column when the chosen node is a leaf, such as a
+     * file's details.
+     */
+    preview?: SafeHtml;
+    /** ColumnTrack's layout: `scroll` (default) or `paged` for a phone. */
+    layout?: 'scroll' | 'paged';
+    /** Each column's minimum width (ColumnTrack's default 250px). */
+    minColumnWidth?: CssLength;
+    /** How much of the next column a paged layout shows. */
+    peek?: CssLength;
+    /** Row density: `standard` (default) or `compact`. */
+    density?: 'standard' | 'compact';
+    className?: string;
+    /** Safe `data-*` metadata for the explorer element. */
+    rootAttributes?: RootDataAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/**
+ * A macOS-style column explorer for a hierarchy: one column per level in a
+ * ColumnTrack, where choosing a row with children opens the next column of
+ * its children. The application owns the nodes and the chosen path and
+ * handles `action`; wire the keyboard with `wireColumnExplorer`.
+ */
+declare function ColumnExplorer({ id, label, nodes, path, action, preview, layout, minColumnWidth, peek, density, className, rootAttributes, slot, }: ColumnExplorerProps): SafeHtml;
+
+export { ColumnExplorer, type ColumnExplorerProps, type ExplorerColumn, explorerChosen, explorerColumns };
 ```
 
 ## `@kerfjs/ui/summary-row`

@@ -883,6 +883,11 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   `/__kerf-ui-editor/` on the dev server, previewing the components your
   `.kerf-ui-profile.json` catalogs declare with their real functions. See
   `docs/editor-host.md`.
+- **Browse a deep hierarchy by column with `ColumnExplorer`**
+  (`@kerfjs/ui/column-explorer`): a macOS-style column view over TreeList's
+  nodes in a ColumnTrack. Pass `nodes`, `path`, and `action`, set
+  `path = treeListPath(nodes, id)` when a row is chosen, and call
+  `wireColumnExplorer(root)`; `layout="paged"` on a phone, `preview` for a leaf.
 - **Show a hierarchy with `TreeList`** (`@kerfjs/ui/tree-list`): ListItem rows
   indented by depth with disclosure arrows, an ARIA tree. Pass `nodes`,
   `expanded`, `selected`, `action`, and `toggleAction`, flip the ids in your

@@ -9,6 +9,7 @@ import {
 import { ColorField } from '@kerfjs/ui/color-field';
 import { ColorPicker } from '@kerfjs/ui/color-picker';
 import { ColorSwatches } from '@kerfjs/ui/color-swatches';
+import { ColumnExplorer } from '@kerfjs/ui/column-explorer';
 import { Disclosure } from '@kerfjs/ui/disclosure';
 import { ListDetailDialog } from '@kerfjs/ui/list-detail-dialog';
 import { NavStack } from '@kerfjs/ui/nav-stack';
@@ -32,6 +33,7 @@ const subpathOnly: Record<string, unknown> = {
   ColorField,
   ColorPicker,
   ColorSwatches,
+  ColumnExplorer,
   Disclosure,
   ListDetailDialog,
   NavStack,
