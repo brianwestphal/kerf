@@ -16,8 +16,15 @@ its contents, into a plain group so these pins apply.
 The masters use native Text and vector paths with shared Color Variables for
 matching text, progress, status, fill, and border paints.
 [The manifest](symbol-manifest.json) records stable Symbol, Text, and Color
-Variable IDs. The exporter rejects a changed source SVG until the published
-native layers can be migrated safely (`KF-J00BCV`).
+Variable IDs.
+
+When a source SVG changes, `generate` imports it into a temporary master,
+applies the same layout, and updates the published layers in place
+(`scripts/sketch/shared/migrate-layers.js`), so Symbol, Text override, and
+layer IDs stay the same. Unchanged paint colors keep their Color Variables;
+run `assets` afterward to bind changed colors. A changed layer count, layer
+or shape type, or a reordered label is rejected with the fixture and tree
+path before any published layer changes.
 
 ## Regenerate and verify
 
