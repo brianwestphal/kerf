@@ -8,6 +8,7 @@ function readJSON(path) {
   return JSON.parse(String(content));
 }
 
+var migrateLayers = require('../../shared/migrate-layers');
 var semanticLayout = require('./semantic-layout');
 
 function textWeights(svg) {
@@ -50,10 +51,8 @@ module.exports.run = function (session, parameters, done) {
         var symbol = matches[0];
         if (old && !symbol)
           throw new Error('Previously published Symbol missing: ' + fixture.id);
-        if (old && old.sourceHash !== fixture.sourceHash)
-          throw new Error(
-            'Source structure changed; migrate native layer IDs: ' + fixture.id,
-          );
+        var changed = old && old.sourceHash !== fixture.sourceHash;
+        var migratedLayers = 0;
         if (!symbol) {
           symbol = new dom.SymbolMaster({
             name: fixture.name,
@@ -71,6 +70,41 @@ module.exports.run = function (session, parameters, done) {
           imported.name = 'Production Capture';
           imported.frame.x = 0;
           imported.frame.y = 0;
+        }
+        if (changed) {
+          // Import the edited capture the way a new Symbol is built, then
+          // update the published layers in place (see shared/migrate-layers).
+          var preview = new dom.SymbolMaster({
+            name: 'Migration Preview / ' + fixture.id,
+            parent: page,
+            frame: {
+              x: symbol.frame.x,
+              y: symbol.frame.y,
+              width: fixture.box.width,
+              height: fixture.box.height,
+            },
+          });
+          try {
+            var replacement = dom.createLayerFromData(fixture.svg, 'svg');
+            if (!replacement)
+              throw new Error('SVG import failed: ' + fixture.id);
+            replacement.parent = preview;
+            replacement.name = 'Production Capture';
+            replacement.frame.x = 0;
+            replacement.frame.y = 0;
+            dom.find('Text', preview).forEach(function (text) {
+              text.style.fontFamily = 'system';
+            });
+            semanticLayout.apply(preview, fixture, dom);
+            migratedLayers = migrateLayers.migrate(
+              symbol,
+              preview,
+              fixture.id,
+              'list/data',
+            );
+          } finally {
+            preview.remove();
+          }
         }
         symbol.name = fixture.name;
         symbol.background.enabled = false;
@@ -104,6 +138,7 @@ module.exports.run = function (session, parameters, done) {
           }),
           paths: paths.length,
           bitmaps: bitmaps.length,
+          migratedLayers: migratedLayers,
           sourceHash: fixture.sourceHash,
         });
         dom.export(symbol, {

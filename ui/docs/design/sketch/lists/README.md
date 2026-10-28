@@ -10,8 +10,13 @@ no bitmap layers. Ten shared Color Variables bind text, fills, and borders.
 This library was created and tested with Sketch 2026.3.1. Install a copy at a
 stable path through Sketch Settings → Libraries. Update that same installed
 file, refresh the Library, and sync consumer instances on a later release.
-The exporter rejects changed source structure until native layer IDs can be
-migrated deliberately.
+When a source SVG changes, `generate` imports it into a temporary master,
+applies the same layout, and updates the published layers in place
+(`scripts/sketch/shared/migrate-layers.js`), so Symbol, Text override, and
+layer IDs stay the same. Unchanged paint colors keep their Color Variables;
+run `assets` afterward to bind changed colors. A changed layer count, layer
+or shape type, or a reordered label is rejected with the fixture and tree
+path before any published layer changes.
 
 ## Regenerate and verify
 
