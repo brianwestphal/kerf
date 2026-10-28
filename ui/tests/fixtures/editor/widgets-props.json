@@ -29,10 +29,7 @@
       "export": "Meter",
       "description": "A one-value meter.",
       "props": [],
-      "nativeAttributes": [
-        "value",
-        "max"
-      ],
+      "nativeAttributes": ["value", "max"],
       "dataChannel": "none"
     }
   ],

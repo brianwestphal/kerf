@@ -2,8 +2,7 @@ import type { ViewDocument } from '@kerfjs/ui/view';
 import { validateView } from '@kerfjs/ui/view';
 import { describe, expect, it } from 'vitest';
 
-import { propsByKey, viewCatalog } from '../../src/catalog.js';
-import { findNode, visitNodes } from '../../src/model/document.js';
+import { findNode, visitNodes } from '../../../src/editor/model/document.js';
 import {
   History,
   insertNode,
@@ -17,8 +16,9 @@ import {
   removeNode,
   renameNode,
   setProp,
-} from '../../src/model/edits.js';
-import sample from '../../src/sample.kui.json';
+} from '../../../src/editor/model/edits.js';
+import sample from '../../fixtures/view/inbox.kui.json';
+import { propsByKey, viewCatalog } from './kerf-catalog.js';
 
 const inbox = sample as unknown as ViewDocument;
 const PANE = '01JB8Z1M6Q8E1X9V4S7K2R3T5A';
@@ -90,6 +90,31 @@ describe('structural edits', () => {
     expect(moveNode(moved, FOLDERS, -1)).toEqual(inbox);
     expect(moveNode(inbox, FOLDERS, -1)).toBe(inbox);
     expect(() => moveNode(inbox, PANE, 1)).toThrow(/cannot move/);
+  });
+
+  it('edits a node in an $if else branch but keeps it in its structure', () => {
+    const withElse = globalThis.structuredClone(inbox) as unknown as {
+      root: { zones: { content: Record<string, unknown>[] } };
+    };
+    const branch = withElse.root.zones.content.find((item) => '$if' in item)!;
+    branch.else = {
+      id: '01JB8Z1M6Q8E1X9V4S7K2R3T5H',
+      type: '@kerfjs/ui:text',
+      props: { children: 'All caught up' },
+    };
+    const document = withElse as unknown as ViewDocument;
+    const edited = setProp(
+      document,
+      '01JB8Z1M6Q8E1X9V4S7K2R3T5H',
+      'children',
+      'Inbox zero',
+    );
+    expect(
+      findNode(edited, '01JB8Z1M6Q8E1X9V4S7K2R3T5H')?.node.props?.children,
+    ).toBe('Inbox zero');
+    expect(isMovable(document, '01JB8Z1M6Q8E1X9V4S7K2R3T5H').remove).toBe(
+      false,
+    );
   });
 
   it('moves a node into another zone and refuses moving it into itself', () => {

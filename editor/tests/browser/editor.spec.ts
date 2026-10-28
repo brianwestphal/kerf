@@ -21,7 +21,7 @@ test('selects a canvas node and highlights it without running its action', async
   await expect(
     page.getByText('composeButton · Button', { exact: false }),
   ).toBeVisible();
-  const highlight = page.locator('.editor-selection');
+  const highlight = page.locator('.kui-editor__selection');
   await expect(highlight).toBeVisible();
   const [box, target] = await Promise.all([
     highlight.boundingBox(),
@@ -142,7 +142,7 @@ test('lists problems and selects the node a problem is about', async ({
   const canvas = page.locator('[data-editor-canvas]');
   await expect(canvas).toContainText('composeButton cannot render');
   await expect(canvas).toContainText('Label 2');
-  await expect(page.locator('.editor-selection')).toBeVisible();
+  await expect(page.locator('.kui-editor__selection')).toBeVisible();
   await page.mouse.move(1, 1);
   await page.screenshot({
     path: info.outputPath('kf-f355bf-editor-problems-preview-1440.png'),

@@ -4,18 +4,18 @@
  * selected or restyled here. The highlight reuses the theme's focus ring so
  * it follows light, dark, and forced-colors modes.
  */
-.editor-canvas {
+.kui-editor__canvas {
   position: relative;
   min-block-size: 100%;
 }
 
-.editor-selection {
+.kui-editor__selection {
   position: absolute;
   pointer-events: none;
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
 }
 
-.editor-selection[hidden] {
+.kui-editor__selection[hidden] {
   display: none;
 }

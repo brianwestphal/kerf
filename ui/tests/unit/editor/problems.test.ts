@@ -2,17 +2,17 @@ import type { ViewDocument } from '@kerfjs/ui/view';
 import { validateView } from '@kerfjs/ui/view';
 import { describe, expect, it } from 'vitest';
 
-import { viewCatalog } from '../../src/catalog.js';
 import {
   nodeIdForPath,
   problemCounts,
   problemsOf,
-} from '../../src/model/problems.js';
-import sample from '../../src/sample.kui.json';
+} from '../../../src/editor/model/problems.js';
+import sample from '../../fixtures/view/inbox.kui.json';
+import { viewCatalog } from './kerf-catalog.js';
 
 const inbox = sample as unknown as ViewDocument;
 const broken = (): ViewDocument => {
-  const document = structuredClone(inbox) as unknown as {
+  const document = globalThis.structuredClone(inbox) as unknown as {
     root: {
       zones: {
         header: { zones: { trailing: { props: Record<string, unknown> }[] } }[];

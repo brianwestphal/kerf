@@ -33,6 +33,7 @@ const entries = [
   'device-class',
   'tab-bar-item',
   'catalog',
+  'editor',
   'catalog-resources',
   'wire-catalog',
   'tab-bar',
@@ -127,5 +128,12 @@ export default defineConfig({
   sourcemap: true,
   dts: { compilerOptions: { ignoreDeprecations: '6.0' } },
   treeshake: true,
-  external: ['kerfjs', 'kerfjs/jsx-runtime', '@awesome.me/webawesome'],
+  // The editor host imports the view tools through the package's own public
+  // subpath, so they ship once (KF-6GT5QY).
+  external: [
+    'kerfjs',
+    'kerfjs/jsx-runtime',
+    '@awesome.me/webawesome',
+    '@kerfjs/ui/view',
+  ],
 });

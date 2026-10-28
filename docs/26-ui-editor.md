@@ -23,6 +23,11 @@
   a chosen component to one of the node's legal zones, moves a node within its
   zone, deletes it, and undoes or redoes any of these.
 
+The editor shell is published as `@kerfjs/ui/editor` (KF-6GT5QY: editor
+host): a host passes it an `EditorCatalog` that combines Kerf UI's catalogs
+with an application's, so application components preview with their real
+functions. The private `editor/` app is one such host.
+
 Drag-and-drop placement and binding props to `$each` item fields or params
 come next (KF-K5TKCV: editor drag-and-drop and bindings). The implementation
 tickets are listed in [§10](#10-implementation-plan).

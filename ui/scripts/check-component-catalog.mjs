@@ -713,10 +713,13 @@ for (const entry of entries.filter(({ delivery }) => delivery.moduleImport)) {
       fail(`${entry.id} names stale module export ${name} from ${specifier}`);
 }
 
-// The `Catalog` shell is package tooling for building a component catalog,
-// not a catalog entry itself, yet it still ships a CSS-aware browser wrapper so
-// the internal components it renders bring their styles.
-const nonCatalogBrowserImports = new Set(['@kerfjs/ui/catalog']);
+// The `Catalog` shell and the editor host (KF-6GT5QY) are package tooling,
+// not catalog entries, yet each ships a CSS-aware browser wrapper so the
+// internal components it renders bring their styles.
+const nonCatalogBrowserImports = new Set([
+  '@kerfjs/ui/catalog',
+  '@kerfjs/ui/editor',
+]);
 const browserImports = Object.entries(packageJson.exports)
   .filter(
     ([, target]) => target && typeof target === 'object' && 'browser' in target,

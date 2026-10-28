@@ -42,7 +42,8 @@ export function controlFor(
     case 'enum': {
       const values =
         (prop.type as { values?: readonly unknown[] }).values ?? [];
-      if (!values.every((item) => typeof item === 'string'))
+      // A Select needs string choices to offer.
+      if (!values.length || !values.every((item) => typeof item === 'string'))
         return { kind: 'readonly', raw: '' };
       return {
         kind: 'select',

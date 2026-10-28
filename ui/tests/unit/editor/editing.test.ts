@@ -3,8 +3,8 @@
 import { mount } from 'kerfjs';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { createEditor } from '../../src/editor.js';
-import { findNode } from '../../src/model/document.js';
+import { findNode } from '../../../src/editor/model/document.js';
+import { createEditor } from './kerf-catalog.js';
 
 const PANE = '01JB8Z1M6Q8E1X9V4S7K2R3T5A';
 const TOOLBAR = '01JB8Z1M6Q8E1X9V4S7K2R3T5B';
@@ -201,7 +201,7 @@ describe('undo and redo', () => {
 });
 
 describe('the Inspector scroll position', () => {
-  const frame = () => new Promise((done) => requestAnimationFrame(done));
+  const frame = () => new Promise((done) => window.requestAnimationFrame(done));
   // happy-dom has no layout and clamps scrollTop to 0; give these elements
   // a plain scroll position so the reset is observable.
   const scrollable = (element: HTMLElement) =>

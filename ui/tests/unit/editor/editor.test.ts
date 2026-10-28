@@ -1,7 +1,7 @@
 import { mount } from 'kerfjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { createEditor } from '../../src/editor.js';
+import { createEditor } from './kerf-catalog.js';
 
 let cleanup: (() => void) | undefined;
 afterEach(() => {
@@ -107,7 +107,9 @@ describe('the editor shell', () => {
       expect.not.stringContaining('renderInbox'),
     );
     expect(root.textContent).toContain('the contract is unchanged');
-    const next = structuredClone(editor.document.value) as unknown as {
+    const next = globalThis.structuredClone(
+      editor.document.value,
+    ) as unknown as {
       root: {
         zones: {
           header: {
@@ -156,7 +158,7 @@ describe('the editor shell', () => {
   });
 
   it('lists problems, marks their nodes in the outline, and selects one', () => {
-    const document = structuredClone(
+    const document = globalThis.structuredClone(
       createEditor().document.value,
     ) as unknown as {
       root: {

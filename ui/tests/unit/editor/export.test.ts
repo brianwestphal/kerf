@@ -4,18 +4,18 @@ import { resolve } from 'node:path';
 import type { ViewContract, ViewDocument } from '@kerfjs/ui/view';
 import { describe, expect, it } from 'vitest';
 
-import { viewCatalog } from '../../src/catalog.js';
 import {
   compareWithModule,
   describeExport,
   exportModule,
   moduleFileName,
-} from '../../src/model/export.js';
-import sample from '../../src/sample.kui.json';
+} from '../../../src/editor/model/export.js';
+import sample from '../../fixtures/view/inbox.kui.json';
+import { viewCatalog } from './kerf-catalog.js';
 
 const inbox = sample as unknown as ViewDocument;
 const golden = readFileSync(
-  resolve(import.meta.dirname, '../../../ui/tests/fixtures/view/inbox.view.ts'),
+  resolve(import.meta.dirname, '../../fixtures/view/inbox.view.ts'),
   'utf8',
 );
 

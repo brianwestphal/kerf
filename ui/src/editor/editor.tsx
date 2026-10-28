@@ -1,36 +1,12 @@
 // The Kerf UI editor shell (docs/26-ui-editor.md; KF-4NRZCV: editor
-// scaffold). A Workbench with the document rail (problems, outline, and
-// component palette), the canvas (the document rendered through
-// interpretView), and the read-only inspector, plus open, save, and export of
-// the generated view module (KF-Y38YRT). Editing is a later slice.
-import '@kerfjs/ui/document.css';
-import '@kerfjs/ui/styles.css';
-import '@kerfjs/ui/layout.css';
-import '@kerfjs/ui/workbench.css';
-import './editor.css';
-import '@kerfjs/ui/popup-menu/register';
-import '@kerfjs/ui/select/register';
+// scaffold), published as `@kerfjs/ui/editor` (KF-6GT5QY: editor host). A
+// Workbench with the document rail (problems, outline, and component
+// palette), the canvas (the document rendered through interpretView), and
+// the inspector that edits it, plus open, save, export, and compare of the
+// generated view module. The host registers `@kerfjs/ui/popup-menu/register`
+// and `@kerfjs/ui/select/register` and loads the global stylesheets, as for
+// any Kerf UI app.
 
-import { Badge } from '@kerfjs/ui/badge';
-import { Button } from '@kerfjs/ui/button';
-import { EmptyState } from '@kerfjs/ui/empty-state';
-import { FilePickerTrigger } from '@kerfjs/ui/file-picker';
-import { List } from '@kerfjs/ui/list';
-import { ListHeader } from '@kerfjs/ui/list-header';
-import { ListInsetText } from '@kerfjs/ui/list-inset-text';
-import { ListItem } from '@kerfjs/ui/list-item';
-import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { PopupMenu } from '@kerfjs/ui/popup-menu';
-import { Select } from '@kerfjs/ui/select';
-import { StateBanner } from '@kerfjs/ui/state-banner';
-import { Switch } from '@kerfjs/ui/switch';
-import { Text } from '@kerfjs/ui/text';
-import { TextField } from '@kerfjs/ui/text-field';
-import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
-import { ToolbarText } from '@kerfjs/ui/toolbar-text';
-import { TreeList, type TreeListNode } from '@kerfjs/ui/tree-list';
-import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import {
   contractDigest,
   contractOf,
@@ -42,10 +18,6 @@ import {
   type ViewDocument,
   type ViewNode,
 } from '@kerfjs/ui/view';
-import { wireFilePickers } from '@kerfjs/ui/wire-file-pickers';
-import { wireTreeList } from '@kerfjs/ui/wire-tree-list';
-import { wireWorkbench } from '@kerfjs/ui/wire-workbench';
-import { Workbench } from '@kerfjs/ui/workbench';
 import { delegate, effect, type SafeHtml, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 import {
@@ -61,7 +33,37 @@ import {
   Undo2,
 } from 'lucide';
 
-import { defaultCatalog, type EditorCatalog } from './catalog.js';
+import { Button } from '../components/actions/button/button.js';
+import { PopupMenu } from '../components/actions/popup-menu/popup-menu.js';
+import { Toolbar } from '../components/actions/toolbar/toolbar.js';
+import { ToolbarControlGroup } from '../components/actions/toolbar-control-group/toolbar-control-group.js';
+import { ToolbarText } from '../components/actions/toolbar-text/toolbar-text.js';
+import { List } from '../components/collections/list/list.js';
+import { ListHeader } from '../components/collections/list-header/list-header.js';
+import { ListInsetText } from '../components/collections/list-inset-text/list-inset-text.js';
+import { ListItem } from '../components/collections/list-item/list-item.js';
+import {
+  TreeList,
+  type TreeListNode,
+} from '../components/collections/tree-list/tree-list.js';
+import { wireTreeList } from '../components/collections/tree-list/wiring/wire-tree-list.js';
+import {
+  ValueTable,
+  ValueTableRow,
+} from '../components/data-display/value-table/value-table.js';
+import { Badge } from '../components/feedback/badge/badge.js';
+import { EmptyState } from '../components/feedback/empty-state/empty-state.js';
+import { StateBanner } from '../components/feedback/state-banner/state-banner.js';
+import { FilePickerTrigger } from '../components/forms/file-picker/file-picker.js';
+import { wireFilePickers } from '../components/forms/file-picker/wiring/wire-file-pickers.js';
+import { Select } from '../components/forms/select/select.js';
+import { Switch } from '../components/forms/switch/switch.js';
+import { TextField } from '../components/forms/text-field/text-field.js';
+import { wireWorkbench } from '../components/layout/workbench/wiring/wire-workbench.js';
+import { Workbench } from '../components/layout/workbench/workbench.js';
+import { LucideIcon } from '../components/media/lucide-icon/lucide-icon.js';
+import { Text } from '../components/typography/text/text.js';
+import type { EditorCatalog } from './catalog.js';
 import {
   controlFor,
   type ControlKind,
@@ -105,7 +107,6 @@ import {
 } from './model/outline.js';
 import { type Problem, problemCounts, problemsOf } from './model/problems.js';
 import { sampleInputs } from './model/sample-inputs.js';
-import sample from './sample.kui.json';
 
 export const WORKBENCH_ID = 'kerf-ui-editor';
 const OUTLINE_ACTION = 'editor-select-node';
@@ -134,9 +135,7 @@ export type Selection =
 // interpretView reads `$icon` names; Lucide exports icons by PascalCase name.
 const icons = new Proxy({} as Record<string, unknown>, {
   get: (_target, name) =>
-    typeof name === 'string'
-      ? (lucideIcons as Record<string, unknown>)[lucideExportName(name)]
-      : undefined,
+    (lucideIcons as Record<string, unknown>)[lucideExportName(String(name))],
 });
 
 /** A slot's placeholder on the canvas: the app fills slots at runtime. */
@@ -198,30 +197,48 @@ function canvasRenderer(catalog: EditorCatalog) {
   };
 }
 
+/** A new document: an empty Pane in Kerf UI's catalog. */
+export function emptyDocument(): ViewDocument {
+  return {
+    schema: 'kerf-ui-document/v1',
+    name: 'Untitled',
+    catalogs: ['@kerfjs/ui'],
+    root: { id: newNodeId(), type: '@kerfjs/ui:pane' },
+  } as ViewDocument;
+}
+
+export {
+  type CatalogEntry,
+  type ComponentFunction,
+  componentMap,
+  createEditorCatalog,
+  type EditorCatalog,
+  type EditorCatalogInputs,
+  type PaletteGroup,
+  type PropsComponent,
+} from './catalog.js';
+
 export interface EditorOptions {
-  /** Starts with this document instead of the bundled sample. */
+  /** The document to start with; the default is an empty Pane. */
   readonly document?: ViewDocument;
   /** Saves a file; the default downloads it through a temporary link. */
   readonly save?: (fileName: string, text: string) => void;
   /**
-   * The components the editor can place and preview. The default is Kerf
-   * UI's own; a host adds an application's catalogs and functions.
+   * The components the editor can place and preview: Kerf UI's catalogs and
+   * functions, plus an application's (`createEditorCatalog`).
    */
-  readonly catalog?: EditorCatalog;
+  readonly catalog: EditorCatalog;
 }
 
 /** An inspector control's current value: a Select's, a switch's, or a field's. */
 function controlValue(field: HTMLElement): string | boolean {
+  // The host registers `kui-select`, whose element reports its value.
   if (field.localName === 'kui-select')
-    return (
-      (field as HTMLElement & { value?: string }).value ??
-      field.getAttribute('value') ??
-      ''
-    );
+    return (field as HTMLElement & { value: string }).value;
+  // Every other inspector control wraps one native input.
   const input = field.querySelector<HTMLInputElement | HTMLTextAreaElement>(
     'input, textarea',
-  );
-  if (!input) return '';
+  )!;
   return input instanceof HTMLInputElement && input.type === 'checkbox'
     ? input.checked
     : input.value;
@@ -237,6 +254,7 @@ function selectionKey(selection: Selection): string {
 
 /** Scrolls the Inspector rail, and anything scrolled inside it, to the top. */
 function resetInspectorScroll(root: HTMLElement): void {
+  // A reset scheduled just before the editor unmounted finds no rail.
   const rail = root.querySelector('[data-workbench-rail="right"]');
   if (!rail) return;
   for (const element of [rail, ...rail.querySelectorAll('*')])
@@ -264,13 +282,11 @@ function download(fileName: string, text: string): void {
   URL.revokeObjectURL(url);
 }
 
-export function createEditor(options: EditorOptions = {}) {
-  const catalog = options.catalog ?? defaultCatalog;
+export function createEditor(options: EditorOptions) {
+  const { catalog } = options;
   const { viewCatalog, propsByKey, componentNames } = catalog;
   const canvasContent = canvasRenderer(catalog);
-  const doc = signal<ViewDocument>(
-    options.document ?? (sample as unknown as ViewDocument),
-  );
+  const doc = signal<ViewDocument>(options.document ?? emptyDocument());
   const selection = signal<Selection>(null);
   const loadError = signal<string | null>(null);
   // Editing (KF-KX77TV): every change goes through commit(), so the
@@ -281,8 +297,9 @@ export function createEditor(options: EditorOptions = {}) {
   const addZone = signal('');
   const addComponent = signal('');
   const promoteProp = signal('');
+  // Every caller passes a changed document (edits clone; moves are checked
+  // against isMovable first).
   const commit = (next: ViewDocument) => {
-    if (next === doc.value) return;
     history.record(doc.value);
     doc.value = next;
     fieldErrors.value = {};
@@ -309,7 +326,7 @@ export function createEditor(options: EditorOptions = {}) {
     selection.value = next;
     // A node chosen elsewhere (the canvas, a problem) shows in the outline.
     if (next?.kind !== 'node') return;
-    const path = findNode(doc.value, next.id)?.ancestors ?? [];
+    const path = findNode(doc.value, next.id)!.ancestors;
     if (path.some(({ node }) => collapsed.value.has(node.id))) {
       const open = new Set(collapsed.value);
       for (const { node } of path) open.delete(node.id);
@@ -570,12 +587,14 @@ export function createEditor(options: EditorOptions = {}) {
     const addable = [...propsByKey.values()]
       .filter(
         (candidate) =>
-          candidate.source === 'kerf' &&
+          // Kerf UI's and an application's own components; Web Awesome
+          // elements are placed through their Kerf wrappers.
+          candidate.source !== 'webawesome' &&
           (!zone?.accepts || zone.accepts.includes(candidate.key)),
       )
       .map((candidate) => ({
         value: candidate.key,
-        label: componentNames.get(candidate.key) ?? candidate.key,
+        label: componentNames.get(candidate.key)!,
       }));
     const chosen =
       addable.find((item) => item.value === addComponent.value) ?? addable[0];
@@ -695,6 +714,19 @@ export function createEditor(options: EditorOptions = {}) {
       </List>
     );
   };
+
+  /** The canvas: the previewed document under the selection highlight. */
+  const canvas = (document: ViewDocument, problemList: readonly Problem[]) => (
+    <div class="kui-editor__canvas" data-editor-canvas>
+      {canvasContent(document, problemList)}
+      <div
+        class="kui-editor__selection"
+        data-morph-skip
+        aria-hidden="true"
+        hidden
+      />
+    </div>
+  );
 
   const render = () => {
     const document = doc.value;
@@ -859,17 +891,7 @@ export function createEditor(options: EditorOptions = {}) {
                 />
               ) : undefined
             }
-            main={
-              <div class="editor-canvas" data-editor-canvas>
-                {canvasContent(document, problemList)}
-                <div
-                  class="editor-selection"
-                  data-morph-skip
-                  aria-hidden="true"
-                  hidden
-                />
-              </div>
-            }
+            main={canvas(document, problemList)}
             rightRail={{
               label: 'Inspector',
               size: inspectorSize.value,
@@ -892,7 +914,9 @@ export function createEditor(options: EditorOptions = {}) {
   /** Draws the selection highlight over the selected node on the canvas. */
   const placeHighlight = (root: HTMLElement) => {
     const canvas = root.querySelector<HTMLElement>('[data-editor-canvas]');
-    const highlight = canvas?.querySelector<HTMLElement>('.editor-selection');
+    const highlight = canvas?.querySelector<HTMLElement>(
+      '.kui-editor__selection',
+    );
     if (!canvas || !highlight) return;
     const current = selection.value;
     const target =
@@ -987,7 +1011,7 @@ export function createEditor(options: EditorOptions = {}) {
       ...(() => {
         const props = seedProps(
           component.props,
-          componentNames.get(key) ?? key,
+          componentNames.get(key)!,
           component.variants,
         );
         return Object.keys(props).length ? { props } : {};
@@ -1019,9 +1043,12 @@ export function createEditor(options: EditorOptions = {}) {
       index += 1
     )
       param = `${base}${index}`;
-    const result = promoteToParam(doc.value, id, name, param, type);
-    if ('error' in result) fieldErrors.value = { [name]: result.error };
-    else commit(result.document);
+    // The name is a fresh camelCase identifier on an existing node, so the
+    // promotion cannot be refused.
+    const result = promoteToParam(doc.value, id, name, param, type) as {
+      document: ViewDocument;
+    };
+    commit(result.document);
   };
 
   const wire = (root: HTMLElement) => {
@@ -1141,9 +1168,8 @@ export function createEditor(options: EditorOptions = {}) {
       wireTreeList(root),
       wireFilePickers(root, {
         onFiles: ({ files, id }) => {
-          const [file] = files;
-          if (!file) return;
-          void file.text().then((text) => {
+          // wireFilePickers reports a choice only when it has files.
+          void files[0]!.text().then((text) => {
             if (id === 'compare-module') {
               const current = contractOf(doc.value, viewCatalog);
               lastExport.value = compareWithModule(text, current);
@@ -1163,7 +1189,7 @@ export function createEditor(options: EditorOptions = {}) {
       effect(() => {
         void selection.value;
         void doc.value;
-        requestAnimationFrame(() => placeHighlight(root));
+        window.requestAnimationFrame(() => placeHighlight(root));
       }),
       // KF-JWD51N: a different selection opens the Inspector at its top; an
       // edit to the same node keeps the place the author was working at.
@@ -1173,13 +1199,12 @@ export function createEditor(options: EditorOptions = {}) {
           const key = selectionKey(selection.value);
           if (key === shown) return;
           shown = key;
-          requestAnimationFrame(() => resetInspectorScroll(root));
+          window.requestAnimationFrame(() => resetInspectorScroll(root));
         });
       })(),
     ];
     const observer = new ResizeObserver(() => placeHighlight(root));
-    const canvas = root.querySelector('[data-editor-canvas]');
-    if (canvas) observer.observe(canvas);
+    observer.observe(root.querySelector('[data-editor-canvas]')!);
     return () => {
       observer.disconnect();
       for (const stop of stops) stop();

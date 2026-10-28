@@ -1,17 +1,17 @@
 // KF-6GT5QY: an editor's catalog can add an application package's catalogs
 // and component functions beside Kerf UI's.
-import catalogJson from '@kerfjs/ui/ai/component-catalog.json';
-import compositionJson from '@kerfjs/ui/ai/component-composition.json';
-import propsJson from '@kerfjs/ui/ai/component-props.json';
 import type { ViewDocument } from '@kerfjs/ui/view';
 import { mount, raw } from 'kerfjs';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { createEditorCatalog, defaultCatalog } from '../../src/catalog.js';
-import { componentFunctions } from '../../src/components.js';
-import { createEditor } from '../../src/editor.js';
-import widgetsComposition from '../fixtures/widgets-composition.json';
-import widgetsProps from '../fixtures/widgets-props.json';
+import catalogJson from '../../../ai/component-catalog.json';
+import compositionJson from '../../../ai/component-composition.json';
+import propsJson from '../../../ai/component-props.json';
+import widgetsComposition from '../../fixtures/editor/widgets-composition.json';
+import widgetsProps from '../../fixtures/editor/widgets-props.json';
+import { createEditorCatalog, defaultCatalog } from './kerf-catalog.js';
+import { componentFunctions } from './kerf-catalog.js';
+import { createEditor } from './kerf-catalog.js';
 
 const catalog = createEditorCatalog({
   props: [propsJson, widgetsProps],
@@ -100,6 +100,12 @@ describe('an editor over an application catalog', () => {
       canvas.querySelector(`[data-kerf-node="${CARD}"]`)?.textContent,
     ).toBe('Card cannot render');
     expect(root.textContent).toContain('Application');
+    // An app component is placeable and inspectable like Kerf UI's.
+    editor.selection.value = { kind: 'node', id: METER };
+    expect(root.textContent).not.toContain('Promote to a param');
+    editor.selection.value = { kind: 'node', id: PANE };
+    const picker = root.querySelector('[data-editor-add="component"]')!;
+    expect(picker.innerHTML).toContain('@acme/widgets:meter');
     expect(root.textContent).toContain('valid');
   });
 });

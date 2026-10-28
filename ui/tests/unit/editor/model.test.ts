@@ -2,27 +2,29 @@ import type { ViewDocument } from '@kerfjs/ui/view';
 import { describe, expect, it } from 'vitest';
 
 import {
-  componentNames,
-  paletteGroups,
-  propsByKey,
-} from '../../src/catalog.js';
-import { componentFunctions } from '../../src/components.js';
-import {
   documentFileName,
   findNode,
   parseDocument,
   serializeDocument,
   visitNodes,
-} from '../../src/model/document.js';
-import { formatValue, inspectorSections } from '../../src/model/inspector.js';
+} from '../../../src/editor/model/document.js';
+import {
+  formatValue,
+  inspectorSections,
+} from '../../../src/editor/model/inspector.js';
 import {
   nodeTitle,
   outlineParents,
   outlineRows,
   outlineTree,
-} from '../../src/model/outline.js';
-import { sampleInputs, sampleValue } from '../../src/model/sample-inputs.js';
-import sample from '../../src/sample.kui.json';
+} from '../../../src/editor/model/outline.js';
+import {
+  sampleInputs,
+  sampleValue,
+} from '../../../src/editor/model/sample-inputs.js';
+import sample from '../../fixtures/view/inbox.kui.json';
+import { componentNames, paletteGroups, propsByKey } from './kerf-catalog.js';
+import { componentFunctions } from './kerf-catalog.js';
 
 const inbox = sample as unknown as ViewDocument;
 

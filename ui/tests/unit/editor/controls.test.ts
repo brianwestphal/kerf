@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { propsByKey } from '../../src/catalog.js';
 import {
   controlFor,
   seedProps,
   valueFromControl,
-} from '../../src/model/controls.js';
-import type { InspectorProp } from '../../src/model/inspector.js';
+} from '../../../src/editor/model/controls.js';
+import type { InspectorProp } from '../../../src/editor/model/inspector.js';
+import { propsByKey } from './kerf-catalog.js';
 
 const prop = (key: string, name: string) =>
   propsByKey

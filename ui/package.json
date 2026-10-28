@@ -203,6 +203,11 @@
       "browser": "./dist/browser/catalog.js",
       "import": "./dist/catalog.js"
     },
+    "./editor": {
+      "types": "./dist/editor.d.ts",
+      "browser": "./dist/browser/editor.js",
+      "import": "./dist/editor.js"
+    },
     "./catalog-resources": {
       "types": "./dist/catalog-resources.d.ts",
       "import": "./dist/catalog-resources.js"
@@ -647,6 +652,7 @@
     "./color-field.css": "./dist/styles/color-field.css",
     "./message-composer.css": "./dist/styles/message-composer.css",
     "./search-field.css": "./dist/styles/search-field.css",
+    "./editor.css": "./dist/styles/editor.css",
     "./tree-list.css": "./dist/styles/tree-list.css",
     "./tag-field.css": "./dist/styles/tag-field.css",
     "./state-banner.css": "./dist/styles/state-banner.css",

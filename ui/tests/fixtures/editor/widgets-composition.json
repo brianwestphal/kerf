@@ -32,9 +32,7 @@
           "jsx": {
             "prop": "children"
           },
-          "accepts": [
-            "KerfUiContent"
-          ],
+          "accepts": ["KerfUiContent"],
           "cardinality": {
             "min": 0,
             "max": "unbounded"

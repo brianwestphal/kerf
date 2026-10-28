@@ -39,7 +39,7 @@ export function newNodeId(
 }
 
 const clone = (document: ViewDocument): ViewDocument =>
-  structuredClone(document);
+  globalThis.structuredClone(document);
 
 /** Finds a node by id in a (cloned, mutable) document. */
 function locate(document: ViewDocument, id: string) {
