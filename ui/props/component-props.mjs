@@ -3,7 +3,7 @@
 // component's props into a small JSON type grammar that editors, validators,
 // and generated view contracts can consume without parsing TypeScript.
 import { existsSync, readFileSync } from 'node:fs';
-import { resolve, sep } from 'node:path';
+import { relative, resolve, sep } from 'node:path';
 
 import ts from 'typescript';
 
@@ -28,16 +28,45 @@ const PRINT_FLAGS =
   ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope;
 
 /** Creates a TypeScript program over declaration files. */
-export function createDeclarationProgram(files) {
+export function createDeclarationProgram(files, options = {}) {
   return ts.createProgram(files, {
     target: ts.ScriptTarget.ES2022,
     module: ts.ModuleKind.ESNext,
     moduleResolution: ts.ModuleResolutionKind.Bundler,
     strict: true,
-    noEmit: true,
     skipLibCheck: true,
     types: [],
+    ...options,
+    noEmit: true,
   });
+}
+
+/**
+ * Compiler options from a package's own tsconfig.json (JSX settings, paths),
+ * for reading component source files; empty when it has none.
+ */
+function packageCompilerOptions(root) {
+  const configPath = ts.findConfigFile(
+    root,
+    ts.sys.fileExists,
+    'tsconfig.json',
+  );
+  if (!configPath || !configPath.startsWith(root)) return {};
+  const parsed = ts.getParsedCommandLineOfConfigFile(
+    configPath,
+    {},
+    {
+      ...ts.sys,
+      onUnRecoverableConfigFileDiagnostic: () => undefined,
+    },
+  );
+  return parsed?.options ?? {};
+}
+
+/** A root-relative ESM import for a source file (`src/x.tsx` → `./src/x.js`). */
+function sourceImport(root, file) {
+  const path = relative(root, file).split(sep).join('/');
+  return `./${path.replace(/\.(?:tsx?|jsx?|mts|cts)$/, '.js')}`;
 }
 
 /**
@@ -1023,6 +1052,7 @@ export function buildPackageComponentProps({
       ? { '.': packageJson.exports }
       : (packageJson.exports ?? {});
   const specs = [];
+  let usesSource = false;
   for (const entry of composition.entries ?? []) {
     if (entry.kind !== 'component' || (entry.package && entry.package !== pkg))
       continue;
@@ -1031,11 +1061,25 @@ export function buildPackageComponentProps({
     );
     const subpaths = [...new Set(exported.map((item) => item.subpath ?? '.'))];
     const subpath = subpaths.find((item) => item !== '.') ?? subpaths[0] ?? '.';
-    const file = declarationsFor(root, exportMap[subpath]);
+    const declarations = declarationsFor(root, exportMap[subpath]);
+    // A component that lives in app source has no package export: read its
+    // source file and import it by a root-relative path, which view tools
+    // rewrite relative to each document (KF-7JP509: app-source catalogs).
+    const source =
+      entry.source && existsSync(resolve(root, entry.source))
+        ? resolve(root, entry.source)
+        : undefined;
+    const fromSource = !(declarations && existsSync(declarations)) && source;
+    const file = fromSource ? source : declarations;
+    if (fromSource) usesSource = true;
     specs.push({
       id: entry.id,
       name: entry.name,
-      import: subpath === '.' ? pkg : `${pkg}${subpath.slice(1)}`,
+      import: fromSource
+        ? sourceImport(root, source)
+        : subpath === '.'
+          ? pkg
+          : `${pkg}${subpath.slice(1)}`,
       file: file && existsSync(file) ? file : undefined,
       exports: [
         ...new Set(
@@ -1048,9 +1092,10 @@ export function buildPackageComponentProps({
       cssValueProps: entry.cssValueProps ?? [],
     });
   }
-  const program = createDeclarationProgram([
-    ...new Set(specs.map((spec) => spec.file).filter(Boolean)),
-  ]);
+  const program = createDeclarationProgram(
+    [...new Set(specs.map((spec) => spec.file).filter(Boolean))],
+    usesSource ? packageCompilerOptions(root) : {},
+  );
   const ctx = createPropsContext(program.getTypeChecker(), root);
   const components = readComponentEntries(
     ctx,

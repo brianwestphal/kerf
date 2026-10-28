@@ -1,0 +1,20 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "Dashboard",
+  "catalogs": ["@kerfjs/ui", "orders-app"],
+  "params": { "title": { "type": { "kind": "string" } } },
+  "root": {
+    "id": "01JB8Z1M6Q8E1X9V4S7K2R3TPA",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "01JB8Z1M6Q8E1X9V4S7K2R3TPB",
+          "name": "firstOrder",
+          "type": "orders-app:order-card",
+          "props": { "title": { "$param": "title" }, "status": "shipped" }
+        }
+      ]
+    }
+  }
+}

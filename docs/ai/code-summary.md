@@ -725,7 +725,7 @@ packages emit component-props.json). That bin generates a component package's
 `component-props.json` from its composition catalog and built declarations.
 It is tested by `ui/tests/unit/component-props-package.test.ts` over
 `ui/tests/fixtures/component-props-package/`, and `create-kerf-component`'s
-template wires it as `props:generate` / `props:check`.
+template wires it as `props:generate` / `props:check`. For components in app source (no package export) it reads the composition entry's `source` with the app's tsconfig and records root-relative imports that `generateView`'s `importFrom` rewrites per document (KF-7JP509; tests: `ui/tests/unit/component-props-app.test.ts` over `ui/tests/fixtures/component-props-app/`).
 
 `ui/view/` is the published `@kerfjs/ui/view` subpath (KF-FB9340: view-document
 validator for the Kerf UI editor, `docs/26-ui-editor.md`). `validate.mjs`

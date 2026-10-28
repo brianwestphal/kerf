@@ -78,6 +78,28 @@ export function lucideExportName(name) {
     .join('');
 }
 
+/**
+ * The import specifier for a component module. A package specifier is used
+ * as is. An absolute path (an app-source component whose catalog the caller
+ * resolved) becomes relative to `importFrom`, the generated module's folder.
+ * Pure string work, so it also runs in the browser.
+ */
+export function moduleSpecifier(specifier, importFrom) {
+  if (!specifier.startsWith('/') || !importFrom) return specifier;
+  const from = importFrom.split('/').filter(Boolean);
+  const to = specifier.split('/').filter(Boolean);
+  let shared = 0;
+  while (
+    shared < from.length &&
+    shared < to.length - 1 &&
+    from[shared] === to[shared]
+  )
+    shared += 1;
+  const up = from.length - shared;
+  const rest = to.slice(shared).join('/');
+  return up === 0 ? `./${rest}` : `${'../'.repeat(up)}${rest}`;
+}
+
 /** The module path generated for a document path (`x.kui.json` → `x.view.ts`). */
 export function viewModulePath(documentPath, target = 'ts') {
   const base = documentPath.replace(/\.kui\.json$/, '');
@@ -175,7 +197,7 @@ function createImports() {
   };
 }
 
-function createEmitter(document, catalog, imports) {
+function createEmitter(document, catalog, imports, importFrom) {
   const component = (type) => catalog.components.get(type)?.component;
 
   const value = (input, scope) => {
@@ -330,7 +352,10 @@ function createEmitter(document, catalog, imports) {
       entries.push(["'data-kerf-node'", raw(literal(node.id))]);
       if (rowKey) entries.push(["'data-key'", raw(`String(${rowKey})`)]);
     }
-    imports.value(definition.import, definition.export);
+    imports.value(
+      moduleSpecifier(definition.import, importFrom),
+      definition.export,
+    );
     return call(`${definition.export}(`, obj(entries));
   };
 
@@ -522,9 +547,12 @@ export function generateView(document, catalog, options = {}) {
   let rootExpr;
   if (!options.declarationsOnly) {
     rootExpr = printDoc(
-      createEmitter({ ...document, views }, catalog, imports).root(
-        document.root,
-      ),
+      createEmitter(
+        { ...document, views },
+        catalog,
+        imports,
+        options.importFrom,
+      ).root(document.root),
       2,
     );
   }

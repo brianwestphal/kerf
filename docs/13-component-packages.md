@@ -372,6 +372,11 @@ The scaffold also ships a structured prop schema, `component-props.json`
   `publicExports` name, preferring a named subpath);
 - an optional inspector-hint overlay (`kerfComponentCatalog.propsOverlay`).
 
+An application can use the same configuration for components that live in its
+own source. When a component has no package export, `kerf-ui-props` reads its
+composition entry's `source` file with the app's `tsconfig.json` and records a
+root-relative import, which `kerf-ui-view` rewrites relative to each document.
+
 It writes `kerfComponentCatalog.propsOutput`, listing each component's props as
 a type grammar with required flags, documented defaults, zones and slots, and
 discriminated variants. Components are keyed `package:id`, the same key as the

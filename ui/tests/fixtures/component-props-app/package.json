@@ -1,0 +1,10 @@
+{
+  "name": "orders-app",
+  "private": true,
+  "type": "module",
+  "kerfComponentCatalog": {
+    "source": "./kerf.components.json",
+    "output": "./component-composition.json",
+    "propsOutput": "./component-props.json"
+  }
+}

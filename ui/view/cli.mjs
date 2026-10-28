@@ -114,16 +114,30 @@ export function profileCatalogPaths(documentPath) {
   return paths;
 }
 
+/**
+ * Reads a component-props.json and makes its relative component imports (app
+ * source components, `./src/x.js`) absolute against the catalog's folder, so
+ * the generator can write them relative to each document.
+ */
+function readPropsCatalog(path) {
+  const catalog = readJson(path);
+  for (const component of catalog.components ?? []) {
+    if (/^\.\.?\//.test(component.import ?? '')) {
+      component.import = resolve(dirname(path), component.import);
+    }
+  }
+  return catalog;
+}
+
 function loadCatalog(options, documentPath) {
   const discovered = options.profile
     ? profileCatalogPaths(documentPath)
     : { props: [], composition: [] };
   return createViewCatalog({
     props: [
-      resolve(packageRoot, 'ai/component-props.json'),
-      ...discovered.props,
-      ...options.props,
-    ].map(readJson),
+      readJson(resolve(packageRoot, 'ai/component-props.json')),
+      ...[...discovered.props, ...options.props].map(readPropsCatalog),
+    ],
     composition: [
       resolve(packageRoot, 'ai/component-composition.json'),
       ...discovered.composition,
@@ -169,6 +183,7 @@ export function run(argv) {
       resolveView,
       target: options.target,
       declarationsOnly: options.declarationsOnly,
+      importFrom: dirname(resolve(documentPath)),
     });
     const outputs = [[modulePath, generated.code]];
     if (generated.declarations)

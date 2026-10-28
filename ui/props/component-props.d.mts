@@ -101,7 +101,10 @@ export interface PropsContext {
   definitionNames: Map<ts.Type, string>;
 }
 
-export function createDeclarationProgram(files: string[]): ts.Program;
+export function createDeclarationProgram(
+  files: string[],
+  options?: ts.CompilerOptions,
+): ts.Program;
 export function createPropsContext(
   checker: ts.TypeChecker,
   ownDirectory: string,

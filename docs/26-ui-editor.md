@@ -504,8 +504,12 @@ the `.kerf-ui-profile.json` layers above a document declare: the
 (KF-S61KAT: profile discovery). Paths resolve relative to the profile file
 that declares them. A component package writes its prop catalog with
 `kerf-ui-props`. `--props` and `--composition` add catalogs explicitly, and
-`--no-profile` turns discovery off. Components that live in app source rather
-than a package are not covered yet (KF-7JP509: app-source prop catalogs).
+`--no-profile` turns discovery off. A component that lives in app source rather than a package (no export
+declarations) is read from its composition entry's `source` file, using the
+app's `tsconfig.json`. Its catalog `import` is root-relative
+(`./src/order-card.js`); the CLI makes it absolute when loading the catalog,
+and `generateView`'s `importFrom` writes it relative to each document
+(KF-7JP509: app-source prop catalogs).
 
 ## 6. Re-export: "only fix what's broken"
 

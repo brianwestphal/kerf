@@ -230,6 +230,8 @@ export function generateView(
     resolveView?: (src: string) => unknown;
     target?: 'ts' | 'js';
     declarationsOnly?: boolean;
+    /** The generated module's folder; absolute component imports become relative to it. */
+    importFrom?: string;
   },
 ): GeneratedView;
 
@@ -321,3 +323,6 @@ export function previewView(
     readonly placeholder: (node: ViewNode, reason: string) => SafeHtmlLike;
   },
 ): SafeHtmlLike;
+
+/** A component import as the generated module writes it, relative to `importFrom` when absolute. */
+export function moduleSpecifier(specifier: string, importFrom?: string): string;
