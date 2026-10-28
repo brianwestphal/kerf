@@ -6,7 +6,7 @@ Use these defaults when composing an application with `@kerfjs/ui`. They govern 
 
 Name the person's task, the primary action, the regions, and each region's state and scroll owner before writing JSX. Choose the existing Kerf component for each role and compose it through public props, variants, and theme tokens. Give application components only domain behavior or structure the package does not provide. Components own their own styling; consumer CSS does not target `.kui-*` classes, rendered parts, or private variables. When a needed variation has no public API, request the prop, token, variant, or component in Kerf and keep the gap visible.
 
-Use the spacing scale by relationship: 8px within a group, 16px between like groups, and 24px between distinct regions. Do not pad a `Pane` and its `ContentItem` children twice. Align text with text and icons with icons. Let empty space remain empty when it clarifies hierarchy. Read [layout](layout.md), [component contract](component-contract.md), and [design philosophy](design-philosophy.md) for the ownership and rationale.
+Use the spacing scale by relationship: 8px within a group, 16px between like groups, and 24px between distinct regions. Do not pad a `Pane` and its `ContentItem` children twice. Align text with text and icons with icons; an element with its own border or fill aligns its outer edge with the other bordered elements in its column (a selected list row, a list header's action), while a borderless nested glyph aligns with those elements' nested content. Let empty space remain empty when it clarifies hierarchy. Read [layout](layout.md), [component contract](component-contract.md), and [design philosophy](design-philosophy.md) for the ownership and rationale.
 
 ## Chrome and hierarchy
 

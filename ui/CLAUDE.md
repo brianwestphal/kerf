@@ -131,7 +131,11 @@ matters, and ask rather than guess when a design brief is ambiguous.**
 - **Align text to text, icons to icons.** A border is decoration, never the
   alignment anchor: a bordered surface extends to the pane gutter instead of
   being indented to line its border up with a heading's text, and bare prose
-  goes on the shared text column via `ListInsetText`.
+  goes on the shared text column via `ListInsetText`. Bordered elements in
+  one column align outer edges with each other (a `ListHeader` action ends on
+  a selected `ListItem`'s edge); a borderless nested glyph aligns with their
+  nested content (a toggle header's disclosure arrow with a row's trailing
+  icon).
 - **Select and PopupMenu are one popup.** They share the caret, rows, check
   column, and group titles from one contract; a `Select` in a group uses
   `focusRingOwner="group"`, and a trigger drops its ring while its popup is

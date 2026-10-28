@@ -6339,10 +6339,9 @@ test('fills ListHeader rows and keeps 18px action visuals at the logical end', a
       // stretched oval.
       expect(measured.actionWidth).toBeCloseTo((18 + 16) * scale + 2, 0);
       expect(measured.actionHeight).toBeCloseTo((18 + 16) * scale + 2, 0);
-      // The fitted action centers in the 44px toolbar-control slot flush with
-      // the root's end, (2 + 42 - 36) / 2 = 4px in, so its glyph shares the
-      // trailing axis of a Pane Header's toolbar action.
-      expect(measured.actionLogicalEnd).toBeCloseTo(4 * scale, 0);
+      // KF-78N7HE: the bordered action ends flush with the root's end, on the
+      // outer edge the selected ListItem rows share, with no glyph-centering inset.
+      expect(measured.actionLogicalEnd).toBeCloseTo(0, 0);
       expect(measured.titleActionOverlap).toBe(0);
       expect(measured.visualInsideAction).toBe(true);
       expect(measured.visualCenterDelta).toBeLessThanOrEqual(1);
@@ -6478,11 +6477,17 @@ test('extends the fitted ListHeader action to a 44px pointer target without over
         outsideHits: outside
           .filter(([x, y]) => hitOwner(x, y) === action)
           .map(([x, y]) => [x - cx, y - cy]),
+        // Block-wise the extension never leaves its header. The action ends
+        // flush at the header's end, so inline-wise its 44px target may reach
+        // into the header's own empty 8px inline margin, never past it.
         hitInsideHeader:
           cy - halfHeight >= headerBounds.top - 0.5 &&
           cy + halfHeight <= headerBounds.bottom + 0.5 &&
           cx - halfWidth >= headerBounds.left - 0.5 &&
-          cx + halfWidth <= headerBounds.right + 0.5,
+          cx + halfWidth <=
+            headerBounds.right +
+              parseFloat(window.getComputedStyle(header).marginRight) +
+              0.5,
       };
     });
   });
@@ -7573,11 +7578,10 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
       'rowEnd',
       'surfaceStart',
       'toolbarActionEnd',
+      // KF-78N7HE: the bordered ListHeader action ends on the rows' outer edge.
+      'headerActionEnd',
     ] as const)
       near(name, geometry[name], 8);
-    // The fitted 36px ListHeader action centers in the 44px toolbar-control
-    // slot at the 8px margin, so its glyph shares the toolbar action's axis.
-    near('headerActionEnd', geometry.headerActionEnd, 12);
     for (const name of [
       'plainStart',
       'sectionStart',

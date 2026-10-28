@@ -136,11 +136,13 @@
 /* The fitted square is the visual and hover surface; the pointer target is at
    least 44px in both dimensions. A transparent, out-of-flow layer extends the
    button's hit area evenly around the square without moving layout or painting
-   anything, and hovering it lights the unchanged fitted square. Standard headers
-   are 44px tall and reserve the 4px inline slot at the logical end, so the
-   extension stays inside the header; the leading 4px falls in the 8px gap before
-   the dormant title. Offsets are from the padding box, hence the extra 1px for the
-   border. */
+   anything, and hovering it lights the unchanged fitted square. The action is a
+   bordered control, so its border box ends flush at the header's 8px inline
+   margin, on the outer edge of the selected ListItem rows below it and of a
+   Pane header's trailing ToolbarControlGroup. Standard headers are 44px tall;
+   the trailing 4px of the extension falls in that inline margin and the leading
+   4px in the 8px gap before the dormant title. Offsets are from the padding box,
+   hence the extra 1px for the border. */
 .kui-list-header__action::before {
   --_kui-list-header-action-hit-outset: min(
     0px,
@@ -156,25 +158,6 @@
    row or header. */
 .kui-list-header[data-density="compact"] .kui-list-header__action::before {
   inset-block: -1px;
-}
-
-/* Trailing icon actions share one axis: a toolbar control centers its glyph in a
-   44px group slot flush with the 8px inline margin, so the fitted action centers
-   itself in a slot of that same size instead of sitting flush at the margin
-   (which put its glyph ~4px outside a Pane header's trailing toolbar glyph). The
-   slot, not the button, grows by the difference, so the fitted hover square and
-   its 18px visual are unchanged. Inline headers carry no outer geometry. */
-.kui-list-header:not([data-inline="true"]) > .kui-list-header__action {
-  margin-inline-end: max(
-    0px,
-    calc(
-      (
-          var(--kui-toolbar-group-size, calc(2px + remify(42px))) -
-            var(--_kui-list-header-action-size)
-        ) /
-        2
-    )
-  );
 }
 
 .kui-list-header__toggle {

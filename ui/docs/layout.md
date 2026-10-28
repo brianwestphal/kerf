@@ -580,12 +580,13 @@ taller than the control band.
 The leading zone clips a shrinking title but reserves 4px of paint overflow
 for the focus outline of a control at its edge. Focus rings in all three zones
 remain visible at narrow and wide widths.
-Trailing icon actions share one axis: a toolbar control centers its glyph in
-that 44px slot at the 8px inline margin, and a `ListHeader` action centers its
-fitted 36px square in a slot of the same size (a transparent hit layer extends
-its pointer target to fill that 44px slot), so a Pane header's trailing toolbar
-action and the `ListHeader` action beneath it line up (30px from the pane edge
-at the default scale).
+Trailing alignment follows borders. An element with its own border or fill
+aligns its outer edge with the other bordered elements in its column: a
+`ListHeader` action's fitted 36px square ends flush at the header's 8px inline
+margin, on the same edge as a selected or hovered `ListItem` below it and as a
+Pane header's trailing `ToolbarControlGroup` (a transparent hit layer still
+extends the action's pointer target to 44px). A borderless nested glyph aligns
+with the nested content of those elements instead, not with their borders.
 Panel, dialog, and page headings are plain `Toolbar` compositions. The leading
 zone holds an optional icon `ToolbarControlGroup` and a direct extra-large
 `ToolbarText`; actions belong in a trailing group. Omit empty groups. Supporting

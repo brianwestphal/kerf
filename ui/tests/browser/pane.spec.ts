@@ -317,7 +317,10 @@ test('Pane and the migrated catalog remain coherent at a narrow viewport', async
     });
 });
 
-test('Pane Header toolbar and ListHeader trailing actions share one axis', async ({
+// KF-78N7HE: bordered elements in one column align their outer edges. The
+// ListHeader action's fitted square ends on the selected ListItem's edge and on
+// the Pane header's trailing ToolbarControlGroup, with no glyph-centering inset.
+test('ListHeader action border box ends on the selected ListItem and toolbar group edges', async ({
   page,
 }) => {
   for (const width of [1200, 390]) {
@@ -325,31 +328,30 @@ test('Pane Header toolbar and ListHeader trailing actions share one axis', async
     await page.goto('/?component=list');
     const pane = page.locator('[data-demo="list"] [data-component="pane"]');
     await expect(pane).toBeVisible();
-    const axis = await pane.evaluate((root) => {
-      const glyph = (selector: string) =>
-        root
-          .querySelector(selector)!
-          .querySelector('svg')!
-          .getBoundingClientRect();
-      const toolbar = glyph('.kui-pane__header [data-action="log-add"]');
-      const listHeader = glyph('.kui-list-header__action');
-      const paneRight = root.getBoundingClientRect().right;
+    const edges = await pane.evaluate((root) => {
+      const right = (element: Element) => element.getBoundingClientRect().right;
+      const paneRight = right(root);
+      const group = root
+        .querySelector('.kui-pane__header [data-action="log-add"]')!
+        .closest('.kui-toolbar-control-group')!;
+      const header = root
+        .querySelector('.kui-list-header__action')!
+        .closest('.kui-list-header')!;
       return {
-        toolbarCenter: paneRight - (toolbar.left + toolbar.width / 2),
-        listHeaderCenter: paneRight - (listHeader.left + listHeader.width / 2),
-        toolbarEnd: paneRight - toolbar.right,
-        listHeaderEnd: paneRight - listHeader.right,
+        action:
+          paneRight - right(root.querySelector('.kui-list-header__action')!),
+        header: paneRight - right(header),
+        selected:
+          paneRight -
+          right(root.querySelector('.kui-list-item[aria-current="page"]')!),
+        group: paneRight - right(group),
       };
     });
-    // Both trailing "+" glyphs center 30px in from the pane edge: the 8px
-    // inline margin plus half of a 44px toolbar-control slot.
-    expect(axis.toolbarCenter).toBeCloseTo(30, 0);
-    expect(
-      Math.abs(axis.listHeaderCenter - axis.toolbarCenter),
-    ).toBeLessThanOrEqual(1);
-    expect(Math.abs(axis.listHeaderEnd - axis.toolbarEnd)).toBeLessThanOrEqual(
-      1,
-    );
+    // 8px inline margin from the pane edge, shared by every bordered element.
+    expect(edges.action).toBeCloseTo(8, 0);
+    expect(Math.abs(edges.action - edges.header)).toBeLessThanOrEqual(0.5);
+    expect(Math.abs(edges.action - edges.selected)).toBeLessThanOrEqual(0.5);
+    expect(Math.abs(edges.action - edges.group)).toBeLessThanOrEqual(0.5);
   }
 });
 
