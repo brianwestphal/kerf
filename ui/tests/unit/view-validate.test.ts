@@ -1155,6 +1155,41 @@ describe('validateView: interactive content (KUI-V014)', () => {
     ).toEqual([]);
   });
 
+  it('carries the host into a composed document', () => {
+    const composed: Record<string, Fixture> = {
+      './go.kui.json': doc(button(), { name: 'Go' }),
+      './note.kui.json': doc(node('badge', { props: { children: '3' } }), {
+        name: 'Note',
+      }),
+    };
+    const resolveView = (src: string) => composed[src];
+    const inRow = (src: string) =>
+      validateView(doc(row([node('#view', { src })])), catalog, {
+        resolveView,
+      }).diagnostics.filter((item) => item.code === 'KUI-V014');
+    expect(inRow('./go.kui.json')).toEqual([
+      {
+        code: 'KUI-V014',
+        path: '$.root.zones.trailing[0]{./go.kui.json}.root',
+        message:
+          '@kerfjs/ui:button renders a control or link, so it cannot sit inside @kerfjs/ui:list-item, which renders one itself',
+      },
+    ]);
+    expect(inRow('./note.kui.json')).toEqual([]);
+    // Outside any host, the composed control is fine.
+    expect(
+      validateView(
+        doc(
+          node('row', {
+            zones: { children: [node('#view', { src: './go.kui.json' })] },
+          }),
+        ),
+        catalog,
+        { resolveView },
+      ).diagnostics,
+    ).toEqual([]);
+  });
+
   it('is unchecked for a package whose catalog declares no rules', () => {
     const bare = createViewCatalog({
       props: [readJson('ai/component-props.json')],

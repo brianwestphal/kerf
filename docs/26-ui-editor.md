@@ -697,8 +697,10 @@ row contract throws. The check follows `$if` and `$each` and passes through
 non-interactive wrappers. `whenProps` turns a rule on only when one of its
 props is set (a Chip is a `<button>` only with `action`), and a bound value
 counts as set. `content.exports` gives an additional JSX export its own rules
-(`ListItemLink`, `FieldLabel`). A `$slot`, a `#view`, and a component whose
-catalog declares no rules are not checked. Because the editor's drops and
+(`ListItemLink`, `FieldLabel`). A `#view` inside a host is validated with that
+host in force, so a composed document whose content is a control is reported
+at its own path. A `$slot` and a component whose catalog declares no rules are
+not checked. Because the editor's drops and
 Move to accept only placements the validator accepts, they stop offering
 these places as well.
 

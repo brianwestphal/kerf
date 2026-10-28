@@ -953,6 +953,8 @@ function checkView(ctx, node, at, scope, rowScoped) {
     resolveView: ctx.resolveView,
     icons: ctx.icons,
     viewStack: [...ctx.viewStack, node.src],
+    // A composed document inside a control renders inside it too.
+    interactiveHost: ctx.interactiveHost,
   });
   for (const diagnostic of nested.diagnostics) {
     ctx.report(
@@ -1147,7 +1149,7 @@ export function validateView(document, catalog, options = {}) {
     params: new Map(),
     slots: new Map(),
     packages: undefined,
-    interactiveHost: undefined,
+    interactiveHost: options.interactiveHost,
     report(code, path, message) {
       diagnostics.push({ code, path, message });
     },
