@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "kerfjs",
+    "types": ["vite/client", "node"],
+    "paths": {
+      "kerfjs": ["../src/index.ts"],
+      "kerfjs/jsx-runtime": ["../src/jsx-runtime.ts"],
+      "kerfjs/actions": ["../src/actions.ts"],
+      "kerfjs/overlay": ["../src/overlay.ts"],
+      "@kerfjs/ui": ["../ui/dist/index.d.ts"],
+      "@kerfjs/ui/view": ["../ui/view/index.d.mts"],
+      "@kerfjs/ui/ai/*": ["../ui/ai/*"],
+      "@kerfjs/ui/*": ["../ui/dist/*"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "tests/**/*",
+    "vite.config.ts",
+    "playwright.config.ts"
+  ]
+}

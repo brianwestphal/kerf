@@ -50,6 +50,7 @@ describe('selectPackageGates', () => {
     expect(names(['ui/ai/component-catalog.json'])).toEqual([
       'ui:check',
       'eslint-plugin:test',
+      'editor:check',
     ]);
     expect(names(['ui/package.json'])).toEqual([
       'ui:check',
@@ -58,6 +59,19 @@ describe('selectPackageGates', () => {
     // ui source alone stays ui-only.
     expect(names(['ui/src/components/actions/button/button.tsx'])).toEqual([
       'ui:check',
+    ]);
+  });
+
+  it('runs the editor check for the editor and the ui view layer it renders with', () => {
+    expect(names(['editor/src/editor.tsx'])).toEqual(['editor:check']);
+    expect(names(['ui/view/interpret.mjs'])).toEqual([
+      'ui:check',
+      'editor:check',
+    ]);
+    expect(names(['ui/ai/component-props.json'])).toEqual([
+      'ui:check',
+      'eslint-plugin:test',
+      'editor:check',
     ]);
   });
 

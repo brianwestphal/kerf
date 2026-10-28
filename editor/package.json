@@ -1,0 +1,33 @@
+{
+  "name": "kerf-ui-editor",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Kerf UI editor: a visual composer for Kerf UI view documents (docs/26-ui-editor.md). Private; not published.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 42917 --strictPort",
+    "lint": "eslint src tests --max-warnings 0",
+    "typecheck": "node node_modules/typescript7/bin/tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "check": "npm run ensure-ui && npm run lint && npm run typecheck && npm run test && npm run build",
+    "ensure-ui": "node scripts/ensure-ui-build.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^22.20.5",
+    "@typescript-eslint/eslint-plugin": "^8.65.0",
+    "@typescript-eslint/parser": "^8.65.0",
+    "eslint": "^10.8.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "happy-dom": "^21.0.4",
+    "lucide": "1.43.0",
+    "typescript": "^6.0.3",
+    "typescript7": "npm:typescript@^7.0.2",
+    "vite": "^7.3.7",
+    "vitest": "^4.1.12"
+  }
+}

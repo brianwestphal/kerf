@@ -1,0 +1,21 @@
+/*
+ * Editor-owned structure only. The canvas is a positioning context for the
+ * selection highlight drawn over the selected node; no Kerf UI component is
+ * selected or restyled here. The highlight reuses the theme's focus ring so
+ * it follows light, dark, and forced-colors modes.
+ */
+.editor-canvas {
+  position: relative;
+  min-block-size: 100%;
+}
+
+.editor-selection {
+  position: absolute;
+  pointer-events: none;
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+.editor-selection[hidden] {
+  display: none;
+}

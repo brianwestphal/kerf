@@ -1,8 +1,8 @@
 // Decide which sibling-package gates a change needs, so the local `npm run
 // check` fails on the same package gates CI's per-package jobs run.
 //
-// CI runs `ui` (`npm run check`), `eslint-plugin`, and `create-kerf-component`
-// as separate jobs. The root chain never ran them, so a core-size change that
+// CI runs `ui` (`npm run check`), `eslint-plugin`, `create-kerf-component`,
+// and `editor` as separate jobs. The root chain never ran them, so a core-size change that
 // pushed the @kerfjs/ui demo bundle over budget passed every local push while
 // CI stayed red. The browser-heavy CI gates (ui `test:e2e`, the design-template
 // drift render, the root Playwright matrix) stay CI-only by design: each takes
@@ -40,6 +40,22 @@ export const PACKAGE_GATES = [
       'create-kerf-component/',
       'ui/ai/component-composition.schema.json',
       'ui/ai/component-catalog-extension.schema.json',
+    ],
+  },
+  {
+    name: 'editor:check',
+    dir: 'editor',
+    args: ['run', 'check'],
+    // The private Kerf UI editor renders documents through @kerfjs/ui/view
+    // against the shipped catalogs. Broader ui and core changes reach it in
+    // CI's editor job rather than on every local push.
+    triggers: [
+      'editor/',
+      'ui/view/',
+      'ui/ai/component-props.json',
+      'ui/ai/component-props-overlay.json',
+      'ui/ai/component-composition.json',
+      'ui/ai/component-catalog.json',
     ],
   },
 ];

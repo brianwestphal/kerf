@@ -1,6 +1,6 @@
 # Kerf UI editor: view documents and generated view contracts
 
-**Status: partly built.** Five pieces exist:
+**Status: partly built.** Six pieces exist:
 
 - the foundation, `ui/ai/component-props.json` (KF-8PXPKW: generated
   per-component prop schema; see `docs/21-ui-package.md`);
@@ -10,9 +10,11 @@
   §6; KF-WWJGSN: view generator and CLI);
 - `interpretView` (§7; KF-5G4CNW: runtime interpreter);
 - the `kerfjs/no-generated-view-edits` lint rule (§5.2; KF-BD3ZHQ: no-hand-edits
-  lint rule).
+  lint rule);
+- the private `editor/` scaffold (KF-4NRZCV: editor scaffold): open and save,
+  canvas preview, selection, outline, and a read-only inspector.
 
-The editor is still design only. The
+Editing, a problems list, and code export in the editor are next. The
 implementation tickets are listed in [§10](#10-implementation-plan).
 
 ## 1. Purpose and decisions
@@ -625,5 +627,5 @@ diff <doc…>` takes `--target js`, `--declarations-only`, and extra
 6. A `data-*` channel (`rootAttributes`) for every component that lacks one,
    recorded in `component-props.json` (§4.5; KF-PYR8XZ: component data
    channels).
-7. The private `editor/` package (KF-4NRZCV: editor scaffold), then editing,
-   validation display, and export in the editor.
+7. **Done (first slice):** the private `editor/` package (KF-4NRZCV: editor
+   scaffold). Editing, validation display, and export in the editor follow.

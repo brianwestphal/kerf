@@ -157,6 +157,35 @@ jobs:
       - run: npm run build
       - run: npm run check
 
+  # The private Kerf UI editor (docs/26-ui-editor.md): lint, types, unit
+  # tests, build, and its Playwright flows in every engine. It renders through
+  # the repository's @kerfjs/ui build and kerf source.
+  editor:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: editor
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '${{ env.NODE_VERSION }}'
+          cache: npm
+          cache-dependency-path: editor/package-lock.json
+      - name: Install kerfjs build dependencies
+        working-directory: .
+        run: npm ci
+      - name: Build the local kerfjs peer
+        working-directory: .
+        run: npm run build
+      - name: Install and build @kerfjs/ui
+        working-directory: ui
+        run: npm ci && npm run build
+      - run: npm ci
+      - run: npm run check
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run test:e2e
+
   # Run the full browser suite in each engine concurrently. The package check
   # remains the stable `ui` status check; each browser reports its own result.
   ui-browser:
