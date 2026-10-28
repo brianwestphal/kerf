@@ -123,11 +123,14 @@ test('lists problems and selects the node a problem is about', async ({
   );
   document.root.zones.header[0].zones.trailing[0].props.tone = 'purple';
   document.params.bad = { type: { kind: 'map' } };
-  await page.locator('input[type="file"]').first().setInputFiles({
-    name: 'inbox.kui.json',
-    mimeType: 'application/json',
-    buffer: Buffer.from(JSON.stringify(document)),
-  });
+  await page
+    .locator('input[type="file"]')
+    .first()
+    .setInputFiles({
+      name: 'inbox.kui.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(document)),
+    });
   const problems = page.locator('[data-action="editor-select-problem"]');
   await expect(problems).toHaveCount(2);
   await expect(page.getByText('2 problems in this document')).toBeVisible();
