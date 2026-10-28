@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 437000,
+  "totalJavaScriptGzip": 437500,
   "measuredLargestJavaScriptGzip": 164544,
-  "measuredTotalJavaScriptGzip": 436950,
+  "measuredTotalJavaScriptGzip": 437484,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6371,6 +6371,22 @@
         "measuredTotalJavaScriptGzip": 436950,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 437000
+      }
+    },
+    {
+      "at": "2026-10-28T08:23:43.253Z",
+      "reason": "rootAttributes data-* channel on 36 components for the Kerf UI editor node marker (KF-PYR8XZ)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164544,
+        "measuredTotalJavaScriptGzip": 436950,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 437000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164544,
+        "measuredTotalJavaScriptGzip": 437484,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 437500
       }
     }
   ]
