@@ -56,6 +56,10 @@
       "types": "./catalog-projection.d.mts",
       "import": "./catalog-projection.mjs"
     },
+    "./view": {
+      "types": "./view/index.d.mts",
+      "import": "./view/index.mjs"
+    },
     "./vite-ux-review": {
       "types": "./vite-ux-review.d.mts",
       "import": "./vite-ux-review.mjs"
@@ -665,6 +669,7 @@
     "catalog-projection-cli.mjs",
     "vite-ux-review.mjs",
     "vite-ux-review.d.mts",
+    "view",
     "scripts/component-catalog-extension-validation.mjs",
     "analyzer",
     "doctor",

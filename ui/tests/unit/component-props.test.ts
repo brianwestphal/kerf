@@ -338,6 +338,12 @@ describe('ai/component-props.json (generated from the built package)', async () 
       type: { kind: 'content' },
       slot: true,
     });
+    // ButtonLabel takes plain text; bare KerfUiContent does not.
+    expect(prop(button, 'children').type).toMatchObject({
+      kind: 'content',
+      acceptsText: true,
+    });
+    expect(prop(button, 'icon').type.acceptsText).toBeUndefined();
   });
 
   it('ListHeader: the toggle discriminant and toggle-only props', () => {
@@ -363,6 +369,11 @@ describe('ai/component-props.json (generated from the built package)', async () 
       ['header', 'children', 'footer'].map((name) => prop(pane, name).zone),
     ).toEqual(['header', 'content', 'footer']);
     expect(prop(pane, 'background').type.kind).toBe('css-value');
+    // rootAttributes keeps its `data-*` index signature beside the protected markers.
+    expect(prop(pane, 'rootAttributes').type.index).toMatchObject({
+      keyPrefix: 'data-',
+      value: { kind: 'string' },
+    });
   });
 
   it('Select: a generic value type and the multiple discriminant', () => {

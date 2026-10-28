@@ -1,0 +1,341 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/view-document.schema.json",
+  "title": "Kerf UI view document",
+  "description": "A kerf-ui-document/v1 view document (docs/26-ui-editor.md): the editor-owned source of truth that generates a read-only view module. This schema checks shape for editors and IDEs; validateView from @kerfjs/ui/view also checks types, scope, actions, and composition against the component catalogs.",
+  "type": "object",
+  "required": ["schema", "name", "catalogs", "root"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schema": {
+      "const": "kerf-ui-document/v1"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]*$"
+    },
+    "catalogs": {
+      "description": "Packages (\"@kerfjs/ui\") or consumer catalog paths whose components the document uses.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "params": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/param"
+      }
+    },
+    "slots": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "input": {
+            "$ref": "#/$defs/declaredType"
+          }
+        }
+      }
+    },
+    "root": {
+      "$ref": "#/$defs/node"
+    }
+  },
+  "$defs": {
+    "param": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "$ref": "#/$defs/declaredType"
+        },
+        "default": {},
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "declaredType": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "string",
+            "number",
+            "boolean",
+            "enum",
+            "literal",
+            "content",
+            "array",
+            "object"
+          ]
+        },
+        "values": {
+          "type": "array",
+          "minItems": 1
+        },
+        "value": {
+          "type": ["string", "number", "boolean"]
+        },
+        "items": {
+          "$ref": "#/$defs/declaredType"
+        },
+        "props": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "type", "required"],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "$ref": "#/$defs/declaredType"
+              },
+              "required": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "enum"
+              }
+            }
+          },
+          "then": {
+            "required": ["values"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "array"
+              }
+            }
+          },
+          "then": {
+            "required": ["items"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "object"
+              }
+            }
+          },
+          "then": {
+            "required": ["props"]
+          }
+        }
+      ]
+    },
+    "id": {
+      "description": "Immutable 26-character Crockford ULID.",
+      "type": "string",
+      "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "dynamicValue": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "$param": {
+          "type": "string"
+        },
+        "$bind": {
+          "type": "string"
+        },
+        "$action": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+        },
+        "$css": {
+          "type": "string"
+        }
+      }
+    },
+    "node": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][A-Za-z0-9]*$"
+        },
+        "props": {
+          "type": "object"
+        },
+        "zones": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/child"
+            }
+          }
+        },
+        "value": {},
+        "src": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "#text"
+              }
+            }
+          },
+          "then": {
+            "required": ["value"],
+            "additionalProperties": false,
+            "properties": {
+              "id": {},
+              "type": {},
+              "value": {
+                "type": ["string", "object"]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "#view"
+              }
+            }
+          },
+          "then": {
+            "required": ["src"],
+            "additionalProperties": false,
+            "properties": {
+              "id": {},
+              "type": {},
+              "src": {},
+              "props": {}
+            }
+          },
+          "else": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {},
+              "type": {},
+              "name": {},
+              "props": {},
+              "zones": {},
+              "value": {}
+            }
+          }
+        }
+      ]
+    },
+    "child": {
+      "type": "object",
+      "allOf": [
+        {
+          "if": {
+            "required": ["$each"]
+          },
+          "then": {
+            "required": ["$each", "as", "key", "template"],
+            "additionalProperties": false,
+            "properties": {
+              "$each": {
+                "$ref": "#/$defs/dynamicValue"
+              },
+              "as": {
+                "type": "string",
+                "pattern": "^[a-z][A-Za-z0-9]*$"
+              },
+              "key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "template": {
+                "$ref": "#/$defs/node"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["$if"]
+          },
+          "then": {
+            "required": ["$if", "then"],
+            "additionalProperties": false,
+            "properties": {
+              "$if": {},
+              "then": {
+                "$ref": "#/$defs/child"
+              },
+              "else": {
+                "$ref": "#/$defs/child"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["$slot"]
+          },
+          "then": {
+            "required": ["$slot"],
+            "additionalProperties": false,
+            "properties": {
+              "$slot": {
+                "type": "string",
+                "pattern": "^[a-z][A-Za-z0-9]*$"
+              },
+              "input": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["type"]
+          },
+          "then": {
+            "$ref": "#/$defs/node"
+          }
+        }
+      ]
+    }
+  }
+}

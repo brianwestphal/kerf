@@ -1,9 +1,14 @@
 # Kerf UI editor: view documents and generated view contracts
 
-**Status: design only.** Nothing in this document is built yet except its
-foundation, `ui/ai/component-props.json` (KF-8PXPKW: generated per-component
-prop schema; see `docs/21-ui-package.md`). The implementation tickets are
-listed in [§10](#10-implementation-plan).
+**Status: partly built.** Two pieces exist:
+
+- the foundation, `ui/ai/component-props.json` (KF-8PXPKW: generated
+  per-component prop schema; see `docs/21-ui-package.md`);
+- the document schema and `validateView` (§3, §8) in `@kerfjs/ui/view`
+  (KF-FB9340: view-document schema and validator).
+
+The generator, interpreter, lint rule, and editor are still design only. The
+implementation tickets are listed in [§10](#10-implementation-plan).
 
 ## 1. Purpose and decisions
 
@@ -209,6 +214,23 @@ There are no expressions: no arithmetic, string templates, or function calls
 beyond `$css`. A value that needs computation becomes a param that the
 application computes.
 
+- `$css` is parsed, not trusted. It must be exactly one call whose arguments
+  are numbers, quoted strings (with no quotes or backslashes inside), or nested
+  builder calls. The outer call must name one of the prop's `cssValue.helpers`
+  (any `@kerfjs/ui/css-values` builder when the catalog sets none). Generated
+  code emits the call verbatim, so an identifier, an operator, or a template is
+  rejected (`KUI-V010`), never passed through.
+- A `content` prop takes a string or number literal only when its descriptor
+  says `acceptsText` (`ButtonLabel`, `TextContent`). Bare `KerfUiContent`
+  rejects text, as its compile-time contract does, so the document supplies
+  nodes in the zone instead.
+- A content prop that is not a composition zone (`slot` in the props schema)
+  may be set either in `props` (text, `$param`, `$bind`) or in `zones`
+  (nodes), but not both.
+- Object literals are checked against the prop's shape. An index signature
+  (`rootAttributes`' `data-*`) allows only keys with its prefix, and protected
+  markers stay rejected.
+
 ### 3.4 Params
 
 `params` maps a camelCase name to `{ type, default?, description? }`. `type` is
@@ -227,6 +249,11 @@ never styled from outside. This matches Kerf UI's "configure, never override".
   number on the item, because the row becomes a keyed `each()` row. The
   template is a single node, since kerf rows have one root element. An empty
   list renders nothing.
+  - Items must be objects, because `each()` keys rows by item identity.
+  - The template's component needs a `data-*` channel to carry the row's
+    `data-key`.
+  - `as` must not shadow a param, an outer item, or a name the generated
+    module uses (`inputs`, `slots`, `each`, `handlers`).
 - **`$if`**: `{ "$if": <boolean value>, "then": <child>, "else"?: <child> }`.
   The condition is a param, a binding, or a literal.
 
@@ -251,7 +278,9 @@ documents share action names: a child's actions join the parent's action union
 (§4.2), and it is an error for the same name to be row-scoped in one document
 and not in the other. Named nodes and slots stay private to their own document.
 A parent reaches a child's refs through the child's generated `refs` function,
-called on the subtree it rendered. Cycles are errors.
+called on the subtree it rendered. Cycles are errors, and so is composing a
+document that declares slots: the parent has no way to fill them. That case
+stays out of v1 until a design names the parent-side slot surface.
 
 ## 4. The generated view module
 
@@ -489,23 +518,31 @@ surface a human reads: "adds the action `archive`, removes the input
 
 ## 8. Validation
 
-`validateView(document, catalogs)` (library) and `kerf-ui-view check`/the editor
-report diagnostics with stable ids:
+`validateView(document, catalog, { resolveView? })` from `@kerfjs/ui/view`
+(and later `kerf-ui-view check` and the editor) reports diagnostics with stable
+ids. `catalog` comes from `createViewCatalog({ props, composition })` over
+`component-props.json` / `component-composition.json` documents (Kerf UI's and
+any consumer's). The result is `{ valid, diagnostics: [{ code, path, message }],
+actions }`, where `actions` maps each action name to its `row` or `view` scope.
+The module is pure, with no Node APIs, so the editor runs it in the browser.
+Structure is checked by hand, so no schema engine ships at runtime.
+`ui/ai/view-document.schema.json` serves editors and IDEs, and a test keeps the
+schema and the validator in agreement.
 
-| Id         | Condition                                                                                   |
-| ---------- | ------------------------------------------------------------------------------------------- |
-| `KUI-V001` | Schema violation (shape, unknown field, bad `schema` id)                                    |
-| `KUI-V002` | Unknown component `type`, or one from a package missing from `catalogs`                     |
-| `KUI-V003` | Unknown prop, or a zone written through `props`                                             |
-| `KUI-V004` | Prop value not assignable to its type descriptor, or a union props type matching no variant |
-| `KUI-V005` | Missing required prop                                                                       |
-| `KUI-V006` | Duplicate node `id` or duplicate `name`; malformed id                                       |
-| `KUI-V007` | `$param` naming no param, or `$bind` path out of scope or not on the item type              |
-| `KUI-V008` | `$each` without a resolvable `key`, or a template that is not a single node                 |
-| `KUI-V009` | `$action` on a non-action prop, or one name used with both row and view scope               |
-| `KUI-V010` | `$css` calling a helper outside the prop's `cssValue.helpers`                               |
-| `KUI-V011` | A named node whose component has no `data-*` channel (§4.5)                                 |
-| `KUI-V012` | `#view` source missing, cyclic, or given props that are not its params                      |
+| Id         | Condition                                                                                                                              |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `KUI-V001` | Schema violation (shape, unknown field, bad `schema` id)                                                                               |
+| `KUI-V002` | Unknown component `type`, or one from a package missing from `catalogs`                                                                |
+| `KUI-V003` | Unknown prop, or a zone written through `props`                                                                                        |
+| `KUI-V004` | Prop value not assignable to its type descriptor, or a union props type matching no variant                                            |
+| `KUI-V005` | Missing required prop                                                                                                                  |
+| `KUI-V006` | Duplicate node `id` or duplicate `name`; malformed id                                                                                  |
+| `KUI-V007` | `$param` naming no param, or `$bind` path out of scope or not on the item type                                                         |
+| `KUI-V008` | `$each` over a non-array or non-object items, a bad or shadowing `as`, no resolvable `key`, or a template that is not one keyable node |
+| `KUI-V009` | `$action` on a non-action prop, or one name used with both row and view scope                                                          |
+| `KUI-V010` | `$css` calling a helper outside the prop's `cssValue.helpers`                                                                          |
+| `KUI-V011` | A named node whose component has no `data-*` channel (§4.5)                                                                            |
+| `KUI-V012` | `#view` source missing, cyclic, declaring slots, or given props that are not its params                                                |
 
 The composition checks reuse the ESLint `ui-composition` rule's ids, which now
 apply to a JSON tree instead of JSX: `KUI-L201` (disallowed direct parent),
@@ -541,8 +578,8 @@ documents.
 ## 10. Implementation plan
 
 1. **Done:** `ui/ai/component-props.json` (KF-8PXPKW: generated prop schema).
-2. Document schema plus `validateView` in `@kerfjs/ui` (§3, §8; KF-FB9340:
-   view-document schema and validator).
+2. **Done:** document schema plus `validateView` in `@kerfjs/ui/view` (§3, §8;
+   KF-FB9340: view-document schema and validator).
 3. Generator, contract digest/diff, and the `kerf-ui-view` CLI (§4, §6;
    KF-WWJGSN: view generator and CLI).
 4. `interpretView` and the `@kerfjs/ui/view` subpath, with differential tests

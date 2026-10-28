@@ -719,6 +719,15 @@ the generated structured prop layer (KF-8PXPKW: per-component prop schema).
 `ui/tests/unit/component-props.test.ts`, with fixture declarations under
 `ui/tests/fixtures/component-props/`.
 
+`ui/view/` is the published `@kerfjs/ui/view` subpath (KF-FB9340: view-document
+validator for the Kerf UI editor, `docs/26-ui-editor.md`). `validate.mjs`
+(`createViewCatalog`, `validateView`, `isAssignable`, `isLiteralOf`,
+`parseCssCall`, `channelOf`) is re-exported by `index.mjs` and typed by
+`index.d.mts`. The shape schema is `ui/ai/view-document.schema.json`, and the
+`KUI-V001`–`V012` ids are registered in
+`ui/ai/application-ui-diagnostic-ids-v1.json`. Tests:
+`ui/tests/unit/view-validate.test.ts`.
+
 `ui/ai/compile-time-contracts-v1.json` and its schema map stable `KUI-T###`
 diagnostics to catalog identities, public imports, and emitted symbols. The one
 positive/negative consumer fixture under `ui/tests/consumer-types/contracts/`

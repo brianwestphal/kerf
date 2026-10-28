@@ -654,8 +654,11 @@ or `package:id#Export` for an entry's second component (`FieldLabel` beside
   distinct member, listing required and forbidden props, with `variantOnly`
   marking props that only some members allow.
 
-Named object and union types are stored once in `definitions` and referenced
-by name, which bounds recursion. Props inherited from Kerf's native attribute
+A `content` type carries `acceptsText` when it also takes a plain string or
+number (`ButtonLabel`); bare `KerfUiContent` does not. An object type with a
+string index signature records it as `index: { keyPrefix, value }`, for
+example `rootAttributes`' `data-*`. Named object and union types are stored
+once in `definitions` and referenced by name, which bounds recursion. Props inherited from Kerf's native attribute
 types are listed only by name in `nativeAttributes`. Web Awesome entries carry
 attribute props (with `property` when the field name differs) and `slots`.
 
@@ -667,6 +670,15 @@ overlay key naming no component, prop, or declared group, and on a catalog
 entry whose `SafeHtml` component does not resolve. Values TypeScript cannot
 name (Web Awesome's opaque `Wa*` aliases, `Date`) stay `unknown`, with their
 text preserved.
+
+`@kerfjs/ui/view` (`ui/view/`, plain browser-safe ESM with `.d.mts` types) is
+the published view-document layer of the Kerf UI editor (`docs/26-ui-editor.md`).
+`createViewCatalog` indexes component-props and composition documents, and
+`validateView` checks a `kerf-ui-document/v1` document. It reports `KUI-V001`–
+`V012` (shape, types, props, values, ids/names, scope, `$each`, actions, `$css`,
+data channels, composed views) plus JSON-tree ports of the ESLint
+`ui-composition` checks (`KUI-L201`–`L204`) over the same composition catalog.
+`ui/ai/view-document.schema.json` is the shape schema for editors.
 
 `ui/ai/compile-time-contracts-v1.json` is the declaration-facing companion:
 stable `KUI-T###` ids map provable invalid states to public imports, emitted

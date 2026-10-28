@@ -167,6 +167,10 @@
         },
         "text": { "type": "string" },
         "nullable": { "const": true },
+        "acceptsText": {
+          "description": "On `content`: the type also takes a plain string or number.",
+          "const": true
+        },
         "typeParameter": { "type": "string" },
         "value": { "type": ["string", "number", "boolean"] },
         "values": {
@@ -178,6 +182,16 @@
         "items": { "$ref": "#/$defs/type" },
         "props": { "type": "array", "items": { "$ref": "#/$defs/prop" } },
         "members": { "type": "array", "items": { "$ref": "#/$defs/type" } },
+        "index": {
+          "description": "On `object`: a string index signature, as the key prefix it allows (`data-`) and the value type.",
+          "type": "object",
+          "required": ["keyPrefix", "value"],
+          "additionalProperties": false,
+          "properties": {
+            "keyPrefix": { "type": "string" },
+            "value": { "$ref": "#/$defs/type" }
+          }
+        },
         "discriminant": { "type": "array", "items": { "type": "string" } },
         "ref": { "type": "string" }
       },

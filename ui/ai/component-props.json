@@ -256,7 +256,11 @@
       "props": [
         {
           "name": "children",
-          "type": { "kind": "content", "text": "string | number | SafeHtml" },
+          "type": {
+            "kind": "content",
+            "acceptsText": true,
+            "text": "string | number | SafeHtml"
+          },
           "required": false,
           "variantOnly": true,
           "slot": true
@@ -466,6 +470,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-tone'?: undefined; 'data-appearance'?: undefined; 'data-shape'?: undefined; 'data-size'?: undefined; 'data-has-icon'?: undefined; 'data-truncate'?: undefined; 'data-placement'?: undefined; }>",
             "nullable": true
           },
@@ -507,7 +515,11 @@
       "props": [
         {
           "name": "children",
-          "type": { "kind": "content", "text": "ButtonLabel" },
+          "type": {
+            "kind": "content",
+            "acceptsText": true,
+            "text": "ButtonLabel"
+          },
           "required": false,
           "description": "The label.",
           "variantOnly": true,
@@ -1252,6 +1264,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-tone'?: undefined; 'data-appearance'?: undefined; 'data-shape'?: undefined; 'data-size'?: undefined; 'data-disabled'?: undefined; 'data-truncate'?: undefined; 'data-item-id'?: undefined; 'data-link'?: undefined; 'data-action'?: undefined; }>",
             "nullable": true
           },
@@ -1274,7 +1290,11 @@
           "type": {
             "kind": "union",
             "members": [
-              { "kind": "content", "text": "string | number | SafeHtml" },
+              {
+                "kind": "content",
+                "acceptsText": true,
+                "text": "string | number | SafeHtml"
+              },
               { "kind": "string", "text": "string" }
             ],
             "text": "string | number | SafeHtml | string"
@@ -2575,6 +2595,7 @@
           "name": "children",
           "type": {
             "kind": "content",
+            "acceptsText": true,
             "text": "string | KerfUiContent",
             "nullable": true
           },
@@ -2842,6 +2863,14 @@
                     "required": false
                   }
                 ],
+                "index": {
+                  "keyPrefix": "data-",
+                  "value": {
+                    "kind": "string",
+                    "text": "string",
+                    "nullable": true
+                  }
+                },
                 "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-appearance'?: undefined; 'data-outlined'?: undefined; 'data-bubble'?: undefined; 'data-grid-row'?: undefined; 'data-media-state'?: undefined; 'data-media-edge'?: undefined; 'data-media-fade'?: undefined; 'data-kui-tint'?: undefined; 'data-kui-tint-accent'?: undefined; }>",
                 "nullable": true
               },
@@ -3002,6 +3031,14 @@
                     "required": false
                   }
                 ],
+                "index": {
+                  "keyPrefix": "data-",
+                  "value": {
+                    "kind": "string",
+                    "text": "string",
+                    "nullable": true
+                  }
+                },
                 "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-appearance'?: undefined; 'data-outlined'?: undefined; 'data-bubble'?: undefined; 'data-grid-row'?: undefined; 'data-media-state'?: undefined; 'data-media-edge'?: undefined; 'data-media-fade'?: undefined; 'data-kui-tint'?: undefined; 'data-kui-tint-accent'?: undefined; 'data-action'?: undefined; 'data-item-id'?: undefined; 'data-interactive'?: undefined; 'data-selected'?: undefined; 'data-disabled'?: undefined; 'data-selection-mode'?: undefined; 'data-kui-pressed'?: undefined; }>",
                 "nullable": true
               }
@@ -3199,6 +3236,7 @@
           "name": "title",
           "type": {
             "kind": "content",
+            "acceptsText": true,
             "text": "string | KerfUiContent",
             "nullable": true
           },
@@ -3210,6 +3248,7 @@
           "name": "detail",
           "type": {
             "kind": "content",
+            "acceptsText": true,
             "text": "string | KerfUiContent",
             "nullable": true
           },
@@ -3221,6 +3260,7 @@
           "name": "children",
           "type": {
             "kind": "content",
+            "acceptsText": true,
             "text": "string | KerfUiContent",
             "nullable": true
           },
@@ -3948,6 +3988,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-surface'?: undefined; }>",
             "nullable": true
           },
@@ -4026,6 +4070,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-highlighted'?: undefined; }>",
             "nullable": true
           },
@@ -4294,6 +4342,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-columns'?: undefined; 'data-min-column-width'?: undefined; 'data-auto-fill'?: undefined; 'data-flex'?: undefined; 'data-fill'?: undefined; 'data-text-insets'?: undefined; 'data-control-insets'?: undefined; }>",
             "nullable": true
           },
@@ -4751,7 +4803,11 @@
       "props": [
         {
           "name": "label",
-          "type": { "kind": "content", "text": "string | SafeHtml" },
+          "type": {
+            "kind": "content",
+            "acceptsText": true,
+            "text": "string | SafeHtml"
+          },
           "required": true,
           "description": "Visible dormant content for the primary button. Must not contain interactive descendants.",
           "slot": true
@@ -4760,6 +4816,7 @@
           "name": "description",
           "type": {
             "kind": "content",
+            "acceptsText": true,
             "text": "string | SafeHtml | undefined",
             "nullable": true
           },
@@ -4770,6 +4827,7 @@
           "name": "status",
           "type": {
             "kind": "content",
+            "acceptsText": true,
             "text": "string | SafeHtml | undefined",
             "nullable": true
           },
@@ -5111,6 +5169,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-item-id'?: undefined; 'data-has-icon'?: undefined; 'data-icon-tile'?: undefined; 'data-icon-tile-tone'?: undefined; 'data-multiline'?: undefined; 'data-density'?: undefined; 'data-divider'?: undefined; 'data-busy'?: undefined; 'data-trailing-visibility'?: undefined; 'data-state'?: undefined; 'data-selected'?: undefined; 'data-pressed'?: undefined; 'data-dragging'?: undefined; 'data-drop-position'?: undefined; }>",
             "nullable": true
           },
@@ -5245,6 +5307,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-item-id'?: undefined; 'data-kui-disabled'?: undefined; popoverTarget?: string | undefined; popoverTargetAction?: \"toggle\" | \"show\" | \"hide\" | undefined; 'aria-controls'?: string | undefined; 'aria-haspopup'?: \"true\" | \"dialog\" | \"menu\" | \"listbox\" | \"tree\" | \"grid\" | undefined; }>",
             "nullable": true
           },
@@ -5679,6 +5745,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-has-badge'?: undefined; 'data-has-count'?: undefined; 'data-density'?: undefined; 'data-size'?: undefined; 'data-divider'?: undefined; 'data-inline'?: undefined; 'data-width'?: undefined; 'data-wrap'?: undefined; 'data-indicator-tone'?: undefined; 'data-toggle'?: undefined; }>",
             "nullable": true
           },
@@ -5753,6 +5823,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-action'?: undefined; 'data-kui-disabled'?: undefined; popoverTarget?: string | undefined; popoverTargetAction?: \"toggle\" | \"show\" | \"hide\" | undefined; 'aria-controls'?: string | undefined; 'aria-haspopup'?: \"true\" | \"dialog\" | \"menu\" | \"listbox\" | \"tree\" | \"grid\" | undefined; }>",
             "nullable": true
           },
@@ -6015,6 +6089,7 @@
           "name": "children",
           "type": {
             "kind": "content",
+            "acceptsText": true,
             "text": "string | KerfUiContent",
             "nullable": true
           },
@@ -6079,6 +6154,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-sides'?: undefined; }>",
             "nullable": true
           },
@@ -6103,7 +6182,11 @@
       "props": [
         {
           "name": "label",
-          "type": { "kind": "content", "text": "string | SafeHtml" },
+          "type": {
+            "kind": "content",
+            "acceptsText": true,
+            "text": "string | SafeHtml"
+          },
           "required": true,
           "slot": true
         },
@@ -6111,6 +6194,7 @@
           "name": "description",
           "type": {
             "kind": "content",
+            "acceptsText": true,
             "text": "string | SafeHtml | undefined",
             "nullable": true
           },
@@ -6165,6 +6249,7 @@
           "name": "status",
           "type": {
             "kind": "content",
+            "acceptsText": true,
             "text": "string | SafeHtml | undefined",
             "nullable": true
           },
@@ -6475,6 +6560,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-item-id'?: undefined; 'data-has-icon'?: undefined; 'data-has-description'?: undefined; 'data-multiline'?: undefined; 'data-density'?: undefined; 'data-divider'?: undefined; 'data-busy'?: undefined; 'data-state'?: undefined; 'data-kui-disabled'?: undefined; 'data-icon-align'?: undefined; 'data-icon-tile'?: undefined; 'data-icon-tile-tone'?: undefined; 'data-dragging'?: undefined; 'data-drop-position'?: undefined; }>",
             "nullable": true
           },
@@ -6560,7 +6649,11 @@
         },
         {
           "name": "label",
-          "type": { "kind": "content", "text": "string | SafeHtml" },
+          "type": {
+            "kind": "content",
+            "acceptsText": true,
+            "text": "string | SafeHtml"
+          },
           "required": true,
           "slot": true
         },
@@ -6584,6 +6677,7 @@
           "name": "status",
           "type": {
             "kind": "content",
+            "acceptsText": true,
             "text": "string | SafeHtml | undefined",
             "nullable": true
           },
@@ -6673,6 +6767,7 @@
           "name": "description",
           "type": {
             "kind": "content",
+            "acceptsText": true,
             "text": "string | SafeHtml | undefined",
             "nullable": true
           },
@@ -6889,6 +6984,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-item-id'?: undefined; 'data-has-icon'?: undefined; 'data-has-description'?: undefined; 'data-multiline'?: undefined; 'data-density'?: undefined; 'data-divider'?: undefined; 'data-busy'?: undefined; 'data-state'?: undefined; 'data-kui-disabled'?: undefined; 'data-icon-align'?: undefined; 'data-icon-tile'?: undefined; 'data-icon-tile-tone'?: undefined; 'data-dragging'?: undefined; 'data-drop-position'?: undefined; }>",
             "nullable": true
           },
@@ -7937,6 +8036,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-separator-block-start'?: undefined; 'data-separator-block-end'?: undefined; 'data-separator-inline-start'?: undefined; 'data-separator-inline-end'?: undefined; 'data-safe-area-block-start'?: undefined; 'data-safe-area-block-end'?: undefined; 'data-safe-area-inline-start'?: undefined; 'data-safe-area-inline-end'?: undefined; 'data-chrome-placement'?: undefined; 'data-chrome-dividers'?: undefined; 'data-appearance'?: undefined; 'data-background'?: undefined; 'data-kui-tint'?: undefined; 'data-kui-tint-accent'?: undefined; 'data-deep-inset'?: undefined; 'data-outlined'?: undefined; 'data-scroll-clearance'?: undefined; 'data-header-presentation'?: undefined; 'data-header-material'?: undefined; 'data-scroll-edge'?: undefined; 'data-scroll-edge-distance'?: undefined; 'data-header-overlay'?: undefined; 'data-compact-header'?: undefined; 'data-compact-footer'?: undefined; 'data-compact-header-open'?: undefined; 'data-compact-footer-open'?: undefined; }>",
             "nullable": true
           },
@@ -8109,6 +8212,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-action'?: undefined; 'data-component'?: undefined; 'data-key'?: undefined; 'data-morph-skip-children'?: undefined; }>",
             "nullable": true
           },
@@ -9131,6 +9238,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-key'?: undefined; 'data-morph-skip'?: undefined; 'data-search-field-editor'?: undefined; 'data-token-count'?: undefined; 'data-placeholder'?: undefined; }>",
             "nullable": true
           },
@@ -10374,6 +10485,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-tone'?: undefined; 'data-fill'?: undefined; 'data-busy'?: undefined; 'data-shape'?: undefined; 'data-focus-ring-inset'?: undefined; }>",
             "nullable": true
           },
@@ -10736,6 +10851,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-tone'?: undefined; 'data-copy-layout'?: undefined; 'data-action-placement'?: undefined; 'data-presentation'?: undefined; 'data-placeholder'?: undefined; }>",
             "nullable": true
           },
@@ -10795,6 +10914,7 @@
           "name": "trailingMeta",
           "type": {
             "kind": "content",
+            "acceptsText": true,
             "text": "string | SafeHtml | undefined",
             "nullable": true
           },
@@ -10960,6 +11080,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-presentation'?: undefined; 'data-list-edge'?: undefined; 'data-rail'?: undefined; 'data-selected'?: undefined; 'data-dimmed'?: undefined; }>",
             "nullable": true
           },
@@ -12396,6 +12520,10 @@
                 "required": false
               }
             ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-tab-id'?: undefined; 'data-selected'?: undefined; 'data-tab-dragging'?: undefined; 'data-tab-drop-position'?: undefined; 'data-attention'?: undefined; 'data-drop-target'?: undefined; 'data-name-overflow'?: undefined; 'data-disabled'?: undefined; }>",
             "nullable": true
           },
@@ -12674,6 +12802,7 @@
           "name": "children",
           "type": {
             "kind": "content",
+            "acceptsText": true,
             "text": "TextContent",
             "nullable": true
           },
@@ -14080,13 +14209,21 @@
       "props": [
         {
           "name": "label",
-          "type": { "kind": "content", "text": "string | SafeHtml" },
+          "type": {
+            "kind": "content",
+            "acceptsText": true,
+            "text": "string | SafeHtml"
+          },
           "required": true,
           "slot": true
         },
         {
           "name": "value",
-          "type": { "kind": "content", "text": "string | SafeHtml" },
+          "type": {
+            "kind": "content",
+            "acceptsText": true,
+            "text": "string | SafeHtml"
+          },
           "required": true,
           "slot": true
         },
@@ -22261,6 +22398,10 @@
           "required": false
         }
       ],
+      "index": {
+        "keyPrefix": "data-",
+        "value": { "kind": "string", "text": "string", "nullable": true }
+      },
       "text": "BackdropImageRootAttributes"
     },
     "CheckboxGroupChoice": {
@@ -22469,6 +22610,10 @@
           "required": false
         }
       ],
+      "index": {
+        "keyPrefix": "data-",
+        "value": { "kind": "string", "text": "string", "nullable": true }
+      },
       "text": "ColumnTrackRootAttributes"
     },
     "ComboboxSuggestion": {
@@ -23155,6 +23300,10 @@
           "required": false
         }
       ],
+      "index": {
+        "keyPrefix": "data-",
+        "value": { "kind": "string", "text": "string", "nullable": true }
+      },
       "text": "ListRootAttributes"
     },
     "NavStackToolbarConfig": {
@@ -24394,6 +24543,10 @@
           "required": false
         }
       ],
+      "index": {
+        "keyPrefix": "data-",
+        "value": { "kind": "string", "text": "string", "nullable": true }
+      },
       "text": "RowRootAttributes"
     },
     "SearchFieldModel": {
@@ -24598,6 +24751,14 @@
                     "required": false
                   }
                 ],
+                "index": {
+                  "keyPrefix": "data-",
+                  "value": {
+                    "kind": "string",
+                    "text": "string",
+                    "nullable": true
+                  }
+                },
                 "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-action'?: undefined; 'data-component'?: undefined; 'data-key'?: undefined; }>",
                 "nullable": true
               },
@@ -24701,6 +24862,14 @@
                     "required": false
                   }
                 ],
+                "index": {
+                  "keyPrefix": "data-",
+                  "value": {
+                    "kind": "string",
+                    "text": "string",
+                    "nullable": true
+                  }
+                },
                 "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-action'?: undefined; 'data-component'?: undefined; 'data-key'?: undefined; }>",
                 "nullable": true
               },

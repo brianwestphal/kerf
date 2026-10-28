@@ -702,11 +702,11 @@ The local CI advisory validates the globally newest-created completed main run t
 
 ### §26 Kerf UI editor
 
-**Design only** (`docs/26-ui-editor.md`). JSON view documents (`*.kui.json`, `kerf-ui-document/v1`) are the source of truth. Nodes are keyed by component-props keys, with immutable ULID ids and optional author names. Prop values are literals or `$param` / `$bind` / `$action` / `$css`; control flow is limited to `$each` (keyed) / `$if`, plus `$slot` holes, `#text` runs, and `#view` composition. One component per document, with generated files beside it.
+**Partly built** (`docs/26-ui-editor.md`): the document schema and `validateView` (`@kerfjs/ui/view`) ship; the rest is design only. JSON view documents (`*.kui.json`, `kerf-ui-document/v1`) are the source of truth. Nodes are keyed by component-props keys, with immutable ULID ids and optional author names. Prop values are literals or `$param` / `$bind` / `$action` / `$css`; control flow is limited to `$each` (keyed) / `$if`, plus `$slot` holes, `#text` runs, and `#view` composition. One component per document, with generated files beside it.
 
 Generated `*.view.ts` modules are read-only. They export typed inputs, an exhaustive action-handler interface over `delegateActions` (row-scoped actions carry the row key), `SafeHtml` slots, `data-kerf-node`-resolved refs typed by `rootElement`, and a `kui1:` FNV-1a contract digest that excludes layout. Re-export shows a breaking/non-breaking contract diff, then the app's `tsc` reports exactly what broke. `interpretView` (`@kerfjs/ui/view`) renders server-driven documents after checking the digest. `KUI-V001`–`V012` plus JSON-tree `KUI-L201`–`L204` validate documents.
 
-Shipped foundation: `ui/ai/component-props.json`. Remaining work: the schema and validator, the generator and CLI, the interpreter, a no-hand-edits lint rule, `data-*` channels for unmarked components, and the private `editor/` app.
+Shipped: `ui/ai/component-props.json`, `ui/ai/view-document.schema.json`, and `validateView`. Remaining work: the generator and CLI, the interpreter, a no-hand-edits lint rule, `data-*` channels for unmarked components, and the private `editor/` app.
 
 ## Update triggers
 

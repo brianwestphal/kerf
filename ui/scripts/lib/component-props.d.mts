@@ -25,6 +25,7 @@ export interface PropType {
   kind: PropTypeKind;
   text?: string;
   nullable?: true;
+  acceptsText?: true;
   typeParameter?: string;
   value?: string | number | boolean;
   values?: (string | number | boolean)[];
@@ -33,6 +34,7 @@ export interface PropType {
   items?: PropType;
   props?: PropDescriptor[];
   members?: PropType[];
+  index?: { keyPrefix: string; value: PropType };
   discriminant?: string[];
   ref?: string;
 }

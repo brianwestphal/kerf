@@ -132,6 +132,16 @@ const isPrimitive = (type) =>
       ts.TypeFlags.BooleanLike)) !==
   0;
 
+// Content that also takes a plain string or number (ButtonLabel, TextContent)
+// says so; bare `KerfUiContent` rejects arbitrary text (docs/21's compile-time
+// contracts), so a document must give it markup instead.
+const TEXT_FLAGS = ts.TypeFlags.StringLike | ts.TypeFlags.NumberLike;
+function contentOf(members, text) {
+  return members.some((member) => member.flags & TEXT_FLAGS)
+    ? { kind: 'content', acceptsText: true, text }
+    : { kind: 'content', text };
+}
+
 /**
  * Text, numbers, rendered markup, or lists of them: application content for
  * a slot.
@@ -182,11 +192,11 @@ export function describeType(ctx, type, depth = 0) {
 function describeNonNull(ctx, type, members, text, depth) {
   if (members.length === 0) return { kind: 'never', text };
   const named = type.aliasSymbol?.getName();
-  if (named && CONTENT_ALIASES.has(named)) return { kind: 'content', text };
+  if (named && CONTENT_ALIASES.has(named)) return contentOf(members, text);
   if (named && CSS_VALUE_ALIAS.test(named)) {
     return { kind: 'css-value', grammar: named, text };
   }
-  if (isContentUnion(ctx.checker, members)) return { kind: 'content', text };
+  if (isContentUnion(ctx.checker, members)) return contentOf(members, text);
   if (members.length === 1) return describeSingle(ctx, members[0], depth);
 
   const literals = members.map(literalOf);
@@ -273,15 +283,41 @@ function describeSingle(ctx, type, depth) {
     ) {
       return { kind: 'record', text };
     }
-    const build = () => ({
-      kind: 'object',
-      props: describeProps(ctx, type, depth + 1).props,
-    });
+    const build = () => {
+      const object = {
+        kind: 'object',
+        props: describeProps(ctx, type, depth + 1).props,
+      };
+      const index = indexOf(ctx, type, depth);
+      if (index) object.index = index;
+      return object;
+    };
     if (name) return reference(ctx, type, name, text, build);
     if (depth >= MAX_INLINE_DEPTH) return { kind: 'object', text };
     return { ...build(), text };
   }
   return { kind: 'unknown', text };
+}
+
+/**
+ * An object's string index signature (`Record<\`data-${string}\`, string>`
+ * behind `rootAttributes`), as the key prefix it allows and its value type.
+ * Returns undefined when the object has none.
+ */
+function indexOf(ctx, type, depth) {
+  const info = ctx.checker
+    .getIndexInfosOfType(type)
+    .find(
+      (item) =>
+        item.keyType.flags &
+        (ts.TypeFlags.String | ts.TypeFlags.TemplateLiteral),
+    );
+  if (!info) return undefined;
+  const prefix =
+    info.keyType.flags & ts.TypeFlags.TemplateLiteral
+      ? info.keyType.texts[0]
+      : '';
+  return { keyPrefix: prefix, value: describeType(ctx, info.type, depth + 1) };
 }
 
 /**
