@@ -29,7 +29,8 @@ beforeEach(() => {
 });
 afterEach(() => rmSync(folder, { recursive: true, force: true }));
 
-describe('buildPackageComponentProps', () => {
+// Each case builds a TypeScript program; give coverage-loaded runs room.
+describe('buildPackageComponentProps', { timeout: 30_000 }, () => {
   const build = () =>
     buildPackageComponentProps({
       root: folder,
@@ -142,7 +143,7 @@ describe('buildPackageComponentProps', () => {
   });
 });
 
-describe('kerf-ui-props', () => {
+describe('kerf-ui-props', { timeout: 30_000 }, () => {
   it('writes, then checks, then reports a stale file', () => {
     expect(run(['--check', '--root', folder])).toMatchObject({
       code: 1,

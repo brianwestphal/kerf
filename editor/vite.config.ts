@@ -61,7 +61,14 @@ export default defineConfig({
     ],
   },
   esbuild: { jsx: 'automatic', jsxImportSource: 'kerfjs' },
-  server: { port: 42917, strictPort: true, fs: { allow: [repo] } },
+  // Bind IPv4 explicitly: on Linux CI `localhost` can resolve to ::1 only,
+  // which Playwright's 127.0.0.1 readiness probe never reaches.
+  server: {
+    host: '127.0.0.1',
+    port: 42917,
+    strictPort: true,
+    fs: { allow: [repo] },
+  },
   // The editor bundles every Lucide icon so documents can name any of them.
   build: { outDir: 'dist', emptyOutDir: true, chunkSizeWarningLimit: 4096 },
   test: {
