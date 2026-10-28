@@ -314,3 +314,35 @@ test('edits, adds, moves, deletes, and undoes from the inspector', async ({
   await page.getByRole('button', { name: 'Undo' }).click();
   await expect(page.getByText('8 nodes · valid')).toBeVisible();
 });
+
+// KF-K5TKCV: a prop is bound to a param through the Bind section's popups,
+// and the preview follows the binding.
+test('binds a repeated row’s label to a document param', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page
+    .locator(
+      '[data-action="editor-select-node"][data-item-id="01JB8Z1M6Q8E1X9V4S7K2R3T5F"]',
+    )
+    .click();
+  await page.locator('[data-editor-bind="prop"]').click();
+  await page.getByRole('option', { name: 'label', exact: true }).click();
+  await expect(page.locator('[data-editor-bind="source"]')).toHaveAttribute(
+    'value',
+    '{"$bind":"item.label"}',
+  );
+  await page.locator('[data-editor-bind="source"]').click();
+  await page.getByRole('option', { name: 'Param title' }).click();
+  // Every repeated row now shows the title param's sample value.
+  await expect(
+    page.locator('[data-editor-canvas]').getByText('Inbox', { exact: true }),
+  ).toHaveCount(4);
+  await expect(page.getByText('7 nodes · valid')).toBeVisible();
+  await page.locator('[data-editor-bind="prop"]').scrollIntoViewIfNeeded();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-k5tkcv-editor-bind-1440.png'),
+    animations: 'disabled',
+  });
+});

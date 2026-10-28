@@ -277,3 +277,53 @@ describe('inspector states', () => {
     expect(names).toEqual(['inbox.view.ts']);
   });
 });
+
+describe('binding a prop', () => {
+  // KF-K5TKCV: the Bind section offers the sources the validator accepts.
+  const ROW = '01JB8Z1M6Q8E1X9V4S7K2R3T5F';
+  const choose = (select: Element, value: string) => {
+    select.setAttribute('value', value);
+    Object.defineProperty(select, 'value', { configurable: true, value });
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+
+  it('binds, rebinds, unbinds, and undoes a prop', () => {
+    const { root, editor } = open();
+    editor.selection.value = { kind: 'node', id: ROW };
+    const prop = () => root.querySelector('[data-editor-bind="prop"]')!;
+    const source = () => root.querySelector('[data-editor-bind="source"]')!;
+    const label = () => findNode(editor.document.value, ROW)!.node.props?.label;
+    choose(prop(), 'label');
+    // The row's label is bound to its item already.
+    expect(source().getAttribute('value')).toBe('{"$bind":"item.label"}');
+    expect(source().innerHTML).toContain('Param title');
+    choose(source(), '{"$param":"title"}');
+    expect(label()).toEqual({ $param: 'title' });
+    choose(source(), '');
+    expect(label()).toBeUndefined();
+    act(root, 'editor-undo');
+    expect(label()).toEqual({ $param: 'title' });
+  });
+
+  it('leaves a literal alone on Not bound and explains an empty choice', () => {
+    const { root, editor } = open();
+    editor.selection.value = { kind: 'node', id: COMPOSE };
+    const before = editor.document.value;
+    choose(root.querySelector('[data-editor-bind="prop"]')!, 'children');
+    choose(root.querySelector('[data-editor-bind="source"]')!, '');
+    expect(editor.document.value).toBe(before);
+    // No param fits the Button's emphasis enum.
+    choose(root.querySelector('[data-editor-bind="prop"]')!, 'emphasis');
+    expect(
+      root.querySelector('[data-editor-bind="source"]')!.textContent,
+    ).toContain('No param or item field in scope fits this prop.');
+    // With nothing selected, a source change does nothing.
+    editor.selection.value = null;
+    const host = document.createElement('kui-select');
+    host.setAttribute('data-editor-bind', 'source');
+    host.setAttribute('data-editor-bind-prop', 'label');
+    root.append(host);
+    choose(host, '{"$param":"title"}');
+    expect(editor.document.value).toBe(before);
+  });
+});

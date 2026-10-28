@@ -40,6 +40,9 @@ it uses ship from `@kerfjs/ui/view`, so tools and applications work without it.
   committed on Enter or blur; a value the prop cannot take shows its reason.
   Values bound to params, actions, or icons are shown read-only. Name a node
   to make it a typed ref, or promote a literal prop to a document param.
+- **Bind** a prop to a document param or a field of an enclosing `$each` item
+  in the Inspector's Bind section; it offers only the sources the validator
+  accepts for that prop, and Not bound clears a binding.
 - **Add, move, and delete** nodes. Add a child picks one of the node's legal
   zones (a full zone is disabled with its reason) and a component that zone
   accepts, seeded with the props it needs to be valid. The Inspector toolbar
@@ -49,7 +52,7 @@ it uses ship from `@kerfjs/ui/view`, so tools and applications work without it.
   Shift+Cmd/Ctrl+Z (text fields keep their own undo). Opening a document
   clears the history.
 
-Drag-and-drop placement and binding props to params or `$each` item fields
+Drag-and-drop placement, non-literal `$css` editing, and adding control flow
 come later.
 
 ## Develop

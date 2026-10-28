@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import { findNode, visitNodes } from '../../../src/editor/model/document.js';
 import {
+  bindingOptions,
   History,
   insertNode,
   isMovable,
@@ -290,5 +291,75 @@ describe('History', () => {
     history.record(a);
     history.clear();
     expect(history.canUndo || history.canRedo).toBe(false);
+  });
+});
+
+describe('bindingOptions', () => {
+  // KF-K5TKCV: the sources the validator accepts for a prop.
+  const labels = (id: string, prop: string) =>
+    bindingOptions(inbox, viewCatalog, id, prop).map((option) => option.label);
+
+  it('offers params that fit the prop, and in-scope item fields', () => {
+    // The ListItem row sits in folderList's $each over items (as "item").
+    expect(labels(ROW, 'label')).toEqual([
+      'Param title',
+      'Param selectedId',
+      'item.id',
+      'item.label',
+    ]);
+    // A boolean prop takes only the boolean param.
+    expect(labels(ROW, 'disabled')).toEqual(['Param showEmpty']);
+    // Outside the template, no item is in scope.
+    expect(labels(TITLE, 'text')).toEqual(['Param title', 'Param selectedId']);
+    expect(
+      bindingOptions(inbox, viewCatalog, ROW, 'label').at(-1)?.value,
+    ).toEqual({ $bind: 'item.label' });
+  });
+
+  it('finds scopes through $if branches and ignores other item sources', () => {
+    const nested = globalThis.structuredClone(inbox) as unknown as {
+      params?: Record<string, unknown>;
+      root: { zones: { content: Record<string, unknown>[] } };
+    };
+    const branch = nested.root.zones.content.find((item) => '$if' in item)!;
+    branch.else = {
+      id: '01JB8Z1M6Q8E1X9V4S7K2R3T5H',
+      type: '@kerfjs/ui:text',
+      props: { children: 'All caught up' },
+    };
+    const document = nested as unknown as ViewDocument;
+    expect(
+      bindingOptions(
+        document,
+        viewCatalog,
+        '01JB8Z1M6Q8E1X9V4S7K2R3T5H',
+        'children',
+      ).map((option) => option.label),
+    ).toContain('Param title');
+    // An $each over something other than an array param offers no fields.
+    const literal = globalThis.structuredClone(inbox) as unknown as {
+      params: Record<string, unknown>;
+    };
+    literal.params.items = { type: { kind: 'string' } };
+    expect(
+      bindingOptions(
+        literal as unknown as ViewDocument,
+        viewCatalog,
+        ROW,
+        'label',
+      ).map((option) => option.label),
+    ).not.toContain('item.label');
+    const bare = globalThis.structuredClone(inbox) as unknown as {
+      params?: unknown;
+    };
+    delete bare.params;
+    expect(
+      bindingOptions(
+        bare as unknown as ViewDocument,
+        viewCatalog,
+        TITLE,
+        'text',
+      ),
+    ).toEqual([]);
   });
 });

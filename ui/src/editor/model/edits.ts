@@ -1,12 +1,14 @@
 // Document edits (KF-KX77TV: editor editing). Every edit is a pure transform
 // that returns a new document, so the document stays the editor's only state
 // and history is a list of documents.
-import type {
-  ViewChild,
-  ViewDocument,
-  ViewNode,
-  ViewType,
-  ViewValue,
+import {
+  validateView,
+  type ViewCatalog,
+  type ViewChild,
+  type ViewDocument,
+  type ViewNode,
+  type ViewType,
+  type ViewValue,
 } from '@kerfjs/ui/view';
 
 import { visitNodes } from './document.js';
@@ -399,4 +401,81 @@ export class History {
     this.past = [];
     this.future = [];
   }
+}
+
+/** A value a prop can be bound to, with how the inspector names it. */
+export interface BindingOption {
+  readonly label: string;
+  readonly value: ViewValue;
+}
+
+/** The `$each` scopes around a node, innermost last: each item's name and source. */
+function eachScopes(
+  document: ViewDocument,
+  id: string,
+): { readonly as: string; readonly source: unknown }[] {
+  type Frame = { readonly as: string; readonly source: unknown };
+  const visit = (node: ViewNode, frames: Frame[]): Frame[] | undefined => {
+    if (node.id === id) return frames;
+    for (const children of Object.values(node.zones ?? {}))
+      for (const item of children) {
+        const found =
+          '$each' in item
+            ? visit(item.template, [
+                ...frames,
+                { as: item.as, source: item.$each },
+              ])
+            : '$if' in item
+              ? (visit(item.then as ViewNode, frames) ??
+                (item.else ? visit(item.else as ViewNode, frames) : undefined))
+              : '$slot' in item
+                ? undefined
+                : visit(item, frames);
+        if (found) return found;
+      }
+    return undefined;
+  };
+  return visit(document.root, []) ?? [];
+}
+
+/**
+ * The params and in-scope `$each` item fields a prop of node `id` can be
+ * bound to (KF-K5TKCV). Each candidate is kept only when the validator
+ * accepts it there, so its scope and type rules decide.
+ */
+export function bindingOptions(
+  document: ViewDocument,
+  catalog: ViewCatalog,
+  id: string,
+  prop: string,
+): BindingOption[] {
+  const params = document.params ?? {};
+  const candidates: BindingOption[] = Object.keys(params).map((name) => ({
+    label: `Param ${name}`,
+    value: { $param: name },
+  }));
+  for (const scope of eachScopes(document, id)) {
+    const source = scope.source as { $param?: string };
+    const type = source.$param ? params[source.$param]?.type : undefined;
+    const items = type?.kind === 'array' ? type.items : undefined;
+    const fields = items?.kind === 'object' ? (items.props ?? []) : [];
+    for (const field of fields)
+      candidates.push({
+        label: `${scope.as}.${field.name}`,
+        value: { $bind: `${scope.as}.${field.name}` },
+      });
+  }
+  const known = new Set(
+    validateView(document, catalog).diagnostics.map(
+      (diagnostic) => `${diagnostic.code} ${diagnostic.path}`,
+    ),
+  );
+  return candidates.filter((candidate) =>
+    validateView(
+      setProp(document, id, prop, candidate.value),
+      catalog,
+    ).diagnostics.every((diagnostic) =>
+      known.has(`${diagnostic.code} ${diagnostic.path}`),
+    ),
+  );
 }

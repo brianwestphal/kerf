@@ -33,8 +33,11 @@ module from the catalog's `import` field (plus an optional registry). The
 private `editor/` app is another host; its `fixtures/app/` is the plugin's
 end-to-end fixture.
 
-Drag-and-drop placement and binding props to `$each` item fields or params
-come next (KF-K5TKCV: editor drag-and-drop and bindings). The implementation
+The inspector also binds a prop to a document param or an in-scope `$each`
+item field, offering only the sources `validateView` accepts there
+(KF-K5TKCV: editor bindings). Drag-and-drop placement (KF-WXP6AB), non-literal
+`$css` and node-valued content editing (KF-YR91FA), and adding control flow
+(KF-90GTJN) come next. The implementation
 tickets are listed in [§10](#10-implementation-plan).
 
 ## 1. Purpose and decisions
@@ -679,5 +682,6 @@ diff <doc…>` takes `--target js`, `--declarations-only`, and extra
    KF-PYR8XZ: component data channels).
 7. **Done:** the private `editor/` package (KF-4NRZCV: editor scaffold), with
    a problems list (KF-WC0ZG3), export and compare (KF-Y38YRT, KF-9J810J), and
-   inspector editing with undo (KF-KX77TV: editor editing). Drag-and-drop and
-   bindings follow (KF-K5TKCV).
+   inspector editing with undo (KF-KX77TV: editor editing), and bindings
+   (KF-K5TKCV). Drag-and-drop (KF-WXP6AB), richer value editing (KF-YR91FA),
+   and control flow (KF-90GTJN) follow.

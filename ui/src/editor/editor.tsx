@@ -17,6 +17,7 @@ import {
   type ViewContract,
   type ViewDocument,
   type ViewNode,
+  type ViewValue,
 } from '@kerfjs/ui/view';
 import { delegate, effect, type SafeHtml, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
@@ -78,6 +79,7 @@ import {
   visitNodes,
 } from './model/document.js';
 import {
+  bindingOptions,
   History,
   insertNode,
   isMovable,
@@ -300,6 +302,7 @@ export function createEditor(options: EditorOptions) {
   const addZone = signal('');
   const addComponent = signal('');
   const promoteProp = signal('');
+  const bindProp = signal('');
   // Every caller passes a changed document (edits clone; moves are checked
   // against isMovable first).
   const commit = (next: ViewDocument) => {
@@ -559,6 +562,71 @@ export function createEditor(options: EditorOptions) {
     );
   };
 
+  /**
+   * Bind a prop to a document param or an in-scope `$each` item field
+   * (KF-K5TKCV): the sources the validator accepts for the chosen prop.
+   */
+  const bindSection = (
+    node: ViewDocument['root'],
+    component: NonNullable<ReturnType<typeof propsByKey.get>>,
+  ) => {
+    const bindable = component.props.filter(
+      (prop) => prop.control !== 'hidden' && !prop.zone,
+    );
+    const prop =
+      bindable.find((item) => item.name === bindProp.value) ?? bindable[0];
+    if (!prop) return undefined;
+    const options = bindingOptions(doc.value, viewCatalog, node.id, prop.name);
+    const current = node.props?.[prop.name];
+    const bound =
+      current !== null &&
+      typeof current === 'object' &&
+      ('$param' in current || '$bind' in current)
+        ? JSON.stringify(current)
+        : '';
+    const choices = [
+      { value: '', label: 'Not bound' },
+      ...options.map((option) => ({
+        value: JSON.stringify(option.value),
+        label: option.label,
+      })),
+    ];
+    return (
+      <>
+        <ListHeader label="Bind a prop" size="xs" />
+        <List controlInsets="trbl" gap>
+          <Select
+            name="bind-prop"
+            label="Prop"
+            value={prop.name}
+            choices={bindable.map((item) => ({
+              value: item.name,
+              label: item.name,
+            }))}
+            rootAttributes={{ 'data-editor-bind': 'prop' }}
+          />
+          <Select
+            name="bind-source"
+            label="Source"
+            value={
+              choices.some((choice) => choice.value === bound) ? bound : ''
+            }
+            choices={choices}
+            hint={
+              options.length
+                ? undefined
+                : 'No param or item field in scope fits this prop.'
+            }
+            rootAttributes={{
+              'data-editor-bind': 'source',
+              'data-editor-bind-prop': prop.name,
+            }}
+          />
+        </List>
+      </>
+    );
+  };
+
   /** The inspector for a selected node: name, editable props, add child. */
   const nodeEditor = (
     node: ViewDocument['root'],
@@ -678,6 +746,7 @@ export function createEditor(options: EditorOptions) {
             </List>
           </>
         ) : undefined}
+        {bindSection(node, component)}
         <ListHeader label="Add a child" size="xs" />
         {zones.length && zone ? (
           <List controlInsets="trbl" gap>
@@ -1119,6 +1188,36 @@ export function createEditor(options: EditorOptions) {
           const value = String(controlValue(field));
           if (field.dataset.editorAdd === 'zone') addZone.value = value;
           else addComponent.value = value;
+        },
+      ),
+      delegate<HTMLElement>(
+        root,
+        'change',
+        '[data-editor-bind]',
+        (_event, field) => {
+          const value = String(controlValue(field));
+          if (field.dataset.editorBind === 'prop') {
+            bindProp.value = value;
+            return;
+          }
+          const id = selectedNodeId();
+          if (!id) return;
+          // Not bound clears a binding; a literal value stays as it is.
+          const name = field.dataset.editorBindProp!;
+          const current = findNode(doc.value, id)!.node.props?.[name];
+          const wasBound =
+            current !== null &&
+            typeof current === 'object' &&
+            ('$param' in current || '$bind' in current);
+          if (!value && !wasBound) return;
+          commit(
+            setProp(
+              doc.value,
+              id,
+              name,
+              value ? (JSON.parse(value) as ViewValue) : undefined,
+            ),
+          );
         },
       ),
       delegate<HTMLElement>(
