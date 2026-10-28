@@ -79,3 +79,41 @@ for (const scheme of ['light', 'dark'] as const) {
     });
   }
 }
+
+// KF-WXP6AB: dragging a row into a container, and beside a row, in the demo's
+// draggable outline.
+test('TreeList moves a dragged row inside and beside other rows', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/?component=tree-list');
+  const tree = page.getByRole('tree', { name: 'Document outline' });
+  const row = (name: string) => tree.getByRole('treeitem', { name });
+  const level = (name: string) => row(name).getAttribute('aria-level');
+  const folders = (await row('folderList content').boundingBox())!;
+  await row('composeButton trailing').dragTo(row('folderList content'), {
+    targetPosition: { x: folders.width / 2, y: folders.height / 2 },
+  });
+  await expect.poll(() => level('composeButton trailing')).toBe('3');
+  const order = () =>
+    tree
+      .getByRole('treeitem')
+      .evaluateAll((rows) =>
+        rows.map(
+          (item) =>
+            item.querySelector('.kui-list-item__primary-label')?.textContent,
+        ),
+      );
+  expect((await order()).slice(-2)).toEqual(['folderList', 'composeButton']);
+  // Before the Toolbar, at the top of the Pane's children.
+  const toolbar = (await row('Toolbar header').boundingBox())!;
+  await row('composeButton trailing').dragTo(row('Toolbar header'), {
+    targetPosition: { x: toolbar.width / 2, y: 2 },
+  });
+  await expect.poll(() => level('composeButton trailing')).toBe('2');
+  expect((await order()).slice(0, 3)).toEqual([
+    'Pane',
+    'composeButton',
+    'Toolbar',
+  ]);
+});

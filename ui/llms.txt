@@ -891,8 +891,10 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
 - **Show a hierarchy with `TreeList`** (`@kerfjs/ui/tree-list`): ListItem rows
   indented by depth with disclosure arrows, an ARIA tree. Pass `nodes`,
   `expanded`, `selected`, `action`, and `toggleAction`, flip the ids in your
-  handlers, and call `wireTreeList(root)` for the keyboard. Never indent
-  ListItem rows yourself.
+  handlers, and call `wireTreeList(root)` for the keyboard. Mark nodes
+  `draggable` and pass `wireTreeList(root, { canDrop, onMove })` to move
+  them before, after, or inside other rows. Never indent ListItem rows
+  yourself.
 - **Pick from a fixed palette with `ColorSwatches`** (`@kerfjs/ui/color-swatches`):
   a native radio group of named round swatches, one Tab stop, a ring that
   does not depend on hue, and a `'transparent'` no-color swatch.

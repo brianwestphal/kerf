@@ -47,7 +47,10 @@ import {
   TreeList,
   type TreeListNode,
 } from '../components/collections/tree-list/tree-list.js';
-import { wireTreeList } from '../components/collections/tree-list/wiring/wire-tree-list.js';
+import {
+  type TreeListMove,
+  wireTreeList,
+} from '../components/collections/tree-list/wiring/wire-tree-list.js';
 import {
   ValueTable,
   ValueTableRow,
@@ -100,6 +103,7 @@ import {
   serializeDocument,
   visitNodes,
 } from './model/document.js';
+import { dropPlacement, moveDestinations } from './model/drop.js';
 import {
   bindingOptions,
   History,
@@ -109,6 +113,7 @@ import {
   moveNode,
   newNodeId,
   paramTypeFor,
+  placeNode,
   promoteToParam,
   removeNode,
   renameNode,
@@ -403,6 +408,8 @@ export function createEditor(options: EditorOptions) {
         label: node.label,
         description: node.detail,
         trailing: badge(node.id),
+        // KF-WXP6AB: a node directly in a zone drags to another place.
+        ...(isMovable(document, node.id).remove ? { draggable: true } : {}),
         ...(node.children ? { children: toTree(node.children) } : {}),
       }));
     const tree = outlineTree(document, componentNames);
@@ -748,6 +755,73 @@ export function createEditor(options: EditorOptions) {
     );
   };
 
+  /** Zone keys a node offers, for moving a node into it. */
+  const zoneKeys = (node: ViewNode) => zonesOf(node).map((zone) => zone.key);
+
+  /**
+   * The placement a drop on an outline row asks for, if legal. Validating
+   * a drop runs the validator, so results are kept per document while a
+   * drag passes over the same rows.
+   */
+  let dropCache: { document: ViewDocument; drops: Map<string, unknown> } = {
+    document: doc.value,
+    drops: new Map(),
+  };
+  const dropFor = (move: TreeListMove) => {
+    if (dropCache.document !== doc.value)
+      dropCache = { document: doc.value, drops: new Map() };
+    const key = `${move.sourceId} ${move.target.id} ${move.target.position}`;
+    if (!dropCache.drops.has(key))
+      dropCache.drops.set(
+        key,
+        dropPlacement(
+          doc.value,
+          viewCatalog,
+          move.sourceId,
+          move.target.id,
+          move.target.position,
+          zoneKeys,
+        ),
+      );
+    return dropCache.drops.get(key) as ReturnType<typeof dropPlacement>;
+  };
+
+  /** Moves a node into another zone: the keyboard alternative to dragging. */
+  const moveSection = (node: ViewNode) => {
+    const destinations = moveDestinations(
+      doc.value,
+      viewCatalog,
+      node.id,
+      zoneKeys,
+      (item) => nodeTitle(item, componentNames),
+    );
+    if (!destinations.length) return undefined;
+    return (
+      <>
+        <ListHeader label="Move to" size="xs" />
+        <List controlInsets="trbl" gap>
+          <Select
+            name="move-to"
+            label="Zone"
+            value=""
+            choices={[
+              { value: '', label: 'Choose a zone' },
+              ...destinations.map((destination) => ({
+                value: JSON.stringify({
+                  parent: destination.parent,
+                  zone: destination.zone,
+                }),
+                label: destination.label,
+              })),
+            ]}
+            hint="Moves this node to the end of another zone. Drag it in the outline to place it exactly."
+            rootAttributes={{ 'data-editor-move': 'true' }}
+          />
+        </List>
+      </>
+    );
+  };
+
   /** The zones a node offers for adding a child. */
   const zonesOf = (node: ViewDocument['root']) =>
     legalZones(
@@ -889,6 +963,7 @@ export function createEditor(options: EditorOptions) {
           </>
         ) : undefined}
         {bindSection(node, component)}
+        {moveSection(node)}
         {controlFlowSection(
           doc.value,
           viewCatalog,
@@ -1474,6 +1549,23 @@ export function createEditor(options: EditorOptions) {
       delegate<HTMLElement>(
         root,
         'change',
+        '[data-editor-move]',
+        (_event, field) => {
+          const id = selectedNodeId();
+          const value = String(controlValue(field));
+          if (!id || !value) return;
+          const { parent, zone } = JSON.parse(value) as {
+            parent: string;
+            zone: string;
+          };
+          const index =
+            findNode(doc.value, parent)!.node.zones?.[zone]?.length ?? 0;
+          commit(placeNode(doc.value, id, { parent, zone, index }));
+        },
+      ),
+      delegate<HTMLElement>(
+        root,
+        'change',
         '[data-editor-control]',
         (_event, field) => editControl(field),
       ),
@@ -1582,7 +1674,15 @@ export function createEditor(options: EditorOptions) {
           select({ kind: 'node', id: node.dataset.kerfNode! });
         }
       }),
-      wireTreeList(root),
+      wireTreeList(root, {
+        canDrop: (move) => dropFor(move) !== undefined,
+        onMove: (move) => {
+          const to = dropFor(move);
+          if (!to) return;
+          commit(placeNode(doc.value, move.sourceId, to));
+          select({ kind: 'node', id: move.sourceId });
+        },
+      }),
       wireFilePickers(root, {
         onFiles: ({ files, id }) => {
           // wireFilePickers reports a choice only when it has files.

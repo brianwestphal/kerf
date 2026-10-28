@@ -15,6 +15,8 @@ export interface TreeListNode {
   /** Trailing content, such as a count Badge. */
   readonly trailing?: KerfUiContent;
   readonly disabled?: boolean;
+  /** Drags with `wireTreeList`'s `onMove` (KF-WXP6AB). */
+  readonly draggable?: boolean;
   /** Child nodes. An empty array is an expandable node with no children yet. */
   readonly children?: readonly TreeListNode[];
   /**
@@ -91,4 +93,56 @@ export function treeListPath(
     if (below.length) return [node.id, ...below];
   }
   return [];
+}
+
+/**
+ * `nodes` with node `sourceId` moved before or after node `target.id`, or
+ * appended inside it (KF-WXP6AB): the change `wireTreeList`'s `onMove`
+ * reports, applied to a plain node tree. Returns a new tree; an unknown
+ * node, a move onto itself, or a move into its own subtree leaves the tree
+ * as it is.
+ */
+export function moveTreeListNode(
+  nodes: readonly TreeListNode[],
+  move: {
+    readonly sourceId: string;
+    readonly target: {
+      readonly id: string;
+      readonly position: 'before' | 'after' | 'inside';
+    };
+  },
+): TreeListNode[] {
+  const { sourceId, target } = move;
+  const path = treeListPath(nodes, target.id);
+  if (!path.length || path.includes(sourceId)) return [...nodes];
+  let moved: TreeListNode | undefined;
+  const without = (list: readonly TreeListNode[]): TreeListNode[] =>
+    list.flatMap((node) => {
+      if (node.id === sourceId) {
+        moved = node;
+        return [];
+      }
+      return node.children
+        ? [{ ...node, children: without(node.children) }]
+        : [node];
+    });
+  const rest = without(nodes);
+  if (!moved) return [...nodes];
+  const place = (list: readonly TreeListNode[]): TreeListNode[] =>
+    list.flatMap((node) => {
+      if (node.id === target.id) {
+        switch (target.position) {
+          case 'before':
+            return [moved!, node];
+          case 'after':
+            return [node, moved!];
+          case 'inside':
+            return [{ ...node, children: [...(node.children ?? []), moved!] }];
+        }
+      }
+      return node.children
+        ? [{ ...node, children: place(node.children) }]
+        : [node];
+    });
+  return place(rest);
 }

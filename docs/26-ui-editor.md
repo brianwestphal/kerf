@@ -65,8 +65,17 @@ allowed ones (KF-YR91FA: richer value editing). A text-accepting content prop
 as nodes** moves the text into a `#text` node so components can sit beside
 it, adding a child to that zone does the same first, and **Use as text**
 moves a zone that is one text run back. While the zone holds nodes, the field
-says how many and points to the outline. Drag-and-drop placement (KF-WXP6AB)
-comes next. The implementation
+says how many and points to the outline.
+
+Nodes move by dragging outline rows (KF-WXP6AB: drag placement): a node that
+sits directly in a zone drags before or after another node, slot, repeated
+row, or conditional node (landing beside the whole repeat or condition), or
+inside a node (appending to its first zone that takes it). A line at the
+target's label edge or a ring around the target shows where it will land,
+and only drops `validateView` accepts show one. The inspector's **Move to**
+picker is the keyboard alternative: it lists every zone the node can move to
+the end of, beside the existing Move up and Move down. Dragging on the canvas
+is not built (KF-CWDE93). The implementation
 tickets are listed in [§10](#10-implementation-plan).
 
 ## 1. Purpose and decisions
@@ -712,5 +721,5 @@ diff <doc…>` takes `--target js`, `--declarations-only`, and extra
 7. **Done:** the private `editor/` package (KF-4NRZCV: editor scaffold), with
    a problems list (KF-WC0ZG3), export and compare (KF-Y38YRT, KF-9J810J), and
    inspector editing with undo (KF-KX77TV: editor editing), and bindings
-   (KF-K5TKCV), control flow (KF-90GTJN), and richer value editing
-   (KF-YR91FA). Drag-and-drop (KF-WXP6AB) follows.
+   (KF-K5TKCV), control flow (KF-90GTJN), richer value editing (KF-YR91FA),
+   and outline drag-and-drop with a Move to picker (KF-WXP6AB).

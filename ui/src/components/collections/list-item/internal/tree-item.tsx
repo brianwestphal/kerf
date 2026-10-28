@@ -24,6 +24,8 @@ export interface ListTreeItemProps {
   /** The one row in the tree's Tab order (roving tabindex). */
   readonly focusable: boolean;
   readonly disabled?: boolean;
+  /** A native drag source for TreeList drag-and-drop. */
+  readonly draggable?: boolean;
   readonly density: 'standard' | 'compact';
   /** Delegated action for choosing the row. */
   readonly action: string;
@@ -49,6 +51,7 @@ export function ListTreeItem({
   selected,
   focusable,
   disabled = false,
+  draggable,
   density,
   action,
   toggleAction,
@@ -69,6 +72,7 @@ export function ListTreeItem({
       data-density={density}
       data-divider="none"
       data-kui-disabled={disabled ? 'true' : undefined}
+      draggable={draggable && !disabled ? 'true' : undefined}
       aria-level={String(level)}
       aria-posinset={String(position)}
       aria-setsize={String(setSize)}

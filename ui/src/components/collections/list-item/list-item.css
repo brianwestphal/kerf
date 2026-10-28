@@ -314,10 +314,28 @@
   inset-block-end: 0;
 }
 
+/* KF-WXP6AB: a tree row that a dragged row would land inside is ringed. */
+.kui-list-item[role="treeitem"][data-drop-position="inside"]::after {
+  inset: 0;
+  height: auto;
+  border: var(--kui-list-item-drop-indicator-width, 2px) solid
+    var(--kui-list-item-drop-indicator, var(--kui-color-brand-border-loud));
+  border-radius: var(
+    --kui-list-item-radius,
+    var(--kui-layout-rounded-radius, calc(1px + remify(11px)))
+  );
+  background: transparent;
+}
+
 @media (forced-colors: active) {
   .kui-list-item[data-drop-position]::after {
     background: Highlight;
     forced-color-adjust: none;
+  }
+
+  .kui-list-item[role="treeitem"][data-drop-position="inside"]::after {
+    border-color: Highlight;
+    background: transparent;
   }
 }
 
@@ -480,6 +498,17 @@
   );
   position: relative;
   padding-inline-start: calc(
+    var(--_kui-list-item-tree-start) + remify(16px) +
+      var(--kui-space-2xs, remify(4px))
+  );
+}
+/* KF-WXP6AB: a before/after drop line starts at the target's label edge,
+   so it shows the level the dragged row lands at. */
+.kui-list-item[role="treeitem"]:is(
+    [data-drop-position="before"],
+    [data-drop-position="after"]
+  )::after {
+  inset-inline-start: calc(
     var(--_kui-list-item-tree-start) + remify(16px) +
       var(--kui-space-2xs, remify(4px))
   );

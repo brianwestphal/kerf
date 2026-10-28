@@ -1,7 +1,12 @@
 import { Badge } from '@kerfjs/ui/badge';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { TreeList, type TreeListNode } from '@kerfjs/ui/tree-list';
+import {
+  moveTreeListNode,
+  TreeList,
+  type TreeListNode,
+  treeListPath,
+} from '@kerfjs/ui/tree-list';
 import { wireTreeList } from '@kerfjs/ui/wire-tree-list';
 import { signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
@@ -24,7 +29,7 @@ const LAZY: Record<string, readonly TreeListNode[]> = {
 
 const INITIAL_EXPANDED: Record<string, readonly string[]> = {
   files: ['src', 'components'],
-  outline: ['pane', 'toolbar'],
+  outline: ['pane', 'toolbar', 'folders'],
 };
 const expanded = signal<Record<string, ReadonlySet<string>>>(
   Object.fromEntries(
@@ -40,6 +45,7 @@ export function resetTreeListDemo(): void {
   );
   selected.value = { files: 'button' };
   loaded.value = new Set();
+  outline.value = OUTLINE;
 }
 
 /** Chooses rows, opens and closes folders (loading a lazy one), and wires keys. */
@@ -65,11 +71,36 @@ export function wireTreeListDemo(canvas: HTMLElement): () => void {
       expanded.value = { ...expanded.value, [tree]: next };
     },
   });
-  const stopKeys = wireTreeList(canvas);
+  const stopKeys = wireTreeList(canvas, {
+    // Rows land beside any row but the root, and inside a container (a node
+    // with children); the root stays the root.
+    canDrop: ({ target }) => {
+      const node = find(outline.value, target.id);
+      return target.position === 'inside'
+        ? Boolean(node?.children)
+        : treeListPath(outline.value, target.id).length > 1;
+    },
+    onMove: (move) => {
+      outline.value = moveTreeListNode(outline.value, move);
+    },
+  });
   return () => {
     stopActions();
     stopKeys();
   };
+}
+
+/** The node with `id` in a tree. */
+function find(
+  nodes: readonly TreeListNode[],
+  id: string,
+): TreeListNode | undefined {
+  for (const node of nodes) {
+    if (node.id === id) return node;
+    const below = node.children && find(node.children, id);
+    if (below) return below;
+  }
+  return undefined;
 }
 
 function files(): TreeListNode[] {
@@ -106,6 +137,7 @@ function files(): TreeListNode[] {
   ];
 }
 
+/** The outline's nodes; every node but the root drags. */
 const OUTLINE: TreeListNode[] = [
   {
     id: 'pane',
@@ -116,15 +148,33 @@ const OUTLINE: TreeListNode[] = [
         id: 'toolbar',
         label: 'Toolbar',
         description: 'header',
+        draggable: true,
         children: [
-          { id: 'title', label: 'ToolbarText', description: 'leading' },
-          { id: 'compose', label: 'composeButton', description: 'trailing' },
+          {
+            id: 'title',
+            label: 'ToolbarText',
+            description: 'leading',
+            draggable: true,
+          },
+          {
+            id: 'compose',
+            label: 'composeButton',
+            description: 'trailing',
+            draggable: true,
+          },
         ],
       },
-      { id: 'folders', label: 'folderList', description: 'content' },
+      {
+        id: 'folders',
+        label: 'folderList',
+        description: 'content',
+        draggable: true,
+        children: [],
+      },
     ],
   },
 ];
+const outline = signal<readonly TreeListNode[]>(OUTLINE);
 
 export function TreeListDemo() {
   const open = expanded.value;
@@ -151,13 +201,13 @@ export function TreeListDemo() {
       </CatalogExample>
       <CatalogExample
         label="Compact Outline"
-        note={`density="compact" with two-line rows, as in an editor's document outline.`}
+        note={`density="compact" with two-line rows, as in an editor's document outline. Drag a row before or after another, or into Toolbar or folderList.`}
         viewport={{ width: 'compact' }}
       >
         <TreeList
           id="outline"
           label="Document outline"
-          nodes={OUTLINE}
+          nodes={outline.value}
           expanded={open.outline ?? new Set()}
           selected={chosen.outline}
           action={PICK}

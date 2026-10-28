@@ -11,6 +11,7 @@ import {
 
 export {
   isExpandable,
+  moveTreeListNode,
   type TreeListNode,
   treeListPath,
   type TreeListRow,
@@ -102,6 +103,7 @@ export function TreeList({
           selected={row.node.id === selected}
           focusable={row.node.id === focusId}
           disabled={row.node.disabled}
+          draggable={row.node.draggable}
           density={density}
           action={action}
           toggleAction={toggleAction}

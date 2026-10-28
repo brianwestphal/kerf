@@ -456,3 +456,78 @@ test('adds what shows otherwise to a conditional node', async ({
     animations: 'disabled',
   });
 });
+
+// KF-WXP6AB: dragging an outline row places the node; the validator decides
+// where it may land.
+test('drags a node in the outline to a new place', async ({ page }, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const row = (id: string) =>
+    page.locator(
+      `[data-tree-list-id="editor-outline"] [role="treeitem"][data-item-id="${id}"]`,
+    );
+  const folders = row('01JB8Z1M6Q8E1X9V4S7K2R3T5E');
+  const text = row('01JB8Z1M6Q8E1X9V4S7K2R3T5G');
+  const box = (await text.boundingBox())!;
+  await folders.dragTo(text, {
+    targetPosition: { x: box.width / 2, y: box.height - 3 },
+  });
+  // folderList now follows the empty-state Text in the Pane's content.
+  const order = await page
+    .locator(
+      '[data-tree-list-id="editor-outline"] [role="treeitem"][aria-level="2"]',
+    )
+    .evaluateAll((rows) =>
+      rows.map((item) => item.getAttribute('data-item-id')),
+    );
+  expect(order.indexOf('01JB8Z1M6Q8E1X9V4S7K2R3T5E')).toBeGreaterThan(
+    order.indexOf('01JB8Z1M6Q8E1X9V4S7K2R3T5G'),
+  );
+  await expect(folders).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByText('7 nodes · valid')).toBeVisible();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-wxp6ab-editor-dragged-1440.png'),
+    animations: 'disabled',
+  });
+  await page.getByRole('button', { name: 'Undo' }).click();
+  const restored = await page
+    .locator(
+      '[data-tree-list-id="editor-outline"] [role="treeitem"][aria-level="2"]',
+    )
+    .evaluateAll((rows) =>
+      rows.map((item) => item.getAttribute('data-item-id')),
+    );
+  expect(restored.indexOf('01JB8Z1M6Q8E1X9V4S7K2R3T5E')).toBeLessThan(
+    restored.indexOf('01JB8Z1M6Q8E1X9V4S7K2R3T5G'),
+  );
+});
+
+test('shows where a dragged outline row would land', async ({ page }, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const row = (id: string) =>
+    page.locator(
+      `[data-tree-list-id="editor-outline"] [role="treeitem"][data-item-id="${id}"]`,
+    );
+  const folders = row('01JB8Z1M6Q8E1X9V4S7K2R3T5E');
+  const source = (await row(COMPOSE).boundingBox())!;
+  const target = (await folders.boundingBox())!;
+  await page.mouse.move(source.x + 40, source.y + source.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(target.x + 60, target.y + target.height / 2, {
+    steps: 8,
+  });
+  await expect(folders).toHaveAttribute('data-drop-position', 'inside');
+  const clip = { x: 0, y: 120, width: 300, height: 460 };
+  await page.screenshot({
+    path: info.outputPath('kf-wxp6ab-editor-drop-inside-1440.png'),
+    clip,
+  });
+  await page.mouse.move(target.x + 60, target.y + 2, { steps: 3 });
+  await expect(folders).toHaveAttribute('data-drop-position', 'before');
+  await page.screenshot({
+    path: info.outputPath('kf-wxp6ab-editor-drop-before-1440.png'),
+    clip,
+  });
+  await page.mouse.up();
+  await expect(folders).not.toHaveAttribute('data-drop-position');
+});

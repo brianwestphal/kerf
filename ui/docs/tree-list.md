@@ -70,6 +70,30 @@ neither action.
 - Enter and Space choose the row.
 - Typing finds the next row whose label starts with the typed letters.
 
+## Drag and drop
+
+Mark nodes `draggable` and pass `onMove` to rearrange the tree by dragging:
+
+```tsx
+const stop = wireTreeList(root, {
+  canDrop: ({ sourceId, target }) => isLegal(sourceId, target),
+  onMove: ({ sourceId, target }) => {
+    // target.position is 'before', 'after', or 'inside' target.id.
+    moveInMyTree(sourceId, target);
+    render();
+  },
+});
+```
+
+A dragged row lands before or after another row of its tree (the top and
+bottom quarters of the row), or inside it (the middle half); when inside is
+not legal, the halves mean before and after. Only drops `canDrop` accepts
+show an indicator: a line at the target's label edge for before and after, a
+ring around the row for inside. A disabled row never drags. The tree stays
+application state: `onMove` reports the move and the application re-renders.
+Dragging is a pointer gesture, so give people a keyboard way to move items
+too (a "Move to" choice, or moving the selected node up and down).
+
 ## The model
 
 `treeListRows(nodes, expanded)` returns the visible rows with each one's

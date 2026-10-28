@@ -3,7 +3,6 @@
 // place application-filled `$slot` holes. Every edit is a pure transform, like
 // the edits in edits.ts, and the validator decides which sources fit.
 import {
-  validateView,
   type ViewCatalog,
   type ViewChild,
   type ViewDocument,
@@ -13,7 +12,7 @@ import {
 } from '@kerfjs/ui/view';
 
 import type { BindingOption } from './edits.js';
-import { eachScopes } from './edits.js';
+import { addsProblems, eachScopes } from './edits.js';
 
 const CAMEL = /^[a-z][A-Za-z0-9]*$/;
 
@@ -277,29 +276,6 @@ export function renameItem(
     },
   });
   return { document: result };
-}
-
-/**
- * Whether `next` has a problem `before` does not. Problems compare by code and
- * message, counted, because wrapping a node moves its existing problems to
- * new paths without adding any.
- */
-function addsProblems(
-  before: ViewDocument,
-  next: ViewDocument,
-  catalog: ViewCatalog,
-): boolean {
-  const counts = new Map<string, number>();
-  for (const { code, message } of validateView(before, catalog).diagnostics)
-    counts.set(
-      `${code} ${message}`,
-      (counts.get(`${code} ${message}`) ?? 0) + 1,
-    );
-  return validateView(next, catalog).diagnostics.some(({ code, message }) => {
-    const left = counts.get(`${code} ${message}`) ?? 0;
-    counts.set(`${code} ${message}`, left - 1);
-    return left <= 0;
-  });
 }
 
 /** The type of an object list's items, or undefined. */

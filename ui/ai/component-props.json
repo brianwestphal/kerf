@@ -26977,6 +26977,16 @@
           "required": false
         },
         {
+          "name": "draggable",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Drags with `wireTreeList`'s `onMove` (KF-WXP6AB)."
+        },
+        {
           "name": "children",
           "type": {
             "kind": "array",

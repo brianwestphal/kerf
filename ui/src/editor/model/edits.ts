@@ -186,6 +186,61 @@ export function moveNode(
   return next;
 }
 
+/** Where a node sits directly in a zone list: its parent, zone, and index. */
+export interface Placement {
+  readonly parent: string;
+  readonly zone: string;
+  readonly index: number;
+}
+
+/**
+ * Where node `id` sits, or undefined when it is not directly in a zone list
+ * (the root, a repeated template, or a branch of a condition).
+ */
+export function placementOf(
+  document: ViewDocument,
+  id: string,
+): Placement | undefined {
+  const found = locate(clone(document), id);
+  return found?.list && found.index !== undefined
+    ? { parent: found.parent!.id, zone: found.zone!, index: found.index }
+    : undefined;
+}
+
+/**
+ * Moves node `id` (which must sit directly in a zone list) to `to`: index
+ * `to.index` of zone `to.zone` of node `to.parent`, counted before the move
+ * (KF-WXP6AB: drag placement). Unchanged when the node cannot move there,
+ * including into itself or its own descendants.
+ */
+export function placeNode(
+  document: ViewDocument,
+  id: string,
+  to: Placement,
+): ViewDocument {
+  const from = placementOf(document, id);
+  if (
+    !from ||
+    id === to.parent ||
+    visitNodes(document).some(
+      (visit) =>
+        visit.node.id === to.parent &&
+        visit.ancestors.some((ancestor) => ancestor.node.id === id),
+    )
+  )
+    return document;
+  const sameList = from.parent === to.parent && from.zone === to.zone;
+  const index = sameList && from.index < to.index ? to.index - 1 : to.index;
+  if (sameList && index === from.index) return document;
+  const node = findNodeIn(document, id);
+  return insertNode(removeNode(document, id), to.parent, to.zone, node, index);
+}
+
+/** Node `id` itself, from a document that has it. */
+function findNodeIn(document: ViewDocument, id: string): ViewNode {
+  return locate(clone(document), id)!.node as ViewNode;
+}
+
 /** Moves a node into another zone (of any node), at the end. */
 export function moveNodeTo(
   document: ViewDocument,
@@ -486,4 +541,27 @@ export function bindingOptions(
       known.has(`${diagnostic.code} ${diagnostic.path}`),
     ),
   );
+}
+
+/**
+ * Whether `next` has a problem `before` does not. Problems compare by code and
+ * message, counted, because wrapping a node moves its existing problems to
+ * new paths without adding any.
+ */
+export function addsProblems(
+  before: ViewDocument,
+  next: ViewDocument,
+  catalog: ViewCatalog,
+): boolean {
+  const counts = new Map<string, number>();
+  for (const { code, message } of validateView(before, catalog).diagnostics)
+    counts.set(
+      `${code} ${message}`,
+      (counts.get(`${code} ${message}`) ?? 0) + 1,
+    );
+  return validateView(next, catalog).diagnostics.some(({ code, message }) => {
+    const left = counts.get(`${code} ${message}`) ?? 0;
+    counts.set(`${code} ${message}`, left - 1);
+    return left <= 0;
+  });
 }

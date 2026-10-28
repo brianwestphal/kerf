@@ -60,6 +60,11 @@ Exact prop names and types: [`@kerfjs/ui/tree-list`](../public-api-signatures-v1
 
 - Use wireTreeList as documented.
 
+**Wiring-owned state attributes** — never render, remove, or branch on these as app state:
+
+- `data-dragging` on `the dragged tree row` (`wireTreeList`): Set to true on the row being dragged while a pointer drag is in progress (with onMove).
+- `data-drop-position` on `the tree row under the pointer` (`wireTreeList`): before, after, or inside: where the dragged row would land, painted only for a drop canDrop accepts.
+
 ## Geometry
 
 Margin: child · border: child · padding: child (layout role: structure). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.

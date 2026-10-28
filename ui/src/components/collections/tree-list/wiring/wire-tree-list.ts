@@ -3,6 +3,17 @@
 // application's `toggleAction` handler stays the one owner of `expanded`.
 import { delegate } from 'kerfjs';
 
+import {
+  type TreeListDragOptions,
+  wireTreeListDrag,
+} from './tree-list-drag.js';
+
+export type {
+  TreeListDragOptions,
+  TreeListDropPosition,
+  TreeListMove,
+} from './tree-list-drag.js';
+
 const ROW = '.kui-tree-list > [role="treeitem"]';
 const TYPEAHEAD_RESET_MS = 500;
 
@@ -38,9 +49,15 @@ function toggle(row: HTMLElement) {
  *   child; Left collapses an expanded row, or moves to its parent.
  * - Enter and Space choose the row (its native button click sends `action`).
  * - Typing letters moves to the next row whose label starts with them.
- * Focus keeps one Tab stop in the tree (roving tabindex). Returns a disposer.
+ * Focus keeps one Tab stop in the tree (roving tabindex). With `onMove`,
+ * `draggable` rows also drag before, after, or inside other rows of their
+ * tree; `canDrop` decides which drops are legal (KF-WXP6AB). Returns a
+ * disposer.
  */
-export function wireTreeList(root: HTMLElement): () => void {
+export function wireTreeList(
+  root: HTMLElement,
+  options: Partial<TreeListDragOptions> = {},
+): () => void {
   let typed = '';
   let typedAt = 0;
   const stopFocus = delegate<HTMLElement>(root, 'focusin', ROW, (_e, row) => {
@@ -117,8 +134,13 @@ export function wireTreeList(root: HTMLElement): () => void {
     return true;
   }
 
+  const stopDrag = options.onMove
+    ? wireTreeListDrag(root, { ...options, onMove: options.onMove })
+    : () => {};
+
   return () => {
     stopFocus();
     stopKeys();
+    stopDrag();
   };
 }

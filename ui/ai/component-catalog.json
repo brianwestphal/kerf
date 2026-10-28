@@ -3443,7 +3443,19 @@
         {
           "export": "wireTreeList",
           "import": "@kerfjs/ui/wire-tree-list",
-          "required": true
+          "required": true,
+          "stateAttributes": [
+            {
+              "name": "data-dragging",
+              "on": "the dragged tree row",
+              "meaning": "Set to true on the row being dragged while a pointer drag is in progress (with onMove)."
+            },
+            {
+              "name": "data-drop-position",
+              "on": "the tree row under the pointer",
+              "meaning": "before, after, or inside: where the dragged row would land, painted only for a drop canDrop accepts."
+            }
+          ]
         }
       ],
       "publicClasses": [

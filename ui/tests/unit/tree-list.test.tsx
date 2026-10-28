@@ -5,12 +5,16 @@ import { delegateActions } from 'kerfjs/actions';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
+  moveTreeListNode,
   TreeList,
   type TreeListNode,
   treeListPath,
   treeListRows,
 } from '../../src/components/collections/tree-list/tree-list.js';
-import { wireTreeList } from '../../src/components/collections/tree-list/wiring/wire-tree-list.js';
+import {
+  type TreeListMove,
+  wireTreeList,
+} from '../../src/components/collections/tree-list/wiring/wire-tree-list.js';
 
 const nodes: TreeListNode[] = [
   {
@@ -340,5 +344,204 @@ describe('wireTreeList', () => {
     expect(focused()).toBe('badge');
     expect(press(' ').defaultPrevented).toBe(false);
     expect(press('Tab').defaultPrevented).toBe(false);
+  });
+});
+
+// KF-WXP6AB: draggable rows drop before, after, or inside other rows of their
+// tree; the application decides which drops are legal.
+describe('TreeList drag-and-drop', () => {
+  let stop: (() => void) | undefined;
+  afterEach(() => {
+    stop?.();
+    stop = undefined;
+    document.body.replaceChildren();
+  });
+
+  const draggableNodes: TreeListNode[] = [
+    { id: 'a', label: 'A', draggable: true, children: [] },
+    { id: 'b', label: 'B', draggable: true },
+    { id: 'c', label: 'C', draggable: true, disabled: true },
+  ];
+
+  function setUp(canDrop?: (move: TreeListMove) => boolean) {
+    const root = document.createElement('div');
+    document.body.append(root);
+    root.innerHTML = String(
+      <TreeList
+        id="t"
+        label="Tree"
+        nodes={draggableNodes}
+        expanded={[]}
+        action="choose"
+        toggleAction="toggle"
+      />,
+    );
+    const moves: TreeListMove[] = [];
+    stop = wireTreeList(root, {
+      ...(canDrop ? { canDrop } : {}),
+      onMove: (move) => moves.push(move),
+    });
+    const row = (id: string) =>
+      root.querySelector<HTMLElement>(
+        `[data-item-id="${id}"][role="treeitem"]`,
+      )!;
+    for (const [index, id] of ['a', 'b', 'c'].entries()) {
+      Object.defineProperty(row(id), 'getBoundingClientRect', {
+        configurable: true,
+        value: () => ({ top: index * 40, height: 40, bottom: index * 40 + 40 }),
+      });
+    }
+    return { root, row, moves };
+  }
+
+  function drag(type: string, target: HTMLElement, clientY = 0) {
+    const event = new Event(type, { bubbles: true, cancelable: true });
+    const transfer = {
+      effectAllowed: 'none',
+      dropEffect: 'none',
+      data: new Map<string, string>(),
+      setData(kind: string, value: string) {
+        this.data.set(kind, value);
+      },
+    };
+    Object.defineProperty(event, 'dataTransfer', { value: transfer });
+    Object.defineProperty(event, 'clientY', { value: clientY });
+    target.dispatchEvent(event);
+    return { event, transfer };
+  }
+
+  it('marks rows draggable unless disabled', () => {
+    const { row } = setUp();
+    expect(row('a').getAttribute('draggable')).toBe('true');
+    expect(row('c').hasAttribute('draggable')).toBe(false);
+  });
+
+  it('drops before, inside, and after a row by where the pointer is', () => {
+    const { row, moves } = setUp();
+    const start = drag('dragstart', row('b'));
+    expect(start.transfer.data.get('application/x-kerf-tree-item')).toBe('b');
+    expect(row('b').dataset.dragging).toBe('true');
+    const over = drag('dragover', row('a'), 5);
+    expect(over.event.defaultPrevented).toBe(true);
+    expect(row('a').dataset.dropPosition).toBe('before');
+    drag('dragover', row('a'), 20);
+    expect(row('a').dataset.dropPosition).toBe('inside');
+    drag('dragover', row('a'), 38);
+    expect(row('a').dataset.dropPosition).toBe('after');
+    drag('drop', row('a'), 20);
+    expect(moves).toEqual([
+      { sourceId: 'b', target: { id: 'a', position: 'inside' } },
+    ]);
+    expect(row('a').dataset.dropPosition).toBeUndefined();
+    expect(row('b').dataset.dragging).toBeUndefined();
+  });
+
+  it('falls back to before or after when inside is not legal, and shows nothing when no drop is', () => {
+    const { row, moves } = setUp(
+      (move) => move.target.position !== 'inside' && move.target.id !== 'c',
+    );
+    drag('dragstart', row('b'));
+    drag('dragover', row('a'), 15);
+    expect(row('a').dataset.dropPosition).toBe('before');
+    drag('dragover', row('a'), 25);
+    expect(row('a').dataset.dropPosition).toBe('after');
+    const refused = drag('dragover', row('c'), 60);
+    expect(refused.event.defaultPrevented).toBe(false);
+    expect(row('a').dataset.dropPosition).toBeUndefined();
+    // Over itself, nothing.
+    drag('dragover', row('b'), 50);
+    expect(row('b').dataset.dropPosition).toBeUndefined();
+    drag('drop', row('c'), 60);
+    expect(moves).toEqual([]);
+  });
+
+  it('ignores drags it did not start and rows that are not draggable', () => {
+    const { root, row, moves } = setUp();
+    drag('dragover', row('a'), 20);
+    expect(row('a').dataset.dropPosition).toBeUndefined();
+    drag('dragstart', row('c'));
+    drag('drop', row('a'), 20);
+    drag('dragstart', root);
+    drag('dragend', row('a'));
+    expect(moves).toEqual([]);
+  });
+
+  it('wires no drag without onMove', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    root.innerHTML = String(
+      <TreeList
+        id="t"
+        label="Tree"
+        nodes={draggableNodes}
+        expanded={[]}
+        action="choose"
+        toggleAction="toggle"
+      />,
+    );
+    stop = wireTreeList(root);
+    const a = root.querySelector<HTMLElement>('[data-item-id="a"]')!;
+    drag('dragstart', root.querySelector('[data-item-id="b"]')!);
+    drag('dragover', a, 20);
+    expect(a.dataset.dropPosition).toBeUndefined();
+  });
+});
+
+describe('moveTreeListNode', () => {
+  const ids = (list: readonly TreeListNode[]): unknown[] =>
+    list.map((node) =>
+      node.children ? [node.id, ids(node.children)] : node.id,
+    );
+
+  it('moves a node before, after, or inside another', () => {
+    expect(
+      ids(
+        moveTreeListNode(nodes, {
+          sourceId: 'readme',
+          target: { id: 'index', position: 'before' },
+        }),
+      ),
+    ).toEqual([
+      ['src', [['components', ['button', 'badge']], 'readme', 'index']],
+      'docs',
+    ]);
+    expect(
+      ids(
+        moveTreeListNode(nodes, {
+          sourceId: 'button',
+          target: { id: 'docs', position: 'after' },
+        }),
+      ),
+    ).toEqual([
+      ['src', [['components', ['badge']], 'index']],
+      'docs',
+      'button',
+      'readme',
+    ]);
+    expect(
+      ids(
+        moveTreeListNode(nodes, {
+          sourceId: 'readme',
+          target: { id: 'docs', position: 'inside' },
+        }),
+      ),
+    ).toEqual([
+      ['src', [['components', ['button', 'badge']], 'index']],
+      ['docs', ['readme']],
+    ]);
+  });
+
+  it('leaves the tree alone for unknown nodes and moves into themselves', () => {
+    const same = (sourceId: string, id: string) =>
+      expect(
+        moveTreeListNode(nodes, {
+          sourceId,
+          target: { id, position: 'inside' },
+        }),
+      ).toEqual(nodes);
+    same('src', 'button');
+    same('src', 'src');
+    same('missing', 'docs');
+    same('docs', 'missing');
   });
 });
