@@ -25,6 +25,7 @@
       "@kerfjs/ui/view": ["../ui/view/index.d.mts"],
       "@kerfjs/ui/ai/*": ["../ui/ai/*"],
       "@kerfjs/ui/popup-menu/register": ["../ui/dist/popup-menu-register.d.ts"],
+      "@kerfjs/ui/select/register": ["../ui/dist/select-register.d.ts"],
       "@kerfjs/ui/*": ["../ui/dist/*"]
     }
   },

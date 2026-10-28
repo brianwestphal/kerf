@@ -13,6 +13,12 @@ export interface PropsComponent extends InspectorComponent {
   readonly source: 'kerf' | 'webawesome';
   readonly export?: string;
   readonly tagName?: string;
+  /** Prop combinations a union-typed props interface allows. */
+  readonly variants?: readonly {
+    readonly required: readonly string[];
+    readonly forbidden: readonly string[];
+    readonly when?: Readonly<Record<string, string | number | boolean>>;
+  }[];
 }
 
 interface CatalogEntry {

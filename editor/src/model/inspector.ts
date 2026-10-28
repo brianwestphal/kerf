@@ -51,10 +51,10 @@ const OTHER = 'Other';
  * curated order then by name. Hidden plumbing props and zones are left out:
  * zones appear in the outline instead.
  */
-export function inspectorSections(
-  node: ViewNode | undefined,
+/** A component's visible props grouped by curated group (then "Other"), in curated order. */
+export function groupedProps(
   component: InspectorComponent,
-): InspectorSection[] {
+): { readonly title: string; readonly props: readonly InspectorProp[] }[] {
   const visible = component.props.filter(
     (prop) =>
       prop.control !== 'hidden' && !prop.zone && prop.type.kind !== 'never',
@@ -69,40 +69,49 @@ export function inspectorSections(
     ...order.filter((title) => byGroup.has(title)),
     ...(byGroup.has(OTHER) ? [OTHER] : []),
   ];
-  // Without a node (a palette entry), each row documents the prop's type.
-  const props = node?.props ?? {};
   return titles.map((title) => ({
     title,
-    rows: byGroup
+    props: byGroup
       .get(title)!
       .slice()
       .sort(
         (a, b) =>
           (a.order ?? 999) - (b.order ?? 999) || a.name.localeCompare(b.name),
-      )
-      .map((prop) => {
-        const set = prop.name in props;
-        if (!node) {
-          const type =
-            prop.type.text?.replace(/ \| undefined$/, '') ?? prop.type.kind;
-          const fallback =
-            prop.default !== undefined
-              ? ` = ${JSON.stringify(prop.default)}`
-              : '';
-          return {
-            name: prop.name,
-            value: `${type}${prop.required ? '' : '?'}${fallback}`,
-            set: false,
-          };
-        }
-        const value = set
-          ? formatValue(props[prop.name] as ViewValue)
-          : prop.default !== undefined
-            ? `${JSON.stringify(prop.default)} (default)`
-            : prop.required
-              ? 'required'
-              : '—';
-        return { name: prop.name, value, set };
-      }),
+      ),
+  }));
+}
+
+export function inspectorSections(
+  node: ViewNode | undefined,
+  component: InspectorComponent,
+): InspectorSection[] {
+  // Without a node (a palette entry), each row documents the prop's type.
+  const props = node?.props ?? {};
+  return groupedProps(component).map(({ title, props: group }) => ({
+    title,
+    rows: group.map((prop) => {
+      const set = prop.name in props;
+      if (!node) {
+        const type =
+          prop.type.text?.replace(/ \| undefined$/, '') ?? prop.type.kind;
+        const fallback =
+          prop.default !== undefined
+            ? ` = ${JSON.stringify(prop.default)}`
+            : '';
+        return {
+          name: prop.name,
+          value: `${type}${prop.required ? '' : '?'}${fallback}`,
+          set: false,
+        };
+      }
+      const value = set
+        ? formatValue(props[prop.name] as ViewValue)
+        : prop.default !== undefined
+          ? `${JSON.stringify(prop.default)} (default)`
+          : prop.required
+            ? 'required'
+            : '—';
+      return { name: prop.name, value, set };
+    }),
   }));
 }

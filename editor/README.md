@@ -31,7 +31,23 @@ it uses ship from `@kerfjs/ui/view`, so tools and applications work without it.
   regenerating would make, flags a hand-edited module, and becomes the
   baseline that later exports compare against.
 
-Editing is a later slice.
+- **Edit** the selected node in the Inspector. Enum props are a Select (its
+  first choice restores the default), booleans a Switch, and strings,
+  numbers, text-accepting content, and `$css` builder calls a text field
+  committed on Enter or blur; a value the prop cannot take shows its reason.
+  Values bound to params, actions, or icons are shown read-only. Name a node
+  to make it a typed ref, or promote a literal prop to a document param.
+- **Add, move, and delete** nodes. Add a child picks one of the node's legal
+  zones (a full zone is disabled with its reason) and a component that zone
+  accepts, seeded with the props it needs to be valid. The Inspector toolbar
+  moves the node up or down within its zone or deletes it; the root, `$each`
+  templates, and `$if` branches belong to their structure and stay put.
+- **Undo and redo** every edit from the Preview toolbar or with Cmd/Ctrl+Z and
+  Shift+Cmd/Ctrl+Z (text fields keep their own undo). Opening a document
+  clears the history.
+
+Drag-and-drop placement and binding props to params or `$each` item fields
+come later.
 
 ## Develop
 

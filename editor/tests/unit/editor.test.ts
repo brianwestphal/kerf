@@ -48,7 +48,9 @@ describe('the editor shell', () => {
       id: '01JB8Z1M6Q8E1X9V4S7K2R3T5D',
     });
     expect(root.textContent).toContain('composeButton · Button');
-    expect(root.textContent).toContain('"brand"');
+    expect(
+      root.querySelector('[data-editor-prop="tone"]')?.getAttribute('value'),
+    ).toBe('brand');
     expect(inspectorHeading(root)).not.toBe('');
   });
 

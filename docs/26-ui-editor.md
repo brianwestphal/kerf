@@ -12,13 +12,20 @@
 - the `kerfjs/no-generated-view-edits` lint rule (§5.2; KF-BD3ZHQ: no-hand-edits
   lint rule);
 - the private `editor/` scaffold (KF-4NRZCV: editor scaffold): open and save,
-  canvas preview, selection, outline, a read-only inspector, and a problems list
+  canvas preview, selection, outline, an inspector, and a problems list
   linked to nodes (KF-WC0ZG3: editor problems list), and export of the generated
   module with a contract-change report against the last export or a chosen
-  existing module (KF-Y38YRT, KF-9J810J: editor export and compare).
+  existing module (KF-Y38YRT, KF-9J810J: editor export and compare);
+- editing in the editor (KF-KX77TV: editor editing): the inspector edits
+  literal props (a Select per string enum, a Switch per boolean, a text field
+  for strings, text-accepting content, numbers, and `$css` builder calls),
+  renames nodes, promotes a literal prop to a document param, adds a child of
+  a chosen component to one of the node's legal zones, moves a node within its
+  zone, deletes it, and undoes or redoes any of these.
 
-Editing in the editor is next. The
-implementation tickets are listed in [§10](#10-implementation-plan).
+Drag-and-drop placement and binding props to `$each` item fields or params
+come next (KF-K5TKCV: editor drag-and-drop and bindings). The implementation
+tickets are listed in [§10](#10-implementation-plan).
 
 ## 1. Purpose and decisions
 
@@ -660,5 +667,7 @@ diff <doc…>` takes `--target js`, `--declarations-only`, and extra
 6. **Done:** a `data-*` channel (`rootAttributes`) for every component with a
    single root, recorded as `dataChannel` in `component-props.json` (§4.5;
    KF-PYR8XZ: component data channels).
-7. **Done (first slice):** the private `editor/` package (KF-4NRZCV: editor
-   scaffold). Editing, validation display, and export in the editor follow.
+7. **Done:** the private `editor/` package (KF-4NRZCV: editor scaffold), with
+   a problems list (KF-WC0ZG3), export and compare (KF-Y38YRT, KF-9J810J), and
+   inspector editing with undo (KF-KX77TV: editor editing). Drag-and-drop and
+   bindings follow (KF-K5TKCV).
