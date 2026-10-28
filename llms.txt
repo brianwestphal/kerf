@@ -51,6 +51,7 @@ kerf renders JSX to a structured `SafeHtml` (string for static content; tagged "
 - [App and dialog layouts](https://github.com/brianwestphal/kerf/blob/main/docs/23-app-layouts.md): responsive whole-screen `@kerfjs/ui` layouts, the shared device-class foundation, controlled state model, and layout-selection guidance.
 - [AI-first project setup](https://github.com/brianwestphal/kerf/blob/main/docs/24-ai-first-setup.md): dry-run-first `npx kerfjs setup`, deterministic workspace discovery, explicit conflict resolution, transactional writes, and the automation API.
 - [Ticket phase timing](https://github.com/brianwestphal/kerf/blob/main/docs/25-ticket-timing.md): structured Hot Sheet phase intervals and process-review summaries without raw output, secrets, or machine-specific paths.
+- [Kerf UI editor (design)](https://github.com/brianwestphal/kerf/blob/main/docs/26-ui-editor.md): JSON view documents as the source of truth, read-only generated view modules with a typed contract and digest, contract-diff re-export, and runtime interpretation.
 
 ## Examples
 
