@@ -4,6 +4,12 @@ import {
   filterDataAttributes,
   type RootDataAttributes,
 } from '../../../shared/dom/extension-attributes.js';
+import type {
+  ButtonEmphasis,
+  ButtonSize,
+  ButtonTone,
+} from '../../actions/button/button.js';
+import { ButtonFace } from '../../actions/button/internal/button-face.js';
 
 interface FileInputProps {
   /** Accepted types, as the native `accept` attribute (`.png,image/*`). */
@@ -28,6 +34,17 @@ export interface FilePickerTriggerProps extends FileInputProps {
   accessibleLabel?: string;
   /** Optional decorative leading icon, normally an unsized LucideIcon. */
   icon?: SafeHtml;
+  /**
+   * Draw the trigger as a `Button` of this tone, so it matches the Buttons
+   * beside it. Setting `tone`, `emphasis`, or `size` switches from the
+   * compact link-toned trigger to the Button look (defaults `neutral`,
+   * `primary`, `default`, as on Button); it stays a native file label.
+   */
+  tone?: ButtonTone;
+  /** The Button look's emphasis: `primary`, `secondary`, or `plain`. */
+  emphasis?: ButtonEmphasis;
+  /** The Button look's size: `default` (44px) or `compact`. */
+  size?: ButtonSize;
 }
 
 export interface FileDropZoneProps extends FileInputProps {
@@ -71,10 +88,11 @@ const FILE_PICKER_PROTECTED = new Set([
 ]);
 
 /**
- * A compact, link-toned trigger that opens the native file chooser: a label
- * around a visually hidden `<input type="file">`, so a click or keyboard
- * activation reaches the input without script. Report choices with
- * `wireFilePickers`.
+ * A trigger that opens the native file chooser: a label around a visually
+ * hidden `<input type="file">`, so a click or keyboard activation reaches the
+ * input without script. It is a compact, link-toned trigger, or with `tone`,
+ * `emphasis`, or `size` it looks like a `Button` of those settings. Report
+ * choices with `wireFilePickers`.
  */
 export function FilePickerTrigger(props: FilePickerTriggerProps) {
   const {
@@ -83,9 +101,29 @@ export function FilePickerTrigger(props: FilePickerTriggerProps) {
     icon,
     pickerId,
     disabled,
+    tone,
+    emphasis,
+    size,
     className = '',
     rootAttributes = {},
   } = props;
+  if (tone !== undefined || emphasis !== undefined || size !== undefined) {
+    return (
+      <label
+        {...filterDataAttributes(rootAttributes, FILE_PICKER_PROTECTED)}
+        class={`kui-file-picker ${className}`.trim()}
+        data-component="file-picker-trigger"
+        data-presentation="button"
+        data-file-picker-id={pickerId}
+        data-disabled={disabled ? 'true' : undefined}
+      >
+        <ButtonFace icon={icon} tone={tone} emphasis={emphasis} size={size}>
+          {label}
+        </ButtonFace>
+        {fileInput(props, accessibleLabel)}
+      </label>
+    );
+  }
   return (
     <label
       {...filterDataAttributes(rootAttributes, FILE_PICKER_PROTECTED)}

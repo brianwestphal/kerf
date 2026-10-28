@@ -82,7 +82,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [PopupMenu](./popup-menu.md) — A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, drawn by Kerf as a native menu in the top layer.
 - [Button](./button.md) — Trigger an action from a dialog footer, a form, or content outside any Toolbar, with Kerf's button chrome and native button semantics.
 - [SplitButton](./split-button.md) — Render a prominent primary action plus an options trigger (provider, model, target) as one control with a semantic tone, full-width sizing, a rounded or pill shape, a busy presentation, and native aria-expanded on the trigger, outside any Toolbar.
-- [FilePicker](./file-picker.md) — Let people choose or drop files (attachments, evidence, imports) without app CSS: a link-toned browse trigger and a dashed drop target that highlights while dragging, both around visually hidden native file inputs.
+- [FilePicker](./file-picker.md) — Let people choose or drop files (attachments, evidence, imports) without app CSS: a link-toned browse trigger (or, with tone, emphasis, or size, one that looks like the Button beside it) and a dashed drop target that highlights while dragging, both around visually hidden native file inputs.
 
 ## Kerf UI — Feedback
 

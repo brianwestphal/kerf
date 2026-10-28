@@ -7110,6 +7110,11 @@ export { SplitButton, type SplitButtonProps, type SplitButtonShape, type SplitBu
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
+import { ButtonTone, ButtonEmphasis, ButtonSize } from './button.js';
+import './semantic-content-BbzjvSu9.js';
+import './badge.js';
+import './css-values.js';
+import './semantic-tone-CdW013KF.js';
 
 interface FileInputProps {
     /** Accepted types, as the native `accept` attribute (`.png,image/*`). */
@@ -7133,6 +7138,17 @@ interface FilePickerTriggerProps extends FileInputProps {
     accessibleLabel?: string;
     /** Optional decorative leading icon, normally an unsized LucideIcon. */
     icon?: SafeHtml;
+    /**
+     * Draw the trigger as a `Button` of this tone, so it matches the Buttons
+     * beside it. Setting `tone`, `emphasis`, or `size` switches from the
+     * compact link-toned trigger to the Button look (defaults `neutral`,
+     * `primary`, `default`, as on Button); it stays a native file label.
+     */
+    tone?: ButtonTone;
+    /** The Button look's emphasis: `primary`, `secondary`, or `plain`. */
+    emphasis?: ButtonEmphasis;
+    /** The Button look's size: `default` (44px) or `compact`. */
+    size?: ButtonSize;
 }
 interface FileDropZoneProps extends FileInputProps {
     /** Primary copy, such as "Drop attachments here or browse". */
@@ -7152,10 +7168,11 @@ interface FileDropZoneProps extends FileInputProps {
     dropScope?: string;
 }
 /**
- * A compact, link-toned trigger that opens the native file chooser: a label
- * around a visually hidden `<input type="file">`, so a click or keyboard
- * activation reaches the input without script. Report choices with
- * `wireFilePickers`.
+ * A trigger that opens the native file chooser: a label around a visually
+ * hidden `<input type="file">`, so a click or keyboard activation reaches the
+ * input without script. It is a compact, link-toned trigger, or with `tone`,
+ * `emphasis`, or `size` it looks like a `Button` of those settings. Report
+ * choices with `wireFilePickers`.
  */
 declare function FilePickerTrigger(props: FilePickerTriggerProps): SafeHtml;
 /**

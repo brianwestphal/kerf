@@ -34,6 +34,14 @@
   background: var(--kui-color-brand-fill-quiet);
 }
 
+/* A Button-styled browse trigger: the label hugs its Button face, which
+   draws the control and its focus ring. */
+.kui-file-picker[data-presentation="button"] {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+}
+
 /* A dashed drop target with content-item margins, highlighted on hover and
    while files are dragged over it. */
 .kui-file-picker[data-presentation="drop-zone"] {
@@ -68,8 +76,11 @@
   font-size: var(--kui-font-2xs);
 }
 
-/* Keyboard focus lands on the hidden input; the visible control shows it. */
-.kui-file-picker:has(> .kui-file-picker__input:focus-visible) {
+/* Keyboard focus lands on the hidden input; the visible control shows it
+   (a Button face draws its own ring). */
+.kui-file-picker:not([data-presentation="button"]):has(
+    > .kui-file-picker__input:focus-visible
+  ) {
   outline: var(--kui-focus-ring);
   outline-offset: 2px;
 }

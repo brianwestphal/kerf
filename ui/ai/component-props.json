@@ -3870,7 +3870,7 @@
       "source": "kerf",
       "import": "@kerfjs/ui/file-picker",
       "export": "FilePickerTrigger",
-      "description": "A compact, link-toned trigger that opens the native file chooser: a label\naround a visually hidden `<input type=\"file\">`, so a click or keyboard\nactivation reaches the input without script. Report choices with\n`wireFilePickers`.",
+      "description": "A trigger that opens the native file chooser: a label around a visually\nhidden `<input type=\"file\">`, so a click or keyboard activation reaches the\ninput without script. It is a compact, link-toned trigger, or with `tone`,\n`emphasis`, or `size` it looks like a `Button` of those settings. Report\nchoices with `wireFilePickers`.",
       "props": [
         {
           "name": "label",
@@ -3894,6 +3894,41 @@
           "required": false,
           "description": "Optional decorative leading icon, normally an unsized LucideIcon.",
           "slot": true
+        },
+        {
+          "name": "tone",
+          "type": {
+            "kind": "enum",
+            "values": ["neutral", "brand", "success", "danger"],
+            "text": "ButtonTone | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "neutral",
+          "description": "Draw the trigger as a `Button` of this tone, so it matches the Buttons\nbeside it. Setting `tone`, `emphasis`, or `size` switches from the\ncompact link-toned trigger to the Button look (defaults `neutral`,\n`primary`, `default`, as on Button); it stays a native file label."
+        },
+        {
+          "name": "emphasis",
+          "type": {
+            "kind": "enum",
+            "values": ["primary", "secondary", "plain"],
+            "text": "ButtonEmphasis | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "primary",
+          "description": "The Button look's emphasis: `primary`, `secondary`, or `plain`."
+        },
+        {
+          "name": "size",
+          "type": {
+            "kind": "enum",
+            "values": ["default", "compact"],
+            "text": "ButtonSize | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The Button look's size: `default` (44px) or `compact`."
         },
         {
           "name": "accept",

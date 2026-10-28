@@ -100,3 +100,54 @@ test('a scoped FileDropZone lights up and takes drops anywhere on its panel', as
     await expect(demo).toContainText('panel.png');
   }
 });
+
+// KF-W99E6W: the Button look keeps the native file label: choosing through it
+// reports files, it matches the Button beside it, and keyboard focus on the
+// hidden input draws the Button's ring on the face.
+test('a FilePickerTrigger with the Button look chooses files and shows focus', async ({
+  page,
+  browserName,
+}, info) => {
+  await page.goto('/?component=file-picker');
+  const demo = page.locator('[data-demo="file-picker"]');
+  const row = demo.locator('[data-demo-file-buttons]');
+  const open = row.locator('[data-file-picker-id="demo-open"]');
+  const chooser = page.waitForEvent('filechooser');
+  await open.click();
+  await (
+    await chooser
+  ).setFiles([
+    {
+      name: 'plan.kui.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from('{}'),
+    },
+  ]);
+  await expect(demo).toContainText('plan.kui.json');
+
+  const face = open.locator('.kui-button');
+  const save = row.getByRole('button', { name: 'Save' });
+  const [faceBox, saveBox] = await Promise.all([
+    face.boundingBox(),
+    save.boundingBox(),
+  ]);
+  expect(Math.abs(faceBox!.height - saveBox!.height)).toBeLessThan(1);
+  expect(Math.abs(faceBox!.y - saveBox!.y)).toBeLessThan(1);
+
+  if (browserName === 'webkit') return;
+  await open.locator('input[type="file"]').focus();
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Tab');
+  await row.screenshot({
+    path: info.outputPath(
+      `kf-w99e6w-file-picker-button-look-${browserName}.png`,
+    ),
+    animations: 'disabled',
+  });
+  expect(
+    await face.evaluate((node) => window.getComputedStyle(node).outlineStyle),
+  ).not.toBe('none');
+  expect(
+    await open.evaluate((node) => window.getComputedStyle(node).outlineStyle),
+  ).toBe('none');
+});

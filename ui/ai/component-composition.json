@@ -6393,7 +6393,7 @@
           "border": "self",
           "padding": "self",
           "notes": [
-            "The drop zone carries the 8px content-item inline margin; the trigger is a compact 32px inline control."
+            "The drop zone carries the 8px content-item inline margin; the trigger is a compact 32px inline control, or with the Button look the same size as a Button of that size."
           ]
         }
       },

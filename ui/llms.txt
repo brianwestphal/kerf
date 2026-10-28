@@ -831,7 +831,9 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
 - **Pick or drop files with `FilePickerTrigger` / `FileDropZone`.** Both wrap
   a real, visually hidden file input; `wireFilePickers(root, { onFiles })`
   reports browsed and dropped files and highlights the zone while dragging.
-  Never hand-style a file input, its label, or a dashed drop target.
+  Give the trigger `tone`, `emphasis`, or `size` to match the Buttons beside
+  it (an app bar's Open beside Save). Never hand-style a file input, its
+  label, or a dashed drop target.
 - **Swap content in place with `ContentSwap`.** Two sides share one cell;
   `active`, `transition` (`push`, `crossfade`, `none`), and `direction` drive
   Kerf-owned motion with an inert, hidden inactive side and reduced-motion

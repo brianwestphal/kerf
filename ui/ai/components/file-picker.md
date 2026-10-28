@@ -8,7 +8,7 @@ A compact browse trigger and a dashed drop zone around native file inputs, with 
 
 ## When to use
 
-Let people choose or drop files (attachments, evidence, imports) without app CSS: a link-toned browse trigger and a dashed drop target that highlights while dragging, both around visually hidden native file inputs.
+Let people choose or drop files (attachments, evidence, imports) without app CSS: a link-toned browse trigger (or, with tone, emphasis, or size, one that looks like the Button beside it) and a dashed drop target that highlights while dragging, both around visually hidden native file inputs.
 
 - People attach or import files by browsing or by dropping them onto a target.
 
@@ -35,6 +35,7 @@ Exact prop names and types: [`@kerfjs/ui/file-picker`](../public-api-signatures-
 **Variants (configure, do not restyle):**
 
 - browse trigger
+- browse trigger with the Button look: tone, emphasis, and size as on Button, for a toolbar or form row beside Buttons
 - drop zone
 - dragging
 - disabled
@@ -64,7 +65,7 @@ Exact prop names and types: [`@kerfjs/ui/file-picker`](../public-api-signatures-
 
 Margin: self · border: self · padding: self (layout role: controls). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
-- The drop zone carries the 8px content-item inline margin; the trigger is a compact 32px inline control.
+- The drop zone carries the 8px content-item inline margin; the trigger is a compact 32px inline control, or with the Button look the same size as a Button of that size.
 
 ## Accessibility
 

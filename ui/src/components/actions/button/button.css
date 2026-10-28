@@ -245,6 +245,17 @@
    the surface the button sits on: the surface context's opaque color with
    its translucent tint (a sunken or quiet fill) layered over it
    (foundation.css), so it reads as a cut through the fill, not a halo. */
+/* A face (a FilePickerTrigger's button presentation) has no focus of its
+   own: keyboard focus lands on the file input beside it in the picker's
+   label, and the face shows it. */
+.kui-file-picker:has(> .kui-file-picker__input:focus-visible)
+  > .kui-button[data-face="true"] {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+.kui-button[data-face="true"] {
+  cursor: inherit;
+}
 .kui-button[data-focus-ring-inset="true"]:focus-visible {
   outline-offset: -3px;
   box-shadow:

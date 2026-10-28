@@ -7932,7 +7932,7 @@
       "source": "kerf",
       "description": "A compact browse trigger and a dashed drop zone around native file inputs, with wiring that reports chosen and dropped files.",
       "uses": [],
-      "purpose": "Let people choose or drop files (attachments, evidence, imports) without app CSS: a link-toned browse trigger and a dashed drop target that highlights while dragging, both around visually hidden native file inputs.",
+      "purpose": "Let people choose or drop files (attachments, evidence, imports) without app CSS: a link-toned browse trigger (or, with tone, emphasis, or size, one that looks like the Button beside it) and a dashed drop target that highlights while dragging, both around visually hidden native file inputs.",
       "publicExports": [
         "FilePickerTrigger",
         "FileDropZone",
@@ -7960,6 +7960,7 @@
       ],
       "variants": [
         "browse trigger",
+        "browse trigger with the Button look: tone, emphasis, and size as on Button, for a toolbar or form row beside Buttons",
         "drop zone",
         "dragging",
         "disabled",
@@ -7975,7 +7976,7 @@
         "border": "self",
         "padding": "self",
         "notes": [
-          "The drop zone carries the 8px content-item inline margin; the trigger is a compact 32px inline control."
+          "The drop zone carries the 8px content-item inline margin; the trigger is a compact 32px inline control, or with the Button look the same size as a Button of that size."
         ]
       },
       "delivery": {

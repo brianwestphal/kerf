@@ -64,6 +64,29 @@ describe('FilePickerTrigger and FileDropZone', () => {
     ).toContain('data-presentation="trigger" data-disabled="true"');
     expect(String(FileDropZone({ title: 'Drop' }))).not.toContain('__detail');
   });
+
+  it('looks like a Button with tone, emphasis, or size, and stays a file label', () => {
+    expect(
+      String(
+        FilePickerTrigger({
+          label: 'Open',
+          icon: <svg />,
+          emphasis: 'plain',
+          size: 'compact',
+          pickerId: 'open',
+          disabled: true,
+        }),
+      ),
+    ).toBe(
+      '<label class="kui-file-picker" data-component="file-picker-trigger" data-presentation="button" data-file-picker-id="open" data-disabled="true"><span class="kui-button" data-component="button" data-face="true" data-tone="neutral" data-emphasis="plain" data-size="compact"><span class="kui-button__icon" aria-hidden="true"><svg></svg></span><span class="kui-button__label">Open</span></span><input type="file" class="kui-file-picker__input" disabled></label>',
+    );
+    for (const look of [{ tone: 'brand' }, { size: 'default' }] as const) {
+      const html = String(FilePickerTrigger({ label: 'Import', ...look }));
+      expect(html).toContain('data-presentation="button"');
+      expect(html).toContain('data-emphasis="primary"');
+      expect(html).not.toContain('kui-button__icon');
+    }
+  });
 });
 
 describe('fileMatchesAccept', () => {

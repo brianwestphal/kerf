@@ -658,6 +658,8 @@ export function createEditor(options: EditorOptions = {}) {
               accessibleLabel="Open a view document"
               accept=".json,application/json"
               pickerId="open-document"
+              emphasis="plain"
+              size="compact"
               icon={<LucideIcon icon={FolderOpen} name="folder-open" />}
             />,
             <FilePickerTrigger
@@ -665,6 +667,8 @@ export function createEditor(options: EditorOptions = {}) {
               accessibleLabel="Compare with an existing generated view module"
               accept=".ts,.js,text/javascript,text/typescript"
               pickerId="compare-module"
+              emphasis="plain"
+              size="compact"
               icon={<LucideIcon icon={GitCompare} name="git-compare" />}
               disabled={problems > 0}
             />,
