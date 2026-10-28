@@ -146,3 +146,33 @@ test('lists problems and selects the node a problem is about', async ({
     animations: 'disabled',
   });
 });
+
+test('exports the view module from the Export menu', async ({ page }, info) => {
+  const menu = page.locator('.kui-popup-menu').filter({ hasText: 'Export' });
+  await menu.getByRole('button', { name: 'Export' }).click();
+  await expect(
+    page.getByRole('menuitem', { name: 'View module (.view.ts)' }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: info.outputPath('kf-y38yrt-editor-export-menu-1440.png'),
+    animations: 'disabled',
+  });
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    page.getByRole('menuitem', { name: 'View module (.view.ts)' }).click(),
+  ]);
+  expect(download.suggestedFilename()).toBe('inbox.view.ts');
+  const code = await readFile((await download.path())!, 'utf8');
+  expect(code).toBe(
+    await readFile(
+      new URL('../../../ui/tests/fixtures/view/inbox.view.ts', import.meta.url),
+      'utf8',
+    ),
+  );
+  await expect(page.getByText('Exported the view module')).toBeVisible();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-y38yrt-editor-exported-1440.png'),
+    animations: 'disabled',
+  });
+});

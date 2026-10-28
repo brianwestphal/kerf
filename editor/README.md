@@ -20,7 +20,13 @@ it uses ship from `@kerfjs/ui/view`, so tools and applications work without it.
   problem-count badge. A document with problems is not previewed until they
   are fixed.
 
-Editing and code export are later slices.
+- **Export** the generated view module from the Export menu, either the full
+  `.view.ts` or the declarations-only form for apps that render with
+  `interpretView`. The bytes are exactly what `kerf-ui-view generate` writes.
+  A banner reports the contract changes since the previous export in this
+  session. Export is disabled while the document has problems.
+
+Editing is a later slice.
 
 ## Develop
 

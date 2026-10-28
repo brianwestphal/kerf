@@ -1,13 +1,14 @@
 // The Kerf UI editor shell (docs/26-ui-editor.md; KF-4NRZCV: editor
-// scaffold). A Workbench with the document rail (outline and component
-// palette), the canvas (the document rendered through interpretView), and the
-// read-only inspector. Editing, live validation display, and code export are
-// later slices.
+// scaffold). A Workbench with the document rail (problems, outline, and
+// component palette), the canvas (the document rendered through
+// interpretView), and the read-only inspector, plus open, save, and export of
+// the generated view module (KF-Y38YRT). Editing is a later slice.
 import '@kerfjs/ui/document.css';
 import '@kerfjs/ui/styles.css';
 import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/workbench.css';
 import './editor.css';
+import '@kerfjs/ui/popup-menu/register';
 
 import { Badge } from '@kerfjs/ui/badge';
 import { Button } from '@kerfjs/ui/button';
@@ -17,9 +18,11 @@ import { List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import {
@@ -28,6 +31,7 @@ import {
   interpretView,
   lucideExportName,
   validateView,
+  type ViewContract,
   type ViewDocument,
 } from '@kerfjs/ui/view';
 import { wireFilePickers } from '@kerfjs/ui/wire-file-pickers';
@@ -35,7 +39,7 @@ import { wireWorkbench } from '@kerfjs/ui/wire-workbench';
 import { Workbench } from '@kerfjs/ui/workbench';
 import { delegate, effect, type SafeHtml, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
-import { FolderOpen, icons as lucideIcons, Save } from 'lucide';
+import { FileCode, FolderOpen, icons as lucideIcons, Save } from 'lucide';
 
 import {
   componentNames,
@@ -50,6 +54,11 @@ import {
   parseDocument,
   serializeDocument,
 } from './model/document.js';
+import {
+  describeExport,
+  type ExportKind,
+  exportModule,
+} from './model/export.js';
 import { inspectorSections } from './model/inspector.js';
 import { nodeTitle, outlineRows } from './model/outline.js';
 import { type Problem, problemCounts, problemsOf } from './model/problems.js';
@@ -61,6 +70,8 @@ const OUTLINE_ACTION = 'editor-select-node';
 const PALETTE_ACTION = 'editor-show-component';
 const PROBLEM_ACTION = 'editor-select-problem';
 const SAVE_ACTION = 'editor-save';
+const EXPORT_MODULE_ACTION = 'editor-export-module';
+const EXPORT_DECLARATIONS_ACTION = 'editor-export-declarations';
 const DOCUMENT_TOGGLE = 'editor-toggle-document';
 const INSPECTOR_TOGGLE = 'editor-toggle-inspector';
 
@@ -138,6 +149,11 @@ export function createEditor(options: EditorOptions = {}) {
   );
   const selection = signal<Selection>(null);
   const loadError = signal<string | null>(null);
+  /** The last export's contract and how the one before it changed. */
+  const lastExport = signal<
+    | { contract: ViewContract; report: ReturnType<typeof describeExport> }
+    | undefined
+  >(undefined);
   const documentSize = signal(280);
   const inspectorSize = signal(300);
   const documentCollapsed = signal(false);
@@ -274,6 +290,32 @@ export function createEditor(options: EditorOptions = {}) {
               pickerId="open-document"
               icon={<LucideIcon icon={FolderOpen} name="folder-open" />}
             />,
+            <ToolbarControlGroup
+              label="Export"
+              appearance="borderless"
+              single
+              nestedDropdown
+            >
+              <PopupMenu
+                text="Export"
+                icon={<LucideIcon icon={FileCode} name="file-code" />}
+                placement="bottom-end"
+                items={[
+                  {
+                    label: 'View module (.view.ts)',
+                    action: EXPORT_MODULE_ACTION,
+                    disabled: problems > 0,
+                    disabledReason: 'Fix the problems first',
+                  },
+                  {
+                    label: 'Declarations only (for interpretView)',
+                    action: EXPORT_DECLARATIONS_ACTION,
+                    disabled: problems > 0,
+                    disabledReason: 'Fix the problems first',
+                  },
+                ]}
+              />
+            </ToolbarControlGroup>,
             <Button
               emphasis="plain"
               size="compact"
@@ -340,6 +382,12 @@ export function createEditor(options: EditorOptions = {}) {
                   title="That file could not be opened"
                   detail={loadError.value}
                 />
+              ) : lastExport.value && !problems ? (
+                <StateBanner
+                  tone={lastExport.value.report.breaking ? 'warning' : 'info'}
+                  title={lastExport.value.report.title}
+                  detail={lastExport.value.report.detail}
+                />
               ) : problems ? (
                 <StateBanner
                   tone="warning"
@@ -399,6 +447,15 @@ export function createEditor(options: EditorOptions = {}) {
     highlight.style.height = `${box.height}px`;
   };
 
+  const exportAs = (kind: ExportKind) => {
+    const result = exportModule(doc.value, viewCatalog, kind);
+    lastExport.value = {
+      contract: result.contract,
+      report: describeExport(result.contract, lastExport.value?.contract),
+    };
+    (options.save ?? download)(result.fileName, result.code);
+  };
+
   const wire = (root: HTMLElement) => {
     const toggle = (action: string, collapsed: typeof documentCollapsed) =>
       delegate(root, 'click', `[data-action="${action}"]`, () => {
@@ -421,6 +478,8 @@ export function createEditor(options: EditorOptions = {}) {
           select({ kind: 'node', id: target.dataset.itemId! }),
         [PALETTE_ACTION]: (_event, target) =>
           select({ kind: 'component', key: target.dataset.itemId! }),
+        [EXPORT_MODULE_ACTION]: () => exportAs('module'),
+        [EXPORT_DECLARATIONS_ACTION]: () => exportAs('declarations'),
         [SAVE_ACTION]: () => {
           const document = doc.value;
           (options.save ?? download)(

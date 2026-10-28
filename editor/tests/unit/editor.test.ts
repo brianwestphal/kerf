@@ -88,6 +88,42 @@ describe('the editor shell', () => {
     expect(root.textContent).not.toContain('Nothing selected');
   });
 
+  it('exports the view module and reports contract changes since the last export', () => {
+    const save = vi.fn();
+    const { root, editor } = open({ save });
+    const exportItem = (action: string) =>
+      root.querySelector<HTMLElement>(`[data-action="${action}"]`)!;
+    exportItem('editor-export-module').click();
+    expect(save).toHaveBeenLastCalledWith(
+      'inbox.view.ts',
+      expect.stringContaining('export function renderInbox'),
+    );
+    expect(root.textContent).toContain('Exported the view module');
+    exportItem('editor-export-declarations').click();
+    expect(save).toHaveBeenLastCalledWith(
+      'inbox.view.ts',
+      expect.not.stringContaining('renderInbox'),
+    );
+    expect(root.textContent).toContain('the contract is unchanged');
+    const next = structuredClone(editor.document.value) as unknown as {
+      root: {
+        zones: {
+          header: {
+            zones: { trailing: { props: Record<string, unknown> }[] };
+          }[];
+        };
+      };
+    };
+    next.root.zones.header[0]!.zones.trailing[0]!.props.action = {
+      $action: 'send',
+    };
+    editor.document.value = next as never;
+    exportItem('editor-export-module').click();
+    expect(root.textContent).toContain(
+      'Exported with 2 contract changes, 2 breaking',
+    );
+  });
+
   it('saves the document as stable JSON under its file name', () => {
     const save = vi.fn();
     const { root, editor } = open({ save });

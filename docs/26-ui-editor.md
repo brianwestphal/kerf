@@ -13,9 +13,10 @@
   lint rule);
 - the private `editor/` scaffold (KF-4NRZCV: editor scaffold): open and save,
   canvas preview, selection, outline, a read-only inspector, and a problems list
-  linked to nodes (KF-WC0ZG3: editor problems list).
+  linked to nodes (KF-WC0ZG3: editor problems list), and export of the generated
+  module with a contract-change report (KF-Y38YRT: editor export).
 
-Editing and code export in the editor are next. The
+Editing in the editor is next. The
 implementation tickets are listed in [§10](#10-implementation-plan).
 
 ## 1. Purpose and decisions
