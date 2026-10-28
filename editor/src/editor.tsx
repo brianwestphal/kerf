@@ -666,6 +666,7 @@ export function createEditor(options: EditorOptions = {}) {
         <Toolbar
           label="Kerf UI Editor"
           safeAreaEdges={['block-start', 'inline-start', 'inline-end']}
+          responsive="wrap"
           dividerSides="b"
           leading={<ToolbarText text="Kerf UI Editor" />}
           trailing={[
@@ -675,7 +676,6 @@ export function createEditor(options: EditorOptions = {}) {
               accept=".json,application/json"
               pickerId="open-document"
               emphasis="plain"
-              size="compact"
               icon={<LucideIcon icon={FolderOpen} name="folder-open" />}
             />,
             <FilePickerTrigger
@@ -684,7 +684,6 @@ export function createEditor(options: EditorOptions = {}) {
               accept=".ts,.js,text/javascript,text/typescript"
               pickerId="compare-module"
               emphasis="plain"
-              size="compact"
               icon={<LucideIcon icon={GitCompare} name="git-compare" />}
               disabled={problems > 0}
             />,
@@ -716,7 +715,6 @@ export function createEditor(options: EditorOptions = {}) {
             </ToolbarControlGroup>,
             <Button
               emphasis="plain"
-              size="compact"
               action={SAVE_ACTION}
               icon={<LucideIcon icon={Save} name="save" />}
             >
