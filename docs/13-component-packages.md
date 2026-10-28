@@ -376,8 +376,8 @@ It writes `kerfComponentCatalog.propsOutput`, listing each component's props as
 a type grammar with required flags, documented defaults, zones and slots, and
 discriminated variants. Components are keyed `package:id`, the same key as the
 composition catalog, with `source: "package"`. The `props:generate` script runs
-it after `npm run build`. `props:check` runs in `prepublishOnly` and fails when
-the file is stale. Kerf UI view tools use the file to validate, inspect, and
+it after `npm run build`. `props:check` fails when the committed file is stale, and
+`prepublishOnly` regenerates it from the fresh build. Kerf UI view tools use the file to validate, inspect, and
 generate documents that compose the package's components
 (`docs/26-ui-editor.md`).
 

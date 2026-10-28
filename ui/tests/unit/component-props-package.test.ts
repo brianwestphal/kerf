@@ -1,13 +1,16 @@
 // @vitest-environment node
+import { execFileSync } from 'node:child_process';
 import {
   cpSync,
   mkdtempSync,
   readFileSync,
   rmSync,
+  symlinkSync,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
+import process from 'node:process';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
@@ -190,6 +193,17 @@ describe('kerf-ui-props', () => {
       code: 1,
       output: expect.stringContaining('catalog:generate'),
     });
+  });
+
+  it('runs through a symlink, as npm installs bins', () => {
+    const link = join(folder, 'kerf-ui-props');
+    symlinkSync(resolve(root, 'props/cli.mjs'), link);
+    execFileSync(process.execPath, [link, '--write', '--root', folder], {
+      stdio: 'pipe',
+    });
+    expect(readJson(join(folder, 'component-props.json')).package).toBe(
+      '@acme/widgets',
+    );
   });
 
   it('fails on overlay problems without writing', () => {

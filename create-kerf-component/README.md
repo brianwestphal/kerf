@@ -61,8 +61,8 @@ check:styles` runs `kerf-ui-analyze` (from the `@kerfjs/ui` dev dependency)
 - **A structured prop schema**, `component-props.json`. `npm run props:generate`
   builds the package, then runs `kerf-ui-props` (from `@kerfjs/ui`) over the
   built declarations, so Kerf UI view tools (the editor, `validateView`,
-  `kerf-ui-view`) can use the package's components. `npm run props:check`, part
-  of `prepublishOnly`, fails when the file is stale.
+  `kerf-ui-view`) can use the package's components. `npm run props:check` fails
+  when the committed file is stale; `prepublishOnly` regenerates it.
   A component whose wiring helper writes runtime `data-*` state onto its DOM
   can declare it under `composition.wiring.stateAttributes` — each item is
   `{ name, on, helper, meaning }`, where `name` is a `data-*` name, `on` is the

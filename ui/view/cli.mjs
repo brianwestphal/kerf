@@ -2,7 +2,7 @@
 // kerf-ui-view: generate, check, and diff read-only view modules from Kerf UI
 // view documents (docs/26-ui-editor.md §6). An authoring step, like a
 // formatter — never part of a consumer's build.
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { basename, dirname, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -178,7 +178,8 @@ export function run(argv) {
 
 if (
   process.argv[1] &&
-  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+  // npm runs bins through symlinks (node_modules/.bin), so compare real paths.
+  realpathSync(resolve(process.argv[1])) === fileURLToPath(import.meta.url)
 ) {
   const result = run(process.argv.slice(2));
   (result.code === 0 ? process.stdout : process.stderr).write(result.output);

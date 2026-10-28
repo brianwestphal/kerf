@@ -251,6 +251,12 @@ describe(
           join(repoRoot, 'ui/analyzer/cli.mjs'),
           join(binRoot, 'kerf-ui-analyze'),
         );
+        // prepublishOnly also regenerates component-props.json with
+        // kerf-ui-props, which ships in @kerfjs/ui too.
+        symlinkSync(
+          join(repoRoot, 'ui/props/cli.mjs'),
+          join(binRoot, 'kerf-ui-props'),
+        );
         const generatedEnv = {
           ...process.env,
           PATH: `${binRoot}${delimiter}${process.env.PATH ?? ''}`,
@@ -283,6 +289,11 @@ describe(
         expect(
           readFileSync(join(generatedRoot, 'dist/counter.d.ts'), 'utf8'),
         ).toContain('createCounter');
+        expect(
+          JSON.parse(
+            readFileSync(join(generatedRoot, 'component-props.json'), 'utf8'),
+          ).components.map((component: { key: string }) => component.key),
+        ).toEqual(['generated-component:counter']);
         expect(
           readFileSync(join(generatedRoot, 'dist/counter.js'), 'utf8'),
         ).toContain('createCounter');

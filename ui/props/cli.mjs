@@ -5,7 +5,7 @@
 // Reads package.json#kerfComponentCatalog: `output` (the composition catalog
 // create-kerf-component writes), `propsOutput` (where to write), and an
 // optional `propsOverlay` of inspector hints. Run after the package's build.
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -107,7 +107,8 @@ export function run(argv) {
 
 if (
   process.argv[1] &&
-  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+  // npm runs bins through symlinks (node_modules/.bin), so compare real paths.
+  realpathSync(resolve(process.argv[1])) === fileURLToPath(import.meta.url)
 ) {
   const result = run(process.argv.slice(2));
   (result.code === 0 ? process.stdout : process.stderr).write(result.output);

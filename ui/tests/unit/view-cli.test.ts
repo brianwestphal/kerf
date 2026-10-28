@@ -4,6 +4,7 @@ import {
   mkdtempSync,
   readFileSync,
   rmSync,
+  symlinkSync,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -191,5 +192,16 @@ describe('kerf-ui-view', () => {
     expect(() =>
       execFileSync(process.execPath, [cli, 'nope'], { stdio: 'pipe' }),
     ).toThrow();
+  });
+
+  it('runs through a symlink, as npm installs bins', () => {
+    const link = join(folder, 'kerf-ui-view');
+    symlinkSync(resolve(root, 'view/cli.mjs'), link);
+    expect(
+      execFileSync(process.execPath, [link, 'generate', documentPath], {
+        encoding: 'utf8',
+        stdio: 'pipe',
+      }),
+    ).toContain('inbox.view.ts: kui1:');
   });
 });

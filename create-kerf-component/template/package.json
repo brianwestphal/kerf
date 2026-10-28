@@ -32,7 +32,7 @@
     "props:check": "kerf-ui-props --check",
     "check:styles": "kerf-ui-analyze --root . src",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run catalog:check && npm run check:styles && npm run build && npm run props:check"
+    "prepublishOnly": "npm run catalog:check && npm run check:styles && npm run build && kerf-ui-props --write"
   },
   "kerfComponentCatalog": {
     "source": "./kerf.components.json",

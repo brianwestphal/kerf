@@ -127,7 +127,9 @@ test('package.json keeps kerfjs a peerDependency (never bundled), with ESM + sub
       'npm run build && kerf-ui-props --write',
     );
     assert.equal(pkg.scripts['props:check'], 'kerf-ui-props --check');
-    assert.match(pkg.scripts.prepublishOnly, /build && npm run props:check$/);
+    // Publishing regenerates the file from the fresh build, so a new scaffold
+    // publishes before anyone has run props:generate.
+    assert.match(pkg.scripts.prepublishOnly, /build && kerf-ui-props --write$/);
     assert.ok(pkg.files.includes('component-props.json'));
     assert.equal(
       pkg.scripts['catalog:generate'],

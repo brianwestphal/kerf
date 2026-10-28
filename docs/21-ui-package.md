@@ -687,7 +687,7 @@ reads:
 
 It writes `propsOutput`, with `source: "package"` entries keyed like the
 composition catalog. `create-kerf-component`'s template wires it as
-`props:generate` and `props:check` (in `prepublishOnly`).
+`props:generate` and `props:check`; `prepublishOnly` regenerates the file.
 
 `@kerfjs/ui/view` (`ui/view/`, plain browser-safe ESM with `.d.mts` types) is
 the published view-document layer of the Kerf UI editor (`docs/26-ui-editor.md`).
