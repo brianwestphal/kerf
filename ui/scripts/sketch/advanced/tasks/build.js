@@ -57,7 +57,6 @@ module.exports.run = function (session, parameters, done) {
           migration.apply(pairs);
           symbol.frame.width = fixture.box.width;
           symbol.frame.height = fixture.box.height;
-          semanticLayout.apply(symbol, fixture, dom);
         }
         if (!symbol) {
           symbol = new dom.SymbolMaster({
@@ -79,8 +78,10 @@ module.exports.run = function (session, parameters, done) {
           dom.find('Text', symbol).forEach(function (text) {
             text.style.fontFamily = 'system';
           });
-          semanticLayout.apply(symbol, fixture, dom);
         }
+        // Re-apply the idempotent layout to every master so a contract change
+        // reaches published Symbols, not only new or migrated ones.
+        semanticLayout.apply(symbol, fixture, dom);
         symbol.name = fixture.name;
         symbol.background.enabled = false;
         var texts = dom.find('Text', symbol);

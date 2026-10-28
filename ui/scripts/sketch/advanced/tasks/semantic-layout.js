@@ -20,8 +20,18 @@ function pinFluid(layer, dom) {
 
 module.exports.apply = function (symbol, fixture, dom) {
   var root = symbol.layers[0];
+  // SVG import makes the capture a Graphic (groupBehavior 2), which scales
+  // its contents and ignores every pin below it. A plain group (0) honors
+  // the pins; the JS API exposes no setter, so use the native layer.
+  root.sketchObject.setGroupBehavior(0);
   fixedLeft(root, dom);
-  if (fixture.component === 'color-swatches') return;
+  // Fixed-size widgets keep their authored size, pinned left, in a wider
+  // instance; stretching would split fields from their backgrounds.
+  if (
+    fixture.component === 'color-swatches' ||
+    fixture.component === 'color-picker'
+  )
+    return;
   root.horizontalPins = dom.Pin.All;
   pinFluid(root, dom);
 };

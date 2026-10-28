@@ -48,8 +48,12 @@ all seven families and both themes, applies short text overrides and an 80px
 width increase, and saves and reopens the consumer document. The reviewed
 `comparison-*.png` files show the production capture, native master, and
 linked wide instance side by side. Select, SearchField, TagField, Slider,
-and ColorField use pinned/stretching vector layout; ColorPicker and
-ColorSwatches retain their control grouping and native color shapes.
+and ColorField stretch their field surfaces with the instance while leading
+content stays left and trailing controls stay right. ColorPicker and
+ColorSwatches are fixed-size widgets: a wider instance keeps them at their
+authored size, pinned left. The builder turns the imported capture from a
+Sketch Graphic, which would scale its contents, into a plain group so these
+pins apply, and re-applies the layout to every master on each build.
 
 The captured Slider value, ColorPicker selection, and popup/field states are
 static design states. Browser interaction, range input behavior, and live
