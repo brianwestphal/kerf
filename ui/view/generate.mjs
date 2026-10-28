@@ -93,7 +93,8 @@ const namesOf = (name) => ({
  * `kerfjs/no-generated-view-edits` lint rule.
  */
 export function readViewHeader(code) {
-  const lines = code.split('\n');
+  // A checkout may convert line endings; the digest covers LF text.
+  const lines = code.replace(/\r\n/g, '\n').split('\n');
   const stamp =
     /^\/\/ kui-view: (\d+) contract (kui1:[0-9a-f]{16}) source (kui1:[0-9a-f]{16}) body (kui1:[0-9a-f]{16})$/.exec(
       lines[1] ?? '',

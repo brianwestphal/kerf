@@ -1,6 +1,6 @@
 # Kerf UI editor: view documents and generated view contracts
 
-**Status: partly built.** Four pieces exist:
+**Status: partly built.** Five pieces exist:
 
 - the foundation, `ui/ai/component-props.json` (KF-8PXPKW: generated
   per-component prop schema; see `docs/21-ui-package.md`);
@@ -8,9 +8,11 @@
   (KF-FB9340: view-document schema and validator);
 - the generator, contract digest and diff, and the `kerf-ui-view` CLI (§4,
   §6; KF-WWJGSN: view generator and CLI);
-- `interpretView` (§7; KF-5G4CNW: runtime interpreter).
+- `interpretView` (§7; KF-5G4CNW: runtime interpreter);
+- the `kerfjs/no-generated-view-edits` lint rule (§5.2; KF-BD3ZHQ: no-hand-edits
+  lint rule).
 
-The lint rule and the editor are still design only. The
+The editor is still design only. The
 implementation tickets are listed in [§10](#10-implementation-plan).
 
 ## 1. Purpose and decisions
@@ -606,8 +608,8 @@ diff <doc…>` takes `--target js`, `--declarations-only`, and extra
    `--props` / `--composition` catalogs.
 4. **Done:** `interpretView` in `@kerfjs/ui/view`, with differential tests
    against the generator (§7; KF-5G4CNW: runtime interpreter).
-5. `kerfjs/no-generated-view-edits` ESLint rule (§5.2; KF-BD3ZHQ: no-hand-edits
-   lint rule).
+5. **Done:** `kerfjs/no-generated-view-edits` ESLint rule, in `recommended` at
+   `error` (§5.2; KF-BD3ZHQ: no-hand-edits lint rule).
 6. A `data-*` channel (`rootAttributes`) for every component that lacks one,
    recorded in `component-props.json` (§4.5; KF-PYR8XZ: component data
    channels).

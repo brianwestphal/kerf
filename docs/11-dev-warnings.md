@@ -48,13 +48,14 @@ before the program runs:
   Hard Rule 9 partial-set bugs as type errors. All complete example apps in
   this repo are under that gate.
 - **`eslint-plugin-kerfjs`** — a separate publishable package, in
-  [`eslint-plugin/`](../eslint-plugin/README.md), with fifteen rules: eight
+  [`eslint-plugin/`](../eslint-plugin/README.md), with sixteen rules: nine
   core rules in its `recommended` config plus seven `ui-*` rules for
   `@kerfjs/ui` consumers. The core rules fire at edit time for hard-rule
-  violations the dev-warns can't see syntactically. Four are errors:
+  violations the dev-warns can't see syntactically. Five are errors:
   `no-inline-jsx-event-handlers` (Rule 10), `require-data-key-in-each`
   (Rule 2), `no-nested-mount` (Rule 6), `prefer-module-jsx-augmentation`
-  (Rule 12). Four warn: `require-delegate-disposer` (Rule 5), and three that
+  (Rule 12), and `no-generated-view-edits` (generated Kerf UI view modules are
+  read-only). Four warn: `require-delegate-disposer` (Rule 5), and three that
   cover non-hard-rule patterns — `no-raw-with-dynamic-arg` (XSS audit trail —
   warns on every dynamic `raw()` argument so the `eslint-disable` suppression
   becomes the permanent acknowledgment), `prefer-attr-selector` (rename-safety

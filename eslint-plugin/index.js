@@ -1,4 +1,5 @@
 import aiAssistantConfigs from './lib/rules/ai-assistant-configs.js';
+import noGeneratedViewEdits from './lib/rules/no-generated-view-edits.js';
 import noInlineJsxEventHandlers from './lib/rules/no-inline-jsx-event-handlers.js';
 import noNestedMount from './lib/rules/no-nested-mount.js';
 import noRawWithDynamicArg from './lib/rules/no-raw-with-dynamic-arg.js';
@@ -18,6 +19,7 @@ const plugin = {
   meta: { name: 'eslint-plugin-kerfjs', version: '5.0.0' },
   rules: {
     'no-inline-jsx-event-handlers': noInlineJsxEventHandlers,
+    'no-generated-view-edits': noGeneratedViewEdits,
     'no-raw-with-dynamic-arg': noRawWithDynamicArg,
     'require-data-key-in-each': requireDataKeyInEach,
     'require-delegate-disposer': requireDelegateDisposer,
@@ -44,6 +46,9 @@ const plugin = {
 // would block too many legitimate uses without eslint-disable comments.
 // `prefer-attr-selector` is `warn` — the literal-selector form is still
 // correct at runtime; this rule nudges toward the rename-safe pattern.
+// `no-generated-view-edits` is `error` — it only inspects files carrying a
+// kerf-ui-view header (or sitting beside a `.kui.json`), and an edited
+// generated module is always a defect: regeneration silently discards it.
 // `require-delegate-disposer` is `warn` — the discarded-disposer form is
 // still correct at runtime for page-lifetime roots, and downstream code
 // that's been around since before the rule shipped needs a deprecation
@@ -57,6 +62,7 @@ const recommendedRules = {
   'kerfjs/prefer-module-jsx-augmentation': 'error',
   'kerfjs/prefer-attr-selector': 'warn',
   'kerfjs/ai-assistant-configs': 'warn',
+  'kerfjs/no-generated-view-edits': 'error',
 };
 
 // Flat config (ESLint v9+) — consumers add this object to their config array.

@@ -121,6 +121,7 @@ Use flat config (`eslint.config.js`), shown above. The `legacy-recommended` expo
 | [`prefer-attr-selector`](docs/rules/prefer-attr-selector.md)                     | — (rename-safety nudge for `delegate()` selectors)              | `warn`                 |
 | [`no-raw-with-dynamic-arg`](docs/rules/no-raw-with-dynamic-arg.md)               | — (XSS audit trail)                                             | `warn`                 |
 | [`ai-assistant-configs`](docs/rules/ai-assistant-configs.md)                     | — (project hygiene)                                             | `warn`                 |
+| [`no-generated-view-edits`](docs/rules/no-generated-view-edits.md)               | — (generated Kerf UI view modules are read-only)                | `error`                |
 | [`ui-public-boundaries`](docs/rules/ui-public-boundaries.md)                     | — (cataloged classes/tokens; component anatomy on app elements) | `error`                |
 | [`ui-component-ownership`](docs/rules/ui-component-ownership.md)                 | — (configure components, never override them)                   | `error`                |
 | [`ui-composition`](docs/rules/ui-composition.md)                                 | — (cataloged parents and zones)                                 | `error`                |
