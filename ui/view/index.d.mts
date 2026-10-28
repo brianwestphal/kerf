@@ -298,3 +298,26 @@ export type SafeHtmlLike = import('kerfjs').SafeHtml;
 
 /** Lucide's export name for a kebab-case icon name (`a-arrow-down` → `AArrowDown`). */
 export function lucideExportName(name: string): string;
+
+/**
+ * Renders a document for an editor preview, with no validation or contract
+ * check. Nodes in `broken`, or whose rendering throws, render `placeholder`
+ * instead. Applications use interpretView.
+ */
+export function previewView(
+  document: unknown,
+  options: {
+    readonly catalog: ViewCatalog;
+    readonly components: Readonly<
+      Record<string, (props: never) => SafeHtmlLike>
+    >;
+    readonly inputs?: object;
+    readonly slots?: object;
+    readonly icons?: Readonly<Record<string, unknown>>;
+    readonly resolveView?: (src: string) => unknown;
+    /** Ids of nodes the caller's validation flagged. */
+    readonly broken?: ReadonlySet<string>;
+    /** Renders in place of a broken node; `reason` is `problem` or the thrown message. */
+    readonly placeholder: (node: ViewNode, reason: string) => SafeHtmlLike;
+  },
+): SafeHtmlLike;

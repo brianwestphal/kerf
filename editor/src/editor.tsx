@@ -30,9 +30,11 @@ import {
   contractOf,
   interpretView,
   lucideExportName,
+  previewView,
   validateView,
   type ViewContract,
   type ViewDocument,
+  type ViewNode,
 } from '@kerfjs/ui/view';
 import { wireFilePickers } from '@kerfjs/ui/wire-file-pickers';
 import { wireWorkbench } from '@kerfjs/ui/wire-workbench';
@@ -98,22 +100,40 @@ const slots = new Proxy({} as Record<string, () => SafeHtml>, {
 });
 
 /** Renders the document onto the canvas, or explains why it cannot. */
-function canvasContent(document: ViewDocument, problems: number): SafeHtml {
-  // interpretView refuses an invalid document; say what to do instead of
-  // repeating the first diagnostic, which the Problems list already shows.
-  if (problems) {
-    return EmptyState({
-      title: 'This document cannot be previewed',
-      detail: `Fix the ${problems === 1 ? 'problem' : `${problems} problems`} listed under Problems in the Document rail to preview it.`,
+/** Stands in for a node the preview cannot render; still selectable. */
+function brokenNode(node: ViewNode): SafeHtml {
+  return Badge({
+    tone: 'danger',
+    children: `${node.name ?? nodeTitle(node, componentNames)} cannot render`,
+    rootAttributes: { 'data-kerf-node': node.id },
+  });
+}
+
+function canvasContent(
+  document: ViewDocument,
+  problems: readonly Problem[],
+): SafeHtml {
+  const preview = {
+    catalog: viewCatalog,
+    components,
+    inputs: sampleInputs(document, (label) => Text({ children: label })),
+    slots,
+    icons,
+  };
+  // A document with problems still previews (KF-F355BF): each node a problem
+  // is about renders as a placeholder and everything else renders normally.
+  if (problems.length) {
+    return previewView(document, {
+      ...preview,
+      broken: new Set(
+        problems.flatMap(({ nodeId }) => (nodeId ? [nodeId] : [])),
+      ),
+      placeholder: brokenNode,
     });
   }
   try {
     return interpretView(document, {
-      catalog: viewCatalog,
-      components,
-      inputs: sampleInputs(document, (label) => Text({ children: label })),
-      slots,
-      icons,
+      ...preview,
       // The editor previews any document, so it checks it against itself.
       contract: contractDigest(contractOf(document, viewCatalog)),
     });
@@ -398,7 +418,7 @@ export function createEditor(options: EditorOptions = {}) {
             }
             main={
               <div class="editor-canvas" data-editor-canvas>
-                {canvasContent(document, problems)}
+                {canvasContent(document, problemList)}
                 <div
                   class="editor-selection"
                   data-morph-skip

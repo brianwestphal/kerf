@@ -72,6 +72,20 @@ export function interpretView(document, options) {
   return renderDocument(document, inputs, slots, options);
 }
 
+/**
+ * Renders a document for an editor preview: no validation or contract check,
+ * and every node in `broken` (ids the caller's validation flagged), or whose
+ * evaluation throws, renders `placeholder(node, reason)` instead, so one bad
+ * node never blanks the rest. Options are interpretView's (without
+ * `contract`/`onMismatch`) plus `broken` (a Set of node ids) and
+ * `placeholder`. Not for applications: they render with interpretView, whose
+ * strictness is what keeps a served document from silently breaking them.
+ */
+export function previewView(document, options) {
+  const { inputs = {}, slots = {} } = options;
+  return renderDocument(document, inputs, slots, options);
+}
+
 function renderDocument(document, inputs, slots, options) {
   const { catalog, components, resolveView } = options;
   const params = document.params ?? {};
@@ -143,7 +157,24 @@ function renderDocument(document, inputs, slots, options) {
     return nodeValue(child, scope, undefined, slot);
   };
 
+  // A preview (previewView) swaps a node it cannot render for the caller's
+  // placeholder: one the caller already knows is broken, or one whose
+  // evaluation throws. The strict interpretView path never does.
   const nodeValue = (node, scope, rowKey, slot) => {
+    const { placeholder, broken } = options;
+    if (!placeholder) return evaluateNode(node, scope, rowKey, slot);
+    if (broken?.has(node.id)) return placeholder(node, 'problem');
+    try {
+      return evaluateNode(node, scope, rowKey, slot);
+    } catch (error) {
+      return placeholder(
+        node,
+        error instanceof Error ? error.message : String(error),
+      );
+    }
+  };
+
+  const evaluateNode = (node, scope, rowKey, slot) => {
     if (node.type === '#text') {
       const text = value(node.value, scope);
       return slot ? jsx('span', { slot, children: text }) : text;

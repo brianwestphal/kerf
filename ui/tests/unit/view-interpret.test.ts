@@ -17,6 +17,7 @@ import {
   generateView,
   interpretView,
   KuiContractMismatch,
+  previewView,
 } from '../../view/index.mjs';
 import {
   inboxContract,
@@ -269,5 +270,62 @@ describe('interpretView: node kinds', () => {
       );
     expect(render(true)).toContain('Yes');
     expect(render(false)).toContain('No');
+  });
+});
+
+describe('previewView: an editor preview that survives broken nodes', () => {
+  const placeholder = (node: { id: string; type: string }, reason: string) =>
+    raw(`<mark data-broken="${node.id}">${node.type}: ${reason}</mark>`);
+  const preview = (
+    document: unknown,
+    broken: string[] = [],
+    inputs: object = cases[1]!,
+  ) =>
+    String(
+      previewView(document, {
+        catalog,
+        components,
+        inputs,
+        slots,
+        broken: new Set(broken),
+        placeholder,
+      }),
+    );
+
+  it('renders a valid document exactly as interpretView does', () => {
+    expect(preview(inbox())).toBe(String(interpret(cases[1]!)));
+  });
+
+  it('replaces flagged nodes and keeps every sibling', () => {
+    const document = inbox();
+    document.root.zones.header[0].zones.trailing[0].props.tone = 'purple';
+    const html = preview(document, ['01JB8Z1M6Q8E1X9V4S7K2R3T5D']);
+    expect(html).toContain(
+      '<mark data-broken="01JB8Z1M6Q8E1X9V4S7K2R3T5D">@kerfjs/ui:button: problem</mark>',
+    );
+    expect(html).toContain('Alpha');
+    expect(html).toContain('id="detail"');
+  });
+
+  it('replaces a node whose rendering throws, such as an unknown component', () => {
+    const document = inbox();
+    document.root.zones.content[1].then.type = '@kerfjs/ui:nope';
+    const html = preview(document, [], cases[2]!);
+    expect(html).toMatch(
+      /<mark data-broken="01JB8Z1M6Q8E1X9V4S7K2R3T5G">@kerfjs\/ui:nope: /,
+    );
+    const nonError = previewView(inbox(), {
+      catalog,
+      components: {
+        ...components,
+        [`${ui}:text`]: () => {
+          throw 'boom';
+        },
+      },
+      inputs: { ...cases[2]! },
+      slots,
+      placeholder,
+    });
+    expect(String(nonError)).toContain('@kerfjs/ui:text: boom');
   });
 });

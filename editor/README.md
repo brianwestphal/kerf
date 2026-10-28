@@ -17,8 +17,9 @@ it uses ship from `@kerfjs/ui/view`, so tools and applications work without it.
   props and types instead.
 - **Problems:** every `validateView` diagnostic is listed at the top of the
   Document rail. Selecting one selects its node, and outline rows carry a
-  problem-count badge. A document with problems is not previewed until they
-  are fixed.
+  problem-count badge. A document with problems still previews: each node a
+  problem is about renders as a selectable "cannot render" placeholder through
+  `previewView`, and the rest renders normally.
 
 - **Export** the generated view module from the Export menu, either the full
   `.view.ts` or the declarations-only form for apps that render with

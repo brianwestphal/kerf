@@ -710,6 +710,8 @@ server-driven screens, with the generated module's exact semantics. It takes
 an explicit `components` map, so bundling stays static. It refuses a document
 whose contract digest differs from the app's compiled `<name>Contract`, by
 throwing `KuiContractMismatch` or rendering an `onMismatch` fallback.
+`previewView` is the editor-only lenient counterpart: no validation or contract
+check, and caller-supplied placeholders for flagged or throwing nodes.
 
 `ui/ai/compile-time-contracts-v1.json` is the declaration-facing companion:
 stable `KUI-T###` ids map provable invalid states to public imports, emitted

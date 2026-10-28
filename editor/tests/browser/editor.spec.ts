@@ -135,14 +135,14 @@ test('lists problems and selects the node a problem is about', async ({
   await expect(
     page.getByText('composeButton · Button', { exact: false }),
   ).toBeVisible();
-  // An invalid document is not previewed (interpretView refuses it), so the
-  // problem list and inspector are how its nodes are reached.
-  await expect(page.locator('[data-editor-canvas]')).toContainText(
-    'This document cannot be previewed',
-  );
+  // The broken node previews as a selectable placeholder; the rest renders.
+  const canvas = page.locator('[data-editor-canvas]');
+  await expect(canvas).toContainText('composeButton cannot render');
+  await expect(canvas).toContainText('Label 2');
+  await expect(page.locator('.editor-selection')).toBeVisible();
   await page.mouse.move(1, 1);
   await page.screenshot({
-    path: info.outputPath('kf-wc0zg3-editor-problems-1440.png'),
+    path: info.outputPath('kf-f355bf-editor-problems-preview-1440.png'),
     animations: 'disabled',
   });
 });

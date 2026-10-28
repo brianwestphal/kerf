@@ -134,7 +134,7 @@ describe('the editor shell', () => {
     );
   });
 
-  it('reports document problems and documents it cannot preview', () => {
+  it('reports document problems and previews a placeholder for the broken node', () => {
     const { root } = open({
       document: {
         schema: 'kerf-ui-document/v1',
@@ -145,7 +145,12 @@ describe('the editor shell', () => {
     });
     expect(root.textContent).toContain('1 problem in this document');
     expect(root.textContent).toContain('KUI-V002');
-    expect(root.textContent).toContain('This document cannot be previewed');
+    expect(root.textContent).toContain('@kerfjs/ui:nope cannot render');
+    expect(
+      root.querySelector(
+        '[data-editor-canvas] [data-kerf-node="01JB8Z1M6Q8E1X9V4S7K2R3TZZ"]',
+      ),
+    ).not.toBeNull();
   });
 
   it('lists problems, marks their nodes in the outline, and selects one', () => {

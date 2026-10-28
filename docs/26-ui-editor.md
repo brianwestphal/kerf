@@ -549,6 +549,12 @@ surface a human reads: "adds the action `archive`, removes the input
   minified + gzip with `kerfjs` external: `interpretView` 9,687 B and
   `validateView` 6,657 B. The gate also fails if the interpreter entry ever
   includes the generator.
+- `previewView(document, { …, broken, placeholder })` is the editor's lenient
+  counterpart (KF-F355BF: best-effort preview). It skips validation and the
+  contract check. Each node in `broken` (the node ids the editor's problems
+  list maps to), and each node whose rendering throws, renders the caller's
+  placeholder instead, so one bad node never blanks the canvas. Applications
+  never use it: interpretView's strictness is what protects a deployed client.
 - `$css` is evaluated by walking its parsed call tree (`parseCssTree`) over
   the `@kerfjs/ui/css-values` builders, never by `eval`. `$param` defaults
   apply to `null` as well as `undefined`, as `??` does in generated code.

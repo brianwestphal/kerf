@@ -741,7 +741,7 @@ The same folder holds the rest of the published layer (KF-WWJGSN: view generator
 - `contract.mjs`: `contractOf`, the `kui1:` FNV-1a `viewDigest` / `contractDigest`, `canonicalJson`, and `diffContracts`.
 - `generate.mjs`: `generateView`, `readViewHeader`, `viewModulePath`, and the `printDoc` layout printer.
 - `cli.mjs` (+ `cli.d.mts`): the `kerf-ui-view` bin.
-- `interpret.mjs`: `interpretView` and `KuiContractMismatch` (KF-5G4CNW: runtime interpreter). It evaluates `$css` through `parseCssTree` over `dist/css-values.js`.
+- `interpret.mjs`: `interpretView` and `KuiContractMismatch` (KF-5G4CNW: runtime interpreter), plus the editor-only lenient `previewView` (KF-F355BF: placeholders for broken nodes). It evaluates `$css` through `parseCssTree` over `dist/css-values.js`.
   - Its test is `ui/tests/unit/view-interpret.test.ts`, which diffs its output against the generated `renderInbox`.
 - `ui/scripts/check-view-bundle.mjs` (logic in `scripts/lib/view-bundle-budget.mjs`; budgets in `ui/view-bundle-budget.json`) is the ratcheting gzip budget plus no-generator check for the runtime entries (KF-CTCNWJ: view bundle budget). It runs as `check:view-bundle` in the ui `check`, and its test is `ui/tests/unit/view-bundle-budget.test.ts`.
 

@@ -29,4 +29,8 @@ export {
   readViewHeader,
   viewModulePath,
 } from './generate.mjs';
-export { interpretView, KuiContractMismatch } from './interpret.mjs';
+export {
+  interpretView,
+  KuiContractMismatch,
+  previewView,
+} from './interpret.mjs';
