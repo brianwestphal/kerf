@@ -83,7 +83,14 @@ pixels, a press becomes a drag; the innermost node or slot under the pointer
 is the target, before, after, or inside is read along its parent's flow (left
 to right in a row), and a line or ring drawn over the canvas shows a legal
 drop. Pressing a repeated row drags the list it repeats in, Escape cancels,
-and the click that ends a drag does not change the selection. The implementation
+and the click that ends a drag does not change the selection.
+
+The canvas preview is rendered and test-mounted outside the editor's own
+render (KF-P6FPG2: preview containment), so a document whose preview fails
+when mounted, such as one that nests a Button in a repeated row's
+description and makes the HTML parser split the row, shows "This document
+cannot be previewed" with the reason while the rest of the editor keeps
+working. The validator does not yet reject that nesting (KF-0P9WWB). The implementation
 tickets are listed in [§10](#10-implementation-plan).
 
 ## 1. Purpose and decisions

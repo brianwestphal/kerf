@@ -19,7 +19,7 @@ import {
   type ViewNode,
   type ViewValue,
 } from '@kerfjs/ui/view';
-import { delegate, effect, type SafeHtml, signal } from 'kerfjs';
+import { delegate, effect, mount, type SafeHtml, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 import {
   ArrowDown,
@@ -241,12 +241,34 @@ function canvasRenderer(catalog: EditorCatalog) {
         contract: contractDigest(contractOf(document, viewCatalog)),
       });
     } catch (error) {
-      return EmptyState({
-        title: 'This document cannot be previewed',
-        detail: (error as Error).message,
-      });
+      return cannotPreview(error);
     }
   };
+}
+
+const cannotPreview = (error: unknown) =>
+  EmptyState({
+    title: 'This document cannot be previewed',
+    detail: (error as Error).message,
+  });
+
+/**
+ * The preview, or why it cannot render (KF-P6FPG2). The canvas is part of
+ * the editor's own render, so a preview that fails when mounted (such as a
+ * repeated row whose markup the HTML parser splits into two elements) would
+ * stop the whole editor from updating. Mounting it once into a detached
+ * element first catches that failure here. This must run outside the
+ * editor's render: a mount sets kerf's render context for its own pass and
+ * clears it afterwards.
+ */
+function contained(preview: SafeHtml): SafeHtml {
+  const probe = globalThis.document.createElement('div');
+  try {
+    mount(probe, () => preview)();
+    return preview;
+  } catch (error) {
+    return cannotPreview(error);
+  }
 }
 
 /** A new document: an empty Pane in Kerf UI's catalog. */
@@ -1065,9 +1087,25 @@ export function createEditor(options: EditorOptions) {
   };
 
   /** The canvas: the previewed document under the selection highlight. */
-  const canvas = (document: ViewDocument, problemList: readonly Problem[]) => (
+  /**
+   * The canvas preview, rendered and checked by `contained` in an effect,
+   * outside the editor's render pass, whenever the document changes; the
+   * render only reads it. The effect lives as long as the editor.
+   */
+  const preview = signal<SafeHtml | undefined>(undefined);
+  effect(() => {
+    const document = doc.value;
+    preview.value = contained(
+      canvasContent(
+        document,
+        problemsOf(document, validateView(document, viewCatalog).diagnostics),
+      ),
+    );
+  });
+
+  const canvas = () => (
     <div class="kui-editor__canvas" data-editor-canvas>
-      {canvasContent(document, problemList)}
+      {preview.value}
       <div
         class="kui-editor__selection"
         data-morph-skip
@@ -1241,7 +1279,7 @@ export function createEditor(options: EditorOptions) {
                 />
               ) : undefined
             }
-            main={canvas(document, problemList)}
+            main={canvas()}
             rightRail={{
               label: 'Inspector',
               size: inspectorSize.value,

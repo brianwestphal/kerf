@@ -592,3 +592,26 @@ test('drags a node on the canvas to after another', async ({ page }, info) => {
   // The click that ended the drag did not select the slot under it.
   await expect(page.getByText('composeButton · Button')).toBeVisible();
 });
+
+// KF-P6FPG2: a document whose preview fails when mounted (a Button nested in
+// a repeated ListItem's description splits the row into two elements) shows
+// why on the canvas, and the rest of the editor keeps working.
+test('contains a preview that fails to mount', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page
+    .locator(`[data-action="editor-select-node"][data-item-id="${COMPOSE}"]`)
+    .click();
+  await page.locator('[data-editor-move]').getByRole('combobox').click();
+  await page.getByRole('option', { name: 'row › description' }).click();
+  await expect(
+    page
+      .locator('[data-editor-canvas]')
+      .getByText('This document cannot be previewed'),
+  ).toBeVisible();
+  // The editor still responds: undo brings the preview back.
+  await page.getByRole('button', { name: 'Undo' }).click();
+  await expect(
+    page.locator('[data-editor-canvas]').getByText('Compose'),
+  ).toBeVisible();
+  await expect(page.getByText('7 nodes · valid')).toBeVisible();
+});
