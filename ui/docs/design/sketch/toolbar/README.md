@@ -9,8 +9,15 @@ remain grouped; a toolbar or tab bar is distinct from a reusable Chip.
 Every master uses native Text and vector paths, with no bitmap layers. Shared
 Color Variables bind text, icon, fill, and border paints.
 [The manifest](symbol-manifest.json) records stable Symbol, Text, and Color
-Variable IDs. The exporter stops if a published source SVG changes until its
-native layers can be migrated without replacing linked IDs (`KF-8970GK`).
+Variable IDs.
+
+When a source SVG changes, `generate` imports it into a temporary master,
+applies the same layout, and updates the published layers in place
+(`scripts/sketch/shared/migrate-layers.js`), so Symbol, Text override, and
+layer IDs stay the same. Unchanged paint colors keep their Color Variables;
+run `assets` afterward to bind changed colors. A changed layer count, layer
+or shape type, or a reordered label is rejected with the fixture and tree
+path before any published layer changes.
 
 This library was created and tested with Sketch 2026.3.1.
 
