@@ -363,6 +363,24 @@ masquerade as a public API. The scaffold declares TypeScript as a development
 dependency; install dependencies before running the copied local checker.
 Commit both files and keep `catalog:check` in the publishing gate.
 
+The scaffold also ships a structured prop schema, `component-props.json`
+(KF-B8TGP4: the same format as `@kerfjs/ui`'s `ai/component-props.json`). The
+`kerf-ui-props` bin from the `@kerfjs/ui` dev dependency reads:
+
+- the generated composition catalog (`kerfComponentCatalog.output`);
+- each component's built declarations (the `types` of the package export its
+  `publicExports` name, preferring a named subpath);
+- an optional inspector-hint overlay (`kerfComponentCatalog.propsOverlay`).
+
+It writes `kerfComponentCatalog.propsOutput`, listing each component's props as
+a type grammar with required flags, documented defaults, zones and slots, and
+discriminated variants. Components are keyed `package:id`, the same key as the
+composition catalog, with `source: "package"`. The `props:generate` script runs
+it after `npm run build`. `props:check` runs in `prepublishOnly` and fails when
+the file is stale. Kerf UI view tools use the file to validate, inspect, and
+generate documents that compose the package's components
+(`docs/26-ui-editor.md`).
+
 At a workspace root, `kerf-component-catalog --root .` follows npm `workspaces`
 and processes every package with `kerfComponentCatalog` configuration. Output
 is sorted by package path and component id, so identical inputs are byte-for-byte

@@ -118,7 +118,17 @@ test('package.json keeps kerfjs a peerDependency (never bundled), with ESM + sub
     assert.deepEqual(pkg.kerfComponentCatalog, {
       source: './kerf.components.json',
       output: './component-composition.json',
+      propsOutput: './component-props.json',
     });
+    // The structured prop schema the Kerf UI editor and view tools read; the
+    // kerf-ui-props bin ships in the @kerfjs/ui dev dependency.
+    assert.equal(
+      pkg.scripts['props:generate'],
+      'npm run build && kerf-ui-props --write',
+    );
+    assert.equal(pkg.scripts['props:check'], 'kerf-ui-props --check');
+    assert.match(pkg.scripts.prepublishOnly, /build && npm run props:check$/);
+    assert.ok(pkg.files.includes('component-props.json'));
     assert.equal(
       pkg.scripts['catalog:generate'],
       'node scripts/kerf-component-catalog.mjs --write',

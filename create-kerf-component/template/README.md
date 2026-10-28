@@ -94,7 +94,20 @@ so run `npm install` before the first local catalog command.
 ```bash
 npm run catalog:generate # write component-composition.json
 npm run catalog:check    # no writes; fail when metadata, source, or output drift
+npm run props:generate   # build, then write component-props.json
+npm run props:check      # fail when component-props.json is stale
 ```
+
+`component-props.json` is the structured prop schema that Kerf UI view
+tools read: the editor's inspector, `validateView`, and the `kerf-ui-view`
+generator. It is generated from the built declarations by `kerf-ui-props`,
+which ships with `@kerfjs/ui`, and joined to the composition catalog by
+component key. Each component's props are listed with their types, required
+flags, documented defaults, zones, and slots. Add inspector hints (groups,
+order, controls) in an overlay file named by
+`package.json#kerfComponentCatalog.propsOverlay`. Run `props:generate` after
+changing a component's props, then commit the file. `prepublishOnly` checks it
+after the build.
 
 The generated catalog ships with the package. AI tools join each entry to
 Kerf's catalog by its `package:id` key, search this package first for

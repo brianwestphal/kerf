@@ -144,7 +144,8 @@ explains when to reuse, compose, extend, or use native HTML.
    generated from the published declarations and Web Awesome's manifest, and
    gives each component's props as a type grammar with required, default, enum
    values, zone or slot, css-value grammar, and discriminated `variants`. Named
-   types live once in `definitions`. Join it by `key` (`package:id`, or
+   types live once in `definitions`. A component package generates its own
+   with `kerf-ui-props --write` after its build. Join it by `key` (`package:id`, or
    `package:id#Export`).
    A tool that reads or writes Kerf UI view documents (`*.kui.json`, the
    editor's JSON source of truth) validates them with `validateView` from

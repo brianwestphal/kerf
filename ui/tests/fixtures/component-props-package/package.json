@@ -1,0 +1,22 @@
+{
+  "name": "@acme/widgets",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./index.js"
+    },
+    "./card": {
+      "types": "./types/card.d.ts",
+      "import": "./card.js"
+    },
+    "./meter": "./meter.js"
+  },
+  "kerfComponentCatalog": {
+    "source": "./kerf.components.json",
+    "output": "./component-composition.json",
+    "propsOutput": "./component-props.json",
+    "propsOverlay": "./component-props-overlay.json"
+  }
+}

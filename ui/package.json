@@ -32,6 +32,7 @@
     "kerf-ui-doctor": "./doctor/cli.mjs",
     "kerf-ui-evaluate": "./evaluator/cli.mjs",
     "kerf-ui-view": "./view/cli.mjs",
+    "kerf-ui-props": "./props/cli.mjs",
     "kerf-catalog-demo": "./catalog-projection-cli.mjs"
   },
   "main": "./dist/index.js",
@@ -671,6 +672,8 @@
     "vite-ux-review.mjs",
     "vite-ux-review.d.mts",
     "view",
+    "props",
+    "scripts/lib/json-schema-subset.mjs",
     "scripts/component-catalog-extension-validation.mjs",
     "analyzer",
     "doctor",

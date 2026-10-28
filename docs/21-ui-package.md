@@ -633,8 +633,8 @@ drift plus adversarial invalid contracts.
 `ui/ai/component-props.json` (schema `kerf-ui-component-props/v1`, with an
 adjacent JSON Schema) is the structured prop layer the two catalogs lack
 (KF-8PXPKW: per-component prop schema for editors and generated contracts).
-`ui/scripts/sync-component-props.mjs` (logic in
-`scripts/lib/component-props.mjs`) reads the built `dist/*.d.ts` with the
+`ui/scripts/sync-component-props.mjs` (logic in the shipped
+`props/component-props.mjs`) reads the built `dist/*.d.ts` with the
 typescript@6 JS API and Web Awesome's `custom-elements.json`. Every public
 component function returning `SafeHtml` becomes one entry keyed `package:id`,
 or `package:id#Export` for an entry's second component (`FieldLabel` beside
@@ -675,6 +675,19 @@ overlay key naming no component, prop, or declared group, and on a catalog
 entry whose `SafeHtml` component does not resolve. Values TypeScript cannot
 name (Web Awesome's opaque `Wa*` aliases, `Date`) stay `unknown`, with their
 text preserved.
+
+Component packages ship the same file. The `kerf-ui-props --write | --check`
+bin (`props/cli.mjs`; KF-B8TGP4: component packages emit component-props.json)
+reads:
+
+- a package's composition catalog (`package.json#kerfComponentCatalog.output`);
+- the built declarations of each component's public export (the `types` of
+  the package export its `publicExports` name);
+- an optional `propsOverlay`.
+
+It writes `propsOutput`, with `source: "package"` entries keyed like the
+composition catalog. `create-kerf-component`'s template wires it as
+`props:generate` and `props:check` (in `prepublishOnly`).
 
 `@kerfjs/ui/view` (`ui/view/`, plain browser-safe ESM with `.d.mts` types) is
 the published view-document layer of the Kerf UI editor (`docs/26-ui-editor.md`).

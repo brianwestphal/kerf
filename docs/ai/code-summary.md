@@ -713,12 +713,19 @@ source provenance, preference conflicts, and narrow exception scope.
 the generated structured prop layer (KF-8PXPKW: per-component prop schema).
 `ui/scripts/sync-component-props.mjs` (`npm run props:sync` builds first;
 `check:props` is the drift gate in the ui `check`) drives
-`ui/scripts/lib/component-props.mjs` (+ `.d.mts`). That module reads
+`ui/props/component-props.mjs` (+ `.d.mts`; shipped, and re-exported from
+`ui/scripts/lib/component-props.mjs`). That module reads
 `ui/dist/*.d.ts` through the typescript@6 JS API plus Web Awesome's
 `custom-elements.json`, and merges the curated
 `ui/ai/component-props-overlay.json` (and its schema). Tests:
 `ui/tests/unit/component-props.test.ts`, with fixture declarations under
-`ui/tests/fixtures/component-props/`.
+`ui/tests/fixtures/component-props/`. The module's `buildPackageComponentProps`
+backs the shipped `kerf-ui-props` bin (`ui/props/cli.mjs`; KF-B8TGP4: component
+packages emit component-props.json). That bin generates a component package's
+`component-props.json` from its composition catalog and built declarations.
+It is tested by `ui/tests/unit/component-props-package.test.ts` over
+`ui/tests/fixtures/component-props-package/`, and `create-kerf-component`'s
+template wires it as `props:generate` / `props:check`.
 
 `ui/view/` is the published `@kerfjs/ui/view` subpath (KF-FB9340: view-document
 validator for the Kerf UI editor, `docs/26-ui-editor.md`). `validate.mjs`

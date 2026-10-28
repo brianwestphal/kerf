@@ -7,17 +7,30 @@
   "required": ["schema", "package", "components", "definitions"],
   "additionalProperties": false,
   "properties": {
-    "$schema": { "type": "string" },
-    "schema": { "const": "kerf-ui-component-props/v1" },
-    "package": { "type": "string", "minLength": 1 },
-    "description": { "type": "string" },
+    "$schema": {
+      "type": "string"
+    },
+    "schema": {
+      "const": "kerf-ui-component-props/v1"
+    },
+    "package": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
     "components": {
       "type": "array",
-      "items": { "$ref": "#/$defs/component" }
+      "items": {
+        "$ref": "#/$defs/component"
+      }
     },
     "definitions": {
       "type": "object",
-      "additionalProperties": { "$ref": "#/$defs/type" }
+      "additionalProperties": {
+        "$ref": "#/$defs/type"
+      }
     }
   },
   "$defs": {
@@ -31,12 +44,29 @@
           "type": "string",
           "pattern": "^[^:]+:[a-z0-9-]+(#[A-Z][A-Za-z0-9]*)?$"
         },
-        "id": { "type": "string", "minLength": 1 },
-        "source": { "enum": ["kerf", "webawesome"] },
-        "import": { "type": "string", "minLength": 1 },
-        "export": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
-        "tagName": { "type": "string", "pattern": "^[a-z]+-[a-z0-9-]+$" },
-        "description": { "type": "string" },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "description": "`kerf` and `webawesome` for @kerfjs/ui's own entries; `package` for a component package's.",
+          "enum": ["kerf", "webawesome", "package"]
+        },
+        "import": {
+          "type": "string",
+          "minLength": 1
+        },
+        "export": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Za-z0-9]*$"
+        },
+        "tagName": {
+          "type": "string",
+          "pattern": "^[a-z]+-[a-z0-9-]+$"
+        },
+        "description": {
+          "type": "string"
+        },
         "typeParameters": {
           "type": "array",
           "items": {
@@ -44,23 +74,33 @@
             "required": ["name"],
             "additionalProperties": false,
             "properties": {
-              "name": { "type": "string" },
-              "constraint": { "type": "string" }
+              "name": {
+                "type": "string"
+              },
+              "constraint": {
+                "type": "string"
+              }
             }
           }
         },
         "groups": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "props": {
           "type": "array",
-          "items": { "$ref": "#/$defs/prop" }
+          "items": {
+            "$ref": "#/$defs/prop"
+          }
         },
         "nativeAttributes": {
           "description": "Inherited native HTML attributes the component passes through (JSX attribute names), listed by name only.",
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "uniqueItems": true
         },
         "variants": {
@@ -72,15 +112,29 @@
             "required": ["required", "forbidden"],
             "additionalProperties": false,
             "properties": {
-              "when": { "type": "object" },
-              "required": { "type": "array", "items": { "type": "string" } },
-              "forbidden": { "type": "array", "items": { "type": "string" } }
+              "when": {
+                "type": "object"
+              },
+              "required": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "forbidden": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
             }
           }
         },
         "discriminant": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "minItems": 1
         },
         "slots": {
@@ -91,8 +145,12 @@
             "required": ["name"],
             "additionalProperties": false,
             "properties": {
-              "name": { "type": "string" },
-              "description": { "type": "string" }
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
             }
           }
         }
@@ -103,16 +161,29 @@
       "required": ["name", "type", "required"],
       "additionalProperties": false,
       "properties": {
-        "name": { "type": "string", "minLength": 1 },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
         "property": {
           "description": "Web Awesome: the element property behind an attribute whose name differs.",
           "type": "string"
         },
-        "type": { "$ref": "#/$defs/type" },
-        "required": { "type": "boolean" },
-        "default": { "type": ["string", "number", "boolean"] },
-        "description": { "type": "string" },
-        "deprecated": { "const": true },
+        "type": {
+          "$ref": "#/$defs/type"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "default": {
+          "type": ["string", "number", "boolean"]
+        },
+        "description": {
+          "type": "string"
+        },
+        "deprecated": {
+          "const": true
+        },
         "variantOnly": {
           "description": "Allowed by only some members of a union props type; see `variants`.",
           "const": true
@@ -134,14 +205,30 @@
           "required": ["grammar"],
           "additionalProperties": false,
           "properties": {
-            "grammar": { "type": "string" },
-            "helpers": { "type": "array", "items": { "type": "string" } },
-            "rawPolicy": { "type": "string" }
+            "grammar": {
+              "type": "string"
+            },
+            "helpers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "rawPolicy": {
+              "type": "string"
+            }
           }
         },
-        "control": { "type": "string" },
-        "group": { "type": "string" },
-        "order": { "type": "integer", "minimum": 0 }
+        "control": {
+          "type": "string"
+        },
+        "group": {
+          "type": "string"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0
+        }
       }
     },
     "type": {
@@ -169,56 +256,136 @@
             "unknown"
           ]
         },
-        "text": { "type": "string" },
-        "nullable": { "const": true },
+        "text": {
+          "type": "string"
+        },
+        "nullable": {
+          "const": true
+        },
         "acceptsText": {
           "description": "On `content`: the type also takes a plain string or number.",
           "const": true
         },
-        "typeParameter": { "type": "string" },
-        "value": { "type": ["string", "number", "boolean"] },
+        "typeParameter": {
+          "type": "string"
+        },
+        "value": {
+          "type": ["string", "number", "boolean"]
+        },
         "values": {
           "type": "array",
-          "items": { "type": ["string", "number", "boolean"] }
+          "items": {
+            "type": ["string", "number", "boolean"]
+          }
         },
-        "suggestions": { "type": "array", "items": { "type": "string" } },
-        "grammar": { "type": "string" },
-        "items": { "$ref": "#/$defs/type" },
-        "props": { "type": "array", "items": { "$ref": "#/$defs/prop" } },
-        "members": { "type": "array", "items": { "$ref": "#/$defs/type" } },
+        "suggestions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "grammar": {
+          "type": "string"
+        },
+        "items": {
+          "$ref": "#/$defs/type"
+        },
+        "props": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/prop"
+          }
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/type"
+          }
+        },
         "index": {
           "description": "On `object`: a string index signature, as the key prefix it allows (`data-`) and the value type.",
           "type": "object",
           "required": ["keyPrefix", "value"],
           "additionalProperties": false,
           "properties": {
-            "keyPrefix": { "type": "string" },
-            "value": { "$ref": "#/$defs/type" }
+            "keyPrefix": {
+              "type": "string"
+            },
+            "value": {
+              "$ref": "#/$defs/type"
+            }
           }
         },
-        "discriminant": { "type": "array", "items": { "type": "string" } },
-        "ref": { "type": "string" }
+        "discriminant": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ref": {
+          "type": "string"
+        }
       },
       "allOf": [
         {
-          "if": { "properties": { "kind": { "const": "enum" } } },
-          "then": { "required": ["values"] }
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "enum"
+              }
+            }
+          },
+          "then": {
+            "required": ["values"]
+          }
         },
         {
-          "if": { "properties": { "kind": { "const": "literal" } } },
-          "then": { "required": ["value"] }
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "literal"
+              }
+            }
+          },
+          "then": {
+            "required": ["value"]
+          }
         },
         {
-          "if": { "properties": { "kind": { "const": "ref" } } },
-          "then": { "required": ["ref"] }
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "ref"
+              }
+            }
+          },
+          "then": {
+            "required": ["ref"]
+          }
         },
         {
-          "if": { "properties": { "kind": { "const": "union" } } },
-          "then": { "required": ["members"] }
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "union"
+              }
+            }
+          },
+          "then": {
+            "required": ["members"]
+          }
         },
         {
-          "if": { "properties": { "kind": { "const": "css-value" } } },
-          "then": { "required": ["grammar"] }
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "css-value"
+              }
+            }
+          },
+          "then": {
+            "required": ["grammar"]
+          }
         }
       ]
     }

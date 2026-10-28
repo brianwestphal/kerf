@@ -1,0 +1,15 @@
+{
+  "components": {
+    "@acme/widgets:card": {
+      "groups": ["Content", "Appearance"],
+      "props": {
+        "title": { "group": "Content", "order": 1 },
+        "elevation": {
+          "group": "Appearance",
+          "order": 1,
+          "control": "segmented"
+        }
+      }
+    }
+  }
+}
