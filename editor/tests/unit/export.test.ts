@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 
 import { viewCatalog } from '../../src/catalog.js';
 import {
+  compareWithModule,
   describeExport,
   exportModule,
   moduleFileName,
@@ -69,5 +70,47 @@ describe('describeExport', () => {
       /^Exported with 10 contract changes, 10 breaking$/,
     );
     expect(report.detail).toContain('Breaking: action "compose" removed');
+  });
+});
+
+describe('compareWithModule', () => {
+  const current = exportModule(inbox, viewCatalog, 'module').contract;
+
+  it('reports an unchanged contract against the module it would regenerate', () => {
+    const result = compareWithModule(golden, current);
+    expect(result.contract).toBeDefined();
+    expect(result.report).toEqual({
+      title: 'Regenerating keeps the module’s contract',
+      detail: 'Application code that uses it needs no changes.',
+      breaking: false,
+    });
+  });
+
+  it('lists what regenerating would break, and flags a hand-edited module', () => {
+    const changed: ViewContract = {
+      ...current,
+      actions: { ...current.actions, archive: 'view' },
+    };
+    expect(compareWithModule(golden, changed).report).toEqual({
+      title: 'Regenerating makes 1 contract change, 1 breaking',
+      detail: 'Breaking: action "archive" added',
+      breaking: true,
+    });
+    const edited = golden.replace('tone: "brand"', 'tone: "danger"');
+    const report = compareWithModule(edited, current).report;
+    expect(report.breaking).toBe(true);
+    expect(report.detail).toContain('edited by hand');
+    expect(compareWithModule(edited, changed).report.detail).toMatch(
+      /added The module was also edited by hand/,
+    );
+  });
+
+  it('rejects a file without a kerf-ui-view header', () => {
+    expect(compareWithModule('export const x = 1;\n', current)).toEqual({
+      report: expect.objectContaining({
+        title: 'That file is not a generated view module',
+        breaking: true,
+      }),
+    });
   });
 });

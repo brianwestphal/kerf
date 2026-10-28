@@ -128,7 +128,10 @@ export function readViewHeader(code) {
     sourceDigest: stamp[3],
     bodyDigest: stamp[4],
     contract,
-    intact: viewDigest(body) === stamp[4],
+    // The contract line is the canonical JSON the contract digest hashes, so
+    // an edited contract line is caught just like an edited body.
+    intact:
+      viewDigest(body) === stamp[4] && viewDigest(recorded[1]) === stamp[2],
   };
 }
 

@@ -3,6 +3,7 @@
 import {
   diffContracts,
   generateView,
+  readViewHeader,
   type ViewCatalog,
   type ViewContract,
   type ViewDocument,
@@ -88,5 +89,64 @@ export function describeExport(
       )
       .join('; '),
     breaking: breaking > 0,
+  };
+}
+
+export interface ExportReport {
+  readonly title: string;
+  readonly detail: string;
+  readonly breaking: boolean;
+}
+
+/**
+ * Compares an existing generated module (the file an app already imports)
+ * with the contract the current document would generate. Returns the
+ * module's recorded contract, to compare later exports against, and a report
+ * of what regenerating would change. A file without a kerf-ui-view header
+ * returns no contract.
+ */
+export function compareWithModule(
+  code: string,
+  current: ViewContract,
+): { readonly contract?: ViewContract; readonly report: ExportReport } {
+  const header = readViewHeader(code);
+  if (!header) {
+    return {
+      report: {
+        title: 'That file is not a generated view module',
+        detail:
+          'Choose a .view.ts or .view.js file written by kerf-ui-view or this editor.',
+        breaking: true,
+      },
+    };
+  }
+  const changes = diffContracts(header.contract, current);
+  const breaking = changes.filter((change) => change.breaking).length;
+  const edited = header.intact
+    ? ''
+    : ' The module was also edited by hand; regenerating discards those edits.';
+  if (changes.length === 0) {
+    return {
+      contract: header.contract,
+      report: {
+        title: 'Regenerating keeps the module’s contract',
+        detail: `Application code that uses it needs no changes.${edited}`,
+        breaking: !header.intact,
+      },
+    };
+  }
+  return {
+    contract: header.contract,
+    report: {
+      title: `Regenerating makes ${plural(changes.length, 'contract change')}${breaking ? `, ${breaking} breaking` : ''}`,
+      detail:
+        changes
+          .map(
+            (change) =>
+              `${change.breaking ? 'Breaking' : 'Compatible'}: ${change.member} "${change.name}" ${change.change}`,
+          )
+          .join('; ') + edited,
+      breaking: breaking > 0 || !header.intact,
+    },
   };
 }

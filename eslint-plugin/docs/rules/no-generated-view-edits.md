@@ -6,7 +6,8 @@ A Kerf UI view document (`*.kui.json`) is the source of truth for a screen's com
 
 The generator records a digest of the module body in its header. This rule recomputes it, so it needs no access to the document:
 
-- **`edited`**: the body no longer matches the header's digest.
+- **`edited`**: the body no longer matches the header's body digest, or the
+  recorded `kui-contract` line no longer matches the contract digest.
 - **`header`**: the `kui-view` / `kui-contract` header lines are damaged.
 - **`missing`**: a `*.view.ts` sits beside a `.kui.json` document but is not a generated module.
 

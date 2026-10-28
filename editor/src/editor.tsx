@@ -41,7 +41,13 @@ import { wireWorkbench } from '@kerfjs/ui/wire-workbench';
 import { Workbench } from '@kerfjs/ui/workbench';
 import { delegate, effect, type SafeHtml, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
-import { FileCode, FolderOpen, icons as lucideIcons, Save } from 'lucide';
+import {
+  FileCode,
+  FolderOpen,
+  GitCompare,
+  icons as lucideIcons,
+  Save,
+} from 'lucide';
 
 import {
   componentNames,
@@ -57,9 +63,11 @@ import {
   serializeDocument,
 } from './model/document.js';
 import {
+  compareWithModule,
   describeExport,
   type ExportKind,
   exportModule,
+  type ExportReport,
 } from './model/export.js';
 import { inspectorSections } from './model/inspector.js';
 import { nodeTitle, outlineRows } from './model/outline.js';
@@ -170,9 +178,12 @@ export function createEditor(options: EditorOptions = {}) {
   const selection = signal<Selection>(null);
   const loadError = signal<string | null>(null);
   /** The last export's contract and how the one before it changed. */
+  /**
+   * The contract later exports compare against (the last export, or a
+   * module chosen with Compare), and the latest report about it.
+   */
   const lastExport = signal<
-    | { contract: ViewContract; report: ReturnType<typeof describeExport> }
-    | undefined
+    { contract?: ViewContract; report: ExportReport } | undefined
   >(undefined);
   const documentSize = signal(280);
   const inspectorSize = signal(300);
@@ -309,6 +320,14 @@ export function createEditor(options: EditorOptions = {}) {
               accept=".json,application/json"
               pickerId="open-document"
               icon={<LucideIcon icon={FolderOpen} name="folder-open" />}
+            />,
+            <FilePickerTrigger
+              label="Compare"
+              accessibleLabel="Compare with an existing generated view module"
+              accept=".ts,.js,text/javascript,text/typescript"
+              pickerId="compare-module"
+              icon={<LucideIcon icon={GitCompare} name="git-compare" />}
+              disabled={problems > 0}
             />,
             <ToolbarControlGroup
               label="Export"
@@ -523,10 +542,15 @@ export function createEditor(options: EditorOptions = {}) {
         }
       }),
       wireFilePickers(root, {
-        onFiles: ({ files }) => {
+        onFiles: ({ files, id }) => {
           const [file] = files;
           if (!file) return;
           void file.text().then((text) => {
+            if (id === 'compare-module') {
+              const current = contractOf(doc.value, viewCatalog);
+              lastExport.value = compareWithModule(text, current);
+              return;
+            }
             const parsed = parseDocument(text);
             if (parsed.ok) {
               doc.value = parsed.document;

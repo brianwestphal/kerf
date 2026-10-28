@@ -63,6 +63,11 @@ describe('generateView: the inbox module', () => {
       readViewHeader(code.replace('tone: "brand"', 'tone: "danger"'))!.intact,
     ).toBe(false);
     expect(readViewHeader('// hand-written\nexport {};')).toBeUndefined();
+    // Editing the recorded contract line is caught too.
+    expect(
+      readViewHeader(code.replace('"compose":"view"', '"compose":"row"'))!
+        .intact,
+    ).toBe(false);
     const lines = code.split('\n');
     lines[2] = '// kui-contract: {not json';
     expect(readViewHeader(lines.join('\n'))).toBeUndefined();

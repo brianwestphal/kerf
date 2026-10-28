@@ -14,7 +14,8 @@
 - the private `editor/` scaffold (KF-4NRZCV: editor scaffold): open and save,
   canvas preview, selection, outline, a read-only inspector, and a problems list
   linked to nodes (KF-WC0ZG3: editor problems list), and export of the generated
-  module with a contract-change report (KF-Y38YRT: editor export).
+  module with a contract-change report against the last export or a chosen
+  existing module (KF-Y38YRT, KF-9J810J: editor export and compare).
 
 Editing in the editor is next. The
 implementation tickets are listed in [§10](#10-implementation-plan).
@@ -425,7 +426,9 @@ The header is three comment lines:
 3. `kui-contract: <canonical JSON>`, the contract itself. `kerf-ui-view diff`
    compares against it, so a diff needs no copy of the previous document.
 
-`readViewHeader(code)` parses all three and reports `intact`.
+`readViewHeader(code)` parses all three and reports `intact`: the body must
+match its digest, and the contract line must match the contract digest, so
+editing either one is detected.
 
 ### 4.7 Determinism and output form
 

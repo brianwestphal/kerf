@@ -26,6 +26,10 @@ it uses ship from `@kerfjs/ui/view`, so tools and applications work without it.
   `interpretView`. The bytes are exactly what `kerf-ui-view generate` writes.
   A banner reports the contract changes since the previous export in this
   session. Export is disabled while the document has problems.
+- **Compare** with a generated module your app already imports. Choose its
+  `.view.ts` (or `.view.js`), and a banner lists the contract changes
+  regenerating would make, flags a hand-edited module, and becomes the
+  baseline that later exports compare against.
 
 Editing is a later slice.
 

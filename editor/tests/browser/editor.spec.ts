@@ -51,7 +51,7 @@ test('selects from the outline and documents a palette component', async ({
 test('opens a document file and reports one that is not a view document', async ({
   page,
 }) => {
-  const input = page.locator('input[type="file"]');
+  const input = page.locator('input[type="file"]').first();
   await input.setInputFiles({
     name: 'bad.json',
     mimeType: 'application/json',
@@ -123,7 +123,7 @@ test('lists problems and selects the node a problem is about', async ({
   );
   document.root.zones.header[0].zones.trailing[0].props.tone = 'purple';
   document.params.bad = { type: { kind: 'map' } };
-  await page.locator('input[type="file"]').setInputFiles({
+  await page.locator('input[type="file"]').first().setInputFiles({
     name: 'inbox.kui.json',
     mimeType: 'application/json',
     buffer: Buffer.from(JSON.stringify(document)),
@@ -175,4 +175,45 @@ test('exports the view module from the Export menu', async ({ page }, info) => {
     path: info.outputPath('kf-y38yrt-editor-exported-1440.png'),
     animations: 'disabled',
   });
+});
+
+test('compares the document with an existing generated module', async ({
+  page,
+}, info) => {
+  const golden = await readFile(
+    new URL('../../../ui/tests/fixtures/view/inbox.view.ts', import.meta.url),
+    'utf8',
+  );
+  const compare = page.locator('input[type="file"]').nth(1);
+  await compare.setInputFiles({
+    name: 'inbox.view.ts',
+    mimeType: 'text/plain',
+    buffer: Buffer.from(
+      golden
+        .replace(/"compose" \| "open-item"/, '"compose" | "open-item"')
+        .replace(
+          '"actions":{"compose":"view","open-item":"row"}',
+          '"actions":{"compose":"view","open-item":"row","archive":"view"}',
+        ),
+    ),
+  });
+  await expect(
+    page.getByText(/Regenerating makes 1 contract change, 1 breaking/),
+  ).toBeVisible();
+  await expect(
+    page.getByText('Breaking: action "archive" removed', { exact: false }),
+  ).toBeVisible();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-9j810j-editor-compare-1440.png'),
+    animations: 'disabled',
+  });
+  await compare.setInputFiles({
+    name: 'notes.ts',
+    mimeType: 'text/plain',
+    buffer: Buffer.from('export {};'),
+  });
+  await expect(
+    page.getByText('That file is not a generated view module'),
+  ).toBeVisible();
 });

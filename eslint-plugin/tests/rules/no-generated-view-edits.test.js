@@ -55,6 +55,15 @@ ruleTester.run('no-generated-view-edits', rule, {
       errors: [{ messageId: 'edited' }],
     },
     {
+      // An edited contract line is an edit even with the body untouched.
+      code: withHeader(
+        undefined,
+        lines[2].replace('"compose":"view"', '"compose":"row"'),
+      ),
+      filename: join(folder, 'inbox.view.ts'),
+      errors: [{ messageId: 'edited' }],
+    },
+    {
       code: withHeader('// kui-view: 1 contract broken'),
       filename: join(folder, 'inbox.view.ts'),
       errors: [{ messageId: 'header' }],
