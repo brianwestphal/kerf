@@ -1,6 +1,10 @@
 import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import type { CssLength } from '../../../shared/styles/css-values.js';
 import { ResizeGrip } from './internal/resize-grip.js';
 
@@ -48,6 +52,9 @@ export interface ResizableRegionProps {
   /** Decorative dormant content for the separator handle. Must not contain interactive descendants. */
   handleIcon?: SafeHtml;
   children: KerfUiContent;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
 
 export const clampRegionSize = (size: number, min: number, max: number) =>
@@ -57,6 +64,23 @@ export const resizeRegionFromPointer = (
   delta: number,
   edge: ResizableRegionEdge,
 ) => startSize + delta * (edge === 'start' ? -1 : 1);
+
+const RESIZABLE_REGION_PROTECTED = new Set([
+  'data-axis',
+  'data-collapse-motion',
+  'data-collapsed',
+  'data-component',
+  'data-content-overflow',
+  'data-edge',
+  'data-placement',
+  'data-position',
+  'data-presentation',
+  'data-region-id',
+  'data-region-restore',
+  'data-responsive-fill-at',
+  'data-separator',
+  'data-transitioning',
+]);
 
 export function ResizableRegion({
   id,
@@ -81,6 +105,7 @@ export function ResizableRegion({
   responsiveFillAt,
   handleIcon,
   children,
+  rootAttributes = {},
 }: ResizableRegionProps) {
   const expandedSize = clampRegionSize(size, min, max);
   const resolved = collapsed ? 0 : expandedSize;
@@ -88,6 +113,7 @@ export function ResizableRegion({
   return (
     <>
       <section
+        {...filterDataAttributes(rootAttributes, RESIZABLE_REGION_PROTECTED)}
         class="kui-resizable-region"
         data-component="resizable-region"
         data-region-id={id}

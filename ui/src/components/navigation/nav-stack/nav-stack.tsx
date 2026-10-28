@@ -2,6 +2,10 @@ import { ChevronLeft } from 'lucide';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
+import {
   type ScrollEdge,
   scrollEdgeAttributes,
 } from '../../../shared/layout/scroll-edge.js';
@@ -195,6 +199,9 @@ export interface NavStackProps {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
 
 const DEFAULT_SAFE_AREA_EDGES = [
@@ -223,6 +230,25 @@ function chromeList(content: KerfUiContent, config?: ListConfig) {
     </List>
   );
 }
+
+// Markers the component writes; data-key is not one of them on the root
+// (only inner rows use it), so an app row key passes through.
+const NAV_STACK_PROTECTED = new Set([
+  'data-background',
+  'data-bottom-toolbar-material',
+  'data-bottom-toolbar-presentation',
+  'data-chrome-dividers',
+  'data-chrome-material',
+  'data-chrome-presentation',
+  'data-component',
+  'data-depth',
+  'data-kui-tint',
+  'data-kui-tint-accent',
+  'data-nav-active',
+  'data-nav-key',
+  'data-nav-stack-id',
+  'data-separator',
+]);
 
 /**
  * A navigation stack (iOS-style push/pop). Renders every entry stacked, the last
@@ -253,6 +279,7 @@ export function NavStack({
   tint,
   className = '',
   slot,
+  rootAttributes = {},
 }: NavStackProps) {
   const tinted = surfaceTintAttributes(tint);
   const topIndex = views.length - 1;
@@ -278,6 +305,7 @@ export function NavStack({
   );
   return (
     <section
+      {...filterDataAttributes(rootAttributes, NAV_STACK_PROTECTED)}
       class={`kui-nav-stack ${tinted.className} ${className}`
         .replace(/\s+/g, ' ')
         .trim()}

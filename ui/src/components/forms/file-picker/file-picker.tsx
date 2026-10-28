@@ -1,5 +1,10 @@
 import type { SafeHtml } from 'kerfjs';
 
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
+
 interface FileInputProps {
   /** Accepted types, as the native `accept` attribute (`.png,image/*`). */
   accept?: string;
@@ -11,6 +16,9 @@ interface FileInputProps {
   pickerId?: string;
   disabled?: boolean;
   className?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
 
 export interface FilePickerTriggerProps extends FileInputProps {
@@ -54,6 +62,14 @@ function fileInput(props: FileInputProps, label: string | undefined) {
   );
 }
 
+const FILE_PICKER_PROTECTED = new Set([
+  'data-component',
+  'data-disabled',
+  'data-drop-scope',
+  'data-file-picker-id',
+  'data-presentation',
+]);
+
 /**
  * A compact, link-toned trigger that opens the native file chooser: a label
  * around a visually hidden `<input type="file">`, so a click or keyboard
@@ -68,9 +84,11 @@ export function FilePickerTrigger(props: FilePickerTriggerProps) {
     pickerId,
     disabled,
     className = '',
+    rootAttributes = {},
   } = props;
   return (
     <label
+      {...filterDataAttributes(rootAttributes, FILE_PICKER_PROTECTED)}
       class={`kui-file-picker ${className}`.trim()}
       data-component="file-picker-trigger"
       data-presentation="trigger"
@@ -103,9 +121,11 @@ export function FileDropZone(props: FileDropZoneProps) {
     disabled,
     dropScope,
     className = '',
+    rootAttributes = {},
   } = props;
   return (
     <label
+      {...filterDataAttributes(rootAttributes, FILE_PICKER_PROTECTED)}
       class={`kui-file-picker ${className}`.trim()}
       data-component="file-drop-zone"
       data-drop-scope={dropScope}

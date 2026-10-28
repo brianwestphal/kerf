@@ -74,7 +74,13 @@ describe('$icon: naming Lucide icons in view documents', () => {
         }),
       );
     expect(render({ inbox: Inbox })).toBe(
-      String(LucideIcon({ name: 'inbox', icon: Inbox })),
+      String(
+        LucideIcon({
+          name: 'inbox',
+          icon: Inbox,
+          rootAttributes: { 'data-kerf-node': '01JB8Z1M6Q8E1X9V4S7K2R3TCA' },
+        }),
+      ),
     );
     expect(() => render()).toThrow(/no icon data for "inbox"/);
   });

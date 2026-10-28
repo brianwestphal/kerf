@@ -1,4 +1,8 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import { pct, remify } from '../../../shared/styles/css-values.js';
 import {
   NavStack,
@@ -136,7 +140,16 @@ export interface SplitViewProps {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const SPLIT_VIEW_PROTECTED = new Set([
+  'data-component',
+  'data-resizable',
+  'data-split-mode',
+]);
 
 /**
  * A list-detail split. On roomy classes it shows both panes side
@@ -160,6 +173,7 @@ export function SplitView({
   listWidth,
   className = '',
   slot,
+  rootAttributes = {},
 }: SplitViewProps) {
   if (listWidth !== undefined && resizable)
     throw new RangeError(
@@ -189,6 +203,7 @@ export function SplitView({
       : [listView];
     return (
       <div
+        {...filterDataAttributes(rootAttributes, SPLIT_VIEW_PROTECTED)}
         class={`kui-split-view kui-split-view--compact ${className}`.trim()}
         id={id}
         data-component="split-view"
@@ -247,6 +262,7 @@ export function SplitView({
   );
   return (
     <div
+      {...filterDataAttributes(rootAttributes, SPLIT_VIEW_PROTECTED)}
       class={`kui-split-view ${className}`.trim()}
       id={id}
       data-component="split-view"

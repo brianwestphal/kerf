@@ -639,6 +639,32 @@ function exportSymbol(checker, sourceFile, name) {
 }
 
 /**
+ * How a component carries application `data-*` attributes to its root (the
+ * Kerf UI editor's node marker and row keys): a `rootAttributes` prop, native
+ * `data-*` passthrough (a `data-${string}` index signature on the props), or
+ * none.
+ */
+function dataChannelOf(checker, type, props) {
+  if (props.some((prop) => prop.name === 'rootAttributes'))
+    return 'rootAttributes';
+  const members = type
+    ? membersOf(type).filter((member) => !isNullish(member))
+    : [];
+  const native =
+    members.length > 0 &&
+    members.every((member) =>
+      checker
+        .getIndexInfosOfType(member)
+        .some(
+          (info) =>
+            info.keyType.flags & ts.TypeFlags.TemplateLiteral &&
+            info.keyType.texts[0] === 'data-',
+        ),
+    );
+  return native ? 'native' : 'none';
+}
+
+/**
  * Reads one exported component function: its props (from the first
  * parameter), type parameters, and documentation. Returns undefined for an
  * export that is not a component (a type, a wiring helper, a non-SafeHtml
@@ -659,6 +685,11 @@ export function readComponentExport(ctx, sourceFile, name) {
   const result = parameter
     ? describePropsType(ctx, checker.getTypeOfSymbol(parameter))
     : { props: [], nativeAttributes: [] };
+  result.dataChannel = dataChannelOf(
+    checker,
+    parameter && checker.getTypeOfSymbol(parameter),
+    result.props,
+  );
   const typeParameters = (signature.getTypeParameters() ?? []).map((item) => {
     const constraint = item.getConstraint();
     return {

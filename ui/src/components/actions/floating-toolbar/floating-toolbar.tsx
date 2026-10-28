@@ -1,4 +1,8 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import type { CssLength } from '../../../shared/styles/css-values.js';
 
 /** Where a {@link FloatingToolbar} floats within its positioned container. */
@@ -29,7 +33,17 @@ export interface FloatingToolbarProps {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const FLOATING_TOOLBAR_PROTECTED = new Set([
+  'data-component',
+  'data-placement',
+  'data-position',
+  'data-safe-area-insets',
+]);
 
 /**
  * A toolbar that floats above the main content of its nearest positioned
@@ -57,9 +71,11 @@ export function FloatingToolbar({
   safeAreaInsets = false,
   className = '',
   slot,
+  rootAttributes = {},
 }: FloatingToolbarProps) {
   return (
     <div
+      {...filterDataAttributes(rootAttributes, FLOATING_TOOLBAR_PROTECTED)}
       class={`kui-floating-toolbar ${className}`.trim()}
       data-component="floating-toolbar"
       data-position={position}

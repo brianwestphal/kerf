@@ -1,4 +1,8 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import type { CssLength } from '../../../shared/styles/css-values.js';
 
 export {
@@ -32,7 +36,18 @@ export interface ValueTableProps {
   children: KerfUiContent;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const VALUE_TABLE_PROTECTED = new Set([
+  'data-component',
+  'data-density',
+  'data-label-width',
+  'data-presentation',
+  'data-stack-below',
+]);
 
 export function ValueTable({
   label,
@@ -43,9 +58,11 @@ export function ValueTable({
   className = '',
   children,
   slot,
+  rootAttributes = {},
 }: ValueTableProps) {
   return (
     <dl
+      {...filterDataAttributes(rootAttributes, VALUE_TABLE_PROTECTED)}
       class={`kui-value-table ${className}`.trim()}
       data-component="value-table"
       data-density={density}

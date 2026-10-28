@@ -138,6 +138,7 @@ export { type CssColor, type CssFlex, type CssFlexBasis, type CssFlexKeyword, ty
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { CssLength } from './css-values.js';
 
 type DisclosureDirection = 'up' | 'down' | 'left' | 'right';
@@ -152,8 +153,11 @@ interface DisclosureArrowProps {
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
-declare function DisclosureArrow({ open, openDirection, closedDirection, icon, size, className, slot, }: DisclosureArrowProps): SafeHtml;
+declare function DisclosureArrow({ open, openDirection, closedDirection, icon, size, className, slot, rootAttributes, }: DisclosureArrowProps): SafeHtml;
 
 export { DisclosureArrow, type DisclosureArrowProps, type DisclosureDirection };
 ```
@@ -163,6 +167,7 @@ export { DisclosureArrow, type DisclosureArrowProps, type DisclosureDirection };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { S as Sides } from './sides-BPSWde0A.js';
 import { PaneSeparatorSide } from './pane.js';
 import './scroll-clearance-BikHljTc.js';
@@ -235,6 +240,9 @@ interface ToolbarProps {
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /**
  * A toolbar's configuration, apart from its content: the props a composite
@@ -242,7 +250,7 @@ interface ToolbarProps {
  * toolbar) forwards, so the app configures that toolbar instead of styling it.
  */
 type ToolbarConfig = Pick<ToolbarProps, 'density' | 'dividerSides' | 'centerAlign' | 'responsive' | 'responsiveAt' | 'safeAreaEdges'>;
-declare function Toolbar({ id, leading, center, trailing, label, position, density, dividerSides, centerAlign, responsive, responsiveAt, safeAreaEdges, className, slot, }: ToolbarProps): kerfjs.SafeHtml;
+declare function Toolbar({ id, leading, center, trailing, label, position, density, dividerSides, centerAlign, responsive, responsiveAt, safeAreaEdges, className, slot, rootAttributes, }: ToolbarProps): kerfjs.SafeHtml;
 
 export { Sides, Toolbar, type ToolbarConfig, type ToolbarDensity, type ToolbarPosition, type ToolbarProps };
 ```
@@ -251,6 +259,7 @@ export { Sides, Toolbar, type ToolbarConfig, type ToolbarDensity, type ToolbarPo
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { CssLength } from './css-values.js';
 
 type ToolbarTextSize = 'xlarge' | 'xlarge-fixed' | 'large' | 'default' | 'small' | 'xsmall';
@@ -288,6 +297,13 @@ interface ToolbarTextBaseProps {
     fill?: boolean;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /**
+     * Cap wrapped text to this many lines, truncating past it. Only takes effect with
+     * `wrap`; ignored on a single line. `null`/omitted wraps without a line cap. Default null.
+     */
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 type ToolbarTextWrappingProps = {
     /** Wrap onto multiple lines; combine with `maxLines` to cap them. */
@@ -324,7 +340,7 @@ type ToolbarTextProps = ToolbarTextBaseProps & (({
     description?: never;
     descriptionId?: never;
 });
-declare function ToolbarText({ text, size, tone, hideBelow, showBelow, className, id, headingLevel, placeholder, wrap, ellipsis, maxLines, fill, slot, action, description, descriptionId, }: ToolbarTextProps): kerfjs.SafeHtml;
+declare function ToolbarText({ text, size, tone, hideBelow, showBelow, className, id, headingLevel, placeholder, wrap, ellipsis, maxLines, fill, slot, action, description, descriptionId, rootAttributes, }: ToolbarTextProps): kerfjs.SafeHtml;
 
 export { type HeadingLevel, ToolbarText, type ToolbarTextProps, type ToolbarTextSize, type ToolbarTextTone };
 ```
@@ -334,6 +350,7 @@ export { type HeadingLevel, ToolbarText, type ToolbarTextProps, type ToolbarText
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { CssLength } from './css-values.js';
 
 type ToolbarControlGroupAppearance = 'contained' | 'borderless';
@@ -369,9 +386,12 @@ interface ToolbarActionLinkProps {
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /** A semantic anchor with ToolbarControlGroup-owned action geometry. */
-declare function ToolbarActionLink({ href, label, icon, detail, ariaLabel, external, className, slot, }: ToolbarActionLinkProps): kerfjs.SafeHtml;
+declare function ToolbarActionLink({ href, label, icon, detail, ariaLabel, external, className, slot, rootAttributes, }: ToolbarActionLinkProps): kerfjs.SafeHtml;
 interface ToolbarControlGroupProps {
     children: KerfUiContent;
     label?: string;
@@ -449,8 +469,11 @@ interface ToolbarControlGroupProps {
     avatarImage?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
-declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, material, tileTone, buttonAppearance, shape, size, density, content, focusRing, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, expandedOverflow, visibility, hideBelow, showBelow, sizing, placement, growBasis, relocateOnCollapse, scrim, busy, busyLabel, avatarImage, slot, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
+declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, material, tileTone, buttonAppearance, shape, size, density, content, focusRing, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, expandedOverflow, visibility, hideBelow, showBelow, sizing, placement, growBasis, relocateOnCollapse, scrim, busy, busyLabel, avatarImage, slot, rootAttributes, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
 
 export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupExpandedOverflow, type ToolbarControlGroupFocusRing, type ToolbarControlGroupMaterial, type ToolbarControlGroupMenuInset, type ToolbarControlGroupOverflow, type ToolbarControlGroupPlacement, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupSizing, type ToolbarControlGroupTileTone, type ToolbarControlGroupTone, type ToolbarControlGroupVisibility };
 ```
@@ -460,6 +483,7 @@ export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarControlGroup, ty
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { CssLength } from './css-values.js';
 
 /** Where a {@link FloatingToolbar} floats within its positioned container. */
@@ -488,6 +512,9 @@ interface FloatingToolbarProps {
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /**
  * A toolbar that floats above the main content of its nearest positioned
@@ -506,7 +533,7 @@ interface FloatingToolbarProps {
  * `placement="inline"` for normal flow when an owner already positions the
  * control; floating placement can add safe-area insets to its per-edge tokens.
  */
-declare function FloatingToolbar({ children, label, position, placement, inset, safeAreaInsets, className, slot, }: FloatingToolbarProps): kerfjs.SafeHtml;
+declare function FloatingToolbar({ children, label, position, placement, inset, safeAreaInsets, className, slot, rootAttributes, }: FloatingToolbarProps): kerfjs.SafeHtml;
 
 export { FloatingToolbar, type FloatingToolbarPosition, type FloatingToolbarProps };
 ```
@@ -674,6 +701,7 @@ export { PopupMenu, type PopupMenuAnchor, type PopupMenuDivider, type PopupMenuE
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { HeadingLevel } from './toolbar-text.js';
+import './extension-attributes-IJ4decoa.js';
 import './css-values.js';
 
 type ListHeaderRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
@@ -784,7 +812,7 @@ export { ListHeader, type ListHeaderProps };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { S as StructuralRootAttributes } from './extension-attributes-mu8MFUl0.js';
+import { S as StructuralRootAttributes } from './extension-attributes-IJ4decoa.js';
 import { H as HorizontalAlignment, L as ListVerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 export { V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 import { S as ScrollClearance } from './scroll-clearance-BikHljTc.js';
@@ -1134,6 +1162,7 @@ export { ListIconTile, ListItem, ListItemLink, type ListItemLinkProps, type List
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { S as Sides } from './sides-BPSWde0A.js';
 
 interface ListInsetControlProps {
@@ -1144,6 +1173,9 @@ interface ListInsetControlProps {
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /**
  * Insets a control into a pane/list content region: an 8px inline margin (so its
@@ -1151,7 +1183,7 @@ interface ListInsetControlProps {
  * Use it for controls that carry their own border and padding but no outer margin
  * — the wrapper adds only the alignment margin and layout, not a second inset.
  */
-declare function ListInsetControl({ children, sides, className, slot, }: ListInsetControlProps): kerfjs.SafeHtml;
+declare function ListInsetControl({ children, sides, className, slot, rootAttributes, }: ListInsetControlProps): kerfjs.SafeHtml;
 
 export { ListInsetControl, type ListInsetControlProps, Sides };
 ```
@@ -1200,7 +1232,7 @@ import { CssColor } from './css-values.js';
 import { S as SemanticTone } from './semantic-tone-CdW013KF.js';
 import { S as SurfaceTint } from './surface-tint-DQgYCaP9.js';
 import { BackdropImagePosition, BackdropImageParallax, BackdropImageBlur, BackdropImageScrim } from './backdrop-image.js';
-import './extension-attributes-mu8MFUl0.js';
+import './extension-attributes-IJ4decoa.js';
 
 /**
  * Base surface treatment, semantic status colors, or `brand-loud`: the solid
@@ -1374,6 +1406,7 @@ export { ContentItem, type ContentItemAppearance, type ContentItemBubble, type C
 import * as kerfjs from 'kerfjs';
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { CssLength } from './css-values.js';
 
 interface ValueTableRowProps {
@@ -1385,8 +1418,11 @@ interface ValueTableRowProps {
     placeholder?: boolean;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
-declare function ValueTableRow({ label, value, icon, className, placeholder, slot, }: ValueTableRowProps): SafeHtml;
+declare function ValueTableRow({ label, value, icon, className, placeholder, slot, rootAttributes, }: ValueTableRowProps): SafeHtml;
 
 /** `columns` keeps label and value side by side; `stacked` puts each value under its label. */
 type ValueTablePresentation = 'columns' | 'stacked';
@@ -1413,8 +1449,11 @@ interface ValueTableProps {
     children: KerfUiContent;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
-declare function ValueTable({ label, density, labelWidth, presentation, stackBelow, className, children, slot, }: ValueTableProps): kerfjs.SafeHtml;
+declare function ValueTable({ label, density, labelWidth, presentation, stackBelow, className, children, slot, rootAttributes, }: ValueTableProps): kerfjs.SafeHtml;
 
 export { ValueTable, type ValueTablePresentation, type ValueTableProps, ValueTableRow, type ValueTableRowProps, type ValueTableStackBelow };
 ```
@@ -1498,6 +1537,7 @@ export { TabBarItem, type TabBarItemNameOverflow, type TabBarItemPresentation, t
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 
 type TabActivation = 'automatic' | 'manual';
 type TabBarAllocation = 'intrinsic' | 'fill';
@@ -1538,9 +1578,12 @@ interface TabBarProps {
     snapTabs?: boolean;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /** Render a controlled tab strip. The application owns selection, order, and persistence. */
-declare function TabBar({ id, label, children, leading, trailing, end, className, activation, allocation, presentation, iconOnlyAt, trailingPlacement, snapTabs, slot, }: TabBarProps): kerfjs.SafeHtml;
+declare function TabBar({ id, label, children, leading, trailing, end, className, activation, allocation, presentation, iconOnlyAt, trailingPlacement, snapTabs, slot, rootAttributes, }: TabBarProps): kerfjs.SafeHtml;
 
 export { type TabActivation, TabBar, type TabBarAllocation, type TabBarIconOnlyAt, type TabBarPresentation, type TabBarProps, type TabBarTrailingPlacement };
 ```
@@ -1551,6 +1594,7 @@ export { type TabActivation, TabBar, type TabBarAllocation, type TabBarIconOnlyA
 import { TabActivation } from './tab-bar.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
+import './extension-attributes-IJ4decoa.js';
 
 type TabReorderSource = 'pointer' | 'keyboard';
 type TabDropPosition = 'before' | 'after';
@@ -1771,15 +1815,15 @@ export { wireListFocusScroll };
 ## `@kerfjs/ui/nav-stack`
 
 ```ts
-export { c as NavStack, d as NavStackBottomToolbarPresentation, e as NavStackChromePresentation, N as NavStackProps, f as NavStackToolbarConfig, a as NavStackView, g as NavStackViewBottomToolbar, h as NavStackViewToolbar } from './nav-stack-CrZF95VO.js';
+export { c as NavStack, d as NavStackBottomToolbarPresentation, e as NavStackChromePresentation, N as NavStackProps, f as NavStackToolbarConfig, a as NavStackView, g as NavStackViewBottomToolbar, h as NavStackViewToolbar } from './nav-stack-ByJ1GcDc.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
+import './extension-attributes-IJ4decoa.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './list.js';
-import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './sides-BPSWde0A.js';
 import './panel-toolbar-vg6Ir5Dy.js';
@@ -1817,14 +1861,14 @@ export { type WireNavStackOptions, wireNavStack };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { N as NavStackProps, a as NavStackView } from './nav-stack-CrZF95VO.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
+import { N as NavStackProps, a as NavStackView } from './nav-stack-ByJ1GcDc.js';
 import { ResizableRegionProps } from './resizable-region.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './list.js';
-import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './sides-BPSWde0A.js';
 import './panel-toolbar-vg6Ir5Dy.js';
@@ -1907,6 +1951,9 @@ interface SplitViewProps {
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /**
  * A list-detail split. On roomy classes it shows both panes side
@@ -1915,7 +1962,7 @@ interface SplitViewProps {
  * resizable wiring with `wireResizableRegions` and the compact back with
  * `wireNavStack`.
  */
-declare function SplitView({ id, label, list, detail, compact, detailActive, listTitle, detailTitle, backLabel, compactStack, resizable, listWidth, className, slot, }: SplitViewProps): kerfjs.SafeHtml;
+declare function SplitView({ id, label, list, detail, compact, detailActive, listTitle, detailTitle, backLabel, compactStack, resizable, listWidth, className, slot, rootAttributes, }: SplitViewProps): kerfjs.SafeHtml;
 
 export { SplitView, type SplitViewCompactStack, type SplitViewCompactViewToolbars, type SplitViewListWidth, type SplitViewProps, type SplitViewResizable };
 ```
@@ -2168,7 +2215,8 @@ export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlac
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { b as NavPane, N as NavStackProps } from './nav-stack-CrZF95VO.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
+import { b as NavPane, N as NavStackProps } from './nav-stack-ByJ1GcDc.js';
 import { ListConfig } from './list.js';
 import { PaneConfig } from './pane.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
@@ -2177,7 +2225,6 @@ import { ToolbarConfig } from './toolbar.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './toolbar-text.js';
-import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './scroll-clearance-BikHljTc.js';
 import './sides-BPSWde0A.js';
@@ -2431,6 +2478,9 @@ interface WorkbenchProps {
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /**
  * The Xcode-like multi-panel workspace: a collapsible left rail, right rail, and
@@ -2445,7 +2495,7 @@ interface WorkbenchProps {
  * lives outside it and stays reachable). A panel may opt in to drag and keyboard resizing with
  * `resizable`, which `wireWorkbench` drives. See `docs/23-app-layouts.md` §3.3.
  */
-declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainToolbar, mainHeader, mainFooter, mainBottomToolbar, mainHeaderPlacement, mainFooterPlacement, mainPane, mainLabel, mainTabIndex, mainOutlined, mainHeaderList, mainFooterList, mainMinSize, mainMinHeight, overlayBackdrop, className, slot, }: WorkbenchProps): SafeHtml;
+declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainToolbar, mainHeader, mainFooter, mainBottomToolbar, mainHeaderPlacement, mainFooterPlacement, mainPane, mainLabel, mainTabIndex, mainOutlined, mainHeaderList, mainFooterList, mainMinSize, mainMinHeight, overlayBackdrop, className, slot, rootAttributes, }: WorkbenchProps): SafeHtml;
 
 export { Workbench, type WorkbenchChromePlacement, type WorkbenchCompactOverlay, type WorkbenchMainBottomToolbar, type WorkbenchMainToolbar, type WorkbenchNavigationPanel, type WorkbenchPanel, type WorkbenchPanelBottomToolbar, type WorkbenchPanelResizable, type WorkbenchPanelToggle, type WorkbenchPanelToolbar, type WorkbenchProps, type WorkbenchResponsiveOverlayAt, type WorkbenchStaticPanel };
 ```
@@ -2576,6 +2626,7 @@ export { type WireWorkbenchOptions, type WireWorkbenchPanel, type WorkbenchPanel
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { P as PanelSide, a as PanelToolbar, b as PanelChromePlacement, c as PanelBottomToolbar, d as PanelToggle } from './panel-toolbar-vg6Ir5Dy.js';
 export { e as collapsiblePanelToggleIcon } from './panel-toolbar-vg6Ir5Dy.js';
 import { ToolbarConfig } from './toolbar.js';
@@ -2586,7 +2637,6 @@ import './lucide-icon.js';
 import 'lucide';
 import './css-values.js';
 import './sides-BPSWde0A.js';
-import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './scroll-clearance-BikHljTc.js';
 import './surface-tint-DQgYCaP9.js';
@@ -2618,6 +2668,9 @@ interface CollapsiblePanelToggleProps {
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /**
  * A standard collapse/expand toggle button for a {@link CollapsiblePanel}: the
@@ -2626,7 +2679,7 @@ interface CollapsiblePanelToggleProps {
  * put it in the panel's own header (to collapse) and somewhere always-visible
  * (to expand while collapsed).
  */
-declare function CollapsiblePanelToggle({ side, collapsed, action, panelId, label, className, slot, }: CollapsiblePanelToggleProps): SafeHtml;
+declare function CollapsiblePanelToggle({ side, collapsed, action, panelId, label, className, slot, rootAttributes, }: CollapsiblePanelToggleProps): SafeHtml;
 interface CollapsiblePanelProps {
     /** A stable id for the panel — `wireSidebar` targets it and toggles reference it. */
     id: string;
@@ -2676,6 +2729,9 @@ interface CollapsiblePanelProps {
     restoreControl?: SafeHtml;
     restorePosition?: ResizableRegionRestorePosition;
     className?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /**
  * A standalone collapsible side rail or bottom drawer, outside the full
@@ -2693,7 +2749,7 @@ interface CollapsiblePanelProps {
  * and persistence semantics, and with `CollapsiblePanelToggle` for the standard
  * affordance. See `ui/docs/collapsible-panel.md` and `docs/23-app-layouts.md`.
  */
-declare function CollapsiblePanel({ id, side, collapsed, size, label, tabIndex, outlined, children, toolbar, header, headerList, headerPlacement, footer, footerList, bottomToolbar, footerPlacement, pane, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, className, }: CollapsiblePanelProps): SafeHtml;
+declare function CollapsiblePanel({ id, side, collapsed, size, label, tabIndex, outlined, children, toolbar, header, headerList, headerPlacement, footer, footerList, bottomToolbar, footerPlacement, pane, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, className, rootAttributes, }: CollapsiblePanelProps): SafeHtml;
 interface CollapsiblePanelRelocatedProps {
     /** The panel's `id`. */
     panelId: string;
@@ -2795,6 +2851,7 @@ export { type SidebarStorage, type WireSidebarOptions, type WireSidebarPanel, wi
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { PaneAppearance, ScrollEdge } from './pane.js';
 import { CssColor } from './css-values.js';
 import { S as SurfaceTint } from './surface-tint-DQgYCaP9.js';
@@ -2936,6 +2993,9 @@ interface TabNavigatorProps<Id extends string = string> {
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /**
  * A mobile-first, iOS-like bottom tab navigator: a bottom tab bar that switches
@@ -2945,7 +3005,7 @@ interface TabNavigatorProps<Id extends string = string> {
  * On larger classes, promote the tabs to a `Workbench` rail or sidebar instead of
  * a bottom bar. See `docs/23-app-layouts.md` §3.4.
  */
-declare function TabNavigator<Id extends string>({ id, label, tabs, active, separator, chromeDividers, barPresentation, scrollEdge, scrollEdgeDistance, background, tint, className, slot, }: TabNavigatorProps<Id>): SafeHtml;
+declare function TabNavigator<Id extends string>({ id, label, tabs, active, separator, chromeDividers, barPresentation, scrollEdge, scrollEdgeDistance, background, tint, className, slot, rootAttributes, }: TabNavigatorProps<Id>): SafeHtml;
 
 export { TabNavigator, type TabNavigatorBarPresentation, type TabNavigatorProps, type TabNavigatorTab };
 ```
@@ -2973,6 +3033,7 @@ export { type WireTabNavigatorOptions, wireTabNavigator };
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { CssLength } from './css-values.js';
 
 type ResizableRegionAxis = 'horizontal' | 'vertical';
@@ -3017,10 +3078,13 @@ interface ResizableRegionProps {
     /** Decorative dormant content for the separator handle. Must not contain interactive descendants. */
     handleIcon?: SafeHtml;
     children: KerfUiContent;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 declare const clampRegionSize: (size: number, min: number, max: number) => number;
 declare const resizeRegionFromPointer: (startSize: number, delta: number, edge: ResizableRegionEdge) => number;
-declare function ResizableRegion({ id, label, size, min, max, axis, edge, collapsed, transitioning, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, restorePlacement, restoreInset, responsiveFillAt, handleIcon, children, }: ResizableRegionProps): SafeHtml;
+declare function ResizableRegion({ id, label, size, min, max, axis, edge, collapsed, transitioning, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, restorePlacement, restoreInset, responsiveFillAt, handleIcon, children, rootAttributes, }: ResizableRegionProps): SafeHtml;
 
 export { ResizableRegion, type ResizableRegionAxis, type ResizableRegionCollapseMotion, type ResizableRegionContentOverflow, type ResizableRegionEdge, type ResizableRegionPresentation, type ResizableRegionProps, type ResizableRegionResponsiveFillAt, type ResizableRegionRestorePosition, type ResizableRegionSeparator, clampRegionSize, resizeRegionFromPointer };
 ```
@@ -3122,15 +3186,15 @@ import { b as CatalogProps } from './types-DmHWkSd6.js';
 export { a as CatalogBackgroundStyle, c as CatalogBrand, d as CatalogEntry, e as CatalogRelated, C as CatalogResource, f as CatalogSecondaryGroup, g as CatalogSection, h as CatalogSettingsConfig, i as CatalogStageRootAttributes, j as CatalogTagFilter, k as CatalogUxReview } from './types-DmHWkSd6.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import './toolbar.js';
+import './extension-attributes-IJ4decoa.js';
 import './sides-BPSWde0A.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './workbench.js';
-import './nav-stack-CrZF95VO.js';
+import './nav-stack-ByJ1GcDc.js';
 import './list.js';
-import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './panel-toolbar-vg6Ir5Dy.js';
 import './lucide-icon.js';
@@ -3278,15 +3342,15 @@ import { C as CatalogResource } from './types-DmHWkSd6.js';
 import './toolbar.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
+import './extension-attributes-IJ4decoa.js';
 import './sides-BPSWde0A.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './workbench.js';
-import './nav-stack-CrZF95VO.js';
+import './nav-stack-ByJ1GcDc.js';
 import './list.js';
-import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './panel-toolbar-vg6Ir5Dy.js';
 import './lucide-icon.js';
@@ -3334,15 +3398,15 @@ import { Signal } from 'kerfjs';
 import { a as CatalogBackgroundStyle } from './types-DmHWkSd6.js';
 import './toolbar.js';
 import './semantic-content-BbzjvSu9.js';
+import './extension-attributes-IJ4decoa.js';
 import './sides-BPSWde0A.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './workbench.js';
-import './nav-stack-CrZF95VO.js';
+import './nav-stack-ByJ1GcDc.js';
 import './list.js';
-import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './panel-toolbar-vg6Ir5Dy.js';
 import './lucide-icon.js';
@@ -3476,6 +3540,7 @@ export { type CatalogRevealOptions, type WireCatalogOptions, revealCatalogEntry,
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 
 type SegmentedControlAppearance = 'filled' | 'outlined' | 'toolbar';
 type SegmentedControlShape = 'rounded' | 'pill';
@@ -3505,8 +3570,11 @@ interface SegmentedControlProps<Value extends string = string> {
     disabled?: boolean;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
-declare function SegmentedControl<Value extends string>({ id, label, value, choices, action, appearance, shape, size, layout, className, placeholder, disabled, slot, }: SegmentedControlProps<Value>): kerfjs.SafeHtml;
+declare function SegmentedControl<Value extends string>({ id, label, value, choices, action, appearance, shape, size, layout, className, placeholder, disabled, slot, rootAttributes, }: SegmentedControlProps<Value>): kerfjs.SafeHtml;
 
 export { SegmentedControl, type SegmentedControlAppearance, type SegmentedControlChoice, type SegmentedControlLayout, type SegmentedControlProps, type SegmentedControlShape, type SegmentedControlSize };
 ```
@@ -3515,6 +3583,7 @@ export { SegmentedControl, type SegmentedControlAppearance, type SegmentedContro
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { CssColor, CssLength } from './css-values.js';
 
 type ChoiceChipsSize = 'default' | 'compact';
@@ -3569,6 +3638,9 @@ interface ChoiceChipsCommonProps<Value extends string> {
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /** One exclusive value (the default), backed by native radios. */
 interface ChoiceChipsSingleProps<Value extends string = string> {
@@ -3735,6 +3807,7 @@ export { wireMessageComposers };
 import { SafeHtml } from 'kerfjs';
 import { KerfCustomElement } from 'kerfjs/jsx-runtime';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { CssForegroundColor, CssLength } from './css-values.js';
 import { LucideNode } from './lucide-icon.js';
 import 'lucide';
@@ -3827,6 +3900,9 @@ interface SelectBaseProps<Value extends string = string> {
     labelMaxWidth?: number;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /** One chosen value (the default). */
 interface SelectSingleValueProps<Value extends string = string> {
@@ -3956,6 +4032,7 @@ export { SemanticTone, StateBanner, type StateBannerActionPlacement, type StateB
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 
 interface EmptyStateProps {
     title: string;
@@ -3966,8 +4043,11 @@ interface EmptyStateProps {
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
-declare function EmptyState({ title, detail, icon, action, busy, className, slot, }: EmptyStateProps): SafeHtml;
+declare function EmptyState({ title, detail, icon, action, busy, className, slot, rootAttributes, }: EmptyStateProps): SafeHtml;
 
 export { EmptyState, type EmptyStateProps };
 ```
@@ -3976,6 +4056,7 @@ export { EmptyState, type EmptyStateProps };
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { CssForegroundColor } from './css-values.js';
 import { LucideIconSize } from './lucide-icon.js';
 import 'lucide';
@@ -3990,9 +4071,12 @@ interface LoadingSpinnerProps {
     size?: LoadingSpinnerSize;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /** Stable viewBox-centered progress ring based on svg-spinners' MIT-licensed 180-ring. */
-declare function LoadingSpinner({ className, color, label, size, slot, }: LoadingSpinnerProps): kerfjs.SafeHtml;
+declare function LoadingSpinner({ className, color, label, size, slot, rootAttributes, }: LoadingSpinnerProps): kerfjs.SafeHtml;
 
 export { LoadingSpinner, type LoadingSpinnerProps, type LoadingSpinnerSize };
 ```
@@ -4001,6 +4085,7 @@ export { LoadingSpinner, type LoadingSpinnerProps, type LoadingSpinnerSize };
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { CssSize, CssLength } from './css-values.js';
 
 interface SkeletonProps {
@@ -4021,6 +4106,9 @@ interface SkeletonProps {
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /**
  * A subtle, deliberately **unanimated** loading placeholder block. Use it for a
@@ -4028,7 +4116,7 @@ interface SkeletonProps {
  * `placeholder` prop. Decorative by default (`aria-hidden`); pass `label` to
  * announce it. Sizes to its slot unless `width`/`height` are given.
  */
-declare function Skeleton({ width, height, radius, lines, block, label, className, slot, }: SkeletonProps): kerfjs.SafeHtml;
+declare function Skeleton({ width, height, radius, lines, block, label, className, slot, rootAttributes, }: SkeletonProps): kerfjs.SafeHtml;
 
 export { Skeleton, type SkeletonProps };
 ```
@@ -4038,6 +4126,7 @@ export { Skeleton, type SkeletonProps };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { CssFlexKeyword, CssFlex } from './css-values.js';
 
 /**
@@ -4065,13 +4154,16 @@ interface SunkenPanelProps {
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /**
  * A lowered application surface with one compact inset and a vertical content
  * stack. The panel owns its background and padding; children own their own
  * borders and internal geometry.
  */
-declare function SunkenPanel({ children, ariaLabel, shape, flex, fill, tabIndex, outlined, className, slot, }: SunkenPanelProps): kerfjs.SafeHtml;
+declare function SunkenPanel({ children, ariaLabel, shape, flex, fill, tabIndex, outlined, className, slot, rootAttributes, }: SunkenPanelProps): kerfjs.SafeHtml;
 
 export { SunkenPanel, type SunkenPanelProps, type SunkenPanelShape, ensureSunkenTexture };
 ```
@@ -4079,17 +4171,19 @@ export { SunkenPanel, type SunkenPanelProps, type SunkenPanelShape, ensureSunken
 ## `@kerfjs/ui/search-field`
 
 ```ts
-export { S as SearchField, a as SearchFieldEditorAttributes, d as SearchFieldProps, j as SearchFieldToken, k as SearchFieldTrailingAction, l as SearchFieldTrailingActionAttributes, m as SearchFieldValue, p as placeSearchFieldCaret, r as readSearchField } from './search-field-CrGTN5sa.js';
+export { S as SearchField, a as SearchFieldEditorAttributes, d as SearchFieldProps, j as SearchFieldToken, k as SearchFieldTrailingAction, l as SearchFieldTrailingActionAttributes, m as SearchFieldValue, p as placeSearchFieldCaret, r as readSearchField } from './search-field-5lNIszda.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
+import './extension-attributes-IJ4decoa.js';
 ```
 
 ## `@kerfjs/ui/wire-search-fields`
 
 ```ts
 import { Signal } from 'kerfjs';
-import { b as SearchFieldModel } from './search-field-CrGTN5sa.js';
+import { b as SearchFieldModel } from './search-field-5lNIszda.js';
 import './semantic-content-BbzjvSu9.js';
+import './extension-attributes-IJ4decoa.js';
 
 interface SearchFieldSubmit {
     id: string;
@@ -4504,6 +4598,7 @@ export { Chip, type ChipProps, type ChipRootAttributes, type ChipTone };
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { IconNode } from 'lucide';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { CssForegroundColor } from './css-values.js';
 
 type LucideNode = IconNode;
@@ -4531,9 +4626,12 @@ interface LucideIconProps {
     size?: LucideIconSize;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /** Render a Lucide-compatible icon node without copying icon SVG strings. */
-declare function LucideIcon({ icon, name, appearance, className, color, inline, label, title, size, slot, }: LucideIconProps): SafeHtml;
+declare function LucideIcon({ icon, name, appearance, className, color, inline, label, title, size, slot, rootAttributes, }: LucideIconProps): SafeHtml;
 
 export { LucideIcon, type LucideIconProps, type LucideIconSize, type LucideNode };
 ```
@@ -4543,7 +4641,7 @@ export { LucideIcon, type LucideIconProps, type LucideIconSize, type LucideNode 
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { S as StructuralRootAttributes } from './extension-attributes-mu8MFUl0.js';
+import { S as StructuralRootAttributes } from './extension-attributes-IJ4decoa.js';
 import { CssLength, CssColor } from './css-values.js';
 
 /** How a single image fills the backdrop (`object-fit`). */
@@ -4709,6 +4807,7 @@ export { wireToolbarVisibility };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { CssLength } from './css-values.js';
 
 /** What asked an open DialogSurface to close. */
@@ -5010,9 +5109,12 @@ interface PopupSurfaceProps {
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /** Configure recurring Web Awesome dropdown-menu geometry without consumer ::part() CSS. */
-declare function PopupSurface({ children, inset, className, slot, }: PopupSurfaceProps): kerfjs.SafeHtml;
+declare function PopupSurface({ children, inset, className, slot, rootAttributes, }: PopupSurfaceProps): kerfjs.SafeHtml;
 
 export { type DialogCloseSource, type DialogRequestCloseDetail, DialogSurface, type DialogSurfaceBodyLayout, type DialogSurfaceCloseEmphasis, type DialogSurfaceFooterPresentation, type DialogSurfaceHeaderPresentation, type DialogSurfaceHeight, type DialogSurfaceMaxHeight, type DialogSurfaceName, type DialogSurfaceOptions, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceRootAttributes, type DialogSurfaceSheetMotion, type DialogSurfaceSize, type DialogSurfaceStack, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset, closeDialog, openDialog, syncDialogStack, wireDialogStack };
 ```
@@ -5026,12 +5128,12 @@ import { CssLength } from './css-values.js';
 import { SplitViewListWidth } from './split-view.js';
 import { DialogSurfaceSize, DialogSurfaceHeight, DialogSurfaceMaxHeight, DialogSurfaceRootAttributes } from './surface-scaffold.js';
 export { DialogCloseSource, DialogRequestCloseDetail, closeDialog, openDialog } from './surface-scaffold.js';
-import './nav-stack-CrZF95VO.js';
+import './extension-attributes-IJ4decoa.js';
+import './nav-stack-ByJ1GcDc.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './surface-tint-DQgYCaP9.js';
 import './list.js';
-import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './sides-BPSWde0A.js';
 import './panel-toolbar-vg6Ir5Dy.js';
@@ -5155,12 +5257,12 @@ import { CssLength } from './css-values.js';
 import { WorkbenchMainBottomToolbar, WorkbenchPanel } from './workbench.js';
 import { DialogSurfaceSize, DialogSurfaceHeight, DialogSurfaceMaxHeight, DialogSurfaceRootAttributes } from './surface-scaffold.js';
 export { DialogCloseSource, DialogRequestCloseDetail, closeDialog, openDialog } from './surface-scaffold.js';
-import './nav-stack-CrZF95VO.js';
+import './extension-attributes-IJ4decoa.js';
+import './nav-stack-ByJ1GcDc.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './surface-tint-DQgYCaP9.js';
 import './list.js';
-import './extension-attributes-mu8MFUl0.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './sides-BPSWde0A.js';
 import './panel-toolbar-vg6Ir5Dy.js';
@@ -5416,6 +5518,7 @@ export { EditorFrame, type EditorFrameAppearance, type EditorFrameInset, type Ed
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { CssLength } from './css-values.js';
 
 interface ValuePreviewProps {
@@ -5431,9 +5534,12 @@ interface ValuePreviewProps {
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /** Read-only, bounded multiline text for a containing surface such as SunkenPanel. */
-declare function ValuePreview({ label, value, minHeight, maxHeight, id, className, slot, }: ValuePreviewProps): kerfjs.SafeHtml;
+declare function ValuePreview({ label, value, minHeight, maxHeight, id, className, slot, rootAttributes, }: ValuePreviewProps): kerfjs.SafeHtml;
 
 export { ValuePreview, type ValuePreviewProps };
 ```
@@ -5565,7 +5671,7 @@ export { SummaryRow, type SummaryRowListEdge, type SummaryRowPresentation, type 
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { S as StructuralRootAttributes } from './extension-attributes-mu8MFUl0.js';
+import { S as StructuralRootAttributes } from './extension-attributes-IJ4decoa.js';
 import { H as HorizontalAlignment, V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 import { S as Sides } from './sides-BPSWde0A.js';
 import { UiGap, CssFlexKeyword, CssFlex } from './css-values.js';
@@ -5686,7 +5792,7 @@ export { CssFlex, CssFlexKeyword, CssLength, Grid, type GridProps, Sides, UiGap 
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { S as StructuralRootAttributes } from './extension-attributes-mu8MFUl0.js';
+import { S as StructuralRootAttributes } from './extension-attributes-IJ4decoa.js';
 import { CssLength } from './css-values.js';
 
 /** `scroll` keeps equal min-width columns; `paged` shows one near-full-width column per page. */
@@ -5732,6 +5838,7 @@ export { ColumnTrack, type ColumnTrackLayout, type ColumnTrackProps };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 
 type ContentSwapSide = 'a' | 'b';
 type ContentSwapTransition = 'none' | 'crossfade' | 'push';
@@ -5753,6 +5860,9 @@ interface ContentSwapProps {
     className?: string;
     /** Native named-slot assignment, such as a dialog's `label` or `footer`. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /**
  * Two content sides sharing one cell (a dialog body that steps to a second
@@ -5761,7 +5871,7 @@ interface ContentSwapProps {
  * `inert`/`aria-hidden`. Use `NavStack` for full views with their own
  * toolbars.
  */
-declare function ContentSwap({ active, a, b, transition, direction, label, fill, className, slot, }: ContentSwapProps): kerfjs.SafeHtml;
+declare function ContentSwap({ active, a, b, transition, direction, label, fill, className, slot, rootAttributes, }: ContentSwapProps): kerfjs.SafeHtml;
 
 export { ContentSwap, type ContentSwapDirection, type ContentSwapProps, type ContentSwapSide, type ContentSwapTransition };
 ```
@@ -5770,6 +5880,7 @@ export { ContentSwap, type ContentSwapDirection, type ContentSwapProps, type Con
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { UiSpaceName, CssLength } from './css-values.js';
 
 interface SpacerProps {
@@ -5782,9 +5893,12 @@ interface SpacerProps {
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /** A decorative fixed-size or flexible gap for Row, List, and other flex layouts. */
-declare function Spacer({ flex, width, height, className, slot, }: SpacerProps): kerfjs.SafeHtml;
+declare function Spacer({ flex, width, height, className, slot, rootAttributes, }: SpacerProps): kerfjs.SafeHtml;
 
 export { CssLength, Spacer, type SpacerProps, UiSpaceName };
 ```
@@ -6179,9 +6293,10 @@ export { ColorField, type ColorFieldProps, type ColorFieldRootAttributes, type C
 ## `@kerfjs/ui/search-field-model`
 
 ```ts
-export { b as SearchFieldModel, c as SearchFieldModelOptions, e as SearchFieldResolvedToken, f as SearchFieldRule, g as SearchFieldState, h as SearchFieldStructure, i as SearchFieldSuggestion, n as createSearchFieldModel } from './search-field-CrGTN5sa.js';
+export { b as SearchFieldModel, c as SearchFieldModelOptions, e as SearchFieldResolvedToken, f as SearchFieldRule, g as SearchFieldState, h as SearchFieldStructure, i as SearchFieldSuggestion, n as createSearchFieldModel } from './search-field-5lNIszda.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
+import './extension-attributes-IJ4decoa.js';
 ```
 
 ## `@kerfjs/ui/tag-field`
@@ -6189,6 +6304,7 @@ import './semantic-content-BbzjvSu9.js';
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 
 /** The delegated actions a TagField's controls carry; `wireTagFields` handles them. */
 declare const tagFieldActions: {
@@ -6226,6 +6342,9 @@ interface TagFieldProps {
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /**
  * A form field that collects short values as removable tags: SearchField's
@@ -6236,7 +6355,7 @@ interface TagFieldProps {
  * the tag list: wire `wireTagFields` from `@kerfjs/ui/wire-tag-fields` and
  * re-render with the list its `onChange` reports.
  */
-declare function TagField({ id, label, tags, name, form, placeholder, morePlaceholder, hint, error, max, required, disabled, icon, clearLabel, className, slot, }: TagFieldProps): kerfjs.SafeHtml;
+declare function TagField({ id, label, tags, name, form, placeholder, morePlaceholder, hint, error, max, required, disabled, icon, clearLabel, className, slot, rootAttributes, }: TagFieldProps): kerfjs.SafeHtml;
 
 export { TagField, type TagFieldProps, tagFieldActions };
 ```
@@ -6245,6 +6364,7 @@ export { TagField, type TagFieldProps, tagFieldActions };
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 
 /** A suggestion: a plain string, or a value with a distinct visible label. */
 type ComboboxSuggestion = string | {
@@ -6273,6 +6393,9 @@ interface ComboboxProps {
     createLabel?: string | false;
     disabled?: boolean;
     className?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /**
  * A free-text field with a filtered suggestion list that can also create a new
@@ -6281,7 +6404,7 @@ interface ComboboxProps {
  * and reports commits (Enter, comma, or a click). Use `Select` when only
  * existing values are allowed and nothing is typed.
  */
-declare function Combobox({ id, label, suggestions, value, placeholder, hint, name, createLabel, disabled, className, }: ComboboxProps): kerfjs.SafeHtml;
+declare function Combobox({ id, label, suggestions, value, placeholder, hint, name, createLabel, disabled, className, rootAttributes, }: ComboboxProps): kerfjs.SafeHtml;
 
 export { Combobox, type ComboboxProps, type ComboboxSuggestion };
 ```
@@ -6986,6 +7109,7 @@ export { SplitButton, type SplitButtonProps, type SplitButtonShape, type SplitBu
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 
 interface FileInputProps {
     /** Accepted types, as the native `accept` attribute (`.png,image/*`). */
@@ -6998,6 +7122,9 @@ interface FileInputProps {
     pickerId?: string;
     disabled?: boolean;
     className?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 interface FilePickerTriggerProps extends FileInputProps {
     /** Visible trigger text, such as "Add". */
@@ -7046,6 +7173,7 @@ export { FileDropZone, type FileDropZoneProps, FilePickerTrigger, type FilePicke
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 
 /** The viewport corner a CornerStatus occupies, in logical (RTL-aware) terms. */
 type CornerStatusPlacement = 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end';
@@ -7068,6 +7196,9 @@ interface CornerStatusProps {
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /**
  * A non-dismissible status surface pinned to a viewport corner — "Loading…",
@@ -7077,7 +7208,7 @@ interface CornerStatusProps {
  * its own; the composed `StateBanner` is the polite live region. Use a toast
  * for transient, dismissible confirmation instead.
  */
-declare function CornerStatus({ id, children, placement, presentation, className, slot, }: CornerStatusProps): kerfjs.SafeHtml;
+declare function CornerStatus({ id, children, placement, presentation, className, slot, rootAttributes, }: CornerStatusProps): kerfjs.SafeHtml;
 
 export { CornerStatus, type CornerStatusPlacement, type CornerStatusPresentation, type CornerStatusProps };
 ```
@@ -7086,6 +7217,7 @@ export { CornerStatus, type CornerStatusPlacement, type CornerStatusPresentation
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { S as SemanticTone } from './semantic-tone-CdW013KF.js';
 
 interface EdgeActivityIndicatorProps {
@@ -7101,6 +7233,9 @@ interface EdgeActivityIndicatorProps {
     /** Clear the device's top safe area (default) or sit at the very edge. */
     inset?: 'safe-area' | 'none';
     className?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
 }
 /**
  * A layout-free activity strip pinned to the top edge of the viewport: a row
@@ -7110,7 +7245,7 @@ interface EdgeActivityIndicatorProps {
  * Kerf owns the motion: it scales in from the edge and, under reduced motion,
  * only fades.
  */
-declare function EdgeActivityIndicator({ busy, message, tone, inset, className, }: EdgeActivityIndicatorProps): kerfjs.SafeHtml;
+declare function EdgeActivityIndicator({ busy, message, tone, inset, className, rootAttributes, }: EdgeActivityIndicatorProps): kerfjs.SafeHtml;
 
 export { EdgeActivityIndicator, type EdgeActivityIndicatorProps };
 ```

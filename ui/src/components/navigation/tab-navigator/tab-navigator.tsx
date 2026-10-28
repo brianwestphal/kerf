@@ -2,6 +2,10 @@ import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
+import {
   type ScrollEdge,
   scrollEdgeAttributes,
 } from '../../../shared/layout/scroll-edge.js';
@@ -158,7 +162,30 @@ export interface TabNavigatorProps<Id extends string = string> {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const TAB_NAVIGATOR_PROTECTED = new Set([
+  'data-active',
+  'data-appearance',
+  'data-background',
+  'data-badge-kind',
+  'data-bar-material',
+  'data-bar-presentation',
+  'data-chrome-dividers',
+  'data-component',
+  'data-deep-inset',
+  'data-has-badge',
+  'data-kui-tint',
+  'data-kui-tint-accent',
+  'data-outlined',
+  'data-separator',
+  'data-tab-scaffold-id',
+  'data-tab-scaffold-scene',
+  'data-tab-scaffold-tab',
+]);
 
 /**
  * A mobile-first, iOS-like bottom tab navigator: a bottom tab bar that switches
@@ -182,6 +209,7 @@ export function TabNavigator<Id extends string>({
   tint,
   className = '',
   slot,
+  rootAttributes = {},
 }: TabNavigatorProps<Id>) {
   const tinted = surfaceTintAttributes(tint);
   if (
@@ -192,6 +220,7 @@ export function TabNavigator<Id extends string>({
     ensureSunkenTexture();
   return (
     <section
+      {...filterDataAttributes(rootAttributes, TAB_NAVIGATOR_PROTECTED)}
       class={`kui-tab-scaffold ${tinted.className} ${className}`
         .replace(/\s+/g, ' ')
         .trim()}

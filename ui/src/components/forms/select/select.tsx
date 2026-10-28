@@ -3,6 +3,10 @@ import type { KerfCustomElement } from 'kerfjs/jsx-runtime';
 import { Check } from 'lucide';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import { PopupCaretGlyph } from '../../../shared/popup/popup-glyphs.js';
 import type { CssLength } from '../../../shared/styles/css-values.js';
 import {
@@ -107,6 +111,9 @@ interface SelectBaseProps<Value extends string = string> {
   labelMaxWidth?: number;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
 
 /** One chosen value (the default). */
@@ -206,6 +213,24 @@ function Caret() {
   );
 }
 
+const SELECT_PROTECTED = new Set([
+  'data-caret',
+  'data-component',
+  'data-default-selected',
+  'data-focus-ring-inset',
+  'data-focus-ring-owner',
+  'data-placeholder',
+  'data-placeholder-text',
+  'data-presentation',
+  'data-select-action',
+  'data-selected-presentation',
+  'data-size',
+  'data-trigger-max',
+  'data-trigger-min',
+  'data-trigger-width',
+  'data-value',
+]);
+
 export function Select<Value extends string>(props: SelectProps<Value>) {
   const {
     name,
@@ -228,6 +253,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
     focusRingInset = false,
     labelMaxWidth,
     slot,
+    rootAttributes = {},
   } = props;
   const multiple = props.multiple === true;
   const values: readonly Value[] = props.multiple ? props.value : [props.value];
@@ -254,6 +280,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
       .filter(Boolean)
       .join(';') || undefined;
   const rootData = {
+    ...filterDataAttributes(rootAttributes, SELECT_PROTECTED),
     'data-component': 'select',
     'data-presentation': presentation,
     'data-size': size,

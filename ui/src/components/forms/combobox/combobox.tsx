@@ -1,3 +1,7 @@
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 /** A suggestion: a plain string, or a value with a distinct visible label. */
 export type ComboboxSuggestion = string | { value: string; label: string };
 
@@ -23,12 +27,24 @@ export interface ComboboxProps {
   createLabel?: string | false;
   disabled?: boolean;
   className?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
 
 const optionParts = (suggestion: ComboboxSuggestion) =>
   typeof suggestion === 'string'
     ? { value: suggestion, label: suggestion }
     : suggestion;
+
+const COMBOBOX_PROTECTED = new Set([
+  'data-combobox-id',
+  'data-component',
+  'data-create',
+  'data-create-label',
+  'data-disabled',
+  'data-value',
+]);
 
 /**
  * A free-text field with a filtered suggestion list that can also create a new
@@ -48,11 +64,13 @@ export function Combobox({
   createLabel = 'Create “{value}”',
   disabled = false,
   className = '',
+  rootAttributes = {},
 }: ComboboxProps) {
   const listId = `${id}-listbox`;
   const hintId = hint ? `${id}-hint` : undefined;
   return (
     <div
+      {...filterDataAttributes(rootAttributes, COMBOBOX_PROTECTED)}
       class={`kui-combobox ${className}`.trim()}
       data-component="combobox"
       data-combobox-id={id}

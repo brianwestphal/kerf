@@ -153,6 +153,10 @@
               }
             }
           }
+        },
+        "dataChannel": {
+          "description": "How the component carries application data-* attributes to its root: a rootAttributes prop, native data-* passthrough, or none (it cannot carry the Kerf UI editor's node marker).",
+          "enum": ["rootAttributes", "native", "none"]
         }
       }
     },

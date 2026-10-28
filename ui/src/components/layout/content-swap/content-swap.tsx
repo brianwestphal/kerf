@@ -1,4 +1,8 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 
 export type ContentSwapSide = 'a' | 'b';
 export type ContentSwapTransition = 'none' | 'crossfade' | 'push';
@@ -21,7 +25,20 @@ export interface ContentSwapProps {
   className?: string;
   /** Native named-slot assignment, such as a dialog's `label` or `footer`. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const CONTENT_SWAP_PROTECTED = new Set([
+  'data-active',
+  'data-active-side',
+  'data-component',
+  'data-direction',
+  'data-fill',
+  'data-side',
+  'data-transition',
+]);
 
 /**
  * Two content sides sharing one cell (a dialog body that steps to a second
@@ -40,6 +57,7 @@ export function ContentSwap({
   fill = false,
   className = '',
   slot,
+  rootAttributes = {},
 }: ContentSwapProps) {
   const side = (name: ContentSwapSide, content: KerfUiContent) => {
     const shown = active === name;
@@ -57,6 +75,7 @@ export function ContentSwap({
   };
   return (
     <div
+      {...filterDataAttributes(rootAttributes, CONTENT_SWAP_PROTECTED)}
       class={`kui-content-swap ${className}`.trim()}
       data-component="content-swap"
       data-active-side={active}

@@ -389,10 +389,17 @@ Every node whose component accepts application `data-*` attributes (a
 refs use it for lookup.
 
 The generator passes the marker through the component's public prop. It never
-patches markup, which keeps the styling and ownership contract intact. A
-component with no `data-*` channel cannot be named: selection on the canvas
-falls back to its nearest marked ancestor. Closing that gap is a component
-change, tracked in §10.
+patches markup, which keeps the styling and ownership contract intact.
+`component-props.json` records each component's `dataChannel`:
+
+- `rootAttributes` for 76 Kerf UI components, which filter their own markers
+  out of it;
+- `native` for `Text` and `FieldLabel`, which pass `data-*` through;
+- `none` for `CollapsiblePanelRelocated` alone, which renders a fragment and
+  has no single root (KF-PYR8XZ: component data channels).
+
+A component with no channel cannot be named, and selection on the canvas falls
+back to its nearest marked ancestor.
 
 The marker attribute is reserved. Application code must not write or remove
 it, consistent with the catalog's `wiring.stateAttributes` rule.
@@ -646,8 +653,8 @@ diff <doc…>` takes `--target js`, `--declarations-only`, and extra
    against the generator (§7; KF-5G4CNW: runtime interpreter).
 5. **Done:** `kerfjs/no-generated-view-edits` ESLint rule, in `recommended` at
    `error` (§5.2; KF-BD3ZHQ: no-hand-edits lint rule).
-6. A `data-*` channel (`rootAttributes`) for every component that lacks one,
-   recorded in `component-props.json` (§4.5; KF-PYR8XZ: component data
-   channels).
+6. **Done:** a `data-*` channel (`rootAttributes`) for every component with a
+   single root, recorded as `dataChannel` in `component-props.json` (§4.5;
+   KF-PYR8XZ: component data channels).
 7. **Done (first slice):** the private `editor/` package (KF-4NRZCV: editor
    scaffold). Editing, validation display, and export in the editor follow.

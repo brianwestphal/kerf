@@ -1,4 +1,8 @@
 import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
+import {
   type CssLength,
   type CssSize,
   pct,
@@ -22,6 +26,9 @@ export interface SkeletonProps {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
 
 function blockStyle(
@@ -36,6 +43,8 @@ function blockStyle(
   ].filter(Boolean);
   return parts.length ? parts.join(';') : undefined;
 }
+
+const SKELETON_PROTECTED = new Set(['data-block', 'data-component']);
 
 /**
  * A subtle, deliberately **unanimated** loading placeholder block. Use it for a
@@ -52,6 +61,7 @@ export function Skeleton({
   label,
   className = '',
   slot,
+  rootAttributes = {},
 }: SkeletonProps) {
   const a11y = {
     role: label ? 'img' : undefined,
@@ -61,6 +71,7 @@ export function Skeleton({
   if (lines && lines > 1) {
     return (
       <span
+        {...filterDataAttributes(rootAttributes, SKELETON_PROTECTED)}
         class={`kui-skeleton-lines ${className}`.trim()}
         data-component="skeleton"
         style={width ? `width:${width}` : undefined}
@@ -83,6 +94,7 @@ export function Skeleton({
   }
   return (
     <span
+      {...filterDataAttributes(rootAttributes, SKELETON_PROTECTED)}
       class={`kui-skeleton ${className}`.trim()}
       data-component="skeleton"
       data-block={block ? 'true' : undefined}

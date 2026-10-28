@@ -658,7 +658,9 @@ A `content` type carries `acceptsText` when it also takes a plain string or
 number (`ButtonLabel`); bare `KerfUiContent` does not. An object type with a
 string index signature records it as `index: { keyPrefix, value }`, for
 example `rootAttributes`' `data-*`. Named object and union types are stored
-once in `definitions` and referenced by name, which bounds recursion. Props inherited from Kerf's native attribute
+once in `definitions` and referenced by name, which bounds recursion. Each
+entry also records its `dataChannel`: `rootAttributes`, `native`
+(data-* passthrough), or `none`. Props inherited from Kerf's native attribute
 types are listed only by name in `nativeAttributes`. Web Awesome entries carry
 attribute props (with `property` when the field name differs) and `slots`.
 

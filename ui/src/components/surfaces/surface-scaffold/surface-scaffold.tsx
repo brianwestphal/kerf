@@ -1,7 +1,10 @@
 import { X } from 'lucide';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
-import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import type { CssLength } from '../../../shared/styles/css-values.js';
 import { LucideIcon } from '../../media/lucide-icon/lucide-icon.js';
 
@@ -542,7 +545,37 @@ export interface PopupSurfaceProps {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const POPUP_SURFACE_PROTECTED = new Set([
+  'data-body-inset',
+  'data-body-layout',
+  'data-component',
+  'data-dialog-close',
+  'data-emphasis',
+  'data-enter-motion',
+  'data-exit-motion',
+  'data-footer-inset',
+  'data-footer-presentation',
+  'data-header-presentation',
+  'data-height',
+  'data-inset',
+  'data-light-dismiss',
+  'data-max-height',
+  'data-min-height',
+  'data-preferred-width',
+  'data-presentation',
+  'data-resizable',
+  'data-size',
+  'data-stack-active',
+  'data-stack-count',
+  'data-stack-open',
+  'data-stack-position',
+  'data-viewport-gutter',
+]);
 
 /** Configure recurring Web Awesome dropdown-menu geometry without consumer ::part() CSS. */
 export function PopupSurface({
@@ -550,9 +583,11 @@ export function PopupSurface({
   inset = 'standard',
   className = '',
   slot,
+  rootAttributes = {},
 }: PopupSurfaceProps) {
   return (
     <span
+      {...filterDataAttributes(rootAttributes, POPUP_SURFACE_PROTECTED)}
       class={`kui-popup-surface ${className}`.trim()}
       data-component="popup-surface"
       data-inset={inset}

@@ -1,6 +1,10 @@
 import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import type { NavPane } from '../../../shared/panels/nav-pane.js';
 import { ensureSunkenTexture } from '../../../shared/styles/sunken-texture.js';
 import type { ListConfig } from '../../collections/list/list.js';
@@ -254,6 +258,9 @@ export interface WorkbenchProps {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
 
 interface ResolvedResize {
@@ -536,6 +543,38 @@ function restore(
   );
 }
 
+const WORKBENCH_PROTECTED = new Set([
+  'data-appearance',
+  'data-collapse-motion',
+  'data-collapsed',
+  'data-compact-overlay',
+  'data-component',
+  'data-content-overflow',
+  'data-drawer-inline-expanded',
+  'data-drawer-overlay-expanded',
+  'data-drawer-responsive-expanded',
+  'data-drawer-responsive-inline',
+  'data-left-inline-expanded',
+  'data-left-responsive-expanded',
+  'data-left-responsive-inline',
+  'data-main-min-height',
+  'data-main-min-size',
+  'data-outlined',
+  'data-overlay-backdrop',
+  'data-panel',
+  'data-position',
+  'data-presentation',
+  'data-rail-overlay-expanded',
+  'data-region-id',
+  'data-responsive-overlay',
+  'data-responsive-overlay-at',
+  'data-right-inline-expanded',
+  'data-right-responsive-expanded',
+  'data-right-responsive-inline',
+  'data-separator',
+  'data-workbench-rail',
+]);
+
 /**
  * The Xcode-like multi-panel workspace: a collapsible left rail, right rail, and
  * bottom drawer around a central work area (any absent). Collapsing snaps the
@@ -573,6 +612,7 @@ export function Workbench({
   overlayBackdrop = false,
   className = '',
   slot,
+  rootAttributes = {},
 }: WorkbenchProps) {
   // Each work-area minimum applies only on an axis a panel shares with it:
   // the width beside a rail, the height above the drawer.
@@ -597,6 +637,7 @@ export function Workbench({
     ensureSunkenTexture();
   return (
     <section
+      {...filterDataAttributes(rootAttributes, WORKBENCH_PROTECTED)}
       class={`kui-workbench ${className}`.trim()}
       id={id}
       data-component="workbench"

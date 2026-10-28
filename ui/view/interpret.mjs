@@ -209,7 +209,8 @@ function renderDocument(document, inputs, slots, options) {
     }
     if (slot && definition.props.some((prop) => prop.name === 'slot'))
       out.slot = slot;
-    if (channelOf(definition) === 'rootAttributes') {
+    const channel = channelOf(definition);
+    if (channel === 'rootAttributes') {
       const base =
         props.rootAttributes === undefined
           ? {}
@@ -219,7 +220,11 @@ function renderDocument(document, inputs, slots, options) {
         'data-kerf-node': node.id,
         ...(rowKey === undefined ? {} : { 'data-key': String(rowKey) }),
       };
+    } else if (channel === 'native') {
+      out['data-kerf-node'] = node.id;
+      if (rowKey !== undefined) out['data-key'] = String(rowKey);
     }
+
     const render = components[node.type];
     if (typeof render !== 'function') {
       throw new Error(

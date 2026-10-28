@@ -1,6 +1,10 @@
 import { Tag } from 'lucide';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import { LucideIcon } from '../../media/lucide-icon/lucide-icon.js';
 import { SearchField } from '../search-field/search-field.js';
 
@@ -41,7 +45,17 @@ export interface TagFieldProps {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const TAG_FIELD_PROTECTED = new Set([
+  'data-component',
+  'data-invalid',
+  'data-max',
+  'data-tag-field-id',
+]);
 
 /**
  * A form field that collects short values as removable tags: SearchField's
@@ -69,11 +83,13 @@ export function TagField({
   clearLabel = 'Clear Tags',
   className = '',
   slot,
+  rootAttributes = {},
 }: TagFieldProps) {
   if (max !== undefined && (!Number.isInteger(max) || max < 1))
     throw new RangeError('TagField max must be a positive integer.');
   return (
     <div
+      {...filterDataAttributes(rootAttributes, TAG_FIELD_PROTECTED)}
       class={`kui-tag-field ${className}`.trim()}
       data-component="tag-field"
       data-tag-field-id={id}

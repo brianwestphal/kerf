@@ -319,11 +319,16 @@ function createEmitter(document, catalog, imports) {
     }
     // A component without the channel has no rootAttributes prop at all, so
     // validation already rejected one in its props.
-    if (channelOf(definition) === 'rootAttributes') {
+    const channel = channelOf(definition);
+    if (channel === 'rootAttributes') {
       entries.push([
         'rootAttributes',
         markers(node, rowKey, props.rootAttributes, scope),
       ]);
+    } else if (channel === 'native') {
+      // The component passes data-* props straight through to its root.
+      entries.push(["'data-kerf-node'", raw(literal(node.id))]);
+      if (rowKey) entries.push(["'data-key'", raw(`String(${rowKey})`)]);
     }
     imports.value(definition.import, definition.export);
     return call(`${definition.export}(`, obj(entries));

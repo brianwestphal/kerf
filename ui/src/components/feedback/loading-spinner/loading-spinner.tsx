@@ -1,4 +1,8 @@
 import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
+import {
   type CssForegroundColor,
   remify,
 } from '../../../shared/styles/css-values.js';
@@ -23,7 +27,12 @@ export interface LoadingSpinnerProps {
   size?: LoadingSpinnerSize;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const LOADING_SPINNER_PROTECTED = new Set(['data-component', 'data-size']);
 
 /** Stable viewBox-centered progress ring based on svg-spinners' MIT-licensed 180-ring. */
 export function LoadingSpinner({
@@ -32,6 +41,7 @@ export function LoadingSpinner({
   label,
   size,
   slot,
+  rootAttributes = {},
 }: LoadingSpinnerProps) {
   if (typeof size === 'number' && (!Number.isFinite(size) || size <= 0))
     throw new RangeError(
@@ -44,6 +54,7 @@ export function LoadingSpinner({
   const slotAttribute = { slot };
   return (
     <svg
+      {...filterDataAttributes(rootAttributes, LOADING_SPINNER_PROTECTED)}
       {...slotAttribute}
       class={`kui-loading-spinner ${className}`.trim()}
       data-component="loading-spinner"

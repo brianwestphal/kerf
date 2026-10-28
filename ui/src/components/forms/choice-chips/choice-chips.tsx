@@ -1,5 +1,9 @@
 import type { SafeHtml } from 'kerfjs';
 
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import type { CssLength } from '../../../shared/styles/css-values.js';
 import type { CssColor } from '../../../shared/styles/css-values.js';
 
@@ -59,6 +63,9 @@ interface ChoiceChipsCommonProps<Value extends string> {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
 
 /** One exclusive value (the default), backed by native radios. */
@@ -128,6 +135,20 @@ function swatchStyle(swatch: ChoiceChipsSwatch): string | undefined {
 /** Which selection model a ChoiceChips group renders. */
 export type ChoiceChipsSelectionMode = 'single' | 'toggle' | 'multiple';
 
+const CHOICE_CHIPS_PROTECTED = new Set([
+  'data-action',
+  'data-choice-value',
+  'data-component',
+  'data-disabled',
+  'data-form',
+  'data-name',
+  'data-presentation',
+  'data-scrollable',
+  'data-selection-mode',
+  'data-size',
+  'data-swatch',
+]);
+
 /**
  * A wrapping set of pill chips. By default it is an exclusive radio group:
  * one Tab stop, arrow-key selection, and a real form value. With
@@ -153,6 +174,7 @@ export function ChoiceChips<Value extends string>(
     slot,
     label,
     labelledBy,
+    rootAttributes = {},
   } = props;
   const icons = presentation === 'icons';
   if (icons && choices.some((choice) => choice.icon === undefined))
@@ -211,6 +233,7 @@ export function ChoiceChips<Value extends string>(
       enabled.find((choice) => checked.includes(choice.value)) ?? enabled[0];
     return (
       <div
+        {...filterDataAttributes(rootAttributes, CHOICE_CHIPS_PROTECTED)}
         id={id}
         class={`kui-choice-chips ${className}`.trim()}
         data-component="choice-chips"
@@ -264,6 +287,7 @@ export function ChoiceChips<Value extends string>(
   const multiple = mode === 'toggle';
   return (
     <div
+      {...filterDataAttributes(rootAttributes, CHOICE_CHIPS_PROTECTED)}
       id={id}
       class={`kui-choice-chips ${className}`.trim()}
       data-component="choice-chips"

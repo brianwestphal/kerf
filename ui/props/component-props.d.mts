@@ -82,6 +82,7 @@ export interface ComponentProps extends Partial<PropsShape> {
   groups?: string[];
   props: PropDescriptor[];
   slots?: { name: string; description?: string }[];
+  dataChannel?: 'rootAttributes' | 'native' | 'none';
 }
 
 export interface ComponentPropsDocument {

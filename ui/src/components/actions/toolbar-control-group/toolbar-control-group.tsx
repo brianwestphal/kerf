@@ -1,4 +1,8 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import { markRelocatableGroup } from '../../../shared/panels/panel-toolbar-group.js';
 import type { CssLength } from '../../../shared/styles/css-values.js';
 import { LoadingSpinner } from '../../feedback/loading-spinner/loading-spinner.js';
@@ -45,7 +49,39 @@ export interface ToolbarActionLinkProps {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const TOOLBAR_ACTION_LINK_PROTECTED = new Set([
+  'data-appearance',
+  'data-busy',
+  'data-button-appearance',
+  'data-component',
+  'data-content',
+  'data-density',
+  'data-expanded',
+  'data-expanded-overflow',
+  'data-focus-ring',
+  'data-hide-below',
+  'data-material',
+  'data-menu-inset',
+  'data-nested-dropdown',
+  'data-overflow',
+  'data-placement',
+  'data-scrim',
+  'data-selected-chrome',
+  'data-selected-tone',
+  'data-shape',
+  'data-show-below',
+  'data-single',
+  'data-size',
+  'data-sizing',
+  'data-tile-tone',
+  'data-tone',
+  'data-visibility',
+]);
 
 /** A semantic anchor with ToolbarControlGroup-owned action geometry. */
 export function ToolbarActionLink({
@@ -57,12 +93,14 @@ export function ToolbarActionLink({
   external = false,
   className = '',
   slot,
+  rootAttributes = {},
 }: ToolbarActionLinkProps) {
   const accessibleLabel =
     ariaLabel ??
     `${label}${detail ? `, ${detail}` : ''}${external ? ' (opens in new tab)' : ''}`;
   return (
     <a
+      {...filterDataAttributes(rootAttributes, TOOLBAR_ACTION_LINK_PROTECTED)}
       class={`kui-toolbar-action-link ${className}`.trim()}
       data-component="toolbar-action-link"
       href={href}
@@ -155,7 +193,39 @@ export interface ToolbarControlGroupProps {
   avatarImage?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const TOOLBAR_CONTROL_GROUP_PROTECTED = new Set([
+  'data-appearance',
+  'data-busy',
+  'data-button-appearance',
+  'data-component',
+  'data-content',
+  'data-density',
+  'data-expanded',
+  'data-expanded-overflow',
+  'data-focus-ring',
+  'data-hide-below',
+  'data-material',
+  'data-menu-inset',
+  'data-nested-dropdown',
+  'data-overflow',
+  'data-placement',
+  'data-scrim',
+  'data-selected-chrome',
+  'data-selected-tone',
+  'data-shape',
+  'data-show-below',
+  'data-single',
+  'data-size',
+  'data-sizing',
+  'data-tile-tone',
+  'data-tone',
+  'data-visibility',
+]);
 
 export function ToolbarControlGroup({
   children,
@@ -191,6 +261,7 @@ export function ToolbarControlGroup({
   busyLabel = 'Working',
   avatarImage,
   slot,
+  rootAttributes = {},
 }: ToolbarControlGroupProps) {
   const inlineStyles = [
     avatarImage
@@ -200,6 +271,7 @@ export function ToolbarControlGroup({
   ].filter(Boolean);
   const group = (
     <div
+      {...filterDataAttributes(rootAttributes, TOOLBAR_CONTROL_GROUP_PROTECTED)}
       class={`kui-toolbar-control-group ${className}`.trim()}
       data-component="toolbar-control-group"
       role={label ? 'group' : undefined}

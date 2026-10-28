@@ -1,6 +1,10 @@
 import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import { LoadingSpinner } from '../loading-spinner/loading-spinner.js';
 
 export interface EmptyStateProps {
@@ -12,7 +16,12 @@ export interface EmptyStateProps {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const EMPTY_STATE_PROTECTED = new Set(['data-busy', 'data-component']);
 
 export function EmptyState({
   title,
@@ -22,9 +31,11 @@ export function EmptyState({
   busy = false,
   className = '',
   slot,
+  rootAttributes = {},
 }: EmptyStateProps) {
   return (
     <section
+      {...filterDataAttributes(rootAttributes, EMPTY_STATE_PROTECTED)}
       class={`kui-empty-state ${className}`.trim()}
       data-component="empty-state"
       data-busy={String(busy)}

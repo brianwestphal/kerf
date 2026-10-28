@@ -247,7 +247,8 @@
           "required": ["repeat", "src", "alt"],
           "forbidden": ["srcset", "sizes", "fit"]
         }
-      ]
+      ],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:badge",
@@ -509,7 +510,8 @@
           "required": ["size", "ariaHidden"],
           "forbidden": ["children", "appearance", "shape", "maxWidth", "label"]
         }
-      ]
+      ],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:button",
@@ -808,6 +810,7 @@
         { "required": ["children"], "forbidden": [] },
         { "required": ["icon", "ariaLabel"], "forbidden": ["children"] }
       ],
+      "dataChannel": "rootAttributes",
       "groups": ["Content", "Appearance", "State", "Form"]
     },
     {
@@ -959,6 +962,7 @@
         }
       ],
       "nativeAttributes": [],
+      "dataChannel": "rootAttributes",
       "groups": ["Content", "State"]
     },
     {
@@ -1121,7 +1125,8 @@
           "required": ["labelledBy", "name", "choices"],
           "forbidden": ["label", "ariaLabel"]
         }
-      ]
+      ],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:chip",
@@ -1477,7 +1482,8 @@
           ]
         }
       ],
-      "discriminant": ["truncate"]
+      "discriminant": ["truncate"],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:choice-chips",
@@ -1580,6 +1586,17 @@
           "control": "hidden"
         },
         {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
+        },
+        {
           "name": "multiple",
           "type": {
             "kind": "enum",
@@ -1672,7 +1689,8 @@
           "forbidden": ["required", "label"]
         }
       ],
-      "discriminant": ["multiple"]
+      "discriminant": ["multiple"],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:collapsible-panel",
@@ -1912,9 +1930,21 @@
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:collapsible-panel#CollapsiblePanelRelocated",
@@ -1967,7 +1997,8 @@
           "description": "Density of the toolbar the groups are placed in, so the standard toggle\nfits it (`compact` in a `density=\"compact\"` toolbar). Defaults to\n`default`."
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "none"
     },
     {
       "key": "@kerfjs/ui:collapsible-panel#CollapsiblePanelToggle",
@@ -2023,9 +2054,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:color-field",
@@ -2161,7 +2204,8 @@
       "variants": [
         { "required": ["id", "value", "label"], "forbidden": ["ariaLabel"] },
         { "required": ["id", "value", "ariaLabel"], "forbidden": ["label"] }
-      ]
+      ],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:color-picker",
@@ -2302,7 +2346,8 @@
           "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:color-swatches",
@@ -2420,7 +2465,8 @@
           "required": ["name", "swatches", "ariaLabel"],
           "forbidden": ["label"]
         }
-      ]
+      ],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:column-track",
@@ -2506,7 +2552,8 @@
           "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:combobox",
@@ -2593,9 +2640,21 @@
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:content-item",
@@ -3129,7 +3188,8 @@
           "forbidden": ["tabIndex", "gridRow"]
         }
       ],
-      "discriminant": ["interactive"]
+      "discriminant": ["interactive"],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:content-swap",
@@ -3220,9 +3280,21 @@
           "required": false,
           "description": "Native named-slot assignment, such as a dialog's `label` or `footer`.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:corner-status",
@@ -3285,9 +3357,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:disclosure",
@@ -3396,7 +3480,8 @@
           "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:disclosure-arrow",
@@ -3469,9 +3554,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:edge-activity-indicator",
@@ -3528,9 +3625,21 @@
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:editor-frame",
@@ -3670,7 +3779,8 @@
           "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:empty-state",
@@ -3737,9 +3847,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": [],
+      "dataChannel": "rootAttributes",
       "groups": ["Content", "State"]
     },
     {
@@ -3815,9 +3937,21 @@
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:file-picker#FileDropZone",
@@ -3904,9 +4038,21 @@
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:floating-toolbar",
@@ -4000,9 +4146,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:framed-list",
@@ -4095,7 +4253,8 @@
           "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:framed-list#FramedListRow",
@@ -4173,7 +4332,8 @@
           "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:grid",
@@ -4495,7 +4655,8 @@
           "forbidden": ["minColumnWidth", "autoFill"]
         },
         { "required": ["minColumnWidth"], "forbidden": ["columns"] }
-      ]
+      ],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:list",
@@ -4925,6 +5086,7 @@
         }
       ],
       "nativeAttributes": [],
+      "dataChannel": "rootAttributes",
       "groups": ["Content", "Layout", "Surface"]
     },
     {
@@ -5488,7 +5650,8 @@
             "trailingActionAttributes"
           ]
         }
-      ]
+      ],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:list-detail-dialog",
@@ -5672,7 +5835,8 @@
           "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:list-header",
@@ -6179,6 +6343,7 @@
         }
       ],
       "discriminant": ["toggle"],
+      "dataChannel": "rootAttributes",
       "groups": ["Content", "Mode", "Appearance"]
     },
     {
@@ -6240,9 +6405,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:list-inset-text",
@@ -6341,7 +6518,8 @@
           "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:list-item",
@@ -6780,6 +6958,7 @@
         }
       ],
       "nativeAttributes": [],
+      "dataChannel": "rootAttributes",
       "groups": ["Content", "Behavior", "Appearance", "State"]
     },
     {
@@ -6862,6 +7041,166 @@
           },
           "required": true,
           "slot": true
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "object",
+            "props": [
+              {
+                "name": "data-component",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-action",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-item-id",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-has-icon",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-has-description",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-multiline",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-density",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-divider",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-busy",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-state",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-kui-disabled",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-icon-align",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-icon-tile",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-icon-tile-tone",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-dragging",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-drop-position",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              }
+            ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
+            "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-item-id'?: undefined; 'data-has-icon'?: undefined; 'data-has-description'?: undefined; 'data-multiline'?: undefined; 'data-density'?: undefined; 'data-divider'?: undefined; 'data-busy'?: undefined; 'data-state'?: undefined; 'data-kui-disabled'?: undefined; 'data-icon-align'?: undefined; 'data-icon-tile'?: undefined; 'data-icon-tile-tone'?: undefined; 'data-dragging'?: undefined; 'data-drop-position'?: undefined; }>",
+            "nullable": true
+          },
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "title",
@@ -7039,169 +7378,10 @@
           },
           "required": false,
           "description": "Draw the insertion line at this row's leading (`before`) or trailing (`after`) block edge."
-        },
-        {
-          "name": "rootAttributes",
-          "type": {
-            "kind": "object",
-            "props": [
-              {
-                "name": "data-component",
-                "type": {
-                  "kind": "never",
-                  "text": "undefined",
-                  "nullable": true
-                },
-                "required": false
-              },
-              {
-                "name": "data-action",
-                "type": {
-                  "kind": "never",
-                  "text": "undefined",
-                  "nullable": true
-                },
-                "required": false
-              },
-              {
-                "name": "data-item-id",
-                "type": {
-                  "kind": "never",
-                  "text": "undefined",
-                  "nullable": true
-                },
-                "required": false
-              },
-              {
-                "name": "data-has-icon",
-                "type": {
-                  "kind": "never",
-                  "text": "undefined",
-                  "nullable": true
-                },
-                "required": false
-              },
-              {
-                "name": "data-has-description",
-                "type": {
-                  "kind": "never",
-                  "text": "undefined",
-                  "nullable": true
-                },
-                "required": false
-              },
-              {
-                "name": "data-multiline",
-                "type": {
-                  "kind": "never",
-                  "text": "undefined",
-                  "nullable": true
-                },
-                "required": false
-              },
-              {
-                "name": "data-density",
-                "type": {
-                  "kind": "never",
-                  "text": "undefined",
-                  "nullable": true
-                },
-                "required": false
-              },
-              {
-                "name": "data-divider",
-                "type": {
-                  "kind": "never",
-                  "text": "undefined",
-                  "nullable": true
-                },
-                "required": false
-              },
-              {
-                "name": "data-busy",
-                "type": {
-                  "kind": "never",
-                  "text": "undefined",
-                  "nullable": true
-                },
-                "required": false
-              },
-              {
-                "name": "data-state",
-                "type": {
-                  "kind": "never",
-                  "text": "undefined",
-                  "nullable": true
-                },
-                "required": false
-              },
-              {
-                "name": "data-kui-disabled",
-                "type": {
-                  "kind": "never",
-                  "text": "undefined",
-                  "nullable": true
-                },
-                "required": false
-              },
-              {
-                "name": "data-icon-align",
-                "type": {
-                  "kind": "never",
-                  "text": "undefined",
-                  "nullable": true
-                },
-                "required": false
-              },
-              {
-                "name": "data-icon-tile",
-                "type": {
-                  "kind": "never",
-                  "text": "undefined",
-                  "nullable": true
-                },
-                "required": false
-              },
-              {
-                "name": "data-icon-tile-tone",
-                "type": {
-                  "kind": "never",
-                  "text": "undefined",
-                  "nullable": true
-                },
-                "required": false
-              },
-              {
-                "name": "data-dragging",
-                "type": {
-                  "kind": "never",
-                  "text": "undefined",
-                  "nullable": true
-                },
-                "required": false
-              },
-              {
-                "name": "data-drop-position",
-                "type": {
-                  "kind": "never",
-                  "text": "undefined",
-                  "nullable": true
-                },
-                "required": false
-              }
-            ],
-            "index": {
-              "keyPrefix": "data-",
-              "value": { "kind": "string", "text": "string", "nullable": true }
-            },
-            "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-item-id'?: undefined; 'data-has-icon'?: undefined; 'data-has-description'?: undefined; 'data-multiline'?: undefined; 'data-density'?: undefined; 'data-divider'?: undefined; 'data-busy'?: undefined; 'data-state'?: undefined; 'data-kui-disabled'?: undefined; 'data-icon-align'?: undefined; 'data-icon-tile'?: undefined; 'data-icon-tile-tone'?: undefined; 'data-dragging'?: undefined; 'data-drop-position'?: undefined; }>",
-            "nullable": true
-          },
-          "required": false,
-          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:loading-spinner",
@@ -7257,9 +7437,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:lucide-icon",
@@ -7362,9 +7554,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:message-composer",
@@ -7489,7 +7693,8 @@
           "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:nav-stack",
@@ -7690,9 +7895,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:pane",
@@ -8313,6 +8530,7 @@
         }
       ],
       "nativeAttributes": [],
+      "dataChannel": "rootAttributes",
       "groups": ["Content", "Chrome", "Surface", "Semantics"]
     },
     {
@@ -8514,7 +8732,8 @@
           "forbidden": ["triggerContent", "text", "icon", "caret", "disabled"]
         }
       ],
-      "discriminant": ["context"]
+      "discriminant": ["context"],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:progress-bar",
@@ -8620,7 +8839,8 @@
       "variants": [
         { "required": ["label"], "forbidden": ["ariaLabel"] },
         { "required": ["ariaLabel"], "forbidden": ["label"] }
-      ]
+      ],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:progress-ring",
@@ -8704,7 +8924,8 @@
           "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:radio-group",
@@ -8859,7 +9080,8 @@
           "forbidden": ["ariaLabel"]
         },
         { "required": ["ariaLabel", "name", "choices"], "forbidden": ["label"] }
-      ]
+      ],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:resize",
@@ -9056,9 +9278,21 @@
           },
           "required": true,
           "slot": true
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:row",
@@ -9305,7 +9539,8 @@
           "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:search-field",
@@ -9530,6 +9765,17 @@
           "control": "hidden"
         },
         {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
+        },
+        {
           "name": "collapsible",
           "type": { "kind": "boolean", "text": "boolean" },
           "required": false,
@@ -9687,7 +9933,8 @@
           "forbidden": ["expanded", "expandAction", "expandLabel", "trailing"]
         }
       ],
-      "discriminant": ["collapsible"]
+      "discriminant": ["collapsible"],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:segmented-control",
@@ -9830,9 +10077,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": [],
+      "dataChannel": "rootAttributes",
       "groups": ["Content", "Appearance", "State"]
     },
     {
@@ -10034,6 +10293,17 @@
           "control": "hidden"
         },
         {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
+        },
+        {
           "name": "label",
           "type": { "kind": "string", "text": "string" },
           "required": false,
@@ -10196,6 +10466,7 @@
         }
       ],
       "discriminant": ["multiple"],
+      "dataChannel": "rootAttributes",
       "groups": ["Content", "Appearance", "State"]
     },
     {
@@ -10333,9 +10604,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:slider",
@@ -10511,7 +10794,8 @@
       "variants": [
         { "required": ["id", "label"], "forbidden": ["ariaLabel"] },
         { "required": ["id", "ariaLabel"], "forbidden": ["label"] }
-      ]
+      ],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:spacer",
@@ -10601,9 +10885,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:split-button",
@@ -10847,7 +11143,8 @@
           "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:split-view",
@@ -10996,9 +11293,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:state-banner",
@@ -11251,6 +11560,7 @@
         }
       ],
       "nativeAttributes": [],
+      "dataChannel": "rootAttributes",
       "groups": ["Content", "Appearance"]
     },
     {
@@ -11506,7 +11816,8 @@
           "forbidden": ["draggable"]
         }
       ],
-      "discriminant": ["semanticRole"]
+      "discriminant": ["semanticRole"],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:sunken-panel",
@@ -11603,9 +11914,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:surface-scaffold",
@@ -12032,7 +12355,8 @@
       "variants": [
         { "required": ["label", "children"], "forbidden": ["labelledBy"] },
         { "required": ["labelledBy", "children"], "forbidden": ["label"] }
-      ]
+      ],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:surface-scaffold#PopoverDialogSurface",
@@ -12197,7 +12521,8 @@
       "variants": [
         { "required": ["label", "children"], "forbidden": ["labelledBy"] },
         { "required": ["labelledBy", "children"], "forbidden": ["label"] }
-      ]
+      ],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:surface-scaffold#PopupSurface",
@@ -12239,9 +12564,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:switch",
@@ -12362,6 +12699,7 @@
         }
       ],
       "nativeAttributes": [],
+      "dataChannel": "rootAttributes",
       "groups": ["Content", "State"]
     },
     {
@@ -12502,9 +12840,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:tab-navigator",
@@ -12637,9 +12987,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:tabs",
@@ -12947,7 +13309,8 @@
           "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:tag-field",
@@ -13071,9 +13434,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:text",
@@ -13366,6 +13741,7 @@
         },
         { "required": ["children", "wrap"], "forbidden": ["maxLines"] }
       ],
+      "dataChannel": "native",
       "groups": ["Content", "Appearance", "Wrapping"]
     },
     {
@@ -13430,7 +13806,8 @@
         "itemType",
         "itemId",
         "itemRef"
-      ]
+      ],
+      "dataChannel": "native"
     },
     {
       "key": "@kerfjs/ui:text-field",
@@ -13787,6 +14164,7 @@
         { "required": ["label"], "forbidden": ["ariaLabel"] },
         { "required": ["ariaLabel"], "forbidden": ["label"] }
       ],
+      "dataChannel": "rootAttributes",
       "groups": ["Content", "Input", "Validation", "State"]
     },
     {
@@ -13976,9 +14354,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": [],
+      "dataChannel": "rootAttributes",
       "groups": ["Content", "Layout", "Responsive"]
     },
     {
@@ -14358,9 +14748,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": [],
+      "dataChannel": "rootAttributes",
       "groups": ["Content", "Appearance", "Responsive", "State"]
     },
     {
@@ -14425,9 +14827,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:toolbar-text",
@@ -14551,6 +14965,17 @@
           "control": "hidden"
         },
         {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
+        },
+        {
           "name": "action",
           "type": { "kind": "string", "text": "string" },
           "required": false,
@@ -14638,6 +15063,7 @@
           ]
         }
       ],
+      "dataChannel": "rootAttributes",
       "groups": ["Content", "Appearance", "Behavior"]
     },
     {
@@ -14699,9 +15125,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:value-table",
@@ -14781,9 +15219,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:value-table#ValueTableRow",
@@ -14844,9 +15294,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:wa-accordion",
@@ -22589,9 +23051,21 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     },
     {
       "key": "@kerfjs/ui:workbench-dialog",
@@ -22878,7 +23352,8 @@
           "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
     }
   ],
   "definitions": {
@@ -26629,6 +27104,16 @@
                 },
                 "required": false,
                 "description": "Accessible label for the icon-only back control (default \"Back\")."
+              },
+              {
+                "name": "rootAttributes",
+                "type": {
+                  "kind": "record",
+                  "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+                  "nullable": true
+                },
+                "required": false,
+                "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected."
               }
             ],
             "text": "Omit<NavStackProps, \"hideToolbar\" | \"panelToggle\" | \"className\" | \"slot\">"

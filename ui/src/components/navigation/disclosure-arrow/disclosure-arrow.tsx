@@ -1,6 +1,10 @@
 import type { SafeHtml } from 'kerfjs';
 import { ChevronRight } from 'lucide';
 
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import type { CssLength } from '../../../shared/styles/css-values.js';
 import { LucideIcon } from '../../media/lucide-icon/lucide-icon.js';
 
@@ -17,6 +21,9 @@ export interface DisclosureArrowProps {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
 
 const directionRotations: Record<DisclosureDirection, number> = {
@@ -39,6 +46,12 @@ function rotationForState(
   return closedRotation + shortestDelta;
 }
 
+const DISCLOSURE_ARROW_PROTECTED = new Set([
+  'data-component',
+  'data-direction',
+  'data-open',
+]);
+
 export function DisclosureArrow({
   open,
   openDirection = 'down',
@@ -47,11 +60,13 @@ export function DisclosureArrow({
   size,
   className = '',
   slot,
+  rootAttributes = {},
 }: DisclosureArrowProps) {
   const direction = open ? openDirection : closedDirection;
   const rotation = rotationForState(open, openDirection, closedDirection);
   return (
     <span
+      {...filterDataAttributes(rootAttributes, DISCLOSURE_ARROW_PROTECTED)}
       class={`kui-disclosure-arrow ${className}`.trim()}
       style={`--_kui-disclosure-arrow-rotation:${rotation}deg${size ? `;--kui-disclosure-arrow-size:${size}` : ''}`}
       data-component="disclosure-arrow"

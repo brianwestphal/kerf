@@ -1,4 +1,8 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 
 export type SegmentedControlAppearance = 'filled' | 'outlined' | 'toolbar';
 export type SegmentedControlShape = 'rounded' | 'pill';
@@ -30,7 +34,26 @@ export interface SegmentedControlProps<Value extends string = string> {
   disabled?: boolean;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const SEGMENTED_CONTROL_PROTECTED = new Set([
+  'data-action',
+  'data-appearance',
+  'data-component',
+  'data-disabled',
+  'data-kui-disabled',
+  'data-layout',
+  'data-placeholder',
+  'data-segment-value',
+  'data-segmented-control-id',
+  'data-selected',
+  'data-shape',
+  'data-size',
+  'data-value',
+]);
 
 export function SegmentedControl<Value extends string>({
   id,
@@ -46,9 +69,11 @@ export function SegmentedControl<Value extends string>({
   placeholder = false,
   disabled = false,
   slot,
+  rootAttributes = {},
 }: SegmentedControlProps<Value>) {
   return (
     <div
+      {...filterDataAttributes(rootAttributes, SEGMENTED_CONTROL_PROTECTED)}
       class={`kui-segmented-control ${className}`.trim()}
       data-component="segmented-control"
       data-segmented-control-id={id}

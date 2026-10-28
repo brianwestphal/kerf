@@ -2,6 +2,10 @@ import type { SafeHtml } from 'kerfjs';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
+import {
   collapsiblePanelToggleIcon,
   composedPanelBody,
   groupSizeFor,
@@ -65,7 +69,26 @@ export interface CollapsiblePanelToggleProps {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const COLLAPSIBLE_PANEL_TOGGLE_PROTECTED = new Set([
+  'data-action',
+  'data-collapse-motion',
+  'data-collapsed',
+  'data-collapsible-panel',
+  'data-collapsible-target',
+  'data-component',
+  'data-content-overflow',
+  'data-outlined',
+  'data-panel-restore',
+  'data-position',
+  'data-presentation',
+  'data-separator',
+  'data-side',
+]);
 
 /**
  * A standard collapse/expand toggle button for a {@link CollapsiblePanel}: the
@@ -82,11 +105,16 @@ export function CollapsiblePanelToggle({
   label,
   className = '',
   slot,
+  rootAttributes = {},
 }: CollapsiblePanelToggleProps) {
   const glyph = collapsiblePanelToggleIcon(side, collapsed);
   const accessible = label ?? (collapsed ? 'Expand' : 'Collapse');
   return (
     <button
+      {...filterDataAttributes(
+        rootAttributes,
+        COLLAPSIBLE_PANEL_TOGGLE_PROTECTED,
+      )}
       type="button"
       class={`kui-collapsible-panel__toggle ${className}`.trim()}
       data-action={action}
@@ -149,7 +177,26 @@ export interface CollapsiblePanelProps {
   restoreControl?: SafeHtml;
   restorePosition?: ResizableRegionRestorePosition;
   className?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const COLLAPSIBLE_PANEL_PROTECTED = new Set([
+  'data-action',
+  'data-collapse-motion',
+  'data-collapsed',
+  'data-collapsible-panel',
+  'data-collapsible-target',
+  'data-component',
+  'data-content-overflow',
+  'data-outlined',
+  'data-panel-restore',
+  'data-position',
+  'data-presentation',
+  'data-separator',
+  'data-side',
+]);
 
 /**
  * A standalone collapsible side rail or bottom drawer, outside the full
@@ -192,6 +239,7 @@ export function CollapsiblePanel({
   restoreControl,
   restorePosition = side === 'left' ? 'bottom-start' : 'bottom-end',
   className = '',
+  rootAttributes = {},
 }: CollapsiblePanelProps) {
   const sizeVar =
     side === 'bottom'
@@ -200,6 +248,7 @@ export function CollapsiblePanel({
   return (
     <>
       <aside
+        {...filterDataAttributes(rootAttributes, COLLAPSIBLE_PANEL_PROTECTED)}
         class={`kui-collapsible-panel kui-collapsible-panel--${side} ${className}`.trim()}
         data-component="collapsible-panel"
         data-collapsible-panel={id}

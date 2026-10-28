@@ -1,4 +1,8 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 
 /** The viewport corner a CornerStatus occupies, in logical (RTL-aware) terms. */
 export type CornerStatusPlacement =
@@ -24,7 +28,16 @@ export interface CornerStatusProps {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const CORNER_STATUS_PROTECTED = new Set([
+  'data-component',
+  'data-placement',
+  'data-presentation',
+]);
 
 /**
  * A non-dismissible status surface pinned to a viewport corner — "Loading…",
@@ -41,9 +54,11 @@ export function CornerStatus({
   presentation = 'overlay',
   className = '',
   slot,
+  rootAttributes = {},
 }: CornerStatusProps) {
   return (
     <div
+      {...filterDataAttributes(rootAttributes, CORNER_STATUS_PROTECTED)}
       id={id}
       class={`kui-corner-status ${className}`.trim()}
       data-component="corner-status"

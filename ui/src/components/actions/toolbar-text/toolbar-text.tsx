@@ -1,3 +1,7 @@
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import { type CssLength, em } from '../../../shared/styles/css-values.js';
 import { Skeleton } from '../../feedback/skeleton/skeleton.js';
 
@@ -44,6 +48,9 @@ interface ToolbarTextBaseProps {
    * Cap wrapped text to this many lines, truncating past it. Only takes effect with
    * `wrap`; ignored on a single line. `null`/omitted wraps without a line cap. Default null.
    */
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
 
 type ToolbarTextWrappingProps =
@@ -86,6 +93,21 @@ export type ToolbarTextProps = ToolbarTextBaseProps &
       }
   );
 
+const TOOLBAR_TEXT_PROTECTED = new Set([
+  'data-action',
+  'data-component',
+  'data-ellipsis',
+  'data-fill',
+  'data-has-description',
+  'data-hide-below',
+  'data-max-lines',
+  'data-placeholder',
+  'data-show-below',
+  'data-size',
+  'data-tone',
+  'data-wrap',
+]);
+
 export function ToolbarText({
   text,
   size = 'default',
@@ -104,11 +126,13 @@ export function ToolbarText({
   action,
   description,
   descriptionId,
+  rootAttributes = {},
 }: ToolbarTextProps) {
   const capped = wrap && maxLines != null && maxLines > 0;
   if (action !== undefined)
     return (
       <button
+        {...filterDataAttributes(rootAttributes, TOOLBAR_TEXT_PROTECTED)}
         type="button"
         class={`kui-toolbar-text ${className}`.trim()}
         data-component="toolbar-text"
@@ -140,6 +164,7 @@ export function ToolbarText({
   );
   return (
     <span
+      {...filterDataAttributes(rootAttributes, TOOLBAR_TEXT_PROTECTED)}
       class={`kui-toolbar-text ${className}`.trim()}
       data-component="toolbar-text"
       data-size={size}

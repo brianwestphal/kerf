@@ -1,4 +1,8 @@
 import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
+import {
   type CssLength,
   space,
   type UiSpaceName,
@@ -24,6 +28,9 @@ export interface SpacerProps {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
 
 function dimension(value?: UiSpaceName | CssLength): CssLength | undefined {
@@ -32,6 +39,8 @@ function dimension(value?: UiSpaceName | CssLength): CssLength | undefined {
     : (value as CssLength | undefined);
 }
 
+const SPACER_PROTECTED = new Set(['data-component', 'data-flex']);
+
 /** A decorative fixed-size or flexible gap for Row, List, and other flex layouts. */
 export function Spacer({
   flex = false,
@@ -39,6 +48,7 @@ export function Spacer({
   height,
   className = '',
   slot,
+  rootAttributes = {},
 }: SpacerProps) {
   const widthValue = dimension(width);
   const heightValue = dimension(height);
@@ -51,6 +61,7 @@ export function Spacer({
 
   return (
     <div
+      {...filterDataAttributes(rootAttributes, SPACER_PROTECTED)}
       class={`kui-spacer ${className}`.trim()}
       data-component="spacer"
       data-flex={String(flex)}

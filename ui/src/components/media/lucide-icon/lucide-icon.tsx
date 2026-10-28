@@ -2,6 +2,10 @@ import type { SafeHtml } from 'kerfjs';
 import { Fragment, jsx } from 'kerfjs/jsx-runtime';
 import type { IconNode } from 'lucide';
 
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import type { CssForegroundColor } from '../../../shared/styles/css-values.js';
 import { remify } from '../../../shared/styles/css-values.js';
 
@@ -39,6 +43,9 @@ export interface LucideIconProps {
   size?: LucideIconSize;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
 
 /**
@@ -89,6 +96,13 @@ function variantKey(parts: readonly (string | number | boolean | undefined)[]) {
     .join('\u0000');
 }
 
+const LUCIDE_ICON_PROTECTED = new Set([
+  'data-component',
+  'data-inline',
+  'data-lucide',
+  'data-size',
+]);
+
 /** Render a Lucide-compatible icon node without copying icon SVG strings. */
 export function LucideIcon({
   icon,
@@ -101,6 +115,7 @@ export function LucideIcon({
   title,
   size,
   slot,
+  rootAttributes,
 }: LucideIconProps) {
   if (typeof size === 'number' && (!Number.isFinite(size) || size <= 0))
     throw new RangeError(
@@ -108,7 +123,11 @@ export function LucideIcon({
     );
   if (typeof size === 'string' && !Object.hasOwn(lucideIconSizePixels, size))
     throw new RangeError('LucideIcon size must use a named icon step');
+  const rootData = rootAttributes
+    ? filterDataAttributes(rootAttributes, LUCIDE_ICON_PROTECTED)
+    : undefined;
   const key = variantKey([
+    rootData ? JSON.stringify(rootData) : undefined,
     name,
     appearance,
     className,
@@ -127,6 +146,7 @@ export function LucideIcon({
   const slotAttribute = { slot };
   const markup = (
     <svg
+      {...rootData}
       {...slotAttribute}
       class={className}
       data-lucide={name}

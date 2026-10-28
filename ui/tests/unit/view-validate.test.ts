@@ -635,7 +635,15 @@ describe('validateView: ids, names, scope, and control flow', () => {
       );
     expect(each('inputs', button())).toEqual(['KUI-V008']);
     expect(each('items', button())).toEqual(['KUI-V008']);
-    expect(each('row', node('spacer'))).toEqual(['KUI-V008']);
+    // CollapsiblePanelRelocated renders a fragment, so it has no data-* channel.
+    expect(
+      each(
+        'row',
+        node('collapsible-panel#CollapsiblePanelRelocated', {
+          props: { panelId: 'p', side: 'left', collapsed: false },
+        }),
+      ),
+    ).toContain('KUI-V008');
     const strings = {
       tags: { type: { kind: 'array', items: { kind: 'string' } } },
     };
@@ -838,7 +846,20 @@ describe('validateView: ids, names, scope, and control flow', () => {
   });
 
   it('KUI-V011: only components with a data-* channel can be named', () => {
-    expect(codes(doc(node('spacer', { name: 'gap' })))).toEqual(['KUI-V011']);
+    expect(
+      codes(
+        doc(
+          node('collapsible-panel#CollapsiblePanelRelocated', {
+            name: 'gap',
+            props: { panelId: 'p', side: 'left', collapsed: false },
+          }),
+        ),
+      ),
+    ).toContain('KUI-V011');
+    // Text passes data-* through natively, so it can be named.
+    expect(
+      codes(doc(node('text', { name: 'intro', props: { children: 'Hi' } }))),
+    ).toEqual([]);
     expect(codes(doc(button({ name: 'save' })))).toEqual([]);
   });
 });

@@ -1,4 +1,8 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 
 export type TabActivation = 'automatic' | 'manual';
 export type TabBarAllocation = 'intrinsic' | 'fill';
@@ -40,7 +44,21 @@ export interface TabBarProps {
   snapTabs?: boolean;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const TAB_BAR_PROTECTED = new Set([
+  'data-allocation',
+  'data-component',
+  'data-icon-only-at',
+  'data-presentation',
+  'data-snap-tabs',
+  'data-tab-activation',
+  'data-tab-bar-id',
+  'data-trailing-placement',
+]);
 
 /** Render a controlled tab strip. The application owns selection, order, and persistence. */
 export function TabBar({
@@ -58,9 +76,11 @@ export function TabBar({
   trailingPlacement = 'separate',
   snapTabs = false,
   slot,
+  rootAttributes = {},
 }: TabBarProps) {
   return (
     <nav
+      {...filterDataAttributes(rootAttributes, TAB_BAR_PROTECTED)}
       class={`kui-tab-bar ${className}`.trim()}
       data-component="tab-bar"
       data-tab-bar-id={id}

@@ -1,4 +1,8 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import type { Sides } from '../../../shared/layout/sides.js';
 import type { PaneSeparatorSide } from '../../layout/pane/pane.js';
 
@@ -70,6 +74,9 @@ export interface ToolbarProps {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
 
 /**
@@ -92,6 +99,19 @@ const claim = (
   side: PaneSeparatorSide,
 ) => (edges?.includes(side) ? 'true' : undefined);
 
+const TOOLBAR_PROTECTED = new Set([
+  'data-center-align',
+  'data-component',
+  'data-density',
+  'data-has-center',
+  'data-responsive',
+  'data-responsive-at',
+  'data-safe-area-block-end',
+  'data-safe-area-block-start',
+  'data-safe-area-inline-end',
+  'data-safe-area-inline-start',
+]);
+
 export function Toolbar({
   id,
   leading,
@@ -107,8 +127,10 @@ export function Toolbar({
   safeAreaEdges,
   className = '',
   slot,
+  rootAttributes = {},
 }: ToolbarProps) {
   const attributes = {
+    ...filterDataAttributes(rootAttributes, TOOLBAR_PROTECTED),
     id,
     class: `kui-toolbar ${className}`.trim(),
     'data-component': 'toolbar',

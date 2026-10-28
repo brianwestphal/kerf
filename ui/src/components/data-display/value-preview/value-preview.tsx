@@ -1,3 +1,7 @@
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import type { CssLength } from '../../../shared/styles/css-values.js';
 
 const unsafeStyleValue = /[;{}<>"'\\]|\p{Cc}/u;
@@ -22,7 +26,12 @@ export interface ValuePreviewProps {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const VALUE_PREVIEW_PROTECTED = new Set(['data-component']);
 
 /** Read-only, bounded multiline text for a containing surface such as SunkenPanel. */
 export function ValuePreview({
@@ -33,6 +42,7 @@ export function ValuePreview({
   id,
   className = '',
   slot,
+  rootAttributes = {},
 }: ValuePreviewProps) {
   const bounds = [
     minHeight === undefined
@@ -46,6 +56,7 @@ export function ValuePreview({
     .join(';');
   return (
     <output
+      {...filterDataAttributes(rootAttributes, VALUE_PREVIEW_PROTECTED)}
       class={`kui-value-preview ${className}`.trim()}
       data-component="value-preview"
       aria-label={label}

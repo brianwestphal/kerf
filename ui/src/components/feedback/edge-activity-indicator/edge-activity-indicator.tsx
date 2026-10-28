@@ -1,3 +1,7 @@
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
 
 export interface EdgeActivityIndicatorProps {
@@ -13,7 +17,18 @@ export interface EdgeActivityIndicatorProps {
   /** Clear the device's top safe area (default) or sit at the very edge. */
   inset?: 'safe-area' | 'none';
   className?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const EDGE_ACTIVITY_INDICATOR_PROTECTED = new Set([
+  'data-busy',
+  'data-component',
+  'data-inset',
+  'data-tone',
+  'data-visible',
+]);
 
 /**
  * A layout-free activity strip pinned to the top edge of the viewport: a row
@@ -29,10 +44,15 @@ export function EdgeActivityIndicator({
   tone = 'info',
   inset = 'safe-area',
   className = '',
+  rootAttributes = {},
 }: EdgeActivityIndicatorProps) {
   const showMessage = busy && Boolean(message?.trim());
   return (
     <div
+      {...filterDataAttributes(
+        rootAttributes,
+        EDGE_ACTIVITY_INDICATOR_PROTECTED,
+      )}
       class={`kui-edge-activity-indicator ${className}`.trim()}
       data-component="edge-activity-indicator"
       data-tone={tone}

@@ -2,6 +2,10 @@ import type { SafeHtml } from 'kerfjs';
 import { Search, X } from 'lucide';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import { LucideIcon } from '../../media/lucide-icon/lucide-icon.js';
 import type { SearchFieldModel } from './model/search-field-model.js';
 
@@ -95,6 +99,9 @@ interface SearchFieldBaseProps {
   editorAttributes?: SearchFieldEditorAttributes;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
 
 type SearchFieldTrailingProps =
@@ -173,6 +180,29 @@ function CloseIcon() {
   return <LucideIcon icon={X} name="x" />;
 }
 
+// Markers the component writes; data-key is not one of them on the root
+// (only inner rows use it), so an app row key passes through.
+const SEARCH_FIELD_PROTECTED = new Set([
+  'data-action',
+  'data-collapsible',
+  'data-component',
+  'data-disabled',
+  'data-empty',
+  'data-expanded',
+  'data-fill',
+  'data-has-trailing',
+  'data-placeholder',
+  'data-placeholder-visible',
+  'data-presentation',
+  'data-search-field-editor',
+  'data-search-field-form-field',
+  'data-search-field-form-label',
+  'data-search-field-id',
+  'data-search-field-suggestion',
+  'data-token-count',
+  'data-token-value',
+]);
+
 export function SearchField({
   id,
   label,
@@ -203,6 +233,7 @@ export function SearchField({
   className = '',
   editorAttributes = {},
   slot,
+  rootAttributes = {},
 }: SearchFieldProps) {
   // A managed model subscribes the host render to `structure` (token,
   // emptiness, and revision changes) only. The live text is DOM-owned between
@@ -222,6 +253,9 @@ export function SearchField({
     !collapsible || expanded || query.length > 0 || tokens.length > 0;
   const control = (
     <div
+      {...(presentation === 'form-field'
+        ? {}
+        : filterDataAttributes(rootAttributes, SEARCH_FIELD_PROTECTED))}
       class={`kui-search-field ${presentation === 'form-field' ? '' : className}`.trim()}
       data-component="search-field"
       data-search-field-id={id}
@@ -377,6 +411,7 @@ export function SearchField({
   if (presentation !== 'form-field') return control;
   return (
     <div
+      {...filterDataAttributes(rootAttributes, SEARCH_FIELD_PROTECTED)}
       class={`kui-search-field__field ${className}`.trim()}
       data-search-field-form-field={id}
     >

@@ -1,4 +1,8 @@
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import type {
   CssFlex,
   CssFlexKeyword,
@@ -24,7 +28,18 @@ export interface SunkenPanelProps {
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
 }
+
+const SUNKEN_PANEL_PROTECTED = new Set([
+  'data-component',
+  'data-fill',
+  'data-flex',
+  'data-outlined',
+  'data-shape',
+]);
 
 /**
  * A lowered application surface with one compact inset and a vertical content
@@ -41,11 +56,13 @@ export function SunkenPanel({
   outlined = false,
   className = '',
   slot,
+  rootAttributes = {},
 }: SunkenPanelProps) {
   const flexValue = flex === true ? '1 1 auto' : flex || undefined;
   ensureSunkenTexture();
   return (
     <div
+      {...filterDataAttributes(rootAttributes, SUNKEN_PANEL_PROTECTED)}
       class={`kui-sunken-panel ${className}`.trim()}
       data-component="sunken-panel"
       data-shape={shape}
