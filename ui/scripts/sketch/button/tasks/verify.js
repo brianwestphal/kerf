@@ -1,3 +1,5 @@
+var sans = require('../../shared/sans-family');
+
 function readJSON(path) {
   var text = NSString.stringWithContentsOfFile_encoding_error(
     path,
@@ -98,7 +100,7 @@ module.exports.run = function (session, parameters, done) {
             )
               throw new Error('Saved shared binding differs: ' + master.name);
             if (
-              label.style.fontFamily !== 'system' ||
+              label.style.fontFamily !== sans.family ||
               label.style.fontSize !== 16 ||
               label.style.fontWeight !== 6 ||
               label.style.opacity !== 1 ||

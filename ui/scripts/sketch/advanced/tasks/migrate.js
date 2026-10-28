@@ -79,7 +79,7 @@ function preserveMatchingSwatches(previous, next) {
   });
 }
 
-function apply(pairs) {
+function apply(pairs, fontFamily) {
   pairs.forEach(function (pair) {
     var target = pair.target;
     var fresh = pair.fresh;
@@ -94,7 +94,7 @@ function apply(pairs) {
       target.clippingMaskMode = fresh.clippingMaskMode;
     if (target.type === 'Text') {
       target.text = fresh.text;
-      target.style.fontFamily = 'system';
+      target.style.fontFamily = fontFamily;
     }
     if (fresh.points) target.points = fresh.points;
     if (fresh.closed !== undefined) target.closed = fresh.closed;

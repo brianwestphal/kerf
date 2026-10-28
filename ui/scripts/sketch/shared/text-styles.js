@@ -1,6 +1,8 @@
 // SVG import keeps captured text but not its weight, and every family build
 // switches Text to the system font. Read each captured string's CSS weight and
 // family so the native Text can match the production capture.
+var sans = require('./sans-family');
+
 function textStyles(svg) {
   var styles = {};
   var tags = svg.matchAll(/<text\b([^>]*)>(.*?)<\/text>/g);
@@ -25,7 +27,7 @@ function textStyles(svg) {
         ? /"([^"]+)"/.exec(family)?.[1].replace(/\b\w/g, function (c) {
             return c.toUpperCase();
           }) || 'Menlo'
-        : 'system',
+        : sans.family,
     };
     var previous = styles[value];
     if (

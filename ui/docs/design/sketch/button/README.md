@@ -66,7 +66,8 @@ The pilot capture uses a normal 600×200 browser viewport for domotion, then cro
 each SVG to the measured control bounds without scaling. `fixtures.json`
 holds the six appearance captures; `layout.json` records separate semantic
 layout values measured from resolved production CSS. The native generator
-maps the CSS system font to Sketch's system font at 16px medium and constructs
+maps the CSS system font to SF Pro (`scripts/sketch/shared/sans-family.js`) at
+16px medium and constructs
 a centered horizontal Stack with a fixed 16px icon, 8px gap, and 9px insets
 (8px padding plus the border). Existing icon vector paths retain their IDs,
 and their paint follows the production text color. `icon-path-identities.json`

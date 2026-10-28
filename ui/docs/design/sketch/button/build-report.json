@@ -19,13 +19,13 @@
         {
           "id": "F177073A-6A08-44FB-BB74-400AFFA1C353",
           "text": "Save Changes",
-          "fontFamily": "system",
+          "fontFamily": "SF Pro",
           "fontSize": 16,
           "frame": {
             "x": 9,
-            "y": 13,
+            "y": 12.5,
             "width": 106,
-            "height": 18
+            "height": 19
           }
         }
       ],
@@ -46,13 +46,13 @@
         {
           "id": "CF7D1C0C-C62B-43C1-80FA-03F975694BD0",
           "text": "Export",
-          "fontFamily": "system",
+          "fontFamily": "SF Pro",
           "fontSize": 16,
           "frame": {
             "x": 9,
-            "y": 13,
+            "y": 12.5,
             "width": 49,
-            "height": 18
+            "height": 19
           }
         }
       ],
@@ -73,13 +73,13 @@
         {
           "id": "E76D6F1A-66E0-4182-842C-57F2FA0AFCB8",
           "text": "New Ticket",
-          "fontFamily": "system",
+          "fontFamily": "SF Pro",
           "fontSize": 16,
           "frame": {
             "x": 33,
-            "y": 13,
+            "y": 12.5,
             "width": 83,
-            "height": 18
+            "height": 19
           }
         }
       ],
@@ -100,13 +100,13 @@
         {
           "id": "F1938F37-33EF-4F8F-B57B-4E49692E0954",
           "text": "Save Changes",
-          "fontFamily": "system",
+          "fontFamily": "SF Pro",
           "fontSize": 16,
           "frame": {
             "x": 9,
-            "y": 13,
+            "y": 12.5,
             "width": 106,
-            "height": 18
+            "height": 19
           }
         }
       ],
@@ -127,13 +127,13 @@
         {
           "id": "84045700-C25F-4308-8D95-105AB1BFC4B2",
           "text": "Export",
-          "fontFamily": "system",
+          "fontFamily": "SF Pro",
           "fontSize": 16,
           "frame": {
             "x": 9,
-            "y": 13,
+            "y": 12.5,
             "width": 49,
-            "height": 18
+            "height": 19
           }
         }
       ],
@@ -154,13 +154,13 @@
         {
           "id": "B284F609-868D-4B54-9586-E6034B5E457C",
           "text": "New Ticket",
-          "fontFamily": "system",
+          "fontFamily": "SF Pro",
           "fontSize": 16,
           "frame": {
             "x": 33,
-            "y": 13,
+            "y": 12.5,
             "width": 83,
-            "height": 18
+            "height": 19
           }
         }
       ],

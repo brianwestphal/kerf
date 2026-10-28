@@ -9,6 +9,7 @@ function readJSON(path) {
 }
 
 var semanticLayout = require('./semantic-layout');
+var sans = require('../../shared/sans-family');
 
 // Bump when semantic-layout output changes for an unchanged source: masters
 // built under an older layout are re-laid out through the migration path,
@@ -199,7 +200,7 @@ module.exports.run = function (session, parameters, done) {
           imported.frame.x = 0;
           imported.frame.y = 0;
           dom.find('Text', symbol).forEach(function (text) {
-            text.style.fontFamily = 'system';
+            text.style.fontFamily = sans.family;
           });
           semanticLayout.apply(symbol, fixture, dom);
         }
@@ -226,7 +227,7 @@ module.exports.run = function (session, parameters, done) {
             replacement.frame.x = 0;
             replacement.frame.y = 0;
             dom.find('Text', preview).forEach(function (text) {
-              text.style.fontFamily = 'system';
+              text.style.fontFamily = sans.family;
             });
             semanticLayout.apply(preview, fixture, dom);
             migratedLayers = migrate(symbol, preview, fixture.id);
@@ -260,6 +261,7 @@ module.exports.run = function (session, parameters, done) {
           sourceHash: fixture.sourceHash,
           layoutVersion: LAYOUT_VERSION,
         });
+        sans.normalize(dom, symbol);
         dom.export(symbol, {
           formats: 'png',
           scales: '2',

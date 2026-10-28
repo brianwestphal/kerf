@@ -13,6 +13,7 @@ function descendants(layer, dom, type) {
 }
 
 var iconPaths = require('./icon-paths');
+var sans = require('../../shared/sans-family');
 var createVariantAssets = require('./variant-assets').createVariantAssets;
 
 function build(session, parameters, document) {
@@ -82,7 +83,7 @@ function build(session, parameters, document) {
         });
       label.nameIsFixed = true;
       label.text = layout.label;
-      label.style.fontFamily = 'system';
+      label.style.fontFamily = sans.family;
       label.style.fontWeight = 6;
       label.style.fontSize = layout.fontSize;
       label.style.textSwatch = textSwatch;
@@ -229,7 +230,7 @@ function build(session, parameters, document) {
             parent: symbol,
           });
         badgeText.text = badge.text;
-        badgeText.style.fontFamily = 'system';
+        badgeText.style.fontFamily = sans.family;
         badgeText.style.fontWeight = 8;
         badgeText.style.fontSize = badge.fontSize;
         badgeText.style.textSwatch = assets.swatch(
@@ -250,6 +251,8 @@ function build(session, parameters, document) {
         badgeText.horizontalPins = dom.Pin.Max;
         badgeText.verticalPins = dom.Pin.Min;
         badgeText.moveToFront();
+        // The shared style copies this style, so it must already be normal width.
+        sans.normalize(dom, badgeText);
         assets.shared('textStyles', fixture, 'Badge Count', badgeText);
       }
     } else {
@@ -430,6 +433,7 @@ module.exports.run = function (session, parameters, done) {
     if (error) return done(error);
     try {
       var report = build(session, parameters, document);
+      sans.normalize(session.dom, document);
       session.saveDocument(
         document,
         parameters.libraryPath,

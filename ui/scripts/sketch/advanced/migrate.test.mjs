@@ -105,11 +105,11 @@ test('edited text, gradients, and checkerboard vectors update in place', () => {
     { id: 'label', value: 'COLOR' },
   ]);
   assert.equal(pairs.length, 6);
-  migration.apply(pairs);
+  migration.apply(pairs, 'SF Pro');
   assert.equal(existing.layers[0].id, 'label');
   assert.equal(existing.layers[0].text, 'ACCENT');
   assert.equal(existing.layers[0].frame.width, 36);
-  assert.equal(existing.layers[0].style.fontFamily, 'system');
+  assert.equal(existing.layers[0].style.fontFamily, 'SF Pro');
   assert.equal(existing.layers[0].style.fills[0].swatch, oldSwatch);
   const well = existing.layers[1];
   assert.equal(well.layers[0].id, 'gradient');
@@ -125,6 +125,7 @@ test('changed paint color does not retain an unrelated Color Variable', () => {
   incoming.layers[0].style.fills[0].color = '#ff0000';
   migration.apply(
     migration.plan(existing, incoming, 'color-picker-light', [{ id: 'label' }]),
+    'SF Pro',
   );
   assert.equal(existing.layers[0].style.fills[0].swatch, undefined);
 });

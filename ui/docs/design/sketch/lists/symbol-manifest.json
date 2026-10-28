@@ -83,8 +83,8 @@
       ],
       "paths": 27,
       "bitmaps": 0,
-      "migratedLayers": 2,
-      "retreed": "Incompatible list/data SVG list-compact-control-light at root/0/0/3/1/1/0/1/1/0: layer type Group -> ShapePath",
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "fab5d15b57acc79ab43676dc97b56099b1ad6000218312f6077009bb7bc1b2cd"
     },
     "list-compact-control-dark": {
@@ -106,8 +106,8 @@
       ],
       "paths": 27,
       "bitmaps": 0,
-      "migratedLayers": 2,
-      "retreed": "Incompatible list/data SVG list-compact-control-dark at root/0/0/3/1/1/0/1/1/0: layer type Group -> ShapePath",
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "89570249f9ec9cbb7fea0afe22b0aa10647134e4b62202d8b4c584d28aeaa6bc"
     },
     "list-item-default-control-light": {

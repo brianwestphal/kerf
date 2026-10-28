@@ -9,6 +9,7 @@ function readJSON(path) {
 }
 
 var blurShadows = require('../../shared/blur-shadows');
+var sans = require('../../shared/sans-family');
 var migrateLayers = require('../../shared/migrate-layers');
 var semanticLayout = require('./semantic-layout');
 
@@ -95,7 +96,7 @@ module.exports.run = function (session, parameters, done) {
             replacement.frame.x = 0;
             replacement.frame.y = 0;
             dom.find('Text', preview).forEach(function (text) {
-              text.style.fontFamily = 'system';
+              text.style.fontFamily = sans.family;
             });
             blurShadows.apply(preview, fixture.svg, dom);
             semanticLayout.apply(preview, fixture, dom);
@@ -128,7 +129,7 @@ module.exports.run = function (session, parameters, done) {
         var texts = dom.find('Text', symbol);
         var weights = textWeights(fixture.svg);
         texts.forEach(function (text) {
-          text.style.fontFamily = 'system';
+          text.style.fontFamily = sans.family;
           if (weights[text.text] === undefined)
             throw new Error('Missing source text weight: ' + text.text);
           text.style.fontWeight = weights[text.text];
@@ -158,6 +159,7 @@ module.exports.run = function (session, parameters, done) {
           retreed: retreed,
           sourceHash: fixture.sourceHash,
         });
+        sans.normalize(dom, symbol);
         dom.export(symbol, {
           formats: 'png',
           scales: '2',

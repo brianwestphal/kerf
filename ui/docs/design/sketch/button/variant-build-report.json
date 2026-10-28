@@ -17,9 +17,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 68,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -64,9 +64,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 60,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -111,9 +111,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 49,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -158,9 +158,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 60,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -205,9 +205,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 52,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -252,9 +252,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 8,
+          "y": 8.5,
           "width": 34,
-          "height": 17
+          "height": 16
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -299,9 +299,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 50,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -404,9 +404,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 68,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -451,9 +451,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 60,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -498,9 +498,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 66,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -545,9 +545,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 66,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -592,9 +592,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 50,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -653,9 +653,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 46,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -728,9 +728,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 63,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -789,9 +789,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 36,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -836,9 +836,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 36,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -883,9 +883,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 68,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -930,9 +930,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 60,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -977,9 +977,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 49,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -1024,9 +1024,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 60,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -1071,9 +1071,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 52,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -1118,9 +1118,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 8,
+          "y": 8.5,
           "width": 34,
-          "height": 17
+          "height": 16
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -1165,9 +1165,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 50,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -1270,9 +1270,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 68,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -1317,9 +1317,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 60,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -1364,9 +1364,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 66,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -1411,9 +1411,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 66,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -1458,9 +1458,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 50,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -1519,9 +1519,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 46,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -1594,9 +1594,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 63,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -1655,9 +1655,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 36,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,
@@ -1702,9 +1702,9 @@
         "type": "Text",
         "frame": {
           "x": 9,
-          "y": 13,
+          "y": 12.5,
           "width": 36,
-          "height": 18
+          "height": 19
         },
         "ignoresStackLayout": false,
         "horizontalPins": 0,

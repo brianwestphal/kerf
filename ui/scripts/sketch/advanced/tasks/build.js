@@ -9,6 +9,7 @@ function readJSON(path) {
 }
 
 var blurShadows = require('../../shared/blur-shadows');
+var sans = require('../../shared/sans-family');
 var semanticLayout = require('./semantic-layout');
 var textStyles = require('../../shared/text-styles');
 var migration = require('./migrate');
@@ -46,7 +47,7 @@ module.exports.run = function (session, parameters, done) {
           // Measure Text frames in the published font, as a fresh import
           // does, so migrated fixed-width text is not clipped.
           dom.find('Text', source).forEach(function (text) {
-            text.style.fontFamily = 'system';
+            text.style.fontFamily = sans.family;
           });
           if (symbol.layers.length !== 1)
             throw new Error('Published Advanced root changed: ' + fixture.id);
@@ -56,7 +57,7 @@ module.exports.run = function (session, parameters, done) {
             fixture.id,
             old.text,
           );
-          migration.apply(pairs);
+          migration.apply(pairs, sans.family);
           symbol.frame.width = fixture.box.width;
           symbol.frame.height = fixture.box.height;
         }
@@ -78,7 +79,7 @@ module.exports.run = function (session, parameters, done) {
           imported.frame.x = 0;
           imported.frame.y = 0;
           dom.find('Text', symbol).forEach(function (text) {
-            text.style.fontFamily = 'system';
+            text.style.fontFamily = sans.family;
           });
         }
         // Re-apply the idempotent layout to every master so a contract change
@@ -110,6 +111,7 @@ module.exports.run = function (session, parameters, done) {
           bitmaps: bitmaps.length,
           sourceHash: fixture.sourceHash,
         });
+        sans.normalize(dom, symbol);
         dom.export(symbol, {
           formats: 'png',
           scales: '2',

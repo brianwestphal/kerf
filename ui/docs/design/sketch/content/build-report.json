@@ -850,8 +850,8 @@
       ],
       "paths": 11,
       "bitmaps": 0,
-      "migratedLayers": 3,
-      "retreed": "Incompatible content/feedback SVG state-banner-warning-control-light at root/0/0/2/1/1/2: layer type Group -> ShapePath",
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "55d9a3d4bc0c34350fc5eb3ee57c15ec92b4da69a55494f9d6633f74910be95b"
     },
     {
@@ -877,8 +877,8 @@
       ],
       "paths": 11,
       "bitmaps": 0,
-      "migratedLayers": 3,
-      "retreed": "Incompatible content/feedback SVG state-banner-warning-control-dark at root/0/0/2/1/1/2: layer type Group -> ShapePath",
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "4eca126a45f0dcbb84dc0a069053754e9c194cb2812d5713122f236c7853ca68"
     },
     {
@@ -958,8 +958,8 @@
       ],
       "paths": 9,
       "bitmaps": 0,
-      "migratedLayers": 3,
-      "retreed": "Incompatible content/feedback SVG state-banner-strip-control-light at root/0/0/2/1/1/2: layer type Group -> ShapePath",
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "8efb71462fa96b71d7d33562fc2771841ca38264db5bf4329708f996e45ea7da"
     },
     {
@@ -985,8 +985,8 @@
       ],
       "paths": 9,
       "bitmaps": 0,
-      "migratedLayers": 3,
-      "retreed": "Incompatible content/feedback SVG state-banner-strip-control-dark at root/0/0/2/1/1/2: layer type Group -> ShapePath",
+      "migratedLayers": 0,
+      "retreed": null,
       "sourceHash": "4fd2669e6e635cb0dfd1e18abc316c237915ba643c894bf31e47d068bce4d0c5"
     },
     {

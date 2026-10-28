@@ -18,6 +18,7 @@ function layerIdentity(layer) {
 }
 
 var iconPaths = require('./icon-paths');
+var sans = require('../../shared/sans-family');
 
 function createAssets(document, dom, fixtures, previous) {
   var assets = { swatches: {}, layerStyles: {}, textStyles: {} };
@@ -194,7 +195,7 @@ function applyLayout(session, parameters, document) {
     label.nameIsFixed = true;
     label.text = layout.label;
     // The source CSS system stack maps to Sketch's native system family.
-    label.style.fontFamily = 'system';
+    label.style.fontFamily = sans.family;
     label.style.fontWeight = 6;
     label.style.fontSize = layout.fontSize;
     label.style.alignment = dom.Text.Alignment.center;
@@ -350,6 +351,7 @@ module.exports.run = function (session, parameters, done) {
     if (error) return done(error);
     try {
       var report = applyLayout(session, parameters, document);
+      sans.normalize(session.dom, document);
       session.saveDocument(
         document,
         parameters.libraryPath,

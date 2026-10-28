@@ -20,15 +20,21 @@ and Color Variables, so a new release reaches every design that uses them.
 
 To install:
 
-1. Find the file. In a project that depends on `@kerfjs/ui` it is
+1. Install Apple's [SF Pro](https://developer.apple.com/fonts/) fonts if they
+   aren't already installed. The Library's text uses SF Pro, the font
+   production's `system-ui` resolves to on macOS. Without it, Sketch reports
+   missing fonts and substitutes another face. Sketch can't embed SF Pro, so
+   its Embed Fonts settings leave it unembedded, and viewers without SF Pro
+   see a fallback font.
+2. Find the file. In a project that depends on `@kerfjs/ui` it is
    `node_modules/@kerfjs/ui/docs/design/sketch/Kerf-UI.sketch`; you can also
    download it from the
    [repository](https://github.com/brianwestphal/kerf/blob/main/ui/docs/design/sketch/Kerf-UI.sketch).
-2. Copy it to a stable folder outside any package or repository checkout, for
+3. Copy it to a stable folder outside any package or repository checkout, for
    example `~/Design Libraries/Kerf-UI.sketch`. Don't add it from
    `node_modules`: a reinstall or branch switch would move or delete the file
    your designs link to.
-3. In Sketch, open **Settings → Libraries**, choose **Add Library…**, and
+4. In Sketch, open **Settings → Libraries**, choose **Add Library…**, and
    select the copy.
 
 To use it, insert a Symbol from the component browser. Symbols are named
