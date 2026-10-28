@@ -151,8 +151,8 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Tab](./wa-tab.md) (avoid) — Ecosystem tab label; use Kerf TabBar or SegmentedControl.
 - [Tab Group](./wa-tab-group.md) (avoid) — Ecosystem tabs; use Kerf TabBar or SegmentedControl.
 - [Tab Panel](./wa-tab-panel.md) (avoid) — Ecosystem tab panel; use Kerf TabBar with application-owned panels.
-- [Tree](./wa-tree.md) (exceptional) — Specialized hierarchy; use only when the product requires tree behavior.
-- [Tree Item](./wa-tree-item.md) (exceptional) — Specialized tree row; use only as part of a required tree.
+- [Tree](./wa-tree.md) (avoid) — Ecosystem tree; use the Kerf TreeList.
+- [Tree Item](./wa-tree-item.md) (avoid) — Ecosystem tree item; use the Kerf TreeList.
 
 ## Web Awesome — Feedback
 

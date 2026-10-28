@@ -54,9 +54,9 @@
       "rationale": "Render SegmentedControl for one-of-N choices instead of a Web Awesome button group."
     },
     "hierarchy-navigation": {
-      "preferred": "@kerfjs/ui:list",
+      "preferred": "@kerfjs/ui:tree-list",
       "avoid": ["@kerfjs/ui:wa-tree", "@kerfjs/ui:wa-tree-item"],
-      "rationale": "Present hierarchy as List rows (or NavStack drill-in levels). Record a narrow KUI-L301 profile exception only when the product requires tree behavior."
+      "rationale": "Present a hierarchy with TreeList (ListItem rows indented by depth, wired by wireTreeList), or NavStack drill-in levels for one level at a time."
     },
     "icon": {
       "preferred": "@kerfjs/ui:lucide-icon",

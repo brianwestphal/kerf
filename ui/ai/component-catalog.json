@@ -3388,7 +3388,8 @@
       "avoidWhen": [
         "Do not indent ListItem rows or draw disclosure arrows yourself; use TreeList.",
         "Do not use it for a flat list; use List and ListItem.",
-        "Do not use it for a single collapsible section; use Disclosure."
+        "Do not use it for a single collapsible section; use Disclosure.",
+        "Do not use wa-tree."
       ],
       "alternatives": [
         {
@@ -10969,21 +10970,26 @@
       "category": "Navigation",
       "kind": "component",
       "source": "webawesome",
-      "description": "Specialized hierarchy; use only when the product requires tree behavior.",
+      "description": "Ecosystem tree; use the Kerf TreeList.",
       "uses": [
         "wa-tree-item"
       ],
-      "purpose": "Specialized hierarchy; use only when the product requires tree behavior.",
+      "purpose": "Ecosystem tree; use the Kerf TreeList.",
       "customElement": "wa-tree",
       "useWhen": [
-        "Specialized hierarchy; use only when the product requires tree behavior."
+        "Only inside an application that has already adopted the optional Web Awesome integration."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; use TreeList (@kerfjs/ui/tree-list) with wireTreeList for a hierarchy of expandable, selectable rows."
       ],
-      "recommendation": "exceptional",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "tree-list",
+          "relationship": "prefer-kerf",
+          "when": "Use TreeList for a hierarchy: ListItem rows indented by depth with disclosure arrows, keyboard tree navigation, and app-owned expansion and selection."
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "child",
@@ -11008,23 +11014,28 @@
       "category": "Navigation",
       "kind": "component",
       "source": "webawesome",
-      "description": "Specialized tree row; use only as part of a required tree.",
+      "description": "Ecosystem tree item; use the Kerf TreeList.",
       "uses": [
         "wa-checkbox",
         "wa-icon",
         "wa-spinner"
       ],
-      "purpose": "Specialized tree row; use only as part of a required tree.",
+      "purpose": "Ecosystem tree item; use the Kerf TreeList.",
       "customElement": "wa-tree-item",
       "useWhen": [
-        "Specialized tree row; use only as part of a required tree."
+        "Only inside an application that has already adopted the optional Web Awesome integration."
       ],
       "avoidWhen": [
-        "Do not choose it from catalog presence alone; confirm that its semantic and interaction contract matches the product need.",
-        "Use it only in an application that has adopted the optional Web Awesome integration (registration imports plus @kerfjs/ui/webawesome.css); a Kerf-only application uses a Kerf component or a native element instead."
+        "Do not use it in Kerf UI; use TreeList (@kerfjs/ui/tree-list) with wireTreeList for a hierarchy of expandable, selectable rows."
       ],
-      "recommendation": "exceptional",
-      "alternatives": [],
+      "recommendation": "avoid",
+      "alternatives": [
+        {
+          "id": "tree-list",
+          "relationship": "prefer-kerf",
+          "when": "Use TreeList for a hierarchy: ListItem rows indented by depth with disclosure arrows, keyboard tree navigation, and app-owned expansion and selection."
+        }
+      ],
       "geometry": {
         "margin": "none",
         "border": "self",

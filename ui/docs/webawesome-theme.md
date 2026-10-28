@@ -393,12 +393,12 @@ application off them.
   Dialog, Drawer, Card, Page, Callout, Popover, Popup, Tab, Tab Group, Tab
   Panel, Badge, Spinner, Skeleton, Toast, Toast Item, Tooltip, Details, Accordion,
   Accordion Item, Progress Bar, Progress Ring, Slider, Tag Input, Color Picker,
-  Split Panel, Icon, Scroller, Include, and Zoomable Frame.
+  Split Panel, Icon, Scroller, Include, Zoomable Frame, Tree, and Tree Item.
   Never render them in application markup. Popover and Popup give way to
   `AnchoredSurface` and `kerfjs/overlay`'s `positionAnchored()`; Tooltip,
   Toast, and Toast Item give way to `kerfjs/overlay`'s `tooltip()` and
   `toast()` with their Kerf stylesheets.
-- Use Web Awesome Tree, Tree Item, Animated Image, and Comparison only for a
+- Use Web Awesome Animated Image and Comparison only for a
   specific product requirement that needs their specialized behavior.
 - Use the remaining supported elements (Carousel, Rating, and
   the rest of the coverage list) when their native semantic contract matches

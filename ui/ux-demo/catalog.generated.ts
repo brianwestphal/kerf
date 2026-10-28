@@ -1926,8 +1926,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "webawesome",
-    "description": "Specialized hierarchy; use only when the product requires tree behavior.",
-    "recommendation": "exceptional",
+    "description": "Ecosystem tree; use the Kerf TreeList.",
+    "recommendation": "avoid",
     "uses": [
       "wa-tree-item"
     ],
@@ -1940,8 +1940,8 @@ export const generatedWebAwesomeCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "webawesome",
-    "description": "Specialized tree row; use only as part of a required tree.",
-    "recommendation": "exceptional",
+    "description": "Ecosystem tree item; use the Kerf TreeList.",
+    "recommendation": "avoid",
     "uses": [
       "wa-checkbox",
       "wa-icon",

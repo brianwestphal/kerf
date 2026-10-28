@@ -251,7 +251,7 @@ The package defaults avoid every `Discouraged` Web Awesome entry — each
 Kerf component that wraps or replaces it (`command-menu` → `PopupMenu`,
 `value-selection` → `Select`, `application-tabs` → `TabBar`, `icon` →
 `LucideIcon`, `resizable-pane` → `ResizableRegion`, `exclusive-choice` →
-`SegmentedControl`, `hierarchy-navigation` → `List`, `embedded-media` →
+`SegmentedControl`, `hierarchy-navigation` → `TreeList`, `embedded-media` →
 `ContentItem`, `anchored-surface` → `AnchoredSurface`, `content-container` →
 `ContentItem`, `inline-status` → `StateBanner`, `application-shell` → the
 app-shell recipe, `modal-dialog` → `DialogSurface`). `eslint-plugin-kerfjs` `ui-preferences` (`KUI-L301`, also run by

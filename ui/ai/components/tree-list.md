@@ -18,6 +18,7 @@ Show and navigate a hierarchy (a file tree, a document outline, nested categorie
 - Do not indent ListItem rows or draw disclosure arrows yourself; use TreeList.
 - Do not use it for a flat list; use List and ListItem.
 - Do not use it for a single collapsible section; use Disclosure.
+- Do not use wa-tree.
 
 **Alternatives:**
 
