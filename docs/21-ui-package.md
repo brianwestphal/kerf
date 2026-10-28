@@ -664,7 +664,12 @@ attribute props (with `property` when the field name differs) and `slots`.
 
 `ui/ai/component-props-overlay.json` (schema-validated) adds only what types
 cannot express: inspector `control` hints, `group`/`order`, and a missing
-`default`. Run `npm run props:sync` after the build. `check:props` (in the ui
+`default`. The generator marks plumbing props as `control: "hidden"` by default
+(`className`, `*ClassName`, `slot`, `rootAttributes`, `triggerAttributes`),
+and the overlay can override that. Sixteen palette components carry curated
+groups and controls: Button, ListHeader, Pane, Toolbar, ToolbarText,
+ToolbarControlGroup, List, ListItem, Text, TextField, Select, Switch, Checkbox,
+SegmentedControl, StateBanner, and EmptyState. Run `npm run props:sync` after the build. `check:props` (in the ui
 `check` chain, after the build) fails on drift, on a schema violation, on an
 overlay key naming no component, prop, or declared group, and on a catalog
 entry whose `SafeHtml` component does not resolve. Values TypeScript cannot

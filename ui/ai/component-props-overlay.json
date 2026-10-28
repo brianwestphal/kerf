@@ -5,28 +5,853 @@
     "@kerfjs/ui:button": {
       "groups": ["Content", "Appearance", "State", "Form"],
       "props": {
-        "children": { "group": "Content", "order": 1 },
-        "icon": { "group": "Content", "order": 2 },
-        "tone": { "group": "Appearance", "order": 1, "control": "segmented" },
+        "children": {
+          "group": "Content",
+          "order": 1
+        },
+        "icon": {
+          "group": "Content",
+          "order": 2
+        },
+        "tone": {
+          "group": "Appearance",
+          "order": 1,
+          "control": "segmented"
+        },
         "emphasis": {
           "group": "Appearance",
           "order": 2,
           "control": "segmented"
         },
-        "size": { "group": "Appearance", "order": 3, "control": "segmented" },
-        "shape": { "group": "Appearance", "order": 4, "control": "segmented" },
-        "pressed": { "group": "State", "order": 1 },
-        "loading": { "group": "State", "order": 2 },
-        "disabled": { "group": "State", "order": 3 },
-        "type": { "group": "Form", "order": 1, "control": "segmented" }
+        "size": {
+          "group": "Appearance",
+          "order": 3,
+          "control": "segmented"
+        },
+        "shape": {
+          "group": "Appearance",
+          "order": 4,
+          "control": "segmented"
+        },
+        "pressed": {
+          "group": "State",
+          "order": 1
+        },
+        "loading": {
+          "group": "State",
+          "order": 2
+        },
+        "disabled": {
+          "group": "State",
+          "order": 3
+        },
+        "type": {
+          "group": "Form",
+          "order": 1,
+          "control": "segmented"
+        }
+      }
+    },
+    "@kerfjs/ui:checkbox": {
+      "groups": ["Content", "State"],
+      "props": {
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "hint": {
+          "group": "Content",
+          "order": 2
+        },
+        "error": {
+          "group": "Content",
+          "order": 3
+        },
+        "name": {
+          "group": "Content",
+          "order": 4
+        },
+        "action": {
+          "group": "Content",
+          "order": 5
+        },
+        "checked": {
+          "group": "State",
+          "order": 1
+        },
+        "indeterminate": {
+          "group": "State",
+          "order": 2
+        },
+        "required": {
+          "group": "State",
+          "order": 3
+        },
+        "size": {
+          "group": "State",
+          "order": 4,
+          "control": "segmented"
+        },
+        "disabled": {
+          "group": "State",
+          "order": 5
+        }
+      }
+    },
+    "@kerfjs/ui:empty-state": {
+      "groups": ["Content", "State"],
+      "props": {
+        "title": {
+          "group": "Content",
+          "order": 1
+        },
+        "detail": {
+          "group": "Content",
+          "order": 2,
+          "control": "textarea"
+        },
+        "busy": {
+          "group": "State",
+          "order": 1
+        }
+      }
+    },
+    "@kerfjs/ui:list": {
+      "groups": ["Content", "Layout", "Surface"],
+      "props": {
+        "ariaLabel": {
+          "group": "Content",
+          "order": 1
+        },
+        "selectionMode": {
+          "group": "Content",
+          "order": 2
+        },
+        "gap": {
+          "group": "Layout",
+          "order": 1,
+          "control": "length"
+        },
+        "fill": {
+          "group": "Layout",
+          "order": 2
+        },
+        "scrollable": {
+          "group": "Layout",
+          "order": 3
+        },
+        "hAlign": {
+          "group": "Layout",
+          "order": 4,
+          "control": "segmented"
+        },
+        "vAlign": {
+          "group": "Layout",
+          "order": 5,
+          "control": "segmented"
+        },
+        "maxHeight": {
+          "group": "Layout",
+          "order": 6,
+          "control": "length"
+        },
+        "minHeight": {
+          "group": "Layout",
+          "order": 7,
+          "control": "length"
+        },
+        "surface": {
+          "group": "Surface",
+          "order": 1,
+          "control": "segmented"
+        },
+        "frame": {
+          "group": "Surface",
+          "order": 2
+        },
+        "dividerSides": {
+          "group": "Surface",
+          "order": 3
+        },
+        "textInsets": {
+          "group": "Surface",
+          "order": 4
+        },
+        "controlInsets": {
+          "group": "Surface",
+          "order": 5
+        }
       }
     },
     "@kerfjs/ui:list-header": {
       "groups": ["Content", "Mode", "Appearance"],
       "props": {
-        "label": { "group": "Content", "order": 1 },
-        "toggle": { "group": "Mode", "order": 1, "control": "switch" },
-        "expanded": { "group": "Mode", "order": 2, "control": "switch" }
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "toggle": {
+          "group": "Mode",
+          "order": 1,
+          "control": "switch"
+        },
+        "expanded": {
+          "group": "Mode",
+          "order": 2,
+          "control": "switch"
+        },
+        "count": {
+          "group": "Content",
+          "order": 2,
+          "control": "number"
+        },
+        "countLabel": {
+          "group": "Content",
+          "order": 3
+        },
+        "headingLevel": {
+          "group": "Content",
+          "order": 4,
+          "control": "segmented"
+        },
+        "action": {
+          "group": "Mode",
+          "order": 3
+        },
+        "actionLabel": {
+          "group": "Mode",
+          "order": 4
+        },
+        "actionDisabled": {
+          "group": "Mode",
+          "order": 5
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1,
+          "control": "segmented"
+        },
+        "density": {
+          "group": "Appearance",
+          "order": 2,
+          "control": "segmented"
+        },
+        "divider": {
+          "group": "Appearance",
+          "order": 3,
+          "control": "segmented"
+        }
+      }
+    },
+    "@kerfjs/ui:list-item": {
+      "groups": ["Content", "Behavior", "Appearance", "State"],
+      "props": {
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "description": {
+          "group": "Content",
+          "order": 2
+        },
+        "accessibleLabel": {
+          "group": "Content",
+          "order": 3
+        },
+        "title": {
+          "group": "Content",
+          "order": 4
+        },
+        "action": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "itemId": {
+          "group": "Behavior",
+          "order": 2
+        },
+        "density": {
+          "group": "Appearance",
+          "order": 1,
+          "control": "segmented"
+        },
+        "divider": {
+          "group": "Appearance",
+          "order": 2,
+          "control": "segmented"
+        },
+        "multiline": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "selected": {
+          "group": "State",
+          "order": 1
+        },
+        "pressed": {
+          "group": "State",
+          "order": 2
+        },
+        "busy": {
+          "group": "State",
+          "order": 3
+        },
+        "disabled": {
+          "group": "State",
+          "order": 4
+        },
+        "placeholder": {
+          "group": "State",
+          "order": 5
+        }
+      }
+    },
+    "@kerfjs/ui:pane": {
+      "groups": ["Content", "Chrome", "Surface", "Semantics"],
+      "props": {
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "contentLabel": {
+          "group": "Content",
+          "order": 2
+        },
+        "chromePlacement": {
+          "group": "Chrome",
+          "order": 1,
+          "control": "segmented"
+        },
+        "chromeDividers": {
+          "group": "Chrome",
+          "order": 2,
+          "control": "segmented"
+        },
+        "headerPresentation": {
+          "group": "Chrome",
+          "order": 3
+        },
+        "scrollEdge": {
+          "group": "Chrome",
+          "order": 4,
+          "control": "segmented"
+        },
+        "appearance": {
+          "group": "Surface",
+          "order": 1,
+          "control": "segmented"
+        },
+        "background": {
+          "group": "Surface",
+          "order": 2,
+          "control": "color"
+        },
+        "scrollClearance": {
+          "group": "Surface",
+          "order": 3
+        },
+        "deepInset": {
+          "group": "Surface",
+          "order": 4
+        },
+        "outlined": {
+          "group": "Surface",
+          "order": 5
+        },
+        "element": {
+          "group": "Semantics",
+          "order": 1,
+          "control": "select"
+        },
+        "contentElement": {
+          "group": "Semantics",
+          "order": 2,
+          "control": "select"
+        },
+        "tabIndex": {
+          "group": "Semantics",
+          "order": 3,
+          "control": "segmented"
+        }
+      }
+    },
+    "@kerfjs/ui:segmented-control": {
+      "groups": ["Content", "Appearance", "State"],
+      "props": {
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "choices": {
+          "group": "Content",
+          "order": 2
+        },
+        "value": {
+          "group": "Content",
+          "order": 3
+        },
+        "action": {
+          "group": "Content",
+          "order": 4
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 1,
+          "control": "segmented"
+        },
+        "shape": {
+          "group": "Appearance",
+          "order": 2,
+          "control": "segmented"
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 3,
+          "control": "segmented"
+        },
+        "layout": {
+          "group": "Appearance",
+          "order": 4,
+          "control": "segmented"
+        },
+        "disabled": {
+          "group": "State",
+          "order": 1
+        },
+        "placeholder": {
+          "group": "State",
+          "order": 2
+        }
+      }
+    },
+    "@kerfjs/ui:select": {
+      "groups": ["Content", "Appearance", "State"],
+      "props": {
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "ariaLabel": {
+          "group": "Content",
+          "order": 2
+        },
+        "name": {
+          "group": "Content",
+          "order": 3
+        },
+        "choices": {
+          "group": "Content",
+          "order": 4
+        },
+        "value": {
+          "group": "Content",
+          "order": 5
+        },
+        "multiple": {
+          "group": "Content",
+          "order": 6
+        },
+        "hint": {
+          "group": "Content",
+          "order": 7
+        },
+        "presentation": {
+          "group": "Appearance",
+          "order": 1,
+          "control": "segmented"
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 2,
+          "control": "segmented"
+        },
+        "triggerWidth": {
+          "group": "Appearance",
+          "order": 3,
+          "control": "segmented"
+        },
+        "caret": {
+          "group": "Appearance",
+          "order": 4
+        },
+        "disabled": {
+          "group": "State",
+          "order": 1
+        },
+        "placeholder": {
+          "group": "State",
+          "order": 2
+        }
+      }
+    },
+    "@kerfjs/ui:state-banner": {
+      "groups": ["Content", "Appearance"],
+      "props": {
+        "title": {
+          "group": "Content",
+          "order": 1
+        },
+        "detail": {
+          "group": "Content",
+          "order": 2,
+          "control": "textarea"
+        },
+        "badge": {
+          "group": "Content",
+          "order": 3
+        },
+        "tone": {
+          "group": "Appearance",
+          "order": 1,
+          "control": "segmented"
+        },
+        "urgency": {
+          "group": "Appearance",
+          "order": 2,
+          "control": "segmented"
+        },
+        "presentation": {
+          "group": "Appearance",
+          "order": 3,
+          "control": "segmented"
+        },
+        "copyLayout": {
+          "group": "Appearance",
+          "order": 4,
+          "control": "segmented"
+        },
+        "actionPlacement": {
+          "group": "Appearance",
+          "order": 5,
+          "control": "segmented"
+        }
+      }
+    },
+    "@kerfjs/ui:switch": {
+      "groups": ["Content", "State"],
+      "props": {
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "hint": {
+          "group": "Content",
+          "order": 2
+        },
+        "name": {
+          "group": "Content",
+          "order": 3
+        },
+        "action": {
+          "group": "Content",
+          "order": 4
+        },
+        "checked": {
+          "group": "State",
+          "order": 1
+        },
+        "size": {
+          "group": "State",
+          "order": 2,
+          "control": "segmented"
+        },
+        "disabled": {
+          "group": "State",
+          "order": 3
+        }
+      }
+    },
+    "@kerfjs/ui:text": {
+      "groups": ["Content", "Appearance", "Wrapping"],
+      "props": {
+        "children": {
+          "group": "Content",
+          "order": 1,
+          "control": "textarea"
+        },
+        "variant": {
+          "group": "Content",
+          "order": 2,
+          "control": "select"
+        },
+        "tone": {
+          "group": "Appearance",
+          "order": 1,
+          "control": "select"
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 2,
+          "control": "select"
+        },
+        "font": {
+          "group": "Appearance",
+          "order": 3,
+          "control": "segmented"
+        },
+        "color": {
+          "group": "Appearance",
+          "order": 4,
+          "control": "color"
+        },
+        "align": {
+          "group": "Appearance",
+          "order": 5,
+          "control": "segmented"
+        },
+        "flush": {
+          "group": "Appearance",
+          "order": 6
+        },
+        "wrap": {
+          "group": "Wrapping",
+          "order": 1,
+          "control": "segmented"
+        },
+        "maxLines": {
+          "group": "Wrapping",
+          "order": 2,
+          "control": "number"
+        },
+        "truncate": {
+          "group": "Wrapping",
+          "order": 3,
+          "control": "segmented"
+        }
+      }
+    },
+    "@kerfjs/ui:text-field": {
+      "groups": ["Content", "Input", "Validation", "State"],
+      "props": {
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "placeholder": {
+          "group": "Content",
+          "order": 2
+        },
+        "hint": {
+          "group": "Content",
+          "order": 3
+        },
+        "ariaLabel": {
+          "group": "Content",
+          "order": 4
+        },
+        "name": {
+          "group": "Input",
+          "order": 1
+        },
+        "value": {
+          "group": "Input",
+          "order": 2
+        },
+        "type": {
+          "group": "Input",
+          "order": 3,
+          "control": "select"
+        },
+        "multiline": {
+          "group": "Input",
+          "order": 4
+        },
+        "rows": {
+          "group": "Input",
+          "order": 5,
+          "control": "number"
+        },
+        "size": {
+          "group": "Input",
+          "order": 6,
+          "control": "segmented"
+        },
+        "clearable": {
+          "group": "Input",
+          "order": 7
+        },
+        "error": {
+          "group": "Validation",
+          "order": 1
+        },
+        "required": {
+          "group": "Validation",
+          "order": 2
+        },
+        "maxLength": {
+          "group": "Validation",
+          "order": 3,
+          "control": "number"
+        },
+        "showCount": {
+          "group": "Validation",
+          "order": 4
+        },
+        "disabled": {
+          "group": "State",
+          "order": 1
+        },
+        "readOnly": {
+          "group": "State",
+          "order": 2
+        }
+      }
+    },
+    "@kerfjs/ui:toolbar": {
+      "groups": ["Content", "Layout", "Responsive"],
+      "props": {
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "position": {
+          "group": "Layout",
+          "order": 1,
+          "control": "segmented"
+        },
+        "density": {
+          "group": "Layout",
+          "order": 2,
+          "control": "segmented"
+        },
+        "dividerSides": {
+          "group": "Layout",
+          "order": 3
+        },
+        "centerAlign": {
+          "group": "Layout",
+          "order": 4,
+          "control": "segmented"
+        },
+        "responsive": {
+          "group": "Responsive",
+          "order": 1
+        },
+        "responsiveAt": {
+          "group": "Responsive",
+          "order": 2
+        }
+      }
+    },
+    "@kerfjs/ui:toolbar-control-group": {
+      "groups": ["Content", "Appearance", "Responsive", "State"],
+      "props": {
+        "label": {
+          "group": "Content",
+          "order": 1
+        },
+        "single": {
+          "group": "Content",
+          "order": 2
+        },
+        "nestedDropdown": {
+          "group": "Content",
+          "order": 3
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 1,
+          "control": "select"
+        },
+        "tone": {
+          "group": "Appearance",
+          "order": 2,
+          "control": "select"
+        },
+        "shape": {
+          "group": "Appearance",
+          "order": 3,
+          "control": "segmented"
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 4,
+          "control": "segmented"
+        },
+        "density": {
+          "group": "Appearance",
+          "order": 5,
+          "control": "segmented"
+        },
+        "overflow": {
+          "group": "Responsive",
+          "order": 1
+        },
+        "visibility": {
+          "group": "Responsive",
+          "order": 2
+        },
+        "hideBelow": {
+          "group": "Responsive",
+          "order": 3,
+          "control": "length"
+        },
+        "showBelow": {
+          "group": "Responsive",
+          "order": 4,
+          "control": "length"
+        },
+        "expanded": {
+          "group": "State",
+          "order": 1
+        },
+        "busy": {
+          "group": "State",
+          "order": 2
+        },
+        "busyLabel": {
+          "group": "State",
+          "order": 3
+        }
+      }
+    },
+    "@kerfjs/ui:toolbar-text": {
+      "groups": ["Content", "Appearance", "Behavior"],
+      "props": {
+        "text": {
+          "group": "Content",
+          "order": 1
+        },
+        "description": {
+          "group": "Content",
+          "order": 2
+        },
+        "headingLevel": {
+          "group": "Content",
+          "order": 3,
+          "control": "segmented"
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1,
+          "control": "select"
+        },
+        "tone": {
+          "group": "Appearance",
+          "order": 2,
+          "control": "segmented"
+        },
+        "ellipsis": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "wrap": {
+          "group": "Appearance",
+          "order": 4
+        },
+        "maxLines": {
+          "group": "Appearance",
+          "order": 5,
+          "control": "number"
+        },
+        "action": {
+          "group": "Behavior",
+          "order": 1
+        },
+        "placeholder": {
+          "group": "Behavior",
+          "order": 2
+        }
       }
     }
   }

@@ -217,7 +217,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -228,13 +229,15 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*`, `aria-*`, and structural `role` metadata on the root."
+          "description": "Safe `data-*`, `aria-*`, and structural `role` metadata on the root.",
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": [],
@@ -478,18 +481,21 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*` identity, such as a status band, on the badge root."
+          "description": "Safe `data-*` identity, such as a status band, on the badge root.",
+          "control": "hidden"
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": [],
@@ -775,7 +781,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -785,13 +792,15 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*` metadata (a `data-key`, `data-dialog-close`)."
+          "description": "Safe `data-*` metadata (a `data-key`, `data-dialog-close`).",
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": [],
@@ -813,7 +822,9 @@
           "name": "label",
           "type": { "kind": "string", "text": "string" },
           "required": true,
-          "description": "The visible label, which is also the checkbox's accessible name."
+          "description": "The visible label, which is also the checkbox's accessible name.",
+          "group": "Content",
+          "order": 1
         },
         {
           "name": "checked",
@@ -822,7 +833,9 @@
             "text": "boolean | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "State",
+          "order": 1
         },
         {
           "name": "indeterminate",
@@ -832,12 +845,16 @@
             "nullable": true
           },
           "required": false,
-          "description": "A mixed state, such as a parent of partly checked children. Needs\n`wireCheckboxes(root)`, which sets the native `indeterminate` property."
+          "description": "A mixed state, such as a parent of partly checked children. Needs\n`wireCheckboxes(root)`, which sets the native `indeterminate` property.",
+          "group": "State",
+          "order": 2
         },
         {
           "name": "name",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "group": "Content",
+          "order": 4
         },
         {
           "name": "value",
@@ -849,13 +866,17 @@
           "name": "hint",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Supporting text below the label, also the checkbox's description."
+          "description": "Supporting text below the label, also the checkbox's description.",
+          "group": "Content",
+          "order": 2
         },
         {
           "name": "error",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "A validation message: shown in the danger color and marking it invalid."
+          "description": "A validation message: shown in the danger color and marking it invalid.",
+          "group": "Content",
+          "order": 3
         },
         {
           "name": "size",
@@ -865,7 +886,10 @@
             "text": "CheckboxSize | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "State",
+          "order": 4,
+          "control": "segmented"
         },
         {
           "name": "disabled",
@@ -874,7 +898,9 @@
             "text": "boolean | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "State",
+          "order": 5
         },
         {
           "name": "required",
@@ -883,13 +909,17 @@
             "text": "boolean | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "State",
+          "order": 3
         },
         {
           "name": "action",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Delegated `data-action` on the input; listen for `change`."
+          "description": "Delegated `data-action` on the input; listen for `change`.",
+          "group": "Content",
+          "order": 5
         },
         {
           "name": "form",
@@ -906,7 +936,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -916,16 +947,19 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*` metadata (a `data-key`)."
+          "description": "Safe `data-*` metadata (a `data-key`).",
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "groups": ["Content", "State"]
     },
     {
       "key": "@kerfjs/ui:checkbox-group",
@@ -1051,7 +1085,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -1061,13 +1096,15 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*` metadata (a `data-key`)."
+          "description": "Safe `data-*` metadata (a `data-key`).",
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": [],
@@ -1272,18 +1309,21 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*` identity on the chip root (a plain, link, or action chip),\nfor tests and delegated handlers; use `itemId` for the record id."
+          "description": "Safe `data-*` identity on the chip root (a plain, link, or action chip),\nfor tests and delegated handlers; use `itemId` for the record id.",
+          "control": "hidden"
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         },
         {
           "name": "children",
@@ -1529,13 +1569,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         },
         {
           "name": "multiple",
@@ -1868,7 +1910,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -1971,13 +2014,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -2079,7 +2124,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -2088,13 +2134,15 @@
             "text": "Readonly<Record<`data-${string}`, string | undefined>>",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         },
         {
           "name": "label",
@@ -2233,7 +2281,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -2242,13 +2291,15 @@
             "text": "Readonly<Record<`data-${string}`, string | undefined>>",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -2326,7 +2377,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -2335,13 +2387,15 @@
             "text": "Readonly<Record<`data-${string}`, string | undefined>>",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         },
         {
           "name": "label",
@@ -2429,7 +2483,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -2440,13 +2495,15 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*`, `aria-*`, and structural `role` metadata on the scroller."
+          "description": "Safe `data-*`, `aria-*`, and structural `role` metadata on the scroller.",
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -2534,7 +2591,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -2683,13 +2741,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         },
         {
           "name": "interactive",
@@ -3046,7 +3106,8 @@
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-appearance'?: undefined; 'data-outlined'?: undefined; 'data-bubble'?: undefined; 'data-grid-row'?: undefined; 'data-media-state'?: undefined; 'data-media-edge'?: undefined; 'data-media-fade'?: undefined; 'data-kui-tint'?: undefined; 'data-kui-tint-accent'?: undefined; }> | Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-appearance'?: undefined; 'data-outlined'?: undefined; 'data-bubble'?: undefined; 'data-grid-row'?: undefined; 'data-media-state'?: undefined; 'data-media-edge'?: undefined; 'data-media-fade'?: undefined; 'data-kui-tint'?: undefined; 'data-kui-tint-accent'?: undefined; 'data-action'?: undefined; 'data-item-id'?: undefined; 'data-interactive'?: undefined; 'data-selected'?: undefined; 'data-disabled'?: undefined; 'data-selection-mode'?: undefined; 'data-kui-pressed'?: undefined; }>"
           },
           "required": false,
-          "description": "Existing static `data-*` metadata remains available."
+          "description": "Existing static `data-*` metadata remains available.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": [],
@@ -3150,13 +3211,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment, such as a dialog's `label` or `footer`."
+          "description": "Native named-slot assignment, such as a dialog's `label` or `footer`.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -3213,13 +3276,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -3314,18 +3379,21 @@
             "text": "Readonly<Record<`data-${string}`, string | undefined>>",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -3392,13 +3460,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -3456,7 +3526,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -3589,12 +3660,14 @@
             "nullable": true
           },
           "required": false,
-          "description": "App-owned root identity for delegation or a stable morph key."
+          "description": "App-owned root identity for delegation or a stable morph key.",
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -3609,12 +3682,17 @@
         {
           "name": "title",
           "type": { "kind": "string", "text": "string" },
-          "required": true
+          "required": true,
+          "group": "Content",
+          "order": 1
         },
         {
           "name": "detail",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "group": "Content",
+          "order": 2,
+          "control": "textarea"
         },
         {
           "name": "icon",
@@ -3643,21 +3721,26 @@
             "text": "boolean | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "State",
+          "order": 1
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "groups": ["Content", "State"]
     },
     {
       "key": "@kerfjs/ui:file-picker",
@@ -3730,7 +3813,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -3818,7 +3902,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -3906,13 +3991,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -3962,7 +4049,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -3996,13 +4084,15 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*` metadata; FramedList-owned markers stay protected."
+          "description": "Safe `data-*` metadata; FramedList-owned markers stay protected.",
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -4044,7 +4134,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -4078,7 +4169,8 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*` metadata; FramedListRow-owned markers stay protected."
+          "description": "Safe `data-*` metadata; FramedListRow-owned markers stay protected.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -4262,7 +4354,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -4350,13 +4443,15 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*` metadata; Grid-owned structural attributes remain protected."
+          "description": "Safe `data-*` metadata; Grid-owned structural attributes remain protected.",
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         },
         {
           "name": "columns",
@@ -4429,13 +4524,17 @@
             "nullable": true
           },
           "required": false,
-          "description": "Make this list a labeled multi-select grid for `ContentItem selectionMode=\"multiple\"` rows."
+          "description": "Make this list a labeled multi-select grid for `ContentItem selectionMode=\"multiple\"` rows.",
+          "group": "Content",
+          "order": 2
         },
         {
           "name": "ariaLabel",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Accessible name for the multi-select grid."
+          "description": "Accessible name for the multi-select grid.",
+          "group": "Content",
+          "order": 1
         },
         {
           "name": "gap",
@@ -4489,7 +4588,10 @@
             "grammar": "length",
             "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
             "rawPolicy": "forbid"
-          }
+          },
+          "group": "Layout",
+          "order": 1,
+          "control": "length"
         },
         {
           "name": "flex",
@@ -4521,7 +4623,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Fill the height of a parent with a definite height, such as an app root or\na fixed-height frame, when this list is that parent's layout root. Inside a\nflex layout use `flex` instead. Defaults to false."
+          "description": "Fill the height of a parent with a definite height, such as an app root or\na fixed-height frame, when this list is that parent's layout root. Inside a\nflex layout use `flex` instead. Defaults to false.",
+          "group": "Layout",
+          "order": 2
         },
         {
           "name": "hAlign",
@@ -4545,7 +4649,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Horizontal alignment. Defaults to full to preserve stretch-aligned list children."
+          "description": "Horizontal alignment. Defaults to full to preserve stretch-aligned list children.",
+          "group": "Layout",
+          "order": 4,
+          "control": "segmented"
         },
         {
           "name": "vAlign",
@@ -4570,7 +4677,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Vertical distribution. Defaults to top."
+          "description": "Vertical distribution. Defaults to top.",
+          "group": "Layout",
+          "order": 5,
+          "control": "segmented"
         },
         {
           "name": "scrollable",
@@ -4580,7 +4690,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Own vertical scrolling and overscroll containment. Children keep their\nnatural height and scroll instead of shrinking. To bound the list by a\n`max-height` ancestor (no definite height), give that ancestor a flex\ncolumn and use `flex`; `fill` needs a definite-height parent."
+          "description": "Own vertical scrolling and overscroll containment. Children keep their\nnatural height and scroll instead of shrinking. To bound the list by a\n`max-height` ancestor (no definite height), give that ancestor a flex\ncolumn and use `flex`; `fill` needs a definite-height parent.",
+          "group": "Layout",
+          "order": 3
         },
         {
           "name": "scrollClearance",
@@ -4601,7 +4713,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Draw a bordered, rounded frame around the stack: a 1px neutral border,\nthe standard control radius, and a 4px inset on every side that keeps the\nfirst and last rows' focus rings inside a scrolling frame's clip. It\nreplaces any `inset`/`textInsets`/`controlInsets`. With `scrollable` and\n`maxHeight` it is a bounded result picker of `ListItem` rows."
+          "description": "Draw a bordered, rounded frame around the stack: a 1px neutral border,\nthe standard control radius, and a 4px inset on every side that keeps the\nfirst and last rows' focus rings inside a scrolling frame's clip. It\nreplaces any `inset`/`textInsets`/`controlInsets`. With `scrollable` and\n`maxHeight` it is a bounded result picker of `ListItem` rows.",
+          "group": "Surface",
+          "order": 2
         },
         {
           "name": "maxHeight",
@@ -4617,7 +4731,10 @@
             "grammar": "length",
             "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
             "rawPolicy": "forbid"
-          }
+          },
+          "group": "Layout",
+          "order": 6,
+          "control": "length"
         },
         {
           "name": "minHeight",
@@ -4633,7 +4750,10 @@
             "grammar": "length",
             "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
             "rawPolicy": "forbid"
-          }
+          },
+          "group": "Layout",
+          "order": 7,
+          "control": "length"
         },
         {
           "name": "surface",
@@ -4644,7 +4764,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Paint a solid surface behind the stack, including its insets: for a strip\nof chrome (a banner above a sunken work area) that must not show the\nlowered tint around its content. Omitted, the List is transparent."
+          "description": "Paint a solid surface behind the stack, including its insets: for a strip\nof chrome (a banner above a sunken work area) that must not show the\nlowered tint around its content. Omitted, the List is transparent.",
+          "group": "Surface",
+          "order": 1,
+          "control": "segmented"
         },
         {
           "name": "dividerSides",
@@ -4672,7 +4795,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Physical divider edges in canonical top/right/bottom/left order."
+          "description": "Physical divider edges in canonical top/right/bottom/left order.",
+          "group": "Surface",
+          "order": 3
         },
         {
           "name": "contentWidth",
@@ -4733,7 +4858,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Physical sides that receive the standard 17px text inset."
+          "description": "Physical sides that receive the standard 17px text inset.",
+          "group": "Surface",
+          "order": 4
         },
         {
           "name": "controlInsets",
@@ -4761,12 +4888,15 @@
             "nullable": true
           },
           "required": false,
-          "description": "Physical sides that receive the standard 8px control inset. Text insets win on overlap."
+          "description": "Physical sides that receive the standard 8px control inset. Text insets win on overlap.",
+          "group": "Surface",
+          "order": 5
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "id",
@@ -4783,16 +4913,19 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*`, `aria-*`, and structural `role` metadata (a named drop\n`region`, `aria-busy`); List-owned structural attributes remain\nprotected, and a multi-select List owns its grid role and name."
+          "description": "Safe `data-*`, `aria-*`, and structural `role` metadata (a named drop\n`region`, `aria-busy`); List-owned structural attributes remain\nprotected, and a multi-select List owns its grid role and name.",
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "groups": ["Content", "Layout", "Surface"]
     },
     {
       "key": "@kerfjs/ui:list-action-row",
@@ -5017,7 +5150,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -5176,13 +5310,15 @@
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-item-id'?: undefined; 'data-has-icon'?: undefined; 'data-icon-tile'?: undefined; 'data-icon-tile-tone'?: undefined; 'data-multiline'?: undefined; 'data-density'?: undefined; 'data-divider'?: undefined; 'data-busy'?: undefined; 'data-trailing-visibility'?: undefined; 'data-state'?: undefined; 'data-selected'?: undefined; 'data-pressed'?: undefined; 'data-dragging'?: undefined; 'data-drop-position'?: undefined; }>",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         },
         {
           "name": "trailingAction",
@@ -5519,18 +5655,21 @@
             "text": "Readonly<Record<`data-${string}`, string | undefined>>",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -5558,7 +5697,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Visual label size, independent of the native heading level. Default `sm`."
+          "description": "Visual label size, independent of the native heading level. Default `sm`.",
+          "group": "Appearance",
+          "order": 1,
+          "control": "segmented"
         },
         {
           "name": "density",
@@ -5568,7 +5710,10 @@
             "text": "\"compact\" | \"standard\" | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Appearance",
+          "order": 2,
+          "control": "segmented"
         },
         {
           "name": "divider",
@@ -5578,7 +5723,10 @@
             "text": "\"none\" | \"both\" | \"before\" | \"after\" | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Appearance",
+          "order": 3,
+          "control": "segmented"
         },
         {
           "name": "inline",
@@ -5752,7 +5900,8 @@
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-has-badge'?: undefined; 'data-has-count'?: undefined; 'data-density'?: undefined; 'data-size'?: undefined; 'data-divider'?: undefined; 'data-inline'?: undefined; 'data-width'?: undefined; 'data-wrap'?: undefined; 'data-indicator-tone'?: undefined; 'data-toggle'?: undefined; }>",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "triggerAttributes",
@@ -5830,25 +5979,32 @@
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-action'?: undefined; 'data-kui-disabled'?: undefined; popoverTarget?: string | undefined; popoverTargetAction?: \"toggle\" | \"show\" | \"hide\" | undefined; 'aria-controls'?: string | undefined; 'aria-haspopup'?: \"true\" | \"dialog\" | \"menu\" | \"listbox\" | \"tree\" | \"grid\" | undefined; }>",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         },
         {
           "name": "count",
           "type": { "kind": "number", "text": "number" },
           "required": false,
-          "variantOnly": true
+          "variantOnly": true,
+          "group": "Content",
+          "order": 2,
+          "control": "number"
         },
         {
           "name": "countLabel",
           "type": { "kind": "string", "text": "string" },
           "required": false,
-          "variantOnly": true
+          "variantOnly": true,
+          "group": "Content",
+          "order": 3
         },
         {
           "name": "badge",
@@ -5891,13 +6047,18 @@
           },
           "required": false,
           "description": "A toggle's label is its button text, not a heading.",
-          "variantOnly": true
+          "variantOnly": true,
+          "group": "Content",
+          "order": 4,
+          "control": "segmented"
         },
         {
           "name": "action",
           "type": { "kind": "string", "text": "string" },
           "required": false,
-          "variantOnly": true
+          "variantOnly": true,
+          "group": "Mode",
+          "order": 3
         },
         {
           "name": "expanded",
@@ -5929,7 +6090,9 @@
           "name": "actionLabel",
           "type": { "kind": "string", "text": "string" },
           "required": false,
-          "variantOnly": true
+          "variantOnly": true,
+          "group": "Mode",
+          "order": 4
         },
         {
           "name": "actionDisabled",
@@ -5939,7 +6102,9 @@
             "nullable": true
           },
           "required": false,
-          "variantOnly": true
+          "variantOnly": true,
+          "group": "Mode",
+          "order": 5
         },
         {
           "name": "disabledReason",
@@ -6066,13 +6231,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -6128,7 +6295,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -6162,13 +6330,15 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*` metadata; component-owned structural attributes stay protected."
+          "description": "Safe `data-*` metadata; component-owned structural attributes stay protected.",
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -6188,7 +6358,9 @@
             "text": "string | SafeHtml"
           },
           "required": true,
-          "slot": true
+          "slot": true,
+          "group": "Content",
+          "order": 1
         },
         {
           "name": "description",
@@ -6200,7 +6372,9 @@
           },
           "required": false,
           "description": "App-owned supporting text rendered in the component's stable label stack.",
-          "slot": true
+          "slot": true,
+          "group": "Content",
+          "order": 2
         },
         {
           "name": "icon",
@@ -6265,7 +6439,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Show a progress indicator and expose the row as busy without replacing its content; a placeholder keeps the indicator."
+          "description": "Show a progress indicator and expose the row as busy without replacing its content; a placeholder keeps the indicator.",
+          "group": "State",
+          "order": 3
         },
         {
           "name": "density",
@@ -6275,7 +6451,10 @@
             "text": "\"compact\" | \"standard\" | \"spacious\" | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Appearance",
+          "order": 1,
+          "control": "segmented"
         },
         {
           "name": "divider",
@@ -6285,7 +6464,10 @@
             "text": "\"none\" | \"both\" | \"before\" | \"after\" | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Appearance",
+          "order": 2,
+          "control": "segmented"
         },
         {
           "name": "selected",
@@ -6294,22 +6476,29 @@
             "text": "boolean | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "State",
+          "order": 1
         },
         {
           "name": "action",
           "type": { "kind": "string", "text": "string" },
-          "required": true
+          "required": true,
+          "group": "Behavior",
+          "order": 1
         },
         {
           "name": "itemId",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "group": "Behavior",
+          "order": 2
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "pressed",
@@ -6318,17 +6507,23 @@
             "text": "boolean | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "State",
+          "order": 2
         },
         {
           "name": "accessibleLabel",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "group": "Content",
+          "order": 3
         },
         {
           "name": "title",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "group": "Content",
+          "order": 4
         },
         {
           "name": "multiline",
@@ -6337,7 +6532,9 @@
             "text": "boolean | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Appearance",
+          "order": 3
         },
         {
           "name": "multilineIconAlign",
@@ -6362,7 +6559,9 @@
             "text": "boolean | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "State",
+          "order": 4
         },
         {
           "name": "tabIndex",
@@ -6377,7 +6576,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Render the row as an unanimated loading skeleton, disabling its action: label, description, icon, status, and trailing content become skeletons; the `busy` indicator stays live."
+          "description": "Render the row as an unanimated loading skeleton, disabling its action: label, description, icon, status, and trailing content become skeletons; the `busy` indicator stays live.",
+          "group": "State",
+          "order": 5
         },
         {
           "name": "draggable",
@@ -6567,16 +6768,19 @@
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-item-id'?: undefined; 'data-has-icon'?: undefined; 'data-has-description'?: undefined; 'data-multiline'?: undefined; 'data-density'?: undefined; 'data-divider'?: undefined; 'data-busy'?: undefined; 'data-state'?: undefined; 'data-kui-disabled'?: undefined; 'data-icon-align'?: undefined; 'data-icon-tile'?: undefined; 'data-icon-tile-tone'?: undefined; 'data-dragging'?: undefined; 'data-drop-position'?: undefined; }>",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "groups": ["Content", "Behavior", "Appearance", "State"]
     },
     {
       "key": "@kerfjs/ui:list-item#ListItemLink",
@@ -6639,13 +6843,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         },
         {
           "name": "label",
@@ -6991,7 +7197,8 @@
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-item-id'?: undefined; 'data-has-icon'?: undefined; 'data-has-description'?: undefined; 'data-multiline'?: undefined; 'data-density'?: undefined; 'data-divider'?: undefined; 'data-busy'?: undefined; 'data-state'?: undefined; 'data-kui-disabled'?: undefined; 'data-icon-align'?: undefined; 'data-icon-tile'?: undefined; 'data-icon-tile-tone'?: undefined; 'data-dragging'?: undefined; 'data-drop-position'?: undefined; }>",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -7007,7 +7214,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "color",
@@ -7047,7 +7255,8 @@
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -7092,7 +7301,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "color",
@@ -7149,7 +7359,8 @@
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -7260,18 +7471,21 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*` identity on the root."
+          "description": "Safe `data-*` identity on the root.",
+          "control": "hidden"
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment, such as a `wa-dialog`'s `footer`."
+          "description": "Native named-slot assignment, such as a `wa-dialog`'s `footer`.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -7466,13 +7680,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -7528,7 +7744,10 @@
           },
           "required": false,
           "default": "fixed",
-          "description": "Whether the header and footer stay pinned around the scrolling content.\n`fixed` (default) always pins them. `auto` pins them while the pane is\ntall enough, and below 480px of height (30rem, so it scales with the text\nsize) lets the whole pane scroll as one column, so tall chrome can never\nsqueeze the content to nothing."
+          "description": "Whether the header and footer stay pinned around the scrolling content.\n`fixed` (default) always pins them. `auto` pins them while the pane is\ntall enough, and below 480px of height (30rem, so it scales with the text\nsize) lets the whole pane scroll as one column, so tall chrome can never\nsqueeze the content to nothing.",
+          "group": "Chrome",
+          "order": 1,
+          "control": "segmented"
         },
         {
           "name": "chromeDividers",
@@ -7540,7 +7759,10 @@
           },
           "required": false,
           "default": "scroll",
-          "description": "The divider under the header and over the footer, where they meet the\nscrolling content. Omitted defaults to `scroll` for a plain pane and\n`always` for `appearance=\"sunken\"`. `scroll` shows the header's divider only\nwhile the content is scrolled down, and the footer's only while more\ncontent lies below — never when the content fits — once\n`wireScrollDividers` (`@kerfjs/ui/wire-scroll-dividers`) is wired above\nthe pane; unwired, neither shows. `always` shows both; `none` neither.\nThe line is drawn inside the chrome, so no state moves the content."
+          "description": "The divider under the header and over the footer, where they meet the\nscrolling content. Omitted defaults to `scroll` for a plain pane and\n`always` for `appearance=\"sunken\"`. `scroll` shows the header's divider only\nwhile the content is scrolled down, and the footer's only while more\ncontent lies below — never when the content fits — once\n`wireScrollDividers` (`@kerfjs/ui/wire-scroll-dividers`) is wired above\nthe pane; unwired, neither shows. `always` shows both; `none` neither.\nThe line is drawn inside the chrome, so no state moves the content.",
+          "group": "Chrome",
+          "order": 2,
+          "control": "segmented"
         },
         {
           "name": "compactChrome",
@@ -7591,7 +7813,9 @@
             "text": "PaneHeaderPresentation | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Chrome",
+          "order": 3
         },
         {
           "name": "scrollEdge",
@@ -7603,7 +7827,10 @@
           },
           "required": false,
           "default": "none",
-          "description": "With `headerPresentation=\"clear\"`, `material` fades the chrome material\nin behind the header once content scrolls beneath it (default `none`)."
+          "description": "With `headerPresentation=\"clear\"`, `material` fades the chrome material\nin behind the header once content scrolls beneath it (default `none`).",
+          "group": "Chrome",
+          "order": 4,
+          "control": "segmented"
         },
         {
           "name": "scrollEdgeDistance",
@@ -7620,7 +7847,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Paint the scrolling work surface with the shared lowered-surface color."
+          "description": "Paint the scrolling work surface with the shared lowered-surface color.",
+          "group": "Surface",
+          "order": 1,
+          "control": "segmented"
         },
         {
           "name": "background",
@@ -7631,7 +7861,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Paint the whole pane, header and footer included, in an app-chosen color\n(`uiColor('surface-raised')`, `fillColor('#1f2a44')`, or `colorVar(…)`\nfrom `@kerfjs/ui/css-values`). It replaces the appearance's fill: a sunken\npane drops its lowered color and grain. Omitted, the pane keeps its\ndefault (transparent, or the sunken surface). Forced colors paint\n`Canvas`. Keep text at AA over the color; a dark color needs a matching\ntint or dark tones for its content."
+          "description": "Paint the whole pane, header and footer included, in an app-chosen color\n(`uiColor('surface-raised')`, `fillColor('#1f2a44')`, or `colorVar(…)`\nfrom `@kerfjs/ui/css-values`). It replaces the appearance's fill: a sunken\npane drops its lowered color and grain. Omitted, the pane keeps its\ndefault (transparent, or the sunken surface). Forced colors paint\n`Canvas`. Keep text at AA over the color; a dark color needs a matching\ntint or dark tones for its content.",
+          "group": "Surface",
+          "order": 2,
+          "control": "color"
         },
         {
           "name": "tint",
@@ -7653,7 +7886,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Clear chrome that lies over the scrolling content's block-start and/or\nblock-end edge, such as a `DialogSurface` floating footer over a filling\nPane. The content scroller adds the inherited\n`--kui-scroll-clearance-block-*` context that chrome publishes to its block\npadding and `scroll-padding`, so content scrolls visibly beneath the chrome\nwhile its first and last items (and anything focused or scrolled into\nview) can still rest clear of it. Defaults to none."
+          "description": "Clear chrome that lies over the scrolling content's block-start and/or\nblock-end edge, such as a `DialogSurface` floating footer over a filling\nPane. The content scroller adds the inherited\n`--kui-scroll-clearance-block-*` context that chrome publishes to its block\npadding and `scroll-padding`, so content scrolls visibly beneath the chrome\nwhile its first and last items (and anything focused or scrolled into\nview) can still rest clear of it. Defaults to none.",
+          "group": "Surface",
+          "order": 3
         },
         {
           "name": "deepInset",
@@ -7663,7 +7898,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Add 8px to every side of scrolling content (default: false)."
+          "description": "Add 8px to every side of scrolling content (default: false).",
+          "group": "Surface",
+          "order": 4
         },
         {
           "name": "tabIndex",
@@ -7674,7 +7911,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Opt into keyboard (`0`) or programmatic (`-1`) focus on the Pane root."
+          "description": "Opt into keyboard (`0`) or programmatic (`-1`) focus on the Pane root.",
+          "group": "Semantics",
+          "order": 3,
+          "control": "segmented"
         },
         {
           "name": "outlined",
@@ -7684,7 +7924,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Keep the standard focus outline visible, such as for a drop target."
+          "description": "Keep the standard focus outline visible, such as for a drop target.",
+          "group": "Surface",
+          "order": 5
         },
         {
           "name": "element",
@@ -7696,7 +7938,10 @@
           },
           "required": false,
           "default": "div",
-          "description": "Root semantics. Defaults to `div`."
+          "description": "Root semantics. Defaults to `div`.",
+          "group": "Semantics",
+          "order": 1,
+          "control": "select"
         },
         {
           "name": "contentElement",
@@ -7708,7 +7953,10 @@
           },
           "required": false,
           "default": "div",
-          "description": "Scrolling content semantics. Defaults to `div`."
+          "description": "Scrolling content semantics. Defaults to `div`.",
+          "group": "Semantics",
+          "order": 2,
+          "control": "select"
         },
         {
           "name": "separators",
@@ -7759,33 +8007,41 @@
           "name": "label",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Accessible name for a landmark root such as `aside` or `main`."
+          "description": "Accessible name for a landmark root such as `aside` or `main`.",
+          "group": "Content",
+          "order": 1
         },
         {
           "name": "contentLabel",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Accessible name for a landmark scrolling slot such as `nav`."
+          "description": "Accessible name for a landmark scrolling slot such as `nav`.",
+          "group": "Content",
+          "order": 2
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "headerClassName",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "contentClassName",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "footerClassName",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -8044,16 +8300,19 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*` metadata; Pane-owned structural attributes remain protected."
+          "description": "Safe `data-*` metadata; Pane-owned structural attributes remain protected.",
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "groups": ["Content", "Chrome", "Surface", "Semantics"]
     },
     {
       "key": "@kerfjs/ui:popup-menu",
@@ -8220,13 +8479,15 @@
             "nullable": true
           },
           "required": false,
-          "description": "Application `data-*` metadata on the menu root."
+          "description": "Application `data-*` metadata on the menu root.",
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": [],
@@ -8323,18 +8584,21 @@
             "text": "Readonly<Record<`data-${string}`, string | undefined>>",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         },
         {
           "name": "label",
@@ -8422,18 +8686,21 @@
             "text": "Readonly<Record<`data-${string}`, string | undefined>>",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -8562,7 +8829,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -8572,13 +8840,15 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*` metadata (a `data-key`)."
+          "description": "Safe `data-*` metadata (a `data-key`).",
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": [],
@@ -9011,7 +9281,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -9022,13 +9293,15 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*`, `aria-*`, and structural `role` metadata (a named\n`region`, a `group`); Row-owned structural attributes remain protected."
+          "description": "Safe `data-*`, `aria-*`, and structural `role` metadata (a named\n`region`, a `group`); Row-owned structural attributes remain protected.",
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -9176,7 +9449,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "editorAttributes",
@@ -9251,7 +9525,8 @@
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         },
         {
           "name": "collapsible",
@@ -9429,7 +9704,9 @@
         {
           "name": "label",
           "type": { "kind": "string", "text": "string" },
-          "required": true
+          "required": true,
+          "group": "Content",
+          "order": 1
         },
         {
           "name": "value",
@@ -9438,7 +9715,9 @@
             "text": "NoInfer<Value>",
             "typeParameter": "Value"
           },
-          "required": true
+          "required": true,
+          "group": "Content",
+          "order": 3
         },
         {
           "name": "choices",
@@ -9451,12 +9730,16 @@
             },
             "text": "readonly SegmentedControlChoice<Value>[]"
           },
-          "required": true
+          "required": true,
+          "group": "Content",
+          "order": 2
         },
         {
           "name": "action",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "group": "Content",
+          "order": 4
         },
         {
           "name": "appearance",
@@ -9466,7 +9749,10 @@
             "text": "SegmentedControlAppearance | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Appearance",
+          "order": 1,
+          "control": "segmented"
         },
         {
           "name": "shape",
@@ -9476,7 +9762,10 @@
             "text": "SegmentedControlShape | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Appearance",
+          "order": 2,
+          "control": "segmented"
         },
         {
           "name": "size",
@@ -9486,7 +9775,10 @@
             "text": "SegmentedControlSize | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Appearance",
+          "order": 3,
+          "control": "segmented"
         },
         {
           "name": "layout",
@@ -9496,12 +9788,16 @@
             "text": "SegmentedControlLayout | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Appearance",
+          "order": 4,
+          "control": "segmented"
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "placeholder",
@@ -9511,7 +9807,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Render as a loading placeholder: every choice keeps its live label or icon, none is selected, and every segment is disabled."
+          "description": "Render as a loading placeholder: every choice keeps its live label or icon, none is selected, and every segment is disabled.",
+          "group": "State",
+          "order": 2
         },
         {
           "name": "disabled",
@@ -9521,16 +9819,20 @@
             "nullable": true
           },
           "required": false,
-          "description": "Disable the whole control: every segment is disabled and dimmed, the selection stays visible, and the group reports `aria-disabled`. A choice's own `disabled` still disables just that segment."
+          "description": "Disable the whole control: every segment is disabled and dimmed, the selection stays visible, and the group reports `aria-disabled`. A choice's own `disabled` still disables just that segment.",
+          "group": "State",
+          "order": 1
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "groups": ["Content", "Appearance", "State"]
     },
     {
       "key": "@kerfjs/ui:select",
@@ -9543,7 +9845,9 @@
         {
           "name": "name",
           "type": { "kind": "string", "text": "string" },
-          "required": true
+          "required": true,
+          "group": "Content",
+          "order": 3
         },
         {
           "name": "choices",
@@ -9556,12 +9860,15 @@
             },
             "text": "readonly SelectChoice<Value>[]"
           },
-          "required": true
+          "required": true,
+          "group": "Content",
+          "order": 4
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "placeholderText",
@@ -9573,7 +9880,9 @@
           "name": "hint",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Supporting text shown below the control and announced as its description."
+          "description": "Supporting text shown below the control and announced as its description.",
+          "group": "Content",
+          "order": 7
         },
         {
           "name": "disabled",
@@ -9582,7 +9891,9 @@
             "text": "boolean | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "State",
+          "order": 1
         },
         {
           "name": "fitMenu",
@@ -9602,7 +9913,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Render as an unanimated loading skeleton: the label above a static, empty control box."
+          "description": "Render as an unanimated loading skeleton: the label above a static, empty control box.",
+          "group": "State",
+          "order": 2
         },
         {
           "name": "presentation",
@@ -9619,7 +9932,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Form (default), borderless toolbar, intrinsic navigation, inline, or view-title chrome."
+          "description": "Form (default), borderless toolbar, intrinsic navigation, inline, or view-title chrome.",
+          "group": "Appearance",
+          "order": 1,
+          "control": "segmented"
         },
         {
           "name": "size",
@@ -9629,7 +9945,10 @@
             "text": "SelectSize | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Appearance",
+          "order": 2,
+          "control": "segmented"
         },
         {
           "name": "triggerWidth",
@@ -9640,7 +9959,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Closed trigger width; omit to keep the presentation's default."
+          "description": "Closed trigger width; omit to keep the presentation's default.",
+          "group": "Appearance",
+          "order": 3,
+          "control": "segmented"
         },
         {
           "name": "maxTriggerWidth",
@@ -9672,7 +9994,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Show the disclosure caret (default); omit it for a compact icon-only trigger."
+          "description": "Show the disclosure caret (default); omit it for a compact icon-only trigger.",
+          "group": "Appearance",
+          "order": 4
         },
         {
           "name": "focusRingOwner",
@@ -9705,23 +10029,30 @@
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         },
         {
           "name": "label",
           "type": { "kind": "string", "text": "string" },
           "required": false,
-          "variantOnly": true
+          "variantOnly": true,
+          "group": "Content",
+          "order": 1
         },
         {
           "name": "ariaLabel",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "group": "Content",
+          "order": 2
         },
         {
           "name": "multiple",
           "type": { "kind": "boolean", "text": "boolean" },
-          "required": false
+          "required": false,
+          "group": "Content",
+          "order": 6
         },
         {
           "name": "value",
@@ -9745,7 +10076,9 @@
             ],
             "text": "NoInfer<Value> | readonly NoInfer<Value>[]"
           },
-          "required": true
+          "required": true,
+          "group": "Content",
+          "order": 5
         },
         {
           "name": "renderSelected",
@@ -9861,7 +10194,8 @@
           "forbidden": ["label", "renderSelected"]
         }
       ],
-      "discriminant": ["multiple"]
+      "discriminant": ["multiple"],
+      "groups": ["Content", "Appearance", "State"]
     },
     {
       "key": "@kerfjs/ui:skeleton",
@@ -9989,13 +10323,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -10137,7 +10473,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -10146,13 +10483,15 @@
             "text": "Readonly<Record<`data-${string}`, string | undefined>>",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         },
         {
           "name": "label",
@@ -10252,13 +10591,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -10423,7 +10764,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -10493,13 +10835,15 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*` metadata; SplitButton-owned markers stay protected."
+          "description": "Safe `data-*` metadata; SplitButton-owned markers stay protected.",
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -10642,13 +10986,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -10663,18 +11009,25 @@
         {
           "name": "title",
           "type": { "kind": "string", "text": "string" },
-          "required": true
+          "required": true,
+          "group": "Content",
+          "order": 1
         },
         {
           "name": "detail",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "group": "Content",
+          "order": 2,
+          "control": "textarea"
         },
         {
           "name": "badge",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Optional compact status or count shown beside the title."
+          "description": "Optional compact status or count shown beside the title.",
+          "group": "Content",
+          "order": 3
         },
         {
           "name": "icon",
@@ -10711,7 +11064,10 @@
             "text": "SemanticTone | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Appearance",
+          "order": 1,
+          "control": "segmented"
         },
         {
           "name": "urgency",
@@ -10721,7 +11077,10 @@
             "text": "StateBannerUrgency | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Appearance",
+          "order": 2,
+          "control": "segmented"
         },
         {
           "name": "copyLayout",
@@ -10732,7 +11091,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Keep the detail beside the title, or give it its own line."
+          "description": "Keep the detail beside the title, or give it its own line.",
+          "group": "Appearance",
+          "order": 4,
+          "control": "segmented"
         },
         {
           "name": "actionPlacement",
@@ -10744,7 +11106,10 @@
           },
           "required": false,
           "default": "trailing",
-          "description": "`trailing` (the default) puts the action beside the copy while the copy\nkeeps its minimum readable width, and otherwise wraps it onto its own\nend-aligned trailing row, at any viewport or container width. `below`\nalways gives the action that separate trailing row."
+          "description": "`trailing` (the default) puts the action beside the copy while the copy\nkeeps its minimum readable width, and otherwise wraps it onto its own\nend-aligned trailing row, at any viewport or container width. `below`\nalways gives the action that separate trailing row.",
+          "group": "Appearance",
+          "order": 5,
+          "control": "segmented"
         },
         {
           "name": "presentation",
@@ -10756,7 +11121,10 @@
           },
           "required": false,
           "default": "card",
-          "description": "`card` (the default) is an inset, rounded, fully bordered banner beside\nthe affected work. `strip` is a full-width band at a layout edge, such as\nabove a workspace: square corners, no inline margin, inline padding on the\nshared content-text column, and only the tone-colored `dividerSides` edges."
+          "description": "`card` (the default) is an inset, rounded, fully bordered banner beside\nthe affected work. `strip` is a full-width band at a layout edge, such as\nabove a workspace: square corners, no inline margin, inline padding on the\nshared content-text column, and only the tone-colored `dividerSides` edges.",
+          "group": "Appearance",
+          "order": 3,
+          "control": "segmented"
         },
         {
           "name": "dividerSides",
@@ -10789,7 +11157,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -10859,7 +11228,8 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*` identity, such as `data-key` for conditional siblings."
+          "description": "Safe `data-*` identity, such as `data-key` for conditional siblings.",
+          "control": "hidden"
         },
         {
           "name": "placeholder",
@@ -10875,10 +11245,12 @@
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "groups": ["Content", "Appearance"]
     },
     {
       "key": "@kerfjs/ui:summary-row",
@@ -11018,7 +11390,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -11088,7 +11461,8 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*` identity (an item id or delegated action) on the root."
+          "description": "Safe `data-*` identity (an item id or delegated action) on the root.",
+          "control": "hidden"
         },
         {
           "name": "semanticRole",
@@ -11219,13 +11593,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -11634,18 +12010,21 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*` identity on the root. Give sibling dialogs distinct\n`data-key`s so a re-render morphs each surface into itself instead of\nreusing one dialog's element for another (structurally identical roots\nare otherwise matched by position)."
+          "description": "Safe `data-*` identity on the root. Give sibling dialogs distinct\n`data-key`s so a re-render morphs each surface into itself instead of\nreusing one dialog's element for another (structurally identical roots\nare otherwise matched by position).",
+          "control": "hidden"
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": [],
@@ -11796,18 +12175,21 @@
             "text": "Readonly<Record<`data-${string}`, string>>",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": [],
@@ -11847,13 +12229,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -11870,7 +12254,9 @@
           "name": "label",
           "type": { "kind": "string", "text": "string" },
           "required": true,
-          "description": "The visible label, which is also the switch's accessible name."
+          "description": "The visible label, which is also the switch's accessible name.",
+          "group": "Content",
+          "order": 1
         },
         {
           "name": "checked",
@@ -11880,12 +12266,16 @@
             "nullable": true
           },
           "required": false,
-          "description": "Whether the setting is on."
+          "description": "Whether the setting is on.",
+          "group": "State",
+          "order": 1
         },
         {
           "name": "name",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "group": "Content",
+          "order": 3
         },
         {
           "name": "value",
@@ -11897,7 +12287,9 @@
           "name": "hint",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Supporting text below the label, also the switch's description."
+          "description": "Supporting text below the label, also the switch's description.",
+          "group": "Content",
+          "order": 2
         },
         {
           "name": "size",
@@ -11907,7 +12299,10 @@
             "text": "SwitchSize | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "State",
+          "order": 2,
+          "control": "segmented"
         },
         {
           "name": "disabled",
@@ -11916,13 +12311,17 @@
             "text": "boolean | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "State",
+          "order": 3
         },
         {
           "name": "action",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Delegated `data-action` on the input; listen for `change`."
+          "description": "Delegated `data-action` on the input; listen for `change`.",
+          "group": "Content",
+          "order": 4
         },
         {
           "name": "form",
@@ -11939,7 +12338,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -11949,16 +12349,19 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*` metadata (a `data-key`)."
+          "description": "Safe `data-*` metadata (a `data-key`).",
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "groups": ["Content", "State"]
     },
     {
       "key": "@kerfjs/ui:tab-bar",
@@ -12023,7 +12426,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "activation",
@@ -12095,7 +12499,8 @@
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -12222,13 +12627,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -12402,7 +12809,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "placeholder",
@@ -12527,13 +12935,15 @@
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-tab-id'?: undefined; 'data-selected'?: undefined; 'data-tab-dragging'?: undefined; 'data-tab-drop-position'?: undefined; 'data-attention'?: undefined; 'data-drop-target'?: undefined; 'data-name-overflow'?: undefined; 'data-disabled'?: undefined; }>",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -12651,13 +13061,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -12680,7 +13092,10 @@
           },
           "required": false,
           "default": "p",
-          "description": "Native heading, paragraph, or inline span element to render. Defaults to `p`."
+          "description": "Native heading, paragraph, or inline span element to render. Defaults to `p`.",
+          "group": "Content",
+          "order": 2,
+          "control": "select"
         },
         {
           "name": "tone",
@@ -12691,7 +13106,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Semantic foreground treatment. Defaults to the inherited foreground."
+          "description": "Semantic foreground treatment. Defaults to the inherited foreground.",
+          "group": "Appearance",
+          "order": 1,
+          "control": "select"
         },
         {
           "name": "color",
@@ -12702,7 +13120,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Foreground color; overrides tone when supplied, or inherits when omitted."
+          "description": "Foreground color; overrides tone when supplied, or inherits when omitted.",
+          "group": "Appearance",
+          "order": 4,
+          "control": "color"
         },
         {
           "name": "size",
@@ -12713,7 +13134,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Text sizing independent of the native semantic element."
+          "description": "Text sizing independent of the native semantic element.",
+          "group": "Appearance",
+          "order": 2,
+          "control": "select"
         },
         {
           "name": "font",
@@ -12724,7 +13148,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Font family independent of the native semantic element."
+          "description": "Font family independent of the native semantic element.",
+          "group": "Appearance",
+          "order": 3,
+          "control": "segmented"
         },
         {
           "name": "border",
@@ -12773,7 +13200,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Remove the block variant's item padding and border in compact content."
+          "description": "Remove the block variant's item padding and border in compact content.",
+          "group": "Appearance",
+          "order": 6
         },
         {
           "name": "lineHeight",
@@ -12796,7 +13225,10 @@
           },
           "required": false,
           "default": "start",
-          "description": "Inline alignment of the lines (default `start`), for centered status copy."
+          "description": "Inline alignment of the lines (default `start`), for centered status copy.",
+          "group": "Appearance",
+          "order": 5,
+          "control": "segmented"
         },
         {
           "name": "children",
@@ -12807,17 +13239,22 @@
             "nullable": true
           },
           "required": true,
-          "slot": true
+          "slot": true,
+          "group": "Content",
+          "order": 1,
+          "control": "textarea"
         },
         {
           "name": "class",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "wrap",
@@ -12836,14 +13273,20 @@
             "text": "\"normal\" | \"anywhere\" | undefined | \"nowrap\" | \"truncate\""
           },
           "required": false,
-          "description": "Wrap normally or break long unbroken strings. Defaults to normal."
+          "description": "Wrap normally or break long unbroken strings. Defaults to normal.",
+          "group": "Wrapping",
+          "order": 1,
+          "control": "segmented"
         },
         {
           "name": "maxLines",
           "type": { "kind": "number", "text": "number", "nullable": true },
           "required": false,
           "description": "Cap wrapped text to this positive number of lines.",
-          "variantOnly": true
+          "variantOnly": true,
+          "group": "Wrapping",
+          "order": 2,
+          "control": "number"
         },
         {
           "name": "truncate",
@@ -12856,7 +13299,10 @@
           "required": false,
           "description": "Where the ellipsis goes (default `end`). `start` and `middle` are\nfor left-to-right identifiers and paths, and `middle` requires\nstring or number children so it can split them.",
           "default": "end",
-          "variantOnly": true
+          "variantOnly": true,
+          "group": "Wrapping",
+          "order": 3,
+          "control": "segmented"
         },
         {
           "name": "truncateKeep",
@@ -12918,7 +13364,8 @@
           "forbidden": ["maxLines", "truncate", "truncateKeep"]
         },
         { "required": ["children", "wrap"], "forbidden": ["maxLines"] }
-      ]
+      ],
+      "groups": ["Content", "Appearance", "Wrapping"]
     },
     {
       "key": "@kerfjs/ui:text#FieldLabel",
@@ -12936,12 +13383,14 @@
         {
           "name": "class",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         }
       ],
       "nativeAttributes": [
@@ -12994,41 +13443,55 @@
           "name": "label",
           "type": { "kind": "string", "text": "string" },
           "required": false,
-          "variantOnly": true
+          "variantOnly": true,
+          "group": "Content",
+          "order": 1
         },
         {
           "name": "ariaLabel",
           "type": { "kind": "string", "text": "string" },
           "required": false,
-          "variantOnly": true
+          "variantOnly": true,
+          "group": "Content",
+          "order": 4
         },
         {
           "name": "value",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "The controlled value."
+          "description": "The controlled value.",
+          "group": "Input",
+          "order": 2
         },
         {
           "name": "name",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "group": "Input",
+          "order": 1
         },
         {
           "name": "placeholder",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "group": "Content",
+          "order": 2
         },
         {
           "name": "hint",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Supporting text below the field, also its accessible description."
+          "description": "Supporting text below the field, also its accessible description.",
+          "group": "Content",
+          "order": 3
         },
         {
           "name": "error",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "A validation message: shown below the field in the danger color, added\nto its description, and marking it `aria-invalid`."
+          "description": "A validation message: shown below the field in the danger color, added\nto its description, and marking it `aria-invalid`.",
+          "group": "Validation",
+          "order": 1
         },
         {
           "name": "size",
@@ -13038,7 +13501,10 @@
             "text": "TextFieldSize | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Input",
+          "order": 6,
+          "control": "segmented"
         },
         {
           "name": "icon",
@@ -13059,7 +13525,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "A clear button while the field has a value (single-line only). Needs\n`wireTextFields(root)`, which clears the field and announces `input`."
+          "description": "A clear button while the field has a value (single-line only). Needs\n`wireTextFields(root)`, which clears the field and announces `input`.",
+          "group": "Input",
+          "order": 7
         },
         {
           "name": "clearLabel",
@@ -13072,7 +13540,10 @@
           "name": "maxLength",
           "type": { "kind": "number", "text": "number", "nullable": true },
           "required": false,
-          "description": "The most characters the field accepts (native `maxlength`)."
+          "description": "The most characters the field accepts (native `maxlength`).",
+          "group": "Validation",
+          "order": 3,
+          "control": "number"
         },
         {
           "name": "showCount",
@@ -13082,7 +13553,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Show a live `count / maxLength` below the field. Needs `maxLength` and\n`wireTextFields(root)`, which updates it as people type."
+          "description": "Show a live `count / maxLength` below the field. Needs `maxLength` and\n`wireTextFields(root)`, which updates it as people type.",
+          "group": "Validation",
+          "order": 4
         },
         {
           "name": "type",
@@ -13103,7 +13576,10 @@
           },
           "required": false,
           "default": "text",
-          "description": "Single-line value kind (default `text`); `date` uses the native picker."
+          "description": "Single-line value kind (default `text`); `date` uses the native picker.",
+          "group": "Input",
+          "order": 3,
+          "control": "select"
         },
         {
           "name": "min",
@@ -13155,13 +13631,18 @@
             "nullable": true
           },
           "required": false,
-          "description": "A multi-line field: a `<textarea>`."
+          "description": "A multi-line field: a `<textarea>`.",
+          "group": "Input",
+          "order": 4
         },
         {
           "name": "rows",
           "type": { "kind": "number", "text": "number", "nullable": true },
           "required": false,
-          "description": "A multi-line field's height in lines (default 3)."
+          "description": "A multi-line field's height in lines (default 3).",
+          "group": "Input",
+          "order": 5,
+          "control": "number"
         },
         {
           "name": "maxRows",
@@ -13176,7 +13657,9 @@
             "text": "boolean | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "State",
+          "order": 1
         },
         {
           "name": "readOnly",
@@ -13185,7 +13668,9 @@
             "text": "boolean | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "State",
+          "order": 2
         },
         {
           "name": "required",
@@ -13194,7 +13679,9 @@
             "text": "boolean | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Validation",
+          "order": 2
         },
         {
           "name": "autofocus",
@@ -13272,7 +13759,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "rootAttributes",
@@ -13282,20 +13770,23 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*` metadata (a `data-key`)."
+          "description": "Safe `data-*` metadata (a `data-key`).",
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": [],
       "variants": [
         { "required": ["label"], "forbidden": ["ariaLabel"] },
         { "required": ["ariaLabel"], "forbidden": ["label"] }
-      ]
+      ],
+      "groups": ["Content", "Input", "Validation", "State"]
     },
     {
       "key": "@kerfjs/ui:toolbar",
@@ -13343,7 +13834,9 @@
         {
           "name": "label",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "group": "Content",
+          "order": 1
         },
         {
           "name": "position",
@@ -13354,7 +13847,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Use footer semantics for a bottom toolbar; defaults to header."
+          "description": "Use footer semantics for a bottom toolbar; defaults to header.",
+          "group": "Layout",
+          "order": 1,
+          "control": "segmented"
         },
         {
           "name": "density",
@@ -13366,7 +13862,10 @@
           },
           "required": false,
           "default": "default",
-          "description": "`compact` sizes the toolbar to a 34px control band with 3px block\ninsets — 40px tall — for a header embedded in a panel or card. Fill it\nwith `ToolbarControlGroup size=\"compact\"` groups; inline insets and the\ngap between zones are unchanged. Composites that render a Toolbar from a\n`ToolbarConfig` (Workbench, CollapsiblePanel, NavStack, SplitView) forward\nit and size the groups they compose to match. Defaults to `default`."
+          "description": "`compact` sizes the toolbar to a 34px control band with 3px block\ninsets — 40px tall — for a header embedded in a panel or card. Fill it\nwith `ToolbarControlGroup size=\"compact\"` groups; inline insets and the\ngap between zones are unchanged. Composites that render a Toolbar from a\n`ToolbarConfig` (Workbench, CollapsiblePanel, NavStack, SplitView) forward\nit and size the groups they compose to match. Defaults to `default`.",
+          "group": "Layout",
+          "order": 2,
+          "control": "segmented"
         },
         {
           "name": "dividerSides",
@@ -13394,7 +13893,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Physical divider edges in canonical top/right/bottom/left order, drawn\nalways. Defaults to none: a toolbar pinned over or under scrolling content\ngets its divider from the scroll state instead — a `Pane` draws the line\nbetween its chrome and content while content is scrolled away beneath it,\nand `wireScrollDividers` `targets` can name a toolbar as chrome, which\nthen draws its facing side the same way."
+          "description": "Physical divider edges in canonical top/right/bottom/left order, drawn\nalways. Defaults to none: a toolbar pinned over or under scrolling content\ngets its divider from the scroll state instead — a `Pane` draws the line\nbetween its chrome and content while content is scrolled away beneath it,\nand `wireScrollDividers` `targets` can name a toolbar as chrome, which\nthen draws its facing side the same way.",
+          "group": "Layout",
+          "order": 3
         },
         {
           "name": "centerAlign",
@@ -13405,7 +13906,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "`balanced` gives both side zones equal tracks, centering the middle zone on the toolbar even if only one side has controls."
+          "description": "`balanced` gives both side zones equal tracks, centering the middle zone on the toolbar even if only one side has controls.",
+          "group": "Layout",
+          "order": 4,
+          "control": "segmented"
         },
         {
           "name": "responsive",
@@ -13422,7 +13926,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Component-owned responsive layout; applications choose the policy rather\nthan restyling toolbar internals. Under every policy the trailing zone\nwraps its groups instead of clipping an action, and the center zone keeps\nits whole content width: when the zones do not fit one row, the leading\ntitle truncates with an ellipsis rather than the center overlapping it.\n- `none` keeps one row; the leading identity truncates first.\n- `stack` stacks the zones at `responsiveAt`, wrapping stacked control\n  groups onto further rows.\n- `wrap` keeps one row while every zone fits at its natural width, and\n  otherwise moves the trailing zone below a whole leading identity.\n- `center-priority` gives an expanded center control the full row.\n- `trailing-priority` moves an expanded trailing control to a full row\n  below the leading identity at `responsiveAt`."
+          "description": "Component-owned responsive layout; applications choose the policy rather\nthan restyling toolbar internals. Under every policy the trailing zone\nwraps its groups instead of clipping an action, and the center zone keeps\nits whole content width: when the zones do not fit one row, the leading\ntitle truncates with an ellipsis rather than the center overlapping it.\n- `none` keeps one row; the leading identity truncates first.\n- `stack` stacks the zones at `responsiveAt`, wrapping stacked control\n  groups onto further rows.\n- `wrap` keeps one row while every zone fits at its natural width, and\n  otherwise moves the trailing zone below a whole leading identity.\n- `center-priority` gives an expanded center control the full row.\n- `trailing-priority` moves an expanded trailing control to a full row\n  below the leading identity at `responsiveAt`.",
+          "group": "Responsive",
+          "order": 1
         },
         {
           "name": "responsiveAt",
@@ -13433,7 +13939,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Container width at which `stack` or `trailing-priority` activates."
+          "description": "Container width at which `stack` or `trailing-priority` activates.",
+          "group": "Responsive",
+          "order": 2
         },
         {
           "name": "safeAreaEdges",
@@ -13458,16 +13966,19 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "groups": ["Content", "Layout", "Responsive"]
     },
     {
       "key": "@kerfjs/ui:toolbar-control-group",
@@ -13489,12 +14000,15 @@
         {
           "name": "label",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "group": "Content",
+          "order": 1
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "expanded",
@@ -13503,7 +14017,9 @@
             "text": "boolean | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "State",
+          "order": 1
         },
         {
           "name": "single",
@@ -13512,7 +14028,9 @@
             "text": "boolean | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Content",
+          "order": 2
         },
         {
           "name": "appearance",
@@ -13522,7 +14040,10 @@
             "text": "ToolbarControlGroupAppearance | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Appearance",
+          "order": 1,
+          "control": "select"
         },
         {
           "name": "tone",
@@ -13532,7 +14053,10 @@
             "text": "ToolbarControlGroupTone | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Appearance",
+          "order": 2,
+          "control": "select"
         },
         {
           "name": "material",
@@ -13576,7 +14100,10 @@
           },
           "required": false,
           "default": "pill",
-          "description": "Corner shape: fully round `pill` (default) or a softer `rounded` rectangle."
+          "description": "Corner shape: fully round `pill` (default) or a softer `rounded` rectangle.",
+          "group": "Appearance",
+          "order": 3,
+          "control": "segmented"
         },
         {
           "name": "size",
@@ -13586,7 +14113,10 @@
             "text": "ToolbarControlGroupSize | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Appearance",
+          "order": 4,
+          "control": "segmented"
         },
         {
           "name": "density",
@@ -13596,7 +14126,10 @@
             "text": "ToolbarControlGroupDensity | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Appearance",
+          "order": 5,
+          "control": "segmented"
         },
         {
           "name": "content",
@@ -13648,7 +14181,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Size a nested Web Awesome dropdown trigger as part of this group."
+          "description": "Size a nested Web Awesome dropdown trigger as part of this group.",
+          "group": "Content",
+          "order": 3
         },
         {
           "name": "menuInset",
@@ -13670,7 +14205,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Keep an overlong row inside the available width by scrolling or wrapping."
+          "description": "Keep an overlong row inside the available width by scrolling or wrapping.",
+          "group": "Responsive",
+          "order": 1
         },
         {
           "name": "expandedOverflow",
@@ -13698,7 +14235,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Responsive visibility owned by the enclosing Toolbar container.\n`yield-to-priority-row` hides this trailing group exactly while its\nToolbar's `responsive=\"trailing-priority\"` row is active (an expanded\ntrailing sibling at the Toolbar's `responsiveAt` width), so the app never\nrestates that breakpoint with `hideBelow`."
+          "description": "Responsive visibility owned by the enclosing Toolbar container.\n`yield-to-priority-row` hides this trailing group exactly while its\nToolbar's `responsive=\"trailing-priority\"` row is active (an expanded\ntrailing sibling at the Toolbar's `responsiveAt` width), so the app never\nrestates that breakpoint with `hideBelow`.",
+          "group": "Responsive",
+          "order": 2
         },
         {
           "name": "hideBelow",
@@ -13714,7 +14253,10 @@
             "grammar": "length",
             "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
             "rawPolicy": "forbid"
-          }
+          },
+          "group": "Responsive",
+          "order": 3,
+          "control": "length"
         },
         {
           "name": "showBelow",
@@ -13730,7 +14272,10 @@
             "grammar": "length",
             "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
             "rawPolicy": "forbid"
-          }
+          },
+          "group": "Responsive",
+          "order": 4,
+          "control": "length"
         },
         {
           "name": "sizing",
@@ -13788,13 +14333,17 @@
             "nullable": true
           },
           "required": false,
-          "description": "Block the group's controls and show a spinner without changing its dimensions."
+          "description": "Block the group's controls and show a spinner without changing its dimensions.",
+          "group": "State",
+          "order": 2
         },
         {
           "name": "busyLabel",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Announced status while busy; defaults to “Working”."
+          "description": "Announced status while busy; defaults to “Working”.",
+          "group": "State",
+          "order": 3
         },
         {
           "name": "avatarImage",
@@ -13806,10 +14355,12 @@
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
-      "nativeAttributes": []
+      "nativeAttributes": [],
+      "groups": ["Content", "Appearance", "Responsive", "State"]
     },
     {
       "key": "@kerfjs/ui:toolbar-control-group#ToolbarActionLink",
@@ -13864,13 +14415,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -13885,7 +14438,9 @@
         {
           "name": "text",
           "type": { "kind": "string", "text": "string" },
-          "required": true
+          "required": true,
+          "group": "Content",
+          "order": 1
         },
         {
           "name": "size",
@@ -13902,7 +14457,10 @@
             "text": "ToolbarTextSize | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "group": "Appearance",
+          "order": 1,
+          "control": "select"
         },
         {
           "name": "tone",
@@ -13913,7 +14471,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Use loud-toolbar foregrounds on a toolbar painted with the inverse loud\nfill, matching dark control groups; like them it inverts with the color\nscheme. Over a dark photo or scrim keep the default tone inside a\n`BackdropImage` overlay, which takes the dark scheme under its scrim."
+          "description": "Use loud-toolbar foregrounds on a toolbar painted with the inverse loud\nfill, matching dark control groups; like them it inverts with the color\nscheme. Over a dark photo or scrim keep the default tone inside a\n`BackdropImage` overlay, which takes the dark scheme under its scrim.",
+          "group": "Appearance",
+          "order": 2,
+          "control": "segmented"
         },
         {
           "name": "hideBelow",
@@ -13950,7 +14511,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "id",
@@ -13966,7 +14528,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Show a trailing ellipsis (…) where the text is truncated — on the single line\n(default), or at the `maxLines` boundary when wrapping. Set false to hard-clip\ninstead. Default true."
+          "description": "Show a trailing ellipsis (…) where the text is truncated — on the single line\n(default), or at the `maxLines` boundary when wrapping. Set false to hard-clip\ninstead. Default true.",
+          "group": "Appearance",
+          "order": 3
         },
         {
           "name": "fill",
@@ -13982,14 +14546,17 @@
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         },
         {
           "name": "action",
           "type": { "kind": "string", "text": "string" },
           "required": false,
           "description": "Render a native button with this delegated action; the app owns editing.",
-          "variantOnly": true
+          "variantOnly": true,
+          "group": "Behavior",
+          "order": 1
         },
         {
           "name": "headingLevel",
@@ -14001,7 +14568,10 @@
           },
           "required": false,
           "description": "Expose `role=\"heading\"` and `aria-level` on read-only text.",
-          "variantOnly": true
+          "variantOnly": true,
+          "group": "Content",
+          "order": 3,
+          "control": "segmented"
         },
         {
           "name": "placeholder",
@@ -14012,14 +14582,18 @@
           },
           "required": false,
           "description": "Render an unanimated loading skeleton instead of the text.",
-          "variantOnly": true
+          "variantOnly": true,
+          "group": "Behavior",
+          "order": 2
         },
         {
           "name": "description",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
           "description": "Quiet, single-line supporting copy under the title (\"Changes save\nautomatically.\"), truncating with an ellipsis. Title and description\nshare the toolbar's control band and the same text start, with or\nwithout a leading icon group. With a description, `id` and\n`headingLevel` apply to the title alone, so a dialog's\n`aria-labelledby` names only the title.",
-          "variantOnly": true
+          "variantOnly": true,
+          "group": "Content",
+          "order": 2
         },
         {
           "name": "descriptionId",
@@ -14033,13 +14607,18 @@
           "type": { "kind": "boolean", "text": "boolean" },
           "required": false,
           "description": "Wrap onto multiple lines; combine with `maxLines` to cap them.",
-          "variantOnly": true
+          "variantOnly": true,
+          "group": "Appearance",
+          "order": 4
         },
         {
           "name": "maxLines",
           "type": { "kind": "number", "text": "number", "nullable": true },
           "required": false,
-          "variantOnly": true
+          "variantOnly": true,
+          "group": "Appearance",
+          "order": 5,
+          "control": "number"
         }
       ],
       "nativeAttributes": [],
@@ -14057,7 +14636,8 @@
             "descriptionId"
           ]
         }
-      ]
+      ],
+      "groups": ["Content", "Appearance", "Behavior"]
     },
     {
       "key": "@kerfjs/ui:value-preview",
@@ -14109,13 +14689,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -14179,7 +14761,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "children",
@@ -14195,7 +14778,8 @@
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -14240,7 +14824,8 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "placeholder",
@@ -14256,7 +14841,8 @@
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -21993,13 +22579,15 @@
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []
@@ -22272,18 +22860,21 @@
             "text": "Readonly<Record<`data-${string}`, string | undefined>>",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false
+          "required": false,
+          "control": "hidden"
         },
         {
           "name": "slot",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Native named-slot assignment when composed inside a web component."
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
         }
       ],
       "nativeAttributes": []

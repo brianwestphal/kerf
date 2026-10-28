@@ -758,6 +758,19 @@ export function applyCrossReferences(
   }
 }
 
+// Plumbing props an inspector never shows by default: styling hooks, slot
+// placement, and attribute bags the editor owns (the node marker). The
+// overlay can still give any of them a visible control.
+const HIDDEN_PROP =
+  /^(class|className|\w+ClassName|slot|rootAttributes|triggerAttributes)$/;
+
+/** Generated inspector defaults, applied before the curated overlay. */
+export function applyControlDefaults(component) {
+  for (const prop of component.props) {
+    if (HIDDEN_PROP.test(prop.name)) prop.control = 'hidden';
+  }
+}
+
 /** Merges curated overlay fields; unknown component or prop keys are problems. */
 export function applyOverlay(component, overlay, problems) {
   const curated = overlay?.components?.[component.key];
@@ -893,8 +906,10 @@ export function buildComponentProps({
     ...readKerfEntries(ctx, program, root, catalog, composition, problems),
     ...readWebAwesomeEntries(catalog, customElements, problems),
   ];
-  for (const component of components)
+  for (const component of components) {
+    applyControlDefaults(component);
     applyOverlay(component, overlay, problems);
+  }
   const known = new Set(components.map((component) => component.key));
   for (const key of Object.keys(overlay?.components ?? {})) {
     if (!known.has(key))

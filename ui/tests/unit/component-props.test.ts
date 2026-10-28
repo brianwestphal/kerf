@@ -9,6 +9,7 @@ import type {
   PropDescriptor,
 } from '../../scripts/lib/component-props.mjs';
 import {
+  applyControlDefaults,
   applyCrossReferences,
   applyOverlay,
   coerceDefault,
@@ -294,6 +295,52 @@ describe('component-props helpers', () => {
   });
 });
 
+describe('inspector control defaults', () => {
+  it('hides plumbing props unless the overlay gives them a control', () => {
+    const component: ComponentProps = {
+      key: 'pkg:thing',
+      id: 'thing',
+      source: 'kerf',
+      props: [
+        'className',
+        'headerClassName',
+        'slot',
+        'rootAttributes',
+        'triggerAttributes',
+        'class',
+        'label',
+      ].map((name) => ({
+        name,
+        type: { kind: 'string' as const },
+        required: false,
+      })),
+    };
+    applyControlDefaults(component);
+    expect(
+      component.props
+        .filter((item) => item.control === 'hidden')
+        .map((item) => item.name),
+    ).toEqual([
+      'className',
+      'headerClassName',
+      'slot',
+      'rootAttributes',
+      'triggerAttributes',
+      'class',
+    ]);
+    applyOverlay(
+      component,
+      {
+        components: {
+          'pkg:thing': { props: { className: { control: 'text' } } },
+        },
+      },
+      [],
+    );
+    expect(prop(component, 'className').control).toBe('text');
+  });
+});
+
 describe('ai/component-props.json (generated from the built package)', async () => {
   const document = (await readJson(
     'ai/component-props.json',
@@ -369,6 +416,13 @@ describe('ai/component-props.json (generated from the built package)', async () 
       ['header', 'children', 'footer'].map((name) => prop(pane, name).zone),
     ).toEqual(['header', 'content', 'footer']);
     expect(prop(pane, 'background').type.kind).toBe('css-value');
+    // Curated inspector grouping, with plumbing hidden by default.
+    expect(pane.groups).toEqual(['Content', 'Chrome', 'Surface', 'Semantics']);
+    expect(prop(pane, 'chromePlacement')).toMatchObject({
+      group: 'Chrome',
+      control: 'segmented',
+    });
+    expect(prop(pane, 'className').control).toBe('hidden');
     // rootAttributes keeps its `data-*` index signature beside the protected markers.
     expect(prop(pane, 'rootAttributes').type.index).toMatchObject({
       keyPrefix: 'data-',

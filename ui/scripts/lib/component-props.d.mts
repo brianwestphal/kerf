@@ -139,6 +139,10 @@ export function applyCrossReferences(
     }[];
   },
 ): void;
+/** Generated inspector defaults: plumbing props get `control: 'hidden'`. */
+export function applyControlDefaults(component: {
+  props: PropDescriptor[];
+}): void;
 export function applyOverlay(
   component: ComponentProps,
   overlay: unknown,
