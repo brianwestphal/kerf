@@ -14,15 +14,34 @@ substitutes for editable Symbols.
 
 ## Install and update
 
-The Library was created and verified with **Sketch 2026.3.1**. Copy
-`Kerf-UI.sketch` to a stable location outside a versioned package or
-repository checkout, then add that copy in Sketch Settings → Libraries.
+The Library was created and verified with **Sketch 2026.3.1**. Kerf UI ships
+it as a Sketch Library, not a document template: documents link its Symbols
+and Color Variables, so a new release reaches every design that uses them.
 
-For an update, copy the new published file over that same installed path and
-refresh the Library in Sketch. Linked instances sync while keeping their
-overrides: the Library's document ID, Symbol IDs, Text layer IDs, and Color
-Variable IDs stay the same across releases, and the build fails if any of them
-changes. If the native format or supported Sketch version changes, this guide
+To install:
+
+1. Find the file. In a project that depends on `@kerfjs/ui` it is
+   `node_modules/@kerfjs/ui/docs/design/sketch/Kerf-UI.sketch`; you can also
+   download it from the
+   [repository](https://github.com/brianwestphal/kerf/blob/main/ui/docs/design/sketch/Kerf-UI.sketch).
+2. Copy it to a stable folder outside any package or repository checkout, for
+   example `~/Design Libraries/Kerf-UI.sketch`. Don't add it from
+   `node_modules`: a reinstall or branch switch would move or delete the file
+   your designs link to.
+3. In Sketch, open **Settings → Libraries**, choose **Add Library…**, and
+   select the copy.
+
+To use it, insert a Symbol from the component browser. Symbols are named
+`Component / Variant / State / Theme`, so typing `Button` finds every Button.
+Kerf's Color Variables (`Kerf/<Theme>/<Role>`) appear in the color picker
+under the Library's name.
+
+To update, copy the newly published file over the same installed path. Sketch
+then offers the Library update in any open document that uses it; accept it to
+sync. Linked instances keep their overrides: the Library's document ID, Symbol
+IDs, Text layer IDs, and Color Variable IDs stay the same across releases, and
+the build fails if any of them changes. Don't add the new file as a second
+Library alongside the old one. If the native format or supported Sketch version changes, this guide
 and the unified guide must record the new verification result before
 publication.
 
