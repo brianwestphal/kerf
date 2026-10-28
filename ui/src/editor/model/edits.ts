@@ -121,6 +121,17 @@ export function insertNode(
 }
 
 /**
+ * Lists a component's package in the document's `catalogs` (KF-6GT5QY), as a
+ * document must before it uses one of its components.
+ */
+export function withCatalog(document: ViewDocument, key: string): ViewDocument {
+  const pkg = key.slice(0, key.lastIndexOf(':'));
+  return document.catalogs.includes(pkg)
+    ? document
+    : { ...document, catalogs: [...document.catalogs, pkg] };
+}
+
+/**
  * Removes a node. Only a node placed directly in a zone list can be removed;
  * the root, `$each` templates, and `$if` branches belong to their structure.
  */

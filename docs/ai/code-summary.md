@@ -6,6 +6,7 @@ The optional `ui/ux-demo/demos/` directory contains one focused renderer per
 first-party component or composition route plus a typed shared context and
 registry; `ui/ux-demo/main.tsx` retains the catalog shell, shared state, routing,
 and interaction wiring. The published UX Review pieces build its contextual region-capture
+`ui/vite-editor.mjs` (`@kerfjs/ui/vite-editor`, Node-only, KF-6GT5QY: editor host) is a Vite dev-server plugin: `kerfUiEditor({ route?, registry? })` serves the editor page at `/__kerf-ui-editor/` and a virtual entry that imports `@kerfjs/ui/editor`, Kerf UI's and the profile's catalogs (`applicationCatalogs`, `readAppPropsCatalog`), every catalog-named component module, and an optional registry. Tests: `ui/tests/unit/vite-editor.test.ts`; end-to-end in `editor/tests/browser/host.spec.ts` over `editor/fixtures/app/`. Docs: `ui/docs/editor-host.md`.
 link: `ui/vite-ux-review.mjs` (`@kerfjs/ui/vite-ux-review`, Node-only
 `uxReviewPlugin`, plus the server-neutral `resolveUxReviewProject`,
 `uxReviewProjectResponse` for Fetch API servers, and `uxReviewMiddleware` for

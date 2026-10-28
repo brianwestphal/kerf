@@ -10,15 +10,24 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',
   },
-  webServer: {
-    command: 'npm run build && npm run preview',
-    url: 'http://127.0.0.1:42917',
-    reuseExistingServer: false,
-    timeout: 180_000,
-  },
-  projects: [
-    { name: 'chromium', use: { browserName: 'chromium' } },
-    { name: 'firefox', use: { browserName: 'firefox' } },
-    { name: 'webkit', use: { browserName: 'webkit' } },
+  webServer: [
+    {
+      command: 'npm run build && npm run preview',
+      url: 'http://127.0.0.1:42917',
+      reuseExistingServer: false,
+      timeout: 180_000,
+    },
+    // An application's dev server hosting the editor through
+    // `@kerfjs/ui/vite-editor` (KF-6GT5QY: editor host).
+    {
+      command: 'npx vite --config fixtures/app/vite.config.ts',
+      url: 'http://127.0.0.1:42918/__kerf-ui-editor/',
+      reuseExistingServer: false,
+      timeout: 120_000,
+    },
   ],
+  projects: ['chromium', 'firefox', 'webkit'].map((browserName) => ({
+    name: browserName,
+    use: { browserName: browserName as 'chromium' | 'firefox' | 'webkit' },
+  })),
 });

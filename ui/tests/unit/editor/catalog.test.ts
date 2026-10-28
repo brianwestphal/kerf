@@ -106,6 +106,26 @@ describe('an editor over an application catalog', () => {
     editor.selection.value = { kind: 'node', id: PANE };
     const picker = root.querySelector('[data-editor-add="component"]')!;
     expect(picker.innerHTML).toContain('@acme/widgets:meter');
+    // Adding a package's component lists the package in the document.
+    const lean = { ...document_, catalogs: ['@kerfjs/ui'] } as ViewDocument;
+    editor.document.value = lean;
+    Object.defineProperty(
+      root.querySelector('[data-editor-add="component"]')!,
+      'value',
+      { configurable: true, value: '@acme/widgets:meter' },
+    );
+    Object.defineProperty(
+      root.querySelector('[data-editor-add="zone"]')!,
+      'value',
+      { configurable: true, value: 'content' },
+    );
+    root
+      .querySelector<HTMLElement>('[data-action="editor-add-child"]')!
+      .click();
+    expect(editor.document.value.catalogs).toEqual([
+      '@kerfjs/ui',
+      '@acme/widgets',
+    ]);
     expect(root.textContent).toContain('valid');
   });
 });

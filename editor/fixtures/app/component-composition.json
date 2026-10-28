@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "package": "orders-app",
+  "entries": [
+    {
+      "key": "orders-app:order-card",
+      "package": "orders-app",
+      "id": "order-card",
+      "name": "OrderCard",
+      "kind": "component",
+      "source": "src/order-card.tsx",
+      "publicExports": ["OrderCard"],
+      "parents": { "mode": "any", "entries": [] },
+      "zones": []
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-props.schema.json",
+  "schema": "kerf-ui-component-props/v1",
+  "package": "orders-app",
+  "description": "Generated prop schema for orders-app's Kerf components. Regenerate with `kerf-ui-props --write` after a build; do not edit.",
+  "components": [
+    {
+      "key": "orders-app:order-card",
+      "id": "order-card",
+      "source": "package",
+      "import": "./src/order-card.js",
+      "export": "OrderCard",
+      "description": "One order, as an app-owned component that lives in app source.",
+      "props": [
+        {
+          "name": "title",
+          "type": {
+            "kind": "string",
+            "text": "string"
+          },
+          "required": true,
+          "description": "The order's title."
+        },
+        {
+          "name": "total",
+          "type": {
+            "kind": "number",
+            "text": "number",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The total, in cents."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "enum",
+            "values": ["open", "shipped"],
+            "text": "OrderStatus | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "open",
+          "description": "Where the order is (default `open`)."
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "control": "hidden"
+        }
+      ],
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
+    }
+  ],
+  "definitions": {}
+}

@@ -62,6 +62,10 @@
       "types": "./view/index.d.mts",
       "import": "./view/index.mjs"
     },
+    "./vite-editor": {
+      "types": "./vite-editor.d.mts",
+      "import": "./vite-editor.mjs"
+    },
     "./vite-ux-review": {
       "types": "./vite-ux-review.d.mts",
       "import": "./vite-ux-review.mjs"
@@ -685,6 +689,8 @@
     "catalog-projection.mjs",
     "catalog-projection.d.mts",
     "catalog-projection-cli.mjs",
+    "vite-editor.mjs",
+    "vite-editor.d.mts",
     "vite-ux-review.mjs",
     "vite-ux-review.d.mts",
     "view",

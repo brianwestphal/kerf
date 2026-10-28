@@ -89,6 +89,7 @@ import {
   removeNode,
   renameNode,
   setProp,
+  withCatalog,
 } from './model/edits.js';
 import {
   compareWithModule,
@@ -1017,7 +1018,7 @@ export function createEditor(options: EditorOptions) {
         return Object.keys(props).length ? { props } : {};
       })(),
     };
-    commit(insertNode(doc.value, id, zone, child));
+    commit(withCatalog(insertNode(doc.value, id, zone, child), key));
     select({ kind: 'node', id: child.id });
   };
 

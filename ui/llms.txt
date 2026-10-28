@@ -878,6 +878,11 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
 - **Collect tags with `TagField`** (`@kerfjs/ui/tag-field`): SearchField's
   token editor as a form field, a hidden input per tag; call
   `wireTagFields(root, { onChange })` and re-render. Never use `wa-tag-input`.
+- **Edit view documents in your app with `@kerfjs/ui/vite-editor`**:
+  `plugins: [kerfUiEditor()]` serves the Kerf UI editor at
+  `/__kerf-ui-editor/` on the dev server, previewing the components your
+  `.kerf-ui-profile.json` catalogs declare with their real functions. See
+  `docs/editor-host.md`.
 - **Show a hierarchy with `TreeList`** (`@kerfjs/ui/tree-list`): ListItem rows
   indented by depth with disclosure arrows, an ARIA tree. Pass `nodes`,
   `expanded`, `selected`, `action`, and `toggleAction`, flip the ids in your

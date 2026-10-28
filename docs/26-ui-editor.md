@@ -26,7 +26,12 @@
 The editor shell is published as `@kerfjs/ui/editor` (KF-6GT5QY: editor
 host): a host passes it an `EditorCatalog` that combines Kerf UI's catalogs
 with an application's, so application components preview with their real
-functions. The private `editor/` app is one such host.
+functions. `@kerfjs/ui/vite-editor` (`kerfUiEditor()`) runs it inside an
+application's own Vite dev server at `/__kerf-ui-editor/`, reading the
+catalogs its `.kerf-ui-profile.json` declares and importing each component's
+module from the catalog's `import` field (plus an optional registry). The
+private `editor/` app is another host; its `fixtures/app/` is the plugin's
+end-to-end fixture.
 
 Drag-and-drop placement and binding props to `$each` item fields or params
 come next (KF-K5TKCV: editor drag-and-drop and bindings). The implementation
