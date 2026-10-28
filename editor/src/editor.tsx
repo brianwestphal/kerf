@@ -213,6 +213,22 @@ function controlValue(field: HTMLElement): string | boolean {
     : input.value;
 }
 
+/** Identifies what the Inspector shows, so a change of subject is detectable. */
+function selectionKey(selection: Selection): string {
+  if (!selection) return '';
+  return selection.kind === 'node'
+    ? `node:${selection.id}`
+    : `component:${selection.key}`;
+}
+
+/** Scrolls the Inspector rail, and anything scrolled inside it, to the top. */
+function resetInspectorScroll(root: HTMLElement): void {
+  const rail = root.querySelector('[data-workbench-rail="right"]');
+  if (!rail) return;
+  for (const element of [rail, ...rail.querySelectorAll('*')])
+    if (element.scrollTop) element.scrollTop = 0;
+}
+
 /** Adds a listener and returns its disposer. */
 function on(
   target: EventTarget,
@@ -1103,6 +1119,17 @@ export function createEditor(options: EditorOptions = {}) {
         void doc.value;
         requestAnimationFrame(() => placeHighlight(root));
       }),
+      // KF-JWD51N: a different selection opens the Inspector at its top; an
+      // edit to the same node keeps the place the author was working at.
+      (() => {
+        let shown = selectionKey(selection.peek());
+        return effect(() => {
+          const key = selectionKey(selection.value);
+          if (key === shown) return;
+          shown = key;
+          requestAnimationFrame(() => resetInspectorScroll(root));
+        });
+      })(),
     ];
     const observer = new ResizeObserver(() => placeHighlight(root));
     const canvas = root.querySelector('[data-editor-canvas]');

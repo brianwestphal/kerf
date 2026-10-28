@@ -280,8 +280,23 @@ test('edits, adds, moves, deletes, and undoes from the inspector', async ({
   await page.getByRole('option', { name: 'trailing' }).click();
   await page.locator('[data-editor-add="component"]').click();
   await page.getByRole('option', { name: 'Button', exact: true }).click();
-  await page.getByRole('button', { name: 'Add', exact: true }).click();
+  const railScroll = () =>
+    page
+      .locator('[data-workbench-rail="right"]')
+      .evaluate((rail) =>
+        Math.max(
+          rail.scrollTop,
+          ...[...rail.querySelectorAll('*')].map((node) => node.scrollTop),
+        ),
+      );
+  const add = page.getByRole('button', { name: 'Add', exact: true });
+  await add.scrollIntoViewIfNeeded();
+  expect(await railScroll()).toBeGreaterThan(0);
+  await add.click();
   await expect(page.getByText('8 nodes · valid')).toBeVisible();
+  // KF-JWD51N: the new selection opens the Inspector at its top.
+  await expect.poll(railScroll).toBe(0);
+  await expect(page.locator('[data-editor-name]')).toBeInViewport();
   await expect(
     page.locator('[data-editor-canvas] [data-kerf-node]', {
       hasText: /^Button$/,

@@ -199,3 +199,39 @@ describe('undo and redo', () => {
     expect(node()?.props?.tone).toBe('danger');
   });
 });
+
+describe('the Inspector scroll position', () => {
+  const frame = () => new Promise((done) => requestAnimationFrame(done));
+  // happy-dom has no layout and clamps scrollTop to 0; give these elements
+  // a plain scroll position so the reset is observable.
+  const scrollable = (element: HTMLElement) =>
+    Object.defineProperty(element, 'scrollTop', { value: 0, writable: true });
+
+  it('returns to the top for a new selection and stays put for an edit', async () => {
+    const { root, editor } = open();
+    const rail = root.querySelector<HTMLElement>(
+      '[data-workbench-rail="right"]',
+    )!;
+    const inner = rail.querySelector<HTMLElement>(
+      '[data-workbench-panel-content]',
+    )!;
+    scrollable(rail);
+    scrollable(inner);
+    await frame(); // the reset for opening on this selection
+    inner.scrollTop = 120;
+    choose(field(root, '[data-editor-prop="tone"]'), 'danger');
+    await frame();
+    expect(inner.scrollTop).toBe(120);
+
+    editor.selection.value = { kind: 'node', id: TOOLBAR };
+    await frame();
+    expect(inner.scrollTop).toBe(0);
+
+    rail.scrollTop = 40;
+    editor.selection.value = { kind: 'component', key: '@kerfjs/ui:button' };
+    await frame();
+    expect(rail.scrollTop).toBe(0);
+    editor.selection.value = null;
+    await frame();
+  });
+});
