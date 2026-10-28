@@ -186,6 +186,9 @@
 }
 .kui-toolbar-control-group[data-size="compact"] {
   --kui-toolbar-group-size: remify(34px);
+  /* Compact text, as on a compact Button: the group's text-bearing controls
+     (plain buttons, action links, PopupMenu triggers) inherit it. */
+  font-size: var(--kui-font-s, remify(14px));
   --_kui-toolbar-control-group-slot-height: remify(32px);
   --_kui-toolbar-control-group-slot-overlap: 1px;
   --_kui-toolbar-control-group-slot-radius: max(

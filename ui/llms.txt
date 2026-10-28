@@ -319,7 +319,8 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   corresponding minimum-height allowance while preserving its zone gap and
   safe-area compensation. For a shorter header embedded in a panel or card,
   pass `density="compact"` (40px: a 34px control band and 3px block insets)
-  and give its groups `size="compact"`; never shrink a Toolbar with CSS.
+  and give its groups `size="compact"` (32px controls with the compact 14px
+  text of a compact Button); never shrink a Toolbar with CSS.
   Composites forward `density` from their `ToolbarConfig` (Workbench panel,
   main, and bottom toolbars, CollapsiblePanel, NavStack, SplitView) and size
   the groups they compose (panel toggles, the back button) to match; pass
