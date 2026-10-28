@@ -398,3 +398,33 @@ test('shows a node only when a param holds and adds a slot', async ({
   await page.getByRole('button', { name: 'Undo' }).click();
   await expect(slotRow).toBeVisible();
 });
+
+// KF-YR91FA: a label moves into nodes so a component can sit beside it, and
+// back to text when the zone is one text run again.
+test('turns a button label into nodes and adds a badge beside it', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page
+    .locator(`[data-action="editor-select-node"][data-item-id="${COMPOSE}"]`)
+    .click();
+  await page.getByRole('button', { name: 'Use as nodes' }).click();
+  await expect(
+    page.getByText('Holds 1 node; select it in the outline.'),
+  ).toBeVisible();
+  await page.locator('[data-editor-add="component"]').click();
+  await page.getByRole('option', { name: 'Badge', exact: true }).click();
+  await page.getByRole('button', { name: 'Add', exact: true }).click();
+  await expect(page.getByText('9 nodes · valid')).toBeVisible();
+  await page
+    .locator(`[data-action="editor-select-node"][data-item-id="${COMPOSE}"]`)
+    .click();
+  await expect(
+    page.getByText('Holds 2 nodes; select them in the outline.'),
+  ).toBeVisible();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-yr91fa-editor-label-nodes-1440.png'),
+    animations: 'disabled',
+  });
+});

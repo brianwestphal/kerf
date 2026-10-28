@@ -12,6 +12,8 @@ export interface InspectorProp {
   readonly control?: string;
   readonly zone?: string;
   readonly slot?: true;
+  /** css-value props: the builders the prop accepts. */
+  readonly cssValue?: { readonly helpers?: readonly string[] };
 }
 
 export interface InspectorComponent {

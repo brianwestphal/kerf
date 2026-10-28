@@ -72,6 +72,7 @@ import {
   DELETE_SLOT_ACTION,
   slotEditor,
 } from './control-flow-section.js';
+import { contentOf, nodesToText, textToNodes } from './model/content.js';
 import {
   controlOf,
   insertSlot,
@@ -87,6 +88,7 @@ import {
 import {
   controlFor,
   type ControlKind,
+  cssHint,
   seedProps,
   valueFromControl,
 } from './model/controls.js';
@@ -144,6 +146,8 @@ const MOVE_UP_ACTION = 'editor-move-up';
 const MOVE_DOWN_ACTION = 'editor-move-down';
 const DELETE_ACTION = 'editor-delete';
 const ADD_ACTION = 'editor-add-child';
+const CONTENT_TO_NODES_ACTION = 'editor-content-to-nodes';
+const CONTENT_TO_TEXT_ACTION = 'editor-content-to-text';
 const PROMOTE_ACTION = 'editor-promote';
 const EXPORT_MODULE_ACTION = 'editor-export-module';
 const EXPORT_DECLARATIONS_ACTION = 'editor-export-declarations';
@@ -568,6 +572,11 @@ export function createEditor(options: EditorOptions) {
             label={prop.name}
             value={String(control.raw)}
             type={control.kind === 'number' ? 'number' : 'text'}
+            hint={
+              control.kind === 'css'
+                ? cssHint(prop.cssValue?.helpers)
+                : undefined
+            }
             placeholder={
               control.kind === 'css'
                 ? 'px(8)'
@@ -580,6 +589,61 @@ export function createEditor(options: EditorOptions) {
           />
         );
     }
+  };
+
+  /**
+   * A text-accepting content prop (KF-YR91FA): its text field with Use as
+   * nodes, or, while its zone holds nodes, a note with Use as text when
+   * those nodes are one text run. Undefined for every other prop.
+   */
+  const contentControl = (
+    node: ViewDocument['root'],
+    prop: (typeof propsByKey extends ReadonlyMap<string, infer C>
+      ? C
+      : never)['props'][number],
+  ) => {
+    if (!prop.slot || !(prop.type as { acceptsText?: true }).acceptsText)
+      return undefined;
+    const content = contentOf(node, prop.name);
+    const attributes = { 'data-editor-content': prop.name };
+    if (content.kind !== 'nodes') {
+      const field = propControl(prop, node.props?.[prop.name] as never);
+      return content.kind === 'text' ? (
+        <>
+          {field}
+          <Button
+            emphasis="secondary"
+            size="compact"
+            action={CONTENT_TO_NODES_ACTION}
+            rootAttributes={attributes}
+          >
+            Use as nodes
+          </Button>
+        </>
+      ) : (
+        field
+      );
+    }
+    return (
+      <>
+        <TextField
+          label={prop.name}
+          value={content.text ?? ''}
+          disabled
+          hint={`Holds ${content.count} ${content.count === 1 ? 'node' : 'nodes'}; select ${content.count === 1 ? 'it' : 'them'} in the outline.`}
+        />
+        {content.text !== undefined ? (
+          <Button
+            emphasis="secondary"
+            size="compact"
+            action={CONTENT_TO_TEXT_ACTION}
+            rootAttributes={attributes}
+          >
+            Use as text
+          </Button>
+        ) : undefined}
+      </>
+    );
   };
 
   /** Move and delete controls for the selected node, when it can move. */
@@ -743,7 +807,11 @@ export function createEditor(options: EditorOptions) {
         </List>
         {groupedProps(component).map((section) => {
           const editable = section.props
-            .map((prop) => propControl(prop, props[prop.name] as never))
+            .map(
+              (prop) =>
+                contentControl(node, prop) ??
+                propControl(prop, props[prop.name] as never),
+            )
             .filter(Boolean);
           const fixed = section.props.filter(
             (prop) =>
@@ -1124,12 +1192,18 @@ export function createEditor(options: EditorOptions) {
     const name = field.dataset.editorProp!;
     const kind = field.dataset.editorKind as ControlKind;
     if (!id) return;
-    const result = valueFromControl(kind, controlValue(field));
+    const node = findNode(doc.value, id)!.node;
+    const result = valueFromControl(
+      kind,
+      controlValue(field),
+      propsByKey.get(node.type)?.props.find((prop) => prop.name === name)
+        ?.cssValue?.helpers,
+    );
     if ('error' in result) {
       fieldErrors.value = { ...fieldErrors.value, [name]: result.error };
       return;
     }
-    const current = findNode(doc.value, id)!.node.props?.[name];
+    const current = node.props?.[name];
     if (JSON.stringify(current) === JSON.stringify(result.value)) {
       if (fieldErrors.value[name]) fieldErrors.value = {};
       return;
@@ -1151,6 +1225,14 @@ export function createEditor(options: EditorOptions) {
     const key = picker ? String(controlValue(picker)) : addComponent.value;
     const component = propsByKey.get(key);
     if (!zone || !component) return;
+    // A content prop holds text or nodes, never both: a child added to a
+    // prop that holds text takes the text into the zone first (KF-YR91FA).
+    const parent = findNode(doc.value, id)!.node;
+    const base = propsByKey
+      .get(parent.type)
+      ?.props.some((prop) => prop.name === zone && prop.slot)
+      ? textToNodes(doc.value, id, zone)
+      : doc.value;
     const child = {
       id: newNodeId(),
       type: key,
@@ -1163,7 +1245,7 @@ export function createEditor(options: EditorOptions) {
         return Object.keys(props).length ? { props } : {};
       })(),
     };
-    commit(withCatalog(insertNode(doc.value, id, zone, child), key));
+    commit(withCatalog(insertNode(base, id, zone, child), key));
     select({ kind: 'node', id: child.id });
     // The new node's form opens at its top; take keyboard focus there too,
     // so it does not stay on the Add button at the bottom of the old form.
@@ -1409,6 +1491,16 @@ export function createEditor(options: EditorOptions) {
           selection.value = null;
         },
         [ADD_ACTION]: () => addChild(),
+        [CONTENT_TO_NODES_ACTION]: (_event, target) => {
+          const id = selectedNodeId();
+          if (id)
+            commit(textToNodes(doc.value, id, target.dataset.editorContent!));
+        },
+        [CONTENT_TO_TEXT_ACTION]: (_event, target) => {
+          const id = selectedNodeId();
+          if (id)
+            commit(nodesToText(doc.value, id, target.dataset.editorContent!));
+        },
         [ADD_SLOT_ACTION]: () => addSlot(),
         [DELETE_SLOT_ACTION]: () => {
           const current = selection.value;

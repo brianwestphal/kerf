@@ -50,8 +50,19 @@ sources `validateView` accepts, conditions and repeats show in the outline
 (`if showEmpty`, `for each item in items`), slots are outline rows of their
 own, and every change is undoable. To repeat a component, add it, then choose
 its list. A node in an `else` branch or under a nested `$if` keeps its control
-flow in the file. Drag-and-drop placement (KF-WXP6AB) and non-literal `$css`
-and node-valued content editing (KF-YR91FA) come next. The implementation
+flow in the file.
+
+A css-value prop's field takes any `$css` builder call, compositions
+included (`calc(plus(px(8), space("m")))`, `lengthVar("--app-gap", px(8))`);
+its hint lists the builders the prop accepts (the catalog's `cssValue.helpers`)
+and an outer builder outside that list is refused at the field, naming the
+allowed ones (KF-YR91FA: richer value editing). A text-accepting content prop
+(a Button's label) holds either text or nodes in its zone, never both: **Use
+as nodes** moves the text into a `#text` node so components can sit beside
+it, adding a child to that zone does the same first, and **Use as text**
+moves a zone that is one text run back. While the zone holds nodes, the field
+says how many and points to the outline. Drag-and-drop placement (KF-WXP6AB)
+comes next. The implementation
 tickets are listed in [§10](#10-implementation-plan).
 
 ## 1. Purpose and decisions
@@ -697,5 +708,5 @@ diff <doc…>` takes `--target js`, `--declarations-only`, and extra
 7. **Done:** the private `editor/` package (KF-4NRZCV: editor scaffold), with
    a problems list (KF-WC0ZG3), export and compare (KF-Y38YRT, KF-9J810J), and
    inspector editing with undo (KF-KX77TV: editor editing), and bindings
-   (KF-K5TKCV), and control flow (KF-90GTJN). Drag-and-drop (KF-WXP6AB) and
-   richer value editing (KF-YR91FA) follow.
+   (KF-K5TKCV), control flow (KF-90GTJN), and richer value editing
+   (KF-YR91FA). Drag-and-drop (KF-WXP6AB) follows.

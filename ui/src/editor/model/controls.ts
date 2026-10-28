@@ -81,6 +81,8 @@ export function controlFor(
 export function valueFromControl(
   kind: ControlKind,
   raw: string | boolean,
+  /** css: the builders the prop accepts as its outermost call. */
+  helpers?: readonly string[],
 ): { readonly value: ViewValue | undefined } | { readonly error: string } {
   switch (kind) {
     case 'switch':
@@ -96,18 +98,45 @@ export function valueFromControl(
     case 'css': {
       const text = String(raw).trim();
       if (text === '') return { value: undefined };
-      return parseCssCall(text)
+      const names = parseCssCall(text);
+      if (!names)
+        return {
+          error: 'Use a css-values builder call, such as px(8) or space("m").',
+        };
+      return !helpers || helpers.includes(names[0]!)
         ? { value: { $css: text } }
-        : {
-            error:
-              'Use a css-values builder call, such as px(8) or space("m").',
-          };
+        : { error: `This prop takes ${listOf(helpers)}, not ${names[0]}().` };
     }
     default: {
       const text = String(raw);
       return { value: text === '' ? undefined : text };
     }
   }
+}
+
+/** `a(), b(), or c()`. */
+function listOf(helpers: readonly string[]): string {
+  const calls = helpers.map((name) => `${name}()`);
+  return calls.length > 1
+    ? `${calls.slice(0, -1).join(', ')}, or ${calls.at(-1)}`
+    : calls.join('');
+}
+
+/**
+ * The hint under a css-value prop's field (KF-YR91FA): the builders it takes
+ * and, when it takes `calc`, how to compose lengths with it.
+ */
+export function cssHint(helpers: readonly string[] | undefined): string {
+  if (!helpers?.length)
+    return 'A css-values builder call, such as px(8) or space("m").';
+  const compose = helpers.includes('calc')
+    ? ` Combine lengths with calc(plus(px(8), space("m")))${
+        helpers.includes('lengthVar')
+          ? ', or read an app variable with lengthVar("--app-gap", px(8))'
+          : ''
+      }.`
+    : '';
+  return `Takes ${listOf(helpers)}.${compose}`;
 }
 
 interface Variant {
