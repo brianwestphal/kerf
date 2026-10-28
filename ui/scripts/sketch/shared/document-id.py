@@ -21,7 +21,7 @@ elif len(sys.argv) == 3:
         document = json.loads(source.read("document.json"))
         document["do_objectID"] = original_id
         descriptor, temporary = tempfile.mkstemp(
-            prefix=".Kerf-Button-identity-", suffix=".sketch", dir=os.path.dirname(path)
+            prefix=".Kerf-identity-", suffix=".sketch", dir=os.path.dirname(path)
         )
         try:
             with os.fdopen(descriptor, "wb") as output, zipfile.ZipFile(output, "w") as target:

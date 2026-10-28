@@ -404,7 +404,7 @@ async function updateIdentityManifest(libraryPath, assetReportPath) {
   }
   const libraryDocumentId = (
     await exec('python3', [
-      join(scriptDirectory, 'document-id.py'),
+      join(scriptDirectory, '../shared/document-id.py'),
       libraryPath,
     ])
   ).stdout.trim();
@@ -647,7 +647,7 @@ if (command === 'generate' || command === 'all') {
   const originalDocumentId = seedExisting
     ? (
         await exec('python3', [
-          join(scriptDirectory, 'document-id.py'),
+          join(scriptDirectory, '../shared/document-id.py'),
           paths.libraryPath,
         ])
       ).stdout.trim()
@@ -675,7 +675,7 @@ if (command === 'generate' || command === 'all') {
   // a new ID. Imported consumers use that ID as their Library link.
   if (originalDocumentId)
     await exec('python3', [
-      join(scriptDirectory, 'document-id.py'),
+      join(scriptDirectory, '../shared/document-id.py'),
       stagingPath,
       originalDocumentId,
     ]);

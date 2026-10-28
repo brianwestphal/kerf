@@ -18,6 +18,7 @@ import prettier from 'prettier';
 
 import { requireExistingSketchProcess } from '../check-runner-process.mjs';
 import { runSketchJob } from '../runner.mjs';
+import { pinDocumentId } from '../shared/document-id.mjs';
 import { captureForms, defaultOutput, verifyTargets } from './capture.mjs';
 
 const exec = promisify(execFile);
@@ -125,10 +126,15 @@ async function generate() {
       `${id} Text IDs changed`,
     );
   }
+  const libraryDocumentId = await pinDocumentId(
+    staged,
+    oldManifest,
+    published ? paths.libraryPath : null,
+  );
   await rename(staged, paths.libraryPath);
   await writeFile(
     paths.manifestPath,
-    `${JSON.stringify({ ...oldManifest, symbols }, null, 2)}\n`,
+    `${JSON.stringify({ ...oldManifest, libraryDocumentId, symbols }, null, 2)}\n`,
   );
   await writeFile(
     paths.reportPath,
@@ -174,6 +180,7 @@ async function assets() {
   for (const [key, old] of Object.entries(oldManifest.assets ?? {})) {
     assert.equal(report.swatches[key]?.id, old.id, `${key} asset ID changed`);
   }
+  await pinDocumentId(staged, oldManifest, paths.libraryPath);
   await rename(staged, paths.libraryPath);
   await writeFile(
     paths.manifestPath,

@@ -26,7 +26,13 @@ the light and dark appearances are distinct masters.
 
 For an update, copy the new published file over that same installed path and
 refresh the Library in Sketch. Keep the installed document and Symbol IDs;
-the maintained exporters reject accidental identity changes. Consumer
+the maintained exporters reject accidental identity changes. Every exporter
+pins its Library's document ID, the identity consumers link to, to the
+`libraryDocumentId` recorded in its manifest (Sketch assigns a new one on
+each save). Releases before that pin gave the Forms, Advanced, Lists,
+Toolbar, and Content files a new document ID on each rebuild; a consumer
+linked to one of those intermediate files needs one library swap to the
+current file. Consumer
 instances can then sync while retaining supported overrides. If the native
 format or supported Sketch version changes, this guide and the family's guide
 must be updated with the new verification result before publication.
