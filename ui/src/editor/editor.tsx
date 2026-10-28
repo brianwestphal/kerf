@@ -126,6 +126,8 @@ const EXPORT_MODULE_ACTION = 'editor-export-module';
 const EXPORT_DECLARATIONS_ACTION = 'editor-export-declarations';
 const DOCUMENT_TOGGLE = 'editor-toggle-document';
 const INSPECTOR_TOGGLE = 'editor-toggle-inspector';
+/** How far the selection ring reaches outside its box: 3px plus 1px offset. */
+const RING_REACH = 4;
 
 /** What the inspector shows: a document node or a palette component. */
 export type Selection =
@@ -930,10 +932,19 @@ export function createEditor(options: EditorOptions) {
     }
     const outer = canvas.getBoundingClientRect();
     const box = target.getBoundingClientRect();
+    // Keep the whole ring (3px plus its 1px offset) inside the canvas, so a
+    // node flush with an edge shows its outline just inside it (KF-F29M9E).
+    const left = Math.max(box.left - outer.left, RING_REACH);
+    const top = Math.max(box.top - outer.top, RING_REACH);
+    const right = Math.min(box.right - outer.left, outer.width - RING_REACH);
+    const bottom = Math.min(
+      box.bottom - outer.top,
+      canvas.scrollHeight - RING_REACH,
+    );
     highlight.hidden = false;
-    highlight.style.inset = `${box.top - outer.top}px auto auto ${box.left - outer.left}px`;
-    highlight.style.width = `${box.width}px`;
-    highlight.style.height = `${box.height}px`;
+    highlight.style.inset = `${top}px auto auto ${left}px`;
+    highlight.style.width = `${Math.max(right - left, 0)}px`;
+    highlight.style.height = `${Math.max(bottom - top, 0)}px`;
   };
 
   const exportAs = (kind: ExportKind) => {

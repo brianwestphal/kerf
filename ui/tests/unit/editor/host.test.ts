@@ -182,6 +182,53 @@ describe('the selection highlight', () => {
     expect(highlight.hidden).toBe(false);
     vi.unstubAllGlobals();
   });
+
+  it('keeps the ring inside the canvas for a node flush with its edges', () => {
+    let resized: (() => void) | undefined;
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(callback: () => void) {
+          resized = callback;
+        }
+        observe() {}
+        disconnect() {}
+      },
+    );
+    const { root, editor } = open();
+    const rect = (left: number, top: number, width: number, height: number) =>
+      ({
+        left,
+        top,
+        width,
+        height,
+        right: left + width,
+        bottom: top + height,
+      }) as DOMRect;
+    const surface = canvas(root) as HTMLElement;
+    vi.spyOn(surface, 'getBoundingClientRect').mockReturnValue(
+      rect(100, 50, 400, 300),
+    );
+    Object.defineProperty(surface, 'scrollHeight', { value: 300 });
+    const flush = surface.querySelector<HTMLElement>(
+      '[data-kerf-node="01JB8Z1M6Q8E1X9V4S7K2R3T5A"]',
+    )!;
+    vi.spyOn(flush, 'getBoundingClientRect').mockReturnValue(
+      rect(100, 50, 400, 300),
+    );
+    editor.selection.value = {
+      kind: 'node',
+      id: '01JB8Z1M6Q8E1X9V4S7K2R3T5A',
+    };
+    resized!();
+    const highlight = root.querySelector<HTMLElement>(
+      '.kui-editor__selection',
+    )!;
+    expect(highlight.style.inset).toBe('4px auto auto 4px');
+    expect(highlight.style.width).toBe('392px');
+    expect(highlight.style.height).toBe('292px');
+    vi.unstubAllGlobals();
+  });
 });
 
 describe('inspector edits a host can reach', () => {

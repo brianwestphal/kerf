@@ -44,6 +44,17 @@ test('an app’s dev server hosts the editor with its own components', async ({
   await title.press('Enter');
   await expect(card.locator('h3')).toHaveText('Order 1024');
   await expect(page.getByText('2 nodes · valid')).toBeVisible();
+  // KF-F29M9E: the card sits flush with the canvas, and the whole selection
+  // ring still shows inside it.
+  const [ringBox, canvasBox] = await Promise.all([
+    page.locator('.kui-editor__selection').boundingBox(),
+    canvas.boundingBox(),
+  ]);
+  expect(ringBox!.x).toBeGreaterThanOrEqual(canvasBox!.x + 4);
+  expect(ringBox!.y).toBeGreaterThanOrEqual(canvasBox!.y + 4);
+  expect(ringBox!.x + ringBox!.width).toBeLessThanOrEqual(
+    canvasBox!.x + canvasBox!.width - 4,
+  );
   await page.mouse.move(1, 1);
   await page.screenshot({
     path: info.outputPath('kf-6gt5qy-editor-host-app-component-1440.png'),
