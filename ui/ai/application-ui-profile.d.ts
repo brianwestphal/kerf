@@ -15,6 +15,8 @@ export interface ApplicationUiProfile {
     /** Required for @kerfjs/ui; composition-only consumer packages omit it. */
     selection?: ApplicationUiCatalogLocation;
     composition: ApplicationUiCatalogLocation;
+    /** The package's component-props.json, for Kerf UI view tools. */
+    props?: ApplicationUiCatalogLocation;
   }>;
   preferences?: Record<
     string,

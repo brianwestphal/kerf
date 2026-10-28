@@ -3,7 +3,8 @@
 // view documents (docs/26-ui-editor.md §6). An authoring step, like a
 // formatter — never part of a consumer's build.
 import { existsSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
-import { basename, dirname, resolve } from 'node:path';
+import { createRequire } from 'node:module';
+import { basename, dirname, join, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
@@ -18,10 +19,14 @@ Commands:
   check      fail when a module is missing, stale, or edited by hand
   diff       print the contract changes regenerating would make
 
+Catalogs: @kerfjs/ui's own, plus every package catalog (props and
+composition) the .kerf-ui-profile.json files above the document declare.
+
 Options:
   --target ts|js        .view.ts (default) or .view.js + .view.d.ts
   --declarations-only   omit render<Name> (for runtime-interpreted documents)
   --props <file>        an extra component-props.json (repeatable)
+  --no-profile          skip catalogs .kerf-ui-profile.json declares
   --composition <file>  an extra component-composition.json (repeatable)
 `;
 
@@ -36,6 +41,7 @@ export function parseArguments(argv) {
     declarationsOnly: false,
     props: [],
     composition: [],
+    profile: true,
   };
   const documents = [];
   for (let index = 0; index < rest.length; index += 1) {
@@ -53,6 +59,7 @@ export function parseArguments(argv) {
       options.declarationsOnly = true;
     else if (argument === '--props') options.props.push(next());
     else if (argument === '--composition') options.composition.push(next());
+    else if (argument === '--no-profile') options.profile = false;
     else if (argument.startsWith('--'))
       throw new Error(`unknown option ${argument}`);
     else documents.push(argument);
@@ -64,14 +71,62 @@ export function parseArguments(argv) {
   return { command, documents, options };
 }
 
-function loadCatalog(options) {
+const require = createRequire(import.meta.url);
+const profiles = require('../ai/application-ui-profile-sync.cjs');
+
+/** The nearest ancestor holding `.git`, else the filesystem root. */
+function workspaceRootOf(directory) {
+  for (let current = directory; ; current = dirname(current)) {
+    if (existsSync(join(current, '.git')) || dirname(current) === current) {
+      return current;
+    }
+  }
+}
+
+/**
+ * The prop and composition catalogs a document's `.kerf-ui-profile.json`
+ * layers declare for packages other than @kerfjs/ui (KF-S61KAT: profile
+ * discovery of component-props.json), resolved relative to the profile file
+ * that declares each one.
+ */
+export function profileCatalogPaths(documentPath) {
+  const startDirectory = dirname(resolve(documentPath));
+  const files = profiles.discoverApplicationUiProfileFilesSync({
+    workspaceRoot: workspaceRootOf(startDirectory),
+    startDirectory,
+    packageProfile: resolve(
+      packageRoot,
+      'ai/application-ui-profile.defaults.json',
+    ),
+  });
+  const resolved = profiles.mergeApplicationUiProfiles(
+    files.map((source) => ({ source, profile: readJson(source) })),
+  );
+  const paths = { props: [], composition: [] };
+  for (const catalog of resolved.profile.catalogs ?? []) {
+    const owner = resolved.provenance[`$catalogs.${catalog.package}`];
+    if (catalog.package === '@kerfjs/ui' || !owner) continue;
+    for (const kind of ['props', 'composition']) {
+      if (catalog[kind]?.path)
+        paths[kind].push(resolve(dirname(owner), catalog[kind].path));
+    }
+  }
+  return paths;
+}
+
+function loadCatalog(options, documentPath) {
+  const discovered = options.profile
+    ? profileCatalogPaths(documentPath)
+    : { props: [], composition: [] };
   return createViewCatalog({
     props: [
       resolve(packageRoot, 'ai/component-props.json'),
+      ...discovered.props,
       ...options.props,
     ].map(readJson),
     composition: [
       resolve(packageRoot, 'ai/component-composition.json'),
+      ...discovered.composition,
       ...options.composition,
     ].map(readJson),
   });
@@ -92,10 +147,10 @@ export function run(argv) {
     return { code: 2, output: `kerf-ui-view: ${error.message}\n\n${USAGE}` };
   }
   const { command, documents, options } = parsed;
-  const catalog = loadCatalog(options);
   const lines = [];
   let failed = false;
   for (const documentPath of documents) {
+    const catalog = loadCatalog(options, documentPath);
     const document = readJson(documentPath);
     const resolveView = viewResolver(documentPath);
     const validation = validateView(document, catalog, { resolveView });

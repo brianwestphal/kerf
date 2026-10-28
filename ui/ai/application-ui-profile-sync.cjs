@@ -230,7 +230,11 @@ function validateApplicationUiProfile(profile, options = {}) {
   for (const [index, catalog] of catalogs.entries()) {
     const path = `$.catalogs[${index}]`;
     if (!objectAt(catalog, path)) continue;
-    rejectUnknown(catalog, ['package', 'selection', 'composition'], path);
+    rejectUnknown(
+      catalog,
+      ['package', 'selection', 'composition', 'props'],
+      path,
+    );
     if (!catalog.package)
       add('KUI-P003', `${path}.package`, 'Catalog package is required.');
     if (packages.has(catalog.package))
@@ -246,8 +250,9 @@ function validateApplicationUiProfile(profile, options = {}) {
         `${path}.selection`,
         'The @kerfjs/ui catalog requires its component-catalog.json selection location.',
       );
-    for (const kind of ['selection', 'composition']) {
-      if (kind === 'selection' && !catalog[kind]) continue;
+    // selection is @kerfjs/ui-only and props (component-props.json) is optional.
+    for (const kind of ['selection', 'composition', 'props']) {
+      if (kind !== 'composition' && !catalog[kind]) continue;
       rejectUnknown(
         catalog[kind],
         ['path', 'schemaVersion'],
@@ -475,16 +480,19 @@ function catalogFacts(resolved, fallbackCatalogs, seedRules) {
   for (const [index, catalog] of (resolved.profile.catalogs ?? []).entries()) {
     const owner = resolved.provenance[`$catalogs.${catalog.package}`];
     if (!owner) continue;
-    for (const kind of ['selection', 'composition']) {
+    for (const kind of ['selection', 'composition', 'props']) {
       const location = catalog[kind];
       if (!location?.path) continue;
       const path = resolve(dirname(owner), location.path);
       try {
         const artifact = JSON.parse(readFileSync(path, 'utf8'));
-        if (
-          artifact.package !== catalog.package ||
-          artifact.schemaVersion !== location.schemaVersion
-        )
+        // component-props.json names its version in `schema`, not schemaVersion.
+        const version =
+          kind === 'props'
+            ? artifact.schema ===
+              `kerf-ui-component-props/v${location.schemaVersion}`
+            : artifact.schemaVersion === location.schemaVersion;
+        if (artifact.package !== catalog.package || !version)
           diagnostics.push({
             code: 'KUI-P020',
             source: owner,

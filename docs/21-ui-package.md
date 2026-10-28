@@ -731,7 +731,10 @@ Migration guidance lives in `ui/docs/type-contracts.md`.
 
 `ui/ai/application-ui-profile.defaults.json` and its schema/types/API define
 the project-policy layer above the catalogs. A checked-in
-`.kerf-ui-profile.json` locates Kerf and consumer catalogs, chooses preferred
+`.kerf-ui-profile.json` locates Kerf and consumer catalogs (each with its
+`composition` catalog, an optional `selection` catalog, and an optional `props`
+catalog, which is a `component-props.json` checked against
+`kerf-ui-component-props/v<schemaVersion>`), chooses preferred
 components/recipes for recurring concepts, constrains theme and density,
 records public semantic-token overrides and layout/responsive conventions, and
 allows only narrow path-scoped rule exceptions with rationale. Discovery merges

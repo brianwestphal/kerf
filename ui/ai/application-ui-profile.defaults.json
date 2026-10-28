@@ -12,6 +12,10 @@
       "composition": {
         "path": "./component-composition.json",
         "schemaVersion": 1
+      },
+      "props": {
+        "path": "./component-props.json",
+        "schemaVersion": 1
       }
     }
   ],

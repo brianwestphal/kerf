@@ -486,6 +486,17 @@ never implements behavior.
 - `kerf-ui-view check` (§6) fails when a document's module is stale, which
   makes it a CI gate.
 
+### 5.3 Catalog discovery
+
+`kerf-ui-view` loads `@kerfjs/ui`'s catalogs plus every package catalog that
+the `.kerf-ui-profile.json` layers above a document declare: the
+`composition` catalog, and the `props` (`component-props.json`) location
+(KF-S61KAT: profile discovery). Paths resolve relative to the profile file
+that declares them. A component package writes its prop catalog with
+`kerf-ui-props`. `--props` and `--composition` add catalogs explicitly, and
+`--no-profile` turns discovery off. Components that live in app source rather
+than a package are not covered yet (KF-7JP509: app-source prop catalogs).
+
 ## 6. Re-export: "only fix what's broken"
 
 `kerf-ui-view` (bin, published from `@kerfjs/ui`) and the editor's Export

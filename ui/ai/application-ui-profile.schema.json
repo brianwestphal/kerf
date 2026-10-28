@@ -5,26 +5,47 @@
   "type": "object",
   "required": ["schemaVersion", "scope"],
   "properties": {
-    "$schema": { "type": "string" },
-    "schemaVersion": { "const": 1 },
-    "scope": { "enum": ["package", "workspace", "directory"] },
+    "$schema": {
+      "type": "string"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "scope": {
+      "enum": ["package", "workspace", "directory"]
+    },
     "catalogs": {
       "type": "array",
-      "items": { "$ref": "#/$defs/catalog" },
+      "items": {
+        "$ref": "#/$defs/catalog"
+      },
       "uniqueItems": true
     },
     "preferences": {
       "type": "object",
-      "propertyNames": { "pattern": "^[a-z][a-z0-9-]*$" },
-      "additionalProperties": { "$ref": "#/$defs/preference" }
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9-]*$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/preference"
+      }
     },
-    "theme": { "$ref": "#/$defs/theme" },
+    "theme": {
+      "$ref": "#/$defs/theme"
+    },
     "tokens": {
       "type": "object",
-      "propertyNames": { "pattern": "^--kui-[a-z0-9-]+$" },
-      "additionalProperties": { "type": "string", "minLength": 1 }
+      "propertyNames": {
+        "pattern": "^--kui-[a-z0-9-]+$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
     },
-    "layout": { "$ref": "#/$defs/layout" },
+    "layout": {
+      "$ref": "#/$defs/layout"
+    },
     "wiring": {
       "type": "object",
       "properties": {
@@ -33,8 +54,13 @@
           "type": "array",
           "items": {
             "oneOf": [
-              { "type": "string", "minLength": 1 },
-              { "$ref": "#/$defs/wiringPair" }
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "$ref": "#/$defs/wiringPair"
+              }
             ]
           },
           "uniqueItems": true
@@ -44,28 +70,40 @@
     },
     "exceptions": {
       "type": "array",
-      "items": { "$ref": "#/$defs/exception" }
+      "items": {
+        "$ref": "#/$defs/exception"
+      }
     }
   },
   "additionalProperties": false,
   "$defs": {
     "stringList": {
       "type": "array",
-      "items": { "type": "string", "minLength": 1 },
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
       "uniqueItems": true
     },
     "wiringPair": {
       "type": "object",
       "required": ["render", "client"],
       "properties": {
-        "render": { "$ref": "#/$defs/nonemptyStringList" },
-        "client": { "$ref": "#/$defs/nonemptyStringList" }
+        "render": {
+          "$ref": "#/$defs/nonemptyStringList"
+        },
+        "client": {
+          "$ref": "#/$defs/nonemptyStringList"
+        }
       },
       "additionalProperties": false
     },
     "nonemptyStringList": {
       "type": "array",
-      "items": { "type": "string", "minLength": 1 },
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
       "minItems": 1,
       "uniqueItems": true
     },
@@ -73,8 +111,14 @@
       "type": "object",
       "required": ["path", "schemaVersion"],
       "properties": {
-        "path": { "type": "string", "minLength": 1 },
-        "schemaVersion": { "type": "integer", "minimum": 1 }
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "minimum": 1
+        }
       },
       "additionalProperties": false
     },
@@ -82,18 +126,35 @@
       "type": "object",
       "required": ["package", "composition"],
       "properties": {
-        "package": { "type": "string", "minLength": 1 },
-        "selection": { "$ref": "#/$defs/catalogLocation" },
-        "composition": { "$ref": "#/$defs/catalogLocation" }
+        "package": {
+          "type": "string",
+          "minLength": 1
+        },
+        "selection": {
+          "$ref": "#/$defs/catalogLocation"
+        },
+        "composition": {
+          "$ref": "#/$defs/catalogLocation"
+        },
+        "props": {
+          "$ref": "#/$defs/catalogLocation",
+          "description": "The package's component-props.json (kerf-ui-component-props/v<schemaVersion>): structured props for Kerf UI view tools."
+        }
       },
       "additionalProperties": false,
       "allOf": [
         {
           "if": {
             "required": ["package"],
-            "properties": { "package": { "const": "@kerfjs/ui" } }
+            "properties": {
+              "package": {
+                "const": "@kerfjs/ui"
+              }
+            }
           },
-          "then": { "required": ["selection"] }
+          "then": {
+            "required": ["selection"]
+          }
         }
       ]
     },
@@ -101,26 +162,42 @@
       "type": "object",
       "required": ["preferred"],
       "properties": {
-        "preferred": { "type": "string", "pattern": "^.+:.+$" },
-        "avoid": { "$ref": "#/$defs/stringList" },
-        "rationale": { "type": "string", "minLength": 1 }
+        "preferred": {
+          "type": "string",
+          "pattern": "^.+:.+$"
+        },
+        "avoid": {
+          "$ref": "#/$defs/stringList"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        }
       },
       "additionalProperties": false
     },
     "theme": {
       "type": "object",
       "properties": {
-        "colorScheme": { "enum": ["light", "dark", "invert", "system"] },
+        "colorScheme": {
+          "enum": ["light", "dark", "invert", "system"]
+        },
         "allowedColorSchemes": {
           "type": "array",
-          "items": { "enum": ["light", "dark", "invert", "system"] },
+          "items": {
+            "enum": ["light", "dark", "invert", "system"]
+          },
           "minItems": 1,
           "uniqueItems": true
         },
-        "density": { "enum": ["standard", "compact"] },
+        "density": {
+          "enum": ["standard", "compact"]
+        },
         "allowedDensities": {
           "type": "array",
-          "items": { "enum": ["standard", "compact"] },
+          "items": {
+            "enum": ["standard", "compact"]
+          },
           "minItems": 1,
           "uniqueItems": true
         }
@@ -130,16 +207,26 @@
     "layout": {
       "type": "object",
       "properties": {
-        "shell": { "type": "string", "pattern": "^.+:.+$" },
-        "pane": { "type": "string", "pattern": "^.+:.+$" },
+        "shell": {
+          "type": "string",
+          "pattern": "^.+:.+$"
+        },
+        "pane": {
+          "type": "string",
+          "pattern": "^.+:.+$"
+        },
         "responsiveStrategy": {
           "enum": ["device-class", "container", "application"]
         },
         "compactNavigation": {
           "enum": ["nav-stack", "tab-scaffold", "application"]
         },
-        "scrollOwnership": { "enum": ["one-per-pane", "application"] },
-        "spacingScale": { "enum": ["kerf-five-step", "application"] }
+        "scrollOwnership": {
+          "enum": ["one-per-pane", "application"]
+        },
+        "spacingScale": {
+          "enum": ["kerf-five-step", "application"]
+        }
       },
       "additionalProperties": false
     },
@@ -147,14 +234,22 @@
       "type": "object",
       "required": ["id", "rules", "target", "rationale"],
       "properties": {
-        "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
-        "rules": { "$ref": "#/$defs/stringList" },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "rules": {
+          "$ref": "#/$defs/stringList"
+        },
         "target": {
           "type": "string",
           "minLength": 1,
           "pattern": "^(?!/)(?!.*(^|/)\\.\\.(/|$))(?!.*[?*]).+"
         },
-        "rationale": { "type": "string", "minLength": 12 }
+        "rationale": {
+          "type": "string",
+          "minLength": 12
+        }
       },
       "additionalProperties": false
     }

@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import {
   copyFileSync,
+  mkdirSync,
   mkdtempSync,
   readFileSync,
   rmSync,
@@ -13,7 +14,8 @@ import process from 'node:process';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { parseArguments, run } from '../../view/cli.mjs';
+import { buildPackageComponentProps } from '../../props/component-props.mjs';
+import { parseArguments, profileCatalogPaths, run } from '../../view/cli.mjs';
 
 const root = resolve(import.meta.dirname, '../..');
 const fixture = resolve(root, 'tests/fixtures/view/inbox.kui.json');
@@ -178,8 +180,75 @@ describe('kerf-ui-view', () => {
         declarationsOnly: true,
         props: [],
         composition: [],
+        profile: true,
       },
     });
+    expect(
+      parseArguments(['check', 'a.kui.json', '--no-profile']).options.profile,
+    ).toBe(false);
+  });
+
+  it('discovers package catalogs from .kerf-ui-profile.json above the document', () => {
+    const widgets = resolve(root, 'tests/fixtures/component-props-package');
+    // A built prop catalog for the fixture package, next to its composition catalog.
+    writeFileSync(
+      join(folder, 'widgets-props.json'),
+      JSON.stringify(
+        buildPackageComponentProps({
+          root: widgets,
+          packageJson: JSON.parse(
+            readFileSync(join(widgets, 'package.json'), 'utf8'),
+          ),
+          composition: JSON.parse(
+            readFileSync(join(widgets, 'component-composition.json'), 'utf8'),
+          ),
+        }).document,
+      ),
+    );
+    const profile = {
+      schemaVersion: 1,
+      scope: 'workspace',
+      catalogs: [
+        {
+          package: '@acme/widgets',
+          composition: {
+            path: join(widgets, 'component-composition.json'),
+            schemaVersion: 1,
+          },
+          props: { path: './widgets-props.json', schemaVersion: 1 },
+        },
+      ],
+    };
+    writeFileSync(
+      join(folder, '.kerf-ui-profile.json'),
+      JSON.stringify(profile),
+    );
+    mkdirSync(join(folder, '.git'));
+    const document = {
+      schema: 'kerf-ui-document/v1',
+      name: 'Dashboard',
+      catalogs: ['@kerfjs/ui', '@acme/widgets'],
+      root: {
+        id: '01JB8Z1M6Q8E1X9V4S7K2R3TQA',
+        type: '@acme/widgets:card',
+        name: 'summary',
+        props: { title: 'Revenue', elevation: 'raised' },
+      },
+    };
+    const documentPath = join(folder, 'dashboard.kui.json');
+    writeFileSync(documentPath, JSON.stringify(document));
+    expect(profileCatalogPaths(documentPath)).toEqual({
+      props: [join(folder, 'widgets-props.json')],
+      composition: [join(widgets, 'component-composition.json')],
+    });
+    expect(run(['generate', documentPath])).toMatchObject({ code: 0 });
+    const code = readFileSync(join(folder, 'dashboard.view.ts'), 'utf8');
+    expect(code).toContain("import { Card } from '@acme/widgets/card';");
+    expect(code).toContain('readonly summary: HTMLElement;');
+    // Without discovery the package's component is unknown.
+    expect(run(['check', documentPath, '--no-profile']).output).toContain(
+      'KUI-V002',
+    );
   });
 
   it('runs as a bin and exits non-zero on failure', () => {
