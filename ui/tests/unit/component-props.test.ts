@@ -30,7 +30,10 @@ const prop = (component: { props: PropDescriptor[] }, name: string) => {
 };
 
 describe('component-props extraction (fixture declarations)', () => {
-  const fixtureDir = resolve(root, 'tests/fixtures/component-props/dist');
+  const fixtureDir = resolve(
+    root,
+    'tests/fixtures/component-props/declarations',
+  );
   const file = resolve(fixtureDir, 'fixture.d.ts');
   const program = createDeclarationProgram([file]);
   const ctx = createPropsContext(program.getTypeChecker(), fixtureDir);
