@@ -561,3 +561,34 @@ test('selects a slot on the canvas and moves it', async ({ page }, info) => {
   await expect(slotRow(1)).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByText('7 nodes · valid')).toBeVisible();
 });
+
+// KF-CWDE93: dragging on the canvas shows where a node lands and moves it.
+test('drags a node on the canvas to after another', async ({ page }, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const canvas = page.locator('[data-editor-canvas]');
+  const compose = canvas.locator(`[data-kerf-node="${COMPOSE}"]`);
+  const slot = canvas.locator('[data-editor-slot-address]');
+  const from = (await compose.boundingBox())!;
+  const to = (await slot.boundingBox())!;
+  await page.mouse.move(from.x + 10, from.y + from.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(to.x + 40, to.y + to.height - 2, { steps: 10 });
+  const drop = page.locator('.kui-editor__drop');
+  await expect(drop).toBeVisible();
+  await expect(drop).toHaveAttribute('data-drop', 'line');
+  await page.screenshot({
+    path: info.outputPath('kf-cwde93-editor-canvas-drop-1440.png'),
+    animations: 'disabled',
+  });
+  await page.mouse.up();
+  await expect(drop).toBeHidden();
+  // composeButton now follows the detail slot in the Pane's content.
+  const outlineRow = page.locator(
+    `[data-tree-list-id="editor-outline"] [data-item-id="${COMPOSE}"]`,
+  );
+  await expect(outlineRow).toHaveAttribute('aria-level', '2');
+  await expect(outlineRow).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByText('7 nodes · valid')).toBeVisible();
+  // The click that ended the drag did not select the slot under it.
+  await expect(page.getByText('composeButton · Button')).toBeVisible();
+});

@@ -77,8 +77,13 @@ inside a node (appending to its first zone that takes it). A line at the
 target's label edge or a ring around the target shows where it will land,
 and only drops `validateView` accepts show one. The inspector's **Move to**
 picker is the keyboard alternative: it lists every zone the node can move to
-the end of, beside the existing Move up and Move down. Dragging on the canvas
-is not built (KF-CWDE93). The implementation
+the end of, beside the existing Move up and Move down. Nodes and slot
+placeholders also drag on the canvas (KF-CWDE93: canvas drag): past a few
+pixels, a press becomes a drag; the innermost node or slot under the pointer
+is the target, before, after, or inside is read along its parent's flow (left
+to right in a row), and a line or ring drawn over the canvas shows a legal
+drop. Pressing a repeated row drags the list it repeats in, Escape cancels,
+and the click that ends a drag does not change the selection. The implementation
 tickets are listed in [§10](#10-implementation-plan).
 
 ## 1. Purpose and decisions

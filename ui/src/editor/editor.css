@@ -19,3 +19,36 @@
 .kui-editor__selection[hidden] {
   display: none;
 }
+
+/* KF-CWDE93: where a node dragged on the canvas would land: a line beside
+   the target, or a ring around it. */
+.kui-editor__drop {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.kui-editor__drop[data-drop="line"] {
+  border-radius: var(--kui-radius-pill);
+  background: var(--kui-color-brand-border-loud);
+}
+
+.kui-editor__drop[data-drop="ring"] {
+  outline: 2px solid var(--kui-color-brand-border-loud);
+  outline-offset: 1px;
+}
+
+.kui-editor__drop[hidden] {
+  display: none;
+}
+
+@media (forced-colors: active) {
+  .kui-editor__drop[data-drop="line"] {
+    background: Highlight;
+    forced-color-adjust: none;
+  }
+
+  .kui-editor__drop[data-drop="ring"] {
+    outline-color: Highlight;
+  }
+}

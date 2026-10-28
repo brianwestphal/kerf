@@ -67,6 +67,7 @@ import { wireWorkbench } from '../components/layout/workbench/wiring/wire-workbe
 import { Workbench } from '../components/layout/workbench/workbench.js';
 import { LucideIcon } from '../components/media/lucide-icon/lucide-icon.js';
 import { Text } from '../components/typography/text/text.js';
+import { wireCanvasDrag } from './canvas-drag.js';
 import type { EditorCatalog } from './catalog.js';
 import {
   ADD_SLOT_ACTION,
@@ -787,6 +788,23 @@ export function createEditor(options: EditorOptions) {
     );
   };
 
+  /**
+   * Applies a legal drag move from the outline or the canvas and keeps the
+   * moved node or slot selected.
+   */
+  const applyMove = (move: TreeListMove) => {
+    const to = dropFor(move);
+    const from = sourceOf(doc.value, move.sourceId);
+    if (!to || !from) return;
+    const moved = placeChild(doc.value, from, to);
+    commit(moved.document);
+    select(
+      slotRowAddress(move.sourceId)
+        ? { kind: 'slot', address: moved.at }
+        : { kind: 'node', id: move.sourceId },
+    );
+  };
+
   /** Zone keys a node offers, for moving a node into it. */
   const zoneKeys = (node: ViewNode) => zonesOf(node).map((zone) => zone.key);
 
@@ -1056,6 +1074,7 @@ export function createEditor(options: EditorOptions) {
         aria-hidden="true"
         hidden
       />
+      <div class="kui-editor__drop" data-morph-skip aria-hidden="true" hidden />
     </div>
   );
 
@@ -1254,9 +1273,15 @@ export function createEditor(options: EditorOptions) {
       current?.kind === 'node'
         ? canvas.querySelector<HTMLElement>(`[data-kerf-node="${current.id}"]`)
         : current?.kind === 'slot'
-          ? canvas.querySelector<HTMLElement>(
-              `[data-editor-slot-address="${CSS.escape(JSON.stringify(current.address))}"]`,
-            )
+          ? ([
+              ...canvas.querySelectorAll<HTMLElement>(
+                '[data-editor-slot-address]',
+              ),
+            ].find(
+              (element) =>
+                element.dataset.editorSlotAddress ===
+                JSON.stringify(current.address),
+            ) ?? null)
           : null;
     if (!target) {
       highlight.hidden = true;
@@ -1738,18 +1763,26 @@ export function createEditor(options: EditorOptions) {
       }),
       wireTreeList(root, {
         canDrop: (move) => dropFor(move) !== undefined,
-        onMove: (move) => {
-          const to = dropFor(move);
-          const from = sourceOf(doc.value, move.sourceId);
-          if (!to || !from) return;
-          const moved = placeChild(doc.value, from, to);
-          commit(moved.document);
-          select(
-            slotRowAddress(move.sourceId)
-              ? { kind: 'slot', address: moved.at }
-              : { kind: 'node', id: move.sourceId },
-          );
+        onMove: applyMove,
+      }),
+      wireCanvasDrag(root, {
+        sourceOf: (element) => {
+          const address = element.dataset.editorSlotAddress;
+          if (address) {
+            const { parent, zone, index } = JSON.parse(address) as SlotAddress;
+            return slotRowId(parent, zone, index);
+          }
+          const id = element.dataset.kerfNode!;
+          return isMovable(doc.value, id).remove ? id : undefined;
         },
+        targetOf: (element) => {
+          const address = element.dataset.editorSlotAddress;
+          if (!address) return element.dataset.kerfNode!;
+          const { parent, zone, index } = JSON.parse(address) as SlotAddress;
+          return slotRowId(parent, zone, index);
+        },
+        canDrop: (move) => dropFor(move) !== undefined,
+        onMove: applyMove,
       }),
       wireFilePickers(root, {
         onFiles: ({ files, id }) => {
