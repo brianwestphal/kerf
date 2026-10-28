@@ -1,0 +1,11 @@
+# The package ships the installable Library (Kerf-UI.sketch), its page
+# overviews, and every guide. Family build-input Libraries, consumer test
+# documents, captured fixtures, manifests, reports, and verification exports
+# are repository build state (KF-C5TZMN: ship the Library, not the pipeline).
+*.sketch
+!Kerf-UI.sketch
+*.png
+!unified/pages/*.png
+*.json
+*.html
+button/inputs/

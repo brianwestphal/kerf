@@ -41,3 +41,8 @@ After a family changes, rebuild the unified Library with
 
 A multi-control SVG variant is a showcase page; it is not an individual
 reusable component.
+
+The `@kerfjs/ui` npm package ships `Kerf-UI.sketch`, its page overviews, and
+these guides. The family build-input Libraries, manifests, captured fixtures,
+and verification evidence the guides mention live in the
+[repository](https://github.com/brianwestphal/kerf/tree/main/ui/docs/design/sketch).

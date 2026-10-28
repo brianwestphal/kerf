@@ -29,7 +29,7 @@ Linked consumers depend on four identities, and none of them changes between
 releases:
 
 - **Document ID.** It is pinned to `libraryDocumentId` in
-  [symbol-manifest.json](symbol-manifest.json), because Sketch assigns a new
+  [symbol-manifest.json](https://github.com/brianwestphal/kerf/blob/main/ui/docs/design/sketch/unified/symbol-manifest.json), because Sketch assigns a new
   one whenever a document is saved.
 - **Symbol, master, and descendant layer IDs, Text override keys included.**
   These equal the family Library's IDs, which each family pipeline already
@@ -59,11 +59,11 @@ npm run sketch:library -- sync
 `npm run sketch:library` runs all three. `verify` opens the Library, checks
 every family page, and builds a consumer linked to one master per family and
 theme. Each instance gets a text override and an 80px resize, and the
-consumer is saved and reopened ([verification.json](verification.json),
-[consumer exports](consumer-exports/)). `sync` publishes a next version with
+consumer is saved and reopened ([verification.json](https://github.com/brianwestphal/kerf/blob/main/ui/docs/design/sketch/unified/verification.json),
+[consumer exports](https://github.com/brianwestphal/kerf/tree/main/ui/docs/design/sketch/unified/consumer-exports)). `sync` publishes a next version with
 one master text edited under the same document ID, syncs a consumer through
 Sketch's libraries controller, and checks that the edit arrives and the
-overrides survive save/reopen ([sync-verification.json](sync-verification.json)).
+overrides survive save/reopen ([sync-verification.json](https://github.com/brianwestphal/kerf/blob/main/ui/docs/design/sketch/unified/sync-verification.json)).
 
 Rebuild after any family Library changes. A Library with an unchanged set of
 family masters rebuilds with identical IDs.
