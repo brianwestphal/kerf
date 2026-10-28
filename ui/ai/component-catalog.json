@@ -3361,6 +3361,96 @@
       }
     },
     {
+      "id": "tree-list",
+      "name": "TreeList",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A hierarchical list of ListItem rows indented by depth, with a disclosure arrow on each row that has children, keyboard tree navigation, and selection; an ARIA tree whose nodes, expansion, and selection the application owns.",
+      "uses": [
+        "list-item",
+        "disclosure-arrow"
+      ],
+      "purpose": "Show and navigate a hierarchy (a file tree, a document outline, nested categories) as expandable, selectable rows that look like the app's lists.",
+      "publicExports": [
+        "TreeList",
+        "TreeListProps",
+        "TreeListNode",
+        "TreeListRow",
+        "treeListRows",
+        "treeListPath",
+        "isExpandable"
+      ],
+      "useWhen": [
+        "People browse or pick from nested items: render TreeList with nodes, expanded, and selected; handle action (choose) and toggleAction (open or close) with delegateActions and re-render; wire wireTreeList for the keyboard.",
+        "Children load on demand: mark the node hasChildren and load them when toggleAction expands it."
+      ],
+      "avoidWhen": [
+        "Do not indent ListItem rows or draw disclosure arrows yourself; use TreeList.",
+        "Do not use it for a flat list; use List and ListItem.",
+        "Do not use it for a single collapsible section; use Disclosure."
+      ],
+      "alternatives": [
+        {
+          "id": "list-item",
+          "relationship": "nearest",
+          "when": "Use List and ListItem when the items are not nested."
+        },
+        {
+          "id": "disclosure",
+          "relationship": "nearest",
+          "when": "Use Disclosure to show and hide one section of content."
+        }
+      ],
+      "appOwns": [
+        "the nodes and loading their children",
+        "which nodes are expanded (flip the id in toggleAction) and which is selected (set it in action)"
+      ],
+      "variants": [
+        "standard density",
+        "compact density",
+        "rows with icons, descriptions, and trailing content",
+        "disabled rows",
+        "lazy children (hasChildren)"
+      ],
+      "accessibility": [
+        "The tree is role=tree named by label; each row is a treeitem button with aria-level, aria-posinset, aria-setsize, aria-expanded on rows that expand, and aria-selected. A disabled row is aria-disabled and stays reachable.",
+        "With wireTreeList: one Tab stop in the tree; Down and Up move, Home and End jump, Right opens a row or enters its first child, Left closes it or returns to its parent, Enter and Space choose, and typing a label's first letters finds the next match."
+      ],
+      "geometry": {
+        "margin": "child",
+        "border": "child",
+        "padding": "child",
+        "notes": [
+          "Rows are ListItems: they own the 8px inline margin, border, and padding, and indent 16px per level with a 16px disclosure column, so labels at one level share an edge."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/tree-list",
+        "browserImport": "@kerfjs/ui/tree-list",
+        "manualCssImport": "@kerfjs/ui/tree-list.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wireTreeList",
+          "import": "@kerfjs/ui/wire-tree-list",
+          "required": true
+        }
+      ],
+      "publicClasses": [
+        "kui-tree-list"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=tree-list",
+        "documentation": "docs/tree-list.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "summary-row",
       "name": "SummaryRow",
       "category": "Structure",

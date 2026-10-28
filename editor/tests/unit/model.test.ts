@@ -15,7 +15,12 @@ import {
   visitNodes,
 } from '../../src/model/document.js';
 import { formatValue, inspectorSections } from '../../src/model/inspector.js';
-import { nodeTitle, outlineRows } from '../../src/model/outline.js';
+import {
+  nodeTitle,
+  outlineParents,
+  outlineRows,
+  outlineTree,
+} from '../../src/model/outline.js';
 import { sampleInputs, sampleValue } from '../../src/model/sample-inputs.js';
 import sample from '../../src/sample.kui.json';
 
@@ -110,6 +115,29 @@ describe('outline', () => {
     expect(rows.find((row) => row.label === 'row')?.detail).toContain(
       'repeated',
     );
+  });
+
+  it('nests nodes under their parents for the outline tree', () => {
+    const tree = outlineTree(inbox, componentNames);
+    expect(tree).toHaveLength(1);
+    const [pane] = tree;
+    expect(pane).toMatchObject({ label: 'Pane', detail: 'Root' });
+    const toolbar = pane!.children!.find((node) => node.label === 'Toolbar')!;
+    expect(toolbar.detail).toBe('header');
+    expect(toolbar.children!.map((node) => [node.label, node.detail])).toEqual([
+      ['ToolbarText', 'leading'],
+      ['composeButton', 'Button · trailing'],
+    ]);
+    const row = pane!
+      .children!.find((node) => node.label === 'folderList')!
+      .children!.find((node) => node.label === 'row')!;
+    expect(row.detail).toBe('ListItem · children · repeated');
+    expect(row).not.toHaveProperty('children');
+    expect(outlineParents(tree)).toEqual([
+      '01JB8Z1M6Q8E1X9V4S7K2R3T5A',
+      '01JB8Z1M6Q8E1X9V4S7K2R3T5B',
+      '01JB8Z1M6Q8E1X9V4S7K2R3T5E',
+    ]);
   });
 
   it('titles text runs, composed views, and unknown types', () => {

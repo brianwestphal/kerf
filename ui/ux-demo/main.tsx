@@ -272,6 +272,7 @@ import {
 } from './demos/tag-field.js';
 import { SHOW_TOAST_DEMO_ACTION, showToastDemo } from './demos/toast.js';
 import { wireTooltipDemo } from './demos/tooltip.js';
+import { resetTreeListDemo, wireTreeListDemo } from './demos/tree-list.js';
 import { changeViewTransitionList } from './demos/view-transition-list-state.js';
 import {
   COLLAPSED_WORKBENCH_ID,
@@ -1746,6 +1747,11 @@ const routeWires: Partial<Record<string, RouteWire>> = {
     wire: () => () => {},
   },
   slider: { reset: resetSliderDemo, target: 'canvas', wire: () => () => {} },
+  'tree-list': {
+    reset: resetTreeListDemo,
+    target: 'canvas',
+    wire: (canvas) => wireTreeListDemo(canvas),
+  },
   'color-field': {
     reset: resetColorFieldDemo,
     target: 'canvas',

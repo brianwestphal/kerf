@@ -1,0 +1,7 @@
+/* A TreeList is a column of ListItem treeitem rows; the rows own their
+   geometry, indent, and disclosure arrows. */
+.kui-tree-list {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}

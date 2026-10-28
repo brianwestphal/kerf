@@ -29,6 +29,7 @@ import { TextField } from '@kerfjs/ui/text-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
+import { TreeList, type TreeListNode } from '@kerfjs/ui/tree-list';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import {
   contractDigest,
@@ -42,6 +43,7 @@ import {
   type ViewNode,
 } from '@kerfjs/ui/view';
 import { wireFilePickers } from '@kerfjs/ui/wire-file-pickers';
+import { wireTreeList } from '@kerfjs/ui/wire-tree-list';
 import { wireWorkbench } from '@kerfjs/ui/wire-workbench';
 import { Workbench } from '@kerfjs/ui/workbench';
 import { delegate, effect, type SafeHtml, signal } from 'kerfjs';
@@ -99,13 +101,20 @@ import {
   type ExportReport,
 } from './model/export.js';
 import { groupedProps, inspectorSections } from './model/inspector.js';
-import { nodeTitle, outlineRows } from './model/outline.js';
+import {
+  nodeTitle,
+  type OutlineNode,
+  outlineParents,
+  outlineRows,
+  outlineTree,
+} from './model/outline.js';
 import { type Problem, problemCounts, problemsOf } from './model/problems.js';
 import { sampleInputs } from './model/sample-inputs.js';
 import sample from './sample.kui.json';
 
 export const WORKBENCH_ID = 'kerf-ui-editor';
 const OUTLINE_ACTION = 'editor-select-node';
+const OUTLINE_TOGGLE_ACTION = 'editor-toggle-node';
 const PALETTE_ACTION = 'editor-show-component';
 const PROBLEM_ACTION = 'editor-select-problem';
 const SAVE_ACTION = 'editor-save';
@@ -285,8 +294,19 @@ export function createEditor(options: EditorOptions = {}) {
   const documentCollapsed = signal(false);
   const inspectorCollapsed = signal(false);
 
+  /** Outline nodes the author closed; everything else starts open. */
+  const collapsed = signal<ReadonlySet<string>>(new Set());
+
   const select = (next: Selection) => {
     selection.value = next;
+    // A node chosen elsewhere (the canvas, a problem) shows in the outline.
+    if (next?.kind !== 'node') return;
+    const path = findNode(doc.value, next.id)?.ancestors ?? [];
+    if (path.some(({ node }) => collapsed.value.has(node.id))) {
+      const open = new Set(collapsed.value);
+      for (const { node } of path) open.delete(node.id);
+      collapsed.value = open;
+    }
   };
 
   const outline = (
@@ -294,28 +314,39 @@ export function createEditor(options: EditorOptions = {}) {
     counts: ReadonlyMap<string, number>,
   ) => {
     const current = selection.value;
-    return outlineRows(document, componentNames).map((row) => {
-      const count = counts.get(row.id);
-      return (
-        <ListItem
-          action={OUTLINE_ACTION}
-          itemId={row.id}
-          label={row.label}
-          description={row.detail}
-          selected={current?.kind === 'node' && current.id === row.id}
-          status={
-            count ? (
-              <Badge
-                tone="danger"
-                label={`${count} ${count === 1 ? 'problem' : 'problems'}`}
-              >
-                {count}
-              </Badge>
-            ) : undefined
-          }
-        />
-      );
-    });
+    const badge = (id: string) => {
+      const count = counts.get(id);
+      return count ? (
+        <Badge
+          tone="danger"
+          label={`${count} ${count === 1 ? 'problem' : 'problems'}`}
+        >
+          {count}
+        </Badge>
+      ) : undefined;
+    };
+    const toTree = (nodes: readonly OutlineNode[]): TreeListNode[] =>
+      nodes.map((node) => ({
+        id: node.id,
+        label: node.label,
+        description: node.detail,
+        trailing: badge(node.id),
+        ...(node.children ? { children: toTree(node.children) } : {}),
+      }));
+    const tree = outlineTree(document, componentNames);
+    const closed = collapsed.value;
+    return (
+      <TreeList
+        id="editor-outline"
+        label="Document outline"
+        nodes={toTree(tree)}
+        expanded={outlineParents(tree).filter((id) => !closed.has(id))}
+        selected={current?.kind === 'node' ? current.id : undefined}
+        action={OUTLINE_ACTION}
+        toggleAction={OUTLINE_TOGGLE_ACTION}
+        density="compact"
+      />
+    );
   };
 
   /** One row per diagnostic; a row about a node selects it. */
@@ -953,7 +984,7 @@ export function createEditor(options: EditorOptions = {}) {
       })(),
     };
     commit(insertNode(doc.value, id, zone, child));
-    selection.value = { kind: 'node', id: child.id };
+    select({ kind: 'node', id: child.id });
   };
 
   /** Promotes the chosen prop to a document param named after it. */
@@ -1063,6 +1094,12 @@ export function createEditor(options: EditorOptions = {}) {
         [PROMOTE_ACTION]: () => promote(),
         [OUTLINE_ACTION]: (_event, target) =>
           select({ kind: 'node', id: target.dataset.itemId! }),
+        [OUTLINE_TOGGLE_ACTION]: (_event, target) => {
+          const next = new Set(collapsed.value);
+          const id = target.dataset.itemId!;
+          if (!next.delete(id)) next.add(id);
+          collapsed.value = next;
+        },
         [PROBLEM_ACTION]: (_event, target) =>
           select({ kind: 'node', id: target.dataset.itemId! }),
         [PALETTE_ACTION]: (_event, target) =>
@@ -1091,6 +1128,7 @@ export function createEditor(options: EditorOptions = {}) {
           select({ kind: 'node', id: node.dataset.kerfNode! });
         }
       }),
+      wireTreeList(root),
       wireFilePickers(root, {
         onFiles: ({ files, id }) => {
           const [file] = files;

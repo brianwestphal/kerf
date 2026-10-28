@@ -15102,6 +15102,118 @@
       "groups": ["Content", "Appearance", "Behavior"]
     },
     {
+      "key": "@kerfjs/ui:tree-list",
+      "id": "tree-list",
+      "source": "kerf",
+      "import": "@kerfjs/ui/tree-list",
+      "export": "TreeList",
+      "description": "A hierarchical list: ListItem rows indented by depth, with a disclosure\narrow on each row that has children. The tree is an ARIA `tree` of flat\n`treeitem` rows; the application owns the nodes, which are expanded, and\nwhich is selected, and handles `action` and `toggleAction`. Wire keyboard\nnavigation with `wireTreeList`.",
+      "props": [
+        {
+          "name": "id",
+          "type": { "kind": "string", "text": "string" },
+          "required": true,
+          "description": "Identifies the tree for `wireTreeList` and in tests."
+        },
+        {
+          "name": "label",
+          "type": { "kind": "string", "text": "string" },
+          "required": true,
+          "description": "The tree's accessible name, such as \"Document outline\"."
+        },
+        {
+          "name": "nodes",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "ref": "TreeListNode",
+              "text": "TreeListNode"
+            },
+            "text": "readonly TreeListNode[]"
+          },
+          "required": true,
+          "description": "The hierarchy. The application owns it."
+        },
+        {
+          "name": "expanded",
+          "type": {
+            "kind": "union",
+            "members": [
+              {
+                "kind": "ref",
+                "ref": "ReadonlySet",
+                "text": "ReadonlySet<string>"
+              },
+              {
+                "kind": "array",
+                "items": { "kind": "string", "text": "string" },
+                "text": "readonly string[]"
+              }
+            ],
+            "text": "ReadonlySet<string> | readonly string[]"
+          },
+          "required": true,
+          "description": "Ids of the expanded nodes. The application owns this state."
+        },
+        {
+          "name": "selected",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "The selected node's id."
+        },
+        {
+          "name": "action",
+          "type": { "kind": "string", "text": "string" },
+          "required": true,
+          "description": "Delegated action for choosing a row; the row's `data-item-id` names it."
+        },
+        {
+          "name": "toggleAction",
+          "type": { "kind": "string", "text": "string" },
+          "required": true,
+          "description": "Delegated action for expanding or collapsing a row, from its disclosure\narrow or the keyboard (Right and Left). Flip the id in `expanded`."
+        },
+        {
+          "name": "density",
+          "type": {
+            "kind": "enum",
+            "values": ["standard", "compact"],
+            "text": "\"compact\" | \"standard\" | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Row density: `standard` (44px rows, default) or `compact` (36px)."
+        },
+        {
+          "name": "className",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Safe `data-*` metadata for the tree element.",
+          "control": "hidden"
+        },
+        {
+          "name": "slot",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
+        }
+      ],
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
+    },
+    {
       "key": "@kerfjs/ui:value-preview",
       "id": "value-preview",
       "source": "kerf",
@@ -25576,6 +25688,11 @@
       ],
       "text": "RadioGroupChoice<Value>"
     },
+    "ReadonlySet": {
+      "kind": "object",
+      "props": [],
+      "text": "ReadonlySet<string>"
+    },
     "RowRootAttributes": {
       "kind": "object",
       "props": [
@@ -26666,6 +26783,91 @@
         }
       ],
       "text": "TabNavigatorTab<Id>"
+    },
+    "TreeListNode": {
+      "kind": "object",
+      "props": [
+        {
+          "name": "id",
+          "type": { "kind": "string", "text": "string" },
+          "required": true,
+          "description": "Stable id: the row's `data-item-id` and its key across re-renders."
+        },
+        {
+          "name": "label",
+          "type": {
+            "kind": "content",
+            "acceptsText": true,
+            "text": "string | SafeHtml"
+          },
+          "required": true
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "content",
+            "acceptsText": true,
+            "text": "string | SafeHtml | undefined",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "icon",
+          "type": {
+            "kind": "content",
+            "text": "SafeHtml | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "A leading icon, normally an unsized LucideIcon."
+        },
+        {
+          "name": "trailing",
+          "type": {
+            "kind": "content",
+            "text": "KerfUiContent",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Trailing content, such as a count Badge."
+        },
+        {
+          "name": "disabled",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "children",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "ref": "TreeListNode",
+              "text": "TreeListNode"
+            },
+            "text": "readonly TreeListNode[]",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Child nodes. An empty array is an expandable node with no children yet."
+        },
+        {
+          "name": "hasChildren",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Marks a node expandable before its children are loaded. The application\nloads them when its `toggleAction` handler expands the node."
+        }
+      ],
+      "text": "TreeListNode"
     },
     "WorkbenchMainBottomToolbar": {
       "kind": "object",

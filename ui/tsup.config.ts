@@ -103,6 +103,8 @@ const entries = [
   'button',
   'split-button',
   'framed-list',
+  'tree-list',
+  'wire-tree-list',
   'summary-row',
   'wire-corner-status',
   'empty-state',

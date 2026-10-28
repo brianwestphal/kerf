@@ -50,3 +50,52 @@ export function outlineRows(
     };
   });
 }
+
+/** One outline tree node: a document node with its children (KF-ECR4XG). */
+export interface OutlineNode {
+  readonly id: string;
+  /** The author's name for the node, else its component name. */
+  readonly label: string;
+  /** The component (when the node is named), its zone, and "repeated". */
+  readonly detail: string;
+  readonly children?: OutlineNode[];
+}
+
+/**
+ * The document as a tree for the outline: each node under its parent, in
+ * document order. A node with children has a `children` array.
+ */
+export function outlineTree(
+  document: ViewDocument,
+  names: ReadonlyMap<string, string>,
+): OutlineNode[] {
+  const top: OutlineNode[] = [];
+  const byId = new Map<string, { children?: OutlineNode[] }>();
+  for (const { node, ancestors, repeated } of visitNodes(document)) {
+    const component = nodeTitle(node, names);
+    const zone = ancestors.at(-1)?.zone;
+    const entry: OutlineNode = {
+      id: node.id,
+      label: node.name ?? component,
+      detail: [
+        node.name ? component : undefined,
+        zone ?? 'Root',
+        repeated ? 'repeated' : undefined,
+      ]
+        .filter(Boolean)
+        .join(' · '),
+    };
+    byId.set(node.id, entry);
+    const parent = ancestors.at(-1) && byId.get(ancestors.at(-1)!.node.id);
+    if (parent) (parent.children ??= []).push(entry);
+    else top.push(entry);
+  }
+  return top;
+}
+
+/** Ids of every outline node with children, so a tree can start expanded. */
+export function outlineParents(nodes: readonly OutlineNode[]): string[] {
+  return nodes.flatMap((node) =>
+    node.children ? [node.id, ...outlineParents(node.children)] : [],
+  );
+}

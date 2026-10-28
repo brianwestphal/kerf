@@ -235,3 +235,31 @@ describe('the Inspector scroll position', () => {
     await frame();
   });
 });
+
+describe('the outline tree', () => {
+  it('starts open, closes a node, and reopens its ancestors for a canvas selection', () => {
+    const { root, editor } = open(PANE);
+    const row = (id: string) =>
+      root.querySelector<HTMLElement>(
+        `[role="treeitem"][data-item-id="${id}"]`,
+      );
+    expect(row(COMPOSE)?.getAttribute('aria-level')).toBe('3');
+    expect(row(TOOLBAR)?.getAttribute('aria-expanded')).toBe('true');
+    row(TOOLBAR)!
+      .querySelector<HTMLElement>('.kui-list-item__disclosure')!
+      .click();
+    expect(row(TOOLBAR)?.getAttribute('aria-expanded')).toBe('false');
+    expect(row(COMPOSE)).toBeNull();
+    // Choosing the hidden node on the canvas reopens its parent.
+    root
+      .querySelector<HTMLElement>(
+        `[data-editor-canvas] [data-kerf-node="${COMPOSE}"]`,
+      )!
+      .click();
+    expect(editor.selection.value).toEqual({ kind: 'node', id: COMPOSE });
+    expect(row(COMPOSE)?.getAttribute('aria-selected')).toBe('true');
+    // Reopening what is already open changes nothing.
+    row(FOLDERS)!.click();
+    expect(row(FOLDERS)?.getAttribute('aria-selected')).toBe('true');
+  });
+});

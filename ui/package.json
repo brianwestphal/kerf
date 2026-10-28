@@ -392,6 +392,15 @@
       "types": "./dist/wire-message-composers.d.ts",
       "import": "./dist/wire-message-composers.js"
     },
+    "./tree-list": {
+      "types": "./dist/tree-list.d.ts",
+      "browser": "./dist/browser/tree-list.js",
+      "import": "./dist/tree-list.js"
+    },
+    "./wire-tree-list": {
+      "types": "./dist/wire-tree-list.d.ts",
+      "import": "./dist/wire-tree-list.js"
+    },
     "./tag-field": {
       "types": "./dist/tag-field.d.ts",
       "browser": "./dist/browser/tag-field.js",
@@ -638,6 +647,7 @@
     "./color-field.css": "./dist/styles/color-field.css",
     "./message-composer.css": "./dist/styles/message-composer.css",
     "./search-field.css": "./dist/styles/search-field.css",
+    "./tree-list.css": "./dist/styles/tree-list.css",
     "./tag-field.css": "./dist/styles/tag-field.css",
     "./state-banner.css": "./dist/styles/state-banner.css",
     "./corner-status.css": "./dist/styles/corner-status.css",

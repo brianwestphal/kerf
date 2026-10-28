@@ -2957,6 +2957,65 @@
       }
     },
     {
+      "key": "@kerfjs/ui:tree-list",
+      "package": "@kerfjs/ui",
+      "id": "tree-list",
+      "name": "TreeList",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the nodes and loading their children",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "which nodes are expanded (flip the id in toggleAction) and which is selected (set it in action)",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": true,
+        "helpers": ["wireTreeList"],
+        "obligations": ["Use wireTreeList as documented."],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "child",
+          "border": "child",
+          "padding": "child",
+          "notes": [
+            "Rows are ListItems: they own the 8px inline margin, border, and padding, and indent 16px per level with a 16px disclosure column, so labels at one level share an edge."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "The tree is role=tree named by label; each row is a treeitem button with aria-level, aria-posinset, aria-setsize, aria-expanded on rows that expand, and aria-selected. A disabled row is aria-disabled and stays reachable.",
+          "With wireTreeList: one Tab stop in the tree; Down and Up move, Home and End jump, Right opens a row or enters its first child, Left closes it or returns to its parent, Enter and Space choose, and typing a label's first letters finds the next match."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-tree-list",
+        "publicClasses": ["kui-tree-list"],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:summary-row",
       "package": "@kerfjs/ui",
       "id": "summary-row",

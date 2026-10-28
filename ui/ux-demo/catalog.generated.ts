@@ -395,6 +395,21 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "tree-list",
+    "name": "TreeList",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Show and navigate a hierarchy (a file tree, a document outline, nested categories) as expandable, selectable rows that look like the app's lists.",
+    "uses": [
+      "list-item",
+      "disclosure-arrow"
+    ],
+    "demoSource": "ui/ux-demo/demos/tree-list.tsx",
+    "componentSource": "ui/src/components/collections/tree-list/tree-list.tsx",
+    "documentation": "ui/docs/tree-list.md"
+  },
+  {
     "id": "summary-row",
     "name": "SummaryRow",
     "category": "Structure",

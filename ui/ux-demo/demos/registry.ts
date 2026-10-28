@@ -74,6 +74,7 @@ import { ToolbarDemo } from './toolbar.js';
 import { ToolbarControlGroupDemo } from './toolbar-control-group.js';
 import { ToolbarTextDemo } from './toolbar-text.js';
 import { TooltipDemo } from './tooltip.js';
+import { TreeListDemo } from './tree-list.js';
 import { ValuePreviewDemo } from './value-preview.js';
 import { ValueTableDemo } from './value-table.js';
 import { WorkbenchDemo } from './workbench.js';
@@ -104,6 +105,7 @@ export const demos = {
   'message-composer': MessageComposerDemo,
   slider: SliderDemo,
   'tag-field': TagFieldDemo,
+  'tree-list': TreeListDemo,
   toast: ToastDemo,
   tooltip: TooltipDemo,
   'search-field': SearchFieldDemo,

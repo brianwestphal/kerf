@@ -2,16 +2,12 @@ import type { SafeHtml } from 'kerfjs';
 
 import {
   type ListIconTile,
-  type ListIconTilePresentation,
   listIconTilePresentation,
 } from '../../../shared/content/list-icon-tile.js';
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { nativeDraggable } from '../../../shared/dom/draggable.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
-import { em, remify } from '../../../shared/styles/css-values.js';
-import { withWordBreaks } from '../../../shared/text/word-breaks.js';
-import { LoadingSpinner } from '../../feedback/loading-spinner/loading-spinner.js';
-import { Skeleton } from '../../feedback/skeleton/skeleton.js';
+import { listItemContent } from './internal/list-item-content.js';
 
 export type {
   ListIconTile,
@@ -110,80 +106,6 @@ export interface ListItemLinkProps extends Omit<
   external?: boolean;
   action?: never;
   pressed?: never;
-}
-
-function listItemContent({
-  label,
-  description,
-  icon,
-  tile,
-  trailing,
-  status,
-  busy = false,
-  multiline = false,
-  placeholder = false,
-}: Pick<
-  ListItemProps,
-  | 'label'
-  | 'description'
-  | 'icon'
-  | 'trailing'
-  | 'status'
-  | 'busy'
-  | 'multiline'
-  | 'placeholder'
-> & { tile: ListIconTilePresentation | null }) {
-  const tileSize = tile?.tile ? 32 : 18;
-  return (
-    <>
-      {icon && (
-        <span
-          class="kui-list-item__icon"
-          style={placeholder ? undefined : tile?.style}
-        >
-          {placeholder ? (
-            <Skeleton
-              block
-              width={remify(tileSize)}
-              height={remify(tileSize)}
-            />
-          ) : (
-            icon
-          )}
-        </span>
-      )}
-      <span class="kui-list-item__label">
-        <span class="kui-list-item__primary-label">
-          {placeholder ? (
-            <Skeleton width={em(9)} />
-          ) : multiline ? (
-            withWordBreaks(label)
-          ) : (
-            label
-          )}
-        </span>
-        {description && (
-          <span class="kui-list-item__description">
-            {placeholder ? <Skeleton width={em(11)} /> : description}
-          </span>
-        )}
-      </span>
-      {(busy || status || trailing) && (
-        <span class="kui-list-item__trailing">
-          {/* The busy spinner is component-owned chrome drawn from a known
-              prop, so a placeholder keeps it live. Status text and
-              author-supplied trailing content are values: skeletons. */}
-          {busy && <LoadingSpinner />}
-          {status && (
-            <span class="kui-list-item__status">
-              {placeholder ? <Skeleton width={em(3.5)} /> : status}
-            </span>
-          )}
-          {trailing && (placeholder ? <Skeleton width={em(1.5)} /> : trailing)}
-        </span>
-      )}
-    </>
-  );
 }
 
 export function ListItem({

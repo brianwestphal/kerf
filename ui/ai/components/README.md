@@ -39,6 +39,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [ValuePreview](./value-preview.md) — Display a literal long value with line breaks and long tokens inside a bounded scroll region.
 - [ValueTable](./value-table.md) — Key/value rows with optional icons and aligned separators.
 - [FramedList](./framed-list.md) — Group settings-style rows of arbitrary content (copy, keycaps, controls) in one framed surface with between-row dividers and an optional highlighted row, without app list CSS.
+- [TreeList](./tree-list.md) — Show and navigate a hierarchy (a file tree, a document outline, nested categories) as expandable, selectable rows that look like the app's lists.
 - [SummaryRow](./summary-row.md) — Present dense item summaries (tickets, tasks, messages) as selectable list rows or board cards with Kerf-owned selection, hover, focus, rail, clamping, list-edge rounding, and narrow compaction, without app row CSS.
 - [Row](./row.md) — Arrange related content horizontally with consistent spacing, optional physical-side text/control insets, and explicit left/center/right/full plus top/middle/bottom/full/baseline alignment instead of application-owned flex wrappers.
 - [Grid](./grid.md) — Arrange related siblings in equal-width columns with either a fixed count or automatic container-width collapse.

@@ -12,7 +12,10 @@ it uses ship from `@kerfjs/ui/view`, so tools and applications work without it.
   placeholder inputs for params that have no default and a label for each slot.
 - **Select** a node by clicking it on the canvas (the previewed document's own
   actions never run) or in the outline. A highlight marks it on the canvas.
-- **Inspect** the selected node's props, read-only and grouped by the curated
+  The outline is a tree (`TreeList`): close and open a node with its arrow or
+  Left and Right, and choosing a node inside a closed one on the canvas opens
+  its parents.
+- **Inspect** the selected node's props, grouped by the curated
   `component-props.json` hints. Selecting a palette component documents its
   props and types instead.
 - **Problems:** every `validateView` diagnostic is listed at the top of the

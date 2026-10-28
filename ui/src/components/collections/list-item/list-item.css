@@ -124,7 +124,8 @@
 .kui-list-item:hover:not(
     [data-placeholder="true"],
     [aria-current="page"],
-    [aria-pressed="true"]
+    [aria-pressed="true"],
+    [aria-selected="true"]
   ) {
   border-color: var(
     --kui-list-item-hover-border,
@@ -153,7 +154,8 @@
 }
 
 .kui-list-item[aria-current="page"],
-.kui-list-item[aria-pressed="true"] {
+.kui-list-item[aria-pressed="true"],
+.kui-list-item[aria-selected="true"] {
   border-color: var(
     --kui-list-item-selected-border,
     var(--kui-color-brand-border-quiet)
@@ -458,4 +460,39 @@
     outline: 1px solid CanvasText;
     outline-offset: -1px;
   }
+}
+
+/* The treeitem form (a TreeList row, KF-ECR4XG): the row indents one 16px
+   step per level below the first and reserves a 16px disclosure column, so
+   labels at one level share an edge whether or not the row expands. The
+   arrow sits out of the grid, centered in that column. */
+.kui-list-item[role="treeitem"] {
+  --_kui-list-item-tree-start: calc(
+    var(
+        --kui-list-item-padding-inline,
+        var(
+          --kui-list-row-padding-inline,
+          var(--kui-layout-item-padding, remify(8px))
+        )
+      ) +
+      (var(--_kui-list-item-tree-level, 1) - 1) *
+      var(--kui-space-m, remify(16px))
+  );
+  position: relative;
+  padding-inline-start: calc(
+    var(--_kui-list-item-tree-start) + remify(16px) +
+      var(--kui-space-2xs, remify(4px))
+  );
+}
+.kui-list-item__disclosure {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: var(--_kui-list-item-tree-start);
+  display: grid;
+  width: remify(16px);
+  color: var(--kui-color-neutral-on-quiet);
+  place-items: center;
+}
+.kui-list-item[aria-disabled="true"] {
+  cursor: not-allowed;
 }

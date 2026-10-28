@@ -18,6 +18,7 @@ import { Slider } from '@kerfjs/ui/slider';
 import { SplitView } from '@kerfjs/ui/split-view';
 import { TabNavigator } from '@kerfjs/ui/tab-navigator';
 import { TagField } from '@kerfjs/ui/tag-field';
+import { TreeList } from '@kerfjs/ui/tree-list';
 import { Workbench } from '@kerfjs/ui/workbench';
 import { WorkbenchDialog } from '@kerfjs/ui/workbench-dialog';
 import type { SafeHtml } from 'kerfjs';
@@ -42,6 +43,7 @@ const subpathOnly: Record<string, unknown> = {
   SplitView,
   TabNavigator,
   TagField,
+  TreeList,
   Workbench,
   WorkbenchDialog,
 };

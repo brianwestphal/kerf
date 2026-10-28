@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 437900,
+  "totalJavaScriptGzip": 440200,
   "measuredLargestJavaScriptGzip": 164545,
-  "measuredTotalJavaScriptGzip": 437806,
+  "measuredTotalJavaScriptGzip": 440191,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6403,6 +6403,22 @@
         "measuredTotalJavaScriptGzip": 437806,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 437900
+      }
+    },
+    {
+      "at": "2026-10-28T09:26:17.686Z",
+      "reason": "KF-ECR4XG: TreeList, wireTreeList, and the TreeList demo (files tree and compact outline)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 437806,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 437900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 440191,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 440200
       }
     }
   ]
