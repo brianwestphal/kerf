@@ -7,6 +7,7 @@ export {
   isAssignable,
   isLiteralOf,
   parseCssCall,
+  parseCssTree,
   validateView,
   VIEW_DOCUMENT_SCHEMA_ID,
 } from './validate.mjs';
@@ -27,3 +28,4 @@ export {
   readViewHeader,
   viewModulePath,
 } from './generate.mjs';
+export { interpretView, KuiContractMismatch } from './interpret.mjs';

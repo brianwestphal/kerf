@@ -203,52 +203,71 @@ export function isLiteralOf(value, type, definitions = {}) {
 /**
  * Parses a `$css` builder call with literal arguments only: numbers, quoted
  * strings without quotes or backslashes inside, and nested builder calls.
- * Generated code emits the call verbatim, so anything else (an identifier,
- * an operator, a template) is rejected rather than trusted. Returns the
- * helper names called, outermost first, or undefined when it does not parse.
+ * Generated code emits the call verbatim and the interpreter evaluates the
+ * tree, so anything else (an identifier, an operator, a template) is rejected
+ * rather than trusted. Returns `{ name, args }` (each argument a number,
+ * string, or nested call), or undefined when it does not parse.
  */
-export function parseCssCall(source) {
+export function parseCssTree(source) {
   if (typeof source !== 'string') return undefined;
   const text = source.trim();
   let index = 0;
-  const helpers = [];
   const space = () => {
     while (text[index] === ' ') index += 1;
   };
   const call = () => {
     const name = /^[A-Za-z]+/.exec(text.slice(index))?.[0];
-    if (!name || text[index + name.length] !== '(') return false;
-    helpers.push(name);
+    if (!name || text[index + name.length] !== '(') return undefined;
+    const node = { name, args: [] };
     index += name.length + 1;
     space();
     if (text[index] === ')') {
       index += 1;
-      return true;
+      return node;
     }
     for (;;) {
       space();
-      if (!argument()) return false;
+      const value = argument();
+      if (value === undefined) return undefined;
+      node.args.push(value);
       space();
       if (text[index] === ',') index += 1;
       else if (text[index] === ')') {
         index += 1;
-        return true;
-      } else return false;
+        return node;
+      } else return undefined;
     }
   };
   const argument = () => {
     const rest = text.slice(index);
-    const literal =
-      /^-?\d+(?:\.\d+)?/.exec(rest)?.[0] ??
-      /^'[^'\\\n]*'/.exec(rest)?.[0] ??
-      /^"[^"\\\n]*"/.exec(rest)?.[0];
-    if (literal) {
-      index += literal.length;
-      return true;
+    const number = /^-?\d+(?:\.\d+)?/.exec(rest)?.[0];
+    if (number) {
+      index += number.length;
+      return Number(number);
+    }
+    const quoted =
+      /^'[^'\\\n]*'/.exec(rest)?.[0] ?? /^"[^"\\\n]*"/.exec(rest)?.[0];
+    if (quoted) {
+      index += quoted.length;
+      return quoted.slice(1, -1);
     }
     return call();
   };
-  return call() && index === text.length ? helpers : undefined;
+  const tree = call();
+  return tree && index === text.length ? tree : undefined;
+}
+
+/** The helper names a `$css` call uses, outermost first, or undefined. */
+export function parseCssCall(source) {
+  const tree = parseCssTree(source);
+  if (!tree) return undefined;
+  const names = [];
+  const visit = (node) => {
+    names.push(node.name);
+    for (const arg of node.args) if (typeof arg === 'object') visit(arg);
+  };
+  visit(tree);
+  return names;
 }
 
 function describe(type) {
@@ -439,6 +458,15 @@ export function channelOf(component) {
   return component.props.some((prop) => prop.name === 'rootAttributes')
     ? 'rootAttributes'
     : 'none';
+}
+
+/** The prop a zone key fills: the composition zone's binding or the prop itself. */
+export function zonePropOf(catalog, component, key) {
+  const entry = component.key.includes('#')
+    ? undefined
+    : catalog.entries.get(component.key);
+  const zone = entry?.zones?.find((item) => item.id === key && item.jsx?.prop);
+  return zone ? zone.jsx.prop : key;
 }
 
 /** A zone key's binding: the composition zone, or a content (`slot`) prop. */

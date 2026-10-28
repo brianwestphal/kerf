@@ -687,6 +687,11 @@ the contract, digest, and breaking/non-breaking `diffContracts`. The
 `kerf-ui-view` bin (`generate`, `check`, `diff`) is an authoring step, never
 part of a consumer's build. A golden fixture plus a consumer compile fixture,
 with `@ts-expect-error` cases, pin the output and its type guarantees.
+`interpretView` (`view/interpret.mjs`) renders a document at runtime, for
+server-driven screens, with the generated module's exact semantics. It takes
+an explicit `components` map, so bundling stays static. It refuses a document
+whose contract digest differs from the app's compiled `<name>Contract`, by
+throwing `KuiContractMismatch` or rendering an `onMismatch` fallback.
 
 `ui/ai/compile-time-contracts-v1.json` is the declaration-facing companion:
 stable `KUI-T###` ids map provable invalid states to public imports, emitted

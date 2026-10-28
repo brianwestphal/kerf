@@ -1,15 +1,16 @@
 # Kerf UI editor: view documents and generated view contracts
 
-**Status: partly built.** Three pieces exist:
+**Status: partly built.** Four pieces exist:
 
 - the foundation, `ui/ai/component-props.json` (KF-8PXPKW: generated
   per-component prop schema; see `docs/21-ui-package.md`);
 - the document schema and `validateView` (§3, §8) in `@kerfjs/ui/view`
   (KF-FB9340: view-document schema and validator);
 - the generator, contract digest and diff, and the `kerf-ui-view` CLI (§4,
-  §6; KF-WWJGSN: view generator and CLI).
+  §6; KF-WWJGSN: view generator and CLI);
+- `interpretView` (§7; KF-5G4CNW: runtime interpreter).
 
-The interpreter, lint rule, and editor are still design only. The
+The lint rule and the editor are still design only. The
 implementation tickets are listed in [§10](#10-implementation-plan).
 
 ## 1. Purpose and decisions
@@ -510,7 +511,7 @@ surface a human reads: "adds the action `archive`, removes the input
 ## 7. Runtime interpreter (server-driven documents)
 
 `@kerfjs/ui/view` exports
-`interpretView(document, { components, inputs, slots, contract, onMismatch? })`.
+`interpretView(document, { catalog, components, inputs, slots, contract, onMismatch?, resolveView? })`.
 
 - `components` maps catalog keys to component functions. The application
   imports them explicitly, so bundling stays static and tree-shakable. A node
@@ -518,17 +519,22 @@ surface a human reads: "adds the action `archive`, removes the input
 - The interpreter validates the document (§8). It then computes the document's
   contract digest and compares it with `contract`, the `<name>Contract` the
   application compiled against.
-  - On a mismatch it throws a `KuiContractMismatch`, naming the changed
-    members, unless `onMismatch` returns fallback `SafeHtml` to render instead.
+  - On a mismatch it throws a `KuiContractMismatch` carrying the `expected`
+    and `actual` digests and the served document's full `contract`, so a host
+    can log exactly what changed. If `onMismatch` is given, it returns
+    fallback `SafeHtml` to render instead of throwing.
   - This means a server-side edit can never silently break a deployed client.
 - An application that loads documents at runtime generates with
   `--declarations-only`, which emits the contract types, `wire<Name>`,
   `<name>Refs`, and `<name>Contract`, but no `render<Name>`. The application
   calls `interpretView` in its place, and the typing and handler exhaustiveness
   are identical.
-- Rendering semantics match the generated module exactly. The test plan pins
-  them differentially: interpreted output must equal generated output for
-  every fixture document.
+- Rendering semantics match the generated module exactly. A differential test
+  pins this: for the inbox fixture, interpreted output equals the generated
+  `renderInbox` output byte for byte across several input sets.
+- `$css` is evaluated by walking its parsed call tree (`parseCssTree`) over
+  the `@kerfjs/ui/css-values` builders, never by `eval`. `$param` defaults
+  apply to `null` as well as `undefined`, as `??` does in generated code.
 
 ## 8. Validation
 
@@ -598,7 +604,7 @@ documents.
    §6; KF-WWJGSN: view generator and CLI). `kerf-ui-view generate | check |
 diff <doc…>` takes `--target js`, `--declarations-only`, and extra
    `--props` / `--composition` catalogs.
-4. `interpretView` and the `@kerfjs/ui/view` subpath, with differential tests
+4. **Done:** `interpretView` in `@kerfjs/ui/view`, with differential tests
    against the generator (§7; KF-5G4CNW: runtime interpreter).
 5. `kerfjs/no-generated-view-edits` ESLint rule (§5.2; KF-BD3ZHQ: no-hand-edits
    lint rule).

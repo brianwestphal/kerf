@@ -250,3 +250,43 @@ export function viewModulePath(
 
 /** Layout printer for generated expressions. */
 export function printDoc(doc: unknown, indent?: number): string;
+
+/** A parsed `$css` call: `{ name, args }`, each argument a literal or nested call. */
+export interface CssCallTree {
+  readonly name: string;
+  readonly args: readonly (number | string | CssCallTree)[];
+}
+/** Parses a `$css` value into its call tree, or undefined for anything else. */
+export function parseCssTree(source: unknown): CssCallTree | undefined;
+
+/** A served document's contract differs from the one the app compiled against. */
+export class KuiContractMismatch extends Error {
+  readonly expected: string;
+  readonly actual: string;
+  /** The served document's full contract. */
+  readonly contract: ViewContract;
+}
+
+/**
+ * Renders a view document at runtime with the generated module's semantics,
+ * after checking its contract digest against `contract`.
+ */
+export function interpretView(
+  document: unknown,
+  options: {
+    readonly catalog: ViewCatalog;
+    /** Catalog key → component function for every Kerf or app component used. */
+    readonly components: Readonly<
+      Record<string, (props: never) => SafeHtmlLike>
+    >;
+    readonly inputs?: object;
+    readonly slots?: object;
+    /** The generated `<name>Contract` the application compiled against. */
+    readonly contract: string;
+    readonly onMismatch?: (error: KuiContractMismatch) => SafeHtmlLike;
+    readonly resolveView?: (src: string) => unknown;
+  },
+): SafeHtmlLike;
+
+/** kerf's SafeHtml (kept structural so this module needs no type import). */
+export type SafeHtmlLike = import('kerfjs').SafeHtml;

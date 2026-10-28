@@ -11,7 +11,7 @@ import {
   typeText,
   viewDigest,
 } from './contract.mjs';
-import { channelOf, parseCssCall } from './validate.mjs';
+import { channelOf, parseCssCall, zonePropOf } from './validate.mjs';
 
 export const GENERATOR_VERSION = 1;
 const HEADER_LINES = 3;
@@ -312,15 +312,6 @@ function createEmitter(document, catalog, imports) {
   };
 
   return { root: (node) => nodeExpr(node, new Map(), undefined, undefined) };
-}
-
-/** The prop a zone key fills: the composition zone's binding or the prop itself. */
-function zonePropOf(catalog, component, key) {
-  const entry = component.key.includes('#')
-    ? undefined
-    : catalog.entries.get(component.key);
-  const zone = entry?.zones?.find((item) => item.id === key && item.jsx?.prop);
-  return zone ? zone.jsx.prop : key;
 }
 
 function typesBlock(name, contract) {
