@@ -1,0 +1,5204 @@
+{
+  "version": 1,
+  "libraryDocumentId": "9D9EB3A0-A3E8-446B-86FE-181E314BDDFF",
+  "swatches": {
+    "Kerf/Dark/Brand Fill Loud": {
+      "id": "49A4DD1A-9202-41B8-978C-4535A032DB52",
+      "color": "#64d2ffff"
+    },
+    "Kerf/Dark/Brand Icon": {
+      "id": "BA04BF8E-4C47-486F-8CAA-32AD8ABE2C3C",
+      "color": "#8acbffff"
+    },
+    "Kerf/Dark/Brand Input": {
+      "id": "1426C048-0F4F-4600-9B44-ED60D680C9A1",
+      "color": "#0a84ffff"
+    },
+    "Kerf/Dark/Brand On Loud": {
+      "id": "F06FE7CD-28D5-45EC-9436-6E3CC237AC7E",
+      "color": "#111113ff"
+    },
+    "Kerf/Dark/Brand Text": {
+      "id": "6E57B9F3-B319-437C-8B2B-AAD41A9EF27E",
+      "color": "#8acbffff"
+    },
+    "Kerf/Dark/Button Badge Brand Badge Fill": {
+      "id": "24391F83-D9EE-4692-BA1C-D99387C702A2",
+      "color": "#ffa0a2ff"
+    },
+    "Kerf/Dark/Button Badge Brand Badge Text": {
+      "id": "C7149A7B-3518-4E3F-8419-406DF272C374",
+      "color": "#1c1c1eff"
+    },
+    "Kerf/Dark/Button Badge Brand Fill": {
+      "id": "B067E3B9-2E17-4F86-86F3-66EBA8461DFC",
+      "color": "#64d2ffff"
+    },
+    "Kerf/Dark/Button Badge Brand Text": {
+      "id": "FB91613C-B03F-4AB8-BF2C-C8E439546B75",
+      "color": "#111113ff"
+    },
+    "Kerf/Dark/Button Badge Dot Badge Fill": {
+      "id": "FC6D9B33-A833-4D81-B17E-9899ED0A607F",
+      "color": "#ffa0a2ff"
+    },
+    "Kerf/Dark/Button Badge Dot Fill": {
+      "id": "B2D22762-DA9C-41F6-A797-4D63CDF24681",
+      "color": "#64d2ffff"
+    },
+    "Kerf/Dark/Button Badge Dot Text": {
+      "id": "5A713D0E-7AC5-4CFF-9B70-7A42539323E9",
+      "color": "#111113ff"
+    },
+    "Kerf/Dark/Button Compact Neutral Fill": {
+      "id": "2F9ED17B-E906-41A3-903A-37D56247CFCD",
+      "color": "#e5e5eaff"
+    },
+    "Kerf/Dark/Button Compact Neutral Text": {
+      "id": "397F2839-120D-404C-B064-82D5ABFB30DF",
+      "color": "#1c1c1eff"
+    },
+    "Kerf/Dark/Button Disabled Neutral Fill": {
+      "id": "23A86DB7-8E9E-4158-BC44-FABA099F48C8",
+      "color": "#e5e5eaff"
+    },
+    "Kerf/Dark/Button Disabled Neutral Text": {
+      "id": "E1926B68-D2A3-4C22-88B6-A4BF64D0EF5D",
+      "color": "#1c1c1eff"
+    },
+    "Kerf/Dark/Button Disabled Success Border": {
+      "id": "C53960F0-8E4E-4E0E-B009-11565268EB02",
+      "color": "#245331ff"
+    },
+    "Kerf/Dark/Button Disabled Success Fill": {
+      "id": "8043736E-B198-4D03-9D02-C6DC798B5333",
+      "color": "#1f3426ff"
+    },
+    "Kerf/Dark/Button Disabled Success Text": {
+      "id": "447F5289-51FF-430C-BB7F-4D550ABBF8DE",
+      "color": "#63e685ff"
+    },
+    "Kerf/Dark/Button Focus Brand Fill": {
+      "id": "8D9CFF91-2A02-497F-AA0E-590F717A98AE",
+      "color": "#64d2ffff"
+    },
+    "Kerf/Dark/Button Focus Brand Focus Contrast": {
+      "id": "4A651E7D-3206-4D2C-91C0-6BA6AEB40BE4",
+      "color": "#1c1c1eff"
+    },
+    "Kerf/Dark/Button Focus Brand Focus Outline": {
+      "id": "2FF5D5BB-D7E8-4322-9C86-63938EF7CBBC",
+      "color": "#64d2ffff"
+    },
+    "Kerf/Dark/Button Focus Brand Text": {
+      "id": "C94497C9-D135-4F75-B28D-4BA6B96A7E13",
+      "color": "#111113ff"
+    },
+    "Kerf/Dark/Button Focus Standard Fill": {
+      "id": "2BE6875F-9819-455D-A052-CC7E4CA18E7D",
+      "color": "#64d2ffff"
+    },
+    "Kerf/Dark/Button Focus Standard Focus Contrast": {
+      "id": "209A36BB-3DC3-47BA-982B-D134E75F65B6",
+      "color": "#1c1c1eff"
+    },
+    "Kerf/Dark/Button Focus Standard Focus Outline": {
+      "id": "078E4013-7F00-463C-B4CA-0B6C76D3DBBA",
+      "color": "#64d2ffff"
+    },
+    "Kerf/Dark/Button Focus Standard Text": {
+      "id": "03D20426-AB39-4F14-BDEF-E38ACEF883FE",
+      "color": "#111113ff"
+    },
+    "Kerf/Dark/Button Icon Only Fill": {
+      "id": "DEEDF0A0-FAE9-4BF8-94FC-4C20D31383D3",
+      "color": "#64d2ffff"
+    },
+    "Kerf/Dark/Button Icon Only Text": {
+      "id": "B0700C52-D228-45DA-8176-40FED6FC52C3",
+      "color": "#111113ff"
+    },
+    "Kerf/Dark/Button Loading Brand Fill": {
+      "id": "019C7F18-8D12-42D7-AE4C-CAF78450A5E7",
+      "color": "#64d2ffff"
+    },
+    "Kerf/Dark/Button Loading Brand Text": {
+      "id": "07EE3D6E-B8B8-47BD-A82D-6BE15660F757",
+      "color": "#111113ff"
+    },
+    "Kerf/Dark/Button Pill Brand Fill": {
+      "id": "DA81C996-1B99-4A37-8CE4-40082F93BCE3",
+      "color": "#64d2ffff"
+    },
+    "Kerf/Dark/Button Pill Brand Text": {
+      "id": "A031985F-45A7-44C9-9401-2980056D8619",
+      "color": "#111113ff"
+    },
+    "Kerf/Dark/Button Plain Neutral Fill": {
+      "id": "A809C354-9AF1-42F3-9BAA-7D745DB1E62D",
+      "color": "#00000000"
+    },
+    "Kerf/Dark/Button Plain Neutral Text": {
+      "id": "F5943D05-B66D-4FDF-B2FB-9BB4713B8740",
+      "color": "#c2c2c6ff"
+    },
+    "Kerf/Dark/Button Pressed Neutral Fill": {
+      "id": "F2CE0458-FEE1-4318-9178-613B7E14C505",
+      "color": "#64d2ffff"
+    },
+    "Kerf/Dark/Button Pressed Neutral Pressed Shadow": {
+      "id": "43BB951F-805A-4DD0-8A1A-DDEA43E30991",
+      "color": "#12121473"
+    },
+    "Kerf/Dark/Button Pressed Neutral Text": {
+      "id": "B15CEF81-2D60-43C8-A276-09667CCB393F",
+      "color": "#111113ff"
+    },
+    "Kerf/Dark/Button Pressed Secondary Brand Border": {
+      "id": "68901F81-77B5-42E7-B2C3-AE436671A115",
+      "color": "#64d2ffff"
+    },
+    "Kerf/Dark/Button Pressed Secondary Brand Fill": {
+      "id": "B238C68D-31DC-4637-B0BB-98696D0B51EA",
+      "color": "#222b30ff"
+    },
+    "Kerf/Dark/Button Pressed Secondary Brand Pressed Shadow": {
+      "id": "4C0C535B-5D64-47D0-95A3-43F4402F0C46",
+      "color": "#64d2ffff"
+    },
+    "Kerf/Dark/Button Pressed Secondary Brand Text": {
+      "id": "02B5B0D5-CE70-4682-A526-A24590695CDF",
+      "color": "#8acbffff"
+    },
+    "Kerf/Dark/Button Primary Danger Fill": {
+      "id": "D4D03B4D-4916-416B-A28B-83BFBAD1DDF9",
+      "color": "#ff383cff"
+    },
+    "Kerf/Dark/Button Primary Danger Text": {
+      "id": "0FB7CFD0-1F3D-4AC6-9A23-AB75AE492D5B",
+      "color": "#111113ff"
+    },
+    "Kerf/Dark/Button Primary Neutral Fill": {
+      "id": "0D072D3D-B60C-4F44-BC96-6821A319A53B",
+      "color": "#e5e5eaff"
+    },
+    "Kerf/Dark/Button Primary Neutral Text": {
+      "id": "34EE4E2B-60EC-4550-96D0-62C8F466CBD1",
+      "color": "#1c1c1eff"
+    },
+    "Kerf/Dark/Button Primary Success Fill": {
+      "id": "D4CC97A2-0F67-4F73-BC0D-2A54D939457B",
+      "color": "#34c759ff"
+    },
+    "Kerf/Dark/Button Primary Success Text": {
+      "id": "AACD8228-18B4-4385-893C-3B98D75840FF",
+      "color": "#1d1d1fff"
+    },
+    "Kerf/Dark/Button Secondary Danger Border": {
+      "id": "BAB981CF-F805-411D-AA77-D4353DA9EED2",
+      "color": "#fd6265ff"
+    },
+    "Kerf/Dark/Button Secondary Danger Fill": {
+      "id": "7764B1C7-DD74-4CBF-A216-E689223442CB",
+      "color": "#00000000"
+    },
+    "Kerf/Dark/Button Secondary Danger Text": {
+      "id": "A0902182-E2DF-46B6-99A1-10A3640C462E",
+      "color": "#ff8588ff"
+    },
+    "Kerf/Dark/Danger Fill Loud": {
+      "id": "A177A0F8-A74A-4EA9-9D55-576D1237988D",
+      "color": "#fd6265ff"
+    },
+    "Kerf/Dark/Danger On Quiet": {
+      "id": "5DC2BB77-BE96-4251-AEA1-3E5337ED9C06",
+      "color": "#ff8588ff"
+    },
+    "Kerf/Dark/Danger Text": {
+      "id": "135C9BBE-6078-4053-BE1C-EF2582EB42BE",
+      "color": "#ffa0a2ff"
+    },
+    "Kerf/Dark/Info On Quiet": {
+      "id": "6D8FAAC5-E33E-4C10-B17F-B57A55CC4419",
+      "color": "#8acbffff"
+    },
+    "Kerf/Dark/Ink Strong": {
+      "id": "DC40A782-FFB2-4120-9A46-6FC66DAE2AC9",
+      "color": "#ffffffff"
+    },
+    "Kerf/Dark/Neutral Border Loud": {
+      "id": "18DF7506-3689-44D5-9E89-4BBB34089B27",
+      "color": "#f9f9ff52"
+    },
+    "Kerf/Dark/Neutral Border Normal": {
+      "id": "E8EE0BD4-0DCA-4106-B47A-C754FD05C137",
+      "color": "#fdfdff32"
+    },
+    "Kerf/Dark/Neutral Fill Loud": {
+      "id": "F1A332A7-26AD-4BCF-8E12-827A0F00E808",
+      "color": "#e5e5eaff"
+    },
+    "Kerf/Dark/Neutral On Quiet": {
+      "id": "4729CEC5-511B-483B-BB03-DDC8BB43858E",
+      "color": "#c2c2c6ff"
+    },
+    "Kerf/Dark/On Brand · Content and Feedback": {
+      "id": "CF937853-D2C8-45E2-A2C0-4C3A1A62839A",
+      "color": "#111113ff"
+    },
+    "Kerf/Dark/On Brand · Form Controls": {
+      "id": "C4F8B66C-7A2B-4C2D-829C-55234BAB4661",
+      "color": "#1c1c1eff"
+    },
+    "Kerf/Dark/On Loud · Form Controls": {
+      "id": "EC43C64E-C29D-44B7-84E3-9B7D9D370DFE",
+      "color": "#111113ff"
+    },
+    "Kerf/Dark/On Loud · Toolbars and Navigation, Content and Feedback": {
+      "id": "8DA4553D-D444-418E-97E9-A97BF62E0F00",
+      "color": "#1c1c1eff"
+    },
+    "Kerf/Dark/Selected Icon": {
+      "id": "4166A05C-7AB4-4E6C-B2E5-7FCDC986B2DD",
+      "color": "#355c6dff"
+    },
+    "Kerf/Dark/Selected Surface": {
+      "id": "7EB4EB86-11BF-4A74-9B59-3982F12192CD",
+      "color": "#283942ff"
+    },
+    "Kerf/Dark/Success Fill Loud": {
+      "id": "352C1EE4-0CA7-489C-A338-2C56536EF751",
+      "color": "#34c759ff"
+    },
+    "Kerf/Dark/Success On Loud": {
+      "id": "3A49A6C0-8933-4401-ADE3-FCF199D9ABF9",
+      "color": "#1d1d1fff"
+    },
+    "Kerf/Dark/Success On Quiet": {
+      "id": "A90804F2-79F2-4EB2-AD9B-C56D7654134E",
+      "color": "#63e685ff"
+    },
+    "Kerf/Dark/Text": {
+      "id": "0A4AC5BE-61BB-4362-88CF-4A086CA8EC6E",
+      "color": "#f5f5f7ff"
+    },
+    "Kerf/Dark/Text Quiet": {
+      "id": "2C596645-4912-4242-896A-5E4F6B96B46E",
+      "color": "#aeaeb2ff"
+    },
+    "Kerf/Dark/Warning On Quiet": {
+      "id": "D2EE715E-C418-40D8-A568-14129352E8D8",
+      "color": "#ffd84aff"
+    },
+    "Kerf/Light/Brand Fill Loud": {
+      "id": "D75164C3-874D-4E30-8D2F-E99D21BF09D0",
+      "color": "#0075dbff"
+    },
+    "Kerf/Light/Brand Icon": {
+      "id": "ED60B94F-D336-4C1A-898F-DA44C89A3044",
+      "color": "#0c62f3ff"
+    },
+    "Kerf/Light/Brand Input": {
+      "id": "606A15F4-E208-4CA7-8354-6B3841EF8DBC",
+      "color": "#0a84ffff"
+    },
+    "Kerf/Light/Brand On Loud": {
+      "id": "0C1F814C-0E4C-4C97-BD32-F8C475750BBB",
+      "color": "#ffffffff"
+    },
+    "Kerf/Light/Brand On Quiet": {
+      "id": "A094262A-0B58-48A5-A4E8-D991EDF134A1",
+      "color": "#1a5dcfff"
+    },
+    "Kerf/Light/Brand Text": {
+      "id": "73774840-8189-424E-B097-518CB1DD6F3D",
+      "color": "#0c62f3ff"
+    },
+    "Kerf/Light/Button Badge Brand Badge Fill": {
+      "id": "9151A306-1E92-4EBA-9687-C8AA6DEA1E3A",
+      "color": "#c20b20ff"
+    },
+    "Kerf/Light/Button Badge Brand Badge Text": {
+      "id": "09614DC0-AE4B-4C92-A2B6-A8BC13310548",
+      "color": "#ffffffff"
+    },
+    "Kerf/Light/Button Badge Brand Fill": {
+      "id": "4FD5CDB0-4544-4EF8-B42C-8A751E778D61",
+      "color": "#0075dbff"
+    },
+    "Kerf/Light/Button Badge Brand Text": {
+      "id": "0CF61D8F-F467-4AD8-B47B-D8FFC263E04F",
+      "color": "#ffffffff"
+    },
+    "Kerf/Light/Button Badge Dot Badge Fill": {
+      "id": "D71700AA-E3FA-4F4C-B627-7FE9EFC03373",
+      "color": "#c20b20ff"
+    },
+    "Kerf/Light/Button Badge Dot Fill": {
+      "id": "448207DD-1DC1-427A-8893-A8A16F1A7D75",
+      "color": "#0075dbff"
+    },
+    "Kerf/Light/Button Badge Dot Text": {
+      "id": "70043A13-16C3-41B6-B6F7-12E735E7B234",
+      "color": "#ffffffff"
+    },
+    "Kerf/Light/Button Compact Neutral Fill": {
+      "id": "4862058A-B96B-40C5-B54D-544A09CB723B",
+      "color": "#48484aff"
+    },
+    "Kerf/Light/Button Compact Neutral Text": {
+      "id": "DDE57740-02CC-43FB-9021-6A21F79284FE",
+      "color": "#ffffffff"
+    },
+    "Kerf/Light/Button Disabled Neutral Fill": {
+      "id": "75653E3F-0AD0-4581-AB9F-CFC6CBC1C339",
+      "color": "#48484aff"
+    },
+    "Kerf/Light/Button Disabled Neutral Text": {
+      "id": "B412BE2F-F0AA-4D41-9C23-133EF63625AE",
+      "color": "#ffffffff"
+    },
+    "Kerf/Light/Button Disabled Success Border": {
+      "id": "31F76EE9-2F61-466B-BB0A-F1A5E5B6DE0D",
+      "color": "#beedcaff"
+    },
+    "Kerf/Light/Button Disabled Success Fill": {
+      "id": "F583A8CD-578C-440C-9AAC-EADB52B1B26F",
+      "color": "#e3f7e8ff"
+    },
+    "Kerf/Light/Button Disabled Success Text": {
+      "id": "2C4CE26E-7D88-4B8A-8C6A-9061D69EF602",
+      "color": "#00792cff"
+    },
+    "Kerf/Light/Button Focus Brand Fill": {
+      "id": "44D0FB4B-B826-49E8-BCAB-8B6BEB8BEA63",
+      "color": "#0075dbff"
+    },
+    "Kerf/Light/Button Focus Brand Focus Contrast": {
+      "id": "C731CFFB-7361-447F-BA53-31C930F99B1D",
+      "color": "#ffffffff"
+    },
+    "Kerf/Light/Button Focus Brand Focus Outline": {
+      "id": "651A19A0-7CC9-4999-88C1-66750BD16746",
+      "color": "#007affff"
+    },
+    "Kerf/Light/Button Focus Brand Text": {
+      "id": "5ADEBF24-5A81-464F-A5D3-A17CB3368EDE",
+      "color": "#ffffffff"
+    },
+    "Kerf/Light/Button Focus Standard Fill": {
+      "id": "187346CB-B1ED-4E1C-8548-A49AB18BDD05",
+      "color": "#0075dbff"
+    },
+    "Kerf/Light/Button Focus Standard Focus Contrast": {
+      "id": "B14719CC-0D4F-435C-AF5E-9766A482BB0A",
+      "color": "#ffffffff"
+    },
+    "Kerf/Light/Button Focus Standard Focus Outline": {
+      "id": "45B082C5-76DF-4D81-96C5-B760F2791C63",
+      "color": "#007affff"
+    },
+    "Kerf/Light/Button Focus Standard Text": {
+      "id": "CD83223A-C967-4ACD-9948-65933804AB55",
+      "color": "#ffffffff"
+    },
+    "Kerf/Light/Button Icon Only Fill": {
+      "id": "4FAC06D5-E98A-42CB-B98D-B78AF85CBC10",
+      "color": "#0075dbff"
+    },
+    "Kerf/Light/Button Icon Only Text": {
+      "id": "34078C24-6F0A-4967-8DEE-BA738F68775C",
+      "color": "#ffffffff"
+    },
+    "Kerf/Light/Button Loading Brand Fill": {
+      "id": "79E5F0D8-22C5-4FD2-9143-949E76ED8187",
+      "color": "#0075dbff"
+    },
+    "Kerf/Light/Button Loading Brand Text": {
+      "id": "70A29760-93EE-46EB-8BC5-9818533AC7C7",
+      "color": "#ffffffff"
+    },
+    "Kerf/Light/Button Pill Brand Fill": {
+      "id": "BDE334DF-B6D1-49CB-B94A-33204CC2048F",
+      "color": "#0075dbff"
+    },
+    "Kerf/Light/Button Pill Brand Text": {
+      "id": "1B0ACBD7-42D2-4F70-A85D-BFB2C9890168",
+      "color": "#ffffffff"
+    },
+    "Kerf/Light/Button Plain Neutral Fill": {
+      "id": "286DC2EE-6E73-43E9-99A4-940C29045DEF",
+      "color": "#00000000"
+    },
+    "Kerf/Light/Button Plain Neutral Text": {
+      "id": "78FD6003-67E0-4F48-9C6A-7F90AFEEBB97",
+      "color": "#626267ff"
+    },
+    "Kerf/Light/Button Pressed Neutral Fill": {
+      "id": "FB20EE7B-C744-43AA-AB87-860446D8BAA6",
+      "color": "#0075dbff"
+    },
+    "Kerf/Light/Button Pressed Neutral Pressed Shadow": {
+      "id": "B435EA11-358D-4E14-B8F2-2DAA1F597113",
+      "color": "#ffffff73"
+    },
+    "Kerf/Light/Button Pressed Neutral Text": {
+      "id": "D7D54C02-0214-40FB-89AA-4DD1B9106147",
+      "color": "#ffffffff"
+    },
+    "Kerf/Light/Button Pressed Secondary Brand Border": {
+      "id": "05D2F78E-37F2-4FAB-B8BB-2335AAE492E3",
+      "color": "#0075dbff"
+    },
+    "Kerf/Light/Button Pressed Secondary Brand Fill": {
+      "id": "8BC94CD4-B3A9-47A3-A1F0-1D6C907BF5AC",
+      "color": "#ebf4fcff"
+    },
+    "Kerf/Light/Button Pressed Secondary Brand Pressed Shadow": {
+      "id": "B128C942-44B1-46F5-A596-C0D92152D143",
+      "color": "#0075dbff"
+    },
+    "Kerf/Light/Button Pressed Secondary Brand Text": {
+      "id": "8F313320-CECD-4049-976C-B355F772E580",
+      "color": "#0025b9ff"
+    },
+    "Kerf/Light/Button Primary Danger Fill": {
+      "id": "5ED961DB-35F4-4458-8513-CCE31C53E117",
+      "color": "#eb0005ff"
+    },
+    "Kerf/Light/Button Primary Danger Text": {
+      "id": "8A26C621-C375-4DEC-81F7-D313305535ED",
+      "color": "#ffffffff"
+    },
+    "Kerf/Light/Button Primary Neutral Fill": {
+      "id": "59572FF2-44F3-40B3-B461-99D0F04DA1D2",
+      "color": "#48484aff"
+    },
+    "Kerf/Light/Button Primary Neutral Text": {
+      "id": "A8A23559-E20F-425D-8C0C-49524C7B4C0C",
+      "color": "#ffffffff"
+    },
+    "Kerf/Light/Button Primary Success Fill": {
+      "id": "B8E2AE95-CBCD-48B0-8C74-CA493D98410F",
+      "color": "#34c759ff"
+    },
+    "Kerf/Light/Button Primary Success Text": {
+      "id": "EDD4EB94-847B-4B53-9ECD-50EEE16686BC",
+      "color": "#1d1d1fff"
+    },
+    "Kerf/Light/Button Secondary Danger Border": {
+      "id": "F5269D88-AE90-4816-BCC3-E910BBD8D2A9",
+      "color": "#be060bff"
+    },
+    "Kerf/Light/Button Secondary Danger Fill": {
+      "id": "D3BF6541-BB9E-47DA-8568-E67F25201A68",
+      "color": "#00000000"
+    },
+    "Kerf/Light/Button Secondary Danger Text": {
+      "id": "EEF7EED9-C234-40C9-A27A-D6834220F345",
+      "color": "#c20b20ff"
+    },
+    "Kerf/Light/Danger Fill Loud": {
+      "id": "4138DBB9-5FDF-40B0-AC56-ADD077D221B9",
+      "color": "#be060bff"
+    },
+    "Kerf/Light/Danger On Quiet": {
+      "id": "6EE76A60-693A-4AD9-8363-688B1573EF7F",
+      "color": "#c20b20ff"
+    },
+    "Kerf/Light/Info On Quiet": {
+      "id": "5E1FCC52-9775-4E8A-8FB0-BE6BE9A3982E",
+      "color": "#1a5dcfff"
+    },
+    "Kerf/Light/Ink Strong": {
+      "id": "A957AB04-9448-49FB-9E54-6AEEA9A06EDF",
+      "color": "#000000ff"
+    },
+    "Kerf/Light/Neutral Border Loud": {
+      "id": "C4E0CD82-1A1D-4176-9551-9A6C37C54BF6",
+      "color": "#00000d51"
+    },
+    "Kerf/Light/Neutral Border Normal": {
+      "id": "76283ACE-293A-4FAD-B587-E066C702A073",
+      "color": "#00001c2e"
+    },
+    "Kerf/Light/Neutral Fill Loud": {
+      "id": "6FC0DD25-A64C-424D-8F6B-AC9187D81438",
+      "color": "#48484aff"
+    },
+    "Kerf/Light/Neutral On Quiet": {
+      "id": "ABFE1D8B-F33D-4E61-923A-80D5410262F7",
+      "color": "#626267ff"
+    },
+    "Kerf/Light/On Loud": {
+      "id": "C21332C5-BF72-46E4-8E0A-9322A746FBC6",
+      "color": "#ffffffff"
+    },
+    "Kerf/Light/Selected Icon": {
+      "id": "00B14EEE-31F1-4403-BF0F-E314FAC3D987",
+      "color": "#a6cff2ff"
+    },
+    "Kerf/Light/Selected Surface": {
+      "id": "6D35C662-FC67-4FDA-BDAA-4601BAB38A52",
+      "color": "#d6e9f9ff"
+    },
+    "Kerf/Light/Success Fill Loud": {
+      "id": "F2AFF85B-D30A-4C0B-A115-E23916F5EE23",
+      "color": "#34c759ff"
+    },
+    "Kerf/Light/Success On Quiet": {
+      "id": "E026448B-DBA2-4613-8FCF-B24DD29E24E5",
+      "color": "#007f2eff"
+    },
+    "Kerf/Light/Text": {
+      "id": "3A797EC6-4127-479A-AC33-2D86882598A3",
+      "color": "#1d1d1fff"
+    },
+    "Kerf/Light/Text Quiet": {
+      "id": "F7E7768F-1C12-44B9-93D1-78DA8E7AE82D",
+      "color": "#646469ff"
+    },
+    "Kerf/Light/Warning On Quiet · Content and Feedback": {
+      "id": "13B39797-1D58-48B3-9FF2-7241548B54A0",
+      "color": "#8f5e00ff"
+    },
+    "Kerf/Light/Warning On Quiet · Toolbars and Navigation": {
+      "id": "0E8E569A-010E-40B9-BD50-C5B46CC037D7",
+      "color": "#966200ff"
+    }
+  },
+  "symbols": {
+    "button/primary-brand-light": {
+      "family": "button",
+      "name": "Button / Primary Brand / Light",
+      "symbolId": "80E82AF9-BF60-4B08-9634-D5507EDE2757",
+      "layerId": "2E054880-303B-4D6B-AE53-F67A9B7545BC",
+      "text": [
+        {
+          "id": "F177073A-6A08-44FB-BB74-400AFFA1C353",
+          "value": "Save Changes"
+        }
+      ]
+    },
+    "button/secondary-light": {
+      "family": "button",
+      "name": "Button / Secondary / Light",
+      "symbolId": "A7014053-526D-4155-9572-3CDC1352A5FF",
+      "layerId": "02B59DB9-2A72-4DA1-8452-54DBB6E139F7",
+      "text": [
+        {
+          "id": "CF7D1C0C-C62B-43C1-80FA-03F975694BD0",
+          "value": "Export"
+        }
+      ]
+    },
+    "button/icon-brand-light": {
+      "family": "button",
+      "name": "Button / Primary with Icon / Light",
+      "symbolId": "A5F66729-88F1-4F6D-AB8D-E5437433663D",
+      "layerId": "F989BAB0-1909-49F9-AB07-C7BCDEE8CF35",
+      "text": [
+        {
+          "id": "E76D6F1A-66E0-4182-842C-57F2FA0AFCB8",
+          "value": "New Ticket"
+        }
+      ]
+    },
+    "button/primary-brand-dark": {
+      "family": "button",
+      "name": "Button / Primary Brand / Dark",
+      "symbolId": "073049EF-DFA6-4078-BFB6-AA35997202BB",
+      "layerId": "C033B6D7-E56A-49B5-A283-BB25A293CA3F",
+      "text": [
+        {
+          "id": "F1938F37-33EF-4F8F-B57B-4E49692E0954",
+          "value": "Save Changes"
+        }
+      ]
+    },
+    "button/secondary-dark": {
+      "family": "button",
+      "name": "Button / Secondary / Dark",
+      "symbolId": "A719738E-7002-4900-913D-D671DD7B99BA",
+      "layerId": "2BDF018D-C0A7-4738-8A8F-2728F3C7939D",
+      "text": [
+        {
+          "id": "84045700-C25F-4308-8D95-105AB1BFC4B2",
+          "value": "Export"
+        }
+      ]
+    },
+    "button/icon-brand-dark": {
+      "family": "button",
+      "name": "Button / Primary with Icon / Dark",
+      "symbolId": "1E43DFF4-774D-4D40-B277-85066273ED60",
+      "layerId": "86BCDE49-2F51-45C8-B092-B115597BE803",
+      "text": [
+        {
+          "id": "B284F609-868D-4B54-9586-E6034B5E457C",
+          "value": "New Ticket"
+        }
+      ]
+    },
+    "button/164A76F7-7581-449B-801B-34D2690BAB73": {
+      "family": "button",
+      "name": "Button / Primary Neutral / Light",
+      "symbolId": "164A76F7-7581-449B-801B-34D2690BAB73",
+      "layerId": "1C2095A2-95BA-4F12-8E28-EB323455CE00",
+      "text": [
+        {
+          "id": "5F83B7B8-A3D3-4024-9541-88EF9F8D08CE",
+          "value": "Continue"
+        }
+      ]
+    },
+    "button/440B3D7B-9E0E-4A1F-A3BD-817309878694": {
+      "family": "button",
+      "name": "Button / Primary Success / Light",
+      "symbolId": "440B3D7B-9E0E-4A1F-A3BD-817309878694",
+      "layerId": "15F07818-47C7-4915-AA44-BA87BF46EDF2",
+      "text": [
+        {
+          "id": "54A52C59-9309-472A-8676-B69C978281CE",
+          "value": "Confirm"
+        }
+      ]
+    },
+    "button/CF187C5F-FAFC-44EC-A9A8-F72AFAEB397D": {
+      "family": "button",
+      "name": "Button / Primary Danger / Light",
+      "symbolId": "CF187C5F-FAFC-44EC-A9A8-F72AFAEB397D",
+      "layerId": "34DE25E1-AFBD-4578-912A-F2B2A97E698E",
+      "text": [
+        {
+          "id": "DE3E03C1-1AC3-4992-9C91-2CD18D253988",
+          "value": "Delete"
+        }
+      ]
+    },
+    "button/2E1884EC-BD17-42C5-8B76-81FE1115BE38": {
+      "family": "button",
+      "name": "Button / Secondary Danger / Light",
+      "symbolId": "2E1884EC-BD17-42C5-8B76-81FE1115BE38",
+      "layerId": "F7B7A302-C401-4665-AC6A-1FED0CCF72B2",
+      "text": [
+        {
+          "id": "994258A1-28F9-4DA0-98D9-B93FC3D9BE69",
+          "value": "Remove"
+        }
+      ]
+    },
+    "button/7EA87C09-C629-4DC1-8365-052506FB20FB": {
+      "family": "button",
+      "name": "Button / Plain Neutral / Light",
+      "symbolId": "7EA87C09-C629-4DC1-8365-052506FB20FB",
+      "layerId": "07E65578-FEBA-4665-9788-CCD1481D03A6",
+      "text": [
+        {
+          "id": "171F07E7-CA79-471B-BFBF-C4BC6FC9D048",
+          "value": "Cancel"
+        }
+      ]
+    },
+    "button/5AA664C8-03FB-4F95-93E4-B3CADCDC1F09": {
+      "family": "button",
+      "name": "Button / Compact Neutral / Light",
+      "symbolId": "5AA664C8-03FB-4F95-93E4-B3CADCDC1F09",
+      "layerId": "525E5A91-1576-4200-AA43-9C37A0D62D2A",
+      "text": [
+        {
+          "id": "04B05495-8855-461B-9ADF-130CF589BE73",
+          "value": "Filter"
+        }
+      ]
+    },
+    "button/758579DC-E5DE-415B-A288-914F62393F6B": {
+      "family": "button",
+      "name": "Button / Pill Brand / Light",
+      "symbolId": "758579DC-E5DE-415B-A288-914F62393F6B",
+      "layerId": "AE5DF29F-C5EB-441A-93C4-C2937D2485B6",
+      "text": [
+        {
+          "id": "BF9D8FB1-F961-4F4F-AB90-6EA31210969C",
+          "value": "Create"
+        }
+      ]
+    },
+    "button/95D89E2D-E3F1-47E8-9EC3-ABB56D4F4E66": {
+      "family": "button",
+      "name": "Button / Icon Only / Light",
+      "symbolId": "95D89E2D-E3F1-47E8-9EC3-ABB56D4F4E66",
+      "layerId": "CF5275B3-D03C-4B7C-9C43-A85EEAA06A95",
+      "text": []
+    },
+    "button/1A9D6E60-7C59-41A8-9FB2-AFD1B9BB815E": {
+      "family": "button",
+      "name": "Button / Disabled Neutral / Light",
+      "symbolId": "1A9D6E60-7C59-41A8-9FB2-AFD1B9BB815E",
+      "layerId": "ED939306-CE70-449F-BB2C-4C914CDEB948",
+      "text": [
+        {
+          "id": "00599A84-A2BF-4017-AB44-C7F91A0426B7",
+          "value": "Continue"
+        }
+      ]
+    },
+    "button/1AFA44FC-5D53-4E31-8F58-B52F3D28FA1A": {
+      "family": "button",
+      "name": "Button / Disabled Success / Light",
+      "symbolId": "1AFA44FC-5D53-4E31-8F58-B52F3D28FA1A",
+      "layerId": "27A82E55-A7E4-49CD-B139-0E2B76852241",
+      "text": [
+        {
+          "id": "9479EFCB-3CB8-47B8-8EF1-145B2121698D",
+          "value": "Confirm"
+        }
+      ]
+    },
+    "button/C090CC83-74D3-417C-97D8-20F28F2DEF28": {
+      "family": "button",
+      "name": "Button / Pressed Neutral / Light",
+      "symbolId": "C090CC83-74D3-417C-97D8-20F28F2DEF28",
+      "layerId": "00B8E15C-FB3C-49CC-B47E-454061DCB63E",
+      "text": [
+        {
+          "id": "D70612C3-5C20-468D-ABFC-88C5CE559BE6",
+          "value": "Selected"
+        }
+      ]
+    },
+    "button/1A90FE0D-C782-4226-9A9B-084BFFA8D5C1": {
+      "family": "button",
+      "name": "Button / Pressed Secondary Brand / Light",
+      "symbolId": "1A90FE0D-C782-4226-9A9B-084BFFA8D5C1",
+      "layerId": "10233613-F7DA-40F5-A52D-1AB3D1EF7A35",
+      "text": [
+        {
+          "id": "DF51690B-858B-4C3B-A95F-44E3EAF01505",
+          "value": "Selected"
+        }
+      ]
+    },
+    "button/93EF26A9-BA2E-4AF3-9694-48D82CCAE627": {
+      "family": "button",
+      "name": "Button / Loading Brand / Light",
+      "symbolId": "93EF26A9-BA2E-4AF3-9694-48D82CCAE627",
+      "layerId": "11848BB5-6F07-4051-ACE7-05ACA0B59AFA",
+      "text": [
+        {
+          "id": "73034E43-17F9-40F9-9BC2-5871DEF4FF19",
+          "value": "Saving"
+        }
+      ]
+    },
+    "button/FD69FB50-D899-4D96-A1B2-7101C7412106": {
+      "family": "button",
+      "name": "Button / Badge Brand / Light",
+      "symbolId": "FD69FB50-D899-4D96-A1B2-7101C7412106",
+      "layerId": "2C26848F-85FD-4E78-834A-DD984EFB8588",
+      "text": [
+        {
+          "id": "6E3B29CA-0EFB-410E-884F-D7ADA95FA512",
+          "value": "Filters"
+        },
+        {
+          "id": "FE1F8AFA-A66A-4A46-B936-90E4AC280028",
+          "value": "3"
+        }
+      ]
+    },
+    "button/7267E4DF-984D-4628-8E0E-1C35289176D0": {
+      "family": "button",
+      "name": "Button / Badge Dot / Light",
+      "symbolId": "7267E4DF-984D-4628-8E0E-1C35289176D0",
+      "layerId": "D0B79829-C084-42DD-8A2A-DE75282E0390",
+      "text": [
+        {
+          "id": "8A482684-65AA-444B-9A16-4CE1CADF5080",
+          "value": "Updates"
+        }
+      ]
+    },
+    "button/9A4A25BE-C975-4EA5-903D-DC6603BE777B": {
+      "family": "button",
+      "name": "Button / Focus Brand / Light",
+      "symbolId": "9A4A25BE-C975-4EA5-903D-DC6603BE777B",
+      "layerId": "70EB33AB-AE26-4B2E-84E2-793754773D8E",
+      "text": [
+        {
+          "id": "28425513-AECF-4ED2-80AD-93931F350D5E",
+          "value": "Save"
+        }
+      ]
+    },
+    "button/1A7911E4-18E2-4804-A7A9-14AA6C82648B": {
+      "family": "button",
+      "name": "Button / Primary Neutral / Dark",
+      "symbolId": "1A7911E4-18E2-4804-A7A9-14AA6C82648B",
+      "layerId": "CE3AC45C-8AB0-4059-811B-B3EB521E2999",
+      "text": [
+        {
+          "id": "A139A512-CAE4-4560-B2FE-0E2B3FD766AA",
+          "value": "Continue"
+        }
+      ]
+    },
+    "button/53DD7796-FBBA-417F-A6BC-D9AFD6E369A7": {
+      "family": "button",
+      "name": "Button / Primary Success / Dark",
+      "symbolId": "53DD7796-FBBA-417F-A6BC-D9AFD6E369A7",
+      "layerId": "3A689FB1-306B-4524-9012-D7589C14EC7A",
+      "text": [
+        {
+          "id": "FA41664A-8BA3-4460-B0D5-4E8F80A3BDC3",
+          "value": "Confirm"
+        }
+      ]
+    },
+    "button/865B5E93-56AD-4B0C-AE56-52BBDD96CCEA": {
+      "family": "button",
+      "name": "Button / Primary Danger / Dark",
+      "symbolId": "865B5E93-56AD-4B0C-AE56-52BBDD96CCEA",
+      "layerId": "BD3085FD-835F-4331-AC69-81D516F52E7C",
+      "text": [
+        {
+          "id": "65A1F56C-35F5-4CAC-A182-ED9DD85DE721",
+          "value": "Delete"
+        }
+      ]
+    },
+    "button/FBC4B718-98C0-4D75-843C-79C1B6EE835E": {
+      "family": "button",
+      "name": "Button / Secondary Danger / Dark",
+      "symbolId": "FBC4B718-98C0-4D75-843C-79C1B6EE835E",
+      "layerId": "F18E7033-88E9-4528-90CE-7465B96FF75D",
+      "text": [
+        {
+          "id": "2910D1D4-8603-47AD-BF0B-DFE9710218FD",
+          "value": "Remove"
+        }
+      ]
+    },
+    "button/DF576745-BE97-4BF9-BE82-BF97860FDEE1": {
+      "family": "button",
+      "name": "Button / Plain Neutral / Dark",
+      "symbolId": "DF576745-BE97-4BF9-BE82-BF97860FDEE1",
+      "layerId": "B78940DC-B2C0-4D63-8ABB-7105A991ECE6",
+      "text": [
+        {
+          "id": "23C22AE9-D359-4BC3-A6B5-D1CA9BC4F92B",
+          "value": "Cancel"
+        }
+      ]
+    },
+    "button/0759487E-00FF-4A2C-BC2A-E672A8E2DA25": {
+      "family": "button",
+      "name": "Button / Compact Neutral / Dark",
+      "symbolId": "0759487E-00FF-4A2C-BC2A-E672A8E2DA25",
+      "layerId": "D63F2763-DEEB-4CC2-B867-9947F28613DB",
+      "text": [
+        {
+          "id": "8763262D-809E-4096-958E-D9871E2C06C0",
+          "value": "Filter"
+        }
+      ]
+    },
+    "button/A9FA3F23-1711-4F7B-B906-4CB5A009F5FD": {
+      "family": "button",
+      "name": "Button / Pill Brand / Dark",
+      "symbolId": "A9FA3F23-1711-4F7B-B906-4CB5A009F5FD",
+      "layerId": "BA1F32A1-E01F-453E-BD6C-907C99C22B2C",
+      "text": [
+        {
+          "id": "C097C606-88F7-4BEF-94DC-D61648B3BDC4",
+          "value": "Create"
+        }
+      ]
+    },
+    "button/3DE21C0D-1189-49E4-91A4-0E03BEF123DE": {
+      "family": "button",
+      "name": "Button / Icon Only / Dark",
+      "symbolId": "3DE21C0D-1189-49E4-91A4-0E03BEF123DE",
+      "layerId": "C39E129F-EE15-415C-BD9D-505AA7933D2C",
+      "text": []
+    },
+    "button/19975BFE-ED19-4305-AC94-1C946F2EBEB9": {
+      "family": "button",
+      "name": "Button / Disabled Neutral / Dark",
+      "symbolId": "19975BFE-ED19-4305-AC94-1C946F2EBEB9",
+      "layerId": "9D3ACF8A-39EE-483F-9733-A71E29F4E720",
+      "text": [
+        {
+          "id": "3F6F67B1-6C9F-4C8E-A3DA-C5EA58144E3E",
+          "value": "Continue"
+        }
+      ]
+    },
+    "button/0C81CA0A-881C-41FB-93B6-110E1E45B38C": {
+      "family": "button",
+      "name": "Button / Disabled Success / Dark",
+      "symbolId": "0C81CA0A-881C-41FB-93B6-110E1E45B38C",
+      "layerId": "C0F532C7-0E68-4AAE-BC7D-2F54EE233769",
+      "text": [
+        {
+          "id": "18843709-54D5-4447-AFE2-C776528F9BC3",
+          "value": "Confirm"
+        }
+      ]
+    },
+    "button/892D2725-A274-4C4C-8C5D-AB6E06058EBE": {
+      "family": "button",
+      "name": "Button / Pressed Neutral / Dark",
+      "symbolId": "892D2725-A274-4C4C-8C5D-AB6E06058EBE",
+      "layerId": "F355F494-B502-4A0F-AC34-89F9D83A4E62",
+      "text": [
+        {
+          "id": "4A4B1E28-DE9A-45D9-B6AE-DF0EE78F5EA6",
+          "value": "Selected"
+        }
+      ]
+    },
+    "button/0C8ED924-984B-4BE0-B571-CF25D5509FE8": {
+      "family": "button",
+      "name": "Button / Pressed Secondary Brand / Dark",
+      "symbolId": "0C8ED924-984B-4BE0-B571-CF25D5509FE8",
+      "layerId": "E87A7EB1-7E54-4CF7-9166-FDF8807772E4",
+      "text": [
+        {
+          "id": "1A33616A-AB8D-42E6-B8C1-76071BB648C1",
+          "value": "Selected"
+        }
+      ]
+    },
+    "button/9E17F8AE-A60F-43C8-9351-5A19D52B7BB4": {
+      "family": "button",
+      "name": "Button / Loading Brand / Dark",
+      "symbolId": "9E17F8AE-A60F-43C8-9351-5A19D52B7BB4",
+      "layerId": "6AB32C16-7A16-4570-B70B-200CB17ACEFD",
+      "text": [
+        {
+          "id": "7EF38B45-68DC-45EF-BE02-D2B055B1394B",
+          "value": "Saving"
+        }
+      ]
+    },
+    "button/417443AB-4ABA-42DC-8A83-BB29699DB377": {
+      "family": "button",
+      "name": "Button / Badge Brand / Dark",
+      "symbolId": "417443AB-4ABA-42DC-8A83-BB29699DB377",
+      "layerId": "5887E135-EA03-4E91-AFBD-766554A8737A",
+      "text": [
+        {
+          "id": "660CA9C0-C23F-491E-BCEB-88A5735B993E",
+          "value": "Filters"
+        },
+        {
+          "id": "8BCF9EE5-2907-4628-9E7C-AFBD6375E623",
+          "value": "3"
+        }
+      ]
+    },
+    "button/236F2838-1126-4AC2-8345-F97DEA690FC1": {
+      "family": "button",
+      "name": "Button / Badge Dot / Dark",
+      "symbolId": "236F2838-1126-4AC2-8345-F97DEA690FC1",
+      "layerId": "C924F38C-13EE-48B1-A1D1-C7071B5AB382",
+      "text": [
+        {
+          "id": "FB4B13AC-8AC8-468E-83F0-E8E96CD2C23E",
+          "value": "Updates"
+        }
+      ]
+    },
+    "button/2116011A-F4BD-4050-A074-DD9D2ECD8AEF": {
+      "family": "button",
+      "name": "Button / Focus Brand / Dark",
+      "symbolId": "2116011A-F4BD-4050-A074-DD9D2ECD8AEF",
+      "layerId": "D2E3861E-207B-45FF-AB29-1FBB05DCB20C",
+      "text": [
+        {
+          "id": "2A0AF53B-0C5C-47B9-A597-3AA359556B08",
+          "value": "Save"
+        }
+      ]
+    },
+    "button/29A2A021-B8F4-4F6C-A51C-39A9AC9E1CB1": {
+      "family": "button",
+      "name": "Button / Focus Standard / Light",
+      "symbolId": "29A2A021-B8F4-4F6C-A51C-39A9AC9E1CB1",
+      "layerId": "2CE03D0B-66C2-40C7-9049-E60C405A8095",
+      "text": [
+        {
+          "id": "A0E5D012-6ABA-42EE-8620-781962AD6781",
+          "value": "Save"
+        }
+      ]
+    },
+    "button/AB2A4285-2C68-499E-8C50-4E8E59C94A36": {
+      "family": "button",
+      "name": "Button / Focus Standard / Dark",
+      "symbolId": "AB2A4285-2C68-499E-8C50-4E8E59C94A36",
+      "layerId": "B246EFC6-9EBF-4F0F-83CC-EE89696225C0",
+      "text": [
+        {
+          "id": "6E3D146F-5CBC-4DF0-BD17-A78C89C2A8CC",
+          "value": "Save"
+        }
+      ]
+    },
+    "forms/split-button-tones-deploy-light": {
+      "family": "forms",
+      "name": "Split Button / Tones / Deploy / Light",
+      "symbolId": "5BB4DD0B-7E14-4EE6-8B95-24A37430D1EF",
+      "layerId": "EFEFB657-9423-4269-A69F-43A2C83649A4",
+      "text": [
+        {
+          "id": "1C6988EA-7C3F-4C83-8054-055BA47784A7",
+          "value": "Deploy"
+        }
+      ]
+    },
+    "forms/split-button-tones-run-checks-light": {
+      "family": "forms",
+      "name": "Split Button / Tones / Run Checks / Light",
+      "symbolId": "B8C4B815-8A39-4245-90F2-D4B904E3D906",
+      "layerId": "76DC1268-E385-4310-B8D3-82D53D477EBA",
+      "text": [
+        {
+          "id": "3A18E561-6CF0-4E89-9048-993E3077A58E",
+          "value": "Run Checks"
+        }
+      ]
+    },
+    "forms/split-button-tones-delete-light": {
+      "family": "forms",
+      "name": "Split Button / Tones / Delete / Light",
+      "symbolId": "45C944A2-9350-405D-BF5F-EB564DBD7152",
+      "layerId": "66E033D8-FFE5-498C-8F6C-506802E11AAF",
+      "text": [
+        {
+          "id": "9740530C-F847-475D-B681-465AA5AF2783",
+          "value": "Delete"
+        }
+      ]
+    },
+    "forms/split-button-tones-deploy-dark": {
+      "family": "forms",
+      "name": "Split Button / Tones / Deploy / Dark",
+      "symbolId": "5748F133-A2EC-475C-A1F1-A7977AF90342",
+      "layerId": "CDDDE917-B2BD-44F9-918E-09D6FA3C48E0",
+      "text": [
+        {
+          "id": "C1C98733-D4D2-4635-9E92-3FC1B2D10CB7",
+          "value": "Deploy"
+        }
+      ]
+    },
+    "forms/split-button-tones-run-checks-dark": {
+      "family": "forms",
+      "name": "Split Button / Tones / Run Checks / Dark",
+      "symbolId": "13043C30-6058-45A2-BE61-F15877DEBF6A",
+      "layerId": "380A2A76-8BFD-469B-AE30-8E5D9621E757",
+      "text": [
+        {
+          "id": "6516B4BC-029F-4B42-B25C-FA13D6FEF282",
+          "value": "Run Checks"
+        }
+      ]
+    },
+    "forms/split-button-tones-delete-dark": {
+      "family": "forms",
+      "name": "Split Button / Tones / Delete / Dark",
+      "symbolId": "58D32892-1591-4764-85BD-A9B0FFF9B570",
+      "layerId": "FBE1E066-7516-47E0-80D9-F50D014A300F",
+      "text": [
+        {
+          "id": "94BE46C2-93D3-4683-8777-6A9C57083539",
+          "value": "Delete"
+        }
+      ]
+    },
+    "forms/split-button-pill-export-light": {
+      "family": "forms",
+      "name": "Split Button / Pill / Export / Light",
+      "symbolId": "70954911-1D92-4DA6-BE3D-58E08F88945C",
+      "layerId": "977DA371-1F2E-4CF4-96BA-49C2C3468C6A",
+      "text": [
+        {
+          "id": "F322429F-35E1-4529-ADCC-C92A2CEFBD63",
+          "value": "Export"
+        }
+      ]
+    },
+    "forms/split-button-pill-run-checks-light": {
+      "family": "forms",
+      "name": "Split Button / Pill / Run Checks / Light",
+      "symbolId": "1A6923AF-F23A-441C-A162-9FF1BC4ABDCA",
+      "layerId": "86562ECF-A4A8-40FF-A588-6F24AFA5D948",
+      "text": [
+        {
+          "id": "17284FB7-D58D-4505-A43C-A47BF0360DA3",
+          "value": "Run Checks"
+        }
+      ]
+    },
+    "forms/split-button-pill-delete-light": {
+      "family": "forms",
+      "name": "Split Button / Pill / Delete / Light",
+      "symbolId": "DE189961-A233-4907-BEA0-7317A4E7137A",
+      "layerId": "AC01566C-3F70-491D-B0C6-6D5B5E055C47",
+      "text": [
+        {
+          "id": "5E5A1D9D-B1DC-4463-B01D-1F4BA0814867",
+          "value": "Delete"
+        }
+      ]
+    },
+    "forms/split-button-pill-export-dark": {
+      "family": "forms",
+      "name": "Split Button / Pill / Export / Dark",
+      "symbolId": "74465AD9-8563-454B-8786-A2DF51ADF8F5",
+      "layerId": "2B69B278-3F91-40AB-AB31-FF5937CD4827",
+      "text": [
+        {
+          "id": "11FB5613-E6C6-4D5E-8AA0-B4F05BCA9E4E",
+          "value": "Export"
+        }
+      ]
+    },
+    "forms/split-button-pill-run-checks-dark": {
+      "family": "forms",
+      "name": "Split Button / Pill / Run Checks / Dark",
+      "symbolId": "17FCFC0F-5794-4757-8CFF-3CA5FEC287FE",
+      "layerId": "C4B26B8A-0190-4506-91A9-98565F05B927",
+      "text": [
+        {
+          "id": "2A03C79B-1F77-4A90-9374-177EC8584169",
+          "value": "Run Checks"
+        }
+      ]
+    },
+    "forms/split-button-pill-delete-dark": {
+      "family": "forms",
+      "name": "Split Button / Pill / Delete / Dark",
+      "symbolId": "EF940FBF-2017-4E53-BCF5-F3D267927ADA",
+      "layerId": "13C9C840-2C29-49FF-BC86-2426E3EBCC63",
+      "text": [
+        {
+          "id": "FBB04397-3BF1-47B3-B4A8-E22CB4DF413A",
+          "value": "Delete"
+        }
+      ]
+    },
+    "forms/split-button-states-deploying-light": {
+      "family": "forms",
+      "name": "Split Button / States / Deploying / Light",
+      "symbolId": "0BE2E2DF-D30B-4724-8674-16642E91E23D",
+      "layerId": "EEA175EA-88B0-46D4-BF2A-89BE8919FB91",
+      "text": [
+        {
+          "id": "D82ECA40-483E-4FA3-B256-74CBCCCA094C",
+          "value": "Deploying"
+        }
+      ]
+    },
+    "forms/split-button-states-publish-disabled-light": {
+      "family": "forms",
+      "name": "Split Button / States / Publish Disabled / Light",
+      "symbolId": "D86B9D79-7CF9-4AA4-8A7B-837DF49CD6C2",
+      "layerId": "C8124F57-95AF-456B-9677-C021DDB33017",
+      "text": [
+        {
+          "id": "3E997761-A7A7-48AB-9CB4-79B4DE9C4747",
+          "value": "Publish"
+        }
+      ]
+    },
+    "forms/split-button-states-deploying-dark": {
+      "family": "forms",
+      "name": "Split Button / States / Deploying / Dark",
+      "symbolId": "260105F1-F6AE-4E0B-ABAC-7C3F6D49F4CE",
+      "layerId": "CE95A303-DFA5-43FB-9078-94ACEDD05236",
+      "text": [
+        {
+          "id": "DED5DA1A-78A1-42BC-A6EC-225F920C9BE2",
+          "value": "Deploying"
+        }
+      ]
+    },
+    "forms/split-button-states-publish-disabled-dark": {
+      "family": "forms",
+      "name": "Split Button / States / Publish Disabled / Dark",
+      "symbolId": "CE279F64-C7EF-4B01-9CA3-1AD669711B48",
+      "layerId": "6218AB9B-2150-4948-B1A1-0C4E0DF1D1A8",
+      "text": [
+        {
+          "id": "319C06F7-D764-48A1-8390-98D72FC48EDF",
+          "value": "Publish"
+        }
+      ]
+    },
+    "forms/split-button-full-width-drive-light": {
+      "family": "forms",
+      "name": "Split Button / Full Width / Drive / Light",
+      "symbolId": "90969DD6-DF54-42F7-B5AA-621630C854E3",
+      "layerId": "2489E327-7403-4A8F-A17A-52A703A44C1B",
+      "text": [
+        {
+          "id": "3B798E0B-AF22-4D63-BEC6-B4208257E095",
+          "value": "Drive with Codex"
+        }
+      ]
+    },
+    "forms/split-button-full-width-drive-dark": {
+      "family": "forms",
+      "name": "Split Button / Full Width / Drive / Dark",
+      "symbolId": "996E745B-0955-4ED5-8C5F-F14F96CE5F0A",
+      "layerId": "EA7093F2-CE62-4D75-868B-2B35FC72A1D2",
+      "text": [
+        {
+          "id": "BA17EEA9-B0EF-4D88-B71C-5F936B5D0F16",
+          "value": "Drive with Codex"
+        }
+      ]
+    },
+    "forms/text-field-labeled-project-name-light": {
+      "family": "forms",
+      "name": "Text Field / Labeled / Project Name / Light",
+      "symbolId": "C973205A-6E42-491D-8020-42C8FD4FFBBC",
+      "layerId": "10BF952A-656D-4D50-AC84-500D9875658C",
+      "text": [
+        {
+          "id": "3318639C-34A8-4E27-8DAA-351F3706798F",
+          "value": "PROJECT NAME"
+        },
+        {
+          "id": "E7B3E112-726A-4994-A806-70A65D59768B",
+          "value": "Northstar Migration"
+        },
+        {
+          "id": "2A07B8AC-9799-4551-9229-B76DB3C6598B",
+          "value": "Visible to collaborators."
+        }
+      ]
+    },
+    "forms/text-field-labeled-project-name-dark": {
+      "family": "forms",
+      "name": "Text Field / Labeled / Project Name / Dark",
+      "symbolId": "A1265A1E-CF26-42B6-8750-43A236DDCBA3",
+      "layerId": "108E2C7F-F13B-4DA7-9E4D-EC27D9E53FAB",
+      "text": [
+        {
+          "id": "7AEF7352-8711-4ABB-98BB-153DC784527D",
+          "value": "PROJECT NAME"
+        },
+        {
+          "id": "1A53FA21-385E-454E-96C4-9D717C1006CD",
+          "value": "Northstar Migration"
+        },
+        {
+          "id": "5F546032-FEE8-461D-9AD7-D4984082B90F",
+          "value": "Visible to collaborators."
+        }
+      ]
+    },
+    "forms/text-field-search-search-tickets-light": {
+      "family": "forms",
+      "name": "Text Field / Search / Search Tickets / Light",
+      "symbolId": "0A133692-5E3D-4AD7-9EA8-60002683187F",
+      "layerId": "5747D3B5-4CCE-438B-99A3-58C3C11B72DB",
+      "text": [
+        {
+          "id": "00583877-54F2-4A8D-8E06-093203CB4A1E",
+          "value": "Search tickets"
+        }
+      ]
+    },
+    "forms/text-field-search-search-tickets-dark": {
+      "family": "forms",
+      "name": "Text Field / Search / Search Tickets / Dark",
+      "symbolId": "819A32B3-B835-4BD1-BCF2-EA258B3C8EFE",
+      "layerId": "F4F04F50-2E0A-4C87-A420-E104346291FD",
+      "text": [
+        {
+          "id": "45E66CCE-6E1E-4FD7-907F-3973481366A3",
+          "value": "Search tickets"
+        }
+      ]
+    },
+    "forms/text-field-error-email-error-light": {
+      "family": "forms",
+      "name": "Text Field / Error / Email Error / Light",
+      "symbolId": "8323C41B-9324-459D-91EA-831BE15AE31C",
+      "layerId": "33C013E7-FAE9-4FDB-9896-6240BAD41080",
+      "text": [
+        {
+          "id": "2878766B-7D9C-47A4-9EA2-9A50CA0D810F",
+          "value": "EMAIL"
+        },
+        {
+          "id": "7760C29E-43D4-4622-9DAD-8B68BDC69402",
+          "value": "*"
+        },
+        {
+          "id": "199166CA-839D-4A3F-B111-D221FF0844BE",
+          "value": "robin@"
+        },
+        {
+          "id": "D3BA7188-8A53-4E38-AE13-E320574B47C9",
+          "value": "Enter a complete email address."
+        }
+      ]
+    },
+    "forms/text-field-error-email-error-dark": {
+      "family": "forms",
+      "name": "Text Field / Error / Email Error / Dark",
+      "symbolId": "CE23BB24-4801-4220-B707-D3A74729479C",
+      "layerId": "C42B0146-7975-464E-B1D6-C690278E8E52",
+      "text": [
+        {
+          "id": "51F41EF4-1261-4B92-AFB6-B8359E12EAC8",
+          "value": "EMAIL"
+        },
+        {
+          "id": "DBF3C922-E259-4F2F-8A29-7D0AC18431CB",
+          "value": "*"
+        },
+        {
+          "id": "8CEAAFB2-6198-455D-880D-BF3AC81FBF87",
+          "value": "robin@"
+        },
+        {
+          "id": "1E0D1767-08C9-4377-B992-8F57CE942CE5",
+          "value": "Enter a complete email address."
+        }
+      ]
+    },
+    "forms/text-field-multiline-release-note-light": {
+      "family": "forms",
+      "name": "Text Field / Multiline / Release Note / Light",
+      "symbolId": "683D7B21-DF1C-4014-8E35-5D4ED0142F15",
+      "layerId": "06DC758A-265B-4F5B-BB41-B7AF74826C1A",
+      "text": [
+        {
+          "id": "3A5F6219-A49E-4C13-BD78-BAFE563B71BB",
+          "value": "RELEASE NOTE"
+        },
+        {
+          "id": "53931FC4-2447-459F-81DA-32513636E73B",
+          "value": "Summarize what changed"
+        },
+        {
+          "id": "63B4FD28-FC7D-4D35-BA94-FAA770D41727",
+          "value": "0 / 200"
+        }
+      ]
+    },
+    "forms/text-field-multiline-release-note-dark": {
+      "family": "forms",
+      "name": "Text Field / Multiline / Release Note / Dark",
+      "symbolId": "6A89BB6F-2C34-4CD2-8638-D9FD01CEF324",
+      "layerId": "A50AE609-F3F9-4559-8616-CE7F6043BA98",
+      "text": [
+        {
+          "id": "514B18E5-36AE-4DDA-B49E-0CDBCC0C016B",
+          "value": "RELEASE NOTE"
+        },
+        {
+          "id": "E7246E2F-03B2-4BC3-8BEB-D4BE4C2C99DD",
+          "value": "Summarize what changed"
+        },
+        {
+          "id": "88F7980D-02E3-4A61-8E8A-7ADBAB9C9A16",
+          "value": "0 / 200"
+        }
+      ]
+    },
+    "forms/text-field-compact-tag-light": {
+      "family": "forms",
+      "name": "Text Field / Compact / Tag / Light",
+      "symbolId": "E9C3F139-E40E-4DBD-9EC0-A1ED3AA1126D",
+      "layerId": "D553D1E5-665F-4242-AFD3-ACE637001CBE",
+      "text": [
+        {
+          "id": "7904783E-C435-47A1-8E9D-F7F5D382D85B",
+          "value": "TAG"
+        },
+        {
+          "id": "E8574855-8C92-4388-BAF5-0B3B98BD1EF7",
+          "value": "design"
+        }
+      ]
+    },
+    "forms/text-field-compact-tag-dark": {
+      "family": "forms",
+      "name": "Text Field / Compact / Tag / Dark",
+      "symbolId": "7AAB89BE-F65C-4BFA-AD7A-AAEEF1EF8A7D",
+      "layerId": "97F70098-C4CB-48E4-84CE-0D5ACC6D015B",
+      "text": [
+        {
+          "id": "BC9A7CB9-B3E4-42A3-AD88-FAD7673007AB",
+          "value": "TAG"
+        },
+        {
+          "id": "5C91D925-480B-4574-AD10-F388F5773B7D",
+          "value": "design"
+        }
+      ]
+    },
+    "forms/text-field-number-customs-duty-light": {
+      "family": "forms",
+      "name": "Text Field / Number / Customs Duty / Light",
+      "symbolId": "207E3120-29D1-4E75-8982-574257452BFD",
+      "layerId": "1EFF9E3D-40E8-479E-93A7-563D69EDCB78",
+      "text": [
+        {
+          "id": "B24BB24B-15CD-4E54-8EAD-0BDC4BC77A6F",
+          "value": "CUSTOMS DUTY"
+        },
+        {
+          "id": "A4665DAF-0953-4E4A-85DD-6034F7696092",
+          "value": "12.50"
+        }
+      ]
+    },
+    "forms/text-field-number-customs-duty-dark": {
+      "family": "forms",
+      "name": "Text Field / Number / Customs Duty / Dark",
+      "symbolId": "C410DA0D-8960-470F-8EB5-781B7F7E6487",
+      "layerId": "3E4CD400-A3A6-41D6-BB82-8EB92C8DF929",
+      "text": [
+        {
+          "id": "021A4D0D-DFC7-4AFE-BB55-7B39D089FF83",
+          "value": "CUSTOMS DUTY"
+        },
+        {
+          "id": "3155A3BB-F805-4A6A-BC1A-7D6588990192",
+          "value": "12.50"
+        }
+      ]
+    },
+    "forms/checkbox-states-include-release-light": {
+      "family": "forms",
+      "name": "Checkbox / States / Include Release / Light",
+      "symbolId": "F3236071-BF1D-4437-9F93-D222CFC26E19",
+      "layerId": "BE12D2E7-19BC-48FA-ADBA-B7AA204EDCDB",
+      "text": [
+        {
+          "id": "E909A083-A5D5-424F-8508-C7A0AF1154BC",
+          "value": "Include in release"
+        }
+      ]
+    },
+    "forms/checkbox-states-email-summaries-light": {
+      "family": "forms",
+      "name": "Checkbox / States / Email Summaries / Light",
+      "symbolId": "530F99C5-0190-4C5E-A80B-4D348D43F17C",
+      "layerId": "1B063C89-6379-4C1F-86DA-AAA49DAAB6CA",
+      "text": [
+        {
+          "id": "92024F8E-17C5-460E-981D-74B51EF58AF6",
+          "value": "Email summaries"
+        },
+        {
+          "id": "46A4D5E3-6D10-42DA-83A1-676BA984FF2F",
+          "value": "Sent every Monday morning."
+        }
+      ]
+    },
+    "forms/checkbox-states-locked-setting-light": {
+      "family": "forms",
+      "name": "Checkbox / States / Locked Setting / Light",
+      "symbolId": "248A443B-DA94-4E2C-B32A-CC241CA0A7CA",
+      "layerId": "0F2616E2-4998-429E-AE4C-3DDE2DD08BAD",
+      "text": [
+        {
+          "id": "EBE393FC-94F3-44AC-9530-AD88FE8ADC6B",
+          "value": "Locked setting"
+        }
+      ]
+    },
+    "forms/checkbox-states-include-release-dark": {
+      "family": "forms",
+      "name": "Checkbox / States / Include Release / Dark",
+      "symbolId": "49E1EF67-0490-43D1-84F2-6C0B528E8C09",
+      "layerId": "F362977C-B773-4447-9428-33823DBD498A",
+      "text": [
+        {
+          "id": "CC940B83-5E3D-46D6-975B-4E291C212F54",
+          "value": "Include in release"
+        }
+      ]
+    },
+    "forms/checkbox-states-email-summaries-dark": {
+      "family": "forms",
+      "name": "Checkbox / States / Email Summaries / Dark",
+      "symbolId": "9B03EBAD-17DE-4EE6-B169-05AE8D437923",
+      "layerId": "02FDE6D4-5FCE-43C3-8F5E-1A1D3D080F65",
+      "text": [
+        {
+          "id": "E9785DD8-EB16-45A9-9B53-F827B7F97487",
+          "value": "Email summaries"
+        },
+        {
+          "id": "26655594-98C7-46D3-8835-5E6FB7689640",
+          "value": "Sent every Monday morning."
+        }
+      ]
+    },
+    "forms/checkbox-states-locked-setting-dark": {
+      "family": "forms",
+      "name": "Checkbox / States / Locked Setting / Dark",
+      "symbolId": "CEDF52D1-CF93-444E-96F5-1949CB968D6D",
+      "layerId": "A5B9FBF0-AB82-4855-9A55-170E2B0995AB",
+      "text": [
+        {
+          "id": "45C57C71-BB64-43F6-8AEA-002A5302824A",
+          "value": "Locked setting"
+        }
+      ]
+    },
+    "forms/checkbox-mixed-all-tasks-light": {
+      "family": "forms",
+      "name": "Checkbox / Mixed / All Tasks / Light",
+      "symbolId": "36C5071B-A789-4A98-9FD1-A9F5D21D5C48",
+      "layerId": "77D8730B-5167-4619-91B2-2CE26B8A40EC",
+      "text": [
+        {
+          "id": "DFB9FBDE-1185-4E60-866E-77C0C62B7060",
+          "value": "All tasks"
+        }
+      ]
+    },
+    "forms/checkbox-mixed-design-review-light": {
+      "family": "forms",
+      "name": "Checkbox / Mixed / Design Review / Light",
+      "symbolId": "FA52D1AA-0460-47F3-B7BB-2E1541E5F558",
+      "layerId": "CC6B0A20-CC8B-4835-A1FB-AF4EF99A47F8",
+      "text": [
+        {
+          "id": "150AB9DE-D365-4032-9A98-104A659FA263",
+          "value": "Design review"
+        }
+      ]
+    },
+    "forms/checkbox-mixed-build-release-light": {
+      "family": "forms",
+      "name": "Checkbox / Mixed / Build Release / Light",
+      "symbolId": "F3C73C85-1D72-4820-8018-390154017148",
+      "layerId": "E03E9A63-7CC6-485C-A967-93522BB48875",
+      "text": [
+        {
+          "id": "601117BE-042E-4A83-94BD-81D5BB169267",
+          "value": "Build release"
+        }
+      ]
+    },
+    "forms/checkbox-mixed-all-tasks-dark": {
+      "family": "forms",
+      "name": "Checkbox / Mixed / All Tasks / Dark",
+      "symbolId": "7393370E-BA2D-4453-8A7A-480CA3F3AF9A",
+      "layerId": "BF1F9228-8E89-4890-9C65-DB426EFC1F95",
+      "text": [
+        {
+          "id": "B2E6CE9E-52E8-423A-B1FC-A7E1F141EC9B",
+          "value": "All tasks"
+        }
+      ]
+    },
+    "forms/checkbox-mixed-design-review-dark": {
+      "family": "forms",
+      "name": "Checkbox / Mixed / Design Review / Dark",
+      "symbolId": "444F4F5B-DA0D-4624-A247-C663E19BD2E9",
+      "layerId": "3F5FAEB6-3920-44F8-9966-85CE1354AE78",
+      "text": [
+        {
+          "id": "CB84ACBA-1F74-486F-BAE6-65E3AE3E2C8E",
+          "value": "Design review"
+        }
+      ]
+    },
+    "forms/checkbox-mixed-build-release-dark": {
+      "family": "forms",
+      "name": "Checkbox / Mixed / Build Release / Dark",
+      "symbolId": "3E62A7E0-4318-4FA2-925D-26DDF87CA9FE",
+      "layerId": "93DFD049-F348-4280-9326-919460208329",
+      "text": [
+        {
+          "id": "22CDE048-B26A-4806-8EE2-C39FACD8B332",
+          "value": "Build release"
+        }
+      ]
+    },
+    "forms/checkbox-error-accept-terms-light": {
+      "family": "forms",
+      "name": "Checkbox / Error / Accept Terms / Light",
+      "symbolId": "6AEFA522-168E-485C-8C0C-BCE9E2970ECE",
+      "layerId": "42D532C3-7D5E-42F1-8A6C-618DF70C4B47",
+      "text": [
+        {
+          "id": "752DE109-576A-40FC-996B-BCAEF6EEF2E7",
+          "value": "I accept the release terms"
+        },
+        {
+          "id": "72ED5574-374C-4558-9D1E-19362D72AE7B",
+          "value": "Accept the terms to continue."
+        }
+      ]
+    },
+    "forms/checkbox-error-accept-terms-dark": {
+      "family": "forms",
+      "name": "Checkbox / Error / Accept Terms / Dark",
+      "symbolId": "09F2B6A6-5FD7-4C0F-8591-AC05596A036D",
+      "layerId": "817ED346-AC2D-49D1-932B-31048A2ED8CE",
+      "text": [
+        {
+          "id": "7668B272-D715-4154-987E-AE8B371A0B08",
+          "value": "I accept the release terms"
+        },
+        {
+          "id": "5FBD2348-B5E9-49B7-9725-96E03416E3C5",
+          "value": "Accept the terms to continue."
+        }
+      ]
+    },
+    "forms/checkbox-compact-show-archived-light": {
+      "family": "forms",
+      "name": "Checkbox / Compact / Show Archived / Light",
+      "symbolId": "378E23AF-5FAC-416E-9517-DE48AB8224DD",
+      "layerId": "8E598DAE-D867-4B07-AB31-EE616A3B7A4B",
+      "text": [
+        {
+          "id": "35901556-5906-4A20-83AC-915338B334EC",
+          "value": "Show archived"
+        }
+      ]
+    },
+    "forms/checkbox-compact-show-drafts-light": {
+      "family": "forms",
+      "name": "Checkbox / Compact / Show Drafts / Light",
+      "symbolId": "00B9C56B-0F1D-40DC-877A-DDACE88BB1A6",
+      "layerId": "2CA238B3-3785-4491-A319-53AD32206D83",
+      "text": [
+        {
+          "id": "B40F0482-1220-4C72-815F-CD938DECA7E6",
+          "value": "Show drafts"
+        }
+      ]
+    },
+    "forms/checkbox-compact-show-archived-dark": {
+      "family": "forms",
+      "name": "Checkbox / Compact / Show Archived / Dark",
+      "symbolId": "2E9CFA2F-CA4C-4841-B9FB-17A6ECA2B168",
+      "layerId": "35377395-0E52-4831-9902-238BE2D0F673",
+      "text": [
+        {
+          "id": "BB9F0FCF-B233-4B73-8506-475E299BF3AF",
+          "value": "Show archived"
+        }
+      ]
+    },
+    "forms/checkbox-compact-show-drafts-dark": {
+      "family": "forms",
+      "name": "Checkbox / Compact / Show Drafts / Dark",
+      "symbolId": "88616002-B45F-45AF-80A9-52FDD7A769EA",
+      "layerId": "2C4B903C-F84E-4722-85F9-B08C4B79C3E7",
+      "text": [
+        {
+          "id": "F229E1D0-4ADA-4CFA-A7E0-EB28FD561E2E",
+          "value": "Show drafts"
+        }
+      ]
+    },
+    "forms/checkbox-group-vertical-notification-channels-light": {
+      "family": "forms",
+      "name": "Checkbox Group / Vertical / Notification Channels / Light",
+      "symbolId": "37472929-6B61-4AD0-A867-2B48C0F16036",
+      "layerId": "BC8C0953-88CC-4649-A662-7941BC70563B",
+      "text": [
+        {
+          "id": "15D88C29-68F8-4E55-9E11-9EDE6251A6D8",
+          "value": "NOTIFICATION CHANNELS"
+        },
+        {
+          "id": "10951492-0FC7-4A9A-A1CE-FF1C7F9AE0DD",
+          "value": "Email"
+        },
+        {
+          "id": "F07817E1-BE64-4E16-BD81-DEC918359725",
+          "value": "Push notifications"
+        },
+        {
+          "id": "81CBA142-7B50-47F1-9933-867673792A3F",
+          "value": "On devices where you are signed in."
+        },
+        {
+          "id": "3201DC6D-EE36-4941-B033-0C9D821BA63D",
+          "value": "Weekly digest"
+        },
+        {
+          "id": "FC71751E-D50F-440B-80F4-BB6FC92178C9",
+          "value": "Text messages"
+        },
+        {
+          "id": "D9FFB95A-383C-4108-B666-553FBB7A8B7A",
+          "value": "Sent to your work account."
+        }
+      ]
+    },
+    "forms/checkbox-group-vertical-notification-channels-dark": {
+      "family": "forms",
+      "name": "Checkbox Group / Vertical / Notification Channels / Dark",
+      "symbolId": "0C8E67A5-77CB-4C59-96EC-FD4ECFCDFC1B",
+      "layerId": "4F46536B-98B3-4333-8642-22DA82148166",
+      "text": [
+        {
+          "id": "27B1D8D9-ECBD-4635-9110-B7F2C9983503",
+          "value": "NOTIFICATION CHANNELS"
+        },
+        {
+          "id": "3FA3CDBB-0EFA-40A4-9354-E66DF0A07AE7",
+          "value": "Email"
+        },
+        {
+          "id": "7DD6BA53-CF6D-43D7-A0AE-482036E51D25",
+          "value": "Push notifications"
+        },
+        {
+          "id": "7BE30426-BB91-4055-9590-F7DBA107FF97",
+          "value": "On devices where you are signed in."
+        },
+        {
+          "id": "A6A9D2D4-A708-4B96-98BB-020CAA17F677",
+          "value": "Weekly digest"
+        },
+        {
+          "id": "0679467E-8372-4FF3-B347-015A7FD0FF84",
+          "value": "Text messages"
+        },
+        {
+          "id": "4A7AED7F-0D59-4AF2-BD56-6359E1F5F61B",
+          "value": "Sent to your work account."
+        }
+      ]
+    },
+    "forms/checkbox-group-horizontal-platforms-light": {
+      "family": "forms",
+      "name": "Checkbox Group / Horizontal / Platforms / Light",
+      "symbolId": "D7389102-96AB-4A64-9CD4-2C4E5A21DD7C",
+      "layerId": "54E486E6-5793-403B-A7BC-D5F15C7DC04A",
+      "text": [
+        {
+          "id": "304D3C74-7B6A-47E4-884D-E4C6F83D553D",
+          "value": "PLATFORMS"
+        },
+        {
+          "id": "64FC648D-EB7A-4A90-B563-4523DDE6A18E",
+          "value": "macOS"
+        },
+        {
+          "id": "4CB8365F-A9B9-4B62-B149-D1EB244E5459",
+          "value": "Windows"
+        },
+        {
+          "id": "E5D216ED-1A5D-44A2-A995-31AEBFF332B6",
+          "value": "Linux"
+        },
+        {
+          "id": "8E390D23-D14C-4B78-B1C6-0E4AF326097B",
+          "value": "Choose a platform."
+        }
+      ]
+    },
+    "forms/checkbox-group-horizontal-platforms-dark": {
+      "family": "forms",
+      "name": "Checkbox Group / Horizontal / Platforms / Dark",
+      "symbolId": "BE911031-307C-4A65-A233-56018E858A8A",
+      "layerId": "5764FF42-F9C0-46C7-A9F7-5110F67616B4",
+      "text": [
+        {
+          "id": "CEA0985B-48AB-40A6-814C-F983A61F0D6C",
+          "value": "PLATFORMS"
+        },
+        {
+          "id": "42AEFA2B-CA2C-445D-9D09-E93A90FBFD46",
+          "value": "macOS"
+        },
+        {
+          "id": "0049643B-7C07-4156-B2A2-CFE10FA82D2C",
+          "value": "Windows"
+        },
+        {
+          "id": "8702E3CD-DB36-43A2-B3F4-71730667A0B0",
+          "value": "Linux"
+        },
+        {
+          "id": "DFA87037-9489-4C29-BC4D-F817DEFDA9FC",
+          "value": "Choose a platform."
+        }
+      ]
+    },
+    "forms/radio-group-vertical-layout-density-light": {
+      "family": "forms",
+      "name": "Radio Group / Vertical / Layout Density / Light",
+      "symbolId": "19F2FC68-5C08-4D3A-B36F-D3A0565B4500",
+      "layerId": "4E834710-BE3E-4A0A-876C-C2F4E2972212",
+      "text": [
+        {
+          "id": "A2F75627-8C30-4188-835E-48ACBB70E5A8",
+          "value": "LAYOUT DENSITY"
+        },
+        {
+          "id": "29CBE251-EAEE-431A-9391-5CFC5E7AB9D5",
+          "value": "Compact"
+        },
+        {
+          "id": "7042E8DC-D851-4E19-B80F-BEC9CD72D6E4",
+          "value": "Balanced"
+        },
+        {
+          "id": "72A0EF1D-2A79-40DD-9766-897BB90FD547",
+          "value": "Roomy"
+        },
+        {
+          "id": "89C06477-C9C0-4D1E-A5DE-515E72786DCD",
+          "value": "Larger rows for touch screens."
+        },
+        {
+          "id": "6A6C9DD0-EAC3-456B-9A36-3394775058D0",
+          "value": "Custom"
+        },
+        {
+          "id": "2B6ED3D8-1123-4408-9096-984489F0363A",
+          "value": "Applies to every list."
+        }
+      ]
+    },
+    "forms/radio-group-vertical-layout-density-dark": {
+      "family": "forms",
+      "name": "Radio Group / Vertical / Layout Density / Dark",
+      "symbolId": "90F9472B-B474-47E0-BADF-69BC562E539B",
+      "layerId": "CE428225-6C24-494A-926D-A86E96AEF4A3",
+      "text": [
+        {
+          "id": "CCC10D43-0244-483E-B77F-E76A41239730",
+          "value": "LAYOUT DENSITY"
+        },
+        {
+          "id": "FA4F7AE9-6C32-443C-8488-C75FD41252C1",
+          "value": "Compact"
+        },
+        {
+          "id": "D0749DC4-24AE-476E-89C6-D5C970DA32F9",
+          "value": "Balanced"
+        },
+        {
+          "id": "FEAB5BB9-FA28-46B7-B826-4A22F8349C35",
+          "value": "Roomy"
+        },
+        {
+          "id": "56F6BA97-ECC1-45D1-8BBD-F9A839FB6FE6",
+          "value": "Larger rows for touch screens."
+        },
+        {
+          "id": "ACA1650B-BE0E-47BA-9B8A-B10C9069B156",
+          "value": "Custom"
+        },
+        {
+          "id": "47677CAB-2E94-4356-B4BE-C3E4E38D1321",
+          "value": "Applies to every list."
+        }
+      ]
+    },
+    "forms/radio-group-horizontal-release-channel-light": {
+      "family": "forms",
+      "name": "Radio Group / Horizontal / Release Channel / Light",
+      "symbolId": "39DDCFE3-F5DC-4FC6-935B-6EEF48B5015A",
+      "layerId": "821D72F6-9E00-4258-BDFA-0456DBA99D08",
+      "text": [
+        {
+          "id": "82D3E802-826F-4914-AC68-1618E1F445B7",
+          "value": "RELEASE CHANNEL"
+        },
+        {
+          "id": "432AE6A2-F408-4061-BEAF-CB5812B7E3D1",
+          "value": "Stable"
+        },
+        {
+          "id": "07E9981E-6561-4BE8-8115-13E3CE994273",
+          "value": "Beta"
+        },
+        {
+          "id": "1BDC54A1-21C6-4358-897E-0AA6E14D94FC",
+          "value": "Nightly"
+        },
+        {
+          "id": "02611509-7664-414E-A0AA-A07D4A662588",
+          "value": "Choose a channel."
+        }
+      ]
+    },
+    "forms/radio-group-horizontal-release-channel-dark": {
+      "family": "forms",
+      "name": "Radio Group / Horizontal / Release Channel / Dark",
+      "symbolId": "2215D2AA-C058-4B6D-8120-8BFFBEB715F8",
+      "layerId": "0202C157-E0F9-47E4-88C4-B47550915C45",
+      "text": [
+        {
+          "id": "A21021A7-1ED6-4197-BB6C-908331D919C7",
+          "value": "RELEASE CHANNEL"
+        },
+        {
+          "id": "191B780B-1B87-4731-A562-7B94A301FFAD",
+          "value": "Stable"
+        },
+        {
+          "id": "B521893A-69D1-4BB0-BAE5-89452A848FC2",
+          "value": "Beta"
+        },
+        {
+          "id": "7DEBB92B-7C06-479D-A56A-4AFC5AB1F669",
+          "value": "Nightly"
+        },
+        {
+          "id": "C4078241-9426-431A-8418-7860A359AD42",
+          "value": "Choose a channel."
+        }
+      ]
+    },
+    "forms/switch-states-live-updates-light": {
+      "family": "forms",
+      "name": "Switch / States / Live Updates / Light",
+      "symbolId": "25F93487-1FF9-4A11-8529-A85A74491557",
+      "layerId": "97A6E175-C872-4B74-B5B3-D49875D7A7B8",
+      "text": [
+        {
+          "id": "863777FF-B918-4AE9-B7B9-22B4248A1D78",
+          "value": "Live updates"
+        },
+        {
+          "id": "B413CA39-B2FE-4E42-8CBE-25FAC1857906",
+          "value": "The list refreshes as tickets change."
+        }
+      ]
+    },
+    "forms/switch-states-compact-navigation-light": {
+      "family": "forms",
+      "name": "Switch / States / Compact Navigation / Light",
+      "symbolId": "6FC9AA75-2B43-4C38-A191-A5D04014163A",
+      "layerId": "95C4E2B1-C904-4521-B6B6-CFEEEACEE3D0",
+      "text": [
+        {
+          "id": "095E7D23-BADC-4AF8-93EE-446AB39DAABF",
+          "value": "Compact navigation"
+        }
+      ]
+    },
+    "forms/switch-states-managed-setting-light": {
+      "family": "forms",
+      "name": "Switch / States / Managed Setting / Light",
+      "symbolId": "6E32F84F-6852-481D-AA75-284C1A55031E",
+      "layerId": "9404DF3E-9793-4594-8440-B71838A0CC03",
+      "text": [
+        {
+          "id": "4D077491-96D7-4C9A-B095-12CEE55B05EA",
+          "value": "Managed setting"
+        }
+      ]
+    },
+    "forms/switch-states-live-updates-dark": {
+      "family": "forms",
+      "name": "Switch / States / Live Updates / Dark",
+      "symbolId": "CE0C7EDF-7253-4557-901C-E76D4B906889",
+      "layerId": "F0D01197-5BF1-4323-AAC5-99E776CE5C22",
+      "text": [
+        {
+          "id": "BEEC0758-7C7C-4C2B-9DD9-CB1FEC06FBBC",
+          "value": "Live updates"
+        },
+        {
+          "id": "FFE38860-EADD-46BE-8EE8-046FC86706F2",
+          "value": "The list refreshes as tickets change."
+        }
+      ]
+    },
+    "forms/switch-states-compact-navigation-dark": {
+      "family": "forms",
+      "name": "Switch / States / Compact Navigation / Dark",
+      "symbolId": "836AC67B-BA61-4B7C-A771-B1506DB94742",
+      "layerId": "88EC00EA-E76B-475F-9924-9C66F769E25B",
+      "text": [
+        {
+          "id": "1C053C43-6092-43D7-9353-74ED6972FF0A",
+          "value": "Compact navigation"
+        }
+      ]
+    },
+    "forms/switch-states-managed-setting-dark": {
+      "family": "forms",
+      "name": "Switch / States / Managed Setting / Dark",
+      "symbolId": "F9983194-A8BE-4417-AFF8-EEC076A47541",
+      "layerId": "54593E14-1773-4676-B687-57E40EA70C2B",
+      "text": [
+        {
+          "id": "14152AAE-202E-4F53-98AE-EB511231EAF0",
+          "value": "Managed setting"
+        }
+      ]
+    },
+    "forms/switch-compact-show-archived-light": {
+      "family": "forms",
+      "name": "Switch / Compact / Show Archived / Light",
+      "symbolId": "3CCD2435-428E-474A-BC3D-DDB6C3B08648",
+      "layerId": "14C05C6F-6233-44EC-A588-577FE57F138D",
+      "text": [
+        {
+          "id": "0A6DB959-FE00-408B-840E-93C9993AD1FB",
+          "value": "Show archived"
+        }
+      ]
+    },
+    "forms/switch-compact-show-drafts-light": {
+      "family": "forms",
+      "name": "Switch / Compact / Show Drafts / Light",
+      "symbolId": "E352796C-634C-444E-9822-D862ED166F93",
+      "layerId": "BCBEBB05-0DF5-4D31-B663-8B0D9F1FEE3C",
+      "text": [
+        {
+          "id": "C4DD18DA-D638-44FF-A4DF-B7057EFB87D7",
+          "value": "Show drafts"
+        }
+      ]
+    },
+    "forms/switch-compact-show-archived-dark": {
+      "family": "forms",
+      "name": "Switch / Compact / Show Archived / Dark",
+      "symbolId": "BBB7EF63-7C13-4278-AEA1-BA72E327C169",
+      "layerId": "72839659-D343-464D-A3F2-3BB258B54286",
+      "text": [
+        {
+          "id": "4FA15BBD-5ECB-401A-9A22-ECE1A957F5B8",
+          "value": "Show archived"
+        }
+      ]
+    },
+    "forms/switch-compact-show-drafts-dark": {
+      "family": "forms",
+      "name": "Switch / Compact / Show Drafts / Dark",
+      "symbolId": "A1D84B01-D3DF-43F0-B2F2-3FDD0953675E",
+      "layerId": "04F3FD5F-033D-42FB-A2DA-62864C9F4791",
+      "text": [
+        {
+          "id": "2352C5F1-0008-4016-9F72-8B6A9D74DE02",
+          "value": "Show drafts"
+        }
+      ]
+    },
+    "advanced/color-field-compact-control-dark": {
+      "family": "advanced",
+      "name": "Color Field / Compact / Control / Dark",
+      "symbolId": "81290917-93C4-435B-AA76-CC5945BAA850",
+      "layerId": "710F586B-41C9-4E2F-9E41-40F611F4D105",
+      "text": [
+        {
+          "id": "CB707394-ED81-462C-B643-AB170E731645",
+          "value": "BORDER"
+        },
+        {
+          "id": "81D4C658-4C6C-4394-9C14-73DB56736AF9",
+          "value": "1C1C1E80"
+        }
+      ]
+    },
+    "advanced/color-field-compact-control-light": {
+      "family": "advanced",
+      "name": "Color Field / Compact / Control / Light",
+      "symbolId": "CEE0E3C5-CA75-4429-B3F7-1B2BD7205AAB",
+      "layerId": "F4B5F2EE-34E5-4413-A1C7-0FE0D6A035BE",
+      "text": [
+        {
+          "id": "A3D266F0-0E8B-440B-A810-01682F956013",
+          "value": "BORDER"
+        },
+        {
+          "id": "D019FC88-0F4E-4742-B7FC-ECE6F8C841F5",
+          "value": "1C1C1E80"
+        }
+      ]
+    },
+    "advanced/color-field-error-control-dark": {
+      "family": "advanced",
+      "name": "Color Field / Error / Control / Dark",
+      "symbolId": "A0B3B7EE-5626-4A99-9627-071D02B75CF4",
+      "layerId": "95DD4143-ED9D-4FFF-A317-907CCFDEAE80",
+      "text": [
+        {
+          "id": "DBC0C609-AB22-4B3F-9FD4-0A735E8FC923",
+          "value": "THEME ACCENT"
+        },
+        {
+          "id": "6E25ECFF-4484-46B1-8D54-BB2002264B2E",
+          "value": "The theme locks this color."
+        },
+        {
+          "id": "5ED05E74-FC04-4EDE-B4FE-BEB74F005F98",
+          "value": "BF5AF2"
+        }
+      ]
+    },
+    "advanced/color-field-error-control-light": {
+      "family": "advanced",
+      "name": "Color Field / Error / Control / Light",
+      "symbolId": "0BC8011A-5183-4EA1-81EA-27DC2643B8CD",
+      "layerId": "A19B2621-12D7-4112-BA97-B6667E318B2C",
+      "text": [
+        {
+          "id": "F7F401D5-0AA4-4D59-9B17-2313BC88439F",
+          "value": "THEME ACCENT"
+        },
+        {
+          "id": "34E8E460-65D5-4D1B-AA40-F23E5B3007AC",
+          "value": "The theme locks this color."
+        },
+        {
+          "id": "FA6C7351-55B4-4B69-8A08-4E4345CA02A4",
+          "value": "BF5AF2"
+        }
+      ]
+    },
+    "advanced/color-field-hint-control-dark": {
+      "family": "advanced",
+      "name": "Color Field / Hint / Control / Dark",
+      "symbolId": "F018714E-3F4F-40B0-A13B-2693918B2EBC",
+      "layerId": "F72C80AA-2401-4669-87B7-8B0B9A5F193C",
+      "text": [
+        {
+          "id": "9DDF7492-669F-4DE6-835E-DB605AABADE2",
+          "value": "FILL"
+        },
+        {
+          "id": "9FB962EB-9C16-4ED1-97ED-962607BAFE52",
+          "value": "0A84FF"
+        },
+        {
+          "id": "967F5DF2-E372-4826-BDBA-5FCFE7F1D9AB",
+          "value": "Applies to the selected shapes."
+        }
+      ]
+    },
+    "advanced/color-field-hint-control-light": {
+      "family": "advanced",
+      "name": "Color Field / Hint / Control / Light",
+      "symbolId": "95967C1D-41E5-4582-8CE2-BB94AAE499C7",
+      "layerId": "A3BEC0EF-E064-4635-B94E-DF37B6D0F713",
+      "text": [
+        {
+          "id": "96FD8A7B-42DF-4456-9AC9-3513AD9248AE",
+          "value": "FILL"
+        },
+        {
+          "id": "5AAA8782-A8C8-407B-ACC7-2D710BC13345",
+          "value": "0A84FF"
+        },
+        {
+          "id": "6388CC05-4174-4098-84E5-24AF8D060495",
+          "value": "Applies to the selected shapes."
+        }
+      ]
+    },
+    "advanced/color-picker-gray-control-dark": {
+      "family": "advanced",
+      "name": "Color Picker / Gray / Control / Dark",
+      "symbolId": "4B1B0B49-056C-477C-8106-05016009D6B3",
+      "layerId": "9C75ECCF-5B7B-4F06-85AF-45CBD88E6BFA",
+      "text": [
+        {
+          "id": "A32A1E78-751F-4AB0-8C7D-86C036E20E45",
+          "value": "W"
+        },
+        {
+          "id": "ED442F2A-E6D1-4847-984E-6AA6FCB9E3C7",
+          "value": "42"
+        },
+        {
+          "id": "3E874A78-B180-4FFA-A5D9-01E73AF254E6",
+          "value": "#"
+        },
+        {
+          "id": "3E229998-ED6A-4282-8946-855447DADFFD",
+          "value": "6B6B6B"
+        },
+        {
+          "id": "8857F0A4-83EC-4865-ABEE-BB474F04B30C",
+          "value": "Grayscale"
+        }
+      ]
+    },
+    "advanced/color-picker-gray-control-light": {
+      "family": "advanced",
+      "name": "Color Picker / Gray / Control / Light",
+      "symbolId": "3E68AD9A-904E-4752-9234-26A6855242BC",
+      "layerId": "424803DA-59E2-4589-96DA-18F86889A2C8",
+      "text": [
+        {
+          "id": "F89DAE34-B475-47D2-89AE-F68CF4B07369",
+          "value": "W"
+        },
+        {
+          "id": "E28C8815-F24B-44A9-9F2F-D60503AF93C4",
+          "value": "42"
+        },
+        {
+          "id": "96E6791E-5F8A-49FB-898C-622E11EADA59",
+          "value": "#"
+        },
+        {
+          "id": "0FAC707A-C15E-40E9-B948-F514187DB9A9",
+          "value": "6B6B6B"
+        },
+        {
+          "id": "3525D002-966B-4C64-994D-9DC08C822E18",
+          "value": "Grayscale"
+        }
+      ]
+    },
+    "advanced/color-picker-hsb-control-dark": {
+      "family": "advanced",
+      "name": "Color Picker / Hsb / Control / Dark",
+      "symbolId": "DFBB3B8E-1084-4CDA-A4E1-6E0F2774A9B8",
+      "layerId": "CFB6078A-56F3-4B3E-8421-09DF968F4D32",
+      "text": [
+        {
+          "id": "39E52BC3-59B5-4FCF-A935-856877183F44",
+          "value": "H"
+        },
+        {
+          "id": "1CD76CE1-2EBE-4B1D-9480-2928DDC356F8",
+          "value": "135"
+        },
+        {
+          "id": "7E2A8B3E-CD09-48BC-A2BE-D43C93DEC71E",
+          "value": "S"
+        },
+        {
+          "id": "B1BF1A62-55C2-4B0B-88D4-2AC1B565AA45",
+          "value": "74"
+        },
+        {
+          "id": "35B45F51-73F6-4A9C-A1D5-AF45158FF601",
+          "value": "B"
+        },
+        {
+          "id": "1BDF7CE5-27E3-4B38-824F-723CF51B5361",
+          "value": "78"
+        },
+        {
+          "id": "1156138B-B6D2-4624-8742-93869D3D9247",
+          "value": "#"
+        },
+        {
+          "id": "89A3CE05-EB5E-4DA2-9AB7-B02813CA439B",
+          "value": "34C759"
+        },
+        {
+          "id": "5FC0F1B2-7766-479F-9D99-BE5D84838828",
+          "value": "A"
+        },
+        {
+          "id": "AEB6631B-7114-4122-9F00-6A999FF194CD",
+          "value": "100%"
+        },
+        {
+          "id": "4F64015C-2A0F-4AD5-8D34-432459DE3943",
+          "value": "HSBA"
+        }
+      ]
+    },
+    "advanced/color-picker-hsb-control-light": {
+      "family": "advanced",
+      "name": "Color Picker / Hsb / Control / Light",
+      "symbolId": "3F7C0D95-14DE-4E8A-B2D4-885ABC91530D",
+      "layerId": "1FEC7F9F-7840-4F06-8A09-684535EBD8DF",
+      "text": [
+        {
+          "id": "603A7769-7CA1-453B-864E-95225347FD64",
+          "value": "H"
+        },
+        {
+          "id": "D083A1C5-9AEE-4B41-B22C-C3F975A2D2AD",
+          "value": "135"
+        },
+        {
+          "id": "D11D6601-2A60-4715-9C11-FEE997F29923",
+          "value": "S"
+        },
+        {
+          "id": "DF5A47E1-BFE4-481E-8123-F87DCCFEA7F1",
+          "value": "74"
+        },
+        {
+          "id": "8A66DC21-A6EA-465D-972D-620DE887523B",
+          "value": "B"
+        },
+        {
+          "id": "93C95B02-0064-4AC5-A1B0-CCC5D877ADBD",
+          "value": "78"
+        },
+        {
+          "id": "623F91F0-14FA-409C-9CC2-CE3C69F5F608",
+          "value": "#"
+        },
+        {
+          "id": "17A8687B-9CAF-4D78-8FD9-C178561AAE4F",
+          "value": "34C759"
+        },
+        {
+          "id": "757AB096-9059-4997-AD76-3D71D355E3F6",
+          "value": "A"
+        },
+        {
+          "id": "DE0D0419-ED95-4587-8F0E-506BC6EBE43B",
+          "value": "100%"
+        },
+        {
+          "id": "673CB969-1614-4460-B8AA-9E761AF5C1B0",
+          "value": "HSBA"
+        }
+      ]
+    },
+    "advanced/color-picker-rgb-control-dark": {
+      "family": "advanced",
+      "name": "Color Picker / Rgb / Control / Dark",
+      "symbolId": "3056F626-28A0-402B-A9F0-F25CA1FAA762",
+      "layerId": "C66BA88B-86F0-4A95-A569-033645D8DC90",
+      "text": [
+        {
+          "id": "DDBAEA66-BE86-4FE5-939F-5C82978B70AE",
+          "value": "R"
+        },
+        {
+          "id": "56CA7E7B-6698-416B-930B-C27D8C027472",
+          "value": "10"
+        },
+        {
+          "id": "3E343FD9-97FA-4CD4-BF34-A50DC57B43AB",
+          "value": "G"
+        },
+        {
+          "id": "6781EE14-6B5A-47CC-9D3F-D3850FF05075",
+          "value": "132"
+        },
+        {
+          "id": "E1B80FE7-7EEC-434A-8F08-54ABCF34C30B",
+          "value": "B"
+        },
+        {
+          "id": "5278EC67-A97E-4DCC-A4A5-0AB8A805B9BF",
+          "value": "255"
+        },
+        {
+          "id": "B2D78131-8B49-4F81-90CD-B1CA4A3300B7",
+          "value": "#"
+        },
+        {
+          "id": "CE9C229B-0636-45B4-9519-902C2A4AD75A",
+          "value": "0A84FFCC"
+        },
+        {
+          "id": "EA48A864-18FF-4029-A3FE-4279DD7E72C6",
+          "value": "A"
+        },
+        {
+          "id": "FCDA9836-13FF-4775-8981-ABB213B07846",
+          "value": "80%"
+        },
+        {
+          "id": "68E39B6A-F9A0-42EE-A3DC-E06BFF9B575D",
+          "value": "RGBA"
+        }
+      ]
+    },
+    "advanced/color-picker-rgb-control-light": {
+      "family": "advanced",
+      "name": "Color Picker / Rgb / Control / Light",
+      "symbolId": "132CF82C-5A29-4624-AEA3-28F93736DBC2",
+      "layerId": "28E1C9EF-3278-4A82-8A59-EB3B5F7A2076",
+      "text": [
+        {
+          "id": "145AC38E-BF5F-4519-A247-3D75CB4685B1",
+          "value": "R"
+        },
+        {
+          "id": "320EA950-165C-4023-838A-8B5230CB0CA9",
+          "value": "10"
+        },
+        {
+          "id": "07825B0D-B78F-4A45-8E00-2361CBBD20BF",
+          "value": "G"
+        },
+        {
+          "id": "E069C8EB-A22E-4661-A00F-EE48D91B926E",
+          "value": "132"
+        },
+        {
+          "id": "8A74DE88-E38E-4CF9-95A7-288514CB4A57",
+          "value": "B"
+        },
+        {
+          "id": "763154CB-8B81-4CF2-8156-AFB322A24E32",
+          "value": "255"
+        },
+        {
+          "id": "EFEAC96D-F927-49F4-BC38-D2A8289F5473",
+          "value": "#"
+        },
+        {
+          "id": "52BAEDF3-37FB-41A4-931F-AE1F2CC23AED",
+          "value": "0A84FFCC"
+        },
+        {
+          "id": "04C041FB-3D56-4A6D-9A15-A83F0651D18F",
+          "value": "A"
+        },
+        {
+          "id": "7F4C2125-B32D-4EAF-B239-FCD04100FADB",
+          "value": "80%"
+        },
+        {
+          "id": "AA54132D-AA94-401E-B8DF-30F1D614A70B",
+          "value": "RGBA"
+        }
+      ]
+    },
+    "advanced/color-swatches-palette-control-dark": {
+      "family": "advanced",
+      "name": "Color Swatches / Palette / Control / Dark",
+      "symbolId": "3D76D8F9-79B5-43C1-B6AE-2E30F294CB2D",
+      "layerId": "5BC6F571-4AB3-46B2-B0FD-1A3AF9DE4118",
+      "text": [
+        {
+          "id": "B69D75BE-9D99-4C94-A055-8A9A8684C84E",
+          "value": "Command Color"
+        }
+      ]
+    },
+    "advanced/color-swatches-palette-control-light": {
+      "family": "advanced",
+      "name": "Color Swatches / Palette / Control / Light",
+      "symbolId": "0DEF9DE2-7A38-4A30-9B52-CAF169F0C235",
+      "layerId": "6AB8C0D5-F50D-47C8-9D79-C241E7DB3145",
+      "text": [
+        {
+          "id": "B5B2797D-9EBA-48BD-AA99-0E618AF70242",
+          "value": "Command Color"
+        }
+      ]
+    },
+    "advanced/search-field-empty-control-dark": {
+      "family": "advanced",
+      "name": "Search Field / Empty / Control / Dark",
+      "symbolId": "43542DBF-2F9E-420D-9373-356C44E23C68",
+      "layerId": "32138A41-F40C-4F71-9BF2-EB112B22B800",
+      "text": [
+        {
+          "id": "093DD20E-D573-4B38-99AD-E7BA315FF631",
+          "value": "Search tickets"
+        }
+      ]
+    },
+    "advanced/search-field-empty-control-light": {
+      "family": "advanced",
+      "name": "Search Field / Empty / Control / Light",
+      "symbolId": "FB5DC9FE-BF12-4C58-96A8-61A029311F0A",
+      "layerId": "096EBF52-6956-4167-94EC-6E9C5BB547EF",
+      "text": [
+        {
+          "id": "6F477212-A5E6-4F4D-932F-770D039CAB96",
+          "value": "Search tickets"
+        }
+      ]
+    },
+    "advanced/search-field-tokens-control-dark": {
+      "family": "advanced",
+      "name": "Search Field / Tokens / Control / Dark",
+      "symbolId": "D03BAA0C-96FF-4B43-9B03-286BCD57A7EA",
+      "layerId": "78664CA9-75A3-4102-ABC5-09733B845E2D",
+      "text": [
+        {
+          "id": "E573C8F6-FCF4-4D34-A41C-BFE187115869",
+          "value": "payments"
+        },
+        {
+          "id": "DEAF05B3-D883-4701-B998-A39FC3DE1C3F",
+          "value": "is:open"
+        },
+        {
+          "id": "003CB75F-8709-4DE2-B241-85259F5EA69C",
+          "value": "is:open"
+        }
+      ]
+    },
+    "advanced/search-field-tokens-control-light": {
+      "family": "advanced",
+      "name": "Search Field / Tokens / Control / Light",
+      "symbolId": "893143E9-79FA-4F9F-B64A-8725AE7B2FE9",
+      "layerId": "B7918860-CCED-4CAE-84C3-06F92DF9DD4D",
+      "text": [
+        {
+          "id": "55261BF5-7F44-4876-8B42-2903EA9B34C2",
+          "value": "payments"
+        },
+        {
+          "id": "BA1EF416-86AC-4E45-B21B-98F664C7C49B",
+          "value": "is:open"
+        },
+        {
+          "id": "48D3A9DA-FB77-4829-A74B-D05E89AC230E",
+          "value": "is:open"
+        }
+      ]
+    },
+    "advanced/select-compact-control-dark": {
+      "family": "advanced",
+      "name": "Select / Compact / Control / Dark",
+      "symbolId": "94F311AE-F9A8-40DE-ABFF-CEC78F8373CD",
+      "layerId": "DF7F9481-349D-49FD-A6E7-5161AEC8416E",
+      "text": [
+        {
+          "id": "1E8391E1-2C3E-469B-8B17-DE5CA5BA968A",
+          "value": "REGION"
+        },
+        {
+          "id": "27DA44E9-2E95-482E-8E45-0B200C69208F",
+          "value": "US East"
+        }
+      ]
+    },
+    "advanced/select-compact-control-light": {
+      "family": "advanced",
+      "name": "Select / Compact / Control / Light",
+      "symbolId": "77A3B34F-962C-4502-BE0D-2D215163CEF5",
+      "layerId": "6FDCD6BB-9FD8-453B-81D6-8F57AAB28F4B",
+      "text": [
+        {
+          "id": "0E531678-69CE-46E2-A167-71427AF61E77",
+          "value": "REGION"
+        },
+        {
+          "id": "CB3F7B69-BDF8-4B91-B273-2BDD7E9D12C0",
+          "value": "US East"
+        }
+      ]
+    },
+    "advanced/select-form-control-dark": {
+      "family": "advanced",
+      "name": "Select / Form / Control / Dark",
+      "symbolId": "60A4E016-9C51-447F-88A0-169D4F0D20D5",
+      "layerId": "F03FFEB5-1923-4689-9217-0A2B6280C191",
+      "text": [
+        {
+          "id": "D99681C4-87BF-442E-99B5-EFF1B67CD7C3",
+          "value": "STATUS"
+        },
+        {
+          "id": "A7812E91-DE6D-4459-B034-44275A897DA9",
+          "value": "Moves the ticket on the board."
+        },
+        {
+          "id": "BE47EF7D-D915-4466-B4B6-811DC7F3A87E",
+          "value": "In Review"
+        }
+      ]
+    },
+    "advanced/select-form-control-light": {
+      "family": "advanced",
+      "name": "Select / Form / Control / Light",
+      "symbolId": "441A4B1D-17EC-4BAC-8655-D4411DC794C6",
+      "layerId": "5BFE01DF-6E8B-4A9D-83D2-84B8D45BEF99",
+      "text": [
+        {
+          "id": "DF85AC77-2328-48B8-A000-D87F499442CF",
+          "value": "STATUS"
+        },
+        {
+          "id": "6C7BBAE8-9E36-4B28-8502-29252D964D70",
+          "value": "Moves the ticket on the board."
+        },
+        {
+          "id": "89393E4D-C5EA-4DA8-B509-DF0791B7A0E0",
+          "value": "In Review"
+        }
+      ]
+    },
+    "advanced/select-icons-control-dark": {
+      "family": "advanced",
+      "name": "Select / Icons / Control / Dark",
+      "symbolId": "02CC141A-C5C4-4542-94AD-3C0CCF1A24A1",
+      "layerId": "F9EF2663-632D-48DA-B7AF-A606235DF94B",
+      "text": [
+        {
+          "id": "489D9E45-BFDF-43FF-8594-517ED2D7E51A",
+          "value": "NOTIFY"
+        },
+        {
+          "id": "2941289A-3419-4FFA-B697-529970A413DD",
+          "value": "Mentions Only"
+        }
+      ]
+    },
+    "advanced/select-icons-control-light": {
+      "family": "advanced",
+      "name": "Select / Icons / Control / Light",
+      "symbolId": "FDD2B527-089C-464F-99BA-2A832DC581F0",
+      "layerId": "6F32C00E-2AEB-4E67-8283-FC450B4899B4",
+      "text": [
+        {
+          "id": "5FA5F9A1-3992-47F1-8DF4-2F69559ADF4A",
+          "value": "NOTIFY"
+        },
+        {
+          "id": "E0EBA35F-DEFC-4776-8BDD-90647BAD7659",
+          "value": "Mentions Only"
+        }
+      ]
+    },
+    "advanced/slider-compact-control-dark": {
+      "family": "advanced",
+      "name": "Slider / Compact / Control / Dark",
+      "symbolId": "A7ED21E7-B9F1-44B1-B8A1-26916CAA9529",
+      "layerId": "9CC89274-870E-4331-A66F-CB39C734A0D2",
+      "text": [
+        {
+          "id": "B907EE5C-67E9-493E-8075-BD81A00EA8DE",
+          "value": "Layer Opacity"
+        },
+        {
+          "id": "6632FC69-893F-448F-885B-B77EAE732CBC",
+          "value": "80%"
+        }
+      ]
+    },
+    "advanced/slider-compact-control-light": {
+      "family": "advanced",
+      "name": "Slider / Compact / Control / Light",
+      "symbolId": "4E2A44FB-7AD6-4074-8F48-7B062431B7CF",
+      "layerId": "B5CB156A-3977-413C-9EDE-581F8FC10A66",
+      "text": [
+        {
+          "id": "45049240-FE5B-43A5-8A5B-7D3C0FBF6A9B",
+          "value": "Layer Opacity"
+        },
+        {
+          "id": "F1EEFEB7-577E-4097-904D-D918E0BBA249",
+          "value": "80%"
+        }
+      ]
+    },
+    "advanced/slider-readout-control-dark": {
+      "family": "advanced",
+      "name": "Slider / Readout / Control / Dark",
+      "symbolId": "11ACAA7F-7D5B-4553-90BF-ABF055C3F800",
+      "layerId": "7DCBF003-21CD-46D9-BB39-B7AB43415C83",
+      "text": [
+        {
+          "id": "FAA5AE6F-8341-434A-BC53-863BCDA67B61",
+          "value": "Volume"
+        },
+        {
+          "id": "D07FCAFE-2F5E-4C6D-8FB0-987AE2B013DA",
+          "value": "35%"
+        },
+        {
+          "id": "623F7C89-8F81-4998-AAFE-D8A2D76BBC0A",
+          "value": "Applies to every output device."
+        }
+      ]
+    },
+    "advanced/slider-readout-control-light": {
+      "family": "advanced",
+      "name": "Slider / Readout / Control / Light",
+      "symbolId": "515BB523-CAAA-4575-BBBC-749D9C25C608",
+      "layerId": "93D6709B-D42A-472E-B350-A89194BF6B29",
+      "text": [
+        {
+          "id": "EDFBBA55-E0F6-4C9A-B9C4-F30BC2D53D2A",
+          "value": "Volume"
+        },
+        {
+          "id": "95A33D38-3FE3-4DF9-84B1-A5A2569576A6",
+          "value": "35%"
+        },
+        {
+          "id": "EFE61638-D9EA-4F45-BF4E-322A3FE33B23",
+          "value": "Applies to every output device."
+        }
+      ]
+    },
+    "advanced/slider-ticks-control-dark": {
+      "family": "advanced",
+      "name": "Slider / Ticks / Control / Dark",
+      "symbolId": "52EAF623-0CA8-402B-870A-42C3FEFED620",
+      "layerId": "4CC8E1EC-0A3F-48D5-B1D6-DD8EBB9911DE",
+      "text": [
+        {
+          "id": "D404A825-7E3B-41D0-BC4D-32304697B0E3",
+          "value": "Zoom"
+        },
+        {
+          "id": "F1D7BD24-10EE-41CA-AEA4-8BA7D881F1D2",
+          "value": "100%"
+        },
+        {
+          "id": "25296EEF-F52F-428A-8BCF-C626BEF62432",
+          "value": "50%"
+        },
+        {
+          "id": "7E5AE2F3-63E7-4183-B763-6A091C0751B6",
+          "value": "100%"
+        },
+        {
+          "id": "9847CCF0-38B4-4AB9-AF2A-311CCBB51AFD",
+          "value": "150%"
+        },
+        {
+          "id": "79457727-FED9-474D-AC83-08A0223F9918",
+          "value": "200%"
+        }
+      ]
+    },
+    "advanced/slider-ticks-control-light": {
+      "family": "advanced",
+      "name": "Slider / Ticks / Control / Light",
+      "symbolId": "1024246C-F78F-4F88-89B1-A8F000F4CA9E",
+      "layerId": "89BEA0B0-4BE3-4E63-8111-D8020BBB591F",
+      "text": [
+        {
+          "id": "A3F2655F-0448-4154-B0F5-48648F21B9F3",
+          "value": "Zoom"
+        },
+        {
+          "id": "05DB31D9-3A6E-4B1D-9987-8751558DE06E",
+          "value": "100%"
+        },
+        {
+          "id": "823B83FF-3079-43BB-B839-01EF14954565",
+          "value": "50%"
+        },
+        {
+          "id": "49BC5EDE-3156-442E-827C-4E38B1023470",
+          "value": "100%"
+        },
+        {
+          "id": "D84AFB8D-57A2-45C5-9DF2-0B38A425F89C",
+          "value": "150%"
+        },
+        {
+          "id": "6AD036BB-851F-4DCE-AE5C-2178AEE8CD55",
+          "value": "200%"
+        }
+      ]
+    },
+    "advanced/tag-field-error-control-dark": {
+      "family": "advanced",
+      "name": "Tag Field / Error / Control / Dark",
+      "symbolId": "1422269E-F923-4C06-83CA-0CD7E5E5148F",
+      "layerId": "8D098442-E53F-41E7-84BA-A76BA8604D40",
+      "text": [
+        {
+          "id": "3FB3C82D-F7C4-41B4-A7BD-E98228CD4BC8",
+          "value": "RECIPIENTS"
+        },
+        {
+          "id": "B8B98A42-24ED-4DA8-9CC7-60FF72C77B23",
+          "value": "Remove a recipient to add another."
+        },
+        {
+          "id": "5307F687-1030-46D1-976A-414763995A05",
+          "value": "mara@example.com"
+        }
+      ]
+    },
+    "advanced/tag-field-error-control-light": {
+      "family": "advanced",
+      "name": "Tag Field / Error / Control / Light",
+      "symbolId": "49A4C664-FDF9-49D4-9F2B-FB1C1F70983A",
+      "layerId": "6A0F6648-599D-4335-86A0-F19383C6CEC7",
+      "text": [
+        {
+          "id": "CC62D238-8BE9-4BEA-A17C-A7DFE3BAB1E0",
+          "value": "RECIPIENTS"
+        },
+        {
+          "id": "7065AC95-8172-4301-9837-6749C1A3FF95",
+          "value": "Remove a recipient to add another."
+        },
+        {
+          "id": "019513B7-DDFC-4EAD-AAC3-BBFED20009D7",
+          "value": "mara@example.com"
+        }
+      ]
+    },
+    "advanced/tag-field-tags-control-dark": {
+      "family": "advanced",
+      "name": "Tag Field / Tags / Control / Dark",
+      "symbolId": "827780F6-CB70-4B64-9F28-4C23B393FBD7",
+      "layerId": "B409330F-9492-4EF9-83D4-5549C55E9A30",
+      "text": [
+        {
+          "id": "F0CF35CD-B11E-4D5E-B906-2921932E7CFF",
+          "value": "LABELS"
+        },
+        {
+          "id": "5AA234F9-117D-48F7-9179-C9AF5124370F",
+          "value": "Press Enter or a comma to add a label."
+        },
+        {
+          "id": "CD3B468A-AD84-459C-841B-8DA331B3AFE0",
+          "value": "bug"
+        },
+        {
+          "id": "BBD3DCAE-022E-44DC-8C60-FC179AAD9721",
+          "value": "docs"
+        },
+        {
+          "id": "1C214B8A-00F9-49B0-B9BF-920BA82BFA59",
+          "value": "perf"
+        }
+      ]
+    },
+    "advanced/tag-field-tags-control-light": {
+      "family": "advanced",
+      "name": "Tag Field / Tags / Control / Light",
+      "symbolId": "C5FB95DB-6E08-4DD2-ADE7-E888B6EEC38C",
+      "layerId": "7718E042-C986-4BC7-BA0A-B67C71FDF537",
+      "text": [
+        {
+          "id": "428D49F8-A446-434C-A185-33DD3B6D7917",
+          "value": "LABELS"
+        },
+        {
+          "id": "9AA36D73-05D3-4586-B39E-60518F334FA3",
+          "value": "Press Enter or a comma to add a label."
+        },
+        {
+          "id": "4B74BFFB-D223-4E12-BD34-112EE7880424",
+          "value": "bug"
+        },
+        {
+          "id": "FD3F8174-AABB-4D87-849B-0CAAC3935116",
+          "value": "docs"
+        },
+        {
+          "id": "3C59797E-D632-40B3-A8A8-B709877C4E45",
+          "value": "perf"
+        }
+      ]
+    },
+    "lists/list-stack-control-light": {
+      "family": "lists",
+      "name": "List / Stack / Control / Light",
+      "symbolId": "EA1CB2C1-6F03-4878-9426-B577C4346BAD",
+      "layerId": "FE00796C-1807-4EB7-BC6D-1D25511B7F89",
+      "text": [
+        {
+          "id": "077A03F4-536F-4F46-8723-B3F2C9E6EC5A",
+          "value": "WORKSPACE"
+        },
+        {
+          "id": "49A049FA-7240-4B17-AB3B-E6308F326BE0",
+          "value": "2"
+        },
+        {
+          "id": "6BC1DEB2-57CC-4633-82B5-673AFBBEE341",
+          "value": "Inbox"
+        },
+        {
+          "id": "CD1F0D0C-A88C-4C4D-AC42-0E10468AA4A8",
+          "value": "Projects"
+        }
+      ]
+    },
+    "lists/list-stack-control-dark": {
+      "family": "lists",
+      "name": "List / Stack / Control / Dark",
+      "symbolId": "9D7F6DD9-FFA0-4C57-B2DA-328D1E6719DD",
+      "layerId": "D042B0A0-3A14-4F85-BBCB-D9683EA198FB",
+      "text": [
+        {
+          "id": "2CD4F5F1-5662-4CEA-AF45-41BE64D302ED",
+          "value": "WORKSPACE"
+        },
+        {
+          "id": "B13F6B27-6E25-456D-818E-6BBF2A3484CD",
+          "value": "2"
+        },
+        {
+          "id": "47BF6329-D852-45DA-886B-F07B2C0979A2",
+          "value": "Inbox"
+        },
+        {
+          "id": "2FDE6EE9-AEFD-4FFD-8E9C-0184426ADB7A",
+          "value": "Projects"
+        }
+      ]
+    },
+    "lists/list-compact-control-light": {
+      "family": "lists",
+      "name": "List / Compact / Control / Light",
+      "symbolId": "79A44F4C-02F0-48AC-B88F-06DBFF4B5EF0",
+      "layerId": "EE2BB8B1-F662-4816-AA96-AA850CACF52C",
+      "text": [
+        {
+          "id": "87D1B100-4417-4527-A280-C21BBF7ED8BC",
+          "value": "Priority"
+        },
+        {
+          "id": "B771EC34-E395-4DE0-BA50-5EF36560E906",
+          "value": "All Work"
+        }
+      ]
+    },
+    "lists/list-compact-control-dark": {
+      "family": "lists",
+      "name": "List / Compact / Control / Dark",
+      "symbolId": "42F26302-C6DD-40B9-9B70-4DDED8CB32A8",
+      "layerId": "814E77E5-46B5-45C5-A62D-D5E73A8C1CCC",
+      "text": [
+        {
+          "id": "EB5BAE24-6183-40CB-9F3C-38AC6EDF635C",
+          "value": "Priority"
+        },
+        {
+          "id": "8DC6942B-9F7F-4375-9CAC-56E85D21F709",
+          "value": "All Work"
+        }
+      ]
+    },
+    "lists/list-item-default-control-light": {
+      "family": "lists",
+      "name": "List Item / Default / Control / Light",
+      "symbolId": "8C77F74E-4617-4EAA-8D87-B150EA5E52D9",
+      "layerId": "7D4F90FB-04AA-4526-B77D-FA462D5751C0",
+      "text": [
+        {
+          "id": "C0789122-FD09-425A-807F-7F2E1D0F9C7F",
+          "value": "Overview"
+        }
+      ]
+    },
+    "lists/list-item-default-control-dark": {
+      "family": "lists",
+      "name": "List Item / Default / Control / Dark",
+      "symbolId": "2F0B3D9B-6FE7-4C7B-8DE7-F5C71B3DAD5C",
+      "layerId": "1B5B888B-2EBE-4EE2-9FFB-E35F4C1EF4EB",
+      "text": [
+        {
+          "id": "B30AD7A6-7A96-4816-A4CF-253079D4C8DA",
+          "value": "Overview"
+        }
+      ]
+    },
+    "lists/list-item-selected-control-light": {
+      "family": "lists",
+      "name": "List Item / Selected / Control / Light",
+      "symbolId": "98B8F4D6-55E6-4B72-A01E-532C785706D5",
+      "layerId": "650441CC-0B86-46D5-A81B-37427939C88B",
+      "text": [
+        {
+          "id": "0D812AFC-FB95-419A-80D3-66557875EFA0",
+          "value": "Billing & Plans"
+        }
+      ]
+    },
+    "lists/list-item-selected-control-dark": {
+      "family": "lists",
+      "name": "List Item / Selected / Control / Dark",
+      "symbolId": "F0100AEF-68D3-4053-9FD3-0B1FC21DAACB",
+      "layerId": "A0E62CA0-5843-4D1D-B233-FA53B6E7FAB4",
+      "text": [
+        {
+          "id": "F58FDB0C-D0EF-4E34-AB9B-F4E01B84AC46",
+          "value": "Billing & Plans"
+        }
+      ]
+    },
+    "lists/list-item-trailing-control-light": {
+      "family": "lists",
+      "name": "List Item / Trailing / Control / Light",
+      "symbolId": "00B33760-8CE3-4F6F-B5D6-40807F348CDD",
+      "layerId": "3E505FF6-486D-4A8B-BB8C-0B9D9640C611",
+      "text": [
+        {
+          "id": "6AF4F04E-6ADE-4A80-A334-E0905C9500AC",
+          "value": "Notifications"
+        },
+        {
+          "id": "6280956C-BC02-412C-B200-F69F846E8F7A",
+          "value": "3"
+        }
+      ]
+    },
+    "lists/list-item-trailing-control-dark": {
+      "family": "lists",
+      "name": "List Item / Trailing / Control / Dark",
+      "symbolId": "577EE12F-7762-42D4-8D1B-6F06FCECDC9D",
+      "layerId": "0EE5500E-868C-40BF-BF3D-590A25632F78",
+      "text": [
+        {
+          "id": "3BD5F0AD-5838-416A-9D17-A8D04B8B0250",
+          "value": "Notifications"
+        },
+        {
+          "id": "C93441C7-47F1-4291-BCE2-7F72AD97FF84",
+          "value": "3"
+        }
+      ]
+    },
+    "lists/list-item-multiline-control-light": {
+      "family": "lists",
+      "name": "List Item / Multiline / Control / Light",
+      "symbolId": "54D72B42-F81E-4424-80BA-5FDCBC272DAE",
+      "layerId": "95298C47-5CA6-43E1-876D-D69D9FA3BB16",
+      "text": [
+        {
+          "id": "54F4C75D-B1B9-4112-A236-AF0631B6DC20",
+          "value": "Migrate the legacy billing pipeline"
+        },
+        {
+          "id": "3D4FD833-5142-425D-BBAF-FFD5B28E7B60",
+          "value": "to the new ledger service"
+        }
+      ]
+    },
+    "lists/list-item-multiline-control-dark": {
+      "family": "lists",
+      "name": "List Item / Multiline / Control / Dark",
+      "symbolId": "E17FFBEC-C6B7-40EA-8B0B-BAE40FD0C8F1",
+      "layerId": "1F8884E8-3DD6-43CD-8838-03CCE3229F61",
+      "text": [
+        {
+          "id": "AD1FC674-B678-41D5-935D-05FE15F4AC5A",
+          "value": "Migrate the legacy billing pipeline"
+        },
+        {
+          "id": "A18FFA03-8F3A-4807-BBFC-11E37A3C8D5A",
+          "value": "to the new ledger service"
+        }
+      ]
+    },
+    "lists/list-item-icon-tile-control-light": {
+      "family": "lists",
+      "name": "List Item / Icon Tile / Control / Light",
+      "symbolId": "6B5911C2-C8C8-4B9B-ADE2-CB2A0D4817E1",
+      "layerId": "66DE2E37-9FEC-4C73-9AA8-7FE769E8B344",
+      "text": [
+        {
+          "id": "91524C4D-A720-45AE-89FE-5D44ED96CDDC",
+          "value": "Notifications"
+        }
+      ]
+    },
+    "lists/list-item-icon-tile-control-dark": {
+      "family": "lists",
+      "name": "List Item / Icon Tile / Control / Dark",
+      "symbolId": "BB7B6A0E-5B47-4B03-848A-89C41F1352FF",
+      "layerId": "D67A53D3-8F56-4C11-A290-B0A03B87A7A3",
+      "text": [
+        {
+          "id": "E5D6ACC4-4040-4AF5-AF00-04E017E3F1CB",
+          "value": "Notifications"
+        }
+      ]
+    },
+    "lists/list-header-action-control-light": {
+      "family": "lists",
+      "name": "List Header / Action / Control / Light",
+      "symbolId": "9199A8A7-B493-44F0-84DF-E37852AE0EE1",
+      "layerId": "6F6C7D17-4C8D-4B17-9116-AE1F96531FBB",
+      "text": [
+        {
+          "id": "15FA6146-A3F6-447A-A8DB-89A31B6D0B98",
+          "value": "TEAM MEMBERS"
+        }
+      ]
+    },
+    "lists/list-header-action-control-dark": {
+      "family": "lists",
+      "name": "List Header / Action / Control / Dark",
+      "symbolId": "C30FE970-929D-4FF6-B129-6D44CA0F7524",
+      "layerId": "6A97A35F-90B5-4652-8716-C0F0BAA9E990",
+      "text": [
+        {
+          "id": "BED47340-F132-449D-8CD8-036C809B737A",
+          "value": "TEAM MEMBERS"
+        }
+      ]
+    },
+    "lists/list-header-count-control-light": {
+      "family": "lists",
+      "name": "List Header / Count / Control / Light",
+      "symbolId": "057A268D-C300-415A-AB8E-949EF97484DF",
+      "layerId": "BE88BED6-D7D0-44F0-B57E-85B4A6FE6BDD",
+      "text": [
+        {
+          "id": "E72E370F-0679-4044-99F8-FC05C45561DB",
+          "value": "OPEN TICKETS"
+        },
+        {
+          "id": "27FD62B5-498F-4496-B6AA-BCC6A5C51FE9",
+          "value": "12"
+        }
+      ]
+    },
+    "lists/list-header-count-control-dark": {
+      "family": "lists",
+      "name": "List Header / Count / Control / Dark",
+      "symbolId": "E3376139-83B2-4C36-BB0A-F94085715DE8",
+      "layerId": "937D7080-382F-4E6E-9F32-8ABB7A2AF43C",
+      "text": [
+        {
+          "id": "5A858AD7-059C-40B7-88C4-162651C15A3F",
+          "value": "OPEN TICKETS"
+        },
+        {
+          "id": "BF9703D6-BEF3-4BF5-A5EE-EE897219B8AF",
+          "value": "12"
+        }
+      ]
+    },
+    "lists/list-header-size-xs-control-light": {
+      "family": "lists",
+      "name": "List Header / Size Xs / Control / Light",
+      "symbolId": "C507AE94-B4F7-4DD9-8F42-81C36BC751EE",
+      "layerId": "CB48D8AD-718F-460E-BEFE-DA08169F11F4",
+      "text": [
+        {
+          "id": "4C00BD70-D075-47FA-9C3C-60147FE145EF",
+          "value": "Team Members"
+        }
+      ]
+    },
+    "lists/list-header-size-xs-control-dark": {
+      "family": "lists",
+      "name": "List Header / Size Xs / Control / Dark",
+      "symbolId": "4C253A76-E497-4E58-9827-C2650112AC02",
+      "layerId": "0F447F88-5596-44BE-B61E-179C879C6907",
+      "text": [
+        {
+          "id": "843AD0FB-77F5-43D8-A231-D85E4EEEB003",
+          "value": "Team Members"
+        }
+      ]
+    },
+    "lists/list-header-size-m-control-light": {
+      "family": "lists",
+      "name": "List Header / Size M / Control / Light",
+      "symbolId": "D7AA03B1-D7FA-4DE2-8EEC-F9E023AA6AA5",
+      "layerId": "FA55EE27-9445-4F90-AB5B-FFF7EC09BCD9",
+      "text": [
+        {
+          "id": "9493F8BC-C157-4824-B255-23575F33B144",
+          "value": "Team Members"
+        }
+      ]
+    },
+    "lists/list-header-size-m-control-dark": {
+      "family": "lists",
+      "name": "List Header / Size M / Control / Dark",
+      "symbolId": "3D1C441E-84D8-4B9F-973E-1B8923754134",
+      "layerId": "EF75D19D-5431-486B-8DAB-699E37F0D7E3",
+      "text": [
+        {
+          "id": "44179201-E566-41DF-8724-B244F6C8368E",
+          "value": "Team Members"
+        }
+      ]
+    },
+    "lists/list-header-size-l-control-light": {
+      "family": "lists",
+      "name": "List Header / Size L / Control / Light",
+      "symbolId": "6259BFF7-8490-4D27-8B2F-42C7344BD2CE",
+      "layerId": "C5051575-9FDC-4EB5-BAA9-F02F78673483",
+      "text": [
+        {
+          "id": "9097C16D-4E94-49DA-85F3-B60C64EEAD18",
+          "value": "Team Members"
+        }
+      ]
+    },
+    "lists/list-header-size-l-control-dark": {
+      "family": "lists",
+      "name": "List Header / Size L / Control / Dark",
+      "symbolId": "CEACFBB2-A166-4675-A2F2-CDA40A5CADEB",
+      "layerId": "28722BB1-9D19-4752-899D-A51891316682",
+      "text": [
+        {
+          "id": "442D4625-DEB3-4379-8B50-88069210E04D",
+          "value": "Team Members"
+        }
+      ]
+    },
+    "lists/list-header-size-xl-control-light": {
+      "family": "lists",
+      "name": "List Header / Size Xl / Control / Light",
+      "symbolId": "214CE6C1-3C0D-479E-8F06-DCE8725AA638",
+      "layerId": "949BE6F7-0A33-4008-B3EC-CDAB0DFF2602",
+      "text": [
+        {
+          "id": "AFAF3271-8F05-4E72-83F5-E6A3A862C524",
+          "value": "Team Members"
+        }
+      ]
+    },
+    "lists/list-header-size-xl-control-dark": {
+      "family": "lists",
+      "name": "List Header / Size Xl / Control / Dark",
+      "symbolId": "5CA65D61-D883-4D96-A141-F16821101659",
+      "layerId": "81E73BB0-1EDD-49DF-B71D-FC355E51C269",
+      "text": [
+        {
+          "id": "036B6901-5615-4FB5-82E3-66747049E714",
+          "value": "Team Members"
+        }
+      ]
+    },
+    "lists/list-header-inline-action-control-light": {
+      "family": "lists",
+      "name": "List Header / Inline Action / Control / Light",
+      "symbolId": "1D0CC534-756C-44C2-A75B-D66BD669FD86",
+      "layerId": "E5A71CF2-274B-48BA-9DED-F447BE5DD0A7",
+      "text": [
+        {
+          "id": "C76D2EBF-17F3-48A7-B3CF-9A837955DC43",
+          "value": "QUEUED"
+        }
+      ]
+    },
+    "lists/list-header-inline-action-control-dark": {
+      "family": "lists",
+      "name": "List Header / Inline Action / Control / Dark",
+      "symbolId": "A23D67B7-895E-48B8-8192-A1BBBC91D56A",
+      "layerId": "71C3434D-2D78-4F1B-80F5-83D08F48D48D",
+      "text": [
+        {
+          "id": "8A98141A-46C1-4790-9F9E-0948F209EF94",
+          "value": "QUEUED"
+        }
+      ]
+    },
+    "lists/list-header-toggle-collapsed-control-light": {
+      "family": "lists",
+      "name": "List Header / Toggle Collapsed / Control / Light",
+      "symbolId": "CACA3F50-C5EB-44F4-9FFD-18EFE21CC6AB",
+      "layerId": "88164922-E76B-42FE-9A05-3DB1AC9EC238",
+      "text": [
+        {
+          "id": "D34E0011-9C0C-45CD-AAF7-00A24BAD4A29",
+          "value": "ARCHIVED"
+        }
+      ]
+    },
+    "lists/list-header-toggle-collapsed-control-dark": {
+      "family": "lists",
+      "name": "List Header / Toggle Collapsed / Control / Dark",
+      "symbolId": "A2649B30-6E32-4E32-BF8C-0021B7A8F521",
+      "layerId": "36C3E52C-5F0E-47B0-804D-85406B184AF4",
+      "text": [
+        {
+          "id": "DA5C3E0A-57A7-4B6A-8E26-E25D82C7AC03",
+          "value": "ARCHIVED"
+        }
+      ]
+    },
+    "lists/list-header-toggle-expanded-control-light": {
+      "family": "lists",
+      "name": "List Header / Toggle Expanded / Control / Light",
+      "symbolId": "EC20166C-54BF-46F4-AE14-273C2CC1EE7B",
+      "layerId": "73CE7B93-358B-4D27-BEBB-242E37307204",
+      "text": [
+        {
+          "id": "10329397-1CAD-4355-9401-83AD1C0B7C91",
+          "value": "RECENT"
+        },
+        {
+          "id": "30585CA2-4AC2-4210-8825-9EC813CC5D8B",
+          "value": "5"
+        }
+      ]
+    },
+    "lists/list-header-toggle-expanded-control-dark": {
+      "family": "lists",
+      "name": "List Header / Toggle Expanded / Control / Dark",
+      "symbolId": "D347741A-1D85-4B16-9A99-5F7FB5222E36",
+      "layerId": "8BC96FFC-0ABF-4133-92B3-DC964D5F4B4A",
+      "text": [
+        {
+          "id": "35736988-CE4D-48E6-9C4B-6961F72FC5CA",
+          "value": "RECENT"
+        },
+        {
+          "id": "9321900B-3E03-4DF9-8DB5-064A9FE2ECF7",
+          "value": "5"
+        }
+      ]
+    },
+    "lists/list-action-row-default-control-light": {
+      "family": "lists",
+      "name": "List Action Row / Default / Control / Light",
+      "symbolId": "C026F4B8-FA0F-4F6A-B04A-34B502540386",
+      "layerId": "2659E94B-34E0-4178-AF26-2B16CFD7EB7E",
+      "text": [
+        {
+          "id": "FE111614-FB5F-43E0-9279-51A6A79D72FE",
+          "value": "staging.example.com"
+        }
+      ]
+    },
+    "lists/list-action-row-default-control-dark": {
+      "family": "lists",
+      "name": "List Action Row / Default / Control / Dark",
+      "symbolId": "2C96EA4A-07E6-4BFF-A86C-45DB6CD002EE",
+      "layerId": "7ABAEA84-476D-4878-A63A-C40BE29905D8",
+      "text": [
+        {
+          "id": "6A8D46F2-D997-49CB-9DBB-DC2AED2426D7",
+          "value": "staging.example.com"
+        }
+      ]
+    },
+    "lists/list-action-row-selected-control-light": {
+      "family": "lists",
+      "name": "List Action Row / Selected / Control / Light",
+      "symbolId": "898475AD-48F8-426B-B546-93DA8E6FEF81",
+      "layerId": "A07BF24C-26C6-443B-A412-E5064B342F87",
+      "text": [
+        {
+          "id": "79ED9898-706D-4D99-B52F-AE02C895180A",
+          "value": "production.example.com"
+        }
+      ]
+    },
+    "lists/list-action-row-selected-control-dark": {
+      "family": "lists",
+      "name": "List Action Row / Selected / Control / Dark",
+      "symbolId": "C9C8176E-FE9E-4BF6-B9C3-5B287C6AA68B",
+      "layerId": "7FDAE7E7-773A-4D63-B112-E63217243DF4",
+      "text": [
+        {
+          "id": "7FE4D81B-838C-476D-9DC6-8711E225029E",
+          "value": "production.example.com"
+        }
+      ]
+    },
+    "lists/list-action-row-trailing-menu-control-light": {
+      "family": "lists",
+      "name": "List Action Row / Trailing Menu / Control / Light",
+      "symbolId": "2BADC37C-13CA-484E-8195-B0EA72D42F89",
+      "layerId": "97240538-4F55-4D53-AA0D-8D91AB92F797",
+      "text": [
+        {
+          "id": "F61B5202-7D5F-4F23-8F74-5B857A2600B8",
+          "value": "preview.example.com"
+        }
+      ]
+    },
+    "lists/list-action-row-trailing-menu-control-dark": {
+      "family": "lists",
+      "name": "List Action Row / Trailing Menu / Control / Dark",
+      "symbolId": "B5255DB8-B84A-485D-A531-2DC1D30A996E",
+      "layerId": "16013612-306B-40CD-86F1-57A32483EBC3",
+      "text": [
+        {
+          "id": "15426A79-FD03-4A22-8C2A-087124795D42",
+          "value": "preview.example.com"
+        }
+      ]
+    },
+    "lists/list-action-row-icon-tile-control-light": {
+      "family": "lists",
+      "name": "List Action Row / Icon Tile / Control / Light",
+      "symbolId": "27EC6442-31BD-4D57-B44B-00A0695F0146",
+      "layerId": "D9A2186C-A5BF-4139-A198-D47A5DD1370E",
+      "text": [
+        {
+          "id": "D75213CF-6CFB-45DB-B1D2-D0024339C461",
+          "value": "Deploy Preview"
+        }
+      ]
+    },
+    "lists/list-action-row-icon-tile-control-dark": {
+      "family": "lists",
+      "name": "List Action Row / Icon Tile / Control / Dark",
+      "symbolId": "104B55DB-7869-45ED-BC3D-5397FB8C5F88",
+      "layerId": "B6A25AFC-A1B8-455B-907C-8149B822C637",
+      "text": [
+        {
+          "id": "895DAB47-4D35-4DF1-B2EE-E1107F206353",
+          "value": "Deploy Preview"
+        }
+      ]
+    },
+    "lists/value-table-details-control-light": {
+      "family": "lists",
+      "name": "Value Table / Details / Control / Light",
+      "symbolId": "626BD10F-DF2C-4194-9FB2-00A7E85FE976",
+      "layerId": "43DAFBE3-DC7C-4832-AEDF-CD5981A1F0D3",
+      "text": [
+        {
+          "id": "19CFBE5E-06A5-4DDA-8AC4-1E0CD30B09AE",
+          "value": "Status"
+        },
+        {
+          "id": "9F1F4642-A563-4CEE-9FF4-CDA178F3A5F2",
+          "value": "Live"
+        },
+        {
+          "id": "9BB4E233-5EF4-4CBC-A2EB-0E997428D1FC",
+          "value": "Environment"
+        },
+        {
+          "id": "7026A693-F773-4225-A728-12CC11706AD7",
+          "value": "Production"
+        },
+        {
+          "id": "8690A37A-4004-4B4D-AC94-49B1EA232332",
+          "value": "Region"
+        },
+        {
+          "id": "6E699863-3297-448F-8E3A-3768B2650406",
+          "value": "us-east-1"
+        },
+        {
+          "id": "EED4583D-1CA3-4021-83B9-8446AC3A9F25",
+          "value": "Last Deploy"
+        },
+        {
+          "id": "CC03AD48-626B-4E09-A4D9-EB335BD84995",
+          "value": "2 hours ago"
+        }
+      ]
+    },
+    "lists/value-table-details-control-dark": {
+      "family": "lists",
+      "name": "Value Table / Details / Control / Dark",
+      "symbolId": "232E685C-CCC7-4CFB-9FEC-ACF2926BBA6E",
+      "layerId": "413EBE99-F2EC-4A30-91ED-92ACF71A4733",
+      "text": [
+        {
+          "id": "B0709639-D3E0-4C66-9CB3-1ADAB27BFCB2",
+          "value": "Status"
+        },
+        {
+          "id": "28C3E1F0-2A25-47E1-AABE-815ECF9BF543",
+          "value": "Live"
+        },
+        {
+          "id": "7B0C082C-B361-49C8-83D8-83B4D69A8EBA",
+          "value": "Environment"
+        },
+        {
+          "id": "C5A1BF0A-7F98-460E-A59B-A6C9D38B07D0",
+          "value": "Production"
+        },
+        {
+          "id": "2272345C-188D-4935-8D8F-DAA0FB868B04",
+          "value": "Region"
+        },
+        {
+          "id": "2C08FF72-5C5A-4CE7-B31C-457FF209653E",
+          "value": "us-east-1"
+        },
+        {
+          "id": "347C7247-9E54-489B-BC15-176A2D2095B3",
+          "value": "Last Deploy"
+        },
+        {
+          "id": "ED21E3D6-B9BB-434E-8C2B-1BF92CEE0DC7",
+          "value": "2 hours ago"
+        }
+      ]
+    },
+    "toolbar/toolbar-control-group-icon-tile-neutral-control-light": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / Icon Tile Neutral / Control / Light",
+      "symbolId": "F17349EA-D667-4209-839F-D20C6C69E4AE",
+      "layerId": "DF63C9B8-0DBA-46E2-B36C-019FC990CA29",
+      "text": []
+    },
+    "toolbar/toolbar-control-group-icon-tile-neutral-control-dark": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / Icon Tile Neutral / Control / Dark",
+      "symbolId": "894BD343-1B0F-49AD-8D95-A783C3396633",
+      "layerId": "30CF99F3-36B9-4F01-B851-D164CC0885CF",
+      "text": []
+    },
+    "toolbar/toolbar-control-group-icon-tile-brand-control-light": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / Icon Tile Brand / Control / Light",
+      "symbolId": "66639FBC-EC68-43BC-8B52-06DD0BD1AE21",
+      "layerId": "9A8022D6-4014-4354-AC88-F4CE06593A19",
+      "text": []
+    },
+    "toolbar/toolbar-control-group-icon-tile-brand-control-dark": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / Icon Tile Brand / Control / Dark",
+      "symbolId": "378617E2-4476-40F6-B056-7F4C70B05959",
+      "layerId": "1F46E48A-B9D0-4D80-A2D1-39BDC09FD2CB",
+      "text": []
+    },
+    "toolbar/toolbar-control-group-icon-tile-success-control-light": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / Icon Tile Success / Control / Light",
+      "symbolId": "9AA1022B-CDB4-4244-97C1-91B65286F063",
+      "layerId": "790ACE9D-6BDB-4032-B785-0304199D6429",
+      "text": []
+    },
+    "toolbar/toolbar-control-group-icon-tile-success-control-dark": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / Icon Tile Success / Control / Dark",
+      "symbolId": "8C2603F9-9D4D-4251-B7EF-FDDC580A4483",
+      "layerId": "27C29A2F-C81D-465A-A807-B0F6D018723A",
+      "text": []
+    },
+    "toolbar/toolbar-control-group-icon-tile-warning-control-light": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / Icon Tile Warning / Control / Light",
+      "symbolId": "FEEF293B-8140-4039-AADA-C707458AD3F1",
+      "layerId": "A93BAA1D-F9C0-4582-9DD9-11E5578C83E7",
+      "text": []
+    },
+    "toolbar/toolbar-control-group-icon-tile-warning-control-dark": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / Icon Tile Warning / Control / Dark",
+      "symbolId": "0EA5A121-B792-4E3E-B054-8F363FF82415",
+      "layerId": "0A8F2CF3-6509-497B-A882-7909093A336A",
+      "text": []
+    },
+    "toolbar/toolbar-control-group-icon-tile-danger-control-light": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / Icon Tile Danger / Control / Light",
+      "symbolId": "5D6F3419-160B-4B74-8848-88043755EA85",
+      "layerId": "0DF195B6-F1F0-46F5-9A7D-F7094540E334",
+      "text": []
+    },
+    "toolbar/toolbar-control-group-icon-tile-danger-control-dark": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / Icon Tile Danger / Control / Dark",
+      "symbolId": "0094DC95-78B7-46D3-B22D-7168B4BCE104",
+      "layerId": "69B0A829-299A-46FC-8EA7-6317CF649DF8",
+      "text": []
+    },
+    "toolbar/toolbar-control-group-icon-buttons-control-light": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / Icon Buttons / Control / Light",
+      "symbolId": "5DF7E71B-5BBA-43DF-AC26-23DAD026EFAF",
+      "layerId": "44B48B3D-7524-42DA-B3B1-2EAB3A3AFCE3",
+      "text": []
+    },
+    "toolbar/toolbar-control-group-icon-buttons-control-dark": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / Icon Buttons / Control / Dark",
+      "symbolId": "1167C17E-DC78-4350-8FC6-F8ED79F67D9B",
+      "layerId": "47222022-976D-4540-9D1A-8B4C3D291244",
+      "text": []
+    },
+    "toolbar/toolbar-control-group-borderless-single-control-light": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / Borderless Single / Control / Light",
+      "symbolId": "E9088DB2-90FC-4846-800F-E7805F61A610",
+      "layerId": "90BC21AE-B6D1-4CD0-8FA6-C0A615741228",
+      "text": []
+    },
+    "toolbar/toolbar-control-group-borderless-single-control-dark": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / Borderless Single / Control / Dark",
+      "symbolId": "29A96833-B284-4160-B2A3-6C9B309A8E16",
+      "layerId": "56E9DDDC-E975-4586-9162-BC94694F5A89",
+      "text": []
+    },
+    "toolbar/toolbar-control-group-with-text-control-light": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / With Text / Control / Light",
+      "symbolId": "3F8B98D0-0BA0-4D1F-A78A-1488399B7866",
+      "layerId": "2EEFCE2F-B379-47D7-AEA4-FB314EBC8131",
+      "text": [
+        {
+          "id": "8C1C23FE-0B4A-4214-859C-1F4610990B52",
+          "value": "Workspace"
+        }
+      ]
+    },
+    "toolbar/toolbar-control-group-with-text-control-dark": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / With Text / Control / Dark",
+      "symbolId": "C3C549F2-CA43-442E-A502-CC0FDA8B8C13",
+      "layerId": "B5A02D70-6EA8-4A87-AC73-C17B6128C0CC",
+      "text": [
+        {
+          "id": "954ADF83-8C7E-4518-9703-9193FC1335B3",
+          "value": "Workspace"
+        }
+      ]
+    },
+    "toolbar/toolbar-control-group-glass-control-light": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / Glass / Control / Light",
+      "symbolId": "AC26EC81-3AAF-41E5-810C-95C2FD295986",
+      "layerId": "D44DAFF0-381A-4A54-A897-366A534293CF",
+      "text": []
+    },
+    "toolbar/toolbar-control-group-glass-control-dark": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / Glass / Control / Dark",
+      "symbolId": "5DD513CC-18F4-4624-A596-14A3AB0968C9",
+      "layerId": "47D39F06-3F75-4C79-9D8D-9E982D407731",
+      "text": []
+    },
+    "toolbar/toolbar-control-group-push-buttons-control-light": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / Push Buttons / Control / Light",
+      "symbolId": "B9510303-12C1-4D1B-9087-A1C483A20982",
+      "layerId": "05288839-95D5-4658-987B-D897E2AE9C69",
+      "text": []
+    },
+    "toolbar/toolbar-control-group-push-buttons-control-dark": {
+      "family": "toolbar",
+      "name": "Toolbar Control Group / Push Buttons / Control / Dark",
+      "symbolId": "9D2C616B-76C2-4443-98A4-1408A7132413",
+      "layerId": "DB819B1C-57B6-49F7-BF87-A2FB7D8AF8F5",
+      "text": []
+    },
+    "toolbar/toolbar-title-and-actions-control-light": {
+      "family": "toolbar",
+      "name": "Toolbar / Title And Actions / Control / Light",
+      "symbolId": "A339C8AD-857B-47C0-80F2-CBF5ADC14D6E",
+      "layerId": "5BC82729-8D52-4844-AA65-2FC08C48536B",
+      "text": [
+        {
+          "id": "22C30F99-C8E6-4D55-9F5B-DD9511E55591",
+          "value": "Northstar"
+        }
+      ]
+    },
+    "toolbar/toolbar-title-and-actions-control-dark": {
+      "family": "toolbar",
+      "name": "Toolbar / Title And Actions / Control / Dark",
+      "symbolId": "FE0C2525-20AA-45F4-BCFD-2F968ED5D172",
+      "layerId": "3C50C720-CE42-428E-81E1-4BBBB5ED83A7",
+      "text": [
+        {
+          "id": "EF553060-ECD9-4FBB-94BF-9FAF3AEF741D",
+          "value": "Northstar"
+        }
+      ]
+    },
+    "toolbar/toolbar-width-visibility-600-control-light": {
+      "family": "toolbar",
+      "name": "Toolbar / Width Visibility 600 / Control / Light",
+      "symbolId": "3D95438B-5C27-4825-BD82-A60D3B8DD034",
+      "layerId": "72D8AC45-63D2-432C-8808-5FFF73A22E19",
+      "text": [
+        {
+          "id": "B3FE4FD8-9DC0-489F-A728-0DF967D7D330",
+          "value": "Workspace"
+        }
+      ]
+    },
+    "toolbar/toolbar-width-visibility-600-control-dark": {
+      "family": "toolbar",
+      "name": "Toolbar / Width Visibility 600 / Control / Dark",
+      "symbolId": "B7023E6A-731A-40E1-9E7C-5F0FF9C68B19",
+      "layerId": "70B8F31F-835B-45AE-B271-096B7CD4E01A",
+      "text": [
+        {
+          "id": "C4F0DDEB-9A4F-41DF-A674-1E4A5D0266E2",
+          "value": "Workspace"
+        }
+      ]
+    },
+    "toolbar/toolbar-width-visibility-320-control-light": {
+      "family": "toolbar",
+      "name": "Toolbar / Width Visibility 320 / Control / Light",
+      "symbolId": "D34330AA-BD5C-44FE-9B9C-E3EB88BC590D",
+      "layerId": "07040D16-78DF-4804-8973-994C4ECB47C3",
+      "text": [
+        {
+          "id": "2B768F5B-FFE6-4013-9755-119AE7C820C4",
+          "value": "Workspace"
+        }
+      ]
+    },
+    "toolbar/toolbar-width-visibility-320-control-dark": {
+      "family": "toolbar",
+      "name": "Toolbar / Width Visibility 320 / Control / Dark",
+      "symbolId": "AC05C6AF-AFBA-4D69-BF65-88F7A86E57AE",
+      "layerId": "53D6DA70-5784-4719-AA15-078225565628",
+      "text": [
+        {
+          "id": "0198111C-B2B9-4741-BBB7-35F9F6008144",
+          "value": "Workspace"
+        }
+      ]
+    },
+    "toolbar/toolbar-text-dark-tone-control-light": {
+      "family": "toolbar",
+      "name": "Toolbar Text / Dark Tone / Control / Light",
+      "symbolId": "1D06A955-44BA-4B09-93F3-551AAC3D7334",
+      "layerId": "88A89569-19A5-4528-9711-D035F3F05818",
+      "text": [
+        {
+          "id": "91668254-29F4-40C4-AC6F-FAEBF4DC5C4A",
+          "value": "Quarterly report.pdf"
+        }
+      ]
+    },
+    "toolbar/toolbar-text-dark-tone-control-dark": {
+      "family": "toolbar",
+      "name": "Toolbar Text / Dark Tone / Control / Dark",
+      "symbolId": "856B540C-D3A7-4FAF-AEBE-FEED1C3FCB87",
+      "layerId": "DE1334FF-E7FC-4E9E-B4DE-12E1450562A0",
+      "text": [
+        {
+          "id": "26AAB572-020F-4B97-AA54-6D0D5B09434F",
+          "value": "Quarterly report.pdf"
+        }
+      ]
+    },
+    "toolbar/toolbar-text-large-control-light": {
+      "family": "toolbar",
+      "name": "Toolbar Text / Large / Control / Light",
+      "symbolId": "7CAE4308-03AD-4E83-8FFC-CD9C23B19F33",
+      "layerId": "CBB8023B-2559-413C-B415-85C6C0DB61DD",
+      "text": [
+        {
+          "id": "E58E59FA-5999-4CE8-AB40-6077CBC2331A",
+          "value": "Northstar Migration"
+        }
+      ]
+    },
+    "toolbar/toolbar-text-large-control-dark": {
+      "family": "toolbar",
+      "name": "Toolbar Text / Large / Control / Dark",
+      "symbolId": "7F8C0EE3-4C28-412E-AB5F-354E5670C1CE",
+      "layerId": "7C8E8EB9-912A-4877-AF93-8DD733DC55F9",
+      "text": [
+        {
+          "id": "182B1B55-8F5A-4B74-B4BE-2FF6915525BF",
+          "value": "Northstar Migration"
+        }
+      ]
+    },
+    "toolbar/toolbar-text-default-control-light": {
+      "family": "toolbar",
+      "name": "Toolbar Text / Default / Control / Light",
+      "symbolId": "E5C9000A-1DC1-4F20-A222-17CB6C0C21FE",
+      "layerId": "2001542C-374B-4D61-A017-92127C2D85FF",
+      "text": [
+        {
+          "id": "57C240BB-0A90-47B3-9377-8E49DC3CF00B",
+          "value": "Workspace Settings"
+        }
+      ]
+    },
+    "toolbar/toolbar-text-default-control-dark": {
+      "family": "toolbar",
+      "name": "Toolbar Text / Default / Control / Dark",
+      "symbolId": "786D4DD6-17A1-429F-9B2D-C1537D2D77B2",
+      "layerId": "74F151E3-084C-42EC-A8C3-AC18B6D1872E",
+      "text": [
+        {
+          "id": "9CA00939-D829-4785-893D-9F97DF81FBF6",
+          "value": "Workspace Settings"
+        }
+      ]
+    },
+    "toolbar/toolbar-text-small-control-light": {
+      "family": "toolbar",
+      "name": "Toolbar Text / Small / Control / Light",
+      "symbolId": "3C13A1C9-7B7B-474B-B458-6DCC7DFA6291",
+      "layerId": "A711B8E7-2407-45DF-A2DD-A1B837C1DCEE",
+      "text": [
+        {
+          "id": "CCC0F9F0-BBD5-4E52-8715-1858A1BE5E66",
+          "value": "Filters"
+        }
+      ]
+    },
+    "toolbar/toolbar-text-small-control-dark": {
+      "family": "toolbar",
+      "name": "Toolbar Text / Small / Control / Dark",
+      "symbolId": "B166B027-AC0D-49F3-824D-E74BEB16D962",
+      "layerId": "EDB1726A-D8A1-408A-ACAC-0B27214209A4",
+      "text": [
+        {
+          "id": "13F72F72-661A-462C-A732-1721709B035A",
+          "value": "Filters"
+        }
+      ]
+    },
+    "toolbar/tab-bar-workspace-tabs-control-light": {
+      "family": "toolbar",
+      "name": "Tab Bar / Workspace Tabs / Control / Light",
+      "symbolId": "9D36DF99-29B5-4E57-82C9-DFCC4F468489",
+      "layerId": "7CC8A7A2-95FD-417A-8312-45A268A97652",
+      "text": [
+        {
+          "id": "93E8A183-3D61-4369-8D9C-FD13B4893EF7",
+          "value": "README.md"
+        },
+        {
+          "id": "741C013A-32AC-4817-8422-F2AEA39658D1",
+          "value": "index.ts"
+        },
+        {
+          "id": "C16CB75D-6824-4ED9-A604-2A4430C88187",
+          "value": "styles.css"
+        }
+      ]
+    },
+    "toolbar/tab-bar-workspace-tabs-control-dark": {
+      "family": "toolbar",
+      "name": "Tab Bar / Workspace Tabs / Control / Dark",
+      "symbolId": "0ABF09DD-D2A9-46AA-92E6-BE273EA2895C",
+      "layerId": "7DB07E33-34C7-4A6F-8A27-4B9D0A71DE76",
+      "text": [
+        {
+          "id": "C3E6906F-A4BA-4667-A3D5-C439715EB951",
+          "value": "README.md"
+        },
+        {
+          "id": "95A8D6BD-5B4A-4450-A56C-DB11DFD3E868",
+          "value": "index.ts"
+        },
+        {
+          "id": "66F024DE-E472-47ED-B548-666CBF0BA030",
+          "value": "styles.css"
+        }
+      ]
+    },
+    "toolbar/segmented-control-equal-control-light": {
+      "family": "toolbar",
+      "name": "Segmented Control / Equal / Control / Light",
+      "symbolId": "22230AC7-4230-4302-B18F-C8BEB7C98994",
+      "layerId": "698CD92A-AAA8-4C97-BD4A-5AFA71C7059B",
+      "text": [
+        {
+          "id": "88798DBF-A8C2-4239-B55E-962EE1C92A42",
+          "value": "Board"
+        },
+        {
+          "id": "908E3C2E-75DE-4F41-B615-5F5B6980F55B",
+          "value": "List"
+        },
+        {
+          "id": "C5BE5888-BA02-4611-94C1-38D7B5C7413A",
+          "value": "Timeline"
+        }
+      ]
+    },
+    "toolbar/segmented-control-equal-control-dark": {
+      "family": "toolbar",
+      "name": "Segmented Control / Equal / Control / Dark",
+      "symbolId": "6B98BCB2-881A-4F0A-A44A-7267A82E9A65",
+      "layerId": "25A2978D-8D97-4B8E-AAA0-6A51BBADC483",
+      "text": [
+        {
+          "id": "4BBB14A7-D797-4A8D-A330-A55DA65F5D31",
+          "value": "Board"
+        },
+        {
+          "id": "5F75F7C6-604F-4FCE-B490-358712495D30",
+          "value": "List"
+        },
+        {
+          "id": "24B67E8B-C0CF-4AA8-A954-6BE0B6840307",
+          "value": "Timeline"
+        }
+      ]
+    },
+    "toolbar/segmented-control-pill-small-control-light": {
+      "family": "toolbar",
+      "name": "Segmented Control / Pill Small / Control / Light",
+      "symbolId": "94F3732B-BBB9-47DB-95BB-C4A965DC49C6",
+      "layerId": "B8C88174-F425-4A67-8C9E-4DE507C063A1",
+      "text": [
+        {
+          "id": "66FB6989-D3CD-449D-9A26-0EA11ED099BA",
+          "value": "Day"
+        },
+        {
+          "id": "A2BF4517-5F40-4E12-A7EA-1015A8FACB94",
+          "value": "Week"
+        },
+        {
+          "id": "FD2547F3-063E-4BAA-BD02-EECFF0B0B703",
+          "value": "Month"
+        }
+      ]
+    },
+    "toolbar/segmented-control-pill-small-control-dark": {
+      "family": "toolbar",
+      "name": "Segmented Control / Pill Small / Control / Dark",
+      "symbolId": "1BB2DE95-5B4B-45A0-84AB-714B7F32825D",
+      "layerId": "D7723991-DBB4-4869-AF5E-79DC899F0892",
+      "text": [
+        {
+          "id": "30A61A56-55E3-4DB7-B0E7-B65854ABD746",
+          "value": "Day"
+        },
+        {
+          "id": "90460C71-8447-478C-98D2-D160D63E141B",
+          "value": "Week"
+        },
+        {
+          "id": "216254AC-4A2A-4776-B5BD-DE478A6F2E31",
+          "value": "Month"
+        }
+      ]
+    },
+    "toolbar/choice-chips-color-palette-control-light": {
+      "family": "toolbar",
+      "name": "Choice Chips / Color Palette / Control / Light",
+      "symbolId": "D904E01C-3DD9-44C1-87E9-217EB3ED0E78",
+      "layerId": "DF07CC59-3A1C-46F6-B83A-D24DCD0C1063",
+      "text": [
+        {
+          "id": "E62F31E9-64AC-4028-9F4B-348737544651",
+          "value": "Transparent"
+        },
+        {
+          "id": "239A4654-269F-4668-B19D-1B607F937B8A",
+          "value": "Blue"
+        },
+        {
+          "id": "19B811E8-2A2A-43FF-99A0-48E8804D8534",
+          "value": "Green"
+        },
+        {
+          "id": "4A60FC21-6B13-40C2-A7DF-F675C36D8CCB",
+          "value": "Orange"
+        },
+        {
+          "id": "50921D29-F558-4874-AEE0-C93ED7D89DCE",
+          "value": "Red"
+        },
+        {
+          "id": "80F071AB-50D9-4269-9F0A-724D8D0F9DB3",
+          "value": "Purple"
+        },
+        {
+          "id": "380C8AD7-52F5-4A04-8E40-8B1864B05D9F",
+          "value": "Pink"
+        },
+        {
+          "id": "EC3BD787-BDF5-4927-8B5C-1F921A53C285",
+          "value": "Teal"
+        },
+        {
+          "id": "778EF1C4-622F-459F-B9C5-E56578D327E4",
+          "value": "Gray"
+        }
+      ]
+    },
+    "toolbar/choice-chips-color-palette-control-dark": {
+      "family": "toolbar",
+      "name": "Choice Chips / Color Palette / Control / Dark",
+      "symbolId": "2BB03EBC-522B-4BFA-B68C-9953D671CAE3",
+      "layerId": "DBB67C50-46B0-4DCC-89A3-9B444EAB4DA7",
+      "text": [
+        {
+          "id": "7131AD72-76AD-441A-962C-9F8E0925BD8F",
+          "value": "Transparent"
+        },
+        {
+          "id": "4E4F9790-ACFB-4696-B2BA-10670E968438",
+          "value": "Blue"
+        },
+        {
+          "id": "5098EAC7-50A1-4817-8E28-7ADEAC0BD0CE",
+          "value": "Green"
+        },
+        {
+          "id": "EFC4746B-6C80-4962-B1FF-F8A863FA9604",
+          "value": "Orange"
+        },
+        {
+          "id": "78AF11AA-2E9A-41D4-96E0-C710EACCE81C",
+          "value": "Red"
+        },
+        {
+          "id": "D24D435D-3C41-416D-A74B-0033E327BE14",
+          "value": "Purple"
+        },
+        {
+          "id": "DBA984D3-3525-41B3-BA76-C2B097992FD4",
+          "value": "Pink"
+        },
+        {
+          "id": "0B423050-6606-4936-B121-C1C57743506B",
+          "value": "Teal"
+        },
+        {
+          "id": "50E55A2B-DEDC-4DE5-B6D0-34A251F98185",
+          "value": "Gray"
+        }
+      ]
+    },
+    "toolbar/choice-chips-compact-icons-control-light": {
+      "family": "toolbar",
+      "name": "Choice Chips / Compact Icons / Control / Light",
+      "symbolId": "FBF9279C-CDC4-40FC-A96A-36AF12719BD4",
+      "layerId": "B6002714-B215-48C9-B0BF-0E380C3CDEB5",
+      "text": [
+        {
+          "id": "7F851EBB-4C07-4C95-9EBB-98F147977630",
+          "value": "Board"
+        },
+        {
+          "id": "F8219738-7716-4CD1-9A29-578ECD72827A",
+          "value": "List"
+        }
+      ]
+    },
+    "toolbar/choice-chips-compact-icons-control-dark": {
+      "family": "toolbar",
+      "name": "Choice Chips / Compact Icons / Control / Dark",
+      "symbolId": "3A26F151-8613-485D-B02D-CCFA3C97C63F",
+      "layerId": "8A50399C-9B28-4659-985F-C4D3A70483C3",
+      "text": [
+        {
+          "id": "182C2921-5BF5-4FA9-B375-9992E59374B5",
+          "value": "Board"
+        },
+        {
+          "id": "FCC16A47-A44E-466C-97BD-86E80379E494",
+          "value": "List"
+        }
+      ]
+    },
+    "toolbar/choice-chips-multiple-control-light": {
+      "family": "toolbar",
+      "name": "Choice Chips / Multiple / Control / Light",
+      "symbolId": "712C48A1-102D-4D98-88B2-F220A91E339D",
+      "layerId": "5E053A20-29DF-4296-8F1C-1CD4BC5C3665",
+      "text": [
+        {
+          "id": "16E0D870-355A-4D17-84EF-1B3BD1BABD05",
+          "value": "Bug"
+        },
+        {
+          "id": "034BAFEC-EAE1-4CA4-A859-A6201E566A72",
+          "value": "Feature"
+        },
+        {
+          "id": "0AC2E134-7F24-452D-B789-C613FC258721",
+          "value": "Docs"
+        },
+        {
+          "id": "F3DA3B8A-CDA3-42ED-9BAC-FFC4B7E614BB",
+          "value": "Design"
+        },
+        {
+          "id": "37C51E64-14EA-43DE-958D-1B7431E1C146",
+          "value": "Chore"
+        }
+      ]
+    },
+    "toolbar/choice-chips-multiple-control-dark": {
+      "family": "toolbar",
+      "name": "Choice Chips / Multiple / Control / Dark",
+      "symbolId": "C19F13D2-7013-4959-85E3-898A365BA0D7",
+      "layerId": "E63D6128-B5CF-4778-B0AA-B81FA1D3C2D3",
+      "text": [
+        {
+          "id": "6B988C24-43CA-4286-9E7E-BAB16E559DB5",
+          "value": "Bug"
+        },
+        {
+          "id": "EAFA3B40-FB73-4E51-865F-F895EAF48FC0",
+          "value": "Feature"
+        },
+        {
+          "id": "7E7958DC-5D6F-4C30-A06D-E8BF49AE9FB0",
+          "value": "Docs"
+        },
+        {
+          "id": "D9BED6CE-83BA-4241-BE39-389CEA802CA0",
+          "value": "Design"
+        },
+        {
+          "id": "E424F1CA-A183-4155-B98E-252278EEAA80",
+          "value": "Chore"
+        }
+      ]
+    },
+    "toolbar/chip-tags-urgent-light": {
+      "family": "toolbar",
+      "name": "Chip / Tags / Urgent / Light",
+      "symbolId": "887E133E-8179-48EE-8A62-369A864B9B3D",
+      "layerId": "970A63F8-B8E1-4C7B-8FC7-3895110616DE",
+      "text": [
+        {
+          "id": "CF76F183-4AE3-4F2B-83DC-5083C3C5C9F7",
+          "value": "Urgent"
+        }
+      ]
+    },
+    "toolbar/chip-tags-report-file-light": {
+      "family": "toolbar",
+      "name": "Chip / Tags / Report File / Light",
+      "symbolId": "60D2276F-8851-488C-B9E7-1D76B22F0252",
+      "layerId": "082E6692-F3B6-4732-85BC-E0C0F2B1B3B9",
+      "text": [
+        {
+          "id": "71FBE1E1-B11F-43E6-884B-07BD513D60EC",
+          "value": "report.md"
+        }
+      ]
+    },
+    "toolbar/chip-tags-backlog-light": {
+      "family": "toolbar",
+      "name": "Chip / Tags / Backlog / Light",
+      "symbolId": "C496464A-D6A1-47C7-B10E-551D30C19A44",
+      "layerId": "1584D25C-4EA8-4D1B-B248-32F41BE2BB17",
+      "text": [
+        {
+          "id": "37938288-7375-401F-9AD4-1CE42FAC122A",
+          "value": "Backlog"
+        }
+      ]
+    },
+    "toolbar/chip-tags-urgent-dark": {
+      "family": "toolbar",
+      "name": "Chip / Tags / Urgent / Dark",
+      "symbolId": "9AAB1AB4-3C61-4061-A745-BEB461F1A19B",
+      "layerId": "A8082067-98EF-4A8A-817C-E1B62706F62F",
+      "text": [
+        {
+          "id": "D6BE8ABD-F14A-4FAD-BAAE-BFC0E5506AA7",
+          "value": "Urgent"
+        }
+      ]
+    },
+    "toolbar/chip-tags-report-file-dark": {
+      "family": "toolbar",
+      "name": "Chip / Tags / Report File / Dark",
+      "symbolId": "FAAAA0CA-9FD8-4B74-969C-379DB775095F",
+      "layerId": "D1BD0F7D-0BF7-44F8-BB2C-72DA4BF13211",
+      "text": [
+        {
+          "id": "FA719987-DCE0-4222-8B95-2CF4E1915331",
+          "value": "report.md"
+        }
+      ]
+    },
+    "toolbar/chip-tags-backlog-dark": {
+      "family": "toolbar",
+      "name": "Chip / Tags / Backlog / Dark",
+      "symbolId": "DE26B257-1C2D-47F0-85F3-3759C51811D2",
+      "layerId": "54509931-F10D-47B5-807E-235C79AE1ED5",
+      "text": [
+        {
+          "id": "45FD1E5A-CC15-4945-8E46-B865A2406621",
+          "value": "Backlog"
+        }
+      ]
+    },
+    "toolbar/chip-action-filters-is-draft-light": {
+      "family": "toolbar",
+      "name": "Chip / Action Filters / Is Draft / Light",
+      "symbolId": "44845CDB-87A2-432D-A2C3-E70CCF325949",
+      "layerId": "77A0F51C-D1E5-4AC5-9045-2CB0393D3122",
+      "text": [
+        {
+          "id": "2C7DF1AA-D6CB-47E4-94BC-4A84A9680C35",
+          "value": "is:draft"
+        }
+      ]
+    },
+    "toolbar/chip-action-filters-is-sent-light": {
+      "family": "toolbar",
+      "name": "Chip / Action Filters / Is Sent / Light",
+      "symbolId": "75EBB36B-5CE8-4566-8CBD-8F72090FE7ED",
+      "layerId": "F0A89E10-2220-4832-BCD9-A9F9D8D682B2",
+      "text": [
+        {
+          "id": "CC013BDA-9F42-46A5-AA28-35FE44587329",
+          "value": "is:sent"
+        }
+      ]
+    },
+    "toolbar/chip-action-filters-is-awarded-light": {
+      "family": "toolbar",
+      "name": "Chip / Action Filters / Is Awarded / Light",
+      "symbolId": "0C785021-BA4D-42F2-AA1C-2BBBF6A6740E",
+      "layerId": "BC80FBAF-5272-456E-9864-C7A3A1B55174",
+      "text": [
+        {
+          "id": "D6DFD167-6815-4A29-A126-C6BA61A9DE9E",
+          "value": "is:awarded"
+        }
+      ]
+    },
+    "toolbar/chip-action-filters-is-mine-light": {
+      "family": "toolbar",
+      "name": "Chip / Action Filters / Is Mine / Light",
+      "symbolId": "A6938F14-09F3-4501-8200-4BD04C5B8F35",
+      "layerId": "DB732345-703C-438B-A88E-3E2562E6E2F6",
+      "text": [
+        {
+          "id": "F72A0333-B366-4262-A33F-71B6DF11BB4B",
+          "value": "is:mine"
+        }
+      ]
+    },
+    "toolbar/chip-action-filters-is-shared-light": {
+      "family": "toolbar",
+      "name": "Chip / Action Filters / Is Shared / Light",
+      "symbolId": "5C5B00A7-4B91-49B7-8FBA-856E66CA0CFF",
+      "layerId": "2A4AE38C-35E5-4C0B-8E68-EBF89497D255",
+      "text": [
+        {
+          "id": "D468EE16-1DDC-44E2-9B8E-F96EC44F78DE",
+          "value": "is:shared"
+        }
+      ]
+    },
+    "toolbar/chip-action-filters-site-karachi-light": {
+      "family": "toolbar",
+      "name": "Chip / Action Filters / Site Karachi / Light",
+      "symbolId": "9D13996B-2757-477B-924F-BBE56B10B4D4",
+      "layerId": "595CB1CB-4BF8-43D5-B954-2C04695FE52C",
+      "text": [
+        {
+          "id": "E89FCFEC-D6C3-4055-A7D7-FF7826B1D190",
+          "value": "site:Karachi"
+        }
+      ]
+    },
+    "toolbar/chip-action-filters-site-lahore-light": {
+      "family": "toolbar",
+      "name": "Chip / Action Filters / Site Lahore / Light",
+      "symbolId": "59BD7A37-C579-4796-A026-71055C157BE5",
+      "layerId": "D156B497-42F1-4744-B531-851E11CA35C1",
+      "text": [
+        {
+          "id": "0CA57539-0EDC-4657-935A-F0DFDCDFC6A4",
+          "value": "site:Lahore"
+        }
+      ]
+    },
+    "toolbar/chip-action-filters-has-questions-light": {
+      "family": "toolbar",
+      "name": "Chip / Action Filters / Has Questions / Light",
+      "symbolId": "B9294932-CA9C-4610-A5FC-66CE37B566F0",
+      "layerId": "B64727DE-BA5C-4749-BE5E-D785635DB55A",
+      "text": [
+        {
+          "id": "3404638B-8F95-49E6-B33C-48032387EF7D",
+          "value": "has:questions"
+        }
+      ]
+    },
+    "toolbar/chip-action-filters-has-attachments-light": {
+      "family": "toolbar",
+      "name": "Chip / Action Filters / Has Attachments / Light",
+      "symbolId": "B1403E50-EEC3-4454-BCAE-FB0A8C8F497A",
+      "layerId": "8882CA96-2E15-48D6-A704-BAFCE114FF2C",
+      "text": [
+        {
+          "id": "C42A4F0D-5DAD-4EA1-9A6A-D1DC095D7013",
+          "value": "has:attachments"
+        }
+      ]
+    },
+    "toolbar/chip-action-filters-is-draft-dark": {
+      "family": "toolbar",
+      "name": "Chip / Action Filters / Is Draft / Dark",
+      "symbolId": "05ACEC1E-F2AA-40FD-ACFD-246EAC0A7DA7",
+      "layerId": "F338CE0B-8461-4AB3-9D40-1875A970AD8D",
+      "text": [
+        {
+          "id": "5ADBA065-027E-4EE0-AB41-4933BB5EEFA8",
+          "value": "is:draft"
+        }
+      ]
+    },
+    "toolbar/chip-action-filters-is-sent-dark": {
+      "family": "toolbar",
+      "name": "Chip / Action Filters / Is Sent / Dark",
+      "symbolId": "7DE6213C-B2EA-4BA4-884B-375A86D9FEB2",
+      "layerId": "2D497831-EEEB-40E1-948F-61C3E99B3125",
+      "text": [
+        {
+          "id": "CF8D4F5E-2690-4289-B59E-D496E3C796A7",
+          "value": "is:sent"
+        }
+      ]
+    },
+    "toolbar/chip-action-filters-is-awarded-dark": {
+      "family": "toolbar",
+      "name": "Chip / Action Filters / Is Awarded / Dark",
+      "symbolId": "6F384A0B-D6E4-4412-AE1B-6C92C1B3EEBA",
+      "layerId": "80CDAC5F-B931-47E6-ACE4-7E85A575BB17",
+      "text": [
+        {
+          "id": "2D00CC28-7DBB-4501-A7A4-C6AE46CEE7E8",
+          "value": "is:awarded"
+        }
+      ]
+    },
+    "toolbar/chip-action-filters-is-mine-dark": {
+      "family": "toolbar",
+      "name": "Chip / Action Filters / Is Mine / Dark",
+      "symbolId": "ED3D5F66-44B1-4052-839C-950161866E6D",
+      "layerId": "6F7E2D11-D7EE-43DD-84A3-D7F6E8791E72",
+      "text": [
+        {
+          "id": "3798BC15-15D8-4D1F-8622-F60B890B469B",
+          "value": "is:mine"
+        }
+      ]
+    },
+    "toolbar/chip-action-filters-is-shared-dark": {
+      "family": "toolbar",
+      "name": "Chip / Action Filters / Is Shared / Dark",
+      "symbolId": "18A4DEA3-8278-4CA9-8C2B-1D86A039C140",
+      "layerId": "97D85A2C-9CCE-4411-8652-8A5B3F6CE8BC",
+      "text": [
+        {
+          "id": "C0CAA2A8-3166-40DD-8F36-9FA6EC3A4739",
+          "value": "is:shared"
+        }
+      ]
+    },
+    "toolbar/chip-action-filters-site-karachi-dark": {
+      "family": "toolbar",
+      "name": "Chip / Action Filters / Site Karachi / Dark",
+      "symbolId": "343014F5-36E8-4110-A7E9-138D8630B5F1",
+      "layerId": "66DD5C1C-E886-4973-97D1-372CF51D97A0",
+      "text": [
+        {
+          "id": "048C2D17-DD1E-4408-8AA1-4CCFB77779C1",
+          "value": "site:Karachi"
+        }
+      ]
+    },
+    "toolbar/chip-action-filters-site-lahore-dark": {
+      "family": "toolbar",
+      "name": "Chip / Action Filters / Site Lahore / Dark",
+      "symbolId": "7DAAEB6A-5470-49CA-B477-807045C8E9C7",
+      "layerId": "D41CA5B4-EFCF-4D0F-B785-CDA98D2A7AF8",
+      "text": [
+        {
+          "id": "6B593727-9D95-4B59-A157-C00393D92CAE",
+          "value": "site:Lahore"
+        }
+      ]
+    },
+    "toolbar/chip-action-filters-has-questions-dark": {
+      "family": "toolbar",
+      "name": "Chip / Action Filters / Has Questions / Dark",
+      "symbolId": "9E304655-DFA2-4EB1-B22D-E56E1A43E88F",
+      "layerId": "745C6356-335B-49B2-9973-826DA4AC15EC",
+      "text": [
+        {
+          "id": "9209C2C0-27C1-458A-9D93-E220A255BB16",
+          "value": "has:questions"
+        }
+      ]
+    },
+    "toolbar/chip-action-filters-has-attachments-dark": {
+      "family": "toolbar",
+      "name": "Chip / Action Filters / Has Attachments / Dark",
+      "symbolId": "77FC76D8-F285-4866-B81F-821D7A77500A",
+      "layerId": "5A16A7EC-F254-43F1-BA62-E7698359C8CB",
+      "text": [
+        {
+          "id": "241DA3B0-8D4F-4D36-87D6-4948E18AFC9E",
+          "value": "has:attachments"
+        }
+      ]
+    },
+    "content/disclosure-plain-advanced-settings-light": {
+      "family": "content",
+      "name": "Disclosure / Plain / Advanced Settings / Light",
+      "symbolId": "39FF4AC9-76EB-4018-864D-437C8536BEBF",
+      "layerId": "211E688B-9BB7-4E50-8061-A562C72A0490",
+      "text": [
+        {
+          "id": "0F897694-1DC3-479D-8F1C-344D399DE79C",
+          "value": "Advanced Settings"
+        },
+        {
+          "id": "8AAA41D2-8A93-4DDC-A609-628BE54B8EE2",
+          "value": "3 options"
+        }
+      ]
+    },
+    "content/disclosure-plain-release-notes-light": {
+      "family": "content",
+      "name": "Disclosure / Plain / Release Notes / Light",
+      "symbolId": "223B1795-A2C9-48E8-8AB5-84A8F78AF9D8",
+      "layerId": "BE8ACC77-33C0-4432-9238-2E609C45F0AF",
+      "text": [
+        {
+          "id": "A282013E-C6DF-4EB9-BC9D-D38602168FEC",
+          "value": "Release Notes"
+        },
+        {
+          "id": "4CB1A8B6-A4CC-46A5-AF71-3DF028B381F6",
+          "value": "Faster sync and four fixes."
+        }
+      ]
+    },
+    "content/disclosure-plain-advanced-settings-dark": {
+      "family": "content",
+      "name": "Disclosure / Plain / Advanced Settings / Dark",
+      "symbolId": "EBA8A186-6455-43BB-84EB-52D96D982CD4",
+      "layerId": "B5C54CA8-1A2C-4386-B2ED-924541F208C3",
+      "text": [
+        {
+          "id": "6196DDAD-DFD0-4B10-824C-801DC4AE6E7C",
+          "value": "Advanced Settings"
+        },
+        {
+          "id": "098B97B5-3DF8-476B-9527-5D75E989248B",
+          "value": "3 options"
+        }
+      ]
+    },
+    "content/disclosure-plain-release-notes-dark": {
+      "family": "content",
+      "name": "Disclosure / Plain / Release Notes / Dark",
+      "symbolId": "F2EF1B4D-409F-4B70-8011-584867595224",
+      "layerId": "3A5A55E6-1B41-4F81-A92D-70FE536757F5",
+      "text": [
+        {
+          "id": "1A9680AA-0905-4126-BD76-26DEC906D074",
+          "value": "Release Notes"
+        },
+        {
+          "id": "B01008B0-B3D9-460B-BC49-716ED8346A60",
+          "value": "Faster sync and four fixes."
+        }
+      ]
+    },
+    "content/disclosure-framed-sunken-billing-light": {
+      "family": "content",
+      "name": "Disclosure / Framed Sunken / Billing / Light",
+      "symbolId": "A5F93521-E105-49A6-BB5B-CF1D7DFEFC90",
+      "layerId": "9009B190-F9F7-423F-B590-65D04FAC8CAE",
+      "text": [
+        {
+          "id": "D5C997F9-6AF5-46F9-890E-470DBCE96320",
+          "value": "When am I billed?"
+        },
+        {
+          "id": "75DF22B7-3B25-43A4-BEB8-E79160C80BE6",
+          "value": "On the first of each month."
+        }
+      ]
+    },
+    "content/disclosure-framed-sunken-build-log-light": {
+      "family": "content",
+      "name": "Disclosure / Framed Sunken / Build Log / Light",
+      "symbolId": "004929C8-0208-42EB-AAB0-DFF48ACBCEBC",
+      "layerId": "44D38AEE-CF55-45D9-A93B-8FE167D956A1",
+      "text": [
+        {
+          "id": "11404BB1-A284-4027-8720-816360457B01",
+          "value": "Build Log"
+        },
+        {
+          "id": "0B83D76B-9704-4AED-8B5D-4382BCCF139B",
+          "value": "412 lines"
+        }
+      ]
+    },
+    "content/disclosure-framed-sunken-billing-dark": {
+      "family": "content",
+      "name": "Disclosure / Framed Sunken / Billing / Dark",
+      "symbolId": "D0BA012F-774E-4FD6-AE9C-B7A847672260",
+      "layerId": "ABF32F45-6697-4C61-AF7D-6AB742F3E072",
+      "text": [
+        {
+          "id": "94501F19-15B2-4192-9560-8514FC1E3F21",
+          "value": "When am I billed?"
+        },
+        {
+          "id": "35EB17B2-CE73-4516-AFA4-9A22016A1BB0",
+          "value": "On the first of each month."
+        }
+      ]
+    },
+    "content/disclosure-framed-sunken-build-log-dark": {
+      "family": "content",
+      "name": "Disclosure / Framed Sunken / Build Log / Dark",
+      "symbolId": "EEB7105A-4BE9-4672-B953-720FC83A708E",
+      "layerId": "68AC0FED-817A-429E-891D-871183AF048D",
+      "text": [
+        {
+          "id": "4DFA731F-9A0F-4E0C-A072-98B88015FF2E",
+          "value": "Build Log"
+        },
+        {
+          "id": "F91649C1-C21A-4221-B7B7-429661E7064A",
+          "value": "412 lines"
+        }
+      ]
+    },
+    "content/disclosure-embedded-ai-feedback-light": {
+      "family": "content",
+      "name": "Disclosure / Embedded / Ai Feedback / Light",
+      "symbolId": "94F2200E-F9FC-4FA7-B718-2C77704A2291",
+      "layerId": "E843ED95-3295-409B-9559-034FEC4599D4",
+      "text": [
+        {
+          "id": "BE54BA44-1646-4359-8463-E2DB269DFCD9",
+          "value": "AI Feedback"
+        },
+        {
+          "id": "42F0A8E8-D795-4C23-974F-9D943BE5393B",
+          "value": "2 suggestions"
+        },
+        {
+          "id": "387B4F15-F5FB-4F3C-9826-0090177B8B32",
+          "value": "Group Export and Share in one group."
+        }
+      ]
+    },
+    "content/disclosure-embedded-ai-feedback-dark": {
+      "family": "content",
+      "name": "Disclosure / Embedded / Ai Feedback / Dark",
+      "symbolId": "18B173A5-2E8B-4A18-BF5E-EF057FB49CC6",
+      "layerId": "47262C8F-E1A8-4328-A5CF-0CA60D0BF92F",
+      "text": [
+        {
+          "id": "A695D958-764A-4890-BDAD-10B8482DCCAE",
+          "value": "AI Feedback"
+        },
+        {
+          "id": "A180CC6F-6685-422D-A356-02491F189058",
+          "value": "2 suggestions"
+        },
+        {
+          "id": "2E7EB6B9-16B8-41A9-BB8B-EBFC77491BEC",
+          "value": "Group Export and Share in one group."
+        }
+      ]
+    },
+    "content/message-composer-chat-control-light": {
+      "family": "content",
+      "name": "Message Composer / Chat / Control / Light",
+      "symbolId": "7421B94B-E42C-4538-84B3-6203E697C08C",
+      "layerId": "E0496BD8-A5A8-4DA6-9C29-684EAA4ABAAB",
+      "text": [
+        {
+          "id": "53CCB2B2-7343-4190-AF6B-599FA0DF14C0",
+          "value": "Ask about this build"
+        },
+        {
+          "id": "C2B53BD2-DAAE-48E9-A957-AA65986D8DD7",
+          "value": "Answers use the latest nightly build."
+        },
+        {
+          "id": "07B0D364-5524-485A-858D-23CF501EF053",
+          "value": "Send"
+        }
+      ]
+    },
+    "content/message-composer-chat-control-dark": {
+      "family": "content",
+      "name": "Message Composer / Chat / Control / Dark",
+      "symbolId": "48453384-87F0-4AB1-811A-C8775C8B8F82",
+      "layerId": "8C37BDFA-1373-4F1B-BBDC-52C200DA5C96",
+      "text": [
+        {
+          "id": "B48DC60B-7D7F-4528-8629-1EE043899F4D",
+          "value": "Ask about this build"
+        },
+        {
+          "id": "8C7991FE-3045-4C80-9E81-AC135A49D009",
+          "value": "Answers use the latest nightly build."
+        },
+        {
+          "id": "A578FB94-40A5-4D03-BE48-11A60E9CEA33",
+          "value": "Send"
+        }
+      ]
+    },
+    "content/message-composer-prompt-control-light": {
+      "family": "content",
+      "name": "Message Composer / Prompt / Control / Light",
+      "symbolId": "CBC38BD9-046E-412B-941D-C8AAF7FC1252",
+      "layerId": "AF606503-1A0B-4EAA-97F7-7D5B9F5FF056",
+      "text": [
+        {
+          "id": "29F0E233-C600-409E-BD9A-2A0F611348E3",
+          "value": "Describe the change you want"
+        },
+        {
+          "id": "734F75F3-8465-47A9-A42B-012133E00512",
+          "value": "Generate"
+        }
+      ]
+    },
+    "content/message-composer-prompt-control-dark": {
+      "family": "content",
+      "name": "Message Composer / Prompt / Control / Dark",
+      "symbolId": "AAF290D4-789F-4705-BF1E-44D8DB50F811",
+      "layerId": "7DC81B5C-F092-42C6-8577-AD068443D38D",
+      "text": [
+        {
+          "id": "7AF088EB-75AD-44F5-8ED5-2826BD8EEE78",
+          "value": "Describe the change you want"
+        },
+        {
+          "id": "46F6B9CF-751C-4607-A7CC-B205B730879F",
+          "value": "Generate"
+        }
+      ]
+    },
+    "content/progress-bar-determinate-control-light": {
+      "family": "content",
+      "name": "Progress Bar / Determinate / Control / Light",
+      "symbolId": "39C217DE-1974-4627-B9F1-0431C5294FD1",
+      "layerId": "C8C84398-DA71-44BE-B69B-248CE6035858",
+      "text": [
+        {
+          "id": "22DCF733-69D8-4186-A2C0-D1A11A84287A",
+          "value": "Uploading Files"
+        },
+        {
+          "id": "E41A1A9D-5482-4365-BDCD-A1D947C41299",
+          "value": "4 of 12 files"
+        }
+      ]
+    },
+    "content/progress-bar-determinate-control-dark": {
+      "family": "content",
+      "name": "Progress Bar / Determinate / Control / Dark",
+      "symbolId": "0B52C112-F75A-4DBB-8013-8C21763ECB8E",
+      "layerId": "F8AE3D3F-1C41-4FBE-87B1-142D464A59D6",
+      "text": [
+        {
+          "id": "C1877CB3-44E9-4C0B-A86F-F9F8EBC91B9B",
+          "value": "Uploading Files"
+        },
+        {
+          "id": "7BBA067B-E0DE-4BD2-A652-EB947397D48A",
+          "value": "4 of 12 files"
+        }
+      ]
+    },
+    "content/progress-bar-tones-confidence-light": {
+      "family": "content",
+      "name": "Progress Bar / Tones / Confidence / Light",
+      "symbolId": "980E13EB-C000-4619-BBD4-E6AA02B88355",
+      "layerId": "BE66389D-66A5-4BF8-BBCD-D80893B7199D",
+      "text": [
+        {
+          "id": "CDD36DE7-6249-48E7-8C67-2B79D01F545F",
+          "value": "Confidence"
+        },
+        {
+          "id": "C062C9F2-C6E0-4E55-BB00-4CEDEBBA4237",
+          "value": "82%"
+        }
+      ]
+    },
+    "content/progress-bar-tones-storage-used-light": {
+      "family": "content",
+      "name": "Progress Bar / Tones / Storage Used / Light",
+      "symbolId": "72F8074C-4839-4181-9817-C0AEED53E57A",
+      "layerId": "1B76E11C-09F3-482C-A7DB-274B1EED6053",
+      "text": [
+        {
+          "id": "CF6DCD6F-696D-4515-9DFE-D264152ED209",
+          "value": "Storage Used"
+        },
+        {
+          "id": "8EEB9A66-64F3-44B1-AFE6-A87271258D70",
+          "value": "93%"
+        }
+      ]
+    },
+    "content/progress-bar-tones-unlabeled-light": {
+      "family": "content",
+      "name": "Progress Bar / Tones / Unlabeled / Light",
+      "symbolId": "60D2FC41-8D88-4697-A0F6-0FF7CBBEB33E",
+      "layerId": "2DEC1A83-833E-4574-A5CC-C9D5EEBD8B92",
+      "text": []
+    },
+    "content/progress-bar-tones-confidence-dark": {
+      "family": "content",
+      "name": "Progress Bar / Tones / Confidence / Dark",
+      "symbolId": "D6D6DF3A-74CA-4B8C-9BC5-2BDBA2C9F8F7",
+      "layerId": "DA7C5A2E-B7CF-4F26-969E-BE7B352D4301",
+      "text": [
+        {
+          "id": "2C18ED22-62C8-4DC9-B86E-D5F60FFE2F7F",
+          "value": "Confidence"
+        },
+        {
+          "id": "62617541-8A12-40CE-9D76-AAD705E258BE",
+          "value": "82%"
+        }
+      ]
+    },
+    "content/progress-bar-tones-storage-used-dark": {
+      "family": "content",
+      "name": "Progress Bar / Tones / Storage Used / Dark",
+      "symbolId": "55A78C03-9DF9-4087-AA53-D7611E5FE1FC",
+      "layerId": "3EA32507-5450-47DD-8387-BF97A7C02372",
+      "text": [
+        {
+          "id": "5B03B991-F23A-449C-B61F-D040E436BA0E",
+          "value": "Storage Used"
+        },
+        {
+          "id": "39FE1479-248B-4357-B2DC-0576879584C2",
+          "value": "93%"
+        }
+      ]
+    },
+    "content/progress-bar-tones-unlabeled-dark": {
+      "family": "content",
+      "name": "Progress Bar / Tones / Unlabeled / Dark",
+      "symbolId": "04B8AB6F-B30D-4F4D-94DD-39958977A165",
+      "layerId": "D90189B2-CE42-43EE-A170-FF8AA6C4A169",
+      "text": []
+    },
+    "content/progress-ring-sizes-small-light": {
+      "family": "content",
+      "name": "Progress Ring / Sizes / Small / Light",
+      "symbolId": "80B5E9CD-599A-4A5B-A4A8-C924993FD84F",
+      "layerId": "11853248-7270-4AF5-BA5B-9B0532B2BA31",
+      "text": []
+    },
+    "content/progress-ring-sizes-medium-light": {
+      "family": "content",
+      "name": "Progress Ring / Sizes / Medium / Light",
+      "symbolId": "4F2474A0-C85D-41D2-8FDC-B8C3B1197159",
+      "layerId": "E0DED1DD-1D72-4F5C-9A3B-65E265B47198",
+      "text": []
+    },
+    "content/progress-ring-sizes-large-light": {
+      "family": "content",
+      "name": "Progress Ring / Sizes / Large / Light",
+      "symbolId": "4AA6EBDC-AEAC-4FB4-B6FC-BA51CDE28E13",
+      "layerId": "A013DF4C-6AB0-4130-A749-B0AD1D77DB9B",
+      "text": []
+    },
+    "content/progress-ring-sizes-small-dark": {
+      "family": "content",
+      "name": "Progress Ring / Sizes / Small / Dark",
+      "symbolId": "DE8CB64F-498C-4A9B-A920-0B7C79416357",
+      "layerId": "7C1CB2F6-5DDA-442B-9269-EDD573C34C29",
+      "text": []
+    },
+    "content/progress-ring-sizes-medium-dark": {
+      "family": "content",
+      "name": "Progress Ring / Sizes / Medium / Dark",
+      "symbolId": "5D1B2B44-A9A5-4D30-8DF4-50803B3600C3",
+      "layerId": "0201CAC6-5444-401E-9D0F-1576D2BA6687",
+      "text": []
+    },
+    "content/progress-ring-sizes-large-dark": {
+      "family": "content",
+      "name": "Progress Ring / Sizes / Large / Dark",
+      "symbolId": "7AF693C7-0310-44B9-B420-F0C454F64ABC",
+      "layerId": "B577030B-97C3-4A40-A9A6-754D3B6448E0",
+      "text": []
+    },
+    "content/progress-ring-tones-done-light": {
+      "family": "content",
+      "name": "Progress Ring / Tones / Done / Light",
+      "symbolId": "533BD095-7912-4278-928B-1BFF73797C15",
+      "layerId": "BCA74CA1-1C44-4C58-9F30-57C912D5F453",
+      "text": []
+    },
+    "content/progress-ring-tones-quota-light": {
+      "family": "content",
+      "name": "Progress Ring / Tones / Quota / Light",
+      "symbolId": "DEDFB9F6-1629-402E-AF72-1B34AF9786A1",
+      "layerId": "79E84177-8943-4E2D-997A-B4339F112033",
+      "text": []
+    },
+    "content/progress-ring-tones-budget-light": {
+      "family": "content",
+      "name": "Progress Ring / Tones / Budget / Light",
+      "symbolId": "EF3F525F-81E9-4A5A-90DD-035F31DF92BD",
+      "layerId": "E5A17971-876A-4B1A-BBF7-C84660092BFE",
+      "text": []
+    },
+    "content/progress-ring-tones-done-dark": {
+      "family": "content",
+      "name": "Progress Ring / Tones / Done / Dark",
+      "symbolId": "62F71A0E-7740-4F7D-BAD0-4D73DF6015CA",
+      "layerId": "666E0EBD-8A26-4EF6-9F25-B85561EC5FB8",
+      "text": []
+    },
+    "content/progress-ring-tones-quota-dark": {
+      "family": "content",
+      "name": "Progress Ring / Tones / Quota / Dark",
+      "symbolId": "C870FB31-B482-4DC8-8DE3-76265A07B1DC",
+      "layerId": "7A98B3F6-A847-4FF3-B8AE-8C2E78BF2444",
+      "text": []
+    },
+    "content/progress-ring-tones-budget-dark": {
+      "family": "content",
+      "name": "Progress Ring / Tones / Budget / Dark",
+      "symbolId": "D88C38EA-CBE0-4397-A6FA-6F40AE2E71C9",
+      "layerId": "55C9F2EF-78C0-4AC4-88CD-97165284093A",
+      "text": []
+    },
+    "content/state-banner-info-control-light": {
+      "family": "content",
+      "name": "State Banner / Info / Control / Light",
+      "symbolId": "82F77215-5A48-4090-80F4-9E30AD7DE5D2",
+      "layerId": "F1534AE5-10DD-41E2-BA83-3C252BB71B29",
+      "text": [
+        {
+          "id": "621A1843-D258-44BC-91F8-18DD077994D1",
+          "value": "Draft Not Published"
+        },
+        {
+          "id": "E9944A01-C031-41FA-8ACD-8CD47BDC2A6B",
+          "value": "Changes are saved but only visible to your team."
+        },
+        {
+          "id": "13D11D4B-0068-4A1B-947F-5ABA1701EDFD",
+          "value": "Publish"
+        }
+      ]
+    },
+    "content/state-banner-info-control-dark": {
+      "family": "content",
+      "name": "State Banner / Info / Control / Dark",
+      "symbolId": "6EB82A0A-7EA6-49EE-AD89-0128995E7021",
+      "layerId": "1FE5A37A-5000-4451-AD83-93BFD1D39061",
+      "text": [
+        {
+          "id": "4CB6107E-3CBA-48C0-BA6C-2ADCFF5A3533",
+          "value": "Draft Not Published"
+        },
+        {
+          "id": "BE2DAAAE-D8BB-4258-A425-9C597017F7FA",
+          "value": "Changes are saved but only visible to your team."
+        },
+        {
+          "id": "AE8CC1DC-D064-4B61-B847-06599F83687A",
+          "value": "Publish"
+        }
+      ]
+    },
+    "content/state-banner-info-badge-control-light": {
+      "family": "content",
+      "name": "State Banner / Info Badge / Control / Light",
+      "symbolId": "31E0D3D6-195F-4275-B75F-780ED6B758CA",
+      "layerId": "5D7A476D-0D7A-4031-9A37-7A4DE6B9F170",
+      "text": [
+        {
+          "id": "69BDB3AB-8FBA-4D03-920D-EB4C1D93168D",
+          "value": "Unanswered Questions"
+        },
+        {
+          "id": "3A58D33E-E713-4EA3-94B2-7B344946C070",
+          "value": "1"
+        },
+        {
+          "id": "A4F7005A-3842-49C4-9740-1D78997C4483",
+          "value": "Answer"
+        }
+      ]
+    },
+    "content/state-banner-info-badge-control-dark": {
+      "family": "content",
+      "name": "State Banner / Info Badge / Control / Dark",
+      "symbolId": "8E53CDEE-F7BF-4C07-8A5A-F497F9EFEA0D",
+      "layerId": "27DC321B-395C-4A6D-8691-41A016C8AA79",
+      "text": [
+        {
+          "id": "B9DDE454-E591-4B05-B70D-F8062A88A23B",
+          "value": "Unanswered Questions"
+        },
+        {
+          "id": "A7D86444-0514-411F-9432-15965502A473",
+          "value": "1"
+        },
+        {
+          "id": "D2D7650D-2181-4551-988D-F58E2F611CF7",
+          "value": "Answer"
+        }
+      ]
+    },
+    "content/state-banner-success-control-light": {
+      "family": "content",
+      "name": "State Banner / Success / Control / Light",
+      "symbolId": "DB362B16-843E-498A-B308-CEC1884782E9",
+      "layerId": "CFAA062D-CA6D-4EBF-B5FF-82A8A9FD3766",
+      "text": [
+        {
+          "id": "478DE700-2009-44CC-AC52-C74A992219B1",
+          "value": "Deployment Complete"
+        },
+        {
+          "id": "652B555E-F2C0-4F5B-B10B-CE56F43A52A7",
+          "value": "production.example.com is serving the new build."
+        }
+      ]
+    },
+    "content/state-banner-success-control-dark": {
+      "family": "content",
+      "name": "State Banner / Success / Control / Dark",
+      "symbolId": "73D9418E-8986-4E09-8CFA-3E257E5A257A",
+      "layerId": "4460FEC2-17C4-4719-8E3D-272429DA1D47",
+      "text": [
+        {
+          "id": "CCA6BA8A-F609-4130-8C79-8B2A87EB467B",
+          "value": "Deployment Complete"
+        },
+        {
+          "id": "AFF26DFE-9DA6-428A-B64D-CAB9041E0794",
+          "value": "production.example.com is serving the new build."
+        }
+      ]
+    },
+    "content/state-banner-warning-control-light": {
+      "family": "content",
+      "name": "State Banner / Warning / Control / Light",
+      "symbolId": "F7FC021C-0A2E-416F-BB24-918C2A095BD3",
+      "layerId": "88458EA8-F754-4BC2-9E63-B5ACBC867DB4",
+      "text": [
+        {
+          "id": "5758AC4A-6DF6-45BE-B929-9033FB4913E5",
+          "value": "Approaching Your Plan Limit"
+        },
+        {
+          "id": "8BA03430-87D0-4281-8DC9-C2869C252561",
+          "value": "You have used 92% of this month’s build minutes."
+        },
+        {
+          "id": "13103CAF-D659-4F35-9D69-B0C238168F8D",
+          "value": "Upgrade"
+        }
+      ]
+    },
+    "content/state-banner-warning-control-dark": {
+      "family": "content",
+      "name": "State Banner / Warning / Control / Dark",
+      "symbolId": "C649322D-2C5C-4C63-8F07-2CB97E6BCFEA",
+      "layerId": "D682CC2F-594E-4DA0-A0AD-4EA13BFEA3AF",
+      "text": [
+        {
+          "id": "EF2CF83E-0821-4C10-B18E-A775CAE5C95F",
+          "value": "Approaching Your Plan Limit"
+        },
+        {
+          "id": "D938B0F5-9623-413C-9BAD-834E3650AB77",
+          "value": "You have used 92% of this month’s build minutes."
+        },
+        {
+          "id": "B0CFBE31-23E1-45F2-AFBB-E16F1D72636D",
+          "value": "Upgrade"
+        }
+      ]
+    },
+    "content/state-banner-danger-control-light": {
+      "family": "content",
+      "name": "State Banner / Danger / Control / Light",
+      "symbolId": "A43E5949-55C9-4220-9328-EB5F8549D7DF",
+      "layerId": "11782D59-EB24-483E-A2E9-6DB93C8D1252",
+      "text": [
+        {
+          "id": "1989BBC5-8DA5-45DA-8093-74AE80FF2754",
+          "value": "Build Failed"
+        },
+        {
+          "id": "7ED4C338-169C-4C36-87E4-1F4A1F8117F5",
+          "value": "Step “test” exited with code 1."
+        },
+        {
+          "id": "31EA89FE-F278-457B-AD10-0E0424B9D9FC",
+          "value": "View Log"
+        }
+      ]
+    },
+    "content/state-banner-danger-control-dark": {
+      "family": "content",
+      "name": "State Banner / Danger / Control / Dark",
+      "symbolId": "C7581EBF-DD47-432D-88FD-173E6A417936",
+      "layerId": "8D9E9718-9D15-4358-BD68-545CFCC480BA",
+      "text": [
+        {
+          "id": "FF96148A-26D9-4DDB-BB66-5D999E4C9527",
+          "value": "Build Failed"
+        },
+        {
+          "id": "807891A8-88C5-4B3D-854E-D35EFB27C52E",
+          "value": "Step “test” exited with code 1."
+        },
+        {
+          "id": "64870017-A578-4DF2-ADA0-39A6F8BD6399",
+          "value": "View Log"
+        }
+      ]
+    },
+    "content/state-banner-strip-control-light": {
+      "family": "content",
+      "name": "State Banner / Strip / Control / Light",
+      "symbolId": "1BED0B22-39AA-43F7-848E-ABB95C485FD8",
+      "layerId": "C461AF0F-5A9D-4605-8261-F190E79DDC76",
+      "text": [
+        {
+          "id": "477FB0C0-3464-45FB-91DF-477631A3BA88",
+          "value": "Notifications Paused"
+        },
+        {
+          "id": "8EA7BB95-5BF5-4B83-9D19-C34A79FA5F4C",
+          "value": "Desktop alerts resume when you reconnect."
+        },
+        {
+          "id": "6C8CADC7-6F98-44A4-A033-E0B138E1741E",
+          "value": "Resume"
+        }
+      ]
+    },
+    "content/state-banner-strip-control-dark": {
+      "family": "content",
+      "name": "State Banner / Strip / Control / Dark",
+      "symbolId": "E9DD6035-EAF9-469E-8872-5987A585C387",
+      "layerId": "EE44D27E-3A36-4D8C-87A2-66FAFCC8D52F",
+      "text": [
+        {
+          "id": "01A556EA-84BC-4A1B-BC0B-60A8ADC13DC9",
+          "value": "Notifications Paused"
+        },
+        {
+          "id": "06A03003-D1D3-4532-86F8-0A4A1BB2C44A",
+          "value": "Desktop alerts resume when you reconnect."
+        },
+        {
+          "id": "A8E7FD6C-F05E-487A-9AFE-C28432BA9F5B",
+          "value": "Resume"
+        }
+      ]
+    },
+    "content/empty-state-with-action-control-light": {
+      "family": "content",
+      "name": "Empty State / With Action / Control / Light",
+      "symbolId": "9DDAAB90-B456-4DBB-A720-093F60858CFC",
+      "layerId": "9B2F42F0-E063-4E0E-9CE1-B8049CFECD2F",
+      "text": [
+        {
+          "id": "973F916E-3CD6-4EF4-94C7-E111D1FE4E99",
+          "value": "No Open Tickets"
+        },
+        {
+          "id": "4AE96FC5-203A-4CC9-9FA5-083F86618CB5",
+          "value": "When someone files a ticket it will show up here."
+        },
+        {
+          "id": "5AECBCE7-E7F6-40A7-84F0-5A7F7FEA3839",
+          "value": "New Ticket"
+        }
+      ]
+    },
+    "content/empty-state-with-action-control-dark": {
+      "family": "content",
+      "name": "Empty State / With Action / Control / Dark",
+      "symbolId": "41C08058-5ED4-4AF4-BF56-505C56513D3B",
+      "layerId": "7A13482E-664C-4980-AD7E-5D329377247D",
+      "text": [
+        {
+          "id": "EC9B5291-15F5-4096-8D01-6134C4A63866",
+          "value": "No Open Tickets"
+        },
+        {
+          "id": "A4729679-A098-44DE-BE8E-185C41B5EBB9",
+          "value": "When someone files a ticket it will show up here."
+        },
+        {
+          "id": "4FC7152F-5689-4258-AA3E-44BE3B49678F",
+          "value": "New Ticket"
+        }
+      ]
+    },
+    "content/empty-state-filtered-control-light": {
+      "family": "content",
+      "name": "Empty State / Filtered / Control / Light",
+      "symbolId": "5F0D7B81-29F1-4002-9EDA-9C3EDB5EBD65",
+      "layerId": "D8BAFCFA-B169-4DD6-AFCC-DFBC316C9E8C",
+      "text": [
+        {
+          "id": "727920A9-C572-4B92-A433-F4FD53C64B7C",
+          "value": "No Matches"
+        },
+        {
+          "id": "83D34B08-BB1E-4197-B83E-403E64BA0CB9",
+          "value": "No tickets match the current filters."
+        }
+      ]
+    },
+    "content/empty-state-filtered-control-dark": {
+      "family": "content",
+      "name": "Empty State / Filtered / Control / Dark",
+      "symbolId": "0EF9F5EE-91CA-4C23-B2E8-F3382123D9BC",
+      "layerId": "2FAD5EF1-C8F2-4944-BD16-39EC74937F9A",
+      "text": [
+        {
+          "id": "EEEE8E9D-39BD-4383-AC45-9DFF4A1DB9A2",
+          "value": "No Matches"
+        },
+        {
+          "id": "749ADED7-E43D-4C46-8894-D0C5E3771BFC",
+          "value": "No tickets match the current filters."
+        }
+      ]
+    },
+    "content/skeleton-block-control-light": {
+      "family": "content",
+      "name": "Skeleton / Block / Control / Light",
+      "symbolId": "444D6C1D-13AB-4362-9CAD-B9CC2740A5D3",
+      "layerId": "5B026A78-FD52-447C-A560-EB30C507D7DC",
+      "text": []
+    },
+    "content/skeleton-block-control-dark": {
+      "family": "content",
+      "name": "Skeleton / Block / Control / Dark",
+      "symbolId": "6357AB27-3830-468F-A0E4-EE5E4A6830F0",
+      "layerId": "42468CB6-B085-4BD3-A927-EF6E055BA333",
+      "text": []
+    },
+    "content/skeleton-lines-control-light": {
+      "family": "content",
+      "name": "Skeleton / Lines / Control / Light",
+      "symbolId": "C6C0FAAE-09F5-4477-9799-1B33033BA709",
+      "layerId": "360B0829-2ABD-42C1-B94B-8F2BB04A3A1C",
+      "text": []
+    },
+    "content/skeleton-lines-control-dark": {
+      "family": "content",
+      "name": "Skeleton / Lines / Control / Dark",
+      "symbolId": "0FF1206C-455C-4A48-A1BD-28E820362817",
+      "layerId": "6053C91E-7BB0-476F-9F82-C1544E4B7B23",
+      "text": []
+    },
+    "content/skeleton-avatar-control-light": {
+      "family": "content",
+      "name": "Skeleton / Avatar / Control / Light",
+      "symbolId": "967B0791-2DBC-4E20-A1B2-A367B90946B2",
+      "layerId": "784049D6-EEEF-4041-AC68-E6E5824D38CD",
+      "text": []
+    },
+    "content/skeleton-avatar-control-dark": {
+      "family": "content",
+      "name": "Skeleton / Avatar / Control / Dark",
+      "symbolId": "3B7AAF8F-D998-4231-B620-7B659012B46C",
+      "layerId": "357CA3B5-7A58-453B-BF63-52279305E4B2",
+      "text": []
+    }
+  }
+}

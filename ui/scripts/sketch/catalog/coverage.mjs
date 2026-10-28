@@ -148,19 +148,22 @@ component boundary and semantic layout have not passed those checks. A source
 variant may be a multi-control showcase; a family ticket must export its actual
 individual component states and retain the sheet only as a catalog page.
 
-The Button pilot covers seven source showcase variants with 40 editable
-appearance Symbols in [Kerf-Button.sketch](button/README.md). The Form controls
-batch covers 20 showcase variants with 66 individual light/dark Symbols in
-[Kerf-Forms.sketch](forms/README.md). The Advanced inputs batch covers 17
-variants with 34 light/dark Symbols in [Kerf-Advanced.sketch](advanced/README.md).
-The Lists and data batch covers 21 variants with 42 light/dark Symbols in
-[Kerf-Lists.sketch](lists/README.md). The Toolbars and navigation batch covers
-25 variants with 70 light/dark Symbols for 35 individual controls in
-[Kerf-Toolbar.sketch](toolbar/README.md). The Content and feedback batch covers
-20 variants with 56 light/dark Symbols for 28 reusable roots in
-[Kerf-Content.sketch](content/README.md). Every source variant now has a
-supported native batch; a new template variant must join a family here. The catalog's [install and update guide](README.md) identifies
-the current libraries and supported Sketch version.
+Every supported Symbol ships in one Library, [Kerf-UI.sketch](unified/README.md),
+with 308 light/dark Symbols assembled from the family build inputs. The Button
+pilot covers seven source showcase variants with 40 appearance Symbols
+([Button](button/README.md)). The Form controls batch covers 20 showcase
+variants with 66 individual Symbols ([Forms](forms/README.md)). The Advanced
+inputs batch covers 17 variants with 34 Symbols
+([Advanced inputs](advanced/README.md)). The Lists and data batch covers 21
+variants with 42 Symbols ([Lists and data](lists/README.md)). The Toolbars and
+navigation batch covers 25 variants with 70 Symbols for 35 individual controls
+([Toolbars and navigation](toolbar/README.md)). The Content and feedback batch
+covers 20 variants with 56 Symbols for 28 reusable roots
+([Content and feedback](content/README.md)). Every source variant now has a
+supported native batch; a new template variant must join a family here and be
+rebuilt into the unified Library. The catalog's
+[install and update guide](README.md) identifies the Library to install and the
+supported Sketch version.
 
 ## Family batches
 

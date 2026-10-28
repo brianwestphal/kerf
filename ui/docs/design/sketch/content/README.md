@@ -63,8 +63,8 @@ tests text overrides where text exists, increases width by 80px, then saves
 and reopens the Library and consumer document. The reviewed
 `comparison-*.png` files show production, native, and widened instances.
 
-Install a copy at a stable path through Sketch Settings → Libraries. On an
-update, replace that installed file, refresh the Library, and sync consumer
-instances. Captured progress values, disclosure states, and skeleton frames
+Designers install the unified [Kerf-UI.sketch](../Kerf-UI.sketch), which
+`npm run sketch:library` rebuilds from this file with the same Symbol, Text,
+and Color Variable identities; this family file is its build input. Captured progress values, disclosure states, and skeleton frames
 are static design states. Runtime progress, expansion, and animation remain in
 `@kerfjs/ui`.

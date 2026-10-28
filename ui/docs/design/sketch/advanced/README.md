@@ -13,9 +13,9 @@ Text matches the production capture: 650 becomes semibold, 500 medium, and a
 monospace capture keeps its named face. A label that outgrows its fixed frame
 at the heavier weight is refitted instead of wrapping.
 
-This library was created and tested with Sketch 2026.3.1. Install a copy at a
-stable path through Sketch Settings → Libraries. Update that same installed
-file, refresh the Library, and sync consumer instances on a later release.
+This library was created and tested with Sketch 2026.3.1. Designers install the unified [Kerf-UI.sketch](../Kerf-UI.sketch), which
+`npm run sketch:library` rebuilds from this file with the same Symbol, Text,
+and Color Variable identities; this family file is its build input.
 The exporter checks previously published identities.
 
 When a source SVG changes, `generate` updates the published layers in place,

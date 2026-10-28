@@ -66,8 +66,8 @@ group so these pins apply. Captured blurred box shadows import as hard offset
 rectangles, so the builder gives each imported shadow layer a native Gaussian
 blur with the captured radius.
 
-Install a copy at a stable path through Sketch Settings → Libraries. On an
-update, replace that installed file, refresh the Library, and sync consumer
-instances. The `width-visibility-600` and `width-visibility-320` toolbar
+Designers install the unified [Kerf-UI.sketch](../Kerf-UI.sketch), which
+`npm run sketch:library` rebuilds from this file with the same Symbol, Text,
+and Color Variable identities; this family file is its build input. The `width-visibility-600` and `width-visibility-320` toolbar
 Symbols are separate captured responsive states; runtime breakpoints,
 selection, and interaction stay in `@kerfjs/ui`.

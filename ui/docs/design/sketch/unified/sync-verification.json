@@ -1,0 +1,43 @@
+{
+  "libraryDocumentId": "9D9EB3A0-A3E8-446B-86FE-181E314BDDFF",
+  "names": [
+    "Text Field / Labeled / Project Name / Light",
+    "Text Field / Labeled / Project Name / Dark"
+  ],
+  "synced": [
+    {
+      "name": "Text Field / Labeled / Project Name / Light",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
+    },
+    {
+      "name": "Text Field / Labeled / Project Name / Dark",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
+    }
+  ],
+  "after": [
+    {
+      "name": "Text Field / Labeled / Project Name / Light",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 0"]
+    },
+    {
+      "name": "Text Field / Labeled / Project Name / Dark",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 1"]
+    }
+  ],
+  "reopened": [
+    {
+      "name": "Text Field / Labeled / Project Name / Light",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 0"]
+    },
+    {
+      "name": "Text Field / Labeled / Project Name / Dark",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 1"]
+    }
+  ]
+}

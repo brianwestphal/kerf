@@ -1,0 +1,150 @@
+{
+  "pages": [
+    "Button",
+    "Form Controls",
+    "Advanced Inputs",
+    "Lists and Data",
+    "Toolbars and Navigation",
+    "Content and Feedback"
+  ],
+  "symbols": 308,
+  "swatches": 141,
+  "layerStyles": 42,
+  "textStyles": 38,
+  "instances": [
+    {
+      "page": "Button",
+      "name": "Button / Primary Brand / Light",
+      "linked": true,
+      "override": "Done",
+      "width": 204
+    },
+    {
+      "page": "Button",
+      "name": "Button / Primary Brand / Dark",
+      "linked": true,
+      "override": "Done",
+      "width": 204
+    },
+    {
+      "page": "Form Controls",
+      "name": "Split Button / Tones / Deploy / Light",
+      "linked": true,
+      "override": "Done",
+      "width": 219.65625
+    },
+    {
+      "page": "Form Controls",
+      "name": "Split Button / Tones / Deploy / Dark",
+      "linked": true,
+      "override": "Done",
+      "width": 219.65625
+    },
+    {
+      "page": "Advanced Inputs",
+      "name": "Color Field / Compact / Control / Light",
+      "linked": true,
+      "override": "Done",
+      "width": 500
+    },
+    {
+      "page": "Advanced Inputs",
+      "name": "Color Field / Compact / Control / Dark",
+      "linked": true,
+      "override": "Done",
+      "width": 500
+    },
+    {
+      "page": "Lists and Data",
+      "name": "List / Stack / Control / Light",
+      "linked": true,
+      "override": "Done",
+      "width": 420
+    },
+    {
+      "page": "Lists and Data",
+      "name": "List / Stack / Control / Dark",
+      "linked": true,
+      "override": "Done",
+      "width": 420
+    },
+    {
+      "page": "Toolbars and Navigation",
+      "name": "Toolbar Control Group / With Text / Control / Light",
+      "linked": true,
+      "override": "Done",
+      "width": 206.234375
+    },
+    {
+      "page": "Toolbars and Navigation",
+      "name": "Toolbar Control Group / With Text / Control / Dark",
+      "linked": true,
+      "override": "Done",
+      "width": 206.234375
+    },
+    {
+      "page": "Content and Feedback",
+      "name": "Disclosure / Plain / Advanced Settings / Light",
+      "linked": true,
+      "override": "Done",
+      "width": 484
+    },
+    {
+      "page": "Content and Feedback",
+      "name": "Disclosure / Plain / Advanced Settings / Dark",
+      "linked": true,
+      "override": "Done",
+      "width": 484
+    }
+  ],
+  "reopened": [
+    {
+      "name": "Button / Primary Brand / Light",
+      "override": "Done"
+    },
+    {
+      "name": "Button / Primary Brand / Dark",
+      "override": "Done"
+    },
+    {
+      "name": "Split Button / Tones / Deploy / Light",
+      "override": "Done"
+    },
+    {
+      "name": "Split Button / Tones / Deploy / Dark",
+      "override": "Done"
+    },
+    {
+      "name": "Color Field / Compact / Control / Light",
+      "override": "Done"
+    },
+    {
+      "name": "Color Field / Compact / Control / Dark",
+      "override": "Done"
+    },
+    {
+      "name": "List / Stack / Control / Light",
+      "override": "Done"
+    },
+    {
+      "name": "List / Stack / Control / Dark",
+      "override": "Done"
+    },
+    {
+      "name": "Toolbar Control Group / With Text / Control / Light",
+      "override": "Done"
+    },
+    {
+      "name": "Toolbar Control Group / With Text / Control / Dark",
+      "override": "Done"
+    },
+    {
+      "name": "Disclosure / Plain / Advanced Settings / Light",
+      "override": "Done"
+    },
+    {
+      "name": "Disclosure / Plain / Advanced Settings / Dark",
+      "override": "Done"
+    }
+  ]
+}

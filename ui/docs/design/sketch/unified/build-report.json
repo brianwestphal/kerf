@@ -1,0 +1,74 @@
+{
+  "sketchPid": 43459,
+  "families": [
+    {
+      "key": "button",
+      "title": "Button",
+      "masters": 40,
+      "boundPaints": {
+        "source": 66,
+        "unified": 66
+      },
+      "sharedStyleLinks": 84
+    },
+    {
+      "key": "forms",
+      "title": "Form Controls",
+      "masters": 66,
+      "boundPaints": {
+        "source": 281,
+        "unified": 281
+      },
+      "sharedStyleLinks": 0
+    },
+    {
+      "key": "advanced",
+      "title": "Advanced Inputs",
+      "masters": 34,
+      "boundPaints": {
+        "source": 262,
+        "unified": 262
+      },
+      "sharedStyleLinks": 0
+    },
+    {
+      "key": "lists",
+      "title": "Lists and Data",
+      "masters": 42,
+      "boundPaints": {
+        "source": 101,
+        "unified": 101
+      },
+      "sharedStyleLinks": 0
+    },
+    {
+      "key": "toolbar",
+      "title": "Toolbars and Navigation",
+      "masters": 70,
+      "boundPaints": {
+        "source": 332,
+        "unified": 332
+      },
+      "sharedStyleLinks": 0
+    },
+    {
+      "key": "content",
+      "title": "Content and Feedback",
+      "masters": 56,
+      "boundPaints": {
+        "source": 176,
+        "unified": 176
+      },
+      "sharedStyleLinks": 0
+    }
+  ],
+  "styles": {
+    "layer": 42,
+    "text": 38
+  },
+  "styleBoundPaints": {
+    "source": 48,
+    "target": 48
+  },
+  "swatches": 141
+}

@@ -1,13 +1,13 @@
 # Design templates — components as self-contained SVGs
 
-The SVG sheets remain the broad, static catalog. The 40-Symbol native
-[Sketch Button library](sketch/button/README.md) adds editable Symbols,
-production CSS capture, and save/reopen and resizing verification. Its
-`.sketch` file ships with the UI package under `docs/design/sketch/button/`;
-the linked instructions cover regeneration and durable Library installation.
-The [native Sketch coverage matrix](sketch/coverage.md) tracks each current
-template variant and its implementation family. The [Sketch catalog guide](sketch/README.md)
-names the published library, its supported version, and update steps.
+The SVG sheets remain the broad, static catalog. The native
+[Kerf UI Sketch Library](sketch/unified/README.md), `Kerf-UI.sketch`, adds
+308 editable Symbols for every template variant, built from production CSS
+captures and verified through resize, override, linked-consumer sync, and
+save/reopen checks. It ships with the UI package under `docs/design/sketch/`.
+The [native Sketch coverage matrix](sketch/coverage.md) tracks each template
+variant and its family, and the [Sketch catalog guide](sketch/README.md)
+covers installation, supported version, and updates.
 
 `docs/design/templates/` holds **SVG design templates** for `@kerfjs/ui`
 components: a faithful, self-contained picture of each component in its common

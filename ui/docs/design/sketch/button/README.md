@@ -104,10 +104,9 @@ expects one vector group directly under `Icon`, with ShapePaths under it.
 - `variant-resize-comparison.png`: 12 wide browser/linked-instance comparisons
   for icon-only, loading, badges, and both focus appearances in light/dark.
 
-Install the library durably by copying `Kerf-Button.sketch` to a stable
-location outside a versioned package directory, then add that copy in Sketch
-Settings → Libraries. When regenerating, update that same stable file and
-refresh the Library. The verification command uses a temporary registration
+Designers install the unified [Kerf-UI.sketch](../Kerf-UI.sketch), which
+`npm run sketch:library` rebuilds from this file with the same Symbol, Text,
+and Color Variable identities; this family file is its build input. When regenerating, rebuild the unified Library afterward. The verification command uses a temporary registration
 and removes it after the job; it never changes an existing registration.
 In the native update check, a separate saved consumer retained its Library
 link plus text and icon-color overrides after a source-fill change, Library

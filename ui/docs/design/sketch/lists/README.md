@@ -7,9 +7,9 @@ from its reusable rows. Every master uses native Text and vector paths, with
 no bitmap layers. Ten shared Color Variables bind text, fills, and borders.
 [The manifest](symbol-manifest.json) pins Symbol, Text, and Color Variable IDs.
 
-This library was created and tested with Sketch 2026.3.1. Install a copy at a
-stable path through Sketch Settings → Libraries. Update that same installed
-file, refresh the Library, and sync consumer instances on a later release.
+This library was created and tested with Sketch 2026.3.1. Designers install the unified [Kerf-UI.sketch](../Kerf-UI.sketch), which
+`npm run sketch:library` rebuilds from this file with the same Symbol, Text,
+and Color Variable identities; this family file is its build input.
 When a source SVG changes, `generate` imports it into a temporary master,
 applies the same layout, and updates the published layers in place
 (`scripts/sketch/shared/migrate-layers.js`), so Symbol, Text override, and
