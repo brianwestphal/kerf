@@ -35,9 +35,23 @@ end-to-end fixture.
 
 The inspector also binds a prop to a document param or an in-scope `$each`
 item field, offering only the sources `validateView` accepts there
-(KF-K5TKCV: editor bindings). Drag-and-drop placement (KF-WXP6AB), non-literal
-`$css` and node-valued content editing (KF-YR91FA), and adding control flow
-(KF-90GTJN) come next. The implementation
+(KF-K5TKCV: editor bindings).
+
+The inspector's Control flow section (KF-90GTJN: editor control flow) shows a
+node only while a true/false param or item field holds (Show, which wraps the
+node in `$if`), repeats it for each item of a list param or in-scope list
+field (Repeat for each, which wraps it in a keyed `$each` with a suggested
+item name and key; renaming the item rewrites the row's bindings), and adds a
+`$slot` to the chosen zone under Add a child. The slot is declared in `slots`
+when new, and inside a repeated row it can take the row's item as its input.
+A selected slot sets its declared inputs from the params and items in scope,
+and deleting the last use of a slot drops its declaration. Choices are the
+sources `validateView` accepts, conditions and repeats show in the outline
+(`if showEmpty`, `for each item in items`), slots are outline rows of their
+own, and every change is undoable. To repeat a component, add it, then choose
+its list. A node in an `else` branch or under a nested `$if` keeps its control
+flow in the file. Drag-and-drop placement (KF-WXP6AB) and non-literal `$css`
+and node-valued content editing (KF-YR91FA) come next. The implementation
 tickets are listed in [§10](#10-implementation-plan).
 
 ## 1. Purpose and decisions
@@ -683,5 +697,5 @@ diff <doc…>` takes `--target js`, `--declarations-only`, and extra
 7. **Done:** the private `editor/` package (KF-4NRZCV: editor scaffold), with
    a problems list (KF-WC0ZG3), export and compare (KF-Y38YRT, KF-9J810J), and
    inspector editing with undo (KF-KX77TV: editor editing), and bindings
-   (KF-K5TKCV). Drag-and-drop (KF-WXP6AB), richer value editing (KF-YR91FA),
-   and control flow (KF-90GTJN) follow.
+   (KF-K5TKCV), and control flow (KF-90GTJN). Drag-and-drop (KF-WXP6AB) and
+   richer value editing (KF-YR91FA) follow.

@@ -410,7 +410,7 @@ export interface BindingOption {
 }
 
 /** The `$each` scopes around a node, innermost last: each item's name and source. */
-function eachScopes(
+export function eachScopes(
   document: ViewDocument,
   id: string,
 ): { readonly as: string; readonly source: unknown }[] {

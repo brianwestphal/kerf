@@ -1,5 +1,5 @@
 // The outline rail's rows: one per node, in document order.
-import type { ViewDocument, ViewNode } from '@kerfjs/ui/view';
+import type { ViewChild, ViewDocument, ViewNode } from '@kerfjs/ui/view';
 
 import { visitNodes } from './document.js';
 
@@ -56,41 +56,112 @@ export interface OutlineNode {
   readonly id: string;
   /** The author's name for the node, else its component name. */
   readonly label: string;
-  /** The component (when the node is named), its zone, and "repeated". */
+  /** The component (when the node is named), its zone, and its control flow. */
   readonly detail: string;
   readonly children?: OutlineNode[];
 }
 
+/** An outline row's id for the `$slot` at index `index` of a zone (KF-90GTJN). */
+export function slotRowId(parent: string, zone: string, index: number): string {
+  return `slot:${parent}:${zone}:${index}`;
+}
+
+/** The slot an outline row id names, or undefined for a node row. */
+export function slotRowAddress(
+  id: string,
+): { parent: string; zone: string; index: number } | undefined {
+  const [kind, parent, zone, index] = id.split(':');
+  return kind === 'slot' && parent && zone && index
+    ? { parent, zone, index: Number(index) }
+    : undefined;
+}
+
+/** How a `$param` or `$bind` source reads in the outline. */
+function sourceName(value: unknown): string {
+  const source = value as { $param?: string; $bind?: string };
+  return source.$param ?? source.$bind ?? 'a value';
+}
+
 /**
  * The document as a tree for the outline: each node under its parent, in
- * document order. A node with children has a `children` array.
+ * document order, with its condition (`$if`) and repeat (`$each`) in its
+ * detail. A `$slot` is a row of its own (KF-90GTJN).
  */
 export function outlineTree(
   document: ViewDocument,
   names: ReadonlyMap<string, string>,
 ): OutlineNode[] {
-  const top: OutlineNode[] = [];
-  const byId = new Map<string, { children?: OutlineNode[] }>();
-  for (const { node, ancestors, repeated } of visitNodes(document)) {
+  const entry = (
+    node: ViewNode,
+    zone: string | undefined,
+    repeated: boolean,
+    control: readonly string[],
+  ): OutlineNode => {
     const component = nodeTitle(node, names);
-    const zone = ancestors.at(-1)?.zone;
-    const entry: OutlineNode = {
+    const children: OutlineNode[] = [];
+    for (const [key, items] of Object.entries(node.zones ?? {}))
+      items.forEach((item, index) =>
+        children.push(...child(item, node.id, key, index, repeated, [])),
+      );
+    return {
       id: node.id,
       label: node.name ?? component,
       detail: [
         node.name ? component : undefined,
         zone ?? 'Root',
-        repeated ? 'repeated' : undefined,
+        ...control,
+        repeated && !control.some((part) => part.startsWith('for each'))
+          ? 'repeated'
+          : undefined,
       ]
         .filter(Boolean)
         .join(' · '),
+      ...(children.length ? { children } : {}),
     };
-    byId.set(node.id, entry);
-    const parent = ancestors.at(-1) && byId.get(ancestors.at(-1)!.node.id);
-    if (parent) (parent.children ??= []).push(entry);
-    else top.push(entry);
-  }
-  return top;
+  };
+  const child = (
+    item: ViewChild,
+    parent: string,
+    zone: string,
+    index: number,
+    repeated: boolean,
+    control: readonly string[],
+  ): OutlineNode[] => {
+    if ('$slot' in item)
+      return [
+        {
+          id: slotRowId(parent, zone, index),
+          label: `${item.$slot} slot`,
+          detail: [zone, ...control, repeated ? 'repeated' : undefined]
+            .filter(Boolean)
+            .join(' · '),
+        },
+      ];
+    if ('$each' in item)
+      return [
+        entry(item.template, zone, true, [
+          ...control,
+          `for each ${item.as} in ${sourceName(item.$each)}`,
+        ]),
+      ];
+    if ('$if' in item) {
+      const condition = sourceName(item.$if);
+      return [
+        ...child(item.then, parent, zone, index, repeated, [
+          ...control,
+          `if ${condition}`,
+        ]),
+        ...(item.else
+          ? child(item.else, parent, zone, index, repeated, [
+              ...control,
+              `unless ${condition}`,
+            ])
+          : []),
+      ];
+    }
+    return [entry(item, zone, repeated, control)];
+  };
+  return [entry(document.root, undefined, false, [])];
 }
 
 /** Ids of every outline node with children, so a tree can start expanded. */

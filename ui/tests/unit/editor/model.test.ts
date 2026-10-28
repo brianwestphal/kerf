@@ -17,6 +17,8 @@ import {
   outlineParents,
   outlineRows,
   outlineTree,
+  slotRowAddress,
+  slotRowId,
 } from '../../../src/editor/model/outline.js';
 import {
   sampleInputs,
@@ -133,7 +135,22 @@ describe('outline', () => {
     const row = pane!
       .children!.find((node) => node.label === 'folderList')!
       .children!.find((node) => node.label === 'row')!;
-    expect(row.detail).toBe('ListItem · children · repeated');
+    expect(row.detail).toBe('ListItem · children · for each item in items');
+    expect(
+      pane!
+        .children!.slice(-2)
+        .map((node) => [node.id, node.label, node.detail]),
+    ).toEqual([
+      ['01JB8Z1M6Q8E1X9V4S7K2R3T5G', 'Text', 'content · if showEmpty'],
+      ['slot:01JB8Z1M6Q8E1X9V4S7K2R3T5A:content:2', 'detail slot', 'content'],
+    ]);
+    expect(slotRowAddress(pane!.children!.at(-1)!.id)).toEqual({
+      parent: '01JB8Z1M6Q8E1X9V4S7K2R3T5A',
+      zone: 'content',
+      index: 2,
+    });
+    expect(slotRowAddress('01JB8Z1M6Q8E1X9V4S7K2R3T5A')).toBeUndefined();
+    expect(slotRowId('P', 'z', 0)).toBe('slot:P:z:0');
     expect(row).not.toHaveProperty('children');
     expect(outlineParents(tree)).toEqual([
       '01JB8Z1M6Q8E1X9V4S7K2R3T5A',

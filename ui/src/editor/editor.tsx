@@ -66,6 +66,25 @@ import { LucideIcon } from '../components/media/lucide-icon/lucide-icon.js';
 import { Text } from '../components/typography/text/text.js';
 import type { EditorCatalog } from './catalog.js';
 import {
+  ADD_SLOT_ACTION,
+  addSlotFields,
+  controlFlowSection,
+  DELETE_SLOT_ACTION,
+  slotEditor,
+} from './control-flow-section.js';
+import {
+  controlOf,
+  insertSlot,
+  removeSlot,
+  renameItem,
+  repeatOptions,
+  setCondition,
+  setRepeat,
+  setSlotInput,
+  type SlotAddress,
+  slotAt,
+} from './model/control-flow.js';
+import {
   controlFor,
   type ControlKind,
   seedProps,
@@ -107,6 +126,8 @@ import {
   outlineParents,
   outlineRows,
   outlineTree,
+  slotRowAddress,
+  slotRowId,
 } from './model/outline.js';
 import { type Problem, problemCounts, problemsOf } from './model/problems.js';
 import { sampleInputs } from './model/sample-inputs.js';
@@ -135,6 +156,7 @@ const RING_REACH = 4;
 export type Selection =
   | { readonly kind: 'node'; readonly id: string }
   | { readonly kind: 'component'; readonly key: string }
+  | { readonly kind: 'slot'; readonly address: SlotAddress }
   | null;
 
 // interpretView reads `$icon` names; Lucide exports icons by PascalCase name.
@@ -252,9 +274,16 @@ function controlValue(field: HTMLElement): string | boolean {
 /** Identifies what the Inspector shows, so a change of subject is detectable. */
 function selectionKey(selection: Selection): string {
   if (!selection) return '';
-  return selection.kind === 'node'
-    ? `node:${selection.id}`
-    : `component:${selection.key}`;
+  switch (selection.kind) {
+    case 'node':
+      return `node:${selection.id}`;
+    case 'slot': {
+      const { parent, zone, index } = selection.address;
+      return slotRowId(parent, zone, index);
+    }
+    case 'component':
+      return `component:${selection.key}`;
+  }
 }
 
 /** Scrolls the Inspector rail, and anything scrolled inside it, to the top. */
@@ -331,8 +360,15 @@ export function createEditor(options: EditorOptions) {
   const select = (next: Selection) => {
     selection.value = next;
     // A node chosen elsewhere (the canvas, a problem) shows in the outline.
-    if (next?.kind !== 'node') return;
-    const path = findNode(doc.value, next.id)!.ancestors;
+    if (next?.kind !== 'node' && next?.kind !== 'slot') return;
+    const visit = findNode(
+      doc.value,
+      next.kind === 'node' ? next.id : next.address.parent,
+    )!;
+    const path =
+      next.kind === 'node'
+        ? visit.ancestors
+        : [...visit.ancestors, { node: visit.node, zone: next.address.zone }];
     if (path.some(({ node }) => collapsed.value.has(node.id))) {
       const open = new Set(collapsed.value);
       for (const { node } of path) open.delete(node.id);
@@ -372,7 +408,17 @@ export function createEditor(options: EditorOptions) {
         label="Document outline"
         nodes={toTree(tree)}
         expanded={outlineParents(tree).filter((id) => !closed.has(id))}
-        selected={current?.kind === 'node' ? current.id : undefined}
+        selected={
+          current?.kind === 'node'
+            ? current.id
+            : current?.kind === 'slot'
+              ? slotRowId(
+                  current.address.parent,
+                  current.address.zone,
+                  current.address.index,
+                )
+              : undefined
+        }
         action={OUTLINE_ACTION}
         toggleAction={OUTLINE_TOGGLE_ACTION}
         density="compact"
@@ -413,6 +459,16 @@ export function createEditor(options: EditorOptions) {
 
   const inspector = (document: ViewDocument) => {
     const current = selection.value;
+    if (current?.kind === 'slot') {
+      return slotAt(document, current.address) ? (
+        slotEditor(document, viewCatalog, current.address)
+      ) : (
+        <EmptyState
+          title="Nothing selected"
+          detail="Select a node on the canvas or in the outline to inspect its props."
+        />
+      );
+    }
     const visit =
       current?.kind === 'node' ? findNode(document, current.id) : undefined;
     const key = visit
@@ -747,6 +803,12 @@ export function createEditor(options: EditorOptions) {
           </>
         ) : undefined}
         {bindSection(node, component)}
+        {controlFlowSection(
+          doc.value,
+          viewCatalog,
+          node.id,
+          fieldErrors.value['#item'],
+        )}
         <ListHeader label="Add a child" size="xs" />
         {zones.length && zone ? (
           <List controlInsets="trbl" gap>
@@ -783,6 +845,9 @@ export function createEditor(options: EditorOptions) {
             </Text>
           </ListInsetText>
         )}
+        {zones.length && zone
+          ? addSlotFields(doc.value, node.id, fieldErrors.value['#slot'])
+          : undefined}
       </List>
     );
   };
@@ -1139,6 +1204,76 @@ export function createEditor(options: EditorOptions) {
     commit(result.document);
   };
 
+  /** Adds a `$slot` to the chosen zone of the selected node (KF-90GTJN). */
+  const addSlot = () => {
+    const id = selectedNodeId();
+    const root = document.querySelector<HTMLElement>(
+      `[data-editor-add="zone"]`,
+    );
+    const field = document.querySelector<HTMLElement>(
+      '[data-editor-slot="name"]',
+    );
+    if (!id || !field) return;
+    const zone = root ? String(controlValue(root)) : addZone.value;
+    const pass = document.querySelector<HTMLElement>(
+      '[data-editor-slot="pass-item"]',
+    );
+    const result = insertSlot(
+      doc.value,
+      id,
+      zone,
+      String(controlValue(field)).trim(),
+      pass ? controlValue(pass) === true : false,
+    );
+    if ('error' in result) {
+      fieldErrors.value = { '#slot': result.error };
+      return;
+    }
+    commit(result.document);
+    select({ kind: 'slot', address: result.address });
+  };
+
+  /** Applies a change to a Show, Repeat, or Item name control. */
+  const editControl = (field: HTMLElement) => {
+    const id = selectedNodeId();
+    if (!id) return;
+    const value = String(controlValue(field));
+    const current = controlOf(doc.value, id);
+    switch (field.dataset.editorControl) {
+      case 'condition': {
+        const next = value ? (JSON.parse(value) as ViewValue) : undefined;
+        if (JSON.stringify(next) === JSON.stringify(current?.condition)) return;
+        commit(setCondition(doc.value, id, next));
+        return;
+      }
+      case 'repeat': {
+        if (value === JSON.stringify(current?.repeat?.source ?? '')) return;
+        if (!value) {
+          if (current?.repeat) commit(setRepeat(doc.value, id, undefined));
+          return;
+        }
+        const option = repeatOptions(doc.value, viewCatalog, id).find(
+          (item) => JSON.stringify(item.source) === value,
+        );
+        if (option)
+          commit(
+            setRepeat(doc.value, id, {
+              source: option.source,
+              as: option.as,
+              key: option.key,
+            }),
+          );
+        return;
+      }
+      default: {
+        if (value === current?.repeat?.as) return;
+        const result = renameItem(doc.value, id, value);
+        if ('error' in result) fieldErrors.value = { '#item': result.error };
+        else commit(result.document);
+      }
+    }
+  };
+
   /** The element the editor is wired to, for focus after an edit. */
   let wired: HTMLElement | undefined;
 
@@ -1223,6 +1358,30 @@ export function createEditor(options: EditorOptions) {
       delegate<HTMLElement>(
         root,
         'change',
+        '[data-editor-control]',
+        (_event, field) => editControl(field),
+      ),
+      delegate<HTMLElement>(
+        root,
+        'change',
+        '[data-editor-slot-input]',
+        (_event, field) => {
+          const current = selection.value;
+          if (current?.kind !== 'slot') return;
+          const value = String(controlValue(field));
+          commit(
+            setSlotInput(
+              doc.value,
+              current.address,
+              field.dataset.editorSlotInput!,
+              value ? (JSON.parse(value) as ViewValue) : undefined,
+            ),
+          );
+        },
+      ),
+      delegate<HTMLElement>(
+        root,
+        'change',
         '[data-editor-promote]',
         (_event, field) => {
           promoteProp.value = String(controlValue(field));
@@ -1250,9 +1409,19 @@ export function createEditor(options: EditorOptions) {
           selection.value = null;
         },
         [ADD_ACTION]: () => addChild(),
+        [ADD_SLOT_ACTION]: () => addSlot(),
+        [DELETE_SLOT_ACTION]: () => {
+          const current = selection.value;
+          if (current?.kind !== 'slot') return;
+          commit(removeSlot(doc.value, current.address));
+          selection.value = null;
+        },
         [PROMOTE_ACTION]: () => promote(),
-        [OUTLINE_ACTION]: (_event, target) =>
-          select({ kind: 'node', id: target.dataset.itemId! }),
+        [OUTLINE_ACTION]: (_event, target) => {
+          const id = target.dataset.itemId!;
+          const address = slotRowAddress(id);
+          select(address ? { kind: 'slot', address } : { kind: 'node', id });
+        },
         [OUTLINE_TOGGLE_ACTION]: (_event, target) => {
           const next = new Set(collapsed.value);
           const id = target.dataset.itemId!;

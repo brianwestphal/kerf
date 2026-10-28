@@ -346,3 +346,55 @@ test('binds a repeated row’s label to a document param', async ({
     animations: 'disabled',
   });
 });
+
+// KF-90GTJN: control flow from the inspector — show a node only when a
+// param holds, and add a slot the application fills.
+test('shows a node only when a param holds and adds a slot', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const select = (id: string) =>
+    page
+      .locator(`[data-action="editor-select-node"][data-item-id="${id}"]`)
+      .click();
+  await select(COMPOSE);
+  await page.locator('[data-editor-control="condition"]').click();
+  await page.getByRole('option', { name: 'Param showEmpty' }).click();
+  await expect(
+    page
+      .locator(`[data-item-id="${COMPOSE}"]`)
+      .getByText('trailing · if showEmpty'),
+  ).toBeVisible();
+  await expect(page.getByText('7 nodes · valid')).toBeVisible();
+  await page
+    .locator('[data-editor-control="condition"]')
+    .scrollIntoViewIfNeeded();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-90gtjn-editor-condition-1440.png'),
+    animations: 'disabled',
+  });
+
+  // Add a slot to the toolbar's trailing zone; the outline and canvas show it.
+  await select('01JB8Z1M6Q8E1X9V4S7K2R3T5B');
+  await page.locator('[data-editor-add="zone"]').click();
+  await page.getByRole('option', { name: 'trailing', exact: true }).click();
+  await page.locator('[data-editor-slot="name"] input').fill('actions');
+  await page.getByRole('button', { name: 'Add slot' }).click();
+  const slotRow = page.locator(
+    '[data-item-id="slot:01JB8Z1M6Q8E1X9V4S7K2R3T5B:trailing:1"]',
+  );
+  await expect(slotRow).toHaveAttribute('aria-selected', 'true');
+  await expect(
+    page.locator('[data-editor-canvas]').getByText('actions slot'),
+  ).toBeVisible();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-90gtjn-editor-slot-1440.png'),
+    animations: 'disabled',
+  });
+  await page.getByRole('button', { name: 'Delete slot' }).click();
+  await expect(slotRow).toHaveCount(0);
+  await page.getByRole('button', { name: 'Undo' }).click();
+  await expect(slotRow).toBeVisible();
+});
