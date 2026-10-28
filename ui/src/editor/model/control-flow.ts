@@ -27,48 +27,77 @@ export interface Repeat {
 /**
  * The control flow around a node the inspector can edit: an optional
  * condition (`$if`, outermost) and an optional repeat (`$each`, innermost).
+ * A conditional node sits in the `then` branch, with what shows `otherwise`
+ * (the `else` branch), or is itself that `else` branch (KF-5S56VQ).
  */
 export interface NodeControl {
   readonly condition?: ViewValue;
   readonly repeat?: Repeat;
+  /** `else` when the node is the otherwise branch of its condition. */
+  readonly branch?: 'else';
+  /** For a node in `then`: what shows while the condition does not hold. */
+  readonly otherwise?: ViewChild;
 }
 
 type Owner = {
   readonly list: ViewChild[];
   readonly index: number;
   readonly node: ViewNode;
+  /** For a node in `else`: the `then` branch beside it. */
+  readonly sibling?: ViewChild;
 } & NodeControl;
 
 const isNode = (child: ViewChild): child is ViewNode =>
   !('$each' in child) && !('$if' in child) && !('$slot' in child);
 
+/** Node `id` as a whole branch: the node itself, or the template of `$each`. */
+function matchBranch(
+  child: ViewChild,
+  id: string,
+): { node: ViewNode; repeat?: Repeat } | undefined {
+  if (isNode(child)) return child.id === id ? { node: child } : undefined;
+  if ('$each' in child && child.template.id === id)
+    return {
+      node: child.template,
+      repeat: { source: child.$each, as: child.as, key: child.key },
+    };
+  return undefined;
+}
+
 /**
  * Where node `id` sits in a zone list, with the control flow around it. Only
  * the shapes the inspector writes are editable — the node itself, `$each`
- * around it, `$if` around either — so a node in an `else` branch or under a
- * nested `$if` has no owner here and its control flow stays in the file.
+ * around it, `$if` around either in either branch — so a node under a nested
+ * `$if` has no owner here and its control flow stays in the file.
  */
 function ownerOf(document: ViewDocument, id: string): Owner | undefined {
-  const match = (child: ViewChild): NodeControl | undefined => {
-    if (isNode(child)) return child.id === id ? {} : undefined;
-    if ('$each' in child)
-      return child.template.id === id
-        ? { repeat: { source: child.$each, as: child.as, key: child.key } }
-        : undefined;
-    if ('$if' in child && !child.else) {
-      const inner = match(child.then);
-      return inner && !('condition' in inner)
-        ? { condition: child.$if, ...inner }
-        : undefined;
-    }
-    return undefined;
+  const match = (
+    child: ViewChild,
+  ): Omit<Owner, 'list' | 'index'> | undefined => {
+    if (!('$if' in child)) return matchBranch(child, id);
+    const inThen = matchBranch(child.then, id);
+    if (inThen)
+      return {
+        ...inThen,
+        condition: child.$if,
+        ...(child.else ? { otherwise: child.else } : {}),
+      };
+    const inElse = child.else && matchBranch(child.else, id);
+    return inElse
+      ? {
+          ...inElse,
+          condition: child.$if,
+          branch: 'else',
+          sibling: child.then,
+        }
+      : undefined;
   };
   const visit = (node: ViewNode): Owner | undefined => {
     for (const children of Object.values(node.zones ?? {})) {
       const list = children as ViewChild[];
       for (const [index, child] of list.entries()) {
         const found = match(child);
-        if (found) return { list, index, node: nodeIn(child), ...found };
+        if (found) return { list, index, ...found };
         for (const inner of nodesUnder(child)) {
           const deeper = visit(inner);
           if (deeper) return deeper;
@@ -78,13 +107,6 @@ function ownerOf(document: ViewDocument, id: string): Owner | undefined {
     return undefined;
   };
   return visit(document.root);
-}
-
-/** The node a matched child holds. */
-function nodeIn(child: ViewChild): ViewNode {
-  if (isNode(child)) return child;
-  if ('$each' in child) return child.template;
-  return nodeIn((child as { then: ViewChild }).then);
 }
 
 /** The nodes directly under a zone child, through its control flow. */
@@ -112,23 +134,38 @@ export function controlOf(
 ): NodeControl | undefined {
   const owner = ownerOf(document, id);
   if (!owner) return undefined;
-  const { condition, repeat } = owner;
+  const { condition, repeat, branch, otherwise } = owner;
   return {
     ...(condition !== undefined ? { condition } : {}),
     ...(repeat ? { repeat } : {}),
+    ...(branch ? { branch } : {}),
+    ...(otherwise ? { otherwise } : {}),
   };
 }
 
-/** Rewrites node `id`'s control flow; unchanged when it has no editable owner. */
+type ControlPatch = {
+  readonly condition?: ViewValue | undefined;
+  readonly repeat?: Repeat | undefined;
+  readonly otherwise?: ViewChild | undefined;
+};
+
+/**
+ * Rewrites node `id`'s control flow with `patch` (a key set to `undefined`
+ * removes that part); unchanged when it has no editable owner. Removing the
+ * condition of a two-branch `$if` keeps both branches, in order, as siblings.
+ */
 function withControl(
   document: ViewDocument,
   id: string,
-  change: (current: NodeControl) => NodeControl,
+  patch: ControlPatch,
 ): ViewDocument {
   const next = clone(document);
   const owner = ownerOf(next, id);
   if (!owner) return document;
-  const { condition, repeat } = change(owner);
+  const pick = <K extends keyof ControlPatch>(key: K) =>
+    key in patch ? patch[key] : owner[key];
+  const condition = pick('condition');
+  const repeat = pick('repeat');
   const inner: ViewChild = repeat
     ? {
         $each: repeat.source,
@@ -137,8 +174,30 @@ function withControl(
         template: owner.node,
       }
     : owner.node;
-  owner.list[owner.index] =
-    condition !== undefined ? { $if: condition, then: inner } : inner;
+  if (owner.branch === 'else') {
+    owner.list.splice(
+      owner.index,
+      1,
+      ...(condition !== undefined
+        ? [{ $if: condition, then: owner.sibling!, else: inner }]
+        : [owner.sibling!, inner]),
+    );
+    return next;
+  }
+  const otherwise = pick('otherwise');
+  owner.list.splice(
+    owner.index,
+    1,
+    ...(condition === undefined
+      ? [inner, ...(otherwise ? [otherwise] : [])]
+      : [
+          {
+            $if: condition,
+            then: inner,
+            ...(otherwise ? { else: otherwise } : {}),
+          },
+        ]),
+  );
   return next;
 }
 
@@ -148,10 +207,7 @@ export function setCondition(
   id: string,
   condition: ViewValue | undefined,
 ): ViewDocument {
-  return withControl(document, id, ({ repeat }) => ({
-    ...(condition !== undefined ? { condition } : {}),
-    ...(repeat ? { repeat } : {}),
-  }));
+  return withControl(document, id, { condition });
 }
 
 /** Repeats node `id` for each item of a list; `undefined` stops repeating. */
@@ -160,10 +216,23 @@ export function setRepeat(
   id: string,
   repeat: Repeat | undefined,
 ): ViewDocument {
-  return withControl(document, id, ({ condition }) => ({
-    ...(condition !== undefined ? { condition } : {}),
-    ...(repeat ? { repeat } : {}),
-  }));
+  return withControl(document, id, { repeat });
+}
+
+/**
+ * Sets what shows while conditional node `id`'s condition does not hold (the
+ * `else` branch); `undefined` removes it. Unchanged for a node with no
+ * condition or one that is itself the otherwise branch.
+ */
+export function setOtherwise(
+  document: ViewDocument,
+  id: string,
+  otherwise: ViewNode | undefined,
+): ViewDocument {
+  const control = controlOf(document, id);
+  if (control?.condition === undefined || control.branch === 'else')
+    return document;
+  return withControl(document, id, { otherwise });
 }
 
 /** Points every `$bind` that starts at item `from` at item `to` instead. */
@@ -200,14 +269,13 @@ export function renameItem(
   const owner = ownerOf(next, id)!;
   const renamed = renameBindings(owner.node, repeat.as, as);
   Object.assign(owner.node, renamed);
-  const result = withControl(next, id, ({ condition }) => ({
-    ...(condition !== undefined ? { condition } : {}),
+  const result = withControl(next, id, {
     repeat: {
       source: repeat.source,
       as,
       key: renameBindings({ $bind: repeat.key }, repeat.as, as).$bind,
     },
-  }));
+  });
   return { document: result };
 }
 

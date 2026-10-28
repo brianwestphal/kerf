@@ -60,7 +60,8 @@ function locate(document: ViewDocument, id: string) {
     index: number,
     parent: MutableNode,
     zone: string,
-  ) => {
+    branch = false,
+  ): void => {
     if ('$each' in item)
       visitNode(
         item.template as MutableNode,
@@ -70,11 +71,18 @@ function locate(document: ViewDocument, id: string) {
         zone,
       );
     else if ('$if' in item) {
-      visitNode(item.then as MutableNode, undefined, undefined, parent, zone);
-      if (item.else)
-        visitNode(item.else as MutableNode, undefined, undefined, parent, zone);
+      // A branch is itself a child: a node, a repeat, or a nested condition.
+      visitChild(item.then, list, index, parent, zone, true);
+      if (item.else) visitChild(item.else, list, index, parent, zone, true);
     } else if (!('$slot' in item))
-      visitNode(item as MutableNode, list, index, parent, zone);
+      // A node in a branch is not directly in the zone list.
+      visitNode(
+        item as MutableNode,
+        branch ? undefined : list,
+        branch ? undefined : index,
+        parent,
+        zone,
+      );
   };
   const visitNode = (
     node: MutableNode,

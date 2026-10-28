@@ -49,8 +49,12 @@ and deleting the last use of a slot drops its declaration. Choices are the
 sources `validateView` accepts, conditions and repeats show in the outline
 (`if showEmpty`, `for each item in items`), slots are outline rows of their
 own, and every change is undoable. To repeat a component, add it, then choose
-its list. A node in an `else` branch or under a nested `$if` keeps its control
-flow in the file.
+its list. A conditional node also chooses what shows **otherwise** (KF-5S56VQ:
+else branches): a component the zone accepts goes in the `else` branch (the
+outline reads `unless showEmpty`), and Nothing removes it. A node in either
+branch edits the shared condition and its own repeat; choosing Always on a
+two-branch condition keeps both nodes as plain siblings. A node under a
+nested `$if` keeps its control flow in the file.
 
 A css-value prop's field takes any `$css` builder call, compositions
 included (`calc(plus(px(8), space("m")))`, `lengthVar("--app-gap", px(8))`);

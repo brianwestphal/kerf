@@ -11,6 +11,7 @@ import {
   renameItem,
   repeatOptions,
   setCondition,
+  setOtherwise,
   setRepeat,
   setSlotInput,
   slotAt,
@@ -71,12 +72,85 @@ describe('controlOf', () => {
         },
       },
     } as unknown as ViewDocument;
-    expect(controlOf(document, 'A')).toBeUndefined();
-    expect(controlOf(document, 'B')).toBeUndefined();
+    expect(controlOf(document, 'A')).toEqual({
+      condition: { $param: 'showEmpty' },
+      otherwise: text('B'),
+    });
+    expect(controlOf(document, 'B')).toEqual({
+      condition: { $param: 'showEmpty' },
+      branch: 'else',
+    });
     expect(controlOf(document, 'C')).toBeUndefined();
-    expect(setCondition(document, 'A', undefined)).toBe(document);
-    expect(conditionOptions(document, viewCatalog, 'A')).toEqual([]);
-    expect(repeatOptions(document, viewCatalog, 'A')).toEqual([]);
+    expect(setCondition(document, 'C', undefined)).toBe(document);
+    expect(conditionOptions(document, viewCatalog, 'C')).toEqual([]);
+    expect(repeatOptions(document, viewCatalog, 'C')).toEqual([]);
+  });
+});
+
+describe('otherwise branches', () => {
+  const OTHER = '01JB8Z1M6Q8E1X9V4S7K2R3T6D';
+  const other = {
+    id: OTHER,
+    type: '@kerfjs/ui:text',
+    props: { children: 'Something here' },
+  };
+  const content = (document: ViewDocument) =>
+    document.root.zones!.content as readonly object[];
+
+  it('adds, reads, and removes what shows otherwise', () => {
+    const both = setOtherwise(inbox, EMPTY, other);
+    expect(controlOf(both, EMPTY)).toEqual({
+      condition: { $param: 'showEmpty' },
+      otherwise: other,
+    });
+    expect(controlOf(both, OTHER)).toEqual({
+      condition: { $param: 'showEmpty' },
+      branch: 'else',
+    });
+    expect(valid(both)).toEqual([]);
+    expect(setOtherwise(both, EMPTY, undefined)).toEqual(inbox);
+    // Only a conditional node in `then` takes an otherwise branch.
+    expect(setOtherwise(inbox, COMPOSE, other)).toBe(inbox);
+    expect(setOtherwise(both, OTHER, other)).toBe(both);
+    expect(setOtherwise(inbox, 'missing', other)).toBe(inbox);
+  });
+
+  it('rewrites the shared condition from either branch', () => {
+    const both = setOtherwise(inbox, EMPTY, other);
+    const flipped = setCondition(both, OTHER, { $param: 'showEmpty' });
+    expect(flipped).toEqual(both);
+    const fromThen = setCondition(both, EMPTY, { $param: 'title' });
+    expect(controlOf(fromThen, OTHER)?.condition).toEqual({ $param: 'title' });
+  });
+
+  it('keeps both branches as siblings, in order, when the condition goes', () => {
+    const both = setOtherwise(inbox, EMPTY, other);
+    for (const id of [EMPTY, OTHER]) {
+      const always = setCondition(both, id, undefined);
+      expect(content(always).slice(1, 3)).toEqual([
+        expect.objectContaining({ id: EMPTY }),
+        expect.objectContaining({ id: OTHER }),
+      ]);
+      expect(valid(always)).toEqual([]);
+    }
+  });
+
+  it('repeats a node inside either branch', () => {
+    const repeat = { source: { $param: 'items' }, as: 'item', key: 'item.id' };
+    const both = setOtherwise(inbox, EMPTY, other);
+    const thenRows = setRepeat(both, EMPTY, repeat);
+    expect(controlOf(thenRows, EMPTY)).toEqual({
+      condition: { $param: 'showEmpty' },
+      repeat,
+      otherwise: other,
+    });
+    const elseRows = setRepeat(both, OTHER, repeat);
+    expect(controlOf(elseRows, OTHER)).toEqual({
+      condition: { $param: 'showEmpty' },
+      repeat,
+      branch: 'else',
+    });
+    expect(setRepeat(elseRows, OTHER, undefined)).toEqual(both);
   });
 });
 

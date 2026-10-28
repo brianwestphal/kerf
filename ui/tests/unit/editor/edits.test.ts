@@ -363,3 +363,46 @@ describe('bindingOptions', () => {
     ).toEqual([]);
   });
 });
+
+// KF-5S56VQ: a node under a condition that also repeats, or under a nested
+// condition, is still found for edits (bindings set props on it).
+describe('nodes inside branches', () => {
+  const item = { id: ROW, type: '@kerfjs/ui:list-item', props: { label: 'x' } };
+  const nested = {
+    ...inbox,
+    root: {
+      ...inbox.root,
+      zones: {
+        content: [
+          {
+            $if: { $param: 'showEmpty' },
+            then: {
+              $each: { $param: 'items' },
+              as: 'item',
+              key: 'item.id',
+              template: item,
+            },
+            else: {
+              $if: { $param: 'showEmpty' },
+              then: { id: TITLE, type: '@kerfjs/ui:text' },
+            },
+          },
+        ],
+      },
+    },
+  } as unknown as ViewDocument;
+
+  it('sets props on them but does not move or remove them', () => {
+    expect(
+      findNode(setProp(nested, ROW, 'label', 'y'), ROW)?.node.props,
+    ).toEqual({ label: 'y' });
+    expect(
+      findNode(setProp(nested, TITLE, 'children', 'z'), TITLE)?.node.props,
+    ).toEqual({ children: 'z' });
+    expect(isMovable(nested, TITLE)).toEqual({
+      up: false,
+      down: false,
+      remove: false,
+    });
+  });
+});

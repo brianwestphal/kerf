@@ -428,3 +428,31 @@ test('turns a button label into nodes and adds a badge beside it', async ({
     animations: 'disabled',
   });
 });
+
+// KF-5S56VQ: a conditional node gets an otherwise branch, which the outline
+// shows as the other side of the same condition.
+test('adds what shows otherwise to a conditional node', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page
+    .locator(
+      '[data-action="editor-select-node"][data-item-id="01JB8Z1M6Q8E1X9V4S7K2R3T5G"]',
+    )
+    .click();
+  await page
+    .locator('[data-editor-control="otherwise"]')
+    .getByRole('combobox')
+    .click();
+  await page.getByRole('option', { name: 'Badge', exact: true }).click();
+  await expect(page.getByText('content · unless showEmpty')).toBeVisible();
+  await expect(page.getByText('8 nodes · valid')).toBeVisible();
+  await page
+    .locator('[data-editor-control="otherwise"]')
+    .scrollIntoViewIfNeeded();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-5s56vq-editor-otherwise-1440.png'),
+    animations: 'disabled',
+  });
+});

@@ -80,6 +80,7 @@ import {
   renameItem,
   repeatOptions,
   setCondition,
+  setOtherwise,
   setRepeat,
   setSlotInput,
   type SlotAddress,
@@ -747,6 +748,32 @@ export function createEditor(options: EditorOptions) {
     );
   };
 
+  /** The zones a node offers for adding a child. */
+  const zonesOf = (node: ViewDocument['root']) =>
+    legalZones(
+      node,
+      viewCatalog.entries.get(node.type) as Parameters<typeof legalZones>[1],
+      propsByKey.get(node.type)?.props ?? [],
+      new Set(viewCatalog.components.keys()),
+    );
+
+  /** The components a zone takes, as Select choices. */
+  const addableIn = (
+    zone: { readonly accepts?: readonly string[] } | undefined,
+  ) =>
+    [...propsByKey.values()]
+      .filter(
+        (candidate) =>
+          // Kerf UI's and an application's own components; Web Awesome
+          // elements are placed through their Kerf wrappers.
+          candidate.source !== 'webawesome' &&
+          (!zone?.accepts || zone.accepts.includes(candidate.key)),
+      )
+      .map((candidate) => ({
+        value: candidate.key,
+        label: componentNames.get(candidate.key)!,
+      }));
+
   /** The inspector for a selected node: name, editable props, add child. */
   const nodeEditor = (
     node: ViewDocument['root'],
@@ -765,28 +792,19 @@ export function createEditor(options: EditorOptions) {
           !Array.isArray(props[prop.name])
         ),
     );
-    const zones = legalZones(
-      node,
-      viewCatalog.entries.get(node.type) as Parameters<typeof legalZones>[1],
-      component.props,
-      new Set(viewCatalog.components.keys()),
-    );
+    const zones = zonesOf(node);
     const zone =
       zones.find(
         (option) => option.key === addZone.value && !option.disabledReason,
       ) ?? zones.find((option) => !option.disabledReason);
-    const addable = [...propsByKey.values()]
-      .filter(
-        (candidate) =>
-          // Kerf UI's and an application's own components; Web Awesome
-          // elements are placed through their Kerf wrappers.
-          candidate.source !== 'webawesome' &&
-          (!zone?.accepts || zone.accepts.includes(candidate.key)),
-      )
-      .map((candidate) => ({
-        value: candidate.key,
-        label: componentNames.get(candidate.key)!,
-      }));
+    const addable = addableIn(zone);
+    // What can show otherwise: what the zone holding this node accepts.
+    const parent = findNode(doc.value, node.id)?.ancestors.at(-1);
+    const otherwiseChoices = parent
+      ? addableIn(
+          zonesOf(parent.node).find((option) => option.key === parent.zone),
+        )
+      : [];
     const chosen =
       addable.find((item) => item.value === addComponent.value) ?? addable[0];
     return (
@@ -876,6 +894,7 @@ export function createEditor(options: EditorOptions) {
           viewCatalog,
           node.id,
           fieldErrors.value['#item'],
+          otherwiseChoices,
         )}
         <ListHeader label="Add a child" size="xs" />
         {zones.length && zone ? (
@@ -1211,6 +1230,21 @@ export function createEditor(options: EditorOptions) {
     commit(setProp(doc.value, id, name, result.value));
   };
 
+  /** A new node of component `key` with its required props filled in. */
+  const seededNode = (key: string): ViewNode => {
+    const component = propsByKey.get(key)!;
+    const props = seedProps(
+      component.props,
+      componentNames.get(key)!,
+      component.variants,
+    );
+    return {
+      id: newNodeId(),
+      type: key,
+      ...(Object.keys(props).length ? { props } : {}),
+    };
+  };
+
   /** Adds the chosen component to the chosen zone and selects it. */
   const addChild = () => {
     const id = selectedNodeId();
@@ -1233,18 +1267,7 @@ export function createEditor(options: EditorOptions) {
       ?.props.some((prop) => prop.name === zone && prop.slot)
       ? textToNodes(doc.value, id, zone)
       : doc.value;
-    const child = {
-      id: newNodeId(),
-      type: key,
-      ...(() => {
-        const props = seedProps(
-          component.props,
-          componentNames.get(key)!,
-          component.variants,
-        );
-        return Object.keys(props).length ? { props } : {};
-      })(),
-    };
+    const child = seededNode(key);
     commit(withCatalog(insertNode(base, id, zone, child), key));
     select({ kind: 'node', id: child.id });
     // The new node's form opens at its top; take keyboard focus there too,
@@ -1345,6 +1368,17 @@ export function createEditor(options: EditorOptions) {
               key: option.key,
             }),
           );
+        return;
+      }
+      case 'otherwise': {
+        const otherwise = current?.otherwise;
+        if (value === (otherwise && 'type' in otherwise ? otherwise.type : ''))
+          return;
+        commit(
+          value
+            ? withCatalog(setOtherwise(doc.value, id, seededNode(value)), value)
+            : setOtherwise(doc.value, id, undefined),
+        );
         return;
       }
       default: {

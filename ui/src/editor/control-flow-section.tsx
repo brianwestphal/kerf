@@ -2,7 +2,12 @@
 // condition holds, repeat it for each item of a list, add a slot, and edit a
 // selected slot. The editor wires the controls' data attributes to the
 // document edits in model/control-flow.ts.
-import type { ViewCatalog, ViewDocument, ViewValue } from '@kerfjs/ui/view';
+import type {
+  ViewCatalog,
+  ViewChild,
+  ViewDocument,
+  ViewValue,
+} from '@kerfjs/ui/view';
 
 import { Button } from '../components/actions/button/button.js';
 import { List } from '../components/collections/list/list.js';
@@ -67,6 +72,8 @@ export function controlFlowSection(
   catalog: ViewCatalog,
   id: string,
   itemError: string | undefined,
+  /** Components that can show otherwise, in the node's zone (KF-5S56VQ). */
+  otherwiseChoices: readonly { value: string; label: string }[],
 ) {
   const control = controlOf(document, id);
   if (!control) {
@@ -75,8 +82,8 @@ export function controlFlowSection(
         <ListHeader label="Control flow" size="xs" />
         <ListInsetText>
           <Text tone="quiet">
-            This node sits in an else branch or a nested condition; edit its
-            control flow in the document file.
+            This node sits in a nested condition; edit its control flow in the
+            document file.
           </Text>
         </ListInsetText>
       </>
@@ -100,9 +107,16 @@ export function controlFlowSection(
             control.condition,
             'Always',
           )}
-          hint="Show this node only while a true/false param or item field is true."
+          hint={
+            control.branch === 'else'
+              ? 'This node shows while the condition does not hold; changing it changes both branches.'
+              : 'Show this node only while a true/false param or item field is true.'
+          }
           rootAttributes={{ 'data-editor-control': 'condition' }}
         />
+        {control.condition !== undefined && control.branch !== 'else'
+          ? otherwiseSelect(control.otherwise, otherwiseChoices)
+          : undefined}
         <Select
           name="control-repeat"
           label="Repeat for each"
@@ -133,6 +147,42 @@ export function controlFlowSection(
         ) : undefined}
       </List>
     </>
+  );
+}
+
+/** What shows while the condition does not hold: nothing, or one component. */
+function otherwiseSelect(
+  otherwise: ViewChild | undefined,
+  choices: readonly { value: string; label: string }[],
+) {
+  // An otherwise branch that repeats or is a slot is edited by selecting it.
+  const plain = !otherwise || !('type' in otherwise) ? undefined : otherwise;
+  if (otherwise && !plain)
+    return (
+      <Select
+        name="control-otherwise"
+        label="Otherwise show"
+        value=""
+        choices={[{ value: '', label: 'A repeated row or slot' }]}
+        disabled
+        hint="Select the otherwise branch in the outline to edit it."
+      />
+    );
+  return (
+    <Select
+      name="control-otherwise"
+      label="Otherwise show"
+      value={plain?.type ?? ''}
+      choices={[
+        { value: '', label: 'Nothing' },
+        ...choices,
+        ...(plain && !choices.some((choice) => choice.value === plain.type)
+          ? [{ value: plain.type, label: plain.type }]
+          : []),
+      ]}
+      hint="Shows in this node's place while the condition does not hold."
+      rootAttributes={{ 'data-editor-control': 'otherwise' }}
+    />
   );
 }
 

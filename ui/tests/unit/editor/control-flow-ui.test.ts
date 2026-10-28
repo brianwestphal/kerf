@@ -5,7 +5,12 @@ import type { ViewDocument } from '@kerfjs/ui/view';
 import { mount } from 'kerfjs';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { controlOf, slotAt } from '../../../src/editor/model/control-flow.js';
+import {
+  controlOf,
+  setOtherwise,
+  setRepeat,
+  slotAt,
+} from '../../../src/editor/model/control-flow.js';
 import { findNode } from '../../../src/editor/model/document.js';
 import { insertNode } from '../../../src/editor/model/edits.js';
 import { createEditor } from './kerf-catalog.js';
@@ -111,8 +116,10 @@ describe('showing a node only when a condition holds', () => {
           content: [
             {
               $if: { $param: 'showEmpty' },
-              then: { id: EMPTY, type: '@kerfjs/ui:text' },
-              else: { id: NEW, type: '@kerfjs/ui:text' },
+              then: {
+                $if: { $param: 'showEmpty' },
+                then: { id: NEW, type: '@kerfjs/ui:text' },
+              },
             },
           ],
         },
@@ -120,6 +127,68 @@ describe('showing a node only when a condition holds', () => {
     }));
     expect(root.textContent).toContain('edit its control flow in the document');
     expect(root.querySelector('[data-editor-control]')).toBeNull();
+  });
+
+  it('adds, replaces, and removes what shows otherwise, then edits it', () => {
+    const { root, editor } = open(EMPTY);
+    const otherwise = () => field(root, '[data-editor-control="otherwise"]');
+    expect(choices(otherwise())).toContain('Badge');
+    choose(otherwise(), '@kerfjs/ui:badge');
+    const added = controlOf(editor.document.value, EMPTY)?.otherwise as {
+      id: string;
+      type: string;
+    };
+    expect(added.type).toBe('@kerfjs/ui:badge');
+    expect(root.textContent).toContain('content · unless showEmpty');
+    // The same component again changes nothing.
+    const before = editor.document.value;
+    choose(otherwise(), '@kerfjs/ui:badge');
+    expect(editor.document.value).toBe(before);
+    // The otherwise node shares the condition and has no otherwise of its own.
+    editor.selection.value = { kind: 'node', id: added.id };
+    expect(root.querySelector('[data-editor-control="otherwise"]')).toBeNull();
+    expect(root.textContent).toContain(
+      'This node shows while the condition does not hold',
+    );
+    choose(condition(root), '');
+    expect(controlOf(editor.document.value, added.id)).toEqual({});
+    expect(controlOf(editor.document.value, EMPTY)).toEqual({});
+    click(root, 'editor-undo');
+    editor.selection.value = { kind: 'node', id: EMPTY };
+    choose(otherwise(), '');
+    expect(controlOf(editor.document.value, EMPTY)).toEqual({
+      condition: { $param: 'showEmpty' },
+    });
+  });
+
+  it('shows an otherwise branch that repeats as read-only', () => {
+    const { root } = open(EMPTY, (document) =>
+      setOtherwise(document, EMPTY, {
+        id: NEW,
+        type: '@kerfjs/ui:text',
+        props: { children: 'x' },
+      }),
+    );
+    expect(
+      field(root, '[data-editor-control="otherwise"]').getAttribute('value'),
+    ).toBe('@kerfjs/ui:text');
+    cleanup?.();
+    document.body.replaceChildren();
+    const repeated = open(EMPTY, (document) => {
+      const withOther = setOtherwise(document, EMPTY, {
+        id: NEW,
+        type: '@kerfjs/ui:button',
+        props: { children: 'x', action: { $action: 'go' } },
+      });
+      return setRepeat(withOther, NEW, {
+        source: { $param: 'items' },
+        as: 'item',
+        key: 'item.id',
+      });
+    });
+    expect(repeated.root.textContent).toContain(
+      'Select the otherwise branch in the outline to edit it.',
+    );
   });
 
   it('shows no control flow for the root', () => {
