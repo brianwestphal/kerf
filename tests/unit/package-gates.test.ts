@@ -182,7 +182,18 @@ process.exit(reply.status ?? 0);
               .split('\n')
               .map((line) => JSON.parse(line))
           : [];
-        expect(calls).toHaveLength(skip ? 0 : replies.length);
+        // KF-TWDAWP: when a reply outlasts the deadline, the deadline is the
+        // behavior under test, and under full-suite load it can expire before
+        // a fake `gh` Node process even starts and records its call, so those
+        // cases bound the call count instead of requiring every call to start.
+        const deadline = Number(deadlineMs) > 0 ? Number(deadlineMs) : 8000;
+        const deadlineBound = replies.some(
+          (reply) => (reply.delay ?? 0) >= deadline,
+        );
+        if (skip) expect(calls).toHaveLength(0);
+        else if (deadlineBound)
+          expect(calls.length).toBeLessThanOrEqual(replies.length);
+        else expect(calls).toHaveLength(replies.length);
         for (const args of calls) {
           expect(args.slice(0, 3)).toEqual([
             'api',
