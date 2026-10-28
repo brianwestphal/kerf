@@ -132,6 +132,9 @@
   background: var(--_kui-popup-scroll-cue);
   box-shadow: var(--kui-shadow-m);
   font: inherit;
+  /* The menu keeps the standard text size wherever its trigger sits: a
+     compact toolbar group's compact text is for the trigger (KF-Z8EYHT). */
+  font-size: var(--kui-font-m, remify(16px));
   font-weight: normal;
   text-align: start;
   white-space: normal;

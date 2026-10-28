@@ -191,7 +191,8 @@
 
 /* An icon-only trigger shows the selected icon and the disclosure caret as one
    pill, the same control family as a toolbar PopupMenu trigger: symmetric 8px
-   inline padding, 12px from the icon to the caret's 20px box, the caret glyph
+   inline padding, 0.75em from the icon to the caret's 1.25em box (12px and
+   20px at the default text size), the caret glyph
    size, and the control height, so the icon sits left of center to balance
    the caret. Inside a ToolbarControlGroup the trigger takes the control-slot
    height, overlap, and radius the group provides
@@ -240,12 +241,15 @@
   > :is(.kui-select__icon, .kui-select__custom-selected) {
   margin-inline-end: 0;
 }
+/* The caret's box and its gap from the icon both scale with the text, as
+   the PopupMenu trigger's do, so the two pills match in a compact group's
+   compact text too (KF-Z8EYHT). */
 .kui-select[data-selected-presentation="icon-only"]
   > .kui-select__trigger
   > .kui-select__caret {
   width: 1.25em;
   height: 1em;
-  margin-inline-start: remify(12px);
+  margin-inline-start: 0.75em;
   transform: scale(0.875);
 }
 .kui-select[data-selected-presentation="icon-only"][data-caret="false"]
@@ -351,6 +355,10 @@
   background: var(--_kui-popup-scroll-cue);
   box-shadow: var(--kui-shadow-m);
   font: inherit;
+  /* The listbox keeps the standard text size wherever its trigger sits, as
+     the PopupMenu's menu does: a compact toolbar group's compact text is for
+     the trigger (KF-Z8EYHT). */
+  font-size: var(--kui-font-m, remify(16px));
   font-weight: normal;
   text-align: start;
   white-space: normal;

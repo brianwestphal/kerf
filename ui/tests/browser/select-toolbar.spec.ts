@@ -28,7 +28,9 @@ test('compact toolbar Select uses group focus geometry and spaced option icons',
     height: 34,
     outlineStyle: 'none',
   });
-  expect(focusGeometry.width).toBe(68);
+  // Compact text (14px) scales the caret box and its gap with the PopupMenu
+  // pill's (KF-Z8EYHT): 62px trigger plus the 1px slot overlap on each side.
+  expect(focusGeometry.width).toBe(64);
   expect(focusGeometry.borderRadius).toBeGreaterThanOrEqual(17);
 
   const gaps = await select

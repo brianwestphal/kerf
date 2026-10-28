@@ -56,7 +56,8 @@ test('names plain and custom Select comboboxes without adding visible label geom
           .width,
       ),
     })),
-  ).toEqual({ width: 66, height: 32, valueWidth: 1 });
+    // A compact group's 14px text sizes the caret like the PopupMenu pill's.
+  ).toEqual({ width: 62, height: 32, valueWidth: 1 });
   expect(
     await navigationHost.evaluate((element) =>
       Math.round(
