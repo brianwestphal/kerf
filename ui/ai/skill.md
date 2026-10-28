@@ -21,6 +21,8 @@ accessibility, styling boundary, diagnostics), then
 `../docs/component-contract.md`, and `../docs/accessibility.md` before changing
 a consuming interface. Use the signature snapshot for exact props, callbacks,
 return values, and supported import paths; do not infer them from examples.
+Tools that need props as data (inspector forms, document validators, generated
+contracts) read `./component-props.json` instead of parsing declarations.
 Treat each `KUI-T###` contract as an exact declaration guarantee, including its
 documented dynamic-data widening. Do not extend those diagnostics to child
 markup, live DOM relationships, disposer invocation, or other conditions that

@@ -630,6 +630,44 @@ the artifact, while the matching consumer extension schema/example preserves
 application package identity. The catalog gate checks catalog/composition completeness and
 drift plus adversarial invalid contracts.
 
+`ui/ai/component-props.json` (schema `kerf-ui-component-props/v1`, with an
+adjacent JSON Schema) is the structured prop layer the two catalogs lack
+(KF-8PXPKW: per-component prop schema for editors and generated contracts).
+`ui/scripts/sync-component-props.mjs` (logic in
+`scripts/lib/component-props.mjs`) reads the built `dist/*.d.ts` with the
+typescript@6 JS API and Web Awesome's `custom-elements.json`. Every public
+component function returning `SafeHtml` becomes one entry keyed `package:id`,
+or `package:id#Export` for an entry's second component (`FieldLabel` beside
+`Text`). Each entry records:
+
+- props in a small type grammar: `string`, `number`, `boolean`, `literal`,
+  `enum` in declaration order, `content`, `css-value`, `function`, `signal`,
+  `element`, `array`, `record`, `object`, `union`, `ref`, `never`, and
+  `unknown`, each with the printed TypeScript `text`;
+- required, a documented default (`@default`, "(default `x`)", or
+  "`x` (default)", coerced to the type or dropped), description, and
+  deprecation;
+- zones (from the composition catalog's `jsx.prop`), unzoned content `slot`s,
+  and css-value grammars (from the catalog's `cssValueProps`);
+- type parameters;
+- for a union props type, the `discriminant` plus one `variants` record per
+  distinct member, listing required and forbidden props, with `variantOnly`
+  marking props that only some members allow.
+
+Named object and union types are stored once in `definitions` and referenced
+by name, which bounds recursion. Props inherited from Kerf's native attribute
+types are listed only by name in `nativeAttributes`. Web Awesome entries carry
+attribute props (with `property` when the field name differs) and `slots`.
+
+`ui/ai/component-props-overlay.json` (schema-validated) adds only what types
+cannot express: inspector `control` hints, `group`/`order`, and a missing
+`default`. Run `npm run props:sync` after the build. `check:props` (in the ui
+`check` chain, after the build) fails on drift, on a schema violation, on an
+overlay key naming no component, prop, or declared group, and on a catalog
+entry whose `SafeHtml` component does not resolve. Values TypeScript cannot
+name (Web Awesome's opaque `Wa*` aliases, `Date`) stay `unknown`, with their
+text preserved.
+
 `ui/ai/compile-time-contracts-v1.json` is the declaration-facing companion:
 stable `KUI-T###` ids map provable invalid states to public imports, emitted
 symbols, and catalog identities. Its positive/negative consumer fixture is

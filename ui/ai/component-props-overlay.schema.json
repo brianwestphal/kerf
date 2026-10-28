@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-props-overlay.schema.json",
+  "title": "Kerf UI component-props curated overlay",
+  "description": "Hand-curated additions merged into the generated component-props.json: what types cannot express. Keys must name generated components and props.",
+  "type": "object",
+  "required": ["components"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "description": { "type": "string" },
+    "components": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "groups": {
+            "description": "Inspector group names in display order.",
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "uniqueItems": true
+          },
+          "props": {
+            "type": "object",
+            "additionalProperties": { "$ref": "#/$defs/curatedProp" }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "curatedProp": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "control": {
+          "description": "Inspector control hint for an editor.",
+          "enum": [
+            "text",
+            "textarea",
+            "number",
+            "switch",
+            "select",
+            "segmented",
+            "color",
+            "length",
+            "content",
+            "hidden"
+          ]
+        },
+        "group": { "type": "string", "minLength": 1 },
+        "order": { "type": "integer", "minimum": 0 },
+        "default": {
+          "description": "A default the types and JSDoc do not state.",
+          "type": ["string", "number", "boolean"]
+        }
+      }
+    }
+  }
+}

@@ -138,6 +138,14 @@ explains when to reuse, compose, extend, or use native HTML.
    surface; the composition layer joins catalogs by `package:id`. Consumer
    composition catalogs use
    [the composition extension schema](./ai/component-composition-extension.schema.json).
+   A tool that needs structured props (an inspector form, a document
+   validator, or a generated typed contract) loads
+   [component props](./ai/component-props.json) (schema alongside). It is
+   generated from the published declarations and Web Awesome's manifest, and
+   gives each component's props as a type grammar with required, default, enum
+   values, zone or slot, css-value grammar, and discriminated `variants`. Named
+   types live once in `definitions`. Join it by `key` (`package:id`, or
+   `package:id#Export`).
    Load [compile-time contracts](./ai/compile-time-contracts-v1.json) for stable
    `KUI-T###` ids, exact declaration symbols, and the boundary between rejected
    source states and relationships that still require runtime/catalog checks.

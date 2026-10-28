@@ -708,6 +708,17 @@ The profile gate checks each layer against its then-effective catalog before
 merge, preserving overridden parent catalog/reference failures, deterministic
 source provenance, preference conflicts, and narrow exception scope.
 
+`ui/ai/component-props.json` and its schema (`kerf-ui-component-props/v1`) are
+the generated structured prop layer (KF-8PXPKW: per-component prop schema).
+`ui/scripts/sync-component-props.mjs` (`npm run props:sync` builds first;
+`check:props` is the drift gate in the ui `check`) drives
+`ui/scripts/lib/component-props.mjs` (+ `.d.mts`). That module reads
+`ui/dist/*.d.ts` through the typescript@6 JS API plus Web Awesome's
+`custom-elements.json`, and merges the curated
+`ui/ai/component-props-overlay.json` (and its schema). Tests:
+`ui/tests/unit/component-props.test.ts`, with fixture declarations under
+`ui/tests/fixtures/component-props/`.
+
 `ui/ai/compile-time-contracts-v1.json` and its schema map stable `KUI-T###`
 diagnostics to catalog identities, public imports, and emitted symbols. The one
 positive/negative consumer fixture under `ui/tests/consumer-types/contracts/`

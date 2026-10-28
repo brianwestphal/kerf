@@ -1,0 +1,33 @@
+{
+  "$schema": "./component-props-overlay.schema.json",
+  "description": "Curated additions to the generated component-props.json for what types cannot express: inspector control hints, grouping, and order. Every key must name a generated component and prop; npm run props:sync fails otherwise.",
+  "components": {
+    "@kerfjs/ui:button": {
+      "groups": ["Content", "Appearance", "State", "Form"],
+      "props": {
+        "children": { "group": "Content", "order": 1 },
+        "icon": { "group": "Content", "order": 2 },
+        "tone": { "group": "Appearance", "order": 1, "control": "segmented" },
+        "emphasis": {
+          "group": "Appearance",
+          "order": 2,
+          "control": "segmented"
+        },
+        "size": { "group": "Appearance", "order": 3, "control": "segmented" },
+        "shape": { "group": "Appearance", "order": 4, "control": "segmented" },
+        "pressed": { "group": "State", "order": 1 },
+        "loading": { "group": "State", "order": 2 },
+        "disabled": { "group": "State", "order": 3 },
+        "type": { "group": "Form", "order": 1, "control": "segmented" }
+      }
+    },
+    "@kerfjs/ui:list-header": {
+      "groups": ["Content", "Mode", "Appearance"],
+      "props": {
+        "label": { "group": "Content", "order": 1 },
+        "toggle": { "group": "Mode", "order": 1, "control": "switch" },
+        "expanded": { "group": "Mode", "order": 2, "control": "switch" }
+      }
+    }
+  }
+}

@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-props.schema.json",
+  "title": "Kerf UI component props",
+  "description": "Generated per-component prop schema (kerf-ui-component-props/v1). Each component lists its props in a small type grammar; named object and union types live once in `definitions` and are referenced by `{ \"kind\": \"ref\" }`.",
+  "type": "object",
+  "required": ["schema", "package", "components", "definitions"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema": { "const": "kerf-ui-component-props/v1" },
+    "package": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "components": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/component" }
+    },
+    "definitions": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/type" }
+    }
+  },
+  "$defs": {
+    "component": {
+      "type": "object",
+      "required": ["key", "id", "source", "props"],
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "description": "`package:id` for an entry's primary component; `package:id#Export` for another component the same entry exports.",
+          "type": "string",
+          "pattern": "^[^:]+:[a-z0-9-]+(#[A-Z][A-Za-z0-9]*)?$"
+        },
+        "id": { "type": "string", "minLength": 1 },
+        "source": { "enum": ["kerf", "webawesome"] },
+        "import": { "type": "string", "minLength": 1 },
+        "export": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
+        "tagName": { "type": "string", "pattern": "^[a-z]+-[a-z0-9-]+$" },
+        "description": { "type": "string" },
+        "typeParameters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "additionalProperties": false,
+            "properties": {
+              "name": { "type": "string" },
+              "constraint": { "type": "string" }
+            }
+          }
+        },
+        "groups": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "props": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/prop" }
+        },
+        "nativeAttributes": {
+          "description": "Inherited native HTML attributes the component passes through (JSX attribute names), listed by name only.",
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "variants": {
+          "description": "For a union props type: each distinct member's discriminant values, required props, and forbidden props.",
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "required": ["required", "forbidden"],
+            "additionalProperties": false,
+            "properties": {
+              "when": { "type": "object" },
+              "required": { "type": "array", "items": { "type": "string" } },
+              "forbidden": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "discriminant": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "slots": {
+          "description": "Web Awesome slots; `default` is the unnamed slot.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "additionalProperties": false,
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "prop": {
+      "type": "object",
+      "required": ["name", "type", "required"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "property": {
+          "description": "Web Awesome: the element property behind an attribute whose name differs.",
+          "type": "string"
+        },
+        "type": { "$ref": "#/$defs/type" },
+        "required": { "type": "boolean" },
+        "default": { "type": ["string", "number", "boolean"] },
+        "description": { "type": "string" },
+        "deprecated": { "const": true },
+        "variantOnly": {
+          "description": "Allowed by only some members of a union props type; see `variants`.",
+          "const": true
+        },
+        "zone": {
+          "description": "The component-composition.json zone this prop fills.",
+          "type": "string"
+        },
+        "slot": {
+          "description": "A content prop with no curated zone: application content an editor can fill.",
+          "const": true
+        },
+        "cssValue": {
+          "type": "object",
+          "required": ["grammar"],
+          "additionalProperties": false,
+          "properties": {
+            "grammar": { "type": "string" },
+            "helpers": { "type": "array", "items": { "type": "string" } },
+            "rawPolicy": { "type": "string" }
+          }
+        },
+        "control": { "type": "string" },
+        "group": { "type": "string" },
+        "order": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "type": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "string",
+            "number",
+            "boolean",
+            "literal",
+            "enum",
+            "content",
+            "css-value",
+            "function",
+            "signal",
+            "element",
+            "array",
+            "record",
+            "object",
+            "union",
+            "ref",
+            "never",
+            "unknown"
+          ]
+        },
+        "text": { "type": "string" },
+        "nullable": { "const": true },
+        "typeParameter": { "type": "string" },
+        "value": { "type": ["string", "number", "boolean"] },
+        "values": {
+          "type": "array",
+          "items": { "type": ["string", "number", "boolean"] }
+        },
+        "suggestions": { "type": "array", "items": { "type": "string" } },
+        "grammar": { "type": "string" },
+        "items": { "$ref": "#/$defs/type" },
+        "props": { "type": "array", "items": { "$ref": "#/$defs/prop" } },
+        "members": { "type": "array", "items": { "$ref": "#/$defs/type" } },
+        "discriminant": { "type": "array", "items": { "type": "string" } },
+        "ref": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "enum" } } },
+          "then": { "required": ["values"] }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "literal" } } },
+          "then": { "required": ["value"] }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "ref" } } },
+          "then": { "required": ["ref"] }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "union" } } },
+          "then": { "required": ["members"] }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "css-value" } } },
+          "then": { "required": ["grammar"] }
+        }
+      ]
+    }
+  }
+}
