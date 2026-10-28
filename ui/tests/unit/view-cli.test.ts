@@ -188,6 +188,8 @@ describe('kerf-ui-view', () => {
     ).toBe(false);
   });
 
+  // KF-Z55BE5: building the fixture's declaration program takes seconds
+  // under full-suite load, like the component-props tests.
   it('discovers package catalogs from .kerf-ui-profile.json above the document', () => {
     const widgets = resolve(root, 'tests/fixtures/component-props-package');
     // A built prop catalog for the fixture package, next to its composition catalog.
@@ -249,7 +251,7 @@ describe('kerf-ui-view', () => {
     expect(run(['check', documentPath, '--no-profile']).output).toContain(
       'KUI-V002',
     );
-  });
+  }, 30_000);
 
   it('runs as a bin and exits non-zero on failure', () => {
     const cli = resolve(root, 'view/cli.mjs');
