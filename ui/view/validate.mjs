@@ -452,7 +452,23 @@ function zonesOf(ctx, component) {
     if (zone.jsx?.prop) zones.set(zone.id, { prop: zone.jsx.prop, zone });
   }
   for (const prop of component.props) {
-    if (prop.slot) zones.set(prop.name, { prop: prop.name });
+    if (prop.slot) {
+      zones.set(prop.name, {
+        prop: prop.name,
+        text: prop.type.acceptsText === true,
+      });
+    }
+  }
+  // A Web Awesome element's slots are its zones; its default slot is its
+  // children, and slotted text is ordinary light-DOM text.
+  for (const slot of component.slots ?? []) {
+    zones.set(slot.name, { prop: 'children', slot: slot.name, text: true });
+  }
+  for (const binding of zones.values()) {
+    if (binding.text === undefined) {
+      const prop = component.props.find((item) => item.name === binding.prop);
+      binding.text = prop?.type.acceptsText === true;
+    }
   }
   return zones;
 }
@@ -468,11 +484,18 @@ function variantMatches(variant, present, literals) {
 
 // Callers pass only objects: checkChild classifies non-objects, and root and
 // `$each` templates are checked for a `type` before they get here.
-function checkNode(ctx, node, at, scope, rowScoped, parentKey) {
+function checkNode(ctx, node, at, scope, rowScoped, parentKey, text = false) {
   ctx.noteId(node.id, at);
   if (node.type === '#text') {
     for (const key of only(node, ['id', 'type', 'value']))
       ctx.report('KUI-V001', `${at}.${key}`, 'unknown field on a text node');
+    if (!text) {
+      ctx.report(
+        'KUI-V004',
+        at,
+        'this zone does not take plain text; place a text component (such as Text) instead',
+      );
+    }
     checkPropValue(
       ctx,
       { name: 'value', type: { kind: 'string' } },
@@ -601,6 +624,7 @@ function checkNode(ctx, node, at, scope, rowScoped, parentKey) {
         scope,
         rowScoped,
         node.type,
+        binding.text,
       ),
     );
     shapes.set(zoneKey, combine(children.map((child) => childShape(child))));
@@ -627,7 +651,7 @@ function checkNode(ctx, node, at, scope, rowScoped, parentKey) {
   checkComposition(ctx, node, at, parentKey, shapes, literals, zones);
 }
 
-function checkChild(ctx, child, at, scope, rowScoped, parentKey) {
+function checkChild(ctx, child, at, scope, rowScoped, parentKey, text = false) {
   if (!isObject(child)) {
     ctx.report('KUI-V001', at, 'a zone child is an object');
     return;
@@ -708,7 +732,15 @@ function checkChild(ctx, child, at, scope, rowScoped, parentKey) {
         `${child.template.type} has no data-* channel to carry the row key`,
       );
     }
-    checkNode(ctx, child.template, `${at}.template`, inner, true, parentKey);
+    checkNode(
+      ctx,
+      child.template,
+      `${at}.template`,
+      inner,
+      true,
+      parentKey,
+      text,
+    );
     return;
   }
   if ('$if' in child) {
@@ -723,9 +755,25 @@ function checkChild(ctx, child, at, scope, rowScoped, parentKey) {
       `${at}.$if`,
       rowScoped,
     );
-    checkChild(ctx, child.then, `${at}.then`, scope, rowScoped, parentKey);
+    checkChild(
+      ctx,
+      child.then,
+      `${at}.then`,
+      scope,
+      rowScoped,
+      parentKey,
+      text,
+    );
     if ('else' in child)
-      checkChild(ctx, child.else, `${at}.else`, scope, rowScoped, parentKey);
+      checkChild(
+        ctx,
+        child.else,
+        `${at}.else`,
+        scope,
+        rowScoped,
+        parentKey,
+        text,
+      );
     return;
   }
   if ('$slot' in child) {
@@ -780,7 +828,7 @@ function checkChild(ctx, child, at, scope, rowScoped, parentKey) {
     }
     return;
   }
-  checkNode(ctx, child, at, scope, rowScoped, parentKey);
+  checkNode(ctx, child, at, scope, rowScoped, parentKey, text);
 }
 
 function checkView(ctx, node, at, scope, rowScoped) {

@@ -1,0 +1,111 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "Inbox",
+  "catalogs": ["@kerfjs/ui"],
+  "params": {
+    "title": { "type": { "kind": "string" }, "default": "Inbox" },
+    "showEmpty": { "type": { "kind": "boolean" }, "default": false },
+    "selectedId": { "type": { "kind": "string" } },
+    "items": {
+      "type": {
+        "kind": "array",
+        "items": {
+          "kind": "object",
+          "props": [
+            { "name": "id", "type": { "kind": "string" }, "required": true },
+            { "name": "label", "type": { "kind": "string" }, "required": true }
+          ]
+        }
+      }
+    }
+  },
+  "slots": {
+    "detail": {
+      "input": {
+        "kind": "object",
+        "props": [
+          {
+            "name": "selectedId",
+            "type": { "kind": "string" },
+            "required": true
+          }
+        ]
+      }
+    }
+  },
+  "root": {
+    "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5A",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "contentElement": "nav",
+      "background": { "$css": "uiColor('surface-raised')" }
+    },
+    "zones": {
+      "header": [
+        {
+          "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5B",
+          "type": "@kerfjs/ui:toolbar",
+          "zones": {
+            "leading": [
+              {
+                "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5C",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": { "text": { "$param": "title" }, "size": "xlarge" }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5D",
+                "name": "composeButton",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Compose",
+                  "tone": "brand",
+                  "action": { "$action": "compose" }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "content": [
+        {
+          "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5E",
+          "name": "folderList",
+          "type": "@kerfjs/ui:list",
+          "props": { "ariaLabel": "Messages" },
+          "zones": {
+            "children": [
+              {
+                "$each": { "$param": "items" },
+                "as": "item",
+                "key": "item.id",
+                "template": {
+                  "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5F",
+                  "name": "row",
+                  "type": "@kerfjs/ui:list-item",
+                  "props": {
+                    "label": { "$bind": "item.label" },
+                    "action": { "$action": "open-item" }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "$if": { "$param": "showEmpty" },
+          "then": {
+            "id": "01JB8Z1M6Q8E1X9V4S7K2R3T5G",
+            "type": "@kerfjs/ui:text",
+            "props": { "children": "Nothing here" }
+          }
+        },
+        {
+          "$slot": "detail",
+          "input": { "selectedId": { "$param": "selectedId" } }
+        }
+      ]
+    }
+  }
+}

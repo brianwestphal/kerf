@@ -10,3 +10,20 @@ export {
   validateView,
   VIEW_DOCUMENT_SCHEMA_ID,
 } from './validate.mjs';
+export {
+  canonicalJson,
+  contractDigest,
+  contractOf,
+  diffContracts,
+  serializeContract,
+  typeText,
+  viewDigest,
+  walkView,
+} from './contract.mjs';
+export {
+  GENERATOR_VERSION,
+  generateView,
+  printDoc,
+  readViewHeader,
+  viewModulePath,
+} from './generate.mjs';

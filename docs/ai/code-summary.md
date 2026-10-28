@@ -728,6 +728,20 @@ validator for the Kerf UI editor, `docs/26-ui-editor.md`). `validate.mjs`
 `ui/ai/application-ui-diagnostic-ids-v1.json`. Tests:
 `ui/tests/unit/view-validate.test.ts`.
 
+The same folder holds the rest of the published layer (KF-WWJGSN: view generator):
+
+- `contract.mjs`: `contractOf`, the `kui1:` FNV-1a `viewDigest` / `contractDigest`, `canonicalJson`, and `diffContracts`.
+- `generate.mjs`: `generateView`, `readViewHeader`, `viewModulePath`, and the `printDoc` layout printer.
+- `cli.mjs` (+ `cli.d.mts`): the `kerf-ui-view` bin.
+
+Fixtures live in `ui/tests/fixtures/view/`:
+
+- `inbox.kui.json`;
+- the golden `inbox.view.ts`, which is prettier-ignored;
+- `inbox-app.ts`, a consumer compile fixture with `@ts-expect-error` contract cases.
+
+Tests: `ui/tests/unit/view-generate.test.ts`, which also renders, wires, and resolves refs in a real mount, and `ui/tests/unit/view-cli.test.ts`.
+
 `ui/ai/compile-time-contracts-v1.json` and its schema map stable `KUI-T###`
 diagnostics to catalog identities, public imports, and emitted symbols. The one
 positive/negative consumer fixture under `ui/tests/consumer-types/contracts/`

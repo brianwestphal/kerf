@@ -145,3 +145,108 @@ export function channelOf(component: {
   source?: string;
   props: readonly { name: string }[];
 }): string;
+
+/** One contract input: its TypeScript spelling, optionality, and declared shape. */
+export interface ViewContractInput {
+  readonly type: string;
+  readonly optional: boolean;
+  readonly shape?: ViewType;
+}
+
+/** A view module's contract (docs/26-ui-editor.md §4). */
+export interface ViewContract {
+  readonly inputs: Readonly<Record<string, ViewContractInput>>;
+  readonly actions: Readonly<Record<string, 'row' | 'view'>>;
+  /** Each slot's input type, or null for a slot without input. */
+  readonly slots: Readonly<Record<string, string | null>>;
+  readonly refs: Readonly<
+    Record<
+      string,
+      {
+        readonly element: string;
+        readonly keyed: boolean;
+        readonly id?: string;
+      }
+    >
+  >;
+}
+
+export interface ViewContractChange {
+  readonly member: 'input' | 'action' | 'slot' | 'ref';
+  readonly name: string;
+  readonly change: string;
+  readonly breaking: boolean;
+  readonly detail: string;
+}
+
+/** JSON with sorted keys and no whitespace. */
+export function canonicalJson(value: unknown): string;
+/** `kui1:` + 16 hex digits of the 64-bit FNV-1a hash of `text`. */
+export function viewDigest(text: string): string;
+/** TypeScript spelling of a document param or slot-input type. */
+export function typeText(type: ViewType): string;
+/** The contract of a valid document; throws when it does not validate. */
+export function contractOf(
+  document: unknown,
+  catalog: ViewCatalog,
+  options?: { resolveView?: (src: string) => unknown },
+): ViewContract;
+/** The layout-independent contract digest. */
+export function contractDigest(contract: ViewContract): string;
+/** The contract as a generated header records it. */
+export function serializeContract(contract: ViewContract): string;
+/** Every breaking and non-breaking change between two contracts. */
+export function diffContracts(
+  before: ViewContract,
+  after: ViewContract,
+): ViewContractChange[];
+/** Visits every node; returns the slot names the document uses. */
+export function walkView(
+  document: ViewDocument,
+  visit: (node: ViewNode, rowScoped: boolean) => void,
+): Set<string>;
+
+export const GENERATOR_VERSION: number;
+
+export interface GeneratedView {
+  /** The `.view.ts` (or `.view.js`) module source. */
+  readonly code: string;
+  /** The `.view.d.ts` source, for the `js` target only. */
+  readonly declarations?: string;
+  readonly contract: ViewContract;
+  readonly digest: string;
+}
+
+/** Generates a read-only view module; throws on an invalid document. */
+export function generateView(
+  document: unknown,
+  catalog: ViewCatalog,
+  options?: {
+    /** The document file name recorded in the header. */
+    source?: string;
+    resolveView?: (src: string) => unknown;
+    target?: 'ts' | 'js';
+    declarationsOnly?: boolean;
+  },
+): GeneratedView;
+
+/** The header a generated module records, and whether its body is untouched. */
+export function readViewHeader(code: string):
+  | {
+      readonly version: number;
+      readonly contractDigest: string;
+      readonly sourceDigest: string;
+      readonly bodyDigest: string;
+      readonly contract: ViewContract;
+      readonly intact: boolean;
+    }
+  | undefined;
+
+/** `x.kui.json` → `x.view.ts` (or `.view.js`). */
+export function viewModulePath(
+  documentPath: string,
+  target?: 'ts' | 'js',
+): string;
+
+/** Layout printer for generated expressions. */
+export function printDoc(doc: unknown, indent?: number): string;

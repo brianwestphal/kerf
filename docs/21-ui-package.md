@@ -679,6 +679,14 @@ the published view-document layer of the Kerf UI editor (`docs/26-ui-editor.md`)
 data channels, composed views) plus JSON-tree ports of the ESLint
 `ui-composition` checks (`KUI-L201`–`L204`) over the same composition catalog.
 `ui/ai/view-document.schema.json` is the shape schema for editors.
+`generateView` (`view/generate.mjs`) turns a valid document into its read-only
+`*.view.ts` module (or `.view.js` + `.view.d.ts`): typed inputs, an exhaustive
+action-handler interface over `delegateActions`, slots, marker-resolved refs,
+and a layout-independent `kui1:` contract digest. `view/contract.mjs` computes
+the contract, digest, and breaking/non-breaking `diffContracts`. The
+`kerf-ui-view` bin (`generate`, `check`, `diff`) is an authoring step, never
+part of a consumer's build. A golden fixture plus a consumer compile fixture,
+with `@ts-expect-error` cases, pin the output and its type guarantees.
 
 `ui/ai/compile-time-contracts-v1.json` is the declaration-facing companion:
 stable `KUI-T###` ids map provable invalid states to public imports, emitted

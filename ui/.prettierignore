@@ -26,3 +26,9 @@ docs/design/sketch/button/fill-browser/
 
 **/*.svg
 **/*.gif
+
+# Generated read-only view modules (docs/26-ui-editor.md): their bytes are the
+# generator's, and the header digest covers them.
+**/*.view.ts
+**/*.view.js
+**/*.view.d.ts

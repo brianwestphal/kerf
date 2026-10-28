@@ -104,7 +104,7 @@ const inbox = () =>
           { $slot: 'detail', input: { selectedId: { $param: 'selectedId' } } },
           {
             $if: { $param: 'showEmpty' },
-            then: node('#text', { value: 'Nothing here' }),
+            then: node('text', { props: { children: 'Nothing here' } }),
           },
         ],
       },
@@ -217,6 +217,30 @@ describe('validateView: KUI-V001 shape', () => {
     expect(codes(doc([] as unknown as Fixture))).toEqual(['KUI-V001']);
   });
 
+  it('reports unknown $each fields', () => {
+    const params = {
+      items: {
+        type: {
+          kind: 'array',
+          items: {
+            kind: 'object',
+            props: [{ name: 'id', type: { kind: 'string' }, required: true }],
+          },
+        },
+      },
+    };
+    const each = {
+      $each: { $param: 'items' },
+      as: 'row',
+      key: 'row.id',
+      template: button(),
+      extra: 1,
+    };
+    expect(
+      codes(doc(node('list', { zones: { children: [each] } }), { params })),
+    ).toEqual(['KUI-V001']);
+  });
+
   it('reports unknown fields on nodes, text, views, and control flow', () => {
     expect(
       codes(doc(node('button', { props: { children: 'x' }, extra: 1 }))),
@@ -224,7 +248,7 @@ describe('validateView: KUI-V001 shape', () => {
     expect(
       codes(
         doc(
-          node('list', {
+          node('button', {
             zones: { children: [node('#text', { value: 'x', extra: 1 })] },
           }),
         ),
@@ -247,7 +271,11 @@ describe('validateView: KUI-V001 shape', () => {
           node('list', {
             zones: {
               children: [
-                { $if: true, then: node('#text', { value: 'x' }), extra: 1 },
+                {
+                  $if: true,
+                  then: node('text', { props: { children: 'x' } }),
+                  extra: 1,
+                },
               ],
             },
           }),
@@ -306,7 +334,7 @@ describe('validateView: types, props, and values', () => {
         doc(
           node('button', {
             props: { children: 'x' },
-            zones: { children: [node('#text', { value: 'y' })] },
+            zones: { children: [node('text', { props: { children: 'y' } })] },
           }),
         ),
       ),
@@ -399,6 +427,41 @@ describe('validateView: types, props, and values', () => {
     ).toEqual(['KUI-V004']);
   });
 
+  it('KUI-V004: #text only in zones whose prop takes text', () => {
+    expect(
+      codes(
+        doc(
+          node('button', {
+            zones: { children: [node('#text', { value: 'Save' })] },
+          }),
+        ),
+      ),
+    ).toEqual([]);
+    expect(
+      codes(
+        doc(
+          node('list', {
+            zones: { children: [node('#text', { value: 'Save' })] },
+          }),
+        ),
+      ),
+    ).toEqual(['KUI-V004']);
+    expect(codes(doc(node('#text', { value: 'Save' })))).toEqual(['KUI-V004']);
+    // A Web Awesome element's slots are zones, and slotted text is fine.
+    expect(
+      codes(
+        doc(
+          node('wa-badge', {
+            zones: { default: [node('#text', { value: '3' })] },
+          }),
+        ),
+      ),
+    ).toEqual([]);
+    expect(codes(doc(node('wa-badge', { zones: { nope: [] } })))).toEqual([
+      'KUI-V003',
+    ]);
+  });
+
   it('KUI-V005: missing required props', () => {
     expect(
       codes(doc(node('list-item', { props: { action: 'open' } }))),
@@ -481,7 +544,7 @@ describe('validateView: ids, names, scope, and control flow', () => {
         },
       },
     ) => codes(doc(node('list', { zones: { children: [each] } }), { params }));
-    const template = node('#text', { value: { $bind: 'row.id' } });
+    const template = button({ props: { title: { $bind: 'row.id' } } });
     expect(
       list({ $each: { $param: 'items' }, as: 'row', key: 'row.id', template }),
     ).toEqual([]);
@@ -521,7 +584,7 @@ describe('validateView: ids, names, scope, and control flow', () => {
                   key: 'row.id',
                   template,
                 },
-                node('#text', { value: { $bind: 'row.id' } }),
+                node('text', { props: { children: { $bind: 'row.id' } } }),
               ],
             },
           }),
@@ -603,7 +666,12 @@ describe('validateView: ids, names, scope, and control flow', () => {
         doc(
           node('list', {
             zones: {
-              children: [{ $if: 'yes', then: node('#text', { value: 'x' }) }],
+              children: [
+                {
+                  $if: 'yes',
+                  then: node('text', { props: { children: 'x' } }),
+                },
+              ],
             },
           }),
         ),
@@ -617,7 +685,7 @@ describe('validateView: ids, names, scope, and control flow', () => {
               children: [
                 {
                   $if: true,
-                  then: node('#text', { value: 'x' }),
+                  then: node('text', { props: { children: 'x' } }),
                   else: node('nope'),
                 },
               ],
@@ -842,7 +910,7 @@ describe('validateView: composed documents (KUI-V012)', () => {
 describe('validateView: composition (KUI-L201–L204)', () => {
   it('KUI-L201: a ToolbarControlGroup outside a toolbar', () => {
     const group = node('toolbar-control-group', {
-      zones: { children: [node('#text', { value: 'x' })] },
+      zones: { children: [node('text', { props: { children: 'x' } })] },
     });
     expect(codes(doc(node('list', { zones: { children: [group] } })))).toEqual([
       'KUI-L201',
@@ -883,7 +951,7 @@ describe('validateView: composition (KUI-L201–L204)', () => {
     ).toEqual(['KUI-L203']);
     expect(
       codes(doc(bar({ tabs: [tab(), node('#text', { value: 'x' })] }))),
-    ).toEqual(['KUI-L202']);
+    ).toEqual(['KUI-V004', 'KUI-L202']);
     // $each counts 0..n, $if its branches, a slot exactly one.
     expect(
       codes(

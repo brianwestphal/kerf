@@ -31,6 +31,7 @@
     "kerf-ui-analyze": "./analyzer/cli.mjs",
     "kerf-ui-doctor": "./doctor/cli.mjs",
     "kerf-ui-evaluate": "./evaluator/cli.mjs",
+    "kerf-ui-view": "./view/cli.mjs",
     "kerf-catalog-demo": "./catalog-projection-cli.mjs"
   },
   "main": "./dist/index.js",

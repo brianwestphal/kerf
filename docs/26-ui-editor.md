@@ -1,13 +1,15 @@
 # Kerf UI editor: view documents and generated view contracts
 
-**Status: partly built.** Two pieces exist:
+**Status: partly built.** Three pieces exist:
 
 - the foundation, `ui/ai/component-props.json` (KF-8PXPKW: generated
   per-component prop schema; see `docs/21-ui-package.md`);
 - the document schema and `validateView` (§3, §8) in `@kerfjs/ui/view`
-  (KF-FB9340: view-document schema and validator).
+  (KF-FB9340: view-document schema and validator);
+- the generator, contract digest and diff, and the `kerf-ui-view` CLI (§4,
+  §6; KF-WWJGSN: view generator and CLI).
 
-The generator, interpreter, lint rule, and editor are still design only. The
+The interpreter, lint rule, and editor are still design only. The
 implementation tickets are listed in [§10](#10-implementation-plan).
 
 ## 1. Purpose and decisions
@@ -319,7 +321,7 @@ export interface InboxSlots {
 }
 export interface InboxRefs {
   readonly composeButton: HTMLElement;
-  readonly folderList: HTMLUListElement;
+  readonly folderList: HTMLElement;
 }
 export const inboxContract = 'kui1:5f0c2a9e7d41b3c8';
 export function renderInbox(inputs: InboxInputs, slots: InboxSlots): SafeHtml { … }
@@ -401,9 +403,18 @@ The hash is a compatibility fingerprint, not a security measure. A
 synchronous, dependency-free algorithm lets Node and browsers compute it
 identically.
 
-The header line also records the `source` digest, a hash of the whole document
-in the same canonical form. The no-hand-edits check (§5.2) compares a hash of
-the module body against what the generator would emit.
+The header is three comment lines:
+
+1. The `GENERATED … do not edit` notice.
+2. `kui-view: <version> contract <digest> source <digest> body <digest>`.
+   - `source` hashes the whole document in the same canonical form.
+   - `body` hashes everything after the header, so the no-hand-edits checks
+     (§5.2) can tell an edited module from an untouched one without the
+     document.
+3. `kui-contract: <canonical JSON>`, the contract itself. `kerf-ui-view diff`
+   compares against it, so a diff needs no copy of the previous document.
+
+`readViewHeader(code)` parses all three and reports `intact`.
 
 ### 4.7 Determinism and output form
 
@@ -413,8 +424,11 @@ so the git diff of a regeneration is meaningful:
 - imports are sorted by specifier, one per component subpath (`import` in
   `component-props.json`) plus `$css` helpers;
 - declarations follow document order;
-- formatting is fixed by the generator, with no dependence on the consumer's
-  Prettier.
+- formatting is fixed by the generator's own layout printer (100 columns, one
+  entry per line when an expression does not fit), with no dependence on the
+  consumer's formatter. Projects add `**/*.view.ts` (and `.view.js` /
+  `.view.d.ts`) to `.prettierignore`, because reformatting a module changes its
+  body digest. This repository does the same for its golden fixture.
 
 Output is plain `.ts` calling component functions: `Pane({ header: [...],
 children: [...] })`. In no-build mode (`--target js`), it is `.view.js` with a
@@ -580,8 +594,10 @@ documents.
 1. **Done:** `ui/ai/component-props.json` (KF-8PXPKW: generated prop schema).
 2. **Done:** document schema plus `validateView` in `@kerfjs/ui/view` (§3, §8;
    KF-FB9340: view-document schema and validator).
-3. Generator, contract digest/diff, and the `kerf-ui-view` CLI (§4, §6;
-   KF-WWJGSN: view generator and CLI).
+3. **Done:** generator, contract digest/diff, and the `kerf-ui-view` CLI (§4,
+   §6; KF-WWJGSN: view generator and CLI). `kerf-ui-view generate | check |
+diff <doc…>` takes `--target js`, `--declarations-only`, and extra
+   `--props` / `--composition` catalogs.
 4. `interpretView` and the `@kerfjs/ui/view` subpath, with differential tests
    against the generator (§7; KF-5G4CNW: runtime interpreter).
 5. `kerfjs/no-generated-view-edits` ESLint rule (§5.2; KF-BD3ZHQ: no-hand-edits
