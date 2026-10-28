@@ -1092,6 +1092,67 @@ tester.run('ui-composition catalog-declared inset-free children', composition, {
   ],
 });
 
+// KF-VTFKX8: the catalog's content rules mark components whose root is a
+// control or link; nothing interactive may render inside them (KUI-L205, the
+// JSX side of validateView's KUI-V014).
+const interactive = (code) => ({
+  code: `import { Badge, Button, Chip, ListItem, ListItemLink, Row, Select, Toolbar } from '@kerfjs/ui'; const tags = []; const on = true; ${code}`,
+  settings: shippedUiSettings,
+});
+const nested = (child, host) => ({
+  message: `KUI-L205: \`@kerfjs/ui:${child}\` renders a control or link, so it cannot sit inside \`@kerfjs/ui:${host}\`, which renders one itself; the browser splits the nested markup. Place it beside the host instead.`,
+});
+tester.run('ui-composition interactive content', composition, {
+  valid: [
+    interactive(
+      "<ListItem action='open' label='Inbox' trailing={<Badge>3</Badge>} />;",
+    ),
+    // A Chip is a control only with an action, link, or remove button.
+    interactive(
+      "<ListItem action='open' label='Inbox' trailing={<Chip>New</Chip>} />;",
+    ),
+    interactive(
+      "<ListItem action='open' label='Inbox' trailing={<Chip action={false}>New</Chip>} />;",
+    ),
+    // Controls beside a row, or in a container that is not a control, are fine.
+    interactive(
+      "<><ListItem action='open' label='Inbox' /><Button>Go</Button></>;",
+    ),
+    interactive('<Row><Button>Go</Button><Select label="Pick" /></Row>;'),
+    interactive('<Toolbar trailing={<Button>Go</Button>} />;'),
+    // A component defined elsewhere is not visible to the rule.
+    interactive(
+      "const Go = () => <Button>Go</Button>; <ListItem action='open' label='Inbox' trailing={<Go />} />;",
+    ),
+  ],
+  invalid: [
+    {
+      ...interactive(
+        "<ListItem action='open' label='Inbox' trailing={<Button>Go</Button>} />;",
+      ),
+      errors: [nested('button', 'list-item')],
+    },
+    {
+      ...interactive(
+        "<ListItem action='open' label='Inbox' description={<Row>{on && <Select label='Pick' />}</Row>} />;",
+      ),
+      errors: [nested('select', 'list-item')],
+    },
+    {
+      ...interactive(
+        "<ListItemLink href='/x' label='Docs' trailing={tags.map((tag) => <Chip href={tag}>{tag}</Chip>)} />;",
+      ),
+      errors: [nested('chip', 'list-item')],
+    },
+    {
+      ...interactive(
+        "<Button><Chip removeAction='drop' removeLabel='Remove'>A</Chip><wa-button>B</wa-button></Button>;",
+      ),
+      errors: [nested('chip', 'button'), nested('wa-button', 'button')],
+    },
+  ],
+});
+
 tester.run('ui-composition rendersAs wrappers', composition, {
   valid: [
     // A wrapper that renders a ToolbarControlGroup (or nothing) fits trailing.

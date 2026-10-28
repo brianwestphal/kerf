@@ -35,7 +35,10 @@ padding) into a parent configured to expect inset-free content, such as a
 block `Text` inside `Disclosure appearance="embedded"`, which double-insets the
 owner chrome; the message names the child's inset-free form (`Text flush`) or
 inline content. Values the rule cannot read statically, such as a spread or an
-expression, are not reported.
+expression, are not reported. `KUI-L205` reports a control, link, or component
+that renders one (a `Button`, a `Select`, a `Chip` with `action`) written
+inside a component whose root is a control or link (an actionable `ListItem`, a
+`Button`), whose nested markup the browser would split.
 
 Property-specific CSS values are evaluated from each first- or third-party
 catalog entry's `cssValueProps`. `KUI-L013`–`KUI-L016` are blocking grammar

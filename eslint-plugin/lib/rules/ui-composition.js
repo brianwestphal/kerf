@@ -13,6 +13,7 @@ const PARENT_CODE = 'KUI-L201';
 const ZONE_CODE = 'KUI-L202';
 const CARDINALITY_CODE = 'KUI-L203';
 const INSET_CODE = 'KUI-L204';
+const INTERACTIVE_CODE = 'KUI-L205';
 
 const emptyShape = () => ({ min: 0, max: 0, items: [] });
 
@@ -179,6 +180,51 @@ function bringsInset(entry, element) {
 const rootsOf = (key, contract) =>
   contract.entries.get(key)?.rendersAs ?? [key];
 
+// Whether an element renders a native control or link as its root (`root`)
+// or inside it (`contains`), from its entry's `content` rules (KF-VTFKX8, the
+// JSX side of validateView's KUI-V014). An export with rules of its own uses
+// them; a `whenProps` rule needs one of its props written, and a literal
+// `false` or `null` does not count.
+function interactiveOf(openingElement, registry, contract) {
+  const key =
+    jsxKey(openingElement.name, registry, contract) ??
+    customElementKey(openingElement.name, contract);
+  const content = contract.entries.get(key)?.content;
+  if (!content) return undefined;
+  const exportName = jsxExportName(openingElement.name, registry);
+  const rules =
+    content.exports?.[exportName]?.interactive ?? content.interactive ?? [];
+  const written = (prop) => {
+    const value = staticProp(openingElement, prop);
+    return (
+      openingElement.attributes.some(
+        (attribute) =>
+          attribute.type === 'JSXAttribute' && attribute.name.name === prop,
+      ) && !(value.known && (value.value === false || value.value === null))
+    );
+  };
+  const kinds = rules
+    .filter((rule) => !rule.whenProps || rule.whenProps.some(written))
+    .map((rule) => rule.kind);
+  const kind = kinds.includes('root') ? 'root' : kinds[0];
+  return kind ? { key, kind } : undefined;
+}
+
+// The nearest enclosing element whose root is a control or link, through
+// children, zone props, and callbacks written inside them.
+function interactiveHost(openingElement, registry, contract) {
+  for (
+    let ancestor = openingElement.parent.parent;
+    ancestor;
+    ancestor = ancestor.parent
+  ) {
+    if (ancestor.type !== 'JSXElement') continue;
+    const host = interactiveOf(ancestor.openingElement, registry, contract);
+    if (host?.kind === 'root') return host;
+  }
+  return undefined;
+}
+
 function boundZone(openingElement, zone, registry, contract) {
   const prop = zone.jsx?.prop;
   if (!prop) return undefined;
@@ -219,6 +265,8 @@ export default {
         'KUI-L203: `{{component}}` zone `{{zone}}` requires {{cardinality}} direct children; statically found {{count}}.',
       inset:
         'KUI-L204: `{{child}}` brings its own content-item inset (1px border + 8px padding) into `{{component}}` with {{condition}}, which expects inset-free content and double-insets it; {{fix}}.',
+      interactive:
+        'KUI-L205: `{{child}}` renders a control or link, so it cannot sit inside `{{host}}`, which renders one itself; the browser splits the nested markup. Place it beside the host instead.',
     },
   },
   create(context) {
@@ -237,6 +285,17 @@ export default {
       },
       JSXOpeningElement(node) {
         if (!registry) return;
+        const inner = interactiveOf(node, registry, contract);
+        const host =
+          inner &&
+          !isExcepted(contract, INTERACTIVE_CODE, filename) &&
+          interactiveHost(node, registry, contract);
+        if (host)
+          context.report({
+            node: node.name,
+            messageId: 'interactive',
+            data: { child: inner.key, host: host.key },
+          });
         const key = jsxKey(node.name, registry, contract);
         const entry = contract.entries.get(key);
         if (!entry) return;

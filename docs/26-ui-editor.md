@@ -700,7 +700,8 @@ counts as set. `content.exports` gives an additional JSX export its own rules
 (`ListItemLink`, `FieldLabel`). A `#view` inside a host is validated with that
 host in force, so a composed document whose content is a control is reported
 at its own path. A `$slot` and a component whose catalog declares no rules are
-not checked. Because the editor's drops and
+not checked. The `ui-composition` lint reports the same placement in JSX as
+`KUI-L205`, from the same rules. Because the editor's drops and
 Move to accept only placements the validator accepts, they stop offering
 these places as well.
 
