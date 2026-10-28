@@ -538,6 +538,13 @@ surface a human reads: "adds the action `archive`, removes the input
 - Rendering semantics match the generated module exactly. A differential test
   pins this: for the inbox fixture, interpreted output equals the generated
   `renderInbox` output byte for byte across several input sets.
+- Size is gated by `npm --prefix ui run check:view-bundle`, which is part of
+  the ui `check` (KF-CTCNWJ: view bundle budget). Budgets live in
+  `ui/view-bundle-budget.json` and ratchet: an entry more than 350 B under
+  budget fails until the budget is lowered. As of 2026-10-28, measured
+  minified + gzip with `kerfjs` external: `interpretView` 9,687 B and
+  `validateView` 6,657 B. The gate also fails if the interpreter entry ever
+  includes the generator.
 - `$css` is evaluated by walking its parsed call tree (`parseCssTree`) over
   the `@kerfjs/ui/css-values` builders, never by `eval`. `$param` defaults
   apply to `null` as well as `undefined`, as `??` does in generated code.
