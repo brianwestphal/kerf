@@ -94,7 +94,10 @@ function styledClasses(css: string): Set<string> {
   return subjects;
 }
 
-describe('consumer bundle boundaries', () => {
+// These cases run real esbuild bundles. Warm, the slowest takes ~350ms, but
+// the first one pays esbuild's cold start and exceeded the 5s default under
+// concurrent load (KF-NWCH9K: bundle cases need headroom, not retries).
+describe('consumer bundle boundaries', { timeout: 30_000 }, () => {
   it('ships the static analyzer as an explicit Node-only subpath', async () => {
     const result = await nodeBundle(
       "import { analyzeUiProject, formatUiAnalysisSarif } from '@kerfjs/ui/analyzer'; console.log(analyzeUiProject, formatUiAnalysisSarif);",
