@@ -173,15 +173,22 @@ test('a multiple Select toggles from the keyboard and closes on Escape', async (
   await expect(select.getByRole('combobox')).toBeFocused();
   expect((await state(select)).display).toBe('Feature, Docs');
 
-  // Deselecting everything shows the placeholder.
+  // Deselecting everything shows the placeholder. Like the steps above,
+  // each toggle is confirmed before the next key, so a slow re-render after
+  // one change cannot race the keys that follow it (KF-R0AXGJ: CI flake).
   await page.keyboard.press('Enter');
+  await expect(select).toHaveAttribute('open', '');
   await page.keyboard.press('Home');
   await page.keyboard.press('ArrowDown');
   await page.keyboard.press(' ');
+  await expect
+    .poll(async () => (await state(select)).checked)
+    .toEqual(['docs']);
   await page.keyboard.press('ArrowDown');
   await page.keyboard.press(' ');
-  await page.keyboard.press('Escape');
   await expect.poll(async () => (await state(select)).checked).toEqual([]);
+  await page.keyboard.press('Escape');
+  await expect(select).not.toHaveAttribute('open', '');
   await expect(select.locator('.kui-select__value')).toHaveAttribute(
     'data-placeholder',
     'true',
