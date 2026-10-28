@@ -14,6 +14,8 @@ import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 
+import prettier from 'prettier';
+
 import { requireExistingSketchProcess } from '../check-runner-process.mjs';
 import { runSketchJob } from '../runner.mjs';
 import { captureAdvanced, defaultOutput, verifyTargets } from './capture.mjs';
@@ -221,7 +223,9 @@ async function verify() {
   assert.equal(status.result.reopened.length, 14);
   await writeFile(
     paths.verificationPath,
-    `${JSON.stringify(status.result, null, 2)}\n`,
+    await prettier.format(`${JSON.stringify(status.result, null, 2)}\n`, {
+      filepath: paths.verificationPath,
+    }),
   );
   console.log(
     `Verified 14 linked advanced consumers after save/reopen in Sketch PID ${status.processId}.`,
