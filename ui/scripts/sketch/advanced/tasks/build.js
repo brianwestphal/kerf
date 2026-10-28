@@ -10,6 +10,7 @@ function readJSON(path) {
 
 var blurShadows = require('../../shared/blur-shadows');
 var semanticLayout = require('./semantic-layout');
+var textStyles = require('../../shared/text-styles');
 var migration = require('./migrate');
 
 module.exports.run = function (session, parameters, done) {
@@ -84,6 +85,7 @@ module.exports.run = function (session, parameters, done) {
         // reaches published Symbols, not only new or migrated ones.
         blurShadows.apply(symbol, fixture.svg, dom);
         semanticLayout.apply(symbol, fixture, dom);
+        textStyles.apply(symbol, fixture.svg, dom);
         symbol.name = fixture.name;
         symbol.background.enabled = false;
         var texts = dom.find('Text', symbol);

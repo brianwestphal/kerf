@@ -15,6 +15,11 @@ and switches keep their controls at a fixed left position as the instance grows.
 SplitButton keeps its primary content centered and the options control on the
 right for the tested short override (`Done`) and an 80px wider instance.
 
+The builder reads each captured string's CSS weight and font family, so native
+Text matches the production capture: 650 becomes semibold, 500 medium, and a
+monospace capture keeps its named face. A label that outgrows its fixed frame
+at the heavier weight is refitted instead of wrapping.
+
 This file was created and tested with Sketch 2026.3.1. Install a copy at a
 stable path through Sketch Settings → Libraries. Update that same installed
 file when a new version is published, then refresh the Library and sync

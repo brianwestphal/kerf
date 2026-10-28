@@ -9,6 +9,7 @@ function readJSON(path) {
 }
 
 var semanticLayout = require('./semantic-layout');
+var textStyles = require('../../shared/text-styles');
 
 function migrationPairs(existing, incoming, fixtureId) {
   var pairs = [];
@@ -224,6 +225,7 @@ module.exports.run = function (session, parameters, done) {
         }
         symbol.name = fixture.name;
         symbol.background.enabled = false;
+        textStyles.apply(symbol, fixture.svg, dom);
         var texts = dom.find('Text', symbol);
         var paths = dom.find('ShapePath', symbol);
         var bitmaps = dom.find('Image', symbol);
