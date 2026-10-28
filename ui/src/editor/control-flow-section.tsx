@@ -30,8 +30,6 @@ import { eachScopes } from './model/edits.js';
 
 /** Adds a `$slot` to the chosen zone. */
 export const ADD_SLOT_ACTION = 'editor-add-slot';
-/** Removes the selected `$slot`. */
-export const DELETE_SLOT_ACTION = 'editor-delete-slot';
 
 /** How a `$param` or `$bind` reads as a choice label. */
 const sourceLabel = (value: ViewValue) => {
@@ -216,7 +214,10 @@ export function addSlotFields(
   );
 }
 
-/** The inspector for a selected `$slot`: its inputs and a delete control. */
+/**
+ * The inspector for a selected `$slot`: its inputs. The Inspector toolbar
+ * moves and deletes it, as it does a node (KF-5RKX3W).
+ */
 export function slotEditor(
   document: ViewDocument,
   catalog: ViewCatalog,
@@ -257,11 +258,6 @@ export function slotEditor(
           </List>
         </>
       ) : undefined}
-      <List controlInsets="trbl" gap>
-        <Button emphasis="secondary" size="compact" action={DELETE_SLOT_ACTION}>
-          Delete slot
-        </Button>
-      </List>
     </List>
   );
 }

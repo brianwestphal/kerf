@@ -72,7 +72,6 @@ import {
   ADD_SLOT_ACTION,
   addSlotFields,
   controlFlowSection,
-  DELETE_SLOT_ACTION,
   slotEditor,
 } from './control-flow-section.js';
 import { contentOf, nodesToText, textToNodes } from './model/content.js';
@@ -103,7 +102,7 @@ import {
   serializeDocument,
   visitNodes,
 } from './model/document.js';
-import { dropPlacement, moveDestinations } from './model/drop.js';
+import { dropPlacement, moveDestinations, sourceOf } from './model/drop.js';
 import {
   bindingOptions,
   History,
@@ -113,6 +112,7 @@ import {
   moveNode,
   newNodeId,
   paramTypeFor,
+  placeChild,
   placeNode,
   promoteToParam,
   removeNode,
@@ -137,6 +137,7 @@ import {
   slotRowAddress,
   slotRowId,
 } from './model/outline.js';
+import { type PreviewSlot, previewSlots } from './model/preview-slots.js';
 import { type Problem, problemCounts, problemsOf } from './model/problems.js';
 import { sampleInputs } from './model/sample-inputs.js';
 
@@ -176,11 +177,23 @@ const icons = new Proxy({} as Record<string, unknown>, {
 });
 
 /** A slot's placeholder on the canvas: the app fills slots at runtime. */
-const slotPlaceholder = (name: string) => () =>
-  Text({ children: `${name} slot`, tone: 'quiet' });
-const slots = new Proxy({} as Record<string, () => SafeHtml>, {
-  get: (_target, name) => slotPlaceholder(String(name)),
-});
+/**
+ * The placeholders for one preview's slots, each marked with where its
+ * `$slot` sits so the canvas can select it (KF-5RKX3W).
+ */
+const slotPlaceholders = (placed: ReadonlyMap<string, PreviewSlot>) =>
+  new Proxy({} as Record<string, () => SafeHtml>, {
+    get: (_target, name) => {
+      // previewSlots names every placed slot, so each name is known.
+      const slot = placed.get(String(name))!;
+      return () =>
+        Text({
+          children: `${slot.name} slot`,
+          tone: 'quiet',
+          'data-editor-slot-address': JSON.stringify(slot.address),
+        });
+    },
+  });
 
 /** The canvas renderer for one catalog. */
 function canvasRenderer(catalog: EditorCatalog) {
@@ -194,12 +207,13 @@ function canvasRenderer(catalog: EditorCatalog) {
     });
 
   /** Renders the document onto the canvas, or explains why it cannot. */
-  return (document: ViewDocument, problems: readonly Problem[]): SafeHtml => {
+  return (source: ViewDocument, problems: readonly Problem[]): SafeHtml => {
+    const { document, slots: placed } = previewSlots(source);
     const preview = {
       catalog: viewCatalog,
       components,
       inputs: sampleInputs(document, (label) => Text({ children: label })),
-      slots,
+      slots: slotPlaceholders(placed),
       icons,
     };
     // A node whose component has no function here (an application component
@@ -408,8 +422,11 @@ export function createEditor(options: EditorOptions) {
         label: node.label,
         description: node.detail,
         trailing: badge(node.id),
-        // KF-WXP6AB: a node directly in a zone drags to another place.
-        ...(isMovable(document, node.id).remove ? { draggable: true } : {}),
+        // KF-WXP6AB, KF-5RKX3W: a node directly in a zone, or a slot,
+        // drags to another place.
+        ...(slotRowAddress(node.id) || isMovable(document, node.id).remove
+          ? { draggable: true }
+          : {}),
         ...(node.children ? { children: toTree(node.children) } : {}),
       }));
     const tree = outlineTree(document, componentNames);
@@ -654,12 +671,27 @@ export function createEditor(options: EditorOptions) {
     );
   };
 
+  /**
+   * Whether the selected node or slot can move up, down, or be removed;
+   * undefined with nothing that moves selected (KF-5RKX3W: slots move too).
+   */
+  const selectedMovable = (document: ViewDocument) => {
+    const current = selection.value;
+    if (current?.kind === 'node')
+      return findNode(document, current.id)
+        ? isMovable(document, current.id)
+        : undefined;
+    if (current?.kind !== 'slot' || !slotAt(document, current.address))
+      return undefined;
+    const { parent, zone, index } = current.address;
+    const count = findNode(document, parent)!.node.zones![zone]!.length;
+    return { up: index > 0, down: index < count - 1, remove: true };
+  };
+
   /** Move and delete controls for the selected node, when it can move. */
   const nodeActions = (document: ViewDocument) => {
-    const current = selection.value;
-    if (current?.kind !== 'node' || !findNode(document, current.id))
-      return undefined;
-    const movable = isMovable(document, current.id);
+    const movable = selectedMovable(document);
+    if (!movable) return undefined;
     return (
       <ToolbarControlGroup label="Node" appearance="borderless">
         <button
@@ -1221,7 +1253,11 @@ export function createEditor(options: EditorOptions) {
     const target =
       current?.kind === 'node'
         ? canvas.querySelector<HTMLElement>(`[data-kerf-node="${current.id}"]`)
-        : null;
+        : current?.kind === 'slot'
+          ? canvas.querySelector<HTMLElement>(
+              `[data-editor-slot-address="${CSS.escape(JSON.stringify(current.address))}"]`,
+            )
+          : null;
     if (!target) {
       highlight.hidden = true;
       return;
@@ -1273,6 +1309,19 @@ export function createEditor(options: EditorOptions) {
   };
 
   const moveSelected = (delta: -1 | 1) => {
+    const current = selection.value;
+    if (current?.kind === 'slot') {
+      const movable = selectedMovable(doc.value);
+      if (!(delta < 0 ? movable?.up : movable?.down)) return;
+      const { address } = current;
+      const moved = placeChild(doc.value, address, {
+        ...address,
+        index: address.index + (delta < 0 ? -1 : 2),
+      });
+      commit(moved.document);
+      select({ kind: 'slot', address: moved.at });
+      return;
+    }
     const id = selectedNodeId();
     if (!id) return;
     const movable = isMovable(doc.value, id);
@@ -1611,6 +1660,13 @@ export function createEditor(options: EditorOptions) {
         [MOVE_UP_ACTION]: () => moveSelected(-1),
         [MOVE_DOWN_ACTION]: () => moveSelected(1),
         [DELETE_ACTION]: () => {
+          const current = selection.value;
+          if (current?.kind === 'slot') {
+            if (!slotAt(doc.value, current.address)) return;
+            commit(removeSlot(doc.value, current.address));
+            selection.value = null;
+            return;
+          }
           const id = selectedNodeId();
           if (!id || !isMovable(doc.value, id).remove) return;
           commit(removeNode(doc.value, id));
@@ -1628,12 +1684,6 @@ export function createEditor(options: EditorOptions) {
             commit(nodesToText(doc.value, id, target.dataset.editorContent!));
         },
         [ADD_SLOT_ACTION]: () => addSlot(),
-        [DELETE_SLOT_ACTION]: () => {
-          const current = selection.value;
-          if (current?.kind !== 'slot') return;
-          commit(removeSlot(doc.value, current.address));
-          selection.value = null;
-        },
         [PROMOTE_ACTION]: () => promote(),
         [OUTLINE_ACTION]: (_event, target) => {
           const id = target.dataset.itemId!;
@@ -1664,6 +1714,18 @@ export function createEditor(options: EditorOptions) {
       // links, buttons, and form controls never act.
       delegate(root, 'click', '[data-editor-canvas]', (event) => {
         event.preventDefault();
+        const placeholder = (event.target as Element).closest<HTMLElement>(
+          '[data-editor-slot-address]',
+        );
+        if (placeholder) {
+          select({
+            kind: 'slot',
+            address: JSON.parse(
+              placeholder.dataset.editorSlotAddress!,
+            ) as SlotAddress,
+          });
+          return;
+        }
         const node = (event.target as Element).closest<HTMLElement>(
           '[data-kerf-node]',
         );
@@ -1678,9 +1740,15 @@ export function createEditor(options: EditorOptions) {
         canDrop: (move) => dropFor(move) !== undefined,
         onMove: (move) => {
           const to = dropFor(move);
-          if (!to) return;
-          commit(placeNode(doc.value, move.sourceId, to));
-          select({ kind: 'node', id: move.sourceId });
+          const from = sourceOf(doc.value, move.sourceId);
+          if (!to || !from) return;
+          const moved = placeChild(doc.value, from, to);
+          commit(moved.document);
+          select(
+            slotRowAddress(move.sourceId)
+              ? { kind: 'slot', address: moved.at }
+              : { kind: 'node', id: move.sourceId },
+          );
         },
       }),
       wireFilePickers(root, {

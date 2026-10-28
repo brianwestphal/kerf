@@ -45,7 +45,10 @@ item name and key; renaming the item rewrites the row's bindings), and adds a
 `$slot` to the chosen zone under Add a child. The slot is declared in `slots`
 when new, and inside a repeated row it can take the row's item as its input.
 A selected slot sets its declared inputs from the params and items in scope,
-and deleting the last use of a slot drops its declaration. Choices are the
+and deleting the last use of a slot drops its declaration. A slot is selected
+from its outline row or its canvas placeholder (ringed like a node; KF-5RKX3W:
+slot selection and moves), and moves like a node: the Inspector toolbar's
+Move up, Move down, and Delete, or dragging its outline row. Choices are the
 sources `validateView` accepts, conditions and repeats show in the outline
 (`if showEmpty`, `for each item in items`), slots are outline rows of their
 own, and every change is undoable. To repeat a component, add it, then choose

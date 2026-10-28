@@ -13,6 +13,7 @@ import type {
 import { findNode, visitNodes } from './document.js';
 import {
   addsProblems,
+  placeChild,
   type Placement,
   placementOf,
   placeNode,
@@ -30,7 +31,18 @@ export interface MoveDestination {
 }
 
 /**
- * The placement dropping node `id` on outline row `target` at `position`
+ * Where an outline row's node or slot sits: a slot row's address, or the
+ * place of a node directly in a zone.
+ */
+export function sourceOf(
+  document: ViewDocument,
+  id: string,
+): Placement | undefined {
+  return slotRowAddress(id) ?? placementOf(document, id);
+}
+
+/**
+ * The placement dropping node or slot row `id` on outline row `target` at `position`
  * asks for, or undefined when that drop is not legal. Before and after land
  * beside a node or slot that sits directly in a zone; inside appends to the
  * first of `zonesOf(target)` that takes the node.
@@ -43,8 +55,10 @@ export function dropPlacement(
   position: DropPosition,
   zonesOf: (node: ViewNode) => readonly string[],
 ): Placement | undefined {
+  const from = sourceOf(document, id);
+  if (!from) return undefined;
   const legal = (to: Placement) => {
-    const next = placeNode(document, id, to);
+    const next = placeChild(document, from, to).document;
     return next !== document && !addsProblems(document, next, catalog);
   };
   if (position === 'inside') {

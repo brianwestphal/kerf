@@ -208,10 +208,56 @@ export function placementOf(
 }
 
 /**
- * Moves node `id` (which must sit directly in a zone list) to `to`: index
- * `to.index` of zone `to.zone` of node `to.parent`, counted before the move
- * (KF-WXP6AB: drag placement). Unchanged when the node cannot move there,
- * including into itself or its own descendants.
+ * Moves the zone child at `from` (a node, slot, repeat, or condition) to
+ * `to`: index `to.index` of zone `to.zone` of node `to.parent`, counted
+ * before the move (KF-WXP6AB, KF-5RKX3W). Returns the document and where the
+ * child landed; the document is unchanged when nothing moves, when either
+ * place does not exist, or when the child would move into itself.
+ */
+export function placeChild(
+  document: ViewDocument,
+  from: Placement,
+  to: Placement,
+): { readonly document: ViewDocument; readonly at: Placement } {
+  const unchanged = { document, at: from };
+  const sameList = from.parent === to.parent && from.zone === to.zone;
+  const index = sameList && from.index < to.index ? to.index - 1 : to.index;
+  if (sameList && index === from.index) return unchanged;
+  const next = clone(document);
+  const source = locate(next, from.parent)?.node.zones?.[from.zone];
+  const child = source?.[from.index];
+  if (!child) return unchanged;
+  // A child cannot move into a node it holds.
+  if (heldIds(child).has(to.parent)) return unchanged;
+  source.splice(from.index, 1);
+  const parent = locate(next, to.parent)?.node;
+  if (!parent) return unchanged;
+  parent.zones = { ...(parent.zones ?? {}) };
+  const list = [...(parent.zones[to.zone] ?? [])];
+  if (index > list.length) return unchanged;
+  list.splice(index, 0, child);
+  parent.zones[to.zone] = list;
+  return { document: next, at: { ...to, index } };
+}
+
+/** The ids of every node a zone child holds, itself included. */
+function heldIds(child: ViewChild, ids = new Set<string>()): Set<string> {
+  if ('$slot' in child) return ids;
+  if ('$each' in child) return heldIds(child.template, ids);
+  if ('$if' in child) {
+    heldIds(child.then, ids);
+    if (child.else) heldIds(child.else, ids);
+    return ids;
+  }
+  ids.add(child.id);
+  for (const list of Object.values(child.zones ?? {}))
+    for (const inner of list) heldIds(inner, ids);
+  return ids;
+}
+
+/**
+ * Moves node `id` (which must sit directly in a zone list) to `to`, as
+ * `placeChild` does. Unchanged when the node cannot move there.
  */
 export function placeNode(
   document: ViewDocument,
@@ -219,26 +265,7 @@ export function placeNode(
   to: Placement,
 ): ViewDocument {
   const from = placementOf(document, id);
-  if (
-    !from ||
-    id === to.parent ||
-    visitNodes(document).some(
-      (visit) =>
-        visit.node.id === to.parent &&
-        visit.ancestors.some((ancestor) => ancestor.node.id === id),
-    )
-  )
-    return document;
-  const sameList = from.parent === to.parent && from.zone === to.zone;
-  const index = sameList && from.index < to.index ? to.index - 1 : to.index;
-  if (sameList && index === from.index) return document;
-  const node = findNodeIn(document, id);
-  return insertNode(removeNode(document, id), to.parent, to.zone, node, index);
-}
-
-/** Node `id` itself, from a document that has it. */
-function findNodeIn(document: ViewDocument, id: string): ViewNode {
-  return locate(clone(document), id)!.node as ViewNode;
+  return from ? placeChild(document, from, to).document : document;
 }
 
 /** Moves a node into another zone (of any node), at the end. */

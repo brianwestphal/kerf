@@ -393,7 +393,7 @@ test('shows a node only when a param holds and adds a slot', async ({
     path: info.outputPath('kf-90gtjn-editor-slot-1440.png'),
     animations: 'disabled',
   });
-  await page.getByRole('button', { name: 'Delete slot' }).click();
+  await page.getByRole('button', { name: 'Delete', exact: true }).click();
   await expect(slotRow).toHaveCount(0);
   await page.getByRole('button', { name: 'Undo' }).click();
   await expect(slotRow).toBeVisible();
@@ -530,4 +530,34 @@ test('shows where a dragged outline row would land', async ({ page }, info) => {
   });
   await page.mouse.up();
   await expect(folders).not.toHaveAttribute('data-drop-position');
+});
+
+// KF-5RKX3W: a slot is selected from its canvas placeholder, ringed like a
+// node, and moved from the Inspector toolbar.
+test('selects a slot on the canvas and moves it', async ({ page }, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const placeholder = page.locator(
+    '[data-editor-canvas] [data-editor-slot-address]',
+  );
+  await placeholder.click();
+  const slotRow = (index: number) =>
+    page.locator(
+      `[data-tree-list-id="editor-outline"] [data-item-id="slot:01JB8Z1M6Q8E1X9V4S7K2R3T5A:content:${index}"]`,
+    );
+  await expect(slotRow(2)).toHaveAttribute('aria-selected', 'true');
+  const ring = page.locator('.kui-editor__selection');
+  await expect(ring).toBeVisible();
+  const [box, target] = await Promise.all([
+    ring.boundingBox(),
+    placeholder.boundingBox(),
+  ]);
+  expect(Math.abs(box!.y - target!.y)).toBeLessThan(2);
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-5rkx3w-editor-slot-selected-1440.png'),
+    animations: 'disabled',
+  });
+  await page.getByRole('button', { name: 'Move up' }).click();
+  await expect(slotRow(1)).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByText('7 nodes · valid')).toBeVisible();
 });

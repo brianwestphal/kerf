@@ -269,12 +269,12 @@ describe('repeating a node for each item', () => {
       '<div data-editor-control="condition"><input value="x"></div>' +
         '<div data-editor-slot-input="x"><input value=""></div>' +
         '<button data-action="editor-add-slot"></button>' +
-        '<button data-action="editor-delete-slot"></button>',
+        '<button data-action="editor-delete"></button>',
     );
     type(field(root, '[data-editor-control="condition"]'), 'x');
     type(field(root, '[data-editor-slot-input="x"]'), '');
     click(root, 'editor-add-slot');
-    click(root, 'editor-delete-slot');
+    click(root, 'editor-delete');
     expect(editor.document.value).toBe(before);
   });
 });
@@ -294,7 +294,7 @@ describe('slots', () => {
       root.querySelector('[aria-current], [aria-selected="true"]')?.textContent,
     ).toContain('actions slot');
     expect(root.textContent).toContain('The application fills this slot');
-    click(root, 'editor-delete-slot');
+    click(root, 'editor-delete');
     expect(editor.selection.value).toBeNull();
     expect(slotAt(editor.document.value, address)).toBeUndefined();
     click(root, 'editor-undo');
