@@ -115,6 +115,12 @@
           "Keep meaningful tag text visible because tone is supplementary."
         ]
       },
+      "content": {
+        "interactive": [
+          { "kind": "root", "whenProps": ["href", "action"] },
+          { "kind": "contains", "whenProps": ["removeAction"] }
+        ]
+      },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-chip",
@@ -928,6 +934,7 @@
           "Clear bars have no material of their own: keep their controls in glass ToolbarControlGroups; they turn opaque under reduced transparency or increased contrast and paint Canvas in forced colors."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-nav-stack",
@@ -1214,6 +1221,7 @@
           "Clear bars have no material of their own: keep their controls in glass ToolbarControlGroups; they turn opaque under reduced transparency or increased contrast and paint Canvas in forced colors."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-tab-scaffold",
@@ -1920,6 +1928,11 @@
           "A dark-toned group's hover paints a 14% surface wash over its loud fill, on one control of a group or across a lone control's whole group, so the on-loud icon keeps at least 3:1 over a light page and well above it in dark."
         ]
       },
+      "content": {
+        "exports": {
+          "ToolbarActionLink": { "interactive": [{ "kind": "root" }] }
+        }
+      },
       "cssValueProps": [
         {
           "path": "hideBelow",
@@ -2066,6 +2079,7 @@
           "Use popup surfaces only for real dropdown menus with named triggers."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [
         {
           "path": "preferredWidth",
@@ -2298,6 +2312,7 @@
           "Pass describedBy, the id of app-owned summary copy, for the dialog's accessible description; the detail description describes the selection and is not wired. On roomy devices the detail title is a level-2 heading; every presentation keeps a close control named Close (closeLabel), and the compact back control is named by backLabel."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -2397,6 +2412,7 @@
           "The title is a level-2 heading, and its description (id <id>-description) is the dialog's accessible description unless describedBy names other content; the close control is named Close (closeLabel) and stays the outermost trailing control. An open overlay rail takes focus, keeps Tab inside it, and closes on Escape before the dialog does."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -2540,6 +2556,9 @@
           "In a Pane header with headerPresentation=\"overlay\" or NavStack chrome with chromePresentation=\"overlay\" (or its bottom toolbar with bottomToolbarPresentation=\"overlay\"), or slotted as the label (or into header-actions) of a DialogSurface header with headerPresentation=\"floating\", untoned text keeps WCAG AA over the translucent chrome material: the title takes --kui-color-text at every size and the description mixes --kui-color-text-quiet halfway toward it."
         ]
       },
+      "content": {
+        "interactive": [{ "kind": "root", "whenProps": ["action"] }]
+      },
       "cssValueProps": [
         {
           "path": "hideBelow",
@@ -2640,6 +2659,9 @@
           "FieldLabel is plain text, not a native label; give it an id and associate the preview group with aria-labelledby.",
           "Start and middle truncation clip visually only: the whole value stays in the DOM in reading order, and Text shows it as the element's title unless the app supplies one."
         ]
+      },
+      "content": {
+        "exports": { "FieldLabel": { "interactive": [{ "kind": "root" }] } }
       },
       "cssValueProps": [],
       "boundaries": {
@@ -3016,6 +3038,7 @@
           "With wireTreeList: one Tab stop in the tree; Down and Up move, Home and End jump, Right opens a row or enters its first child, Left closes it or returns to its parent, Enter and Space choose, and typing a label's first letters finds the next match."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-tree-list",
@@ -3075,6 +3098,7 @@
           "With wireColumnExplorer: one Tab stop per column; Up and Down move, Home and End jump, Right opens a row's column and moves into it, Left returns to the column before, Enter and Space choose, and typing finds a row in the column."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-column-explorer",
@@ -3782,6 +3806,11 @@
           "The owning control retains a stable accessible name."
         ]
       },
+      "content": {
+        "interactive": [
+          { "kind": "contains", "whenProps": ["action", "toggle"] }
+        ]
+      },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-list-header",
@@ -3881,6 +3910,7 @@
           "A draggable row is dragged by its noninteractive root; with wireListReorder, Alt+Shift+ArrowUp/ArrowDown on its primary button moves it, and focus returns to that button after the application re-renders."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [
         {
           "path": "style",
@@ -4048,6 +4078,10 @@
         "obligations": [
           "ListItem uses native button activation and pressed maps to aria-pressed; ListItemLink uses native anchor activation and external opens a new tab with safe rel and an announced default label. Both map selected to aria-current; disabled or loading links omit href and leave the tab order. rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls. A draggable row reorders by pointer drag or, with wireListReorder, Alt+Shift+ArrowUp/ArrowDown; a placeholder is never draggable."
         ]
+      },
+      "content": {
+        "interactive": [{ "kind": "root" }],
+        "exports": { "ListItemLink": { "interactive": [{ "kind": "root" }] } }
       },
       "cssValueProps": [
         {
@@ -4409,6 +4443,7 @@
           "Keep the title a short, meaningful name for the hidden content; the open state survives re-renders because the platform owns it."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-disclosure",
@@ -4556,6 +4591,7 @@
           "Use rootAttributes only for application data-* metadata; component-owned identity, state, action, and role semantics are protected at runtime."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-tab-bar-item",
@@ -4709,6 +4745,7 @@
           "Selection and focus behavior follow the configured activation mode."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-tab-bar",
@@ -4778,6 +4815,7 @@
           "Every choice has a meaningful label."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-segmented-control",
@@ -4850,6 +4888,7 @@
           "Every choice keeps a visible text label; a swatch or icon is decorative."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [
         {
           "path": "choices[].swatch",
@@ -4929,6 +4968,7 @@
           "The chosen swatch wears a ring in the text color set off by a gap, so the choice never depends on hue; forced colors draw it in Highlight."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-color-swatches",
@@ -5016,6 +5056,7 @@
           "Every slider track runs in the writing direction, as the native range does: in right-to-left text its gradient starts at the right, under the thumb at the channel's minimum."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-color-picker",
@@ -5111,6 +5152,7 @@
           "The picker opens in a non-modal AnchoredSurface named by the label; Escape or a press outside closes it and focus returns to the trigger."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-color-field",
@@ -5177,6 +5219,7 @@
           "Give every trailing action a visible or accessible name, such as a Send button."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-message-composer",
@@ -5263,6 +5306,7 @@
           "The form-field presentation associates its visible label and optional hint with the searchbox, exposes aria-required when required, and lets wireSearchFields focus the editor from a label click. The app validates required input."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-search-field",
@@ -5365,6 +5409,7 @@
           "Enter or a delimiter adds the typed text, Backspace at the start removes the last tag, ArrowLeft and ArrowRight move between chips and the editor, and Backspace or Delete on a focused chip removes it."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-tag-field",
@@ -5520,6 +5565,7 @@
           "Once registered, an icon-only trigger (single or multiple) shows an aria-hidden help tag repeating its accessible name (a single Select adds its current choice) after a 500ms hover and at once on keyboard focus; it hides while the listbox is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [
         {
           "path": "choices[].color",
@@ -5645,6 +5691,7 @@
           "The suggestion listbox is a manual popover in the top layer, placed below the field at its width and flipped when short, so a clipping or scrolling ancestor (an AnchoredSurface, a dialog, a scrolling List) never cuts it off."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-combobox",
@@ -5732,6 +5779,7 @@
           "Compact text grows to 16px on coarse-pointer touch screens so iOS does not zoom on focus."
         ]
       },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-text-field",
@@ -5824,6 +5872,7 @@
           "The hint and error form the input's aria-description; an error sets aria-invalid=\"true\" and the danger border. indeterminate sets the native indeterminate property through wireCheckboxes, so assistive technology reports a mixed state."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-checkbox",
@@ -5907,6 +5956,7 @@
           "The group's hint and error form its aria-description; an error sets aria-invalid on the group and the danger border on each box. A choice's hint is that checkbox's aria-description. disabled disables the fieldset, and so every checkbox, natively."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-checkbox-group",
@@ -5983,6 +6033,7 @@
           "The group's hint and error form its aria-description; an error sets aria-invalid on the group and the danger border on each circle. required sets each radio's native required and aria-required on the group. A choice's hint is that radio's aria-description."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-radio-group",
@@ -6066,6 +6117,7 @@
           "A native <input type=\"checkbox\" role=\"switch\"> inside its <label>, invisibly over the drawn track, so the label names it and assistive technology announces on or off; Space toggles it and focus shows the focus ring on the track. The hint is its aria-description. The thumb's slide is skipped when reduced motion is preferred."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-switch",
@@ -6150,6 +6202,7 @@
           "The label names it, the hint describes it, and the readout is hidden from assistive technology because the input already reports its value; forced colors draw a Highlight fill on a GrayText track."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-slider",
@@ -6282,6 +6335,7 @@
           "Once registered, an icon-only trigger shows its label as an aria-hidden help tag after a 500ms hover and at once on keyboard focus; it hides while the menu is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-popup-menu",
@@ -6350,6 +6404,7 @@
           "With currentStep, a native button or link reports aria-current=\"step\" even when disabled; the app owns the step label and which step is current."
         ]
       },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-button",
@@ -6438,6 +6493,7 @@
           "Each half draws the focus ring 1px outside its box; with focusRingInset it is drawn inside, two-tone with a surface-colored line inside the ring color, so it keeps 3:1 contrast on every loud fill."
         ]
       },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-split-button",
@@ -6533,6 +6589,7 @@
           "Each control is a label around a real file input that receives keyboard focus; the visible control shows the focus ring. Give the input an accessibleLabel when the visible copy is short."
         ]
       },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-file-picker",
@@ -7402,6 +7459,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -7474,6 +7532,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -7546,6 +7605,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -7582,6 +7642,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -7654,6 +7715,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -7690,6 +7752,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -7726,6 +7789,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -7762,6 +7826,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -7834,6 +7899,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -7870,6 +7936,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -7953,6 +8020,7 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -8000,6 +8068,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -8036,6 +8105,7 @@
         "geometry": { "margin": "self", "border": "none", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -8072,6 +8142,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -8108,6 +8179,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -8144,6 +8216,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -8180,6 +8253,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -8268,6 +8342,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -8345,6 +8420,7 @@
         "geometry": { "margin": "self", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -8386,6 +8462,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -8459,6 +8536,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -8639,6 +8717,7 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root", "whenProps": ["href"] }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -8675,6 +8754,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -8783,6 +8863,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -8958,6 +9039,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "root" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -9430,6 +9512,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -9502,6 +9585,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
@@ -9646,6 +9730,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "content": { "interactive": [{ "kind": "contains" }] },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": null,

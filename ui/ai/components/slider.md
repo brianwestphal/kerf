@@ -67,6 +67,8 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 - It is a native range input: arrow keys, Page Up and Down, Home, and End step it, and the platform announces its value (with a unit, as aria-valuetext).
 - The label names it, the hint describes it, and the readout is hidden from assistive technology because the input already reports its value; forced colors draw a Highlight fill on a GrayText track.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

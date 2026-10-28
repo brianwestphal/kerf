@@ -69,6 +69,8 @@ Margin: child · border: child · padding: child (layout role: controls). `self`
 - The editor is named by the visible label and described by the hint or error; each chip has an edit button (its label) and a remove button named for the tag.
 - Enter or a delimiter adds the typed text, Backspace at the start removes the last tag, ArrowLeft and ArrowRight move between chips and the editor, and Backspace or Delete on a focused chip removes it.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

@@ -70,6 +70,8 @@ Margin: none · border: none · padding: self (layout role: controls). `self` me
 - A native \<fieldset> (a group) named by its legend (label), ariaLabel, or labelledBy; each choice is a Kerf Checkbox, a native checkbox inside its \<label>, invisibly over the drawn box. Every checkbox is its own Tab stop and Space toggles it; each checked value submits under name.
 - The group's hint and error form its aria-description; an error sets aria-invalid on the group and the danger border on each box. A choice's hint is that checkbox's aria-description. disabled disables the fieldset, and so every checkbox, natively.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

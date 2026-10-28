@@ -95,6 +95,8 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 - A multiple icon-only trigger shows its fixed triggerIcon and, while any choice is chosen, an aria-hidden count Badge; the trigger's accessible name ends with the chosen labels in choice order, and its value text stays empty.
 - Once registered, an icon-only trigger (single or multiple) shows an aria-hidden help tag repeating its accessible name (a single Select adds its current choice) after a 500ms hover and at once on keyboard focus; it hides while the listbox is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

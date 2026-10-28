@@ -65,6 +65,8 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 - It is a native radio group: Tab reaches it once and the arrow keys move the choice; each radio is named by its color label, also shown as the swatch's hover hint.
 - The chosen swatch wears a ring in the text color set off by a gap, so the choice never depends on hue; forced colors draw it in Highlight.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

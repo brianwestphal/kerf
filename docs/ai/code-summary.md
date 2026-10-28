@@ -733,9 +733,15 @@ validator for the Kerf UI editor, `docs/26-ui-editor.md`). `validate.mjs`
 (`createViewCatalog`, `validateView`, `isAssignable`, `isLiteralOf`,
 `parseCssCall`, `channelOf`) is re-exported by `index.mjs` and typed by
 `index.d.mts`. The shape schema is `ui/ai/view-document.schema.json`, and the
-`KUI-V001`–`V013` ids are registered in
-`ui/ai/application-ui-diagnostic-ids-v1.json`. Tests:
-`ui/tests/unit/view-validate.test.ts`.
+`KUI-V001`–`V014` ids are registered in
+`ui/ai/application-ui-diagnostic-ids-v1.json`. `KUI-V014` (KF-0P9WWB: a
+control or link inside a component whose root is one) reads each composition
+entry's `content` rules (`interactive` / per-export `exports`, each
+`{ kind: root | contains, whenProps? }`), declared in
+`ui/ai/component-catalog.json` and copied by `sync-component-composition.mjs`;
+`create-kerf-component` copies a package's `composition.content` the same way,
+and `scripts/lib/component-docs.mjs` renders the rules into each
+`ai/components/*.md` page. Tests: `ui/tests/unit/view-validate.test.ts`.
 
 The same folder holds the rest of the published layer (KF-WWJGSN: view generator):
 

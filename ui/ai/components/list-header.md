@@ -68,6 +68,8 @@ Margin: self · border: self · padding: self (layout role: navigation). `self` 
 - When toggle mode is used, the application reveals matching content and keeps expanded state synchronized.
 - The owning control retains a stable accessible name.
 
+The component renders controls inside it when `action` or `toggle` is set, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

@@ -73,6 +73,8 @@ Margin: none · border: child · padding: child (layout role: controls). `self` 
 - Keyboard: Enter, Space, or ArrowDown on the trigger opens on the first item (ArrowUp on the last); ArrowUp/ArrowDown move and wrap past disabled items, Home/End jump, and typing a label's first letters moves to it; Enter or Space chooses; ArrowRight opens a submenu on its first item and ArrowLeft returns to the parent item (mirrored right to left); Escape closes the current level and returns focus to its opener; Tab closes the menu and continues from the trigger.
 - Once registered, an icon-only trigger shows its label as an aria-hidden help tag after a 500ms hover and at once on keyboard focus; it hides while the menu is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Usage examples
 
 ### Nested decisions

@@ -71,6 +71,8 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 - Native input with role=combobox, aria-autocomplete=list, aria-expanded, aria-controls, and aria-activedescendant; options are role=option in a listbox. The visible label is a real label; the hint is aria-describedby.
 - The suggestion listbox is a manual popover in the top layer, placed below the field at its width and flipped when short, so a clipping or scrolling ancestor (an AnchoredSurface, a dialog, a scrolling List) never cuts it off.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

@@ -76,6 +76,8 @@ Margin: child · border: child · padding: child (layout role: structure). `self
 - The tree is role=tree named by label; each row is a treeitem button with aria-level, aria-posinset, aria-setsize, aria-expanded on rows that expand, and aria-selected. A disabled row is aria-disabled and stays reachable.
 - With wireTreeList: one Tab stop in the tree; Down and Up move, Home and End jump, Right opens a row or enters its first child, Left closes it or returns to its parent, Enter and Space choose, and typing a label's first letters finds the next match.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

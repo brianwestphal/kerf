@@ -66,6 +66,7 @@
         "publicTokens": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
         "cssValueProps": { "type": "array", "items": { "$ref": "#/$defs/cssValueProp" }, "uniqueItems": true },
         "geometry": { "$ref": "#/$defs/geometry" },
+        "content": { "description": "Whether the component renders interactive content (a native control, link, or label), projected verbatim into component-composition.json. A root rule means the control is the component's own root; a contains rule means it renders one inside. The view validator reports KUI-V014 for a root or contains element at any depth in a root element's zones. exports gives the same rules per additional JSX export, which do not inherit them.", "$ref": "#/$defs/interactiveContent" },
         "delivery": { "$ref": "#/$defs/delivery" },
         "links": { "$ref": "#/$defs/links" }
       },
@@ -89,6 +90,24 @@
         "border": { "$ref": "#/$defs/geometryOwner" },
         "padding": { "$ref": "#/$defs/geometryOwner" },
         "notes": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1 }
+      },
+      "additionalProperties": false
+    },
+    "interactiveContent": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "interactive": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/interactiveRule" } },
+        "exports": { "type": "object", "additionalProperties": { "type": "object", "required": ["interactive"], "properties": { "interactive": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/interactiveRule" } } }, "additionalProperties": false } }
+      },
+      "additionalProperties": false
+    },
+    "interactiveRule": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": { "enum": ["root", "contains"] },
+        "whenProps": { "description": "Props that turn the rule on when any one is set to a value other than false; omitted, the rule always applies.", "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*$" } }
       },
       "additionalProperties": false
     },

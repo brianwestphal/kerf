@@ -75,6 +75,8 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 - The trigger is a button named by the label and the current hex value, with aria-haspopup dialog and aria-expanded; the hint and error describe it.
 - The picker opens in a non-modal AnchoredSurface named by the label; Escape or a press outside closes it and focus returns to the trigger.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

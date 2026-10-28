@@ -181,6 +181,7 @@
           "items": { "$ref": "#/$defs/propCondition" },
           "minItems": 1
         },
+        "content": { "$ref": "#/$defs/interactiveContent" },
         "rendersAs": {
           "description": "For a wrapper component: the cataloged roots it renders (package-qualified keys), any one of them or nothing. Composition checks treat an element of this entry as each declared root: a zone accepts it only if it accepts every root, and each root's parent contract applies to where it is placed.",
           "type": "array",
@@ -378,6 +379,53 @@
             "composition": { "type": "string", "minLength": 1 }
           },
           "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "interactiveContent": {
+      "description": "Whether the element renders interactive content (HTML's button, a, input, label, select, textarea, summary, and so on). The view validator reports KUI-V014 for any root or contains element placed, at any depth, in the zones of a root element, because interactive content cannot hold more of it. An omitted field is unchecked.",
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "interactive": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/interactiveRule" }
+        },
+        "exports": {
+          "description": "The same rules for each additional JSX export of the entry, keyed by export name. Exports do not inherit the entry's rules.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["interactive"],
+            "properties": {
+              "interactive": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "$ref": "#/$defs/interactiveRule" }
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "interactiveRule": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "description": "root: the control or link is the element's own root. contains: the element renders one inside.",
+          "enum": ["root", "contains"]
+        },
+        "whenProps": {
+          "description": "Props that turn the rule on when any one is set to a value other than false. Omitted, the rule always applies.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*$" }
         }
       },
       "additionalProperties": false

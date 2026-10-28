@@ -1020,6 +1020,161 @@ describe('validateView: composition (KUI-L201–L204)', () => {
   });
 });
 
+// KF-0P9WWB: interactive content (a native control or link) cannot hold more
+// of it; the parser splits the host and the row contract throws.
+describe('validateView: interactive content (KUI-V014)', () => {
+  const row = (trailing: unknown[]) =>
+    node('list-item', {
+      props: { label: 'Inbox', action: 'open' },
+      zones: { trailing },
+    });
+  const v014 = (document: unknown) =>
+    validateView(document, catalog).diagnostics.filter(
+      (item) => item.code === 'KUI-V014',
+    );
+
+  it('reports a control in an actionable row, naming both components', () => {
+    const [problem] = v014(doc(row([button()])));
+    expect(problem).toEqual({
+      code: 'KUI-V014',
+      path: '$.root.zones.trailing[0]',
+      message:
+        '@kerfjs/ui:button renders a control or link, so it cannot sit inside @kerfjs/ui:list-item, which renders one itself',
+    });
+  });
+
+  it('looks through wrappers, conditions, and repeats', () => {
+    const params = {
+      params: {
+        show: { type: { kind: 'boolean' } },
+        items: {
+          type: {
+            kind: 'array',
+            items: { kind: 'object', props: [] },
+          },
+        },
+      },
+    };
+    expect(
+      v014(doc(row([node('row', { zones: { children: [button()] } })]))),
+    ).toHaveLength(1);
+    expect(
+      v014(
+        doc(
+          row([
+            { $if: { $param: 'show' }, then: node('badge'), else: button() },
+            {
+              $each: { $param: 'items' },
+              as: 'item',
+              template: node('select', { props: { label: 'Pick' } }),
+            },
+          ]),
+          params,
+        ),
+      ).map((item) => item.path),
+    ).toEqual([
+      '$.root.zones.trailing[0].else',
+      '$.root.zones.trailing[1].template',
+    ]);
+  });
+
+  it('applies prop-conditioned rules: a Chip is a control only with an action, link, or remove button', () => {
+    const chip = (props: Fixture = {}) =>
+      node('chip', { props: { children: 'New', ...props } });
+    expect(v014(doc(row([chip()])))).toEqual([]);
+    expect(v014(doc(row([chip({ action: 'filter' })])))).toHaveLength(1);
+    expect(v014(doc(row([chip({ href: '/new' })])))).toHaveLength(1);
+    expect(
+      v014(doc(row([chip({ removeAction: 'drop', removeLabel: 'Remove' })]))),
+    ).toHaveLength(1);
+    // A Chip that renders a remove button inside is no host itself.
+    expect(
+      v014(
+        doc(
+          node('chip', {
+            props: { removeAction: 'drop', removeLabel: 'Remove' },
+            zones: { children: [chip({ action: 'filter' })] },
+          }),
+        ),
+      ),
+    ).toEqual([]);
+    // A bound value counts as set; an explicit false does not.
+    expect(
+      v014(
+        doc(row([chip({ href: { $param: 'link' } })]), {
+          params: { link: { type: { kind: 'string' } } },
+        }),
+      ),
+    ).toHaveLength(1);
+    expect(v014(doc(row([chip({ action: false })])))).toEqual([]);
+  });
+
+  it('reads the rules of an additional JSX export', () => {
+    const link = node('list-item#ListItemLink', {
+      props: { label: 'Docs', href: '/docs' },
+      zones: { trailing: [button()] },
+    });
+    expect(v014(doc(link))).toHaveLength(1);
+    // An export with no rules of its own inherits none from its entry.
+    expect(
+      v014(
+        doc(
+          node('list-item#ListItemLink', {
+            props: { label: 'Docs', href: '/docs' },
+            zones: {
+              trailing: [
+                node('text#FieldLabel', { props: { children: 'Name' } }),
+              ],
+            },
+          }),
+        ),
+      ),
+    ).toHaveLength(1);
+  });
+
+  it('leaves slots, non-interactive content, and controls outside any host alone', () => {
+    expect(
+      v014(
+        doc(
+          row([
+            node('badge', { props: { children: '3' } }),
+            { $slot: 'extra' },
+          ]),
+          {
+            slots: { extra: {} },
+          },
+        ),
+      ),
+    ).toEqual([]);
+    expect(
+      v014(doc(node('row', { zones: { children: [button(), button()] } }))),
+    ).toEqual([]);
+    // The host is restored after its zones: a sibling after it is unaffected.
+    expect(
+      v014(doc(node('row', { zones: { children: [row([]), button()] } }))),
+    ).toEqual([]);
+  });
+
+  it('is unchecked for a package whose catalog declares no rules', () => {
+    const bare = createViewCatalog({
+      props: [readJson('ai/component-props.json')],
+      composition: [
+        {
+          ...readJson('ai/component-composition.json'),
+          entries: readJson('ai/component-composition.json').entries.map(
+            ({ content: _content, ...entry }: Fixture) => entry,
+          ),
+        },
+      ],
+    });
+    expect(
+      validateView(doc(row([button()])), bare).diagnostics.map(
+        (item) => item.code,
+      ),
+    ).not.toContain('KUI-V014');
+  });
+});
+
 describe('parseCssCall and channelOf', () => {
   it('accepts literal-argument builder calls only', () => {
     expect(parseCssCall('px(2)')).toEqual(['px']);

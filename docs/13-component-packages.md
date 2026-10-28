@@ -619,3 +619,36 @@ both fields into the generated entry. The `ui-composition` rule, and so
 `kerf-ui-doctor`, then reports `<FeedbackPanel appearance="embedded"><Note /></FeedbackPanel>`
 as `KUI-L204` and names `flush` as the fix. A child entry from another catalog,
 such as `@kerfjs/ui`'s `Text` (`flush` or `variant="span"`), works the same way.
+
+### Interactive content: `content`
+
+HTML forbids interactive content (a `button`, `a`, form control, `label`, or
+`summary`) inside interactive content, and the browser splits markup that
+nests one in another. A component that renders such an element declares it
+under `composition.content`, so `@kerfjs/ui`'s view validator can report the
+placement as `KUI-V014`:
+
+```json
+{
+  "components": [
+    {
+      "id": "nav-card",
+      "composition": {
+        "content": {
+          "interactive": [{ "kind": "root", "whenProps": ["href"] }],
+          "exports": { "NavCardButton": { "interactive": [{ "kind": "root" }] } }
+        }
+      }
+    }
+  ]
+}
+```
+
+`root` means the control or link is the component's own root, so its zones
+may hold no control and no component that renders one; `contains` means it
+renders one inside, so it cannot sit in a `root` component's zones.
+`whenProps` limits a rule to elements that set one of those props, and
+`exports` gives an additional JSX export its own rules, which it does not
+inherit from the component. The generator validates the field at its exact
+metadata path and copies it into the generated entry. Without it, the
+component's placements are unchecked.

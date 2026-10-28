@@ -685,6 +685,22 @@ schema and the validator in agreement.
 | `KUI-V011` | A named node whose component has no `data-*` channel (§4.5)                                                                            |
 | `KUI-V012` | `#view` source missing, cyclic, declaring slots, or given props that are not its params                                                |
 | `KUI-V013` | `$icon` on a non-icon prop, a malformed icon name, or (given `icons`) an unknown one                                                   |
+| `KUI-V014` | A control, link, or component that renders one, at any depth in the zones of a component whose root is a control or link               |
+
+`KUI-V014` reads each composition entry's `content.interactive` rules, which
+the selection catalog declares and `catalog:sync` projects. A `root` rule
+means the component renders a native control or link (`button`, `a`, `input`,
+`label`, and so on) as its root; a `contains` rule means it renders one inside.
+HTML forbids interactive content inside interactive content, so the parser
+splits such a host (a Button in an actionable ListItem's `trailing`) and the
+row contract throws. The check follows `$if` and `$each` and passes through
+non-interactive wrappers. `whenProps` turns a rule on only when one of its
+props is set (a Chip is a `<button>` only with `action`), and a bound value
+counts as set. `content.exports` gives an additional JSX export its own rules
+(`ListItemLink`, `FieldLabel`). A `$slot`, a `#view`, and a component whose
+catalog declares no rules are not checked. Because the editor's drops and
+Move to accept only placements the validator accepts, they stop offering
+these places as well.
 
 The composition checks reuse the ESLint `ui-composition` rule's ids, which now
 apply to a JSON tree instead of JSX: `KUI-L201` (disallowed direct parent),

@@ -79,6 +79,7 @@ function defaultEntry(entry) {
       geometry: entry.geometry ?? defaultGeometry,
     },
     accessibility: { obligations: entry.accessibility ?? [] },
+    ...(entry.content ? { content: entry.content } : {}),
     cssValueProps: entry.cssValueProps ?? [],
     boundaries: {
       rootClass: entry.publicClasses?.includes(componentRootClass)

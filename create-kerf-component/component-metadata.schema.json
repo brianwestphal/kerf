@@ -24,6 +24,25 @@
   },
   "additionalProperties": false,
   "$defs": {
+    "interactiveRules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["kind"],
+        "properties": {
+          "kind": { "enum": ["root", "contains"] },
+          "whenProps": {
+            "description": "Props that turn the rule on when any one is set to a value other than false. Omitted, the rule always applies.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*$" }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
     "propCondition": {
       "type": "object",
       "required": ["prop", "equals"],
@@ -277,6 +296,26 @@
           "type": "array",
           "items": { "$ref": "#/$defs/propCondition" },
           "minItems": 1
+        },
+        "content": {
+          "description": "Whether the component renders interactive content (a native button, link, form control, label, or summary). A root rule means the control is the component's own root, so its zones may hold no control or component that renders one; a contains rule means it renders one inside. The @kerfjs/ui view validator reports KUI-V014 for those placements. exports gives the same rules per additional JSX export, which do not inherit the component's. Omitted, placements are unchecked.",
+          "type": "object",
+          "minProperties": 1,
+          "properties": {
+            "interactive": { "$ref": "#/$defs/interactiveRules" },
+            "exports": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "required": ["interactive"],
+                "properties": {
+                  "interactive": { "$ref": "#/$defs/interactiveRules" }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
         },
         "parents": {
           "type": "object",

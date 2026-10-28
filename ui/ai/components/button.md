@@ -78,6 +78,8 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 - With pressed, it is a toggle: aria-pressed reports the state, and the pressed look adds a doubled outline (secondary and plain) or a darkened fill with an inset ring (primary), so the state never relies on hue alone; forced-colors mode paints it Highlight. An icon-only Button is named by ariaLabel, and help tags show that name on hover and keyboard focus. A title gives native hover text that says more than the name and replaces the help tag.
 - With currentStep, a native button or link reports aria-current="step" even when disabled; the app owns the step label and which step is current.
 
+The component renders a native control or link as its root, so it cannot sit in another such component's zones, and its own zones cannot hold a control, a link, or a component that renders one. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

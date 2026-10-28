@@ -597,6 +597,16 @@ function checkNode(ctx, node, at, scope, rowScoped, parentKey, text = false) {
       );
     }
   }
+  const interactive = interactiveOf(ctx.catalog, node);
+  if (interactive && ctx.interactiveHost) {
+    ctx.report(
+      'KUI-V014',
+      at,
+      `${node.type} renders a control or link, so it cannot sit inside ${ctx.interactiveHost}, which renders one itself`,
+    );
+  }
+  const host = ctx.interactiveHost;
+  if (interactive === 'root' && !host) ctx.interactiveHost = node.type;
   const zones = zonesOf(ctx, component);
   const byName = new Map(component.props.map((prop) => [prop.name, prop]));
   const native = new Set(component.nativeAttributes ?? []);
@@ -680,6 +690,7 @@ function checkNode(ctx, node, at, scope, rowScoped, parentKey, text = false) {
     );
     shapes.set(zoneKey, combine(children.map((child) => childShape(child))));
   }
+  ctx.interactiveHost = host;
   if (component.variants) {
     if (
       !component.variants.some((variant) =>
@@ -990,6 +1001,24 @@ function childShape(child) {
   return shape(1, 1, [{ node: child }]);
 }
 
+// Interactive content (HTML's button, a, input, label, and so on) cannot hold
+// more of it: the parser splits the host and the row contract breaks. An
+// entry's `content.interactive` rules say whether a node renders a control as
+// its root or inside it; `content.exports` does the same per JSX export.
+function interactiveOf(catalog, node) {
+  const [base, exportName] = node.type.split('#');
+  const content = catalog.entries.get(base)?.content;
+  const rules = exportName
+    ? content?.exports?.[exportName]?.interactive
+    : content?.interactive;
+  const props = isObject(node.props) ? node.props : {};
+  const applies = (rule) =>
+    !rule.whenProps ||
+    rule.whenProps.some((name) => props[name] != null && props[name] !== false);
+  const matched = (rules ?? []).filter(applies).map((rule) => rule.kind);
+  return matched.includes('root') ? 'root' : matched[0];
+}
+
 const conditionLabel = ({ prop, equals }) =>
   `\`${prop}=${JSON.stringify(equals)}\``;
 
@@ -1118,6 +1147,7 @@ export function validateView(document, catalog, options = {}) {
     params: new Map(),
     slots: new Map(),
     packages: undefined,
+    interactiveHost: undefined,
     report(code, path, message) {
       diagnostics.push({ code, path, message });
     },

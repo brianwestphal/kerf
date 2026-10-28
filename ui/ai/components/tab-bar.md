@@ -91,6 +91,8 @@ Margin: none · border: self · padding: self (layout role: navigation). `self` 
 - Each tab controls a matching tabpanel.
 - Selection and focus behavior follow the configured activation mode.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

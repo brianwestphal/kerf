@@ -106,6 +106,8 @@ Margin: none · border: self · padding: self (layout role: structure). `self` m
 - In an overlay Pane header (headerPresentation="overlay"), overlay NavStack chrome (chromePresentation="overlay") or bottom toolbar (bottomToolbarPresentation="overlay"), or a DialogSurface floating header's header-actions (headerPresentation="floating"), a default-tone group (not dark-toned, not an avatar scrim) takes --kui-color-text for its controls, so they keep WCAG AA over content passing beneath the translucent chrome material.
 - A dark-toned group's hover paints a 14% surface wash over its loud fill, on one control of a group or across a lone control's whole group, so the on-loud icon keeps at least 3:1 over a light page and well above it in dark.
 
+`ToolbarActionLink` renders a native control or link as its root, so it cannot sit in another such component's zones, and its own zones cannot hold a control, a link, or a component that renders one. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

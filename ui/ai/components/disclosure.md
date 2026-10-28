@@ -69,6 +69,8 @@ While `appearance="embedded"` is set, direct children must bring no content-item
 - The native summary is a button that Enter and Space toggle and that reports its expanded state; the DisclosureArrow is decorative.
 - Keep the title a short, meaningful name for the hidden content; the open state survives re-renders because the platform owns it.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

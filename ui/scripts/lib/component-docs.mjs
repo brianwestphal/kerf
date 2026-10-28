@@ -344,7 +344,34 @@ function accessibilitySection(contract) {
     obligations.length
       ? bullets(obligations.map(text))
       : 'No component-specific obligations beyond native semantics and a visible or accessible name for every control.',
+    ...interactiveContent(contract.content),
   ].join('\n');
+}
+
+// The `content` rules as prose: what renders a control, and the KUI-V014
+// consequence for what the element may hold or sit inside.
+function interactiveContent(content) {
+  if (!content) return [];
+  const describe = (name, rules) =>
+    rules
+      .map(({ kind, whenProps }) => {
+        const when = whenProps
+          ? ` when ${whenProps.map(code).join(' or ')} is set`
+          : '';
+        return kind === 'root'
+          ? `${name} renders a native control or link as its root${when}, so it cannot sit in another such component's zones, and its own zones cannot hold a control, a link, or a component that renders one.`
+          : `${name} renders controls inside it${when}, so it cannot sit in the zones of a component whose root is a control or link.`;
+      })
+      .join(' ');
+  const lines = [
+    ...(content.interactive
+      ? [describe('The component', content.interactive)]
+      : []),
+    ...Object.entries(content.exports ?? {}).map(([name, rules]) =>
+      describe(code(name), rules.interactive),
+    ),
+  ];
+  return lines.flatMap((line) => ['', `${line} (\`KUI-V014\`)`]);
 }
 
 function stylingSection(entry, contract) {

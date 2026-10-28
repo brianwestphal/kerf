@@ -77,6 +77,8 @@ Margin: none · border: self · padding: self (layout role: navigation). `self` 
 - Keep closeIcon decorative and free of interactive descendants; the owning close button supplies its accessible name and interaction.
 - Use rootAttributes only for application data-\* metadata; component-owned identity, state, action, and role semantics are protected at runtime.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

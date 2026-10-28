@@ -49,6 +49,8 @@ Margin: none · border: self · padding: self (layout role: forms). `self` means
 
 No component-specific obligations beyond native semantics and a visible or accessible name for every control.
 
+The component renders a native control or link as its root, so it cannot sit in another such component's zones, and its own zones cannot hold a control, a link, or a component that renders one. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

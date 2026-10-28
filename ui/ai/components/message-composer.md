@@ -68,6 +68,8 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 - Name the message field with label in title style; give it an id so a hint becomes its accessible description.
 - Give every trailing action a visible or accessible name, such as a Send button.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

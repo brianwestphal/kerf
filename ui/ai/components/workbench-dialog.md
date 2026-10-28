@@ -77,6 +77,8 @@ Margin: parent · border: self · padding: child (layout role: structure). `self
 - It is a native modal \<dialog> named by label: the page is inert, focus stays inside, Escape asks to close, and focus returns to the opener on close.
 - The title is a level-2 heading, and its description (id \<id>-description) is the dialog's accessible description unless describedBy names other content; the close control is named Close (closeLabel) and stays the outermost trailing control. An open overlay rail takes focus, keeps Tab inside it, and closes on Escape before the dialog does.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

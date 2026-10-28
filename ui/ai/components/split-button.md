@@ -64,6 +64,8 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 - Both halves are native buttons in a group; the options trigger exposes aria-haspopup, aria-expanded, and optional aria-controls, and needs optionsLabel. busy sets aria-busy on the primary.
 - Each half draws the focus ring 1px outside its box; with focusRingInset it is drawn inside, two-tone with a surface-colored line inside the ring color, so it keeps 3:1 contrast on every loud fill.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

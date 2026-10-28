@@ -239,6 +239,12 @@ describe('drops', () => {
       expect(valid(next)).toEqual([]);
     }
     expect(destinations[0]!.label).toContain(' › ');
+    // KF-0P9WWB: the repeated row renders a <button>, so a Button cannot move
+    // into its zones (KUI-V014), by Move to or by dropping inside it.
+    expect(destinations.some((item) => item.parent === ROW)).toBe(false);
+    expect(
+      dropPlacement(inbox, viewCatalog, COMPOSE, ROW, 'inside', zonesOf),
+    ).toBeUndefined();
     expect(
       moveDestinations(inbox, viewCatalog, ROW, zonesOf, (node) => node.type),
     ).toEqual([]);

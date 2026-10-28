@@ -70,6 +70,8 @@ Margin: child · border: child · padding: child (layout role: structure). `self
 - The explorer is a region named by label; each column is a group named by its parent's label, and chosen rows carry aria-current. Rows that open a column show a chevron.
 - With wireColumnExplorer: one Tab stop per column; Up and Down move, Home and End jump, Right opens a row's column and moves into it, Left returns to the column before, Enter and Space choose, and typing finds a row in the column.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

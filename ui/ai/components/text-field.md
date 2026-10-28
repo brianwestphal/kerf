@@ -83,6 +83,8 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 - The hint and error are visible below the field and form the input's aria-description; an error also sets aria-invalid="true". The clear button is a native button named by clearLabel (default Clear), hidden while the field is empty, and returns focus to the field.
 - Compact text grows to 16px on coarse-pointer touch screens so iOS does not zoom on focus.
 
+The component renders a native control or link as its root, so it cannot sit in another such component's zones, and its own zones cannot hold a control, a link, or a component that renders one. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

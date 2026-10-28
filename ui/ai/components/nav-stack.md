@@ -101,6 +101,8 @@ Margin: none · border: conditional · padding: child (layout role: structure). 
 - A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead.
 - Clear bars have no material of their own: keep their controls in glass ToolbarControlGroups; they turn opaque under reduced transparency or increased contrast and paint Canvas in forced colors.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

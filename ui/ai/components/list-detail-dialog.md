@@ -77,6 +77,8 @@ Margin: parent · border: self · padding: child (layout role: structure). `self
 - It is a native modal \<dialog> named by label: the page is inert, focus stays inside, Escape asks to close, and focus returns to the opener on close.
 - Pass describedBy, the id of app-owned summary copy, for the dialog's accessible description; the detail description describes the selection and is not wired. On roomy devices the detail title is a level-2 heading; every presentation keeps a close control named Close (closeLabel), and the compact back control is named by backLabel.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

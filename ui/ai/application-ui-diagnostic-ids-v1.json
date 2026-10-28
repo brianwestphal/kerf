@@ -119,7 +119,8 @@
     "KUI-V010",
     "KUI-V011",
     "KUI-V012",
-    "KUI-V013"
+    "KUI-V013",
+    "KUI-V014"
   ],
   "retired": {
     "KUI-C101": "Toolbar zones accept KerfUiContent directly; grouping is a recommended presentation choice, not a composition requirement. Kept in ids so existing profile exceptions still load.",

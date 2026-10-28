@@ -618,6 +618,27 @@ test('passes insetFreeChildren and insetFreeWhen through to the composition cata
   });
 });
 
+test('passes interactive-content rules through to the composition catalog', () => {
+  withScaffold(({ target }) => {
+    const content = {
+      interactive: [{ kind: 'root', whenProps: ['href'] }],
+      exports: { CounterLink: { interactive: [{ kind: 'root' }] } },
+    };
+    withInsetFree(target, 'content', content);
+    const [result] = runCatalogCommand({ root: target });
+    assert.deepEqual(result.catalog.entries[0].content, content);
+    assert.deepEqual(validateComposition(result.catalog), []);
+    withInsetFree(target, 'content', { interactive: [{ kind: 'button' }] });
+    assert.throws(
+      () => runCatalogCommand({ root: target }),
+      /composition\.content\.interactive\[0\]\.kind/,
+    );
+    withInsetFree(target, 'content', undefined);
+    const [entry] = generateCatalogs(target)[0].catalog.entries;
+    assert.equal('content' in entry, false);
+  });
+});
+
 test('rejects malformed inset-free conditions at exact metadata paths', () => {
   withScaffold(({ target }) => {
     const [validEntry] = generateCatalogs(target)[0].catalog.entries;

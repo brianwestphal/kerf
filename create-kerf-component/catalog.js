@@ -763,6 +763,9 @@ function toEntry(packageName, component) {
     ...(component.composition.insetFreeWhen
       ? { insetFreeWhen: component.composition.insetFreeWhen }
       : {}),
+    ...(component.composition.content
+      ? { content: component.composition.content }
+      : {}),
     parents: component.composition.parents,
     contexts: component.composition.contexts,
     zones: component.composition.zones,

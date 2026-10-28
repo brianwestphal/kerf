@@ -76,6 +76,8 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 - Every thumb draws a two-tone ring, a white border inside a dark outline, so it keeps at least 3:1 non-text contrast against light and dark area and track colors alike.
 - Every slider track runs in the writing direction, as the native range does: in right-to-left text its gradient starts at the right, under the thumb at the channel's minimum.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

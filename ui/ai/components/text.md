@@ -74,6 +74,8 @@ Inset-free (no margin, border, or padding) when `flush` or `variant="span"`: the
 - FieldLabel is plain text, not a native label; give it an id and associate the preview group with aria-labelledby.
 - Start and middle truncation clip visually only: the whole value stays in the DOM in reading order, and Text shows it as the element's title unless the app supplies one.
 
+`FieldLabel` renders a native control or link as its root, so it cannot sit in another such component's zones, and its own zones cannot hold a control, a link, or a component that renders one. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

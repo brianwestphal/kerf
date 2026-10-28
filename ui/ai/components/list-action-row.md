@@ -89,6 +89,8 @@ Margin: self · border: self · padding: self (layout role: navigation). `self` 
 - Selection semantics are exposed only by the primary button; label, icon, and trailingActionIcon are dormant SafeHtml and must not contain interactive descendants; never place an interactive descendant in ListItem.trailing.
 - A draggable row is dragged by its noninteractive root; with wireListReorder, Alt+Shift+ArrowUp/ArrowDown on its primary button moves it, and focus returns to that button after the application re-renders.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

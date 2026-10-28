@@ -62,6 +62,8 @@ Margin: none · border: self · padding: none (layout role: controls). `self` me
 
 - A native \<input type="checkbox" role="switch"> inside its \<label>, invisibly over the drawn track, so the label names it and assistive technology announces on or off; Space toggles it and focus shows the focus ring on the track. The hint is its aria-description. The thumb's slide is skipped when reduced motion is preferred.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

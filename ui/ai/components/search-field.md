@@ -85,6 +85,8 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 - In collapsible mode, wireSearchFields manages this by default: activating the trigger reveals the searchbox and moves focus into it, Escape on an empty field collapses and returns focus to the trigger, and focus leaving an empty field collapses it; each behavior is individually opt-out.
 - The form-field presentation associates its visible label and optional hint with the searchbox, exposes aria-required when required, and lets wireSearchFields focus the editor from a label click. The app validates required input.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

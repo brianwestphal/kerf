@@ -81,6 +81,8 @@ Margin: none · border: none · padding: none (layout role: structure). `self` m
 - Actionable text is a native button with its full text as its accessible name; action cannot be combined with headingLevel, placeholder, or wrap.
 - In a Pane header with headerPresentation="overlay" or NavStack chrome with chromePresentation="overlay" (or its bottom toolbar with bottomToolbarPresentation="overlay"), or slotted as the label (or into header-actions) of a DialogSurface header with headerPresentation="floating", untoned text keeps WCAG AA over the translucent chrome material: the title takes --kui-color-text at every size and the description mixes --kui-color-text-quiet halfway toward it.
 
+The component renders a native control or link as its root when `action` is set, so it cannot sit in another such component's zones, and its own zones cannot hold a control, a link, or a component that renders one. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

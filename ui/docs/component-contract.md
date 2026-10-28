@@ -73,6 +73,14 @@ direct JSX children must bring no content-item inset (`Disclosure` with
 unless one of its own `insetFreeWhen` conditions holds (`Text` with `flush` or
 `variant="span"`). `ui-composition` reports a child that statically brings the
 inset as `KUI-L204` and names the child's inset-free form when it has one.
+An entry that renders interactive content declares `content.interactive`, a
+list of `{ kind, whenProps? }` rules in the selection catalog that
+`catalog:sync` copies into composition: `root` when its own root is a native
+control or link, `contains` when it renders one inside, and `whenProps` when
+only some props make it so. `content.exports` gives additional JSX exports
+their own rules; they do not inherit the entry's. `validateView` reports a
+`root` or `contains` element anywhere in a `root` element's zones as
+`KUI-V014`.
 Generated `boundaries.rootClass` prefers the public `kui-<entry-id>` class when
 present, so a sibling export's class cannot become the entry's root class.
 

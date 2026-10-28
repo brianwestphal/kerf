@@ -93,6 +93,13 @@ check:styles` runs `kerf-ui-analyze` (from the `@kerfjs/ui` dev dependency)
   optional non-empty lists of `{ prop, equals }`; `prop` is a JSX prop name and
   `equals` a string, number, or boolean. The generator copies them into the
   catalog entry unchanged.
+  A component that renders a native control, link, or label declares
+  `composition.content`: `{ "interactive": [{ "kind": "root" }] }` when the
+  control is its root, `"contains"` when it renders one inside, and
+  `"whenProps": ["href"]` when only those props make it so; `exports` gives
+  another JSX export its own rules. `@kerfjs/ui`'s view validator then reports
+  a control placed in a `root` component's zones as `KUI-V014`. Omitted, the
+  component's placements are unchecked.
   Each `publicExports` item names a `package.json#exports` subpath that maps to
   the `src/` file exporting it. A private, bundled application
   (`package.json#private: true`) has no per-file `dist/` entries and is never

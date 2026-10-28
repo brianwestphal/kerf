@@ -64,6 +64,8 @@ Margin: none · border: self · padding: self (layout role: foundation). `self` 
 - An action chip is one native button (type button) named by its visible label or by actionLabel, which should include that label; Enter and Space activate it, it shows the focus ring on keyboard focus, and a disabled action chip is a disabled button that leaves the tab order. It cannot also be a link or carry a remove button.
 - Keep meaningful tag text visible because tone is supplementary.
 
+The component renders a native control or link as its root when `href` or `action` is set, so it cannot sit in another such component's zones, and its own zones cannot hold a control, a link, or a component that renders one. The component renders controls inside it when `removeAction` is set, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

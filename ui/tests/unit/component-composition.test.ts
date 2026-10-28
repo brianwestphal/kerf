@@ -117,6 +117,43 @@ describe('component composition catalog contract', () => {
     }
   });
 
+  it('projects interactive-content rules from the selection catalog and validates their shape', async () => {
+    const composition = await readJson<ComponentComposition>(
+      '../../ai/component-composition.json',
+    );
+    const entry = (id: string) =>
+      composition.entries.find((item) => item.id === id)!;
+    // KF-0P9WWB: the rules KUI-V014 reads, as the catalog declares them.
+    expect(entry('list-item').content).toEqual({
+      interactive: [{ kind: 'root' }],
+      exports: { ListItemLink: { interactive: [{ kind: 'root' }] } },
+    });
+    expect(entry('chip').content?.interactive).toEqual([
+      { kind: 'root', whenProps: ['href', 'action'] },
+      { kind: 'contains', whenProps: ['removeAction'] },
+    ]);
+    expect('content' in entry('badge')).toBe(false);
+    expect(validateComposition(composition)).toEqual([]);
+    for (const invalid of [
+      {},
+      [],
+      { interactive: [] },
+      { interactive: [{ kind: 'button' }] },
+      { interactive: [{ kind: 'root', whenProps: [] }] },
+      { interactive: [{ kind: 'root', whenProps: ['data-x'] }] },
+      { interactive: [{ kind: 'root', extra: true }] },
+      { exports: { Link: { interactive: [] } } },
+      { exports: { Link: { interactive: [{ kind: 'root' }], extra: 1 } } },
+      { exports: [] },
+      { other: [] },
+    ]) {
+      Object.assign(entry('badge'), { content: invalid });
+      expect(validateComposition(composition)).toContain(
+        '@kerfjs/ui:badge content must hold interactive and/or exports rule lists of { kind: root | contains, whenProps? }',
+      );
+    }
+  });
+
   it('accepts required wiring that is root-delegated actions and rejects empty required wiring', async () => {
     const composition = await readJson<ComponentComposition>(
       '../../ai/component-composition.json',

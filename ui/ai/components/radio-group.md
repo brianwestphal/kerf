@@ -70,6 +70,8 @@ Margin: none · border: none · padding: self (layout role: controls). `self` me
 - A native \<fieldset role="radiogroup"> named by its legend (label) or ariaLabel; each choice is a native radio inside its \<label>, invisibly over the drawn circle. The browser owns the interaction: one Tab stop, arrow keys move and select, and the checked radio submits its value under name.
 - The group's hint and error form its aria-description; an error sets aria-invalid on the group and the danger border on each circle. required sets each radio's native required and aria-required on the group. A choice's hint is that radio's aria-description.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

@@ -71,6 +71,8 @@ Margin: none · border: self · padding: none (layout role: controls). `self` me
 - A native \<input type="checkbox"> inside its \<label>, invisibly over the drawn box, so the label names it and pointer, keyboard, touch exploration, and forms reach the real control; Space toggles it and focus shows the focus ring on the box.
 - The hint and error form the input's aria-description; an error sets aria-invalid="true" and the danger border. indeterminate sets the native indeterminate property through wireCheckboxes, so assistive technology reports a mixed state.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

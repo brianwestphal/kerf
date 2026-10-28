@@ -97,6 +97,8 @@ Margin: parent · border: child · padding: self (layout role: structure). `self
 - A resizable bottom sheet's grabber is a focusable horizontal separator ("Resize sheet") with aria-valuemin, aria-valuenow, and aria-valuemax in visible px; the arrow keys, Page Up/Down, Home, and End resize it, and its slide motion is skipped under prefers-reduced-motion.
 - Use popup surfaces only for real dropdown menus with named triggers.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

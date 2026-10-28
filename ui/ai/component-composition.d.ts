@@ -44,6 +44,15 @@ export type CatalogPropCondition = {
   prop: string;
   equals: string | number | boolean;
 };
+/** One interactive-content rule; `whenProps` turns it on when any is set. */
+export type CatalogInteractiveRule = {
+  kind: 'root' | 'contains';
+  whenProps?: string[];
+};
+export type CatalogInteractiveContent = {
+  interactive?: CatalogInteractiveRule[];
+  exports?: Record<string, { interactive: CatalogInteractiveRule[] }>;
+};
 export interface CatalogCompositionEntry {
   key: CatalogQualifiedKey;
   package: string;
@@ -63,6 +72,10 @@ export interface CatalogCompositionEntry {
   insetFreeChildren?: CatalogPropCondition[];
   /** Prop values that render this inset-bearing entry without its inset. */
   insetFreeWhen?: CatalogPropCondition[];
+  /** Whether the element renders a control, link, or label (`root`) or holds
+   *  one (`contains`); a `root` element's zones may hold neither (KUI-V014).
+   *  `exports` gives the rules per additional JSX export, without inheritance. */
+  content?: CatalogInteractiveContent;
   /** Additional JSX exports in this selection entry with their own placement. */
   jsxExports?: Record<
     string,

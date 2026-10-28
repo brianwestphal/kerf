@@ -64,6 +64,8 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 - Every enabled choice remains in sequential tab order.
 - Every choice has a meaningful label.
 
+The component renders controls inside it, so it cannot sit in the zones of a component whose root is a control or link. (`KUI-V014`)
+
 ## Styling boundary
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.

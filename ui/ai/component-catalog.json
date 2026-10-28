@@ -125,6 +125,23 @@
         "An action chip is one native button (type button) named by its visible label or by actionLabel, which should include that label; Enter and Space activate it, it shows the focus ring on keyboard focus, and a disabled action chip is a disabled button that leaves the tab order. It cannot also be a link or carry a remove button.",
         "Keep meaningful tag text visible because tone is supplementary."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "root",
+            "whenProps": [
+              "href",
+              "action"
+            ]
+          },
+          {
+            "kind": "contains",
+            "whenProps": [
+              "removeAction"
+            ]
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -889,6 +906,13 @@
         "A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead.",
         "Clear bars have no material of their own: keep their controls in glass ToolbarControlGroups; they turn opaque under reduced transparency or increased contrast and paint Canvas in forced colors."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "conditional",
@@ -1208,6 +1232,13 @@
         "A background color is app-chosen: Keep text at WCAG AA over the color: a dark background needs dark-tone content or a scoped tint; forced colors paint Canvas instead.",
         "Clear bars have no material of their own: keep their controls in glass ToolbarControlGroups; they turn opaque under reduced transparency or increased contrast and paint Canvas in forced colors."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "conditional",
@@ -1988,6 +2019,17 @@
         "In an overlay Pane header (headerPresentation=\"overlay\"), overlay NavStack chrome (chromePresentation=\"overlay\") or bottom toolbar (bottomToolbarPresentation=\"overlay\"), or a DialogSurface floating header's header-actions (headerPresentation=\"floating\"), a default-tone group (not dark-toned, not an avatar scrim) takes --kui-color-text for its controls, so they keep WCAG AA over content passing beneath the translucent chrome material.",
         "A dark-toned group's hover paints a 14% surface wash over its loud fill, on one control of a group or across a lone control's whole group, so the on-loud icon keeps at least 3:1 over a light page and well above it in dark."
       ],
+      "content": {
+        "exports": {
+          "ToolbarActionLink": {
+            "interactive": [
+              {
+                "kind": "root"
+              }
+            ]
+          }
+        }
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -2205,6 +2247,13 @@
         "A resizable bottom sheet's grabber is a focusable horizontal separator (\"Resize sheet\") with aria-valuemin, aria-valuenow, and aria-valuemax in visible px; the arrow keys, Page Up/Down, Home, and End resize it, and its slide motion is skipped under prefers-reduced-motion.",
         "Use popup surfaces only for real dropdown menus with named triggers."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "parent",
         "border": "child",
@@ -2453,6 +2502,13 @@
         "It is a native modal <dialog> named by label: the page is inert, focus stays inside, Escape asks to close, and focus returns to the opener on close.",
         "Pass describedBy, the id of app-owned summary copy, for the dialog's accessible description; the detail description describes the selection and is not wired. On roomy devices the detail title is a level-2 heading; every presentation keeps a close control named Close (closeLabel), and the compact back control is named by backLabel."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "parent",
         "border": "self",
@@ -2586,6 +2642,13 @@
         "It is a native modal <dialog> named by label: the page is inert, focus stays inside, Escape asks to close, and focus returns to the opener on close.",
         "The title is a level-2 heading, and its description (id <id>-description) is the dialog's accessible description unless describedBy names other content; the close control is named Close (closeLabel) and stays the outermost trailing control. An open overlay rail takes focus, keeps Tab inside it, and closes on Escape before the dialog does."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "parent",
         "border": "self",
@@ -2793,6 +2856,16 @@
         "Actionable text is a native button with its full text as its accessible name; action cannot be combined with headingLevel, placeholder, or wrap.",
         "In a Pane header with headerPresentation=\"overlay\" or NavStack chrome with chromePresentation=\"overlay\" (or its bottom toolbar with bottomToolbarPresentation=\"overlay\"), or slotted as the label (or into header-actions) of a DialogSurface header with headerPresentation=\"floating\", untoned text keeps WCAG AA over the translucent chrome material: the title takes --kui-color-text at every size and the description mixes --kui-color-text-quiet halfway toward it."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "root",
+            "whenProps": [
+              "action"
+            ]
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "none",
@@ -2960,6 +3033,17 @@
         "FieldLabel is plain text, not a native label; give it an id and associate the preview group with aria-labelledby.",
         "Start and middle truncation clip visually only: the whole value stays in the DOM in reading order, and Text shows it as the element's title unless the app supplies one."
       ],
+      "content": {
+        "exports": {
+          "FieldLabel": {
+            "interactive": [
+              {
+                "kind": "root"
+              }
+            ]
+          }
+        }
+      },
       "geometry": {
         "margin": "self",
         "border": "self",
@@ -3423,6 +3507,13 @@
         "The tree is role=tree named by label; each row is a treeitem button with aria-level, aria-posinset, aria-setsize, aria-expanded on rows that expand, and aria-selected. A disabled row is aria-disabled and stays reachable.",
         "With wireTreeList: one Tab stop in the tree; Down and Up move, Home and End jump, Right opens a row or enters its first child, Left closes it or returns to its parent, Enter and Space choose, and typing a label's first letters finds the next match."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "child",
         "border": "child",
@@ -3526,6 +3617,13 @@
         "The explorer is a region named by label; each column is a group named by its parent's label, and chosen rows carry aria-current. Rows that open a column show a chevron.",
         "With wireColumnExplorer: one Tab stop per column; Up and Down move, Home and End jump, Right opens a row's column and moves into it, Left returns to the column before, Enter and Space choose, and typing finds a row in the column."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "child",
         "border": "child",
@@ -4639,6 +4737,17 @@
         "A valid count is hidden as duplicate visual text and its required localized countLabel joins the owned heading or disclosure-button accessible name; zero remains visible.",
         "The application controls and updates disclosure state and the revealed content; the default DisclosureArrow mirrors expanded while the button name stays stable. triggerAttributes can describe the controlled relationship but cannot replace the owned accessible name or expanded state."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains",
+            "whenProps": [
+              "action",
+              "toggle"
+            ]
+          }
+        ]
+      },
       "geometry": {
         "margin": "self",
         "border": "self",
@@ -4799,6 +4908,13 @@
         "Selection semantics are exposed only by the primary button; label, icon, and trailingActionIcon are dormant SafeHtml and must not contain interactive descendants; never place an interactive descendant in ListItem.trailing.",
         "A draggable row is dragged by its noninteractive root; with wireListReorder, Alt+Shift+ArrowUp/ArrowDown on its primary button moves it, and focus returns to that button after the application re-renders."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "self",
         "border": "self",
@@ -5015,6 +5131,22 @@
       "accessibility": [
         "ListItem uses native button activation and pressed maps to aria-pressed; ListItemLink uses native anchor activation and external opens a new tab with safe rel and an announced default label. Both map selected to aria-current; disabled or loading links omit href and leave the tab order. rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls. A draggable row reorders by pointer drag or, with wireListReorder, Alt+Shift+ArrowUp/ArrowDown; a placeholder is never draggable."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ],
+        "exports": {
+          "ListItemLink": {
+            "interactive": [
+              {
+                "kind": "root"
+              }
+            ]
+          }
+        }
+      },
       "geometry": {
         "margin": "self",
         "border": "self",
@@ -5416,6 +5548,13 @@
         "The native summary is a button that Enter and Space toggle and that reports its expanded state; the DisclosureArrow is decorative.",
         "Keep the title a short, meaningful name for the hidden content; the open state survives re-renders because the platform owns it."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "self",
         "border": "self",
@@ -5565,6 +5704,13 @@
         "Keep closeIcon decorative and free of interactive descendants; the owning close button supplies its accessible name and interaction.",
         "Use rootAttributes only for application data-* metadata; component-owned identity, state, action, and role semantics are protected at runtime."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -5679,6 +5825,13 @@
         "Keep exactly one selected tab at tabindex 0 and preserve the wiring keyboard model.",
         "Call wireTabBars for keyboard focus, selection reveal, and whole-tab snapping; put fixed controls in the outer leading, trailing, or end zones."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -5828,6 +5981,13 @@
       "accessibility": [
         "Keep choice labels meaningful and every enabled native button in sequential Tab order."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -5971,6 +6131,13 @@
         "Every choice keeps a visible text label; the swatch is decorative and the selection adds a heavier border, so neither relies on color alone.",
         "Every color is a theme token, so a dark appearance scope (.wa-dark, .wa-invert, or any color-scheme: dark ancestor) restyles the chips for inverse chrome."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -6055,6 +6222,13 @@
         "It is a native radio group: Tab reaches it once and the arrow keys move the choice; each radio is named by its color label, also shown as the swatch's hover hint.",
         "The chosen swatch wears a ring in the text color set off by a gap, so the choice never depends on hue; forced colors draw it in Highlight."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -6146,6 +6320,13 @@
         "Every thumb draws a two-tone ring, a white border inside a dark outline, so it keeps at least 3:1 non-text contrast against light and dark area and track colors alike.",
         "Every slider track runs in the writing direction, as the native range does: in right-to-left text its gradient starts at the right, under the thumb at the channel's minimum."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -6264,6 +6445,13 @@
         "The trigger is a button named by the label and the current hex value, with aria-haspopup dialog and aria-expanded; the hint and error describe it.",
         "The picker opens in a non-modal AnchoredSurface named by the label; Escape or a press outside closes it and focus returns to the trigger."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -6367,6 +6555,13 @@
         "The frame's brand border shows focus within; the action row is a compact Toolbar footer named \"<label> Actions\", and its controls keep their own names and focus rings.",
         "With submitOnEnter the field announces aria-keyshortcuts=\"Enter\"; Shift+Enter keeps a newline, and an Enter that commits an IME composition never sends."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -6455,6 +6650,13 @@
         "In collapsible mode, wireSearchFields manages this by default: activating the trigger reveals the searchbox and moves focus into it, Escape on an empty field collapses and returns focus to the trigger, and focus leaving an empty field collapses it; each behavior is individually opt-out.",
         "The form-field presentation associates its visible label and optional hint with the searchbox, exposes aria-required when required, and lets wireSearchFields focus the editor from a label click. The app validates required input."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -6593,6 +6795,13 @@
         "The editor is named by the visible label and described by the hint or error; each chip has an edit button (its label) and a remove button named for the tag.",
         "Enter or a delimiter adds the typed text, Backspace at the start removes the last tag, ArrowLeft and ArrowRight move between chips and the editor, and Backspace or Delete on a focused chip removes it."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "child",
         "border": "child",
@@ -6896,6 +7105,13 @@
         "A multiple icon-only trigger shows its fixed triggerIcon and, while any choice is chosen, an aria-hidden count Badge; the trigger's accessible name ends with the chosen labels in choice order, and its value text stays empty.",
         "Once registered, an icon-only trigger (single or multiple) shows an aria-hidden help tag repeating its accessible name (a single Select adds its current choice) after a 500ms hover and at once on keyboard focus; it hides while the listbox is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -6990,6 +7206,13 @@
         "Native input with role=combobox, aria-autocomplete=list, aria-expanded, aria-controls, and aria-activedescendant; options are role=option in a listbox. The visible label is a real label; the hint is aria-describedby.",
         "The suggestion listbox is a manual popover in the top layer, placed below the field at its width and flipped when short, so a clipping or scrolling ancestor (an AnchoredSurface, a dialog, a scrolling List) never cuts it off."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -7133,6 +7356,13 @@
         "The hint and error are visible below the field and form the input's aria-description; an error also sets aria-invalid=\"true\". The clear button is a native button named by clearLabel (default Clear), hidden while the field is empty, and returns focus to the field.",
         "Compact text grows to 16px on coarse-pointer touch screens so iOS does not zoom on focus."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -7256,6 +7486,13 @@
         "A native <input type=\"checkbox\"> inside its <label>, invisibly over the drawn box, so the label names it and pointer, keyboard, touch exploration, and forms reach the real control; Space toggles it and focus shows the focus ring on the box.",
         "The hint and error form the input's aria-description; an error sets aria-invalid=\"true\" and the danger border. indeterminate sets the native indeterminate property through wireCheckboxes, so assistive technology reports a mixed state."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -7373,6 +7610,13 @@
         "A native <fieldset> (a group) named by its legend (label), ariaLabel, or labelledBy; each choice is a Kerf Checkbox, a native checkbox inside its <label>, invisibly over the drawn box. Every checkbox is its own Tab stop and Space toggles it; each checked value submits under name.",
         "The group's hint and error form its aria-description; an error sets aria-invalid on the group and the danger border on each box. A choice's hint is that checkbox's aria-description. disabled disables the fieldset, and so every checkbox, natively."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "none",
@@ -7477,6 +7721,13 @@
         "A native <fieldset role=\"radiogroup\"> named by its legend (label) or ariaLabel; each choice is a native radio inside its <label>, invisibly over the drawn circle. The browser owns the interaction: one Tab stop, arrow keys move and select, and the checked radio submits its value under name.",
         "The group's hint and error form its aria-description; an error sets aria-invalid on the group and the danger border on each circle. required sets each radio's native required and aria-required on the group. A choice's hint is that radio's aria-description."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "none",
@@ -7578,6 +7829,13 @@
       "accessibility": [
         "A native <input type=\"checkbox\" role=\"switch\"> inside its <label>, invisibly over the drawn track, so the label names it and assistive technology announces on or off; Space toggles it and focus shows the focus ring on the track. The hint is its aria-description. The thumb's slide is skipped when reduced motion is preferred."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -7676,6 +7934,13 @@
         "It is a native range input: arrow keys, Page Up and Down, Home, and End step it, and the platform announces its value (with a unit, as aria-valuetext).",
         "The label names it, the hint describes it, and the readout is hidden from assistive technology because the input already reports its value; forced colors draw a Highlight fill on a GrayText track."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -7877,6 +8142,13 @@
         "Keyboard: Enter, Space, or ArrowDown on the trigger opens on the first item (ArrowUp on the last); ArrowUp/ArrowDown move and wrap past disabled items, Home/End jump, and typing a label's first letters moves to it; Enter or Space chooses; ArrowRight opens a submenu on its first item and ArrowLeft returns to the parent item (mirrored right to left); Escape closes the current level and returns focus to its opener; Tab closes the menu and continues from the trigger.",
         "Once registered, an icon-only trigger shows its label as an aria-hidden help tag after a 500ms hover and at once on keyboard focus; it hides while the menu is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "child",
@@ -7975,6 +8247,13 @@
         "With pressed, it is a toggle: aria-pressed reports the state, and the pressed look adds a doubled outline (secondary and plain) or a darkened fill with an inset ring (primary), so the state never relies on hue alone; forced-colors mode paints it Highlight. An icon-only Button is named by ariaLabel, and help tags show that name on hover and keyboard focus. A title gives native hover text that says more than the name and replaces the help tag.",
         "With currentStep, a native button or link reports aria-current=\"step\" even when disabled; the app owns the step label and which step is current."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -8079,6 +8358,13 @@
         "Both halves are native buttons in a group; the options trigger exposes aria-haspopup, aria-expanded, and optional aria-controls, and needs optionsLabel. busy sets aria-busy on the primary.",
         "Each half draws the focus ring 1px outside its box; with focusRingInset it is drawn inside, two-tone with a surface-colored line inside the ring color, so it keeps 3:1 contrast on every loud fill."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
       "geometry": {
         "margin": "none",
         "border": "self",
@@ -8170,6 +8456,13 @@
       "accessibility": [
         "Each control is a label around a real file input that receives keyboard focus; the visible control shows the focus ring. Give the input an accessibleLabel when the visible copy is short."
       ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
+      },
       "geometry": {
         "margin": "self",
         "border": "self",
@@ -9304,6 +9597,13 @@
         "catalogRoute": "?component=wa-button",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/webawesome-theme.md#coverage"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -9392,6 +9692,13 @@
         "catalogRoute": "?component=wa-copy-button",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/webawesome-theme.md#coverage"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -9491,6 +9798,13 @@
         "catalogRoute": "?component=wa-dropdown-item",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/component-selection.md#web-awesome-integration"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -9535,6 +9849,13 @@
         "catalogRoute": "?component=wa-checkbox",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/webawesome-theme.md#coverage"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -9641,6 +9962,13 @@
         "catalogRoute": "?component=wa-color-picker",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/component-selection.md#web-awesome-integration"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -9690,6 +10018,13 @@
         "catalogRoute": "?component=wa-input",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/component-selection.md#web-awesome-integration"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -9727,6 +10062,13 @@
         "catalogRoute": "?component=wa-known-date",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/webawesome-theme.md#coverage"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -9766,6 +10108,13 @@
         "catalogRoute": "?component=wa-number-input",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/webawesome-theme.md#coverage"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -9847,6 +10196,13 @@
         "catalogRoute": "?component=wa-otp-input",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/webawesome-theme.md#coverage"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -9891,6 +10247,13 @@
         "catalogRoute": "?component=wa-radio",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/webawesome-theme.md#coverage"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -9984,6 +10347,13 @@
         "catalogRoute": "?component=wa-rating",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/webawesome-theme.md#coverage"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -10031,6 +10401,13 @@
         "catalogRoute": "?component=wa-select",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/component-selection.md#web-awesome-integration"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -10075,6 +10452,13 @@
         "catalogRoute": "?component=wa-slider",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/component-selection.md#web-awesome-integration"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -10117,6 +10501,13 @@
         "catalogRoute": "?component=wa-switch",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/webawesome-theme.md#coverage"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -10159,6 +10550,13 @@
         "catalogRoute": "?component=wa-textarea",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/webawesome-theme.md#coverage"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -10199,6 +10597,13 @@
         "catalogRoute": "?component=wa-time-input",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/webawesome-theme.md#coverage"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -10249,6 +10654,13 @@
         "catalogRoute": "?component=wa-tag-input",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/component-selection.md#web-awesome-integration"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -10346,6 +10758,13 @@
         "catalogRoute": "?component=wa-accordion-item",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/component-selection.md#web-awesome-integration"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
       }
     },
     {
@@ -10455,6 +10874,13 @@
         "catalogRoute": "?component=wa-details",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/component-selection.md#web-awesome-integration"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
       }
     },
     {
@@ -10505,6 +10931,13 @@
         "catalogRoute": "?component=wa-dialog",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/webawesome-theme.md#coverage"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
       }
     },
     {
@@ -10591,6 +11024,13 @@
         "catalogRoute": "?component=wa-drawer",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/component-selection.md#web-awesome-integration"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
       }
     },
     {
@@ -10809,6 +11249,16 @@
         "catalogRoute": "?component=wa-breadcrumb-item",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/webawesome-theme.md#coverage"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root",
+            "whenProps": [
+              "href"
+            ]
+          }
+        ]
       }
     },
     {
@@ -10848,6 +11298,13 @@
         "catalogRoute": "?component=wa-pagination",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/webawesome-theme.md#coverage"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
       }
     },
     {
@@ -10974,6 +11431,13 @@
         "catalogRoute": "?component=wa-tab",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/component-selection.md#web-awesome-integration"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -11160,6 +11624,13 @@
         "catalogRoute": "?component=wa-tree-item",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/component-selection.md#web-awesome-integration"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "root"
+          }
+        ]
       }
     },
     {
@@ -11727,6 +12198,13 @@
         "catalogRoute": "?component=wa-carousel",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/webawesome-theme.md#coverage"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
       }
     },
     {
@@ -11803,6 +12281,13 @@
         "catalogRoute": "?component=wa-comparison",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/component-selection.md#web-awesome-integration"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
       }
     },
     {
@@ -11958,6 +12443,13 @@
         "catalogRoute": "?component=wa-zoomable-frame",
         "documentation": "docs/webawesome-theme.md#coverage",
         "recipe": "docs/component-selection.md#web-awesome-integration"
+      },
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
       }
     },
     {

@@ -96,7 +96,7 @@ export function createViewCatalog(input: {
 }): ViewCatalog;
 
 export interface ViewDiagnostic {
-  /** `KUI-V001`–`KUI-V012`, or `KUI-L201`–`KUI-L204` for composition. */
+  /** `KUI-V001`–`KUI-V014`, or `KUI-L201`–`KUI-L204` for composition. */
   readonly code: string;
   /** JSON path into the document, such as `$.root.zones.header[0]`. */
   readonly path: string;

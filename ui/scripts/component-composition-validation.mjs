@@ -97,6 +97,48 @@ export function validateComposition(catalog, options = {}) {
             `${at} ${field} must be a non-empty list of { prop, equals } conditions`,
           );
       }
+    if ('content' in entry) {
+      const { content } = entry;
+      const rules = (list) =>
+        Array.isArray(list) &&
+        list.length > 0 &&
+        list.every(
+          (rule) =>
+            rule &&
+            typeof rule === 'object' &&
+            Object.keys(rule).every((name) =>
+              ['kind', 'whenProps'].includes(name),
+            ) &&
+            ['root', 'contains'].includes(rule.kind) &&
+            (!('whenProps' in rule) ||
+              (isStringList(rule.whenProps) &&
+                rule.whenProps.length > 0 &&
+                rule.whenProps.every((name) =>
+                  /^[A-Za-z][A-Za-z0-9]*$/.test(name),
+                ))),
+        );
+      const isMap = (value) =>
+        value && typeof value === 'object' && !Array.isArray(value);
+      if (
+        !isMap(content) ||
+        !Object.keys(content).length ||
+        Object.keys(content).some(
+          (name) => !['interactive', 'exports'].includes(name),
+        ) ||
+        ('interactive' in content && !rules(content.interactive)) ||
+        ('exports' in content &&
+          (!isMap(content.exports) ||
+            Object.values(content.exports).some(
+              (item) =>
+                !isMap(item) ||
+                Object.keys(item).some((name) => name !== 'interactive') ||
+                !rules(item.interactive),
+            )))
+      )
+        fail(
+          `${at} content must hold interactive and/or exports rule lists of { kind: root | contains, whenProps? }`,
+        );
+    }
     if (!['any', 'root', 'listed'].includes(entry?.parents?.mode))
       fail(`${at} has invalid parents.mode`);
     if (!isStringList(entry?.parents?.entries))
