@@ -208,7 +208,7 @@ describe('inspector states', () => {
     expect(root.textContent).toContain('Every zone of this component is full.');
   });
 
-  it('adds a component that needs no props, and reopens a closed outline node', () => {
+  it('adds a component that needs no props, and reopens a closed outline node', async () => {
     const { root, editor } = open();
     editor.selection.value = { kind: 'node', id: TOOLBAR };
     const component = root.querySelector<HTMLElement>(
@@ -220,6 +220,11 @@ describe('inspector states', () => {
     });
     act(root, 'editor-add-child');
     const added = editor.selection.value;
+    await frame();
+    await frame();
+    expect(document.activeElement).toBe(
+      root.querySelector('[data-editor-name] input'),
+    );
     expect(
       added?.kind === 'node' && findNode(editor.document.value, added.id)?.node,
     ).toMatchObject({ type: '@kerfjs/ui:spacer' });

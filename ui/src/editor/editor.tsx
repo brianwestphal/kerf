@@ -1020,6 +1020,13 @@ export function createEditor(options: EditorOptions) {
     };
     commit(withCatalog(insertNode(doc.value, id, zone, child), key));
     select({ kind: 'node', id: child.id });
+    // The new node's form opens at its top; take keyboard focus there too,
+    // so it does not stay on the Add button at the bottom of the old form.
+    window.requestAnimationFrame(() =>
+      wired
+        ?.querySelector<HTMLInputElement>('[data-editor-name] input')
+        ?.focus(),
+    );
   };
 
   /** Promotes the chosen prop to a document param named after it. */
@@ -1052,7 +1059,11 @@ export function createEditor(options: EditorOptions) {
     commit(result.document);
   };
 
+  /** The element the editor is wired to, for focus after an edit. */
+  let wired: HTMLElement | undefined;
+
   const wire = (root: HTMLElement) => {
+    wired = root;
     const toggle = (action: string, collapsed: typeof documentCollapsed) =>
       delegate(root, 'click', `[data-action="${action}"]`, () => {
         collapsed.value = !collapsed.value;
