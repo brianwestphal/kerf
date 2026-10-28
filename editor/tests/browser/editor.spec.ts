@@ -593,25 +593,62 @@ test('drags a node on the canvas to after another', async ({ page }, info) => {
   await expect(page.getByText('composeButton · Button')).toBeVisible();
 });
 
-// KF-P6FPG2: a document whose preview fails when mounted (a Button nested in
-// a repeated ListItem's description splits the row into two elements) shows
-// why on the canvas, and the rest of the editor keeps working.
-test('contains a preview that fails to mount', async ({ page }) => {
+// KF-P6FPG2 / KF-0P9WWB: a Button nested in a repeated ListItem's description
+// would split each row into two elements and fail the preview. The editor no
+// longer builds such a document, and one opened from a file reports KUI-V014
+// and draws the Button as a problem placeholder, so the rows still render.
+test('reports a control nested in a repeated row and keeps the preview', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1440, height: 900 });
+  const sample = JSON.parse(
+    await readFile(
+      new URL('../../src/sample.kui.json', import.meta.url),
+      'utf8',
+    ),
+  );
+  const NESTED = '01JB8Z1M6Q8E1X9V4S7K2R3TXB';
+  const nest = (node: Record<string, unknown>): boolean => {
+    if (node.name === 'row') {
+      node.zones = {
+        description: [
+          {
+            id: NESTED,
+            type: '@kerfjs/ui:button',
+            props: { children: 'Nested' },
+          },
+        ],
+      };
+      return true;
+    }
+    return Object.values(node).some(
+      (value) =>
+        value !== null &&
+        typeof value === 'object' &&
+        nest(value as Record<string, unknown>),
+    );
+  };
+  expect(nest(sample)).toBe(true);
   await page
-    .locator(`[data-action="editor-select-node"][data-item-id="${COMPOSE}"]`)
+    .locator('input[type="file"]')
+    .first()
+    .setInputFiles({
+      name: 'nested.kui.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(sample)),
+    });
+  const canvas = page.locator('[data-editor-canvas]');
+  await expect(canvas.getByText('Button cannot render')).toHaveCount(3);
+  await expect(canvas.getByText('Label 3')).toBeVisible();
+  await expect(
+    canvas.getByText('This document cannot be previewed'),
+  ).toHaveCount(0);
+  await expect(page.getByText(/^KUI-V014/)).toBeVisible();
+  // Deleting the nested Button makes the document valid again.
+  await page
+    .locator(`[data-action="editor-select-node"][data-item-id="${NESTED}"]`)
     .click();
-  await page.locator('[data-editor-move]').getByRole('combobox').click();
-  await page.getByRole('option', { name: 'row › description' }).click();
-  await expect(
-    page
-      .locator('[data-editor-canvas]')
-      .getByText('This document cannot be previewed'),
-  ).toBeVisible();
-  // The editor still responds: undo brings the preview back.
-  await page.getByRole('button', { name: 'Undo' }).click();
-  await expect(
-    page.locator('[data-editor-canvas]').getByText('Compose'),
-  ).toBeVisible();
+  await page.locator('[data-action="editor-delete"]').click();
+  await expect(canvas.getByText('Button cannot render')).toHaveCount(0);
   await expect(page.getByText('7 nodes · valid')).toBeVisible();
 });
