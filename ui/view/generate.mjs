@@ -70,6 +70,14 @@ ${doc.obj
   return `[\n${doc.arr.map((item) => `${pad}${printDoc(item, indent + 2)},`).join('\n')}\n${end}]`;
 }
 
+/** Lucide's export name for a kebab-case icon name (`a-arrow-down` → `AArrowDown`). */
+export function lucideExportName(name) {
+  return name
+    .split('-')
+    .map((part) => part[0].toUpperCase() + part.slice(1))
+    .join('');
+}
+
 /** The module path generated for a document path (`x.kui.json` → `x.view.ts`). */
 export function viewModulePath(documentPath, target = 'ts') {
   const base = documentPath.replace(/\.kui\.json$/, '');
@@ -183,6 +191,12 @@ function createEmitter(document, catalog, imports) {
     }
     if (isObject(input) && '$action' in input)
       return raw(literal(input.$action));
+    if (isObject(input) && '$icon' in input) {
+      const exported = lucideExportName(input.$icon);
+      // Aliased so a Lucide name never collides with a component (List, Text).
+      imports.value('lucide', `${exported} as lucide${exported}`);
+      return raw(`lucide${exported}`);
+    }
     if (isObject(input) && '$css' in input) {
       for (const helper of parseCssCall(input.$css)) {
         imports.value('@kerfjs/ui/css-values', helper);

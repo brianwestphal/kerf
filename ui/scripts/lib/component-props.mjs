@@ -486,8 +486,13 @@ function describeProperty(ctx, symbol, depth) {
   if (fallback !== undefined) prop.default = fallback;
   if (description) prop.description = description;
   if (jsDocTag(symbol, 'deprecated') !== undefined) prop.deprecated = true;
+  // Lucide icon data is a nested array no document can spell as a literal;
+  // marking it lets documents name the icon instead (`$icon`).
+  if (ICON_DATA.test(descriptor.text ?? '')) prop.iconSource = 'lucide';
   return prop;
 }
+
+const ICON_DATA = /^(IconNode|LucideNode)( \| undefined)?$/;
 
 /** Splits an object type's properties into own props and native attributes. */
 function describeProps(ctx, type, depth) {

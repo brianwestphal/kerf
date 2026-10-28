@@ -7280,7 +7280,8 @@
             },
             "text": "IconNode"
           },
-          "required": true
+          "required": true,
+          "iconSource": "lucide"
         },
         {
           "name": "name",
@@ -25563,7 +25564,8 @@
             "text": "IconNode",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "iconSource": "lucide"
         },
         {
           "name": "iconName",

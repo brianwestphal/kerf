@@ -24,6 +24,7 @@ export {
 export {
   GENERATOR_VERSION,
   generateView,
+  lucideExportName,
   printDoc,
   readViewHeader,
   viewModulePath,

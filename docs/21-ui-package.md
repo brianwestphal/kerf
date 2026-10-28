@@ -680,7 +680,7 @@ text preserved.
 the published view-document layer of the Kerf UI editor (`docs/26-ui-editor.md`).
 `createViewCatalog` indexes component-props and composition documents, and
 `validateView` checks a `kerf-ui-document/v1` document. It reports `KUI-V001`–
-`V012` (shape, types, props, values, ids/names, scope, `$each`, actions, `$css`,
+`V013` (shape, types, props, values, ids/names, scope, `$each`, actions, `$css`,
 data channels, composed views) plus JSON-tree ports of the ESLint
 `ui-composition` checks (`KUI-L201`–`L204`) over the same composition catalog.
 `ui/ai/view-document.schema.json` is the shape schema for editors.

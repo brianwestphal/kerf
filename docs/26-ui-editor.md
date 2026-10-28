@@ -207,13 +207,14 @@ A node is `{ id, type, name?, props?, zones? }`.
 
 ### 3.3 Prop values
 
-| Form                       | Meaning                                                                                                                                        |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| JSON literal               | String, number, boolean, null, or an array/object of literals, checked against the prop's type descriptor.                                     |
-| `{ "$param": "title" }`    | The value of a document param. The param's type must be assignable to the prop's type.                                                         |
-| `{ "$bind": "item.x" }`    | A dotted path into an in-scope `$each` item (or into a param). Scope is lexical: only the enclosing templates' `as` names and params resolve.  |
-| `{ "$action": "name" }`    | Only on string props the catalog identifies as action names (`action`). Declares a member of the action union (§4.2).                          |
-| `{ "$css": "space('m')" }` | Only on `css-value` props: a call to one of the prop's allowed `cssValue.helpers`, never a raw CSS string. Generated verbatim with its import. |
+| Form                       | Meaning                                                                                                                                                                                                                               |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| JSON literal               | String, number, boolean, null, or an array/object of literals, checked against the prop's type descriptor.                                                                                                                            |
+| `{ "$param": "title" }`    | The value of a document param. The param's type must be assignable to the prop's type.                                                                                                                                                |
+| `{ "$bind": "item.x" }`    | A dotted path into an in-scope `$each` item (or into a param). Scope is lexical: only the enclosing templates' `as` names and params resolve.                                                                                         |
+| `{ "$action": "name" }`    | Only on string props the catalog identifies as action names (`action`). Declares a member of the action union (§4.2).                                                                                                                 |
+| `{ "$css": "space('m')" }` | Only on `css-value` props: a call to one of the prop's allowed `cssValue.helpers`, never a raw CSS string. Generated verbatim with its import.                                                                                        |
+| `{ "$icon": "inbox" }`     | Only on props whose descriptor has `iconSource: "lucide"` (`LucideIcon.icon`): a kebab-case Lucide icon name. Generated code imports it from `lucide`, aliased as `lucideInbox`; `interpretView` takes the data from `options.icons`. |
 
 There are no expressions: no arithmetic, string templates, or function calls
 beyond `$css`. A value that needs computation becomes a param that the
@@ -232,6 +233,9 @@ application computes.
 - A content prop that is not a composition zone (`slot` in the props schema)
   may be set either in `props` (text, `$param`, `$bind`) or in `zones`
   (nodes), but not both.
+- A prop typed as Lucide icon data (`LucideIcon.icon`) is named with `$icon`,
+  never spelled as a nested array literal. The CLI does not check names; an
+  unknown one fails the consumer's `tsc` on the generated import.
 - Object literals are checked against the prop's shape. An index signature
   (`rootAttributes`' `data-*`) allows only keys with its prefix, and protected
   markers stay rejected.
@@ -565,6 +569,7 @@ schema and the validator in agreement.
 | `KUI-V010` | `$css` calling a helper outside the prop's `cssValue.helpers`                                                                          |
 | `KUI-V011` | A named node whose component has no `data-*` channel (§4.5)                                                                            |
 | `KUI-V012` | `#view` source missing, cyclic, declaring slots, or given props that are not its params                                                |
+| `KUI-V013` | `$icon` on a non-icon prop, a malformed icon name, or (given `icons`) an unknown one                                                   |
 
 The composition checks reuse the ESLint `ui-composition` rule's ids, which now
 apply to a JSON tree instead of JSX: `KUI-L201` (disallowed direct parent),

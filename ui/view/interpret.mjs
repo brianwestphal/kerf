@@ -89,6 +89,15 @@ function renderDocument(document, inputs, slots, options) {
       return readPath(scope.has(head) ? scope.get(head) : inputs[head], rest);
     }
     if (isObject(raw) && '$action' in raw) return raw.$action;
+    if (isObject(raw) && '$icon' in raw) {
+      const icon = options.icons?.[raw.$icon];
+      if (!icon) {
+        throw new Error(
+          `interpretView: no icon data for "${raw.$icon}"; pass it in options.icons`,
+        );
+      }
+      return icon;
+    }
     if (isObject(raw) && '$css' in raw)
       return evaluateCss(parseCssTree(raw.$css));
     if (isObject(raw)) {

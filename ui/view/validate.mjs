@@ -10,6 +10,7 @@ const CAMEL = /^[a-z][A-Za-z0-9]*$/;
 const PASCAL = /^[A-Z][A-Za-z0-9]*$/;
 const ACTION_NAME = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
 const ACTION_PROP = /^action$|[a-z]Action$/;
+const ICON_NAME = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 // Loop variable names the generated module already uses.
 const RESERVED_NAMES = new Set(['inputs', 'slots', 'each', 'handlers']);
 // Every builder `@kerfjs/ui/css-values` exports; a css-value prop without a
@@ -392,6 +393,27 @@ function checkPropValue(ctx, prop, value, definitions, scope, at, rowScoped) {
       ctx.report('KUI-V001', at, 'an action name is lowercase kebab-case');
     } else {
       ctx.noteAction(value.$action, rowScoped ? 'row' : 'view', at);
+    }
+    return;
+  }
+  if (isObject(value) && '$icon' in value) {
+    if (prop.iconSource !== 'lucide') {
+      ctx.report(
+        'KUI-V013',
+        at,
+        `\`$icon\` is only valid on an icon-data prop, not "${prop.name}"`,
+      );
+    } else if (
+      typeof value.$icon !== 'string' ||
+      !ICON_NAME.test(value.$icon)
+    ) {
+      ctx.report(
+        'KUI-V013',
+        at,
+        'an icon name is a kebab-case Lucide name such as "inbox"',
+      );
+    } else if (ctx.icons && !ctx.icons.has(value.$icon)) {
+      ctx.report('KUI-V013', at, `unknown Lucide icon "${value.$icon}"`);
     }
     return;
   }
@@ -917,6 +939,7 @@ function checkView(ctx, node, at, scope, rowScoped) {
   }
   const nested = validateView(child, ctx.catalog, {
     resolveView: ctx.resolveView,
+    icons: ctx.icons,
     viewStack: [...ctx.viewStack, node.src],
   });
   for (const diagnostic of nested.diagnostics) {
@@ -1089,6 +1112,7 @@ export function validateView(document, catalog, options = {}) {
   const ctx = {
     catalog,
     resolveView: options.resolveView,
+    icons: options.icons ? new Set(options.icons) : undefined,
     viewStack: options.viewStack ?? [],
     params: new Map(),
     slots: new Map(),

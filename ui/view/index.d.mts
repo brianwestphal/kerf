@@ -27,6 +27,7 @@ export type ViewValue =
   | { readonly $bind: string }
   | { readonly $action: string }
   | { readonly $css: string }
+  | { readonly $icon: string }
   | { readonly [name: string]: ViewValue };
 
 export interface ViewNode {
@@ -115,6 +116,8 @@ export function validateView(
   options?: {
     /** Loads a `#view` node's document; without it, `#view` is shape-checked only. */
     resolveView?: (src: string) => unknown;
+    /** Known Lucide icon names; with it, an unknown `$icon` is `KUI-V013`. */
+    icons?: Iterable<string>;
   },
 ): ViewValidation;
 
@@ -285,8 +288,13 @@ export function interpretView(
     readonly contract: string;
     readonly onMismatch?: (error: KuiContractMismatch) => SafeHtmlLike;
     readonly resolveView?: (src: string) => unknown;
+    /** Lucide icon name → icon data, for every `$icon` the document uses. */
+    readonly icons?: Readonly<Record<string, unknown>>;
   },
 ): SafeHtmlLike;
 
 /** kerf's SafeHtml (kept structural so this module needs no type import). */
 export type SafeHtmlLike = import('kerfjs').SafeHtml;
+
+/** Lucide's export name for a kebab-case icon name (`a-arrow-down` → `AArrowDown`). */
+export function lucideExportName(name: string): string;

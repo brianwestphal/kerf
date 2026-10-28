@@ -50,6 +50,7 @@ export interface PropDescriptor {
   variantOnly?: true;
   zone?: string;
   slot?: true;
+  iconSource?: 'lucide';
   cssValue?: { grammar: string; helpers?: string[]; rawPolicy?: string };
   control?: string;
   group?: string;

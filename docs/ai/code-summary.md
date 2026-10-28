@@ -724,7 +724,7 @@ validator for the Kerf UI editor, `docs/26-ui-editor.md`). `validate.mjs`
 (`createViewCatalog`, `validateView`, `isAssignable`, `isLiteralOf`,
 `parseCssCall`, `channelOf`) is re-exported by `index.mjs` and typed by
 `index.d.mts`. The shape schema is `ui/ai/view-document.schema.json`, and the
-`KUI-V001`–`V012` ids are registered in
+`KUI-V001`–`V013` ids are registered in
 `ui/ai/application-ui-diagnostic-ids-v1.json`. Tests:
 `ui/tests/unit/view-validate.test.ts`.
 

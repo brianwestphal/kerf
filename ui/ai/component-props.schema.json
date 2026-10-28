@@ -121,6 +121,10 @@
           "description": "The component-composition.json zone this prop fills.",
           "type": "string"
         },
+        "iconSource": {
+          "description": "The prop takes icon data a document names with `$icon` (Lucide).",
+          "const": "lucide"
+        },
         "slot": {
           "description": "A content prop with no curated zone: application content an editor can fill.",
           "const": true
