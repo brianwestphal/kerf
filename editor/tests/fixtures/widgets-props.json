@@ -1,0 +1,40 @@
+{
+  "$schema": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-props.schema.json",
+  "schema": "kerf-ui-component-props/v1",
+  "package": "@acme/widgets",
+  "description": "Generated prop schema for @acme/widgets's Kerf components. Regenerate with `kerf-ui-props --write` after a build; do not edit.",
+  "components": [
+    {
+      "key": "@acme/widgets:card",
+      "id": "card",
+      "source": "package",
+      "import": "@acme/widgets/card",
+      "export": "Card",
+      "description": "A titled card for grouped content.",
+      "props": [],
+      "nativeAttributes": [
+        "title",
+        "elevation",
+        "children",
+        "footer",
+        "rootAttributes"
+      ],
+      "dataChannel": "none"
+    },
+    {
+      "key": "@acme/widgets:meter",
+      "id": "meter",
+      "source": "package",
+      "import": "@acme/widgets/meter",
+      "export": "Meter",
+      "description": "A one-value meter.",
+      "props": [],
+      "nativeAttributes": [
+        "value",
+        "max"
+      ],
+      "dataChannel": "none"
+    }
+  ],
+  "definitions": {}
+}

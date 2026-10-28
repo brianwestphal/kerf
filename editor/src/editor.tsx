@@ -61,13 +61,7 @@ import {
   Undo2,
 } from 'lucide';
 
-import {
-  componentNames,
-  paletteGroups,
-  propsByKey,
-  viewCatalog,
-} from './catalog.js';
-import { componentFunctions } from './components.js';
+import { defaultCatalog, type EditorCatalog } from './catalog.js';
 import {
   controlFor,
   type ControlKind,
@@ -79,6 +73,7 @@ import {
   findNode,
   parseDocument,
   serializeDocument,
+  visitNodes,
 } from './model/document.js';
 import {
   History,
@@ -136,7 +131,6 @@ export type Selection =
   | { readonly kind: 'component'; readonly key: string }
   | null;
 
-const components = componentFunctions();
 // interpretView reads `$icon` names; Lucide exports icons by PascalCase name.
 const icons = new Proxy({} as Record<string, unknown>, {
   get: (_target, name) =>
@@ -152,50 +146,56 @@ const slots = new Proxy({} as Record<string, () => SafeHtml>, {
   get: (_target, name) => slotPlaceholder(String(name)),
 });
 
-/** Renders the document onto the canvas, or explains why it cannot. */
-/** Stands in for a node the preview cannot render; still selectable. */
-function brokenNode(node: ViewNode): SafeHtml {
-  return Badge({
-    tone: 'danger',
-    children: `${node.name ?? nodeTitle(node, componentNames)} cannot render`,
-    rootAttributes: { 'data-kerf-node': node.id },
-  });
-}
+/** The canvas renderer for one catalog. */
+function canvasRenderer(catalog: EditorCatalog) {
+  const { viewCatalog, componentNames, components } = catalog;
+  /** Stands in for a node the preview cannot render; still selectable. */
+  const brokenNode = (node: ViewNode): SafeHtml =>
+    Badge({
+      tone: 'danger',
+      children: `${node.name ?? nodeTitle(node, componentNames)} cannot render`,
+      rootAttributes: { 'data-kerf-node': node.id },
+    });
 
-function canvasContent(
-  document: ViewDocument,
-  problems: readonly Problem[],
-): SafeHtml {
-  const preview = {
-    catalog: viewCatalog,
-    components,
-    inputs: sampleInputs(document, (label) => Text({ children: label })),
-    slots,
-    icons,
+  /** Renders the document onto the canvas, or explains why it cannot. */
+  return (document: ViewDocument, problems: readonly Problem[]): SafeHtml => {
+    const preview = {
+      catalog: viewCatalog,
+      components,
+      inputs: sampleInputs(document, (label) => Text({ children: label })),
+      slots,
+      icons,
+    };
+    // A node whose component has no function here (an application component
+    // its host did not register) previews as a placeholder too (KF-6GT5QY).
+    const unregistered = visitNodes(document).flatMap(({ node }) =>
+      node.type.startsWith('#') || node.type in components ? [] : [node.id],
+    );
+    // A document with problems still previews (KF-F355BF): each node a problem
+    // is about renders as a placeholder and everything else renders normally.
+    if (problems.length || unregistered.length) {
+      return previewView(document, {
+        ...preview,
+        broken: new Set([
+          ...problems.flatMap(({ nodeId }) => (nodeId ? [nodeId] : [])),
+          ...unregistered,
+        ]),
+        placeholder: brokenNode,
+      });
+    }
+    try {
+      return interpretView(document, {
+        ...preview,
+        // The editor previews any document, so it checks it against itself.
+        contract: contractDigest(contractOf(document, viewCatalog)),
+      });
+    } catch (error) {
+      return EmptyState({
+        title: 'This document cannot be previewed',
+        detail: (error as Error).message,
+      });
+    }
   };
-  // A document with problems still previews (KF-F355BF): each node a problem
-  // is about renders as a placeholder and everything else renders normally.
-  if (problems.length) {
-    return previewView(document, {
-      ...preview,
-      broken: new Set(
-        problems.flatMap(({ nodeId }) => (nodeId ? [nodeId] : [])),
-      ),
-      placeholder: brokenNode,
-    });
-  }
-  try {
-    return interpretView(document, {
-      ...preview,
-      // The editor previews any document, so it checks it against itself.
-      contract: contractDigest(contractOf(document, viewCatalog)),
-    });
-  } catch (error) {
-    return EmptyState({
-      title: 'This document cannot be previewed',
-      detail: (error as Error).message,
-    });
-  }
 }
 
 export interface EditorOptions {
@@ -203,6 +203,11 @@ export interface EditorOptions {
   readonly document?: ViewDocument;
   /** Saves a file; the default downloads it through a temporary link. */
   readonly save?: (fileName: string, text: string) => void;
+  /**
+   * The components the editor can place and preview. The default is Kerf
+   * UI's own; a host adds an application's catalogs and functions.
+   */
+  readonly catalog?: EditorCatalog;
 }
 
 /** An inspector control's current value: a Select's, a switch's, or a field's. */
@@ -260,6 +265,9 @@ function download(fileName: string, text: string): void {
 }
 
 export function createEditor(options: EditorOptions = {}) {
+  const catalog = options.catalog ?? defaultCatalog;
+  const { viewCatalog, propsByKey, componentNames } = catalog;
+  const canvasContent = canvasRenderer(catalog);
   const doc = signal<ViewDocument>(
     options.document ?? (sample as unknown as ViewDocument),
   );
@@ -363,20 +371,22 @@ export function createEditor(options: EditorOptions = {}) {
     ));
 
   const palette = () =>
-    paletteGroups().map((group) => [
-      <ListHeader label={group.category} size="xs" />,
-      ...group.items.map((item) => (
-        <ListItem
-          action={PALETTE_ACTION}
-          itemId={item.key}
-          label={item.name}
-          selected={
-            selection.value?.kind === 'component' &&
-            selection.value.key === item.key
-          }
-        />
-      )),
-    ]);
+    catalog
+      .paletteGroups()
+      .map((group) => [
+        <ListHeader label={group.category} size="xs" />,
+        ...group.items.map((item) => (
+          <ListItem
+            action={PALETTE_ACTION}
+            itemId={item.key}
+            label={item.name}
+            selected={
+              selection.value?.kind === 'component' &&
+              selection.value.key === item.key
+            }
+          />
+        )),
+      ]);
 
   const inspector = (document: ViewDocument) => {
     const current = selection.value;

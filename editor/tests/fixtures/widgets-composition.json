@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "package": "@acme/widgets",
+  "entries": [
+    {
+      "key": "@acme/widgets:card",
+      "package": "@acme/widgets",
+      "id": "card",
+      "name": "Card",
+      "kind": "component",
+      "publicExports": [
+        {
+          "name": "Card",
+          "subpath": "."
+        },
+        {
+          "name": "createCardModel",
+          "subpath": "."
+        },
+        {
+          "name": "Card",
+          "subpath": "./card"
+        },
+        {
+          "name": "createCardModel",
+          "subpath": "./card"
+        }
+      ],
+      "zones": [
+        {
+          "id": "body",
+          "jsx": {
+            "prop": "children"
+          },
+          "accepts": [
+            "KerfUiContent"
+          ],
+          "cardinality": {
+            "min": 0,
+            "max": "unbounded"
+          }
+        }
+      ]
+    },
+    {
+      "key": "@acme/widgets:meter",
+      "package": "@acme/widgets",
+      "id": "meter",
+      "name": "Meter",
+      "kind": "component",
+      "publicExports": [
+        {
+          "name": "Meter",
+          "subpath": "./meter"
+        }
+      ],
+      "zones": []
+    },
+    {
+      "key": "@acme/widgets:dashboard",
+      "package": "@acme/widgets",
+      "id": "dashboard",
+      "name": "Dashboard",
+      "kind": "recipe",
+      "publicExports": []
+    }
+  ]
+}

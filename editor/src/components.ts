@@ -1,6 +1,7 @@
 // Catalog key → component function, for interpretView. The root barrel holds
 // most components; the layout-heavy ones ship only from their own subpaths.
 import * as barrel from '@kerfjs/ui';
+import propsJson from '@kerfjs/ui/ai/component-props.json';
 import {
   CollapsiblePanel,
   CollapsiblePanelRelocated,
@@ -22,8 +23,6 @@ import { TreeList } from '@kerfjs/ui/tree-list';
 import { Workbench } from '@kerfjs/ui/workbench';
 import { WorkbenchDialog } from '@kerfjs/ui/workbench-dialog';
 import type { SafeHtml } from 'kerfjs';
-
-import { propsByKey } from './catalog.js';
 
 type Render = (props: never) => SafeHtml;
 
@@ -52,10 +51,14 @@ const subpathOnly: Record<string, unknown> = {
 export function componentFunctions(): Record<string, Render> {
   const functions: Record<string, Render> = {};
   const exports = barrel as unknown as Record<string, unknown>;
-  for (const [key, component] of propsByKey) {
+  const catalog = propsJson as unknown as {
+    components: { key: string; source: string; export?: string }[];
+  };
+  for (const component of catalog.components) {
     if (component.source !== 'kerf' || !component.export) continue;
     const render = exports[component.export] ?? subpathOnly[component.export];
-    if (typeof render === 'function') functions[key] = render as Render;
+    if (typeof render === 'function')
+      functions[component.key] = render as Render;
   }
   return functions;
 }
