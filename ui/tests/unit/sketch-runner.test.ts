@@ -2,7 +2,7 @@
 import { mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { clearInterval, setInterval } from 'node:timers';
+import { clearInterval, setInterval, setTimeout } from 'node:timers';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
@@ -226,23 +226,22 @@ describe('Sketch runner lifecycle', () => {
 
   it('keeps polling a slow launch once the plugin reports this run', async () => {
     let job: { jobDirectory: string; runId: string } | undefined;
+    let finished: Promise<void> | undefined;
     const result = runSketchJob({
       ...options(),
       invoke: async (_tool: string, args: string[]) => {
         const started = await jobFrom(args);
         job = started;
         await status(started, { state: 'running', cleanupComplete: false });
+        // The job completes after the launch command has already timed out.
+        finished = new Promise((resolve) => setTimeout(resolve, 20)).then(() =>
+          status(started, { result: 'built' }),
+        );
         throw Object.assign(new Error('Command failed'), { killed: true });
       },
     });
-    const finish = setInterval(() => {
-      if (job) void status(job, { result: 'built' });
-    }, 5);
-    try {
-      await expect(result).resolves.toMatchObject({ result: 'built' });
-    } finally {
-      clearInterval(finish);
-    }
+    await expect(result).resolves.toMatchObject({ result: 'built' });
+    await finished;
     await expect(
       readFile(join(job!.jobDirectory, 'cancel.json'), 'utf8'),
     ).rejects.toThrow();
