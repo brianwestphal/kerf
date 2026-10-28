@@ -30,6 +30,67 @@ function pinTextField(symbol, dom) {
   pinContent(content);
 }
 
+// The leading icon sits just left of the label wherever the button centers
+// its content; a full-width button centers it far from the leading edge. An
+// icon the old layout left behind can overlap the re-centered label.
+function leadingIcon(content, labelX, dom, exclude) {
+  return content.layers.filter(function (layer) {
+    var gap = labelX - (layer.frame.x + layer.frame.width);
+    return (
+      exclude.indexOf(layer) < 0 &&
+      layer.type === 'Group' &&
+      layer.frame.width < 20 &&
+      layer.frame.x < labelX &&
+      gap >= -layer.frame.width &&
+      gap <= 16 &&
+      dom.find('Text', layer).length === 0
+    );
+  })[0];
+}
+
+// Keep the icon's imported size: most icons arrive in a 16px clip host, but a
+// bare glyph (the Deploying spinner arc) would be stretched by a forced 16x16.
+function placeIcon(iconHost, dom) {
+  iconHost.verticalSizing = dom.FlexSizing.Fixed;
+  iconHost.index = 1;
+}
+
+/**
+ * Move an icon the original layout missed into Primary Content, matching
+ * what layoutSplitButton now produces. Reparenting keeps the layer ID, and
+ * the repair is a no-op once the icon is in place.
+ */
+function repairSplitButton(symbol, dom) {
+  var content = symbol.layers[0].layers[0];
+  var primary = content.layers.filter(function (layer) {
+    return layer.name === 'Primary Content';
+  })[0];
+  if (!primary) return false;
+  var label = primary.layers.filter(function (layer) {
+    return layer.type === 'Text';
+  })[0];
+  var hasIcon = primary.layers.some(function (layer) {
+    return layer.name === 'Icon';
+  });
+  if (!label || hasIcon) return false;
+  var labelX = primary.frame.x + label.frame.x;
+  var icon = leadingIcon(content, labelX, dom, [primary]);
+  if (!icon) return false;
+  var x = icon.frame.x - primary.frame.x;
+  icon.parent = primary;
+  icon.frame.x = x;
+  icon.name = 'Icon';
+  icon.horizontalSizing = dom.FlexSizing.Fixed;
+  icon.horizontalPins = dom.Pin.None;
+  placeIcon(icon, dom);
+  label.index = 0;
+  return true;
+}
+
+module.exports.repair = function (symbol, fixture, dom) {
+  return fixture.component === 'split-button' && repairSplitButton(symbol, dom);
+};
+
 function layoutSplitButton(symbol, dom) {
   var root = symbol.layers[0];
   var content = root.layers[0];
@@ -48,15 +109,7 @@ function layoutSplitButton(symbol, dom) {
   })[0];
   if (!labelHost) throw new Error('SplitButton label missing: ' + symbol.name);
   var label = dom.find('Text', labelHost)[0];
-  var iconHost = content.layers.filter(function (layer) {
-    return (
-      layer !== labelHost &&
-      layer.type === 'Group' &&
-      layer.frame.x < 30 &&
-      layer.frame.width < 20 &&
-      dom.find('Text', layer).length === 0
-    );
-  })[0];
+  var iconHost = leadingIcon(content, labelHost.frame.x, dom, [labelHost]);
   var primary = new dom.Group({
     name: 'Primary Content',
     parent: content,
@@ -85,12 +138,7 @@ function layoutSplitButton(symbol, dom) {
     wraps: false,
     bordersAffectLayout: false,
   };
-  if (iconHost) {
-    iconHost.verticalSizing = dom.FlexSizing.Fixed;
-    iconHost.frame.height = 16;
-    iconHost.frame.width = 16;
-    iconHost.index = 1;
-  }
+  if (iconHost) placeIcon(iconHost, dom);
   label.verticalSizing = dom.FlexSizing.Fit;
   label.index = 0;
   primary.verticalSizing = dom.FlexSizing.Fixed;

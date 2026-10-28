@@ -35,6 +35,14 @@ A changed layer count, layer or shape type, or a reordered label is rejected
 with the fixture and tree path before any published layer changes; such an
 edit needs a deliberate override-key migration.
 
+The manifest also records each Symbol's layout version. When the builder's
+semantic layout changes for an unchanged source, raising `LAYOUT_VERSION` in
+`tasks/build.js` sends every older master through the same migration, so the
+corrected layout reaches published Symbols without new IDs. Version 2 moves a
+centered SplitButton icon (the full-width variant) into the primary content
+stack beside its label, and keeps a bare glyph icon, such as the Deploying
+spinner arc, at its imported size instead of stretching it to 16px.
+
 ## Regenerate and verify
 
 From `ui/`, with the project's login-shell Node toolchain and one existing

@@ -9,6 +9,11 @@ function readJSON(path) {
 }
 
 var semanticLayout = require('./semantic-layout');
+
+// Bump when semantic-layout output changes for an unchanged source: masters
+// built under an older layout are re-laid out through the migration path,
+// which re-imports the source and keeps every published layer ID.
+var LAYOUT_VERSION = 2;
 var textStyles = require('../../shared/text-styles');
 
 function migrationPairs(existing, incoming, fixtureId) {
@@ -171,7 +176,10 @@ module.exports.run = function (session, parameters, done) {
         var symbol = matches[0];
         if (old && !symbol)
           throw new Error('Previously published Symbol missing: ' + fixture.id);
-        var changed = old && old.sourceHash !== fixture.sourceHash;
+        var changed =
+          old &&
+          (old.sourceHash !== fixture.sourceHash ||
+            (old.layoutVersion || 1) !== LAYOUT_VERSION);
         var migratedLayers = 0;
         if (!symbol) {
           symbol = new dom.SymbolMaster({
@@ -196,6 +204,9 @@ module.exports.run = function (session, parameters, done) {
           semanticLayout.apply(symbol, fixture, dom);
         }
         if (changed) {
+          // Bring an older layout's topology in line with the current one
+          // before the migration compares the two trees.
+          semanticLayout.repair(symbol, fixture, dom);
           var preview = new dom.SymbolMaster({
             name: 'Migration Preview / ' + fixture.id,
             parent: page,
@@ -247,6 +258,7 @@ module.exports.run = function (session, parameters, done) {
           bitmaps: bitmaps.length,
           migratedLayers: migratedLayers,
           sourceHash: fixture.sourceHash,
+          layoutVersion: LAYOUT_VERSION,
         });
         dom.export(symbol, {
           formats: 'png',
