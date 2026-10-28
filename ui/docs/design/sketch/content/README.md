@@ -40,8 +40,15 @@ npm run sketch:content -- capture
 npm run sketch:content -- generate
 npm run sketch:content -- assets
 npm run sketch:content -- verify
+npm run sketch:content -- sync
 node scripts/sketch/content/compare.mjs
 ```
+
+`sync` proves linked consumers follow an update. It builds a consumer on the
+published Library with a Text override per instance, publishes a next version
+with one master text edited under the same document ID, syncs through Sketch's
+libraries controller, and checks that the edit arrives, the overrides survive,
+and save/reopen keeps both (`sync-verification.json`).
 
 The capture renders production templates in Chromium and clips each reusable
 root. Sketch's SVG import cannot reproduce three browser features, so the

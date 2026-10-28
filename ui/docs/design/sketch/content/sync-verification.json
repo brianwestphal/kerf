@@ -1,0 +1,43 @@
+{
+  "libraryDocumentId": "EAE8D610-4015-4BC5-A849-22B9C28155F1",
+  "names": [
+    "Disclosure / Plain / Advanced Settings / Light",
+    "Disclosure / Plain / Advanced Settings / Dark"
+  ],
+  "synced": [
+    {
+      "name": "Disclosure / Plain / Advanced Settings / Light",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
+    },
+    {
+      "name": "Disclosure / Plain / Advanced Settings / Dark",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
+    }
+  ],
+  "after": [
+    {
+      "name": "Disclosure / Plain / Advanced Settings / Light",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 0"]
+    },
+    {
+      "name": "Disclosure / Plain / Advanced Settings / Dark",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 1"]
+    }
+  ],
+  "reopened": [
+    {
+      "name": "Disclosure / Plain / Advanced Settings / Light",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 0"]
+    },
+    {
+      "name": "Disclosure / Plain / Advanced Settings / Dark",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 1"]
+    }
+  ]
+}

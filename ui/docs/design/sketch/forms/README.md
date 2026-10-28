@@ -53,8 +53,15 @@ npm run sketch:forms -- capture
 npm run sketch:forms -- generate
 npm run sketch:forms -- assets
 npm run sketch:forms -- verify
+npm run sketch:forms -- sync
 node scripts/sketch/forms/compare.mjs
 ```
+
+`sync` proves linked consumers follow an update. It builds a consumer on the
+published Library with a Text override per instance, publishes a next version
+with one master text edited under the same document ID, syncs through Sketch's
+libraries controller, and checks that the edit arrives, the overrides survive,
+and save/reopen keeps both (`sync-verification.json`).
 
 The native tasks use the shared serial runner. They reuse the existing Sketch
 process, track test-owned documents and temporary Library registrations, and

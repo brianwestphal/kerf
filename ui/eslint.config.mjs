@@ -35,6 +35,7 @@ export default [
         NSUTF8StringEncoding: 'readonly',
         NSFont: 'readonly',
         NSBundle: 'readonly',
+        NSClassFromString: 'readonly',
       },
     },
   },

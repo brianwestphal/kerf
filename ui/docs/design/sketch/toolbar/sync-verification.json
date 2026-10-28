@@ -1,0 +1,43 @@
+{
+  "libraryDocumentId": "A9056535-7E8A-4179-9E4A-A2FA08757367",
+  "names": [
+    "Tab Bar / Workspace Tabs / Control / Light",
+    "Tab Bar / Workspace Tabs / Control / Dark"
+  ],
+  "synced": [
+    {
+      "name": "Tab Bar / Workspace Tabs / Control / Light",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
+    },
+    {
+      "name": "Tab Bar / Workspace Tabs / Control / Dark",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
+    }
+  ],
+  "after": [
+    {
+      "name": "Tab Bar / Workspace Tabs / Control / Light",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 0"]
+    },
+    {
+      "name": "Tab Bar / Workspace Tabs / Control / Dark",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 1"]
+    }
+  ],
+  "reopened": [
+    {
+      "name": "Tab Bar / Workspace Tabs / Control / Light",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 0"]
+    },
+    {
+      "name": "Tab Bar / Workspace Tabs / Control / Dark",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 1"]
+    }
+  ]
+}

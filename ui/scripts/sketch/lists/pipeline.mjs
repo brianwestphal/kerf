@@ -19,6 +19,7 @@ import prettier from 'prettier';
 import { requireExistingSketchProcess } from '../check-runner-process.mjs';
 import { runSketchJob } from '../runner.mjs';
 import { pinDocumentId } from '../shared/document-id.mjs';
+import { runSyncGate } from '../shared/sync-gate.mjs';
 import { captureLists, defaultOutput, verifyTargets } from './capture.mjs';
 
 const exec = promisify(execFile);
@@ -237,10 +238,24 @@ async function verify() {
   );
 }
 
+async function sync() {
+  const report = await runSyncGate({
+    libraryPath: paths.libraryPath,
+    manifestPath: paths.manifestPath,
+    reportPath: join(output, 'sync-verification.json'),
+  });
+  console.log(
+    `Synced ${report.names.length} linked lists consumers to a Library update with overrides kept.`,
+  );
+}
+
 const command = process.argv[2] ?? 'all';
 if (command === 'capture' || command === 'all') await captureLists(output);
 if (command === 'generate' || command === 'all') await generate();
 if (command === 'assets' || command === 'all') await assets();
 if (command === 'verify' || command === 'all') await verify();
-if (!['capture', 'generate', 'assets', 'verify', 'all'].includes(command))
+if (command === 'sync' || command === 'all') await sync();
+if (
+  !['capture', 'generate', 'assets', 'verify', 'sync', 'all'].includes(command)
+)
   throw new Error(`Unknown list/data command: ${command}`);

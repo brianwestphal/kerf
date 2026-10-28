@@ -1,0 +1,43 @@
+{
+  "libraryDocumentId": "F4DC5291-8F51-497E-9187-DEA24862B0C6",
+  "names": [
+    "Color Field / Compact / Control / Light",
+    "Color Field / Compact / Control / Dark"
+  ],
+  "synced": [
+    {
+      "name": "Color Field / Compact / Control / Light",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
+    },
+    {
+      "name": "Color Field / Compact / Control / Dark",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
+    }
+  ],
+  "after": [
+    {
+      "name": "Color Field / Compact / Control / Light",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 0"]
+    },
+    {
+      "name": "Color Field / Compact / Control / Dark",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 1"]
+    }
+  ],
+  "reopened": [
+    {
+      "name": "Color Field / Compact / Control / Light",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 0"]
+    },
+    {
+      "name": "Color Field / Compact / Control / Dark",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 1"]
+    }
+  ]
+}

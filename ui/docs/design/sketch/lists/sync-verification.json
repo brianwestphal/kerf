@@ -1,0 +1,40 @@
+{
+  "libraryDocumentId": "7B7999B6-9EAE-4B8A-810E-ECCD016AF89F",
+  "names": ["List / Stack / Control / Light", "List / Stack / Control / Dark"],
+  "synced": [
+    {
+      "name": "List / Stack / Control / Light",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
+    },
+    {
+      "name": "List / Stack / Control / Dark",
+      "outOfDateBefore": true,
+      "outOfDateAfter": false
+    }
+  ],
+  "after": [
+    {
+      "name": "List / Stack / Control / Light",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 0"]
+    },
+    {
+      "name": "List / Stack / Control / Dark",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 1"]
+    }
+  ],
+  "reopened": [
+    {
+      "name": "List / Stack / Control / Light",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 0"]
+    },
+    {
+      "name": "List / Stack / Control / Dark",
+      "firstText": "Library sync check",
+      "overrides": ["Kept override 1"]
+    }
+  ]
+}
