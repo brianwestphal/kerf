@@ -165,6 +165,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **A toggle `ListHeader`'s disclosure arrow lines up with its rows' trailing icons.** The arrow was centered in a 24px layer, 3px inside the trailing content edge of the `ListItem` rows below it. The layer now hugs the 18px arrow, so it ends on the toggle's 1px border + 8px padding, the same inset as a row's trailing icon, at standard and compact density (`KF-HZKKK9`).
 - **UI doctor KUI-L401 honors view-scoped exceptions from app entries.** A declared application entry keeps each component use's source file when checking missing wiring, so a narrow exception on one view does not move to the entry or suppress another view's warning (`KF-5X91JH`).
 - **Live Markdown editor at phone width.** The editor and preview stack into full-width, independently scrolling panes on narrow screens; tablet and desktop keep the side-by-side layout (`KF-HR730P`).
 - **UI doctor KUI-L401 respects `ChoiceChips` modes.** Radio and toggle modes no longer require `wireChoiceChips`; listbox and dynamic modes still do. Entry-point wiring remains recognized when bundle entries are declared in `.kerf-ui-profile.json` (`KF-KCM28K`, `KF-CYYR43`).

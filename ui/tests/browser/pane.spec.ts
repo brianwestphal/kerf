@@ -355,6 +355,53 @@ test('ListHeader action border box ends on the selected ListItem and toolbar gro
   }
 });
 
+// KF-HZKKK9: a toggle ListHeader's borderless disclosure arrow aligns with the
+// nested trailing content of the ListItem rows in its list, at either density.
+test('toggle ListHeader disclosure arrow ends on the ListItem trailing content edge', async ({
+  page,
+}) => {
+  for (const width of [1200, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?component=list');
+    const pane = page.locator('[data-demo="list"] [data-component="pane"]');
+    await expect(pane).toBeVisible();
+    for (const density of ['standard', 'compact'] as const) {
+      const edges = await pane.evaluate((root, density) => {
+        const toggle = root.querySelector<HTMLElement>(
+          '.kui-list-header[data-toggle="true"]',
+        )!;
+        const row = root.querySelector<HTMLElement>(
+          '.kui-list-item[aria-current="page"]',
+        )!;
+        toggle.dataset.density = density;
+        row.dataset.density = density;
+        const style = window.getComputedStyle(row);
+        const rowContentEnd =
+          row.getBoundingClientRect().right -
+          parseFloat(style.borderRightWidth) -
+          parseFloat(style.paddingRight);
+        const arrow = toggle
+          .querySelector('[data-component="disclosure-arrow"]')!
+          .getBoundingClientRect();
+        const trailing = row
+          .querySelector('.kui-list-item__trailing')!
+          .getBoundingClientRect();
+        return {
+          arrow: rowContentEnd - arrow.right,
+          trailing: rowContentEnd - trailing.right,
+          arrowWidth: arrow.width,
+        };
+      }, density);
+      expect(edges.arrowWidth, density).toBeCloseTo(18, 0);
+      expect(Math.abs(edges.arrow), density).toBeLessThanOrEqual(0.5);
+      expect(
+        Math.abs(edges.arrow - edges.trailing),
+        density,
+      ).toBeLessThanOrEqual(0.5);
+    }
+  }
+});
+
 test('sunken Pane paints short and long scroll viewports with fixed and auto chrome', async ({
   page,
 }, testInfo) => {

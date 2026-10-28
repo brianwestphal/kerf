@@ -167,8 +167,11 @@
   cursor: pointer;
 }
 
+/* A toggle's disclosure arrow is a borderless nested glyph, so it aligns with
+   the nested content of the ListItem rows below: the layer hugs its 18px glyph
+   and ends on the toggle's 1px border + 8px padding, the same inset as a row's
+   trailing icon, instead of centering it 3px inside a 24px box. */
 .kui-list-header__action-layer {
-  width: remify(24px);
   height: remify(24px);
   margin-inline-start: auto;
   flex: none;

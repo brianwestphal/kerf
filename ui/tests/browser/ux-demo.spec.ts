@@ -7505,6 +7505,11 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
       const toggleLayer = node
         .querySelector<HTMLElement>('.kui-list-header__action-layer')!
         .getBoundingClientRect();
+      const toggleArrow = node
+        .querySelector<HTMLElement>(
+          '.kui-list-header__action-layer [data-component="disclosure-arrow"]',
+        )!
+        .getBoundingClientRect();
       const toolbarText = node
         .querySelector<HTMLElement>('.kui-pane__footer .kui-toolbar-text')!
         .getBoundingClientRect();
@@ -7548,6 +7553,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
         headerActionEnd: end(content, action),
         headerActionWidth: action.width,
         headerActionHeight: action.height,
+        toggleArrowEnd: end(content, toggleArrow),
         toggleLayerWidth: toggleLayer.width,
         toggleLayerHeight: toggleLayer.height,
         toolbarTextStart: start(toolbar, toolbarText),
@@ -7588,6 +7594,9 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
       'surfaceContentStart',
       'iconStart',
       'trailingEnd',
+      // KF-HZKKK9: the borderless disclosure arrow ends on the rows' nested
+      // trailing content edge (border + padding), like a row's trailing icon.
+      'toggleArrowEnd',
     ] as const)
       near(name, geometry[name], 17);
     near('toolbarTextStart', geometry.toolbarTextStart, 8);
@@ -7601,7 +7610,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     // border each side = 36px), not the toolbar control group's 44px.
     for (const name of ['headerActionWidth', 'headerActionHeight'] as const)
       near(name, geometry[name], 36);
-    near('toggleLayerWidth', geometry.toggleLayerWidth, 24);
+    near('toggleLayerWidth', geometry.toggleLayerWidth, 18);
     near('toggleLayerHeight', geometry.toggleLayerHeight, 24);
     expect(geometry.rowHeight).toBeGreaterThanOrEqual(44);
   };
