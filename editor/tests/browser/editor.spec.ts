@@ -2,6 +2,8 @@ import { readFile } from 'node:fs/promises';
 
 import { expect, test } from '@playwright/test';
 
+import { area } from './areas.js';
+
 const COMPOSE = '01JB8Z1M6Q8E1X9V4S7K2R3T5D';
 
 test.beforeEach(async ({ page }) => {
@@ -42,6 +44,7 @@ test('selects from the outline and documents a palette component', async ({
   await expect(
     page.getByText('folderList · List', { exact: false }),
   ).toBeVisible();
+  await area(page, 'Components');
   await page
     .locator('[data-action="editor-show-component"]', { hasText: /^Badge$/ })
     .click();
@@ -141,6 +144,7 @@ test('lists problems and selects the node a problem is about', async ({
   const problems = page.locator('[data-action="editor-select-problem"]');
   await expect(problems).toHaveCount(2);
   await expect(page.getByText('2 problems in this document')).toBeVisible();
+  await area(page, 'Problems');
   await problems.nth(1).click();
   await expect(
     page.getByText('composeButton · Button', { exact: false }),
@@ -283,6 +287,9 @@ test('edits, adds, moves, deletes, and undoes from the inspector', async ({
       '[data-action="editor-select-node"][data-item-id="01JB8Z1M6Q8E1X9V4S7K2R3T5B"]',
     )
     .click();
+  // A short window, so the Children area scrolls before Add.
+  await page.setViewportSize({ width: 1440, height: 420 });
+  await area(page, 'Children');
   await page.locator('[data-editor-add="zone"]').click();
   await page.getByRole('option', { name: 'trailing' }).click();
   await page.locator('[data-editor-add="component"]').click();
@@ -301,9 +308,11 @@ test('edits, adds, moves, deletes, and undoes from the inspector', async ({
   expect(await railScroll()).toBeGreaterThan(0);
   await add.click();
   await expect(page.getByText('8 nodes · valid')).toBeVisible();
-  // KF-JWD51N: the new selection opens the Inspector at its top.
+  // KF-JWD51N: the new selection opens the Inspector at its top, on its
+  // Properties.
   await expect.poll(railScroll).toBe(0);
   await expect(page.locator('[data-editor-name]')).toBeInViewport();
+  await page.setViewportSize({ width: 1440, height: 900 });
   await expect(
     page.locator('[data-editor-canvas] [data-kerf-node]', {
       hasText: /^Button$/,
@@ -365,6 +374,7 @@ test('shows a node only when a param holds and adds a slot', async ({
       .locator(`[data-action="editor-select-node"][data-item-id="${id}"]`)
       .click();
   await select(COMPOSE);
+  await area(page, 'Flow');
   await page.locator('[data-editor-control="condition"]').click();
   await page.getByRole('option', { name: 'Param showEmpty' }).click();
   await expect(
@@ -384,6 +394,7 @@ test('shows a node only when a param holds and adds a slot', async ({
 
   // Add a slot to the toolbar's trailing zone; the outline and canvas show it.
   await select('01JB8Z1M6Q8E1X9V4S7K2R3T5B');
+  await area(page, 'Children');
   await page.locator('[data-editor-add="zone"]').click();
   await page.getByRole('option', { name: 'trailing', exact: true }).click();
   await page.locator('[data-editor-slot="name"] input').fill('actions');
@@ -419,6 +430,7 @@ test('turns a button label into nodes and adds a badge beside it', async ({
   await expect(
     page.getByText('Holds 1 node; select it in the outline.'),
   ).toBeVisible();
+  await area(page, 'Children');
   await page.locator('[data-editor-add="component"]').click();
   await page.getByRole('option', { name: 'Badge', exact: true }).click();
   await page.getByRole('button', { name: 'Add', exact: true }).click();
@@ -447,6 +459,7 @@ test('adds what shows otherwise to a conditional node', async ({
       '[data-action="editor-select-node"][data-item-id="01JB8Z1M6Q8E1X9V4S7K2R3T5G"]',
     )
     .click();
+  await area(page, 'Flow');
   await page
     .locator('[data-editor-control="otherwise"]')
     .getByRole('combobox')
@@ -650,7 +663,9 @@ test('reports a control nested in a repeated row and keeps the preview', async (
   await expect(
     canvas.getByText('This document cannot be previewed'),
   ).toHaveCount(0);
+  await area(page, 'Problems');
   await expect(page.getByText(/^KUI-V014/)).toBeVisible();
+  await area(page, 'Outline');
   // Deleting the nested Button makes the document valid again.
   await page
     .locator(`[data-action="editor-select-node"][data-item-id="${NESTED}"]`)
@@ -740,6 +755,7 @@ test('drags components from the palette onto the canvas', async ({
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.getByRole('button', { name: 'New' }).click();
   await expect(page.getByText('1 node · valid')).toBeVisible();
+  await area(page, 'Components');
   const canvas = page.locator('[data-editor-canvas]');
   const drag = async (
     key: string,
@@ -760,12 +776,12 @@ test('drags components from the palette onto the canvas', async ({
       });
     await page.mouse.up();
   };
-  const area = (await canvas.boundingBox())!;
+  const bounds = (await canvas.boundingBox())!;
   await drag(
     '@kerfjs/ui:text',
     {
-      x: area.x + area.width / 2,
-      y: area.y + area.height / 2,
+      x: bounds.x + bounds.width / 2,
+      y: bounds.y + bounds.height / 2,
     },
     'KF-78MHM8-dragging-1440.png',
   );

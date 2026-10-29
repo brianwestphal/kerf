@@ -291,7 +291,9 @@ describe('slots', () => {
       $slot: 'actions',
     });
     expect(
-      root.querySelector('[aria-current], [aria-selected="true"]')?.textContent,
+      root.querySelector(
+        '[data-tree-list-id="editor-outline"] :is([aria-current], [aria-selected="true"])',
+      )?.textContent,
     ).toContain('actions slot');
     expect(root.textContent).toContain('The application fills this slot');
     click(root, 'editor-delete');

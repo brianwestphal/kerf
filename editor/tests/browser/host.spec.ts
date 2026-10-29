@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { area } from './areas.js';
+
 // KF-6GT5QY: an application's own dev server hosts the editor through
 // `@kerfjs/ui/vite-editor`, and its own component (OrderCard, which lives in
 // app source) is placed, previewed with its real function, and inspected.
@@ -15,6 +17,7 @@ test('an app’s dev server hosts the editor with its own components', async ({
   await expect(page.getByText('1 node · valid')).toBeVisible();
 
   // The palette lists the app's component under Application.
+  await area(page, 'Components');
   await expect(page.getByText('Application', { exact: true })).toBeVisible();
   await expect(
     page.locator(
@@ -23,7 +26,9 @@ test('an app’s dev server hosts the editor with its own components', async ({
   ).toBeVisible();
 
   // Add an OrderCard to the empty Pane's content.
+  await area(page, 'Outline');
   await page.getByRole('treeitem', { name: /Pane/ }).click();
+  await area(page, 'Children');
   await page.locator('[data-editor-add="zone"]').click();
   await page.getByRole('option', { name: 'content' }).click();
   await page.locator('[data-editor-add="component"]').click();

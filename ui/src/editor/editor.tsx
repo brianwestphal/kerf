@@ -67,6 +67,9 @@ import { TextField } from '../components/forms/text-field/text-field.js';
 import { wireWorkbench } from '../components/layout/workbench/wiring/wire-workbench.js';
 import { Workbench } from '../components/layout/workbench/workbench.js';
 import { LucideIcon } from '../components/media/lucide-icon/lucide-icon.js';
+import { TabBar } from '../components/navigation/tab-bar/tab-bar.js';
+import { wireTabBars } from '../components/navigation/tab-bar/wiring/wire-tab-bars.js';
+import { TabBarItem } from '../components/navigation/tab-bar-item/tab-bar-item.js';
 import {
   closeDialog,
   DialogSurface,
@@ -167,6 +170,11 @@ const OUTLINE_TOGGLE_ACTION = 'editor-toggle-node';
 const PALETTE_ACTION = 'editor-show-component';
 const PROBLEM_ACTION = 'editor-select-problem';
 const NEW_ACTION = 'editor-new';
+// KF-MHY1GB: each rail switches between focus areas with a segmented tab strip.
+const DOCUMENT_TAB_ACTION = 'editor-document-tab';
+const INSPECTOR_TAB_ACTION = 'editor-inspector-tab';
+type DocumentArea = 'outline' | 'components' | 'problems';
+type InspectorArea = 'properties' | 'flow' | 'children';
 const SAVE_ACTION = 'editor-save';
 const SAVE_AS_ACTION = 'editor-save-as';
 const SAVE_AS_DIALOG = 'editor-save-as-dialog';
@@ -408,6 +416,8 @@ export function createEditor(options: EditorOptions) {
   const history = new History();
   const historyVersion = signal(0);
   const autosave = options.storage && createAutosave(options.storage);
+  const documentArea = signal<DocumentArea>('outline');
+  const inspectorArea = signal<InspectorArea>('properties');
   const saveAsError = signal('');
   const fieldErrors = signal<Readonly<Record<string, string>>>({});
   const addZone = signal('');
@@ -543,6 +553,57 @@ export function createEditor(options: EditorOptions) {
         />
       )),
     ]);
+
+  /**
+   * A segmented strip of tabs `areas` under strip `id`, then one tabpanel per
+   * area with only the current one shown. Hidden panels stay rendered, so
+   * their fields keep their state while another area shows.
+   */
+  const areaTabs = <Area extends string>(
+    id: string,
+    label: string,
+    action: string,
+    current: Area,
+    allocation: 'fill' | 'intrinsic',
+    areas: readonly {
+      area: Area;
+      name: string;
+      trailing?: SafeHtml;
+      panel: unknown;
+    }[],
+  ) => [
+    <TabBar
+      id={id}
+      label={label}
+      presentation="segmented"
+      allocation={allocation}
+    >
+      {areas.map(({ area, name, trailing }) => (
+        <TabBarItem
+          id={`${id}-${area}`}
+          name={name}
+          selected={area === current}
+          closable={false}
+          presentation="segmented"
+          size="compact"
+          selectAction={action}
+          tabId={`${id}-${area}-tab`}
+          panelId={`${id}-${area}-panel`}
+          trailing={trailing}
+        />
+      ))}
+    </TabBar>,
+    ...areas.map(({ area, panel }) => (
+      <div
+        role="tabpanel"
+        id={`${id}-${area}-panel`}
+        aria-labelledby={`${id}-${area}-tab`}
+        hidden={area !== current}
+      >
+        {panel as SafeHtml}
+      </div>
+    )),
+  ];
 
   const inspector = (document: ViewDocument) => {
     const current = selection.value;
@@ -875,6 +936,8 @@ export function createEditor(options: EditorOptions) {
         ),
       );
       select({ kind: 'node', id: node.id });
+      // A new node opens on its Properties, ready to fill in.
+      inspectorArea.value = 'properties';
       return;
     }
     const to = dropFor(move);
@@ -1024,13 +1087,8 @@ export function createEditor(options: EditorOptions) {
       : [];
     const chosen =
       addable.find((item) => item.value === addComponent.value) ?? addable[0];
-    return (
+    const properties = (
       <List>
-        <ListHeader
-          label={node.name ? `${node.name} · ${title}` : title}
-          count={component.props.length}
-          countLabel="props"
-        />
         <List controlInsets="trbl">
           <TextField
             label="Name"
@@ -1106,7 +1164,10 @@ export function createEditor(options: EditorOptions) {
           </>
         ) : undefined}
         {bindSection(node, component)}
-        {moveSection(node)}
+      </List>
+    );
+    const flow = (
+      <List>
         {controlFlowSection(
           doc.value,
           viewCatalog,
@@ -1114,6 +1175,11 @@ export function createEditor(options: EditorOptions) {
           fieldErrors.value['#item'],
           otherwiseChoices,
         )}
+        {moveSection(node)}
+      </List>
+    );
+    const children = (
+      <List>
         <ListHeader label="Add a child" size="xs" />
         {zones.length && zone ? (
           <List controlInsets="trbl" gap>
@@ -1153,6 +1219,27 @@ export function createEditor(options: EditorOptions) {
         {zones.length && zone
           ? addSlotFields(doc.value, node.id, fieldErrors.value['#slot'])
           : undefined}
+      </List>
+    );
+    return (
+      <List>
+        <ListHeader
+          label={node.name ? `${node.name} · ${title}` : title}
+          count={component.props.length}
+          countLabel="props"
+        />
+        {areaTabs(
+          'editor-inspector-areas',
+          'Inspector areas',
+          INSPECTOR_TAB_ACTION,
+          inspectorArea.value,
+          'fill',
+          [
+            { area: 'properties', name: 'Properties', panel: properties },
+            { area: 'flow', name: 'Flow', panel: flow },
+            { area: 'children', name: 'Children', panel: children },
+          ],
+        )}
       </List>
     );
   };
@@ -1350,24 +1437,52 @@ export function createEditor(options: EditorOptions) {
               },
               content: (
                 <List>
-                  {problems
-                    ? [
-                        <ListHeader
-                          label="Problems"
-                          count={problems}
-                          countLabel="problems"
-                        />,
-                        problemRows(problemList),
-                      ]
-                    : undefined}
-                  <ListHeader
-                    label="Outline"
-                    count={nodes}
-                    countLabel="nodes"
-                  />
-                  {outline(document, problemCounts(problemList))}
-                  <ListHeader label="Components" />
-                  {palette()}
+                  {areaTabs(
+                    'editor-document-areas',
+                    'Document areas',
+                    DOCUMENT_TAB_ACTION,
+                    documentArea.value,
+                    // Names of different lengths: each tab takes its own width.
+                    'intrinsic',
+                    [
+                      {
+                        area: 'outline',
+                        name: 'Outline',
+                        // The tab names the area; the Preview header counts
+                        // its nodes.
+                        panel: (
+                          <List>
+                            {outline(document, problemCounts(problemList))}
+                          </List>
+                        ),
+                      },
+                      {
+                        area: 'components',
+                        name: 'Components',
+                        panel: <List>{palette()}</List>,
+                      },
+                      {
+                        area: 'problems',
+                        name: 'Problems',
+                        trailing: problems ? (
+                          <Badge
+                            tone="danger"
+                            label={`${problems} ${problems === 1 ? 'problem' : 'problems'}`}
+                          >
+                            {problems}
+                          </Badge>
+                        ) : undefined,
+                        panel: problems ? (
+                          <List>{problemRows(problemList)}</List>
+                        ) : (
+                          <EmptyState
+                            title="No problems"
+                            detail="The document is valid."
+                          />
+                        ),
+                      },
+                    ],
+                  )}
                 </List>
               ),
             }}
@@ -1608,6 +1723,7 @@ export function createEditor(options: EditorOptions) {
     const child = seededNode(key);
     commit(withCatalog(insertNode(base, id, zone, child), key));
     select({ kind: 'node', id: child.id });
+    inspectorArea.value = 'properties';
     // The new node's form opens at its top; take keyboard focus there too,
     // so it does not stay on the Add button at the bottom of the old form.
     window.requestAnimationFrame(() =>
@@ -1968,6 +2084,16 @@ export function createEditor(options: EditorOptions) {
         // KF-QSSTMX: a new empty document; with storage it is a new draft,
         // and the previous document stays in its file.
         [NEW_ACTION]: () => load(emptyDocument()),
+        [DOCUMENT_TAB_ACTION]: (_event, target) => {
+          documentArea.value = target.dataset.tabId!.slice(
+            'editor-document-areas-'.length,
+          ) as DocumentArea;
+        },
+        [INSPECTOR_TAB_ACTION]: (_event, target) => {
+          inspectorArea.value = target.dataset.tabId!.slice(
+            'editor-inspector-areas-'.length,
+          ) as InspectorArea;
+        },
         [SAVE_AS_ACTION]: (_event, target) => {
           const dialog = root.querySelector<HTMLDialogElement>(
             `#${SAVE_AS_DIALOG}`,
@@ -2033,6 +2159,8 @@ export function createEditor(options: EditorOptions) {
         canDrop: (move) => dropFor(move) !== undefined,
         onMove: applyMove,
       }),
+      // Arrow keys move between a strip's tabs; nothing here reorders.
+      wireTabBars(root, { onReorder: () => {} }),
       wireCanvasDrag(root, {
         sourceOf: (element) => {
           const address = element.dataset.editorSlotAddress;

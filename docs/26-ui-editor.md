@@ -111,6 +111,18 @@ and the click that ends a drag does not change the selection. Near a
 target's edge, before or after comes first and inside is the fallback, so a
 container that nothing can sit beside (the root) still takes a drop.
 
+Each rail switches between focus areas with a segmented `TabBar` under its
+toolbar (KF-MHY1GB: rail areas). The Document rail shows Outline, Components,
+or Problems (with a count badge while there are any, and "No problems"
+otherwise); its tabs take their own widths so the names fit. The Inspector,
+for a selected node, shows Properties (name, props, promote, bind), Flow
+(Show, Otherwise, Repeat, Move to), or Children (Add a child, slots); a
+component, a slot, or an empty selection shows its single view without tabs.
+Each panel is a `tabpanel`; hidden panels stay rendered, so a field keeps its
+state while another area shows. The Inspector's area persists across
+selections, except that a node just added (from Add a child or the palette)
+opens on its Properties. Arrow keys move between tabs (`wireTabBars`).
+
 Components drag from the palette onto the canvas the same way (KF-78MHM8:
 palette drag). The dragged component is a new node with its required props
 seeded, as Add a child makes it; `insertPlacement` asks the validator where
