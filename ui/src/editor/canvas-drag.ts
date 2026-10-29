@@ -20,6 +20,19 @@ export interface CanvasDragOptions {
   readonly targetOf: (element: HTMLElement) => string;
   readonly canDrop: (move: TreeListMove) => boolean;
   readonly onMove: (move: TreeListMove) => void;
+  /**
+   * Draggable elements outside the canvas (KF-78MHM8: the component palette),
+   * and the source id of each; they drop on the canvas like canvas nodes.
+   */
+  readonly external?: {
+    readonly selector: string;
+    readonly sourceOf: (element: HTMLElement) => string | undefined;
+  };
+  /**
+   * The outline id of the document's root, which a drop on the canvas's
+   * blank space lands inside (an empty root Pane has no height to hit).
+   */
+  readonly rootOf?: () => string;
   /** The element under a point; `document.elementFromPoint` by default. */
   readonly pick?: (x: number, y: number) => Element | null;
 }
@@ -45,7 +58,9 @@ function positionsAt(
     ? (x - box.left) / box.width
     : (y - box.top) / box.height;
   const edge: TreeListDropPosition = offset < 0.5 ? 'before' : 'after';
-  return offset < 0.25 || offset > 0.75 ? [edge] : ['inside', edge];
+  // Near an edge, beside comes first; a container that cannot take a node
+  // beside it (the root) still takes it inside.
+  return offset < 0.25 || offset > 0.75 ? [edge, 'inside'] : ['inside', edge];
 }
 
 /**
@@ -79,7 +94,17 @@ export function wireCanvasDrag(
 
   /** The legal move at a point, with the target element, if any. */
   const moveAt = (x: number, y: number) => {
-    const element = pick(x, y)?.closest<HTMLElement>(DRAGGABLE);
+    const hit = pick(x, y);
+    const element = hit?.closest<HTMLElement>(DRAGGABLE);
+    if (press && !element && hit === canvas() && options.rootOf) {
+      const move = {
+        sourceId: press.source,
+        target: { id: options.rootOf(), position: 'inside' as const },
+      };
+      if (move.target.id !== press.source && options.canDrop(move))
+        return { move, element: canvas(), across: false };
+      return undefined;
+    }
     if (!press || !element || !canvas().contains(element)) return undefined;
     const id = options.targetOf(element);
     if (id === press.source) return undefined;
@@ -127,9 +152,12 @@ export function wireCanvasDrag(
               box.width,
               line,
             ];
-    mark.style.inset = `${y}px auto auto ${x}px`;
-    mark.style.width = `${width}px`;
-    mark.style.height = `${height}px`;
+    // A ring around the whole canvas would sit on its clipped edges; draw it
+    // a little inside instead.
+    const inset = element === host ? 4 : 0;
+    mark.style.inset = `${y + inset}px auto auto ${x + inset}px`;
+    mark.style.width = `${width - inset * 2}px`;
+    mark.style.height = `${height - inset * 2}px`;
   };
 
   const onDown = (event: Event) => {
@@ -139,9 +167,13 @@ export function wireCanvasDrag(
     if (pointer.button !== 0) return;
     // The innermost node that can move: pressing a repeated row drags the
     // list it repeats in.
-    let element = (pointer.target as Element).closest<HTMLElement>(DRAGGABLE);
-    let source: string | undefined;
-    while (element && canvas().contains(element)) {
+    const target = pointer.target as Element;
+    const external =
+      options.external &&
+      target.closest<HTMLElement>(options.external.selector);
+    let element = target.closest<HTMLElement>(DRAGGABLE);
+    let source = external ? options.external!.sourceOf(external) : undefined;
+    while (!external && element && canvas().contains(element)) {
       source = options.sourceOf(element);
       if (source) break;
       element = element.parentElement?.closest<HTMLElement>(DRAGGABLE) ?? null;

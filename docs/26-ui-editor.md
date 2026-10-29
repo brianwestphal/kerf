@@ -107,7 +107,19 @@ pixels, a press becomes a drag; the innermost node or slot under the pointer
 is the target, before, after, or inside is read along its parent's flow (left
 to right in a row), and a line or ring drawn over the canvas shows a legal
 drop. Pressing a repeated row drags the list it repeats in, Escape cancels,
-and the click that ends a drag does not change the selection.
+and the click that ends a drag does not change the selection. Near a
+target's edge, before or after comes first and inside is the fallback, so a
+container that nothing can sit beside (the root) still takes a drop.
+
+Components drag from the palette onto the canvas the same way (KF-78MHM8:
+palette drag). The dragged component is a new node with its required props
+seeded, as Add a child makes it; `insertPlacement` asks the validator where
+it may land, it joins the document's catalogs when it comes from another
+package, and the drop selects it. A drop on the canvas's blank space lands
+inside the document's root, which is how an empty document gets its first
+node (an empty Pane has no height to hit). A click without a drag still shows
+the component's documentation. Dropping onto outline rows is not built yet
+(KF-67K2VP); Add a child stays the keyboard path.
 
 The canvas preview is rendered and test-mounted outside the editor's own
 render (KF-P6FPG2: preview containment), so a document whose preview fails

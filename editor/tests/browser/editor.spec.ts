@@ -732,3 +732,58 @@ for (const width of [1440, 390] as const) {
     ).toBeVisible();
   });
 }
+
+// KF-78MHM8: components drag from the palette onto the canvas.
+test('drags components from the palette onto the canvas', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.getByRole('button', { name: 'New' }).click();
+  await expect(page.getByText('1 node · valid')).toBeVisible();
+  const canvas = page.locator('[data-editor-canvas]');
+  const drag = async (
+    key: string,
+    to: { x: number; y: number },
+    shot?: string,
+  ) => {
+    const row = page.locator(`[data-editor-palette="${key}"]`);
+    await row.scrollIntoViewIfNeeded();
+    const box = (await row.boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(to.x, to.y, { steps: 8 });
+    await expect(canvas.locator('.kui-editor__drop')).toBeVisible();
+    if (shot)
+      await page.screenshot({
+        path: info.outputPath(shot),
+        animations: 'disabled',
+      });
+    await page.mouse.up();
+  };
+  const area = (await canvas.boundingBox())!;
+  await drag(
+    '@kerfjs/ui:text',
+    {
+      x: area.x + area.width / 2,
+      y: area.y + area.height / 2,
+    },
+    'KF-78MHM8-dragging-1440.png',
+  );
+  await expect(page.getByText('2 nodes · valid')).toBeVisible();
+  // The added node is selected; its props show in the Inspector.
+  await expect(page.locator('[data-workbench-rail="right"]')).toContainText(
+    'Text',
+  );
+  const added = canvas.locator('[data-kerf-node]').nth(1);
+  const box = (await added.boundingBox())!;
+  await drag('@kerfjs/ui:button', {
+    x: box.x + box.width / 2,
+    y: box.y + box.height - 2,
+  });
+  await expect(page.getByText('autosaved · 3 nodes · valid')).toBeVisible();
+  await expect(canvas.getByRole('button')).toBeVisible();
+  await page.screenshot({
+    path: info.outputPath('KF-78MHM8-dropped-1440.png'),
+    animations: 'disabled',
+  });
+});

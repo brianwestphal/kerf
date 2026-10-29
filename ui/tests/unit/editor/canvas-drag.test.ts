@@ -203,12 +203,28 @@ describe('canvas drag', () => {
     hover(outside);
     pointer('pointermove', folders, 50, 150);
     expect(overlay().hidden).toBe(true);
-    // The Pane root is no place to land beside.
-    hover(node(PANE));
-    at(node(PANE), 0, 0, 800, 600);
-    pointer('pointermove', folders, 50, 2);
-    pointer('pointerup', folders, 50, 2);
+    pointer('pointerup', folders, 50, 150);
     expect(editor.document.value).toBe(before);
+  });
+
+  // KF-78MHM8: near a container's edge, a drop that cannot land beside it
+  // lands inside it, so the root takes drops anywhere.
+  it('drops inside the root Pane at its edge, since nothing goes beside it', () => {
+    const { editor, node, overlay, pointer, hover } = setUp();
+    const folders = node(FOLDERS);
+    at(folders, 0, 100, 800, 120);
+    at(node(PANE), 0, 0, 800, 600);
+    pointer('pointerdown', folders, 10, 110);
+    hover(node(PANE));
+    pointer('pointermove', folders, 50, 2);
+    expect(overlay().dataset.drop).toBe('ring');
+    pointer('pointerup', folders, 50, 2);
+    // Inside takes the first of the root's zones that accepts the node.
+    expect(placementOf(editor.document.value, FOLDERS)).toEqual({
+      parent: PANE,
+      zone: 'header',
+      index: 1,
+    });
   });
 
   it('ignores other buttons, other pointers, undraggable nodes, and cancels on Escape or pointercancel', () => {
@@ -243,5 +259,167 @@ describe('canvas drag', () => {
     expect(editor.selection.value).toEqual({ kind: 'node', id: FOLDERS });
     // A pointerdown outside any node is not a drag.
     pointer('pointerdown', document.body, 0, 0);
+  });
+
+  // KF-78MHM8: palette rows drag onto the canvas to add a component.
+  describe('from the palette', () => {
+    const paletteRow = (root: HTMLElement, key: string) =>
+      root.querySelector<HTMLElement>(`[data-editor-palette="${key}"]`)!;
+
+    it('adds the dragged component where it drops and selects it', () => {
+      const { root, editor, node, overlay, pointer, hover } = setUp();
+      const badge = paletteRow(root, '@kerfjs/ui:badge');
+      const folders = node(FOLDERS);
+      at(folders, 0, 100, 800, 120);
+      pointer('pointerdown', badge, 10, 700);
+      hover(folders);
+      pointer('pointermove', badge, 50, 215);
+      expect(overlay().dataset.drop).toBe('line');
+      pointer('pointerup', badge, 50, 215);
+      const added = content(editor.document.value)[1]!;
+      expect(editor.selection.value).toEqual({ kind: 'node', id: added });
+      expect(placementOf(editor.document.value, added)).toEqual({
+        parent: PANE,
+        zone: 'content',
+        index: 1,
+      });
+      // The click that ends the drag does not open the component's docs.
+      badge.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      expect(editor.selection.value).toEqual({ kind: 'node', id: added });
+    });
+
+    it('offers no drop over a node where the component fits nowhere', () => {
+      const { root, editor, node, overlay, pointer, hover } = setUp();
+      const before = editor.document.value;
+      // A ToolbarControlGroup belongs in a Toolbar only.
+      const group = paletteRow(root, '@kerfjs/ui:toolbar-control-group');
+      const folders = node(FOLDERS);
+      at(folders, 0, 100, 800, 120);
+      pointer('pointerdown', group, 10, 700);
+      hover(folders);
+      pointer('pointermove', group, 50, 160);
+      expect(overlay().hidden).toBe(true);
+      pointer('pointerup', group, 50, 160);
+      expect(editor.document.value).toBe(before);
+    });
+
+    it('still shows the component on a click without a drag', () => {
+      const { root, editor, pointer } = setUp();
+      const badge = paletteRow(root, '@kerfjs/ui:badge');
+      pointer('pointerdown', badge, 10, 700);
+      pointer('pointerup', badge, 10, 700);
+      badge.click();
+      expect(editor.selection.value).toEqual({
+        kind: 'component',
+        key: '@kerfjs/ui:badge',
+      });
+    });
+
+    it('lands beside a repeated row when the component cannot go inside it', () => {
+      const { root, editor, node, overlay, pointer, hover } = setUp();
+      const before = editor.document.value;
+      const button = paletteRow(root, '@kerfjs/ui:button');
+      const row = node(FOLDERS).querySelector<HTMLElement>('[data-kerf-node]')!;
+      at(row, 0, 100, 800, 40);
+      pointer('pointerdown', button, 10, 700);
+      hover(row);
+      pointer('pointermove', button, 50, 120);
+      expect(overlay().hidden).toBe(false);
+      // Beside the repeated row means beside its list; inside is illegal.
+      expect(overlay().dataset.drop).toBe('line');
+      pointer('pointerup', button, 50, 120);
+      expect(editor.document.value).not.toBe(before);
+      expect(placementOf(editor.document.value, FOLDERS)?.index).toBe(0);
+    });
+  });
+
+  it('fills an empty document by dropping on its root', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    const editor = createEditor({
+      document: {
+        schema: 'kerf-ui-document/v1',
+        name: 'Untitled',
+        catalogs: ['@kerfjs/ui'],
+        root: { id: PANE, type: '@kerfjs/ui:pane' },
+      } as ViewDocument,
+    });
+    mount(root, editor.render);
+    let under: Element | null = null;
+    Object.defineProperty(document, 'elementFromPoint', {
+      configurable: true,
+      value: () => under,
+    });
+    cleanup = editor.wire(root);
+    const canvas = root.querySelector<HTMLElement>('[data-editor-canvas]')!;
+    at(canvas, 0, 0, 800, 600);
+    const pane = canvas.querySelector<HTMLElement>(
+      `[data-kerf-node="${PANE}"]`,
+    )!;
+    at(pane, 0, 0, 800, 600);
+    const text = root.querySelector<HTMLElement>(
+      '[data-editor-palette="@kerfjs/ui:text"]',
+    )!;
+    const fire = (type: string, x: number, y: number) => {
+      const event = new Event(type, { bubbles: true, cancelable: true });
+      for (const [key, value] of Object.entries({
+        clientX: x,
+        clientY: y,
+        button: 0,
+        pointerId: 1,
+      }))
+        Object.defineProperty(event, key, { value });
+      text.dispatchEvent(event);
+    };
+    // An empty Pane has no height, so the pointer is over the canvas.
+    fire('pointerdown', 10, 700);
+    under = canvas;
+    fire('pointermove', 400, 300);
+    const overlay = canvas.querySelector<HTMLElement>('.kui-editor__drop')!;
+    expect(overlay.dataset.drop).toBe('ring');
+    // Drawn just inside the canvas, whose edges clip.
+    expect(overlay.style.width).toBe('792px');
+    fire('pointerup', 400, 300);
+    const zones = editor.document.value.root.zones!;
+    const [zone] = Object.keys(zones);
+    expect((zones[zone!] as readonly { type?: string }[])[0]!.type).toBe(
+      '@kerfjs/ui:text',
+    );
+    // A component the root cannot hold gets no drop on blank canvas.
+    const group = root.querySelector<HTMLElement>(
+      '[data-editor-palette="@kerfjs/ui:toolbar-control-group"]',
+    )!;
+    const press = (type: string) => {
+      const event = new Event(type, { bubbles: true, cancelable: true });
+      for (const [key, value] of Object.entries({
+        clientX: 400,
+        clientY: 300,
+        button: 0,
+        pointerId: 1,
+      }))
+        Object.defineProperty(event, key, { value });
+      group.dispatchEvent(event);
+    };
+    press('pointerdown');
+    under = canvas;
+    const move = new Event('pointermove', { bubbles: true, cancelable: true });
+    for (const [key, value] of Object.entries({
+      clientX: 600,
+      clientY: 500,
+      pointerId: 1,
+    }))
+      Object.defineProperty(move, key, { value });
+    group.dispatchEvent(move);
+    expect(overlay.hidden).toBe(true);
+    press('pointerup');
+    // The root itself takes a drop on it too, and a canvas drag of the
+    // root over blank canvas goes nowhere.
+    fire('pointerdown', 10, 700);
+    under = pane;
+    fire('pointermove', 400, 300);
+    fire('pointerup', 400, 300);
+    expect(
+      Object.values(editor.document.value.root.zones!).flat(),
+    ).toHaveLength(2);
   });
 });

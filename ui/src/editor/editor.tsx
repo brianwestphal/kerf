@@ -117,7 +117,12 @@ import {
   serializeDocument,
   visitNodes,
 } from './model/document.js';
-import { dropPlacement, moveDestinations, sourceOf } from './model/drop.js';
+import {
+  dropPlacement,
+  insertPlacement,
+  moveDestinations,
+  sourceOf,
+} from './model/drop.js';
 import {
   bindingOptions,
   History,
@@ -522,22 +527,22 @@ export function createEditor(options: EditorOptions) {
     ));
 
   const palette = () =>
-    catalog
-      .paletteGroups()
-      .map((group) => [
-        <ListHeader label={group.category} size="xs" />,
-        ...group.items.map((item) => (
-          <ListItem
-            action={PALETTE_ACTION}
-            itemId={item.key}
-            label={item.name}
-            selected={
-              selection.value?.kind === 'component' &&
-              selection.value.key === item.key
-            }
-          />
-        )),
-      ]);
+    catalog.paletteGroups().map((group) => [
+      <ListHeader label={group.category} size="xs" />,
+      ...group.items.map((item) => (
+        <ListItem
+          action={PALETTE_ACTION}
+          itemId={item.key}
+          label={item.name}
+          // KF-78MHM8: a palette row drags onto the canvas to add one.
+          rootAttributes={{ 'data-editor-palette': item.key }}
+          selected={
+            selection.value?.kind === 'component' &&
+            selection.value.key === item.key
+          }
+        />
+      )),
+    ]);
 
   const inspector = (document: ViewDocument) => {
     const current = selection.value;
@@ -844,7 +849,34 @@ export function createEditor(options: EditorOptions) {
    * Applies a legal drag move from the outline or the canvas and keeps the
    * moved node or slot selected.
    */
+  /** The id a palette drag of component `key` carries. */
+  const PALETTE_SOURCE = 'component:';
+  /**
+   * The node a palette drag adds, made once per drag so its id, and so the
+   * cached drop results, stay the same while it moves.
+   */
+  let dragged: ViewNode | undefined;
+  const draggedNode = (sourceId: string) => {
+    const key = sourceId.slice(PALETTE_SOURCE.length);
+    if (dragged?.type !== key) dragged = seededNode(key);
+    return dragged;
+  };
+
   const applyMove = (move: TreeListMove) => {
+    if (move.sourceId.startsWith(PALETTE_SOURCE)) {
+      const to = dropFor(move);
+      if (!to) return;
+      const node = draggedNode(move.sourceId);
+      dragged = undefined;
+      commit(
+        withCatalog(
+          insertNode(doc.value, to.parent, to.zone, node, to.index),
+          node.type,
+        ),
+      );
+      select({ kind: 'node', id: node.id });
+      return;
+    }
     const to = dropFor(move);
     const from = sourceOf(doc.value, move.sourceId);
     if (!to || !from) return;
@@ -876,14 +908,23 @@ export function createEditor(options: EditorOptions) {
     if (!dropCache.drops.has(key))
       dropCache.drops.set(
         key,
-        dropPlacement(
-          doc.value,
-          viewCatalog,
-          move.sourceId,
-          move.target.id,
-          move.target.position,
-          zoneKeys,
-        ),
+        move.sourceId.startsWith(PALETTE_SOURCE)
+          ? insertPlacement(
+              doc.value,
+              viewCatalog,
+              draggedNode(move.sourceId),
+              move.target.id,
+              move.target.position,
+              zoneKeys,
+            )
+          : dropPlacement(
+              doc.value,
+              viewCatalog,
+              move.sourceId,
+              move.target.id,
+              move.target.position,
+              zoneKeys,
+            ),
       );
     return dropCache.drops.get(key) as ReturnType<typeof dropPlacement>;
   };
@@ -2010,6 +2051,12 @@ export function createEditor(options: EditorOptions) {
         },
         canDrop: (move) => dropFor(move) !== undefined,
         onMove: applyMove,
+        rootOf: () => doc.value.root.id,
+        external: {
+          selector: '[data-editor-palette]',
+          sourceOf: (element) =>
+            `${PALETTE_SOURCE}${element.dataset.editorPalette}`,
+        },
       }),
       wireFilePickers(root, {
         onFiles: ({ files, id }) => {

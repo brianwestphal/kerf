@@ -13,10 +13,12 @@ import type {
 import { findNode, visitNodes } from './document.js';
 import {
   addsProblems,
+  insertNode,
   placeChild,
   type Placement,
   placementOf,
   placeNode,
+  withCatalog,
 } from './edits.js';
 import { slotRowAddress } from './outline.js';
 
@@ -57,10 +59,43 @@ export function dropPlacement(
 ): Placement | undefined {
   const from = sourceOf(document, id);
   if (!from) return undefined;
-  const legal = (to: Placement) => {
+  return placementAt(document, target, position, zonesOf, (to) => {
     const next = placeChild(document, from, to).document;
     return next !== document && !addsProblems(document, next, catalog);
-  };
+  });
+}
+
+/**
+ * Where dropping new node `node` (not yet in the document) on `target` at
+ * `position` would insert it, or undefined when that is not legal (KF-78MHM8:
+ * dragging a component from the palette).
+ */
+export function insertPlacement(
+  document: ViewDocument,
+  catalog: ViewCatalog,
+  node: ViewNode,
+  target: string,
+  position: DropPosition,
+  zonesOf: (node: ViewNode) => readonly string[],
+): Placement | undefined {
+  return placementAt(document, target, position, zonesOf, (to) => {
+    // As adding does, the node's package joins the document's catalogs.
+    const next = withCatalog(
+      insertNode(document, to.parent, to.zone, node, to.index),
+      node.type,
+    );
+    return !addsProblems(document, next, catalog);
+  });
+}
+
+/** The placement a drop on `target` at `position` asks for, if `legal`. */
+function placementAt(
+  document: ViewDocument,
+  target: string,
+  position: DropPosition,
+  zonesOf: (node: ViewNode) => readonly string[],
+  legal: (to: Placement) => boolean,
+): Placement | undefined {
   if (position === 'inside') {
     const node = findNode(document, target)?.node;
     if (!node) return undefined;

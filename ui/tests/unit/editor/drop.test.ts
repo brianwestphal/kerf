@@ -9,6 +9,7 @@ import { setOtherwise } from '../../../src/editor/model/control-flow.js';
 import { findNode } from '../../../src/editor/model/document.js';
 import {
   dropPlacement,
+  insertPlacement,
   moveDestinations,
 } from '../../../src/editor/model/drop.js';
 import {
@@ -213,6 +214,37 @@ describe('drops', () => {
     expect(
       dropPlacement(inbox, viewCatalog, TOOLBAR, COMPOSE, 'inside', zonesOf),
     ).toBeUndefined();
+  });
+
+  // KF-78MHM8: a component dragged from the palette is not in the document
+  // yet; the same targets decide where it would land.
+  it('places a new node beside or inside a target, legally only', () => {
+    const badge = {
+      id: '01JB8Z1M6Q8E1X9V4S7K2R3TZZ',
+      type: '@kerfjs/ui:badge',
+      props: { children: '3' },
+    };
+    const place = (target: string, position: 'before' | 'after' | 'inside') =>
+      insertPlacement(inbox, viewCatalog, badge, target, position, zonesOf);
+    expect(place(FOLDERS, 'after')).toEqual({
+      parent: PANE,
+      zone: 'content',
+      index: 1,
+    });
+    expect(place(PANE, 'inside')).toMatchObject({ parent: PANE });
+    // A repeated row's zones would hold a Badge, so inside it is legal.
+    expect(place(ROW, 'inside')).toMatchObject({ parent: ROW });
+    // A Button cannot go inside the repeated row (KUI-V014).
+    const button = {
+      id: '01JB8Z1M6Q8E1X9V4S7K2R3TZY',
+      type: '@kerfjs/ui:button',
+      props: { children: 'Go' },
+    };
+    expect(
+      insertPlacement(inbox, viewCatalog, button, ROW, 'inside', zonesOf),
+    ).toBeUndefined();
+    expect(place('missing', 'inside')).toBeUndefined();
+    expect(place(PANE, 'before')).toBeUndefined();
   });
 
   it('lists the zones a node can move into, other than its own', () => {
