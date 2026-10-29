@@ -1,10 +1,11 @@
 // KF-KX77TV: the inspector edits the selected node, structural actions move,
 // delete, and add nodes, and every edit is undoable.
+import { validateView } from '@kerfjs/ui/view';
 import { mount } from 'kerfjs';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { findNode } from '../../../src/editor/model/document.js';
-import { createEditor } from './kerf-catalog.js';
+import { createEditor, viewCatalog } from './kerf-catalog.js';
 
 const PANE = '01JB8Z1M6Q8E1X9V4S7K2R3T5A';
 const TOOLBAR = '01JB8Z1M6Q8E1X9V4S7K2R3T5B';
@@ -187,6 +188,42 @@ describe('list props (KF-HNNWN9)', () => {
       expect(root.textContent).not.toContain('cannot render');
     },
   );
+
+  it('edits a size union from keywords or a builder call (KF-Q5AXNP)', () => {
+    const { root, editor, node } = open(FOLDERS);
+    const gap = () =>
+      field(root, '[data-editor-prop="gap"][data-editor-kind="size"]');
+    const builder = () =>
+      root.querySelector<HTMLElement>(
+        '[data-editor-prop="gap"][data-editor-kind="css"]',
+      );
+    expect(builder()).toBeNull();
+    choose(gap(), 'm');
+    expect(node()?.props?.gap).toBe('m');
+    choose(gap(), 'true');
+    expect(node()?.props?.gap).toBe(true);
+    // Custom clears the keyword and opens the builder field.
+    choose(gap(), 'custom');
+    expect(node()?.props).not.toHaveProperty('gap');
+    expect(gap().getAttribute('value')).toBe('custom');
+    // Undo brings the keyword back, and the Select shows it, not Custom.
+    click(root, 'editor-undo');
+    expect(node()?.props?.gap).toBe(true);
+    expect(gap().getAttribute('value')).toBe('true');
+    expect(builder()).toBeNull();
+    choose(gap(), 'custom');
+    type(builder()!, 'rgb(0, 0, 0)');
+    expect(builder()!.textContent).toContain('This prop takes');
+    type(builder()!, 'px(12)');
+    expect(node()?.props?.gap).toEqual({ $css: 'px(12)' });
+    expect(validateView(editor.document.value, viewCatalog).valid).toBe(true);
+    // A keyword again hides the builder field.
+    choose(gap(), 'xs');
+    expect(node()?.props?.gap).toBe('xs');
+    expect(builder()).toBeNull();
+    choose(gap(), '');
+    expect(node()?.props).not.toHaveProperty('gap');
+  });
 
   it('edits a list prop as JSON and refuses a value its type does not take', () => {
     const { root, node } = add('@kerfjs/ui:combobox');

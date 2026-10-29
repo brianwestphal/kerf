@@ -333,6 +333,40 @@ test('edits, adds, moves, deletes, and undoes from the inspector', async ({
 
 // KF-K5TKCV: a prop is bound to a param through the Bind section's popups,
 // and the preview follows the binding.
+test('edits a List gap from its size keywords and a builder call', async ({
+  page,
+}, info) => {
+  // KF-Q5AXNP: a gap is a union of spacing tokens and css-values builders.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const FOLDERS = '01JB8Z1M6Q8E1X9V4S7K2R3T5E';
+  await page
+    .locator(`[data-action="editor-select-node"][data-item-id="${FOLDERS}"]`)
+    .click();
+  const list = page.locator(
+    `[data-editor-canvas] [data-kerf-node="${FOLDERS}"]`,
+  );
+  const gap = page.locator('[data-editor-prop="gap"][data-editor-kind="size"]');
+  await gap.click();
+  await page.getByRole('option', { name: 'l', exact: true }).click();
+  await expect(list).toHaveAttribute('data-gap', 'true');
+  await expect(list).toHaveAttribute('style', /--_kui-list-gap:/);
+
+  await gap.click();
+  await page.getByRole('option', { name: 'Custom…' }).click();
+  await expect(list).toHaveAttribute('data-gap', 'false');
+  const builder = page
+    .locator('[data-editor-prop="gap"][data-editor-kind="css"]')
+    .getByRole('textbox');
+  await builder.fill('px(12)');
+  await builder.press('Enter');
+  await expect(list).toHaveAttribute('style', /--_kui-list-gap:12px/);
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-q5axnp-list-gap-custom-1440.png'),
+    animations: 'disabled',
+  });
+});
+
 test('binds a repeated row’s label to a document param', async ({
   page,
 }, info) => {

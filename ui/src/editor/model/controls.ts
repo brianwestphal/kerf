@@ -7,20 +7,98 @@ import {
   type ViewValue,
 } from '@kerfjs/ui/view';
 
-import { exampleValue, isStructured, type SlotNamer } from './examples.js';
+import {
+  exampleValue,
+  isStructured,
+  resolveType,
+  type SlotNamer,
+} from './examples.js';
 import type { InspectorProp } from './inspector.js';
 
 export type ControlKind =
-  'select' | 'switch' | 'text' | 'number' | 'css' | 'list' | 'readonly';
+  | 'select'
+  | 'size'
+  | 'switch'
+  | 'text'
+  | 'number'
+  | 'css'
+  | 'list'
+  | 'readonly';
 
 type Definitions = Readonly<Record<string, ViewType>>;
 
 export interface Control {
   readonly kind: ControlKind;
-  /** select: the choices, with '' meaning "use the default". */
+  /** select, size: the choices, with '' meaning "use the default". */
   readonly choices?: readonly string[];
   /** The control's current raw value: text, a choice, or a checked state. */
   readonly raw: string | boolean;
+  /** size: the builder call of a custom (`$css`) value. */
+  readonly css?: string;
+}
+
+/** The size choice that edits a css-values builder call instead. */
+export const CUSTOM_SIZE = 'custom';
+
+/** The spacing scale, in order, so a size Select lists tokens smallest first. */
+const SCALE = ['none', '2xs', 'xs', 's', 'm', 'l', 'xl'];
+
+interface UnionMember {
+  readonly kind: string;
+  readonly value?: unknown;
+  readonly values?: readonly unknown[];
+  readonly members?: readonly UnionMember[];
+}
+
+/**
+ * The keyword choices of a size prop (KF-Q5AXNP): a union of a css-value
+ * with keywords, such as a gap (`true`, `"m"`, or `px(8)`), a flex
+ * (`"auto"` or `flex(1)`), or a height (`"viewport"`). `true` stands for a
+ * boolean member. Undefined for any other type. A `{ column, row }` object
+ * member does not rule a union out; such a value edits as JSON.
+ */
+export function sizeKeywords(
+  type: ViewType,
+  definitions: Definitions = {},
+): readonly string[] | undefined {
+  const root = resolveType(type, definitions) as UnionMember | undefined;
+  if (root?.kind !== 'union') return undefined;
+  let css = false;
+  const keywords: string[] = [];
+  const visit = (member: UnionMember): boolean => {
+    switch (member.kind) {
+      case 'css-value':
+        css = true;
+        return true;
+      case 'boolean':
+        keywords.push('true');
+        return true;
+      case 'literal':
+        if (member.value === true) keywords.push('true');
+        else if (typeof member.value === 'string') keywords.push(member.value);
+        return member.value === false || typeof member.value !== 'number';
+      case 'enum':
+        if (!member.values?.every((item) => typeof item === 'string'))
+          return false;
+        keywords.push(...(member.values as string[]));
+        return true;
+      case 'union':
+        return member.members!.every(visit);
+      case 'object':
+        return true;
+      default:
+        return false;
+    }
+  };
+  if (!root.members!.every(visit) || !css) return undefined;
+  const unique = [...new Set(keywords)];
+  // Only a spacing union sorts; a flex's `none` is a keyword, not a token.
+  if (!unique.some((keyword) => SCALE.indexOf(keyword) > 0)) return unique;
+  const rank = (keyword: string) => {
+    const at = SCALE.indexOf(keyword);
+    return at < 0 ? SCALE.length : at;
+  };
+  return unique.sort((a, b) => rank(a) - rank(b));
 }
 
 const isDynamic = (value: ViewValue | undefined) =>
@@ -51,6 +129,24 @@ export function controlFor(
           kind: 'list',
           raw: value === undefined ? '' : JSON.stringify(value, null, 2),
         }
+      : { kind: 'readonly', raw: '' };
+  }
+  const keywords = sizeKeywords(prop.type as ViewType, definitions);
+  if (keywords) {
+    const choices = ['', ...keywords, CUSTOM_SIZE];
+    if (value === undefined) return { kind: 'size', choices, raw: '' };
+    if (
+      value === true ||
+      (typeof value === 'string' && keywords.includes(value))
+    )
+      return { kind: 'size', choices, raw: String(value) };
+    if (isDynamic(value) && '$css' in (value as object)) {
+      const css = String((value as { $css: string }).$css);
+      return { kind: 'size', choices, raw: CUSTOM_SIZE, css };
+    }
+    // A `{ column, row }` gap edits as JSON; a binding stays read-only.
+    return isDynamic(value) && !isBinding(value)
+      ? { kind: 'list', raw: JSON.stringify(value, null, 2) }
       : { kind: 'readonly', raw: '' };
   }
   if (kind === 'css-value') {
@@ -130,6 +226,11 @@ export function valueFromControl(
     }
     case 'switch':
       return { value: raw === true };
+    case 'size':
+      // Custom picks the builder field, which sets the value itself.
+      return raw === 'true'
+        ? { value: true }
+        : { value: raw === '' || raw === CUSTOM_SIZE ? undefined : raw };
     case 'number': {
       const text = String(raw).trim();
       if (text === '') return { value: undefined };

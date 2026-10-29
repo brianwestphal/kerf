@@ -112,6 +112,7 @@ import {
   controlFor,
   type ControlKind,
   cssHint,
+  CUSTOM_SIZE,
   seedProps,
   typeLabel,
   valueFromControl,
@@ -443,6 +444,11 @@ export function createEditor(options: EditorOptions) {
   const rootComponent = signal('');
   const promoteProp = signal('');
   const bindProp = signal('');
+  /**
+   * The size prop (`<node id> <prop>`) whose Select is on Custom with no
+   * builder call yet, so its builder field shows (KF-Q5AXNP).
+   */
+  const customSize = signal('');
   // Every caller passes a changed document (edits clone; moves are checked
   // against isMovable first).
   const commit = (next: ViewDocument) => {
@@ -716,7 +722,48 @@ export function createEditor(options: EditorOptions) {
       'data-editor-prop': prop.name,
       'data-editor-kind': kind,
     });
+    const builderField = (raw: string) => (
+      <TextField
+        label={`${prop.name} value`}
+        value={raw}
+        hint={cssHint(prop.cssValue?.helpers)}
+        placeholder={
+          prop.cssValue?.helpers?.[0] === 'flex' ? 'flex(1)' : 'px(8)'
+        }
+        error={error}
+        rootAttributes={marker('css')}
+      />
+    );
     switch (control.kind) {
+      case 'size': {
+        // A keyword Select, and the builder field while the value is custom.
+        const custom =
+          control.raw === CUSTOM_SIZE ||
+          (control.raw === '' &&
+            customSize.value === `${selectedNodeId()} ${prop.name}`);
+        return (
+          <>
+            <Select
+              name={`prop-${prop.name}`}
+              label={prop.name}
+              value={custom ? CUSTOM_SIZE : String(control.raw)}
+              choices={control.choices!.map((choice) => ({
+                value: choice,
+                label:
+                  choice === ''
+                    ? prop.default !== undefined
+                      ? `Default (${String(prop.default)})`
+                      : 'Not set'
+                    : choice === CUSTOM_SIZE
+                      ? 'Custom…'
+                      : choice,
+              }))}
+              rootAttributes={marker('size')}
+            />
+            {custom ? builderField(control.css ?? '') : undefined}
+          </>
+        );
+      }
       case 'select':
         return (
           <Select
@@ -1867,6 +1914,10 @@ export function createEditor(options: EditorOptions) {
     const name = field.dataset.editorProp!;
     const kind = field.dataset.editorKind as ControlKind;
     if (!id) return;
+    // Custom shows the builder field; a keyword or the default hides it.
+    if (kind === 'size')
+      customSize.value =
+        controlValue(field) === CUSTOM_SIZE ? `${id} ${name}` : '';
     const node = findNode(doc.value, id)!.node;
     // A field renders only for a prop of the node's props entry.
     const prop = propsByKey

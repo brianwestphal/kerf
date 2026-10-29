@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import {
   controlFor,
   seedProps,
+  sizeKeywords,
   valueFromControl,
 } from '../../../src/editor/model/controls.js';
 import { slotNamer } from '../../../src/editor/model/examples.js';
@@ -139,6 +140,89 @@ describe('controlFor list literals (KF-HNNWN9)', () => {
       kind: 'list',
       raw: JSON.stringify([{ value: 'a', label: 'A' }], null, 2),
     });
+  });
+});
+
+describe('size controls (KF-Q5AXNP)', () => {
+  const sizeOf = (key: string, name: string, value?: unknown) =>
+    controlFor(prop(key, name), value as never, definitions(key));
+
+  it('lists the keywords of a size union in scale order, with Custom', () => {
+    expect(sizeOf('list', 'gap')).toEqual({
+      kind: 'size',
+      choices: ['', 'none', '2xs', 'xs', 's', 'm', 'l', 'xl', 'true', 'custom'],
+      raw: '',
+    });
+    expect(sizeOf('row', 'flex').choices).toEqual([
+      '',
+      'true',
+      'auto',
+      'none',
+      'initial',
+      'custom',
+    ]);
+    expect(sizeOf('list-detail-dialog', 'height').choices).toEqual([
+      '',
+      'viewport',
+      'custom',
+    ]);
+    expect(sizeOf('skeleton', 'width').kind).toBe('size');
+  });
+
+  it('shows a keyword, a builder call, an object, or a binding', () => {
+    expect(sizeOf('list', 'gap', 'm').raw).toBe('m');
+    expect(sizeOf('list', 'gap', true).raw).toBe('true');
+    expect(sizeOf('list', 'gap', { $css: 'px(8)' })).toMatchObject({
+      kind: 'size',
+      raw: 'custom',
+      css: 'px(8)',
+    });
+    expect(
+      sizeOf('list', 'gap', {
+        column: { $css: 'px(4)' },
+        row: { $css: 'px(8)' },
+      }).kind,
+    ).toBe('list');
+    expect(sizeOf('list', 'gap', { $param: 'gap' }).kind).toBe('readonly');
+    expect(sizeOf('list', 'gap', 'huge').kind).toBe('readonly');
+  });
+
+  it('leaves unions without a css-value to their own rules', () => {
+    expect(sizeKeywords(prop('badge', 'size').type as never)).toBeUndefined();
+    expect(sizeKeywords(prop('button', 'tone').type as never)).toBeUndefined();
+    expect(
+      sizeKeywords(prop('backdrop-image', 'parallax').type as never),
+    ).toBeUndefined();
+  });
+
+  it('reads nested unions and refuses keywords it cannot offer', () => {
+    const css = { kind: 'css-value', text: 'CssLength' };
+    const union = (...members: object[]) =>
+      ({ kind: 'union', members, text: 'Size' }) as never;
+    expect(
+      sizeKeywords(
+        union(css, {
+          kind: 'union',
+          members: [{ kind: 'literal', value: 'a' }],
+        }),
+      ),
+    ).toEqual(['a']);
+    expect(sizeKeywords(union(css, { kind: 'enum', values: [1, 2] }))).toBe(
+      undefined,
+    );
+    expect(sizeKeywords(union(css, { kind: 'literal', value: 3 }))).toBe(
+      undefined,
+    );
+    expect(sizeKeywords(union({ kind: 'literal', value: 'a' }))).toBe(
+      undefined,
+    );
+  });
+
+  it('converts a size choice to its document value', () => {
+    expect(valueFromControl('size', 'm')).toEqual({ value: 'm' });
+    expect(valueFromControl('size', 'true')).toEqual({ value: true });
+    expect(valueFromControl('size', '')).toEqual({ value: undefined });
+    expect(valueFromControl('size', 'custom')).toEqual({ value: undefined });
   });
 });
 

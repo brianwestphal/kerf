@@ -111,7 +111,13 @@ A css-value prop's field takes any `$css` builder call, compositions
 included (`calc(plus(px(8), space("m")))`, `lengthVar("--app-gap", px(8))`);
 its hint lists the builders the prop accepts (the catalog's `cssValue.helpers`)
 and an outer builder outside that list is refused at the field, naming the
-allowed ones (KF-YR91FA: richer value editing). A text-accepting content prop
+allowed ones (KF-YR91FA: richer value editing). A size prop, a union of a
+css-value with keywords (a List, Row, or Grid `gap`, a layout `flex`, a
+Spacer or Skeleton `width`/`height`, a dialog `height` of `"viewport"`),
+gets a Select of its keywords, with spacing tokens in scale order (`none`,
+`2xs` … `xl`), `true` when the union takes a boolean, and **Custom…**, which
+shows that builder field beneath it (KF-Q5AXNP: first-class size editing). A
+`{ column, row }` gap edits as JSON. A text-accepting content prop
 (a Button's label) holds either text or nodes in its zone, never both: **Use
 as nodes** moves the text into a `#text` node so components can sit beside
 it, adding a child to that zone does the same first, and **Use as text**
