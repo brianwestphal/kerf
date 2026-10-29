@@ -146,7 +146,7 @@ import {
   setProp,
   withCatalog,
 } from './model/edits.js';
-import { exampleValue } from './model/examples.js';
+import { exampleValue, slotNamer, usedSlots } from './model/examples.js';
 import {
   compareWithModule,
   describeExport,
@@ -156,6 +156,7 @@ import {
 } from './model/export.js';
 import { groupedProps, inspectorSections } from './model/inspector.js';
 import {
+  itemSlotRowNode,
   nodeTitle,
   type OutlineNode,
   outlineParents,
@@ -224,14 +225,17 @@ const icons = new Proxy({} as Record<string, unknown>, {
 const slotPlaceholders = (placed: ReadonlyMap<string, PreviewSlot>) =>
   new Proxy({} as Record<string, () => SafeHtml>, {
     get: (_target, name) => {
-      // previewSlots names every placed slot, so each name is known.
-      const slot = placed.get(String(name))!;
+      // previewSlots names every slot placed in a zone; any other name is a
+      // slot inside a prop value (KF-SXDM56), which selects with its node.
+      const slot = placed.get(String(name));
       return () =>
-        Text({
-          children: `${slot.name} slot`,
-          tone: 'quiet',
-          'data-editor-slot-address': JSON.stringify(slot.address),
-        });
+        slot
+          ? Text({
+              children: `${slot.name} slot`,
+              tone: 'quiet',
+              'data-editor-slot-address': JSON.stringify(slot.address),
+            })
+          : Text({ children: `${String(name)} slot`, tone: 'quiet' });
     },
   });
 
@@ -741,10 +745,12 @@ export function createEditor(options: EditorOptions) {
       case 'list': {
         // A list or object literal as JSON (KF-HNNWN9), with a placeholder
         // to start from while a required one is unset.
+        // Whether there is an example; Fill with example names its slots.
         const example = exampleValue(
           prop.type as never,
           definitionsOf(type),
           prop.name,
+          (hint) => hint,
         );
         return (
           <>
@@ -1855,6 +1861,7 @@ export function createEditor(options: EditorOptions) {
       componentNames.get(key)!,
       component.variants,
       definitionsOf(key),
+      slotNamer(usedSlots(doc.value)),
     );
     return {
       id: newNodeId(),
@@ -2241,7 +2248,12 @@ export function createEditor(options: EditorOptions) {
               doc.value,
               id,
               name,
-              exampleValue(prop.type as never, definitionsOf(node.type), name)!,
+              exampleValue(
+                prop.type as never,
+                definitionsOf(node.type),
+                name,
+                slotNamer(usedSlots(doc.value)),
+              )!,
             ),
           );
         },
@@ -2250,7 +2262,12 @@ export function createEditor(options: EditorOptions) {
         [OUTLINE_ACTION]: (_event, target) => {
           const id = target.dataset.itemId!;
           const address = slotRowAddress(id);
-          select(address ? { kind: 'slot', address } : { kind: 'node', id });
+          // An item slot row selects the node whose prop holds it (KF-SXDM56).
+          select(
+            address
+              ? { kind: 'slot', address }
+              : { kind: 'node', id: itemSlotRowNode(id) ?? id },
+          );
         },
         [OUTLINE_TOGGLE_ACTION]: (_event, target) => {
           const next = new Set(collapsed.value);

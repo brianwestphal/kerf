@@ -228,6 +228,9 @@ function createEmitter(document, catalog, imports, importFrom) {
       }
       return raw(input.$css.trim());
     }
+    // An item slot (KF-SXDM56): content the application fills, as a zone's.
+    if (isObject(input) && '$slot' in input)
+      return raw(`slots.${input.$slot}()`);
     if (isObject(input)) {
       return obj(
         Object.keys(input)

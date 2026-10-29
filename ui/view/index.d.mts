@@ -28,6 +28,8 @@ export type ViewValue =
   | { readonly $action: string }
   | { readonly $css: string }
   | { readonly $icon: string }
+  /** An item slot: application content at a content field inside a value. */
+  | { readonly $slot: string }
   | { readonly [name: string]: ViewValue };
 
 export interface ViewNode {

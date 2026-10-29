@@ -6,6 +6,7 @@ import {
   seedProps,
   valueFromControl,
 } from '../../../src/editor/model/controls.js';
+import { slotNamer } from '../../../src/editor/model/examples.js';
 import type { InspectorProp } from '../../../src/editor/model/inspector.js';
 import { componentNames, propsByKey, viewCatalog } from './kerf-catalog.js';
 
@@ -23,6 +24,7 @@ const seeded = (key: string) => {
     componentNames.get(key)!,
     component.variants,
     viewCatalog.components.get(key)!.definitions,
+    slotNamer([]),
   );
 };
 /** The prop names a lone seeded node of `key` is still reported missing. */
@@ -252,29 +254,33 @@ describe('seedProps', () => {
   });
 
   it('leaves no required literal prop unfilled on any Kerf UI component', () => {
-    // Zones and slots fill from the outline, and these need rendered content (icons,
-    // views) no literal can stand in for (KF-SXDM56: content placeholders).
-    const content = new Set([
-      '@kerfjs/ui:list-action-row',
-      '@kerfjs/ui:list-detail-dialog',
-      '@kerfjs/ui:nav-stack',
-      '@kerfjs/ui:summary-row',
-      '@kerfjs/ui:surface-scaffold',
-      '@kerfjs/ui:surface-scaffold#PopoverDialogSurface',
-      '@kerfjs/ui:tab-navigator',
-    ]);
+    // Zones and slots fill from the outline: a missing one, or a variant
+    // that only a zone or slot keeps from matching, is that work, not a gap.
+    // Rendered content inside a value is an item slot (KF-SXDM56).
     const missing = [...propsByKey.values()]
       .filter((component) => component.source === 'kerf')
-      .filter((component) => !content.has(component.key))
       .flatMap((component) => {
-        const zones = new Set(
+        const holes = new Set(
           component.props
             .filter((item) => item.zone || item.slot)
             .map((item) => item.name),
         );
+        const props = seeded(component.key);
+        const onlyHoles = (component.variants ?? []).some(
+          (variant) =>
+            variant.required.every(
+              (name) => holes.has(name) || name in props,
+            ) &&
+            Object.entries(variant.when ?? {}).every(
+              ([name, value]) => (props[name] ?? false) === value,
+            ),
+        );
         return unfilled(component.key).filter(
           (message) =>
-            ![...zones].some((zone) => message.endsWith(`requires "${zone}"`)),
+            !(
+              message.endsWith('props match none of its variants') && onlyHoles
+            ) &&
+            ![...holes].some((zone) => message.endsWith(`requires "${zone}"`)),
         );
       });
     expect(missing).toEqual([]);

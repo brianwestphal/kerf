@@ -178,6 +178,11 @@
         "$icon": {
           "type": "string",
           "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "$slot": {
+          "description": "An application-filled slot at a content-typed position inside a prop value (a list item's or object's content field, or a content prop that is not a zone). It passes no input.",
+          "type": "string",
+          "pattern": "^[a-z][A-Za-z0-9]*$"
         }
       }
     },

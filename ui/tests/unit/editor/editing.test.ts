@@ -221,6 +221,48 @@ describe('list props (KF-HNNWN9)', () => {
     ).toBeNull();
   });
 
+  // KF-SXDM56: content inside a list item (a NavStack view's body) is an
+  // item slot the application fills; the outline and canvas show it.
+  it('adds a NavStack whose views hold item slots, named apart per node', () => {
+    const { root, editor, node } = add('@kerfjs/ui:nav-stack');
+    expect(root.textContent).toContain('· valid');
+    expect(node()?.props?.views).toEqual([
+      { key: 'View 1', content: { $slot: 'view1Content' } },
+      { key: 'View 2', content: { $slot: 'view2Content' } },
+      { key: 'View 3', content: { $slot: 'view3Content' } },
+    ]);
+    const canvas = root.querySelector('[data-editor-canvas]')!;
+    expect(canvas.textContent).toContain('view1Content slot');
+    const row = root.querySelector<HTMLElement>(
+      `[data-item-id="item-slot:${node()!.id}:views › 1 › content"]`,
+    )!;
+    expect(row.textContent).toContain('view1Content slot');
+    // A second NavStack in the same document does not reuse those names.
+    const first = node()!.id;
+    editor.selection.value = { kind: 'node', id: PANE };
+    choose(field(root, '[data-editor-add="zone"]'), 'content');
+    choose(
+      field(root, '[data-editor-add="component"]'),
+      '@kerfjs/ui:nav-stack',
+    );
+    click(root, 'editor-add-child');
+    const selected = editor.selection.value;
+    const second = findNode(
+      editor.document.value,
+      selected?.kind === 'node' ? selected.id : '',
+    )!.node;
+    expect((second.props?.views as { content: unknown }[])[0]?.content).toEqual(
+      { $slot: 'view1Content2' },
+    );
+    // An item slot row selects the node that holds it.
+    root
+      .querySelector<HTMLElement>(
+        `[data-action="editor-select-node"][data-item-id="item-slot:${first}:views › 2 › content"]`,
+      )!
+      .click();
+    expect(editor.selection.value).toEqual({ kind: 'node', id: first });
+  });
+
   it('offers an example only for a required list prop', () => {
     const { root } = add('@kerfjs/ui:popup-menu');
     // The optional anchor is unset and edits as JSON, with no Fill button.

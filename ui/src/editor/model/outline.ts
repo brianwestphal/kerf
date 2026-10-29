@@ -76,6 +76,42 @@ export function slotRowAddress(
     : undefined;
 }
 
+/**
+ * An outline row id for the `$slot` at `path` inside node `node`'s prop
+ * values (KF-SXDM56: item slots), such as `views › 1 › content`.
+ */
+export function itemSlotRowId(node: string, path: string): string {
+  return `item-slot:${node}:${path}`;
+}
+
+/** The node an item slot row belongs to, or undefined for any other row. */
+export function itemSlotRowNode(id: string): string | undefined {
+  const [kind, node] = id.split(':');
+  return kind === 'item-slot' ? node : undefined;
+}
+
+/** Every `$slot` inside `node`'s prop values, with its path in words. */
+export function itemSlots(
+  node: ViewNode,
+): { readonly name: string; readonly path: string }[] {
+  const found: { name: string; path: string }[] = [];
+  const visit = (value: unknown, path: readonly (string | number)[]) => {
+    if (Array.isArray(value))
+      value.forEach((item, index) => visit(item, [...path, index + 1]));
+    else if (value !== null && typeof value === 'object') {
+      const { $slot } = value as { $slot?: unknown };
+      if (typeof $slot === 'string')
+        found.push({ name: $slot, path: path.join(' › ') });
+      else
+        for (const [key, item] of Object.entries(value))
+          visit(item, [...path, key]);
+    }
+  };
+  for (const [name, value] of Object.entries(node.props ?? {}))
+    visit(value, [name]);
+  return found;
+}
+
 /** How a `$param` or `$bind` source reads in the outline. */
 function sourceName(value: unknown): string {
   const source = value as { $param?: string; $bind?: string };
@@ -98,7 +134,12 @@ export function outlineTree(
     control: readonly string[],
   ): OutlineNode => {
     const component = nodeTitle(node, names);
-    const children: OutlineNode[] = [];
+    // Content the application fills inside the node's props (KF-SXDM56).
+    const children: OutlineNode[] = itemSlots(node).map(({ name, path }) => ({
+      id: itemSlotRowId(node.id, path),
+      label: `${name} slot`,
+      detail: path,
+    }));
     for (const [key, items] of Object.entries(node.zones ?? {}))
       items.forEach((item, index) =>
         children.push(...child(item, node.id, key, index, repeated, [])),

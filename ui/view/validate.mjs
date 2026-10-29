@@ -143,6 +143,14 @@ export function isAssignable(from, to, definitions = {}) {
 
 /** Whether a JSON literal is a valid value of a type descriptor. */
 export function isLiteralOf(value, type, definitions = {}) {
+  return literalOf(value, type, definitions);
+}
+
+/**
+ * `isLiteralOf`, where `onSlot` decides a `{ $slot }` at a content-typed
+ * position (KF-SXDM56: item slots); without it a `$slot` is no literal.
+ */
+function literalOf(value, type, definitions, onSlot) {
   const target = resolveType(type, definitions);
   if (value === null) return target.nullable === true;
   switch (target.kind) {
@@ -150,7 +158,7 @@ export function isLiteralOf(value, type, definitions = {}) {
       return true;
     case 'union':
       return target.members.some((member) =>
-        isLiteralOf(value, member, definitions),
+        literalOf(value, member, definitions, onSlot),
       );
     case 'string':
       return typeof value === 'string';
@@ -163,6 +171,7 @@ export function isLiteralOf(value, type, definitions = {}) {
     case 'literal':
       return value === target.value;
     case 'content':
+      if (onSlot && isObject(value) && '$slot' in value) return onSlot(value);
       return (
         target.acceptsText === true &&
         (typeof value === 'string' || typeof value === 'number')
@@ -170,7 +179,9 @@ export function isLiteralOf(value, type, definitions = {}) {
     case 'array':
       return (
         Array.isArray(value) &&
-        value.every((item) => isLiteralOf(item, target.items, definitions))
+        value.every((item) =>
+          literalOf(item, target.items, definitions, onSlot),
+        )
       );
     case 'record':
       return (
@@ -186,10 +197,10 @@ export function isLiteralOf(value, type, definitions = {}) {
       return (
         Object.entries(value).every(([name, item]) =>
           known.has(name)
-            ? isLiteralOf(item, known.get(name).type, definitions)
+            ? literalOf(item, known.get(name).type, definitions, onSlot)
             : index !== undefined &&
               name.startsWith(index.keyPrefix) &&
-              isLiteralOf(item, index.value, definitions),
+              literalOf(item, index.value, definitions, onSlot),
         ) &&
         [...known.values()].every(
           (prop) => !prop.required || prop.name in value,
@@ -454,7 +465,8 @@ function checkPropValue(ctx, prop, value, definitions, scope, at, rowScoped) {
   const type = dynamicType(ctx, value, scope, at);
   if (type === undefined) return;
   if (type === null) {
-    if (!isLiteralOf(value, prop.type, definitions)) {
+    const onSlot = (slot) => checkValueSlot(ctx, slot, at);
+    if (!literalOf(value, prop.type, definitions, onSlot)) {
       ctx.report(
         'KUI-V004',
         at,
@@ -468,6 +480,33 @@ function checkPropValue(ctx, prop, value, definitions, scope, at, rowScoped) {
       `a ${describe(type)} value does not fit ${describe(prop.type)}`,
     );
   }
+}
+
+/**
+ * A `$slot` inside a prop value (KF-SXDM56: item slots): the application
+ * fills it with content, as a zone's `$slot`, but it passes no input. Each
+ * slot object reports once, though a union may try it against several
+ * members. Returns true, so a malformed slot is not also a type mismatch.
+ */
+function checkValueSlot(ctx, slot, at) {
+  if (ctx.checkedSlots.has(slot)) return true;
+  ctx.checkedSlots.add(slot);
+  for (const key of only(slot, ['$slot']))
+    ctx.report(
+      'KUI-V001',
+      `${at}`,
+      `a \`$slot\` in a prop value passes no "${key}"`,
+    );
+  if (typeof slot.$slot !== 'string' || !CAMEL.test(slot.$slot)) {
+    ctx.report('KUI-V001', at, 'a slot name is a camelCase identifier');
+  } else if (ctx.slots.get(slot.$slot)?.input) {
+    ctx.report(
+      'KUI-V001',
+      at,
+      `slot "${slot.$slot}" declares an input, which a \`$slot\` in a prop value cannot pass`,
+    );
+  }
+  return true;
 }
 
 /**
@@ -1148,6 +1187,7 @@ export function validateView(document, catalog, options = {}) {
     viewStack: options.viewStack ?? [],
     params: new Map(),
     slots: new Map(),
+    checkedSlots: new WeakSet(),
     packages: undefined,
     interactiveHost: options.interactiveHost,
     report(code, path, message) {

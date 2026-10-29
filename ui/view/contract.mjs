@@ -120,8 +120,17 @@ export function walkView(document, visit) {
         for (const entry of children) child(entry, row);
     }
   };
+  // A `$slot` inside a prop value (KF-SXDM56: item slots), at any depth.
+  const valueSlots = (value, found) => {
+    if (Array.isArray(value)) for (const item of value) valueSlots(item, found);
+    else if (isObject(value)) {
+      if (typeof value.$slot === 'string') found.add(value.$slot);
+      else for (const item of Object.values(value)) valueSlots(item, found);
+    }
+  };
   const slots = (item, found) => {
     if (!isObject(item)) return;
+    valueSlots(item.props, found);
     if ('$slot' in item) found.add(item.$slot);
     else if ('$each' in item) slots(item.template, found);
     else if ('$if' in item) {

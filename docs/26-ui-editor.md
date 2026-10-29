@@ -71,9 +71,10 @@ required `value` starts on the first seeded choice. So a Combobox, a Select,
 or a PopupMenu renders as soon as it is added. The inspector edits such a
 prop as JSON, checked against the prop's type with `isLiteralOf`. While the
 prop is unset, **Fill with example** writes the placeholder back. Binding the
-prop to a param stays available for data the application provides. Props
-whose required fields need rendered content (an icon, a view body) get no
-placeholder yet (KF-SXDM56).
+prop to a param stays available for data the application provides. A
+required field that needs rendered content (a NavStack view's body, a row
+menu's icon) is seeded as an item slot (KF-SXDM56: item slots, §3.3) that
+the application fills; the outline lists each one under its node.
 
 The inspector's Control flow section (KF-90GTJN: editor control flow) shows a
 node only while a true/false param or item field holds (Show, which wraps the
@@ -375,6 +376,7 @@ A node is `{ id, type, name?, props?, zones? }`.
 | `{ "$action": "name" }`    | Only on string props the catalog identifies as action names (`action`). Declares a member of the action union (§4.2).                                                                                                                 |
 | `{ "$css": "space('m')" }` | Only on `css-value` props: a call to one of the prop's allowed `cssValue.helpers`, never a raw CSS string. Generated verbatim with its import.                                                                                        |
 | `{ "$icon": "inbox" }`     | Only on props whose descriptor has `iconSource: "lucide"` (`LucideIcon.icon`): a kebab-case Lucide icon name. Generated code imports it from `lucide`, aliased as `lucideInbox`; `interpretView` takes the data from `options.icons`. |
+| `{ "$slot": "homeView" }`  | An item slot: only at a content-typed position inside a prop value (a list item's or object's content field, such as a NavStack view's `content`). The application fills it like a zone's `$slot` (§3.6), but it passes no input.     |
 
 There are no expressions: no arithmetic, string templates, or function calls
 beyond `$css`. A value that needs computation becomes a param that the
@@ -393,6 +395,15 @@ application computes.
 - A content prop that is not a composition zone (`slot` in the props schema)
   may be set either in `props` (text, `$param`, `$bind`) or in `zones`
   (nodes), but not both.
+- An item slot (KF-SXDM56: item slots) is the only way to put rendered
+  content inside a list or object value, such as a NavStack view whose
+  `content` is `{ "$slot": "homeView" }`. It needs no `slots` declaration, a
+  slot declared with an `input` cannot be used there, and anywhere but a
+  content-typed position it is a type mismatch (`KUI-V004`). The contract,
+  the generated `<Name>Slots`, and `interpretView` treat it as any other slot:
+  generated code calls `slots.homeView()` in place. The editor seeds one for
+  each such field of a new node (`view1Content`, unique within the document)
+  and lists it in the outline under its node.
 - A prop typed as Lucide icon data (`LucideIcon.icon`) is named with `$icon`,
   never spelled as a nested array literal. The CLI does not check names; an
   unknown one fails the consumer's `tsc` on the generated import.

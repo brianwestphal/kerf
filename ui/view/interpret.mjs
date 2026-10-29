@@ -114,6 +114,8 @@ function renderDocument(document, inputs, slots, options) {
     }
     if (isObject(raw) && '$css' in raw)
       return evaluateCss(parseCssTree(raw.$css));
+    // An item slot (KF-SXDM56): content the application fills, as a zone's.
+    if (isObject(raw) && '$slot' in raw) return slots[raw.$slot]();
     if (isObject(raw)) {
       return Object.fromEntries(
         Object.keys(raw).map((key) => [key, value(raw[key], scope)]),

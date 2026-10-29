@@ -2,7 +2,7 @@
 // Select, or a PopupMenu added from the palette has its suggestions, choices,
 // or items to render). One rule for every component, read from the props
 // catalog's type graph rather than a per-component table.
-import type { ViewType, ViewValue } from '@kerfjs/ui/view';
+import type { ViewDocument, ViewType, ViewValue } from '@kerfjs/ui/view';
 
 type Definitions = Readonly<Record<string, ViewType>>;
 
@@ -44,43 +44,123 @@ export function isStructured(
   return kind === 'array' || kind === 'object';
 }
 
-/** "suggestions" → "Suggestion", "items" → "Item", "entries" → "Entry". */
+/**
+ * "suggestions" → "Suggestion", "entries" → "Entry", "trailingMenu" →
+ * "Trailing menu".
+ */
 function singular(name: string): string {
-  const word = name.replace(/ies$/, 'y').replace(/s$/, '');
+  const word = name
+    .replace(/ies$/, 'y')
+    .replace(/s$/, '')
+    .replace(
+      /([a-z0-9])([A-Z])/g,
+      (_, a: string, b: string) => `${a} ${b.toLowerCase()}`,
+    );
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
 const slug = (text: string) => text.toLowerCase().replace(/\s+/g, '-');
 
+/** "View 1" + "content" → "view1Content", a slot name. */
+const camel = (...words: string[]) =>
+  words
+    .join(' ')
+    .split(/[^A-Za-z0-9]+/)
+    .filter(Boolean)
+    .map(
+      (word, index) =>
+        (index ? word.charAt(0).toUpperCase() : word.charAt(0).toLowerCase()) +
+        word.slice(1),
+    )
+    .join('');
+
+/** Names an item slot for content no literal can hold, from a name hint. */
+export type SlotNamer = (hint: string) => string;
+
+/** Every `$slot` name `document` uses: in zones or inside prop values. */
+export function usedSlots(document: ViewDocument): Set<string> {
+  const names = new Set<string>();
+  const visit = (value: unknown): void => {
+    if (Array.isArray(value)) value.forEach(visit);
+    else if (value !== null && typeof value === 'object') {
+      const { $slot } = value as { $slot?: unknown };
+      if (typeof $slot === 'string') names.add($slot);
+      Object.values(value).forEach(visit);
+    }
+  };
+  visit(document.root);
+  return names;
+}
+
+/**
+ * A namer that hands out slot names no place in `taken` (or an earlier call)
+ * uses: the hint, else the hint numbered from 2.
+ */
+export function slotNamer(taken: Iterable<string>): SlotNamer {
+  const used = new Set(taken);
+  return (hint) => {
+    let name = hint;
+    for (let count = 2; used.has(name); count += 1) name = `${hint}${count}`;
+    used.add(name);
+    return name;
+  };
+}
+
 /**
  * A placeholder literal of `type`, or undefined when none can be made up (a
- * function, rendered content, a CSS value). `name` is the prop the value is
- * for: list items are numbered after it ("Choice 1" with value `choice-1`).
+ * function, a CSS value). `name` is the prop the value is for: list items are
+ * numbered after it ("Choice 1" with value `choice-1`). Rendered content no
+ * text can stand for (a view's body, an icon) becomes an item slot named by
+ * `slot` (KF-SXDM56: "view1Content"); without `slot` there is none.
  */
 export function exampleValue(
   type: ViewType | undefined,
   definitions: Definitions,
   name: string,
+  slot?: SlotNamer,
 ): ViewValue | undefined {
-  return example(resolveType(type, definitions), definitions, name, 0, 0);
+  return example(resolveType(type, definitions), {
+    definitions,
+    name,
+    index: 0,
+    depth: 0,
+    slot,
+  });
+}
+
+interface Place {
+  readonly definitions: Definitions;
+  /** The list the value sits in, or the prop it is for. */
+  readonly name: string;
+  /** 1-based position in that list; 0 outside a list. */
+  readonly index: number;
+  readonly depth: number;
+  /** The object field the value fills, if any. */
+  readonly field?: string;
+  readonly slot?: SlotNamer;
 }
 
 function example(
   type: TypeNode | undefined,
-  definitions: Definitions,
-  /** The list the value sits in, or the prop it is for. */
-  name: string,
-  /** 1-based position in that list; 0 outside a list. */
-  index: number,
-  depth: number,
+  place: Place,
 ): ViewValue | undefined {
+  const { definitions, name, index, depth } = place;
   if (!type || depth > 4) return undefined;
   const label = `${singular(name)}${index ? ` ${index}` : ''}`;
+  const inner = (next: ViewType | undefined, change: Partial<Place> = {}) =>
+    example(resolveType(next, definitions), {
+      ...place,
+      depth: depth + 1,
+      ...change,
+    });
   switch (type.kind) {
     case 'string':
       return label;
     case 'content':
-      return type.acceptsText ? label : undefined;
+      if (type.acceptsText) return label;
+      return place.slot
+        ? { $slot: place.slot(camel(label, place.field ?? '')) }
+        : undefined;
     case 'number':
       return index;
     case 'boolean':
@@ -91,26 +171,14 @@ function example(
       return type.values?.[0] as ViewValue | undefined;
     case 'union':
       for (const member of type.members ?? []) {
-        const value = example(
-          resolveType(member as ViewType, definitions),
-          definitions,
-          name,
-          index,
-          depth + 1,
-        );
+        const value = inner(member as ViewType);
         if (value !== undefined) return value;
       }
       return undefined;
     case 'array': {
       const items: ViewValue[] = [];
       for (let item = 1; item <= EXAMPLE_ITEMS; item += 1) {
-        const value = example(
-          resolveType(type.items as ViewType, definitions),
-          definitions,
-          name,
-          item,
-          depth + 1,
-        );
+        const value = inner(type.items as ViewType, { index: item });
         if (value === undefined) return undefined;
         items.push(value);
       }
@@ -126,12 +194,13 @@ function example(
           (prop.name === 'value' || prop.name === 'id') &&
           resolveType(prop.type as ViewType, definitions)?.kind === 'string'
             ? slug(label)
-            : example(
-                resolveType(prop.type as ViewType, definitions),
-                definitions,
-                name,
-                index,
-                depth + 1,
+            : inner(
+                prop.type as ViewType,
+                // A nested list numbers its own items ("Item 1").
+                resolveType(prop.type as ViewType, definitions)?.kind ===
+                  'array'
+                  ? { field: prop.name, name: prop.name, index: 0 }
+                  : { field: prop.name },
               );
         if (field === undefined) return undefined;
         value[prop.name] = field;

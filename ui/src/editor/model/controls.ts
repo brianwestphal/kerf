@@ -7,7 +7,7 @@ import {
   type ViewValue,
 } from '@kerfjs/ui/view';
 
-import { exampleValue, isStructured } from './examples.js';
+import { exampleValue, isStructured, type SlotNamer } from './examples.js';
 import type { InspectorProp } from './inspector.js';
 
 export type ControlKind =
@@ -195,6 +195,7 @@ function seedFor(
   prop: InspectorProp,
   name: string,
   definitions: Definitions,
+  slot?: SlotNamer,
 ): ViewValue | undefined {
   const type = prop.type as {
     kind: string;
@@ -214,29 +215,32 @@ function seedFor(
     case 'union':
     case 'array':
     case 'object':
-      return exampleValue(prop.type as ViewType, definitions, prop.name);
+      return exampleValue(prop.type as ViewType, definitions, prop.name, slot);
     default:
       return undefined;
   }
 }
 
 /**
- * The first `value` of a seeded list of choices, so a Select's required
- * `value` starts on a choice it offers rather than on a made-up string.
+ * The first `value` (or `id`) of a seeded list of choices or tabs, so a
+ * Select's required `value` or a TabNavigator's `active` starts on an item it
+ * offers rather than on a made-up string.
  */
 function firstChoiceValue(
   seeded: Readonly<Record<string, ViewValue>>,
 ): ViewValue | undefined {
   for (const value of Object.values(seeded)) {
-    const first = Array.isArray(value) ? value[0] : undefined;
-    if (
-      isDynamic(first) &&
-      typeof (first as { value?: unknown }).value === 'string'
-    )
-      return (first as { value: string }).value;
+    const first = (Array.isArray(value) ? value[0] : undefined) as
+      { value?: unknown; id?: unknown } | undefined;
+    if (!isDynamic(first as ViewValue)) continue;
+    const choice = first!.value ?? first!.id;
+    if (typeof choice === 'string') return choice;
   }
   return undefined;
 }
+
+/** Required props that name the chosen item of a seeded list. */
+const CHOICE_PROPS = ['value', 'active'];
 
 /**
  * Seed props for a newly added component: its required literals, filled in,
@@ -249,36 +253,50 @@ export function seedProps(
   variants: readonly Variant[] = [],
   /** The props catalog's type table, for list and object placeholders. */
   definitions: Definitions = {},
+  /** Names an item slot for rendered content inside a seeded value. */
+  slot?: SlotNamer,
 ): Record<string, ViewValue> {
   const byName = new Map(props.map((prop) => [prop.name, prop]));
   const seeded: Record<string, ViewValue> = {};
-  const fill = (names: readonly string[]) => {
+  for (const prop of props) {
+    if (!prop.required || prop.zone) continue;
+    const value = seedFor(prop, name, definitions, slot);
+    if (value !== undefined) seeded[prop.name] = value;
+  }
+  /**
+   * Values for a variant's required props, or undefined when one cannot be
+   * made up. A zone, or a slot no value seeds, is the outline's to fill
+   * (KF-SXDM56), so it does not rule the variant out.
+   */
+  const fill = (names: readonly string[], namer?: SlotNamer) => {
     const values: Record<string, ViewValue> = {};
     for (const propName of names) {
       const prop = byName.get(propName);
-      const value =
-        prop && !prop.zone ? seedFor(prop, name, definitions) : undefined;
-      if (value === undefined) return undefined;
+      if (!prop) return undefined;
+      if (prop.zone) continue;
+      const value = seeded[propName] ?? seedFor(prop, name, definitions, namer);
+      if (value === undefined) {
+        if (prop.slot) continue;
+        return undefined;
+      }
       values[propName] = value;
     }
     return values;
   };
-  for (const prop of props) {
-    if (!prop.required || prop.zone) continue;
-    const value = seedFor(prop, name, definitions);
-    if (value !== undefined) seeded[prop.name] = value;
-  }
-  const variant = [...variants]
+  // Variants are tried with a namer that hands out nothing, so only the one
+  // chosen names its item slots.
+  const trial: SlotNamer | undefined = slot && ((hint) => hint);
+  const chosen = [...variants]
     .sort((a, b) => a.required.length - b.required.length)
-    .map((item) => ({ item, values: fill(item.required) }))
-    .find(({ values }) => values !== undefined);
-  const result = variant
-    ? { ...seeded, ...variant.item.when, ...variant.values }
+    .find((item) => fill(item.required, trial) !== undefined);
+  const result = chosen
+    ? { ...seeded, ...chosen.when, ...fill(chosen.required, slot) }
     : seeded;
   const choice = firstChoiceValue(result);
-  return choice !== undefined &&
-    typeof result.value === 'string' &&
-    byName.get('value')?.required
-    ? { ...result, value: choice }
-    : result;
+  if (choice === undefined) return result;
+  const picked = { ...result };
+  for (const propName of CHOICE_PROPS)
+    if (typeof picked[propName] === 'string' && byName.get(propName)?.required)
+      picked[propName] = choice;
+  return picked;
 }

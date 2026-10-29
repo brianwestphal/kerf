@@ -7,7 +7,14 @@ import {
   exampleValue,
   isStructured,
   resolveType,
+  slotNamer,
+  usedSlots,
 } from '../../../src/editor/model/examples.js';
+import {
+  itemSlotRowId,
+  itemSlotRowNode,
+  itemSlots,
+} from '../../../src/editor/model/outline.js';
 
 const t = (type: object) => type as never;
 
@@ -127,5 +134,85 @@ describe('resolveType and isStructured', () => {
         definitions: {},
       }),
     ).toEqual({ error: 'Not a value of this type.' });
+  });
+});
+
+// KF-SXDM56: rendered content inside a value becomes an item slot.
+describe('item slots', () => {
+  const view = t({
+    kind: 'object',
+    props: [
+      { name: 'key', required: true, type: { kind: 'string' } },
+      { name: 'content', required: true, type: { kind: 'content' } },
+    ],
+  });
+
+  it('seeds content no text can stand for as a named slot', () => {
+    const namer = slotNamer(['view1Content']);
+    expect(
+      exampleValue(t({ kind: 'array', items: view }), {}, 'views', namer),
+    ).toEqual([
+      { key: 'View 1', content: { $slot: 'view1Content2' } },
+      { key: 'View 2', content: { $slot: 'view2Content' } },
+      { key: 'View 3', content: { $slot: 'view3Content' } },
+    ]);
+  });
+
+  it('numbers a nested list after its own field and reads camelCase as words', () => {
+    expect(
+      exampleValue(
+        t({
+          kind: 'object',
+          props: [
+            { name: 'label', required: true, type: { kind: 'string' } },
+            { name: 'icon', required: true, type: { kind: 'content' } },
+            {
+              name: 'items',
+              required: true,
+              type: { kind: 'array', items: { kind: 'string' } },
+            },
+          ],
+        }),
+        {},
+        'trailingMenu',
+        slotNamer([]),
+      ),
+    ).toEqual({
+      label: 'Trailing menu',
+      icon: { $slot: 'trailingMenuIcon' },
+      items: ['Item 1', 'Item 2', 'Item 3'],
+    });
+  });
+
+  it('finds every slot a document uses, in zones and prop values', () => {
+    expect([
+      ...usedSlots({
+        root: {
+          id: 'A',
+          type: 'x',
+          props: { views: [{ content: { $slot: 'a' } }], label: 'L' },
+          zones: { children: [{ $slot: 'b' }] },
+        },
+      } as never),
+    ]).toEqual(['a', 'b']);
+  });
+
+  it('lists a node’s item slots as outline rows that select the node', () => {
+    const node = {
+      id: 'N',
+      type: 'x',
+      props: {
+        views: [{ key: 'a', content: { $slot: 'home' } }],
+        trailingMenu: { icon: { $slot: 'more' } },
+      },
+    } as never;
+    expect(itemSlots(node)).toEqual([
+      { name: 'home', path: 'views › 1 › content' },
+      { name: 'more', path: 'trailingMenu › icon' },
+    ]);
+    expect(itemSlots({ id: 'M', type: 'x' } as never)).toEqual([]);
+    const id = itemSlotRowId('N', 'views › 1 › content');
+    expect(itemSlotRowNode(id)).toBe('N');
+    expect(itemSlotRowNode('N')).toBeUndefined();
   });
 });
