@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  collectStyleImports,
   deriveComponentIntegrations,
   validateComponentIntegrations,
 } from '../../scripts/lib/component-integrations.mjs';
@@ -108,12 +109,44 @@ describe('component integration surface manifest', () => {
     };
     const surfaces = completeSurfaces();
     surfaces.barrelExports.clear();
+    // An opt-in subpath needs no import in styles.css either.
+    surfaces.styleImports.clear();
     const [integration] = deriveComponentIntegrations(optIn);
     expect(integration).toMatchObject({
       browserCondition: true,
       rootBarrel: false,
     });
     expect(validateComponentIntegrations([integration!], surfaces)).toEqual([]);
+  });
+
+  it('requires a root-barrel stylesheet to reach styles.css (KF-H29W31)', () => {
+    const surfaces = completeSurfaces();
+    surfaces.styleImports.clear();
+    expect(
+      validateComponentIntegrations(
+        deriveComponentIntegrations(catalog),
+        surfaces,
+      ),
+    ).toEqual([
+      {
+        surface: 'src/styles.css import',
+        expected: './example.css',
+        actual: 'missing',
+      },
+    ]);
+  });
+
+  it('collects nested stylesheet imports once each', async () => {
+    const files: Record<string, string> = {
+      layout: '@import "./pane.css";\n@import "./layout.css";',
+      pane: '.kui-pane {}',
+    };
+    await expect(
+      collectStyleImports(
+        '@import "./layout.css";\n@import "./missing.css";',
+        async (name) => files[name],
+      ),
+    ).resolves.toEqual(new Set(['layout', 'pane', 'missing']));
   });
 
   it('accepts a component whose complete integration projections agree', () => {

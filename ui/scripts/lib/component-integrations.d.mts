@@ -37,6 +37,10 @@ export function validateComponentIntegrations(
 ): ComponentIntegrationFailure[];
 export function parseTsupEntries(source: string): Set<string>;
 export function parseBarrelExports(source: string): Set<string>;
+export function collectStyleImports(
+  source: string,
+  read: (name: string) => Promise<string | undefined>,
+): Promise<Set<string>>;
 export function parseStyleImports(source: string): Set<string>;
 export function parseDemoIds(source: string): Set<string>;
 export function parseSignatureSpecifiers(source: string): Set<string>;

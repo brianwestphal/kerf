@@ -77,11 +77,16 @@ export function validateComponentIntegrations(integrations, surfaces) {
         fail('source stylesheet', `src/${module}.css`, 'missing');
     }
 
-    if (rootBarrel)
+    if (rootBarrel) {
       for (const name of publicExports) {
         if (!surfaces.barrelExports.has(name))
           fail('src/index.ts root export', name, 'missing');
       }
+      // KF-H29W31: `styles.css` is the complete layer a root-barrel import
+      // pairs with, so every barrel component's stylesheet must reach it.
+      if (cssSpecifier && !surfaces.styleImports.has(module))
+        fail('src/styles.css import', `./${module}.css`, 'missing');
+    }
     if (!surfaces.demoIds.has(id)) fail('ux-demo registry', id, 'missing');
     if (!surfaces.demoModules.has(id))
       fail('demo source', `ux-demo/demos/${id}.tsx`, 'missing');
@@ -121,6 +126,24 @@ export function parseBarrelExports(source) {
       exports.add(name);
   }
   return exports;
+}
+
+/**
+ * The stylesheets `source` reaches through `@import`, nested ones included
+ * (`styles.css` brings Pane in through `layout.css`). `read(name)` returns
+ * `src/<name>.css`, or undefined for one that does not exist.
+ */
+export async function collectStyleImports(source, read) {
+  const reached = new Set();
+  const pending = [...parseStyleImports(source)];
+  while (pending.length) {
+    const name = pending.pop();
+    if (reached.has(name)) continue;
+    reached.add(name);
+    const nested = await read(name);
+    if (nested !== undefined) pending.push(...parseStyleImports(nested));
+  }
+  return reached;
 }
 
 export function parseStyleImports(source) {

@@ -3,11 +3,11 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
+  collectStyleImports,
   deriveComponentIntegrations,
   parseBarrelExports,
   parseDemoIds,
   parseSignatureSpecifiers,
-  parseStyleImports,
   parseTsupEntries,
   validateComponentIntegrations,
 } from './lib/component-integrations.mjs';
@@ -70,7 +70,9 @@ const failures = validateComponentIntegrations(integrations, {
   sourceModules,
   styleModules,
   barrelExports: parseBarrelExports(barrel),
-  styleImports: parseStyleImports(styles),
+  styleImports: await collectStyleImports(styles, (name) =>
+    read(`src/${name}.css`).catch(() => undefined),
+  ),
   demoIds: parseDemoIds(registry),
   demoModules,
   signatureSpecifiers: parseSignatureSpecifiers(signatures),
