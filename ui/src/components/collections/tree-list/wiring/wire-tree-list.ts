@@ -11,8 +11,10 @@ import {
 export type {
   TreeListDragOptions,
   TreeListDropPosition,
+  TreeListExternalDrop,
   TreeListMove,
 } from './tree-list-drag.js';
+export { treeListExternalDrop } from './tree-list-drag.js';
 
 const ROW = '.kui-tree-list > [role="treeitem"]';
 const TYPEAHEAD_RESET_MS = 500;

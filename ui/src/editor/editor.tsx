@@ -49,6 +49,7 @@ import {
   type TreeListNode,
 } from '../components/collections/tree-list/tree-list.js';
 import {
+  treeListExternalDrop,
   type TreeListMove,
   wireTreeList,
 } from '../components/collections/tree-list/wiring/wire-tree-list.js';
@@ -76,6 +77,7 @@ import {
   openDialog,
 } from '../components/surfaces/surface-scaffold/surface-scaffold.js';
 import { Text } from '../components/typography/text/text.js';
+import { wireScrollDividers } from '../wiring/wire-scroll-dividers.js';
 import {
   createAutosave,
   draftPath,
@@ -84,7 +86,7 @@ import {
   rememberedPath,
   rememberPath,
 } from './autosave.js';
-import { wireCanvasDrag } from './canvas-drag.js';
+import { type CanvasDropSurface, wireCanvasDrag } from './canvas-drag.js';
 import type { EditorCatalog } from './catalog.js';
 import {
   ADD_SLOT_ACTION,
@@ -173,6 +175,10 @@ const NEW_ACTION = 'editor-new';
 // KF-MHY1GB: each rail switches between focus areas with a segmented tab strip.
 const DOCUMENT_TAB_ACTION = 'editor-document-tab';
 const INSPECTOR_TAB_ACTION = 'editor-inspector-tab';
+/** The Document rail's tab strip id. */
+const DOCUMENT_AREAS = 'editor-document-areas';
+/** How long a drag rests on a tab before it opens. */
+const SPRING_MS = 500;
 type DocumentArea = 'outline' | 'components' | 'problems';
 type InspectorArea = 'properties' | 'flow' | 'children';
 const SAVE_ACTION = 'editor-save';
@@ -972,7 +978,8 @@ export function createEditor(options: EditorOptions) {
       add(outlineTree(doc.value, componentNames));
       rowLabels = { document: doc.value, labels };
     }
-    return rowLabels.labels.get(id) ?? id;
+    // Every drag source and target is an outline row.
+    return rowLabels.labels.get(id)!;
   };
 
   /**
@@ -988,6 +995,39 @@ export function createEditor(options: EditorOptions) {
     return node && zone && zoneKeys(node).length > 1
       ? `Inside ${target} › ${zone}`
       : `Inside ${target}`;
+  };
+
+  /**
+   * A drop surface that opens the Document tab a drag rests on for
+   * `SPRING_MS` (spring-loading, KF-67K2VP), so a drag from the palette can
+   * go on to the outline. It never offers a drop itself.
+   */
+  const springTabs = (): CanvasDropSurface => {
+    let pending: { tab: string; timer: number } | undefined;
+    const clear = () => {
+      if (pending) window.clearTimeout(pending.timer);
+      pending = undefined;
+    };
+    return {
+      over: (hit) => {
+        const tab = hit
+          ?.closest<HTMLElement>(`[data-tab-id^="${DOCUMENT_AREAS}-"]`)
+          ?.dataset.tabId?.slice(DOCUMENT_AREAS.length + 1) as
+          DocumentArea | undefined;
+        if (tab === pending?.tab) return undefined;
+        clear();
+        if (tab && tab !== documentArea.value)
+          pending = {
+            tab,
+            timer: window.setTimeout(() => {
+              documentArea.value = tab;
+              pending = undefined;
+            }, SPRING_MS),
+          };
+        return undefined;
+      },
+      clear,
+    };
   };
 
   /** Zone keys a node offers, for moving a node into it. */
@@ -1404,6 +1444,45 @@ export function createEditor(options: EditorOptions) {
     const nodes = outlineRows(document, componentNames).length;
     const problemList = problemsOf(document, validation.diagnostics);
     const problems = problemList.length;
+    const [documentStrip, ...documentPanels] = areaTabs(
+      DOCUMENT_AREAS,
+      'Document areas',
+      DOCUMENT_TAB_ACTION,
+      documentArea.value,
+      // Names of different lengths: each tab takes its own width.
+      'intrinsic',
+      [
+        {
+          area: 'outline',
+          name: 'Outline',
+          // The tab names the area; the Preview header counts
+          // its nodes.
+          panel: <List>{outline(document, problemCounts(problemList))}</List>,
+        },
+        {
+          area: 'components',
+          name: 'Components',
+          panel: <List>{palette()}</List>,
+        },
+        {
+          area: 'problems',
+          name: 'Problems',
+          trailing: problems ? (
+            <Badge
+              tone="danger"
+              label={`${problems} ${problems === 1 ? 'problem' : 'problems'}`}
+            >
+              {problems}
+            </Badge>
+          ) : undefined,
+          panel: problems ? (
+            <List>{problemRows(problemList)}</List>
+          ) : (
+            <EmptyState title="No problems" detail="The document is valid." />
+          ),
+        },
+      ],
+    );
     return (
       <List fill rootAttributes={{ 'data-editor': 'kerf-ui-editor' }}>
         <Toolbar
@@ -1492,56 +1571,11 @@ export function createEditor(options: EditorOptions) {
                 title: <ToolbarText text="Document" />,
                 toggle: { action: DOCUMENT_TOGGLE, name: 'Document' },
               },
-              content: (
-                <List>
-                  {areaTabs(
-                    'editor-document-areas',
-                    'Document areas',
-                    DOCUMENT_TAB_ACTION,
-                    documentArea.value,
-                    // Names of different lengths: each tab takes its own width.
-                    'intrinsic',
-                    [
-                      {
-                        area: 'outline',
-                        name: 'Outline',
-                        // The tab names the area; the Preview header counts
-                        // its nodes.
-                        panel: (
-                          <List>
-                            {outline(document, problemCounts(problemList))}
-                          </List>
-                        ),
-                      },
-                      {
-                        area: 'components',
-                        name: 'Components',
-                        panel: <List>{palette()}</List>,
-                      },
-                      {
-                        area: 'problems',
-                        name: 'Problems',
-                        trailing: problems ? (
-                          <Badge
-                            tone="danger"
-                            label={`${problems} ${problems === 1 ? 'problem' : 'problems'}`}
-                          >
-                            {problems}
-                          </Badge>
-                        ) : undefined,
-                        panel: problems ? (
-                          <List>{problemRows(problemList)}</List>
-                        ) : (
-                          <EmptyState
-                            title="No problems"
-                            detail="The document is valid."
-                          />
-                        ),
-                      },
-                    ],
-                  )}
-                </List>
-              ),
+              // KF-67K2VP: the strip stays pinned under the toolbar, so a
+              // drag (or a click) reaches another area from anywhere in a
+              // long panel.
+              header: documentStrip,
+              content: <List>{documentPanels}</List>,
             }}
             mainToolbar={{
               label: 'Canvas',
@@ -2143,7 +2177,7 @@ export function createEditor(options: EditorOptions) {
         [NEW_ACTION]: () => load(emptyDocument()),
         [DOCUMENT_TAB_ACTION]: (_event, target) => {
           documentArea.value = target.dataset.tabId!.slice(
-            'editor-document-areas-'.length,
+            DOCUMENT_AREAS.length + 1,
           ) as DocumentArea;
         },
         [INSPECTOR_TAB_ACTION]: (_event, target) => {
@@ -2218,6 +2252,9 @@ export function createEditor(options: EditorOptions) {
       }),
       // Arrow keys move between a strip's tabs; nothing here reorders.
       wireTabBars(root, { onReorder: () => {} }),
+      // KF-67K2VP: a rail's pinned tab strip shows its divider once its
+      // area scrolls under it.
+      wireScrollDividers(root),
       wireCanvasDrag(root, {
         sourceOf: (element) => {
           const address = element.dataset.editorSlotAddress;
@@ -2239,10 +2276,17 @@ export function createEditor(options: EditorOptions) {
         rootOf: () => doc.value.root.id,
         labelOf: (sourceId) =>
           sourceId.startsWith(PALETTE_SOURCE)
-            ? (componentNames.get(sourceId.slice(PALETTE_SOURCE.length)) ??
-              sourceId.slice(PALETTE_SOURCE.length))
+            ? componentNames.get(sourceId.slice(PALETTE_SOURCE.length))!
             : rowLabel(sourceId),
         captionOf: dropCaption,
+        // KF-67K2VP: a drag also drops on the outline's rows, and resting on
+        // a Document tab opens it, so a palette drag can reach the outline.
+        surfaces: [
+          treeListExternalDrop(root, {
+            canDrop: (move) => dropFor(move) !== undefined,
+          }),
+          springTabs(),
+        ],
         external: {
           selector: '[data-editor-palette]',
           sourceOf: (element) =>

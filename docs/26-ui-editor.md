@@ -144,8 +144,13 @@ or the ring's top edge, at its far end, where row content rarely sits; for a
 line in a row it sits under the line's foot. A node moved on the canvas dims
 in place. A line before the first node, and a caption near the top, stay
 inside the canvas rather than on its clipped edge. Dropping, Escape, or a
-cancelled pointer clears all of them. Dropping onto outline rows is not built yet
-(KF-67K2VP); Add a child stays the keyboard path.
+cancelled pointer clears all of them. A drag also drops on the outline's rows (KF-67K2VP: outline drops), with
+TreeList's own before, after, and inside indicator through
+`treeListExternalDrop`, and resting on a Document tab for half a second opens
+it (spring-loading), so a drag from Components reaches Outline. The Document
+rail's tab strip is pinned under its toolbar (the rail Pane's `header`), with
+the scroll divider once its area scrolls, so the tabs stay in reach anywhere
+in a long palette. Add a child stays the keyboard path.
 
 The canvas preview is rendered and test-mounted outside the editor's own
 render (KF-P6FPG2: preview containment), so a document whose preview fails

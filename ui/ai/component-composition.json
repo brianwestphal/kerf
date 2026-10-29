@@ -3016,7 +3016,7 @@
             "name": "data-drop-position",
             "on": "the tree row under the pointer",
             "helper": "wireTreeList",
-            "meaning": "before, after, or inside: where the dragged row would land, painted only for a drop canDrop accepts."
+            "meaning": "before, after, or inside: where the dragged row would land, painted only for a drop canDrop accepts; treeListExternalDrop paints it the same way for a drag from outside the tree."
           }
         ]
       },

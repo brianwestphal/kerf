@@ -748,6 +748,55 @@ for (const width of [1440, 390] as const) {
   });
 }
 
+// KF-67K2VP: a palette drag rests on the Outline tab to open it, then drops
+// on an outline row.
+test('drags a palette component onto an outline row', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.getByRole('button', { name: 'New' }).click();
+  await expect(page.getByText('1 node · valid')).toBeVisible();
+  await area(page, 'Components');
+  const row = page.locator('[data-editor-palette="@kerfjs/ui:text"]');
+  await row.scrollIntoViewIfNeeded();
+  const from = (await row.boundingBox())!;
+  await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+  await page.mouse.down();
+  const tab = page.getByRole('tab', { name: 'Outline' });
+  const at = (await tab.boundingBox())!;
+  await page.mouse.move(at.x + at.width / 2, at.y + at.height / 2, {
+    steps: 8,
+  });
+  // Resting on the tab opens the outline under the drag.
+  await expect(tab).toHaveAttribute('aria-selected', 'true');
+  const target = page.locator('.kui-tree-list > [role="treeitem"]').first();
+  const box = (await target.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, {
+    steps: 6,
+  });
+  await expect(target).toHaveAttribute('data-drop-position', 'inside');
+  await expect(
+    page.locator('[data-editor-canvas] .kui-editor__drag-chip'),
+  ).toContainText('Text');
+  await page.screenshot({
+    path: info.outputPath('KF-67K2VP-outline-drop-1440.png'),
+    animations: 'disabled',
+  });
+  await page.mouse.up();
+  await expect(page.getByText('2 nodes · valid')).toBeVisible();
+  await expect(target).not.toHaveAttribute('data-drop-position');
+  // The strip stays pinned while a long area scrolls.
+  await area(page, 'Components');
+  await page
+    .locator('[data-editor-palette="@kerfjs/ui:tree-list"]')
+    .scrollIntoViewIfNeeded();
+  await expect(page.getByRole('tab', { name: 'Outline' })).toBeInViewport();
+  await page.screenshot({
+    path: info.outputPath('KF-67K2VP-pinned-strip-1440.png'),
+    animations: 'disabled',
+  });
+});
+
 // KF-78MHM8: components drag from the palette onto the canvas.
 test('drags components from the palette onto the canvas', async ({
   page,

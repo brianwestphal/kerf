@@ -12,6 +12,7 @@ import {
   treeListRows,
 } from '../../src/components/collections/tree-list/tree-list.js';
 import {
+  treeListExternalDrop,
   type TreeListMove,
   wireTreeList,
 } from '../../src/components/collections/tree-list/wiring/wire-tree-list.js';
@@ -464,6 +465,44 @@ describe('TreeList drag-and-drop', () => {
     drag('dragstart', root);
     drag('dragend', row('a'));
     expect(moves).toEqual([]);
+  });
+
+  // KF-67K2VP: a pointer drag the application runs from outside the tree
+  // (a palette) targets rows with the same positions and indicator.
+  it('takes drops from outside the tree, with the same positions and indicator', () => {
+    const { root, row } = setUp();
+    const outside = treeListExternalDrop(root, {
+      canDrop: (move) => move.target.id !== 'c',
+    });
+    const label = row('a').querySelector('.kui-list-item__primary-label')!;
+    expect(outside.over(label, 5, 'new')).toEqual({
+      sourceId: 'new',
+      target: { id: 'a', position: 'before' },
+    });
+    expect(row('a').dataset.dropPosition).toBe('before');
+    expect(outside.over(row('a'), 20, 'new')?.target.position).toBe('inside');
+    expect(row('a').dataset.dropPosition).toBe('inside');
+    // Moving to another row moves the indicator.
+    expect(outside.over(row('b'), 78, 'new')?.target).toEqual({
+      id: 'b',
+      position: 'after',
+    });
+    expect(row('a').dataset.dropPosition).toBeUndefined();
+    // A refused row, a point off any row, or a row outside `root` offers none.
+    expect(outside.over(row('c'), 100, 'new')).toBeUndefined();
+    expect(row('b').dataset.dropPosition).toBeUndefined();
+    expect(outside.over(null, 0, 'new')).toBeUndefined();
+    expect(outside.over(document.body, 0, 'new')).toBeUndefined();
+    const elsewhere = treeListExternalDrop(document.createElement('div'));
+    expect(elsewhere.over(row('a'), 20, 'new')).toBeUndefined();
+    // Without canDrop, every drop is legal.
+    expect(treeListExternalDrop(root).over(row('c'), 100, 'new')).toEqual({
+      sourceId: 'new',
+      target: { id: 'c', position: 'inside' },
+    });
+    outside.over(row('a'), 20, 'new');
+    outside.clear();
+    expect(row('a').dataset.dropPosition).toBeUndefined();
   });
 
   it('wires no drag without onMove', () => {

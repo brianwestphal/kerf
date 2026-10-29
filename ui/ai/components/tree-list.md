@@ -63,7 +63,7 @@ Exact prop names and types: [`@kerfjs/ui/tree-list`](../public-api-signatures-v1
 **Wiring-owned state attributes** — never render, remove, or branch on these as app state:
 
 - `data-dragging` on `the dragged tree row` (`wireTreeList`): Set to true on the row being dragged while a pointer drag is in progress (with onMove).
-- `data-drop-position` on `the tree row under the pointer` (`wireTreeList`): before, after, or inside: where the dragged row would land, painted only for a drop canDrop accepts.
+- `data-drop-position` on `the tree row under the pointer` (`wireTreeList`): before, after, or inside: where the dragged row would land, painted only for a drop canDrop accepts; treeListExternalDrop paints it the same way for a drag from outside the tree.
 
 ## Geometry
 

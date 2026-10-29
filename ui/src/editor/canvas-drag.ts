@@ -17,6 +17,20 @@ const DRAGGABLE = '[data-kerf-node], [data-editor-slot-address]';
 /** How far the pointer moves before a press becomes a drag. */
 const DRAG_THRESHOLD = 4;
 
+/**
+ * Somewhere other than the canvas a drag can drop (KF-67K2VP: the outline's
+ * rows): the legal move over `hit`, drawing its own indicator, if any.
+ */
+export interface CanvasDropSurface {
+  readonly over: (
+    hit: Element | null,
+    clientY: number,
+    sourceId: string,
+  ) => TreeListMove | undefined;
+  /** Clears what `over` drew, when the drag leaves it or ends. */
+  readonly clear: () => void;
+}
+
 export interface CanvasDragOptions {
   /** The outline id of a canvas element that can be dragged, if any. */
   readonly sourceOf: (element: HTMLElement) => string | undefined;
@@ -41,6 +55,11 @@ export interface CanvasDragOptions {
   readonly labelOf?: (sourceId: string) => string;
   /** Where a legal move lands, in words, for the drop caption. */
   readonly captionOf?: (move: TreeListMove) => string;
+  /**
+   * Other surfaces the drag drops on where the canvas has no drop under the
+   * pointer, asked in order; the first legal move wins.
+   */
+  readonly surfaces?: readonly CanvasDropSurface[];
   /** The element under a point; `document.elementFromPoint` by default. */
   readonly pick?: (x: number, y: number) => Element | null;
 }
@@ -115,9 +134,21 @@ export function wireCanvasDrag(
     const text = caption();
     if (text) text.hidden = true;
   };
+  const surfaces = options.surfaces ?? [];
+  /** The first legal move a surface offers at a point, if any. */
+  const surfaceMoveAt = (x: number, y: number) => {
+    const hit = pick(x, y);
+    let found: TreeListMove | undefined;
+    for (const surface of surfaces) {
+      if (found) surface.clear();
+      else found = surface.over(hit, y, press!.source);
+    }
+    return found;
+  };
   /** Clears everything a drag drew. */
   const clear = () => {
     hide();
+    for (const surface of surfaces) surface.clear();
     for (const name of ['drag-source', 'drag-chip']) {
       const host = part(name);
       if (host) host.hidden = true;
@@ -290,19 +321,25 @@ export function wireCanvasDrag(
     pointer.preventDefault();
     follow(pointer.clientX, pointer.clientY);
     const found = moveAt(pointer.clientX, pointer.clientY);
-    if (found) show(found.element, found.move, found.across);
-    else hide();
+    if (found) {
+      show(found.element, found.move, found.across);
+      for (const surface of surfaces) surface.clear();
+      return;
+    }
+    hide();
+    surfaceMoveAt(pointer.clientX, pointer.clientY);
   };
   const onUp = (event: Event) => {
     const pointer = event as PointerEvent;
     if (!press || pointer.pointerId !== press.pointer) return;
     const found = press.dragging
-      ? moveAt(pointer.clientX, pointer.clientY)
+      ? (moveAt(pointer.clientX, pointer.clientY)?.move ??
+        surfaceMoveAt(pointer.clientX, pointer.clientY))
       : undefined;
     suppressClick = press.dragging;
     press = undefined;
     clear();
-    if (found) options.onMove(found.move);
+    if (found) options.onMove(found);
   };
   const cancel = () => {
     if (press?.dragging) suppressClick = true;

@@ -94,6 +94,32 @@ application state: `onMove` reports the move and the application re-renders.
 Dragging is a pointer gesture, so give people a keyboard way to move items
 too (a "Move to" choice, or moving the selected node up and down).
 
+### Drops from outside the tree
+
+A drag your application runs itself, starting outside the tree (a palette of
+new items, say), can land on its rows the same way. `treeListExternalDrop`
+finds the legal move under the pointer and paints the tree's own indicator;
+you apply the move when the pointer is released:
+
+```ts
+import { treeListExternalDrop } from '@kerfjs/ui/wire-tree-list';
+
+const outline = treeListExternalDrop(root, {
+  canDrop: ({ sourceId, target }) => canAdd(sourceId, target),
+});
+// On each pointermove of your drag:
+const move = outline.over(
+  document.elementFromPoint(event.clientX, event.clientY),
+  event.clientY,
+  newItemId,
+);
+// On pointerup: if (move) addItem(move); then outline.clear().
+```
+
+The positions and indicator match a dragged row's: before, after, or inside,
+painted only for a drop `canDrop` accepts, and `over` clears the previous
+row's indicator.
+
 ## The model
 
 `treeListRows(nodes, expanded)` returns the visible rows with each one's

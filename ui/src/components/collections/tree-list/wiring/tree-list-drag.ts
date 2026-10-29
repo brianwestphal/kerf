@@ -1,6 +1,8 @@
 // KF-WXP6AB: pointer drag-and-drop for TreeList rows. A dragged row lands
 // before or after another row, or inside it; the application says which
-// drops are legal (`canDrop`) and applies the move (`onMove`).
+// drops are legal (`canDrop`) and applies the move (`onMove`). KF-67K2VP:
+// `treeListExternalDrop` lets a drag that starts outside the tree (a palette)
+// target its rows with the same positions and indicator.
 
 /** Where a dragged row lands: beside the target row, or inside it. */
 export type TreeListDropPosition = 'before' | 'after' | 'inside';
@@ -45,6 +47,60 @@ function positionsAt(
   return offset < 0.25 || offset > 0.75 ? [edge] : ['inside', edge];
 }
 
+/** The rows under `root` showing a drop indicator. */
+const indicated = (root: HTMLElement) =>
+  root.querySelectorAll<HTMLElement>(`${ROW}[data-drop-position]`);
+
+/** A drop target for drags that start outside a TreeList. */
+export interface TreeListExternalDrop {
+  /**
+   * The legal move for `sourceId` over the row containing `hit` at
+   * `clientY`, if any, showing the tree's indicator on that row; any other
+   * indicator clears.
+   */
+  readonly over: (
+    hit: Element | null,
+    clientY: number,
+    sourceId: string,
+  ) => TreeListMove | undefined;
+  /** Clears the indicator. */
+  readonly clear: () => void;
+}
+
+/**
+ * Lets a pointer drag the application runs itself, starting outside the tree
+ * (a palette of new items), drop on the TreeList rows under `root` before,
+ * after, or inside them, as a dragged row does (KF-67K2VP). `canDrop`
+ * decides which drops are legal; the application applies the move it
+ * returns when the pointer is released.
+ */
+export function treeListExternalDrop(
+  root: HTMLElement,
+  { canDrop = () => true }: Pick<TreeListDragOptions, 'canDrop'> = {},
+): TreeListExternalDrop {
+  const clear = () =>
+    indicated(root).forEach((row) => delete row.dataset.dropPosition);
+  return {
+    over: (hit, clientY, sourceId) => {
+      clear();
+      const row = rowOf(hit);
+      if (!row || !root.contains(row)) return undefined;
+      for (const position of positionsAt(row, clientY)) {
+        const move = {
+          sourceId,
+          target: { id: row.dataset.itemId!, position },
+        };
+        if (canDrop(move)) {
+          row.dataset.dropPosition = position;
+          return move;
+        }
+      }
+      return undefined;
+    },
+    clear,
+  };
+}
+
 /** Wires pointer drag-and-drop for draggable TreeList rows under `root`. */
 export function wireTreeListDrag(
   root: HTMLElement,
@@ -53,9 +109,7 @@ export function wireTreeListDrag(
   let dragged: { tree: HTMLElement; id: string } | undefined;
 
   const clearIndicators = () =>
-    root
-      .querySelectorAll<HTMLElement>(`${ROW}[data-drop-position]`)
-      .forEach((row) => delete row.dataset.dropPosition);
+    indicated(root).forEach((row) => delete row.dataset.dropPosition);
   const clear = () => {
     dragged = undefined;
     root

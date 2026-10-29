@@ -893,7 +893,9 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   `expanded`, `selected`, `action`, and `toggleAction`, flip the ids in your
   handlers, and call `wireTreeList(root)` for the keyboard. Mark nodes
   `draggable` and pass `wireTreeList(root, { canDrop, onMove })` to move
-  them before, after, or inside other rows. Never indent ListItem rows
+  them before, after, or inside other rows; `treeListExternalDrop(root,
+  { canDrop })` lets your own pointer drag from outside the tree (a palette)
+  target its rows with the same indicator. Never indent ListItem rows
   yourself.
 - **Pick from a fixed palette with `ColorSwatches`** (`@kerfjs/ui/color-swatches`):
   a native radio group of named round swatches, one Tab stop, a ring that

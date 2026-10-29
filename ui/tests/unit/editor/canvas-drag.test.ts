@@ -2,8 +2,9 @@
 // and the click that ends a drag suppressed.
 import type { ViewDocument } from '@kerfjs/ui/view';
 import { mount } from 'kerfjs';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { wireCanvasDrag } from '../../../src/editor/canvas-drag.js';
 import { slotAt } from '../../../src/editor/model/control-flow.js';
 import { placementOf } from '../../../src/editor/model/edits.js';
 import { createEditor } from './kerf-catalog.js';
@@ -372,6 +373,74 @@ describe('canvas drag', () => {
       expect(part('drop-caption').hidden).toBe(true);
     });
 
+    // KF-67K2VP: a palette drag rests on the Outline tab to open it, then
+    // drops on an outline row with TreeList's own indicator.
+    it('opens the Outline tab it rests on, and drops on an outline row', () => {
+      vi.useFakeTimers();
+      try {
+        const { root, editor, overlay, pointer, hover } = setUp();
+        const tab = (area: string) =>
+          root.querySelector<HTMLElement>(
+            `#editor-document-areas-${area}-tab`,
+          )!;
+        const panel = (area: string) =>
+          root.querySelector<HTMLElement>(
+            `#editor-document-areas-${area}-panel`,
+          )!;
+        tab('components').click();
+        expect(panel('outline').hidden).toBe(true);
+        const badge = paletteRow(root, '@kerfjs/ui:badge');
+        pointer('pointerdown', badge, 10, 700);
+        hover(tab('outline'));
+        pointer('pointermove', badge, 20, 40);
+        // Resting short of the delay, or moving off, opens nothing.
+        vi.advanceTimersByTime(300);
+        hover(null);
+        pointer('pointermove', badge, 400, 400);
+        vi.advanceTimersByTime(500);
+        expect(panel('outline').hidden).toBe(true);
+        hover(tab('outline'));
+        pointer('pointermove', badge, 20, 40);
+        pointer('pointermove', badge, 21, 41);
+        vi.advanceTimersByTime(500);
+        expect(panel('outline').hidden).toBe(false);
+        // A row of the outline now takes the drop.
+        const row = panel('outline').querySelector<HTMLElement>(
+          `[role="treeitem"][data-item-id="${FOLDERS}"]`,
+        )!;
+        at(row, 0, 300, 260, 40);
+        hover(row);
+        pointer('pointermove', badge, 50, 302);
+        expect(row.dataset.dropPosition).toBe('before');
+        expect(overlay().hidden).toBe(true);
+        pointer('pointerup', badge, 50, 302);
+        expect(row.dataset.dropPosition).toBeUndefined();
+        const added = content(editor.document.value)[0]!;
+        expect(added).not.toBe(FOLDERS);
+        expect(editor.selection.value).toEqual({ kind: 'node', id: added });
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it('clears an outline indicator when the drag reaches the canvas', () => {
+      const { root, node, pointer, hover } = setUp();
+      const badge = paletteRow(root, '@kerfjs/ui:badge');
+      const row = root.querySelector<HTMLElement>(
+        `[role="treeitem"][data-item-id="${FOLDERS}"]`,
+      )!;
+      at(row, 0, 300, 260, 40);
+      at(node(FOLDERS), 0, 100, 800, 120);
+      pointer('pointerdown', badge, 10, 700);
+      hover(row);
+      pointer('pointermove', badge, 50, 338);
+      expect(row.dataset.dropPosition).toBe('after');
+      hover(node(FOLDERS));
+      pointer('pointermove', badge, 50, 215);
+      expect(row.dataset.dropPosition).toBeUndefined();
+      pointer('pointercancel', badge, 50, 215);
+    });
+
     it('offers no drop over a node where the component fits nowhere', () => {
       const { root, editor, node, overlay, pointer, hover } = setUp();
       const before = editor.document.value;
@@ -530,5 +599,50 @@ describe('canvas drag', () => {
     expect(
       Object.values(editor.document.value.root.zones!).flat(),
     ).toHaveLength(2);
+  });
+});
+
+// KF-Y4GHQV / KF-67K2VP: the chip, caption, dimmed source, and other drop
+// surfaces are optional; a canvas without their hosts still drags.
+describe('wireCanvasDrag without its optional parts', () => {
+  it('drags with only the drop overlay', () => {
+    const root = document.createElement('div');
+    root.innerHTML =
+      '<div data-editor-canvas><div data-kerf-node="a"></div>' +
+      '<div data-kerf-node="b"></div><div class="kui-editor__drop" hidden></div></div>';
+    document.body.append(root);
+    const [a, b] = root.querySelectorAll<HTMLElement>('[data-kerf-node]');
+    at(root.querySelector('[data-editor-canvas]')!, 0, 0, 400, 400);
+    at(a!, 0, 0, 400, 40);
+    at(b!, 0, 100, 400, 40);
+    const moves: unknown[] = [];
+    const stop = wireCanvasDrag(root, {
+      sourceOf: (element) => element.dataset.kerfNode,
+      targetOf: (element) => element.dataset.kerfNode!,
+      canDrop: () => true,
+      onMove: (move) => moves.push(move),
+      pick: () => b!,
+    });
+    const send = (type: string, x: number, y: number) => {
+      const event = new Event(type, { bubbles: true, cancelable: true });
+      for (const [key, value] of Object.entries({
+        clientX: x,
+        clientY: y,
+        button: 0,
+        pointerId: 1,
+      }))
+        Object.defineProperty(event, key, { value });
+      a!.dispatchEvent(event);
+    };
+    send('pointerdown', 10, 10);
+    send('pointermove', 10, 138);
+    expect(root.querySelector<HTMLElement>('.kui-editor__drop')!.hidden).toBe(
+      false,
+    );
+    send('pointerup', 10, 138);
+    expect(moves).toEqual([
+      { sourceId: 'a', target: { id: 'b', position: 'after' } },
+    ]);
+    stop();
   });
 });

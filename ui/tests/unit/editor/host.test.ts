@@ -160,12 +160,13 @@ describe('the selection highlight', () => {
     vi.stubGlobal(
       'ResizeObserver',
       class {
-        constructor(callback: () => void) {
-          resized = callback;
-        }
+        constructor(private readonly callback: () => void) {}
         observe(target: Element) {
           observed.push(target);
+          // Other wiring (scroll dividers) observes too; keep the canvas's.
+          if (target.matches('[data-editor-canvas]')) resized = this.callback;
         }
+        unobserve() {}
         disconnect() {}
       },
     );
@@ -188,10 +189,11 @@ describe('the selection highlight', () => {
     vi.stubGlobal(
       'ResizeObserver',
       class {
-        constructor(callback: () => void) {
-          resized = callback;
+        constructor(private readonly callback: () => void) {}
+        observe(target: Element) {
+          if (target.matches('[data-editor-canvas]')) resized = this.callback;
         }
-        observe() {}
+        unobserve() {}
         disconnect() {}
       },
     );
