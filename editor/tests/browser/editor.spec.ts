@@ -858,13 +858,14 @@ test('drags components from the palette onto the canvas', async ({
     path: info.outputPath('KF-78MHM8-dropped-1440.png'),
     animations: 'disabled',
   });
-  // KF-DC23E9: a Select drops though it has no options yet; Problems then
-  // asks for them, as after Add a child.
+  // KF-HNNWN9: a dropped Select starts with placeholder choices, so it renders
+  // and the document stays valid.
   await drag('@kerfjs/ui:select', {
     x: bounds.x + bounds.width / 2,
     y: bounds.y + bounds.height - 24,
   });
-  await expect(page.getByText('autosaved · 4 nodes · 1 problem')).toBeVisible();
+  await expect(page.getByText('autosaved · 4 nodes · valid')).toBeVisible();
+  await expect(canvas.getByText('Choice 1').first()).toBeVisible();
   // KF-Y4GHQV: moving a node on the canvas names it, dims its place, and
   // captions where it lands; letting go clears all three.
   const moved = (await canvas.getByRole('button').boundingBox())!;
