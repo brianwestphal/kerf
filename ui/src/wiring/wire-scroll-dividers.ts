@@ -312,9 +312,16 @@ const STRUCTURAL_CLASSES = [
   'kui-tab-scaffold__bar',
 ] as const;
 
+/**
+ * A scroller that draws its own edges from `data-scroll-overflow` and pairs
+ * with no chrome: a TabBar's strip, or a one-row scrolling ChoiceChips group
+ * (KF-0Q7Q3D).
+ */
+const SCROLL_STRIP = '[data-kui-tab-list], [data-kui-scroll-strip]';
+
 const STRUCTURAL_SELECTOR = [
   ...STRUCTURAL_CLASSES.map((name) => `.${name}`),
-  '[data-kui-tab-list]',
+  SCROLL_STRIP,
 ].join(', ');
 
 /** Whether a class attribute value names a structural class. */
@@ -382,7 +389,7 @@ function createController(
           'b',
           directChild(scaffold, '.kui-tab-scaffold__bar'),
         );
-      for (const strip of within<HTMLElement>(root, '[data-kui-tab-list]'))
+      for (const strip of within<HTMLElement>(root, SCROLL_STRIP))
         found.push({ scroller: strip, chrome: {} });
       for (const target of targets) {
         const scroller = byId(root, target.scroller);

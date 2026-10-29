@@ -7,6 +7,7 @@ export const choiceChipsColor = signal('blue');
 export const choiceChipsDialogColor = signal('transparent');
 export const choiceChipsView = signal('board');
 export const choiceChipsIcon = signal('star');
+export const choiceChipsSection = signal('all');
 export const choiceChipsLabels = signal<readonly string[]>(['bug', 'docs']);
 export const choiceChipsIntents = signal<readonly string[]>(['comment']);
 export const choiceChipsWorkspaces = signal<readonly string[]>(['atlas']);

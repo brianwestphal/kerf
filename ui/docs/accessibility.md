@@ -543,6 +543,16 @@ Hidden inputs submit each selected value under `name`. The focus ring follows
 or any `color-scheme: dark` ancestor) the pills, labels, checked tint, and
 focus ring read on inverse chrome without overrides.
 
+With `overflow="scroll"`, any of these groups keeps its chips on one row that
+scrolls horizontally inside the group, with no visible scrollbar. Its role,
+naming, Tab stops, and keys do not change. Moving focus with the keyboard
+scrolls the focused chip into view, and `wireChoiceChips` keeps the checked
+chip in view after a render or change, scrolling only the group. The group
+pads its clip so a chip's focus ring is never cut off. With
+`wireScrollDividers`, an edge with chips scrolled past it fades, so hidden
+chips are signaled visually; the chips stay in the accessibility tree and in
+keyboard order either way.
+
 ## TextField
 
 `TextField` renders a native `<input>` (or, with `multiline`, a `<textarea>`)

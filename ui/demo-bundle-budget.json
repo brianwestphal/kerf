@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 443200,
+  "totalJavaScriptGzip": 443800,
   "measuredLargestJavaScriptGzip": 164548,
-  "measuredTotalJavaScriptGzip": 443137,
+  "measuredTotalJavaScriptGzip": 443767,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6451,6 +6451,22 @@
         "measuredTotalJavaScriptGzip": 443137,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 443200
+      }
+    },
+    {
+      "at": "2026-10-29T03:55:32.177Z",
+      "reason": "KF-0Q7Q3D: ChoiceChips overflow=scroll (reveal wiring) and the catalog's Section Strip example",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164548,
+        "measuredTotalJavaScriptGzip": 443137,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 443200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164548,
+        "measuredTotalJavaScriptGzip": 443767,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 443800
       }
     }
   ]

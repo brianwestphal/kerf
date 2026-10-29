@@ -3594,6 +3594,12 @@ type ChoiceChipsSize = 'default' | 'compact';
  */
 type ChoiceChipsPresentation = 'chips' | 'icons';
 /**
+ * `wrap` (default) wraps chips onto more rows; `scroll` keeps them on one row
+ * that scrolls horizontally inside the group, for a section or filter strip
+ * that must never push the content below it down.
+ */
+type ChoiceChipsOverflow = 'wrap' | 'scroll';
+/**
  * A leading color dot: a {@link CssColor} from `uiColor()`, `colorVar()`, or
  * `fillColor()`, or `'transparent'` for the no-color swatch (an outlined
  * dot struck through by a diagonal line).
@@ -3628,8 +3634,16 @@ interface ChoiceChipsCommonProps<Value extends string> {
     presentation?: ChoiceChipsPresentation;
     /**
      * Cap the group's height; past it the group scrolls (a long icon grid).
+     * Not with `overflow: 'scroll'`.
      */
     maxHeight?: CssLength;
+    /**
+     * `scroll` keeps the chips on one row that scrolls sideways inside the
+     * group, with no visible scrollbar. `wireChoiceChips` keeps the checked
+     * chip in view, and `wireScrollDividers` fades each edge with chips
+     * scrolled past it.
+     */
+    overflow?: ChoiceChipsOverflow;
     /** Disable the whole group. */
     disabled?: boolean;
     /** Associate the inputs with a form outside their ancestor chain. */
@@ -3692,7 +3706,8 @@ type ChoiceChipsProps<Value extends string = string> = ChoiceChipsCommonProps<Va
 /** Which selection model a ChoiceChips group renders. */
 type ChoiceChipsSelectionMode = 'single' | 'toggle' | 'multiple';
 /**
- * A wrapping set of pill chips. By default it is an exclusive radio group:
+ * A wrapping (or, with `overflow: 'scroll'`, one scrolling row of) set of
+ * pill chips. By default it is an exclusive radio group:
  * one Tab stop, arrow-key selection, and a real form value. With
  * `multiple: 'toggle'` it is a checkbox group: each pill toggles on its own.
  * With `multiple: true` it is a multi-select listbox with modifier-key
@@ -3701,7 +3716,7 @@ type ChoiceChipsSelectionMode = 'single' | 'toggle' | 'multiple';
  */
 declare function ChoiceChips<Value extends string>(props: ChoiceChipsProps<Value>): SafeHtml;
 
-export { ChoiceChips, type ChoiceChipsChoice, type ChoiceChipsMultipleProps, type ChoiceChipsNaming, type ChoiceChipsPresentation, type ChoiceChipsProps, type ChoiceChipsSelectionMode, type ChoiceChipsSingleProps, type ChoiceChipsSize, type ChoiceChipsSwatch, type ChoiceChipsToggleProps };
+export { ChoiceChips, type ChoiceChipsChoice, type ChoiceChipsMultipleProps, type ChoiceChipsNaming, type ChoiceChipsOverflow, type ChoiceChipsPresentation, type ChoiceChipsProps, type ChoiceChipsSelectionMode, type ChoiceChipsSingleProps, type ChoiceChipsSize, type ChoiceChipsSwatch, type ChoiceChipsToggleProps };
 ```
 
 ## `@kerfjs/ui/message-composer`
@@ -6167,7 +6182,9 @@ declare function readChoiceChips(group: Element): string[];
  * it), and Cmd/Ctrl+A selects every chip. Disabled chips keep their state.
  * Each change updates `aria-selected` and the hidden form inputs, then fires
  * a bubbling `change` on the group, whose `data-action` is the group's
- * `action`; read the new set with `readChoiceChips`. Returns a disposer.
+ * `action`; read the new set with `readChoiceChips`. In a one-row scrolling
+ * group (`overflow: 'scroll'`) of any selection mode, it also keeps the
+ * checked chip in view, scrolling only the group. Returns a disposer.
  */
 declare function wireChoiceChips(root: HTMLElement | Document): () => void;
 

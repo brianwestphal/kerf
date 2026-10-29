@@ -217,3 +217,48 @@
   overscroll-behavior: contain;
   align-content: flex-start;
 }
+
+/* `overflow="scroll"` (KF-0Q7Q3D): one row that scrolls sideways inside the
+   group and never wraps the content below it down. The padding gives a chip's
+   focus ring (3px ring, 2px offset) room inside the clip, and the matching
+   negative margin gives it back so the chips stay where a wrapping group puts
+   them. No scrollbar shows; an edge with chips scrolled past it fades, as
+   `wireScrollDividers` reports through `data-scroll-overflow` (physical
+   sides). */
+.kui-choice-chips[data-overflow="scroll"] {
+  --_kui-choice-chips-ring-room: remify(5px);
+  --_kui-choice-chips-fade-left: 0px;
+  --_kui-choice-chips-fade-right: 0px;
+
+  max-width: calc(100% + 2 * var(--_kui-choice-chips-ring-room));
+  margin: calc(-1 * var(--_kui-choice-chips-ring-room));
+  padding: var(--_kui-choice-chips-ring-room);
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--_kui-choice-chips-fade-left),
+    #000 calc(100% - var(--_kui-choice-chips-fade-right)),
+    transparent
+  );
+}
+
+.kui-choice-chips[data-overflow="scroll"]::-webkit-scrollbar {
+  display: none;
+}
+
+.kui-choice-chips[data-overflow="scroll"] > .kui-choice-chips__chip {
+  flex: none;
+}
+
+.kui-choice-chips[data-overflow="scroll"][data-scroll-overflow*="l"] {
+  --_kui-choice-chips-fade-left: remify(24px);
+}
+
+.kui-choice-chips[data-overflow="scroll"][data-scroll-overflow*="r"] {
+  --_kui-choice-chips-fade-right: remify(24px);
+}

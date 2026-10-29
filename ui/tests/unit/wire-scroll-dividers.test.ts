@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Toolbar } from '../../src/components/actions/toolbar/toolbar.js';
 import { List } from '../../src/components/collections/list/list.js';
+import { ChoiceChips } from '../../src/components/forms/choice-chips/choice-chips.js';
 import { Pane } from '../../src/components/layout/pane/pane.js';
 import { SplitView } from '../../src/components/layout/split-view/split-view.js';
 import { NavStack } from '../../src/components/navigation/nav-stack/nav-stack.js';
@@ -484,6 +485,30 @@ describe('wireScrollDividers — horizontal edges', () => {
     expect(overflow(tabs)).toBe('rl');
     scrollTo(tabs, state, { scrollLeft: 200 });
     expect(overflow(tabs)).toBe('l');
+    dispose();
+  });
+
+  // KF-0Q7Q3D: a one-row scrolling ChoiceChips group is a scroll strip too.
+  it('reports the sides of a scrolling ChoiceChips group', () => {
+    const root = mountHtml(
+      String(
+        ChoiceChips({
+          name: 'section',
+          label: 'Section',
+          overflow: 'scroll',
+          choices: [
+            { value: 'all', label: 'All' },
+            { value: 'news', label: 'News' },
+          ],
+        }),
+      ),
+    );
+    const group = root.querySelector<HTMLElement>('.kui-choice-chips')!;
+    const state = geometry(group, { scrollWidth: 300, clientWidth: 100 });
+    const dispose = wireScrollDividers(root);
+    expect(overflow(group)).toBe('r');
+    scrollTo(group, state, { scrollLeft: 200 });
+    expect(overflow(group)).toBe('l');
     dispose();
   });
 

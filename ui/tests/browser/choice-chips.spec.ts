@@ -391,3 +391,70 @@ test('ChoiceChips keeps selected text, icons, focus, and disabled choices legibl
     }
   }
 });
+
+// KF-0Q7Q3D: a section strip stays one row and scrolls inside its group.
+test('an overflow="scroll" ChoiceChips strip stays one row, scrolls inside the group, and fades its cut-off edges', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.goto('/?component=choice-chips');
+  const demo = page.locator('[data-demo="choice-chips"]');
+  const group = demo.getByRole('radiogroup', { name: 'Feed Section' });
+  await group.scrollIntoViewIfNeeded();
+  expect((await pillRows(group)).rows).toBe(1);
+  const metrics = () =>
+    group.evaluate((element: HTMLElement) => ({
+      scrollWidth: element.scrollWidth,
+      clientWidth: element.clientWidth,
+      scrollLeft: Math.round(element.scrollLeft),
+      overflow: element.getAttribute('data-scroll-overflow'),
+      mask: element.ownerDocument.defaultView!.getComputedStyle(element)
+        .maskImage,
+      scrollbar: element.offsetHeight - element.clientHeight,
+    }));
+  // The group and a margin around it, for its focus ring and edge fades.
+  const around = (box: Awaited<ReturnType<Locator['boundingBox']>>) => ({
+    x: box!.x - 24,
+    y: box!.y - 24,
+    width: box!.width + 48,
+    height: box!.height + 48,
+  });
+  const start = await metrics();
+  expect(start.scrollWidth).toBeGreaterThan(start.clientWidth);
+  expect(start.scrollLeft).toBe(0);
+  expect(start.scrollbar).toBe(0);
+  // The far edge has chips past it and fades; the near edge does not.
+  // Only the horizontal sides matter: the group fades l and r, and cannot
+  // scroll vertically.
+  const sides = async () =>
+    ((await group.getAttribute('data-scroll-overflow')) ?? '').replace(
+      /[tb]/g,
+      '',
+    );
+  await expect.poll(sides).toBe('r');
+  expect(start.mask).toContain('linear-gradient');
+  await page.screenshot({
+    path: info.outputPath('KF-0Q7Q3D-section-strip-start.png'),
+    clip: around(await group.boundingBox()),
+  });
+  // Arrow keys move the checked radio; the browser keeps it in view, and
+  // the group (not the page) scrolls to it.
+  await group.getByRole('radio', { name: 'All' }).focus();
+  await page.keyboard.press('ArrowLeft');
+  const last = group.getByRole('radio', { name: 'Transport' });
+  await expect(last).toBeChecked();
+  await expect
+    .poll(async () => (await metrics()).scrollLeft)
+    .toBeGreaterThan(0);
+  const chip = await group
+    .locator('.kui-choice-chips__chip[data-choice-value="transport"]')
+    .boundingBox();
+  const box = (await group.boundingBox())!;
+  expect(chip!.x + chip!.width).toBeLessThanOrEqual(box.x + box.width + 1);
+  await expect.poll(sides).toBe('l');
+  // The focused chip's ring stays inside the group's clip.
+  await page.screenshot({
+    path: info.outputPath('KF-0Q7Q3D-section-strip-end.png'),
+    clip: around(await group.boundingBox()),
+  });
+});

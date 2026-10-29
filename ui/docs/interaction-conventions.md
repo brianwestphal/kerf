@@ -42,6 +42,7 @@ Use the spacing scale by relationship: 8px within a group, 16px between like gro
 ## Responsive, platform, and roles
 
 - Declare a desktop minimum and a collapse order for each composed screen. Measure the actual content region, not only the viewport. Protect readable text, recognizable icons, and usable targets. Relocate or hide secondary labels before shrinking icons or controls below their usable size.
+- A section or filter strip that must stay one row scrolls horizontally inside its own group; it never wraps the content below it down (`ChoiceChips` `overflow="scroll"`, or a `TabBar` when the choice switches tabpanels).
 - Use one scroll owner per region and check narrow, intermediate, wide, zoomed, keyboard, and reduced-motion states. Avoid clipped menus and dialogs; anchored surfaces retain their trigger relationship and stay inside the viewport.
 - Keep the same mental model across platforms while using native platform language and behavior. Use one icon set through a shared renderer; decorative icons are hidden from assistive technology and icon-only controls have accessible names. Do not use emoji as UI icons.
 - A restricted role sees the same interface with unavailable features explained or disabled according to capability. Do not invent a separate stripped-down product that changes navigation or identity. Important state must be expressed in text or structure, not color alone.

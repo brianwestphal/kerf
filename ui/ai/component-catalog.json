@@ -6087,7 +6087,8 @@
       "useWhen": [
         "Expose one exclusive choice among several visible options that must wrap onto more rows, such as a labeled color palette with swatches.",
         "Set multiple when the person may turn any number of visible, wrapping options on or off, such as label filters or annotation intents.",
-        "Pick one icon from many (a command or category icon): presentation=\"icons\" with an icon and label per choice and maxHeight to scroll a long grid, instead of an application grid of buttons."
+        "Pick one icon from many (a command or category icon): presentation=\"icons\" with an icon and label per choice and maxHeight to scroll a long grid, instead of an application grid of buttons.",
+        "A section or filter strip that must stay one row (a feed's section filter on a phone): overflow=\"scroll\" scrolls the chips sideways inside the group instead of wrapping the content below it down; wire wireChoiceChips to keep the checked chip in view and wireScrollDividers to fade the edges with chips past them."
       ],
       "avoidWhen": [
         "Use SegmentedControl for a few compact choices on one track.",
@@ -6122,7 +6123,8 @@
         "default or compact size",
         "disabled group or disabled choices",
         "required (single selection only)",
-        "presentation=\"icons\": square 36px icon-only choices (an icon picker) named by hidden labels with hover titles, and maxHeight for a scrolling grid"
+        "presentation=\"icons\": square 36px icon-only choices (an icon picker) named by hidden labels with hover titles, and maxHeight for a scrolling grid",
+        "overflow=\"scroll\": one row that scrolls sideways inside the group, with no scrollbar and faded edges where chips are scrolled past"
       ],
       "accessibility": [
         "The single group is a named role=\"radiogroup\" of native radios: one Tab stop, arrow keys move the selection, and the checked radio submits the form value.",
@@ -6155,8 +6157,31 @@
           "export": "wireChoiceChips",
           "import": "@kerfjs/ui/wire-choice-chips",
           "required": true,
-          "reason": "Gives a multiple: true group its listbox selection: pointer and keyboard gestures, roving focus, aria-selected, hidden form inputs, and a change event on the group. Radio and toggle groups use native inputs and need no wiring.",
+          "reason": "Gives a multiple: true group its listbox selection: pointer and keyboard gestures, roving focus, aria-selected, hidden form inputs, and a change event on the group, and keeps the checked chip of an overflow=\"scroll\" group in view. Radio and toggle groups that wrap use native inputs and need no wiring.",
           "stateAttributes": []
+        },
+        {
+          "export": "wireScrollDividers",
+          "import": "@kerfjs/ui/wire-scroll-dividers",
+          "required": false,
+          "reason": "Fades each edge of an overflow=\"scroll\" group with chips scrolled past it.",
+          "stateAttributes": [
+            {
+              "name": "data-scroll-overflow",
+              "on": "kui-choice-chips with overflow=\"scroll\"",
+              "meaning": "The physical edges, in canonical t/r/b/l order, beyond which chips are scrolled out of view; the group fades its l and r edges. Absent when every chip fits. Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-scroll-divider",
+              "on": "chrome named in wireScrollDividers targets (a ChoiceChips group has none)",
+              "meaning": "The sides, in t/r/b/l order, on which that chrome currently draws its scroll divider. Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-header-overlay",
+              "on": "kui-pane",
+              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root, plus a classic content scrollbar's inline size as --kui-pane-scrollbar-inline-size, which the header leaves uncovered. Re-applied if a re-render drops it."
+            }
+          ]
         }
       ],
       "publicClasses": [

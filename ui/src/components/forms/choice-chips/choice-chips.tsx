@@ -17,6 +17,13 @@ export type ChoiceChipsSize = 'default' | 'compact';
 export type ChoiceChipsPresentation = 'chips' | 'icons';
 
 /**
+ * `wrap` (default) wraps chips onto more rows; `scroll` keeps them on one row
+ * that scrolls horizontally inside the group, for a section or filter strip
+ * that must never push the content below it down.
+ */
+export type ChoiceChipsOverflow = 'wrap' | 'scroll';
+
+/**
  * A leading color dot: a {@link CssColor} from `uiColor()`, `colorVar()`, or
  * `fillColor()`, or `'transparent'` for the no-color swatch (an outlined
  * dot struck through by a diagonal line).
@@ -53,8 +60,16 @@ interface ChoiceChipsCommonProps<Value extends string> {
   presentation?: ChoiceChipsPresentation;
   /**
    * Cap the group's height; past it the group scrolls (a long icon grid).
+   * Not with `overflow: 'scroll'`.
    */
   maxHeight?: CssLength;
+  /**
+   * `scroll` keeps the chips on one row that scrolls sideways inside the
+   * group, with no visible scrollbar. `wireChoiceChips` keeps the checked
+   * chip in view, and `wireScrollDividers` fades each edge with chips
+   * scrolled past it.
+   */
+  overflow?: ChoiceChipsOverflow;
   /** Disable the whole group. */
   disabled?: boolean;
   /** Associate the inputs with a form outside their ancestor chain. */
@@ -141,8 +156,11 @@ const CHOICE_CHIPS_PROTECTED = new Set([
   'data-component',
   'data-disabled',
   'data-form',
+  'data-kui-scroll-strip',
   'data-name',
+  'data-overflow',
   'data-presentation',
+  'data-scroll-overflow',
   'data-scrollable',
   'data-selection-mode',
   'data-size',
@@ -150,7 +168,8 @@ const CHOICE_CHIPS_PROTECTED = new Set([
 ]);
 
 /**
- * A wrapping set of pill chips. By default it is an exclusive radio group:
+ * A wrapping (or, with `overflow: 'scroll'`, one scrolling row of) set of
+ * pill chips. By default it is an exclusive radio group:
  * one Tab stop, arrow-key selection, and a real form value. With
  * `multiple: 'toggle'` it is a checkbox group: each pill toggles on its own.
  * With `multiple: true` it is a multi-select listbox with modifier-key
@@ -167,6 +186,7 @@ export function ChoiceChips<Value extends string>(
     size = 'default',
     presentation = 'chips',
     maxHeight,
+    overflow = 'wrap',
     disabled = false,
     form,
     id,
@@ -179,8 +199,16 @@ export function ChoiceChips<Value extends string>(
   const icons = presentation === 'icons';
   if (icons && choices.some((choice) => choice.icon === undefined))
     throw new TypeError('An icons ChoiceChips choice needs an icon.');
+  const scroll = overflow === 'scroll';
+  if (scroll && maxHeight !== undefined)
+    throw new TypeError(
+      'A ChoiceChips group scrolls one row or caps its height, not both.',
+    );
   const shape = {
     'data-presentation': icons ? 'icons' : undefined,
+    'data-overflow': scroll ? 'scroll' : undefined,
+    // KF-0Q7Q3D: wireScrollDividers reports which edges have chips past them.
+    'data-kui-scroll-strip': scroll ? '' : undefined,
     'data-scrollable': maxHeight === undefined ? undefined : '',
     style:
       maxHeight === undefined

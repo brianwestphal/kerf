@@ -1491,7 +1491,7 @@
       "source": "kerf",
       "import": "@kerfjs/ui/choice-chips",
       "export": "ChoiceChips",
-      "description": "A wrapping set of pill chips. By default it is an exclusive radio group:\none Tab stop, arrow-key selection, and a real form value. With\n`multiple: 'toggle'` it is a checkbox group: each pill toggles on its own.\nWith `multiple: true` it is a multi-select listbox with modifier-key\nselection (wire it with `wireChoiceChips`). Each choice may lead with a\ncolor swatch (including a struck-through transparent swatch) or an icon.",
+      "description": "A wrapping (or, with `overflow: 'scroll'`, one scrolling row of) set of\npill chips. By default it is an exclusive radio group:\none Tab stop, arrow-key selection, and a real form value. With\n`multiple: 'toggle'` it is a checkbox group: each pill toggles on its own.\nWith `multiple: true` it is a multi-select listbox with modifier-key\nselection (wire it with `wireChoiceChips`). Each choice may lead with a\ncolor swatch (including a struck-through transparent swatch) or an icon.",
       "typeParameters": [{ "name": "Value", "constraint": "string" }],
       "props": [
         {
@@ -1549,7 +1549,19 @@
             "nullable": true
           },
           "required": false,
-          "description": "Cap the group's height; past it the group scrolls (a long icon grid)."
+          "description": "Cap the group's height; past it the group scrolls (a long icon grid).\nNot with `overflow: 'scroll'`."
+        },
+        {
+          "name": "overflow",
+          "type": {
+            "kind": "enum",
+            "values": ["wrap", "scroll"],
+            "text": "ChoiceChipsOverflow | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "wrap",
+          "description": "`scroll` keeps the chips on one row that scrolls sideways inside the\ngroup, with no visible scrollbar. `wireChoiceChips` keeps the checked\nchip in view, and `wireScrollDividers` fades each edge with chips\nscrolled past it."
         },
         {
           "name": "disabled",

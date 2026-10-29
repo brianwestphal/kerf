@@ -971,7 +971,12 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   multi-select: a listbox where a click selects one, Cmd/Ctrl toggles, Shift
   extends, and hidden inputs submit under `name`; wire it with
   `wireChoiceChips` (`@kerfjs/ui/wire-choice-chips`) and read the set with
-  `readChoiceChips`. On dark
+  `readChoiceChips`. A section or filter strip that must stay one row (a
+  feed's sections on a phone) takes `overflow="scroll"`: the chips scroll
+  sideways inside the group instead of wrapping the content below down;
+  `wireChoiceChips` keeps the checked chip in view and `wireScrollDividers`
+  fades the edges with chips past them. Use a `TabBar` instead only when the
+  choice switches tabpanels. On dark
   inverse chrome, place the chips in a dark appearance scope (`.wa-dark`)
   instead of restyling them.
 

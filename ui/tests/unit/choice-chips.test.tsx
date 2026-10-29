@@ -10,6 +10,7 @@ import {
   ChoiceChips,
   type ChoiceChipsChoice,
 } from '../../src/components/forms/choice-chips/choice-chips.js';
+import { wireChoiceChips } from '../../src/components/forms/choice-chips/wiring/wire-choice-chips.js';
 import { LucideIcon } from '../../src/components/media/lucide-icon/lucide-icon.js';
 import {
   colorVar,
@@ -192,6 +193,108 @@ describe('ChoiceChips', () => {
         choices: [{ value: 'a', label: 'Alpha' }],
       }),
     ).toThrow('An icons ChoiceChips choice needs an icon.');
+  });
+
+  // KF-0Q7Q3D: one row that scrolls sideways instead of wrapping.
+  it('renders a one-row scrolling strip, never with a height cap', () => {
+    const host = render(
+      ChoiceChips({
+        name: 'section',
+        label: 'Section',
+        overflow: 'scroll',
+        value: 'news',
+        choices: [
+          { value: 'all', label: 'All' },
+          { value: 'news', label: 'News' },
+        ],
+        rootAttributes: { 'data-overflow': 'wrap', 'data-feed': 'main' } as {
+          'data-feed': string;
+        },
+      }),
+    );
+    const group = host.querySelector<HTMLElement>('.kui-choice-chips')!;
+    expect(group.dataset.overflow).toBe('scroll');
+    expect(group.hasAttribute('data-kui-scroll-strip')).toBe(true);
+    expect(group.dataset.feed).toBe('main');
+    expect(group.getAttribute('role')).toBe('radiogroup');
+    const wrapping = render(
+      ChoiceChips({ name: 'w', label: 'W', choices: [] }),
+    ).querySelector<HTMLElement>('.kui-choice-chips')!;
+    expect(wrapping.hasAttribute('data-overflow')).toBe(false);
+    expect(wrapping.hasAttribute('data-kui-scroll-strip')).toBe(false);
+    expect(() =>
+      ChoiceChips({
+        name: 'x',
+        label: 'X',
+        overflow: 'scroll',
+        maxHeight: rem(4),
+        choices: [],
+      }),
+    ).toThrow('A ChoiceChips group scrolls one row or caps its height');
+  });
+
+  it('keeps the checked chip of a scrolling group in view, scrolling only the group', async () => {
+    const value = signal('all');
+    const host = document.createElement('div');
+    document.body.append(host);
+    mount(host, () =>
+      ChoiceChips({
+        name: 'section',
+        label: 'Section',
+        overflow: 'scroll',
+        value: value.value,
+        choices: ['all', 'news', 'travel'].map((item) => ({
+          value: item,
+          label: item,
+        })),
+      }),
+    );
+    const group = host.querySelector<HTMLElement>('.kui-choice-chips')!;
+    const box = (left: number, width: number) =>
+      ({ left, right: left + width, width }) as DOMRect;
+    // The group shows 0..200 of a 600px row; chips sit 200px apart, so the
+    // travel chip starts at 400 less the scroll.
+    // happy-dom has no layout to scroll against; a plain property stands in.
+    Object.defineProperties(group, {
+      scrollWidth: { value: 600 },
+      clientWidth: { value: 200 },
+      scrollLeft: { value: 0, writable: true },
+    });
+    group.getBoundingClientRect = () => box(0, 200);
+    const chips = [
+      ...group.querySelectorAll<HTMLElement>('.kui-choice-chips__chip'),
+    ];
+    chips.forEach((chip, index) => {
+      chip.getBoundingClientRect = () =>
+        box(index * 200 - group.scrollLeft, 80);
+    });
+    // The wiring scans a frame after the render's mutations are observed.
+    const frame = () =>
+      new Promise((resolve) => window.requestAnimationFrame(resolve));
+    const nextFrame = async () => {
+      await frame();
+      await frame();
+    };
+    const stop = wireChoiceChips(host);
+    await nextFrame();
+    expect(group.scrollLeft).toBe(0);
+    value.value = 'travel';
+    await nextFrame();
+    // Its right edge (480) clears the far fade (176): 304 to the left.
+    expect(group.scrollLeft).toBe(304);
+    // Back to the first chip, cut off on the left: it clears the near fade
+    // (a browser clamps the 24px asked past the row's start to 0).
+    value.value = 'all';
+    await nextFrame();
+    expect(group.scrollLeft).toBe(-24);
+    // A chip already in full view does not move the row.
+    group.scrollLeft = 100;
+    value.value = 'news';
+    await nextFrame();
+    expect(group.scrollLeft).toBe(100);
+    // A change event asks too; disposing cancels a pending frame.
+    group.dispatchEvent(new Event('change', { bubbles: true }));
+    stop();
   });
 
   it('paints a color dot, the struck transparent dot, and no dot for a text choice', () => {

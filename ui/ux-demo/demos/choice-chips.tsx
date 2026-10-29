@@ -49,9 +49,24 @@ import {
   choiceChipsIcon,
   choiceChipsIntents,
   choiceChipsLabels,
+  choiceChipsSection,
   choiceChipsView,
   choiceChipsWorkspaces,
 } from './state.js';
+
+/** A feed's sections: more than one narrow row holds. */
+const sectionChoices: readonly ChoiceChipsChoice[] = [
+  'All',
+  'Business',
+  'Money',
+  'Technology',
+  'Science',
+  'Health',
+  'Sports',
+  'Culture',
+  'Travel',
+  'Transport',
+].map((label) => ({ value: label.toLowerCase(), label }));
 
 const commandIcons = [
   ['star', 'Star', Star],
@@ -253,6 +268,21 @@ export function ChoiceChipsDemo() {
           value={choiceChipsIcon.value}
           action="choice-chips-demo"
           choices={iconChoices}
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Section Strip"
+        note='overflow="scroll" keeps a section or filter strip on one row that scrolls sideways inside the group, so it never pushes the content below it down. The edges fade where chips are scrolled past, and the checked chip stays in view.'
+        viewport={{ width: 'compact' }}
+      >
+        <ChoiceChips<string>
+          id="choice-chips-section"
+          name="feed-section"
+          label="Feed Section"
+          overflow="scroll"
+          value={choiceChipsSection.value}
+          action="choice-chips-demo"
+          choices={sectionChoices}
         />
       </CatalogExample>
       <CatalogExample

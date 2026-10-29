@@ -7,6 +7,77 @@ import {
 
 const GROUP = '[data-component="choice-chips"][data-selection-mode="multiple"]';
 const OPTION = '.kui-choice-chips__chip[role="option"]';
+/** A one-row scrolling group (`overflow: 'scroll'`, KF-0Q7Q3D). */
+const SCROLLING = '[data-component="choice-chips"][data-overflow="scroll"]';
+/** The group's first checked (or, in a listbox, selected) chip. */
+function checkedChip(group: HTMLElement): HTMLElement | undefined {
+  return [
+    ...group.querySelectorAll<HTMLElement>('.kui-choice-chips__chip'),
+  ].find(
+    (chip) =>
+      chip.getAttribute('aria-selected') === 'true' ||
+      chip.querySelector<HTMLInputElement>(':scope > .kui-choice-chips__input')
+        ?.checked === true,
+  );
+}
+/** How far a revealed chip clears the group's edge, past its edge fade. */
+const REVEAL_CLEARANCE = 24;
+
+/**
+ * Scrolls a one-row group, and nothing else (never the page), so its first
+ * checked chip is in full view, clear of the edge fade.
+ */
+function revealChecked(group: HTMLElement): void {
+  const chip = checkedChip(group);
+  if (!chip || group.scrollWidth <= group.clientWidth) return;
+  const bounds = group.getBoundingClientRect();
+  const box = chip.getBoundingClientRect();
+  const left = bounds.left + REVEAL_CLEARANCE;
+  const right = bounds.right - REVEAL_CLEARANCE;
+  // Only a chip cut off by an edge moves; it then clears that edge's fade.
+  if (box.left < bounds.left) group.scrollLeft -= left - box.left;
+  else if (box.right > bounds.right)
+    group.scrollLeft += Math.min(box.right - right, box.left - left);
+}
+
+/**
+ * Keeps the checked chip of every one-row scrolling group under `root` in
+ * view: when wired, after a change, and after a render changes which chip is
+ * checked. Returns a disposer.
+ */
+function wireScrollingGroups(root: HTMLElement | Document): () => void {
+  const shown = new WeakMap<Element, string>();
+  const view = (root.ownerDocument ?? (root as Document)).defaultView!;
+  let frame: number | undefined;
+  const scan = () => {
+    frame = undefined;
+    for (const group of root.querySelectorAll<HTMLElement>(SCROLLING)) {
+      const checked = checkedChip(group)?.dataset.choiceValue ?? '';
+      if (shown.get(group) === checked) continue;
+      shown.set(group, checked);
+      revealChecked(group);
+    }
+  };
+  // In the next frame: a render has settled which input is checked, and it
+  // has laid out.
+  const pass = () => {
+    frame ??= view.requestAnimationFrame(scan);
+  };
+  const observer = new MutationObserver(pass);
+  observer.observe(root, {
+    subtree: true,
+    childList: true,
+    attributes: true,
+    attributeFilter: ['checked', 'aria-selected'],
+  });
+  root.addEventListener('change', pass);
+  pass();
+  return () => {
+    observer.disconnect();
+    root.removeEventListener('change', pass);
+    if (frame !== undefined) view.cancelAnimationFrame(frame);
+  };
+}
 
 function optionsOf(group: Element): HTMLElement[] {
   return Array.from(group.querySelectorAll<HTMLElement>(OPTION)).filter(
@@ -35,7 +106,9 @@ export function readChoiceChips(group: Element): string[] {
  * it), and Cmd/Ctrl+A selects every chip. Disabled chips keep their state.
  * Each change updates `aria-selected` and the hidden form inputs, then fires
  * a bubbling `change` on the group, whose `data-action` is the group's
- * `action`; read the new set with `readChoiceChips`. Returns a disposer.
+ * `action`; read the new set with `readChoiceChips`. In a one-row scrolling
+ * group (`overflow: 'scroll'`) of any selection mode, it also keeps the
+ * checked chip in view, scrolling only the group. Returns a disposer.
  */
 export function wireChoiceChips(root: HTMLElement | Document): () => void {
   const anchors = new WeakMap<Element, string>();
@@ -167,8 +240,10 @@ export function wireChoiceChips(root: HTMLElement | Document): () => void {
 
   root.addEventListener('click', click);
   root.addEventListener('keydown', keydown as EventListener);
+  const stopScrolling = wireScrollingGroups(root);
   return () => {
     root.removeEventListener('click', click);
     root.removeEventListener('keydown', keydown as EventListener);
+    stopScrolling();
   };
 }
