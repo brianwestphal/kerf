@@ -573,12 +573,14 @@ export function bindingOptions(
 /**
  * Whether `next` has a problem `before` does not. Problems compare by code and
  * message, counted, because wrapping a node moves its existing problems to
- * new paths without adding any.
+ * new paths without adding any. Problems `ignore` accepts do not count.
  */
 export function addsProblems(
   before: ViewDocument,
   next: ViewDocument,
   catalog: ViewCatalog,
+  ignore: (diagnostic: { code: string; message: string }) => boolean = () =>
+    false,
 ): boolean {
   const counts = new Map<string, number>();
   for (const { code, message } of validateView(before, catalog).diagnostics)
@@ -586,7 +588,9 @@ export function addsProblems(
       `${code} ${message}`,
       (counts.get(`${code} ${message}`) ?? 0) + 1,
     );
-  return validateView(next, catalog).diagnostics.some(({ code, message }) => {
+  return validateView(next, catalog).diagnostics.some((diagnostic) => {
+    if (ignore(diagnostic)) return false;
+    const { code, message } = diagnostic;
     const left = counts.get(`${code} ${message}`) ?? 0;
     counts.set(`${code} ${message}`, left - 1);
     return left <= 0;

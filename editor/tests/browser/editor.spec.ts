@@ -802,4 +802,11 @@ test('drags components from the palette onto the canvas', async ({
     path: info.outputPath('KF-78MHM8-dropped-1440.png'),
     animations: 'disabled',
   });
+  // KF-DC23E9: a Select drops though it has no options yet; Problems then
+  // asks for them, as after Add a child.
+  await drag('@kerfjs/ui:select', {
+    x: bounds.x + bounds.width / 2,
+    y: bounds.y + bounds.height - 24,
+  });
+  await expect(page.getByText('autosaved · 4 nodes · 1 problem')).toBeVisible();
 });

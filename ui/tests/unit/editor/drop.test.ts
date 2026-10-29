@@ -247,6 +247,35 @@ describe('drops', () => {
     expect(place(PANE, 'before')).toBeUndefined();
   });
 
+  // KF-DC23E9: a new node's own unfilled props and empty zones are for the
+  // inspector to ask about; only where it goes decides a drop.
+  it('places a new node that is not filled in yet', () => {
+    const fresh = (type: string): ViewNode => ({
+      id: '01JB8Z1M6Q8E1X9V4S7K2R3TZX',
+      type,
+    });
+    const place = (type: string, target: string) =>
+      insertPlacement(
+        inbox,
+        viewCatalog,
+        fresh(type),
+        target,
+        'inside',
+        zonesOf,
+      );
+    // Missing required props (KUI-V005), no matching variant (KUI-V004),
+    // and empty required zones (KUI-L203).
+    expect(place('@kerfjs/ui:corner-status', PANE)).toMatchObject({
+      parent: PANE,
+    });
+    expect(place('@kerfjs/ui:select', PANE)).toMatchObject({ parent: PANE });
+    expect(place('@kerfjs/ui:split-view', PANE)).toMatchObject({
+      parent: PANE,
+    });
+    // Its parent still matters (KUI-L201).
+    expect(place('@kerfjs/ui:tabs', PANE)).toBeUndefined();
+  });
+
   it('lists the zones a node can move into, other than its own', () => {
     const destinations = moveDestinations(
       inbox,

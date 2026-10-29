@@ -126,7 +126,10 @@ opens on its Properties. Arrow keys move between tabs (`wireTabBars`).
 Components drag from the palette onto the canvas the same way (KF-78MHM8:
 palette drag). The dragged component is a new node with its required props
 seeded, as Add a child makes it; `insertPlacement` asks the validator where
-it may land, it joins the document's catalogs when it comes from another
+it may land. Only placement problems block it (a parent the component may
+not sit in, a full zone, a binding out of scope): the new node's own unfilled
+required props, unmatched variants, and empty required zones are accepted,
+as Add a child accepts them, and Problems then lists them (KF-DC23E9). It joins the document's catalogs when it comes from another
 package, and the drop selects it. A drop on the canvas's blank space lands
 inside the document's root, which is how an empty document gets its first
 node (an empty Pane has no height to hit). A click without a drag still shows

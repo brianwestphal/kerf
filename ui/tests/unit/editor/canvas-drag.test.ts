@@ -303,6 +303,31 @@ describe('canvas drag', () => {
       expect(editor.document.value).toBe(before);
     });
 
+    // KF-DC23E9: a component whose seeded props leave required ones unfilled
+    // (options, menu items, children) still drops; the inspector then asks
+    // for what it needs, as it does after Add a child.
+    it.each([
+      '@kerfjs/ui:corner-status',
+      '@kerfjs/ui:popup-menu',
+      '@kerfjs/ui:combobox',
+      '@kerfjs/ui:select',
+      '@kerfjs/ui:resize',
+      '@kerfjs/ui:list-inset-control',
+      '@kerfjs/ui:choice-chips',
+    ])('drops %s though it is not filled in yet', (key) => {
+      const { root, editor, node, overlay, pointer, hover } = setUp();
+      const row = paletteRow(root, key);
+      const folders = node(FOLDERS);
+      at(folders, 0, 100, 800, 120);
+      pointer('pointerdown', row, 10, 700);
+      hover(folders);
+      pointer('pointermove', row, 50, 215);
+      expect(overlay().hidden).toBe(false);
+      pointer('pointerup', row, 50, 215);
+      const added = content(editor.document.value)[1]!;
+      expect(editor.selection.value).toEqual({ kind: 'node', id: added });
+    });
+
     it('still shows the component on a click without a drag', () => {
       const { root, editor, pointer } = setUp();
       const badge = paletteRow(root, '@kerfjs/ui:badge');

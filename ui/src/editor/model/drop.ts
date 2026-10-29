@@ -84,8 +84,36 @@ export function insertPlacement(
       insertNode(document, to.parent, to.zone, node, to.index),
       node.type,
     );
-    return !addsProblems(document, next, catalog);
+    return !addsProblems(document, next, catalog, (diagnostic) =>
+      unfilled(diagnostic, node.type),
+    );
   });
+}
+
+/**
+ * Whether `diagnostic` only says a new node of `type` is not filled in yet: a
+ * required prop or variant it has no value for, or a zone short of its
+ * minimum children (KF-DC23E9). Adding a child accepts these, and the
+ * inspector then asks for them, so a drop accepts them too; where the node
+ * may go (its parent, a full zone, a binding's scope) still decides.
+ */
+function unfilled(
+  { code, message }: { code: string; message: string },
+  type: string,
+): boolean {
+  switch (code) {
+    case 'KUI-V004':
+    case 'KUI-V005':
+      return message.startsWith(`${type} `);
+    case 'KUI-L203':
+      // Its zones start empty; a full zone of a parent of the same type
+      // reports what it found there instead.
+      return (
+        message.startsWith(`\`${type}\` zone `) && message.endsWith('found 0')
+      );
+    default:
+      return false;
+  }
 }
 
 /** The placement a drop on `target` at `position` asks for, if `legal`. */
