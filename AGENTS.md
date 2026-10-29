@@ -274,7 +274,9 @@ captures before handoff. Set `KERF_VISUAL_ROUTE=api/` (or another built route su
 
 Coverage thresholds (`vitest.config.ts`): **100% lines and functions, 98.5% branches, 99.5% statements** on `src/`. Lines and functions are the load-bearing pair — they are what catches genuinely unexercised code. Branches and statements sit below 100 for one enumerated reason: defensive arms that cannot be exercised by construction (a `parentElement !== null` guard on a node the reconciler just found attached, a `?? ''` after a regex that always matches, loop-completion branches). KF-103 first lowered branches to 99 for that class; KF-452 moved both numbers again when vitest 4 replaced `v8-to-istanbul` with `ast-v8-to-istanbul`, which maps V8's counters onto the AST rather than onto transpiled line ranges and so resolves guards the old mapping silently credited as covered. **Coverage did not get worse — the instrument got sharper.** `vitest.config.ts` names all seventeen affected branches. If these numbers need to move again, name the branches that moved them; never lower them to make a build pass.
 
-### Testing Philosophy
+### Kerf's test suites
+
+The shared **Testing Philosophy** and **Testing** rules apply; these are kerf's suites and the kerf-specific practice on top of them.
 
 - **Unit tests** (`tests/unit/`): Test each module in isolation with `happy-dom`. Mock external state (timers, network) but exercise real logic.
 - **Integration tests** (`tests/integration/`): Exercise the full pipeline — signals + stores + mount + delegate against a real DOM tree.
