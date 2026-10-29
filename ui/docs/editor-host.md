@@ -24,6 +24,17 @@ export default defineConfig({
 Start the dev server and open `/__kerf-ui-editor/`. The plugin runs only on
 the dev server; a production build never includes it.
 
+The editor saves every change through the dev server. Until you choose a path
+with **Save As…**, a document autosaves as a draft in `.kerf-ui-editor/drafts/`
+at your project root; that folder holds its own `.gitignore`, so drafts never
+reach git. After Save As, changes save to the `.kui.json` path you chose, and
+the editor reopens it on your next visit. The plugin's file endpoint
+(`/__kerf-ui-editor/api/file`) reads and writes only `.kui.json` files inside
+the project, outside `node_modules` and `.git`, and only for requests the
+editor itself makes. A host that mounts the editor itself passes
+`createEditor({ catalog, storage: devServerStorage() })` and adds
+`editorFileMiddleware(root)` to its server.
+
 The editor offers Kerf UI's components and every component your
 `.kerf-ui-profile.json` declares a catalog for. Generate your package's
 `component-props.json` with `kerf-ui-props --write` and name it beside your

@@ -13,8 +13,10 @@
  * production build.
  */
 import { existsSync, readFileSync } from 'node:fs';
-import { dirname, isAbsolute, join, resolve } from 'node:path';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import process from 'node:process';
+import { URL } from 'node:url';
 
 import { profileCatalogPaths } from './view/cli.mjs';
 
@@ -22,6 +24,13 @@ import { profileCatalogPaths } from './view/cli.mjs';
 export const KERF_UI_EDITOR_ROUTE = '/__kerf-ui-editor/';
 /** The registry module the plugin loads when it exists and none is named. */
 export const DEFAULT_REGISTRY = 'src/kerf-ui-registry.ts';
+
+/** Where the editor reads and writes documents (KF-0SY9M6: autosave). */
+export const KERF_UI_EDITOR_FILE_API = '/__kerf-ui-editor/api/file';
+/** The project folder unsaved drafts autosave into. */
+export const KERF_UI_EDITOR_FOLDER = '.kerf-ui-editor';
+/** The header every write carries; a cross-site page cannot send it. */
+export const KERF_UI_EDITOR_HEADER = 'x-kerf-ui-editor';
 
 const ENTRY_ID = 'virtual:kerf-ui-editor/entry';
 const RESOLVED_ENTRY_ID = `\0${ENTRY_ID}`;
@@ -59,6 +68,83 @@ export function applicationCatalogs(root) {
   return {
     props: paths.props.map(readAppPropsCatalog),
     composition: paths.composition.map(readJson),
+  };
+}
+
+/**
+ * The absolute file a request names: a `.kui.json` path inside `root`, outside
+ * `node_modules` and `.git`, or undefined for anything else.
+ */
+export function editorFilePath(root, path) {
+  if (typeof path !== 'string' || !path.endsWith('.kui.json')) return;
+  const file = resolve(root, path);
+  const inside = relative(root, file);
+  if (!inside || inside.startsWith('..') || isAbsolute(inside)) return;
+  const parts = inside.split(sep);
+  if (parts.includes('node_modules') || parts.includes('.git')) return;
+  return file;
+}
+
+const send = (response, status, body, type = 'text/plain; charset=utf-8') => {
+  response.statusCode = status;
+  response.setHeader('Content-Type', type);
+  response.end(body);
+};
+
+/**
+ * Connect middleware serving `KERF_UI_EDITOR_FILE_API` over `root`: GET reads
+ * a document, PUT writes one (creating folders). Writes need the
+ * `KERF_UI_EDITOR_HEADER` header, which a cross-site page cannot send without
+ * a preflight this middleware never answers. The drafts folder ignores
+ * itself in git.
+ */
+export function editorFileMiddleware(root) {
+  return async (request, response, next) => {
+    const url = new URL(request.url ?? '/', 'http://localhost');
+    if (url.pathname !== KERF_UI_EDITOR_FILE_API) {
+      next();
+      return;
+    }
+    const file = editorFilePath(root, url.searchParams.get('path'));
+    if (!file) {
+      send(response, 400, 'Name a .kui.json file inside the project.');
+      return;
+    }
+    try {
+      if (request.method === 'GET') {
+        if (!existsSync(file)) {
+          send(response, 404, 'No such document.');
+          return;
+        }
+        send(response, 200, await readFile(file, 'utf8'), 'application/json');
+        return;
+      }
+      if (request.method !== 'PUT') {
+        send(response, 405, 'Use GET or PUT.');
+        return;
+      }
+      if (request.headers[KERF_UI_EDITOR_HEADER] !== '1') {
+        send(response, 403, 'Writes come from the editor only.');
+        return;
+      }
+      let text = '';
+      for await (const chunk of request) text += chunk;
+      await mkdir(dirname(file), { recursive: true });
+      const folder = join(root, KERF_UI_EDITOR_FOLDER);
+      if (
+        file.startsWith(folder + sep) &&
+        !existsSync(join(folder, '.gitignore'))
+      )
+        await writeFile(join(folder, '.gitignore'), '*\n');
+      await writeFile(file, text);
+      send(response, 204, '');
+    } catch (error) {
+      send(
+        response,
+        500,
+        error instanceof Error ? error.message : String(error),
+      );
+    }
   };
 }
 
@@ -109,7 +195,8 @@ export function editorEntry({ app, registry }) {
     "import '@kerfjs/ui/editor.css';",
     "import '@kerfjs/ui/popup-menu/register';",
     "import '@kerfjs/ui/select/register';",
-    "import { componentMap, createEditor, createEditorCatalog } from '@kerfjs/ui/editor';",
+    "import '@kerfjs/ui/surface-scaffold/register';",
+    "import { componentMap, createEditor, createEditorCatalog, devServerStorage } from '@kerfjs/ui/editor';",
     "import kerfProps from '@kerfjs/ui/ai/component-props.json';",
     "import kerfComposition from '@kerfjs/ui/ai/component-composition.json';",
     "import kerfSelection from '@kerfjs/ui/ai/component-catalog.json';",
@@ -134,7 +221,7 @@ export function editorEntry({ app, registry }) {
     '  components: { ...componentMap(props, modules), ...registry },',
     '});',
     "const root = document.getElementById('kerf-ui-editor');",
-    'const editor = createEditor({ catalog });',
+    'const editor = createEditor({ catalog, storage: devServerStorage() });',
     'mount(root, editor.render);',
     'editor.wire(root);',
     '',
@@ -170,6 +257,7 @@ export function kerfUiEditor(options = {}) {
       });
     },
     configureServer(server) {
+      server.middlewares.use(editorFileMiddleware(root));
       server.middlewares.use(async (request, response, next) => {
         const path = (request.url ?? '').split(/[?#]/)[0];
         if (path !== route && `${path}/` !== route) {

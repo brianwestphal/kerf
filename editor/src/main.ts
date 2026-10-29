@@ -5,8 +5,9 @@ import '@kerfjs/ui/workbench.css';
 import '@kerfjs/ui/editor.css';
 import '@kerfjs/ui/popup-menu/register';
 import '@kerfjs/ui/select/register';
+import '@kerfjs/ui/surface-scaffold/register';
 
-import { createEditor } from '@kerfjs/ui/editor';
+import { createEditor, devServerStorage } from '@kerfjs/ui/editor';
 import type { ViewDocument } from '@kerfjs/ui/view';
 import { mount } from 'kerfjs';
 
@@ -17,6 +18,7 @@ const root = document.getElementById('editor')!;
 const editor = createEditor({
   catalog: kerfUiCatalog,
   document: sample as unknown as ViewDocument,
+  storage: devServerStorage(),
 });
 mount(root, editor.render);
 editor.wire(root);

@@ -63,7 +63,7 @@ describe('the generated entry', () => {
       registry: '/app/src/kerf-ui-registry.ts',
     });
     expect(code).toContain(
-      "import { componentMap, createEditor, createEditorCatalog } from '@kerfjs/ui/editor';",
+      "import { componentMap, createEditor, createEditorCatalog, devServerStorage } from '@kerfjs/ui/editor';",
     );
     expect(code).toContain('import * as module0 from "@kerfjs/ui/');
     expect(code).toContain(
@@ -76,6 +76,10 @@ describe('the generated entry', () => {
     );
     expect(code).toContain('"orders-app:order-card"');
     expect(code).toContain("import '@kerfjs/ui/select/register';");
+    expect(code).toContain("import '@kerfjs/ui/surface-scaffold/register';");
+    expect(code).toContain(
+      'createEditor({ catalog, storage: devServerStorage() })',
+    );
     expect(editorEntry({ app: { props: [], composition: [] } })).toContain(
       'const registry = {};',
     );

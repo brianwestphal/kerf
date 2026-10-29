@@ -33,6 +33,28 @@ module from the catalog's `import` field (plus an optional registry). The
 private `editor/` app is another host; its `fixtures/app/` is the plugin's
 end-to-end fixture.
 
+Documents save themselves (KF-0SY9M6: autosave). A host passes
+`createEditor({ storage })`; both hosts pass `devServerStorage()`, which reads
+and writes through their dev server's file endpoint
+(`/__kerf-ui-editor/api/file`, `editorFileMiddleware` in
+`@kerfjs/ui/vite-editor`). The endpoint reads (GET) and writes (PUT) only
+`.kui.json` files inside the project, outside `node_modules` and `.git`, and
+refuses a write without the `X-Kerf-UI-Editor` header, which a cross-site page
+cannot send. Every committed change saves about 400 ms after it, unless the
+file already holds that text. A document without a chosen path is an
+autosaved draft in `.kerf-ui-editor/drafts/`, a folder that ignores itself in
+git, written once it first changes. An opened file becomes a new draft, saved
+at once, because a browser file picker reveals no project path. Save As (the
+toolbar's Save button with storage) names a project path; the editor switches
+to it only after that write succeeds, and later changes save there. The
+Preview header shows the file (`Unsaved draft` or its path) and its state:
+autosaved or saved, saving…, or not saved with the reason. The editor
+remembers the current path in browser storage and reopens it on the next
+visit; a missing or unreadable file starts a draft, and an edit made while it
+loads saves to a new draft instead. A pending change saves as the page hides.
+With storage, a copy downloads from Export's Document (.kui.json); without
+it, Save downloads as before.
+
 The inspector also binds a prop to a document param or an in-scope `$each`
 item field, offering only the sources `validateView` accepts there
 (KF-K5TKCV: editor bindings).

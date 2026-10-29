@@ -76,16 +76,23 @@ test('opens a document file and reports one that is not a view document', async 
   await expect(page.locator('[data-editor-canvas]')).toContainText(
     'Hello from a file',
   );
+  // KF-0SY9M6: an opened file has no project path, so it becomes a draft.
   await expect(
-    page.getByText('greeting.kui.json · 1 node · valid'),
+    page.getByText('Unsaved draft · autosaved · 1 node · valid'),
   ).toBeVisible();
   await expect(page.getByText('That file could not be opened')).toBeHidden();
 });
 
 test('saves the document as a .kui.json download', async ({ page }) => {
+  // KF-0SY9M6: with autosave, a download is an export of a copy.
+  await page
+    .locator('.kui-popup-menu')
+    .filter({ hasText: 'Export' })
+    .getByRole('button', { name: 'Export' })
+    .click();
   const [download] = await Promise.all([
     page.waitForEvent('download'),
-    page.locator('[data-action="editor-save"]').click(),
+    page.getByRole('menuitem', { name: 'Document (.kui.json)' }).click(),
   ]);
   expect(download.suggestedFilename()).toBe('inbox.kui.json');
   const saved = JSON.parse(await readFile((await download.path())!, 'utf8'));
@@ -651,4 +658,55 @@ test('reports a control nested in a repeated row and keeps the preview', async (
   await page.locator('[data-action="editor-delete"]').click();
   await expect(canvas.getByText('Button cannot render')).toHaveCount(0);
   await expect(page.getByText('7 nodes · valid')).toBeVisible();
+});
+
+// KF-0SY9M6: every change autosaves (to a draft until Save As chooses a
+// path), and a reload reopens the document where it was left.
+test('autosaves edits, reopens them, and saves as a project path', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(
+    page.getByText('Unsaved draft · autosaved · 7 nodes · valid'),
+  ).toBeVisible();
+  await page
+    .locator(`[data-editor-canvas] [data-kerf-node="${COMPOSE}"]`)
+    .click();
+  await page.locator('[data-action="editor-delete"]').click();
+  await expect(
+    page.getByText('Unsaved draft · autosaved · 6 nodes · valid'),
+  ).toBeVisible();
+  await page.reload();
+  await expect(
+    page.getByText('Unsaved draft · autosaved · 6 nodes · valid'),
+  ).toBeVisible();
+
+  const path = `.kerf-ui-editor/e2e/${info.project.name}-${Date.now()}.kui.json`;
+  await page.getByRole('button', { name: 'Save As…' }).click();
+  const field = page.getByRole('textbox', { name: 'Path' });
+  await expect(field).toHaveValue('inbox.kui.json');
+  await field.fill(path);
+  await page.screenshot({
+    path: info.outputPath('KF-0SY9M6-save-as-1440.png'),
+    animations: 'disabled',
+  });
+  await page.locator('[data-editor-save-as="confirm"]').click();
+  await expect(page.getByRole('dialog', { name: 'Save As' })).toBeHidden();
+  await expect(
+    page.getByText(`${path} · saved · 6 nodes · valid`),
+  ).toBeVisible();
+  await page.screenshot({
+    path: info.outputPath('KF-0SY9M6-saved-1440.png'),
+    animations: 'disabled',
+  });
+  const saved = await readFile(
+    new URL(`../../${path}`, import.meta.url),
+    'utf8',
+  );
+  expect(JSON.parse(saved).name).toBe('Inbox');
+  expect(saved).not.toContain(COMPOSE);
+  await page.reload();
+  await expect(
+    page.getByText(`${path} · saved · 6 nodes · valid`),
+  ).toBeVisible();
 });

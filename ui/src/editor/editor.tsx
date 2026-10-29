@@ -66,7 +66,20 @@ import { TextField } from '../components/forms/text-field/text-field.js';
 import { wireWorkbench } from '../components/layout/workbench/wiring/wire-workbench.js';
 import { Workbench } from '../components/layout/workbench/workbench.js';
 import { LucideIcon } from '../components/media/lucide-icon/lucide-icon.js';
+import {
+  closeDialog,
+  DialogSurface,
+  openDialog,
+} from '../components/surfaces/surface-scaffold/surface-scaffold.js';
 import { Text } from '../components/typography/text/text.js';
+import {
+  createAutosave,
+  draftPath,
+  type EditorStorage,
+  isDraft,
+  rememberedPath,
+  rememberPath,
+} from './autosave.js';
 import { wireCanvasDrag } from './canvas-drag.js';
 import type { EditorCatalog } from './catalog.js';
 import {
@@ -148,6 +161,8 @@ const OUTLINE_TOGGLE_ACTION = 'editor-toggle-node';
 const PALETTE_ACTION = 'editor-show-component';
 const PROBLEM_ACTION = 'editor-select-problem';
 const SAVE_ACTION = 'editor-save';
+const SAVE_AS_ACTION = 'editor-save-as';
+const SAVE_AS_DIALOG = 'editor-save-as-dialog';
 const UNDO_ACTION = 'editor-undo';
 const REDO_ACTION = 'editor-redo';
 const MOVE_UP_ACTION = 'editor-move-up';
@@ -282,6 +297,11 @@ export function emptyDocument(): ViewDocument {
 }
 
 export {
+  devServerStorage,
+  EDITOR_FILE_API,
+  type EditorStorage,
+} from './autosave.js';
+export {
   type CatalogEntry,
   type ComponentFunction,
   componentMap,
@@ -297,6 +317,12 @@ export interface EditorOptions {
   readonly document?: ViewDocument;
   /** Saves a file; the default downloads it through a temporary link. */
   readonly save?: (fileName: string, text: string) => void;
+  /**
+   * Where documents live (KF-0SY9M6: autosave). With it, every change saves
+   * itself, to a draft until Save as chooses a path, and the editor reopens
+   * the last document; `devServerStorage()` uses the host's dev server.
+   */
+  readonly storage?: EditorStorage;
   /**
    * The components the editor can place and preview: Kerf UI's catalogs and
    * functions, plus an application's (`createEditorCatalog`).
@@ -374,6 +400,8 @@ export function createEditor(options: EditorOptions) {
   // document stays the only state and undo/redo restores whole documents.
   const history = new History();
   const historyVersion = signal(0);
+  const autosave = options.storage && createAutosave(options.storage);
+  const saveAsError = signal('');
   const fieldErrors = signal<Readonly<Record<string, string>>>({});
   const addZone = signal('');
   const addComponent = signal('');
@@ -1116,6 +1144,73 @@ export function createEditor(options: EditorOptions) {
     </div>
   );
 
+  /**
+   * Shows `document` as a fresh session: no history or selection. With
+   * storage it becomes the file at `path`, or a new draft saved right away.
+   */
+  const load = (document: ViewDocument, path?: string) => {
+    doc.value = document;
+    history.clear();
+    historyVersion.value += 1;
+    selection.value = null;
+    loadError.value = null;
+    if (!autosave) return;
+    const text = serializeDocument(document);
+    if (path) autosave.adopt(path, text);
+    else void autosave.create(draftPath(newNodeId()), text);
+  };
+
+  /** The Preview header's file part: its name, or with storage its path and save state. */
+  const fileState = (document: ViewDocument) => {
+    if (!autosave) return documentFileName(document);
+    const path = autosave.path.value;
+    const name = isDraft(path) ? 'Unsaved draft' : path;
+    switch (autosave.status.value) {
+      case 'saving':
+        return `${name} · saving…`;
+      case 'failed':
+        return `${name} · not saved: ${autosave.error.value}`;
+      case 'saved':
+        return isDraft(path) ? `${name} · autosaved` : `${name} · saved`;
+    }
+  };
+
+  /** Save As: a project path for the document, where later changes save. */
+  const saveAsDialog = (document: ViewDocument) => {
+    const path = autosave!.path.value;
+    return (
+      <DialogSurface
+        id={SAVE_AS_DIALOG}
+        label="Save As"
+        size="small"
+        footer={
+          <>
+            <Button rootAttributes={{ 'data-dialog-close': '' }}>Cancel</Button>
+            <Button
+              tone="brand"
+              action={SAVE_AS_ACTION}
+              rootAttributes={{ 'data-editor-save-as': 'confirm' }}
+            >
+              Save
+            </Button>
+          </>
+        }
+      >
+        <TextField
+          label="Path"
+          name="path"
+          value={isDraft(path) ? documentFileName(document) : path}
+          hint="A .kui.json file inside the project. Every later change saves there."
+          error={saveAsError.value || undefined}
+          spellcheck={false}
+          autocapitalize="off"
+          autocorrect="off"
+          rootAttributes={{ 'data-editor-save-as': 'path' }}
+        />
+      </DialogSurface>
+    );
+  };
+
   const render = () => {
     const document = doc.value;
     const validation = validateView(document, viewCatalog);
@@ -1159,6 +1254,11 @@ export function createEditor(options: EditorOptions) {
                 icon={<LucideIcon icon={FileCode} name="file-code" />}
                 placement="bottom-end"
                 items={[
+                  // With storage the toolbar's Save As keeps the file; a
+                  // download is then an export of a copy.
+                  ...(autosave
+                    ? [{ label: 'Document (.kui.json)', action: SAVE_ACTION }]
+                    : []),
                   {
                     label: 'View module (.view.ts)',
                     action: EXPORT_MODULE_ACTION,
@@ -1176,13 +1276,14 @@ export function createEditor(options: EditorOptions) {
             </ToolbarControlGroup>,
             <Button
               emphasis="plain"
-              action={SAVE_ACTION}
+              action={autosave ? SAVE_AS_ACTION : SAVE_ACTION}
               icon={<LucideIcon icon={Save} name="save" />}
             >
-              Save
+              {autosave ? 'Save As…' : 'Save'}
             </Button>,
           ]}
         />
+        {autosave ? saveAsDialog(document) : undefined}
         <List flex>
           <Workbench
             id={WORKBENCH_ID}
@@ -1227,7 +1328,7 @@ export function createEditor(options: EditorOptions) {
               title: (
                 <ToolbarText
                   text="Preview"
-                  description={`${documentFileName(document)} · ${nodes} ${nodes === 1 ? 'node' : 'nodes'} · ${problems === 0 ? 'valid' : `${problems} ${problems === 1 ? 'problem' : 'problems'}`}`}
+                  description={`${fileState(document)} · ${nodes} ${nodes === 1 ? 'node' : 'nodes'} · ${problems === 0 ? 'valid' : `${problems} ${problems === 1 ? 'problem' : 'problems'}`}`}
                 />
               ),
               responsive: 'wrap',
@@ -1580,6 +1681,55 @@ export function createEditor(options: EditorOptions) {
   /** The element the editor is wired to, for focus after an edit. */
   let wired: HTMLElement | undefined;
 
+  /**
+   * Reopens the last document this browser had open, then saves every change
+   * and remembers the current path; a pending change saves as the page hides.
+   */
+  const wireAutosave = (root: HTMLElement) => {
+    const saver = autosave!;
+    const last = rememberedPath();
+    const start = historyVersion.peek();
+    // A new draft for the document on screen, written on its first change.
+    const fresh = () =>
+      saver.adopt(draftPath(newNodeId()), serializeDocument(doc.peek()));
+    if (last)
+      void options.storage!.read(last).then(
+        (text) => {
+          // An edit made while the file loaded wins: it saves to a draft.
+          if (historyVersion.peek() !== start) {
+            void saver.create(
+              draftPath(newNodeId()),
+              serializeDocument(doc.peek()),
+            );
+            return;
+          }
+          const parsed = text === undefined ? undefined : parseDocument(text);
+          if (parsed?.ok) load(parsed.document, last);
+          else fresh();
+        },
+        () => fresh(),
+      );
+    else fresh();
+    return [
+      effect(() => {
+        const text = serializeDocument(doc.value);
+        if (saver.path.peek()) saver.change(text);
+      }),
+      effect(() => {
+        const path = saver.path.value;
+        if (path && (!isDraft(path) || saver.status.value === 'saved'))
+          rememberPath(path);
+      }),
+      on(root.ownerDocument.defaultView!, 'pagehide', () => {
+        void saver.flush();
+      }),
+      () => {
+        void saver.flush();
+        saver.dispose();
+      },
+    ];
+  };
+
   const wire = (root: HTMLElement) => {
     wired = root;
     const toggle = (action: string, collapsed: typeof documentCollapsed) =>
@@ -1765,6 +1915,33 @@ export function createEditor(options: EditorOptions) {
           select({ kind: 'component', key: target.dataset.itemId! }),
         [EXPORT_MODULE_ACTION]: () => exportAs('module'),
         [EXPORT_DECLARATIONS_ACTION]: () => exportAs('declarations'),
+        [SAVE_AS_ACTION]: (_event, target) => {
+          const dialog = root.querySelector<HTMLDialogElement>(
+            `#${SAVE_AS_DIALOG}`,
+          )!;
+          if (target.dataset.editorSaveAs !== 'confirm') {
+            saveAsError.value = '';
+            openDialog(dialog);
+            return;
+          }
+          const path = dialog
+            .querySelector<HTMLInputElement>(
+              '[data-editor-save-as="path"] input',
+            )!
+            .value.trim()
+            .replace(/^\.\//, '');
+          if (!path.endsWith('.kui.json') || isDraft(path)) {
+            saveAsError.value =
+              'Name a .kui.json file outside the drafts folder.';
+            return;
+          }
+          void autosave!
+            .saveAs(path, serializeDocument(doc.value))
+            .then((failure) => {
+              saveAsError.value = failure ?? '';
+              if (!failure) closeDialog(dialog);
+            });
+        },
         [SAVE_ACTION]: () => {
           const document = doc.value;
           (options.save ?? download)(
@@ -1832,13 +2009,9 @@ export function createEditor(options: EditorOptions) {
               return;
             }
             const parsed = parseDocument(text);
-            if (parsed.ok) {
-              doc.value = parsed.document;
-              history.clear();
-              historyVersion.value += 1;
-              selection.value = null;
-              loadError.value = null;
-            } else loadError.value = parsed.error;
+            // An opened file has no project path, so it becomes a draft.
+            if (parsed.ok) load(parsed.document);
+            else loadError.value = parsed.error;
           });
         },
       }),
@@ -1859,6 +2032,7 @@ export function createEditor(options: EditorOptions) {
         });
       })(),
     ];
+    if (autosave) stops.push(...wireAutosave(root));
     const observer = new ResizeObserver(() => placeHighlight(root));
     observer.observe(root.querySelector('[data-editor-canvas]')!);
     return () => {

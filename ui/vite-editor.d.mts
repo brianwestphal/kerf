@@ -2,6 +2,12 @@
 export declare const KERF_UI_EDITOR_ROUTE: '/__kerf-ui-editor/';
 /** The registry module the plugin loads when it exists and none is named. */
 export declare const DEFAULT_REGISTRY: 'src/kerf-ui-registry.ts';
+/** Where the editor reads and writes documents. */
+export declare const KERF_UI_EDITOR_FILE_API: '/__kerf-ui-editor/api/file';
+/** The project folder unsaved drafts autosave into; it ignores itself in git. */
+export declare const KERF_UI_EDITOR_FOLDER: '.kerf-ui-editor';
+/** The header every write must carry. */
+export declare const KERF_UI_EDITOR_HEADER: 'x-kerf-ui-editor';
 
 /** A `component-props.json` catalog, as the plugin reads it. */
 export interface EditorPropsCatalog {
@@ -72,6 +78,19 @@ export interface KerfUiEditorPlugin {
 export declare function readAppPropsCatalog(path: string): EditorPropsCatalog;
 /** The catalogs the application's `.kerf-ui-profile.json` declares. */
 export declare function applicationCatalogs(root: string): ApplicationCatalogs;
+/** The absolute `.kui.json` file inside `root` a path names, or undefined. */
+export declare function editorFilePath(
+  root: string,
+  path: string | null | undefined,
+): string | undefined;
+/** Connect middleware reading (GET) and writing (PUT) documents under `root`. */
+export declare function editorFileMiddleware(
+  root: string,
+): (
+  request: import('node:http').IncomingMessage,
+  response: import('node:http').ServerResponse,
+  next: (error?: unknown) => void,
+) => Promise<void>;
 /** The editor page the route serves. */
 export declare function editorPage(): string;
 /** The generated entry module that mounts the editor. */
