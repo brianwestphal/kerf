@@ -887,3 +887,27 @@ test('drags components from the palette onto the canvas', async ({
   for (const part of ['drag-chip', 'drag-source', 'drop-caption'])
     await expect(canvas.locator(`.kui-editor__${part}`)).toBeHidden();
 });
+
+// KF-5QXNWS: the Inspector's title and tab strip stay pinned under its
+// toolbar while a long Properties form scrolls.
+for (const width of [1440, 900]) {
+  test(`pins the Inspector's tabs while its form scrolls at ${width}px`, async ({
+    page,
+  }, info) => {
+    await page.setViewportSize({ width, height: 700 });
+    await page
+      .locator(`[data-editor-canvas] [data-kerf-node="${COMPOSE}"]`)
+      .click();
+    const rail = page.locator('[data-workbench-rail="right"]');
+    const properties = rail.getByRole('tab', { name: 'Properties' });
+    await expect(properties).toBeInViewport();
+    // Scroll the form to its end.
+    await rail.locator('[data-editor-prop]').last().scrollIntoViewIfNeeded();
+    await expect(properties).toBeInViewport();
+    await expect(rail.getByText('composeButton · Button')).toBeInViewport();
+    await page.screenshot({
+      path: info.outputPath(`KF-5QXNWS-inspector-scrolled-${width}.png`),
+      animations: 'disabled',
+    });
+  });
+}

@@ -611,17 +611,25 @@ export function createEditor(options: EditorOptions) {
     )),
   ];
 
-  const inspector = (document: ViewDocument) => {
+  /**
+   * The Inspector's body for the selection, and for a node the chrome pinned
+   * above it (KF-5QXNWS).
+   */
+  const inspector = (
+    document: ViewDocument,
+  ): { header?: SafeHtml; content: SafeHtml } => {
     const current = selection.value;
     if (current?.kind === 'slot') {
-      return slotAt(document, current.address) ? (
-        slotEditor(document, viewCatalog, current.address)
-      ) : (
-        <EmptyState
-          title="Nothing selected"
-          detail="Select a node on the canvas or in the outline to inspect its props."
-        />
-      );
+      return {
+        content: slotAt(document, current.address) ? (
+          slotEditor(document, viewCatalog, current.address)
+        ) : (
+          <EmptyState
+            title="Nothing selected"
+            detail="Select a node on the canvas or in the outline to inspect its props."
+          />
+        ),
+      };
     }
     const visit =
       current?.kind === 'node' ? findNode(document, current.id) : undefined;
@@ -632,42 +640,48 @@ export function createEditor(options: EditorOptions) {
         : undefined;
     const component = key ? propsByKey.get(key) : undefined;
     if (!current || (current.kind === 'node' && !visit)) {
-      return (
-        <EmptyState
-          title="Nothing selected"
-          detail="Select a node on the canvas or in the outline to inspect its props."
-        />
-      );
+      return {
+        content: (
+          <EmptyState
+            title="Nothing selected"
+            detail="Select a node on the canvas or in the outline to inspect its props."
+          />
+        ),
+      };
     }
     const title = visit
       ? nodeTitle(visit.node, componentNames)
       : componentNames.get(key!)!;
     if (!component) {
-      return (
-        <List>
-          <ListHeader label={title} />
-          <Text>This node has no props to inspect.</Text>
-        </List>
-      );
+      return {
+        content: (
+          <List>
+            <ListHeader label={title} />
+            <Text>This node has no props to inspect.</Text>
+          </List>
+        ),
+      };
     }
     if (visit) return nodeEditor(visit.node, component, title);
-    return (
-      <List>
-        <ListHeader
-          label={title}
-          count={component.props.length}
-          countLabel="props"
-        />
-        {inspectorSections(undefined, component).map((section) => [
-          <ListHeader label={section.title} size="xs" />,
-          <ValueTable label={`${title} ${section.title}`} density="compact">
-            {section.rows.map((row) => (
-              <ValueTableRow label={row.name} value={row.value} />
-            ))}
-          </ValueTable>,
-        ])}
-      </List>
-    );
+    return {
+      content: (
+        <List>
+          <ListHeader
+            label={title}
+            count={component.props.length}
+            countLabel="props"
+          />
+          {inspectorSections(undefined, component).map((section) => [
+            <ListHeader label={section.title} size="xs" />,
+            <ValueTable label={`${title} ${section.title}`} density="compact">
+              {section.rows.map((row) => (
+                <ValueTableRow label={row.name} value={row.value} />
+              ))}
+            </ValueTable>,
+          ])}
+        </List>
+      ),
+    };
   };
 
   /** One editable control for a prop, or a read-only row's worth of text. */
@@ -1299,27 +1313,33 @@ export function createEditor(options: EditorOptions) {
           : undefined}
       </List>
     );
-    return (
-      <List>
-        <ListHeader
-          label={node.name ? `${node.name} · ${title}` : title}
-          count={component.props.length}
-          countLabel="props"
-        />
-        {areaTabs(
-          'editor-inspector-areas',
-          'Inspector areas',
-          INSPECTOR_TAB_ACTION,
-          inspectorArea.value,
-          'fill',
-          [
-            { area: 'properties', name: 'Properties', panel: properties },
-            { area: 'flow', name: 'Flow', panel: flow },
-            { area: 'children', name: 'Children', panel: children },
-          ],
-        )}
-      </List>
+    const [strip, ...panels] = areaTabs(
+      'editor-inspector-areas',
+      'Inspector areas',
+      INSPECTOR_TAB_ACTION,
+      inspectorArea.value,
+      'fill',
+      [
+        { area: 'properties', name: 'Properties', panel: properties },
+        { area: 'flow', name: 'Flow', panel: flow },
+        { area: 'children', name: 'Children', panel: children },
+      ],
     );
+    // KF-5QXNWS: the node's title and its tab strip stay pinned under the
+    // rail's toolbar while a long area scrolls.
+    return {
+      header: (
+        <List>
+          <ListHeader
+            label={node.name ? `${node.name} · ${title}` : title}
+            count={component.props.length}
+            countLabel="props"
+          />
+          {strip}
+        </List>
+      ),
+      content: <List>{panels}</List>,
+    };
   };
 
   /** The canvas: the previewed document under the selection highlight. */
@@ -1648,7 +1668,7 @@ export function createEditor(options: EditorOptions) {
                 toggle: { action: INSPECTOR_TOGGLE, name: 'Inspector' },
                 trailing: nodeActions(document),
               },
-              content: inspector(document),
+              ...inspector(document),
             }}
           />
         </List>

@@ -150,7 +150,8 @@ TreeList's own before, after, and inside indicator through
 it (spring-loading), so a drag from Components reaches Outline. The Document
 rail's tab strip is pinned under its toolbar (the rail Pane's `header`), with
 the scroll divider once its area scrolls, so the tabs stay in reach anywhere
-in a long palette. Add a child stays the keyboard path.
+in a long palette. The Inspector pins a node's title and its Properties, Flow,
+and Children strip the same way (KF-5QXNWS). Add a child stays the keyboard path.
 
 The canvas preview is rendered and test-mounted outside the editor's own
 render (KF-P6FPG2: preview containment), so a document whose preview fails
