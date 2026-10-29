@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 444500,
-  "measuredLargestJavaScriptGzip": 164547,
-  "measuredTotalJavaScriptGzip": 444421,
+  "totalJavaScriptGzip": 444600,
+  "measuredLargestJavaScriptGzip": 164548,
+  "measuredTotalJavaScriptGzip": 444532,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6483,6 +6483,22 @@
         "measuredTotalJavaScriptGzip": 444421,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 444500
+      }
+    },
+    {
+      "at": "2026-10-29T11:22:38.637Z",
+      "reason": "Kerf UI editor size-union control and Components filter (KF-Q5AXNP, KF-Y26SKM)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 444421,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 444500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164548,
+        "measuredTotalJavaScriptGzip": 444532,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 444600
       }
     }
   ]
