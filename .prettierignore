@@ -5,6 +5,8 @@ dist-demo/
 coverage/
 playwright-report/
 test-results/
+# Kerf UI editor autosave drafts (gitignored by their own nested .gitignore).
+**/.kerf-ui-editor/
 .astro/
 .agents/
 **/.claude/
