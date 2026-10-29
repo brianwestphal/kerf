@@ -34,12 +34,11 @@ Choose one value, or with multiple any number of values, from a visible set too 
 - JavaScript: `@kerfjs/ui/wire-choice-chips` — exports `wireChoiceChips`, `readChoiceChips`.
 - CSS: the browser build of `@kerfjs/ui/choice-chips` pulls its CSS automatically; import `@kerfjs/ui/choice-chips.css` manually only without the `browser` export condition.
 - Wiring: `wireChoiceChips` from `@kerfjs/ui/wire-choice-chips` (required).
-- Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
 - Declared side effects: browser-condition-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/choice-chips`](../public-api-signatures-v1.md#kerfjsuichoice-chips), [`@kerfjs/ui/css-values`](../public-api-signatures-v1.md#kerfjsuicss-values), [`@kerfjs/ui/wire-choice-chips`](../public-api-signatures-v1.md#kerfjsuiwire-choice-chips), [`@kerfjs/ui/wire-scroll-dividers`](../public-api-signatures-v1.md#kerfjsuiwire-scroll-dividers) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/choice-chips`](../public-api-signatures-v1.md#kerfjsuichoice-chips), [`@kerfjs/ui/css-values`](../public-api-signatures-v1.md#kerfjsuicss-values), [`@kerfjs/ui/wire-choice-chips`](../public-api-signatures-v1.md#kerfjsuiwire-choice-chips) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
@@ -66,15 +65,9 @@ Exact prop names and types: [`@kerfjs/ui/choice-chips`](../public-api-signatures
 
 - value — controlled
 
-**Wiring:** `wireChoiceChips`, `wireScrollDividers` is required.
+**Wiring:** `wireChoiceChips` is required.
 
-- Gives a multiple: true group its listbox selection: pointer and keyboard gestures, roving focus, aria-selected, hidden form inputs, and a change event on the group, and keeps the checked chip of an overflow="scroll" group in view. Radio and toggle groups that wrap use native inputs and need no wiring.
-
-**Wiring-owned state attributes** — never render, remove, or branch on these as app state:
-
-- `data-scroll-overflow` on `kui-choice-chips with overflow="scroll"` (`wireScrollDividers`): The physical edges, in canonical t/r/b/l order, beyond which chips are scrolled out of view; the group fades its l and r edges. Absent when every chip fits. Re-applied if a re-render drops it.
-- `data-scroll-divider` on `chrome named in wireScrollDividers targets (a ChoiceChips group has none)` (`wireScrollDividers`): The sides, in t/r/b/l order, on which that chrome currently draws its scroll divider. Re-applied if a re-render drops it.
-- `data-header-overlay` on `kui-pane` (`wireScrollDividers`): measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root, plus a classic content scrollbar's inline size as --kui-pane-scrollbar-inline-size, which the header leaves uncovered. Re-applied if a re-render drops it.
+- Gives a multiple: true group its listbox selection: pointer and keyboard gestures, roving focus, aria-selected, hidden form inputs, and a change event on the group, and keeps the checked chip of an overflow="scroll" group in view (the optional wireScrollDividers fades its edges with chips past them). Radio and toggle groups that wrap use native inputs and need no wiring.
 
 ## Geometry
 

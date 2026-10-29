@@ -6157,31 +6157,8 @@
           "export": "wireChoiceChips",
           "import": "@kerfjs/ui/wire-choice-chips",
           "required": true,
-          "reason": "Gives a multiple: true group its listbox selection: pointer and keyboard gestures, roving focus, aria-selected, hidden form inputs, and a change event on the group, and keeps the checked chip of an overflow=\"scroll\" group in view. Radio and toggle groups that wrap use native inputs and need no wiring.",
+          "reason": "Gives a multiple: true group its listbox selection: pointer and keyboard gestures, roving focus, aria-selected, hidden form inputs, and a change event on the group, and keeps the checked chip of an overflow=\"scroll\" group in view (the optional wireScrollDividers fades its edges with chips past them). Radio and toggle groups that wrap use native inputs and need no wiring.",
           "stateAttributes": []
-        },
-        {
-          "export": "wireScrollDividers",
-          "import": "@kerfjs/ui/wire-scroll-dividers",
-          "required": false,
-          "reason": "Fades each edge of an overflow=\"scroll\" group with chips scrolled past it.",
-          "stateAttributes": [
-            {
-              "name": "data-scroll-overflow",
-              "on": "kui-choice-chips with overflow=\"scroll\"",
-              "meaning": "The physical edges, in canonical t/r/b/l order, beyond which chips are scrolled out of view; the group fades its l and r edges. Absent when every chip fits. Re-applied if a re-render drops it."
-            },
-            {
-              "name": "data-scroll-divider",
-              "on": "chrome named in wireScrollDividers targets (a ChoiceChips group has none)",
-              "meaning": "The sides, in t/r/b/l order, on which that chrome currently draws its scroll divider. Re-applied if a re-render drops it."
-            },
-            {
-              "name": "data-header-overlay",
-              "on": "kui-pane",
-              "meaning": "measured once the wiring has measured a Pane's overlay header (headerPresentation: overlay) and published its border-box height as --kui-scroll-clearance-block-start on the Pane root, plus a classic content scrollbar's inline size as --kui-pane-scrollbar-inline-size, which the header leaves uncovered. Re-applied if a re-render drops it."
-            }
-          ]
         }
       ],
       "publicClasses": [
