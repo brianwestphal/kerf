@@ -62,6 +62,10 @@ import { EmptyState } from '../components/feedback/empty-state/empty-state.js';
 import { StateBanner } from '../components/feedback/state-banner/state-banner.js';
 import { FilePickerTrigger } from '../components/forms/file-picker/file-picker.js';
 import { wireFilePickers } from '../components/forms/file-picker/wiring/wire-file-pickers.js';
+import {
+  readSearchField,
+  SearchField,
+} from '../components/forms/search-field/search-field.js';
 import { Select } from '../components/forms/select/select.js';
 import { Switch } from '../components/forms/switch/switch.js';
 import { TextField } from '../components/forms/text-field/text-field.js';
@@ -175,6 +179,7 @@ export const WORKBENCH_ID = 'kerf-ui-editor';
 const OUTLINE_ACTION = 'editor-select-node';
 const OUTLINE_TOGGLE_ACTION = 'editor-toggle-node';
 const PALETTE_ACTION = 'editor-show-component';
+const PALETTE_CLEAR_ACTION = 'editor-clear-palette-filter';
 const PROBLEM_ACTION = 'editor-select-problem';
 const NEW_ACTION = 'editor-new';
 // KF-MHY1GB: each rail switches between focus areas with a segmented tab strip.
@@ -449,6 +454,9 @@ export function createEditor(options: EditorOptions) {
    * builder call yet, so its builder field shows (KF-Q5AXNP).
    */
   const customSize = signal('');
+  /** The Components filter's text (KF-Y26SKM), and its editor's revision. */
+  const paletteFilter = signal('');
+  const paletteFilterRevision = signal(0);
   // Every caller passes a changed document (edits clone; moves are checked
   // against isMovable first).
   const commit = (next: ViewDocument) => {
@@ -561,8 +569,26 @@ export function createEditor(options: EditorOptions) {
       />
     ));
 
-  const palette = () =>
-    catalog.paletteGroups().map((group) => [
+  /**
+   * The palette's groups, narrowed to components whose name or category
+   * holds the filter text (KF-Y26SKM); a group with no match is left out.
+   */
+  const paletteMatches = () => {
+    const query = paletteFilter.value.trim().toLocaleLowerCase();
+    const holds = (text: string) => text.toLocaleLowerCase().includes(query);
+    return catalog
+      .paletteGroups()
+      .map((group) => ({
+        ...group,
+        items: holds(group.category)
+          ? group.items
+          : group.items.filter((item) => holds(item.name)),
+      }))
+      .filter((group) => group.items.length);
+  };
+
+  const palette = (groups: ReturnType<typeof paletteMatches>) =>
+    groups.map((group) => [
       <ListHeader label={group.category} size="xs" />,
       ...group.items.map((item) => (
         <ListItem
@@ -1621,7 +1647,33 @@ export function createEditor(options: EditorOptions) {
         {
           area: 'components',
           name: 'Components',
-          panel: <List>{palette()}</List>,
+          panel: (() => {
+            const groups = paletteMatches();
+            return (
+              <>
+                <List controlInsets="trbl">
+                  <SearchField
+                    id="editor-palette-filter"
+                    label="Filter Components"
+                    placeholder="Filter components"
+                    query={paletteFilter.value}
+                    revision={paletteFilterRevision.value}
+                    clearAction={PALETTE_CLEAR_ACTION}
+                    clearLabel="Clear Filter"
+                    editorAttributes={{ 'data-editor-palette-filter': '' }}
+                  />
+                </List>
+                {groups.length ? (
+                  <List>{palette(groups)}</List>
+                ) : (
+                  <EmptyState
+                    title="No matching components"
+                    detail="No component name or category holds that text."
+                  />
+                )}
+              </>
+            );
+          })(),
         },
         {
           area: 'problems',
@@ -2313,7 +2365,22 @@ export function createEditor(options: EditorOptions) {
         if (key.shiftKey) redo();
         else undo();
       }),
+      delegate<HTMLElement>(
+        root,
+        'input',
+        '[data-editor-palette-filter]',
+        (_event, editor) => {
+          paletteFilter.value = readSearchField(editor).query;
+        },
+      ),
       delegateActions<HTMLElement>(root, 'click', {
+        [PALETTE_CLEAR_ACTION]: () => {
+          paletteFilter.value = '';
+          paletteFilterRevision.value += 1;
+          root
+            .querySelector<HTMLElement>('[data-editor-palette-filter]')
+            ?.focus();
+        },
         [UNDO_ACTION]: () => undo(),
         [REDO_ACTION]: () => redo(),
         [MOVE_UP_ACTION]: () => moveSelected(-1),

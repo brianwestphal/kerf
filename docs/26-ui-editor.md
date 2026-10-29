@@ -152,6 +152,11 @@ Each panel is a `tabpanel`; hidden panels stay rendered, so a field keeps its
 state while another area shows. The Inspector's area persists across
 selections, except that a node just added (from Add a child or the palette)
 opens on its Properties. Arrow keys move between tabs (`wireTabBars`).
+Components opens with a **Filter Components** `SearchField` (KF-Y26SKM:
+palette filter): typing keeps the components whose name or category holds
+the text, case-insensitively (a category match keeps its whole group), drops
+groups left empty, and shows "No matching components" when none match; its
+clear button lists them all again and keeps focus in the field.
 
 Components drag from the palette onto the canvas the same way (KF-78MHM8:
 palette drag). The dragged component is a new node with its required props

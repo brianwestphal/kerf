@@ -58,6 +58,55 @@ describe('document rail areas', () => {
     ).toBeNull();
   });
 
+  it('filters the components by name or category (KF-Y26SKM)', () => {
+    const { root } = open();
+    const components = panel(root, strip, 'components');
+    const names = () =>
+      [
+        ...components.querySelectorAll<HTMLElement>('[data-editor-palette]'),
+      ].map((row) => row.textContent!.trim());
+    const headers = () =>
+      [...components.querySelectorAll('[data-component="list-header"]')].map(
+        (header) => header.textContent!.trim(),
+      );
+    const editor = () =>
+      components.querySelector<HTMLElement>('[data-editor-palette-filter]')!;
+    const filter = (text: string) => {
+      editor().textContent = text;
+      editor().dispatchEvent(new Event('input', { bubbles: true }));
+    };
+    const all = names().length;
+    expect(all).toBeGreaterThan(20);
+
+    filter('  BADGE ');
+    expect(names()).toEqual(['Badge']);
+    expect(headers()).toHaveLength(1);
+
+    // A category name keeps its whole group.
+    const category = headers()[0]!;
+    filter(category);
+    expect(headers()).toContain(category);
+    expect(names().length).toBeGreaterThan(1);
+
+    filter('zzz-no-such');
+    expect(names()).toEqual([]);
+    expect(components.textContent).toContain('No matching components');
+
+    // Clear empties the field, rebuilds its editor, and lists everything.
+    const before = editor();
+    components
+      .querySelector<HTMLElement>(
+        '[data-action="editor-clear-palette-filter"]',
+      )!
+      .click();
+    expect(names()).toHaveLength(all);
+    expect(editor()).not.toBe(before);
+    expect(editor().textContent).toBe('');
+    expect(
+      components.querySelector('[data-action="editor-clear-palette-filter"]'),
+    ).toBeNull();
+  });
+
   it('counts problems on the tab and lists them in its panel', () => {
     const { root, editor } = open();
     editor.selection.value = { kind: 'node', id: COMPOSE };

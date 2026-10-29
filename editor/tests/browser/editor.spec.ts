@@ -51,6 +51,36 @@ test('selects from the outline and documents a palette component', async ({
   await expect(page.getByText('Nothing selected')).toBeHidden();
 });
 
+test('filters the components list as you type', async ({ page }, info) => {
+  // KF-Y26SKM: the Components area narrows to names or categories.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await area(page, 'Components');
+  const rows = page.locator('[data-editor-palette]');
+  const all = await rows.count();
+  const filter = page.locator('[data-editor-palette-filter]');
+  await filter.click();
+  await page.keyboard.type('list');
+  await expect(rows.first()).toBeVisible();
+  const names = await rows.allTextContents();
+  expect(names.length).toBeLessThan(all);
+  for (const name of names) expect(name.toLowerCase()).toContain('list');
+  // Typing again keeps the caret: the text reads in order.
+  await page.keyboard.type('item');
+  await expect(filter).toHaveText('listitem');
+  await expect(rows).toHaveText(['ListItem', 'ListItemLink']);
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-y26skm-palette-filter-1440.png'),
+    animations: 'disabled',
+  });
+  // A palette row from the filtered list still documents its component.
+  await rows.first().click();
+  await expect(page.getByText('Nothing selected')).toBeHidden();
+  await page.getByRole('button', { name: 'Clear Filter' }).click();
+  await expect(rows).toHaveCount(all);
+  await expect(filter).toBeFocused();
+});
+
 test('opens a document file and reports one that is not a view document', async ({
   page,
 }) => {
