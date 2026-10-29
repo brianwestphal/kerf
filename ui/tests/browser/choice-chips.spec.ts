@@ -440,7 +440,10 @@ test('an overflow="scroll" ChoiceChips strip stays one row, scrolls inside the g
   // Arrow keys move the checked radio; the browser keeps it in view, and
   // the group (not the page) scrolls to it.
   await group.getByRole('radio', { name: 'All' }).focus();
-  await page.keyboard.press('ArrowLeft');
+  // Right through the row to its last chip (WebKit's radios do not wrap from
+  // the first to the last).
+  for (let step = 0; step < 9; step += 1)
+    await page.keyboard.press('ArrowRight');
   const last = group.getByRole('radio', { name: 'Transport' });
   await expect(last).toBeChecked();
   await expect
