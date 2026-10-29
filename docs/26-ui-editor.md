@@ -18,8 +18,9 @@
   existing module (KF-Y38YRT, KF-9J810J: editor export and compare);
 - editing in the editor (KF-KX77TV: editor editing): the inspector edits
   literal props (a Select per string enum, a Switch per boolean, a text field
-  for strings, text-accepting content, numbers, and `$css` builder calls),
-  renames nodes, promotes a literal prop to a document param, adds a child of
+  for strings, text-accepting content, numbers, and `$css` builder calls, and
+  a JSON field for list and object literals such as a Combobox's
+  `suggestions`), renames nodes, promotes a literal prop to a document param, adds a child of
   a chosen component to one of the node's legal zones, moves a node within its
   zone, deletes it, and undoes or redoes any of these.
 
@@ -60,6 +61,19 @@ saved at once, and the previous document stays in its own file.
 The inspector also binds a prop to a document param or an in-scope `$each`
 item field, offering only the sources `validateView` accepts there
 (KF-K5TKCV: editor bindings).
+
+List and object props have placeholders (KF-HNNWN9: list placeholders). A
+component added from Add a child or the palette has its required lists,
+objects, and unions seeded from the props catalog's type graph, not a
+per-component table: three items numbered after the prop ("Suggestion 1",
+`{ value: "choice-1", label: "Choice 1" }`, `{ label: "Item 1" }`), and a
+required `value` starts on the first seeded choice. So a Combobox, a Select,
+or a PopupMenu renders as soon as it is added. The inspector edits such a
+prop as JSON, checked against the prop's type with `isLiteralOf`. While the
+prop is unset, **Fill with example** writes the placeholder back. Binding the
+prop to a param stays available for data the application provides. Props
+whose required fields need rendered content (an icon, a view body) get no
+placeholder yet (KF-SXDM56).
 
 The inspector's Control flow section (KF-90GTJN: editor control flow) shows a
 node only while a true/false param or item field holds (Show, which wraps the

@@ -113,6 +113,7 @@ import {
   type ControlKind,
   cssHint,
   seedProps,
+  typeLabel,
   valueFromControl,
 } from './model/controls.js';
 import {
@@ -145,6 +146,7 @@ import {
   setProp,
   withCatalog,
 } from './model/edits.js';
+import { exampleValue } from './model/examples.js';
 import {
   compareWithModule,
   describeExport,
@@ -192,6 +194,7 @@ const DELETE_ACTION = 'editor-delete';
 const ADD_ACTION = 'editor-add-child';
 const CONTENT_TO_NODES_ACTION = 'editor-content-to-nodes';
 const CONTENT_TO_TEXT_ACTION = 'editor-content-to-text';
+const EXAMPLE_ACTION = 'editor-fill-example';
 const PROMOTE_ACTION = 'editor-promote';
 const EXPORT_MODULE_ACTION = 'editor-export-module';
 const EXPORT_DECLARATIONS_ACTION = 'editor-export-declarations';
@@ -414,6 +417,9 @@ export function createEditor(options: EditorOptions) {
   const { catalog } = options;
   const { viewCatalog, propsByKey, componentNames } = catalog;
   const canvasContent = canvasRenderer(catalog);
+  /** The type table component `key`'s props catalog declares. */
+  const definitionsOf = (key: string) =>
+    viewCatalog.components.get(key)?.definitions ?? {};
   const doc = signal<ViewDocument>(options.document ?? emptyDocument());
   const selection = signal<Selection>(null);
   const loadError = signal<string | null>(null);
@@ -694,8 +700,10 @@ export function createEditor(options: EditorOptions) {
         ? V
         : never
       : never,
+    /** The node's component key, whose catalog types the prop. */
+    type: string,
   ) => {
-    const control = controlFor(prop, value);
+    const control = controlFor(prop, value, definitionsOf(type));
     const error = fieldErrors.value[prop.name];
     const marker = (kind: ControlKind) => ({
       'data-editor-prop': prop.name,
@@ -730,6 +738,39 @@ export function createEditor(options: EditorOptions) {
         );
       case 'readonly':
         return undefined;
+      case 'list': {
+        // A list or object literal as JSON (KF-HNNWN9), with a placeholder
+        // to start from while a required one is unset.
+        const example = exampleValue(
+          prop.type as never,
+          definitionsOf(type),
+          prop.name,
+        );
+        return (
+          <>
+            <TextField
+              label={prop.name}
+              value={String(control.raw)}
+              multiline
+              rows={control.raw === '' ? 2 : 4}
+              maxRows={12}
+              hint={`JSON for ${typeLabel(prop.type.text!)}.`}
+              error={error}
+              rootAttributes={marker('list')}
+            />
+            {prop.required && control.raw === '' && example !== undefined ? (
+              <Button
+                emphasis="secondary"
+                size="compact"
+                action={EXAMPLE_ACTION}
+                rootAttributes={{ 'data-editor-example': prop.name }}
+              >
+                Fill with example
+              </Button>
+            ) : undefined}
+          </>
+        );
+      }
       default:
         return (
           <TextField
@@ -771,7 +812,11 @@ export function createEditor(options: EditorOptions) {
     const content = contentOf(node, prop.name);
     const attributes = { 'data-editor-content': prop.name };
     if (content.kind !== 'nodes') {
-      const field = propControl(prop, node.props?.[prop.name] as never);
+      const field = propControl(
+        prop,
+        node.props?.[prop.name] as never,
+        node.type,
+      );
       return content.kind === 'text' ? (
         <>
           {field}
@@ -1195,12 +1240,16 @@ export function createEditor(options: EditorOptions) {
             .map(
               (prop) =>
                 contentControl(node, prop) ??
-                propControl(prop, props[prop.name] as never),
+                propControl(prop, props[prop.name] as never, node.type),
             )
             .filter(Boolean);
           const fixed = section.props.filter(
             (prop) =>
-              controlFor(prop, props[prop.name] as never).kind === 'readonly',
+              controlFor(
+                prop,
+                props[prop.name] as never,
+                definitionsOf(node.type),
+              ).kind === 'readonly',
           );
           return [
             <ListHeader label={section.title} size="xs" />,
@@ -1776,11 +1825,15 @@ export function createEditor(options: EditorOptions) {
     const kind = field.dataset.editorKind as ControlKind;
     if (!id) return;
     const node = findNode(doc.value, id)!.node;
+    // A field renders only for a prop of the node's props entry.
+    const prop = propsByKey
+      .get(node.type)!
+      .props.find((item) => item.name === name)!;
     const result = valueFromControl(
       kind,
       controlValue(field),
-      propsByKey.get(node.type)?.props.find((prop) => prop.name === name)
-        ?.cssValue?.helpers,
+      prop.cssValue?.helpers,
+      { type: prop.type as never, definitions: definitionsOf(node.type) },
     );
     if ('error' in result) {
       fieldErrors.value = { ...fieldErrors.value, [name]: result.error };
@@ -1801,6 +1854,7 @@ export function createEditor(options: EditorOptions) {
       component.props,
       componentNames.get(key)!,
       component.variants,
+      definitionsOf(key),
     );
     return {
       id: newNodeId(),
@@ -2172,6 +2226,24 @@ export function createEditor(options: EditorOptions) {
           const id = selectedNodeId();
           if (id)
             commit(nodesToText(doc.value, id, target.dataset.editorContent!));
+        },
+        [EXAMPLE_ACTION]: (_event, target) => {
+          // The button shows only for the selected node's required prop
+          // that has an example.
+          const id = selectedNodeId()!;
+          const name = target.dataset.editorExample!;
+          const node = findNode(doc.value, id)!.node;
+          const prop = propsByKey
+            .get(node.type)!
+            .props.find((item) => item.name === name)!;
+          commit(
+            setProp(
+              doc.value,
+              id,
+              name,
+              exampleValue(prop.type as never, definitionsOf(node.type), name)!,
+            ),
+          );
         },
         [ADD_SLOT_ACTION]: () => addSlot(),
         [PROMOTE_ACTION]: () => promote(),

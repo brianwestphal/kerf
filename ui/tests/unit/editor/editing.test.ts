@@ -165,6 +165,74 @@ describe('structural edits', () => {
   });
 });
 
+describe('list props (KF-HNNWN9)', () => {
+  /** Adds component `key` to the Pane's content and returns its node getter. */
+  function add(key: string) {
+    const opened = open(PANE);
+    const { root, editor } = opened;
+    choose(field(root, '[data-editor-add="zone"]'), 'content');
+    choose(field(root, '[data-editor-add="component"]'), key);
+    click(root, 'editor-add-child');
+    const selected = editor.selection.value;
+    const id = selected?.kind === 'node' ? selected.id : '';
+    return { ...opened, node: () => findNode(editor.document.value, id)?.node };
+  }
+
+  it.each(['combobox', 'select', 'popup-menu'])(
+    'adds a %s that renders without a problem',
+    (key) => {
+      const { root, node } = add(`@kerfjs/ui:${key}`);
+      expect(node()?.type).toBe(`@kerfjs/ui:${key}`);
+      expect(root.textContent).toContain('· valid');
+      expect(root.textContent).not.toContain('cannot render');
+    },
+  );
+
+  it('edits a list prop as JSON and refuses a value its type does not take', () => {
+    const { root, node } = add('@kerfjs/ui:combobox');
+    const suggestions = field(root, '[data-editor-prop="suggestions"]');
+    expect(suggestions.dataset.editorKind).toBe('list');
+    expect(suggestions.querySelector('textarea')!.value).toContain(
+      'Suggestion 1',
+    );
+    type(suggestions, '["Red", {"value": "g", "label": "Green"}]');
+    expect(node()?.props?.suggestions).toEqual([
+      'Red',
+      { value: 'g', label: 'Green' },
+    ]);
+    type(field(root, '[data-editor-prop="suggestions"]'), '[1, 2]');
+    expect(node()?.props?.suggestions).toHaveLength(2);
+    expect(root.textContent).toContain('Not a ComboboxSuggestion[].');
+  });
+
+  it('fills a cleared list prop with an example', () => {
+    const { root, node } = add('@kerfjs/ui:combobox');
+    type(field(root, '[data-editor-prop="suggestions"]'), '');
+    expect(node()?.props).not.toHaveProperty('suggestions');
+    expect(root.textContent).toContain('requires "suggestions"');
+    click(root, 'editor-fill-example');
+    expect(node()?.props?.suggestions).toEqual([
+      'Suggestion 1',
+      'Suggestion 2',
+      'Suggestion 3',
+    ]);
+    expect(
+      root.querySelector('[data-action="editor-fill-example"]'),
+    ).toBeNull();
+  });
+
+  it('offers an example only for a required list prop', () => {
+    const { root } = add('@kerfjs/ui:popup-menu');
+    // The optional anchor is unset and edits as JSON, with no Fill button.
+    expect(field(root, '[data-editor-prop="anchor"]').dataset.editorKind).toBe(
+      'list',
+    );
+    expect(
+      root.querySelector('[data-action="editor-fill-example"]'),
+    ).toBeNull();
+  });
+});
+
 describe('undo and redo', () => {
   it('undoes and redoes from the toolbar and the keyboard', () => {
     const { root, editor, node } = open();

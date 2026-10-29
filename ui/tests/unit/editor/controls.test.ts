@@ -1,3 +1,4 @@
+import { validateView, VIEW_DOCUMENT_SCHEMA_ID } from '@kerfjs/ui/view';
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -6,12 +7,41 @@ import {
   valueFromControl,
 } from '../../../src/editor/model/controls.js';
 import type { InspectorProp } from '../../../src/editor/model/inspector.js';
-import { propsByKey } from './kerf-catalog.js';
+import { componentNames, propsByKey, viewCatalog } from './kerf-catalog.js';
 
 const prop = (key: string, name: string) =>
   propsByKey
     .get(`@kerfjs/ui:${key}`)!
     .props.find((item) => item.name === name)!;
+const definitions = (key: string) =>
+  viewCatalog.components.get(`@kerfjs/ui:${key}`)!.definitions;
+/** The props the editor seeds a newly added component of `key` with. */
+const seeded = (key: string) => {
+  const component = propsByKey.get(key)!;
+  return seedProps(
+    component.props,
+    componentNames.get(key)!,
+    component.variants,
+    viewCatalog.components.get(key)!.definitions,
+  );
+};
+/** The prop names a lone seeded node of `key` is still reported missing. */
+const unfilled = (key: string) =>
+  validateView(
+    {
+      schema: VIEW_DOCUMENT_SCHEMA_ID,
+      name: 'Seeded',
+      catalogs: ['@kerfjs/ui'],
+      root: { id: '01J0000000000000000000000A', type: key, props: seeded(key) },
+    },
+    viewCatalog,
+  )
+    .diagnostics.filter(
+      (item) =>
+        item.path === '$.root' &&
+        (item.code === 'KUI-V004' || item.code === 'KUI-V005'),
+    )
+    .map((item) => item.message);
 
 describe('controlFor', () => {
   it('edits string enums with a select whose first choice is the default', () => {
@@ -74,10 +104,39 @@ describe('controlFor', () => {
     expect(controlFor(prop('button', 'title'), ['x']).kind).toBe('readonly');
     expect(
       controlFor(
+        prop('combobox', 'suggestions'),
+        { $param: 'options' },
+        definitions('combobox'),
+      ).kind,
+    ).toBe('readonly');
+    expect(
+      controlFor(
         { name: 'f', required: false, type: { kind: 'function' } },
         undefined,
       ).kind,
     ).toBe('readonly');
+  });
+});
+
+describe('controlFor list literals (KF-HNNWN9)', () => {
+  it('edits list and object literals as JSON, set or unset', () => {
+    expect(
+      controlFor(
+        prop('combobox', 'suggestions'),
+        undefined,
+        definitions('combobox'),
+      ),
+    ).toEqual({ kind: 'list', raw: '' });
+    expect(
+      controlFor(
+        prop('select', 'choices'),
+        [{ value: 'a', label: 'A' }],
+        definitions('select'),
+      ),
+    ).toEqual({
+      kind: 'list',
+      raw: JSON.stringify([{ value: 'a', label: 'A' }], null, 2),
+    });
   });
 });
 
@@ -97,6 +156,30 @@ describe('valueFromControl', () => {
     });
     expect(valueFromControl('css', '')).toEqual({ value: undefined });
     expect(valueFromControl('css', 'red')).toHaveProperty('error');
+  });
+
+  it('parses list literals and rejects ones the prop type refuses', () => {
+    const type = {
+      type: prop('select', 'choices').type as never,
+      definitions: definitions('select'),
+    };
+    expect(
+      valueFromControl('list', '[{"value":"a","label":"A"}]', undefined, type),
+    ).toEqual({ value: [{ value: 'a', label: 'A' }] });
+    expect(valueFromControl('list', '  ', undefined, type)).toEqual({
+      value: undefined,
+    });
+    expect(valueFromControl('list', '[{"value":"a"', undefined, type)).toEqual({
+      error: 'Enter JSON, such as ["One", "Two"].',
+    });
+    expect(
+      valueFromControl('list', '[{"value":"a"}]', undefined, type),
+    ).toEqual({ error: 'Not a SelectChoice<Value>[].' });
+    expect(valueFromControl('list', '{"$param":"x"}', undefined, type)).toEqual(
+      { error: 'Bind a param with Bind a prop instead.' },
+    );
+    // Without a type to check against, any JSON is taken.
+    expect(valueFromControl('list', '["x"]')).toEqual({ value: ['x'] });
   });
 });
 
@@ -143,5 +226,60 @@ describe('seedProps', () => {
       ]),
     ).toEqual({ label: 'X', compact: true });
     expect(seedProps(props, 'X', [{ required: ['icon'] }])).toEqual({});
+  });
+
+  // KF-HNNWN9: a component added from the palette renders, so a Combobox's
+  // suggestions, a Select's choices, and a PopupMenu's items get placeholders.
+  it('fills required lists with numbered placeholders', () => {
+    expect(seeded('@kerfjs/ui:combobox')).toEqual({
+      id: 'Combobox',
+      label: 'Combobox',
+      suggestions: ['Suggestion 1', 'Suggestion 2', 'Suggestion 3'],
+    });
+    const select = seeded('@kerfjs/ui:select');
+    expect(select.choices).toEqual([
+      { value: 'choice-1', label: 'Choice 1' },
+      { value: 'choice-2', label: 'Choice 2' },
+      { value: 'choice-3', label: 'Choice 3' },
+    ]);
+    // The required value starts on a choice the Select offers.
+    expect(select.value).toBe('choice-1');
+    expect(seeded('@kerfjs/ui:popup-menu').items).toEqual([
+      { label: 'Item 1' },
+      { label: 'Item 2' },
+      { label: 'Item 3' },
+    ]);
+  });
+
+  it('leaves no required literal prop unfilled on any Kerf UI component', () => {
+    // Zones and slots fill from the outline, and these need rendered content (icons,
+    // views) no literal can stand in for (KF-SXDM56: content placeholders).
+    const content = new Set([
+      '@kerfjs/ui:list-action-row',
+      '@kerfjs/ui:list-detail-dialog',
+      '@kerfjs/ui:nav-stack',
+      '@kerfjs/ui:summary-row',
+      '@kerfjs/ui:surface-scaffold',
+      '@kerfjs/ui:surface-scaffold#PopoverDialogSurface',
+      '@kerfjs/ui:tab-navigator',
+    ]);
+    const missing = [...propsByKey.values()]
+      .filter((component) => component.source === 'kerf')
+      .filter((component) => !content.has(component.key))
+      .flatMap((component) => {
+        const zones = new Set(
+          component.props
+            .filter((item) => item.zone || item.slot)
+            .map((item) => item.name),
+        );
+        return unfilled(component.key).filter(
+          (message) =>
+            ![...zones].some((zone) => message.endsWith(`requires "${zone}"`)),
+        );
+      });
+    expect(missing).toEqual([]);
+    expect(unfilled('@kerfjs/ui:combobox')).toEqual([]);
+    expect(unfilled('@kerfjs/ui:select')).toEqual([]);
+    expect(unfilled('@kerfjs/ui:popup-menu')).toEqual([]);
   });
 });
