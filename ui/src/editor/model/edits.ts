@@ -142,6 +142,18 @@ export function withCatalog(document: ViewDocument, key: string): ViewDocument {
 }
 
 /**
+ * The document with `node` as its root, in place of the whole previous tree
+ * (KF-KWQVDJ: start a document from a layout such as a NavStack). Its params,
+ * slots, and name stay; its package joins the catalogs.
+ */
+export function replaceRoot(
+  document: ViewDocument,
+  node: ViewNode,
+): ViewDocument {
+  return withCatalog({ ...document, root: node }, node.type);
+}
+
+/**
  * Removes a node. Only a node placed directly in a zone list can be removed;
  * the root, `$each` templates, and `$if` branches belong to their structure.
  */

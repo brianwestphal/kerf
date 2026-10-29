@@ -58,6 +58,15 @@ it, Save downloads as before. New (KF-QSSTMX) starts an empty document (an
 empty Pane) with no history or selection; with storage it is a new draft,
 saved at once, and the previous document stays in its own file.
 
+**Replace the root** (KF-KWQVDJ: choose the root) starts a document from any
+component. Selecting the root shows it in the Children area: a component
+picker and Replace swap the whole tree for a new, seeded node of that
+component and select it; params, slots, and the document's name stay, and
+Undo restores the previous tree. Full-height layouts (NavStack,
+TabNavigator, SplitView, Workbench) fill the view only as the root: nested
+in a Pane's content they have no definite height and preview, as they would
+render, as their chrome alone.
+
 The inspector also binds a prop to a document param or an in-scope `$each`
 item field, offering only the sources `validateView` accepts there
 (KF-K5TKCV: editor bindings).

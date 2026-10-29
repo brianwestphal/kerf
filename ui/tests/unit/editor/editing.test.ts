@@ -275,6 +275,36 @@ describe('list props (KF-HNNWN9)', () => {
   });
 });
 
+describe('replacing the root (KF-KWQVDJ)', () => {
+  it('starts the document from a NavStack, selects it, and undoes back', () => {
+    const { root, editor } = open(PANE);
+    const original = editor.document.value;
+    choose(
+      field(root, '[data-editor-root="component"]'),
+      '@kerfjs/ui:nav-stack',
+    );
+    click(root, 'editor-replace-root');
+    const next = editor.document.value.root;
+    expect(next.type).toBe('@kerfjs/ui:nav-stack');
+    expect(next.id).not.toBe(PANE);
+    expect(editor.selection.value).toEqual({ kind: 'node', id: next.id });
+    expect(root.textContent).toContain('1 node · valid');
+    expect(root.querySelector('[data-editor-canvas]')!.textContent).toContain(
+      'view3Content slot',
+    );
+    // The document keeps its name and params.
+    expect(editor.document.value.name).toBe(original.name);
+    expect(editor.document.value.params).toEqual(original.params);
+    click(root, 'editor-undo');
+    expect(editor.document.value).toBe(original);
+  });
+
+  it('is offered only for the root', () => {
+    const { root } = open(TOOLBAR);
+    expect(root.querySelector('[data-editor-root]')).toBeNull();
+  });
+});
+
 describe('undo and redo', () => {
   it('undoes and redoes from the toolbar and the keyboard', () => {
     const { root, editor, node } = open();

@@ -16,6 +16,7 @@ import {
   promoteToParam,
   removeNode,
   renameNode,
+  replaceRoot,
   setProp,
 } from '../../../src/editor/model/edits.js';
 import sample from '../../fixtures/view/inbox.kui.json';
@@ -404,5 +405,21 @@ describe('nodes inside branches', () => {
       down: false,
       remove: false,
     });
+  });
+});
+
+describe('replaceRoot (KF-KWQVDJ)', () => {
+  it('swaps the whole tree, keeps params and slots, and adds the package', () => {
+    const root = { id: newNodeId(), type: 'acme:order-card' };
+    const next = replaceRoot(inbox, root);
+    expect(next.root).toBe(root);
+    expect(next.params).toBe(inbox.params);
+    expect(next.slots).toBe(inbox.slots);
+    expect(next.catalogs).toEqual([...inbox.catalogs, 'acme']);
+    const kerf = replaceRoot(inbox, {
+      id: newNodeId(),
+      type: '@kerfjs/ui:nav-stack',
+    });
+    expect(kerf.catalogs).toBe(inbox.catalogs);
   });
 });

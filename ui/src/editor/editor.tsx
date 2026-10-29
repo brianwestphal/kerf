@@ -143,6 +143,7 @@ import {
   promoteToParam,
   removeNode,
   renameNode,
+  replaceRoot,
   setProp,
   withCatalog,
 } from './model/edits.js';
@@ -193,6 +194,7 @@ const MOVE_UP_ACTION = 'editor-move-up';
 const MOVE_DOWN_ACTION = 'editor-move-down';
 const DELETE_ACTION = 'editor-delete';
 const ADD_ACTION = 'editor-add-child';
+const REPLACE_ROOT_ACTION = 'editor-replace-root';
 const CONTENT_TO_NODES_ACTION = 'editor-content-to-nodes';
 const CONTENT_TO_TEXT_ACTION = 'editor-content-to-text';
 const EXAMPLE_ACTION = 'editor-fill-example';
@@ -438,6 +440,7 @@ export function createEditor(options: EditorOptions) {
   const fieldErrors = signal<Readonly<Record<string, string>>>({});
   const addZone = signal('');
   const addComponent = signal('');
+  const rootComponent = signal('');
   const promoteProp = signal('');
   const bindProp = signal('');
   // Every caller passes a changed document (edits clone; moves are checked
@@ -1197,6 +1200,39 @@ export function createEditor(options: EditorOptions) {
         label: componentNames.get(candidate.key)!,
       }));
 
+  /**
+   * Replace the root (KF-KWQVDJ): start the document from another component,
+   * such as a NavStack, which needs to be the root to fill the view.
+   */
+  const replaceRootSection = () => {
+    const choices = addableIn(undefined);
+    const value = choices.some((item) => item.value === rootComponent.value)
+      ? rootComponent.value
+      : choices[0]!.value;
+    return (
+      <>
+        <ListHeader label="Replace the root" size="xs" />
+        <List controlInsets="trbl" gap>
+          <Select
+            name="root-component"
+            label="Component"
+            value={value}
+            choices={choices}
+            hint="Replaces everything in the document. Undo restores it."
+            rootAttributes={{ 'data-editor-root': 'component' }}
+          />
+          <Button
+            emphasis="secondary"
+            size="compact"
+            action={REPLACE_ROOT_ACTION}
+          >
+            Replace
+          </Button>
+        </List>
+      </>
+    );
+  };
+
   /** The inspector for a selected node: name, editable props, add child. */
   const nodeEditor = (
     node: ViewDocument['root'],
@@ -1366,6 +1402,7 @@ export function createEditor(options: EditorOptions) {
         {zones.length && zone
           ? addSlotFields(doc.value, node.id, fieldErrors.value['#slot'])
           : undefined}
+        {node.id === doc.value.root.id ? replaceRootSection() : undefined}
       </List>
     );
     const [strip, ...panels] = areaTabs(
@@ -1871,6 +1908,18 @@ export function createEditor(options: EditorOptions) {
   };
 
   /** Adds the chosen component to the chosen zone and selects it. */
+  /** Makes a new node of the chosen component the document's root. */
+  const replaceRootWith = () => {
+    // The picker renders beside Replace and offers only cataloged components.
+    const picker = document.querySelector<HTMLElement>(
+      '[data-editor-root="component"]',
+    )!;
+    const root = seededNode(String(controlValue(picker)));
+    commit(replaceRoot(doc.value, root));
+    select({ kind: 'node', id: root.id });
+    inspectorArea.value = 'properties';
+  };
+
   const addChild = () => {
     const id = selectedNodeId();
     if (!id) return;
@@ -2109,6 +2158,14 @@ export function createEditor(options: EditorOptions) {
       delegate<HTMLElement>(
         root,
         'change',
+        '[data-editor-root]',
+        (_event, field) => {
+          rootComponent.value = String(controlValue(field));
+        },
+      ),
+      delegate<HTMLElement>(
+        root,
+        'change',
         '[data-editor-add]',
         (_event, field) => {
           const value = String(controlValue(field));
@@ -2224,6 +2281,7 @@ export function createEditor(options: EditorOptions) {
           selection.value = null;
         },
         [ADD_ACTION]: () => addChild(),
+        [REPLACE_ROOT_ACTION]: () => replaceRootWith(),
         [CONTENT_TO_NODES_ACTION]: (_event, target) => {
           const id = selectedNodeId();
           if (id)
