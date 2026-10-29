@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 443800,
-  "measuredLargestJavaScriptGzip": 164548,
-  "measuredTotalJavaScriptGzip": 443767,
+  "totalJavaScriptGzip": 444500,
+  "measuredLargestJavaScriptGzip": 164547,
+  "measuredTotalJavaScriptGzip": 444421,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6467,6 +6467,22 @@
         "measuredTotalJavaScriptGzip": 443767,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 443800
+      }
+    },
+    {
+      "at": "2026-10-29T04:08:29.344Z",
+      "reason": "KF-7KV6H4: the TreeList catalog demo's New node source shows treeListExternalDrop",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164548,
+        "measuredTotalJavaScriptGzip": 443767,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 443800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 444421,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 444500
       }
     }
   ]

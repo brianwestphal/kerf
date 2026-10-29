@@ -117,3 +117,39 @@ test('TreeList moves a dragged row inside and beside other rows', async ({
     'Toolbar',
   ]);
 });
+
+// KF-7KV6H4: an application's own pointer drag from outside the tree drops
+// on its rows through treeListExternalDrop, with the tree's indicator.
+test('TreeList takes a drop from a source outside the tree', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1280, height: 1200 });
+  await page.goto('/?component=tree-list');
+  const tree = page.getByRole('tree', { name: 'Document outline' });
+  const row = (name: string) => tree.getByRole('treeitem', { name });
+  const source = page.locator('[data-tree-list-demo-new]');
+  await tree.scrollIntoViewIfNeeded();
+  await source.scrollIntoViewIfNeeded();
+  const from = (await source.boundingBox())!;
+  const folders = row('folderList content');
+  const target = (await folders.boundingBox())!;
+  await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(
+    target.x + target.width / 2,
+    target.y + target.height / 2,
+    { steps: 8 },
+  );
+  await expect(folders).toHaveAttribute('data-drop-position', 'inside');
+  await page.screenshot({
+    path: info.outputPath('KF-7KV6H4-external-drop.png'),
+    animations: 'disabled',
+  });
+  await page.mouse.up();
+  await expect(folders).not.toHaveAttribute('data-drop-position');
+  await expect(row('Badge 1 new')).toHaveAttribute('aria-level', '3');
+  // Choosing the source (the keyboard path) adds one at the root's end.
+  await source.focus();
+  await page.keyboard.press('Enter');
+  await expect(row('Badge 2 new')).toHaveAttribute('aria-level', '2');
+});
