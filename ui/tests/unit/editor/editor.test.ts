@@ -37,6 +37,26 @@ describe('the editor shell', () => {
     expect(root.textContent).toContain('inbox.kui.json · 7 nodes · valid');
   });
 
+  // KF-X2YQZE: counts of one read in the singular.
+  it('writes one node and one problem in the singular', () => {
+    const { root, editor } = open();
+    const button = (props: Record<string, unknown>) => ({
+      schema: 'kerf-ui-document/v1',
+      name: 'Greeting',
+      catalogs: ['@kerfjs/ui'],
+      root: {
+        id: '01JB8Z1M6Q8E1X9V4S7K2R3TXA',
+        type: '@kerfjs/ui:button',
+        props,
+      },
+    });
+    editor.document.value = button({ children: 'Hi' }) as never;
+    expect(root.textContent).toContain('greeting.kui.json · 1 node · valid');
+    editor.document.value = button({ children: 'Hi', tone: 'loud' }) as never;
+    expect(root.textContent).toContain('1 node · 1 problem');
+    expect(root.textContent).not.toContain('1 problems');
+  });
+
   it('selects a node from the outline and shows its props', () => {
     const { root, editor } = open();
     const row = root.querySelector<HTMLElement>(

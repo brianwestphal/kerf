@@ -77,7 +77,7 @@ test('opens a document file and reports one that is not a view document', async 
     'Hello from a file',
   );
   await expect(
-    page.getByText('greeting.kui.json · 1 nodes · valid'),
+    page.getByText('greeting.kui.json · 1 node · valid'),
   ).toBeVisible();
   await expect(page.getByText('That file could not be opened')).toBeHidden();
 });

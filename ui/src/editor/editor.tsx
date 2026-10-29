@@ -1227,7 +1227,7 @@ export function createEditor(options: EditorOptions) {
               title: (
                 <ToolbarText
                   text="Preview"
-                  description={`${documentFileName(document)} · ${nodes} nodes · ${problems === 0 ? 'valid' : `${problems} problems`}`}
+                  description={`${documentFileName(document)} · ${nodes} ${nodes === 1 ? 'node' : 'nodes'} · ${problems === 0 ? 'valid' : `${problems} ${problems === 1 ? 'problem' : 'problems'}`}`}
                 />
               ),
               responsive: 'wrap',
