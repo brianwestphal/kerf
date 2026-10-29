@@ -38,6 +38,8 @@ import {
   CircleCheck,
   Columns3,
   Download,
+  File,
+  FileCode,
   FileText,
   Filter,
   Folder,
@@ -56,6 +58,7 @@ import {
 } from 'lucide';
 
 import { TabBarItem } from '../dist/tab-bar-item.js';
+import { Badge } from '../dist/badge.js';
 import { Button } from '../dist/button.js';
 import { Checkbox } from '../dist/checkbox.js';
 import { CheckboxGroup } from '../dist/checkbox-group.js';
@@ -87,6 +90,7 @@ import { Slider } from '../dist/slider.js';
 import { Switch } from '../dist/switch.js';
 import { TagField } from '../dist/tag-field.js';
 import { TabBar } from '../dist/tab-bar.js';
+import { TreeList } from '../dist/tree-list.js';
 import { Text } from '../dist/text.js';
 import { TextField } from '../dist/text-field.js';
 import { Toolbar } from '../dist/toolbar.js';
@@ -370,6 +374,129 @@ export const COMPONENTS = {
             iconTile: 'brand',
             action: 'select',
             itemId: 'notifications-tile',
+          }),
+      },
+    ],
+  },
+  // KF-ATTRA5: a files tree (icons, open folders, a selected row, a disabled
+  // row, a trailing badge) and a compact two-line outline.
+  'tree-list': {
+    css: [
+      'foundation',
+      'layout',
+      'lucide-icon',
+      'badge',
+      'disclosure-arrow',
+      'list-item',
+      'tree-list',
+    ],
+    selector: '#frame',
+    width: 380,
+    frameWidth: 320,
+    variants: [
+      {
+        id: 'files',
+        label: 'Files (Open Folders, Selected, Disabled, Badge)',
+        height: 330,
+        render: () =>
+          TreeList({
+            id: 'dt-files',
+            label: 'Files',
+            nodes: [
+              {
+                id: 'src',
+                label: 'src',
+                icon: glyph(Folder, 'folder'),
+                children: [
+                  {
+                    id: 'components',
+                    label: 'components',
+                    icon: glyph(Folder, 'folder'),
+                    trailing: Badge({ children: '3' }),
+                    children: [
+                      {
+                        id: 'button',
+                        label: 'button.tsx',
+                        icon: glyph(FileCode, 'file-code'),
+                      },
+                      {
+                        id: 'legacy',
+                        label: 'legacy.tsx',
+                        description: 'Read-only',
+                        icon: glyph(FileCode, 'file-code'),
+                        disabled: true,
+                      },
+                    ],
+                  },
+                  {
+                    id: 'index',
+                    label: 'index.ts',
+                    icon: glyph(FileCode, 'file-code'),
+                  },
+                ],
+              },
+              {
+                id: 'docs',
+                label: 'docs',
+                icon: glyph(Folder, 'folder'),
+                hasChildren: true,
+              },
+              {
+                id: 'readme',
+                label: 'README.md',
+                icon: glyph(File, 'file'),
+              },
+            ],
+            expanded: new Set(['src', 'components']),
+            selected: 'button',
+            action: 'choose',
+            toggleAction: 'toggle',
+          }),
+      },
+      {
+        id: 'outline',
+        label: 'Compact Two-Line Outline',
+        height: 230,
+        render: () =>
+          TreeList({
+            id: 'dt-outline',
+            label: 'Document outline',
+            density: 'compact',
+            nodes: [
+              {
+                id: 'pane',
+                label: 'Pane',
+                description: 'Root',
+                children: [
+                  {
+                    id: 'toolbar',
+                    label: 'Toolbar',
+                    description: 'header',
+                    children: [
+                      {
+                        id: 'title',
+                        label: 'ToolbarText',
+                        description: 'leading',
+                      },
+                      {
+                        id: 'compose',
+                        label: 'composeButton',
+                        description: 'trailing',
+                      },
+                    ],
+                  },
+                  {
+                    id: 'folders',
+                    label: 'folderList',
+                    description: 'content',
+                  },
+                ],
+              },
+            ],
+            expanded: new Set(['pane', 'toolbar']),
+            selected: 'compose',
+            action: 'choose',
+            toggleAction: 'toggle',
           }),
       },
     ],

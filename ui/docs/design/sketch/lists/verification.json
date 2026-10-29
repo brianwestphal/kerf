@@ -1,10 +1,10 @@
 {
-  "symbols": 42,
-  "nativeText": 72,
-  "nativePaths": 516,
+  "symbols": 46,
+  "nativeText": 110,
+  "nativePaths": 830,
   "bitmaps": 0,
   "assets": 10,
-  "assetBindings": 101,
+  "assetBindings": 163,
   "instances": [
     {
       "id": "list-stack-control-light",
@@ -95,6 +95,24 @@
       "fitWidth": 404,
       "wideWidth": 484,
       "height": 165.1875
+    },
+    {
+      "id": "tree-list-files-control-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 320,
+      "fitWidth": 320,
+      "wideWidth": 400,
+      "height": 316
+    },
+    {
+      "id": "tree-list-files-control-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 320,
+      "fitWidth": 320,
+      "wideWidth": 400,
+      "height": 316
     }
   ],
   "reopened": [
@@ -154,6 +172,34 @@
         "Environment",
         "Live",
         "Status"
+      ]
+    },
+    {
+      "name": "Tree List / Files / Control / Light",
+      "overrides": [
+        "Done",
+        "docs",
+        "index.ts",
+        "Read-only",
+        "legacy.tsx",
+        "button.tsx",
+        "3",
+        "components",
+        "src"
+      ]
+    },
+    {
+      "name": "Tree List / Files / Control / Dark",
+      "overrides": [
+        "Done",
+        "docs",
+        "index.ts",
+        "Read-only",
+        "legacy.tsx",
+        "button.tsx",
+        "3",
+        "components",
+        "src"
       ]
     }
   ]

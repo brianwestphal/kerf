@@ -1,7 +1,7 @@
 # Kerf UI Sketch catalog
 
 [Kerf-UI.sketch](Kerf-UI.sketch) is the one Kerf UI Sketch Library. It holds
-all 308 editable light and dark Symbols for the 110 template variants, on one
+all 312 editable light and dark Symbols for the 112 template variants, on one
 page per family: Button, Form Controls, Advanced Inputs, Lists and Data,
 Toolbars and Navigation, and Content and Feedback. Each page shows its light
 masters beside its dark masters on a dark surface, ordered by Symbol name.

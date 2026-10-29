@@ -2,7 +2,7 @@
 
 The SVG sheets remain the broad, static catalog. The native
 [Kerf UI Sketch Library](sketch/unified/README.md), `Kerf-UI.sketch`, adds
-308 editable Symbols for every template variant, built from production CSS
+312 editable Symbols for every template variant, built from production CSS
 captures and verified through resize, override, linked-consumer sync, and
 save/reopen checks. It ships with the UI package under `docs/design/sketch/`.
 The [native Sketch coverage matrix](sketch/coverage.md) tracks each template
@@ -20,7 +20,7 @@ component picture without running the app.
 
 Templated components (each with light + dark variants):
 `ToolbarControlGroup`, `Toolbar`, `ToolbarText`, `List`, `ListItem`, `ListHeader`,
-`ListActionRow`, `ValueTable`, `Disclosure`, `ProgressBar`, `ProgressRing`, `StateBanner`, `EmptyState`, `Skeleton`,
+`ListActionRow`, `ValueTable`, `TreeList`, `Disclosure`, `ProgressBar`, `ProgressRing`, `StateBanner`, `EmptyState`, `Skeleton`,
 `SegmentedControl`, `TabBar`/`TabBarItem`, `SearchField`, `TagField`, `Chip`, `ChoiceChips`,
 `MessageComposer`, `ColorPicker`, `ColorField`, `ColorSwatches`, and the native form controls `Button`, `SplitButton`, `TextField`, `Checkbox`,
 `CheckboxGroup`, `RadioGroup`, `Switch`, `Slider`, and `Select`.

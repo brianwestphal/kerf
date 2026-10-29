@@ -407,6 +407,7 @@ export const generatedKerfCatalog = [
     ],
     "demoSource": "ui/ux-demo/demos/tree-list.tsx",
     "componentSource": "ui/src/components/collections/tree-list/tree-list.tsx",
+    "designTemplate": "ui/docs/design/templates/tree-list.svg",
     "documentation": "ui/docs/tree-list.md"
   },
   {

@@ -33,6 +33,7 @@ module.exports.apply = function (symbol, fixture, dom) {
       'list-header',
       'list-action-row',
       'value-table',
+      'tree-list',
     ].indexOf(fixture.component) < 0
   )
     throw new Error('Unsupported list/data layout: ' + fixture.component);

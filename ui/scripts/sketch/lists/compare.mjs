@@ -13,6 +13,7 @@ const selected = [
   'list-header-action-control',
   'list-action-row-trailing-menu-control',
   'value-table-details-control',
+  'tree-list-files-control',
 ];
 const output = defaultOutput;
 const fixtures = JSON.parse(

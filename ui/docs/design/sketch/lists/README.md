@@ -1,9 +1,9 @@
 # Lists and Data Sketch library
 
-[Kerf-Lists.sketch](Kerf-Lists.sketch) contains 42 editable light and dark
-Symbols for 21 production variants across List, ListItem, ListHeader,
-ListActionRow, and ValueTable. A whole List or ValueTable is a separate Symbol
-from its reusable rows. Every master uses native Text and vector paths, with
+[Kerf-Lists.sketch](Kerf-Lists.sketch) contains 46 editable light and dark
+Symbols for 23 production variants across List, ListItem, ListHeader,
+ListActionRow, ValueTable, and TreeList. A whole List, ValueTable, or TreeList
+is a separate Symbol from its reusable rows. Every master uses native Text and vector paths, with
 no bitmap layers. Ten shared Color Variables bind text, fills, and borders.
 [The manifest](symbol-manifest.json) pins Symbol, Text, and Color Variable IDs.
 
@@ -53,8 +53,8 @@ right edge, and a shorter text override stays right aligned. The serial runner u
 existing Sketch process and preserves its preexisting documents and Library
 registrations.
 
-Verification saves and reopens the library, imports ten linked instances
-covering all five families and both themes, applies a text override and an
+Verification saves and reopens the library, imports twelve linked instances
+covering all six components and both themes, applies a text override and an
 80px width increase, then saves and reopens the consumer document. The
 reviewed `comparison-*.png` files show the production capture, native master,
 and widened linked instance side by side.

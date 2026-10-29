@@ -19,6 +19,7 @@ module.exports.run = function (session, parameters, done) {
     'list-header': 'action',
     'list-action-row': 'trailing-menu',
     'value-table': 'details',
+    'tree-list': 'files',
   };
   var selected = fixtures.filter(function (fixture) {
     return (
@@ -27,9 +28,9 @@ module.exports.run = function (session, parameters, done) {
       ) === 0
     );
   });
-  if (selected.length !== 10)
+  if (selected.length !== 12)
     throw new Error(
-      'Expected five representative list/data components in two themes.',
+      'Expected six representative list/data components in two themes.',
     );
   session.openDocument(
     parameters.libraryPath,

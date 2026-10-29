@@ -53,6 +53,8 @@ export const targets = {
     'icon-tile': ['control'],
   },
   'value-table': { details: ['control'] },
+  // KF-ATTRA5: TreeList joins the family.
+  'tree-list': { files: ['control'], outline: ['control'] },
 };
 
 export function verifyTargets() {
@@ -64,6 +66,7 @@ export function verifyTargets() {
       'list-header',
       'list-action-row',
       'value-table',
+      'tree-list',
     ].sort(),
   );
   let variants = 0;
@@ -87,8 +90,8 @@ export function verifyTargets() {
       individuals += keys.length;
     }
   }
-  assert.equal(variants, 21);
-  assert.equal(individuals, 21);
+  assert.equal(variants, 23);
+  assert.equal(individuals, 23);
 }
 
 const title = (value) =>

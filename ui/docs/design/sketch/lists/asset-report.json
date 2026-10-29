@@ -52,8 +52,8 @@
     }
   },
   "bindings": {
-    "text": 72,
-    "fills": 3,
-    "borders": 26
+    "text": 110,
+    "fills": 5,
+    "borders": 48
   }
 }

@@ -3518,6 +3518,190 @@
         }
       ]
     },
+    "lists/tree-list-files-control-light": {
+      "family": "lists",
+      "name": "Tree List / Files / Control / Light",
+      "symbolId": "1AFE8E84-1EE6-4FCD-B303-60AD246BC2E4",
+      "layerId": "4F34410E-6016-430D-8F02-F5BE263934CE",
+      "text": [
+        {
+          "id": "D7193C80-6074-4756-A0D1-0205066E26C4",
+          "value": "src"
+        },
+        {
+          "id": "DB11D7D4-8B33-48D7-80D2-62FB83EFA451",
+          "value": "components"
+        },
+        {
+          "id": "42362EAE-5401-4000-B6FF-3EE927C99689",
+          "value": "3"
+        },
+        {
+          "id": "D9DBB189-F957-479D-8173-22635B8624A9",
+          "value": "button.tsx"
+        },
+        {
+          "id": "175D4249-BB8E-411A-B8C9-890A0551A727",
+          "value": "legacy.tsx"
+        },
+        {
+          "id": "EC5B4965-1D54-4F8F-99E3-A5C0BE8173F6",
+          "value": "Read-only"
+        },
+        {
+          "id": "BC29C50A-42FA-4B6E-856C-9D5CD6B6644A",
+          "value": "index.ts"
+        },
+        {
+          "id": "916C312F-307C-4BF6-AF83-A56D08DCB713",
+          "value": "docs"
+        },
+        {
+          "id": "169A96EB-DDA9-48B8-9441-24462F6D79B4",
+          "value": "README.md"
+        }
+      ]
+    },
+    "lists/tree-list-files-control-dark": {
+      "family": "lists",
+      "name": "Tree List / Files / Control / Dark",
+      "symbolId": "AD68FBE0-3DF5-4D76-B0BF-355436C6254B",
+      "layerId": "1D3635F6-20A9-43E4-9C28-42CBE2391442",
+      "text": [
+        {
+          "id": "2C06794A-455C-4857-80AA-E0F2D9BF7294",
+          "value": "src"
+        },
+        {
+          "id": "0B926FC8-CD20-4DCE-A3ED-BCE4D86764E9",
+          "value": "components"
+        },
+        {
+          "id": "93190EEA-A253-47FA-BD58-D6C506CA99B7",
+          "value": "3"
+        },
+        {
+          "id": "31B34BC3-3905-4611-9B5A-0F80F019A46A",
+          "value": "button.tsx"
+        },
+        {
+          "id": "D54A85A3-3D84-44C1-8EC0-AB46CA8EEF90",
+          "value": "legacy.tsx"
+        },
+        {
+          "id": "3E8B713A-400A-4825-A140-7F9351EBD6C0",
+          "value": "Read-only"
+        },
+        {
+          "id": "8C902891-16B2-4D5A-9A33-AA178BC8EEDC",
+          "value": "index.ts"
+        },
+        {
+          "id": "82B6FC18-8842-461E-BD38-CC63A77DCD0A",
+          "value": "docs"
+        },
+        {
+          "id": "6AE32A7A-D3B1-4FCA-BAC5-62AAE079E373",
+          "value": "README.md"
+        }
+      ]
+    },
+    "lists/tree-list-outline-control-light": {
+      "family": "lists",
+      "name": "Tree List / Outline / Control / Light",
+      "symbolId": "E77C1CD7-6B42-42B0-9A5B-55C71B140C63",
+      "layerId": "4B4E53ED-A8B4-4246-ACAF-E8F524794328",
+      "text": [
+        {
+          "id": "0B761816-C2EB-4910-8CCA-EFF988B04859",
+          "value": "Pane"
+        },
+        {
+          "id": "895BBCE2-7B28-4248-B0C2-F40CA89A4BCF",
+          "value": "Root"
+        },
+        {
+          "id": "299271E7-EA1C-4911-BCD3-C22C8F22A04B",
+          "value": "Toolbar"
+        },
+        {
+          "id": "425812FE-9CE9-4FAD-9B31-3796F02AD36D",
+          "value": "header"
+        },
+        {
+          "id": "2DDDFD1D-55D4-4908-A757-B6C9CB0FA959",
+          "value": "ToolbarText"
+        },
+        {
+          "id": "24223C67-4B16-42E1-9864-962F5B2A345C",
+          "value": "leading"
+        },
+        {
+          "id": "F39B1C00-24EB-4774-8982-8E0E195BF969",
+          "value": "composeButton"
+        },
+        {
+          "id": "E2382109-0884-4B0A-B6EA-C109D28A553C",
+          "value": "trailing"
+        },
+        {
+          "id": "19799FE8-73A0-4DCE-B473-791D6EE79E2A",
+          "value": "folderList"
+        },
+        {
+          "id": "F4091072-A1D8-43FA-8157-C4A9624DBD64",
+          "value": "content"
+        }
+      ]
+    },
+    "lists/tree-list-outline-control-dark": {
+      "family": "lists",
+      "name": "Tree List / Outline / Control / Dark",
+      "symbolId": "3709A7E6-4E32-40F5-B3A6-13362D6CFBA6",
+      "layerId": "7FEE9BD4-2C51-4B49-96F1-82BA4A94DC7A",
+      "text": [
+        {
+          "id": "699AF262-4EFD-4691-8146-1430B0333342",
+          "value": "Pane"
+        },
+        {
+          "id": "BAD430BB-AE48-480A-B52C-2A27ED0C7E64",
+          "value": "Root"
+        },
+        {
+          "id": "4725EC02-1E09-4144-B6A8-BAA30CF9A559",
+          "value": "Toolbar"
+        },
+        {
+          "id": "99614200-07D7-4110-83C4-6942A342E34D",
+          "value": "header"
+        },
+        {
+          "id": "56D325CD-3F0D-411D-9D51-8BF3A157B6DF",
+          "value": "ToolbarText"
+        },
+        {
+          "id": "A701BEED-6719-44CC-849F-DB925B67C8A7",
+          "value": "leading"
+        },
+        {
+          "id": "0B7A66EA-694F-40CB-BF18-59962A9B5801",
+          "value": "composeButton"
+        },
+        {
+          "id": "9B4CD848-9E59-4DE4-A2CB-ADF7C762366C",
+          "value": "trailing"
+        },
+        {
+          "id": "B3E85DC7-1239-4452-B3D5-88D8E2CA2E11",
+          "value": "folderList"
+        },
+        {
+          "id": "E6B16930-B405-4391-B330-943DAA4533DC",
+          "value": "content"
+        }
+      ]
+    },
     "toolbar/toolbar-control-group-icon-tile-neutral-control-light": {
       "family": "toolbar",
       "name": "Toolbar Control Group / Icon Tile Neutral / Control / Light",

@@ -70,6 +70,7 @@ const families = [
       'list-header',
       'list-action-row',
       'value-table',
+      'tree-list',
     ],
   },
   {
@@ -116,8 +117,8 @@ const rows = families.flatMap((family) =>
     })),
   ),
 );
-assert.equal(rows.length, 110, 'Reconcile catalog count and ticket batches');
-assert.equal(rows.filter((row) => row.status === 'supported').length, 110);
+assert.equal(rows.length, 112, 'Reconcile catalog count and ticket batches');
+assert.equal(rows.filter((row) => row.status === 'supported').length, 112);
 assert.equal(rows.filter((row) => row.status === 'pending').length, 0);
 assert.equal(
   new Set(rows.map((row) => `${row.component}/${row.variant}`)).size,
@@ -149,13 +150,13 @@ variant may be a multi-control showcase; a family ticket must export its actual
 individual component states and retain the sheet only as a catalog page.
 
 Every supported Symbol ships in one Library, [Kerf-UI.sketch](unified/README.md),
-with 308 light/dark Symbols assembled from the family build inputs. The Button
+with 312 light/dark Symbols assembled from the family build inputs. The Button
 pilot covers seven source showcase variants with 40 appearance Symbols
 ([Button](button/README.md)). The Form controls batch covers 20 showcase
 variants with 66 individual Symbols ([Forms](forms/README.md)). The Advanced
 inputs batch covers 17 variants with 34 Symbols
-([Advanced inputs](advanced/README.md)). The Lists and data batch covers 21
-variants with 42 Symbols ([Lists and data](lists/README.md)). The Toolbars and
+([Advanced inputs](advanced/README.md)). The Lists and data batch covers 23
+variants with 46 Symbols ([Lists and data](lists/README.md)). The Toolbars and
 navigation batch covers 25 variants with 70 Symbols for 35 individual controls
 ([Toolbars and navigation](toolbar/README.md)). The Content and feedback batch
 covers 20 variants with 56 Symbols for 28 reusable roots
