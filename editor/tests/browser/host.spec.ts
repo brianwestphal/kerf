@@ -12,7 +12,7 @@ test('an app’s dev server hosts the editor with its own components', async ({
   await page.goto(EDITOR);
   const canvas = page.locator('[data-editor-canvas]');
   // A new document is an empty Pane.
-  await expect(page.getByText('1 nodes · valid')).toBeVisible();
+  await expect(page.getByText('1 node · valid')).toBeVisible();
 
   // The palette lists the app's component under Application.
   await expect(page.getByText('Application', { exact: true })).toBeVisible();
