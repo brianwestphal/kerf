@@ -25,6 +25,7 @@ import {
   ArrowDown,
   ArrowUp,
   FileCode,
+  FilePlus,
   FolderOpen,
   GitCompare,
   icons as lucideIcons,
@@ -160,6 +161,7 @@ const OUTLINE_ACTION = 'editor-select-node';
 const OUTLINE_TOGGLE_ACTION = 'editor-toggle-node';
 const PALETTE_ACTION = 'editor-show-component';
 const PROBLEM_ACTION = 'editor-select-problem';
+const NEW_ACTION = 'editor-new';
 const SAVE_ACTION = 'editor-save';
 const SAVE_AS_ACTION = 'editor-save-as';
 const SAVE_AS_DIALOG = 'editor-save-as-dialog';
@@ -1226,6 +1228,13 @@ export function createEditor(options: EditorOptions) {
           dividerSides="b"
           leading={<ToolbarText text="Kerf UI Editor" />}
           trailing={[
+            <Button
+              emphasis="plain"
+              action={NEW_ACTION}
+              icon={<LucideIcon icon={FilePlus} name="file-plus" />}
+            >
+              New
+            </Button>,
             <FilePickerTrigger
               label="Open"
               accessibleLabel="Open a view document"
@@ -1915,6 +1924,9 @@ export function createEditor(options: EditorOptions) {
           select({ kind: 'component', key: target.dataset.itemId! }),
         [EXPORT_MODULE_ACTION]: () => exportAs('module'),
         [EXPORT_DECLARATIONS_ACTION]: () => exportAs('declarations'),
+        // KF-QSSTMX: a new empty document; with storage it is a new draft,
+        // and the previous document stays in its file.
+        [NEW_ACTION]: () => load(emptyDocument()),
         [SAVE_AS_ACTION]: (_event, target) => {
           const dialog = root.querySelector<HTMLDialogElement>(
             `#${SAVE_AS_DIALOG}`,

@@ -228,6 +228,35 @@ describe('editor autosave', () => {
     expect(JSON.parse([...stored.values()][0]!).name).toBe('Opened');
   });
 
+  // KF-QSSTMX: New starts an empty document in a new draft, leaving the
+  // previous document in its own file.
+  it('starts a new empty document in a new draft', async () => {
+    const { stored, storage } = memory();
+    const { root, editor } = open(storage);
+    edit(root, editor);
+    await vi.waitFor(() => expect(stored.size).toBe(1));
+    const [first] = [...stored.keys()];
+    editor.selection.value = { kind: 'node', id: COMPOSE };
+    root.querySelector<HTMLElement>('[data-action="editor-new"]')!.click();
+    expect(editor.document.value.root.type).toBe('@kerfjs/ui:pane');
+    expect(editor.document.value.root.zones).toBeUndefined();
+    expect(editor.selection.value).toBeNull();
+    await vi.waitFor(() => expect(stored.size).toBe(2));
+    const second = [...stored.keys()].find((path) => path !== first)!;
+    expect(isDraft(second)).toBe(true);
+    expect(JSON.parse(stored.get(second)!).name).toBe('Untitled');
+    expect(JSON.parse(stored.get(first!)!).name).toBe('Inbox');
+    await vi.waitFor(() =>
+      expect(header(root)).toContain('Unsaved draft · autosaved · 1 node'),
+    );
+    // Undo has nothing to go back to: the new document starts fresh.
+    expect(
+      root
+        .querySelector('[data-action="editor-undo"]')!
+        .hasAttribute('disabled'),
+    ).toBe(true);
+  });
+
   it('saves a pending change as the page hides and when unwired', async () => {
     const { storage } = memory();
     const { root, editor } = open(storage);

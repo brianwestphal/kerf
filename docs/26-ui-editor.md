@@ -53,7 +53,9 @@ remembers the current path in browser storage and reopens it on the next
 visit; a missing or unreadable file starts a draft, and an edit made while it
 loads saves to a new draft instead. A pending change saves as the page hides.
 With storage, a copy downloads from Export's Document (.kui.json); without
-it, Save downloads as before.
+it, Save downloads as before. New (KF-QSSTMX) starts an empty document (an
+empty Pane) with no history or selection; with storage it is a new draft,
+saved at once, and the previous document stays in its own file.
 
 The inspector also binds a prop to a document param or an in-scope `$each`
 item field, offering only the sources `validateView` accepts there

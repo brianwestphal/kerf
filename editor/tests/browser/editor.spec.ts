@@ -710,3 +710,25 @@ test('autosaves edits, reopens them, and saves as a project path', async ({
     page.getByText(`${path} · saved · 6 nodes · valid`),
   ).toBeVisible();
 });
+
+// KF-QSSTMX: New starts an empty document in a new draft that a reload keeps.
+for (const width of [1440, 390] as const) {
+  test(`starts a new empty document at ${width}px`, async ({ page }, info) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.getByRole('button', { name: 'New' }).click();
+    await expect(
+      page.getByText('Unsaved draft · autosaved · 1 node · valid'),
+    ).toBeVisible();
+    await expect(page.locator('[data-editor-canvas]')).not.toContainText(
+      'Inbox',
+    );
+    await page.screenshot({
+      path: info.outputPath(`KF-QSSTMX-new-${width}.png`),
+      animations: 'disabled',
+    });
+    await page.reload();
+    await expect(
+      page.getByText('Unsaved draft · autosaved · 1 node · valid'),
+    ).toBeVisible();
+  });
+}
