@@ -133,7 +133,18 @@ as Add a child accepts them, and Problems then lists them (KF-DC23E9). It joins 
 package, and the drop selects it. A drop on the canvas's blank space lands
 inside the document's root, which is how an empty document gets its first
 node (an empty Pane has no height to hit). A click without a drag still shows
-the component's documentation. Dropping onto outline rows is not built yet
+the component's documentation.
+
+While a drag is under way (KF-Y4GHQV: drag feedback), a solid `Badge` chip
+naming what is dragged (the component, or the node's outline label) follows
+the pointer, and the line or ring carries a caption saying where the drop
+lands: "Before folderList", "After folderList", or "Inside Pane", plus
+"› zone" when the target has more than one zone. The caption rides the line,
+or the ring's top edge, at its far end, where row content rarely sits; for a
+line in a row it sits under the line's foot. A node moved on the canvas dims
+in place. A line before the first node, and a caption near the top, stay
+inside the canvas rather than on its clipped edge. Dropping, Escape, or a
+cancelled pointer clears all of them. Dropping onto outline rows is not built yet
 (KF-67K2VP); Add a child stays the keyboard path.
 
 The canvas preview is rendered and test-mounted outside the editor's own

@@ -42,6 +42,39 @@
   display: none;
 }
 
+/* KF-Y4GHQV: the caption saying where a drag lands, beside its line or
+   inside its ring; the dimmed place of a node moved on the canvas; and the
+   chip naming what is dragged, which follows the pointer. Each only places
+   the Badge it holds. */
+.kui-editor__drop-caption,
+.kui-editor__drag-source {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.kui-editor__drop-caption[data-side="on"] {
+  transform: translate(-100%, -50%);
+}
+
+.kui-editor__drag-source {
+  /* The canvas's own surface, mostly over the node, so it reads as lifted. */
+  background: var(--kui-color-surface-current);
+  opacity: 0.7;
+}
+
+.kui-editor__drag-chip {
+  position: fixed;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.kui-editor__drop-caption[hidden],
+.kui-editor__drag-source[hidden],
+.kui-editor__drag-chip[hidden] {
+  display: none;
+}
+
 @media (forced-colors: active) {
   .kui-editor__drop[data-drop="line"] {
     background: Highlight;

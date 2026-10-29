@@ -126,6 +126,60 @@ describe('canvas drag', () => {
     expect(editor.selection.value).toEqual({ kind: 'node', id: COMPOSE });
   });
 
+  // KF-Y4GHQV: a drag shows what moves and, in words, where it lands.
+  it('names the dragged node and its landing place, and dims its place', () => {
+    const { root, node, pointer, hover } = setUp();
+    const canvas = root.querySelector('[data-editor-canvas]')!;
+    const part = (name: string) =>
+      canvas.querySelector<HTMLElement>(`.kui-editor__${name}`)!;
+    const compose = node(COMPOSE);
+    const folders = node(FOLDERS);
+    at(compose, 600, 10, 100, 40);
+    at(folders, 0, 100, 800, 120);
+    pointer('pointerdown', compose, 610, 20);
+    expect(part('drag-chip').hidden).toBe(true);
+    hover(folders);
+    pointer('pointermove', compose, 50, 210);
+    // The chip follows the pointer and names the node.
+    expect(part('drag-chip').hidden).toBe(false);
+    expect(part('drag-chip').textContent).toContain('composeButton');
+    expect(part('drag-chip').style.inset).toBe('224px auto auto 64px');
+    // The moved node's place dims.
+    expect(part('drag-source').hidden).toBe(false);
+    expect(part('drag-source').style.width).toBe('100px');
+    // The caption rides the line at its far end and says where it lands.
+    expect(part('drop-caption').hidden).toBe(false);
+    expect(part('drop-caption').textContent).toBe('After folderList');
+    expect(part('drop-caption').style.inset).toBe('221px auto auto 792px');
+    expect(part('drop-caption').dataset.side).toBe('on');
+    // On the top edge of a ring around the target it would land inside.
+    pointer('pointermove', compose, 400, 160);
+    expect(part('drop-caption').textContent).toMatch(/^Inside folderList/);
+    expect(part('drop-caption').style.inset).toBe('100px auto auto 792px');
+    // Never above the canvas's top, where it would be clipped.
+    at(folders, 0, 10, 800, 120);
+    pointer('pointermove', compose, 400, 70);
+    expect(part('drop-caption').style.inset).toBe('14px auto auto 792px');
+    // Nor is a line before a node at the very top.
+    at(folders, 0, 0, 800, 120);
+    pointer('pointermove', compose, 400, 2);
+    expect(part('drop-caption').textContent).toBe('Before folderList');
+    expect(
+      root.querySelector<HTMLElement>('.kui-editor__drop')!.style.inset,
+    ).toBe('0px auto auto 0px');
+    // Over nothing legal, no caption.
+    hover(null);
+    pointer('pointermove', compose, 400, 500);
+    expect(part('drop-caption').hidden).toBe(true);
+    expect(part('drag-chip').hidden).toBe(false);
+    // Escape clears everything the drag drew.
+    root.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
+    );
+    for (const name of ['drag-chip', 'drag-source', 'drop-caption'])
+      expect(part(name).hidden).toBe(true);
+  });
+
   it('drags the list a pressed repeated row belongs to', () => {
     const { editor, node, slot, pointer, hover } = setUp();
     const folders = node(FOLDERS);
@@ -168,6 +222,17 @@ describe('canvas drag', () => {
     pointer('pointermove', compose, 2, 20);
     expect(overlay().hidden).toBe(false);
     expect(overlay().style.width).toBe('2px');
+    // KF-Y4GHQV: across a row the caption sits under the line's foot, and a
+    // line before the first item stays inside the canvas.
+    const caption = () =>
+      toolbar
+        .closest('[data-editor-canvas]')!
+        .querySelector<HTMLElement>('.kui-editor__drop-caption')!;
+    expect(overlay().style.inset).toBe('10px auto auto 0px');
+    expect(caption().dataset.side).toBe('below');
+    expect(caption().style.inset).toBe('54px auto auto 0px');
+    pointer('pointermove', compose, 298, 20);
+    expect(caption().style.inset).toBe('54px auto auto 300px');
   });
 
   it('drags a slot by its placeholder', () => {
@@ -286,6 +351,25 @@ describe('canvas drag', () => {
       // The click that ends the drag does not open the component's docs.
       badge.dispatchEvent(new MouseEvent('click', { bubbles: true }));
       expect(editor.selection.value).toEqual({ kind: 'node', id: added });
+    });
+
+    it('names the dragged component on its chip, without dimming anything', () => {
+      const { root, node, pointer, hover } = setUp();
+      const canvas = root.querySelector('[data-editor-canvas]')!;
+      const part = (name: string) =>
+        canvas.querySelector<HTMLElement>(`.kui-editor__${name}`)!;
+      const badge = paletteRow(root, '@kerfjs/ui:badge');
+      at(node(FOLDERS), 0, 100, 800, 120);
+      pointer('pointerdown', badge, 10, 700);
+      hover(node(FOLDERS));
+      pointer('pointermove', badge, 50, 108);
+      expect(part('drag-chip').textContent).toContain('Badge');
+      expect(part('drag-source').hidden).toBe(true);
+      expect(part('drop-caption').textContent).toBe('Before folderList');
+      expect(part('drop-caption').dataset.side).toBe('on');
+      pointer('pointerup', badge, 50, 108);
+      expect(part('drag-chip').hidden).toBe(true);
+      expect(part('drop-caption').hidden).toBe(true);
     });
 
     it('offers no drop over a node where the component fits nowhere', () => {

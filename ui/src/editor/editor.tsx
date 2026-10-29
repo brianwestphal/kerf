@@ -952,6 +952,44 @@ export function createEditor(options: EditorOptions) {
     );
   };
 
+  /**
+   * An outline row's label by id (a node's name or component, or a slot),
+   * kept per document while a drag passes over the same rows.
+   */
+  let rowLabels: { document: ViewDocument; labels: Map<string, string> } = {
+    document: doc.value,
+    labels: new Map(),
+  };
+  const rowLabel = (id: string): string => {
+    if (rowLabels.document !== doc.value || !rowLabels.labels.size) {
+      const labels = new Map<string, string>();
+      const add = (nodes: readonly OutlineNode[]) => {
+        for (const node of nodes) {
+          labels.set(node.id, node.label);
+          if (node.children) add(node.children);
+        }
+      };
+      add(outlineTree(doc.value, componentNames));
+      rowLabels = { document: doc.value, labels };
+    }
+    return rowLabels.labels.get(id) ?? id;
+  };
+
+  /**
+   * Where a legal drag move lands, in words (KF-Y4GHQV): beside its target,
+   * or inside it, naming the zone when the target has more than one.
+   */
+  const dropCaption = (move: TreeListMove): string => {
+    const target = rowLabel(move.target.id);
+    if (move.target.position === 'before') return `Before ${target}`;
+    if (move.target.position === 'after') return `After ${target}`;
+    const zone = dropFor(move)?.zone;
+    const node = findNode(doc.value, move.target.id)?.node;
+    return node && zone && zoneKeys(node).length > 1
+      ? `Inside ${target} › ${zone}`
+      : `Inside ${target}`;
+  };
+
   /** Zone keys a node offers, for moving a node into it. */
   const zoneKeys = (node: ViewNode) => zonesOf(node).map((zone) => zone.key);
 
@@ -1271,6 +1309,25 @@ export function createEditor(options: EditorOptions) {
         hidden
       />
       <div class="kui-editor__drop" data-morph-skip aria-hidden="true" hidden />
+      {/* KF-Y4GHQV: the drag's caption, dimmed source, and pointer chip. */}
+      <div
+        class="kui-editor__drop-caption"
+        data-morph-skip
+        aria-hidden="true"
+        hidden
+      />
+      <div
+        class="kui-editor__drag-source"
+        data-morph-skip
+        aria-hidden="true"
+        hidden
+      />
+      <div
+        class="kui-editor__drag-chip"
+        data-morph-skip
+        aria-hidden="true"
+        hidden
+      />
     </div>
   );
 
@@ -2180,6 +2237,12 @@ export function createEditor(options: EditorOptions) {
         canDrop: (move) => dropFor(move) !== undefined,
         onMove: applyMove,
         rootOf: () => doc.value.root.id,
+        labelOf: (sourceId) =>
+          sourceId.startsWith(PALETTE_SOURCE)
+            ? (componentNames.get(sourceId.slice(PALETTE_SOURCE.length)) ??
+              sourceId.slice(PALETTE_SOURCE.length))
+            : rowLabel(sourceId),
+        captionOf: dropCaption,
         external: {
           selector: '[data-editor-palette]',
           sourceOf: (element) =>

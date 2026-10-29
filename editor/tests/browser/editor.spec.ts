@@ -769,6 +769,9 @@ test('drags components from the palette onto the canvas', async ({
     await page.mouse.down();
     await page.mouse.move(to.x, to.y, { steps: 8 });
     await expect(canvas.locator('.kui-editor__drop')).toBeVisible();
+    // KF-Y4GHQV: a chip names what is dragged, and a caption where it lands.
+    await expect(canvas.locator('.kui-editor__drag-chip')).toBeVisible();
+    await expect(canvas.locator('.kui-editor__drop-caption')).toBeVisible();
     if (shot)
       await page.screenshot({
         path: info.outputPath(shot),
@@ -792,10 +795,14 @@ test('drags components from the palette onto the canvas', async ({
   );
   const added = canvas.locator('[data-kerf-node]').nth(1);
   const box = (await added.boundingBox())!;
-  await drag('@kerfjs/ui:button', {
-    x: box.x + box.width / 2,
-    y: box.y + box.height - 2,
-  });
+  await drag(
+    '@kerfjs/ui:button',
+    {
+      x: box.x + box.width / 2,
+      y: box.y + box.height - 2,
+    },
+    'KF-Y4GHQV-palette-after-1440.png',
+  );
   await expect(page.getByText('autosaved · 3 nodes · valid')).toBeVisible();
   await expect(canvas.getByRole('button')).toBeVisible();
   await page.screenshot({
@@ -809,4 +816,25 @@ test('drags components from the palette onto the canvas', async ({
     y: bounds.y + bounds.height - 24,
   });
   await expect(page.getByText('autosaved · 4 nodes · 1 problem')).toBeVisible();
+  // KF-Y4GHQV: moving a node on the canvas names it, dims its place, and
+  // captions where it lands; letting go clears all three.
+  const moved = (await canvas.getByRole('button').boundingBox())!;
+  const first = (await added.boundingBox())!;
+  await page.mouse.move(moved.x + moved.width / 2, moved.y + moved.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(first.x + 20, first.y + 2, { steps: 8 });
+  await expect(canvas.locator('.kui-editor__drag-source')).toBeVisible();
+  await expect(canvas.locator('.kui-editor__drag-chip')).toContainText(
+    'Button',
+  );
+  await expect(canvas.locator('.kui-editor__drop-caption')).toContainText(
+    'Before Text',
+  );
+  await page.screenshot({
+    path: info.outputPath('KF-Y4GHQV-canvas-move-1440.png'),
+    animations: 'disabled',
+  });
+  await page.mouse.up();
+  for (const part of ['drag-chip', 'drag-source', 'drop-caption'])
+    await expect(canvas.locator(`.kui-editor__${part}`)).toBeHidden();
 });
