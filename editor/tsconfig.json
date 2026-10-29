@@ -26,6 +26,9 @@
       "@kerfjs/ui/ai/*": ["../ui/ai/*"],
       "@kerfjs/ui/popup-menu/register": ["../ui/dist/popup-menu-register.d.ts"],
       "@kerfjs/ui/select/register": ["../ui/dist/select-register.d.ts"],
+      "@kerfjs/ui/surface-scaffold/register": [
+        "../ui/dist/surface-scaffold-register.d.ts"
+      ],
       "@kerfjs/ui/*": ["../ui/dist/*"]
     }
   },
