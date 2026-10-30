@@ -20,11 +20,11 @@ import {
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { each } from 'kerfjs';
 import {
-  CircleHelp,
+  CircleQuestionMark,
+  Ellipsis,
   FileText,
   Folder,
   Inbox,
-  MoreHorizontal,
   Plus,
   Settings,
   Wrench,
@@ -166,7 +166,12 @@ export function ListDemo() {
                   <ListItem
                     action="disabled"
                     label="Unavailable"
-                    icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
+                    icon={
+                      <LucideIcon
+                        icon={CircleQuestionMark}
+                        name="circle-question-mark"
+                      />
+                    }
                     disabled
                   />
                   <DemoContentItem
@@ -201,9 +206,7 @@ export function ListDemo() {
             divider="both"
             trailingAction="log-settings"
             trailingActionLabel="Action row options"
-            trailingActionIcon={
-              <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
-            }
+            trailingActionIcon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
           />
         </List>
       </CatalogExample>
@@ -230,9 +233,7 @@ export function ListDemo() {
             icon={<LucideIcon icon={Folder} name="folder" />}
             trailingAction="log-settings"
             trailingActionLabel="Project Options"
-            trailingActionIcon={
-              <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
-            }
+            trailingActionIcon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
           />
           <ListItem
             action="log-settings"
@@ -278,7 +279,12 @@ export function ListDemo() {
             tone="info"
             title="Codex Hooks Are Not Installed"
             detail="Install them to sync agent activity."
-            icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
+            icon={
+              <LucideIcon
+                icon={CircleQuestionMark}
+                name="circle-question-mark"
+              />
+            }
           />
         </List>
         <List controlInsets="tb">

@@ -5,14 +5,14 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Text } from '@kerfjs/ui/text';
 import {
   Bell,
-  CircleHelp,
+  CircleQuestionMark,
   Folder,
   GripVertical,
   HardDrive,
   Inbox,
   Settings,
   ShieldCheck,
-  Trash2,
+  Trash,
   Wrench,
 } from 'lucide';
 
@@ -46,7 +46,7 @@ const iconTileSettings = [
   {
     id: 'tile-reset',
     label: 'Reset Workspace',
-    icon: <LucideIcon icon={Trash2} name="trash-2" />,
+    icon: <LucideIcon icon={Trash} name="trash" />,
     tone: 'danger',
   },
 ] as const;
@@ -267,7 +267,9 @@ export function ListItemDemo() {
           action="disabled"
           itemId="disabled"
           label="Unavailable Item"
-          icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
+          icon={
+            <LucideIcon icon={CircleQuestionMark} name="circle-question-mark" />
+          }
           disabled
         />
       </CatalogExample>
@@ -297,7 +299,9 @@ export function ListItemDemo() {
           action="disabled"
           itemId="disabled-placeholder"
           label="Unavailable Item"
-          icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
+          icon={
+            <LucideIcon icon={CircleQuestionMark} name="circle-question-mark" />
+          }
           disabled
           placeholder
         />

@@ -24357,7 +24357,7 @@
           "name": "icon",
           "type": { "kind": "content", "text": "SafeHtml" },
           "required": true,
-          "description": "Decorative trigger icon, typically a `MoreHorizontal` `LucideIcon`."
+          "description": "Decorative trigger icon, typically a `Ellipsis` `LucideIcon`."
         },
         {
           "name": "items",

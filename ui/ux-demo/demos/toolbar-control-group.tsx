@@ -23,12 +23,12 @@ import {
   ChevronLeft,
   ChevronRight,
   Columns3,
+  Ellipsis,
   ExternalLink,
   EyeOff,
   Flag,
   GitCompare,
   List,
-  MoreHorizontal,
   PanelLeftOpen,
   Pin,
   Settings,
@@ -263,7 +263,7 @@ export function ToolbarControlGroupDemo() {
               <ToolbarButton
                 ariaLabel="More Actions"
                 action="log-more"
-                icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
+                icon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
               />
             </ToolbarControlGroup>
           }
@@ -294,7 +294,7 @@ export function ToolbarControlGroupDemo() {
               />
               <PopupMenu
                 label="More Actions"
-                icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
+                icon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
                 items={[{ label: 'Archive', action: 'log-more' }]}
               />
             </ToolbarControlGroup>

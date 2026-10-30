@@ -1,10 +1,10 @@
-import { MoreHorizontal } from 'lucide';
+import { Ellipsis } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
 import { ListActionRow } from '../../src/components/collections/list-action-row/list-action-row.js';
 import { LucideIcon } from '../../src/components/media/lucide-icon/lucide-icon.js';
 
-const icon = <LucideIcon icon={MoreHorizontal} name="more-horizontal" />;
+const icon = <LucideIcon icon={Ellipsis} name="ellipsis" />;
 
 const renderRow = (html: unknown) => {
   document.body.innerHTML = String(html);

@@ -88,7 +88,7 @@ type ListActionRowTrailingAttributes = Readonly<
 export interface ListActionRowTrailingMenu {
   /** Accessible name of the icon-only menu trigger, such as `Actions for report.json`. */
   label: string;
-  /** Decorative trigger icon, typically a `MoreHorizontal` `LucideIcon`. */
+  /** Decorative trigger icon, typically a `Ellipsis` `LucideIcon`. */
   icon: SafeHtml;
   /** The menu's commands, headings, and dividers; items dispatch their own `data-action`s. */
   items: readonly PopupMenuEntry[];

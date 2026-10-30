@@ -43,7 +43,7 @@ import {
   Plus,
   Redo2,
   Save,
-  Trash2,
+  Trash,
   Undo2,
 } from 'lucide';
 
@@ -1538,7 +1538,7 @@ export function createEditor(options: EditorOptions) {
           rootAttributes={{ 'data-editor-open': JSON.stringify(at) }}
           trailingAction={FIELD_REMOVE_ITEM_ACTION}
           trailingActionLabel={`Remove ${label}`}
-          trailingActionIcon={<LucideIcon icon={Trash2} name="trash-2" />}
+          trailingActionIcon={<LucideIcon icon={Trash} name="trash" />}
           trailingActionAttributes={{ 'data-editor-item': JSON.stringify(at) }}
         />
       );
@@ -2046,7 +2046,7 @@ export function createEditor(options: EditorOptions) {
           data-action={DELETE_ACTION}
           disabled={!movable.remove}
         >
-          <LucideIcon icon={Trash2} name="trash-2" />
+          <LucideIcon icon={Trash} name="trash" />
         </button>
       </ToolbarControlGroup>
     );

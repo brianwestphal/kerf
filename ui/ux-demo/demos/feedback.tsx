@@ -6,7 +6,7 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Text } from '@kerfjs/ui/text';
-import { Check, CircleHelp, Search } from 'lucide';
+import { Check, CircleQuestionMark, Search } from 'lucide';
 
 import { bannerTone } from './state.js';
 
@@ -28,7 +28,10 @@ export function FeedbackDemo() {
             detail="State is expressed with text and color."
             icon={
               tone === 'danger' ? (
-                <LucideIcon icon={CircleHelp} name="circle-help" />
+                <LucideIcon
+                  icon={CircleQuestionMark}
+                  name="circle-question-mark"
+                />
               ) : (
                 <LucideIcon icon={Check} name="check" />
               )

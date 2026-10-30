@@ -16,12 +16,12 @@ import {
   Archive,
   ArrowDownAZ,
   Copy,
+  Ellipsis,
   Gavel,
-  MoreHorizontal,
   Plus,
   ThumbsDown,
   ThumbsUp,
-  Trash2,
+  Trash,
 } from 'lucide';
 
 import { popupContextAnchor, popupSortChoice } from './state.js';
@@ -68,7 +68,7 @@ export function PopupMenuDemo() {
             >
               <PopupMenu
                 text="Actions"
-                icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
+                icon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
                 items={[
                   { kind: 'heading', label: 'Ticket' },
                   {
@@ -85,7 +85,7 @@ export function PopupMenuDemo() {
                   {
                     label: 'Delete',
                     action: 'log-more',
-                    icon: <LucideIcon icon={Trash2} name="trash-2" />,
+                    icon: <LucideIcon icon={Trash} name="trash" />,
                     disabled: true,
                   },
                 ]}
@@ -102,7 +102,7 @@ export function PopupMenuDemo() {
             <ToolbarControlGroup single nestedDropdown menuInset="compact">
               <PopupMenu
                 label="More Actions"
-                icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
+                icon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
                 placement="bottom-end"
                 items={[
                   { label: 'Export', action: 'log-more' },
@@ -220,7 +220,7 @@ export function PopupMenuDemo() {
                 {
                   label: 'Other…',
                   action: 'log-decision',
-                  icon: <LucideIcon icon={MoreHorizontal} name="other" />,
+                  icon: <LucideIcon icon={Ellipsis} name="other" />,
                   attributes: { 'data-decision': 'other' },
                 },
               ],
@@ -243,7 +243,7 @@ export function PopupMenuDemo() {
             ariaLabel="Demand Actions"
             action="open-demand-actions"
             title="Demand Actions"
-            icon={<LucideIcon icon={MoreHorizontal} name="actions" />}
+            icon={<LucideIcon icon={Ellipsis} name="actions" />}
           />
         </ToolbarControlGroup>
         <PopupMenu

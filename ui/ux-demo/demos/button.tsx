@@ -12,7 +12,7 @@ import {
   PanelRight,
   Plus,
   RefreshCw,
-  Trash2,
+  Trash,
 } from 'lucide';
 
 import { buttonToggleConversationOpen } from './state.js';
@@ -107,7 +107,7 @@ export function ButtonDemo() {
           <Button
             tone="danger"
             emphasis="plain"
-            icon={<LucideIcon icon={Trash2} name="trash-2" size="s" />}
+            icon={<LucideIcon icon={Trash} name="trash" size="s" />}
             action="log-more"
           >
             Remove
@@ -181,7 +181,7 @@ export function ButtonDemo() {
             action="log-refresh"
           />
           <Button
-            icon={<LucideIcon icon={Trash2} name="trash-2" />}
+            icon={<LucideIcon icon={Trash} name="trash" />}
             ariaLabel="Delete"
             title="Delete the Selected Draft"
             tone="danger"

@@ -13,11 +13,11 @@ import {
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import {
   Bold,
-  CircleHelp,
+  CircleQuestionMark,
+  Ellipsis,
   FileText,
-  Filter,
+  Funnel,
   Italic,
-  MoreHorizontal,
   RefreshCw,
   Settings,
   SlidersHorizontal,
@@ -56,7 +56,7 @@ export function ToolbarDemo() {
                 <ToolbarButton
                   ariaLabel="Filter Workspace"
                   action="width-filter"
-                  icon={<LucideIcon icon={Filter} name="filter" />}
+                  icon={<LucideIcon icon={Funnel} name="funnel" />}
                 />
                 <ToolbarButton
                   ariaLabel="Workspace Settings"
@@ -72,9 +72,7 @@ export function ToolbarDemo() {
               >
                 <PopupMenu
                   label="More Workspace Actions"
-                  icon={
-                    <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
-                  }
+                  icon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
                   items={[
                     { label: 'Filter Workspace', action: 'width-filter' },
                     { label: 'Workspace Settings', action: 'log-settings' },
@@ -104,7 +102,7 @@ export function ToolbarDemo() {
               >
                 <ToolbarButton
                   ariaLabel="Leading Action"
-                  icon={<LucideIcon icon={Filter} name="filter" />}
+                  icon={<LucideIcon icon={Funnel} name="funnel" />}
                 />
               </ToolbarControlGroup>
               <ToolbarText
@@ -186,7 +184,7 @@ export function ToolbarDemo() {
               />
               <ToolbarButton
                 ariaLabel="Filter Activity"
-                icon={<LucideIcon icon={Filter} name="filter" />}
+                icon={<LucideIcon icon={Funnel} name="funnel" />}
               />
             </ToolbarControlGroup>
           }
@@ -222,7 +220,12 @@ export function ToolbarDemo() {
                   expandLabel="Open find"
                   clearAction="clear-toolbar-find"
                   editorAttributes={{ 'data-demo-toolbar-find': 'true' }}
-                  trailing={<LucideIcon icon={CircleHelp} name="circle-help" />}
+                  trailing={
+                    <LucideIcon
+                      icon={CircleQuestionMark}
+                      name="circle-question-mark"
+                    />
+                  }
                 />
               </ToolbarControlGroup>
             }
@@ -303,7 +306,7 @@ export function ToolbarDemo() {
             <ToolbarControlGroup appearance="borderless" single>
               <ToolbarButton
                 ariaLabel="Filters"
-                icon={<LucideIcon icon={Filter} name="filter" />}
+                icon={<LucideIcon icon={Funnel} name="funnel" />}
               />
             </ToolbarControlGroup>
           }
@@ -353,7 +356,7 @@ export function ToolbarDemo() {
               >
                 <ToolbarButton
                   ariaLabel="Filter Drafts"
-                  icon={<LucideIcon icon={Filter} name="filter" />}
+                  icon={<LucideIcon icon={Funnel} name="funnel" />}
                 />
                 <ToolbarButton
                   ariaLabel="Refresh Drafts"
@@ -363,9 +366,7 @@ export function ToolbarDemo() {
               <ToolbarControlGroup label="More Draft Actions" single>
                 <ToolbarButton
                   ariaLabel="More Draft Actions"
-                  icon={
-                    <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
-                  }
+                  icon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
                 />
               </ToolbarControlGroup>
             </>
@@ -437,7 +438,7 @@ export function ToolbarDemo() {
               >
                 <ToolbarButton
                   ariaLabel="More Actions"
-                  icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
+                  icon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
                 />
               </ToolbarControlGroup>
             </>

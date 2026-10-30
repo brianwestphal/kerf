@@ -3,7 +3,7 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
 import { StateBanner } from '@kerfjs/ui/state-banner';
-import { Check, CircleAlert, CircleHelp } from 'lucide';
+import { Check, CircleAlert, CircleQuestionMark } from 'lucide';
 
 export function StateBannerDemo() {
   const specimens = [
@@ -16,7 +16,7 @@ export function StateBannerDemo() {
   ] as const;
   const iconFor = (tone: (typeof specimens)[number]['tone']) =>
     tone === 'danger' ? (
-      <LucideIcon icon={CircleHelp} name="circle-help" />
+      <LucideIcon icon={CircleQuestionMark} name="circle-question-mark" />
     ) : (
       <LucideIcon icon={Check} name="check" />
     );
@@ -65,7 +65,9 @@ export function StateBannerDemo() {
           tone="warning"
           title="Migration Needs Review"
           detail="Check the imported projects before removing the old source."
-          icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
+          icon={
+            <LucideIcon icon={CircleQuestionMark} name="circle-question-mark" />
+          }
           copyLayout="stacked"
           actionPlacement="below"
           action={<Button size="compact">Review Projects</Button>}
@@ -108,7 +110,9 @@ export function StateBannerDemo() {
           tone="warning"
           title="Notifications Paused"
           detail="Desktop alerts resume when you reconnect."
-          icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
+          icon={
+            <LucideIcon icon={CircleQuestionMark} name="circle-question-mark" />
+          }
           copyLayout="stacked"
           action={<Button size="compact">Resume</Button>}
         />

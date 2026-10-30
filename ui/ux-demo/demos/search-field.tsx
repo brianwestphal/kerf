@@ -7,7 +7,7 @@ import { Row } from '@kerfjs/ui/row';
 import { SearchField } from '@kerfjs/ui/search-field';
 import { Text } from '@kerfjs/ui/text';
 import { TextField } from '@kerfjs/ui/text-field';
-import { CircleHelp, CircleX } from 'lucide';
+import { CircleQuestionMark, CircleX } from 'lucide';
 
 import {
   ADOPTION_SUGGESTIONS,
@@ -119,7 +119,12 @@ export function SearchFieldDemo() {
             tokens={searchFieldTokens.value}
             autofocus
             trailingAction={{
-              icon: <LucideIcon icon={CircleHelp} name="circle-help" />,
+              icon: (
+                <LucideIcon
+                  icon={CircleQuestionMark}
+                  name="circle-question-mark"
+                />
+              ),
               label: 'Search Help',
               action: 'toggle-search-field-help',
               id: 'catalog-search-field-help',

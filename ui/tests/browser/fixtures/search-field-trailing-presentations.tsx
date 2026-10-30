@@ -3,7 +3,7 @@ import { SearchField } from '@kerfjs/ui/search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
-import { CircleHelp } from 'lucide';
+import { CircleQuestionMark } from 'lucide';
 
 // One stateful help toggle per presentation, each with text so the clear
 // button renders beside it. No application CSS: the field owns the button.
@@ -11,7 +11,7 @@ const open = signal<string | null>(null);
 const root = document.querySelector<HTMLElement>('[data-app]')!;
 
 const help = (id: string) => ({
-  icon: <LucideIcon icon={CircleHelp} name="circle-help" />,
+  icon: <LucideIcon icon={CircleQuestionMark} name="circle-question-mark" />,
   label: 'Search Help',
   action: 'toggle-help',
   expanded: open.value === id,

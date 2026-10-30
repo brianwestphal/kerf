@@ -13,7 +13,7 @@ import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
-import { Filter, MoreHorizontal, RefreshCw } from 'lucide';
+import { Ellipsis, Funnel, RefreshCw } from 'lucide';
 
 import type { RecipeFactory, RecipePresentation } from './types.js';
 
@@ -93,7 +93,7 @@ export const createRecipe: RecipeFactory = (announce) => {
                   data-action="recipe-action"
                   data-recipe-command="filter"
                 >
-                  <LucideIcon icon={Filter} name="filter" />
+                  <LucideIcon icon={Funnel} name="funnel" />
                 </button>
                 <button
                   type="button"
@@ -111,7 +111,7 @@ export const createRecipe: RecipeFactory = (announce) => {
                   data-action="recipe-action"
                   data-recipe-command="more"
                 >
-                  <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+                  <LucideIcon icon={Ellipsis} name="ellipsis" />
                 </button>
               </ToolbarControlGroup>
             </>

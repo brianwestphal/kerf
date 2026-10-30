@@ -107,9 +107,7 @@ test('builds Button › Compact and Icons', async ({ page }) => {
   await choose(page, 'emphasis', 'plain');
   await select(page, /^LucideIcon/, 2);
   await page.locator('[data-editor-icon-place]').first().click();
-  // KF-NTK7YW: the demo's Trash2 is Lucide's alias of `trash`; searching
-  // the alias finds that icon under its own name.
-  await page.keyboard.type('trash 2');
+  await page.keyboard.type('trash');
   await page.locator('[data-editor-icon="trash"]').click();
   await expect(canvas(page).locator('.kui-button')).toHaveText([
     'New Item',
@@ -338,8 +336,7 @@ test('builds Toolbar › Compact Density', async ({ page }) => {
   await setText(page, 'ariaLabel', 'Filter Activity');
   await select(page, /^LucideIcon/, 1);
   await page.locator('[data-editor-icon-place]').first().click();
-  // KF-NTK7YW: Filter is Lucide's alias of `funnel`.
-  await page.keyboard.type('filter');
+  await page.keyboard.type('funnel');
   await page.locator('[data-editor-icon="funnel"]').click();
   await expect(
     canvas(page).locator('.kui-toolbar-control-group button'),

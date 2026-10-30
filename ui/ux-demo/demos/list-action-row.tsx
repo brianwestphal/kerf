@@ -5,14 +5,14 @@ import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import {
   BookOpen,
+  Ellipsis,
   Folder,
   GripVertical,
-  MoreHorizontal,
   Paintbrush,
   Pencil,
   Rocket,
   Terminal,
-  Trash2,
+  Trash,
 } from 'lucide';
 
 import { DemoListPopover } from './demo-list-popover.js';
@@ -68,7 +68,7 @@ const iconTileCommands = [
     id: 'tile-clean-build',
     label: 'Clean Build',
     command: 'npm run clean',
-    icon: <LucideIcon icon={Trash2} name="trash-2" />,
+    icon: <LucideIcon icon={Trash} name="trash" />,
     tile: { color: fillColor('#e5484d') },
   },
   {
@@ -97,9 +97,7 @@ export function ListActionRowDemo() {
           itemId="status-action"
           trailingAction="open-list-action-row-actions"
           trailingActionLabel="Actions for generated report"
-          trailingActionIcon={
-            <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
-          }
+          trailingActionIcon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
           trailingActionVisibility="interaction"
           rootAttributes={{ 'data-demo-action-row': 'status' }}
         />
@@ -116,7 +114,7 @@ export function ListActionRowDemo() {
           trailingActionVisibility="interaction"
           trailingMenu={{
             label: 'Actions for Run Tests',
-            icon: <LucideIcon icon={MoreHorizontal} name="more-horizontal" />,
+            icon: <LucideIcon icon={Ellipsis} name="ellipsis" />,
             items: [
               {
                 label: 'Edit',
@@ -128,7 +126,7 @@ export function ListActionRowDemo() {
                 label: 'Delete',
                 action: 'delete-list-action-row',
                 tone: 'danger',
-                icon: <LucideIcon icon={Trash2} name="trash-2" />,
+                icon: <LucideIcon icon={Trash} name="trash" />,
               },
             ],
           }}
@@ -145,9 +143,7 @@ export function ListActionRowDemo() {
           accessibleLabel="Select src/main.ts"
           trailingAction="open-list-action-row-actions"
           trailingActionLabel="Actions for src/main.ts"
-          trailingActionIcon={
-            <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
-          }
+          trailingActionIcon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
           rootAttributes={{ 'data-demo-action-row': 'selected' }}
           trailingActionAttributes={{
             popoverTarget: 'list-action-row-popover',
@@ -169,9 +165,7 @@ export function ListActionRowDemo() {
           multiline
           trailingAction="open-list-action-row-actions"
           trailingActionLabel="Actions for long file"
-          trailingActionIcon={
-            <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
-          }
+          trailingActionIcon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
           rootAttributes={{ 'data-demo-action-row': 'multiline' }}
         />
       </CatalogExample>
@@ -184,9 +178,7 @@ export function ListActionRowDemo() {
           disabled
           trailingAction="open-list-action-row-actions"
           trailingActionLabel="Actions for unavailable primary"
-          trailingActionIcon={
-            <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
-          }
+          trailingActionIcon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
           rootAttributes={{ 'data-demo-action-row': 'disabled-primary' }}
         />
       </CatalogExample>
@@ -198,9 +190,7 @@ export function ListActionRowDemo() {
           selected={menuActionCurrent.value === 'disabled-trailing'}
           trailingAction="open-list-action-row-actions"
           trailingActionLabel="Unavailable actions"
-          trailingActionIcon={
-            <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
-          }
+          trailingActionIcon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
           trailingActionDisabled
           trailingActionTitle="Actions unavailable"
           rootAttributes={{ 'data-demo-action-row': 'disabled-trailing' }}
@@ -218,9 +208,7 @@ export function ListActionRowDemo() {
           placeholder
           trailingAction="open-list-action-row-actions"
           trailingActionLabel="Actions"
-          trailingActionIcon={
-            <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
-          }
+          trailingActionIcon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
           rootAttributes={{ 'data-demo-action-row': 'placeholder' }}
         />
       </CatalogExample>
@@ -266,7 +254,7 @@ export function ListActionRowDemo() {
               trailingAction="open-list-action-row-actions"
               trailingActionLabel={`Actions for ${command.label}`}
               trailingActionIcon={
-                <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+                <LucideIcon icon={Ellipsis} name="ellipsis" />
               }
               trailingActionVisibility="interaction"
             />
@@ -290,7 +278,7 @@ export function ListActionRowDemo() {
               trailingAction="open-list-action-row-actions"
               trailingActionLabel={`Actions for ${file.label}`}
               trailingActionIcon={
-                <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+                <LucideIcon icon={Ellipsis} name="ellipsis" />
               }
               trailingActionVisibility="interaction"
             />
@@ -307,9 +295,7 @@ export function ListActionRowDemo() {
             dropPosition="before"
             trailingAction="open-list-action-row-actions"
             trailingActionLabel="Actions for the row below the drop"
-            trailingActionIcon={
-              <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
-            }
+            trailingActionIcon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
           />
           <ListActionRow
             label="Row Being Dragged"
@@ -319,9 +305,7 @@ export function ListActionRowDemo() {
             dragging
             trailingAction="open-list-action-row-actions"
             trailingActionLabel="Actions for the dragged row"
-            trailingActionIcon={
-              <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
-            }
+            trailingActionIcon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
           />
           <ListActionRow
             label="Drops Below This Row"
@@ -331,9 +315,7 @@ export function ListActionRowDemo() {
             dropPosition="after"
             trailingAction="open-list-action-row-actions"
             trailingActionLabel="Actions for the row above the drop"
-            trailingActionIcon={
-              <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
-            }
+            trailingActionIcon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
           />
         </List>
       </CatalogExample>

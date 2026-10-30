@@ -13,14 +13,7 @@ import {
   ToolbarButton,
   ToolbarControlGroup,
 } from '@kerfjs/ui/toolbar-control-group';
-import {
-  Bell,
-  Funnel,
-  MoreHorizontal,
-  Pin,
-  SlidersHorizontal,
-  Wrench,
-} from 'lucide';
+import { Bell, Ellipsis, Funnel, Pin, SlidersHorizontal, Wrench } from 'lucide';
 
 import {
   itemTypes,
@@ -196,7 +189,7 @@ export function SelectDemo() {
               />
               <PopupMenu
                 label="More Actions"
-                icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
+                icon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
                 items={[{ label: 'Archive', action: 'log-more' }]}
               />
             </ToolbarControlGroup>
