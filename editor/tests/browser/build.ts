@@ -171,3 +171,7 @@ export async function pickIcon(page: Page, row: Locator, glyph: string) {
   await page.keyboard.type(glyph.replaceAll('-', ' '));
   await page.locator(`[data-editor-icon="${glyph}"]`).click();
 }
+
+/** An empty Toolbar zone's placeholder on the canvas, by its zone label. */
+export const zoneSpot = (page: Page, label: string) =>
+  canvas(page).locator('[data-editor-empty]', { hasText: label }).first();

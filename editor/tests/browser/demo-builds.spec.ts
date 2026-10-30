@@ -21,6 +21,7 @@ import {
   setText,
   turnFieldOn,
   turnOn,
+  zoneSpot,
 } from './build.js';
 
 test.beforeEach(async ({ page }) => {
@@ -300,6 +301,72 @@ test('builds Select › Rendering Balance', async ({ page }) => {
                 ...(index === 2 ? { separatorBefore: true } : {}),
               })),
             }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+// KF-5ZEYKP, KF-7BB55F: a toolbar's native group buttons are ToolbarButtons.
+test('builds Toolbar › Compact Density', async ({ page }) => {
+  await dragComponent(page, 'Toolbar', () => emptySpot(page));
+  await dragComponent(page, 'ToolbarText', () => zoneSpot(page, 'Leading'));
+  await select(page, /^Toolbar(?!Text)/);
+  await dragComponent(page, 'ToolbarControlGroup', () =>
+    zoneSpot(page, 'Trailing'),
+  );
+  await select(page, /^Toolbar(?!Text|Control|Button)/);
+  await setText(page, 'label', 'Recent Activity');
+  await choose(page, 'density', 'compact');
+  await select(page, /^ToolbarText/);
+  await setText(page, 'text', 'Recent Activity');
+  await select(page, /^ToolbarControlGroup/);
+  await setText(page, 'label', 'Activity Actions');
+  await choose(page, 'size', 'compact');
+  await choose(page, 'content', 'icon');
+  // The seeded ToolbarButton becomes the first icon action, then a copy.
+  await select(page, /^ToolbarButton/);
+  await setText(page, 'ariaLabel', 'Refresh Activity');
+  await setText(page, 'children', '');
+  await addIcon(page, 'icon', 'refresh-cw');
+  await select(page, /^ToolbarButton/);
+  await page.keyboard.press('ControlOrMeta+d');
+  await select(page, /^ToolbarButton/, 1);
+  await setText(page, 'ariaLabel', 'Filter Activity');
+  await select(page, /^LucideIcon/, 1);
+  await page.locator('[data-editor-icon-place]').first().click();
+  await page.keyboard.type('filter');
+  await page.locator('[data-editor-icon="filter"]').click();
+  await expect(
+    canvas(page).locator('.kui-toolbar-control-group button'),
+  ).toHaveCount(2);
+  const action = (ariaLabel: string, glyph: string) =>
+    node(
+      'toolbar-control-group#ToolbarButton',
+      { ariaLabel },
+      {
+        icon: [icon(glyph)],
+      },
+    );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'toolbar',
+        { label: 'Recent Activity', density: 'compact' },
+        {
+          leading: [node('toolbar-text', { text: 'Recent Activity' })],
+          trailing: [
+            node(
+              'toolbar-control-group',
+              { label: 'Activity Actions', size: 'compact', content: 'icon' },
+              {
+                children: [
+                  action('Refresh Activity', 'refresh-cw'),
+                  action('Filter Activity', 'filter'),
+                ],
+              },
+            ),
           ],
         },
       ),
