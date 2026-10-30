@@ -14,6 +14,7 @@ import {
   lucideIconName,
   matchIcons,
 } from '../../../src/editor/model/icons.js';
+import { loadScaledTimeout } from '../../helpers/load-scaled-timeout.js';
 import { createEditor } from './kerf-catalog.js';
 
 describe('icon names and search', () => {
@@ -116,77 +117,86 @@ function search(root: HTMLElement, text: string) {
 const dialog = (root: HTMLElement) =>
   root.querySelector<HTMLDialogElement>('#editor-icon-dialog')!;
 
-describe('the icon picker (KF-VYRDDQ)', () => {
-  it('shows a LucideIcon’s icon as a row, picks another, and removes it', () => {
-    const { root, props } = added('@kerfjs/ui:lucide-icon');
-    const row = root.querySelector<HTMLElement>(
-      `[data-editor-icon-place='{"prop":"icon","path":[]}']`,
-    )!;
-    expect(row.textContent).toContain('circle');
-    expect(root.querySelector('[data-editor-prop="icon"]')).toBeNull();
-    click(root, `[data-editor-icon-place='{"prop":"icon","path":[]}']`);
-    expect(dialog(root).open).toBe(true);
-    // Unsearched, it shows the first icons and says how many there are.
-    expect(dialog(root).textContent).toMatch(/Showing \d+ of \d+ icons/);
-    // The chosen icon reads as pressed.
-    search(root, 'circle');
-    const circle = dialog(root).querySelector('[data-editor-icon="circle"]')!;
-    expect(
-      circle.getAttribute('aria-pressed') ??
-        circle.querySelector('[aria-pressed]')?.getAttribute('aria-pressed'),
-    ).toBe('true');
-    search(root, 'chevron right');
-    expect(
-      [...dialog(root).querySelectorAll<HTMLElement>('[data-editor-icon]')].map(
-        (button) => button.dataset.editorIcon,
-      ),
-    ).toContain('chevron-right');
-    // Clear empties the search and shows every icon again.
-    click(root, '[data-action="editor-clear-icon-search"]');
-    expect(dialog(root).textContent).toMatch(/Showing \d+ of \d+ icons/);
-    // A name only one icon matches reads in the singular.
-    search(root, 'accessibility');
-    expect(dialog(root).textContent).toContain('1 icon');
-    search(root, 'chevron right');
-    click(root, '[data-editor-icon="chevron-right"]');
-    expect(props().icon).toEqual({ $icon: 'chevron-right' });
-    expect(dialog(root).open).toBe(false);
-    // Closing the dialog ends the pick, so Remove acts on a fresh open.
-    dialog(root).dispatchEvent(new Event('close'));
-    click(root, `[data-editor-icon-place='{"prop":"icon","path":[]}']`);
-    search(root, 'circle');
-    expect(dialog(root).textContent).toContain('Remove icon');
-    click(root, '[data-action="editor-remove-icon"]');
-    expect(props()).not.toHaveProperty('icon');
-  });
-
-  it('shows a name Lucide does not have without a glyph', () => {
-    const { root, editor, id } = added('@kerfjs/ui:lucide-icon');
-    editor.document.value = setProp(editor.document.value, id, 'icon', {
-      $icon: 'no-such-icon',
+// Each search re-renders the whole editor with a grid of icons, which runs
+// past vitest's default timeout when the suite runs in parallel.
+describe(
+  'the icon picker (KF-VYRDDQ)',
+  { timeout: loadScaledTimeout(15_000) },
+  () => {
+    it('shows a LucideIcon’s icon as a row, picks another, and removes it', () => {
+      const { root, props } = added('@kerfjs/ui:lucide-icon');
+      const row = root.querySelector<HTMLElement>(
+        `[data-editor-icon-place='{"prop":"icon","path":[]}']`,
+      )!;
+      expect(row.textContent).toContain('circle');
+      expect(root.querySelector('[data-editor-prop="icon"]')).toBeNull();
+      click(root, `[data-editor-icon-place='{"prop":"icon","path":[]}']`);
+      expect(dialog(root).open).toBe(true);
+      // Unsearched, it shows the first icons and says how many there are.
+      expect(dialog(root).textContent).toMatch(/Showing \d+ of \d+ icons/);
+      // The chosen icon reads as pressed.
+      search(root, 'circle');
+      const circle = dialog(root).querySelector('[data-editor-icon="circle"]')!;
+      expect(
+        circle.getAttribute('aria-pressed') ??
+          circle.querySelector('[aria-pressed]')?.getAttribute('aria-pressed'),
+      ).toBe('true');
+      search(root, 'chevron right');
+      expect(
+        [
+          ...dialog(root).querySelectorAll<HTMLElement>('[data-editor-icon]'),
+        ].map((button) => button.dataset.editorIcon),
+      ).toContain('chevron-right');
+      // Clear empties the search and shows every icon again.
+      click(root, '[data-action="editor-clear-icon-search"]');
+      expect(dialog(root).textContent).toMatch(/Showing \d+ of \d+ icons/);
+      // A name only one icon matches reads in the singular.
+      search(root, 'accessibility');
+      expect(dialog(root).textContent).toContain('1 icon');
+      search(root, 'chevron right');
+      click(root, '[data-editor-icon="chevron-right"]');
+      expect(props().icon).toEqual({ $icon: 'chevron-right' });
+      expect(dialog(root).open).toBe(false);
+      // Closing the dialog ends the pick, so Remove acts on a fresh open.
+      dialog(root).dispatchEvent(new Event('close'));
+      click(root, `[data-editor-icon-place='{"prop":"icon","path":[]}']`);
+      search(root, 'circle');
+      expect(dialog(root).textContent).toContain('Remove icon');
+      click(root, '[data-action="editor-remove-icon"]');
+      expect(props()).not.toHaveProperty('icon');
     });
-    const row = root.querySelector<HTMLElement>(
-      `[data-editor-icon-place='{"prop":"icon","path":[]}']`,
-    )!;
-    expect(row.textContent).toContain('no-such-icon');
-    expect(row.querySelector('svg[data-lucide="no-such-icon"]')).toBeNull();
-  });
 
-  it('picks the icon of a Select choice from its form', () => {
-    const { root, props } = added('@kerfjs/ui:select');
-    // Open the first choice's form, as the list editor will.
-    const opener = document.createElement('button');
-    opener.dataset.action = 'editor-open-field';
-    opener.dataset.editorOpen = JSON.stringify({ prop: 'choices', path: [0] });
-    root.append(opener);
-    opener.click();
-    const place = `[data-editor-icon-place='{"prop":"choices","path":[0,"icon"]}']`;
-    expect(root.querySelector(place)!.textContent).toContain('Not set');
-    click(root, place);
-    search(root, 'star');
-    click(root, '[data-editor-icon="star"]');
-    expect((props().choices as { icon?: unknown }[])[0]!.icon).toEqual({
-      $icon: 'star',
+    it('shows a name Lucide does not have without a glyph', () => {
+      const { root, editor, id } = added('@kerfjs/ui:lucide-icon');
+      editor.document.value = setProp(editor.document.value, id, 'icon', {
+        $icon: 'no-such-icon',
+      });
+      const row = root.querySelector<HTMLElement>(
+        `[data-editor-icon-place='{"prop":"icon","path":[]}']`,
+      )!;
+      expect(row.textContent).toContain('no-such-icon');
+      expect(row.querySelector('svg[data-lucide="no-such-icon"]')).toBeNull();
     });
-  });
-});
+
+    it('picks the icon of a Select choice from its form', () => {
+      const { root, props } = added('@kerfjs/ui:select');
+      // Open the first choice's form, as the list editor will.
+      const opener = document.createElement('button');
+      opener.dataset.action = 'editor-open-field';
+      opener.dataset.editorOpen = JSON.stringify({
+        prop: 'choices',
+        path: [0],
+      });
+      root.append(opener);
+      opener.click();
+      const place = `[data-editor-icon-place='{"prop":"choices","path":[0,"icon"]}']`;
+      expect(root.querySelector(place)!.textContent).toContain('Not set');
+      click(root, place);
+      search(root, 'star');
+      click(root, '[data-editor-icon="star"]');
+      expect((props().choices as { icon?: unknown }[])[0]!.icon).toEqual({
+        $icon: 'star',
+      });
+    });
+  },
+);

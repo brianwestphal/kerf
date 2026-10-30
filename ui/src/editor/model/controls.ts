@@ -15,7 +15,13 @@ import {
   resolveType,
   type SlotNamer,
 } from './examples.js';
-import { enumSetValues, fieldEditorKind } from './fields.js';
+import {
+  enumSetValues,
+  fieldEditorKind,
+  memberFor,
+  memberLabels,
+  objectFields,
+} from './fields.js';
 import type { InspectorProp } from './inspector.js';
 
 export type ControlKind =
@@ -149,14 +155,26 @@ export function choiceOptions(
     seen.add(json);
     options.push({ value: json, label: String(value) });
   }
-  // Two open members of one kind (two object shapes) are numbered apart.
+  // Object members are named by their type ("Static panel"), and other
+  // open members by their kind.
+  const objects = open.filter((option) => option.label === OPEN_LABELS.object);
+  const names = memberLabels(
+    objects.map((option) => option.member!),
+    definitions,
+    'Custom',
+  );
   open.forEach((option, index) => {
-    const twin = open.filter((other) => other.label === option.label).length;
+    const at = objects.indexOf(option);
     options.push({
       ...option,
       value: `#${index}`,
+      // Members no name tells apart (two inline shapes) are numbered.
       label:
-        twin > 1 ? option.label.replace('…', ` ${index + 1}…`) : option.label,
+        at < 0 || objects.length < 2
+          ? option.label
+          : names.filter((name) => name === names[at]).length > 1
+            ? `${names[at]} ${at + 1}…`
+            : `${names[at]}…`,
     });
   });
   return options;
@@ -167,7 +185,17 @@ function openOptionFor(
   options: readonly ChoiceOption[],
   value: ViewValue,
   definitions: Definitions,
+  type: ViewType,
 ): ChoiceOption | undefined {
+  // An object holds the member it fits (a panel with `navStack` is a
+  // navigation panel; KF-907BXY).
+  if (isDynamic(value)) {
+    const member = memberFor(type, definitions, value);
+    const exact = options.find(
+      (option) => option.member && option.member === member,
+    );
+    if (exact) return exact;
+  }
   const kind = Array.isArray(value)
     ? 'array'
     : value === null
@@ -317,7 +345,12 @@ export function controlFor(
     const json = JSON.stringify(value);
     if (options.some((option) => option.value === json))
       return { kind: 'choice', options, raw: json };
-    const open = openOptionFor(options, value, definitions);
+    const open = openOptionFor(
+      options,
+      value,
+      definitions,
+      prop.type as ViewType,
+    );
     return open
       ? { kind: 'choice', options, raw: open.value, member: open.member }
       : { kind: 'readonly', raw: '' };
@@ -394,8 +427,18 @@ export function valueFromControl(
   raw: string | boolean,
   /** css: the builders the prop accepts as its outermost call. */
   helpers?: readonly string[],
-  /** list: the prop's type, and the table its `ref`s name. */
-  type?: { readonly type: ViewType; readonly definitions: Definitions },
+  /**
+   * list, choice: the prop's type and the table its `ref`s name; choice
+   * also takes the prop's name and a slot namer for a new member's
+   * placeholder, and the value it replaces.
+   */
+  type?: {
+    readonly type: ViewType;
+    readonly definitions: Definitions;
+    readonly name?: string;
+    readonly slot?: SlotNamer;
+    readonly current?: ViewValue;
+  },
 ): { readonly value: ViewValue | undefined } | { readonly error: string } {
   switch (kind) {
     case 'list': {
@@ -431,7 +474,32 @@ export function valueFromControl(
       )!.member!;
       // Text, numbers, and lists always have one; an object may need a
       // value no placeholder stands for (a color).
-      return { value: exampleValue(member, type!.definitions, 'value') ?? {} };
+      const start =
+        exampleValue(
+          member,
+          type!.definitions,
+          type!.name ?? 'value',
+          type!.slot,
+        ) ?? {};
+      // Switching between object members keeps the fields both share
+      // (a panel's label and size; KF-907BXY).
+      const current = type!.current;
+      if (
+        !isDynamic(current) ||
+        isBinding(current) ||
+        (resolveType(member, type!.definitions) as { kind: string }).kind !==
+          'object'
+      )
+        return { value: start };
+      const kept = Object.fromEntries(
+        objectFields(member, type!.definitions)
+          .filter((field) => field.name in (current as object))
+          .map((field) => [
+            field.name,
+            (current as Record<string, ViewValue>)[field.name]!,
+          ]),
+      );
+      return { value: { ...(start as object), ...kept } as ViewValue };
     }
     case 'switch':
       return { value: raw === true };

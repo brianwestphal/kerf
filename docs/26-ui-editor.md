@@ -230,7 +230,18 @@ an option of its own ("Text…", "Number…", "List…", "Custom…") that start
 from a placeholder and shows that member's control or form beneath the
 Select. A required lone literal is a fixed discriminant and stays
 read-only, as does a union with a member no control edits (rendered
-content). A size prop, a union of a
+content).
+
+A union of object types (KF-907BXY: object members), such as a Workbench's
+`leftRail`, `rightRail`, or `bottomDrawer` (a static or a navigation panel),
+names each member by its type less the words the members share ("Static
+panel…", "Navigation panel…"). Choosing one starts it from its placeholder
+(a static panel's `content` as an item slot named after the prop,
+`leftRailContent`) and keeps the fields the old member shared with it (a
+panel's `label` and `size`), and its Configure row edits that member's
+form. A member is told from a value by the fields it forbids: a panel with
+`navStack` is a navigation panel. A form leaves those forbidden (`never`)
+fields out. A size prop, a union of a
 css-value with keywords (a List, Row, or Grid `gap`, a layout `flex`, a
 Spacer or Skeleton `width`/`height`, a dialog `height` of `"viewport"`),
 gets a Select of its keywords, with spacing tokens in scale order (`none`,

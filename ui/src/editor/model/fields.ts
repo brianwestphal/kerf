@@ -141,12 +141,15 @@ export function objectFields(
 ): readonly InspectorProp[] {
   const resolved = shape(type, definitions);
   if (!isFormObject(resolved)) return [];
-  return resolved!.props!.map((field) => ({
-    name: field.name,
-    type: field.type as InspectorProp['type'],
-    required: field.required === true,
-    ...(field.iconSource ? { iconSource: field.iconSource } : {}),
-  }));
+  // A field the type forbids (`never`) is no field to edit (KF-907BXY).
+  return resolved!
+    .props!.filter((field) => shape(field.type, definitions)?.kind !== 'never')
+    .map((field) => ({
+      name: field.name,
+      type: field.type as InspectorProp['type'],
+      required: field.required === true,
+      ...(field.iconSource ? { iconSource: field.iconSource } : {}),
+    }));
 }
 
 /**
@@ -249,6 +252,9 @@ export function memberFor(
     objects.find((member) =>
       shape(member, definitions)!.props!.every((field) => {
         const literal = shape(field.type, definitions);
+        // A field the member forbids (`never`) rules it out when set: a
+        // static Workbench panel has no `navStack` (KF-907BXY).
+        if (literal?.kind === 'never') return fields[field.name] === undefined;
         if (literal?.kind !== 'literal') return true;
         const own = fields[field.name];
         return own === undefined
@@ -354,17 +360,17 @@ const memberName = (member: ViewType): string | undefined => {
  * member's name shares (`PopupMenuHeading` → "Heading"), else after the
  * list (`suggestions` → "Suggestion").
  */
-export function listMembers(
-  type: ViewType | undefined,
+/**
+ * Labels for a union's object members (KF-907BXY): a text literal field
+ * each carries (`kind: "divider"` → "Divider"), else its type name less the
+ * words every member's name shares (`WorkbenchStaticPanel` → "Static
+ * panel"), else `fallback`.
+ */
+export function memberLabels(
+  members: readonly ViewType[],
   definitions: Definitions,
-  /** The list's prop or field name, for an otherwise unnamed member. */
-  name = 'items',
-): readonly ListMember[] {
-  const items = shape(type, definitions)?.items;
-  const union = shape(items, definitions);
-  if (union?.kind !== 'union')
-    return items ? [{ label: singular(name), type: items }] : [];
-  const members = unionMembers(union, definitions);
+  fallback: string,
+): string[] {
   const names = members.map((member) => {
     const named = memberName(member);
     return named ? camelWords(named) : undefined;
@@ -379,20 +385,34 @@ export function listMembers(
     shared += 1;
   return members.map((member, index) => {
     const resolved = shape(member, definitions)!;
-    if (resolved.kind === 'string') return { label: 'Text', type: member };
-    const literal = resolved
-      .props!.map(
+    if (resolved.kind === 'string') return 'Text';
+    const literal = (resolved.props ?? [])
+      .map(
         (field) =>
           (shape(field.type, definitions) as { value?: unknown }).value,
       )
       .find((value) => typeof value === 'string') as string | undefined;
-    const words = names[index]?.slice(shared).join(' ');
-    const label = literal ?? words ?? singular(name);
-    return {
-      label: label.charAt(0).toUpperCase() + label.slice(1).toLowerCase(),
-      type: member,
-    };
+    const label = literal ?? names[index]?.slice(shared).join(' ') ?? fallback;
+    return label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
   });
+}
+
+export function listMembers(
+  type: ViewType | undefined,
+  definitions: Definitions,
+  /** The list's prop or field name, for an otherwise unnamed member. */
+  name = 'items',
+): readonly ListMember[] {
+  const items = shape(type, definitions)?.items;
+  const union = shape(items, definitions);
+  if (union?.kind !== 'union')
+    return items ? [{ label: singular(name), type: items }] : [];
+  const members = unionMembers(union, definitions);
+  const labels = memberLabels(members, definitions, singular(name));
+  return members.map((member, index) => ({
+    label: labels[index]!,
+    type: member,
+  }));
 }
 
 /**

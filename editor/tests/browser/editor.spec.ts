@@ -1307,3 +1307,31 @@ test('sets a LucideIcon’s size from a keyword, then a number', async ({
     animations: 'disabled',
   });
 });
+
+// KF-907BXY: a Workbench rail picks its kind, then edits that kind's form.
+test('gives a Workbench a static left rail', async ({ page }, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await workbenchRoot(page);
+  const kind = page.locator(
+    '[data-editor-prop="leftRail"][data-editor-kind="choice"]',
+  );
+  await kind.click();
+  await page.getByRole('option', { name: 'Static panel…' }).click();
+  const canvas = page.locator('[data-editor-canvas]');
+  await expect(canvas).toContainText('leftRailContent slot');
+  await page.getByRole('button', { name: 'Configure leftRail' }).click();
+  const label = page
+    .locator(`[data-editor-field='{"prop":"leftRail","path":["label"]}']`)
+    .getByRole('textbox');
+  await label.fill('Folders');
+  await label.press('Enter');
+  await expect(canvas.locator('[data-workbench-rail="left"]')).toHaveAttribute(
+    'aria-label',
+    'Folders',
+  );
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-907bxy-workbench-left-rail-1440.png'),
+    animations: 'disabled',
+  });
+});

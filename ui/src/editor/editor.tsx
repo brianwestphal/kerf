@@ -2733,6 +2733,11 @@ export function createEditor(options: EditorOptions) {
     const result = valueFromControl(kind, raw, prop.cssValue?.helpers, {
       type: prop.type as never,
       definitions: definitionsOf(node.type),
+      // A typed choice's new member names its slots and keeps the fields it
+      // shares with the old one (KF-907BXY).
+      name,
+      slot: slotNamer(usedSlots(doc.value)),
+      current: node.props?.[name] as ViewValue | undefined,
     });
     if ('error' in result) {
       fieldErrors.value = { ...fieldErrors.value, [name]: result.error };
