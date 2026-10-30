@@ -1,5 +1,9 @@
 // KF-VYRDDQ: icon data picks a Lucide icon in a searchable dialog that
 // writes `{ $icon: name }`, at the top level and inside an object form.
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { dirname, resolve } from 'node:path';
+
 import { lucideExportName } from '@kerfjs/ui/view';
 import { mount } from 'kerfjs';
 import { icons } from 'lucide';
@@ -11,6 +15,7 @@ import { setProp } from '../../../src/editor/model/edits.js';
 import {
   followingIconName,
   ICON_RESULTS,
+  iconAliases,
   iconNameEdit,
   iconNames,
   lucideIconName,
@@ -19,16 +24,61 @@ import {
 import { loadScaledTimeout } from '../../helpers/load-scaled-timeout.js';
 import { createEditor } from './kerf-catalog.js';
 
+const require = createRequire(import.meta.url);
+
 describe('icon names and search', () => {
-  it('names every Lucide export by a name that round-trips to it', () => {
+  it('names a Lucide export by a name that round-trips to it', () => {
     expect(lucideIconName('ChevronRight')).toBe('chevron-right');
     expect(lucideIconName('ArrowDown01')).toBe('arrow-down-0-1');
-    expect(lucideIconName('ArrowDownAZ')).toBe('arrowDownAZ');
+    expect(lucideIconName('ArrowDownAZ')).toBe('arrow-down-a-z');
+    expect(lucideIconName('Axis3D')).toBe('axis-3-d');
+    expect(lucideIconName('CalendarX2')).toBe('calendar-x-2');
+    // A name that does not split back the same way keeps its own spelling.
+    expect(lucideIconName('aB')).toBe('aB');
+  });
+
+  // KF-NTK7YW: one tile per icon, under Lucide's own name. The installed
+  // lucide's iconsAndAliases.mjs exports each icon from
+  // `./icons/<canonical-name>.mjs`, so the names must be exactly those; a
+  // lucide bump that changes them fails here until the table is synced.
+  it('offers each icon once, by its canonical Lucide name', () => {
+    const lucide = dirname(require.resolve('lucide/package.json'));
+    const canonical = [
+      ...readFileSync(
+        resolve(lucide, 'dist/esm/iconsAndAliases.mjs'),
+        'utf8',
+      ).matchAll(/from '\.\/icons\/([\w-]+)\.mjs'/g),
+    ].map(([, file]) => file!);
     const names = iconNames(icons);
-    expect(names).toHaveLength(Object.keys(icons).length);
-    for (const name of names)
-      expect(icons).toHaveProperty(lucideExportName(name));
-    expect([...names].sort()).toEqual(names);
+    expect(names).toEqual([...canonical].sort());
+    expect(
+      new Set(names.map((name) => icons[lucideExportName(name) as never])),
+    ).toHaveProperty('size', names.length);
+    expect(names).toContain('arrow-down-a-z');
+    expect(names).not.toContain('arrow-down-az');
+    expect(names).toContain('circle-alert');
+    expect(names).not.toContain('alert-circle');
+  });
+
+  // KF-NTK7YW: an alias still finds its icon, which keeps its own name.
+  it('finds an icon by its aliases, best match first', () => {
+    const aliases = iconAliases(icons);
+    expect(aliases.get('funnel')).toContain('filter');
+    expect(aliases.get('trash')).toContain('trash-2');
+    expect(aliases.get('arrow-down-a-z')).toEqual(['arrow-down-az']);
+    const names = iconNames(icons);
+    expect(matchIcons(names, 'filter', 3, aliases).names[0]).toBe('funnel');
+    expect(matchIcons(names, 'trash 2', 3, aliases).names[0]).toBe('trash');
+    expect(matchIcons(names, 'trash 2').names).not.toContain('trash');
+    // An alias of an icon this lucide does not have is left out.
+    expect(iconAliases({ ArrowDownAz: {} }).size).toBe(0);
+  });
+
+  it('names an alias a newer lucide adds once, by the icon first named', () => {
+    const icon = {};
+    expect(iconNames({ ZebraNew: icon, ZebraOld: icon })).toEqual([
+      'zebra-new',
+    ]);
   });
 
   it('matches words in any order and caps the results', () => {

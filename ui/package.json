@@ -731,6 +731,7 @@
     "check:format": "prettier --check . --ignore-unknown",
     "catalog:sync": "node scripts/sync-component-catalog.mjs && node scripts/sync-component-composition.mjs && node scripts/sync-component-docs.mjs",
     "props:sync": "npm run build && node scripts/sync-component-props.mjs",
+    "lucide-aliases:sync": "node scripts/sync-lucide-aliases.mjs",
     "check:props": "node scripts/sync-component-props.mjs --check",
     "check:view-bundle": "node scripts/check-view-bundle.mjs",
     "composition:sync": "node scripts/sync-component-composition.mjs && node scripts/sync-component-docs.mjs",

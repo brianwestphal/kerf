@@ -107,8 +107,10 @@ test('builds Button › Compact and Icons', async ({ page }) => {
   await choose(page, 'emphasis', 'plain');
   await select(page, /^LucideIcon/, 2);
   await page.locator('[data-editor-icon-place]').first().click();
+  // KF-NTK7YW: the demo's Trash2 is Lucide's alias of `trash`; searching
+  // the alias finds that icon under its own name.
   await page.keyboard.type('trash 2');
-  await page.locator('[data-editor-icon="trash-2"]').click();
+  await page.locator('[data-editor-icon="trash"]').click();
   await expect(canvas(page).locator('.kui-button')).toHaveText([
     'New Item',
     'Download',
@@ -140,7 +142,7 @@ test('builds Button › Compact and Icons', async ({ page }) => {
                 emphasis: 'plain',
                 action: 'log-more',
               },
-              withIcon('trash-2'),
+              withIcon('trash'),
             ),
           ],
         },
@@ -336,8 +338,9 @@ test('builds Toolbar › Compact Density', async ({ page }) => {
   await setText(page, 'ariaLabel', 'Filter Activity');
   await select(page, /^LucideIcon/, 1);
   await page.locator('[data-editor-icon-place]').first().click();
+  // KF-NTK7YW: Filter is Lucide's alias of `funnel`.
   await page.keyboard.type('filter');
-  await page.locator('[data-editor-icon="filter"]').click();
+  await page.locator('[data-editor-icon="funnel"]').click();
   await expect(
     canvas(page).locator('.kui-toolbar-control-group button'),
   ).toHaveCount(2);
@@ -363,7 +366,7 @@ test('builds Toolbar › Compact Density', async ({ page }) => {
               {
                 children: [
                   action('Refresh Activity', 'refresh-cw'),
-                  action('Filter Activity', 'filter'),
+                  action('Filter Activity', 'funnel'),
                 ],
               },
             ),
@@ -540,6 +543,86 @@ test('builds SegmentedControl › Rounded Rectangle', async ({ page }) => {
             [icon(glyph), node('text', { children: label, variant: 'span' })],
           ]),
         ),
+      ),
+    ),
+  );
+});
+
+// KF-0W87ST: the group sits in a Toolbar; KF-NTK7YW: its icon is Lucide's
+// own `arrow-down-a-z`, one tile in the picker.
+test('builds PopupMenu › Icon Trigger in a Toolbar Group', async ({ page }) => {
+  await dragComponent(page, 'Toolbar', () => emptySpot(page));
+  await dragComponent(page, 'ToolbarControlGroup', () =>
+    zoneSpot(page, 'Leading'),
+  );
+  await select(page, /^Toolbar(?!Text|Control|Button)/);
+  await setText(page, 'label', 'Icon Trigger in a Toolbar Group');
+  await select(page, /^ToolbarControlGroup/);
+  await turnOn(page, 'single');
+  await turnOn(page, 'nestedDropdown');
+  await choose(page, 'menuInset', 'compact');
+  // The group's seeded ToolbarButton gives way to the menu.
+  await select(page, /^ToolbarButton/);
+  await page.locator('[data-action="editor-delete"]').click();
+  await select(page, /^ToolbarControlGroup/);
+  await addChild(page, 'PopupMenu');
+  await select(page, /^PopupMenu/);
+  await setText(page, 'label', 'Sort Tickets');
+  // An icon-only trigger: a label, no seeded text.
+  await setText(page, 'text', '');
+  await page.locator('[data-editor-content-add="icon"]').click();
+  await page.locator('[data-editor-icon-place]').first().click();
+  await page.keyboard.type('arrow down a z');
+  await expect(page.locator('[data-editor-icon]')).toHaveCount(2);
+  await page.locator('[data-editor-icon="arrow-down-a-z"]').click();
+  await select(page, /^PopupMenu/);
+  await page.getByRole('button', { name: 'Configure items' }).click();
+  const dialog = page.locator('dialog[open]');
+  await dialog.getByRole('button', { name: 'Remove Item 3' }).click();
+  const items = [
+    ['Recently Updated', 'sort-recent'],
+    ['Priority', 'sort-priority'],
+  ] as const;
+  for (const [index, [label, action]] of items.entries()) {
+    await dialog.getByText(`Item ${index + 1}`, { exact: true }).click();
+    await setField(page, 'items', [index, 'label'], label);
+    await setField(page, 'items', [index, 'action'], action);
+    await dialog.getByRole('button', { name: 'Back' }).click();
+  }
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  const trigger = canvas(page).getByRole('button', { name: 'Sort Tickets' });
+  await expect(trigger).toBeVisible();
+  await expect(trigger.locator('[data-lucide="arrow-down-a-z"]')).toHaveCount(
+    1,
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'toolbar',
+        { label: 'Icon Trigger in a Toolbar Group' },
+        {
+          leading: [
+            node(
+              'toolbar-control-group',
+              { single: true, nestedDropdown: true, menuInset: 'compact' },
+              {
+                children: [
+                  node(
+                    'popup-menu',
+                    {
+                      label: 'Sort Tickets',
+                      items: items.map(([label, action]) => ({
+                        label,
+                        action,
+                      })),
+                    },
+                    { icon: [icon('arrow-down-a-z')] },
+                  ),
+                ],
+              },
+            ),
+          ],
+        },
       ),
     ),
   );

@@ -154,11 +154,14 @@ string outside the set) keeps the JSON field. Icon data (a prop or field
 marked `iconSource: "lucide"`, such as a LucideIcon's `icon` or a Select
 choice's `icon`) shows as a row with the chosen icon and its name and opens
 the icon picker (KF-VYRDDQ: icon picker), a dialog with a search over the
-Lucide names and the matching icons themselves. An exact name ranks first,
+Lucide names and the matching icons themselves. Each icon shows once, under
+Lucide's canonical name (KF-NTK7YW: one tile per icon): its aliases
+(`Trash2` for `trash`, `Filter` for `funnel`) are left out of the grid but
+still find it in a search, from a table `npm run lucide-aliases:sync`
+generates from lucide's `iconsAndAliases.mjs`. An exact name ranks first,
 then names with a matching word; at most 96 show at once. Choosing one
-writes `{ $icon: name }` (the kebab-case name, or the export's camel case
-for the few Lucide names that do not split back), and **Remove icon**
-unsets it. A list of objects or of union items (a Select's `choices`, a
+writes `{ $icon: name }` (the kebab-case name with one word per capital or
+number, such as `arrow-down-a-z`), and **Remove icon** unsets it. A list of objects or of union items (a Select's `choices`, a
 PopupMenu's `items`, a Combobox's `suggestions`) opens the list editor
 (KF-CY1D5W: list editor): one `ListActionRow` per item, labeled from its
 `label`, `name`, `title`, `value`, `key`, or `id` (a divider by its kind),

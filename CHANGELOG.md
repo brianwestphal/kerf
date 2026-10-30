@@ -234,6 +234,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **The Kerf UI editor icon picker shows each Lucide icon once, by its own name.** Lucide exports 255 aliases (`ArrowDownAz` for `ArrowDownAZ`, `Filter` for `Funnel`), which showed as duplicate tiles, and `ArrowDownAZ` was named `arrowDownAZ`; the picker now offers one tile per icon under Lucide's canonical name (`arrow-down-a-z`, `funnel`) while an alias still finds it in a search (`KF-NTK7YW`).
 - **Clearing a Kerf UI editor field commits in Safari.** When a node's problems appeared above its Inspector controls, the re-render turned one prop's input into another's; WebKit then fired no `change` for the next clear, so a cleared `label` stayed set. Each control is now keyed by its prop or field (`KF-QCBJ4F`).
 - **A content field in a Kerf UI editor item form leads to its field zone.** In a SegmentedControl choice’s form, `Content` read “KerfUiContent” and did nothing; it now adds to that choice’s field zone (opening Children with the zone chosen when nothing is suggested), or names and selects the nodes there, like a top-level content row. An item slot set in the field still shows as its value (`KF-VSWT2Q`).
 - **New nodes in the Kerf UI editor no longer write a `false` variant discriminant.** Dropping a ListHeader exported `toggle: false` and a Select `multiple: false`, restating defaults the validator already assumes when a prop is absent; seeding now leaves them unset (`KF-RRVYCG`).

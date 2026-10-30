@@ -228,7 +228,12 @@ import {
   valueAt,
   withValueAt,
 } from './model/fields.js';
-import { iconNameEdit, iconNames, matchIcons } from './model/icons.js';
+import {
+  iconAliases,
+  iconNameEdit,
+  iconNames,
+  matchIcons,
+} from './model/icons.js';
 import {
   groupedProps,
   type InspectorProp,
@@ -750,6 +755,7 @@ export function createEditor(options: EditorOptions) {
   const iconQueryRevision = signal(0);
   /** Every Lucide icon's document name, listed on first use. */
   let allIcons: readonly string[] | undefined;
+  let allAliases: ReadonlyMap<string, readonly string[]> | undefined;
   /** The Components filter's text (KF-Y26SKM), and its editor's revision. */
   const paletteFilter = signal('');
   const paletteFilterRevision = signal(0);
@@ -1399,9 +1405,12 @@ export function createEditor(options: EditorOptions) {
           ) as { $icon?: string } | undefined
         )?.$icon
       : undefined;
-    if (open) allIcons ??= iconNames(lucideIcons);
+    if (open) {
+      allIcons ??= iconNames(lucideIcons);
+      allAliases ??= iconAliases(lucideIcons);
+    }
     const found = open
-      ? matchIcons(allIcons!, iconQuery.value)
+      ? matchIcons(allIcons!, iconQuery.value, undefined, allAliases)
       : { names: [], total: 0 };
     return (
       <DialogSurface

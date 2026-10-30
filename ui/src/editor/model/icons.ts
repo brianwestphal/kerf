@@ -1,23 +1,24 @@
 // The icon picker's names and search (KF-VYRDDQ: icon picker). A document
 // names a Lucide icon in `{ $icon: name }`, which `lucideExportName` turns
-// into the PascalCase export: the picker offers every export by a name that
-// round-trips to it.
+// into the PascalCase export: the picker offers every icon once (KF-NTK7YW),
+// by Lucide's own name for it, which round-trips to its export.
 import { lucideExportName } from '@kerfjs/ui/view';
+
+import { LUCIDE_ALIASES, LUCIDE_NAMES } from './lucide-aliases.generated.js';
 
 /** The most icons the picker shows at once; a search narrows the rest. */
 export const ICON_RESULTS = 96;
 
 /**
- * The document name of a Lucide export: its kebab-case name
- * (`ChevronRight` → `chevron-right`, `ArrowDown01` → `arrow-down-0-1`),
- * else, for the few whose kebab name does not split back the same way
- * (`ArrowDownAZ`), the export with a lowercase first letter.
+ * The document name of a Lucide export: its kebab-case name, one word per
+ * capital or number (`ChevronRight` → `chevron-right`, `ArrowDown01` →
+ * `arrow-down-0-1`, KF-NTK7YW: `ArrowDownAZ` → `arrow-down-a-z`), else,
+ * for an export that does not split back the same way, the export with a
+ * lowercase first letter.
  */
 export function lucideIconName(exportName: string): string {
   const kebab = exportName
-    .replace(/([a-z])([A-Z0-9])/g, '$1-$2')
-    .replace(/([0-9])([A-Za-z])/g, '$1-$2')
-    .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2')
+    .replace(/([a-z0-9])(?=[A-Z])|([A-Za-z])(?=[0-9])|([A-Z])(?=[A-Z])/g, '$&-')
     .replace(/([0-9])(?=[0-9])/g, '$1-')
     .toLowerCase();
   return lucideExportName(kebab) === exportName
@@ -25,9 +26,52 @@ export function lucideIconName(exportName: string): string {
     : exportName.charAt(0).toLowerCase() + exportName.slice(1);
 }
 
-/** Every icon's document name, sorted. */
+/**
+ * The alias names each icon also answers to in a search (KF-NTK7YW: `filter`
+ * finds `funnel`, `trash-2` finds `trash`), by the name the picker shows.
+ */
+export function iconAliases(
+  icons: Readonly<Record<string, unknown>>,
+): ReadonlyMap<string, readonly string[]> {
+  const named = new Map<unknown, string>();
+  for (const exportName of Object.keys(icons))
+    if (!LUCIDE_ALIASES.has(exportName))
+      named.set(
+        icons[exportName],
+        LUCIDE_NAMES[exportName] ?? lucideIconName(exportName),
+      );
+  const aliases = new Map<string, string[]>();
+  for (const exportName of LUCIDE_ALIASES) {
+    const name = named.get(icons[exportName]);
+    if (name === undefined) continue;
+    aliases.set(name, [
+      ...(aliases.get(name) ?? []),
+      lucideIconName(exportName),
+    ]);
+  }
+  return aliases;
+}
+
+/**
+ * Every icon's document name, once each, sorted (KF-NTK7YW): Lucide's
+ * aliases (`ArrowDownAz` for `ArrowDownAZ`) are left out, and an export
+ * whose icon an earlier one already named (an alias a newer lucide adds)
+ * gives way to it.
+ */
 export function iconNames(icons: Readonly<Record<string, unknown>>): string[] {
-  return Object.keys(icons).map(lucideIconName).sort();
+  const named = new Set<unknown>();
+  const names: string[] = [];
+  const add = (exportName: string) => {
+    const icon = icons[exportName];
+    if (named.has(icon)) return;
+    named.add(icon);
+    names.push(LUCIDE_NAMES[exportName] ?? lucideIconName(exportName));
+  };
+  const exports = Object.keys(icons);
+  for (const exportName of exports)
+    if (!LUCIDE_ALIASES.has(exportName)) add(exportName);
+  for (const exportName of exports) add(exportName);
+  return names.sort();
 }
 
 /**
@@ -41,11 +85,15 @@ export function matchIcons(
   names: readonly string[],
   query: string,
   limit = ICON_RESULTS,
+  /** Other names an icon answers to (KF-NTK7YW: Lucide's aliases). */
+  aliases: ReadonlyMap<string, readonly string[]> = new Map(),
 ): { readonly names: readonly string[]; readonly total: number } {
   const words = query
     .toLowerCase()
     .split(/[\s-]+/)
     .filter(Boolean);
+  const matches = (term: string) =>
+    words.every((word) => term.toLowerCase().includes(word));
   const rank = (name: string) => {
     const lower = name.toLowerCase();
     if (lower === words.join('-')) return 0;
@@ -55,12 +103,16 @@ export function matchIcons(
       return 2;
     return 3;
   };
-  const matches = names
-    .filter((name) => words.every((word) => name.toLowerCase().includes(word)))
-    .map((name) => ({ name, rank: rank(name) }))
+  const found = names
+    .map((name) => ({
+      name,
+      terms: [name, ...(aliases.get(name) ?? [])].filter(matches),
+    }))
+    .filter((match) => match.terms.length)
+    .map(({ name, terms }) => ({ name, rank: Math.min(...terms.map(rank)) }))
     .sort((a, b) => a.rank - b.rank)
     .map((match) => match.name);
-  return { names: matches.slice(0, limit), total: matches.length };
+  return { names: found.slice(0, limit), total: found.length };
 }
 
 /**

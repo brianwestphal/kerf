@@ -190,7 +190,7 @@ async function chooseAdd(page: Page, which: string, option: string) {
  * (a field zone reads `choices › 0 › content`) or to the zone already chosen.
  */
 export async function addChild(page: Page, name: string, zone?: string) {
-  await page.getByText('Children', { exact: true }).click();
+  await area(page, 'Children');
   if (zone) await chooseAdd(page, 'zone', zone);
   await chooseAdd(page, 'component', name);
   await page.locator('[data-action="editor-add-child"]').click();
