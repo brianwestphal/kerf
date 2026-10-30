@@ -2,6 +2,8 @@
 export declare const KERF_UI_EDITOR_ROUTE: '/__kerf-ui-editor/';
 /** The registry module the plugin loads when it exists and none is named. */
 export declare const DEFAULT_REGISTRY: 'src/kerf-ui-registry.ts';
+/** The field editors module the plugin loads when it exists and none is named. */
+export declare const DEFAULT_FIELD_EDITORS: 'src/kerf-ui-field-editors.ts';
 /** Where the editor reads and writes documents. */
 export declare const KERF_UI_EDITOR_FILE_API: '/__kerf-ui-editor/api/file';
 /** The project folder unsaved drafts autosave into; it ignores itself in git. */
@@ -40,6 +42,13 @@ export interface KerfUiEditorOptions {
    * exists.
    */
   registry?: string;
+  /**
+   * A module, resolved against Vite's `root`, whose default export maps type
+   * names to field editors (`FieldEditors` from `@kerfjs/ui/editor`) that
+   * replace the editor's type-driven form for those types. Default:
+   * `src/kerf-ui-field-editors.ts` when it exists.
+   */
+  fieldEditors?: string;
 }
 
 /** The connect-style middleware stack and HTML transform of a Vite dev server. */
@@ -97,6 +106,7 @@ export declare function editorPage(): string;
 export declare function editorEntry(options: {
   app: ApplicationCatalogs;
   registry?: string;
+  fieldEditors?: string;
 }): string;
 /** Run the Kerf UI editor in this Vite dev server. */
 export declare function kerfUiEditor(

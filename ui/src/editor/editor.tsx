@@ -113,6 +113,11 @@ import {
   controlFlowSection,
   slotEditor,
 } from './control-flow-section.js';
+import {
+  type FieldEditorContext,
+  fieldEditorFor,
+  type FieldEditors,
+} from './field-editors.js';
 import { contentOf, nodesToText, textToNodes } from './model/content.js';
 import {
   controlOf,
@@ -265,6 +270,8 @@ const ICON_DIALOG = 'editor-icon-dialog';
 // KF-CY1D5W: a list of objects or union items edits item by item.
 const FIELD_ADD_ITEM_ACTION = 'editor-add-item';
 const FIELD_REMOVE_ITEM_ACTION = 'editor-remove-item';
+// KF-EXA2WH: an application field editor's button sets its value.
+const FIELD_SET_ACTION = 'editor-set-field';
 const PROMOTE_ACTION = 'editor-promote';
 const EXPORT_MODULE_ACTION = 'editor-export-module';
 const EXPORT_DECLARATIONS_ACTION = 'editor-export-declarations';
@@ -408,6 +415,13 @@ export {
   type PaletteGroup,
   type PropsComponent,
 } from './catalog.js';
+export type {
+  FieldEditor,
+  FieldEditorAttributes,
+  FieldEditorContext,
+  FieldEditorControlKind,
+  FieldEditors,
+} from './field-editors.js';
 
 export interface EditorOptions {
   /** The document to start with; the default is an empty Pane. */
@@ -425,6 +439,12 @@ export interface EditorOptions {
    * functions, plus an application's (`createEditorCatalog`).
    */
   readonly catalog: EditorCatalog;
+  /**
+   * Editors for named types (KF-EXA2WH: field editor API), such as a
+   * catalog's `'ListConfig'` or an application's `'InvoiceFilter'`: each
+   * replaces the type-driven form wherever a prop or field has that type.
+   */
+  readonly fieldEditors?: FieldEditors;
 }
 
 /** An inspector control's current value: a Select's, a switch's, or a field's. */
@@ -441,10 +461,13 @@ function controlValue(field: HTMLElement): string | boolean {
         ),
       ].map((input) => input.value),
     );
-  // Every other inspector control wraps one native input.
-  const input = field.querySelector<HTMLInputElement | HTMLTextAreaElement>(
-    'input, textarea',
-  )!;
+  // Every other inspector control wraps one native input, or is one (an
+  // application field editor's own control; KF-EXA2WH).
+  const input = field.matches('input, textarea, select')
+    ? (field as HTMLInputElement)
+    : field.querySelector<HTMLInputElement | HTMLTextAreaElement>(
+        'input, textarea',
+      )!;
   return input instanceof HTMLInputElement && input.type === 'checkbox'
     ? input.checked
     : input.value;
@@ -1259,7 +1282,8 @@ export function createEditor(options: EditorOptions) {
     const key = placeKey(place);
     const step = { 'data-editor-step': JSON.stringify(place) };
     const kind = fieldEditorKind(type, definitions);
-    const structured = opensEditor(kind);
+    const custom = customFor(type);
+    const structured = Boolean(custom) || opensEditor(kind);
     const form = structured && !jsonSteps.value.has(key);
     // A list's text item (a Combobox suggestion) edits in its own control.
     const scalar = { name: stepLabel(node, place), type, required: true };
@@ -1288,7 +1312,7 @@ export function createEditor(options: EditorOptions) {
           >
             {form
               ? 'Edit as JSON'
-              : kind === 'object'
+              : kind === 'object' || custom
                 ? 'Edit as form'
                 : 'Edit as list'}
           </Button>
@@ -1337,7 +1361,30 @@ export function createEditor(options: EditorOptions) {
         </List>
       );
     }
+    // An application's editor for the type replaces the form (KF-EXA2WH).
+    if (custom && form)
+      return (
+        <List>
+          {custom.editor.render(editorContext(node, place))}
+          {actions()}
+        </List>
+      );
     if (kind !== 'object') return listStep(node, place, actions);
+    return (
+      <List>
+        {objectForm(node, place)}
+        {actions()}
+      </List>
+    );
+  };
+
+  /**
+   * An object's type-driven form: its fields with the Inspector's controls,
+   * nested objects, lists, icons, and app-edited types as rows that open
+   * their own editors, and fields no control edits as a value table.
+   */
+  const objectForm = (node: ViewNode, place: FieldPlace) => {
+    const { definitions, type, value } = fieldContext(node, place);
     const record = (value ?? {}) as Record<string, ViewValue>;
     const editable: SafeHtml[] = [];
     const nested: SafeHtml[] = [];
@@ -1346,7 +1393,9 @@ export function createEditor(options: EditorOptions) {
       const at = { prop: place.prop, path: [...place.path, field.name] };
       const fieldValue = record[field.name];
       const control = controlFor(field, fieldValue, definitions);
-      if (control.kind === 'readonly') {
+      if (customFor(field.type as never)) {
+        nested.push(configureRow(field.name, fieldValue, at));
+      } else if (control.kind === 'readonly') {
         fixed.push({
           name: field.name,
           value:
@@ -1382,9 +1431,45 @@ export function createEditor(options: EditorOptions) {
             ))}
           </ValueTable>
         ) : undefined}
-        {actions()}
       </List>
     );
+  };
+
+  /** An application's field editor for `type`, if one is registered. */
+  const customFor = (type: ViewType | undefined) =>
+    fieldEditorFor(type, options.fieldEditors);
+
+  /**
+   * What an application's field editor renders from (KF-EXA2WH): the value
+   * at `place` in the selected node's prop, and how to change it.
+   */
+  const editorContext = (
+    node: ViewNode,
+    place: FieldPlace,
+  ): FieldEditorContext => {
+    const { definitions, type, value } = fieldContext(node, place);
+    return {
+      value,
+      type: type!,
+      definitions,
+      commit: (next) => {
+        writeField(place, next);
+      },
+      setAction: FIELD_SET_ACTION,
+      set: (next) => ({
+        'data-editor-step': JSON.stringify(place),
+        'data-editor-value': next === undefined ? '' : JSON.stringify(next),
+      }),
+      control: (path, kind) => ({
+        'data-editor-field': JSON.stringify({
+          prop: place.prop,
+          path: [...place.path, ...path],
+        }),
+        'data-editor-kind': kind,
+      }),
+      form: (path = []) =>
+        objectForm(node, { prop: place.prop, path: [...place.path, ...path] }),
+    };
   };
 
   /**
@@ -1919,15 +2004,17 @@ export function createEditor(options: EditorOptions) {
         {groupedProps(component).map((section) => {
           // An object prop opens its form from a Configure row (KF-Z9S029).
           // Icon data opens the icon picker from its row (KF-VYRDDQ).
+          // An app's editor for the type opens the same way (KF-EXA2WH).
           const opens = (prop: (typeof section.props)[number]) =>
             (!isBinding(props[prop.name]) &&
-              opensEditor(
-                fieldEditorKind(
-                  prop.type as never,
-                  definitionsOf(node.type),
-                  prop.iconSource,
-                ),
-              )) ||
+              (Boolean(customFor(prop.type as never)) ||
+                opensEditor(
+                  fieldEditorKind(
+                    prop.type as never,
+                    definitionsOf(node.type),
+                    prop.iconSource,
+                  ),
+                ))) ||
             controlFor(prop, props[prop.name], definitionsOf(node.type))
               .kind === 'icon';
           const editable = section.props
@@ -1947,6 +2034,7 @@ export function createEditor(options: EditorOptions) {
           });
           const fixed = section.props.filter(
             (prop) =>
+              !opens(prop) &&
               controlFor(
                 prop,
                 props[prop.name] as never,
@@ -2671,11 +2759,12 @@ export function createEditor(options: EditorOptions) {
     const container =
       open && open.prop === place.prop
         ? open.container
-        : containerFor(
+        : (customFor(prop.type as never)?.editor.container ??
+          containerFor(
             prop.type as never,
             definitionsOf(node.type),
             prop.iconSource,
-          );
+          ));
     openField.value = { node: id, ...place, container };
     if (container === 'dialog' && wired) {
       const dialog = wired.querySelector<HTMLDialogElement>(
@@ -3157,6 +3246,13 @@ export function createEditor(options: EditorOptions) {
             ) ?? {};
           writeField(place, [...items, item]);
         },
+        [FIELD_SET_ACTION]: (_event, target) => {
+          const { editorValue } = target.dataset;
+          writeField(
+            JSON.parse(target.dataset.editorStep!) as FieldPlace,
+            editorValue ? (JSON.parse(editorValue) as ViewValue) : undefined,
+          );
+        },
         [FIELD_REMOVE_ITEM_ACTION]: (_event, target) => {
           writeField(
             JSON.parse(target.dataset.editorItem!) as FieldPlace,
@@ -3362,6 +3458,23 @@ export function createEditor(options: EditorOptions) {
             else editProp(host, raw);
           },
         }),
+      ),
+      // KF-EXA2WH: an application's field editors wire their own events;
+      // each reads the context of the open value of its type, if any.
+      ...Object.entries(options.fieldEditors ?? {}).flatMap(([name, editor]) =>
+        editor.wire
+          ? [
+              editor.wire(root, () => {
+                const open = activeField();
+                if (!open) return undefined;
+                const node = findNode(doc.value, open.node)!.node;
+                const { type } = fieldContext(node, open);
+                return customFor(type)?.name === name
+                  ? editorContext(node, open)
+                  : undefined;
+              }),
+            ]
+          : [],
       ),
       // KF-CY1D5W: a list editor's rows reorder by drag or Alt+Shift+Arrow;
       // each list's id is the place of the list it edits.

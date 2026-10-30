@@ -69,6 +69,9 @@ Options:
 - `registry`: a module, resolved against Vite's `root`, whose default export
   maps catalog keys to component functions, to add or replace the ones the
   catalogs provide. Default: `src/kerf-ui-registry.ts` when it exists.
+- `fieldEditors`: a module, resolved the same way, whose default export maps
+  type names to field editors (below). Default:
+  `src/kerf-ui-field-editors.ts` when it exists.
 
 ```ts
 // src/kerf-ui-registry.ts
@@ -80,6 +83,61 @@ export default {
     OrderCard({ total: 4200, ...props }),
 };
 ```
+
+## Field editors for your types
+
+The Inspector edits an object prop in a form built from its type, a list of
+objects item by item, strings as tags, and icon data in a picker. To edit one
+of your types your own way, register a field editor for its name, a props
+catalog definition such as `ShippingWindow`. It replaces the type-driven form
+wherever a prop or field has that type, and Edit as JSON, Reset, and Fill
+with example stay around it.
+
+```tsx
+// src/kerf-ui-field-editors.tsx (name it with the plugin's `fieldEditors`
+// option; the default path is src/kerf-ui-field-editors.ts)
+import { Button } from "@kerfjs/ui/button";
+import type { FieldEditors } from "@kerfjs/ui/editor";
+import { List } from "@kerfjs/ui/list";
+
+const fieldEditors: FieldEditors = {
+  ShippingWindow: {
+    render: (context) => (
+      <List>
+        <List controlInsets="trbl" gap>
+          <Button
+            action={context.setAction}
+            rootAttributes={context.set({ from: "Mon", to: "Fri" })}
+          >
+            This week
+          </Button>
+        </List>
+        {context.form()}
+      </List>
+    ),
+  },
+};
+
+export default fieldEditors;
+```
+
+`render(context)` receives:
+
+- `value`, `type`, and `definitions`: the value being edited and its type.
+- `commit(next)`: writes the next value as one undoable edit (`undefined`
+  unsets it).
+- `setAction` and `set(next)`: a button with that `action` and those
+  `rootAttributes` sets the value to `next`.
+- `control(path, kind)`: attributes for your own control (a `TextField`'s
+  `rootAttributes`, or a native input) that commits the field at `path` on
+  `change`, read as `text`, `number`, `switch`, `select`, or `list` (JSON).
+- `form(path?)`: the type-driven form for the value, or for the object at
+  `path` inside it.
+
+A field editor may also name its `container` (`'subview'`, pushed in the
+Inspector, or `'dialog'`; the default rule pushes at most 10 fields) and a
+`wire(root, context)` that wires its own events once, reads the open value's
+context with `context()`, and returns a disposer.
 
 ## Build your own host
 
@@ -116,9 +174,10 @@ mount(root, editor.render);
 editor.wire(root);
 ```
 
-- `createEditor({ catalog, document?, save? })`: `document` is the document
-  to start with (default an empty Pane), and `save(fileName, text)` replaces
-  the default download for Save and Export.
+- `createEditor({ catalog, document?, save?, storage?, fieldEditors? })`:
+  `document` is the document to start with (default an empty Pane),
+  `save(fileName, text)` replaces the default download for Save and Export,
+  and `fieldEditors` registers field editors by type name (above).
 - `createEditorCatalog({ props, composition, selection?, components })`
   combines catalogs. Without a selection catalog a component is named by its
   export.

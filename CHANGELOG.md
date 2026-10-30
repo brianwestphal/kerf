@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Field editors for your own types in the Kerf UI editor.** `createEditor({ fieldEditors })`, or a `src/kerf-ui-field-editors.ts` module beside `@kerfjs/ui/vite-editor`, registers an editor for a named type (`'ShippingWindow'`, `'ListConfig'`) that replaces the type-driven form wherever a prop or field has that type. Its `render(context)` gets the value, its type, `commit`, preset-button and control attributes, and the type-driven `form()` to compose (`KF-EXA2WH`).
 - **A list editor in the Kerf UI editor.** A list of objects or union items (a Select's `choices`, a PopupMenu's `items`, a NavStack's `views`) now opens as one row per item: choose a row to edit that item's form, remove it, drag or Alt+Shift+Arrow to reorder, and **Add** a new item (or pick the kind from **Add ▾** for a PopupMenu's items, headings, and dividers) (`KF-CY1D5W`).
 - **An icon picker in the Kerf UI editor.** A LucideIcon's `icon` (and any icon-data prop or field) now opens a dialog that searches the Lucide icons and shows them; choosing one sets it, and the canvas updates (`KF-VYRDDQ`).
 - **Inline tag and checkbox editors in the Kerf UI editor.** A list of strings (a TagField's `tags`, a ColumnExplorer's `path`) now edits in a TagField and a set of sides (a Pane's `separators` or `safeAreaEdges`) in a CheckboxGroup, instead of JSON (`KF-A9ZHGW`).

@@ -24,6 +24,11 @@ import { profileCatalogPaths } from './view/cli.mjs';
 export const KERF_UI_EDITOR_ROUTE = '/__kerf-ui-editor/';
 /** The registry module the plugin loads when it exists and none is named. */
 export const DEFAULT_REGISTRY = 'src/kerf-ui-registry.ts';
+/**
+ * The field editors module the plugin loads when it exists and none is
+ * named (KF-EXA2WH: field editor API).
+ */
+export const DEFAULT_FIELD_EDITORS = 'src/kerf-ui-field-editors.ts';
 
 /** Where the editor reads and writes documents (KF-0SY9M6: autosave). */
 export const KERF_UI_EDITOR_FILE_API = '/__kerf-ui-editor/api/file';
@@ -172,7 +177,7 @@ export function editorPage() {
  * The generated entry: imports the editor, the catalogs, and each module a
  * catalog names, then mounts the editor over all of them.
  */
-export function editorEntry({ app, registry }) {
+export function editorEntry({ app, registry, fieldEditors }) {
   const kerfProps = readJson(
     resolve(import.meta.dirname, 'ai/component-props.json'),
   );
@@ -208,6 +213,9 @@ export function editorEntry({ app, registry }) {
     registry
       ? `import registry from ${JSON.stringify(registry)};`
       : 'const registry = {};',
+    fieldEditors
+      ? `import fieldEditors from ${JSON.stringify(fieldEditors)};`
+      : 'const fieldEditors = undefined;',
     `const appProps = ${JSON.stringify(app.props)};`,
     `const appComposition = ${JSON.stringify(app.composition)};`,
     'const props = [kerfProps, ...appProps];',
@@ -221,7 +229,7 @@ export function editorEntry({ app, registry }) {
     '  components: { ...componentMap(props, modules), ...registry },',
     '});',
     "const root = document.getElementById('kerf-ui-editor');",
-    'const editor = createEditor({ catalog, storage: devServerStorage() });',
+    'const editor = createEditor({ catalog, storage: devServerStorage(), fieldEditors });',
     'mount(root, editor.render);',
     'editor.wire(root);',
     '',
@@ -249,11 +257,15 @@ export function kerfUiEditor(options = {}) {
     },
     load(id) {
       if (id !== RESOLVED_ENTRY_ID) return null;
-      const named = options.registry ?? DEFAULT_REGISTRY;
-      const path = isAbsolute(named) ? named : resolve(root, named);
+      // A module that is named or at its default path, when it exists.
+      const found = (named) => {
+        const path = isAbsolute(named) ? named : resolve(root, named);
+        return existsSync(path) ? path : undefined;
+      };
       return editorEntry({
         app: applicationCatalogs(root),
-        registry: existsSync(path) ? path : undefined,
+        registry: found(options.registry ?? DEFAULT_REGISTRY),
+        fieldEditors: found(options.fieldEditors ?? DEFAULT_FIELD_EDITORS),
       });
     },
     configureServer(server) {

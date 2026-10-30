@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.65.0
+kerf-ui-skill-version: 1.66.0
 ---
 
 # Building with @kerfjs/ui
@@ -23,6 +23,11 @@ a consuming interface. Use the signature snapshot for exact props, callbacks,
 return values, and supported import paths; do not infer them from examples.
 Tools that need props as data (inspector forms, document validators, generated
 contracts) read `./component-props.json` instead of parsing declarations.
+To edit an app type its own way in the Kerf UI editor, register a field editor
+by type name (`createEditor({ fieldEditors })`, or the Vite plugin's
+`src/kerf-ui-field-editors.ts`) and compose `context.form()` with `set` and
+`control` attributes rather than rebuilding the type-driven form
+(`../docs/editor-host.md`).
 Treat each `KUI-T###` contract as an exact declaration guarantee, including its
 documented dynamic-data widening. Do not extend those diagnostics to child
 markup, live DOM relationships, disposer invocation, or other conditions that

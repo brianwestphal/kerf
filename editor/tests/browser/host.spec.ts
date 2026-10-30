@@ -66,3 +66,38 @@ test('an app’s dev server hosts the editor with its own components', async ({
     animations: 'disabled',
   });
 });
+
+// KF-EXA2WH: the app's own field editor, registered through the Vite
+// plugin's `fieldEditors` option, edits its ShippingWindow type.
+test('an app’s field editor edits its own type', async ({ page }, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(EDITOR);
+  await expect(page.getByText('1 node · valid')).toBeVisible();
+  await area(page, 'Outline');
+  await page.getByRole('treeitem', { name: /Pane/ }).click();
+  await area(page, 'Children');
+  await page.locator('[data-editor-add="zone"]').click();
+  await page.getByRole('option', { name: 'content' }).click();
+  await page.locator('[data-editor-add="component"]').click();
+  await page.getByRole('option', { name: 'OrderCard' }).click();
+  await page.getByRole('button', { name: 'Add', exact: true }).click();
+  await area(page, 'Properties');
+
+  await page.getByRole('button', { name: 'Configure shipping' }).click();
+  const stack = page.locator('#editor-inspector-stack');
+  await stack.getByRole('button', { name: 'This week' }).click();
+  const shipping = page.locator('[data-editor-canvas] [data-shipping]');
+  await expect(shipping).toHaveText('Mon–Fri');
+  // The editor's type-driven form sits beside the presets.
+  const to = stack
+    .locator(`[data-editor-field='{"prop":"shipping","path":["to"]}']`)
+    .getByRole('textbox');
+  await to.fill('Thu');
+  await to.press('Enter');
+  await expect(shipping).toHaveText('Mon–Thu');
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-exa2wh-app-field-editor-1440.png'),
+    animations: 'disabled',
+  });
+});

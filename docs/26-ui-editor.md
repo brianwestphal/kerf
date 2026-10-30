@@ -171,7 +171,21 @@ and clearing it keeps the item. A list and its item form are a
 sub-selection, so the list opens in a dialog unless its items have at most
 3 fields and nothing nested (a Slider's `ticks`), which push in the
 Inspector. A list whose items no form edits (an application's `number[]`)
-keeps the JSON field. The `fieldEditors` extension API is still to come.
+keeps the JSON field.
+
+An application registers its own editor for a named type (KF-EXA2WH: field
+editor API) with `createEditor({ fieldEditors })`, or with the Vite plugin's
+`fieldEditors` module (default `src/kerf-ui-field-editors.ts`). An editor
+matches a prop or field whose type is that `ref` (a catalog definition such
+as `ListConfig`, or the app's own `ShippingWindow`), at the top level and
+inside forms, and replaces the type-driven form there; Edit as JSON, Reset,
+and Fill with example stay around it. Its `render(context)` receives the
+value, its type and definitions, and `commit`; `set(next)` with `setAction`
+makes a preset button, `control(path, kind)` makes its own control commit a
+field on `change` as the Inspector's do, and `form(path?)` composes the
+type-driven form. An optional `wire(root, context)` wires its own events,
+reading the open value's context. Its `container` names where it opens, and
+the type-driven rule decides otherwise.
 
 The inspector's Control flow section (KF-90GTJN: editor control flow) shows a
 node only while a true/false param or item field holds (Show, which wraps the

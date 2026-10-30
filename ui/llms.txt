@@ -881,8 +881,10 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
 - **Edit view documents in your app with `@kerfjs/ui/vite-editor`**:
   `plugins: [kerfUiEditor()]` serves the Kerf UI editor at
   `/__kerf-ui-editor/` on the dev server, previewing the components your
-  `.kerf-ui-profile.json` catalogs declare with their real functions. See
-  `docs/editor-host.md`.
+  `.kerf-ui-profile.json` catalogs declare with their real functions. Edit
+  one of your types your own way by exporting `FieldEditors` (type name →
+  `{ render(context), container?, wire? }`) from
+  `src/kerf-ui-field-editors.ts`. See `docs/editor-host.md`.
 - **Browse a deep hierarchy by column with `ColumnExplorer`**
   (`@kerfjs/ui/column-explorer`): a macOS-style column view over TreeList's
   nodes in a ColumnTrack. Pass `nodes`, `path`, and `action`, set

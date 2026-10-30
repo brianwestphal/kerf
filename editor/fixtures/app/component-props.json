@@ -35,13 +35,27 @@
           "name": "status",
           "type": {
             "kind": "enum",
-            "values": ["open", "shipped"],
+            "values": [
+              "open",
+              "shipped"
+            ],
             "text": "OrderStatus | undefined",
             "nullable": true
           },
           "required": false,
           "default": "open",
           "description": "Where the order is (default `open`)."
+        },
+        {
+          "name": "shipping",
+          "type": {
+            "kind": "ref",
+            "ref": "ShippingWindow",
+            "text": "ShippingWindow | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "When the order ships, edited by the app's own field editor."
         },
         {
           "name": "rootAttributes",
@@ -58,5 +72,30 @@
       "dataChannel": "rootAttributes"
     }
   ],
-  "definitions": {}
+  "definitions": {
+    "ShippingWindow": {
+      "kind": "object",
+      "props": [
+        {
+          "name": "from",
+          "type": {
+            "kind": "string",
+            "text": "string"
+          },
+          "required": true,
+          "description": "The first day."
+        },
+        {
+          "name": "to",
+          "type": {
+            "kind": "string",
+            "text": "string"
+          },
+          "required": true,
+          "description": "The last day."
+        }
+      ],
+      "text": "ShippingWindow"
+    }
+  }
 }

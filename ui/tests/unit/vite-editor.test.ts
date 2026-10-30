@@ -11,6 +11,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   applicationCatalogs,
+  DEFAULT_FIELD_EDITORS,
   DEFAULT_REGISTRY,
   editorEntry,
   editorPage,
@@ -78,7 +79,7 @@ describe('the generated entry', () => {
     expect(code).toContain("import '@kerfjs/ui/select/register';");
     expect(code).toContain("import '@kerfjs/ui/surface-scaffold/register';");
     expect(code).toContain(
-      'createEditor({ catalog, storage: devServerStorage() })',
+      'createEditor({ catalog, storage: devServerStorage(), fieldEditors })',
     );
     expect(editorEntry({ app: { props: [], composition: [] } })).toContain(
       'const registry = {};',
@@ -152,6 +153,25 @@ describe('kerfUiEditor', () => {
     const named = serve({ registry: join(app, 'missing.ts') }).plugin;
     expect(named.load('\0virtual:kerf-ui-editor/entry')).toContain(
       'const registry = {};',
+    );
+  });
+
+  // KF-EXA2WH: an app's field editors module, named or at its default path.
+  it('passes the field editors module to the editor when it exists', () => {
+    const { plugin } = serve();
+    const entry = () => plugin.load('\0virtual:kerf-ui-editor/entry')!;
+    expect(entry()).toContain('const fieldEditors = undefined;');
+    expect(entry()).toContain(
+      'createEditor({ catalog, storage: devServerStorage(), fieldEditors })',
+    );
+    mkdirSync(join(app, 'src'), { recursive: true });
+    writeFileSync(join(app, DEFAULT_FIELD_EDITORS), 'export default {};\n');
+    expect(entry()).toContain(
+      `import fieldEditors from ${JSON.stringify(join(app, DEFAULT_FIELD_EDITORS))};`,
+    );
+    const named = serve({ fieldEditors: 'src/missing.ts' }).plugin;
+    expect(named.load('\0virtual:kerf-ui-editor/entry')).toContain(
+      'const fieldEditors = undefined;',
     );
   });
 

@@ -9,7 +9,10 @@ import { kerfAliases, kerfUi, repo } from '../../vite.workspace.js';
 
 export default defineConfig({
   root: fileURLToPath(new URL('.', import.meta.url)),
-  plugins: [kerfUi(), kerfUiEditor()],
+  plugins: [
+    kerfUi(),
+    kerfUiEditor({ fieldEditors: 'src/kerf-ui-field-editors.tsx' }),
+  ],
   resolve: { alias: kerfAliases },
   esbuild: { jsx: 'automatic', jsxImportSource: 'kerfjs' },
   server: {
