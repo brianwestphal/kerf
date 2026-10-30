@@ -624,3 +624,95 @@ test('builds PopupMenu › Icon Trigger in a Toolbar Group', async ({ page }) =>
     ),
   );
 });
+
+test('builds SegmentedControl › Pill', async ({ page }) => {
+  await dragComponent(page, 'SegmentedControl', () => emptySpot(page));
+  await select(page, /^SegmentedControl/);
+  await setText(page, 'id', 'display-density');
+  await setText(page, 'label', 'Display Density');
+  await setText(page, 'action', 'select-segment-demo');
+  await choose(page, 'appearance', 'outlined');
+  await choose(page, 'shape', 'pill');
+  await choose(page, 'size', 'small');
+  const choices = [
+    ['compact', 'Compact'],
+    ['comfortable', 'Comfortable'],
+    ['roomy', 'Roomy'],
+  ] as const;
+  await page.getByRole('button', { name: 'Configure choices' }).click();
+  const dialog = page.locator('dialog[open]');
+  for (const [index, [value, label]] of choices.entries()) {
+    await dialog.getByText(`Choice ${index + 1}`, { exact: true }).click();
+    await setField(page, 'choices', [index, 'value'], value);
+    await setField(page, 'choices', [index, 'label'], label);
+    if (index === 2) {
+      await turnFieldOn(page, 'choices', [index, 'disabled']);
+      await setField(
+        page,
+        'choices',
+        [index, 'title'],
+        'Roomy density is unavailable',
+      );
+    }
+    await dialog.getByRole('button', { name: 'Back' }).click();
+  }
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  await choose(page, 'value', 'Comfortable');
+  const control = canvas(page).locator(
+    '[data-segmented-control-id="display-density"]',
+  );
+  await expect(control.locator('button')).toHaveText([
+    'Compact',
+    'Comfortable',
+    'Roomy',
+  ]);
+  await expect(control.locator('button[aria-pressed="true"]')).toHaveText(
+    'Comfortable',
+  );
+  await expect(control.locator('button').nth(2)).toBeDisabled();
+  expect(await exported(page)).toEqual(
+    pane(
+      node('segmented-control', {
+        label: 'Display Density',
+        value: 'comfortable',
+        action: 'select-segment-demo',
+        appearance: 'outlined',
+        shape: 'pill',
+        size: 'small',
+        choices: [
+          { value: 'compact', label: 'Compact' },
+          { value: 'comfortable', label: 'Comfortable' },
+          {
+            value: 'roomy',
+            label: 'Roomy',
+            disabled: true,
+            title: 'Roomy density is unavailable',
+          },
+        ],
+      }),
+    ),
+  );
+});
+
+// KF-ZYQVHD: badge and status are both plain text.
+test('builds ListHeader › Badge and Status Together', async ({ page }) => {
+  await dragComponent(page, 'ListHeader', () => emptySpot(page));
+  await select(page, /^ListHeader/);
+  await setText(page, 'label', 'Purchases');
+  await setText(page, 'badge', '3 lines unpriced');
+  await setText(page, 'status', 'Needs review');
+  await choose(page, 'indicatorTone', 'danger');
+  await expect(
+    canvas(page).locator('.kui-list-header[data-kerf-node] .kui-badge'),
+  ).toHaveText(['3 lines unpriced', 'Needs review']);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('list-header', {
+        label: 'Purchases',
+        badge: '3 lines unpriced',
+        status: 'Needs review',
+        indicatorTone: 'danger',
+      }),
+    ),
+  );
+});
