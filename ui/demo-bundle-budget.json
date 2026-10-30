@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 444600,
-  "measuredLargestJavaScriptGzip": 164548,
-  "measuredTotalJavaScriptGzip": 444532,
+  "totalJavaScriptGzip": 444800,
+  "measuredLargestJavaScriptGzip": 164546,
+  "measuredTotalJavaScriptGzip": 444714,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6499,6 +6499,22 @@
         "measuredTotalJavaScriptGzip": 444532,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 444600
+      }
+    },
+    {
+      "at": "2026-10-30T02:47:17.124Z",
+      "reason": "KF-MGKDJC: PopupMenu demo adds an outlined compact trigger example beside a Button (+0.11 kB gzip)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164548,
+        "measuredTotalJavaScriptGzip": 444532,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 444600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 444714,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 444800
       }
     }
   ]

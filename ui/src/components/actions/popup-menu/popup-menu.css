@@ -56,6 +56,18 @@
 .kui-popup-menu__trigger > svg {
   flex: none;
 }
+/* emphasis="secondary": outlined like a secondary Button, for a menu beside
+   them outside a toolbar (a toolbar group styles its own triggers below). */
+.kui-popup-menu[data-emphasis="secondary"] > .kui-popup-menu__trigger {
+  border-color: var(--kui-color-neutral-border-loud);
+}
+/* size="compact": a compact Button's height and type. */
+.kui-popup-menu[data-size="compact"] {
+  --_kui-popup-menu-trigger-height: round(calc(1rem + 1.2em), 1px);
+}
+.kui-popup-menu[data-size="compact"] > .kui-popup-menu__trigger {
+  font-size: var(--kui-font-s, remify(14px));
+}
 /* An icon and visible text sit one standard gap apart. */
 .kui-popup-menu__text:not(:first-child) {
   margin-inline-start: var(--kui-space-xs);

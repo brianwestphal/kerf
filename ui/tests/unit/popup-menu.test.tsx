@@ -206,6 +206,39 @@ describe('PopupMenu markup', () => {
     expect(rows[1]!.getAttribute('value')).toBe('priority');
   });
 
+  // KF-MGKDJC: a menu beside secondary Buttons outside a toolbar.
+  it('marks an outlined or compact trigger, and neither by default', () => {
+    const plain = render(
+      asHtml(PopupMenu({ text: 'Add', items: [{ label: 'Item' }] })),
+    );
+    expect(plain.hasAttribute('data-emphasis')).toBe(false);
+    expect(plain.hasAttribute('data-size')).toBe(false);
+    const outlined = render(
+      asHtml(
+        PopupMenu({
+          text: 'Add',
+          emphasis: 'secondary',
+          size: 'compact',
+          items: [{ label: 'Item' }],
+        }),
+      ),
+    );
+    expect(outlined.dataset.emphasis).toBe('secondary');
+    expect(outlined.dataset.size).toBe('compact');
+    const explicit = render(
+      asHtml(
+        PopupMenu({
+          text: 'Add',
+          emphasis: 'plain',
+          size: 'standard',
+          items: [{ label: 'Item' }],
+        }),
+      ),
+    );
+    expect(explicit.hasAttribute('data-emphasis')).toBe(false);
+    expect(explicit.hasAttribute('data-size')).toBe(false);
+  });
+
   it('renders visible trigger text, groups, dividers, item icons, and item metadata', () => {
     const menu = render(
       asHtml(

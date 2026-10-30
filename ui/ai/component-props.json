@@ -8831,6 +8831,30 @@
           "variantOnly": true
         },
         {
+          "name": "emphasis",
+          "type": {
+            "kind": "enum",
+            "values": ["plain", "secondary"],
+            "text": "PopupMenuEmphasis | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "plain",
+          "description": "The button trigger's emphasis outside a toolbar: `plain` (default), a\nquiet borderless trigger, or `secondary`, outlined to sit beside\nsecondary `Button`s, as an Add menu does in a form's row of actions. A\n`ToolbarControlGroup` styles its own triggers, so it ignores this."
+        },
+        {
+          "name": "size",
+          "type": {
+            "kind": "enum",
+            "values": ["standard", "compact"],
+            "text": "PopupMenuSize | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "standard",
+          "description": "The button trigger's size: `standard` (default), the 44px control\nheight, or `compact`, the height and type of a compact `Button`."
+        },
+        {
           "name": "rootAttributes",
           "type": {
             "kind": "object",

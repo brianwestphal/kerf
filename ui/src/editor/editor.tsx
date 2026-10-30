@@ -1235,6 +1235,8 @@ export function createEditor(options: EditorOptions) {
     const add = union ? (
       <PopupMenu
         text="Add"
+        emphasis="secondary"
+        size="compact"
         icon={<LucideIcon icon={Plus} name="plus" />}
         items={members.map((member, index) => ({
           label: member.label,

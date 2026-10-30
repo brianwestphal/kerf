@@ -102,6 +102,12 @@ type PopupMenuTriggerName =
       icon?: never;
     };
 
+/** How loudly a PopupMenu's button trigger asks: borderless or outlined. */
+export type PopupMenuEmphasis = 'plain' | 'secondary';
+
+/** A PopupMenu button trigger's height: the standard control or compact. */
+export type PopupMenuSize = 'standard' | 'compact';
+
 /** A context PopupMenu's viewport anchor point. */
 export interface PopupMenuAnchor {
   x: number;
@@ -139,6 +145,18 @@ export type PopupMenuProps = PopupMenuTrigger & {
   /** Show the disclosure caret after the trigger content. Defaults to true. */
   caret?: boolean;
   disabled?: boolean;
+  /**
+   * The button trigger's emphasis outside a toolbar: `plain` (default), a
+   * quiet borderless trigger, or `secondary`, outlined to sit beside
+   * secondary `Button`s, as an Add menu does in a form's row of actions. A
+   * `ToolbarControlGroup` styles its own triggers, so it ignores this.
+   */
+  emphasis?: PopupMenuEmphasis;
+  /**
+   * The button trigger's size: `standard` (default), the 44px control
+   * height, or `compact`, the height and type of a compact `Button`.
+   */
+  size?: PopupMenuSize;
   /** Application `data-*` metadata on the menu root. */
   rootAttributes?: PopupMenuDataAttributes;
   /** Native named-slot assignment when composed inside a web component. */
@@ -403,6 +421,8 @@ export function PopupMenu({
   placement = 'bottom-start',
   caret = triggerContent === undefined,
   disabled = false,
+  emphasis = 'plain',
+  size = 'standard',
   rootAttributes = {},
   slot,
   context = false,
@@ -461,6 +481,8 @@ export function PopupMenu({
             : 'content'
       }
       data-placement={placement}
+      data-emphasis={emphasis === 'secondary' ? emphasis : undefined}
+      data-size={size === 'compact' ? size : undefined}
       style={
         anchor
           ? `--kui-popup-menu-context-x:${anchor.x}px;--kui-popup-menu-context-y:${anchor.y}px`

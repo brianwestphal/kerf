@@ -1,8 +1,10 @@
 import { Badge } from '@kerfjs/ui/badge';
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
+import { Row } from '@kerfjs/ui/row';
 import { PopupSurface } from '@kerfjs/ui/surface-scaffold';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -13,6 +15,7 @@ import {
   Copy,
   Gavel,
   MoreHorizontal,
+  Plus,
   ThumbsDown,
   ThumbsUp,
   Trash2,
@@ -96,6 +99,28 @@ export function PopupMenuDemo() {
             </ToolbarControlGroup>
           }
         />
+      </CatalogExample>
+      <CatalogExample
+        label="Outlined Trigger Beside Buttons"
+        note="Outside a toolbar, the secondary emphasis outlines the trigger and the compact size gives it a compact Button's height, so an Add menu sits in a row of secondary actions."
+        align="inline-control"
+      >
+        <Row gap="s" wrap>
+          <PopupMenu
+            text="Add"
+            emphasis="secondary"
+            size="compact"
+            icon={<LucideIcon icon={Plus} name="plus" />}
+            items={[
+              { label: 'Item', action: 'log-more' },
+              { label: 'Heading', action: 'log-more' },
+              { label: 'Divider', action: 'log-more' },
+            ]}
+          />
+          <Button emphasis="secondary" size="compact" action="log-more">
+            Reset
+          </Button>
+        </Row>
       </CatalogExample>
       <CatalogExample
         label="Status Badge Trigger"

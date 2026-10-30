@@ -614,6 +614,10 @@ type PopupMenuTriggerName = {
     triggerContent: KerfUiContent;
     icon?: never;
 };
+/** How loudly a PopupMenu's button trigger asks: borderless or outlined. */
+type PopupMenuEmphasis = 'plain' | 'secondary';
+/** A PopupMenu button trigger's height: the standard control or compact. */
+type PopupMenuSize = 'standard' | 'compact';
 /** A context PopupMenu's viewport anchor point. */
 interface PopupMenuAnchor {
     x: number;
@@ -650,6 +654,18 @@ type PopupMenuProps = PopupMenuTrigger & {
     /** Show the disclosure caret after the trigger content. Defaults to true. */
     caret?: boolean;
     disabled?: boolean;
+    /**
+     * The button trigger's emphasis outside a toolbar: `plain` (default), a
+     * quiet borderless trigger, or `secondary`, outlined to sit beside
+     * secondary `Button`s, as an Add menu does in a form's row of actions. A
+     * `ToolbarControlGroup` styles its own triggers, so it ignores this.
+     */
+    emphasis?: PopupMenuEmphasis;
+    /**
+     * The button trigger's size: `standard` (default), the 44px control
+     * height, or `compact`, the height and type of a compact `Button`.
+     */
+    size?: PopupMenuSize;
     /** Application `data-*` metadata on the menu root. */
     rootAttributes?: PopupMenuDataAttributes;
     /** Native named-slot assignment when composed inside a web component. */
@@ -691,9 +707,9 @@ declare function closePopupMenu(menu: PopupMenuElement): void;
  * submenus appear above or below their parent menu so their rows do not cover
  * the parent list.
  */
-declare function PopupMenu({ text, label, icon, triggerContent, items, placement, caret, disabled, rootAttributes, slot, context, anchor, }: PopupMenuProps): SafeHtml;
+declare function PopupMenu({ text, label, icon, triggerContent, items, placement, caret, disabled, emphasis, size, rootAttributes, slot, context, anchor, }: PopupMenuProps): SafeHtml;
 
-export { PopupMenu, type PopupMenuAnchor, type PopupMenuDivider, type PopupMenuElement, type PopupMenuEntry, type PopupMenuHeading, type PopupMenuItem, type PopupMenuPlacement, type PopupMenuProps, closePopupMenu, openPopupMenu, openPopupMenuAt };
+export { PopupMenu, type PopupMenuAnchor, type PopupMenuDivider, type PopupMenuElement, type PopupMenuEmphasis, type PopupMenuEntry, type PopupMenuHeading, type PopupMenuItem, type PopupMenuPlacement, type PopupMenuProps, type PopupMenuSize, closePopupMenu, openPopupMenu, openPopupMenuAt };
 ```
 
 ## `@kerfjs/ui/list-header`
