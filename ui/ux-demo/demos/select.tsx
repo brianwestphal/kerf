@@ -9,7 +9,10 @@ import { Row } from '@kerfjs/ui/row';
 import { Select } from '@kerfjs/ui/select';
 import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import {
   Bell,
   Funnel,
@@ -166,9 +169,11 @@ export function SelectDemo() {
         align="inline-control"
       >
         <ToolbarControlGroup label="Ticket View">
-          <button type="button" aria-label="Pin View" data-action="log-pin">
-            <LucideIcon icon={Pin} name="pin" />
-          </button>
+          <ToolbarButton
+            ariaLabel="Pin View"
+            action="log-pin"
+            icon={<LucideIcon icon={Pin} name="pin" />}
+          />
           <Select<string>
             name="toolbar-ticket-label-filter"
             multiple

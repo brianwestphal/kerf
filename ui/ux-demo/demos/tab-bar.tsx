@@ -3,7 +3,10 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { TabBar } from '@kerfjs/ui/tab-bar';
 import { TabBarItem } from '@kerfjs/ui/tab-bar-item';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { LayoutGrid, PanelLeft, Plus, SquarePlus } from 'lucide';
 
 const tabs = (presentation: 'pill' | 'segmented' = 'pill') => [
@@ -117,16 +120,18 @@ export function TabBarDemo() {
           trailingPlacement="adjacent"
           trailing={
             <ToolbarControlGroup appearance="borderless" single>
-              <button type="button" aria-label="Add Inspector Section">
-                <LucideIcon icon={Plus} name="plus" />
-              </button>
+              <ToolbarButton
+                ariaLabel="Add Inspector Section"
+                icon={<LucideIcon icon={Plus} name="plus" />}
+              />
             </ToolbarControlGroup>
           }
           end={
             <ToolbarControlGroup appearance="borderless" single>
-              <button type="button" aria-label="Create Workspace Item">
-                <LucideIcon icon={SquarePlus} name="square-plus" />
-              </button>
+              <ToolbarButton
+                ariaLabel="Create Workspace Item"
+                icon={<LucideIcon icon={SquarePlus} name="square-plus" />}
+              />
             </ToolbarControlGroup>
           }
         >
@@ -143,13 +148,11 @@ export function TabBarDemo() {
           label="Project Tabs with Primary Action"
           leading={
             <ToolbarControlGroup appearance="borderless" single>
-              <button
-                type="button"
-                aria-label="Project Grid"
-                data-action="log-more"
-              >
-                <LucideIcon icon={LayoutGrid} name="layout-grid" />
-              </button>
+              <ToolbarButton
+                ariaLabel="Project Grid"
+                action="log-more"
+                icon={<LucideIcon icon={LayoutGrid} name="layout-grid" />}
+              />
             </ToolbarControlGroup>
           }
           trailingPlacement="adjacent"
@@ -212,16 +215,18 @@ export function TabBarDemo() {
           label="Overflowing Tab Bar"
           leading={
             <ToolbarControlGroup appearance="borderless" single>
-              <button type="button" aria-label="Show Sidebar">
-                <LucideIcon icon={PanelLeft} name="panel-left" />
-              </button>
+              <ToolbarButton
+                ariaLabel="Show Sidebar"
+                icon={<LucideIcon icon={PanelLeft} name="panel-left" />}
+              />
             </ToolbarControlGroup>
           }
           trailing={
             <ToolbarControlGroup appearance="borderless" single>
-              <button type="button" aria-label="Add Tab">
-                <LucideIcon icon={Plus} name="plus" />
-              </button>
+              <ToolbarButton
+                ariaLabel="Add Tab"
+                icon={<LucideIcon icon={Plus} name="plus" />}
+              />
             </ToolbarControlGroup>
           }
         >

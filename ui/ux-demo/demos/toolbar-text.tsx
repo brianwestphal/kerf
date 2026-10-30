@@ -3,7 +3,10 @@ import { Chip } from '@kerfjs/ui/chip';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { SearchField } from '@kerfjs/ui/search-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { SquareTerminal, X } from 'lucide';
 
@@ -122,9 +125,10 @@ export function ToolbarTextDemo() {
           }
           trailing={
             <ToolbarControlGroup single label="Close">
-              <button type="button" aria-label="Close">
-                <LucideIcon icon={X} name="x" />
-              </button>
+              <ToolbarButton
+                ariaLabel="Close"
+                icon={<LucideIcon icon={X} name="x" />}
+              />
             </ToolbarControlGroup>
           }
         />

@@ -6,7 +6,10 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { ResizableRegion } from '@kerfjs/ui/resizable-region';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { GripVertical, PanelLeftOpen } from 'lucide';
 
 import { DemoContentItem } from './demo-content-item.js';
@@ -105,9 +108,12 @@ export function ResizeDemo() {
           restoreControl={
             <FloatingToolbar label="Restore Collapsed Panel" placement="inline">
               <ToolbarControlGroup label="Restore Panel" single>
-                <button type="button" aria-label="Restore Panel">
-                  <LucideIcon icon={PanelLeftOpen} name="panel-left-open" />
-                </button>
+                <ToolbarButton
+                  ariaLabel="Restore Panel"
+                  icon={
+                    <LucideIcon icon={PanelLeftOpen} name="panel-left-open" />
+                  }
+                />
               </ToolbarControlGroup>
             </FloatingToolbar>
           }

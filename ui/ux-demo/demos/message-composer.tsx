@@ -2,7 +2,10 @@ import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { MessageComposer } from '@kerfjs/ui/message-composer';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { Paperclip } from 'lucide';
 
 /** The delegated action every Send button in this demo uses. */
@@ -51,13 +54,11 @@ export function MessageComposerDemo() {
           maxRows={12}
           leading={
             <ToolbarControlGroup appearance="borderless" single>
-              <button
-                type="button"
-                aria-label="Attach File"
-                data-action="attach-composer-demo"
-              >
-                <LucideIcon icon={Paperclip} name="paperclip" />
-              </button>
+              <ToolbarButton
+                ariaLabel="Attach File"
+                action="attach-composer-demo"
+                icon={<LucideIcon icon={Paperclip} name="paperclip" />}
+              />
             </ToolbarControlGroup>
           }
           trailing={

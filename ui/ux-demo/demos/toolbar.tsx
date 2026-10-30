@@ -6,7 +6,10 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { SearchField } from '@kerfjs/ui/search-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import {
   Bold,
@@ -40,32 +43,26 @@ export function ToolbarDemo() {
           trailing={
             <>
               <ToolbarControlGroup label="Refresh Workspace" single>
-                <button
-                  type="button"
-                  aria-label="Refresh Workspace"
-                  data-action="width-refresh"
-                >
-                  <LucideIcon icon={RefreshCw} name="refresh-cw" />
-                </button>
+                <ToolbarButton
+                  ariaLabel="Refresh Workspace"
+                  action="width-refresh"
+                  icon={<LucideIcon icon={RefreshCw} name="refresh-cw" />}
+                />
               </ToolbarControlGroup>
               <ToolbarControlGroup
                 label="Workspace Utilities"
                 hideBelow={px(416)}
               >
-                <button
-                  type="button"
-                  aria-label="Filter Workspace"
-                  data-action="width-filter"
-                >
-                  <LucideIcon icon={Filter} name="filter" />
-                </button>
-                <button
-                  type="button"
-                  aria-label="Workspace Settings"
-                  data-action="log-settings"
-                >
-                  <LucideIcon icon={Settings} name="settings" />
-                </button>
+                <ToolbarButton
+                  ariaLabel="Filter Workspace"
+                  action="width-filter"
+                  icon={<LucideIcon icon={Filter} name="filter" />}
+                />
+                <ToolbarButton
+                  ariaLabel="Workspace Settings"
+                  action="log-settings"
+                  icon={<LucideIcon icon={Settings} name="settings" />}
+                />
               </ToolbarControlGroup>
               <ToolbarControlGroup
                 label="More Workspace Actions"
@@ -105,9 +102,10 @@ export function ToolbarDemo() {
                 focusRing="outline"
                 single
               >
-                <button type="button" aria-label="Leading Action">
-                  <LucideIcon icon={Filter} name="filter" />
-                </button>
+                <ToolbarButton
+                  ariaLabel="Leading Action"
+                  icon={<LucideIcon icon={Filter} name="filter" />}
+                />
               </ToolbarControlGroup>
               <ToolbarText
                 text="A Long Toolbar Identity That Can Shrink"
@@ -121,9 +119,10 @@ export function ToolbarDemo() {
               focusRing="outline"
               single
             >
-              <button type="button" aria-label="Center Action">
-                <LucideIcon icon={RefreshCw} name="refresh-cw" />
-              </button>
+              <ToolbarButton
+                ariaLabel="Center Action"
+                icon={<LucideIcon icon={RefreshCw} name="refresh-cw" />}
+              />
             </ToolbarControlGroup>
           }
           trailing={
@@ -132,9 +131,10 @@ export function ToolbarDemo() {
               focusRing="outline"
               single
             >
-              <button type="button" aria-label="Trailing Action">
-                <LucideIcon icon={Settings} name="settings" />
-              </button>
+              <ToolbarButton
+                ariaLabel="Trailing Action"
+                icon={<LucideIcon icon={Settings} name="settings" />}
+              />
             </ToolbarControlGroup>
           }
         />
@@ -152,9 +152,10 @@ export function ToolbarDemo() {
           trailing={
             <>
               <ToolbarControlGroup label="Other Actions" single>
-                <button type="button" aria-label="Refresh Tickets">
-                  <LucideIcon icon={RefreshCw} name="refresh-cw" />
-                </button>
+                <ToolbarButton
+                  ariaLabel="Refresh Tickets"
+                  icon={<LucideIcon icon={RefreshCw} name="refresh-cw" />}
+                />
               </ToolbarControlGroup>
               <Button tone="brand" action="log-add">
                 New Ticket…
@@ -179,12 +180,14 @@ export function ToolbarDemo() {
               size="compact"
               content="icon"
             >
-              <button type="button" aria-label="Refresh Activity">
-                <LucideIcon icon={RefreshCw} name="refresh-cw" />
-              </button>
-              <button type="button" aria-label="Filter Activity">
-                <LucideIcon icon={Filter} name="filter" />
-              </button>
+              <ToolbarButton
+                ariaLabel="Refresh Activity"
+                icon={<LucideIcon icon={RefreshCw} name="refresh-cw" />}
+              />
+              <ToolbarButton
+                ariaLabel="Filter Activity"
+                icon={<LucideIcon icon={Filter} name="filter" />}
+              />
             </ToolbarControlGroup>
           }
         />
@@ -228,19 +231,20 @@ export function ToolbarDemo() {
                 label="View Controls"
                 buttonAppearance="push"
               >
-                <button
-                  type="button"
-                  aria-label="Toggle Inspector"
-                  aria-pressed="true"
-                >
-                  <LucideIcon
-                    icon={SlidersHorizontal}
-                    name="sliders-horizontal"
-                  />
-                </button>
-                <button type="button" aria-label="Settings">
-                  <LucideIcon icon={Settings} name="settings" />
-                </button>
+                <ToolbarButton
+                  ariaLabel="Toggle Inspector"
+                  pressed
+                  icon={
+                    <LucideIcon
+                      icon={SlidersHorizontal}
+                      name="sliders-horizontal"
+                    />
+                  }
+                />
+                <ToolbarButton
+                  ariaLabel="Settings"
+                  icon={<LucideIcon icon={Settings} name="settings" />}
+                />
               </ToolbarControlGroup>
             }
           />
@@ -273,12 +277,14 @@ export function ToolbarDemo() {
           center={<ToolbarText text="TICKET-123" size="large" />}
           trailing={
             <ToolbarControlGroup appearance="borderless">
-              <button type="button" aria-label="Refresh Ticket">
-                <LucideIcon icon={RefreshCw} name="refresh-cw" />
-              </button>
-              <button type="button" aria-label="Ticket Settings">
-                <LucideIcon icon={Settings} name="settings" />
-              </button>
+              <ToolbarButton
+                ariaLabel="Refresh Ticket"
+                icon={<LucideIcon icon={RefreshCw} name="refresh-cw" />}
+              />
+              <ToolbarButton
+                ariaLabel="Ticket Settings"
+                icon={<LucideIcon icon={Settings} name="settings" />}
+              />
             </ToolbarControlGroup>
           }
         />
@@ -295,16 +301,18 @@ export function ToolbarDemo() {
           label="Inset-Free Toolbar"
           leading={
             <ToolbarControlGroup appearance="borderless" single>
-              <button type="button" aria-label="Filters">
-                <LucideIcon icon={Filter} name="filter" />
-              </button>
+              <ToolbarButton
+                ariaLabel="Filters"
+                icon={<LucideIcon icon={Filter} name="filter" />}
+              />
             </ToolbarControlGroup>
           }
           trailing={
             <ToolbarControlGroup appearance="borderless" single>
-              <button type="button" aria-label="Refresh">
-                <LucideIcon icon={RefreshCw} name="refresh-cw" />
-              </button>
+              <ToolbarButton
+                ariaLabel="Refresh"
+                icon={<LucideIcon icon={RefreshCw} name="refresh-cw" />}
+              />
             </ToolbarControlGroup>
           }
         />
@@ -323,35 +331,42 @@ export function ToolbarDemo() {
           trailing={
             <>
               <ToolbarControlGroup label="Text Style" buttonAppearance="push">
-                <button type="button" aria-label="Bold" aria-pressed="false">
-                  <LucideIcon icon={Bold} name="bold" />
-                </button>
-                <button type="button" aria-label="Italic" aria-pressed="false">
-                  <LucideIcon icon={Italic} name="italic" />
-                </button>
-                <button
-                  type="button"
-                  aria-label="Underline"
-                  aria-pressed="false"
-                >
-                  <LucideIcon icon={Underline} name="underline" />
-                </button>
+                <ToolbarButton
+                  ariaLabel="Bold"
+                  pressed={false}
+                  icon={<LucideIcon icon={Bold} name="bold" />}
+                />
+                <ToolbarButton
+                  ariaLabel="Italic"
+                  pressed={false}
+                  icon={<LucideIcon icon={Italic} name="italic" />}
+                />
+                <ToolbarButton
+                  ariaLabel="Underline"
+                  pressed={false}
+                  icon={<LucideIcon icon={Underline} name="underline" />}
+                />
               </ToolbarControlGroup>
               <ToolbarControlGroup
                 label="Draft Actions"
                 buttonAppearance="push"
               >
-                <button type="button" aria-label="Filter Drafts">
-                  <LucideIcon icon={Filter} name="filter" />
-                </button>
-                <button type="button" aria-label="Refresh Drafts">
-                  <LucideIcon icon={RefreshCw} name="refresh-cw" />
-                </button>
+                <ToolbarButton
+                  ariaLabel="Filter Drafts"
+                  icon={<LucideIcon icon={Filter} name="filter" />}
+                />
+                <ToolbarButton
+                  ariaLabel="Refresh Drafts"
+                  icon={<LucideIcon icon={RefreshCw} name="refresh-cw" />}
+                />
               </ToolbarControlGroup>
               <ToolbarControlGroup label="More Draft Actions" single>
-                <button type="button" aria-label="More Draft Actions">
-                  <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
-                </button>
+                <ToolbarButton
+                  ariaLabel="More Draft Actions"
+                  icon={
+                    <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+                  }
+                />
               </ToolbarControlGroup>
             </>
           }
@@ -410,18 +425,20 @@ export function ToolbarDemo() {
                 single
                 visibility="yield-to-expanded-sibling"
               >
-                <button type="button" aria-label="List View">
-                  <LucideIcon icon={FileText} name="file-text" />
-                </button>
+                <ToolbarButton
+                  ariaLabel="List View"
+                  icon={<LucideIcon icon={FileText} name="file-text" />}
+                />
               </ToolbarControlGroup>
               <ToolbarControlGroup
                 label="Actions"
                 single
                 visibility="yield-to-expanded-sibling"
               >
-                <button type="button" aria-label="More Actions">
-                  <LucideIcon icon={MoreHorizontal} name="ellipsis" />
-                </button>
+                <ToolbarButton
+                  ariaLabel="More Actions"
+                  icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
+                />
               </ToolbarControlGroup>
             </>
           }

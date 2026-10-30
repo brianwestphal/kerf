@@ -8,7 +8,10 @@ import { Skeleton } from '@kerfjs/ui/skeleton';
 import { TabBar } from '@kerfjs/ui/tab-bar';
 import { TabBarItem } from '@kerfjs/ui/tab-bar-item';
 import { Text } from '@kerfjs/ui/text';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { PanelLeft, Plus } from 'lucide';
 
 import { reportTabActive, tabBarActive, tabBarTabs } from './state.js';
@@ -33,24 +36,20 @@ export function ApplicationTabsDemo() {
               label="Open Catalog Pages"
               leading={
                 <ToolbarControlGroup appearance="borderless" single>
-                  <button
-                    type="button"
-                    aria-label="Show Navigation"
-                    data-action="log-sidebar"
-                  >
-                    <LucideIcon icon={PanelLeft} name="panel-left" />
-                  </button>
+                  <ToolbarButton
+                    ariaLabel="Show Navigation"
+                    action="log-sidebar"
+                    icon={<LucideIcon icon={PanelLeft} name="panel-left" />}
+                  />
                 </ToolbarControlGroup>
               }
               trailing={
                 <ToolbarControlGroup appearance="borderless" single>
-                  <button
-                    type="button"
-                    aria-label="Add Tab"
-                    data-action="add-demo-tab"
-                  >
-                    <LucideIcon icon={Plus} name="plus" />
-                  </button>
+                  <ToolbarButton
+                    ariaLabel="Add Tab"
+                    action="add-demo-tab"
+                    icon={<LucideIcon icon={Plus} name="plus" />}
+                  />
                 </ToolbarControlGroup>
               }
             >

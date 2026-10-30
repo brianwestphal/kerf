@@ -5,7 +5,10 @@ import { ContentItem } from '@kerfjs/ui/content-item';
 import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { PanelBottomOpen, Terminal, X } from 'lucide';
 
@@ -50,19 +53,19 @@ export function FloatingToolbarDemo() {
           }
           trailing={
             <ToolbarControlGroup appearance="borderless" single>
-              <button
-                type="button"
-                data-action="toggle-floating-toolbar"
-                aria-pressed={String(open)}
-                aria-label={
+              <ToolbarButton
+                ariaLabel={
                   open ? 'Hide Floating Toolbar' : 'Show Floating Toolbar'
                 }
-              >
-                <LucideIcon
-                  icon={open ? X : PanelBottomOpen}
-                  name={open ? 'x' : 'panel-bottom-open'}
-                />
-              </button>
+                action="toggle-floating-toolbar"
+                pressed={open}
+                icon={
+                  <LucideIcon
+                    icon={open ? X : PanelBottomOpen}
+                    name={open ? 'x' : 'panel-bottom-open'}
+                  />
+                }
+              />
             </ToolbarControlGroup>
           }
         />
@@ -72,13 +75,11 @@ export function FloatingToolbarDemo() {
         {open ? (
           <FloatingToolbar label="Terminal Drawer">
             <ToolbarControlGroup label="Terminal Drawer" single>
-              <button
-                type="button"
-                aria-label="Restore Terminal Drawer"
-                data-action="log-restore-drawer"
-              >
-                <LucideIcon icon={Terminal} name="terminal" />
-              </button>
+              <ToolbarButton
+                ariaLabel="Restore Terminal Drawer"
+                action="log-restore-drawer"
+                icon={<LucideIcon icon={Terminal} name="terminal" />}
+              />
             </ToolbarControlGroup>
           </FloatingToolbar>
         ) : null}
@@ -86,9 +87,10 @@ export function FloatingToolbarDemo() {
       <CatalogExample label="Inline Restore Cluster" align="none">
         <FloatingToolbar label="Inline Drawer Restore" placement="inline">
           <ToolbarControlGroup label="Restore Drawer" single>
-            <button type="button" aria-label="Restore Drawer">
-              <LucideIcon icon={Terminal} name="terminal" />
-            </button>
+            <ToolbarButton
+              ariaLabel="Restore Drawer"
+              icon={<LucideIcon icon={Terminal} name="terminal" />}
+            />
           </ToolbarControlGroup>
         </FloatingToolbar>
       </CatalogExample>

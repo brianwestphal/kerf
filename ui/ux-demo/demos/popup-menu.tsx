@@ -7,7 +7,10 @@ import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { Row } from '@kerfjs/ui/row';
 import { PopupSurface } from '@kerfjs/ui/surface-scaffold';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import {
   Archive,
@@ -226,14 +229,12 @@ export function PopupMenuDemo() {
           rootAttributes={{ 'data-popup-menu-context-target': '' }}
         />
         <ToolbarControlGroup single>
-          <button
-            type="button"
-            aria-label="Demand Actions"
+          <ToolbarButton
+            ariaLabel="Demand Actions"
+            action="open-demand-actions"
             title="Demand Actions"
-            data-action="open-demand-actions"
-          >
-            <LucideIcon icon={MoreHorizontal} name="actions" />
-          </button>
+            icon={<LucideIcon icon={MoreHorizontal} name="actions" />}
+          />
         </ToolbarControlGroup>
         <PopupMenu
           context

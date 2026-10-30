@@ -240,14 +240,12 @@ export function ToolbarControlGroupDemo() {
         align="inline-control"
       >
         <ToolbarControlGroup label="Ticket View" shape={shape}>
-          <button
-            type="button"
-            aria-label="Pin View"
-            aria-pressed="true"
-            data-action="log-pin"
-          >
-            <LucideIcon icon={Pin} name="pin" />
-          </button>
+          <ToolbarButton
+            ariaLabel="Pin View"
+            action="log-pin"
+            pressed
+            icon={<LucideIcon icon={Pin} name="pin" />}
+          />
           <Select<string>
             name="toolbar-group-sort"
             value={toolbarSort.value}
@@ -265,9 +263,11 @@ export function ToolbarControlGroupDemo() {
       </CatalogExample>
       <CatalogExample label="Single Button" align="inline-control">
         <ToolbarControlGroup single shape={shape}>
-          <button type="button" aria-label="Pin View" data-action="log-pin">
-            <LucideIcon icon={Pin} name="pin" />
-          </button>
+          <ToolbarButton
+            ariaLabel="Pin View"
+            action="log-pin"
+            icon={<LucideIcon icon={Pin} name="pin" />}
+          />
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
@@ -281,13 +281,11 @@ export function ToolbarControlGroupDemo() {
           busy={toolbarGroupBusy.value}
           busyLabel="Running pricing check"
         >
-          <button
-            type="button"
-            aria-label="Run Pricing Check"
-            data-action="log-pricing-check"
-          >
-            <LucideIcon icon={GitCompare} name="git-compare" />
-          </button>
+          <ToolbarButton
+            ariaLabel="Run Pricing Check"
+            action="log-pricing-check"
+            icon={<LucideIcon icon={GitCompare} name="git-compare" />}
+          />
         </ToolbarControlGroup>
         <ToolbarControlGroup
           single
@@ -307,37 +305,31 @@ export function ToolbarControlGroupDemo() {
       </CatalogExample>
       <CatalogExample label="Borderless Group" align="inline-control">
         <ToolbarControlGroup appearance="borderless" single shape={shape}>
-          <button
-            type="button"
-            aria-label="Show Sidebar"
-            data-action="log-sidebar"
-          >
-            <LucideIcon icon={PanelLeftOpen} name="panel-left-open" />
-          </button>
+          <ToolbarButton
+            ariaLabel="Show Sidebar"
+            action="log-sidebar"
+            icon={<LucideIcon icon={PanelLeftOpen} name="panel-left-open" />}
+          />
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample label="Push Button, Resting" align="inline-control">
         <ToolbarControlGroup buttonAppearance="push" single shape={shape}>
-          <button
-            type="button"
-            aria-label="Resting Comparison"
-            aria-pressed="false"
-            data-action="log-resting"
-          >
-            <LucideIcon icon={GitCompare} name="git-compare" />
-          </button>
+          <ToolbarButton
+            ariaLabel="Resting Comparison"
+            action="log-resting"
+            pressed={false}
+            icon={<LucideIcon icon={GitCompare} name="git-compare" />}
+          />
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample label="Push Button, Pressed" align="inline-control">
         <ToolbarControlGroup buttonAppearance="push" single shape={shape}>
-          <button
-            type="button"
-            aria-label="Pressed Comparison"
-            aria-pressed="true"
-            data-action="log-pressed"
-          >
-            <LucideIcon icon={GitCompare} name="git-compare" />
-          </button>
+          <ToolbarButton
+            ariaLabel="Pressed Comparison"
+            action="log-pressed"
+            pressed
+            icon={<LucideIcon icon={GitCompare} name="git-compare" />}
+          />
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample label="Pop Selected Tone" align="inline-control">
@@ -347,14 +339,12 @@ export function ToolbarControlGroupDemo() {
           selectedTone="pop"
           shape={shape}
         >
-          <button
-            type="button"
-            aria-label="Featured"
-            aria-pressed="true"
-            data-action="log-featured"
-          >
-            <LucideIcon icon={Star} name="star" />
-          </button>
+          <ToolbarButton
+            ariaLabel="Featured"
+            action="log-featured"
+            pressed
+            icon={<LucideIcon icon={Star} name="star" />}
+          />
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
@@ -372,23 +362,25 @@ export function ToolbarControlGroupDemo() {
           >
             <LucideIcon icon={Star} name="star" appearance="solid" />
           </button>
-          <button type="button" aria-label="Share" data-action="log-share">
-            <LucideIcon icon={Share2} name="share-2" />
-          </button>
+          <ToolbarButton
+            ariaLabel="Share"
+            action="log-share"
+            icon={<LucideIcon icon={Share2} name="share-2" />}
+          />
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample label="Dark Group" align="inline-control">
         <ToolbarControlGroup label="Dark Navigation" tone="dark" shape={shape}>
-          <button
-            type="button"
-            aria-label="Previous"
-            data-action="log-previous"
-          >
-            <LucideIcon icon={ChevronLeft} name="chevron-left" />
-          </button>
-          <button type="button" aria-label="Next" data-action="log-next">
-            <LucideIcon icon={ChevronRight} name="chevron-right" />
-          </button>
+          <ToolbarButton
+            ariaLabel="Previous"
+            action="log-previous"
+            icon={<LucideIcon icon={ChevronLeft} name="chevron-left" />}
+          />
+          <ToolbarButton
+            ariaLabel="Next"
+            action="log-next"
+            icon={<LucideIcon icon={ChevronRight} name="chevron-right" />}
+          />
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
@@ -427,20 +419,18 @@ export function ToolbarControlGroupDemo() {
                   material="glass"
                   shape={shape}
                 >
-                  <button
-                    type="button"
-                    aria-label="Earlier Photo"
-                    data-action="log-previous"
-                  >
-                    <LucideIcon icon={ChevronLeft} name="chevron-left" />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Later Photo"
-                    data-action="log-next"
-                  >
-                    <LucideIcon icon={ChevronRight} name="chevron-right" />
-                  </button>
+                  <ToolbarButton
+                    ariaLabel="Earlier Photo"
+                    action="log-previous"
+                    icon={<LucideIcon icon={ChevronLeft} name="chevron-left" />}
+                  />
+                  <ToolbarButton
+                    ariaLabel="Later Photo"
+                    action="log-next"
+                    icon={
+                      <LucideIcon icon={ChevronRight} name="chevron-right" />
+                    }
+                  />
                 </ToolbarControlGroup>
               }
               trailing={
@@ -450,13 +440,11 @@ export function ToolbarControlGroupDemo() {
                   single
                   shape={shape}
                 >
-                  <button
-                    type="button"
-                    aria-label="Share Photo"
-                    data-action="log-share"
-                  >
-                    <LucideIcon icon={Share2} name="share-2" />
-                  </button>
+                  <ToolbarButton
+                    ariaLabel="Share Photo"
+                    action="log-share"
+                    icon={<LucideIcon icon={Share2} name="share-2" />}
+                  />
                 </ToolbarControlGroup>
               }
             />
@@ -597,14 +585,18 @@ export function ToolbarControlGroupDemo() {
                   />
                 </ToolbarControlGroup>
                 <ToolbarControlGroup label="View" single>
-                  <button type="button" aria-label="List View">
-                    <LucideIcon icon={List} name="list" />
-                  </button>
+                  <ToolbarButton
+                    ariaLabel="List View"
+                    icon={<LucideIcon icon={List} name="list" />}
+                  />
                 </ToolbarControlGroup>
                 <ToolbarControlGroup label="Sort" single>
-                  <button type="button" aria-label="Sort Tickets">
-                    <LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />
-                  </button>
+                  <ToolbarButton
+                    ariaLabel="Sort Tickets"
+                    icon={
+                      <LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />
+                    }
+                  />
                 </ToolbarControlGroup>
               </>
             }
@@ -627,9 +619,12 @@ export function ToolbarControlGroupDemo() {
                   />
                 </ToolbarControlGroup>
                 <ToolbarControlGroup label="Sort" single>
-                  <button type="button" aria-label="Sort Tickets">
-                    <LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />
-                  </button>
+                  <ToolbarButton
+                    ariaLabel="Sort Tickets"
+                    icon={
+                      <LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />
+                    }
+                  />
                 </ToolbarControlGroup>
                 <ToolbarControlGroup
                   content="search"

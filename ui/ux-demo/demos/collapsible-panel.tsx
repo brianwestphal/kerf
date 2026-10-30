@@ -13,7 +13,10 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
 import { Row } from '@kerfjs/ui/row';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
 import { FilePlus, Search } from 'lucide';
@@ -59,13 +62,11 @@ function iconGroup(
       single
       relocateOnCollapse={relocateOnCollapse}
     >
-      <button
-        type="button"
-        aria-label={label}
-        data-action="collapsible-panel-demo-command"
-      >
-        <LucideIcon icon={icon} name={name} />
-      </button>
+      <ToolbarButton
+        ariaLabel={label}
+        action="collapsible-panel-demo-command"
+        icon={<LucideIcon icon={icon} name={name} />}
+      />
     </ToolbarControlGroup>
   );
 }

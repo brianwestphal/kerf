@@ -9,7 +9,10 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
 import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { ChevronLeft, Ellipsis, Share } from 'lucide';
 
@@ -119,13 +122,11 @@ export function BackdropImageDemo() {
                   material="glass"
                   single
                 >
-                  <button
-                    type="button"
-                    aria-label="Back"
-                    data-action="log-backdrop-track"
-                  >
-                    <LucideIcon icon={ChevronLeft} name="chevron-left" />
-                  </button>
+                  <ToolbarButton
+                    ariaLabel="Back"
+                    action="log-backdrop-track"
+                    icon={<LucideIcon icon={ChevronLeft} name="chevron-left" />}
+                  />
                 </ToolbarControlGroup>
               }
               trailing={
@@ -134,20 +135,16 @@ export function BackdropImageDemo() {
                   content="icon"
                   material="glass"
                 >
-                  <button
-                    type="button"
-                    aria-label="Share"
-                    data-action="log-backdrop-track"
-                  >
-                    <LucideIcon icon={Share} name="share" />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="More"
-                    data-action="log-backdrop-track"
-                  >
-                    <LucideIcon icon={Ellipsis} name="ellipsis" />
-                  </button>
+                  <ToolbarButton
+                    ariaLabel="Share"
+                    action="log-backdrop-track"
+                    icon={<LucideIcon icon={Share} name="share" />}
+                  />
+                  <ToolbarButton
+                    ariaLabel="More"
+                    action="log-backdrop-track"
+                    icon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
+                  />
                 </ToolbarControlGroup>
               }
             />

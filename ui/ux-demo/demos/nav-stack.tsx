@@ -13,7 +13,10 @@ import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { NavStack, type NavStackView } from '@kerfjs/ui/nav-stack';
 import { Text } from '@kerfjs/ui/text';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
 import {
@@ -264,14 +267,12 @@ const compactChromeView = (open: boolean): NavStackView => ({
     title: 'Messages',
     trailing: (
       <ToolbarControlGroup label="Filter" appearance="borderless" single>
-        <button
-          type="button"
-          aria-label={open ? 'Hide Filters' : 'Show Filters'}
-          aria-pressed={String(open)}
-          data-action={TOGGLE_COMPACT_CHROME_DEMO_ACTION}
-        >
-          <LucideIcon icon={Funnel} name="funnel" />
-        </button>
+        <ToolbarButton
+          ariaLabel={open ? 'Hide Filters' : 'Show Filters'}
+          action={TOGGLE_COMPACT_CHROME_DEMO_ACTION}
+          pressed={open}
+          icon={<LucideIcon icon={Funnel} name="funnel" />}
+        />
       </ToolbarControlGroup>
     ),
   },

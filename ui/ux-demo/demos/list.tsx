@@ -13,7 +13,10 @@ import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Text } from '@kerfjs/ui/text';
 import { TextField } from '@kerfjs/ui/text-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { each } from 'kerfjs';
 import {
@@ -91,13 +94,11 @@ export function ListDemo() {
               leading={<ToolbarText text="Workspace" size="small" />}
               trailing={
                 <ToolbarControlGroup appearance="borderless" single>
-                  <button
-                    type="button"
-                    aria-label="Add Workspace"
-                    data-action="log-add"
-                  >
-                    <LucideIcon icon={Plus} name="plus" />
-                  </button>
+                  <ToolbarButton
+                    ariaLabel="Add Workspace"
+                    action="log-add"
+                    icon={<LucideIcon icon={Plus} name="plus" />}
+                  />
                 </ToolbarControlGroup>
               }
             />
@@ -108,13 +109,11 @@ export function ListDemo() {
               leading={<ToolbarText text="Ready" size="small" />}
               trailing={
                 <ToolbarControlGroup appearance="borderless" single>
-                  <button
-                    type="button"
-                    aria-label="Sidebar Settings"
-                    data-action="log-settings"
-                  >
-                    <LucideIcon icon={Settings} name="settings" />
-                  </button>
+                  <ToolbarButton
+                    ariaLabel="Sidebar Settings"
+                    action="log-settings"
+                    icon={<LucideIcon icon={Settings} name="settings" />}
+                  />
                 </ToolbarControlGroup>
               }
             />
