@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **A list editor in the Kerf UI editor.** A list of objects or union items (a Select's `choices`, a PopupMenu's `items`, a NavStack's `views`) now opens as one row per item: choose a row to edit that item's form, remove it, drag or Alt+Shift+Arrow to reorder, and **Add** a new item (or pick the kind from **Add ▾** for a PopupMenu's items, headings, and dividers) (`KF-CY1D5W`).
 - **An icon picker in the Kerf UI editor.** A LucideIcon's `icon` (and any icon-data prop or field) now opens a dialog that searches the Lucide icons and shows them; choosing one sets it, and the canvas updates (`KF-VYRDDQ`).
 - **Inline tag and checkbox editors in the Kerf UI editor.** A list of strings (a TagField's `tags`, a ColumnExplorer's `path`) now edits in a TagField and a set of sides (a Pane's `separators` or `safeAreaEdges`) in a CheckboxGroup, instead of JSON (`KF-A9ZHGW`).
 - **Object forms in the Kerf UI editor.** An object prop (a Workbench's `mainFooterList`, a Pane's `tint`) now opens a form built from its type's fields instead of a JSON textarea. A form of at most 10 fields slides into the Inspector, Back returns, and the canvas updates as you edit; a larger one, such as a Workbench's `mainPane`, opens in a dialog. Nested objects open the same way. **Edit as JSON**, **Reset**, and **Fill with example** remain on every form (`KF-Z9S029`).

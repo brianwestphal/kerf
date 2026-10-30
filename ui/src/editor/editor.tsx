@@ -17,6 +17,7 @@ import {
   type ViewContract,
   type ViewDocument,
   type ViewNode,
+  type ViewType,
   type ViewValue,
 } from '@kerfjs/ui/view';
 import { delegate, effect, mount, type SafeHtml, signal } from 'kerfjs';
@@ -30,6 +31,7 @@ import {
   FolderOpen,
   GitCompare,
   icons as lucideIcons,
+  Plus,
   Redo2,
   Save,
   Trash2,
@@ -42,6 +44,7 @@ import { Toolbar } from '../components/actions/toolbar/toolbar.js';
 import { ToolbarControlGroup } from '../components/actions/toolbar-control-group/toolbar-control-group.js';
 import { ToolbarText } from '../components/actions/toolbar-text/toolbar-text.js';
 import { List } from '../components/collections/list/list.js';
+import { ListActionRow } from '../components/collections/list-action-row/list-action-row.js';
 import { ListHeader } from '../components/collections/list-header/list-header.js';
 import { ListInsetText } from '../components/collections/list-inset-text/list-inset-text.js';
 import { ListItem } from '../components/collections/list-item/list-item.js';
@@ -89,6 +92,10 @@ import {
 } from '../components/surfaces/surface-scaffold/surface-scaffold.js';
 import { Text } from '../components/typography/text/text.js';
 import { px } from '../shared/styles/css-values.js';
+import {
+  reorderListItems,
+  wireListReorder,
+} from '../wiring/wire-list-reorder.js';
 import { wireScrollDividers } from '../wiring/wire-scroll-dividers.js';
 import {
   createAutosave,
@@ -162,7 +169,12 @@ import {
   setProp,
   withCatalog,
 } from './model/edits.js';
-import { exampleValue, slotNamer, usedSlots } from './model/examples.js';
+import {
+  exampleValue,
+  resolveType,
+  slotNamer,
+  usedSlots,
+} from './model/examples.js';
 import {
   compareWithModule,
   describeExport,
@@ -173,9 +185,13 @@ import {
 import {
   containerFor,
   type FieldContainer,
+  type FieldEditorKind,
   fieldEditorKind,
   type FieldPath,
   fieldSummary,
+  listItemLabel,
+  listMembers,
+  memberFor,
   objectFields,
   stepTitle,
   typeAt,
@@ -183,7 +199,11 @@ import {
   withValueAt,
 } from './model/fields.js';
 import { iconNames, matchIcons } from './model/icons.js';
-import { groupedProps, inspectorSections } from './model/inspector.js';
+import {
+  groupedProps,
+  type InspectorProp,
+  inspectorSections,
+} from './model/inspector.js';
 import {
   itemSlotRowNode,
   nodeTitle,
@@ -242,6 +262,9 @@ const ICON_CHOOSE_ACTION = 'editor-choose-icon';
 const ICON_REMOVE_ACTION = 'editor-remove-icon';
 const ICON_CLEAR_ACTION = 'editor-clear-icon-search';
 const ICON_DIALOG = 'editor-icon-dialog';
+// KF-CY1D5W: a list of objects or union items edits item by item.
+const FIELD_ADD_ITEM_ACTION = 'editor-add-item';
+const FIELD_REMOVE_ITEM_ACTION = 'editor-remove-item';
 const PROMOTE_ACTION = 'editor-promote';
 const EXPORT_MODULE_ACTION = 'editor-export-module';
 const EXPORT_DECLARATIONS_ACTION = 'editor-export-declarations';
@@ -942,7 +965,7 @@ export function createEditor(options: EditorOptions) {
           prop.type as never,
           definitionsOf(type),
           prop.name,
-          (hint) => hint,
+          slotNamer(usedSlots(doc.value)),
         );
         return (
           <>
@@ -1122,6 +1145,109 @@ export function createEditor(options: EditorOptions) {
     };
   };
 
+  /** Whether a structured kind opens its own editor rather than JSON. */
+  const opensEditor = (kind: FieldEditorKind) =>
+    kind === 'object' || kind === 'object-list' || kind === 'union-list';
+
+  /** Whether a step's scalar type has a control of its own, not JSON. */
+  const opensScalar = (
+    prop: InspectorProp,
+    value: ViewValue | undefined,
+    definitions: Parameters<typeof controlFor>[2],
+  ) => {
+    const kind = controlFor(prop, value, definitions).kind;
+    return kind !== 'list' && kind !== 'readonly';
+  };
+
+  /** A step's title: a field's name, or a list item's label ("Choice 2"). */
+  const stepLabel = (node: ViewNode, place: FieldPlace) => {
+    const index = place.path.at(-1);
+    return typeof index === 'number'
+      ? listItemLabel(fieldContext(node, place).value, index)
+      : stepTitle(place);
+  };
+
+  /**
+   * A list step (KF-CY1D5W): one row per item, labeled from the item and
+   * opening its form, with Remove and drag-reorder; Add appends an item,
+   * or for a union list offers each member in an Add menu.
+   */
+  const listStep = (
+    node: ViewNode,
+    place: FieldPlace,
+    actions: (lead: SafeHtml) => SafeHtml,
+  ) => {
+    const { definitions, type, value } = fieldContext(node, place);
+    const items = Array.isArray(value) ? value : [];
+    const members = listMembers(type, definitions, stepTitle(place));
+    const union = members.length > 1;
+    const itemType = (resolveType(type, definitions) as { items?: ViewType })
+      .items;
+    const step = JSON.stringify(place);
+    const rows = items.map((item, index) => {
+      const at = { prop: place.prop, path: [...place.path, index] };
+      const label = listItemLabel(item, index);
+      const member = memberFor(itemType, definitions, item);
+      // A union list's row names its member, unless the label already does.
+      const kind = union
+        ? members.find((option) => option.type === member)?.label
+        : undefined;
+      return (
+        <ListActionRow
+          label={label}
+          description={kind === label ? undefined : kind}
+          action={FIELD_OPEN_ACTION}
+          itemId={`item-${index}`}
+          draggable
+          rootAttributes={{ 'data-editor-open': JSON.stringify(at) }}
+          trailingAction={FIELD_REMOVE_ITEM_ACTION}
+          trailingActionLabel={`Remove ${label}`}
+          trailingActionIcon={<LucideIcon icon={Trash2} name="trash-2" />}
+          trailingActionAttributes={{ 'data-editor-item': JSON.stringify(at) }}
+        />
+      );
+    });
+    const add = union ? (
+      <PopupMenu
+        text="Add"
+        icon={<LucideIcon icon={Plus} name="plus" />}
+        items={members.map((member, index) => ({
+          label: member.label,
+          action: FIELD_ADD_ITEM_ACTION,
+          attributes: {
+            'data-editor-step': step,
+            'data-editor-member': String(index),
+          },
+        }))}
+      />
+    ) : (
+      <Button
+        emphasis="secondary"
+        size="compact"
+        icon={<LucideIcon icon={Plus} name="plus" />}
+        action={FIELD_ADD_ITEM_ACTION}
+        rootAttributes={{
+          'data-editor-step': step,
+          'data-editor-member': '0',
+        }}
+      >
+        Add
+      </Button>
+    );
+    return (
+      <List>
+        {rows.length ? (
+          <List rootAttributes={{ 'data-list-id': step }}>{rows}</List>
+        ) : (
+          <ListInsetText>
+            <Text tone="quiet">No items yet.</Text>
+          </ListInsetText>
+        )}
+        {actions(add)}
+      </List>
+    );
+  };
+
   /**
    * One step of a field editor (KF-Z9S029): an object's form, built from
    * its fields with the Inspector's controls, nested objects opening the
@@ -1132,25 +1258,39 @@ export function createEditor(options: EditorOptions) {
     const { definitions, type, value } = fieldContext(node, place);
     const key = placeKey(place);
     const step = { 'data-editor-step': JSON.stringify(place) };
-    const form =
-      !jsonSteps.value.has(key) &&
-      fieldEditorKind(type, definitions) === 'object';
+    const kind = fieldEditorKind(type, definitions);
+    const structured = opensEditor(kind);
+    const form = structured && !jsonSteps.value.has(key);
+    // A list's text item (a Combobox suggestion) edits in its own control.
+    const scalar = { name: stepLabel(node, place), type, required: true };
+    if (!structured && opensScalar(scalar as never, value, definitions))
+      return (
+        <List controlInsets="trbl" gap>
+          {propControl(scalar as never, value as never, node.type, place)}
+        </List>
+      );
     const example = exampleValue(
       type,
       definitions,
       stepTitle(place),
       slotNamer(usedSlots(doc.value)),
     );
-    const actions = (
+    // A list's Add leads the row of actions (KF-CY1D5W).
+    const actions = (lead?: SafeHtml) => (
       <List controlInsets="trbl">
         <Row gap="s" wrap>
+          {lead}
           <Button
             emphasis="secondary"
             size="compact"
             action={FIELD_JSON_ACTION}
             rootAttributes={step}
           >
-            {form ? 'Edit as JSON' : 'Edit as form'}
+            {form
+              ? 'Edit as JSON'
+              : kind === 'object'
+                ? 'Edit as form'
+                : 'Edit as list'}
           </Button>
           <Button
             emphasis="secondary"
@@ -1193,10 +1333,11 @@ export function createEditor(options: EditorOptions) {
               }}
             />
           </List>
-          {actions}
+          {actions()}
         </List>
       );
     }
+    if (kind !== 'object') return listStep(node, place, actions);
     const record = (value ?? {}) as Record<string, ViewValue>;
     const editable: SafeHtml[] = [];
     const nested: SafeHtml[] = [];
@@ -1217,8 +1358,9 @@ export function createEditor(options: EditorOptions) {
         nested.push(iconRow(field.name, String(control.raw), at));
       } else if (
         control.kind === 'list' &&
-        fieldEditorKind(field.type as never, definitions, field.iconSource) ===
-          'object'
+        opensEditor(
+          fieldEditorKind(field.type as never, definitions, field.iconSource),
+        )
       ) {
         nested.push(configureRow(field.name, fieldValue, at));
       } else {
@@ -1240,7 +1382,7 @@ export function createEditor(options: EditorOptions) {
             ))}
           </ValueTable>
         ) : undefined}
-        {actions}
+        {actions()}
       </List>
     );
   };
@@ -1268,7 +1410,7 @@ export function createEditor(options: EditorOptions) {
     const node = findNode(doc.value, open.node)!.node;
     return fieldSteps(open).map((place) => ({
       key: `field-${placeKey(place)}`,
-      toolbar: { title: stepTitle(place) },
+      toolbar: { title: stepLabel(node, place) },
       content: fieldStep(node, place),
     }));
   };
@@ -1281,7 +1423,7 @@ export function createEditor(options: EditorOptions) {
     return (
       <DialogSurface
         id={FIELD_DIALOG}
-        label={place ? stepTitle(place) : 'Field'}
+        label={place ? stepLabel(node!, place) : 'Field'}
         size="medium"
         rootAttributes={{ 'data-key': FIELD_DIALOG }}
         footer={
@@ -1779,11 +1921,13 @@ export function createEditor(options: EditorOptions) {
           // Icon data opens the icon picker from its row (KF-VYRDDQ).
           const opens = (prop: (typeof section.props)[number]) =>
             (!isBinding(props[prop.name]) &&
-              fieldEditorKind(
-                prop.type as never,
-                definitionsOf(node.type),
-                prop.iconSource,
-              ) === 'object') ||
+              opensEditor(
+                fieldEditorKind(
+                  prop.type as never,
+                  definitionsOf(node.type),
+                  prop.iconSource,
+                ),
+              )) ||
             controlFor(prop, props[prop.name], definitionsOf(node.type))
               .kind === 'icon';
           const editable = section.props
@@ -2502,7 +2646,12 @@ export function createEditor(options: EditorOptions) {
       fieldErrors.value = { ...fieldErrors.value, [key]: result.error };
       return;
     }
-    if (!writeField(place, result.value) && fieldErrors.value[key])
+    // A list's text item cleared stays in the list, empty (KF-CY1D5W).
+    const next =
+      result.value === undefined && typeof place.path.at(-1) === 'number'
+        ? ''
+        : result.value;
+    if (!writeField(place, next) && fieldErrors.value[key])
       fieldErrors.value = {};
   };
 
@@ -2976,9 +3125,44 @@ export function createEditor(options: EditorOptions) {
           if (id)
             commit(nodesToText(doc.value, id, target.dataset.editorContent!));
         },
+        // A list row's action is its inner button; the row carries the place.
         [FIELD_OPEN_ACTION]: (_event, target) =>
-          openFieldAt(JSON.parse(target.dataset.editorOpen!) as FieldPlace),
+          openFieldAt(
+            JSON.parse(
+              target.closest<HTMLElement>('[data-editor-open]')!.dataset
+                .editorOpen!,
+            ) as FieldPlace,
+          ),
         [FIELD_BACK_ACTION]: fieldBack,
+        [FIELD_ADD_ITEM_ACTION]: (_event, target) => {
+          const place = JSON.parse(target.dataset.editorStep!) as FieldPlace;
+          const { definitions, type, value } = fieldContext(
+            findNode(doc.value, selectedNodeId()!)!.node,
+            place,
+          );
+          const items = Array.isArray(value) ? value : [];
+          const member = listMembers(type, definitions, stepTitle(place))[
+            Number(target.dataset.editorMember)
+          ]!;
+          // A new item is numbered after the list ("Choice 4"); an object
+          // no placeholder can stand for (a required color) starts empty
+          // for its form to fill. Text always has one.
+          const item =
+            exampleValue(
+              member.type,
+              definitions,
+              stepTitle(place),
+              slotNamer(usedSlots(doc.value)),
+              items.length + 1,
+            ) ?? {};
+          writeField(place, [...items, item]);
+        },
+        [FIELD_REMOVE_ITEM_ACTION]: (_event, target) => {
+          writeField(
+            JSON.parse(target.dataset.editorItem!) as FieldPlace,
+            undefined,
+          );
+        },
         [ICON_OPEN_ACTION]: (_event, target) => {
           iconPicker.value = JSON.parse(
             target.dataset.editorIconPlace!,
@@ -3176,6 +3360,32 @@ export function createEditor(options: EditorOptions) {
             const raw = JSON.stringify(tags);
             if (host.dataset.editorField) editField(host, raw);
             else editProp(host, raw);
+          },
+        }),
+      ),
+      // KF-CY1D5W: a list editor's rows reorder by drag or Alt+Shift+Arrow;
+      // each list's id is the place of the list it edits.
+      ...[
+        root.querySelector<HTMLElement>('[data-workbench-rail="right"]')!,
+        root.querySelector<HTMLElement>(`#${FIELD_DIALOG}`)!,
+      ].map((scope) =>
+        wireListReorder(scope, {
+          onReorder: ({ listId, sourceIds, target }) => {
+            const place = JSON.parse(listId!) as FieldPlace;
+            const items = fieldContext(
+              findNode(doc.value, selectedNodeId()!)!.node,
+              place,
+            ).value as ViewValue[];
+            const indexed = items.map((item, index) => ({ item, index }));
+            writeField(
+              place,
+              reorderListItems(
+                indexed,
+                (entry) => `item-${entry.index}`,
+                sourceIds,
+                target,
+              ).map((entry) => entry.item),
+            );
           },
         }),
       ),

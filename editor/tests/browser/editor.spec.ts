@@ -1190,3 +1190,80 @@ test('picks a LucideIcon’s icon from the icon picker', async ({
     animations: 'disabled',
   });
 });
+
+// KF-CY1D5W: a list of objects or union items edits item by item.
+async function addToPane(page: Page, name: string) {
+  const PANE = '01JB8Z1M6Q8E1X9V4S7K2R3T5A';
+  await area(page, 'Outline');
+  await page
+    .locator(`[data-action="editor-select-node"][data-item-id="${PANE}"]`)
+    .click();
+  await area(page, 'Children');
+  await page.locator('[data-editor-add="component"]').click();
+  await page.getByRole('option', { name, exact: true }).click();
+  await page.getByRole('button', { name: 'Add', exact: true }).click();
+  await area(page, 'Properties');
+}
+
+test('edits a Select’s choices in the list editor', async ({ page }, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await addToPane(page, 'Select');
+  await page.getByRole('button', { name: 'Configure choices' }).click();
+  const dialog = page.locator('#editor-field-dialog');
+  await expect(dialog).toBeVisible();
+  const rows = dialog.locator('[data-component="list-action-row"]');
+  await expect(rows).toHaveCount(3);
+  await dialog.getByRole('button', { name: 'Add', exact: true }).click();
+  await expect(rows).toHaveCount(4);
+  await expect(rows.nth(3)).toContainText('Choice 4');
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-cy1d5w-choices-1440.png'),
+    animations: 'disabled',
+  });
+  // Choose a row: its form opens in the dialog; Back returns to the list.
+  await rows
+    .nth(1)
+    .getByRole('button', { name: 'Choice 2', exact: true })
+    .click();
+  const label = dialog
+    .locator(`[data-editor-field='{"prop":"choices","path":[1,"label"]}']`)
+    .getByRole('textbox');
+  await label.fill('Second');
+  await label.press('Enter');
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-cy1d5w-choice-form-1440.png'),
+    animations: 'disabled',
+  });
+  await dialog.getByRole('button', { name: 'Back' }).click();
+  await expect(rows.nth(1)).toContainText('Second');
+  await dialog.getByRole('button', { name: 'Remove Choice 1' }).click();
+  await expect(rows).toHaveCount(3);
+  await expect(rows.first()).toContainText('Second');
+  // Drag the last row above the first.
+  await rows.nth(2).dragTo(rows.first(), { targetPosition: { x: 20, y: 4 } });
+  await expect(rows.first()).toContainText('Choice 4');
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  await expect(page.locator('[data-editor-canvas]')).toBeVisible();
+});
+
+test('adds a divider to a PopupMenu’s items from the Add menu', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await addToPane(page, 'PopupMenu');
+  await page.getByRole('button', { name: 'Configure items' }).click();
+  const dialog = page.locator('#editor-field-dialog');
+  const rows = dialog.locator('[data-component="list-action-row"]');
+  await expect(rows).toHaveCount(3);
+  await dialog.getByRole('button', { name: 'Add' }).click();
+  await page.getByRole('menuitem', { name: 'Divider' }).click();
+  await expect(rows).toHaveCount(4);
+  await expect(rows.nth(3)).toContainText('Divider');
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-cy1d5w-popup-items-1440.png'),
+    animations: 'disabled',
+  });
+});

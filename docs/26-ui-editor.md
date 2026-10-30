@@ -158,8 +158,20 @@ Lucide names and the matching icons themselves. An exact name ranks first,
 then names with a matching word; at most 96 show at once. Choosing one
 writes `{ $icon: name }` (the kebab-case name, or the export's camel case
 for the few Lucide names that do not split back), and **Remove icon**
-unsets it. Lists of objects and union items and the `fieldEditors`
-extension API still edit as JSON until their own editors land.
+unsets it. A list of objects or of union items (a Select's `choices`, a
+PopupMenu's `items`, a Combobox's `suggestions`) opens the list editor
+(KF-CY1D5W: list editor): one `ListActionRow` per item, labeled from its
+`label`, `name`, `title`, `value`, `key`, or `id` (a divider by its kind),
+that opens the item's form, with a Remove action and drag or
+Alt+Shift+Arrow reordering. **Add** appends an item numbered after the list
+("Choice 4"); a union list's **Add ▾** menu offers each member, named by its
+literal kind or its type name ("Item", "Heading", "Divider"; "Text" for a
+string), and its rows name the member. A text item edits in a text field,
+and clearing it keeps the item. A list and its item form are a
+sub-selection, so the list opens in a dialog unless its items have at most
+3 fields and nothing nested (a Slider's `ticks`), which push in the
+Inspector. A list whose items no form edits (an application's `number[]`)
+keeps the JSON field. The `fieldEditors` extension API is still to come.
 
 The inspector's Control flow section (KF-90GTJN: editor control flow) shows a
 node only while a true/false param or item field holds (Show, which wraps the

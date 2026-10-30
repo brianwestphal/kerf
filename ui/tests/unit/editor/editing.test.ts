@@ -225,37 +225,46 @@ describe('list props (KF-HNNWN9)', () => {
     expect(node()?.props).not.toHaveProperty('gap');
   });
 
+  // KF-CY1D5W: a list of union items opens its list editor; its typed JSON
+  // stays one click away there.
+  const openSuggestions = (root: HTMLElement) =>
+    field(
+      root,
+      `[data-editor-open='{"prop":"suggestions","path":[]}']`,
+    ).click();
+  const suggestionsJson = (root: HTMLElement) =>
+    field(root, `[data-editor-field='{"prop":"suggestions","path":[]}']`);
+
   it('edits a list prop as JSON and refuses a value its type does not take', () => {
     const { root, node } = add('@kerfjs/ui:combobox');
-    const suggestions = field(root, '[data-editor-prop="suggestions"]');
-    expect(suggestions.dataset.editorKind).toBe('list');
-    expect(suggestions.querySelector('textarea')!.value).toContain(
+    openSuggestions(root);
+    click(root, 'editor-field-json');
+    expect(suggestionsJson(root).dataset.editorKind).toBe('list');
+    expect(suggestionsJson(root).querySelector('textarea')!.value).toContain(
       'Suggestion 1',
     );
-    type(suggestions, '["Red", {"value": "g", "label": "Green"}]');
+    type(suggestionsJson(root), '["Red", {"value": "g", "label": "Green"}]');
     expect(node()?.props?.suggestions).toEqual([
       'Red',
       { value: 'g', label: 'Green' },
     ]);
-    type(field(root, '[data-editor-prop="suggestions"]'), '[1, 2]');
+    type(suggestionsJson(root), '[1, 2]');
     expect(node()?.props?.suggestions).toHaveLength(2);
     expect(root.textContent).toContain('Not a ComboboxSuggestion[].');
   });
 
   it('fills a cleared list prop with an example', () => {
     const { root, node } = add('@kerfjs/ui:combobox');
-    type(field(root, '[data-editor-prop="suggestions"]'), '');
+    openSuggestions(root);
+    click(root, 'editor-reset-field');
     expect(node()?.props).not.toHaveProperty('suggestions');
     expect(root.textContent).toContain('requires "suggestions"');
-    click(root, 'editor-fill-example');
+    click(root, 'editor-fill-field-example');
     expect(node()?.props?.suggestions).toEqual([
       'Suggestion 1',
       'Suggestion 2',
       'Suggestion 3',
     ]);
-    expect(
-      root.querySelector('[data-action="editor-fill-example"]'),
-    ).toBeNull();
   });
 
   // KF-SXDM56: content inside a list item (a NavStack view's body) is an

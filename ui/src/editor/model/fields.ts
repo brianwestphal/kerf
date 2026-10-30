@@ -5,7 +5,7 @@
 // component's catalog gets the same editors with no per-component table.
 import type { ViewType, ViewValue } from '@kerfjs/ui/view';
 
-import { resolveType } from './examples.js';
+import { resolveType, singular } from './examples.js';
 import type { InspectorProp } from './inspector.js';
 
 type Definitions = Readonly<Record<string, ViewType>>;
@@ -34,6 +34,13 @@ export type FieldContainer = 'subview' | 'dialog';
 /** The most fields a single-step form shows in the Inspector's pushed view. */
 export const SUBVIEW_FIELDS = 10;
 
+/**
+ * The most fields a list's items may have for the list to edit in the
+ * Inspector's pushed view (KF-CY1D5W): a list and its item form are a
+ * sub-selection, a dialog's job, unless the items are this small.
+ */
+export const SMALL_ITEM_FIELDS = 3;
+
 interface TypeShape {
   readonly kind: string;
   readonly text?: string;
@@ -51,6 +58,10 @@ interface TypeShape {
 
 const shape = (type: ViewType | undefined, definitions: Definitions) =>
   resolveType(type, definitions) as TypeShape | undefined;
+
+/** Whether a resolved type holds a list or an object. */
+const isStructuredShape = (type: TypeShape | undefined) =>
+  type?.kind === 'array' || type?.kind === 'object';
 
 /** Whether a resolved type is an object with fields a form can show. */
 const isFormObject = (type: TypeShape | undefined) =>
@@ -156,7 +167,18 @@ export function containerFor(
       return objectFields(type, definitions).length > SUBVIEW_FIELDS
         ? 'dialog'
         : 'subview';
-    case 'object-list':
+    case 'object-list': {
+      const item = shape(type, definitions)!.items;
+      const fields = objectFields(item, definitions);
+      // Small items with no list or object of their own (a Slider tick).
+      return fields.length <= SMALL_ITEM_FIELDS &&
+        fields.every(
+          (field) =>
+            !isStructuredShape(shape(field.type as ViewType, definitions)),
+        )
+        ? 'subview'
+        : 'dialog';
+    }
     case 'union-list':
     case 'icon':
       return 'dialog';
@@ -302,4 +324,94 @@ export function fieldSummary(value: ViewValue | undefined): string {
     return `${count} ${count === 1 ? 'field' : 'fields'} set`;
   }
   return 'Set';
+}
+
+/** The kinds of item a list editor adds: a label and the member's type. */
+export interface ListMember {
+  readonly label: string;
+  readonly type: ViewType;
+}
+
+/** "PopupMenuHeading" → ["Popup", "Menu", "Heading"]. */
+const camelWords = (name: string) => name.match(/[A-Z][a-z0-9]*|[a-z0-9]+/g)!;
+
+/**
+ * A union member's type name: its `ref`, or the last named type of an
+ * intersection (`Base<Id> & TabNavigatorTabDotBadge`).
+ */
+const memberName = (member: ViewType): string | undefined => {
+  const { ref, text } = member as { ref?: string; text?: string };
+  if (ref) return ref;
+  const last = text?.split('&').at(-1)!.trim();
+  return last && /^[A-Z][A-Za-z0-9]*$/.test(last) ? last : undefined;
+};
+
+/**
+ * What a list of `type` adds (KF-CY1D5W): its one item type, or each member
+ * of its union, labeled for an Add menu. A string member is "Text"; an
+ * object member is named by a text literal field it carries (`kind:
+ * "divider"` → "Divider"), else by its type name less the words every
+ * member's name shares (`PopupMenuHeading` → "Heading"), else after the
+ * list (`suggestions` → "Suggestion").
+ */
+export function listMembers(
+  type: ViewType | undefined,
+  definitions: Definitions,
+  /** The list's prop or field name, for an otherwise unnamed member. */
+  name = 'items',
+): readonly ListMember[] {
+  const items = shape(type, definitions)?.items;
+  const union = shape(items, definitions);
+  if (union?.kind !== 'union')
+    return items ? [{ label: singular(name), type: items }] : [];
+  const members = unionMembers(union, definitions);
+  const names = members.map((member) => {
+    const named = memberName(member);
+    return named ? camelWords(named) : undefined;
+  });
+  const named = names.filter(Boolean) as string[][];
+  let shared = 0;
+  while (
+    named.length > 1 &&
+    named.every((words) => words.length > shared + 1) &&
+    named.every((words) => words[shared] === named[0]![shared])
+  )
+    shared += 1;
+  return members.map((member, index) => {
+    const resolved = shape(member, definitions)!;
+    if (resolved.kind === 'string') return { label: 'Text', type: member };
+    const literal = resolved
+      .props!.map(
+        (field) =>
+          (shape(field.type, definitions) as { value?: unknown }).value,
+      )
+      .find((value) => typeof value === 'string') as string | undefined;
+    const words = names[index]?.slice(shared).join(' ');
+    const label = literal ?? words ?? singular(name);
+    return {
+      label: label.charAt(0).toUpperCase() + label.slice(1).toLowerCase(),
+      type: member,
+    };
+  });
+}
+
+/**
+ * How a list item reads in its list editor: a string as itself, an object
+ * by its first text `label`, `name`, `title`, `value`, `key`, or `id`, else
+ * by the literal it carries ("Divider"), else numbered ("Item 3").
+ */
+export function listItemLabel(
+  value: ViewValue | undefined,
+  index: number,
+): string {
+  if (typeof value === 'string') return value || `Item ${index + 1}`;
+  const fields = fieldsOf(value);
+  for (const name of ['label', 'name', 'title', 'value', 'key', 'id']) {
+    const text = fields?.[name];
+    if (typeof text === 'string' && text) return text;
+  }
+  const kind = fields?.kind;
+  return typeof kind === 'string' && kind
+    ? kind.charAt(0).toUpperCase() + kind.slice(1)
+    : `Item ${index + 1}`;
 }

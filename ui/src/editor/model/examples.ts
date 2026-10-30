@@ -48,7 +48,7 @@ export function isStructured(
  * "suggestions" → "Suggestion", "entries" → "Entry", "trailingMenu" →
  * "Trailing menu".
  */
-function singular(name: string): string {
+export function singular(name: string): string {
   const word = name
     .replace(/ies$/, 'y')
     .replace(/s$/, '')
@@ -118,11 +118,13 @@ export function exampleValue(
   definitions: Definitions,
   name: string,
   slot?: SlotNamer,
+  /** 1-based: a list item's number ("Choice 4"); 0 for none. */
+  index = 0,
 ): ViewValue | undefined {
   return example(resolveType(type, definitions), {
     definitions,
     name,
-    index: 0,
+    index,
     depth: 0,
     slot,
   });

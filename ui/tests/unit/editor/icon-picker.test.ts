@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { controlFor } from '../../../src/editor/model/controls.js';
 import { findNode } from '../../../src/editor/model/document.js';
+import { setProp } from '../../../src/editor/model/edits.js';
 import {
   ICON_RESULTS,
   iconNames,
@@ -100,7 +101,7 @@ function added(key: string) {
   click(root, '[data-action="editor-add-child"]');
   const { id } = editor.selection.value as { id: string };
   const props = () => findNode(editor.document.value, id)!.node.props ?? {};
-  return { root, props };
+  return { root, editor, id, props };
 }
 
 /** Types into the picker's search the way its editor reports input. */
@@ -143,6 +144,9 @@ describe('the icon picker (KF-VYRDDQ)', () => {
     // Clear empties the search and shows every icon again.
     click(root, '[data-action="editor-clear-icon-search"]');
     expect(dialog(root).textContent).toMatch(/Showing \d+ of \d+ icons/);
+    // A name only one icon matches reads in the singular.
+    search(root, 'accessibility');
+    expect(dialog(root).textContent).toContain('1 icon');
     search(root, 'chevron right');
     click(root, '[data-editor-icon="chevron-right"]');
     expect(props().icon).toEqual({ $icon: 'chevron-right' });
@@ -154,6 +158,18 @@ describe('the icon picker (KF-VYRDDQ)', () => {
     expect(dialog(root).textContent).toContain('Remove icon');
     click(root, '[data-action="editor-remove-icon"]');
     expect(props()).not.toHaveProperty('icon');
+  });
+
+  it('shows a name Lucide does not have without a glyph', () => {
+    const { root, editor, id } = added('@kerfjs/ui:lucide-icon');
+    editor.document.value = setProp(editor.document.value, id, 'icon', {
+      $icon: 'no-such-icon',
+    });
+    const row = root.querySelector<HTMLElement>(
+      `[data-editor-icon-place='{"prop":"icon","path":[]}']`,
+    )!;
+    expect(row.textContent).toContain('no-such-icon');
+    expect(row.querySelector('svg[data-lucide="no-such-icon"]')).toBeNull();
   });
 
   it('picks the icon of a Select choice from its form', () => {
