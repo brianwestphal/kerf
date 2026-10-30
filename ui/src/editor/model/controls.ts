@@ -321,9 +321,13 @@ function listOf(helpers: readonly string[]): string {
  * The hint under a css-value prop's field (KF-YR91FA): the builders it takes
  * and, when it takes `calc`, how to compose lengths with it.
  */
-export function cssHint(helpers: readonly string[] | undefined): string {
+export function cssHint(
+  helpers: readonly string[] | undefined,
+  /** The css-value's grammar, for a prop whose catalog names no builders. */
+  grammar?: string,
+): string {
   if (!helpers?.length)
-    return 'A css-values builder call, such as px(8) or space("m").';
+    return GRAMMAR_EXAMPLES[grammar ?? '']?.hint ?? LENGTH.hint;
   const compose = helpers.includes('calc')
     ? ` Combine lengths with calc(plus(px(8), space("m")))${
         helpers.includes('lengthVar')
@@ -332,6 +336,67 @@ export function cssHint(helpers: readonly string[] | undefined): string {
       }.`
     : '';
   return `Takes ${listOf(helpers)}.${compose}`;
+}
+
+/** A css-value field's placeholder and hint for one grammar. */
+interface CssExample {
+  readonly placeholder: string;
+  readonly hint: string;
+}
+
+const LENGTH: CssExample = {
+  placeholder: 'px(8)',
+  hint: 'A css-values builder call, such as px(8) or space("m").',
+};
+
+/**
+ * Examples by grammar (KF-PE0PTT): a color field suggests color builders,
+ * not a length, when the catalog names no builders for the prop. Any other
+ * grammar is a length.
+ */
+const GRAMMAR_EXAMPLES: Readonly<Record<string, CssExample>> = {
+  CssColor: {
+    placeholder: 'uiColor("surface-raised")',
+    hint: 'A color builder call, such as uiColor("surface-raised"), fillColor("#1f2a44"), or colorVar("--app-color").',
+  },
+  CssForegroundColor: {
+    placeholder: 'uiColor("success-on-quiet")',
+    hint: 'A text color builder call, such as uiColor("success-on-quiet"), foregroundColor("#1f2a44"), or foregroundColorVar("--app-icon-color").',
+  },
+  CssFlex: {
+    placeholder: 'flex(1)',
+    hint: 'A flex builder call, such as flex(1).',
+  },
+};
+
+/**
+ * The placeholder a css-value field shows: the first builder the prop
+ * takes, else an example of its grammar, else a length.
+ */
+export function cssPlaceholder(
+  helpers: readonly string[] | undefined,
+  grammar?: string,
+): string {
+  if (helpers?.[0] === 'flex') return 'flex(1)';
+  if (helpers?.length) return LENGTH.placeholder;
+  return GRAMMAR_EXAMPLES[grammar ?? '']?.placeholder ?? LENGTH.placeholder;
+}
+
+/** The grammar of a css-value `type`, or of a union's css-value member. */
+export function cssGrammar(
+  type: ViewType,
+  definitions: Definitions = {},
+): string | undefined {
+  const resolved = resolveType(type, definitions) as
+    | { kind: string; grammar?: string; members?: readonly ViewType[] }
+    | undefined;
+  if (resolved?.kind === 'css-value') return resolved.grammar;
+  if (resolved?.kind !== 'union') return undefined;
+  for (const member of resolved.members!) {
+    const grammar = cssGrammar(member, definitions);
+    if (grammar) return grammar;
+  }
+  return undefined;
 }
 
 interface Variant {

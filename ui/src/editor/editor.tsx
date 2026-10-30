@@ -135,7 +135,9 @@ import {
 import {
   controlFor,
   type ControlKind,
+  cssGrammar,
   cssHint,
+  cssPlaceholder,
   CUSTOM_SIZE,
   isBinding,
   type SeedCatalog,
@@ -883,14 +885,14 @@ export function createEditor(options: EditorOptions) {
             'data-editor-kind': kind,
           }
         : { 'data-editor-prop': prop.name, 'data-editor-kind': kind };
+    // KF-PE0PTT: a color field suggests color builders, not a length.
+    const grammar = cssGrammar(prop.type as never, definitionsOf(type));
     const builderField = (raw: string) => (
       <TextField
         label={`${prop.name} value`}
         value={raw}
-        hint={cssHint(prop.cssValue?.helpers)}
-        placeholder={
-          prop.cssValue?.helpers?.[0] === 'flex' ? 'flex(1)' : 'px(8)'
-        }
+        hint={cssHint(prop.cssValue?.helpers, grammar)}
+        placeholder={cssPlaceholder(prop.cssValue?.helpers, grammar)}
         error={error}
         rootAttributes={marker('css')}
       />
@@ -1026,12 +1028,12 @@ export function createEditor(options: EditorOptions) {
             type={control.kind === 'number' ? 'number' : 'text'}
             hint={
               control.kind === 'css'
-                ? cssHint(prop.cssValue?.helpers)
+                ? cssHint(prop.cssValue?.helpers, grammar)
                 : undefined
             }
             placeholder={
               control.kind === 'css'
-                ? 'px(8)'
+                ? cssPlaceholder(prop.cssValue?.helpers, grammar)
                 : prop.default !== undefined
                   ? String(prop.default)
                   : undefined

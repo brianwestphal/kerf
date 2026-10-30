@@ -171,7 +171,11 @@ describe('inspector states', () => {
     editor.selection.value = { kind: 'node', id: id(3) };
     const color = root.querySelector('[data-editor-prop="color"]')!;
     expect(color.getAttribute('data-editor-kind')).toBe('css');
-    expect(color.querySelector('input')?.placeholder).toBe('px(8)');
+    // A text color suggests a text color builder, not a length (KF-PE0PTT).
+    expect(color.querySelector('input')?.placeholder).toBe(
+      'uiColor("success-on-quiet")',
+    );
+    expect(color.textContent).toContain('foregroundColor("#1f2a44")');
   });
 
   it('restricts a zone to what it accepts and disables a full one', () => {

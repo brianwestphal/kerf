@@ -1155,6 +1155,18 @@ test('picks a LucideIcon’s icon from the icon picker', async ({
   await page.getByRole('option', { name: 'LucideIcon', exact: true }).click();
   await page.getByRole('button', { name: 'Add', exact: true }).click();
   await area(page, 'Properties');
+  // KF-PE0PTT: its text color field suggests a text color builder.
+  const color = page.locator('[data-editor-prop="color"]');
+  await expect(color.getByRole('textbox')).toHaveAttribute(
+    'placeholder',
+    'uiColor("success-on-quiet")',
+  );
+  await color.scrollIntoViewIfNeeded();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-pe0ptt-color-field-1440.png'),
+    animations: 'disabled',
+  });
   await page.getByRole('button', { name: 'Choose icon icon' }).click();
   const dialog = page.locator('#editor-icon-dialog');
   await expect(dialog).toBeVisible();

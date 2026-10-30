@@ -8,6 +8,9 @@ import { afterEach, describe, expect, it } from 'vitest';
 import propsJson from '../../../ai/component-props.json';
 import {
   controlFor,
+  cssGrammar,
+  cssHint,
+  cssPlaceholder,
   valueFromControl,
 } from '../../../src/editor/model/controls.js';
 import { findNode } from '../../../src/editor/model/document.js';
@@ -545,5 +548,47 @@ describe('inline list editors (KF-A9ZHGW)', () => {
     expect(group.dataset.editorKind).toBe('enum-set');
     check(group, 'inline-end');
     expect(props().mainPane).toEqual({ separators: ['inline-end'] });
+  });
+});
+
+describe('css-value examples by grammar (KF-PE0PTT)', () => {
+  it('suggests builders for the value’s grammar when the prop names none', () => {
+    expect(cssPlaceholder(undefined, 'CssColor')).toBe(
+      'uiColor("surface-raised")',
+    );
+    expect(cssHint(undefined, 'CssColor')).toContain('colorVar("--app-color")');
+    expect(cssPlaceholder(undefined, 'CssFlex')).toBe('flex(1)');
+    expect(cssHint(undefined, 'CssFlex')).toContain('flex(1)');
+    // A length, or no grammar, keeps the length example.
+    expect(cssPlaceholder(undefined, 'CssLength')).toBe('px(8)');
+    expect(cssPlaceholder(undefined)).toBe('px(8)');
+    expect(cssHint(undefined)).toContain('px(8)');
+    // Builders the catalog names win.
+    expect(cssPlaceholder(['flex'], 'CssFlex')).toBe('flex(1)');
+    expect(cssPlaceholder(['px', 'space'], 'CssColor')).toBe('px(8)');
+    expect(cssHint(['px'], 'CssColor')).toBe('Takes px().');
+  });
+
+  it('reads the grammar of a css-value, a union member, or neither', () => {
+    expect(
+      cssGrammar({ kind: 'css-value', grammar: 'CssColor' } as ViewType),
+    ).toBe('CssColor');
+    const gap = objectFields(ref('ListConfig'), definitions).find(
+      (field) => field.name === 'gap',
+    )!;
+    expect(cssGrammar(gap.type as ViewType, definitions)).toBe('CssLength');
+    expect(
+      cssGrammar({ kind: 'union', members: [{ kind: 'string' }] } as ViewType),
+    ).toBeUndefined();
+    expect(cssGrammar({ kind: 'string' } as ViewType)).toBeUndefined();
+  });
+
+  it('suggests a color for a Pane background inside a Workbench form', () => {
+    const { root } = workbench();
+    opener(root, 'mainPane').click();
+    const background = at(root, 'mainPane', ['background']);
+    expect(background.querySelector('input')!.placeholder).toBe(
+      'uiColor("surface-raised")',
+    );
   });
 });

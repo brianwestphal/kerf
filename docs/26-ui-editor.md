@@ -213,7 +213,12 @@ A css-value prop's field takes any `$css` builder call, compositions
 included (`calc(plus(px(8), space("m")))`, `lengthVar("--app-gap", px(8))`);
 its hint lists the builders the prop accepts (the catalog's `cssValue.helpers`)
 and an outer builder outside that list is refused at the field, naming the
-allowed ones (KF-YR91FA: richer value editing). A size prop, a union of a
+allowed ones (KF-YR91FA: richer value editing). A prop whose catalog entry
+names no builders gets a placeholder and hint for its grammar (KF-PE0PTT:
+grammar examples): a color suggests `uiColor("surface-raised")`,
+`fillColor`, or `colorVar`, a text color `uiColor("success-on-quiet")`,
+`foregroundColor`, or `foregroundColorVar`, a flex `flex(1)`, and anything
+else a length. A size prop, a union of a
 css-value with keywords (a List, Row, or Grid `gap`, a layout `flex`, a
 Spacer or Skeleton `width`/`height`, a dialog `height` of `"viewport"`),
 gets a Select of its keywords, with spacing tokens in scale order (`none`,
