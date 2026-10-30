@@ -6,6 +6,7 @@ import { createViewCatalog, type ViewCatalog } from '@kerfjs/ui/view';
 import type { SafeHtml } from 'kerfjs';
 
 import type { InspectorComponent } from './model/inspector.js';
+import { KERF_UI_PLACEHOLDERS, type Placeholders } from './placeholders.js';
 
 export interface PropsComponent extends InspectorComponent {
   readonly id: string;
@@ -47,6 +48,11 @@ export interface EditorCatalog {
   readonly components: Readonly<Record<string, ComponentFunction>>;
   /** Placeable components by category, in catalog order. */
   paletteGroups(): PaletteGroup[];
+  /**
+   * Preview stand-ins for app-supplied props, by `<component key>.<prop>`
+   * (KF-H3CB2P): Kerf UI's, then the host's.
+   */
+  readonly placeholders: Placeholders;
 }
 
 export interface EditorCatalogInputs {
@@ -57,6 +63,12 @@ export interface EditorCatalogInputs {
   /** Selection catalogs (`component-catalog.json`) for names and categories. */
   readonly selection?: readonly unknown[];
   readonly components: Readonly<Record<string, ComponentFunction>>;
+  /**
+   * Preview stand-ins for the app-supplied props (functions, models) of an
+   * application's components, by `<component key>.<prop>`; each returns a
+   * fresh value. They add to and replace Kerf UI's own.
+   */
+  readonly placeholders?: Placeholders;
 }
 
 /** The category of a package component no selection catalog lists. */
@@ -92,6 +104,7 @@ export function createEditorCatalog(
     propsByKey,
     componentNames,
     components: inputs.components,
+    placeholders: { ...KERF_UI_PLACEHOLDERS, ...inputs.placeholders },
     paletteGroups() {
       const groups = new Map<string, { key: string; name: string }[]>();
       const add = (category: string, key: string) => {

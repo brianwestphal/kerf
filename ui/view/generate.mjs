@@ -189,10 +189,12 @@ function createImports() {
       ].sort();
       return specifiers
         .map((specifier) => {
+          const named = values.get(specifier) ?? new Set();
           const names = [
-            ...[...(values.get(specifier) ?? [])].sort(),
+            ...[...named].sort(),
             ...(ts
               ? [...(types.get(specifier) ?? [])]
+                  .filter((name) => !named.has(name))
                   .sort()
                   .map((name) => `type ${name}`)
               : []),
@@ -382,7 +384,7 @@ function createEmitter(document, catalog, imports, importFrom) {
   return { root: (node) => nodeExpr(node, new Map(), undefined, undefined) };
 }
 
-function typesBlock(name, contract) {
+function typesBlock(name, contract, inputType = (input) => input.type) {
   const inputs = Object.entries(contract.inputs);
   const actions = Object.entries(contract.actions);
   const slots = Object.entries(contract.slots);
@@ -393,7 +395,7 @@ function typesBlock(name, contract) {
       ? `export interface ${name}Inputs {\n${inputs
           .map(
             ([key, input]) =>
-              `  readonly ${key}${input.optional ? '?' : ''}: ${input.type};`,
+              `  readonly ${key}${input.optional ? '?' : ''}: ${inputType(input)};`,
           )
           .join('\n')}\n}`
       : `export type ${name}Inputs = Readonly<Record<string, never>>;`,
@@ -579,7 +581,17 @@ export function generateView(document, catalog, options = {}) {
   const digest = contractDigest(contract);
   const sourceDigest = viewDigest(canonicalJson(document));
   const sourceName = options.source ?? `${camel}.kui.json`;
-  const types = typesBlock(name, contract);
+  // A prop-typed input is that component prop's own type, read from the
+  // component function so the app's value is checked against it (KF-H3CB2P).
+  const types = typesBlock(name, contract, (input) => {
+    if (input.shape.kind !== 'prop') return input.type;
+    const owner = catalog.components.get(input.shape.component).component;
+    imports.type(
+      moduleSpecifier(owner.import, options.importFrom),
+      owner.export,
+    );
+    return `Parameters<typeof ${owner.export}>[0][${literal(input.shape.prop)}]`;
+  });
   const contractLine = `export const ${camel}Contract = ${literal(digest)};`;
 
   const assemble = (body) =>

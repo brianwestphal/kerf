@@ -41,6 +41,10 @@ const PARAM_KINDS = new Set([
   'content',
   'array',
   'object',
+  // The exact type of one component prop (KF-H3CB2P: app-supplied values):
+  // `{ kind: 'prop', component: '@kerfjs/ui:search-field', prop: 'model' }`,
+  // for values a document cannot spell, such as functions and signals.
+  'prop',
 ]);
 
 const isObject = (value) =>
@@ -189,6 +193,13 @@ export function withFieldZones(props, zones, component, definitions) {
 
 /** Whether a value of type `from` (a param or binding) fits type `to`. */
 export function isAssignable(from, to, definitions = {}) {
+  // A component prop's type fits only that same component prop.
+  if (from?.kind === 'prop' || to?.kind === 'prop')
+    return (
+      from?.kind === to?.kind &&
+      from.component === to.component &&
+      from.prop === to.prop
+    );
   const target = resolveType(to, definitions);
   const source = resolveType(from, definitions);
   if (target.kind === 'unknown' || source.kind === 'unknown') return true;
@@ -414,6 +425,20 @@ function validateDeclaredType(ctx, type, path) {
       'an enum type needs a non-empty `values` list',
     );
   }
+  if (type.kind === 'prop') {
+    const owner =
+      typeof type.component === 'string'
+        ? ctx.catalog.components.get(type.component)?.component
+        : undefined;
+    if (!owner?.props.some((prop) => prop.name === type.prop)) {
+      ctx.report(
+        'KUI-V001',
+        path,
+        'a prop type names a catalog `component` key and one of its `prop`s',
+      );
+    }
+    return;
+  }
   if (type.kind === 'array') {
     if (!isObject(type.items))
       ctx.report('KUI-V001', path, 'an array type needs `items`');
@@ -571,6 +596,17 @@ function checkPropValue(ctx, prop, value, definitions, scope, at, rowScoped) {
   }
   const type = dynamicType(ctx, value, scope, at);
   if (type === undefined) return;
+  // A param typed as a component prop binds only to that prop.
+  if (type?.kind === 'prop') {
+    if (type.component !== ctx.component || type.prop !== prop.name) {
+      ctx.report(
+        'KUI-V004',
+        at,
+        `a ${type.component} "${type.prop}" value does not fit "${prop.name}" of ${ctx.component}`,
+      );
+    }
+    return;
+  }
   if (type === null) {
     const onSlot = (slot) => checkValueSlot(ctx, slot, at);
     if (!literalOf(value, prop.type, definitions, onSlot)) {
@@ -754,6 +790,8 @@ function checkNode(ctx, node, at, scope, rowScoped, parentKey, text = false) {
   const host = ctx.interactiveHost;
   if (interactive === 'root' && !host) ctx.interactiveHost = node.type;
   const zones = zonesOf(ctx, component);
+  // The component whose props are checked next, for a prop-typed param.
+  ctx.component = node.type;
   const byName = new Map(component.props.map((prop) => [prop.name, prop]));
   const native = new Set(component.nativeAttributes ?? []);
   const present = new Set();

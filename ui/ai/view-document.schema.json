@@ -79,8 +79,17 @@
             "literal",
             "content",
             "array",
-            "object"
+            "object",
+            "prop"
           ]
+        },
+        "component": {
+          "type": "string",
+          "description": "kind prop: the catalog component key whose prop's type this is."
+        },
+        "prop": {
+          "type": "string",
+          "description": "kind prop: that component's prop."
         },
         "values": {
           "type": "array",

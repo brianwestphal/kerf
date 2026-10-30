@@ -178,9 +178,13 @@ editor.wire(root);
   `document` is the document to start with (default an empty Pane),
   `save(fileName, text)` replaces the default download for Save and Export,
   and `fieldEditors` registers field editors by type name (above).
-- `createEditorCatalog({ props, composition, selection?, components })`
+- `createEditorCatalog({ props, composition, selection?, components, placeholders? })`
   combines catalogs. Without a selection catalog a component is named by its
-  export.
+  export. `placeholders` maps `<component key>.<prop>` to a factory for the
+  canvas's stand-in for an app-supplied prop (a function or a model) that a
+  document takes through a prop-typed param, such as
+  `"orders-app:order-list.renderRow": () => (order) => OrderRow({ order })`.
+  They add to and replace Kerf UI's own.
 - `componentMap(props, modules)` maps each catalog key to
   `modules[import][export]`.
 

@@ -13,8 +13,13 @@ export function sampleValue(
   name: string,
   content: (label: string) => unknown,
   index = 0,
+  /** A prop-typed param's stand-in, by `<component key>.<prop>` (KF-H3CB2P). */
+  placeholder: (key: string) => unknown = () => undefined,
 ): unknown {
   switch (type.kind) {
+    case 'prop': {
+      return placeholder(`${type.component}.${type.prop}`);
+    }
     case 'string':
       return index ? `${words(name)} ${index + 1}` : words(name);
     case 'number':
@@ -47,10 +52,18 @@ export function sampleValue(
 export function sampleInputs(
   document: ViewDocument,
   content: (label: string) => unknown,
+  /** A prop-typed param's stand-in, by `<component key>.<prop>` (KF-H3CB2P). */
+  placeholder?: (key: string) => unknown,
 ): Record<string, unknown> {
   return Object.fromEntries(
     Object.entries(document.params ?? {})
       .filter(([, param]) => !('default' in param))
-      .map(([name, param]) => [name, sampleValue(param.type, name, content)]),
+      .map(([name, param]) => [
+        name,
+        sampleValue(param.type, name, content, 0, placeholder),
+      ])
+      // An app-supplied value with no stand-in is left out, as the
+      // application may leave an optional one out.
+      .filter(([, value]) => value !== undefined),
   );
 }

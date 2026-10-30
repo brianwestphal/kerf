@@ -207,6 +207,16 @@ the param grammar can carry app-supplied values (KF-H3CB2P), and Web
 Awesome props the catalog types as `unknown` are out of the editor's reach,
 which places Web Awesome only through Kerf wrappers.
 
+A function, signal, or model prop (a Select's `renderSelected`, a
+SearchField's `model`) is read-only in the Inspector until **Promote to a
+param** makes it a prop-typed param (KF-H3CB2P). The canvas previews it with
+a placeholder that does something typically useful, or nothing: Kerf UI's
+render a choice's label and give a SearchField a working model with no
+rules. A host adds or replaces them with
+`createEditorCatalog({ placeholders })`, keyed `<component key>.<prop>`; an
+optional prop with no placeholder is left out of the preview. Promoting a
+list or object prop is a separate decision (KF-V9V2B6).
+
 The inspector's Control flow section (KF-90GTJN: editor control flow) shows a
 node only while a true/false param or item field holds (Show, which wraps the
 node in `$if`), repeats it for each item of a list param or in-scope list
@@ -600,6 +610,22 @@ application computes.
 a descriptor in the component-props type grammar (`string`, `number`,
 `boolean`, `enum`, `content`, `array`, `object`). A param with no default
 becomes a required input. `content` params are application-rendered `SafeHtml`.
+
+A **prop-typed param** (KF-H3CB2P: app-supplied values),
+`{ "kind": "prop", "component": "@kerfjs/ui:select", "prop": "renderSelected" }`,
+has exactly the type of one catalog component's prop. It carries a value a
+document cannot spell, such as a function, a signal, or a SearchField
+model:
+
+- **Typed from the component.** The generated module types the input as
+  `Parameters<typeof Select>[0]["renderSelected"]`, read from the component
+  function it imports, so the application's value is checked against the
+  real interface.
+- **Required when the prop is.** The input is optional exactly when that
+  prop is optional in the catalog.
+- **Bound to that prop only.** It binds only to that same prop of that
+  component (`KUI-V004` otherwise), and it takes no default.
+- **Passed through.** `interpretView` passes the value through untouched.
 
 Params are how an application overrides anything: to change a node's prop at
 runtime, the author promotes it to a param. Generated code is never edited and

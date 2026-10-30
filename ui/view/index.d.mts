@@ -14,6 +14,10 @@ export interface ViewType {
   members?: ViewType[];
   index?: { keyPrefix: string; value: ViewType };
   ref?: string;
+  /** `kind: 'prop'`: the catalog component key whose prop's type this is. */
+  component?: string;
+  /** `kind: 'prop'`: that component's prop. */
+  prop?: string;
 }
 
 /** A value in a node's `props`, a `$each` source, or a `$slot` input. */

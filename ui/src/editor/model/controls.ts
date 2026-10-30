@@ -18,6 +18,7 @@ import {
 import {
   enumSetValues,
   fieldEditorKind,
+  isAppSupplied,
   memberFor,
   memberLabels,
   objectFields,
@@ -295,6 +296,10 @@ export function controlFor(
   definitions: Definitions = {},
 ): Control {
   const kind = prop.type.kind;
+  // A function, signal, or model comes from the app (KF-H3CB2P): it edits
+  // only as a prop-typed param, never here.
+  if (isAppSupplied(prop.type as ViewType, definitions))
+    return { kind: 'readonly', raw: '' };
   // Icon data picks a Lucide icon by name (KF-VYRDDQ: icon picker).
   if (prop.iconSource === 'lucide') {
     if (value === undefined) return { kind: 'icon', raw: '' };

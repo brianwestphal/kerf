@@ -51,6 +51,10 @@ export function typeText(type) {
       return type.values.map((value) => JSON.stringify(value)).join(' | ');
     case 'content':
       return 'SafeHtml';
+    // A component prop's own type (KF-H3CB2P); the generated module spells
+    // it from the component function it imports.
+    case 'prop':
+      return `PropOf<${JSON.stringify(type.component)}, ${JSON.stringify(type.prop)}>`;
     case 'array': {
       const item = typeText(type.items);
       return `readonly ${/[|&]/.test(item) ? `(${item})` : item}[]`;
@@ -168,7 +172,14 @@ export function contractOf(document, catalog, options = {}) {
   for (const [name, param] of Object.entries(document.params ?? {})) {
     inputs[name] = {
       type: typeText(param.type),
-      optional: 'default' in param,
+      // A prop-typed input is optional exactly when that prop is.
+      optional:
+        'default' in param ||
+        (param.type.kind === 'prop' &&
+          !catalog.components
+            .get(param.type.component)
+            .component.props.find((prop) => prop.name === param.type.prop)
+            .required),
       shape: param.type,
     };
   }

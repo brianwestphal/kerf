@@ -192,6 +192,7 @@ import {
   type ExportReport,
 } from './model/export.js';
 import {
+  appParamFor,
   containerFor,
   type FieldContainer,
   type FieldEditorKind,
@@ -323,7 +324,7 @@ const slotPlaceholders = (placed: ReadonlyMap<string, PreviewSlot>) =>
 
 /** The canvas renderer for one catalog. */
 function canvasRenderer(catalog: EditorCatalog) {
-  const { viewCatalog, componentNames, components } = catalog;
+  const { viewCatalog, componentNames, components, placeholders } = catalog;
   /** Stands in for a node the preview cannot render; still selectable. */
   const brokenNode = (node: ViewNode): SafeHtml =>
     Badge({
@@ -338,7 +339,11 @@ function canvasRenderer(catalog: EditorCatalog) {
     const preview = {
       catalog: viewCatalog,
       components,
-      inputs: sampleInputs(document, (label) => Text({ children: label })),
+      inputs: sampleInputs(
+        document,
+        (label) => Text({ children: label }),
+        (key) => placeholders[key]?.(),
+      ),
       slots: slotPlaceholders(placed),
       icons,
     };
@@ -2063,7 +2068,9 @@ export function createEditor(options: EditorOptions) {
       (prop) =>
         prop.control !== 'hidden' &&
         !prop.zone &&
-        paramTypeFor(prop.type as never) !== undefined &&
+        (paramTypeFor(prop.type as never) ??
+          appParamFor(node.type, prop, definitionsOf(node.type))) !==
+          undefined &&
         !(
           props[prop.name] !== null &&
           typeof props[prop.name] === 'object' &&
@@ -2956,7 +2963,11 @@ export function createEditor(options: EditorOptions) {
     const picker = document.querySelector<HTMLElement>('[data-editor-promote]');
     const name = picker ? String(controlValue(picker)) : promoteProp.value;
     const prop = component?.props.find((item) => item.name === name);
-    const type = prop && paramTypeFor(prop.type as never);
+    // A function, signal, or model becomes a param of its prop's own type.
+    const type =
+      prop &&
+      (paramTypeFor(prop.type as never) ??
+        appParamFor(node.type, prop, definitionsOf(node.type)));
     const current = node.props?.[name];
     // Only a literal (or unset) prop promotes; one already bound stays as is.
     if (!prop || !type || (current !== null && typeof current === 'object'))

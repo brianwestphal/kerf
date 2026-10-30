@@ -1402,3 +1402,26 @@ test('puts a Badge beside a Chip’s text', async ({ page }, info) => {
     animations: 'disabled',
   });
 });
+
+// KF-H3CB2P: a function prop becomes an app-supplied, prop-typed param.
+test('promotes a Select’s renderSelected to an app-supplied param', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await addToPane(page, 'Select');
+  await page.locator('[data-editor-promote]').click();
+  await page
+    .getByRole('option', { name: 'renderSelected', exact: true })
+    .click();
+  await page.getByRole('button', { name: 'Promote' }).click();
+  await expect(page.getByText(/· valid$/)).toBeVisible();
+  // The placeholder renders the chosen label.
+  await expect(
+    page.locator('[data-editor-canvas] [data-component="select"]').first(),
+  ).toContainText('Choice 1');
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-h3cb2p-render-selected-1440.png'),
+    animations: 'disabled',
+  });
+});

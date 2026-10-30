@@ -78,6 +78,8 @@ export function fieldEditorKind(
   iconSource?: string,
 ): FieldEditorKind {
   if (iconSource === 'lucide') return 'icon';
+  // A model of signals and functions comes from the app, not a form.
+  if (isAppSupplied(type, definitions)) return 'json';
   const resolved = shape(type, definitions);
   if (isFormObject(resolved)) return 'object';
   if (resolved?.kind !== 'array') return 'json';
@@ -486,3 +488,35 @@ export function fieldZoneKeys(
 /** A binding (`$param`, `$bind`, …) rather than a literal value. */
 const isBindingValue = (value: ViewValue | undefined) =>
   Object.keys(fieldsOf(value) ?? {}).some((key) => key.startsWith('$'));
+
+/**
+ * Whether a value of `type` comes from the application, never the document
+ * (KF-H3CB2P): a function, a signal, or an object holding one (a SearchField
+ * model). It edits only as a prop-typed param.
+ */
+export function isAppSupplied(
+  type: ViewType | undefined,
+  definitions: Definitions,
+): boolean {
+  const opaque = (item: ViewType | undefined) => {
+    const kind = shape(item, definitions)?.kind;
+    return kind === 'function' || kind === 'signal';
+  };
+  const resolved = shape(type, definitions);
+  return (
+    opaque(type) ||
+    (resolved?.kind === 'object' &&
+      (resolved.props ?? []).some((field) => opaque(field.type)))
+  );
+}
+
+/** The prop-typed param an app-supplied prop promotes to (KF-H3CB2P). */
+export function appParamFor(
+  component: string,
+  prop: { readonly name: string; readonly type: unknown },
+  definitions: Definitions,
+): ViewType | undefined {
+  return isAppSupplied(prop.type as ViewType, definitions)
+    ? ({ kind: 'prop', component, prop: prop.name } as ViewType)
+    : undefined;
+}
