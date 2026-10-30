@@ -177,3 +177,21 @@ export async function pickIcon(page: Page, row: Locator, glyph: string) {
 /** An empty Toolbar zone's placeholder on the canvas, by its zone label. */
 export const zoneSpot = (page: Page, label: string) =>
   canvas(page).locator('[data-editor-empty]', { hasText: label }).first();
+
+/** Picks `option` in one of Children › Add a child's Selects. */
+async function chooseAdd(page: Page, which: string, option: string) {
+  const control = page.locator(`[data-editor-add="${which}"]`);
+  await control.locator('.kui-select__trigger').click();
+  await control.getByRole('option', { name: option, exact: true }).click();
+}
+
+/**
+ * Adds component `name` under Children › Add a child, to `zone` when given
+ * (a field zone reads `choices › 0 › content`) or to the zone already chosen.
+ */
+export async function addChild(page: Page, name: string, zone?: string) {
+  await page.getByText('Children', { exact: true }).click();
+  if (zone) await chooseAdd(page, 'zone', zone);
+  await chooseAdd(page, 'component', name);
+  await page.locator('[data-action="editor-add-child"]').click();
+}

@@ -370,3 +370,54 @@ describe('a list no field editor takes (KF-CY1D5W)', () => {
     ]);
   });
 });
+
+// KF-VSWT2Q: an item's content field is its field zone, not a type name.
+describe(
+  'an item form’s content field (KF-VSWT2Q)',
+  { timeout: loadScaledTimeout(15_000) },
+  () => {
+    it('adds to the field zone, then selects what fills it', () => {
+      const { root, editor } = added('@kerfjs/ui:segmented-control');
+      const control = (editor.selection.value as { id: string }).id;
+      open(root, 'choices');
+      open(root, 'choices', [0]);
+      const dialog = field(root, '#editor-field-dialog') as HTMLDialogElement;
+      expect(dialog.textContent).not.toContain('KerfUiContent');
+      const add = field(root, '[data-editor-content-add="choices.0.content"]');
+      expect(add.textContent).toContain('Content');
+      expect(add.textContent).toContain('Not set');
+      // Nothing to suggest: Children opens with the field zone chosen.
+      (add.querySelector<HTMLElement>('[data-action]') ?? add).click();
+      expect(dialog.open).toBe(false);
+      const zone = field(root, '[data-editor-add="zone"]');
+      expect(zone.getAttribute('value')).toBe('choices.0.content');
+      // added() pinned the select's `.value` to `content`; follow the render.
+      choose(zone, zone.getAttribute('value')!);
+      choose(
+        field(root, '[data-editor-add="component"]'),
+        '@kerfjs/ui:lucide-icon',
+      );
+      field(root, '[data-action="editor-add-child"]').click();
+      const icon = (editor.selection.value as { id: string }).id;
+      expect(
+        findNode(editor.document.value, control)!.node.zones?.[
+          'choices.0.content'
+        ],
+      ).toEqual([expect.objectContaining({ id: icon })]);
+      // Back on the control, the filled field names its node and selects it.
+      editor.selection.value = { kind: 'node', id: control };
+      open(root, 'choices');
+      open(root, 'choices', [0]);
+      const filled = field(
+        root,
+        '[data-editor-content-node="choices.0.content"]',
+      );
+      expect(filled.textContent).toContain('LucideIcon');
+      (filled.querySelector<HTMLElement>('[data-action]') ?? filled).click();
+      expect(editor.selection.value).toEqual({ kind: 'node', id: icon });
+      expect(
+        (field(root, '#editor-field-dialog') as HTMLDialogElement).open,
+      ).toBe(false);
+    });
+  },
+);

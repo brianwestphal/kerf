@@ -1689,6 +1689,14 @@ export function createEditor(options: EditorOptions) {
         return { kind: 'open', row: configureRow(label, fieldValue, at) };
       switch (control.kind) {
         case 'readonly':
+          // KF-VSWT2Q: a content field is a field zone the outline fills,
+          // so its row adds to that zone or selects what fills it. An item
+          // slot set there keeps showing as its value.
+          if (field.type.kind === 'content' && fieldValue === undefined)
+            return {
+              kind: 'open',
+              row: nodeContentRow(node, placeKey(at), label),
+            };
           return {
             kind: 'fixed',
             row: (
@@ -1866,14 +1874,18 @@ export function createEditor(options: EditorOptions) {
   /**
    * A content prop that takes only nodes (a Button's `icon`), as a row
    * (KF-5T3TE4): Add puts the zone's suggested component there; once
-   * filled, the row names what fills it and selects it.
+   * filled, the row names what fills it and selects it. A content field
+   * inside a prop value (KF-VSWT2Q) passes its field zone and own label.
    */
-  const nodeContentRow = (node: ViewDocument['root'], prop: string) => {
+  const nodeContentRow = (
+    node: ViewDocument['root'],
+    prop: string,
+    label = propLabel(prop),
+  ) => {
     const entries = node.zones?.[prop] ?? [];
     const children = entries.filter(
       (child): child is ViewNode => 'id' in child && 'type' in child,
     );
-    const label = propLabel(prop);
     if (!entries.length) {
       const suggestion = suggestionFor(node, prop);
       const adds = suggestion && componentNames.get(suggestion);
@@ -3345,6 +3357,20 @@ export function createEditor(options: EditorOptions) {
     }
   };
 
+  /**
+   * A field zone's row (KF-VSWT2Q) leads out of the field editor it sits in:
+   * its dialog closes, and a subview's field steps pop.
+   */
+  const leaveFieldEditor = (target: HTMLElement) => {
+    const zone =
+      target.dataset.editorContentAdd ?? target.dataset.editorContentNode;
+    // Field zones are paths (`choices.0.content`); a prop's zone is a name.
+    if (!zone?.includes('.')) return;
+    const dialog = target.closest<HTMLDialogElement>(`#${FIELD_DIALOG}`);
+    if (dialog) closeDialog(dialog);
+    openField.value = null;
+  };
+
   /** Steps a field editor back one place, closing it from its first. */
   const fieldBack = () => {
     // Back shows only on an open field editor's step.
@@ -3892,6 +3918,7 @@ export function createEditor(options: EditorOptions) {
         [DUPLICATE_ACTION]: () => duplicate(),
         [ADD_ACTION]: () => addChild(),
         [CONTENT_ADD_ACTION]: (_event, target) => {
+          leaveFieldEditor(target);
           const zone = target.dataset.editorContentAdd!;
           const id = selectedNodeId()!;
           const parent = findNode(doc.value, id)!.node;
@@ -4100,6 +4127,7 @@ export function createEditor(options: EditorOptions) {
         [PROMOTE_PROP_ACTION]: (_event, target) =>
           promote(target.dataset.editorPromoteProp),
         [OUTLINE_ACTION]: (_event, target) => {
+          leaveFieldEditor(target);
           const id = target.dataset.itemId!;
           const address = slotRowAddress(id);
           // An item slot row selects the node whose prop holds it (KF-SXDM56).

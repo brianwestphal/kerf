@@ -5,6 +5,7 @@
 import { expect, test } from '@playwright/test';
 
 import {
+  addChild,
   addIcon,
   canvas,
   choose,
@@ -457,6 +458,89 @@ test('builds ListHeader › Needs Attention', async ({ page }) => {
         divider: 'before',
         headingLevel: 3,
       }),
+    ),
+  );
+});
+
+// KF-VSWT2Q: each choice's content field leads from its form to its zone.
+test('builds SegmentedControl › Rounded Rectangle', async ({ page }) => {
+  await dragComponent(page, 'SegmentedControl', () => emptySpot(page));
+  await select(page, /^SegmentedControl/);
+  await setText(page, 'id', 'inspector-section');
+  await setText(page, 'label', 'Inspector Section');
+  await setText(page, 'action', 'select-segment-demo');
+  await choose(page, 'shape', 'rounded');
+  await choose(page, 'layout', 'equal');
+  const choices = [
+    ['summary', 'Summary', 'list'],
+    ['activity', 'Activity', 'bell'],
+    ['files', 'Files', 'folder'],
+  ] as const;
+  const dialog = page.locator('dialog[open]');
+  for (const [index, [value, label, glyph]] of choices.entries()) {
+    await select(page, /^SegmentedControl/);
+    await page.getByRole('button', { name: 'Configure choices' }).click();
+    await dialog.getByText(`Choice ${index + 1}`, { exact: true }).click();
+    await setField(page, 'choices', [index, 'value'], value);
+    await setField(page, 'choices', [index, 'label'], label);
+    // The content row leaves the form for Children, its zone chosen.
+    await page
+      .locator(`[data-editor-content-add="choices.${index}.content"]`)
+      .click();
+    await expect(dialog).toHaveCount(0);
+    await expect(
+      page.locator('[data-editor-add="zone"] .kui-select__trigger'),
+    ).toContainText(`choices › ${index} › content`);
+    await addChild(page, 'LucideIcon');
+    await select(page, /^LucideIcon/, index);
+    await page.locator('[data-editor-icon-place]').first().click();
+    await page.keyboard.type(glyph);
+    await page.locator(`[data-editor-icon="${glyph}"]`).click();
+    await select(page, /^SegmentedControl/);
+    await addChild(page, 'Text', `choices › ${index} › content`);
+    await select(page, /^Text/, index);
+    await choose(page, 'variant', 'span');
+    await setText(page, 'children', label);
+  }
+  const control = canvas(page).locator(
+    '[data-segmented-control-id="inspector-section"]',
+  );
+  await expect(control.locator('button')).toHaveText([
+    'Summary',
+    'Activity',
+    'Files',
+  ]);
+  await expect(control.locator('button svg')).toHaveCount(3);
+  await expect(control.locator('button[aria-pressed="true"]')).toHaveText(
+    'Summary',
+  );
+  // Back in a filled choice's form, its content row counts its nodes.
+  await select(page, /^SegmentedControl/);
+  await page.getByRole('button', { name: 'Configure choices' }).click();
+  await dialog.getByText('Activity', { exact: true }).click();
+  await expect(
+    page.locator('[data-editor-content-node="choices.1.content"]'),
+  ).toContainText('2 items');
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'segmented-control',
+        {
+          label: 'Inspector Section',
+          value: 'summary',
+          action: 'select-segment-demo',
+          shape: 'rounded',
+          layout: 'equal',
+          choices: choices.map(([value, label]) => ({ value, label })),
+        },
+        Object.fromEntries(
+          choices.map(([, label, glyph], index) => [
+            `choices.${index}.content`,
+            [icon(glyph), node('text', { children: label, variant: 'span' })],
+          ]),
+        ),
+      ),
     ),
   );
 });

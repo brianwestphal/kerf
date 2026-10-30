@@ -241,9 +241,12 @@ zone of its own (KF-PD6QC5: field zones): a Workbench's `leftRail › content`
 once the rail has a kind, `mainToolbar › title` once the toolbar is
 configured, each NavStack view's `views › 0 › content`. Add a child, drag
 and drop, and the outline treat it like any zone, and the outline names it
-by its path. Nodes placed there own the field: a seeded item slot or text
-at that path gives way, and an object left with no other field stays set
-as `{}`, so the rail still reads as a static panel.
+by its path. In the item's form the field is a row like a top-level
+content prop's (KF-VSWT2Q: item form content rows): Add fills the zone (or
+opens Children with it chosen), and a filled row names or counts its nodes
+and selects them, leaving the form. Nodes placed there own the field: a
+seeded item slot or text at that path gives way, and an object left with no
+other field stays set as `{}`, so the rail still reads as a static panel.
 
 The props catalog generator (KF-24G2KV: remaining props) treats a union whose
 members are all content, text, or numbers as one content slot, including

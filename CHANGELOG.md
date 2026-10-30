@@ -234,6 +234,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **A content field in a Kerf UI editor item form leads to its field zone.** In a SegmentedControl choice’s form, `Content` read “KerfUiContent” and did nothing; it now adds to that choice’s field zone (opening Children with the zone chosen when nothing is suggested), or names and selects the nodes there, like a top-level content row. An item slot set in the field still shows as its value (`KF-VSWT2Q`).
 - **New nodes in the Kerf UI editor no longer write a `false` variant discriminant.** Dropping a ListHeader exported `toggle: false` and a Select `multiple: false`, restating defaults the validator already assumes when a prop is absent; seeding now leaves them unset (`KF-RRVYCG`).
 - **The Kerf UI editor says why a drop is not allowed.** Dragging a component or node where it cannot go drew nothing and dropped nothing; the drag caption now names the reason in words while the pointer rests there ("ToolbarControlGroup goes in Toolbar or FloatingToolbar or TabBar", or "cannot go here") (`KF-6RYJ64`).
 - **Toolbars and toolbar groups in the Kerf UI editor.** A new ToolbarControlGroup starts with a ToolbarButton instead of a stray Text, and Add a child in a group suggests ToolbarButton then ToolbarActionLink. A container with no main zone (a Toolbar) shows a placeholder for each empty zone ("Leading — drop here", "Center", "Trailing") while it is empty or selected, and a drop on one lands in that zone (`KF-7BB55F`).
