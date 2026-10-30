@@ -588,23 +588,30 @@ export function createEditor(options: EditorOptions) {
       .filter((group) => group.items.length);
   };
 
-  const palette = (groups: ReturnType<typeof paletteMatches>) =>
-    groups.map((group) => [
-      <ListHeader label={group.category} size="xs" />,
-      ...group.items.map((item) => (
-        <ListItem
-          action={PALETTE_ACTION}
-          itemId={item.key}
-          label={item.name}
-          // KF-78MHM8: a palette row drags onto the canvas to add one.
-          rootAttributes={{ 'data-editor-palette': item.key }}
-          selected={
-            selection.value?.kind === 'component' &&
-            selection.value.key === item.key
-          }
-        />
-      )),
-    ]);
+  // KF-K2VP9A / KF-YR81M0: each category is its own List under a default
+  // ListHeader, spaced apart as the catalog's sidebar sections are.
+  const palette = (groups: ReturnType<typeof paletteMatches>) => (
+    <List gap="m">
+      {groups.map((group) => (
+        <List>
+          <ListHeader label={group.category} />
+          {group.items.map((item) => (
+            <ListItem
+              action={PALETTE_ACTION}
+              itemId={item.key}
+              label={item.name}
+              // KF-78MHM8: a palette row drags onto the canvas to add one.
+              rootAttributes={{ 'data-editor-palette': item.key }}
+              selected={
+                selection.value?.kind === 'component' &&
+                selection.value.key === item.key
+              }
+            />
+          ))}
+        </List>
+      ))}
+    </List>
+  );
 
   /**
    * A segmented strip of tabs `areas` under strip `id`, then one tabpanel per
@@ -1665,7 +1672,7 @@ export function createEditor(options: EditorOptions) {
                   />
                 </List>
                 {groups.length ? (
-                  <List>{palette(groups)}</List>
+                  palette(groups)
                 ) : (
                   <EmptyState
                     title="No matching components"
