@@ -1171,7 +1171,8 @@ test('picks a LucideIcon’s icon from the icon picker', async ({
   const dialog = page.locator('#editor-icon-dialog');
   await expect(dialog).toBeVisible();
   await expect(dialog).toContainText(/Showing \d+ of \d+ icons/);
-  await dialog.locator('[data-editor-icon-search]').click();
+  // KF-GQHRC0: the search has focus, so typing searches at once.
+  await expect(dialog.locator('[data-editor-icon-search]')).toBeFocused();
   await page.keyboard.type('star');
   await expect(dialog.locator('[data-editor-icon="star"]')).toBeVisible();
   await page.mouse.move(1, 1);

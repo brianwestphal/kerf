@@ -3425,6 +3425,8 @@ export function createEditor(options: EditorOptions) {
           iconQuery.value = '';
           iconQueryRevision.value += 1;
           openDialog(root.querySelector<HTMLDialogElement>(`#${ICON_DIALOG}`)!);
+          // KF-GQHRC0: typing searches at once.
+          root.querySelector<HTMLElement>('[data-editor-icon-search]')!.focus();
         },
         [ICON_CLEAR_ACTION]: () => {
           iconQuery.value = '';

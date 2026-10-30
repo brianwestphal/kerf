@@ -132,6 +132,10 @@ describe(
       expect(root.querySelector('[data-editor-prop="icon"]')).toBeNull();
       click(root, `[data-editor-icon-place='{"prop":"icon","path":[]}']`);
       expect(dialog(root).open).toBe(true);
+      // KF-GQHRC0: the search takes focus, so typing searches at once.
+      expect(document.activeElement).toBe(
+        root.querySelector('[data-editor-icon-search]'),
+      );
       // Unsearched, it shows the first icons and says how many there are.
       expect(dialog(root).textContent).toMatch(/Showing \d+ of \d+ icons/);
       // The chosen icon reads as pressed.
