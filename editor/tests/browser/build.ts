@@ -76,7 +76,9 @@ export async function setText(page: Page, name: string, value: string) {
 /** Picks `option` in an enum prop's Select. */
 export async function choose(page: Page, name: string, option: string) {
   await prop(page, name).locator('.kui-select__trigger').click();
-  await page.getByRole('option', { name: option, exact: true }).click();
+  await prop(page, name)
+    .getByRole('option', { name: option, exact: true })
+    .click();
 }
 
 /** Turns a boolean prop's Switch on. */

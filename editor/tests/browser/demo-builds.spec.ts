@@ -373,3 +373,63 @@ test('builds Toolbar › Compact Density', async ({ page }) => {
     ),
   );
 });
+
+// KF-GEQD7F: DemoFrameShell is a SunkenPanel and DemoChip an outlined Badge.
+test('builds Row › Wrapped Row', async ({ page }) => {
+  await dragComponent(page, 'SunkenPanel', () => emptySpot(page));
+  await dragComponent(page, 'Row', () => emptySpot(page));
+  await dragComponent(page, 'Badge', () => emptySpot(page));
+  await select(page, /^SunkenPanel/);
+  await setText(page, 'ariaLabel', 'Layout Example');
+  await select(page, /^Row/);
+  await choose(page, 'hAlign', 'full');
+  await choose(page, 'vAlign', 'middle');
+  await choose(page, 'gap', 'm');
+  await turnOn(page, 'wrap');
+  await select(page, /^Badge/);
+  await choose(page, 'appearance', 'outline');
+  await choose(page, 'shape', 'rounded');
+  await choose(page, 'size', 'default');
+  for (let copy = 0; copy < 4; copy += 1)
+    await page.keyboard.press('ControlOrMeta+d');
+  const labels = [
+    'Alpha',
+    'Beta release',
+    'Gamma',
+    'Delta workspace',
+    'Epsilon',
+  ];
+  for (const [index, label] of labels.entries()) {
+    await select(page, /^Badge/, index);
+    await setText(page, 'children', label);
+  }
+  await expect(canvas(page).locator('.kui-badge[data-kerf-node]')).toHaveText(
+    labels,
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'sunken-panel',
+        { ariaLabel: 'Layout Example' },
+        {
+          children: [
+            node(
+              'row',
+              { hAlign: 'full', vAlign: 'middle', gap: 'm', wrap: true },
+              {
+                children: labels.map((children) =>
+                  node('badge', {
+                    children,
+                    appearance: 'outline',
+                    shape: 'rounded',
+                    size: 'default',
+                  }),
+                ),
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
