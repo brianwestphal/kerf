@@ -747,8 +747,14 @@ export function seedProps(
   const chosen = [...variants]
     .sort((a, b) => a.required.length - b.required.length)
     .find((item) => fill(item.required, trial) !== undefined);
+  // KF-RRVYCG: an absent prop already matches a `false` discriminant (a
+  // ListHeader's `toggle?: false`), so writing it would only restate the
+  // default in every new node.
+  const when = Object.fromEntries(
+    Object.entries(chosen?.when ?? {}).filter(([, value]) => value !== false),
+  );
   const result: Record<string, ViewValue> = chosen
-    ? { ...seeded, ...chosen.when, ...fill(chosen.required, slot) }
+    ? { ...seeded, ...when, ...fill(chosen.required, slot) }
     : seeded;
   // KF-DQFXWG: a seeded `name` beside an icon names that icon.
   const icon = props.find((prop) => prop.iconSource && prop.name in result);

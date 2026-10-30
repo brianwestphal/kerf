@@ -331,6 +331,22 @@ describe('seedProps', () => {
     expect(seedProps(props, 'X', [{ required: ['icon'] }])).toEqual({});
   });
 
+  // KF-RRVYCG: absent already matches a `false` discriminant, so a new
+  // ListHeader does not export `toggle: false`.
+  it('leaves a false variant discriminant unset', () => {
+    const header = propsByKey.get('@kerfjs/ui:list-header')!;
+    const seeded = seedProps(header.props, 'ListHeader', header.variants);
+    expect(seeded).toEqual({ label: 'ListHeader' });
+    const props: InspectorProp[] = [
+      { name: 'label', required: false, type: { kind: 'string' } },
+    ];
+    expect(
+      seedProps(props, 'X', [
+        { required: ['label'], when: { open: false, mode: 'inline' } },
+      ]),
+    ).toEqual({ label: 'X', mode: 'inline' });
+  });
+
   // KF-HNNWN9: a component added from the palette renders, so a Combobox's
   // suggestions, a Select's choices, and a PopupMenu's items get placeholders.
   it('fills required lists with numbered placeholders', () => {

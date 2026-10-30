@@ -287,7 +287,6 @@ test('builds Select › Rendering Balance', async ({ page }) => {
               name: 'rendering-balance',
               ariaLabel: 'Rendering Balance',
               value: 'quiet',
-              multiple: false,
               renderSelected: { $param: 'nodeRenderSelected' },
               choices: choices.map(([value, label, glyph, group], index) => ({
                 value,

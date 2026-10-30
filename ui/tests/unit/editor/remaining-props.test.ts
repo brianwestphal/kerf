@@ -71,7 +71,7 @@ describe('the props left read-only (KF-24G2KV)', () => {
     choose(field(root, '[data-editor-add="component"]'), '@kerfjs/ui:badge');
     field(root, '[data-action="editor-add-child"]').click();
     const chip = findNode(instance.document.value, id)!.node;
-    expect(chip.props).not.toHaveProperty('children');
+    expect(chip.props ?? {}).not.toHaveProperty('children');
     expect(
       chip.zones?.children?.map((child) => (child as { type: string }).type),
     ).toEqual(['#text', '@kerfjs/ui:badge']);
