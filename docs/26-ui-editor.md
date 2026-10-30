@@ -98,6 +98,43 @@ the outline and inspector change or remove like any other. A unit test seeds
 every cataloged component as a lone document and requires it to validate and
 render.
 
+**Field editors (design, signed off 2026-10-30; KF-AJHJB8: first-class
+complex-prop editors).** Today 55 Kerf UI props are edited as typed JSON: 32
+objects (a Workbench's `mainToolbar`, a `ListConfig`), 13 lists of objects (a
+Select's `choices`, a NavStack's `views`), 6 lists of strings or enum values
+(TagField `tags`, Pane `separators`), 3 lists of union items (PopupMenu
+`items`), and LucideIcon's icon data. Each of these gets a first-class editor
+instead. The editors are derived from the props catalog's type graph (the same
+`resolveType` walk seeding uses), not written per component, so an
+application component's catalog gets them with no extra code.
+
+- **Two containers, one form.** A structural editor's form is built from the
+  object's fields with the same `controlFor` controls as top-level props, and
+  nested objects open the same way again. The form opens in one of two
+  containers:
+  - **A pushed subview** in the Inspector rail (a `NavStack`) for a single
+    step of at most 10 fields. The canvas stays visible and updates live, and
+    Back pops.
+  - **A modal dialog** for anything with several steps, sub-selections (pick
+    one, then configure it), or more than 10 fields, and for pickers.
+  The rule picks a container by default, and a field editor may name its
+  container explicitly.
+- **Lists of objects** open a list editor: one `ListItem` per item, labeled
+  from its `label`, `name`, or `value`, with add, remove, and drag-reorder.
+  Choosing an item opens its form. A list of **union items** (PopupMenu items)
+  adds through an **Add ▾** `PopupMenu` offering each member type ("Item",
+  "Separator", "Group").
+- **Lists of strings** edit inline in a `TagField`. **Sets of enum values**
+  (sides) edit inline in a `CheckboxGroup`.
+- **Icon data** opens an icon picker dialog: a search over the Lucide names
+  that writes `{ $icon: name }`.
+- **JSON remains** as an escape hatch: "Edit as JSON" in each editor shows the
+  typed JSON field the Inspector uses today.
+- **Extension API.** `createEditor({ fieldEditors })` registers an editor for
+  a named type (`'ListConfig'`, an application's `'InvoiceFilter'`), which
+  overrides the type-driven default. An editor receives the value, its type
+  and definitions, and a commit callback, and chooses its container.
+
 The inspector's Control flow section (KF-90GTJN: editor control flow) shows a
 node only while a true/false param or item field holds (Show, which wraps the
 node in `$if`), repeats it for each item of a list param or in-scope list
