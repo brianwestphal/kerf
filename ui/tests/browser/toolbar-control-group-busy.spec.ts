@@ -27,9 +27,11 @@ test('busy toolbar action keeps its dimensions and cannot activate', async ({
   await expect(demo.getByRole('status').first()).toHaveText(
     'Running pricing check',
   );
-  const during = await group.boundingBox();
-  expect(during?.width).toBe(before?.width);
-  expect(during?.height).toBe(before?.height);
+  // Within 0.005px: inside its Toolbar the group can sit at a fractional
+  // offset, where Firefox rounds the busy height a ten-thousandth apart.
+  const during = (await group.boundingBox())!;
+  expect(during.width).toBeCloseTo(before!.width, 2);
+  expect(during.height).toBeCloseTo(before!.height, 2);
   await group.screenshot({
     path: 'test-results/toolbar-control-group-busy.png',
   });
