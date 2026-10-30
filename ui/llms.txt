@@ -1021,7 +1021,7 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
 
 ## Public exports
 
-`Badge`, `LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `ToolbarActionLink`, `FloatingToolbar`, `ToolbarText`, `Text`,
+`Badge`, `LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `ToolbarActionLink`, `ToolbarButton`, `FloatingToolbar`, `ToolbarText`, `Text`,
 `ListItem`, `ListActionRow` (+ `wireListReorder`, `reorderListItems`), `wireListFocusScroll`, `ListHeader`, `ListInsetControl`,
 `ListInsetText`, `SegmentedControl`, `ChoiceChips`, `MessageComposer`,
 `Select`, `SearchField` (+ `readSearchField`, `placeSearchFieldCaret`,

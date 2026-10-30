@@ -6,6 +6,7 @@ import {
 import { markRelocatableGroup } from '../../../shared/panels/panel-toolbar-group.js';
 import type { CssLength } from '../../../shared/styles/css-values.js';
 import { LoadingSpinner } from '../../feedback/loading-spinner/loading-spinner.js';
+import type { ButtonLabel } from '../button/button.js';
 
 export type ToolbarControlGroupAppearance = 'contained' | 'borderless';
 export type ToolbarControlGroupTone = 'default' | 'dark';
@@ -113,6 +114,90 @@ export function ToolbarActionLink({
       <span>{label}</span>
       {detail ? <code aria-hidden="true">{detail}</code> : null}
     </a>
+  );
+}
+
+/**
+ * A ToolbarButton's content: a labeled button (its text names it), or an
+ * icon-only control named by `ariaLabel`.
+ */
+export type ToolbarButtonContent =
+  | {
+      /** The visible label, after the icon. */
+      children: ButtonLabel;
+      /** A leading icon, such as a `LucideIcon`; it is decorative. */
+      icon?: KerfUiContent;
+      /** Override the accessible name when the label is not enough. */
+      ariaLabel?: string;
+    }
+  | {
+      children?: undefined;
+      /** The icon of an icon-only control. */
+      icon: KerfUiContent;
+      /** The accessible name of an icon-only control. */
+      ariaLabel: string;
+    };
+
+export type ToolbarButtonProps = ToolbarButtonContent & {
+  /** The `data-action` name a delegated handler dispatches on. */
+  action?: string;
+  /** A toggle's state, reported as `aria-pressed`; unset for a plain action. */
+  pressed?: boolean;
+  disabled?: boolean;
+  /** Native hover text that says more than the accessible name. */
+  title?: string;
+  /** `none` keeps this pressed control looking like its neighbors. */
+  selectedChrome?: 'none';
+  className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
+  /** Application `data-*` metadata on the root, such as a row key or an
+   * editor node marker; the component's own markers stay protected. */
+  rootAttributes?: RootDataAttributes;
+};
+
+const TOOLBAR_BUTTON_PROTECTED = new Set([
+  ...TOOLBAR_ACTION_LINK_PROTECTED,
+  'data-action',
+]);
+
+// KF-5ZEYKP: the group's native button as a component, so view documents,
+// the editor, and generated code can place it.
+/**
+ * A native button in a ToolbarControlGroup: the group owns its geometry,
+ * focus ring, pressed chrome, and busy state, exactly as for a hand-written
+ * `<button type="button">`.
+ */
+export function ToolbarButton({
+  children,
+  icon,
+  ariaLabel,
+  action,
+  pressed,
+  disabled = false,
+  title,
+  selectedChrome,
+  className = '',
+  slot,
+  rootAttributes = {},
+}: ToolbarButtonProps) {
+  return (
+    <button
+      {...filterDataAttributes(rootAttributes, TOOLBAR_BUTTON_PROTECTED)}
+      type="button"
+      class={`kui-toolbar-button ${className}`.trim()}
+      data-component="toolbar-button"
+      data-action={action}
+      data-selected-chrome={selectedChrome}
+      aria-label={ariaLabel}
+      aria-pressed={pressed === undefined ? undefined : String(pressed)}
+      title={title}
+      disabled={disabled}
+      slot={slot}
+    >
+      {icon}
+      {children}
+    </button>
   );
 }
 

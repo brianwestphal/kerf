@@ -8,6 +8,7 @@ import { FloatingToolbar } from '../../src/components/actions/floating-toolbar/f
 import { Toolbar } from '../../src/components/actions/toolbar/toolbar.js';
 import {
   ToolbarActionLink,
+  ToolbarButton,
   ToolbarControlGroup,
 } from '../../src/components/actions/toolbar-control-group/toolbar-control-group.js';
 import { ToolbarText } from '../../src/components/actions/toolbar-text/toolbar-text.js';
@@ -1011,6 +1012,50 @@ describe('production UI primitives', () => {
     );
     expect(internalLink).not.toContain('target=');
     expect(internalLink).not.toContain('<code');
+  });
+
+  it('renders a ToolbarButton as the native button a group styles (KF-5ZEYKP)', () => {
+    const icon = LucideIcon({ icon: Check, name: 'check' });
+    const glyph = asHtml(icon);
+    const iconOnly = asHtml(
+      ToolbarButton({
+        icon,
+        ariaLabel: 'Favorite View',
+        action: 'log-favorite',
+        pressed: true,
+        title: 'Keep this view',
+        rootAttributes: { 'data-row': '3', 'data-action': 'forged' },
+      }),
+    );
+    expect(iconOnly).toBe(
+      '<button data-row="3" type="button" class="kui-toolbar-button" data-component="toolbar-button" data-action="log-favorite" aria-label="Favorite View" aria-pressed="true" title="Keep this view">' +
+        glyph +
+        '</button>',
+    );
+    const labeled = asHtml(
+      ToolbarButton({
+        icon,
+        children: 'Favorite',
+        pressed: false,
+        disabled: true,
+        selectedChrome: 'none',
+        className: 'app-favorite',
+      }),
+    );
+    expect(labeled).toBe(
+      '<button type="button" class="kui-toolbar-button app-favorite" data-component="toolbar-button" data-selected-chrome="none" aria-pressed="false" disabled>' +
+        glyph +
+        'Favorite</button>',
+    );
+    // Inside a group it is the group's `> button`.
+    expect(
+      asHtml(
+        ToolbarControlGroup({
+          label: 'View',
+          children: ToolbarButton({ children: 'Open' }),
+        }),
+      ),
+    ).toContain('<button type="button" class="kui-toolbar-button"');
   });
 
   it('never clips toolbar actions under any responsive policy', () => {

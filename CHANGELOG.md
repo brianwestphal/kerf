@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`ToolbarButton` in `@kerfjs/ui/toolbar-control-group`.** A ToolbarControlGroup's native `<button type="button">` as a component: icon-only with `ariaLabel`, or labeled, with `action`, `pressed`, `disabled`, `title`, and `selectedChrome="none"`. It renders exactly the button the group already styles, so view documents, the Kerf UI editor, and generated code can place toolbar actions (`KF-5ZEYKP`).
 - **A node's problems in its Inspector in the Kerf UI editor.** The selected node's problems lead its Properties, and a field a problem is about, or that a variant hint names, shows it as its error ("To fix: set "label" or "ariaLabel""). The document is validated once per edit for the canvas, the Problems list, and the Inspector (`KF-H782W9`).
 - **Duplicate, copy, and paste in the Kerf UI editor.** The selected node's heading carries a Duplicate action (or press ⌘D / Ctrl+D) that copies it right after itself; ⌘C and ⌘V (Ctrl+C / Ctrl+V) copy a node and paste it after the selection, or at the end of the selected root's main zone. Copies get fresh ids and numbered names (`folderList2`), each is one undo step, and a paste the document cannot take changes nothing and says why (`KF-QAVK73`).
 - **Promote list and object props to params in the Kerf UI editor.** Promoting a list, object, or record prop (a Select's `choices`) makes a param typed exactly as that prop that keeps its current value as the default, so the application can supply the data (`KF-V9V2B6`).

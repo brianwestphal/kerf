@@ -77,6 +77,12 @@
           "mode": "listed",
           "entries": ["@kerfjs/ui:toolbar-control-group"]
         }
+      },
+      "ToolbarButton": {
+        "parents": {
+          "mode": "listed",
+          "entries": ["@kerfjs/ui:toolbar-control-group"]
+        }
       }
     },
     "parents": {

@@ -15066,6 +15066,117 @@
       "dataChannel": "rootAttributes"
     },
     {
+      "key": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+      "id": "toolbar-control-group",
+      "source": "kerf",
+      "import": "@kerfjs/ui/toolbar-control-group",
+      "export": "ToolbarButton",
+      "description": "A native button in a ToolbarControlGroup: the group owns its geometry,\nfocus ring, pressed chrome, and busy state, exactly as for a hand-written\n`<button type=\"button\">`.",
+      "props": [
+        {
+          "name": "children",
+          "type": {
+            "kind": "content",
+            "acceptsText": true,
+            "text": "ButtonLabel"
+          },
+          "required": false,
+          "description": "The visible label, after the icon.",
+          "variantOnly": true,
+          "slot": true
+        },
+        {
+          "name": "icon",
+          "type": {
+            "kind": "content",
+            "text": "KerfUiContent",
+            "nullable": true
+          },
+          "required": false,
+          "description": "A leading icon, such as a `LucideIcon`; it is decorative.",
+          "slot": true
+        },
+        {
+          "name": "ariaLabel",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Override the accessible name when the label is not enough."
+        },
+        {
+          "name": "action",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "The `data-action` name a delegated handler dispatches on."
+        },
+        {
+          "name": "pressed",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "A toggle's state, reported as `aria-pressed`; unset for a plain action."
+        },
+        {
+          "name": "disabled",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Native hover text that says more than the accessible name."
+        },
+        {
+          "name": "selectedChrome",
+          "type": {
+            "kind": "literal",
+            "value": "none",
+            "text": "\"none\"",
+            "nullable": true
+          },
+          "required": false,
+          "description": "`none` keeps this pressed control looking like its neighbors."
+        },
+        {
+          "name": "className",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "control": "hidden"
+        },
+        {
+          "name": "slot",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
+        }
+      ],
+      "nativeAttributes": [],
+      "variants": [
+        { "required": ["children"], "forbidden": [] },
+        { "required": ["icon", "ariaLabel"], "forbidden": ["children"] }
+      ],
+      "dataChannel": "rootAttributes"
+    },
+    {
       "key": "@kerfjs/ui:toolbar-text",
       "id": "toolbar-text",
       "source": "kerf",

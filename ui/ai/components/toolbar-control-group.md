@@ -12,6 +12,7 @@ Provide complete toolbar action geometry through configuration, including semant
 
 - Group related controls inside a toolbar with a supported visual treatment.
 - Use ToolbarActionLink for navigation or external resources that must retain native anchor semantics inside a group.
+- Use ToolbarButton for a group's button when it must be a component rather than markup (a view document, the Kerf UI editor, or generated code): it renders exactly the native \<button type="button"> the group styles, icon-only with ariaLabel or labeled, with action, pressed, disabled, and title.
 - Fill it with plain \<button> controls (the group styles > button fully); use wa-button only for a Web Awesome feature. A popup menu is a PopupMenu in a single group with nestedDropdown; it renders its own trigger, so never hand-write wa-dropdown markup. Each control stays whole: an icon sits beside its label on one row and no trigger gets a fixed width. Use overflow=wrap for independent links that should move as whole actions to another row on narrow surfaces.
 - For an avatar control, set content=avatar and avatarImage instead of inserting an img; one button paints the group and multiple buttons paint only the pressed highlight.
 - In a Workbench or CollapsiblePanel toolbar, mark a group relocateOnCollapse to keep it available in the work-area toolbar when the panel closes; place it directly or in an array in any toolbar zone.
@@ -33,7 +34,7 @@ Provide complete toolbar action geometry through configuration, including semant
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/toolbar-control-group` — exports `ToolbarActionLink`, `ToolbarControlGroup`.
+- JavaScript: `@kerfjs/ui/toolbar-control-group` — exports `ToolbarActionLink`, `ToolbarButton`, `ToolbarControlGroup`.
 - CSS: the browser build of `@kerfjs/ui/toolbar-control-group` pulls its CSS automatically; import `@kerfjs/ui/toolbar-control-group.css` manually only without the `browser` export condition.
 - Wiring: `wireToolbarVisibility` from `@kerfjs/ui/wire-toolbar-visibility` (optional).
 - Declared side effects: browser-condition-css.
@@ -107,6 +108,8 @@ Margin: none · border: self · padding: self (layout role: structure). `self` m
 - A dark-toned group's hover paints a 14% surface wash over its loud fill, on one control of a group or across a lone control's whole group, so the on-loud icon keeps at least 3:1 over a light page and well above it in dark.
 
 `ToolbarActionLink` renders a native control or link as its root, so it cannot sit in another such component's zones, and its own zones cannot hold a control, a link, or a component that renders one. (`KUI-V014`)
+
+`ToolbarButton` renders a native control or link as its root, so it cannot sit in another such component's zones, and its own zones cannot hold a control, a link, or a component that renders one. (`KUI-V014`)
 
 ## Styling boundary
 

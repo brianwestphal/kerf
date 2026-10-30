@@ -1930,7 +1930,8 @@
       },
       "content": {
         "exports": {
-          "ToolbarActionLink": { "interactive": [{ "kind": "root" }] }
+          "ToolbarActionLink": { "interactive": [{ "kind": "root" }] },
+          "ToolbarButton": { "interactive": [{ "kind": "root" }] }
         }
       },
       "cssValueProps": [
@@ -2011,6 +2012,12 @@
       },
       "jsxExports": {
         "ToolbarActionLink": {
+          "parents": {
+            "mode": "listed",
+            "entries": ["@kerfjs/ui:toolbar-control-group"]
+          }
+        },
+        "ToolbarButton": {
           "parents": {
             "mode": "listed",
             "entries": ["@kerfjs/ui:toolbar-control-group"]

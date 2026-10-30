@@ -352,6 +352,9 @@ import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { CssLength } from './css-values.js';
+import { ButtonLabel } from './button.js';
+import './badge.js';
+import './semantic-tone-CdW013KF.js';
 
 type ToolbarControlGroupAppearance = 'contained' | 'borderless';
 type ToolbarControlGroupTone = 'default' | 'dark';
@@ -392,6 +395,47 @@ interface ToolbarActionLinkProps {
 }
 /** A semantic anchor with ToolbarControlGroup-owned action geometry. */
 declare function ToolbarActionLink({ href, label, icon, detail, ariaLabel, external, className, slot, rootAttributes, }: ToolbarActionLinkProps): kerfjs.SafeHtml;
+/**
+ * A ToolbarButton's content: a labeled button (its text names it), or an
+ * icon-only control named by `ariaLabel`.
+ */
+type ToolbarButtonContent = {
+    /** The visible label, after the icon. */
+    children: ButtonLabel;
+    /** A leading icon, such as a `LucideIcon`; it is decorative. */
+    icon?: KerfUiContent;
+    /** Override the accessible name when the label is not enough. */
+    ariaLabel?: string;
+} | {
+    children?: undefined;
+    /** The icon of an icon-only control. */
+    icon: KerfUiContent;
+    /** The accessible name of an icon-only control. */
+    ariaLabel: string;
+};
+type ToolbarButtonProps = ToolbarButtonContent & {
+    /** The `data-action` name a delegated handler dispatches on. */
+    action?: string;
+    /** A toggle's state, reported as `aria-pressed`; unset for a plain action. */
+    pressed?: boolean;
+    disabled?: boolean;
+    /** Native hover text that says more than the accessible name. */
+    title?: string;
+    /** `none` keeps this pressed control looking like its neighbors. */
+    selectedChrome?: 'none';
+    className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
+};
+/**
+ * A native button in a ToolbarControlGroup: the group owns its geometry,
+ * focus ring, pressed chrome, and busy state, exactly as for a hand-written
+ * `<button type="button">`.
+ */
+declare function ToolbarButton({ children, icon, ariaLabel, action, pressed, disabled, title, selectedChrome, className, slot, rootAttributes, }: ToolbarButtonProps): kerfjs.SafeHtml;
 interface ToolbarControlGroupProps {
     children: KerfUiContent;
     label?: string;
@@ -475,7 +519,7 @@ interface ToolbarControlGroupProps {
 }
 declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, material, tileTone, buttonAppearance, shape, size, density, content, focusRing, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, expandedOverflow, visibility, hideBelow, showBelow, sizing, placement, growBasis, relocateOnCollapse, scrim, busy, busyLabel, avatarImage, slot, rootAttributes, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
 
-export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupExpandedOverflow, type ToolbarControlGroupFocusRing, type ToolbarControlGroupMaterial, type ToolbarControlGroupMenuInset, type ToolbarControlGroupOverflow, type ToolbarControlGroupPlacement, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupSizing, type ToolbarControlGroupTileTone, type ToolbarControlGroupTone, type ToolbarControlGroupVisibility };
+export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarButton, type ToolbarButtonContent, type ToolbarButtonProps, ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupExpandedOverflow, type ToolbarControlGroupFocusRing, type ToolbarControlGroupMaterial, type ToolbarControlGroupMenuInset, type ToolbarControlGroupOverflow, type ToolbarControlGroupPlacement, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupSizing, type ToolbarControlGroupTileTone, type ToolbarControlGroupTone, type ToolbarControlGroupVisibility };
 ```
 
 ## `@kerfjs/ui/floating-toolbar`

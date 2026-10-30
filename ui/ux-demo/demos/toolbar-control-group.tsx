@@ -14,6 +14,7 @@ import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import {
   ToolbarActionLink,
+  ToolbarButton,
   ToolbarControlGroup,
 } from '@kerfjs/ui/toolbar-control-group';
 import {
@@ -217,24 +218,20 @@ export function ToolbarControlGroupDemo() {
       </CatalogExample>
       <CatalogExample
         label="Button Group"
-        note="Name an icon-only button with aria-label; hover or keyboard focus shows that name as a help tag."
+        note="Name an icon-only button with aria-label (ToolbarButton's ariaLabel); hover or keyboard focus shows that name as a help tag."
         align="inline-control"
       >
         <ToolbarControlGroup label="View Actions" shape={shape}>
-          <button
-            type="button"
-            aria-label="Favorite View"
-            data-action="log-favorite"
-          >
-            <LucideIcon icon={Star} name="star" />
-          </button>
-          <button
-            type="button"
-            aria-label="More Actions"
-            data-action="log-more"
-          >
-            <LucideIcon icon={MoreHorizontal} name="ellipsis" />
-          </button>
+          <ToolbarButton
+            ariaLabel="Favorite View"
+            action="log-favorite"
+            icon={<LucideIcon icon={Star} name="star" />}
+          />
+          <ToolbarButton
+            ariaLabel="More Actions"
+            action="log-more"
+            icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
+          />
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample

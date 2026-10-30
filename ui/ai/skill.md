@@ -395,6 +395,11 @@ choice that should remain only when application context justifies it. Apply the
 same metadata when authoring consumer component catalogs so lint, analyzer, and
 doctor feedback covers local components too.
 
+A group's buttons are native `<button type="button">` elements; where a
+component is needed instead of markup (a view document, generated code), use
+`ToolbarButton` (icon-only with `ariaLabel`, or labeled), which renders the
+same button.
+
 Toolbar action links and menus are configuration, not application CSS: put
 `ToolbarActionLink` inside `ToolbarControlGroup`, set `overflow="scroll"` for a
 bounded action row or `overflow="wrap"` to keep independent links fully visible

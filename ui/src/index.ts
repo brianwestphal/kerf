@@ -45,6 +45,9 @@ export {
 export {
   ToolbarActionLink,
   type ToolbarActionLinkProps,
+  ToolbarButton,
+  type ToolbarButtonContent,
+  type ToolbarButtonProps,
   ToolbarControlGroup,
   type ToolbarControlGroupAppearance,
   type ToolbarControlGroupButtonAppearance,
