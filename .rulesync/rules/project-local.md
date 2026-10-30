@@ -289,7 +289,7 @@ The shared **Testing Philosophy** rule applies; these are kerf's suites and the 
 
 ## Code Quality Gates
 
-- **Lint and types:** `npx tsc --noEmit` and `npm run lint` must pass with zero errors before handing work back.
+- **Lint and types:** `npm run typecheck` (the native TypeScript 7 compiler; a bare `npx tsc` resolves the `typescript@6` bridge package instead) and `npm run lint` must pass with zero errors before handing work back.
 - **Prefer editing existing files** to creating new ones. The runtime is small on purpose.
 - **One coherent concern per file.** Split a file when it holds two genuinely separable concerns — never to satisfy a line count. Prefer a ~400-line file that houses one coherent state machine or algorithm to three fragments that each hold a slice of it (the keyed list reconciler is deliberately one algorithm even though it spans several hundred lines across its dispatcher and path files). A file growing past ~500 LOC is a _smell_ worth a second look for a hidden second concern, not a gate that fails the build. (One primary export per file — Design rule 4.)
 - **Prefer `switch` for finite dispatch.** When rendering or logic selects among cases of one discriminant (a union, action, patch, mode, or key), use a real `switch` instead of a nested ternary or long `if`/`else if` chain. For a return-valued switch over a closed TypeScript union, give the function an explicit return type and let `noImplicitReturns` check exhaustiveness. Keep simple two-way choices and independent boolean or range checks as ordinary conditions.
@@ -304,7 +304,7 @@ Keep **text search** (ripgrep / the editor's grep / the Explore agent) for what 
 
 **Push policy: `push-per-batch` on `main` (`git-commit-and-push`, KF-2JCGXZ).** The maintainer has authorized routine fast-forward pushes of verified ticket commits to `main`; do not ask again. The shared **Git Commit and Push** rule defines what `push-per-batch` means. The measured 2026-10-23 pre-push `npm run check` took about two minutes on this machine (the final run's timed steps totaled 109 seconds); each push also starts CI, which cancels superseded runs. This is the measured cost that justifies batching. The old 2026-09-23..25 timing audit recorded 47 pushes for 50 tickets (see `docs/25-ticket-timing.md`).
 
-Use `npm run push` (`npm run check && git push`) so the check finishes before opening the SSH connection. `.husky/pre-push` repeats the check only if the exact tree lacks a recorded local pass; a plain `git push` with a long hook can leave the connection idle and fail with SIGPIPE.
+Use `npm run push` (`scripts/push.mjs`: it requires a clean worktree, runs `npm run check`, then `git push`) so the check finishes before opening the SSH connection. With unrelated local edits in the checkout, push from a clean detached worktree at the verified commit instead (`docs/25-ticket-timing.md`). `.husky/pre-push` repeats the check only if the exact tree lacks a recorded local pass; a plain `git push` with a long hook can leave the connection idle and fail with SIGPIPE.
 
 ## Hot Sheet integration
 
