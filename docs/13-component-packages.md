@@ -379,7 +379,9 @@ root-relative import, which `kerf-ui-view` rewrites relative to each document.
 
 It writes `kerfComponentCatalog.propsOutput`, listing each component's props as
 a type grammar with required flags, documented defaults, zones and slots, and
-discriminated variants. Components are keyed `package:id`, the same key as the
+discriminated variants. A prop whose type mixes text and markup (including one
+assembled from the variants) is a content slot, and inline object types keep
+their fields up to five levels deep. Components are keyed `package:id`, the same key as the
 composition catalog, with `source: "package"`. The `props:generate` script runs
 it after `npm run build`. `props:check` fails when the committed file is stale, and
 `prepublishOnly` regenerates it from the fresh build. Kerf UI view tools use the file to validate, inspect, and

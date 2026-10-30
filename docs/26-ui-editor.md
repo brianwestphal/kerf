@@ -196,6 +196,17 @@ by its path. Nodes placed there own the field: a seeded item slot or text
 at that path gives way, and an object left with no other field stays set
 as `{}`, so the rail still reads as a static panel.
 
+The props catalog generator (KF-24G2KV: remaining props) treats a union whose
+members are all content, text, or numbers as one content slot, including
+one a component's variants assemble (a Chip's `children`, a ListHeader's
+`actionIcon`), so those edit as text or nodes. Inline object types keep
+their fields five levels deep (a pane config's `compactChromeOpen`), and a
+record (a `data-*` map inside a value) edits as typed JSON. Props whose
+values are functions or signals (`SearchField.model`) stay read-only until
+the param grammar can carry app-supplied values (KF-H3CB2P), and Web
+Awesome props the catalog types as `unknown` are out of the editor's reach,
+which places Web Awesome only through Kerf wrappers.
+
 The inspector's Control flow section (KF-90GTJN: editor control flow) shows a
 node only while a true/false param or item field holds (Show, which wraps the
 node in `$if`), repeats it for each item of a list param or in-scope list

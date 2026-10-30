@@ -1382,3 +1382,23 @@ test('composes a Workbench’s left rail and toolbar title from nodes', async ({
     animations: 'disabled',
   });
 });
+
+// KF-24G2KV: a Chip's children take text or nodes, as other content does.
+test('puts a Badge beside a Chip’s text', async ({ page }, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await addToPane(page, 'Chip');
+  await area(page, 'Children');
+  await page.locator('[data-editor-add="zone"]').click();
+  await page.getByRole('option', { name: 'children', exact: true }).click();
+  await page.locator('[data-editor-add="component"]').click();
+  await page.getByRole('option', { name: 'Badge', exact: true }).click();
+  await page.getByRole('button', { name: 'Add', exact: true }).click();
+  const chip = page.locator('[data-editor-canvas] [data-component="chip"]');
+  await expect(chip.locator('[data-component="badge"]')).toBeVisible();
+  await expect(page.getByText(/· valid$/)).toBeVisible();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-24g2kv-chip-badge-1440.png'),
+    animations: 'disabled',
+  });
+});

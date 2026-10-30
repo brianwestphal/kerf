@@ -22,7 +22,7 @@ const CSS_VALUE_ALIAS =
   /^(Css[A-Z]\w*|Ui(Color|ForegroundColor|Gap|GapValue|SpaceName|ColorName|ForegroundColorName))$/;
 // Anonymous object literals inline up to this depth; named ones become
 // shared definitions, so recursion and repetition stay bounded.
-const MAX_INLINE_DEPTH = 3;
+const MAX_INLINE_DEPTH = 5;
 const PRINT_FLAGS =
   ts.TypeFormatFlags.NoTruncation |
   ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope;
@@ -172,6 +172,26 @@ function contentOf(members, text) {
 }
 
 /**
+ * Described members that are all content, text, or numbers (a branded
+ * SafeHtml, an alias of content, or one prop's type in each variant) are one
+ * content slot (KF-24G2KV); undefined for any other set.
+ */
+function contentOfDescribed(members, text) {
+  if (
+    !members.some((member) => member.kind === 'content') ||
+    !members.every((member) =>
+      ['content', 'string', 'number'].includes(member.kind),
+    )
+  )
+    return undefined;
+  return members.some(
+    (member) => member.kind !== 'content' || member.acceptsText,
+  )
+    ? { kind: 'content', acceptsText: true, text }
+    : { kind: 'content', text };
+}
+
+/**
  * Text, numbers, rendered markup, or lists of them: application content for
  * a slot.
  */
@@ -256,6 +276,9 @@ function describeNonNull(ctx, type, members, text, depth) {
       }
       folded.push(describeType(ctx, member, depth + 1));
     }
+    // Text and markup TypeScript kept apart are still one content slot.
+    const content = contentOfDescribed(folded, text);
+    if (content) return content;
     const union = { kind: 'union', members: folded };
     const discriminant = discriminantOf(ctx.checker, members);
     if (discriminant) union.discriminant = discriminant;
@@ -585,10 +608,11 @@ function mergeMemberProps(memberProps, memberCount) {
         text: usable.map((item) => item.text).join(' | '),
       };
     } else if (usable.length > 1) {
-      type = {
+      const text = usable.map((item) => item.text).join(' | ');
+      type = contentOfDescribed(usable, text) ?? {
         kind: 'union',
         members: usable,
-        text: usable.map((item) => item.text).join(' | '),
+        text,
       };
     }
     const merged = { ...prop, type, required: required === memberCount };

@@ -35,13 +35,16 @@ export function resolveType(
   return current?.kind === 'ref' ? undefined : current;
 }
 
-/** Whether a prop of `type` holds a list or an object literal. */
+/**
+ * Whether a prop of `type` holds a list, an object, or a record (a map of
+ * `data-*` attributes; KF-24G2KV) literal.
+ */
 export function isStructured(
   type: ViewType | undefined,
   definitions: Definitions,
 ): boolean {
   const kind = resolveType(type, definitions)?.kind;
-  return kind === 'array' || kind === 'object';
+  return kind === 'array' || kind === 'object' || kind === 'record';
 }
 
 /**

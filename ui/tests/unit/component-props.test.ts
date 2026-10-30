@@ -368,6 +368,27 @@ describe('ai/component-props.json (generated from the built package)', async () 
     for (const ref of refs) expect(document.definitions).toHaveProperty([ref]);
   });
 
+  // KF-24G2KV: text and markup kept apart by TypeScript (branded SafeHtml,
+  // one prop's type per variant) are one content slot, and inline objects
+  // deeper in a config keep their fields.
+  it('collapses content unions to slots and keeps deep inline object fields', () => {
+    expect(prop(component('@kerfjs/ui:chip'), 'children')).toMatchObject({
+      type: { kind: 'content', acceptsText: true },
+      slot: true,
+    });
+    const actionIcon = prop(component('@kerfjs/ui:list-header'), 'actionIcon');
+    expect(actionIcon).toMatchObject({ type: { kind: 'content' }, slot: true });
+    expect(actionIcon.type).not.toHaveProperty('acceptsText');
+    const pane = document.definitions.PaneConfig as {
+      props: { name: string; type: { props?: { name: string }[] } }[];
+    };
+    expect(
+      pane.props
+        .find((item) => item.name === 'compactChromeOpen')!
+        .type.props!.map((item) => item.name),
+    ).toEqual(['header', 'footer']);
+  });
+
   it('Button: labeled or icon-only variants, enum defaults, and the overlay', () => {
     const button = component('@kerfjs/ui:button');
     expect(button.import).toBe('@kerfjs/ui/button');

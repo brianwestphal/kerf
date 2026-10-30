@@ -86,8 +86,12 @@ describe('typed choices', () => {
       choiceOptions({ kind: 'enum', values: ['a', 'b'] } as ViewType),
     ).toBeUndefined();
     expect(choiceOptions({ kind: 'enum' } as ViewType)).toBeUndefined();
+    // A union with a member no control edits (rendered content).
     expect(
-      choiceOptions(typeOf('ListHeader', 'actionIcon'), definitions),
+      choiceOptions({
+        kind: 'union',
+        members: [{ kind: 'content' }, { kind: 'number' }],
+      } as ViewType),
     ).toBeUndefined();
   });
 

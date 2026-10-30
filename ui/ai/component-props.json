@@ -1333,18 +1333,12 @@
         {
           "name": "children",
           "type": {
-            "kind": "union",
-            "members": [
-              {
-                "kind": "content",
-                "acceptsText": true,
-                "text": "string | number | SafeHtml"
-              },
-              { "kind": "string", "text": "string" }
-            ],
+            "kind": "content",
+            "acceptsText": true,
             "text": "string | number | SafeHtml | string"
           },
-          "required": true
+          "required": true,
+          "slot": true
         },
         {
           "name": "truncate",
@@ -6418,19 +6412,12 @@
         {
           "name": "actionIcon",
           "type": {
-            "kind": "union",
-            "members": [
-              {
-                "kind": "content",
-                "text": "SafeHtml | undefined",
-                "nullable": true
-              },
-              { "kind": "content", "text": "SafeHtml" }
-            ],
+            "kind": "content",
             "text": "SafeHtml | undefined | SafeHtml"
           },
           "required": false,
-          "variantOnly": true
+          "variantOnly": true,
+          "slot": true
         },
         {
           "name": "actionLabel",
@@ -24324,6 +24311,26 @@
               { "kind": "literal", "value": "2xs", "text": "\"2xs\"" },
               {
                 "kind": "object",
+                "props": [
+                  {
+                    "name": "column",
+                    "type": {
+                      "kind": "css-value",
+                      "grammar": "UiGapValue",
+                      "text": "UiGapValue"
+                    },
+                    "required": true
+                  },
+                  {
+                    "name": "row",
+                    "type": {
+                      "kind": "css-value",
+                      "grammar": "UiGapValue",
+                      "text": "UiGapValue"
+                    },
+                    "required": true
+                  }
+                ],
                 "text": "Readonly<{ column: UiGapValue; row: UiGapValue; }>"
               }
             ],
@@ -25250,6 +25257,26 @@
           "name": "compactChromeOpen",
           "type": {
             "kind": "object",
+            "props": [
+              {
+                "name": "header",
+                "type": {
+                  "kind": "boolean",
+                  "text": "boolean | undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "footer",
+                "type": {
+                  "kind": "boolean",
+                  "text": "boolean | undefined",
+                  "nullable": true
+                },
+                "required": false
+              }
+            ],
             "text": "{ header?: boolean | undefined; footer?: boolean | undefined; }",
             "nullable": true
           },
@@ -25811,6 +25838,48 @@
           "name": "attributes",
           "type": {
             "kind": "object",
+            "props": [
+              {
+                "name": "data-action",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-component",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-key",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
+                "name": "data-morph-skip-children",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              }
+            ],
+            "index": {
+              "keyPrefix": "data-",
+              "value": { "kind": "string", "text": "string", "nullable": true }
+            },
             "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-action'?: undefined; 'data-component'?: undefined; 'data-key'?: undefined; 'data-morph-skip-children'?: undefined; }>",
             "nullable": true
           },
