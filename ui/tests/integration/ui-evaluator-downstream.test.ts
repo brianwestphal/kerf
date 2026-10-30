@@ -121,7 +121,16 @@ describe('browser evaluator against running downstream fixtures', () => {
           outputDirectory,
           recordedAt: '2026-09-21T00:00:00.000Z',
           retention: 'always',
+          // A loaded machine can stretch Firefox's full-page capture past the
+          // evaluator's 15s default, which reports KUI-B001 and keeps no
+          // screenshot (KF-J701X0: an empty artifact list under suite load).
+          timeoutMs: loadScaledTimeout(15_000),
         });
+        // A navigation or capture failure names its cause here rather than
+        // surfacing later as a missing artifact.
+        expect(
+          report.diagnostics.filter(({ code }) => code === 'KUI-B001'),
+        ).toEqual([]);
         const codes = new Set(report.diagnostics.map(({ code }) => code));
         for (const code of [
           'KUI-B010',
