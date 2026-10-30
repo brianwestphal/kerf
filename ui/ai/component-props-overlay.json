@@ -306,6 +306,43 @@
         }
       }
     },
+    "@kerfjs/ui:lucide-icon": {
+      "groups": ["Icon", "Appearance", "Accessibility"],
+      "props": {
+        "icon": {
+          "group": "Icon",
+          "order": 1
+        },
+        "name": {
+          "group": "Icon",
+          "order": 2
+        },
+        "size": {
+          "group": "Appearance",
+          "order": 1
+        },
+        "color": {
+          "group": "Appearance",
+          "order": 2
+        },
+        "appearance": {
+          "group": "Appearance",
+          "order": 3
+        },
+        "inline": {
+          "group": "Appearance",
+          "order": 4
+        },
+        "label": {
+          "group": "Accessibility",
+          "order": 1
+        },
+        "title": {
+          "group": "Accessibility",
+          "order": 2
+        }
+      }
+    },
     "@kerfjs/ui:pane": {
       "groups": ["Content", "Chrome", "Surface", "Semantics"],
       "props": {

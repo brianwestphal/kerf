@@ -9,6 +9,7 @@ import { controlFor } from '../../../src/editor/model/controls.js';
 import { findNode } from '../../../src/editor/model/document.js';
 import { setProp } from '../../../src/editor/model/edits.js';
 import {
+  followingIconName,
   ICON_RESULTS,
   iconNames,
   lucideIconName,
@@ -168,6 +169,61 @@ describe(
       expect(dialog(root).textContent).toContain('Remove icon');
       click(root, '[data-action="editor-remove-icon"]');
       expect(props()).not.toHaveProperty('icon');
+    });
+
+    it('names a LucideIcon after its icon until the author names it (KF-DQFXWG)', () => {
+      const { root, editor, id, props } = added('@kerfjs/ui:lucide-icon');
+      // Seeded with its icon's name, and the icon row comes before it.
+      expect(props()).toMatchObject({
+        icon: { $icon: 'circle' },
+        name: 'circle',
+      });
+      const icon = root.querySelector(
+        `[data-editor-icon-place='{"prop":"icon","path":[]}']`,
+      )!;
+      const name = root.querySelector('[data-editor-prop="name"]')!;
+      expect(
+        icon.compareDocumentPosition(name) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+      // The ref name and the icon's name prop read differently.
+      expect(root.querySelector('[data-editor-name]')!.textContent).toContain(
+        'Ref name',
+      );
+      const pick = (glyph: string) => {
+        click(root, `[data-editor-icon-place='{"prop":"icon","path":[]}']`);
+        search(root, glyph);
+        click(root, `[data-editor-icon="${glyph}"]`);
+        dialog(root).dispatchEvent(new Event('close'));
+      };
+      pick('plus');
+      expect(props()).toMatchObject({ icon: { $icon: 'plus' }, name: 'plus' });
+      // One undo restores both.
+      click(root, '[data-action="editor-undo"]');
+      expect(props()).toMatchObject({
+        icon: { $icon: 'circle' },
+        name: 'circle',
+      });
+      editor.document.value = setProp(editor.document.value, id, 'name', 'add');
+      pick('star');
+      expect(props()).toMatchObject({ icon: { $icon: 'star' }, name: 'add' });
+    });
+
+    it('follows an icon only while the name does', () => {
+      expect(
+        followingIconName(undefined, undefined, 'plus', 'LucideIcon'),
+      ).toBe('plus');
+      expect(followingIconName('circle', 'circle', 'plus', 'LucideIcon')).toBe(
+        'plus',
+      );
+      expect(
+        followingIconName('LucideIcon', 'circle', 'plus', 'LucideIcon'),
+      ).toBe('plus');
+      expect(
+        followingIconName('add', 'circle', 'plus', 'LucideIcon'),
+      ).toBeUndefined();
+      expect(
+        followingIconName('plus', 'circle', 'plus', 'LucideIcon'),
+      ).toBeUndefined();
     });
 
     it('shows a name Lucide does not have without a glyph', () => {

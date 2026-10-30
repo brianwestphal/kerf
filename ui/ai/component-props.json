@@ -7642,12 +7642,16 @@
             "text": "IconNode"
           },
           "required": true,
-          "iconSource": "lucide"
+          "iconSource": "lucide",
+          "group": "Icon",
+          "order": 1
         },
         {
           "name": "name",
           "type": { "kind": "string", "text": "string" },
-          "required": true
+          "required": true,
+          "group": "Icon",
+          "order": 2
         },
         {
           "name": "appearance",
@@ -7658,7 +7662,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Outline by default; solid fills compatible glyphs with the current text color."
+          "description": "Outline by default; solid fills compatible glyphs with the current text color.",
+          "group": "Appearance",
+          "order": 3
         },
         {
           "name": "className",
@@ -7675,7 +7681,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Foreground color; omit to inherit the surrounding text color."
+          "description": "Foreground color; omit to inherit the surrounding text color.",
+          "group": "Appearance",
+          "order": 2
         },
         {
           "name": "inline",
@@ -7685,19 +7693,25 @@
             "nullable": true
           },
           "required": false,
-          "description": "Flow with surrounding text instead of occupying a block."
+          "description": "Flow with surrounding text instead of occupying a block.",
+          "group": "Appearance",
+          "order": 4
         },
         {
           "name": "label",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "The icon's accessible name; without it the icon is decorative."
+          "description": "The icon's accessible name; without it the icon is decorative.",
+          "group": "Accessibility",
+          "order": 1
         },
         {
           "name": "title",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Hover text, as an SVG `<title>`: a status icon's explanation (\"Session\nhalted\"). With `label`, the label stays the accessible name; alone, the\ntitle also names the icon. The whole icon box shows it, not just its\nstrokes."
+          "description": "Hover text, as an SVG `<title>`: a status icon's explanation (\"Session\nhalted\"). With `label`, the label stays the accessible name; alone, the\ntitle also names the icon. The whole icon box shows it, not just its\nstrokes.",
+          "group": "Accessibility",
+          "order": 2
         },
         {
           "name": "size",
@@ -7715,7 +7729,9 @@
             "nullable": true
           },
           "required": false,
-          "description": "Named icon scale or positive pixel size, converted to rem. Omit for 1em."
+          "description": "Named icon scale or positive pixel size, converted to rem. Omit for 1em.",
+          "group": "Appearance",
+          "order": 1
         },
         {
           "name": "slot",
@@ -7737,7 +7753,8 @@
         }
       ],
       "nativeAttributes": [],
-      "dataChannel": "rootAttributes"
+      "dataChannel": "rootAttributes",
+      "groups": ["Icon", "Appearance", "Accessibility"]
     },
     {
       "key": "@kerfjs/ui:message-composer",

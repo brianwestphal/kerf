@@ -175,6 +175,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **A clearer LucideIcon Inspector in the Kerf UI editor.** A LucideIcon's icon comes first, under Icon with its `name`, then Appearance and Accessibility; Inspector rows keep their prop order instead of listing every icon or Configure row after the text fields. A new LucideIcon's `name` matches its icon, and choosing another icon renames it until you give it a name of your own (one undo restores both). The node's own name field is now "Ref name", so it no longer reads like the `name` prop (`KF-DQFXWG`).
 - **Readable field labels in the Kerf UI editor.** The Inspector labels each prop and form field in sentence case (`controlInsets` reads "Control insets", `hAlign` "Horizontal align", `ariaLabel` "ARIA label") instead of its run-together camelCase name, and Configure and Choose rows name their field the same way (`KF-7M4XQR`).
 - **`wa-tree` and `wa-tree-item` are Discouraged.** They now point at `TreeList` (`@kerfjs/ui/tree-list`), and the default application UI profile's `hierarchy-navigation` preference prefers TreeList, so `KUI-L301` steers a hierarchy to it rather than to an exception for Web Awesome Tree (`KF-QMH4F5`).
 - **Compact toolbar groups use compact text.** A `ToolbarControlGroup` with `size="compact"` now sets the 14px text of a compact `Button` (`--kui-font-s`), so its plain buttons, action links, and PopupMenu triggers match a compact Button beside them; before, they kept the default 16px text at the 32px height (`KF-Z8EYHT`).

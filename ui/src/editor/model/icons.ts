@@ -62,3 +62,22 @@ export function matchIcons(
     .map((match) => match.name);
   return { names: matches.slice(0, limit), total: matches.length };
 }
+
+/**
+ * The `name` a node takes when its icon changes from `from` to `to`
+ * (KF-DQFXWG: a LucideIcon's `name` follows its icon, as `icon={Plus}
+ * name="plus"`): the new icon's name while `name` still follows the icon
+ * (unset, the old icon's name, or `seeded`, what a new node was given), or
+ * undefined to leave a name the author chose.
+ */
+export function followingIconName(
+  name: unknown,
+  from: string | undefined,
+  to: string,
+  seeded: string,
+): string | undefined {
+  if (name === to) return undefined;
+  return name === undefined || name === from || name === seeded
+    ? to
+    : undefined;
+}

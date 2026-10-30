@@ -746,9 +746,18 @@ export function seedProps(
   const chosen = [...variants]
     .sort((a, b) => a.required.length - b.required.length)
     .find((item) => fill(item.required, trial) !== undefined);
-  const result = chosen
+  const result: Record<string, ViewValue> = chosen
     ? { ...seeded, ...chosen.when, ...fill(chosen.required, slot) }
     : seeded;
+  // KF-DQFXWG: a seeded `name` beside an icon names that icon.
+  const icon = props.find((prop) => prop.iconSource && prop.name in result);
+  const iconValue = icon && (result[icon.name] as { $icon?: unknown });
+  if (
+    typeof iconValue?.$icon === 'string' &&
+    result.name === name &&
+    byName.get('name')?.type.kind === 'string'
+  )
+    result.name = iconValue.$icon;
   const choice = firstChoiceValue(result);
   if (choice === undefined) return result;
   const picked = { ...result };

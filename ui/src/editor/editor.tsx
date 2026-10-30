@@ -211,7 +211,7 @@ import {
   valueAt,
   withValueAt,
 } from './model/fields.js';
-import { iconNames, matchIcons } from './model/icons.js';
+import { followingIconName, iconNames, matchIcons } from './model/icons.js';
 import {
   groupedProps,
   type InspectorProp,
@@ -288,6 +288,12 @@ const DOCUMENT_TOGGLE = 'editor-toggle-document';
 const INSPECTOR_TOGGLE = 'editor-toggle-inspector';
 /** How far the selection ring reaches outside its box: 3px plus 1px offset. */
 const RING_REACH = 4;
+
+/** One row of an Inspector section and how it is contained. */
+interface InspectorRow {
+  readonly kind: 'edit' | 'open' | 'fixed';
+  readonly row: SafeHtml;
+}
 
 /** What the inspector shows: a document node or a palette component. */
 export type Selection =
@@ -2142,7 +2148,7 @@ export function createEditor(options: EditorOptions) {
       <List>
         <List controlInsets="trbl">
           <TextField
-            label="Name"
+            label="Ref name"
             value={node.name ?? ''}
             hint="A name makes the node a typed ref in the generated module."
             error={fieldErrors.value['#name']}
@@ -2165,57 +2171,78 @@ export function createEditor(options: EditorOptions) {
                 ))) ||
             controlFor(prop, props[prop.name], definitionsOf(node.type))
               .kind === 'icon';
-          const editable = section.props
-            .filter((prop) => !opens(prop))
-            .map(
-              (prop) =>
-                contentControl(node, prop) ??
-                propControl(prop, props[prop.name] as never, node.type),
-            )
-            .filter(Boolean);
-          const configured = section.props.filter(opens).map((prop) => {
+          // KF-DQFXWG: rows keep the section's prop order, so a required
+          // icon row is not pushed below every field; runs of one kind share
+          // a container.
+          const rows = section.props.flatMap((prop): InspectorRow[] => {
             const value = props[prop.name] as never;
+            if (opens(prop))
+              return [
+                {
+                  kind: 'open' as const,
+                  row:
+                    controlFor(prop, value, definitionsOf(node.type)).kind ===
+                    'icon'
+                      ? propControl(prop, value, node.type)!
+                      : configureRow(propLabel(prop.name), value, {
+                          prop: prop.name,
+                          path: [],
+                        }),
+                },
+              ];
+            const control =
+              contentControl(node, prop) ?? propControl(prop, value, node.type);
+            if (control) return [{ kind: 'edit' as const, row: control }];
             return controlFor(prop, value, definitionsOf(node.type)).kind ===
-              'icon'
-              ? propControl(prop, value, node.type)!
-              : configureRow(propLabel(prop.name), value, {
-                  prop: prop.name,
-                  path: [],
-                });
+              'readonly'
+              ? [
+                  {
+                    kind: 'fixed' as const,
+                    row: (
+                      <ValueTableRow
+                        label={propLabel(prop.name)}
+                        value={
+                          inspectorSections(node, {
+                            ...component,
+                            props: [prop],
+                            groups: [],
+                          })[0]!.rows[0]!.value
+                        }
+                      />
+                    ),
+                  },
+                ]
+              : [];
           });
-          const fixed = section.props.filter(
-            (prop) =>
-              !opens(prop) &&
-              controlFor(
-                prop,
-                props[prop.name] as never,
-                definitionsOf(node.type),
-              ).kind === 'readonly',
-          );
+          const runs: { kind: InspectorRow['kind']; rows: SafeHtml[] }[] = [];
+          for (const { kind, row } of rows) {
+            const last = runs.at(-1);
+            if (last?.kind === kind) last.rows.push(row);
+            else runs.push({ kind, rows: [row] });
+          }
           return [
             <ListHeader label={section.title} size="xs" />,
-            editable.length ? (
-              <List controlInsets="trbl" gap>
-                {editable}
-              </List>
-            ) : undefined,
-            configured.length ? <List>{configured}</List> : undefined,
-            fixed.length ? (
-              <ValueTable label={`${title} ${section.title}`} density="compact">
-                {fixed.map((prop) => (
-                  <ValueTableRow
-                    label={propLabel(prop.name)}
-                    value={
-                      inspectorSections(node, {
-                        ...component,
-                        props: [prop],
-                        groups: [],
-                      })[0]!.rows[0]!.value
-                    }
-                  />
-                ))}
-              </ValueTable>
-            ) : undefined,
+            ...runs.map(({ kind, rows: run }) => {
+              switch (kind) {
+                case 'edit':
+                  return (
+                    <List controlInsets="trbl" gap>
+                      {run}
+                    </List>
+                  );
+                case 'open':
+                  return <List>{run}</List>;
+                case 'fixed':
+                  return (
+                    <ValueTable
+                      label={`${title} ${section.title}`}
+                      density="compact"
+                    >
+                      {run}
+                    </ValueTable>
+                  );
+              }
+            }),
           ];
         })}
         {promotable.length ? (
@@ -3434,7 +3461,37 @@ export function createEditor(options: EditorOptions) {
           root.querySelector<HTMLElement>('[data-editor-icon-search]')!.focus();
         },
         [ICON_CHOOSE_ACTION]: (_event, target) => {
-          writeField(iconPicker.value!, { $icon: target.dataset.editorIcon! });
+          const place = iconPicker.value!;
+          const icon = target.dataset.editorIcon!;
+          const id = selectedNodeId()!;
+          const node = findNode(doc.value, id)!.node;
+          // KF-DQFXWG: a node's string `name` follows its icon until the
+          // author names it otherwise.
+          const named =
+            !place.path.length &&
+            propsByKey
+              .get(node.type)
+              ?.props.some(
+                (prop) => prop.name === 'name' && prop.type.kind === 'string',
+              )
+              ? followingIconName(
+                  node.props?.name,
+                  (node.props?.[place.prop] as { $icon?: string } | undefined)
+                    ?.$icon,
+                  icon,
+                  componentNames.get(node.type) ?? '',
+                )
+              : undefined;
+          if (named === undefined) writeField(place, { $icon: icon });
+          else
+            commit(
+              setProp(
+                setProp(doc.value, id, place.prop, { $icon: icon }),
+                id,
+                'name',
+                named,
+              ),
+            );
           closeDialog(
             root.querySelector<HTMLDialogElement>(`#${ICON_DIALOG}`)!,
           );

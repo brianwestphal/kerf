@@ -173,6 +173,13 @@ sub-selection, so the list opens in a dialog unless its items have at most
 Inspector. A list whose items no form edits (an application's `number[]`)
 keeps the JSON field.
 
+Inspector rows follow the section's prop order, whatever control each
+takes (KF-DQFXWG: LucideIcon inspector): an icon or Configure row sits
+where its prop does rather than after every text field. Choosing an icon
+also sets a string `name` prop beside it (a LucideIcon's) while that name
+still follows the icon: unset, the old icon's name, or the seeded default.
+The node's own name field reads "Ref name".
+
 An application registers its own editor for a named type (KF-EXA2WH: field
 editor API) with `createEditor({ fieldEditors })`, or with the Vite plugin's
 `fieldEditors` module (default `src/kerf-ui-field-editors.ts`). An editor
