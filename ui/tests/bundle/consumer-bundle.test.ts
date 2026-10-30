@@ -335,7 +335,11 @@ describe('consumer bundle boundaries', { timeout: 30_000 }, () => {
     let lucideImports = 0;
     for (const file of files) {
       const source = await readFile(new URL(file, dist), 'utf8');
-      for (const match of source.matchAll(/['"](lucide[^'"]*)['"]/g)) {
+      // Import specifiers only: a component key such as `@kerfjs/ui:lucide-icon`
+      // in the editor's data is a string, not an import (KF-N8TW04).
+      for (const match of source.matchAll(
+        /\b(?:from|import)\s*['"](lucide[^'"]*)['"]/g,
+      )) {
         expect(match[1], `${file}: lucide specifier`).toBe('lucide');
         lucideImports += 1;
       }
