@@ -603,7 +603,8 @@ describe('canvas drag', () => {
                 id: TEXT,
                 type: '@kerfjs/ui:text',
                 name: 'intro',
-                props: { children: 'Hi' },
+                // A problem the document already has is not a refusal reason.
+                props: { children: 'Hi', tone: 'purple' },
               },
               {
                 id: '01JB8Z1M6Q8E1X9V4S7K2R3TT3',
