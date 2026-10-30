@@ -305,7 +305,9 @@ Each rail switches between focus areas with a segmented `TabBar` under its
 toolbar (KF-MHY1GB: rail areas). The Document rail shows Outline, Components,
 or Problems (with a count badge while there are any, and "No problems"
 otherwise); its tabs take their own widths so the names fit. The Inspector,
-for a selected node, shows Properties (name, props, promote, bind), Flow
+for a selected node, shows Properties (name, props, promote, bind; each
+field labeled in sentence case from its prop name, KF-7M4XQR: readable
+labels, so `controlInsets` reads "Control insets"), Flow
 (Show, Otherwise, Repeat, Move to), or Children (Add a child, slots); a
 component, a slot, or an empty selection shows its single view without tabs.
 Each panel is a `tabpanel`; hidden panels stay rendered, so a field keeps its

@@ -175,6 +175,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Readable field labels in the Kerf UI editor.** The Inspector labels each prop and form field in sentence case (`controlInsets` reads "Control insets", `hAlign` "Horizontal align", `ariaLabel` "ARIA label") instead of its run-together camelCase name, and Configure and Choose rows name their field the same way (`KF-7M4XQR`).
 - **`wa-tree` and `wa-tree-item` are Discouraged.** They now point at `TreeList` (`@kerfjs/ui/tree-list`), and the default application UI profile's `hierarchy-navigation` preference prefers TreeList, so `KUI-L301` steers a hierarchy to it rather than to an exception for Web Awesome Tree (`KF-QMH4F5`).
 - **Compact toolbar groups use compact text.** A `ToolbarControlGroup` with `size="compact"` now sets the 14px text of a compact `Button` (`--kui-font-s`), so its plain buttons, action links, and PopupMenu triggers match a compact Button beside them; before, they kept the default 16px text at the 32px height (`KF-Z8EYHT`).
 - **`ListHeader` action ends on the list's bordered edge.** A full-width header's fitted trailing action no longer sits 4px inside its header to center its glyph on a Pane toolbar slot; its border box now ends flush at the 8px inline margin, on the same edge as a selected or hovered `ListItem` and a Pane header's trailing `ToolbarControlGroup`. Bordered elements in one column align outer edges; borderless nested glyphs align with nested content (`KF-78N7HE`).

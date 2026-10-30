@@ -21,6 +21,7 @@ import {
   fieldSummary,
   memberFor,
   objectFields,
+  propLabel,
   stepTitle,
   SUBVIEW_FIELDS,
   typeAt,
@@ -140,9 +141,21 @@ describe('field editor model', () => {
   });
 
   it('titles a step after its field, or numbers a list item', () => {
-    expect(stepTitle({ prop: 'mainPane', path: [] })).toBe('mainPane');
-    expect(stepTitle({ prop: 'mainPane', path: ['tint'] })).toBe('tint');
+    expect(stepTitle({ prop: 'mainPane', path: [] })).toBe('Main pane');
+    expect(stepTitle({ prop: 'mainPane', path: ['tint'] })).toBe('Tint');
     expect(stepTitle({ prop: 'items', path: [1] })).toBe('Item 2');
+  });
+
+  it('labels a prop in sentence case (KF-7M4XQR)', () => {
+    expect(propLabel('controlInsets')).toBe('Control insets');
+    expect(propLabel('hAlign')).toBe('Horizontal align');
+    expect(propLabel('vAlign')).toBe('Vertical align');
+    expect(propLabel('ariaLabel')).toBe('ARIA label');
+    expect(propLabel('id')).toBe('ID');
+    expect(propLabel('wrap')).toBe('Wrap');
+    expect(propLabel('rootAttributes')).toBe('Root attributes');
+    expect(propLabel('maxHTMLLength')).toBe('Max HTML length');
+    expect(propLabel('size2x')).toBe('Size 2x');
   });
 
   it('picks a union member from a value', () => {
@@ -276,7 +289,7 @@ describe('object forms in the Inspector (KF-Z9S029)', () => {
       root,
       `[data-editor-open='{"prop":"mainFooterList","path":[]}']`,
     );
-    expect(row.textContent).toContain('mainFooterList');
+    expect(row.textContent).toContain('Main footer list');
     expect(row.textContent).toContain('Not set');
     expect(
       root.querySelector('[data-editor-prop="mainFooterList"]'),
@@ -312,19 +325,19 @@ describe('object forms in the Inspector (KF-Z9S029)', () => {
     const dialog = field(root, '#editor-field-dialog') as HTMLDialogElement;
     expect(dialog.open).toBe(true);
     expect(views(root)).toEqual(['inspector']);
-    expect(dialog.textContent).toContain('chromeDividers');
+    expect(dialog.textContent).toContain('Chrome dividers');
     choose(at(root, 'mainPane', ['chromeDividers']), 'always');
     expect(props().mainPane).toEqual({ chromeDividers: 'always' });
     // A nested object steps forward inside the dialog, and Back returns.
     opener(root, 'mainPane', ['tint']).click();
-    expect(dialog.textContent).toContain('scheme');
+    expect(dialog.textContent).toContain('Scheme');
     choose(at(root, 'mainPane', ['tint', 'scheme']), 'dark');
     expect(props().mainPane).toEqual({
       chromeDividers: 'always',
       tint: { scheme: 'dark' },
     });
     click(root, 'editor-field-back');
-    expect(dialog.textContent).toContain('chromeDividers');
+    expect(dialog.textContent).toContain('Chrome dividers');
     expect(root.querySelector('[data-action="editor-field-back"]')).toBeNull();
     click(root, 'editor-field-done');
     expect(dialog.open).toBe(false);

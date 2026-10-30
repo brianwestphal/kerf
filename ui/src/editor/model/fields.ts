@@ -198,8 +198,42 @@ export function stepTitle(place: {
   readonly path: FieldPath;
 }): string {
   const step = place.path.at(-1);
-  if (step === undefined) return place.prop;
-  return typeof step === 'number' ? `Item ${step + 1}` : step;
+  if (step === undefined) return propLabel(place.prop);
+  return typeof step === 'number' ? `Item ${step + 1}` : propLabel(step);
+}
+
+/** Words a label spells in capitals. */
+const ACRONYMS = new Set(['aria', 'css', 'html', 'id', 'url', 'ui', 'svg']);
+/** Abbreviated prop-name words a label spells out. */
+const SPELLED: Readonly<Record<string, string>> = {
+  h: 'horizontal',
+  v: 'vertical',
+};
+
+/**
+ * The label a field shows for a prop or field name (KF-7M4XQR): its camelCase
+ * words in sentence case, so `controlInsets` reads "Control insets", `hAlign`
+ * "Horizontal align", and `ariaLabel` "ARIA label".
+ */
+export function propLabel(name: string): string {
+  const words = name
+    .replace(/[-_]+/g, ' ')
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+    .replace(/([a-zA-Z])(\d)/g, '$1 $2')
+    .trim()
+    .split(/\s+/)
+    .map((word) => word.toLowerCase())
+    .map((word) => SPELLED[word] ?? word);
+  return words
+    .map((word, index) =>
+      ACRONYMS.has(word)
+        ? word.toUpperCase()
+        : index === 0
+          ? word.charAt(0).toUpperCase() + word.slice(1)
+          : word,
+    )
+    .join(' ');
 }
 
 /** The type at `path` inside a value of `type`, following fields and items. */

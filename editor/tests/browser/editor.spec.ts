@@ -1034,10 +1034,10 @@ for (const width of [1440, 900]) {
     await page.setViewportSize({ width, height: 900 });
     await workbenchRoot(page);
     await page
-      .getByRole('button', { name: 'Configure mainFooterList' })
+      .getByRole('button', { name: 'Configure main footer list' })
       .click();
     const stack = page.locator('#editor-inspector-stack');
-    await expect(stack.getByText('mainFooterList').first()).toBeVisible();
+    await expect(stack.getByText('Main footer list').first()).toBeVisible();
     const align = page.locator(
       `[data-editor-field='{"prop":"mainFooterList","path":["hAlign"]}']`,
     );
@@ -1052,7 +1052,7 @@ for (const width of [1440, 900]) {
     });
     await stack.getByRole('button', { name: 'Back' }).click();
     await expect(
-      page.getByRole('button', { name: 'Configure mainFooterList' }),
+      page.getByRole('button', { name: 'Configure main footer list' }),
     ).toContainText('1 field set');
   });
 }
@@ -1062,7 +1062,7 @@ test('edits a Workbench mainPane of more than 10 fields in a dialog', async ({
 }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await workbenchRoot(page);
-  await page.getByRole('button', { name: 'Configure mainPane' }).click();
+  await page.getByRole('button', { name: 'Configure main pane' }).click();
   const dialog = page.locator('#editor-field-dialog');
   await expect(dialog).toBeVisible();
   const dividers = dialog.locator(
@@ -1091,7 +1091,7 @@ test('edits a Workbench mainPane of more than 10 fields in a dialog', async ({
   await dialog.getByRole('button', { name: 'Done' }).click();
   await expect(dialog).toBeHidden();
   await expect(
-    page.getByRole('button', { name: 'Configure mainPane' }),
+    page.getByRole('button', { name: 'Configure main pane' }),
   ).toContainText('1 field set');
 });
 
@@ -1167,7 +1167,7 @@ test('picks a LucideIcon’s icon from the icon picker', async ({
     path: info.outputPath('kf-pe0ptt-color-field-1440.png'),
     animations: 'disabled',
   });
-  await page.getByRole('button', { name: 'Choose icon icon' }).click();
+  await page.getByRole('button', { name: 'Choose icon' }).click();
   const dialog = page.locator('#editor-icon-dialog');
   await expect(dialog).toBeVisible();
   await expect(dialog).toContainText(/Showing \d+ of \d+ icons/);
@@ -1194,9 +1194,9 @@ test('picks a LucideIcon’s icon from the icon picker', async ({
       }),
     )
     .toBe(true);
-  await expect(
-    page.getByRole('button', { name: 'Choose icon icon' }),
-  ).toContainText('star');
+  await expect(page.getByRole('button', { name: 'Choose icon' })).toContainText(
+    'star',
+  );
   await page.screenshot({
     path: info.outputPath('kf-vyrddq-icon-row-1440.png'),
     animations: 'disabled',
@@ -1319,7 +1319,7 @@ test('gives a Workbench a static left rail', async ({ page }, info) => {
   await page.getByRole('option', { name: 'Static panel…' }).click();
   const canvas = page.locator('[data-editor-canvas]');
   await expect(canvas).toContainText('leftRailContent slot');
-  await page.getByRole('button', { name: 'Configure leftRail' }).click();
+  await page.getByRole('button', { name: 'Configure left rail' }).click();
   const label = page
     .locator(`[data-editor-field='{"prop":"leftRail","path":["label"]}']`)
     .getByRole('textbox');
@@ -1346,7 +1346,7 @@ test('composes a Workbench’s left rail and toolbar title from nodes', async ({
     .locator('[data-editor-prop="leftRail"][data-editor-kind="choice"]')
     .click();
   await page.getByRole('option', { name: 'Static panel…' }).click();
-  await page.getByRole('button', { name: 'Configure mainToolbar' }).click();
+  await page.getByRole('button', { name: 'Configure main toolbar' }).click();
   const label = page
     .locator(`[data-editor-field='{"prop":"mainToolbar","path":["label"]}']`)
     .getByRole('textbox');

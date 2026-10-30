@@ -204,6 +204,7 @@ import {
   listMembers,
   memberFor,
   objectFields,
+  propLabel,
   stepTitle,
   typeAt,
   valueAt,
@@ -933,7 +934,7 @@ export function createEditor(options: EditorOptions) {
     const grammar = cssGrammar(prop.type as never, definitionsOf(type));
     const builderField = (raw: string) => (
       <TextField
-        label={`${prop.name} value`}
+        label={`${propLabel(prop.name)} value`}
         value={raw}
         hint={cssHint(prop.cssValue?.helpers, grammar)}
         placeholder={cssPlaceholder(prop.cssValue?.helpers, grammar)}
@@ -952,7 +953,7 @@ export function createEditor(options: EditorOptions) {
           <>
             <Select
               name={`prop-${key}`}
-              label={prop.name}
+              label={propLabel(prop.name)}
               value={custom ? CUSTOM_SIZE : String(control.raw)}
               choices={control.choices!.map((choice) => ({
                 value: choice,
@@ -975,7 +976,7 @@ export function createEditor(options: EditorOptions) {
         return (
           <Select
             name={`prop-${key}`}
-            label={prop.name}
+            label={propLabel(prop.name)}
             value={String(control.raw)}
             choices={control.choices!.map((choice) => ({
               value: choice,
@@ -992,7 +993,7 @@ export function createEditor(options: EditorOptions) {
       case 'switch':
         return (
           <Switch
-            label={prop.name}
+            label={propLabel(prop.name)}
             checked={control.raw === true}
             rootAttributes={marker('switch')}
           />
@@ -1000,12 +1001,12 @@ export function createEditor(options: EditorOptions) {
       case 'readonly':
         return undefined;
       case 'icon':
-        return iconRow(prop.name, String(control.raw), place);
+        return iconRow(propLabel(prop.name), String(control.raw), place);
       // KF-3CKTKN: a typed value from a Select, and an open member's own
       // control (text, a number, a list) or form (an object) beneath it.
       case 'choice': {
         const member = control.member && {
-          name: `${prop.name} value`,
+          name: `${propLabel(prop.name)} value`,
           type: control.member as InspectorProp['type'],
           required: false,
         };
@@ -1013,7 +1014,7 @@ export function createEditor(options: EditorOptions) {
           <>
             <Select
               name={`prop-${key}`}
-              label={prop.name}
+              label={propLabel(prop.name)}
               value={String(control.raw)}
               choices={[
                 {
@@ -1033,7 +1034,7 @@ export function createEditor(options: EditorOptions) {
             {member
               ? fieldEditorKind(member.type as never, definitionsOf(type)) ===
                 'object'
-                ? configureRow(prop.name, value as ViewValue, place)
+                ? configureRow(propLabel(prop.name), value as ViewValue, place)
                 : propControl(member, value, type, place)
               : undefined}
           </>
@@ -1044,7 +1045,7 @@ export function createEditor(options: EditorOptions) {
         return (
           <TagField
             id={`editor-tags-${key}`}
-            label={prop.name}
+            label={propLabel(prop.name)}
             tags={JSON.parse(String(control.raw)) as string[]}
             error={error}
             rootAttributes={marker('tags')}
@@ -1053,7 +1054,7 @@ export function createEditor(options: EditorOptions) {
       case 'enum-set':
         return (
           <CheckboxGroup
-            label={prop.name}
+            label={propLabel(prop.name)}
             name={`prop-${key}`}
             choices={control.choices!.map((choice) => ({
               value: choice,
@@ -1077,7 +1078,7 @@ export function createEditor(options: EditorOptions) {
         return (
           <>
             <TextField
-              label={prop.name}
+              label={propLabel(prop.name)}
               value={String(control.raw)}
               multiline
               rows={control.raw === '' ? 2 : 4}
@@ -1105,7 +1106,7 @@ export function createEditor(options: EditorOptions) {
       default:
         return (
           <TextField
-            label={prop.name}
+            label={propLabel(prop.name)}
             value={String(control.raw)}
             type={control.kind === 'number' ? 'number' : 'text'}
             hint={
@@ -1139,7 +1140,7 @@ export function createEditor(options: EditorOptions) {
     <ListItem
       label={label}
       status={fieldSummary(value)}
-      accessibleLabel={`Configure ${label}`}
+      accessibleLabel={`Configure ${label.toLowerCase()}`}
       action={FIELD_OPEN_ACTION}
       trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
       rootAttributes={{ 'data-editor-open': JSON.stringify(place) }}
@@ -1161,7 +1162,11 @@ export function createEditor(options: EditorOptions) {
       label={label}
       icon={name ? iconOf(name) : undefined}
       status={name || 'Not set'}
-      accessibleLabel={`Choose ${label} icon`}
+      accessibleLabel={
+        /icon$/i.test(label)
+          ? `Choose ${label.toLowerCase()}`
+          : `Choose ${label.toLowerCase()} icon`
+      }
       action={ICON_OPEN_ACTION}
       trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
       rootAttributes={{ 'data-editor-icon-place': JSON.stringify(place) }}
@@ -1486,7 +1491,7 @@ export function createEditor(options: EditorOptions) {
       const fieldValue = record[field.name];
       const control = controlFor(field, fieldValue, definitions);
       if (customFor(field.type as never)) {
-        nested.push(configureRow(field.name, fieldValue, at));
+        nested.push(configureRow(propLabel(field.name), fieldValue, at));
       } else if (control.kind === 'readonly') {
         fixed.push({
           name: field.name,
@@ -1496,14 +1501,14 @@ export function createEditor(options: EditorOptions) {
               : JSON.stringify(fieldValue),
         });
       } else if (control.kind === 'icon') {
-        nested.push(iconRow(field.name, String(control.raw), at));
+        nested.push(iconRow(propLabel(field.name), String(control.raw), at));
       } else if (
         control.kind === 'list' &&
         opensEditor(
           fieldEditorKind(field.type as never, definitions, field.iconSource),
         )
       ) {
-        nested.push(configureRow(field.name, fieldValue, at));
+        nested.push(configureRow(propLabel(field.name), fieldValue, at));
       } else {
         editable.push(propControl(field, fieldValue as never, node.type, at)!);
       }
@@ -1661,7 +1666,7 @@ export function createEditor(options: EditorOptions) {
     return (
       <>
         <TextField
-          label={prop.name}
+          label={propLabel(prop.name)}
           value={content.text ?? ''}
           disabled
           hint={`Holds ${content.count} ${content.count === 1 ? 'node' : 'nodes'}; select ${content.count === 1 ? 'it' : 'them'} in the outline.`}
@@ -2129,7 +2134,10 @@ export function createEditor(options: EditorOptions) {
             return controlFor(prop, value, definitionsOf(node.type)).kind ===
               'icon'
               ? propControl(prop, value, node.type)!
-              : configureRow(prop.name, value, { prop: prop.name, path: [] });
+              : configureRow(propLabel(prop.name), value, {
+                  prop: prop.name,
+                  path: [],
+                });
           });
           const fixed = section.props.filter(
             (prop) =>
@@ -2152,7 +2160,7 @@ export function createEditor(options: EditorOptions) {
               <ValueTable label={`${title} ${section.title}`} density="compact">
                 {fixed.map((prop) => (
                   <ValueTableRow
-                    label={prop.name}
+                    label={propLabel(prop.name)}
                     value={
                       inspectorSections(node, {
                         ...component,
