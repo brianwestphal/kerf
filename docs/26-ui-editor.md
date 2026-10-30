@@ -242,7 +242,8 @@ the type-driven rule decides otherwise.
 In the editor, every content field inside a prop value a node sets is a
 zone of its own (KF-PD6QC5: field zones): a Workbench's `leftRail › content`
 once the rail has a kind, `mainToolbar › title` once the toolbar is
-configured, each NavStack view's `views › 0 › content`. Add a child, drag
+configured, each NavStack view's `views › 1 › content` (items count from 1
+in labels, as item slot rows do; KF-3N67HR). Add a child, drag
 and drop, and the outline treat it like any zone, and the outline names it
 by its path. In the item's form the field is a row like a top-level
 content prop's (KF-VSWT2Q: item form content rows): Add fills the zone (or

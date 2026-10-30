@@ -490,14 +490,14 @@ test('builds SegmentedControl › Rounded Rectangle', async ({ page }) => {
     await expect(dialog).toHaveCount(0);
     await expect(
       page.locator('[data-editor-add="zone"] .kui-select__trigger'),
-    ).toContainText(`choices › ${index} › content`);
+    ).toContainText(`choices › ${index + 1} › content`);
     await addChild(page, 'LucideIcon');
     await select(page, /^LucideIcon/, index);
     await page.locator('[data-editor-icon-place]').first().click();
     await page.keyboard.type(glyph);
     await page.locator(`[data-editor-icon="${glyph}"]`).click();
     await select(page, /^SegmentedControl/);
-    await addChild(page, 'Text', `choices › ${index} › content`);
+    await addChild(page, 'Text', `choices › ${index + 1} › content`);
     await select(page, /^Text/, index);
     await choose(page, 'variant', 'span');
     await setText(page, 'children', label);

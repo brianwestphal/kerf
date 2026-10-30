@@ -63,10 +63,15 @@ export interface OutlineNode {
 
 /**
  * How a zone key reads: a field zone's path with arrows (`leftRail ›
- * content`; KF-PD6QC5), any other key as itself.
+ * content`; KF-PD6QC5), its items counted from 1 as the item editors and
+ * item slot rows count them (KF-3N67HR: `views.0.content` reads `views › 1
+ * › content`), any other key as itself.
  */
 export function zoneLabel(key: string): string {
-  return key.split('.').join(' › ');
+  return key
+    .split('.')
+    .map((part) => (/^\d+$/.test(part) ? String(Number(part) + 1) : part))
+    .join(' › ');
 }
 
 /** An outline row's id for the `$slot` at index `index` of a zone (KF-90GTJN). */

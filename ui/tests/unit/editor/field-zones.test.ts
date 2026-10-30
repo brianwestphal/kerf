@@ -66,6 +66,9 @@ describe('field zone keys', () => {
 
   it('reads a field zone’s path with arrows', () => {
     expect(zoneLabel('leftRail.content')).toBe('leftRail › content');
+    // KF-3N67HR: items count from 1, as item slot rows and "View 1" do.
+    expect(zoneLabel('views.0.content')).toBe('views › 1 › content');
+    expect(zoneLabel('choices.11.content')).toBe('choices › 12 › content');
     expect(zoneLabel('main')).toBe('main');
   });
 });

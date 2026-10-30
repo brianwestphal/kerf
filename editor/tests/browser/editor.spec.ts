@@ -1465,12 +1465,20 @@ test('fills a NavStack view’s slot-seeded content from its form', async ({
   await dialog.getByText('View 1', { exact: true }).click();
   const row = page.locator('[data-editor-content-add="views.0.content"]');
   await expect(row).toContainText(/Slot · view1Content/);
+  // KF-3N67HR: the slot's outline row and the node that replaces it name
+  // the same place.
+  const place = page.locator('[data-action="editor-select-node"]', {
+    hasText: 'views › 1 › content',
+  });
+  await expect(place).toContainText('view1Content');
   await page.screenshot({
     path: test.info().outputPath('kf-1zsw5j-view-form-1440.png'),
   });
   await row.click();
   await expect(dialog).toHaveCount(0);
   await addChild(page, 'List');
+  await area(page, 'Outline');
+  await expect(place).toContainText('List');
   await select(page, /^NavStack/);
   await page.getByRole('button', { name: 'Configure views' }).click();
   await dialog.getByText('View 1', { exact: true }).click();

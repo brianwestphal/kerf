@@ -139,7 +139,7 @@ export const icon = (glyph: string, props: Record<string, unknown> = {}) =>
 export const page = (...content: unknown[]) =>
   node('pane', undefined, { content });
 
-/** A field inside a prop value, such as `choices › 0 › label`. */
+/** A field inside a prop value, by its place (`choices`, `[0, 'label']`). */
 const field = (page: Page, prop: string, path: readonly (string | number)[]) =>
   page
     .locator(`[data-editor-field='${JSON.stringify({ prop, path })}']`)
@@ -187,7 +187,7 @@ async function chooseAdd(page: Page, which: string, option: string) {
 
 /**
  * Adds component `name` under Children › Add a child, to `zone` when given
- * (a field zone reads `choices › 0 › content`) or to the zone already chosen.
+ * (a field zone reads `choices › 1 › content`) or to the zone already chosen.
  */
 export async function addChild(page: Page, name: string, zone?: string) {
   await area(page, 'Children');
