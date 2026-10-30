@@ -28,6 +28,7 @@ export type ControlKind =
   | 'list'
   | 'tags'
   | 'enum-set'
+  | 'icon'
   | 'readonly';
 
 type Definitions = Readonly<Record<string, ViewType>>;
@@ -41,7 +42,8 @@ export interface Control {
   readonly choices?: readonly string[];
   /**
    * The control's current raw value: text, a choice, or a checked state;
-   * tags and enum-set: the JSON of the strings it holds.
+   * tags and enum-set: the JSON of the strings it holds; icon: the Lucide
+   * name, or '' while none is chosen.
    */
   readonly raw: string | boolean;
   /** size: the builder call of a custom (`$css`) value. */
@@ -134,6 +136,16 @@ export function controlFor(
   definitions: Definitions = {},
 ): Control {
   const kind = prop.type.kind;
+  // Icon data picks a Lucide icon by name (KF-VYRDDQ: icon picker).
+  if (prop.iconSource === 'lucide') {
+    if (value === undefined) return { kind: 'icon', raw: '' };
+    const name = isDynamic(value)
+      ? (value as { $icon?: unknown }).$icon
+      : undefined;
+    return typeof name === 'string'
+      ? { kind: 'icon', raw: name }
+      : { kind: 'readonly', raw: '' };
+  }
   if (isStructured(prop.type as ViewType, definitions)) {
     // A list of strings edits in a TagField, a set of enum values in a
     // CheckboxGroup (KF-A9ZHGW), while every value is one they can hold.

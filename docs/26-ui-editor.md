@@ -150,9 +150,16 @@ object's last field unsets it. Lists of strings edit inline in a
 `TagField` and sets of enum values in a `CheckboxGroup`, at the top level
 and inside forms (KF-A9ZHGW: inline list editors); unchecking or removing
 the last one unsets the prop, and a value they cannot hold (a number, a
-string outside the set) keeps the JSON field. Lists of objects and union
-items, icon data, and the `fieldEditors` extension API still edit as JSON
-until their own editors land.
+string outside the set) keeps the JSON field. Icon data (a prop or field
+marked `iconSource: "lucide"`, such as a LucideIcon's `icon` or a Select
+choice's `icon`) shows as a row with the chosen icon and its name and opens
+the icon picker (KF-VYRDDQ: icon picker), a dialog with a search over the
+Lucide names and the matching icons themselves. An exact name ranks first,
+then names with a matching word; at most 96 show at once. Choosing one
+writes `{ $icon: name }` (the kebab-case name, or the export's camel case
+for the few Lucide names that do not split back), and **Remove icon**
+unsets it. Lists of objects and union items and the `fieldEditors`
+extension API still edit as JSON until their own editors land.
 
 The inspector's Control flow section (KF-90GTJN: editor control flow) shows a
 node only while a true/false param or item field holds (Show, which wraps the

@@ -73,6 +73,7 @@ import { Switch } from '../components/forms/switch/switch.js';
 import { TagField } from '../components/forms/tag-field/tag-field.js';
 import { wireTagFields } from '../components/forms/tag-field/wiring/wire-tag-fields.js';
 import { TextField } from '../components/forms/text-field/text-field.js';
+import { Grid } from '../components/layout/grid/grid.js';
 import { Row } from '../components/layout/row/row.js';
 import { wireWorkbench } from '../components/layout/workbench/wiring/wire-workbench.js';
 import { Workbench } from '../components/layout/workbench/workbench.js';
@@ -87,6 +88,7 @@ import {
   openDialog,
 } from '../components/surfaces/surface-scaffold/surface-scaffold.js';
 import { Text } from '../components/typography/text/text.js';
+import { px } from '../shared/styles/css-values.js';
 import { wireScrollDividers } from '../wiring/wire-scroll-dividers.js';
 import {
   createAutosave,
@@ -180,6 +182,7 @@ import {
   valueAt,
   withValueAt,
 } from './model/fields.js';
+import { iconNames, matchIcons } from './model/icons.js';
 import { groupedProps, inspectorSections } from './model/inspector.js';
 import {
   itemSlotRowNode,
@@ -233,6 +236,12 @@ const FIELD_EXAMPLE_ACTION = 'editor-fill-field-example';
 const FIELD_JSON_ACTION = 'editor-field-json';
 const FIELD_DIALOG = 'editor-field-dialog';
 const INSPECTOR_STACK = 'editor-inspector-stack';
+// KF-VYRDDQ: icon data picks a Lucide icon in a searchable dialog.
+const ICON_OPEN_ACTION = 'editor-open-icon';
+const ICON_CHOOSE_ACTION = 'editor-choose-icon';
+const ICON_REMOVE_ACTION = 'editor-remove-icon';
+const ICON_CLEAR_ACTION = 'editor-clear-icon-search';
+const ICON_DIALOG = 'editor-icon-dialog';
 const PROMOTE_ACTION = 'editor-promote';
 const EXPORT_MODULE_ACTION = 'editor-export-module';
 const EXPORT_DECLARATIONS_ACTION = 'editor-export-declarations';
@@ -511,6 +520,13 @@ export function createEditor(options: EditorOptions) {
   const openField = signal<OpenField | null>(null);
   /** Field editor steps (`placeKey`) showing their typed JSON instead. */
   const jsonSteps = signal<ReadonlySet<string>>(new Set());
+  /** The icon prop or field the icon picker is choosing for (KF-VYRDDQ). */
+  const iconPicker = signal<FieldPlace | null>(null);
+  /** The icon picker's search, and its field's revision (to clear it). */
+  const iconQuery = signal('');
+  const iconQueryRevision = signal(0);
+  /** Every Lucide icon's document name, listed on first use. */
+  let allIcons: readonly string[] | undefined;
   /** The Components filter's text (KF-Y26SKM), and its editor's revision. */
   const paletteFilter = signal('');
   const paletteFilterRevision = signal(0);
@@ -891,6 +907,8 @@ export function createEditor(options: EditorOptions) {
         );
       case 'readonly':
         return undefined;
+      case 'icon':
+        return iconRow(prop.name, String(control.raw), place);
       // KF-A9ZHGW: strings edit inline as tags, enum values as checkboxes.
       case 'tags':
         return (
@@ -998,6 +1016,98 @@ export function createEditor(options: EditorOptions) {
     />
   );
 
+  /** A Lucide icon by its document name, or nothing for an unknown name. */
+  const iconOf = (name: string) => {
+    const node = icons[name] as Parameters<typeof LucideIcon>[0]['icon'];
+    return node ? <LucideIcon icon={node} name={name} /> : undefined;
+  };
+
+  /**
+   * The row that opens the icon picker for icon data (KF-VYRDDQ): the
+   * chosen icon and its name, in place of the JSON field.
+   */
+  const iconRow = (label: string, name: string, place: FieldPlace) => (
+    <ListItem
+      label={label}
+      icon={name ? iconOf(name) : undefined}
+      status={name || 'Not set'}
+      accessibleLabel={`Choose ${label} icon`}
+      action={ICON_OPEN_ACTION}
+      trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
+      rootAttributes={{ 'data-editor-icon-place': JSON.stringify(place) }}
+    />
+  );
+
+  /**
+   * The icon picker: a search over the Lucide names and the matching icons
+   * themselves; choosing one writes `{ $icon: name }`.
+   */
+  const iconDialog = () => {
+    const place = iconPicker.value;
+    const id = selectedNodeId();
+    const open = place && id ? place : undefined;
+    const current = open
+      ? (
+          valueAt(
+            findNode(doc.value, id!)!.node.props?.[open.prop] as
+              ViewValue | undefined,
+            open.path,
+          ) as { $icon?: string } | undefined
+        )?.$icon
+      : undefined;
+    if (open) allIcons ??= iconNames(lucideIcons);
+    const found = open
+      ? matchIcons(allIcons!, iconQuery.value)
+      : { names: [], total: 0 };
+    return (
+      <DialogSurface
+        id={ICON_DIALOG}
+        label={open ? `Choose ${stepTitle(open)}` : 'Choose an icon'}
+        size="medium"
+        rootAttributes={{ 'data-key': ICON_DIALOG }}
+        footer={
+          <>
+            {current ? (
+              <Button action={ICON_REMOVE_ACTION}>Remove icon</Button>
+            ) : undefined}
+            <Button rootAttributes={{ 'data-dialog-close': '' }}>Cancel</Button>
+          </>
+        }
+      >
+        <List controlInsets="trbl" gap>
+          <SearchField
+            id="editor-icon-search"
+            label="Search icons"
+            placeholder="Search icons"
+            query={iconQuery.value}
+            revision={iconQueryRevision.value}
+            clearAction={ICON_CLEAR_ACTION}
+            clearLabel="Clear Search"
+            editorAttributes={{ 'data-editor-icon-search': '' }}
+          />
+          <Text tone="quiet">
+            {found.total > found.names.length
+              ? `Showing ${found.names.length} of ${found.total} icons; search to narrow them.`
+              : `${found.total} ${found.total === 1 ? 'icon' : 'icons'}`}
+          </Text>
+          <Grid minColumnWidth={px(44)} gap="s">
+            {found.names.map((name) => (
+              <Button
+                icon={iconOf(name)!}
+                ariaLabel={name}
+                title={name}
+                emphasis="secondary"
+                pressed={name === current}
+                action={ICON_CHOOSE_ACTION}
+                rootAttributes={{ 'data-editor-icon': name }}
+              />
+            ))}
+          </Grid>
+        </List>
+      </DialogSurface>
+    );
+  };
+
   /** What a field of the selected node's prop is: its type and value. */
   const fieldContext = (node: ViewNode, place: FieldPlace) => {
     const prop = propsByKey
@@ -1103,6 +1213,8 @@ export function createEditor(options: EditorOptions) {
               ? typeLabel(field.type.text!)
               : JSON.stringify(fieldValue),
         });
+      } else if (control.kind === 'icon') {
+        nested.push(iconRow(field.name, String(control.raw), at));
       } else if (
         control.kind === 'list' &&
         fieldEditorKind(field.type as never, definitions, field.iconSource) ===
@@ -1664,13 +1776,16 @@ export function createEditor(options: EditorOptions) {
         </List>
         {groupedProps(component).map((section) => {
           // An object prop opens its form from a Configure row (KF-Z9S029).
+          // Icon data opens the icon picker from its row (KF-VYRDDQ).
           const opens = (prop: (typeof section.props)[number]) =>
-            !isBinding(props[prop.name]) &&
-            fieldEditorKind(
-              prop.type as never,
-              definitionsOf(node.type),
-              prop.iconSource,
-            ) === 'object';
+            (!isBinding(props[prop.name]) &&
+              fieldEditorKind(
+                prop.type as never,
+                definitionsOf(node.type),
+                prop.iconSource,
+              ) === 'object') ||
+            controlFor(prop, props[prop.name], definitionsOf(node.type))
+              .kind === 'icon';
           const editable = section.props
             .filter((prop) => !opens(prop))
             .map(
@@ -1679,12 +1794,13 @@ export function createEditor(options: EditorOptions) {
                 propControl(prop, props[prop.name] as never, node.type),
             )
             .filter(Boolean);
-          const configured = section.props.filter(opens).map((prop) =>
-            configureRow(prop.name, props[prop.name] as never, {
-              prop: prop.name,
-              path: [],
-            }),
-          );
+          const configured = section.props.filter(opens).map((prop) => {
+            const value = props[prop.name] as never;
+            return controlFor(prop, value, definitionsOf(node.type)).kind ===
+              'icon'
+              ? propControl(prop, value, node.type)!
+              : configureRow(prop.name, value, { prop: prop.name, path: [] });
+          });
           const fixed = section.props.filter(
             (prop) =>
               controlFor(
@@ -2102,6 +2218,7 @@ export function createEditor(options: EditorOptions) {
         />
         {autosave ? saveAsDialog(document) : undefined}
         {fieldDialog()}
+        {iconDialog()}
         <List flex>
           <Workbench
             id={WORKBENCH_ID}
@@ -2809,6 +2926,14 @@ export function createEditor(options: EditorOptions) {
       delegate<HTMLElement>(
         root,
         'input',
+        '[data-editor-icon-search]',
+        (_event, editor) => {
+          iconQuery.value = readSearchField(editor).query;
+        },
+      ),
+      delegate<HTMLElement>(
+        root,
+        'input',
         '[data-editor-palette-filter]',
         (_event, editor) => {
           paletteFilter.value = readSearchField(editor).query;
@@ -2854,6 +2979,31 @@ export function createEditor(options: EditorOptions) {
         [FIELD_OPEN_ACTION]: (_event, target) =>
           openFieldAt(JSON.parse(target.dataset.editorOpen!) as FieldPlace),
         [FIELD_BACK_ACTION]: fieldBack,
+        [ICON_OPEN_ACTION]: (_event, target) => {
+          iconPicker.value = JSON.parse(
+            target.dataset.editorIconPlace!,
+          ) as FieldPlace;
+          iconQuery.value = '';
+          iconQueryRevision.value += 1;
+          openDialog(root.querySelector<HTMLDialogElement>(`#${ICON_DIALOG}`)!);
+        },
+        [ICON_CLEAR_ACTION]: () => {
+          iconQuery.value = '';
+          iconQueryRevision.value += 1;
+          root.querySelector<HTMLElement>('[data-editor-icon-search]')!.focus();
+        },
+        [ICON_CHOOSE_ACTION]: (_event, target) => {
+          writeField(iconPicker.value!, { $icon: target.dataset.editorIcon! });
+          closeDialog(
+            root.querySelector<HTMLDialogElement>(`#${ICON_DIALOG}`)!,
+          );
+        },
+        [ICON_REMOVE_ACTION]: () => {
+          writeField(iconPicker.value!, undefined);
+          closeDialog(
+            root.querySelector<HTMLDialogElement>(`#${ICON_DIALOG}`)!,
+          );
+        },
         [FIELD_DONE_ACTION]: () =>
           closeDialog(
             root.querySelector<HTMLDialogElement>(`#${FIELD_DIALOG}`)!,
@@ -3036,8 +3186,9 @@ export function createEditor(options: EditorOptions) {
       }),
       (() => {
         const closed = (event: Event) => {
-          if ((event.target as Element).id === FIELD_DIALOG)
-            openField.value = null;
+          const { id } = event.target as Element;
+          if (id === FIELD_DIALOG) openField.value = null;
+          if (id === ICON_DIALOG) iconPicker.value = null;
         };
         root.addEventListener('close', closed, true);
         return () => root.removeEventListener('close', closed, true);

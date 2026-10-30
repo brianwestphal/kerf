@@ -1139,3 +1139,54 @@ test('edits a Pane’s separators and a TagField’s tags inline', async ({
     animations: 'disabled',
   });
 });
+
+// KF-VYRDDQ: icon data picks a Lucide icon in a searchable dialog.
+test('picks a LucideIcon’s icon from the icon picker', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const PANE = '01JB8Z1M6Q8E1X9V4S7K2R3T5A';
+  await area(page, 'Outline');
+  await page
+    .locator(`[data-action="editor-select-node"][data-item-id="${PANE}"]`)
+    .click();
+  await area(page, 'Children');
+  await page.locator('[data-editor-add="component"]').click();
+  await page.getByRole('option', { name: 'LucideIcon', exact: true }).click();
+  await page.getByRole('button', { name: 'Add', exact: true }).click();
+  await area(page, 'Properties');
+  await page.getByRole('button', { name: 'Choose icon icon' }).click();
+  const dialog = page.locator('#editor-icon-dialog');
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toContainText(/Showing \d+ of \d+ icons/);
+  await dialog.locator('[data-editor-icon-search]').click();
+  await page.keyboard.type('star');
+  await expect(dialog.locator('[data-editor-icon="star"]')).toBeVisible();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-vyrddq-icon-picker-1440.png'),
+    animations: 'disabled',
+  });
+  await dialog.locator('[data-editor-icon="star"]').click();
+  await expect(dialog).toBeHidden();
+  // The canvas draws the same glyph the Inspector row shows.
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const glyph = document.querySelector(
+          '[data-editor-icon-place] svg',
+        )!.innerHTML;
+        return [...document.querySelectorAll('[data-editor-canvas] svg')].some(
+          (svg) => svg.innerHTML === glyph,
+        );
+      }),
+    )
+    .toBe(true);
+  await expect(
+    page.getByRole('button', { name: 'Choose icon icon' }),
+  ).toContainText('star');
+  await page.screenshot({
+    path: info.outputPath('kf-vyrddq-icon-row-1440.png'),
+    animations: 'disabled',
+  });
+});
