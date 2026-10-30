@@ -19,6 +19,31 @@ import {
 const t = (type: object) => type as never;
 
 describe('exampleValue', () => {
+  // KF-FGD8B3: a union seeds a member that renders rather than an empty
+  // object (a ReadonlySet), and keeps the empty object only as a last resort.
+  it('prefers a union member that is not an empty object', () => {
+    const set = { kind: 'object', props: [] };
+    const list = { kind: 'array', items: { kind: 'string' } };
+    expect(
+      exampleValue(t({ kind: 'union', members: [set, list] }), {}, 'expanded'),
+    ).toEqual(['Expanded 1', 'Expanded 2', 'Expanded 3']);
+    expect(exampleValue(t({ kind: 'union', members: [set] }), {}, 'x')).toEqual(
+      {},
+    );
+    // Rendered content without a slot namer has no placeholder.
+    expect(
+      exampleValue(
+        t({ kind: 'union', members: [{ kind: 'content' }, list] }),
+        {},
+        'item',
+      ),
+    ).toEqual(['Item 1', 'Item 2', 'Item 3']);
+    // With one, rendered content outside any field is an item slot.
+    expect(
+      exampleValue(t({ kind: 'content' }), {}, 'body', slotNamer([])),
+    ).toEqual({ $slot: expect.any(String) });
+  });
+
   it('numbers list items after the prop they fill', () => {
     expect(
       exampleValue(

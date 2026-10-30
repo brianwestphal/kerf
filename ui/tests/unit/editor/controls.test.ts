@@ -432,6 +432,58 @@ describe('seedNode', () => {
     });
   });
 
+  it('seeds from any catalog: qualified zones, a #text fallback, defaults', () => {
+    // A catalog with no Text component, a zone naming a qualified key, and a
+    // number with its own default.
+    const catalog = {
+      component: (key: string) =>
+        ({
+          'app:shell': {
+            props: [
+              {
+                name: 'body',
+                required: true,
+                slot: true,
+                type: { kind: 'content' },
+              },
+              {
+                name: 'size',
+                required: true,
+                default: 4,
+                type: { kind: 'number' },
+              },
+            ] as InspectorProp[],
+          },
+          'app:card': { props: [] },
+        })[key],
+      name: (key: string) => key.slice(4),
+      definitions: () => ({}),
+      entry: (key: string) =>
+        key === 'app:shell'
+          ? {
+              package: 'app',
+              zones: [
+                {
+                  id: 'main',
+                  jsx: { prop: 'main' },
+                  accepts: ['app:card'],
+                  cardinality: { min: 2 },
+                },
+              ],
+            }
+          : undefined,
+    };
+    const node = seedNode('app:shell', catalog, makeId);
+    expect(node.props).toEqual({ size: 4 });
+    expect(node.zones?.main?.map((child) => (child as ViewNode).type)).toEqual([
+      'app:card',
+      'app:card',
+    ]);
+    expect(node.zones?.body).toEqual([
+      { id: expect.any(String), type: '#text', value: 'Body' },
+    ]);
+  });
+
   it('seeds icon data, in-range numbers, and list-shaped unions', () => {
     expect(seededDocument('@kerfjs/ui:lucide-icon').root.props?.icon).toEqual({
       $icon: PLACEHOLDER_ICON,
