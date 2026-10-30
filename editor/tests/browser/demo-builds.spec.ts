@@ -432,3 +432,31 @@ test('builds Row › Wrapped Row', async ({ page }) => {
     ),
   );
 });
+
+// KF-ZYQVHD: ListHeader status is text, typed straight into its field.
+test('builds ListHeader › Needs Attention', async ({ page }) => {
+  await dragComponent(page, 'ListHeader', () => emptySpot(page));
+  await select(page, /^ListHeader/);
+  await setText(page, 'label', 'Needs Attention');
+  await setText(page, 'status', '3 blocked');
+  await choose(page, 'indicatorTone', 'danger');
+  await choose(page, 'density', 'compact');
+  await choose(page, 'divider', 'before');
+  await choose(page, 'headingLevel', '3');
+  const header = canvas(page).locator('.kui-list-header[data-kerf-node]');
+  await expect(header.locator('h3')).toHaveText('Needs Attention');
+  await expect(header.locator('.kui-badge')).toHaveText('3 blocked');
+  await expect(header.locator('.kui-badge .kui-badge')).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('list-header', {
+        label: 'Needs Attention',
+        status: '3 blocked',
+        indicatorTone: 'danger',
+        density: 'compact',
+        divider: 'before',
+        headingLevel: 3,
+      }),
+    ),
+  );
+});
