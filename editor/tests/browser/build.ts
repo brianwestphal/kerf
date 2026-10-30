@@ -136,3 +136,38 @@ export const icon = (glyph: string, props: Record<string, unknown> = {}) =>
 /** The new document's root Pane holding `content`. */
 export const page = (...content: unknown[]) =>
   node('pane', undefined, { content });
+
+/** A field inside a prop value, such as `choices › 0 › label`. */
+const field = (page: Page, prop: string, path: readonly (string | number)[]) =>
+  page
+    .locator(`[data-editor-field='${JSON.stringify({ prop, path })}']`)
+    .first();
+
+/** Types `value` into a field of a prop value and commits it with Enter. */
+export async function setField(
+  page: Page,
+  prop: string,
+  path: readonly (string | number)[],
+  value: string,
+) {
+  await field(page, prop, path).locator('input, textarea').first().click();
+  await page.keyboard.press('ControlOrMeta+a');
+  await page.keyboard.type(value);
+  await page.keyboard.press('Enter');
+}
+
+/** Turns a boolean field of a prop value on. */
+export async function turnFieldOn(
+  page: Page,
+  prop: string,
+  path: readonly (string | number)[],
+) {
+  await field(page, prop, path).locator('.kui-switch__control').click();
+}
+
+/** Picks `glyph` in the icon picker its row opens. */
+export async function pickIcon(page: Page, row: Locator, glyph: string) {
+  await row.click();
+  await page.keyboard.type(glyph.replaceAll('-', ' '));
+  await page.locator(`[data-editor-icon="${glyph}"]`).click();
+}

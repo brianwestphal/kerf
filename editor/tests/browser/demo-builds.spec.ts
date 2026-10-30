@@ -15,8 +15,11 @@ import {
   newDocument,
   node,
   page as pane,
+  pickIcon,
   select,
+  setField,
   setText,
+  turnFieldOn,
   turnOn,
 } from './build.js';
 
@@ -226,6 +229,80 @@ test('builds ListItem › Divided List', async ({ page }) => {
           }),
         ),
       }),
+    ),
+  );
+});
+
+test('builds Select › Rendering Balance', async ({ page }) => {
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await dragComponent(page, 'Select', () => emptySpot(page));
+  await select(page, /^List/);
+  await choose(page, 'gap', 'xs');
+  await select(page, /^Select/);
+  await setText(page, 'name', 'rendering-balance');
+  await setText(page, 'ariaLabel', 'Rendering Balance');
+  await setText(page, 'label', '');
+  const choices = [
+    ['quiet', 'Quiet', 'bell', 'Attention'],
+    ['balanced', 'Balanced', 'sliders-horizontal', 'Attention'],
+    ['explicit', 'Explicit', 'wrench', 'Control'],
+  ] as const;
+  await page.getByRole('button', { name: 'Configure choices' }).click();
+  const dialog = page.locator('dialog[open]');
+  for (const [index, [value, label, glyph, group]] of choices.entries()) {
+    await dialog.getByText(`Choice ${index + 1}`, { exact: true }).click();
+    await setField(page, 'choices', [index, 'value'], value);
+    await setField(page, 'choices', [index, 'label'], label);
+    await setField(page, 'choices', [index, 'group'], group);
+    if (index === 0)
+      await setField(
+        page,
+        'choices',
+        [index, 'color'],
+        'uiColor("success-on-quiet")',
+      );
+    if (index === 2)
+      await turnFieldOn(page, 'choices', [index, 'separatorBefore']);
+    await pickIcon(page, dialog.locator('[data-editor-icon-place]'), glyph);
+    await dialog.getByRole('button', { name: 'Back' }).click();
+  }
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  // The first choice was selected, and its rename carried the value along.
+  await expect(
+    page.locator('[data-editor-prop="value"] .kui-select__trigger'),
+  ).toHaveText('Quiet');
+  await page.locator('[data-editor-promote-prop="renderSelected"]').click();
+  await expect(canvas(page).locator('.kui-select__trigger')).toContainText(
+    'Quiet',
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'xs' },
+        {
+          children: [
+            node('select', {
+              name: 'rendering-balance',
+              ariaLabel: 'Rendering Balance',
+              value: 'quiet',
+              multiple: false,
+              renderSelected: { $param: 'nodeRenderSelected' },
+              choices: choices.map(([value, label, glyph, group], index) => ({
+                value,
+                label,
+                group,
+                icon: { $icon: glyph },
+                iconName: glyph,
+                ...(index === 0
+                  ? { color: { $css: 'uiColor("success-on-quiet")' } }
+                  : {}),
+                ...(index === 2 ? { separatorBefore: true } : {}),
+              })),
+            }),
+          ],
+        },
+      ),
     ),
   );
 });
