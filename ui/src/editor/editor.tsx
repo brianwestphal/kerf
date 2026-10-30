@@ -27,6 +27,7 @@ import {
   ArrowDown,
   ArrowUp,
   ChevronRight,
+  CopyPlus,
   FileCode,
   FilePlus,
   FolderOpen,
@@ -160,7 +161,9 @@ import {
   sourceOf,
 } from './model/drop.js';
 import {
+  addsProblems,
   bindingOptions,
+  duplicateNode,
   History,
   insertNode,
   isMovable,
@@ -168,7 +171,9 @@ import {
   moveNode,
   newNodeId,
   paramTypeFor,
+  pasteNode,
   placeChild,
+  placementOf,
   placeNode,
   primaryFirst,
   promoteToParam,
@@ -257,6 +262,8 @@ const REDO_ACTION = 'editor-redo';
 const MOVE_UP_ACTION = 'editor-move-up';
 const MOVE_DOWN_ACTION = 'editor-move-down';
 const DELETE_ACTION = 'editor-delete';
+/** Copies the selected node right after itself (KF-QAVK73). */
+const DUPLICATE_ACTION = 'editor-duplicate';
 const ADD_ACTION = 'editor-add-child';
 const REPLACE_ROOT_ACTION = 'editor-replace-root';
 const CONTENT_TO_NODES_ACTION = 'editor-content-to-nodes';
@@ -396,7 +403,7 @@ function canvasRenderer(catalog: EditorCatalog) {
         (label) => Text({ children: label }),
         (key) => placeholders[key]?.(),
       ),
-      slots: slotPlaceholders(placed, (id) => titles.get(id) ?? 'This node'),
+      slots: slotPlaceholders(placed, (id) => titles.get(id)!),
       icons,
     };
     // A node whose component has no function here (an application component
@@ -606,6 +613,10 @@ export function createEditor(options: EditorOptions) {
   const doc = signal<ViewDocument>(options.document ?? emptyDocument());
   const selection = signal<Selection>(null);
   const loadError = signal<string | null>(null);
+  /** Why the last duplicate or paste did not happen (KF-QAVK73). */
+  const editNotice = signal<string | null>(null);
+  /** The node Copy took, for Paste; held per editor, never shared. */
+  let clipboard: ViewNode | undefined;
   // Editing (KF-KX77TV): every change goes through commit(), so the
   // document stays the only state and undo/redo restores whole documents.
   const history = new History();
@@ -645,6 +656,7 @@ export function createEditor(options: EditorOptions) {
     history.record(doc.value);
     doc.value = ownFilledFields(next);
     fieldErrors.value = {};
+    editNotice.value = null;
     historyVersion.value += 1;
   };
 
@@ -1213,11 +1225,7 @@ export function createEditor(options: EditorOptions) {
       label={label}
       icon={name ? iconOf(name) : undefined}
       status={name || 'Not set'}
-      accessibleLabel={
-        /icon$/i.test(label)
-          ? `Choose ${label.toLowerCase()}`
-          : `Choose ${label.toLowerCase()} icon`
-      }
+      accessibleLabel={`Choose ${label.toLowerCase()}`}
       action={ICON_OPEN_ACTION}
       trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
       rootAttributes={{ 'data-editor-icon-place': JSON.stringify(place) }}
@@ -1684,16 +1692,13 @@ export function createEditor(options: EditorOptions) {
    */
   /**
    * The one component a zone of `node` calls for, if any: the first its name
-   * suggests, or the only one it accepts.
+   * suggests.
    */
   const suggestionFor = (node: ViewNode, zone: string) => {
     const keys = addableIn(
       zonesOf(node).find((option) => option.key === zone),
     ).map((choice) => choice.value);
-    return (
-      suggestedComponents(zone, keys)[0] ??
-      (keys.length === 1 ? keys[0] : undefined)
-    );
+    return suggestedComponents(zone, keys)[0];
   };
 
   /**
@@ -1752,11 +1757,8 @@ export function createEditor(options: EditorOptions) {
       : never)['props'][number],
   ) => {
     if (!prop.slot) return undefined;
-    // The main zone's children show in the outline, not as a row.
-    if (!(prop.type as { acceptsText?: true }).acceptsText)
-      return prop.name === 'children'
-        ? undefined
-        : nodeContentRow(node, prop.name);
+    // Node-only content is a row of its own (nodeContentRow) or the outline's.
+    if (!(prop.type as { acceptsText?: true }).acceptsText) return undefined;
     const content = contentOf(node, prop.name);
     const attributes = { 'data-editor-content': prop.name };
     if (content.kind !== 'nodes') {
@@ -2303,26 +2305,24 @@ export function createEditor(options: EditorOptions) {
             const control =
               contentControl(node, prop) ?? propControl(prop, value, node.type);
             if (control) return [{ kind: 'edit' as const, row: control }];
-            return controlFor(prop, value, definitionsOf(node.type)).kind ===
-              'readonly'
-              ? [
-                  {
-                    kind: 'fixed' as const,
-                    row: (
-                      <ValueTableRow
-                        label={propLabel(prop.name)}
-                        value={
-                          inspectorSections(node, {
-                            ...component,
-                            props: [prop],
-                            groups: [],
-                          })[0]!.rows[0]!.value
-                        }
-                      />
-                    ),
-                  },
-                ]
-              : [];
+            // propControl leaves only a read-only prop without a control.
+            return [
+              {
+                kind: 'fixed' as const,
+                row: (
+                  <ValueTableRow
+                    label={propLabel(prop.name)}
+                    value={
+                      inspectorSections(node, {
+                        ...component,
+                        props: [prop],
+                        groups: [],
+                      })[0]!.rows[0]!.value
+                    }
+                  />
+                ),
+              },
+            ];
           });
           const runs: { kind: InspectorRow['kind']; rows: SafeHtml[] }[] = [];
           for (const { kind, row } of rows) {
@@ -2463,6 +2463,12 @@ export function createEditor(options: EditorOptions) {
             label={node.name ? `${node.name} · ${title}` : title}
             count={component.props.length}
             countLabel="props"
+            // KF-QAVK73: copies the node right after itself (⌘D).
+            action={DUPLICATE_ACTION}
+            actionLabel="Duplicate"
+            actionIcon={<LucideIcon icon={CopyPlus} name="copy-plus" />}
+            actionDisabled={!isMovable(doc.value, node.id).remove}
+            disabledReason="The root has no place to copy it beside."
           />
           {strip}
         </List>
@@ -2803,7 +2809,9 @@ export function createEditor(options: EditorOptions) {
               ),
             }}
             mainHeader={
-              loadError.value ? (
+              editNotice.value ? (
+                <StateBanner tone="warning" title={editNotice.value} />
+              ) : loadError.value ? (
                 <StateBanner
                   tone="danger"
                   title="That file could not be opened"
@@ -3104,6 +3112,61 @@ export function createEditor(options: EditorOptions) {
     commit(replaceRoot(doc.value, root));
     select({ kind: 'node', id: root.id });
     inspectorArea.value = 'properties';
+  };
+
+  /** Commits a copy that landed at `next`, or says why it cannot (KF-QAVK73). */
+  const placeCopy = (
+    result: { document: ViewDocument; id: string },
+    type: string,
+    refusal: string,
+  ) => {
+    const next = withCatalog(result.document, type);
+    if (addsProblems(doc.value, next, viewCatalog)) {
+      editNotice.value = refusal;
+      return;
+    }
+    commit(next);
+    select({ kind: 'node', id: result.id });
+  };
+
+  /** Copies the selected node right after itself (KF-QAVK73). */
+  const duplicate = () => {
+    const id = selectedNodeId();
+    const node = id ? findNode(doc.value, id)?.node : undefined;
+    const result = id ? duplicateNode(doc.value, id) : undefined;
+    if (!node || !result) return;
+    placeCopy(
+      result,
+      node.type,
+      `A copy of ${node.name ?? nodeTitle(node, componentNames)} does not fit beside it.`,
+    );
+  };
+
+  /**
+   * Pastes a copy of `node` after the selected node, or at the end of the
+   * selected node's main zone when it has no place of its own (the root),
+   * or of the root's with nothing selected.
+   */
+  const paste = (node: ViewNode) => {
+    const id = selectedNodeId() ?? doc.value.root.id;
+    const at = placementOf(doc.value, id);
+    const target = findNode(doc.value, id)!.node;
+    const zone = at ? undefined : primaryFirst(zonesOf(target))[0]?.key;
+    const to = at
+      ? { ...at, index: at.index + 1 }
+      : zone
+        ? { parent: id, zone, index: target.zones?.[zone]?.length ?? 0 }
+        : undefined;
+    const title = node.name ?? nodeTitle(node, componentNames);
+    if (!to) {
+      editNotice.value = `${title} cannot be pasted there.`;
+      return;
+    }
+    placeCopy(
+      pasteNode(doc.value, node, to),
+      node.type,
+      `${title} cannot be pasted there.`,
+    );
   };
 
   /**
@@ -3459,13 +3522,38 @@ export function createEditor(options: EditorOptions) {
       ),
       on(root.ownerDocument, 'keydown', (event) => {
         const key = event as KeyboardEvent;
-        if (!(key.metaKey || key.ctrlKey) || key.key.toLowerCase() !== 'z')
-          return;
+        const letter = key.key.toLowerCase();
+        if (!(key.metaKey || key.ctrlKey) || !'zdcv'.includes(letter)) return;
         const target = key.target as Element | null;
         if (target?.closest('input, textarea, [contenteditable]')) return;
-        key.preventDefault();
-        if (key.shiftKey) redo();
-        else undo();
+        // KF-QAVK73: copy and paste leave a text selection's own behavior be.
+        if (
+          (letter === 'c' || letter === 'v') &&
+          !root.ownerDocument.getSelection()?.isCollapsed
+        )
+          return;
+        switch (letter) {
+          case 'z':
+            key.preventDefault();
+            if (key.shiftKey) redo();
+            else undo();
+            return;
+          case 'd':
+            key.preventDefault();
+            duplicate();
+            return;
+          case 'c': {
+            const id = selectedNodeId();
+            if (!id) return;
+            key.preventDefault();
+            clipboard = findNode(doc.value, id)!.node;
+            return;
+          }
+          case 'v':
+            if (!clipboard) return;
+            key.preventDefault();
+            paste(clipboard);
+        }
       }),
       delegate<HTMLElement>(
         root,
@@ -3508,6 +3596,7 @@ export function createEditor(options: EditorOptions) {
           commit(removeNode(doc.value, id));
           selection.value = null;
         },
+        [DUPLICATE_ACTION]: () => duplicate(),
         [ADD_ACTION]: () => addChild(),
         [CONTENT_ADD_ACTION]: (_event, target) => {
           const zone = target.dataset.editorContentAdd!;
@@ -3612,7 +3701,7 @@ export function createEditor(options: EditorOptions) {
                   (node.props?.[place.prop] as { $icon?: string } | undefined)
                     ?.$icon,
                   icon,
-                  componentNames.get(node.type) ?? '',
+                  componentNames.get(node.type)!,
                 )
               : undefined;
           if (named === undefined) writeField(place, { $icon: icon });

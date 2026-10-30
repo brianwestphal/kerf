@@ -188,6 +188,25 @@ describe('the editor shell', () => {
     ).not.toBeNull();
   });
 
+  it('previews a content param with no default as its name', () => {
+    const { root } = open({
+      document: {
+        schema: 'kerf-ui-document/v1',
+        name: 'Titled',
+        catalogs: ['@kerfjs/ui'],
+        params: { pageTitle: { type: { kind: 'content' } } },
+        root: {
+          id: '01JB8Z1M6Q8E1X9V4S7K2R3TP3',
+          type: '@kerfjs/ui:text',
+          props: { children: { $param: 'pageTitle' } },
+        },
+      } as never,
+    });
+    expect(root.querySelector('[data-editor-canvas]')!.textContent).toContain(
+      'Page Title',
+    );
+  });
+
   it('shows an empty container as a placeholder that selects it and takes a drop (KF-ZWJHJR)', () => {
     const PANE = '01JB8Z1M6Q8E1X9V4S7K2R3TP0';
     const ROW = '01JB8Z1M6Q8E1X9V4S7K2R3TP1';

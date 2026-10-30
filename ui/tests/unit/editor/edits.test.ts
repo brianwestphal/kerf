@@ -5,6 +5,8 @@ import { describe, expect, it } from 'vitest';
 import { findNode, visitNodes } from '../../../src/editor/model/document.js';
 import {
   bindingOptions,
+  copyChild,
+  duplicateNode,
   History,
   insertNode,
   isMovable,
@@ -13,6 +15,7 @@ import {
   moveNodeTo,
   newNodeId,
   paramTypeFor,
+  pasteNode,
   primaryFirst,
   promoteToParam,
   removeNode,
@@ -215,6 +218,120 @@ describe('names and props', () => {
       values: [],
     });
     expect(paramTypeFor({ kind: 'function' })).toBeUndefined();
+  });
+});
+
+describe('copies (KF-QAVK73)', () => {
+  let next = 0;
+  const makeId = () =>
+    `01JB8Z1M6Q8E1X9V4S7K2RCP${String(next++).padStart(2, '0')}`;
+
+  it('copies a child with fresh ids and unique names, through repeats and branches', () => {
+    next = 0;
+    const child = {
+      id: 'a',
+      type: '@kerfjs/ui:list',
+      name: 'folderList',
+      zones: {
+        children: [
+          {
+            $each: { $param: 'rows' },
+            as: 'row',
+            template: { id: 'b', type: '@kerfjs/ui:list-item', name: 'row' },
+          },
+          {
+            $if: { $param: 'x' },
+            then: { id: 'c', type: '@kerfjs/ui:text' },
+            else: { $slot: 'empty' },
+          },
+          {
+            $if: { $param: 'y' },
+            then: { id: 'd', type: '@kerfjs/ui:text', name: 'note' },
+          },
+        ],
+      },
+    } as never;
+    const taken = new Set(['folderList', 'row', 'row2']);
+    const copy = copyChild(child, taken, makeId) as unknown as {
+      id: string;
+      name: string;
+      zones: {
+        children: [
+          { template: { id: string; name: string } },
+          { then: { id: string }; else: unknown },
+        ];
+      };
+    };
+    expect(copy.id).toBe('01JB8Z1M6Q8E1X9V4S7K2RCP00');
+    expect(copy.name).toBe('folderList2');
+    expect(copy.zones.children[0].template).toMatchObject({
+      id: '01JB8Z1M6Q8E1X9V4S7K2RCP01',
+      name: 'row3',
+    });
+    expect(copy.zones.children[1].then.id).toBe('01JB8Z1M6Q8E1X9V4S7K2RCP02');
+    expect(copy.zones.children[1].else).toEqual({ $slot: 'empty' });
+    expect(
+      (copy.zones.children as unknown as { then: { name: string } }[])[2]!.then
+        .name,
+    ).toBe('note');
+    expect(taken).toContain('row3');
+    // The original is untouched.
+    expect((child as { id: string }).id).toBe('a');
+  });
+
+  it('duplicates a node right after itself and pastes one at a place', () => {
+    next = 10;
+    const duplicated = duplicateNode(inbox, FOLDERS, makeId)!;
+    const content = duplicated.document.root.zones!.content as readonly {
+      id: string;
+      name?: string;
+    }[];
+    const at = content.findIndex((child) => child.id === FOLDERS);
+    expect(content[at + 1]).toMatchObject({
+      id: duplicated.id,
+      name: 'folderList2',
+    });
+    expect(valid(duplicated.document)).toEqual(valid(inbox));
+    // The root has no place of its own to sit beside.
+    expect(duplicateNode(inbox, PANE, makeId)).toBeUndefined();
+    // Names inside a branch with no else are taken too.
+    const branched = {
+      ...inbox,
+      root: {
+        ...inbox.root,
+        zones: {
+          ...inbox.root.zones,
+          footer: [
+            {
+              $if: { $param: 'showEmpty' },
+              then: { id: 'e', type: '@kerfjs/ui:text', name: 'note' },
+            },
+            {
+              $if: { $param: 'showEmpty' },
+              then: { $slot: 'detail' },
+              else: { id: 'g', type: '@kerfjs/ui:text', name: 'note2' },
+            },
+          ],
+        },
+      },
+    } as unknown as ViewDocument;
+    const note = { id: 'f', type: '@kerfjs/ui:text', name: 'note' } as never;
+    const named = pasteNode(
+      branched,
+      note,
+      { parent: PANE, zone: 'content', index: 0 },
+      makeId,
+    );
+    expect(findNode(named.document, named.id)!.node.name).toBe('note3');
+    const pasted = pasteNode(
+      inbox,
+      findNode(inbox, COMPOSE)!.node,
+      { parent: PANE, zone: 'content', index: 0 },
+      makeId,
+    );
+    expect((pasted.document.root.zones!.content![0] as { id: string }).id).toBe(
+      pasted.id,
+    );
   });
 });
 

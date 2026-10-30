@@ -186,6 +186,15 @@ first suggestion, or the only component it accepts) and selects it, or
 opens Children on that zone; filled, it names what fills it and selects
 it.
 
+Duplicate (the selected node's heading action, or Cmd/Ctrl+D) inserts a
+copy right after the node; Cmd/Ctrl+C copies it and Cmd/Ctrl+V pastes a
+copy after the selection, or at the end of the main zone of a selected
+node with no place of its own (the root), or of the root with nothing
+selected (KF-QAVK73: duplicate and paste). Every node in a copy gets a fresh
+id and every name a unique one (`folderList2`); a copy that would add a
+validation problem is refused with a notice above the canvas. Copy and
+paste leave text fields and a text selection to the browser.
+
 Inspector rows follow the section's prop order, whatever control each
 takes (KF-DQFXWG: LucideIcon inspector): an icon or Configure row sits
 where its prop does rather than after every text field. Choosing an icon

@@ -11,7 +11,7 @@ import {
   type ViewValue,
 } from '@kerfjs/ui/view';
 
-import { visitNodes } from './document.js';
+import { findNode, visitNodes } from './document.js';
 
 type MutableNode = {
   id: string;
@@ -278,6 +278,100 @@ export function placeNode(
 ): ViewDocument {
   const from = placementOf(document, id);
   return from ? placeChild(document, from, to).document : document;
+}
+
+/**
+ * A copy of zone child `child` (KF-QAVK73: duplicate and paste): every node
+ * it holds gets a fresh id, and every name a unique one, numbered past the
+ * names in `taken` (which it extends), so the copy can sit in the same
+ * document as its original.
+ */
+export function copyChild<Child extends ViewChild>(
+  child: Child,
+  taken: Set<string>,
+  makeId: () => string = newNodeId,
+): Child {
+  const unique = (name: string) => {
+    const stem = name.replace(/\d+$/, '');
+    let next = name;
+    for (let count = 2; taken.has(next); count += 1) next = `${stem}${count}`;
+    taken.add(next);
+    return next;
+  };
+  const copy = (item: ViewChild): ViewChild => {
+    if ('$slot' in item) return { ...item };
+    if ('$each' in item)
+      return { ...item, template: copy(item.template) as ViewNode };
+    if ('$if' in item)
+      return {
+        ...item,
+        then: copy(item.then),
+        ...(item.else ? { else: copy(item.else) } : {}),
+      };
+    const node = globalThis.structuredClone(item) as MutableNode;
+    node.id = makeId();
+    if (node.name) node.name = unique(node.name);
+    if (node.zones)
+      node.zones = Object.fromEntries(
+        Object.entries(node.zones).map(([zone, list]) => [
+          zone,
+          list.map(copy),
+        ]),
+      );
+    return node as ViewNode;
+  };
+  return copy(child) as Child;
+}
+
+/** Every node name in `document`. */
+function namesIn(document: ViewDocument): Set<string> {
+  const names = new Set<string>();
+  const visit = (child: ViewChild) => {
+    if ('$slot' in child) return;
+    if ('$each' in child) return visit(child.template);
+    if ('$if' in child) {
+      visit(child.then);
+      if (child.else) visit(child.else);
+      return;
+    }
+    if (child.name) names.add(child.name);
+    for (const list of Object.values(child.zones ?? {})) list.forEach(visit);
+  };
+  visit(document.root);
+  return names;
+}
+
+/**
+ * Inserts a copy of `node` (fresh ids, unique names) at `to`, and returns
+ * the document and the copy's id (KF-QAVK73).
+ */
+export function pasteNode(
+  document: ViewDocument,
+  node: ViewNode,
+  to: Placement,
+  makeId: () => string = newNodeId,
+): { readonly document: ViewDocument; readonly id: string } {
+  const copy = copyChild(node, namesIn(document), makeId);
+  return {
+    document: insertNode(document, to.parent, to.zone, copy, to.index),
+    id: copy.id,
+  };
+}
+
+/**
+ * A copy of node `id` right after it in its zone (KF-QAVK73), or undefined
+ * when the node does not sit directly in a zone (the root, a repeated
+ * template, a branch).
+ */
+export function duplicateNode(
+  document: ViewDocument,
+  id: string,
+  makeId: () => string = newNodeId,
+): { readonly document: ViewDocument; readonly id: string } | undefined {
+  const at = placementOf(document, id);
+  const node = findNode(document, id)?.node;
+  if (!at || !node) return undefined;
+  return pasteNode(document, node, { ...at, index: at.index + 1 }, makeId);
 }
 
 /** Moves a node into another zone (of any node), at the end. */
