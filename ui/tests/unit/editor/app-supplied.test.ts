@@ -167,3 +167,22 @@ describe('promoting an app-supplied prop (KF-H3CB2P)', () => {
     ).toContain('<em>Host placeholder</em>');
   });
 });
+
+describe('promoting a list prop (KF-V9V2B6)', () => {
+  it('makes a Select’s choices a prop-typed param that keeps the list', () => {
+    const { root, editor, node } = added('@kerfjs/ui:select');
+    const seeded = node().props?.choices;
+    promote(root, 'choices');
+    const bound = node().props?.choices as { $param: string };
+    expect(editor.document.value.params?.[bound.$param]).toEqual({
+      type: { kind: 'prop', component: '@kerfjs/ui:select', prop: 'choices' },
+      default: seeded,
+    });
+    expect(root.textContent).toContain('· valid');
+    expect(
+      root.querySelector(
+        `[data-editor-canvas] [data-kerf-node="${node().id}"]`,
+      )!.textContent,
+    ).toContain('Choice 1');
+  });
+});

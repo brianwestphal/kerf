@@ -215,7 +215,7 @@ render a choice's label and give a SearchField a working model with no
 rules. A host adds or replaces them with
 `createEditorCatalog({ placeholders })`, keyed `<component key>.<prop>`; an
 optional prop with no placeholder is left out of the preview. Promoting a
-list or object prop is a separate decision (KF-V9V2B6).
+list, object, or record prop (a Select's `choices`) makes a prop-typed param too, keeping its current literal as the default (KF-V9V2B6: list and object params).
 
 The inspector's Control flow section (KF-90GTJN: editor control flow) shows a
 node only while a true/false param or item field holds (Show, which wraps the
@@ -624,7 +624,7 @@ model:
 - **Required when the prop is.** The input is optional exactly when that
   prop is optional in the catalog.
 - **Bound to that prop only.** It binds only to that same prop of that
-  component (`KUI-V004` otherwise), and it takes no default.
+  component (`KUI-V004` otherwise), and it takes a default only when it is a literal of that prop (a list of choices, never a function; KF-V9V2B6).
 - **Passed through.** `interpretView` passes the value through untouched.
 
 Params are how an application overrides anything: to change a node's prop at

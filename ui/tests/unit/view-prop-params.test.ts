@@ -134,3 +134,53 @@ describe('prop-typed params', () => {
     expect(html).toContain('wired');
   });
 });
+
+// KF-V9V2B6: a list or object prop becomes a prop-typed param, keeping its
+// literal as a default checked against that prop.
+describe('prop-typed params for lists and objects', () => {
+  const choices = {
+    kind: 'prop',
+    component: '@kerfjs/ui:select',
+    prop: 'choices',
+  } as const;
+  const list = [{ value: 's', label: 'Small' }];
+
+  it('takes a default that fits the prop, and refuses one that does not', () => {
+    expect(
+      diagnostics(
+        select(
+          { options: { type: choices, default: list } },
+          {
+            choices: { $param: 'options' },
+          },
+        ),
+      ),
+    ).toEqual([]);
+    expect(
+      diagnostics(
+        select(
+          { options: { type: choices, default: ['nope'] } },
+          {
+            choices: { $param: 'options' },
+          },
+        ),
+      ),
+    ).toEqual(
+      expect.arrayContaining([expect.stringMatching(/^KUI-V004 the default/)]),
+    );
+  });
+
+  it('is an optional input with its default, typed from the component', () => {
+    const document = select(
+      { options: { type: choices, default: list } },
+      { choices: { $param: 'options' } },
+    );
+    const { code } = generateView(document as never, catalog, {
+      source: 'picker.kui.json',
+    });
+    expect(code).toContain(
+      'readonly options?: Parameters<typeof Select>[0]["choices"];',
+    );
+    expect(code).toContain('inputs.options ??');
+  });
+});

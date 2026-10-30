@@ -510,13 +510,21 @@ export function isAppSupplied(
   );
 }
 
-/** The prop-typed param an app-supplied prop promotes to (KF-H3CB2P). */
+/**
+ * The prop-typed param a prop promotes to: an app-supplied one (KF-H3CB2P),
+ * or a list, object, or record (KF-V9V2B6: a Select's choices from app
+ * data), typed exactly as that prop.
+ */
 export function appParamFor(
   component: string,
   prop: { readonly name: string; readonly type: unknown },
   definitions: Definitions,
 ): ViewType | undefined {
-  return isAppSupplied(prop.type as ViewType, definitions)
+  const kind = shape(prop.type as ViewType, definitions)?.kind;
+  return isAppSupplied(prop.type as ViewType, definitions) ||
+    kind === 'array' ||
+    kind === 'object' ||
+    kind === 'record'
     ? ({ kind: 'prop', component, prop: prop.name } as ViewType)
     : undefined;
 }

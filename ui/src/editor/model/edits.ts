@@ -391,9 +391,12 @@ export function promoteToParam(
   const node = locate(clone(document), id)?.node;
   if (!node) return { error: `No node ${id}.` };
   const current = node.props?.[prop];
+  // A list or object literal is a default too (KF-V9V2B6); a binding is not.
   const literal =
     current !== undefined &&
-    (current === null || typeof current !== 'object' || Array.isArray(current));
+    (current === null ||
+      typeof current !== 'object' ||
+      !Object.keys(current).some((key) => key.startsWith('$')));
   const next = setProp(document, id, prop, { $param: param });
   const params = {
     ...(next.params ?? {}),

@@ -2071,11 +2071,8 @@ export function createEditor(options: EditorOptions) {
         (paramTypeFor(prop.type as never) ??
           appParamFor(node.type, prop, definitionsOf(node.type))) !==
           undefined &&
-        !(
-          props[prop.name] !== null &&
-          typeof props[prop.name] === 'object' &&
-          !Array.isArray(props[prop.name])
-        ),
+        // A literal promotes; a bound prop is already a param.
+        !isBinding(props[prop.name]),
     );
     const zones = zonesOf(node);
     const zone =
@@ -2970,8 +2967,7 @@ export function createEditor(options: EditorOptions) {
         appParamFor(node.type, prop, definitionsOf(node.type)));
     const current = node.props?.[name];
     // Only a literal (or unset) prop promotes; one already bound stays as is.
-    if (!prop || !type || (current !== null && typeof current === 'object'))
-      return;
+    if (!prop || !type || isBinding(current)) return;
     const base = `${node.name ?? 'node'}${name[0]!.toUpperCase()}${name.slice(1)}`;
     let param = base;
     for (

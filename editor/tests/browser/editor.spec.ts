@@ -1425,3 +1425,23 @@ test('promotes a Select’s renderSelected to an app-supplied param', async ({
     animations: 'disabled',
   });
 });
+
+// KF-V9V2B6: a list prop becomes a prop-typed param that keeps its value.
+test('promotes a Select’s choices to a param that keeps the list', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await addToPane(page, 'Select');
+  await page.locator('[data-editor-promote]').click();
+  await page.getByRole('option', { name: 'choices', exact: true }).click();
+  await page.getByRole('button', { name: 'Promote' }).click();
+  await expect(page.getByText(/· valid$/)).toBeVisible();
+  await expect(
+    page.locator('[data-editor-canvas] [data-component="select"]').first(),
+  ).toContainText('Choice 1');
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-v9v2b6-promoted-choices-1440.png'),
+    animations: 'disabled',
+  });
+});

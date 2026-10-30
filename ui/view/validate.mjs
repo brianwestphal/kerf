@@ -1471,10 +1471,21 @@ export function validateView(document, catalog, options = {}) {
     for (const key of only(param, ['type', 'default', 'description']))
       ctx.report('KUI-V001', `${at}.${key}`, 'unknown param field');
     validateDeclaredType(ctx, param.type, `${at}.type`);
+    // A prop-typed param's default is a literal of that prop (KF-V9V2B6: a
+    // Select's choices promoted with their current list).
+    const owner =
+      param.type?.kind === 'prop'
+        ? ctx.catalog.components.get(param.type.component)
+        : undefined;
+    const ownerProp = owner?.component.props.find(
+      (prop) => prop.name === param.type.prop,
+    );
     if (
       'default' in param &&
       PARAM_KINDS.has(param.type?.kind) &&
-      !isLiteralOf(param.default, param.type)
+      !(ownerProp
+        ? isLiteralOf(param.default, ownerProp.type, owner.definitions)
+        : isLiteralOf(param.default, param.type))
     ) {
       ctx.report(
         'KUI-V004',
