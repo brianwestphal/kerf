@@ -276,14 +276,14 @@ Coverage thresholds (`vitest.config.ts`): **100% lines and functions, 98.5% bran
 
 ### Kerf's test suites
 
-The shared **Testing Philosophy** and **Testing** rules apply; these are kerf's suites and the kerf-specific practice on top of them.
+The shared **Testing Philosophy** rule applies; these are kerf's suites and the kerf-specific practice on top of them.
 
 - **Unit tests** (`tests/unit/`): Test each module in isolation with `happy-dom`. Mock external state (timers, network) but exercise real logic.
 - **Integration tests** (`tests/integration/`): Exercise the full pipeline — signals + stores + mount + delegate against a real DOM tree.
 - **Browser tests** (`tests/browser/`): Real-browser tests via Playwright (Chromium / Firefox / WebKit) for scenarios `happy-dom` can't model truthfully — SVG/MathML namespacing, IME composition, MutationObserver counts. Run with `npm run test:browser` (builds dist first; the fixture page imports from `dist/` via importmap). Browser binaries are downloaded once via `npx playwright install`. **`tests/browser/consumer-app.spec.ts`** (KF-123) drives a real downstream-style app at `tests/dist/consumer-app/` that's bundled by esbuild against `dist/` (Playwright's `globalSetup` rebuilds it before every run); each zone exercises a public primitive end-to-end through all three engines, so a `dist/` regression that only manifests in a real-consumer bundle (KF-14 SafeHtml duplication, KF-123 IntrinsicElements self-shadow, etc.) trips the gate. **`tests/browser/example-apps.spec.ts`** (KF-165) drives the eleven complete example apps under `site/src/examples/complete/<name>/` (re-bundled by `tests/dist/example-apps/build.mjs` with `base: './'` so the test webServer can serve them; the no-build `live-poll` app is copied verbatim with a vendored dist instead of bundled). Each app gets a smoke spec that exercises its headline interaction (kanban drag, markdown caret survival, chat streaming, todomvc add/toggle/clear, dashboard tick, counter-store inc/fetch, cart-htmx swap, row-selector fine-grained select, virtual-list scrolling, router navigation, live-poll no-build voting). It surfaced the historical kanban regression where the old direct-match `delegateCapture` behavior used `target.matches()` and missed a pointerdown on `.card-text` inside `.card`; both delegation helpers now default to `closest()` walk-up matching, with `{ match: 'direct' }` as the explicit opt-in.
 - **Dist `.d.ts` typing gate** (`tests/dist/jsx-typing/`, KF-123): `tsc -p tests/dist/jsx-typing/tsconfig.json` typechecks `consumer.tsx` + `consumer-merge.tsx` against `dist/jsx-runtime.d.ts` with `jsxImportSource: "kerfjs"`. Catches IntrinsicElements self-shadow regressions (where `dist/jsx-runtime.d.ts` emits `interface IntrinsicElements extends IntrinsicElements {}`) and declaration-merge breakage that the in-source typing tests can't see because they never look at the emitted .d.ts.
-- **Coverage is a floor here too** (shared **Testing**). The kerf evidence: two basic, critical bugs (KF-125: select-after-delete lost the `cacheKey` dependency; append-after-clear rendered nothing) shipped under full line coverage because no test walked those transitions. Treat a green coverage report as the _trigger_ for the behavioral audit below, never as proof of correctness.
-- **Transition-matrix testing for kerf's stateful modules** (the shared **Testing** rule's adversarial pass). They are the `each()` / list-reconcile state machine (`first-render ↔ granular ↔ snapshot ↔ empty-binding ↔ drift-recovery`), `morph.ts`, and `store.ts`. Probe sequences such as `create → select → delete → select`, `clear → append → select`, and `empty-via-remove → insert`. The template is `tests/unit/array-signal-transition-matrix.test.ts` › **"reconciler transition matrix (adversarial)"**. See also KF-284 (the feature/requirements coverage report that asserts every documented behavior — including transitions — is tested).
+- **Coverage is a floor here too** (shared **Testing Philosophy**). The kerf evidence: two basic, critical bugs (KF-125: select-after-delete lost the `cacheKey` dependency; append-after-clear rendered nothing) shipped under full line coverage because no test walked those transitions. Treat a green coverage report as the _trigger_ for the behavioral audit below, never as proof of correctness.
+- **Transition-matrix testing for kerf's stateful modules** (the shared **Testing Philosophy** rule's transition and sequence pass). They are the `each()` / list-reconcile state machine (`first-render ↔ granular ↔ snapshot ↔ empty-binding ↔ drift-recovery`), `morph.ts`, and `store.ts`. Probe sequences such as `create → select → delete → select`, `clear → append → select`, and `empty-via-remove → insert`. The template is `tests/unit/array-signal-transition-matrix.test.ts` › **"reconciler transition matrix (adversarial)"**. See also KF-284 (the feature/requirements coverage report that asserts every documented behavior — including transitions — is tested).
 - **Property-based (fuzz) testing is the instrument hand-written cases can't replace.** Three adversarial sweeps over the reconciler found nine defects, and every one was an unexpected _combination_ of shapes rather than a wrong line of code — which is the ceiling of enumerating cases by hand, because the enumeration is steered by the same priors that wrote the code. `tests/unit/reconciler-fuzz.test.ts` (helpers in `tests/unit/fuzz/`) searches the shape space instead: it generates random-but-valid trees plus random mutation sequences, checks invariants after **every step**, and shrinks a failure to a minimal paste-ready case. Its strongest invariant is differential — _incremental reconcile must equal a from-scratch render of the same state_ — which subsumes most hand-written assertions and needs no prediction about which shapes matter. It runs a small deterministic budget in `npm run check`; soak it with `npm run fuzz:soak` (one process caps out around 6–15k cases because **happy-dom retains detached DOM trees** — measured at ~1.5 MB per mount cycle with no kerf involved — so the runner windows across fresh processes). If it finds a defect you aren't fixing in the same change, **hold it in a quarantine scoped by the SHAPE of the case** (not the text of the failure), pin a reproduction that must keep failing so an entry cannot outlive its bug, and budget the excused fraction so the debt can shrink but never quietly grow. Six defects were carried that way and retired within a day; the harness currently runs with an empty quarantine, and every generated case is expected to hold.
 
 ## Code Quality Gates
@@ -354,7 +354,7 @@ What this means for the site:
 
 ### Concerns → tickets, not ad-hoc fixes
 
-**Ticket-Driven Work** and the Hot Sheet workflow below govern follow-ups: a concern outside the current ticket's scope (a bug, refactor, doc drift, or design question noticed along the way) gets its own ticket immediately rather than an in-flight fix, even a one-line one. Kerf specifics: file with the `hs-bug` / `hs-task` / `hs-issue` / `hs-feature` / `hs-investigation` / `hs-requirement-change` skills, and name the surfacing context in the title (for example "Surfaced by /check-code-hygiene on YYYY-MM-DD"). The only in-flight edits allowed are ones the ticket's own scope defines, such as the summary fixes `/check-requirements-against-code` performs.
+The Hot Sheet workflow below governs follow-ups: a concern outside the current ticket's scope (a bug, refactor, doc drift, or design question noticed along the way) gets its own ticket immediately rather than an in-flight fix, even a one-line one. Kerf specifics: file with the `hs-bug` / `hs-task` / `hs-issue` / `hs-feature` / `hs-investigation` / `hs-requirement-change` skills, and name the surfacing context in the title (for example "Surfaced by /check-code-hygiene on YYYY-MM-DD"). The only in-flight edits allowed are ones the ticket's own scope defines, such as the summary fixes `/check-requirements-against-code` performs.
 
 ### Tag a ticket `Fable` when Fable is the right model for it
 
@@ -509,13 +509,13 @@ The `gitgist.exclude` list in `package.json` keeps Kerf's generated/imported art
 
 The site's doc pages under `site/src/content/docs/` are hand-authored consumer content (no longer generated from `docs/*.md`), so they carry a normal diff body like any other source.
 
-<!-- hotsheet:begin section=git-commit-and-push v=1 -->
+<!-- hotsheet:begin section=git-commit-and-push v=2 -->
 
 ## Git Commit and Push
 
 Every repository declares its push policy in its project instructions. An agent that cannot find one does not guess: it commits, files a ticket to add the declaration, and leaves the push to a person. Commit discipline is the same everywhere.
 
-- **One commit per ticket.** Commit a finished, verified ticket before starting the next one. Combine tickets in one commit only when their changes cannot be separated safely, and name every slug the commit addresses.
+- **One commit per ticket.** The Hot Sheet workflow's commit hygiene owns this rule (one commit per finished, verified ticket, naming every slug it addresses); this rule adds the commit's shape and the push policy.
 - **Subject shape.** `<SLUG> <imperative summary>`, slug first so `git log --oneline` reads as a ticket list, under 72 characters, no trailing period, no type prefix. The only exception is the release script's own `release: vX.Y.Z` commit. The body says why the change was made and what behavior changed, not which files; it names follow-up slugs and any deliberate deviation from a rule. A tool may draft the body from the staged diff (`gitgist-release-notes`); the author edits it and keeps the subject shape.
 - **Stage by path.** Stage named files, never `git add -A` or `git add .`, and read `git diff --cached` before every commit to remove anything you did not change. Generated artifacts regenerate in the same commit as their source and are staged by name.
 - **Never rewrite shared history.** No amend, rebase, reset, or force-push on a commit that has reached the shipping branch or any remote; fix forward with a new commit. Local unpushed commits may be amended before they leave the machine. Never pass `--no-verify`: a failing hook is a failing gate, and the fix is the code, not the flag.
@@ -566,7 +566,7 @@ Any project with a rendered interface keeps a UI conventions document. It points
 
 <!-- hotsheet:end section=requirements-documentation -->
 
-<!-- hotsheet:begin section=testing-philosophy v=6 -->
+<!-- hotsheet:begin section=testing-philosophy v=7 -->
 
 ## Testing Philosophy
 
@@ -578,21 +578,20 @@ Any project with a rendered interface keeps a UI conventions document. It points
 - Maintain a feature-by-feature record of unit, end-to-end, and manual coverage as behavior changes. Keep a manual test plan for behavior that cannot be reliably automated.
 - Give every code package a working local lint command and configuration when it is added. Keep lint warning-free, fix lint and type errors before finishing, and document justified suppressions.
 - When a reviewer corrects a convention, pin it in the same change as a source-level policy test or lint rule named with the ticket slug; prose alone does not hold.
+- Keep test output quiet: run suites with failure-only reporters (the project's quiet test wrapper when it has one) and read the summary and failure excerpts, not the full log. A cheaper background agent may run the tests and report only pass/fail and the failures.
+- Rerun only what failed. After a failure, rerun just the failing tests (for example `cargo nextest run -E 'test(<name>)'`, `vitest run <file> -t '<name>'`, or `playwright test -g '<title>'`) until they pass, then run the ticket's affected set once. A rebase onto commits that do not touch the ticket's area needs no rerun; an overlapping one reruns only the overlap's affected tests. Never rerun a passing suite to double-check.
 - Verify on the rebuilt instance and reproduce the user's actual steps or command before claiming a fix; never test against the user's running host or a stale build. Isolation, build-once, and flake policy live in the `test-operations` rule when a project installs it.
 
 <!-- hotsheet:end section=testing-philosophy -->
 
-<!-- hotsheet:begin section=ticket-driven-work v=6 -->
+<!-- hotsheet:begin section=ticket-driven-work v=8 -->
 
 ## Ticket-Driven Work
 
-Create a Hot Sheet ticket before substantial work described directly by a user, including features, bugs, refactors, and multi-step code changes. Claim it before editing, keep its phase and ETA current, and release the claim whenever work stops. A claim is the live activity signal; `claim_count` records past attempts and must not be used to infer current activity.
+The Hot Sheet workflow owns ticket creation, claims, phases and ETAs, releasing, follow-ups, the `FEEDBACK NEEDED` rule, and the completion checklist (HS2-B39GQ9). This rule adds what the workflow does not say.
 
-- Create follow-up tickets immediately for unfinished steps, open decisions, known gaps, and designed but unbuilt behavior. Include their slugs in the current ticket's completion note.
-- Use `FEEDBACK NEEDED` only when the current ticket cannot proceed without a user decision or unavailable external state. Leave it Started, describe the blocker, and release its claim. Status reports, release waits, and sandbox blockers are regular notes, not feedback requests; close tickets you created yourself; give a visual tradeoff captures and `CHOICE` options; check open tickets and the code before asking.
-- Before completing, verify the scope, update tests, coverage and docs, scan for placeholders and incomplete behavior, and record the result, verification, and every follow-up.
-- When a UI ticket has a problem or design image, capture and attach an after image of the matching component, state, and viewport. Explain any unavailable capture in the completion note.
-- Name every addressed ticket slug in its commit message.
+- A claim is the live activity signal; `claim_count` records past attempts and must not be used to infer current activity.
+- Before asking for feedback, check open tickets and the code. Status reports, release waits, and sandbox blockers are regular notes, not feedback requests; close tickets you created yourself; give a visual tradeoff captures and `CHOICE` options.
 - Re-read the whole ticket, including notes added since your last read, before every action on it, and quote the note you are acting on in your result.
 - Change only what the ticket asks and preserve neighboring appearance and behavior; propose collateral changes as separate tickets. When the ticket names an attachment, reference art, a prior implementation, or another project, open it before designing.
 - Measure before restructuring: record the number that justifies a performance or architecture change, and close the ticket as not worth it when the number is small.
@@ -612,7 +611,7 @@ If the ticket has a problem or design image, capture the corresponding after sta
 
 <!-- hotsheet:end section=visual-qa -->
 
-<!-- hotsheet-instructions-version: 64 -->
+<!-- hotsheet-instructions-version: 65 -->
 
 ## Hot Sheet — ticket workflow
 
@@ -755,37 +754,6 @@ look for changes.
 developer-specific home directory, username, or absolute clone path. Use repository-relative
 paths, a stable repo name/URL, or a placeholder such as `<repo-root>/path`. Keep an exact
 local path only as clearly labeled machine-local diagnostic evidence.
-
-## Testing
-
-- **Double coverage:** cover each feature with both unit tests (logic in isolation, external
-  dependencies mocked) **and** end-to-end tests (real user flows through the running system,
-  minimal mocking). Keep test fakes faithful to the real contract — same shapes, fields, and
-  status codes.
-- **Coverage is a floor, not a ceiling.** 100% lines means every line *ran*, not that every
-  *behavior* — or every *sequence* of behaviors — is *asserted*. It is blind to missing state
-  transitions.
-- **Stateful code gets transition-matrix + adversarial tests.** For anything with modes, a
-  cache, or a state machine, enumerate the states *and* the transitions, then walk realistic
-  multi-step sequences that cross boundaries. Deliberately try to break it with out-of-order,
-  interleaved, repeated, and empty-then-refill sequences; pin any bug you find as a permanent
-  regression test.
-- **Keep test output quiet.** Run suites with failure-only reporters (the project's quiet
-  test wrapper when it has one) and read the summary and failure excerpts, not the full log.
-  A cheaper background agent may run the tests and report only pass/fail and the failures.
-- **Rerun only what failed.** After a failure, rerun just the failing tests (for example
-  `cargo nextest run -E 'test(<name>)'`, `vitest run <file> -t '<name>'`, or
-  `playwright test -g '<title>'`) until they pass, then run the ticket's affected set once.
-  A rebase onto commits that do not touch the ticket's area needs no rerun; an overlapping
-  one reruns only the overlap's affected tests. Never rerun a passing suite to double-check.
-- **Fix lint and type errors before finishing** — as you go, not batched.
-
-## Requirements & docs
-
-Keep human-readable requirements/docs as the source of truth for what the project does, and
-update them **in the same change as the code**: add, remove, or modify a behavior → update
-its doc in the same commit. Create a new doc for a major new functional area and cross-link
-related docs.
 
 ## Commit hygiene
 
