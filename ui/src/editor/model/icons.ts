@@ -81,3 +81,24 @@ export function followingIconName(
     ? to
     : undefined;
 }
+
+/**
+ * The name field that follows an icon and the value it takes (KF-3J47BY):
+ * of `fields` (the string fields beside the icon), `iconName`, else `name`,
+ * while it still follows the icon (see `followingIconName`); undefined when
+ * there is none or the author named it.
+ */
+export function iconNameEdit(
+  fields: readonly string[],
+  holder: Readonly<Record<string, unknown>> | undefined,
+  from: string | undefined,
+  to: string,
+  seeded: string,
+): { readonly key: string; readonly value: string } | undefined {
+  const key = ['iconName', 'name'].find((name) => fields.includes(name));
+  const value =
+    key === undefined
+      ? undefined
+      : followingIconName(holder?.[key], from, to, seeded);
+  return value === undefined ? undefined : { key: key!, value };
+}

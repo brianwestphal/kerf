@@ -5,6 +5,7 @@ import { mount } from 'kerfjs';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { findNode } from '../../../src/editor/model/document.js';
+import { loadScaledTimeout } from '../../helpers/load-scaled-timeout.js';
 import { createEditor, viewCatalog } from './kerf-catalog.js';
 
 const PANE = '01JB8Z1M6Q8E1X9V4S7K2R3T5A';
@@ -120,153 +121,169 @@ describe('editing the selected node', () => {
 });
 
 describe('structural edits', () => {
-  it('duplicates, copies, and pastes nodes, and says why a paste does not fit (KF-QAVK73)', () => {
-    const { root, editor } = open(FOLDERS);
-    const content = () =>
-      (
-        editor.document.value.root.zones!.content as readonly {
-          id: string;
-          name?: string;
-        }[]
-      ).map((child) => child.name ?? child.id);
-    const before = content();
-    click(root, 'editor-duplicate');
-    expect(content()).toEqual([
-      ...before.slice(0, before.indexOf('folderList') + 1),
-      'folderList2',
-      ...before.slice(before.indexOf('folderList') + 1),
-    ]);
-    // The copy is selected; one undo removes it.
-    const copy = (editor.selection.value as { id: string }).id;
-    expect(findNode(editor.document.value, copy)!.node.name).toBe(
-      'folderList2',
-    );
-    click(root, 'editor-undo');
-    expect(content()).toEqual(before);
-    const key = (letter: string) =>
-      document.body.dispatchEvent(
-        new KeyboardEvent('keydown', {
-          key: letter,
-          metaKey: true,
-          bubbles: true,
-        }),
+  it(
+    'duplicates, copies, and pastes nodes, and says why a paste does not fit (KF-QAVK73)',
+    // Each step re-renders the whole editor, slow under a parallel run.
+    { timeout: loadScaledTimeout(15_000) },
+    () => {
+      const { root, editor } = open(FOLDERS);
+      const content = () =>
+        (
+          editor.document.value.root.zones!.content as readonly {
+            id: string;
+            name?: string;
+          }[]
+        ).map((child) => child.name ?? child.id);
+      const before = content();
+      click(root, 'editor-duplicate');
+      expect(content()).toEqual([
+        ...before.slice(0, before.indexOf('folderList') + 1),
+        'folderList2',
+        ...before.slice(before.indexOf('folderList') + 1),
+      ]);
+      // The copy is selected; one undo removes it.
+      const copy = (editor.selection.value as { id: string }).id;
+      expect(findNode(editor.document.value, copy)!.node.name).toBe(
+        'folderList2',
       );
-    editor.selection.value = { kind: 'node', id: FOLDERS };
-    key('d');
-    expect(content()).toContain('folderList2');
-    click(root, 'editor-undo');
-    // Copy, then paste after the selection.
-    editor.selection.value = { kind: 'node', id: FOLDERS };
-    key('c');
-    key('v');
-    expect(content()).toContain('folderList2');
-    // A List does not fit a Button's icon: nothing changes, and a notice
-    // says so.
-    editor.selection.value = { kind: 'node', id: COMPOSE };
-    click(root, 'editor-content-add');
-    const unchanged = editor.document.value;
-    key('v');
-    expect(editor.document.value).toBe(unchanged);
-    expect(root.textContent).toContain('folderList cannot be pasted there.');
-    // The next edit clears it.
-    key('d');
-    expect(root.textContent).not.toContain('cannot be pasted there');
-  });
+      click(root, 'editor-undo');
+      expect(content()).toEqual(before);
+      const key = (letter: string) =>
+        document.body.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            key: letter,
+            metaKey: true,
+            bubbles: true,
+          }),
+        );
+      editor.selection.value = { kind: 'node', id: FOLDERS };
+      key('d');
+      expect(content()).toContain('folderList2');
+      click(root, 'editor-undo');
+      // Copy, then paste after the selection.
+      editor.selection.value = { kind: 'node', id: FOLDERS };
+      key('c');
+      key('v');
+      expect(content()).toContain('folderList2');
+      // A List does not fit a Button's icon: nothing changes, and a notice
+      // says so.
+      editor.selection.value = { kind: 'node', id: COMPOSE };
+      click(root, 'editor-content-add');
+      const unchanged = editor.document.value;
+      key('v');
+      expect(editor.document.value).toBe(unchanged);
+      expect(root.textContent).toContain('folderList cannot be pasted there.');
+      // The next edit clears it.
+      key('d');
+      expect(root.textContent).not.toContain('cannot be pasted there');
+    },
+  );
 
-  it('pastes into the main zone of the root or nothing selected, and refuses a place with no zone (KF-QAVK73)', () => {
-    const { root, editor } = open(PANE);
-    const key = (letter: string) =>
-      document.body.dispatchEvent(
-        new KeyboardEvent('keydown', {
-          key: letter,
-          ctrlKey: true,
-          bubbles: true,
-        }),
+  it(
+    'pastes into the main zone of the root or nothing selected, and refuses a place with no zone (KF-QAVK73)',
+    // Each step re-renders the whole editor, slow under a parallel run.
+    { timeout: loadScaledTimeout(15_000) },
+    () => {
+      const { root, editor } = open(PANE);
+      const key = (letter: string) =>
+        document.body.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            key: letter,
+            ctrlKey: true,
+            bubbles: true,
+          }),
+        );
+      const content = () =>
+        editor.document.value.root.zones!.content as readonly { id?: string }[];
+      // Nothing to paste yet, and the root has no place to duplicate beside.
+      const start = editor.document.value;
+      key('v');
+      key('d');
+      expect(editor.document.value).toBe(start);
+      // Nothing selected copies and duplicates nothing.
+      editor.selection.value = null;
+      key('d');
+      key('c');
+      key('v');
+      expect(editor.document.value).toBe(start);
+      // With text selected, copy is the browser's.
+      editor.selection.value = { kind: 'node', id: COMPOSE };
+      const text = document.createElement('p');
+      text.textContent = 'words';
+      document.body.append(text);
+      document.getSelection()!.selectAllChildren(text);
+      key('c');
+      key('v');
+      expect(editor.document.value).toBe(start);
+      document.getSelection()!.removeAllRanges();
+      key('c');
+      // The root selected: the copy goes at the end of its content.
+      editor.selection.value = { kind: 'node', id: PANE };
+      key('v');
+      const last = content().at(-1)!;
+      expect(findNode(editor.document.value, last.id!)!.node.type).toBe(
+        '@kerfjs/ui:button',
       );
-    const content = () =>
-      editor.document.value.root.zones!.content as readonly { id?: string }[];
-    // Nothing to paste yet, and the root has no place to duplicate beside.
-    const start = editor.document.value;
-    key('v');
-    key('d');
-    expect(editor.document.value).toBe(start);
-    // Nothing selected copies and duplicates nothing.
-    editor.selection.value = null;
-    key('d');
-    key('c');
-    key('v');
-    expect(editor.document.value).toBe(start);
-    // With text selected, copy is the browser's.
-    editor.selection.value = { kind: 'node', id: COMPOSE };
-    const text = document.createElement('p');
-    text.textContent = 'words';
-    document.body.append(text);
-    document.getSelection()!.selectAllChildren(text);
-    key('c');
-    key('v');
-    expect(editor.document.value).toBe(start);
-    document.getSelection()!.removeAllRanges();
-    key('c');
-    // The root selected: the copy goes at the end of its content.
-    editor.selection.value = { kind: 'node', id: PANE };
-    key('v');
-    const last = content().at(-1)!;
-    expect(findNode(editor.document.value, last.id!)!.node.type).toBe(
-      '@kerfjs/ui:button',
-    );
-    // Nothing selected: the root's content too.
-    editor.selection.value = null;
-    key('v');
-    expect(content()).toHaveLength(content().length);
-    // A root with no zones takes nothing.
-    const icon = '01JB8Z1M6Q8E1X9V4S7K2R3TQ2';
-    editor.document.value = {
-      ...editor.document.value,
-      root: {
-        id: icon,
-        type: '@kerfjs/ui:lucide-icon',
-        props: { icon: { $icon: 'plus' }, name: 'plus' },
-      },
-    } as never;
-    editor.selection.value = { kind: 'node', id: icon };
-    key('v');
-    expect(root.textContent).toContain('composeButton cannot be pasted there.');
-    // An unnamed node pastes into an empty zone, and is called by its type.
-    const pane = '01JB8Z1M6Q8E1X9V4S7K2R3TQ4';
-    const unnamed = '01JB8Z1M6Q8E1X9V4S7K2R3TQ5';
-    editor.document.value = {
-      ...editor.document.value,
-      root: {
-        id: pane,
-        type: '@kerfjs/ui:pane',
-        zones: {
-          content: [
-            { id: unnamed, type: '@kerfjs/ui:text', props: { children: 'Hi' } },
-          ],
+      // Nothing selected: the root's content too.
+      editor.selection.value = null;
+      key('v');
+      expect(content()).toHaveLength(content().length);
+      // A root with no zones takes nothing.
+      const icon = '01JB8Z1M6Q8E1X9V4S7K2R3TQ2';
+      editor.document.value = {
+        ...editor.document.value,
+        root: {
+          id: icon,
+          type: '@kerfjs/ui:lucide-icon',
+          props: { icon: { $icon: 'plus' }, name: 'plus' },
         },
-      },
-    } as never;
-    editor.selection.value = { kind: 'node', id: unnamed };
-    key('c');
-    editor.document.value = {
-      ...editor.document.value,
-      root: { id: pane, type: '@kerfjs/ui:pane' },
-    } as never;
-    editor.selection.value = { kind: 'node', id: pane };
-    key('v');
-    expect(content()).toHaveLength(1);
-    editor.document.value = {
-      ...editor.document.value,
-      root: {
-        id: icon,
-        type: '@kerfjs/ui:lucide-icon',
-        props: { icon: { $icon: 'plus' }, name: 'plus' },
-      },
-    } as never;
-    editor.selection.value = { kind: 'node', id: icon };
-    key('v');
-    expect(root.textContent).toContain('Text cannot be pasted there.');
-  });
+      } as never;
+      editor.selection.value = { kind: 'node', id: icon };
+      key('v');
+      expect(root.textContent).toContain(
+        'composeButton cannot be pasted there.',
+      );
+      // An unnamed node pastes into an empty zone, and is called by its type.
+      const pane = '01JB8Z1M6Q8E1X9V4S7K2R3TQ4';
+      const unnamed = '01JB8Z1M6Q8E1X9V4S7K2R3TQ5';
+      editor.document.value = {
+        ...editor.document.value,
+        root: {
+          id: pane,
+          type: '@kerfjs/ui:pane',
+          zones: {
+            content: [
+              {
+                id: unnamed,
+                type: '@kerfjs/ui:text',
+                props: { children: 'Hi' },
+              },
+            ],
+          },
+        },
+      } as never;
+      editor.selection.value = { kind: 'node', id: unnamed };
+      key('c');
+      editor.document.value = {
+        ...editor.document.value,
+        root: { id: pane, type: '@kerfjs/ui:pane' },
+      } as never;
+      editor.selection.value = { kind: 'node', id: pane };
+      key('v');
+      expect(content()).toHaveLength(1);
+      editor.document.value = {
+        ...editor.document.value,
+        root: {
+          id: icon,
+          type: '@kerfjs/ui:lucide-icon',
+          props: { icon: { $icon: 'plus' }, name: 'plus' },
+        },
+      } as never;
+      editor.selection.value = { kind: 'node', id: icon };
+      key('v');
+      expect(root.textContent).toContain('Text cannot be pasted there.');
+    },
+  );
 
   it('names what fills a content prop: one node, several, or a slot (KF-5T3TE4)', () => {
     const { root, editor } = open(COMPOSE);

@@ -11,6 +11,7 @@ import { setProp } from '../../../src/editor/model/edits.js';
 import {
   followingIconName,
   ICON_RESULTS,
+  iconNameEdit,
   iconNames,
   lucideIconName,
   matchIcons,
@@ -208,6 +209,24 @@ describe(
       expect(props()).toMatchObject({ icon: { $icon: 'star' }, name: 'add' });
     });
 
+    it('picks iconName, else name, beside an icon (KF-3J47BY)', () => {
+      expect(
+        iconNameEdit(['label'], {}, undefined, 'star', 'X'),
+      ).toBeUndefined();
+      expect(
+        iconNameEdit(['name', 'iconName'], {}, undefined, 'star', 'X'),
+      ).toEqual({ key: 'iconName', value: 'star' });
+      expect(iconNameEdit(['name'], undefined, undefined, 'star', 'X')).toEqual(
+        {
+          key: 'name',
+          value: 'star',
+        },
+      );
+      expect(
+        iconNameEdit(['name'], { name: 'mine' }, 'bell', 'star', 'X'),
+      ).toBeUndefined();
+    });
+
     it('follows an icon only while the name does', () => {
       expect(
         followingIconName(undefined, undefined, 'plus', 'LucideIcon'),
@@ -239,7 +258,7 @@ describe(
     });
 
     it('picks the icon of a Select choice from its form', () => {
-      const { root, props } = added('@kerfjs/ui:select');
+      const { root, props, editor, id } = added('@kerfjs/ui:select');
       // Open the first choice's form, as the list editor will.
       const opener = document.createElement('button');
       opener.dataset.action = 'editor-open-field';
@@ -251,11 +270,44 @@ describe(
       opener.click();
       const place = `[data-editor-icon-place='{"prop":"choices","path":[0,"icon"]}']`;
       expect(root.querySelector(place)!.textContent).toContain('Not set');
+      // KF-3J47BY: the Icon row sits in field order, after Label and before
+      // Icon name.
+      const field = (name: string) =>
+        root.querySelector(
+          `[data-editor-field='{"prop":"choices","path":[0,"${name}"]}']`,
+        )!;
+      const follows = (a: Element, b: Element) =>
+        Boolean(
+          a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING,
+        );
+      expect(follows(field('label'), root.querySelector(place)!)).toBe(true);
+      expect(follows(root.querySelector(place)!, field('iconName'))).toBe(true);
       click(root, place);
       search(root, 'star');
       click(root, '[data-editor-icon="star"]');
-      expect((props().choices as { icon?: unknown }[])[0]!.icon).toEqual({
-        $icon: 'star',
+      const choice = () =>
+        (props().choices as { icon?: unknown; iconName?: string }[])[0]!;
+      // Its iconName follows the icon, until the author names it.
+      expect(choice()).toMatchObject({
+        icon: { $icon: 'star' },
+        iconName: 'star',
+      });
+      dialog(root).dispatchEvent(new Event('close'));
+      click(root, place);
+      search(root, 'bell');
+      click(root, '[data-editor-icon="bell"]');
+      expect(choice().iconName).toBe('bell');
+      editor.document.value = setProp(editor.document.value, id, 'choices', [
+        { ...choice(), iconName: 'alarm' },
+        ...(props().choices as unknown[]).slice(1),
+      ] as never);
+      dialog(root).dispatchEvent(new Event('close'));
+      click(root, place);
+      search(root, 'star');
+      click(root, '[data-editor-icon="star"]');
+      expect(choice()).toMatchObject({
+        icon: { $icon: 'star' },
+        iconName: 'alarm',
       });
     });
   },

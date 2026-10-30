@@ -202,11 +202,13 @@ prop that would do when several variants are one change away (`set
 "label" or "ariaLabel"`). The validator's own message, and so the CLI's,
 is unchanged, keeping the runtime entries within their size budgets.
 
-Inspector rows follow the section's prop order, whatever control each
-takes (KF-DQFXWG: LucideIcon inspector): an icon or Configure row sits
-where its prop does rather than after every text field. Choosing an icon
-also sets a string `name` prop beside it (a LucideIcon's) while that name
-still follows the icon: unset, the old icon's name, or the seeded default.
+Inspector rows, and an item form's fields, follow their prop or field
+order, whatever control each takes (KF-DQFXWG: LucideIcon inspector;
+KF-3J47BY: item forms): an icon or Configure row sits where its prop does
+rather than after every text field. Choosing an icon also sets the string
+field beside it that names it, an item's `iconName` (else `name`) or a
+LucideIcon's `name`, while that name still follows the icon: unset, the
+old icon's name, or the seeded default.
 The node's own name field reads "Ref name".
 
 An application registers its own editor for a named type (KF-EXA2WH: field

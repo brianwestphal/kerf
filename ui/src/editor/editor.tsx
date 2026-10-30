@@ -217,7 +217,7 @@ import {
   valueAt,
   withValueAt,
 } from './model/fields.js';
-import { followingIconName, iconNames, matchIcons } from './model/icons.js';
+import { iconNameEdit, iconNames, matchIcons } from './model/icons.js';
 import {
   groupedProps,
   type InspectorProp,
@@ -1551,53 +1551,78 @@ export function createEditor(options: EditorOptions) {
   const objectForm = (node: ViewNode, place: FieldPlace) => {
     const { definitions, type, value } = fieldContext(node, place);
     const record = (value ?? {}) as Record<string, ViewValue>;
-    const editable: SafeHtml[] = [];
-    const nested: SafeHtml[] = [];
-    const fixed: { name: string; value: string }[] = [];
-    for (const field of objectFields(type, definitions)) {
+    // KF-3J47BY: rows keep the fields' order, as the Inspector's do.
+    const rows = objectFields(type, definitions).map((field): InspectorRow => {
       const at = { prop: place.prop, path: [...place.path, field.name] };
       const fieldValue = record[field.name];
       const control = controlFor(field, fieldValue, definitions);
-      if (customFor(field.type as never)) {
-        nested.push(configureRow(propLabel(field.name), fieldValue, at));
-      } else if (control.kind === 'readonly') {
-        fixed.push({
-          name: field.name,
-          value:
-            fieldValue === undefined
-              ? typeLabel(field.type.text!)
-              : JSON.stringify(fieldValue),
-        });
-      } else if (control.kind === 'icon') {
-        nested.push(iconRow(propLabel(field.name), String(control.raw), at));
-      } else if (
-        control.kind === 'list' &&
+      const label = propLabel(field.name);
+      if (customFor(field.type as never))
+        return { kind: 'open', row: configureRow(label, fieldValue, at) };
+      switch (control.kind) {
+        case 'readonly':
+          return {
+            kind: 'fixed',
+            row: (
+              <ValueTableRow
+                label={label}
+                value={
+                  fieldValue === undefined
+                    ? typeLabel(field.type.text!)
+                    : JSON.stringify(fieldValue)
+                }
+              />
+            ),
+          };
+        case 'icon':
+          return {
+            kind: 'open',
+            row: iconRow(label, String(control.raw), at),
+          };
+      }
+      return control.kind === 'list' &&
         opensEditor(
           fieldEditorKind(field.type as never, definitions, field.iconSource),
         )
-      ) {
-        nested.push(configureRow(propLabel(field.name), fieldValue, at));
-      } else {
-        editable.push(propControl(field, fieldValue as never, node.type, at)!);
-      }
+        ? { kind: 'open', row: configureRow(label, fieldValue, at) }
+        : {
+            kind: 'edit',
+            row: propControl(field, fieldValue as never, node.type, at)!,
+          };
+    });
+    return <List>{inspectorRuns(rows, `${stepTitle(place)} fields`)}</List>;
+  };
+
+  /**
+   * Inspector rows in their order, each run of one kind in its container:
+   * fields in an inset list, open rows in a list, read-only values in a
+   * table labeled `tableLabel`.
+   */
+  const inspectorRuns = (rows: readonly InspectorRow[], tableLabel: string) => {
+    const runs: { kind: InspectorRow['kind']; rows: SafeHtml[] }[] = [];
+    for (const { kind, row } of rows) {
+      const last = runs.at(-1);
+      if (last?.kind === kind) last.rows.push(row);
+      else runs.push({ kind, rows: [row] });
     }
-    return (
-      <List>
-        {editable.length ? (
-          <List controlInsets="trbl" gap>
-            {editable}
-          </List>
-        ) : undefined}
-        {nested.length ? <List>{nested}</List> : undefined}
-        {fixed.length ? (
-          <ValueTable label={`${stepTitle(place)} fields`} density="compact">
-            {fixed.map((row) => (
-              <ValueTableRow label={row.name} value={row.value} />
-            ))}
-          </ValueTable>
-        ) : undefined}
-      </List>
-    );
+    return runs.map(({ kind, rows: run }) => {
+      switch (kind) {
+        case 'edit':
+          return (
+            <List controlInsets="trbl" gap>
+              {run}
+            </List>
+          );
+        case 'open':
+          return <List>{run}</List>;
+        case 'fixed':
+          return (
+            <ValueTable label={tableLabel} density="compact">
+              {run}
+            </ValueTable>
+          );
+      }
+    });
   };
 
   /** An application's field editor for `type`, if one is registered. */
@@ -2333,35 +2358,9 @@ export function createEditor(options: EditorOptions) {
               },
             ];
           });
-          const runs: { kind: InspectorRow['kind']; rows: SafeHtml[] }[] = [];
-          for (const { kind, row } of rows) {
-            const last = runs.at(-1);
-            if (last?.kind === kind) last.rows.push(row);
-            else runs.push({ kind, rows: [row] });
-          }
           return [
             <ListHeader label={section.title} size="xs" />,
-            ...runs.map(({ kind, rows: run }) => {
-              switch (kind) {
-                case 'edit':
-                  return (
-                    <List controlInsets="trbl" gap>
-                      {run}
-                    </List>
-                  );
-                case 'open':
-                  return <List>{run}</List>;
-                case 'fixed':
-                  return (
-                    <ValueTable
-                      label={`${title} ${section.title}`}
-                      density="compact"
-                    >
-                      {run}
-                    </ValueTable>
-                  );
-              }
-            }),
+            ...inspectorRuns(rows, `${title} ${section.title}`),
           ];
         })}
         {promotable.length ? (
@@ -3704,31 +3703,51 @@ export function createEditor(options: EditorOptions) {
           const icon = target.dataset.editorIcon!;
           const id = selectedNodeId()!;
           const node = findNode(doc.value, id)!.node;
-          // KF-DQFXWG: a node's string `name` follows its icon until the
-          // author names it otherwise.
-          const named =
-            !place.path.length &&
-            propsByKey
-              .get(node.type)
-              ?.props.some(
-                (prop) => prop.name === 'name' && prop.type.kind === 'string',
-              )
-              ? followingIconName(
-                  node.props?.name,
-                  (node.props?.[place.prop] as { $icon?: string } | undefined)
-                    ?.$icon,
-                  icon,
-                  componentNames.get(node.type)!,
+          // KF-DQFXWG, KF-3J47BY: a string `name` beside a node's icon, or
+          // `iconName` (else `name`) beside an item's, follows the icon until
+          // the author names it otherwise.
+          const parent = place.path.slice(0, -1);
+          const strings = (
+            place.path.length
+              ? objectFields(
+                  fieldContext(node, { prop: place.prop, path: parent }).type,
+                  definitionsOf(node.type),
                 )
-              : undefined;
-          if (named === undefined) writeField(place, { $icon: icon });
-          else
+              : propsByKey.get(node.type)!.props
+          )
+            .filter((field) => field.type.kind === 'string')
+            .map((field) => field.name);
+          const current = node.props?.[place.prop] as ViewValue | undefined;
+          const named = iconNameEdit(
+            strings,
+            (place.path.length ? valueAt(current, parent) : node.props) as
+              Record<string, ViewValue> | undefined,
+            (valueAt(current, place.path) as { $icon?: string } | undefined)
+              ?.$icon,
+            icon,
+            componentNames.get(node.type)!,
+          );
+          if (!named) writeField(place, { $icon: icon });
+          else if (!place.path.length)
             commit(
               setProp(
                 setProp(doc.value, id, place.prop, { $icon: icon }),
                 id,
-                'name',
-                named,
+                named.key,
+                named.value,
+              ),
+            );
+          else
+            commit(
+              setProp(
+                doc.value,
+                id,
+                place.prop,
+                withValueAt(
+                  withValueAt(current, place.path, { $icon: icon }),
+                  [...parent, named.key],
+                  named.value,
+                ),
               ),
             );
           closeDialog(

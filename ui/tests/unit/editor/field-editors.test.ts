@@ -428,7 +428,7 @@ describe('object forms in the Inspector (KF-Z9S029)', () => {
     click(root, 'editor-fill-field-example');
     const form = field(root, '#editor-inspector-stack');
     // `content` is a slot, shown as its value; `actions`, unset, as its type.
-    expect(form.textContent).toMatch(/content\{"\$slot":"[^"]+"\}/);
+    expect(form.textContent).toMatch(/Content\{"\$slot":"[^"]+"\}/);
     expect(form.textContent).toContain('actions');
   });
 });

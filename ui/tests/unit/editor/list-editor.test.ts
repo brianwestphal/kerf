@@ -207,7 +207,7 @@ describe(
       open(root, 'items', [(props().items as unknown[]).length - 2]);
       const dialog = field(root, '#editor-field-dialog');
       expect(dialog.querySelector('[data-editor-field]')).toBeNull();
-      expect(dialog.textContent).toContain('kind');
+      expect(dialog.textContent).toContain('Kind');
     });
 
     it('edits a Combobox’s text suggestion in a text field', () => {
