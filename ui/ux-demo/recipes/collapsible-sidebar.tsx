@@ -154,8 +154,8 @@ export const createRecipe: RecipeFactory = (announce) => {
     >
       <ContentItem>
         <List gap="2xs">
-          <Text variant="span">
-            <strong>Compact Width</strong>
+          <Text variant="span" weight="strong">
+            Compact Width
           </Text>
           <Text variant="span" tone="quiet" size="compact">
             Narrow the window to a compact width: the rail and drawer start

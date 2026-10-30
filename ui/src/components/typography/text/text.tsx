@@ -12,6 +12,8 @@ export {
 export type TextVariant =
   'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
 export type TextTone = 'default' | 'quiet' | 'danger';
+/** `strong` marks the text as important with a `<strong>` element. */
+export type TextWeight = 'regular' | 'strong';
 /**
  * `compact` (xs), `default` (the element's own size), `medium` (the 16px
  * body size, for a heading such as an in-list group title), `large`, or
@@ -47,6 +49,11 @@ type TextCommonProps = Omit<
   variant?: TextVariant;
   /** Semantic foreground treatment. Defaults to the inherited foreground. */
   tone?: TextTone;
+  /**
+   * `strong` wraps the text in `<strong>`, for a title or key phrase that
+   * matters more than its neighbors. Defaults to `regular`.
+   */
+  weight?: TextWeight;
   /** Foreground color; overrides tone when supplied, or inherits when omitted. */
   color?: CssForegroundColor;
   /** Text sizing independent of the native semantic element. */
@@ -131,6 +138,7 @@ function splitMiddle(text: string, keep: TextTruncateKeep): [string, string] {
 export function Text({
   variant: Variant = 'p',
   tone = 'default',
+  weight = 'regular',
   color,
   size = 'default',
   font = 'default',
@@ -214,7 +222,14 @@ export function Text({
           : `${style === undefined || style === null ? '' : `${style};`}color:${color}`
       }
     >
-      {textBody(position, children, textValue, truncateKeep, maxLines)}
+      {textBody(
+        position,
+        children,
+        textValue,
+        truncateKeep,
+        maxLines,
+        weight === 'strong',
+      )}
     </Variant>
   );
 }
@@ -226,39 +241,50 @@ function textBody(
   textValue: string | undefined,
   truncateKeep: TextTruncateKeep | undefined,
   maxLines: number | undefined,
+  strong: boolean,
 ): TextContent {
+  const content = strong ? <strong>{children}</strong> : children;
   switch (position) {
     case 'start':
       return (
         <span class="kui-text__truncate-start">
-          <span dir="ltr">{children}</span>
+          <span dir="ltr">{content}</span>
         </span>
       );
     case 'middle':
       return (
         <TruncateMiddle
           parts={splitMiddle(textValue!, truncateKeep ?? 'segment')}
+          strong={strong}
         />
       );
     case 'end':
       return maxLines === undefined ? (
-        children
+        content
       ) : (
         <span
           class="kui-text__clamp"
           style={`--_kui-text-max-lines:${maxLines}`}
         >
-          {children}
+          {content}
         </span>
       );
   }
 }
 
-function TruncateMiddle({ parts: [head, tail] }: { parts: [string, string] }) {
+function TruncateMiddle({
+  parts: [head, tail],
+  strong,
+}: {
+  parts: [string, string];
+  strong: boolean;
+}) {
+  // A strong middle truncation keeps its two shrinking parts and marks each.
+  const mark = (part: string) => (strong ? <strong>{part}</strong> : part);
   return (
     <span class="kui-text__truncate-middle">
-      <span class="kui-text__truncate-head">{head}</span>
-      {tail ? <span class="kui-text__truncate-tail">{tail}</span> : ''}
+      <span class="kui-text__truncate-head">{mark(head)}</span>
+      {tail ? <span class="kui-text__truncate-tail">{mark(tail)}</span> : ''}
     </span>
   );
 }

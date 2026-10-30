@@ -109,8 +109,8 @@ function ticketCollectionView(): NavStackView {
             ariaLabel={`Open Ticket ${id}`}
           >
             <List gap="2xs">
-              <Text variant="span">
-                <strong>{id}</strong>
+              <Text variant="span" weight="strong">
+                {id}
               </Text>
               <Text variant="span" tone="quiet" size="compact">
                 Review the workspace rail

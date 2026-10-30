@@ -32,6 +32,17 @@ export function TextDemo() {
         </Text>
       </CatalogExample>
       <CatalogExample
+        label="Strong Emphasis"
+        note="weight=strong marks a title or key phrase as important with a strong element."
+      >
+        <Text variant="span" weight="strong">
+          Release Notes
+        </Text>
+        <Text variant="span" tone="quiet" size="compact">
+          Updated a moment ago
+        </Text>
+      </CatalogExample>
+      <CatalogExample
         label="Text Colors"
         note="Use a semantic foreground token or an application color. Omit color to keep tone or inherited text color; an explicit color wins over tone."
         align="inline-control"

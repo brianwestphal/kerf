@@ -86,8 +86,8 @@ export const createRecipe: RecipeFactory = (announce) => {
           <Row gap="xs">
             <LucideIcon icon={FileText} name="file-text" />
             <List gap="2xs">
-              <Text variant="span">
-                <strong>{item.label}</strong>
+              <Text variant="span" weight="strong">
+                {item.label}
               </Text>
               <Text variant="span" tone="quiet" size="compact">
                 {item.detail}

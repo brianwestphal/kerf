@@ -13710,6 +13710,18 @@
           "control": "select"
         },
         {
+          "name": "weight",
+          "type": {
+            "kind": "enum",
+            "values": ["regular", "strong"],
+            "text": "TextWeight | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "regular",
+          "description": "`strong` wraps the text in `<strong>`, for a title or key phrase that\nmatters more than its neighbors. Defaults to `regular`."
+        },
+        {
           "name": "color",
           "type": {
             "kind": "css-value",

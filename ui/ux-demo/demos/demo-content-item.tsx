@@ -35,8 +35,8 @@ export function DemoContentItem({
             {eyebrow}
           </Text>
         ) : null}
-        <Text variant="span">
-          <strong>{title}</strong>
+        <Text variant="span" weight="strong">
+          {title}
         </Text>
         <Text variant="span" tone="quiet" size="compact">
           {detail}

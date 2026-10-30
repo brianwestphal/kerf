@@ -213,3 +213,39 @@ describe('Text size', () => {
     expect(html).toContain('data-size="medium"');
   });
 });
+
+describe('Text weight (KF-6A9GJ2)', () => {
+  const html = (props: Partial<TextProps>) =>
+    String(Text({ children: 'Release Notes', ...props } as TextProps));
+
+  it('wraps strong text in <strong> and leaves regular text bare', () => {
+    expect(html({ variant: 'span', weight: 'strong' })).toMatch(
+      /<span[^>]*><strong>Release Notes<\/strong><\/span>/,
+    );
+    expect(html({ variant: 'span' })).not.toContain('<strong>');
+    expect(html({ variant: 'span', weight: 'regular' })).not.toContain(
+      '<strong>',
+    );
+  });
+
+  it('keeps each truncation and line cap structure around the strong text', () => {
+    expect(html({ wrap: 'normal', maxLines: 2, weight: 'strong' })).toContain(
+      '<span class="kui-text__clamp" style="--_kui-text-max-lines:2"><strong>Release Notes</strong></span>',
+    );
+    expect(
+      html({ wrap: 'truncate', truncate: 'start', weight: 'strong' }),
+    ).toContain('<span dir="ltr"><strong>Release Notes</strong></span>');
+    const middle = html({
+      children: 'src/lib/release-notes.md',
+      wrap: 'truncate',
+      truncate: 'middle',
+      weight: 'strong',
+    });
+    expect(middle).toContain(
+      '<span class="kui-text__truncate-head"><strong>src/lib</strong></span>',
+    );
+    expect(middle).toContain(
+      '<span class="kui-text__truncate-tail"><strong>/release-notes.md</strong></span>',
+    );
+  });
+});

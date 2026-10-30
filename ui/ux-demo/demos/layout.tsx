@@ -44,9 +44,7 @@ export function LayoutDemo() {
           }
         >
           <ContentItem appearance="surface" frame="framed">
-            <Text>
-              <strong>One owner per item</strong>
-            </Text>
+            <Text weight="strong">One owner per item</Text>
             <Text>
               Each content child owns its margin, border, background, padding,
               and radius.

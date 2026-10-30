@@ -123,8 +123,8 @@ export const createRecipe: RecipeFactory = (announce) => {
             />
             <ContentItem>
               <List gap="2xs">
-                <Text variant="span">
-                  <strong>Quarterly Goal</strong>
+                <Text variant="span" weight="strong">
+                  Quarterly Goal
                 </Text>
                 <Text variant="span" tone="quiet" size="compact">
                   Ship accessible navigation patterns to every workspace.

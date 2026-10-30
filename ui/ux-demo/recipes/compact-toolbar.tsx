@@ -126,8 +126,8 @@ export const createRecipe: RecipeFactory = (announce) => {
           {guide.map(([name, use]) => (
             <ListInsetText>
               <List gap="2xs">
-                <Text variant="span">
-                  <strong>{name}</strong>
+                <Text variant="span" weight="strong">
+                  {name}
                 </Text>
                 <Text variant="span" tone="quiet" size="compact">
                   {use}

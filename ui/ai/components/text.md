@@ -12,6 +12,7 @@ Render paragraph semantics by default, h1 through h6 when selected, or geometry-
 
 - Render ordinary application headings or paragraphs with native document semantics, or inline secondary text inside rows, labels, and table cells.
 - Render FieldLabel over a read-only or click-to-edit preview that replaces a Web Awesome form control.
+- Set weight="strong" for a title or key phrase that matters more than its neighbors, such as a card or row title; it renders a \<strong> element, so never hand-write \<strong> inside Text.
 
 **Not when:**
 

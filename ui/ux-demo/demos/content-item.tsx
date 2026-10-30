@@ -36,8 +36,8 @@ const appearances = [
 function itemCopy(title: string, detail: string) {
   return (
     <List gap="2xs">
-      <Text variant="span">
-        <strong>{title}</strong>
+      <Text variant="span" weight="strong">
+        {title}
       </Text>
       <Text variant="span" tone="quiet" size="compact">
         {detail}
@@ -93,8 +93,8 @@ export function ContentItemDemo() {
                 rootAttributes={{ 'data-feed-card': String(index + 1) }}
               >
                 <List gap="2xs">
-                  <Text variant="span">
-                    <strong>{title}</strong>
+                  <Text variant="span" weight="strong">
+                    {title}
                   </Text>
                   <Text variant="span" tone="quiet">
                     A short dispatch from the coast.
@@ -181,8 +181,8 @@ export function ContentItemDemo() {
                 'data-demo-item': `appearance-${appearance}`,
               }}
             >
-              <Text variant="span">
-                <strong>{appearance}</strong>
+              <Text variant="span" weight="strong">
+                {appearance}
               </Text>
             </ContentItem>
           ))}
