@@ -35,10 +35,7 @@
           "name": "status",
           "type": {
             "kind": "enum",
-            "values": [
-              "open",
-              "shipped"
-            ],
+            "values": ["open", "shipped"],
             "text": "OrderStatus | undefined",
             "nullable": true
           },
