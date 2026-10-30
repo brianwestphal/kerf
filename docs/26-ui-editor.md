@@ -247,7 +247,9 @@ and drop, and the outline treat it like any zone, and the outline names it
 by its path. In the item's form the field is a row like a top-level
 content prop's (KF-VSWT2Q: item form content rows): Add fills the zone (or
 opens Children with it chosen), and a filled row names or counts its nodes
-and selects them, leaving the form. Nodes placed there own the field: a
+and selects them, leaving the form. A seeded item slot there reads
+"Slot · view1Content" (KF-1ZSW5J), and nodes added from the row take its
+place. Nodes placed there own the field: a
 seeded item slot or text at that path gives way, and an object left with no
 other field stays set as `{}`, so the rail still reads as a static panel.
 

@@ -1713,12 +1713,20 @@ export function createEditor(options: EditorOptions) {
         case 'readonly':
           // KF-VSWT2Q: a content field is a field zone the outline fills,
           // so its row adds to that zone or selects what fills it. An item
-          // slot set there keeps showing as its value.
-          if (field.type.kind === 'content' && fieldValue === undefined)
-            return {
-              kind: 'open',
-              row: nodeContentRow(node, placeKey(at), label),
-            };
+          // slot there (KF-1ZSW5J) is named, and gives way to added nodes.
+          if (field.type.kind === 'content') {
+            const slot = (fieldValue as { $slot?: unknown } | undefined)?.$slot;
+            if (fieldValue === undefined || typeof slot === 'string')
+              return {
+                kind: 'open',
+                row: nodeContentRow(
+                  node,
+                  placeKey(at),
+                  label,
+                  typeof slot === 'string' ? `Slot · ${slot}` : undefined,
+                ),
+              };
+          }
           return {
             kind: 'fixed',
             row: (
@@ -1903,6 +1911,8 @@ export function createEditor(options: EditorOptions) {
     node: ViewDocument['root'],
     prop: string,
     label = propLabel(prop),
+    /** What an empty row says it holds (KF-1ZSW5J: an item slot). */
+    unset = 'Not set',
   ) => {
     const entries = node.zones?.[prop] ?? [];
     const children = entries.filter(
@@ -1914,7 +1924,7 @@ export function createEditor(options: EditorOptions) {
       return (
         <ListItem
           label={label}
-          status="Not set"
+          status={unset}
           accessibleLabel={
             adds
               ? `Add ${adds} to ${label.toLowerCase()}`

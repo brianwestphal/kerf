@@ -427,8 +427,9 @@ describe('object forms in the Inspector (KF-Z9S029)', () => {
     opener(root, 'detail').click();
     click(root, 'editor-fill-field-example');
     const form = field(root, '#editor-inspector-stack');
-    // `content` is a slot, shown as its value; `actions`, unset, as its type.
-    expect(form.textContent).toMatch(/Content\{"\$slot":"[^"]+"\}/);
+    // `content` is an item slot, named in its content row (KF-1ZSW5J);
+    // `actions`, unset, shows as its type.
+    expect(form.textContent).toMatch(/ContentSlot · \w+/);
     expect(form.textContent).toContain('actions');
   });
 });

@@ -419,5 +419,35 @@ describe(
         (field(root, '#editor-field-dialog') as HTMLDialogElement).open,
       ).toBe(false);
     });
+
+    // KF-1ZSW5J: a NavStack view's seeded item slot is named in its row,
+    // and nodes added from there take the slot's place.
+    it('names a seeded item slot and replaces it with added nodes', () => {
+      const { root, editor } = added('@kerfjs/ui:nav-stack');
+      const stack = (editor.selection.value as { id: string }).id;
+      const view = () =>
+        (
+          findNode(editor.document.value, stack)!.node.props?.views as {
+            content?: unknown;
+          }[]
+        )[0]!;
+      const slot = (view().content as { $slot: string }).$slot;
+      open(root, 'views');
+      open(root, 'views', [0]);
+      const row = field(root, '[data-editor-content-add="views.0.content"]');
+      expect(row.textContent).toContain(`Slot · ${slot}`);
+      expect(row.textContent).not.toContain('$slot');
+      (row.querySelector<HTMLElement>('[data-action]') ?? row).click();
+      const zone = field(root, '[data-editor-add="zone"]');
+      expect(zone.getAttribute('value')).toBe('views.0.content');
+      // added() pinned the select's `.value` to `content`; follow the render.
+      choose(zone, zone.getAttribute('value')!);
+      choose(field(root, '[data-editor-add="component"]'), '@kerfjs/ui:list');
+      field(root, '[data-action="editor-add-child"]').click();
+      expect(view()).not.toHaveProperty('content');
+      expect(
+        findNode(editor.document.value, stack)!.node.zones?.['views.0.content'],
+      ).toEqual([expect.objectContaining({ type: '@kerfjs/ui:list' })]);
+    });
   },
 );

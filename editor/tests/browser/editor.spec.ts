@@ -3,6 +3,13 @@ import { readFile } from 'node:fs/promises';
 import { expect, type Page, test } from '@playwright/test';
 
 import { area } from './areas.js';
+import {
+  addChild,
+  dragComponent,
+  emptySpot,
+  newDocument,
+  select,
+} from './build.js';
 
 const COMPOSE = '01JB8Z1M6Q8E1X9V4S7K2R3T5D';
 
@@ -1442,4 +1449,32 @@ test('promotes a Select’s choices to a param that keeps the list', async ({
     path: info.outputPath('kf-v9v2b6-promoted-choices-1440.png'),
     animations: 'disabled',
   });
+});
+
+// KF-1ZSW5J: a NavStack view's seeded slot is named in its form, and a node
+// added from there takes the slot's place.
+test('fills a NavStack view’s slot-seeded content from its form', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await newDocument(page);
+  await dragComponent(page, 'NavStack', () => emptySpot(page));
+  await select(page, /^NavStack/);
+  await page.getByRole('button', { name: 'Configure views' }).click();
+  const dialog = page.locator('dialog[open]');
+  await dialog.getByText('View 1', { exact: true }).click();
+  const row = page.locator('[data-editor-content-add="views.0.content"]');
+  await expect(row).toContainText(/Slot · view1Content/);
+  await page.screenshot({
+    path: test.info().outputPath('kf-1zsw5j-view-form-1440.png'),
+  });
+  await row.click();
+  await expect(dialog).toHaveCount(0);
+  await addChild(page, 'List');
+  await select(page, /^NavStack/);
+  await page.getByRole('button', { name: 'Configure views' }).click();
+  await dialog.getByText('View 1', { exact: true }).click();
+  await expect(
+    page.locator('[data-editor-content-node="views.0.content"]'),
+  ).toContainText('List');
 });
