@@ -228,6 +228,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **A gutter around the Kerf UI editor's canvas.** The preview sat flush against the canvas edges, so the selection ring of a node at the edge was drawn over its content; the canvas now leaves a small gutter so the ring and drop lines show whole (`KF-C4EW1V`).
 - **Node-only content props are editable from Properties in the Kerf UI editor.** A prop that takes only components, such as a Button's or ListItem's `icon` or a ListItem's `trailing`, showed as a read-only "—". Its row now adds the component the zone calls for (a LucideIcon for an icon) and selects it, or opens Children on that zone when there is no single choice; once filled, the row names what fills it ("LucideIcon · plus") and selects it (`KF-5T3TE4`).
 - **The Kerf UI editor's icon picker focuses its search.** Opening Choose icon puts focus in the search field, so typing a name filters the icons at once (`KF-GQHRC0`).
 - **Empty containers show on the Kerf UI editor canvas.** A container whose main zone holds nothing (a new document's Pane, a Row just dropped in) previewed with no size, so it could not be seen, clicked, or dropped into. It now shows a placeholder ("Row is empty — drag a component here") that selects the node and takes a drop; the document is unchanged (`KF-ZWJHJR`).

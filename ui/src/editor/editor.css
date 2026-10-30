@@ -6,7 +6,11 @@
  */
 .kui-editor__canvas {
   position: relative;
+  box-sizing: border-box;
   min-block-size: 100%;
+  /* KF-C4EW1V: a gutter around the preview, so the selection ring and drop
+     lines show whole around a node at the canvas's edge. */
+  padding: var(--kui-space-s);
 }
 
 .kui-editor__selection {
