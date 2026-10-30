@@ -13,6 +13,7 @@ import {
   moveNodeTo,
   newNodeId,
   paramTypeFor,
+  primaryFirst,
   promoteToParam,
   removeNode,
   renameNode,
@@ -241,6 +242,22 @@ describe('legalZones', () => {
       'children',
       'icon',
     ]);
+  });
+
+  it('marks the zone children fill as primary and orders it first (KF-W10DXQ)', () => {
+    const pane = zonesOf(PANE);
+    expect(pane.filter((zone) => zone.primary).map((zone) => zone.key)).toEqual(
+      ['content'],
+    );
+    expect(primaryFirst(pane).map((zone) => zone.key)).toEqual([
+      'content',
+      'header',
+      'footer',
+    ]);
+    expect(
+      zonesOf(COMPOSE).find((zone) => zone.key === 'children')?.primary,
+    ).toBe(true);
+    expect(zonesOf(TOOLBAR).some((zone) => zone.primary)).toBe(false);
   });
 
   it('restricts a zone to its accepted components and disables a full zone', () => {

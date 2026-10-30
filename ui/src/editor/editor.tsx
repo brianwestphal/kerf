@@ -170,6 +170,7 @@ import {
   paramTypeFor,
   placeChild,
   placeNode,
+  primaryFirst,
   promoteToParam,
   removeNode,
   renameNode,
@@ -1920,7 +1921,9 @@ export function createEditor(options: EditorOptions) {
   };
 
   /** Zone keys a node offers, for moving a node into it. */
-  const zoneKeys = (node: ViewNode) => zonesOf(node).map((zone) => zone.key);
+  // KF-W10DXQ: a drop inside a node tries its main zone first.
+  const zoneKeys = (node: ViewNode) =>
+    primaryFirst(zonesOf(node)).map((zone) => zone.key);
 
   /**
    * The placement a drop on an outline row asks for, if legal. Validating
@@ -2083,7 +2086,7 @@ export function createEditor(options: EditorOptions) {
     const zone =
       zones.find(
         (option) => option.key === addZone.value && !option.disabledReason,
-      ) ?? zones.find((option) => !option.disabledReason);
+      ) ?? primaryFirst(zones).find((option) => !option.disabledReason);
     const addable = addableIn(zone);
     // What can show otherwise: what the zone holding this node accepts.
     const parent = findNode(doc.value, node.id)?.ancestors.at(-1);

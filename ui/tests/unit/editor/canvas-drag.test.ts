@@ -285,11 +285,11 @@ describe('canvas drag', () => {
     pointer('pointermove', folders, 50, 2);
     expect(overlay().dataset.drop).toBe('ring');
     pointer('pointerup', folders, 50, 2);
-    // Inside takes the first of the root's zones that accepts the node.
+    // Inside takes the root's main zone first (KF-W10DXQ), at its end.
     expect(placementOf(editor.document.value, FOLDERS)).toEqual({
       parent: PANE,
-      zone: 'header',
-      index: 1,
+      zone: 'content',
+      index: 2,
     });
   });
 
@@ -558,9 +558,10 @@ describe('canvas drag', () => {
     // Drawn just inside the canvas, whose edges clip.
     expect(overlay.style.width).toBe('792px');
     fire('pointerup', 400, 300);
+    // KF-W10DXQ: it lands in the Pane's content, not its header.
     const zones = editor.document.value.root.zones!;
-    const [zone] = Object.keys(zones);
-    expect((zones[zone!] as readonly { type?: string }[])[0]!.type).toBe(
+    expect(Object.keys(zones)).toEqual(['content']);
+    expect((zones.content as readonly { type?: string }[])[0]!.type).toBe(
       '@kerfjs/ui:text',
     );
     // A component the root cannot hold gets no drop on blank canvas.

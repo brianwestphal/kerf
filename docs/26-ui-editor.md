@@ -299,7 +299,10 @@ to right in a row), and a line or ring drawn over the canvas shows a legal
 drop. Pressing a repeated row drags the list it repeats in, Escape cancels,
 and the click that ends a drag does not change the selection. Near a
 target's edge, before or after comes first and inside is the fallback, so a
-container that nothing can sit beside (the root) still takes a drop.
+container that nothing can sit beside (the root) still takes a drop. Inside
+fills the node's main zone first, the one its `children` render into (a
+Pane's content, not its header; KF-W10DXQ: primary zone), then its other
+zones in order; Add a child starts on the main zone too.
 
 Each rail switches between focus areas with a segmented `TabBar` under its
 toolbar (KF-MHY1GB: rail areas). The Document rail shows Outline, Components,

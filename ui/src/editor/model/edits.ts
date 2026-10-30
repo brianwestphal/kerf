@@ -421,6 +421,11 @@ export interface ZoneOption {
   readonly accepts?: readonly string[];
   /** Set when the zone is full or accepts nothing addable. */
   readonly disabledReason?: string;
+  /**
+   * The node's main zone, the one its `children` fill (KF-W10DXQ: a Pane's
+   * content, not its header): where a drop inside the node lands first.
+   */
+  readonly primary?: true;
 }
 
 /**
@@ -452,6 +457,7 @@ export function legalZones(
       zone.cardinality.max !== 'unbounded' && count >= zone.cardinality.max;
     options.push({
       key: zone.id,
+      ...(zone.jsx.prop === 'children' ? { primary: true as const } : {}),
       ...(accepts.length ? { accepts } : {}),
       ...(full
         ? { disabledReason: `${zone.id} holds at most ${zone.cardinality.max}` }
@@ -460,9 +466,22 @@ export function legalZones(
   }
   for (const prop of props) {
     if (prop.slot && !options.some((option) => option.key === prop.name))
-      options.push({ key: prop.name });
+      options.push({
+        key: prop.name,
+        ...(prop.name === 'children' ? { primary: true as const } : {}),
+      });
   }
   return options;
+}
+
+/** `zones` with the primary zone first, the rest in their own order. */
+export function primaryFirst<Zone extends ZoneOption>(
+  zones: readonly Zone[],
+): Zone[] {
+  return [
+    ...zones.filter((zone) => zone.primary),
+    ...zones.filter((zone) => !zone.primary),
+  ];
 }
 
 /** Undo/redo over whole documents. */

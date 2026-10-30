@@ -143,7 +143,11 @@ describe('edit edges', () => {
       keys,
     );
     expect(zones).toEqual([
-      { key: 'body', accepts: ['@acme/widgets:card', '@kerfjs/ui:button'] },
+      {
+        key: 'body',
+        primary: true,
+        accepts: ['@acme/widgets:card', '@kerfjs/ui:button'],
+      },
     ]);
   });
 });
