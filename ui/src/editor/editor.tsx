@@ -21,7 +21,14 @@ import {
   type ViewType,
   type ViewValue,
 } from '@kerfjs/ui/view';
-import { delegate, effect, mount, type SafeHtml, signal } from 'kerfjs';
+import {
+  computed,
+  delegate,
+  effect,
+  mount,
+  type SafeHtml,
+  signal,
+} from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 import {
   ArrowDown,
@@ -620,6 +627,32 @@ export function createEditor(options: EditorOptions) {
   const variantsOf = (type: string) =>
     (propsByKey.get(type) as { variants?: readonly PropsVariant[] } | undefined)
       ?.variants;
+  /** The document's problems, validated once per edit. */
+  const currentProblems = computed(() =>
+    problemsOf(
+      doc.value,
+      validateView(doc.value, viewCatalog).diagnostics,
+      variantsOf,
+    ),
+  );
+  /**
+   * The selected node's problems by the prop each is about (KF-H782W9): a
+   * problem at a prop's path, and each prop a variant hint names, so the
+   * field can show it.
+   */
+  const fieldProblems = computed(() => {
+    const id = selectedNodeId();
+    const byProp = new Map<string, string>();
+    for (const { diagnostic, nodeId } of currentProblems.value) {
+      if (nodeId !== id) continue;
+      const prop = /\.props\.([A-Za-z]\w*)$/.exec(diagnostic.path)?.[1];
+      if (prop) byProp.set(prop, diagnostic.message);
+      const fix = diagnostic.message.split('variants: ')[1];
+      for (const [, name] of fix?.matchAll(/"([^"]+)"/g) ?? [])
+        byProp.set(name!, `To fix: ${fix}`);
+    }
+    return byProp;
+  });
   const canvasContent = canvasRenderer(catalog);
   /** The type table component `key`'s props catalog declares. */
   const definitionsOf = (key: string) =>
@@ -999,7 +1032,9 @@ export function createEditor(options: EditorOptions) {
   ): SafeHtml | undefined => {
     const control = controlFor(prop, value, definitionsOf(type));
     const key = placeKey(place);
-    const error = fieldErrors.value[key];
+    const error =
+      fieldErrors.value[key] ??
+      (place.path.length ? undefined : fieldProblems.value.get(place.prop));
     // KF-9AWGPS: a value beside literal choices picks one of them.
     const offered =
       prop.name === 'value' && !place.path.length && !Array.isArray(value)
@@ -2327,8 +2362,24 @@ export function createEditor(options: EditorOptions) {
       : [];
     const chosen =
       addable.find((item) => item.value === addComponent.value) ?? addable[0];
+    // KF-H782W9: the node's own problems lead its Properties.
+    const own = currentProblems.value.filter(
+      (problem) => problem.nodeId === node.id,
+    );
     const properties = (
       <List>
+        {own.length ? (
+          <List controlInsets="trbl" gap>
+            {own.map(({ diagnostic }) => (
+              <StateBanner
+                tone="warning"
+                title={diagnostic.message}
+                detail={diagnostic.code}
+                rootAttributes={{ 'data-editor-node-problem': diagnostic.code }}
+              />
+            ))}
+          </List>
+        ) : undefined}
         <List controlInsets="trbl">
           <TextField
             label="Ref name"
@@ -2560,17 +2611,7 @@ export function createEditor(options: EditorOptions) {
    */
   const preview = signal<SafeHtml | undefined>(undefined);
   effect(() => {
-    const document = doc.value;
-    preview.value = contained(
-      canvasContent(
-        document,
-        problemsOf(
-          document,
-          validateView(document, viewCatalog).diagnostics,
-          variantsOf,
-        ),
-      ),
-    );
+    preview.value = contained(canvasContent(doc.value, currentProblems.value));
   });
 
   const canvas = () => (
@@ -2674,13 +2715,8 @@ export function createEditor(options: EditorOptions) {
 
   const render = () => {
     const document = doc.value;
-    const validation = validateView(document, viewCatalog);
     const nodes = outlineRows(document, componentNames).length;
-    const problemList = problemsOf(
-      document,
-      validation.diagnostics,
-      variantsOf,
-    );
+    const problemList = currentProblems.value;
     const problems = problemList.length;
     // KF-PR8MA6: the Components filter sits in the rail's pinned header,
     // under the strip, so it stays in reach while the list scrolls.

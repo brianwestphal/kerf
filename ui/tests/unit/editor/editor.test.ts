@@ -188,6 +188,45 @@ describe('the editor shell', () => {
     ).not.toBeNull();
   });
 
+  it('lists the selected node’s problems in its Inspector and marks the fields (KF-H782W9)', () => {
+    const FIELD = '01JB8Z1M6Q8E1X9V4S7K2R3TP4';
+    const { root, editor } = open({
+      document: {
+        schema: 'kerf-ui-document/v1',
+        name: 'Unlabeled',
+        catalogs: ['@kerfjs/ui'],
+        root: {
+          id: '01JB8Z1M6Q8E1X9V4S7K2R3TP5',
+          type: '@kerfjs/ui:list',
+          zones: {
+            children: [
+              {
+                id: FIELD,
+                type: '@kerfjs/ui:text-field',
+                props: { placeholder: 'Search', size: 'huge' },
+              },
+            ],
+          },
+        },
+      } as never,
+    });
+    editor.selection.value = { kind: 'node', id: FIELD };
+    const banners = [
+      ...root.querySelectorAll<HTMLElement>('[data-editor-node-problem]'),
+    ].map((banner) => banner.textContent);
+    expect(banners.join()).toContain('set "label" or "ariaLabel"');
+    expect(banners).toHaveLength(2);
+    // The fields the hint names say so; a prop's own problem marks it.
+    const label = root.querySelector('[data-editor-prop="label"]')!;
+    expect(label.textContent).toContain('To fix: set "label" or "ariaLabel"');
+    // Another node shows none.
+    editor.selection.value = {
+      kind: 'node',
+      id: '01JB8Z1M6Q8E1X9V4S7K2R3TP5',
+    };
+    expect(root.querySelector('[data-editor-node-problem]')).toBeNull();
+  });
+
   it('previews a content param with no default as its name', () => {
     const { root } = open({
       document: {

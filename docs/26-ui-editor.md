@@ -200,7 +200,10 @@ gains, in the editor, what would fix it (KF-TVZ06Y: variant hints): the
 changes to the closest variant (`set "id"; remove "ariaLabel"`), or each
 prop that would do when several variants are one change away (`set
 "label" or "ariaLabel"`). The validator's own message, and so the CLI's,
-is unchanged, keeping the runtime entries within their size budgets.
+is unchanged, keeping the runtime entries within their size budgets. The
+selected node's problems lead its Properties, and a field a problem's path
+ends at, or that a variant hint names, shows the problem as its error
+(KF-H782W9: problems in the Inspector).
 
 A `value` prop beside literal `choices` (KF-9AWGPS: value choices) is a
 Select of those choices' values, labeled by each choice's label; the
