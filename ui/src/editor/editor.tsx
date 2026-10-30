@@ -172,6 +172,7 @@ import {
 import {
   addsProblems,
   bindingOptions,
+  copyChild,
   duplicateNode,
   History,
   insertNode,
@@ -246,6 +247,7 @@ import {
 } from './model/outline.js';
 import { type PreviewSlot, previewSlots } from './model/preview-slots.js';
 import {
+  placementReason,
   type Problem,
   problemCounts,
   problemsOf,
@@ -2166,6 +2168,56 @@ export function createEditor(options: EditorOptions) {
     return node && zone && zoneKeys(node).length > 1
       ? `Inside ${target} › ${zone}`
       : `Inside ${target}`;
+  };
+
+  /**
+   * Why a drag cannot drop on canvas target `targetId` (KF-6RYJ64): the
+   * first problem placing it there would add, else that it does not fit.
+   */
+  const dropRefusal = (sourceId: string, targetId: string): string => {
+    const empty = emptyZoneTarget(targetId);
+    const slot = slotRowAddress(targetId);
+    const parent = empty?.parent ?? slot?.parent ?? targetId;
+    // Canvas targets and drag sources are always nodes of the document.
+    const target = findNode(doc.value, parent)!.node;
+    const node = sourceId.startsWith(PALETTE_SOURCE)
+      ? draggedNode(sourceId)
+      : findNode(doc.value, sourceId)!.node;
+    const name = node.name ?? nodeTitle(node, componentNames);
+    // The zone a drop inside would fill: not one whose prop holds text.
+    const zone =
+      empty?.zone ??
+      slot?.zone ??
+      zoneKeys(target).find((key) => target.props?.[key] === undefined);
+    if (!zone) return `${name} cannot go here`;
+    const before = new Set(
+      currentProblems.value.map(({ diagnostic }) => diagnostic.message),
+    );
+    const inserted = sourceId.startsWith(PALETTE_SOURCE)
+      ? node
+      : // A copy, so its names do not clash with the original's.
+        copyChild(
+          node,
+          new Set(
+            visitNodes(doc.value).flatMap(({ node: item }) =>
+              item.name ? [item.name] : [],
+            ),
+          ),
+        );
+    const placed = withCatalog(
+      insertNode(doc.value, parent, zone, inserted),
+      node.type,
+    );
+    return (
+      placementReason(
+        placed,
+        validateView(placed, viewCatalog).diagnostics.filter(
+          (diagnostic) => !before.has(diagnostic.message),
+        ),
+        inserted.id,
+        componentNames,
+      ) ?? `${name} cannot go here`
+    );
   };
 
   /**
@@ -4255,6 +4307,7 @@ export function createEditor(options: EditorOptions) {
             ? componentNames.get(sourceId.slice(PALETTE_SOURCE.length))!
             : rowLabel(sourceId),
         captionOf: dropCaption,
+        refusalOf: dropRefusal,
         // KF-67K2VP: a drag also drops on the outline's rows, and resting on
         // a Document tab opens it, so a palette drag can reach the outline.
         surfaces: [

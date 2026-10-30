@@ -347,7 +347,12 @@ pixels, a press becomes a drag; the innermost node or slot under the pointer
 is the target, before, after, or inside is read along its parent's flow (left
 to right in a row), and a line or ring drawn over the canvas shows a legal
 drop. Pressing a repeated row drags the list it repeats in, Escape cancels,
-and the click that ends a drag does not change the selection. Near a
+and the click that ends a drag does not change the selection. Over a canvas
+target with no legal drop, the caption turns into the reason (KF-6RYJ64:
+refused drops): the first problem placing the dragged component inside
+it would add, about the dragged node when there is one, with component
+keys written as names ("ToolbarControlGroup goes in Toolbar or
+FloatingToolbar or TabBar"), else "cannot go here". Near a
 target's edge, before or after comes first and inside is the fallback, so a
 container that nothing can sit beside (the root) still takes a drop. Inside
 fills the node's main zone first, the one its `children` render into (a

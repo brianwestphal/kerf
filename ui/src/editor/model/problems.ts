@@ -153,3 +153,41 @@ export function problemCounts(
   }
   return counts;
 }
+
+/**
+ * A validator message for people (KF-6RYJ64): component keys written as
+ * their names, and a cataloged-parents rule as where the component goes.
+ */
+export function readableMessage(
+  message: string,
+  names: ReadonlyMap<string, string>,
+): string {
+  return message
+    .replace(
+      /`?(@[\w./-]+:[\w#-]+)`?/g,
+      (key, bare: string) => names.get(bare) ?? key,
+    )
+    .replace(
+      /^(\S+) requires one of these cataloged parents: (.*)$/,
+      (_, name: string, parents: string) =>
+        `${name} goes in ${parents.split(', ').join(' or ')}`,
+    );
+}
+
+/**
+ * Why placing node `id` made `document` worse (KF-6RYJ64): the first of the
+ * `added` problems about that node, else the first added at all, in words;
+ * undefined when none was added.
+ */
+export function placementReason(
+  document: ViewDocument,
+  added: readonly ViewDiagnostic[],
+  id: string,
+  names: ReadonlyMap<string, string>,
+): string | undefined {
+  const reason =
+    added.find(
+      (diagnostic) => nodeIdForPath(document, diagnostic.path) === id,
+    ) ?? added[0];
+  return reason && readableMessage(reason.message, names);
+}

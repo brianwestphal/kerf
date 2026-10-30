@@ -585,6 +585,136 @@ describe('canvas drag', () => {
     expect(labels()).toEqual(['Leading — drop here', 'Center — drop here']);
   });
 
+  it('says why a drag cannot drop where the pointer rests (KF-6RYJ64)', () => {
+    const TEXT = '01JB8Z1M6Q8E1X9V4S7K2R3TT2';
+    const root = document.createElement('div');
+    document.body.append(root);
+    const editor = createEditor({
+      document: {
+        schema: 'kerf-ui-document/v1',
+        name: 'Untitled',
+        catalogs: ['@kerfjs/ui'],
+        root: {
+          id: PANE,
+          type: '@kerfjs/ui:pane',
+          zones: {
+            content: [
+              {
+                id: TEXT,
+                type: '@kerfjs/ui:text',
+                name: 'intro',
+                props: { children: 'Hi' },
+              },
+              {
+                id: '01JB8Z1M6Q8E1X9V4S7K2R3TT3',
+                type: '@kerfjs/ui:toolbar',
+                zones: {
+                  trailing: [
+                    {
+                      id: '01JB8Z1M6Q8E1X9V4S7K2R3TT4',
+                      type: '@kerfjs/ui:toolbar-control-group',
+                      props: { label: 'Actions' },
+                      zones: {
+                        children: [
+                          {
+                            id: '01JB8Z1M6Q8E1X9V4S7K2R3TT5',
+                            type: '@kerfjs/ui:toolbar-control-group#ToolbarButton',
+                            props: { children: 'Go' },
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      } as ViewDocument,
+    });
+    mount(root, editor.render);
+    let under: Element | null = null;
+    Object.defineProperty(document, 'elementFromPoint', {
+      configurable: true,
+      value: () => under,
+    });
+    cleanup = editor.wire(root);
+    const canvas = root.querySelector<HTMLElement>('[data-editor-canvas]')!;
+    at(canvas, 0, 0, 800, 600);
+    const pane = canvas.querySelector<HTMLElement>(
+      `[data-kerf-node="${PANE}"]`,
+    )!;
+    at(pane, 0, 0, 800, 600);
+    const text = canvas.querySelector<HTMLElement>(
+      `[data-kerf-node="${TEXT}"]`,
+    )!;
+    at(text, 0, 0, 800, 40);
+    const drag = (from: HTMLElement) => {
+      const fire = (type: string, x: number, y: number) => {
+        const event = new Event(type, { bubbles: true, cancelable: true });
+        for (const [key, value] of Object.entries({
+          clientX: x,
+          clientY: y,
+          button: 0,
+          pointerId: 1,
+        }))
+          Object.defineProperty(event, key, { value });
+        from.dispatchEvent(event);
+      };
+      return fire;
+    };
+    const caption = () =>
+      canvas.querySelector<HTMLElement>('.kui-editor__drop-caption')!;
+    const group = drag(
+      root.querySelector<HTMLElement>(
+        '[data-editor-palette="@kerfjs/ui:toolbar-control-group"]',
+      )!,
+    );
+    group('pointerdown', 10, 700);
+    under = pane;
+    group('pointermove', 400, 300);
+    expect(caption().hidden).toBe(false);
+    expect(caption().hasAttribute('data-refused')).toBe(true);
+    expect(caption().textContent).toBe(
+      'ToolbarControlGroup goes in Toolbar or FloatingToolbar or TabBar',
+    );
+    // A drop there changes nothing; leaving clears the refusal.
+    const before = editor.document.value;
+    group('pointerup', 400, 300);
+    expect(editor.document.value).toBe(before);
+    expect(caption().hidden).toBe(true);
+    // Nothing fits inside a Text, and a group cannot sit beside it either.
+    group('pointerdown', 10, 700);
+    under = text;
+    group('pointermove', 400, 20);
+    expect(caption().textContent).toBe('ToolbarControlGroup cannot go here');
+    group('pointerup', 400, 20);
+    // Moving the Toolbar's group out to the Pane is refused the same way.
+    const existing = canvas.querySelector<HTMLElement>(
+      '[data-kerf-node="01JB8Z1M6Q8E1X9V4S7K2R3TT4"]',
+    )!;
+    at(existing, 600, 100, 100, 40);
+    const move = drag(existing);
+    move('pointerdown', 620, 110);
+    under = pane;
+    move('pointermove', 400, 500);
+    expect(caption().textContent).toBe(
+      'ToolbarControlGroup goes in Toolbar or FloatingToolbar or TabBar',
+    );
+    move('pointerup', 400, 500);
+    // A Toolbar cannot go inside its own group.
+    const toolbar = canvas.querySelector<HTMLElement>(
+      '[data-kerf-node="01JB8Z1M6Q8E1X9V4S7K2R3TT3"]',
+    )!;
+    at(toolbar, 0, 90, 800, 60);
+    const own = drag(toolbar);
+    own('pointerdown', 20, 120);
+    under = existing;
+    own('pointermove', 650, 120);
+    expect(caption().textContent).toBe('Toolbar cannot go here');
+    own('pointerup', 650, 120);
+  });
+
   it('fills an empty document by dropping on its root', () => {
     const root = document.createElement('div');
     document.body.append(root);

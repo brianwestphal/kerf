@@ -61,6 +61,11 @@ export interface CanvasDragOptions {
   /** Where a legal move lands, in words, for the drop caption. */
   readonly captionOf?: (move: TreeListMove) => string;
   /**
+   * Why source `sourceId` cannot drop on the canvas element target
+   * `targetId` (KF-6RYJ64), shown while the drag rests over it.
+   */
+  readonly refusalOf?: (sourceId: string, targetId: string) => string;
+  /**
    * Other surfaces the drag drops on where the canvas has no drop under the
    * pointer, asked in order; the first legal move wins.
    */
@@ -137,7 +142,10 @@ export function wireCanvasDrag(
   const hide = () => {
     overlay().hidden = true;
     const text = caption();
-    if (text) text.hidden = true;
+    if (text) {
+      text.hidden = true;
+      delete text.dataset.refused;
+    }
   };
   const surfaces = options.surfaces ?? [];
   /** The first legal move a surface offers at a point, if any. */
@@ -168,8 +176,8 @@ export function wireCanvasDrag(
       top: box.top - outer.top + host.scrollTop,
     };
   };
-  const badge = (text: string) =>
-    String(Badge({ children: text, tone: 'info', appearance: 'solid' }));
+  const badge = (text: string, tone: 'info' | 'danger' = 'info') =>
+    String(Badge({ children: text, tone, appearance: 'solid' }));
   /** Starts a drag's chip, and dims the canvas element it moves. */
   const begin = () => {
     const chip = part('drag-chip');
@@ -332,7 +340,23 @@ export function wireCanvasDrag(
       return;
     }
     hide();
-    surfaceMoveAt(pointer.clientX, pointer.clientY);
+    if (!surfaceMoveAt(pointer.clientX, pointer.clientY))
+      refuse(pointer.clientX, pointer.clientY);
+  };
+  /** Says why the canvas target under a point takes no drop (KF-6RYJ64). */
+  const refuse = (x: number, y: number) => {
+    const element = pick(x, y)?.closest<HTMLElement>(TARGETS);
+    const text = caption();
+    if (!element || !text || !options.refusalOf || !canvas().contains(element))
+      return;
+    const id = options.targetOf(element);
+    if (id === press!.source) return;
+    text.innerHTML = badge(options.refusalOf(press!.source, id), 'danger');
+    text.hidden = false;
+    text.dataset.side = 'on';
+    text.dataset.refused = '';
+    const { left, top } = within(element.getBoundingClientRect());
+    text.style.inset = `${Math.max(top, canvas().scrollTop + CAPTION_HALF)}px auto auto ${left + element.getBoundingClientRect().width - CAPTION_END}px`;
   };
   const onUp = (event: Event) => {
     const pointer = event as PointerEvent;

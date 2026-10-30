@@ -4,8 +4,10 @@ import { describe, expect, it } from 'vitest';
 
 import {
   nodeIdForPath,
+  placementReason,
   problemCounts,
   problemsOf,
+  readableMessage,
   variantFix,
 } from '../../../src/editor/model/problems.js';
 import sample from '../../fixtures/view/inbox.kui.json';
@@ -158,5 +160,46 @@ describe('variant problems (KF-TVZ06Y)', () => {
     ).toEqual(
       validateView(broken(), viewCatalog).diagnostics.map((d) => d.message),
     );
+  });
+});
+
+describe('readable placement reasons (KF-6RYJ64)', () => {
+  const names = new Map([
+    ['@kerfjs/ui:toolbar', 'Toolbar'],
+    ['@kerfjs/ui:toolbar-control-group', 'ToolbarControlGroup'],
+  ]);
+  it('writes component keys as names and parents as where it goes', () => {
+    expect(
+      readableMessage(
+        '`@kerfjs/ui:toolbar-control-group` requires one of these cataloged parents: @kerfjs/ui:toolbar, @acme/x:panel',
+        names,
+      ),
+    ).toBe('ToolbarControlGroup goes in Toolbar or @acme/x:panel');
+    expect(readableMessage('plain words', names)).toBe('plain words');
+  });
+
+  it('prefers a problem about the placed node, else the first, else none', () => {
+    const at = (path: string, message: string) =>
+      ({ code: 'KUI-L201', path, message, severity: 'error' }) as never;
+    const document = inbox;
+    const compose = '01JB8Z1M6Q8E1X9V4S7K2R3T5D';
+    const path = '$.root.zones.header[0].zones.trailing[0]';
+    expect(
+      placementReason(
+        document,
+        [at('$.root', 'about the root'), at(path, 'about the button')],
+        compose,
+        names,
+      ),
+    ).toBe('about the button');
+    expect(
+      placementReason(
+        document,
+        [at('$.root', 'about the root')],
+        compose,
+        names,
+      ),
+    ).toBe('about the root');
+    expect(placementReason(document, [], compose, names)).toBeUndefined();
   });
 });
