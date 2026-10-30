@@ -319,7 +319,8 @@ function literalOf(value, type, definitions, onSlot) {
         Object.entries(value).every(([name, item]) =>
           known.has(name)
             ? // An icon-data field names its icon (KF-3J9GJV).
-              (known.get(name).iconSource && ICON_NAME.test(item?.$icon ?? '')) ||
+              (known.get(name).iconSource &&
+                ICON_NAME.test(item?.$icon ?? '')) ||
               literalOf(item, known.get(name).type, definitions, onSlot)
             : index !== undefined &&
               name.startsWith(index.keyPrefix) &&
