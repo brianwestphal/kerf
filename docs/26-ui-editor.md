@@ -356,7 +356,13 @@ zones in order; Add a child starts on the main zone too. A container
 whose main zone holds nothing and whose `children` prop is unset previews
 with a placeholder in that zone (KF-ZWJHJR: empty containers), "Row is
 empty — drag a component here", so it has a size to see, select, and drop
-into; it is canvas-only and never enters the document.
+into; it is canvas-only and never enters the document. A container with
+no main zone (a Toolbar) shows a placeholder for each empty composition
+zone instead ("Leading — drop here") while it holds nothing or is
+selected, and a canvas drop on one lands in that zone (KF-7BB55F: zone
+placeholders). Components whose catalog export names a parent (a
+ToolbarControlGroup's ToolbarButton, then ToolbarActionLink) seed that
+parent's required content and lead its Add a child suggestions.
 
 Each rail switches between focus areas with a segmented `TabBar` under its
 toolbar (KF-MHY1GB: rail areas). The Document rail shows Outline, Components,

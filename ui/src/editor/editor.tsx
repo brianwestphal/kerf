@@ -283,6 +283,13 @@ const ADD_ACTION = 'editor-add-child';
 const REPLACE_ROOT_ACTION = 'editor-replace-root';
 const CONTENT_TO_NODES_ACTION = 'editor-content-to-nodes';
 const CONTENT_TO_TEXT_ACTION = 'editor-content-to-text';
+/** A canvas drop target naming an empty zone (KF-7BB55F). */
+const EMPTY_ZONE_TARGET = 'editor-empty-zone:';
+/** The zone an empty-zone drop target names, if `id` is one. */
+const emptyZoneTarget = (id: string) =>
+  id.startsWith(EMPTY_ZONE_TARGET)
+    ? (JSON.parse(id.slice(EMPTY_ZONE_TARGET.length)) as SlotAddress)
+    : undefined;
 /** Adds a node to a content prop's zone from its Properties row (KF-5T3TE4). */
 const CONTENT_ADD_ACTION = 'editor-content-add';
 const EXAMPLE_ACTION = 'editor-fill-example';
@@ -342,8 +349,8 @@ const icons = new Proxy({} as Record<string, unknown>, {
  */
 const slotPlaceholders = (
   placed: ReadonlyMap<string, PreviewSlot>,
-  /** What a node is called, for an empty zone's stand-in. */
-  titleOf: (id: string) => string,
+  /** What an empty zone's stand-in says. */
+  emptyLabel: (address: SlotAddress) => string,
 ) =>
   new Proxy({} as Record<string, () => SafeHtml>, {
     get: (_target, name) => {
@@ -358,10 +365,7 @@ const slotPlaceholders = (
             class="kui-editor__empty"
             data-editor-empty={JSON.stringify(slot.address)}
           >
-            {Text({
-              children: `${titleOf(slot.address.parent)} is empty — drag a component here`,
-              tone: 'quiet',
-            })}
+            {Text({ children: emptyLabel(slot.address), tone: 'quiet' })}
           </div>
         );
       return () =>
@@ -392,25 +396,64 @@ function canvasRenderer(catalog: EditorCatalog) {
    * The zone an empty container shows a stand-in in (KF-ZWJHJR): its main
    * zone, while that zone and the `children` prop it renders are unset.
    */
-  const emptyZoneOf = (node: ViewNode): string | undefined => {
-    if (node.type.startsWith('#') || node.props?.children !== undefined)
-      return undefined;
-    return legalZones(
+  const zonesFor = (node: ViewNode) =>
+    legalZones(
       node,
       viewCatalog.entries.get(node.type) as Parameters<typeof legalZones>[1],
       propsByKey.get(node.type)?.props ?? [],
       knownKeys,
-    ).find((zone) => zone.primary)?.key;
+    );
+  const primaryZoneOf = (node: ViewNode) =>
+    node.type.startsWith('#')
+      ? undefined
+      : zonesFor(node).find((zone) => zone.primary)?.key;
+  const emptyZonesOf = (
+    node: ViewNode,
+    selected: boolean,
+  ): readonly string[] => {
+    if (node.type.startsWith('#') || node.props?.children !== undefined)
+      return [];
+    const zones = zonesFor(node);
+    const primary = zones.find((zone) => zone.primary);
+    if (primary) return [primary.key];
+    // KF-7BB55F: a container with no main zone (a Toolbar) shows each empty
+    // zone while it holds nothing at all, or while it is selected.
+    // Only composition zones: a content prop (a ListItem's label or icon)
+    // edits from its own row.
+    const composition = new Set(
+      (
+        (
+          viewCatalog.entries.get(node.type) as
+            { zones?: readonly { id: string }[] } | undefined
+        )?.zones ?? []
+      ).map((zone) => zone.id),
+    );
+    return !selected &&
+      Object.values(node.zones ?? {}).some((list) => list.length)
+      ? []
+      : zones
+          .filter((zone) => composition.has(zone.key) && !zone.disabledReason)
+          .map((zone) => zone.key);
   };
 
   /** Renders the document onto the canvas, or explains why it cannot. */
-  return (source: ViewDocument, problems: readonly Problem[]): SafeHtml => {
-    const { document, slots: placed } = previewSlots(source, emptyZoneOf);
+  return (
+    source: ViewDocument,
+    problems: readonly Problem[],
+    /** The selected node, which shows its empty zones too (KF-7BB55F). */
+    selected?: string,
+  ): SafeHtml => {
+    const { document, slots: placed } = previewSlots(source, (node) =>
+      emptyZonesOf(node, node.id === selected),
+    );
     const titles = new Map(
       visitNodes(source).map(({ node }) => [
         node.id,
         node.name ?? nodeTitle(node, componentNames),
       ]),
+    );
+    const primaryZones = new Map(
+      visitNodes(source).map(({ node }) => [node.id, primaryZoneOf(node)]),
     );
     const preview = {
       catalog: viewCatalog,
@@ -420,7 +463,11 @@ function canvasRenderer(catalog: EditorCatalog) {
         (label) => Text({ children: label }),
         (key) => placeholders[key]?.(),
       ),
-      slots: slotPlaceholders(placed, (id) => titles.get(id)!),
+      slots: slotPlaceholders(placed, ({ parent, zone }) =>
+        primaryZones.get(parent) === zone
+          ? `${titles.get(parent)!} is empty — drag a component here`
+          : `${propLabel(zone)} — drop here`,
+      ),
       icons,
     };
     // A node whose component has no function here (an application component
@@ -2109,6 +2156,8 @@ export function createEditor(options: EditorOptions) {
    * or inside it, naming the zone when the target has more than one.
    */
   const dropCaption = (move: TreeListMove): string => {
+    const empty = emptyZoneTarget(move.target.id);
+    if (empty) return `Inside ${rowLabel(empty.parent)} › ${empty.zone}`;
     const target = rowLabel(move.target.id);
     if (move.target.position === 'before') return `Before ${target}`;
     if (move.target.position === 'after') return `After ${target}`;
@@ -2166,7 +2215,18 @@ export function createEditor(options: EditorOptions) {
     document: doc.value,
     drops: new Map(),
   };
-  const dropFor = (move: TreeListMove) => {
+  const dropFor = (target: TreeListMove) => {
+    // KF-7BB55F: inside an empty zone's placeholder is the zone's first place.
+    const empty = emptyZoneTarget(target.target.id);
+    const move = empty
+      ? {
+          ...target,
+          target: {
+            id: slotRowId(empty.parent, empty.zone, 0),
+            position: 'before' as const,
+          },
+        }
+      : target;
     if (dropCache.document !== doc.value)
       dropCache = { document: doc.value, drops: new Map() };
     const key = `${move.sourceId} ${move.target.id} ${move.target.position}`;
@@ -2265,6 +2325,8 @@ export function createEditor(options: EditorOptions) {
     zone:
       | { readonly key?: string; readonly accepts?: readonly string[] }
       | undefined,
+    /** The node the zone belongs to; its cataloged children come first. */
+    parent?: string,
   ) => {
     const keys = [...propsByKey.values()]
       .filter(
@@ -2275,7 +2337,15 @@ export function createEditor(options: EditorOptions) {
           (!zone?.accepts || zone.accepts.includes(candidate.key)),
       )
       .map((candidate) => candidate.key);
-    const suggested = zone?.key ? suggestedComponents(zone.key, keys) : [];
+    const suggested = [
+      ...new Set([
+        // KF-7BB55F: a ToolbarControlGroup's ToolbarButton.
+        ...(parent
+          ? childrenOf(parent).filter((key) => keys.includes(key))
+          : []),
+        ...(zone?.key ? suggestedComponents(zone.key, keys) : []),
+      ]),
+    ];
     const order = [...categories.keys()];
     const rank = (key: string) =>
       order.includes(key) ? order.indexOf(key) : order.length;
@@ -2352,12 +2422,13 @@ export function createEditor(options: EditorOptions) {
       zones.find(
         (option) => option.key === addZone.value && !option.disabledReason,
       ) ?? primaryFirst(zones).find((option) => !option.disabledReason);
-    const addable = addableIn(zone);
+    const addable = addableIn(zone, node.type);
     // What can show otherwise: what the zone holding this node accepts.
     const parent = findNode(doc.value, node.id)?.ancestors.at(-1);
     const otherwiseChoices = parent
       ? addableIn(
           zonesOf(parent.node).find((option) => option.key === parent.zone),
+          parent.node.type,
         )
       : [];
     const chosen =
@@ -2611,7 +2682,14 @@ export function createEditor(options: EditorOptions) {
    */
   const preview = signal<SafeHtml | undefined>(undefined);
   effect(() => {
-    preview.value = contained(canvasContent(doc.value, currentProblems.value));
+    const current = selection.value;
+    preview.value = contained(
+      canvasContent(
+        doc.value,
+        currentProblems.value,
+        current?.kind === 'node' ? current.id : undefined,
+      ),
+    );
   });
 
   const canvas = () => (
@@ -3226,6 +3304,27 @@ export function createEditor(options: EditorOptions) {
     openField.value = { ...open, path: open.path.slice(0, -1) };
   };
 
+  /**
+   * Components whose catalog export contract names each parent (KF-7BB55F:
+   * a ToolbarControlGroup's ToolbarButton, then its ToolbarActionLink).
+   */
+  const childrenByParent = new Map<string, string[]>();
+  for (const [base, entry] of viewCatalog.entries)
+    for (const [name, contract] of Object.entries(
+      (
+        entry as {
+          // The composition schema requires each export's parents.
+          jsxExports?: Record<string, { parents: { entries: string[] } }>;
+        }
+      ).jsxExports ?? {},
+    ))
+      for (const parent of contract.parents.entries)
+        childrenByParent.set(parent, [
+          ...(childrenByParent.get(parent) ?? []),
+          `${base}#${name}`,
+        ]);
+  const childrenOf = (key: string) => childrenByParent.get(key) ?? [];
+
   /** A new node of component `key`, seeded so it renders as added. */
   const seededNode = (key: string): ViewNode =>
     seedNode(
@@ -3236,6 +3335,7 @@ export function createEditor(options: EditorOptions) {
         definitions: definitionsOf,
         entry: (item) =>
           viewCatalog.entries.get(item) as ReturnType<SeedCatalog['entry']>,
+        childrenOf,
       },
       newNodeId,
       slotNamer(usedSlots(doc.value)),
@@ -4139,6 +4239,9 @@ export function createEditor(options: EditorOptions) {
           return isMovable(doc.value, id).remove ? id : undefined;
         },
         targetOf: (element) => {
+          // KF-7BB55F: an empty zone's placeholder targets that zone.
+          const empty = element.dataset.editorEmpty;
+          if (empty) return `${EMPTY_ZONE_TARGET}${empty}`;
           const address = element.dataset.editorSlotAddress;
           if (!address) return element.dataset.kerfNode!;
           const { parent, zone, index } = JSON.parse(address) as SlotAddress;

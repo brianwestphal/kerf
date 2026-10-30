@@ -19,13 +19,13 @@ export interface PreviewSlot {
 
 /**
  * `document` with every `$slot` renamed to a unique preview name (declared
- * like the original), and the slot each preview name stands for. A node for
- * which `emptyZoneOf` names a zone that holds nothing gets a stand-in slot
- * there, so an empty container has something to see, select, and drop into.
+ * like the original), and the slot each preview name stands for. Each zone
+ * `emptyZonesOf` names for a node that holds nothing gets a stand-in slot,
+ * so an empty container has something to see, select, and drop into.
  */
 export function previewSlots(
   document: ViewDocument,
-  emptyZoneOf: (node: ViewNode) => string | undefined = () => undefined,
+  emptyZonesOf: (node: ViewNode) => readonly string[] = () => [],
 ): {
   readonly document: ViewDocument;
   readonly slots: ReadonlyMap<string, PreviewSlot>;
@@ -60,17 +60,19 @@ export function previewSlots(
           ]),
         )
       : undefined;
-    const empty = emptyZoneOf(item);
-    if (empty !== undefined && !zones?.[empty]?.length) {
+    const empties = emptyZonesOf(item).filter((zone) => !zones?.[zone]?.length);
+    if (!empties.length) return zones ? { ...item, zones } : item;
+    const filled: Record<string, ViewChild[]> = { ...zones };
+    for (const zone of empties) {
       const preview = `kuiEmptyPreview${slots.size}`;
       slots.set(preview, {
         name: preview,
-        address: { parent: item.id, zone: empty, index: 0 },
+        address: { parent: item.id, zone, index: 0 },
         empty: true,
       });
-      return { ...item, zones: { ...zones, [empty]: [{ $slot: preview }] } };
+      filled[zone] = [{ $slot: preview }];
     }
-    return zones ? { ...item, zones } : item;
+    return { ...item, zones: filled };
   };
   const root = node(document.root);
   return slots.size

@@ -511,6 +511,80 @@ describe('canvas drag', () => {
     });
   });
 
+  it('shows each empty zone of a Toolbar and drops into the one under the pointer (KF-7BB55F)', () => {
+    const TOOLBAR = '01JB8Z1M6Q8E1X9V4S7K2R3TT1';
+    const root = document.createElement('div');
+    document.body.append(root);
+    const editor = createEditor({
+      document: {
+        schema: 'kerf-ui-document/v1',
+        name: 'Untitled',
+        catalogs: ['@kerfjs/ui'],
+        root: {
+          id: PANE,
+          type: '@kerfjs/ui:pane',
+          zones: { content: [{ id: TOOLBAR, type: '@kerfjs/ui:toolbar' }] },
+        },
+      } as ViewDocument,
+    });
+    mount(root, editor.render);
+    let under: Element | null = null;
+    Object.defineProperty(document, 'elementFromPoint', {
+      configurable: true,
+      value: () => under,
+    });
+    cleanup = editor.wire(root);
+    const canvas = root.querySelector<HTMLElement>('[data-editor-canvas]')!;
+    at(canvas, 0, 0, 800, 600);
+    const empties = [
+      ...canvas.querySelectorAll<HTMLElement>('[data-editor-empty]'),
+    ];
+    expect(empties.map((empty) => empty.textContent)).toEqual([
+      'Leading — drop here',
+      'Center — drop here',
+      'Trailing — drop here',
+    ]);
+    const trailing = empties[2]!;
+    at(trailing, 600, 10, 180, 44);
+    const button = root.querySelector<HTMLElement>(
+      '[data-editor-palette="@kerfjs/ui:button"]',
+    )!;
+    const fire = (type: string, x: number, y: number) => {
+      const event = new Event(type, { bubbles: true, cancelable: true });
+      for (const [key, value] of Object.entries({
+        clientX: x,
+        clientY: y,
+        button: 0,
+        pointerId: 1,
+      }))
+        Object.defineProperty(event, key, { value });
+      button.dispatchEvent(event);
+    };
+    fire('pointerdown', 10, 700);
+    under = trailing.querySelector('.kui-text') ?? trailing;
+    fire('pointermove', 650, 30);
+    const overlay = canvas.querySelector<HTMLElement>('.kui-editor__drop')!;
+    expect(overlay.dataset.drop).toBe('ring');
+    expect(
+      canvas.querySelector<HTMLElement>('.kui-editor__drop-caption')!
+        .textContent,
+    ).toBe('Inside Toolbar › trailing');
+    fire('pointerup', 650, 30);
+    const toolbar = editor.document.value.root.zones!.content![0] as {
+      zones?: Record<string, { type: string }[]>;
+    };
+    expect(Object.keys(toolbar.zones!)).toEqual(['trailing']);
+    expect(toolbar.zones!.trailing[0]!.type).toBe('@kerfjs/ui:button');
+    // No longer empty, it shows its empty zones only while selected.
+    const labels = () =>
+      [...canvas.querySelectorAll('[data-editor-empty]')].map(
+        (empty) => empty.textContent,
+      );
+    expect(labels()).toEqual([]);
+    editor.selection.value = { kind: 'node', id: TOOLBAR };
+    expect(labels()).toEqual(['Leading — drop here', 'Center — drop here']);
+  });
+
   it('fills an empty document by dropping on its root', () => {
     const root = document.createElement('div');
     document.body.append(root);

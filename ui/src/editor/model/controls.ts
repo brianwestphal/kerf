@@ -791,6 +791,12 @@ export interface SeedCatalog {
   ) =>
     | { readonly package?: string; readonly zones?: readonly SeedZone[] }
     | undefined;
+  /**
+   * Components whose catalog entry names `key` as their parent (KF-7BB55F:
+   * a ToolbarControlGroup's ToolbarButton), best first; they fill a zone
+   * that names only concepts.
+   */
+  readonly childrenOf?: (key: string) => readonly string[];
 }
 
 /** How deep seeded children of seeded children go. */
@@ -841,10 +847,18 @@ export function seedNode(
         : text(label(zone.id)),
     );
   }
-  // A required content prop that took no text holds a Text instead.
+  // A required content prop that took no text holds a cataloged child of
+  // this component (a group's ToolbarButton), else a Text.
+  const child = catalog
+    .childrenOf?.(key)
+    .find((item) => catalog.component(item));
   for (const prop of component.props)
     if (prop.slot && !prop.zone && prop.required && !(prop.name in props))
-      zones[prop.name] ??= [text(label(prop.name))];
+      zones[prop.name] ??= [
+        child && depth < SEED_DEPTH
+          ? seedNode(child, catalog, makeId, slot, depth + 1)
+          : text(label(prop.name)),
+      ];
   return {
     id: makeId(),
     type: key,

@@ -372,6 +372,36 @@ describe('structural edits', () => {
     ).toBe(false);
   });
 
+  it('seeds and suggests a ToolbarButton in a ToolbarControlGroup (KF-7BB55F)', () => {
+    const { root, editor, node } = open(TOOLBAR);
+    choose(field(root, '[data-editor-add="zone"]'), 'trailing');
+    choose(
+      field(root, '[data-editor-add="component"]'),
+      '@kerfjs/ui:toolbar-control-group',
+    );
+    click(root, 'editor-add-child');
+    const group = (editor.selection.value as { id: string }).id;
+    const seeded = findNode(editor.document.value, group)!.node.zones!;
+    const [child] = Object.values(seeded).flat() as { type: string }[];
+    expect(child!.type).toBe('@kerfjs/ui:toolbar-control-group#ToolbarButton');
+    expect(
+      validateView(editor.document.value, viewCatalog).diagnostics,
+    ).toEqual([]);
+    // Adding to the group suggests its own controls first.
+    editor.selection.value = { kind: 'node', id: group };
+    const options = [
+      ...field(
+        root,
+        '[data-editor-add="component"]',
+      ).querySelectorAll<HTMLElement>('[role="option"]'),
+    ].map((option) => option.dataset.value);
+    expect(options.slice(0, 2)).toEqual([
+      '@kerfjs/ui:toolbar-control-group#ToolbarButton',
+      '@kerfjs/ui:toolbar-control-group#ToolbarActionLink',
+    ]);
+    expect(node()).toBeDefined();
+  });
+
   it('suggests the components a zone is named for, grouped by category (KF-N8TW04)', () => {
     const { root } = open(COMPOSE);
     const picker = () => field(root, '[data-editor-add="component"]');

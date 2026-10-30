@@ -85,7 +85,7 @@ describe('preview slots', () => {
       },
     } as unknown as ViewDocument;
     const { document, slots } = previewSlots(bare, (node) =>
-      node.type === '@kerfjs/ui:row' ? 'children' : 'content',
+      node.type === '@kerfjs/ui:row' ? ['children'] : ['content'],
     );
     // The Pane's content holds the Row, so only the Row gets a stand-in.
     expect([...slots.values()]).toEqual([

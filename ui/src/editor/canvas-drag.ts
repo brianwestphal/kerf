@@ -14,6 +14,11 @@ import { Badge } from '../components/feedback/badge/badge.js';
 
 /** Elements the canvas drags and drops on: nodes and slot placeholders. */
 const DRAGGABLE = '[data-kerf-node], [data-editor-slot-address]';
+/**
+ * What a drag drops on: what it drags, and an empty zone's placeholder
+ * (KF-7BB55F), which takes a drop inside only.
+ */
+const TARGETS = `${DRAGGABLE}, [data-editor-empty]`;
 /** How far the pointer moves before a press becomes a drag. */
 const DRAG_THRESHOLD = 4;
 
@@ -191,7 +196,7 @@ export function wireCanvasDrag(
   /** The legal move at a point, with the target element, if any. */
   const moveAt = (x: number, y: number) => {
     const hit = pick(x, y);
-    const element = hit?.closest<HTMLElement>(DRAGGABLE);
+    const element = hit?.closest<HTMLElement>(TARGETS);
     if (press && !element && hit === canvas() && options.rootOf) {
       const move = {
         sourceId: press.source,
@@ -205,12 +210,12 @@ export function wireCanvasDrag(
     const id = options.targetOf(element);
     if (id === press.source) return undefined;
     const across = horizontal(element);
-    for (const position of positionsAt(
-      element.getBoundingClientRect(),
-      x,
-      y,
-      across,
-    )) {
+    const positions: readonly TreeListDropPosition[] = element.matches(
+      '[data-editor-empty]',
+    )
+      ? ['inside']
+      : positionsAt(element.getBoundingClientRect(), x, y, across);
+    for (const position of positions) {
       const move = { sourceId: press.source, target: { id, position } };
       if (options.canDrop(move)) return { move, element, across };
     }
