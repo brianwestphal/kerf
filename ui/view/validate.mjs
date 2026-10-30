@@ -81,6 +81,112 @@ function resolveType(type, definitions) {
 
 const propsOf = (type, definitions) => resolveType(type, definitions).props;
 
+/** A type, or each member of a union of it (unions of unions flattened). */
+function membersOf(type, definitions) {
+  const resolved = resolveType(type, definitions);
+  return resolved.kind === 'union'
+    ? resolved.members.flatMap((member) => membersOf(member, definitions))
+    : [resolved];
+}
+
+const INDEX = /^\d+$/;
+
+/**
+ * A zone key that names a content field inside a prop value (KF-PD6QC5:
+ * field zones): the prop, then field names and list indexes, dot-separated
+ * (`leftRail.content`, `mainToolbar.title`, `views.0.content`). Walks the
+ * prop's type through refs, union members, objects (never a field the type
+ * forbids), and lists, and ends at rendered content. Returns the prop, the
+ * path inside its value, and whether the field takes text; undefined for any
+ * other key.
+ */
+export function fieldZoneOf(component, definitions, key) {
+  if (typeof key !== 'string' || !key.includes('.')) return undefined;
+  const [name, ...path] = key.split('.');
+  const prop = component.props.find((item) => item.name === name);
+  if (!prop || prop.slot || prop.zone) return undefined;
+  let types = [prop.type];
+  for (const step of path) {
+    const next = [];
+    for (const type of types.flatMap((item) => membersOf(item, definitions))) {
+      if (INDEX.test(step)) {
+        if (type.kind === 'array') next.push(type.items);
+        continue;
+      }
+      const field =
+        type.kind === 'object'
+          ? type.props?.find((item) => item.name === step)
+          : undefined;
+      if (field && resolveType(field.type, definitions).kind !== 'never')
+        next.push(field.type);
+    }
+    if (!next.length) return undefined;
+    types = next;
+  }
+  const content = types
+    .flatMap((type) => membersOf(type, definitions))
+    .find((type) => type.kind === 'content');
+  return content
+    ? {
+        prop: name,
+        path: path.map((step) => (INDEX.test(step) ? Number(step) : step)),
+        text: content.acceptsText === true,
+      }
+    : undefined;
+}
+
+/**
+ * Where a field zone's children go in a prop value while it is checked,
+ * interpreted, or generated: a placeholder no document can spell, so it
+ * never reads as a literal of the document's own.
+ */
+export class ZoneFill {
+  constructor(key, children) {
+    this.key = key;
+    this.children = children;
+  }
+}
+
+/** `value` with `fill` at `path`, copying each object and list on the way. */
+function withAt(value, path, fill) {
+  if (!path.length) return fill;
+  const [step, ...rest] = path;
+  if (typeof step === 'number') {
+    const list = Array.isArray(value) ? [...value] : [];
+    list[step] = withAt(list[step], rest, fill);
+    return list;
+  }
+  const object = isObject(value) ? { ...value } : {};
+  object[step] = withAt(object[step], rest, fill);
+  return object;
+}
+
+/** Whether a value is a binding (`$param`, `$bind`, …) rather than a literal. */
+const isBinding = (value) =>
+  isObject(value) && Object.keys(value).some((key) => key.startsWith('$'));
+
+/**
+ * `props` with each filled field zone's placeholder (a `ZoneFill`) at its
+ * path, so the zone fills that content field (KF-PD6QC5). A prop held by a
+ * binding is left alone; validation reports the clash.
+ */
+export function withFieldZones(props, zones, component, definitions) {
+  let merged = props;
+  for (const key of Object.keys(zones)) {
+    const field = fieldZoneOf(component, definitions, key);
+    if (!field || !zones[key].length || isBinding(merged[field.prop])) continue;
+    merged = {
+      ...merged,
+      [field.prop]: withAt(
+        merged[field.prop],
+        field.path,
+        new ZoneFill(key, zones[key]),
+      ),
+    };
+  }
+  return merged;
+}
+
 /** Whether a value of type `from` (a param or binding) fits type `to`. */
 export function isAssignable(from, to, definitions = {}) {
   const target = resolveType(to, definitions);
@@ -171,6 +277,7 @@ function literalOf(value, type, definitions, onSlot) {
     case 'literal':
       return value === target.value;
     case 'content':
+      if (value instanceof ZoneFill) return true;
       if (onSlot && isObject(value) && '$slot' in value) return onSlot(value);
       return (
         target.acceptsText === true &&
@@ -653,9 +760,21 @@ function checkNode(ctx, node, at, scope, rowScoped, parentKey, text = false) {
   const literals = new Map();
   if (node.props !== undefined && !isObject(node.props))
     ctx.report('KUI-V001', `${at}.props`, '`props` is an object');
-  for (const [name, value] of Object.entries(
-    isObject(node.props) ? node.props : {},
-  )) {
+  // A field zone fills a content field inside a prop value (KF-PD6QC5), so
+  // the prop is checked with the zone's placeholder in that field.
+  const ownProps = isObject(node.props) ? node.props : {};
+  const ownZones = isObject(node.zones) ? node.zones : {};
+  const filledProps = withFieldZones(
+    ownProps,
+    Object.fromEntries(
+      Object.entries(ownZones).filter(([, children]) =>
+        Array.isArray(children),
+      ),
+    ),
+    component,
+    definitions,
+  );
+  for (const [name, value] of Object.entries(filledProps)) {
     const propAt = `${at}.props.${name}`;
     const prop = byName.get(name);
     if ([...zones.values()].some((zone) => zone.zone && zone.prop === name)) {
@@ -699,7 +818,10 @@ function checkNode(ctx, node, at, scope, rowScoped, parentKey, text = false) {
     isObject(node.zones) ? node.zones : {},
   )) {
     const zoneAt = `${at}.zones.${zoneKey}`;
-    const binding = zones.get(zoneKey);
+    const field = zones.has(zoneKey)
+      ? undefined
+      : fieldZoneOf(component, definitions, zoneKey);
+    const binding = zones.get(zoneKey) ?? field;
     if (!binding) {
       ctx.report('KUI-V003', zoneAt, `${node.type} has no zone "${zoneKey}"`);
       continue;
@@ -708,7 +830,30 @@ function checkNode(ctx, node, at, scope, rowScoped, parentKey, text = false) {
       ctx.report('KUI-V001', zoneAt, 'a zone is a list of children');
       continue;
     }
-    if (isObject(node.props) && binding.prop in node.props) {
+    if (field) {
+      const own = ownProps[field.prop];
+      if (isBinding(own)) {
+        ctx.report(
+          'KUI-V003',
+          zoneAt,
+          `"${field.prop}" is bound, so a zone cannot fill "${zoneKey}"`,
+        );
+      } else if (
+        field.path.reduce(
+          (current, step) =>
+            current === undefined || current === null
+              ? undefined
+              : current[step],
+          own,
+        ) !== undefined
+      ) {
+        ctx.report(
+          'KUI-V003',
+          zoneAt,
+          `"${zoneKey}" is set in both \`props\` and \`zones\``,
+        );
+      }
+    } else if (isObject(node.props) && binding.prop in node.props) {
       ctx.report(
         'KUI-V003',
         zoneAt,

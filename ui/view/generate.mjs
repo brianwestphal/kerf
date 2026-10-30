@@ -11,7 +11,14 @@ import {
   typeText,
   viewDigest,
 } from './contract.mjs';
-import { channelOf, parseCssCall, zonePropOf } from './validate.mjs';
+import {
+  channelOf,
+  fieldZoneOf,
+  parseCssCall,
+  withFieldZones,
+  ZoneFill,
+  zonePropOf,
+} from './validate.mjs';
 
 export const GENERATOR_VERSION = 1;
 const HEADER_LINES = 3;
@@ -201,6 +208,8 @@ function createEmitter(document, catalog, imports, importFrom) {
   const component = (type) => catalog.components.get(type)?.component;
 
   const value = (input, scope) => {
+    // A field zone's children, in the content field it fills (KF-PD6QC5).
+    if (input instanceof ZoneFill) return children(input.children, scope);
     if (isObject(input) && '$param' in input) {
       const param = document.params[input.$param];
       const read = `inputs.${input.$param}`;
@@ -309,14 +318,21 @@ function createEmitter(document, catalog, imports, importFrom) {
       imports.value(viewImport(node.src), names.render);
       return call(`${names.render}(`, value(node.props ?? {}, scope));
     }
-    const definition = component(node.type);
-    const props = isObject(node.props) ? node.props : {};
+    const { component: definition, definitions } = catalog.components.get(
+      node.type,
+    );
+    const zones = isObject(node.zones) ? node.zones : {};
+    const props = withFieldZones(
+      isObject(node.props) ? node.props : {},
+      zones,
+      definition,
+      definitions,
+    );
     const entries = [];
     for (const name of Object.keys(props).sort()) {
       if (name === 'rootAttributes') continue;
       entries.push([propertyName(name), value(props[name], scope)]);
     }
-    const zones = isObject(node.zones) ? node.zones : {};
     if (definition.source === 'webawesome') {
       entries.push(["'data-kerf-node'", raw(literal(node.id))]);
       if (rowKey) entries.push(["'data-key'", raw(`String(${rowKey})`)]);
@@ -334,6 +350,7 @@ function createEmitter(document, catalog, imports, importFrom) {
       return call(`jsx(${literal(definition.tagName)}, `, obj(entries));
     }
     for (const key of Object.keys(zones).sort()) {
+      if (fieldZoneOf(definition, definitions, key)) continue;
       entries.push([
         propertyName(zonePropOf(catalog, definition, key)),
         children(zones[key], scope),

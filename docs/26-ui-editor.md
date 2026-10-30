@@ -187,6 +187,15 @@ type-driven form. An optional `wire(root, context)` wires its own events,
 reading the open value's context. Its `container` names where it opens, and
 the type-driven rule decides otherwise.
 
+In the editor, every content field inside a prop value a node sets is a
+zone of its own (KF-PD6QC5: field zones): a Workbench's `leftRail › content`
+once the rail has a kind, `mainToolbar › title` once the toolbar is
+configured, each NavStack view's `views › 0 › content`. Add a child, drag
+and drop, and the outline treat it like any zone, and the outline names it
+by its path. Nodes placed there own the field: a seeded item slot or text
+at that path gives way, and an object left with no other field stays set
+as `{}`, so the rail still reads as a static panel.
+
 The inspector's Control flow section (KF-90GTJN: editor control flow) shows a
 node only while a true/false param or item field holds (Show, which wraps the
 node in `$if`), repeats it for each item of a list param or in-scope list
@@ -515,6 +524,18 @@ A node is `{ id, type, name?, props?, zones? }`.
   with `zone`; otherwise it is the content prop's name (a prop marked `slot`).
   Children are nodes, `#text` runs, `$each`, `$if`, or `$slot` (§3.5–3.6).
   Writing a zone through `props` instead is an error.
+- A **field zone** (KF-PD6QC5: field zones) is a key that names a content
+  field inside a prop value: the prop, then field names and list indexes,
+  dot-separated (`leftRail.content`, `mainToolbar.title`,
+  `views.0.content`). The path follows the prop's type through refs, union
+  members, objects (never a field the type forbids), and lists, and must end
+  at rendered content. Its nodes render into that field: `interpretView`
+  and the generated module put them in the prop value
+  (`leftRail: { label: "Folders", content: List(…) }`), and validation
+  checks the prop as if the field held them, so a required content field a
+  zone fills is present, and a zone alone makes a static rail. A field zone
+  and a value at the same path (`{ "$slot": … }`, text) clash (`KUI-V003`),
+  as does a field zone under a bound prop.
 
 ### 3.3 Prop values
 
@@ -545,8 +566,9 @@ application computes.
 - A content prop that is not a composition zone (`slot` in the props schema)
   may be set either in `props` (text, `$param`, `$bind`) or in `zones`
   (nodes), but not both.
-- An item slot (KF-SXDM56: item slots) is the only way to put rendered
-  content inside a list or object value, such as a NavStack view whose
+- An item slot (KF-SXDM56: item slots) is the way to put
+  application-filled content inside a list or object value; a field zone
+  puts document nodes there, such as a NavStack view whose
   `content` is `{ "$slot": "homeView" }`. It needs no `slots` declaration, a
   slot declared with an `input` cannot be used there, and anywhere but a
   content-typed position it is a type mismatch (`KUI-V004`). The contract,

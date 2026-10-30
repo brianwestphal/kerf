@@ -130,6 +130,25 @@ export function isAssignable(
   definitions?: Record<string, ViewType>,
 ): boolean;
 
+/**
+ * A zone key that names a content field inside a prop value (`leftRail.content`,
+ * `mainToolbar.title`, `views.0.content`): its prop, the path inside the
+ * prop's value, and whether the field takes text. Undefined for any other key.
+ * A filled field zone renders its nodes into that field.
+ */
+export function fieldZoneOf(
+  /** A catalog component, as `ViewCatalog.components` holds it. */
+  component: unknown,
+  definitions: Record<string, ViewType>,
+  key: string,
+):
+  | {
+      readonly prop: string;
+      readonly path: readonly (string | number)[];
+      readonly text: boolean;
+    }
+  | undefined;
+
 /** Whether a JSON literal is a valid value of a type. */
 export function isLiteralOf(
   value: unknown,

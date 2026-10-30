@@ -151,7 +151,9 @@ explains when to reuse, compose, extend, or use native HTML.
    editor's JSON source of truth) validates them with `validateView` from
    `@kerfjs/ui/view` against `component-props.json` and
    `component-composition.json`. The shape schema is
-   [view-document.schema.json](./ai/view-document.schema.json). Generate the
+   [view-document.schema.json](./ai/view-document.schema.json). A zone key
+   may name a content field inside a prop value (`leftRail.content`,
+   `views.0.content`) to put nodes there. Generate the
    read-only `*.view.ts` module with `kerf-ui-view generate <doc>`. Never edit
    it; `kerf-ui-view check` fails on hand edits, and `kerf-ui-view diff` lists
    breaking contract changes first. A server-driven app renders documents at

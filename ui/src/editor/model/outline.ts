@@ -61,6 +61,14 @@ export interface OutlineNode {
   readonly children?: OutlineNode[];
 }
 
+/**
+ * How a zone key reads: a field zone's path with arrows (`leftRail ›
+ * content`; KF-PD6QC5), any other key as itself.
+ */
+export function zoneLabel(key: string): string {
+  return key.split('.').join(' › ');
+}
+
 /** An outline row's id for the `$slot` at index `index` of a zone (KF-90GTJN). */
 export function slotRowId(parent: string, zone: string, index: number): string {
   return `slot:${parent}:${zone}:${index}`;
@@ -149,7 +157,7 @@ export function outlineTree(
       label: node.name ?? component,
       detail: [
         node.name ? component : undefined,
-        zone ?? 'Root',
+        zone === undefined ? 'Root' : zoneLabel(zone),
         ...control,
         repeated && !control.some((part) => part.startsWith('for each'))
           ? 'repeated'
@@ -173,7 +181,11 @@ export function outlineTree(
         {
           id: slotRowId(parent, zone, index),
           label: `${item.$slot} slot`,
-          detail: [zone, ...control, repeated ? 'repeated' : undefined]
+          detail: [
+            zoneLabel(zone),
+            ...control,
+            repeated ? 'repeated' : undefined,
+          ]
             .filter(Boolean)
             .join(' · '),
         },

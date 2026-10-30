@@ -7,7 +7,14 @@ import { jsx } from 'kerfjs/jsx-runtime';
 
 import * as cssValues from '../dist/css-values.js';
 import { contractDigest, contractOf } from './contract.mjs';
-import { channelOf, parseCssTree, zonePropOf } from './validate.mjs';
+import {
+  channelOf,
+  fieldZoneOf,
+  parseCssTree,
+  withFieldZones,
+  ZoneFill,
+  zonePropOf,
+} from './validate.mjs';
 
 const isObject = (value) =>
   value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -91,6 +98,8 @@ function renderDocument(document, inputs, slots, options) {
   const params = document.params ?? {};
 
   const value = (raw, scope) => {
+    // A field zone's children, in the content field it fills (KF-PD6QC5).
+    if (raw instanceof ZoneFill) return children(raw.children, scope);
     if (isObject(raw) && '$param' in raw) {
       // `??` as in the generated module: null and undefined take the default.
       const read = inputs[raw.$param];
@@ -185,9 +194,16 @@ function renderDocument(document, inputs, slots, options) {
       const child = resolveView(node.src);
       return renderDocument(child, value(node.props ?? {}, scope), {}, options);
     }
-    const definition = catalog.components.get(node.type).component;
-    const props = isObject(node.props) ? node.props : {};
+    const { component: definition, definitions } = catalog.components.get(
+      node.type,
+    );
     const zones = isObject(node.zones) ? node.zones : {};
+    const props = withFieldZones(
+      isObject(node.props) ? node.props : {},
+      zones,
+      definition,
+      definitions,
+    );
     const out = {};
     for (const name of Object.keys(props)) {
       if (name !== 'rootAttributes') out[name] = value(props[name], scope);
@@ -207,6 +223,7 @@ function renderDocument(document, inputs, slots, options) {
       return jsx(definition.tagName, out);
     }
     for (const key of Object.keys(zones)) {
+      if (fieldZoneOf(definition, definitions, key)) continue;
       out[zonePropOf(catalog, definition, key)] = children(zones[key], scope);
     }
     if (slot && definition.props.some((prop) => prop.name === 'slot'))

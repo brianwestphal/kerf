@@ -3,7 +3,7 @@
 // opens in, the fields of an object type, and edits at a path inside a prop
 // value. Read from the props catalog's type graph, so an application
 // component's catalog gets the same editors with no per-component table.
-import type { ViewType, ViewValue } from '@kerfjs/ui/view';
+import type { ViewNode, ViewType, ViewValue } from '@kerfjs/ui/view';
 
 import { resolveType, singular } from './examples.js';
 import type { InspectorProp } from './inspector.js';
@@ -435,3 +435,54 @@ export function listItemLabel(
     ? kind.charAt(0).toUpperCase() + kind.slice(1)
     : `Item ${index + 1}`;
 }
+
+/**
+ * The field zones a node offers (KF-PD6QC5: field zones): every content
+ * field inside a prop value it sets, by key (`leftRail.content`,
+ * `mainToolbar.title`, `views.0.content`), so the editor can fill it with
+ * nodes; plus every field zone it already fills. A prop it leaves unset or
+ * binds offers none until it is set (choose a panel kind first).
+ */
+export function fieldZoneKeys(
+  node: ViewNode,
+  props: readonly InspectorProp[],
+  definitions: Definitions,
+): string[] {
+  const keys = new Set<string>();
+  const walk = (
+    type: ViewType,
+    value: ViewValue | undefined,
+    path: FieldPath,
+  ): void => {
+    const resolved = shape(memberFor(type, definitions, value), definitions);
+    if (resolved?.kind === 'content') {
+      keys.add(path.join('.'));
+      return;
+    }
+    if (path.length > 5) return;
+    const fields = resolved?.kind === 'object' ? fieldsOf(value) : undefined;
+    if (fields && !isBindingValue(value))
+      for (const field of objectFields(resolved as ViewType, definitions))
+        walk(field.type as ViewType, fields[field.name], [...path, field.name]);
+    if (resolved?.kind === 'array' && Array.isArray(value))
+      value.forEach((item, index) =>
+        walk(resolved.items!, item, [...path, index]),
+      );
+  };
+  for (const prop of props) {
+    if (prop.slot || prop.zone) continue;
+    const value = node.props?.[prop.name] as ViewValue | undefined;
+    if (value === undefined || isBindingValue(value)) continue;
+    // The prop itself is not a field zone; only fields inside its value.
+    const resolved = shape(prop.type as ViewType, definitions);
+    if (resolved?.kind === 'content') continue;
+    walk(prop.type as ViewType, value, [prop.name]);
+  }
+  for (const key of Object.keys(node.zones ?? {}))
+    if (key.includes('.')) keys.add(key);
+  return [...keys];
+}
+
+/** A binding (`$param`, `$bind`, …) rather than a literal value. */
+const isBindingValue = (value: ViewValue | undefined) =>
+  Object.keys(fieldsOf(value) ?? {}).some((key) => key.startsWith('$'));

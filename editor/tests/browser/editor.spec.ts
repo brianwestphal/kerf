@@ -1335,3 +1335,50 @@ test('gives a Workbench a static left rail', async ({ page }, info) => {
     animations: 'disabled',
   });
 });
+
+// KF-PD6QC5: a rail's content and a toolbar's title take nodes.
+test('composes a Workbench’s left rail and toolbar title from nodes', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await workbenchRoot(page);
+  await page
+    .locator('[data-editor-prop="leftRail"][data-editor-kind="choice"]')
+    .click();
+  await page.getByRole('option', { name: 'Static panel…' }).click();
+  await page.getByRole('button', { name: 'Configure mainToolbar' }).click();
+  const label = page
+    .locator(`[data-editor-field='{"prop":"mainToolbar","path":["label"]}']`)
+    .getByRole('textbox');
+  await label.fill('Main');
+  await label.press('Enter');
+  await page.getByRole('button', { name: 'Done' }).click();
+
+  const add = async (zone: string, component: string) => {
+    await area(page, 'Outline');
+    await page.locator('[data-action="editor-select-node"]').first().click();
+    await area(page, 'Children');
+    await page.locator('[data-editor-add="zone"]').click();
+    await page.getByRole('option', { name: zone, exact: true }).click();
+    await page.locator('[data-editor-add="component"]').click();
+    await page.getByRole('option', { name: component, exact: true }).click();
+    await page.getByRole('button', { name: 'Add', exact: true }).click();
+  };
+  await add('leftRail › content', 'List');
+  await add('mainToolbar › title', 'ToolbarText');
+
+  const canvas = page.locator('[data-editor-canvas]');
+  // A new List has no rows yet, so it is present but takes no space.
+  await expect(
+    canvas.locator('[data-workbench-rail="left"] [data-component="list"]'),
+  ).toHaveCount(1);
+  await expect(canvas.locator('[data-component="toolbar-text"]')).toBeVisible();
+  await expect(page.getByText(/· valid$/)).toBeVisible();
+  await area(page, 'Outline');
+  await expect(page.getByText('leftRail › content').first()).toBeVisible();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-pd6qc5-workbench-rail-and-title-1440.png'),
+    animations: 'disabled',
+  });
+});

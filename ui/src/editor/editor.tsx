@@ -10,6 +10,7 @@
 import {
   contractDigest,
   contractOf,
+  fieldZoneOf,
   interpretView,
   lucideExportName,
   previewView,
@@ -175,6 +176,7 @@ import {
   replaceRoot,
   setProp,
   withCatalog,
+  type ZoneOption,
 } from './model/edits.js';
 import {
   exampleValue,
@@ -196,6 +198,7 @@ import {
   fieldEditorKind,
   type FieldPath,
   fieldSummary,
+  fieldZoneKeys,
   listItemLabel,
   listMembers,
   memberFor,
@@ -220,6 +223,7 @@ import {
   outlineTree,
   slotRowAddress,
   slotRowId,
+  zoneLabel,
 } from './model/outline.js';
 import { type PreviewSlot, previewSlots } from './model/preview-slots.js';
 import { type Problem, problemCounts, problemsOf } from './model/problems.js';
@@ -582,7 +586,7 @@ export function createEditor(options: EditorOptions) {
   // against isMovable first).
   const commit = (next: ViewDocument) => {
     history.record(doc.value);
-    doc.value = next;
+    doc.value = ownFilledFields(next);
     fieldErrors.value = {};
     historyVersion.value += 1;
   };
@@ -788,6 +792,39 @@ export function createEditor(options: EditorOptions) {
       </div>
     )),
   ];
+
+  /**
+   * `document` with each filled field zone owning its field (KF-PD6QC5): a
+   * placeholder the prop value held there (a seeded item slot, text) gives
+   * way to the zone's nodes, so the two never clash.
+   */
+  const ownFilledFields = (document: ViewDocument): ViewDocument => {
+    let next = document;
+    for (const { node } of visitNodes(document)) {
+      for (const [key, children] of Object.entries(node.zones ?? {})) {
+        const component = viewCatalog.components.get(node.type);
+        const field =
+          component &&
+          fieldZoneOf(component.component, component.definitions, key);
+        const own = node.props?.[field?.prop ?? ''] as ViewValue | undefined;
+        if (
+          !field ||
+          !children.length ||
+          valueAt(own, field.path) === undefined
+        )
+          continue;
+        // An object left with no other field stays, so the prop still
+        // reads as set (its rail kind, its toolbar).
+        next = setProp(
+          next,
+          node.id,
+          field.prop,
+          withValueAt(own, field.path, undefined) ?? {},
+        );
+      }
+    }
+    return next;
+  };
 
   /**
    * The Inspector's body for the selection, and for a node the chrome pinned
@@ -1949,13 +1986,21 @@ export function createEditor(options: EditorOptions) {
   };
 
   /** The zones a node offers for adding a child. */
-  const zonesOf = (node: ViewDocument['root']) =>
-    legalZones(
+  const zonesOf = (node: ViewDocument['root']) => {
+    const props = propsByKey.get(node.type)?.props ?? [];
+    const zones = legalZones(
       node,
       viewCatalog.entries.get(node.type) as Parameters<typeof legalZones>[1],
-      propsByKey.get(node.type)?.props ?? [],
+      props,
       new Set(viewCatalog.components.keys()),
     );
+    // KF-PD6QC5: content fields inside the props it sets (a rail's content,
+    // a toolbar's title) take nodes too.
+    const fields = fieldZoneKeys(node, props, definitionsOf(node.type))
+      .filter((key) => !zones.some((zone) => zone.key === key))
+      .map((key): ZoneOption => ({ key }));
+    return [...zones, ...fields];
+  };
 
   /** The components a zone takes, as Select choices. */
   const addableIn = (
@@ -2171,7 +2216,7 @@ export function createEditor(options: EditorOptions) {
               value={zone.key}
               choices={zones.map((option) => ({
                 value: option.key,
-                label: option.key,
+                label: zoneLabel(option.key),
                 ...(option.disabledReason
                   ? { disabled: true, disabledReason: option.disabledReason }
                   : {}),
