@@ -14,6 +14,7 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const generated = [
   'ux-demo/catalog.generated.ts',
   'ai/component-composition.json',
+  'ai/component-props.json',
   'ai/public-api-signatures-v1.md',
   'ai/webawesome-jsx-signatures-v1.md',
   'ai-regressions/compatibility-v3.json',

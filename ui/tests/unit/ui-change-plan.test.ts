@@ -25,6 +25,19 @@ describe('check:change demo-bundle measurement', () => {
       commands.indexOf('node scripts/sync-ai-public-signatures.mjs'),
     );
   });
+  // KF-P7SW6B: a prop-type change once passed check:change with a stale
+  // component-props.json, which the editor Inspector reads.
+  it('synchronizes the component props catalog from the fresh build', () => {
+    const commands = uiChangeSyncSteps().map((step) => step.command);
+    const props = commands.indexOf('node scripts/sync-component-props.mjs');
+    expect(props).toBeGreaterThan(commands.indexOf('npm run build'));
+    expect(props).toBeLessThan(
+      commands.indexOf('node scripts/sync-ai-compatibility.mjs --write'),
+    );
+    expect(
+      readFileSync(resolve(uiRoot, 'scripts/check-ui-change.mjs'), 'utf8'),
+    ).toContain("'ai/component-props.json'");
+  });
   it('measures the demo with exactly the command sequence demo:build runs', () => {
     const gates = uiChangeGateSteps();
     const demoSteps = gates.slice(-2).map((step) => step.command);
