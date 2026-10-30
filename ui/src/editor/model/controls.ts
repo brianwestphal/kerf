@@ -107,7 +107,7 @@ const isDynamic = (value: ViewValue | undefined) =>
   value !== null && typeof value === 'object' && !Array.isArray(value);
 
 /** A document binding (`$param`, `$bind`, `$css`, …) rather than a literal. */
-const isBinding = (value: ViewValue | undefined) =>
+export const isBinding = (value: ViewValue | undefined) =>
   isDynamic(value) &&
   Object.keys(value as object).some((key) => key.startsWith('$'));
 

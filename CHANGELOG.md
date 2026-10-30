@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Object forms in the Kerf UI editor.** An object prop (a Workbench's `mainFooterList`, a Pane's `tint`) now opens a form built from its type's fields instead of a JSON textarea. A form of at most 10 fields slides into the Inspector, Back returns, and the canvas updates as you edit; a larger one, such as a Workbench's `mainPane`, opens in a dialog. Nested objects open the same way. **Edit as JSON**, **Reset**, and **Fill with example** remain on every form (`KF-Z9S029`).
 - **The Kerf UI editor's component filter stays put.** The Filter Components field now sits in the Document rail's pinned header, under the tab strip, so it stays in view while the Components list scrolls (`KF-PR8MA6`).
 - **Pill-shaped segmented tabs.** In a `TabBar presentation="segmented"` every tab is now a pill inside the pill track, so the selected tab reads as a rounded thumb wherever it sits. Before, only the strip's outer ends were pill-rounded and the corners between tabs kept the small segment radius (`KF-82MNT7`).
 - **Clearer component groups in the Kerf UI editor.** The Components list titles each category with a default `ListHeader` and spaces the categories apart, as the catalog's sidebar does (`KF-K2VP9A`, `KF-YR81M0`).

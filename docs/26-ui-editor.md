@@ -117,8 +117,8 @@ application component's catalog gets them with no extra code.
     Back pops.
   - **A modal dialog** for anything with several steps, sub-selections (pick
     one, then configure it), or more than 10 fields, and for pickers.
-  The rule picks a container by default, and a field editor may name its
-  container explicitly.
+    The rule picks a container by default, and a field editor may name its
+    container explicitly.
 - **Lists of objects** open a list editor: one `ListItem` per item, labeled
   from its `label`, `name`, or `value`, with add, remove, and drag-reorder.
   Choosing an item opens its form. A list of **union items** (PopupMenu items)
@@ -134,6 +134,21 @@ application component's catalog gets them with no extra code.
   a named type (`'ListConfig'`, an application's `'InvoiceFilter'`), which
   overrides the type-driven default. An editor receives the value, its type
   and definitions, and a commit callback, and chooses its container.
+
+Object forms are built (KF-Z9S029: object forms). An object prop shows as a
+row with its name, what it holds ("Not set", "2 fields set"), and a chevron,
+in place of the JSON field; choosing it opens the form. The Inspector rail
+is a Workbench navigation panel whose root view is the Inspector, so a form
+of at most 10 fields pushes a view titled after the prop, and Back pops it.
+A larger object opens in a dialog with Back and Done; a nested object steps
+forward in the container its outermost form opened in. Every field edit
+commits and is undoable, so the canvas updates while the form is open.
+Selecting another node closes the editor. Each step has **Edit as JSON**
+(and **Edit as form** to return), **Reset**, which unsets that step, and
+**Fill with example** when its type has required fields. Clearing an
+object's last field unsets it. Lists of objects and union items, string and
+enum lists, icon data, and the `fieldEditors` extension API still edit as
+JSON until their own editors land.
 
 The inspector's Control flow section (KF-90GTJN: editor control flow) shows a
 node only while a true/false param or item field holds (Show, which wraps the

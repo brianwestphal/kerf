@@ -302,10 +302,11 @@ describe('list props (KF-HNNWN9)', () => {
 
   it('offers an example only for a required list prop', () => {
     const { root } = add('@kerfjs/ui:popup-menu');
-    // The optional anchor is unset and edits as JSON, with no Fill button.
-    expect(field(root, '[data-editor-prop="anchor"]').dataset.editorKind).toBe(
-      'list',
-    );
+    // The optional anchor is unset and opens its form (KF-Z9S029), with no
+    // Fill button beside it.
+    expect(
+      root.querySelector('[data-editor-open*=\'"prop":"anchor"\']'),
+    ).not.toBeNull();
     expect(
       root.querySelector('[data-action="editor-fill-example"]'),
     ).toBeNull();

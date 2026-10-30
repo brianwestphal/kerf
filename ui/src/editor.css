@@ -1,2 +1,4 @@
 /* Public stylesheet entry; implementation is colocated with the component. */
+/* The Inspector pushes field editors on a NavStack (KF-Z9S029). */
+@import "./nav-stack.css";
 @import "./editor/editor.css";

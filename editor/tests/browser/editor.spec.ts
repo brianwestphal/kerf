@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 
 import { area } from './areas.js';
 
@@ -1011,4 +1011,86 @@ test('renders a Workbench chosen as the root with its placeholders', async ({
     path: info.outputPath('kf-fgd8b3-workbench-root-1440.png'),
     animations: 'disabled',
   });
+});
+
+// KF-Z9S029: an object prop edits in a form from its type's fields, pushed
+// in the Inspector for a single step of at most 10 fields and in a dialog
+// for more.
+async function workbenchRoot(page: Page) {
+  await page.getByRole('button', { name: 'New' }).click();
+  await area(page, 'Outline');
+  await page.locator('[data-action="editor-select-node"]').first().click();
+  await area(page, 'Children');
+  await page.locator('[data-editor-root="component"]').click();
+  await page.getByRole('option', { name: 'Workbench', exact: true }).click();
+  await page.getByRole('button', { name: 'Replace' }).click();
+  await area(page, 'Properties');
+}
+
+for (const width of [1440, 900]) {
+  test(`edits a Workbench's mainFooterList in the pushed Inspector view at ${width}px`, async ({
+    page,
+  }, info) => {
+    await page.setViewportSize({ width, height: 900 });
+    await workbenchRoot(page);
+    await page
+      .getByRole('button', { name: 'Configure mainFooterList' })
+      .click();
+    const stack = page.locator('#editor-inspector-stack');
+    await expect(stack.getByText('mainFooterList').first()).toBeVisible();
+    const align = page.locator(
+      `[data-editor-field='{"prop":"mainFooterList","path":["hAlign"]}']`,
+    );
+    await align.click();
+    await page.getByRole('option', { name: 'center', exact: true }).click();
+    // The canvas stays visible beside the form and updates live.
+    await expect(page.locator('[data-editor-canvas]')).toBeVisible();
+    await page.mouse.move(1, 1);
+    await page.screenshot({
+      path: info.outputPath(`kf-z9s029-subview-${width}.png`),
+      animations: 'disabled',
+    });
+    await stack.getByRole('button', { name: 'Back' }).click();
+    await expect(
+      page.getByRole('button', { name: 'Configure mainFooterList' }),
+    ).toContainText('1 field set');
+  });
+}
+
+test('edits a Workbench mainPane of more than 10 fields in a dialog', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await workbenchRoot(page);
+  await page.getByRole('button', { name: 'Configure mainPane' }).click();
+  const dialog = page.locator('#editor-field-dialog');
+  await expect(dialog).toBeVisible();
+  const dividers = dialog.locator(
+    `[data-editor-field='{"prop":"mainPane","path":["chromeDividers"]}']`,
+  );
+  await dividers.click();
+  await page.getByRole('option', { name: 'always', exact: true }).click();
+  await expect(dividers).toHaveAttribute('value', 'always');
+  await dialog.getByRole('button', { name: 'Configure tint' }).click();
+  await expect(
+    dialog.locator(
+      `[data-editor-field='{"prop":"mainPane","path":["tint","scheme"]}']`,
+    ),
+  ).toBeVisible();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-z9s029-dialog-nested-1440.png'),
+    animations: 'disabled',
+  });
+  await dialog.getByRole('button', { name: 'Back' }).click();
+  await expect(dividers).toBeVisible();
+  await page.screenshot({
+    path: info.outputPath('kf-z9s029-dialog-1440.png'),
+    animations: 'disabled',
+  });
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  await expect(dialog).toBeHidden();
+  await expect(
+    page.getByRole('button', { name: 'Configure mainPane' }),
+  ).toContainText('1 field set');
 });

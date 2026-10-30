@@ -14,6 +14,8 @@ export interface InspectorProp {
   readonly slot?: true;
   /** css-value props: the builders the prop accepts. */
   readonly cssValue?: { readonly helpers?: readonly string[] };
+  /** Icon data (`'lucide'`): edits in the icon picker (KF-AJHJB8). */
+  readonly iconSource?: string;
 }
 
 export interface InspectorComponent {

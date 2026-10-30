@@ -24,6 +24,7 @@ import { delegateActions } from 'kerfjs/actions';
 import {
   ArrowDown,
   ArrowUp,
+  ChevronRight,
   FileCode,
   FilePlus,
   FolderOpen,
@@ -69,9 +70,11 @@ import {
 import { Select } from '../components/forms/select/select.js';
 import { Switch } from '../components/forms/switch/switch.js';
 import { TextField } from '../components/forms/text-field/text-field.js';
+import { Row } from '../components/layout/row/row.js';
 import { wireWorkbench } from '../components/layout/workbench/wiring/wire-workbench.js';
 import { Workbench } from '../components/layout/workbench/workbench.js';
 import { LucideIcon } from '../components/media/lucide-icon/lucide-icon.js';
+import { wireNavStack } from '../components/navigation/nav-stack/wiring/wire-nav-stack.js';
 import { TabBar } from '../components/navigation/tab-bar/tab-bar.js';
 import { wireTabBars } from '../components/navigation/tab-bar/wiring/wire-tab-bars.js';
 import { TabBarItem } from '../components/navigation/tab-bar-item/tab-bar-item.js';
@@ -117,6 +120,7 @@ import {
   type ControlKind,
   cssHint,
   CUSTOM_SIZE,
+  isBinding,
   type SeedCatalog,
   seedNode,
   typeLabel,
@@ -161,6 +165,18 @@ import {
   exportModule,
   type ExportReport,
 } from './model/export.js';
+import {
+  containerFor,
+  type FieldContainer,
+  fieldEditorKind,
+  type FieldPath,
+  fieldSummary,
+  objectFields,
+  stepTitle,
+  typeAt,
+  valueAt,
+  withValueAt,
+} from './model/fields.js';
 import { groupedProps, inspectorSections } from './model/inspector.js';
 import {
   itemSlotRowNode,
@@ -205,6 +221,15 @@ const REPLACE_ROOT_ACTION = 'editor-replace-root';
 const CONTENT_TO_NODES_ACTION = 'editor-content-to-nodes';
 const CONTENT_TO_TEXT_ACTION = 'editor-content-to-text';
 const EXAMPLE_ACTION = 'editor-fill-example';
+// KF-Z9S029: object forms in a pushed Inspector view or a dialog.
+const FIELD_OPEN_ACTION = 'editor-open-field';
+const FIELD_BACK_ACTION = 'editor-field-back';
+const FIELD_DONE_ACTION = 'editor-field-done';
+const FIELD_RESET_ACTION = 'editor-reset-field';
+const FIELD_EXAMPLE_ACTION = 'editor-fill-field-example';
+const FIELD_JSON_ACTION = 'editor-field-json';
+const FIELD_DIALOG = 'editor-field-dialog';
+const INSPECTOR_STACK = 'editor-inspector-stack';
 const PROMOTE_ACTION = 'editor-promote';
 const EXPORT_MODULE_ACTION = 'editor-export-module';
 const EXPORT_DECLARATIONS_ACTION = 'editor-export-declarations';
@@ -381,6 +406,21 @@ function controlValue(field: HTMLElement): string | boolean {
     : input.value;
 }
 
+/** Where an inspector control writes: a prop, or a field inside one. */
+interface FieldPlace {
+  readonly prop: string;
+  readonly path: FieldPath;
+}
+
+/** An open field editor (KF-Z9S029): a place in the selected node's prop. */
+interface OpenField extends FieldPlace {
+  readonly node: string;
+  readonly container: FieldContainer;
+}
+
+/** A place's key for its error and Custom size state: `gap`, `mainPane.gap`. */
+const placeKey = (place: FieldPlace) => [place.prop, ...place.path].join('.');
+
 /** Identifies what the Inspector shows, so a change of subject is detectable. */
 function selectionKey(selection: Selection): string {
   if (!selection) return '';
@@ -455,6 +495,10 @@ export function createEditor(options: EditorOptions) {
    * builder call yet, so its builder field shows (KF-Q5AXNP).
    */
   const customSize = signal('');
+  /** The field editor open on the selected node, if any (KF-Z9S029). */
+  const openField = signal<OpenField | null>(null);
+  /** Field editor steps (`placeKey`) showing their typed JSON instead. */
+  const jsonSteps = signal<ReadonlySet<string>>(new Set());
   /** The Components filter's text (KF-Y26SKM), and its editor's revision. */
   const paletteFilter = signal('');
   const paletteFilterRevision = signal(0);
@@ -485,6 +529,9 @@ export function createEditor(options: EditorOptions) {
 
   const select = (next: Selection) => {
     selection.value = next;
+    // A field editor belongs to the node it opened on (KF-Z9S029).
+    if (next?.kind !== 'node' || next.id !== openField.value?.node)
+      openField.value = null;
     // A node chosen elsewhere (the canvas, a problem) shows in the outline.
     if (next?.kind !== 'node' && next?.kind !== 'slot') return;
     const visit = findNode(
@@ -749,13 +796,19 @@ export function createEditor(options: EditorOptions) {
       : never,
     /** The node's component key, whose catalog types the prop. */
     type: string,
+    /** A field inside a prop (KF-Z9S029: object forms); the prop itself by default. */
+    place: FieldPlace = { prop: prop.name, path: [] },
   ) => {
     const control = controlFor(prop, value, definitionsOf(type));
-    const error = fieldErrors.value[prop.name];
-    const marker = (kind: ControlKind) => ({
-      'data-editor-prop': prop.name,
-      'data-editor-kind': kind,
-    });
+    const key = placeKey(place);
+    const error = fieldErrors.value[key];
+    const marker = (kind: ControlKind) =>
+      place.path.length
+        ? {
+            'data-editor-field': JSON.stringify(place),
+            'data-editor-kind': kind,
+          }
+        : { 'data-editor-prop': prop.name, 'data-editor-kind': kind };
     const builderField = (raw: string) => (
       <TextField
         label={`${prop.name} value`}
@@ -774,11 +827,11 @@ export function createEditor(options: EditorOptions) {
         const custom =
           control.raw === CUSTOM_SIZE ||
           (control.raw === '' &&
-            customSize.value === `${selectedNodeId()} ${prop.name}`);
+            customSize.value === `${selectedNodeId()} ${key}`);
         return (
           <>
             <Select
-              name={`prop-${prop.name}`}
+              name={`prop-${key}`}
               label={prop.name}
               value={custom ? CUSTOM_SIZE : String(control.raw)}
               choices={control.choices!.map((choice) => ({
@@ -801,7 +854,7 @@ export function createEditor(options: EditorOptions) {
       case 'select':
         return (
           <Select
-            name={`prop-${prop.name}`}
+            name={`prop-${key}`}
             label={prop.name}
             value={String(control.raw)}
             choices={control.choices!.map((choice) => ({
@@ -848,7 +901,10 @@ export function createEditor(options: EditorOptions) {
               error={error}
               rootAttributes={marker('list')}
             />
-            {prop.required && control.raw === '' && example !== undefined ? (
+            {prop.required &&
+            control.raw === '' &&
+            example !== undefined &&
+            !place.path.length ? (
               <Button
                 emphasis="secondary"
                 size="compact"
@@ -884,6 +940,217 @@ export function createEditor(options: EditorOptions) {
           />
         );
     }
+  };
+
+  /**
+   * The row that opens an object's form (KF-Z9S029): its name, what it
+   * holds, and a chevron, in place of the JSON field.
+   */
+  const configureRow = (
+    label: string,
+    value: ViewValue | undefined,
+    place: FieldPlace,
+  ) => (
+    <ListItem
+      label={label}
+      status={fieldSummary(value)}
+      accessibleLabel={`Configure ${label}`}
+      action={FIELD_OPEN_ACTION}
+      trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
+      rootAttributes={{ 'data-editor-open': JSON.stringify(place) }}
+    />
+  );
+
+  /** What a field of the selected node's prop is: its type and value. */
+  const fieldContext = (node: ViewNode, place: FieldPlace) => {
+    const prop = propsByKey
+      .get(node.type)!
+      .props.find((item) => item.name === place.prop)!;
+    const definitions = definitionsOf(node.type);
+    const propValue = node.props?.[place.prop] as ViewValue | undefined;
+    return {
+      definitions,
+      type: typeAt(prop.type as never, definitions, place.path, propValue),
+      value: valueAt(propValue, place.path),
+    };
+  };
+
+  /**
+   * One step of a field editor (KF-Z9S029): an object's form, built from
+   * its fields with the Inspector's controls, nested objects opening the
+   * same way again; or its typed JSON, the escape hatch. Reset and Fill
+   * with example act on the whole step.
+   */
+  const fieldStep = (node: ViewNode, place: FieldPlace) => {
+    const { definitions, type, value } = fieldContext(node, place);
+    const key = placeKey(place);
+    const step = { 'data-editor-step': JSON.stringify(place) };
+    const form =
+      !jsonSteps.value.has(key) &&
+      fieldEditorKind(type, definitions) === 'object';
+    const example = exampleValue(
+      type,
+      definitions,
+      stepTitle(place),
+      slotNamer(usedSlots(doc.value)),
+    );
+    const actions = (
+      <List controlInsets="trbl">
+        <Row gap="s" wrap>
+          <Button
+            emphasis="secondary"
+            size="compact"
+            action={FIELD_JSON_ACTION}
+            rootAttributes={step}
+          >
+            {form ? 'Edit as JSON' : 'Edit as form'}
+          </Button>
+          <Button
+            emphasis="secondary"
+            size="compact"
+            action={FIELD_RESET_ACTION}
+            disabled={value === undefined}
+            rootAttributes={step}
+          >
+            Reset
+          </Button>
+          {/* An object of only optional fields has nothing to fill. */}
+          {example !== undefined && JSON.stringify(example) !== '{}' ? (
+            <Button
+              emphasis="secondary"
+              size="compact"
+              action={FIELD_EXAMPLE_ACTION}
+              rootAttributes={step}
+            >
+              Fill with example
+            </Button>
+          ) : undefined}
+        </Row>
+      </List>
+    );
+    if (!form) {
+      return (
+        <List>
+          <List controlInsets="trbl" gap>
+            <TextField
+              label={stepTitle(place)}
+              value={value === undefined ? '' : JSON.stringify(value, null, 2)}
+              multiline
+              rows={value === undefined ? 2 : 6}
+              maxRows={20}
+              hint={`JSON for ${typeLabel(type!.text!)}.`}
+              error={fieldErrors.value[key]}
+              rootAttributes={{
+                'data-editor-field': JSON.stringify(place),
+                'data-editor-kind': 'list',
+              }}
+            />
+          </List>
+          {actions}
+        </List>
+      );
+    }
+    const record = (value ?? {}) as Record<string, ViewValue>;
+    const editable: SafeHtml[] = [];
+    const nested: SafeHtml[] = [];
+    const fixed: { name: string; value: string }[] = [];
+    for (const field of objectFields(type, definitions)) {
+      const at = { prop: place.prop, path: [...place.path, field.name] };
+      const fieldValue = record[field.name];
+      const control = controlFor(field, fieldValue, definitions);
+      if (control.kind === 'readonly') {
+        fixed.push({
+          name: field.name,
+          value:
+            fieldValue === undefined
+              ? typeLabel(field.type.text!)
+              : JSON.stringify(fieldValue),
+        });
+      } else if (
+        control.kind === 'list' &&
+        fieldEditorKind(field.type as never, definitions, field.iconSource) ===
+          'object'
+      ) {
+        nested.push(configureRow(field.name, fieldValue, at));
+      } else {
+        editable.push(propControl(field, fieldValue as never, node.type, at)!);
+      }
+    }
+    return (
+      <List>
+        {editable.length ? (
+          <List controlInsets="trbl" gap>
+            {editable}
+          </List>
+        ) : undefined}
+        {nested.length ? <List>{nested}</List> : undefined}
+        {fixed.length ? (
+          <ValueTable label={`${stepTitle(place)} fields`} density="compact">
+            {fixed.map((row) => (
+              <ValueTableRow label={row.name} value={row.value} />
+            ))}
+          </ValueTable>
+        ) : undefined}
+        {actions}
+      </List>
+    );
+  };
+
+  /**
+   * The open field editor, when it still belongs to the selected node: a
+   * selection change or an undo that removes the node closes it.
+   */
+  const activeField = (): OpenField | null => {
+    const open = openField.value;
+    return open && open.node === selectedNodeId() ? open : null;
+  };
+
+  /** Every step of a field editor's path, the prop first. */
+  const fieldSteps = (open: FieldPlace): FieldPlace[] =>
+    Array.from({ length: open.path.length + 1 }, (_, index) => ({
+      prop: open.prop,
+      path: open.path.slice(0, index),
+    }));
+
+  /** The pushed Inspector views of a field editor open as a subview. */
+  const fieldViews = () => {
+    const open = activeField();
+    if (open?.container !== 'subview') return [];
+    const node = findNode(doc.value, open.node)!.node;
+    return fieldSteps(open).map((place) => ({
+      key: `field-${placeKey(place)}`,
+      toolbar: { title: stepTitle(place) },
+      content: fieldStep(node, place),
+    }));
+  };
+
+  /** The dialog a field editor opens in when it is too big for the rail. */
+  const fieldDialog = () => {
+    const open = activeField();
+    const place = open?.container === 'dialog' ? open : undefined;
+    const node = place && findNode(doc.value, place.node)!.node;
+    return (
+      <DialogSurface
+        id={FIELD_DIALOG}
+        label={place ? stepTitle(place) : 'Field'}
+        size="medium"
+        rootAttributes={{ 'data-key': FIELD_DIALOG }}
+        footer={
+          <>
+            {place?.path.length ? (
+              <Button action={FIELD_BACK_ACTION}>Back</Button>
+            ) : undefined}
+            <Button tone="brand" action={FIELD_DONE_ACTION}>
+              Done
+            </Button>
+          </>
+        }
+      >
+        {node
+          ? fieldStep(node, { prop: place!.prop, path: place!.path })
+          : undefined}
+      </DialogSurface>
+    );
   };
 
   /**
@@ -1359,13 +1626,28 @@ export function createEditor(options: EditorOptions) {
           />
         </List>
         {groupedProps(component).map((section) => {
+          // An object prop opens its form from a Configure row (KF-Z9S029).
+          const opens = (prop: (typeof section.props)[number]) =>
+            !isBinding(props[prop.name]) &&
+            fieldEditorKind(
+              prop.type as never,
+              definitionsOf(node.type),
+              prop.iconSource,
+            ) === 'object';
           const editable = section.props
+            .filter((prop) => !opens(prop))
             .map(
               (prop) =>
                 contentControl(node, prop) ??
                 propControl(prop, props[prop.name] as never, node.type),
             )
             .filter(Boolean);
+          const configured = section.props.filter(opens).map((prop) =>
+            configureRow(prop.name, props[prop.name] as never, {
+              prop: prop.name,
+              path: [],
+            }),
+          );
           const fixed = section.props.filter(
             (prop) =>
               controlFor(
@@ -1381,6 +1663,7 @@ export function createEditor(options: EditorOptions) {
                 {editable}
               </List>
             ) : undefined,
+            configured.length ? <List>{configured}</List> : undefined,
             fixed.length ? (
               <ValueTable label={`${title} ${section.title}`} density="compact">
                 {fixed.map((prop) => (
@@ -1781,6 +2064,7 @@ export function createEditor(options: EditorOptions) {
           ]}
         />
         {autosave ? saveAsDialog(document) : undefined}
+        {fieldDialog()}
         <List flex>
           <Workbench
             id={WORKBENCH_ID}
@@ -1873,11 +2157,25 @@ export function createEditor(options: EditorOptions) {
               collapsed: inspectorCollapsed.value,
               toolbar: {
                 label: 'Inspector',
-                title: <ToolbarText text="Inspector" />,
                 toggle: { action: INSPECTOR_TOGGLE, name: 'Inspector' },
-                trailing: nodeActions(document),
               },
-              ...inspector(document),
+              // KF-Z9S029: an object's form pushes onto the Inspector.
+              navStack: {
+                id: INSPECTOR_STACK,
+                label: 'Inspector',
+                toolbarConfig: { titleSize: 'default' },
+                views: [
+                  {
+                    key: 'inspector',
+                    toolbar: {
+                      title: 'Inspector',
+                      trailing: nodeActions(document),
+                    },
+                    ...inspector(document),
+                  },
+                  ...fieldViews(),
+                ],
+              },
             }}
           />
         </List>
@@ -2009,6 +2307,86 @@ export function createEditor(options: EditorOptions) {
       return;
     }
     commit(setProp(doc.value, id, name, result.value));
+  };
+
+  /** Writes `next` at a field editor's place in the selected node's prop. */
+  const writeField = (place: FieldPlace, next: ViewValue | undefined) => {
+    const id = selectedNodeId()!;
+    const current = findNode(doc.value, id)!.node.props?.[place.prop] as
+      ViewValue | undefined;
+    const value = withValueAt(current, place.path, next);
+    if (JSON.stringify(current) === JSON.stringify(value)) return false;
+    commit(setProp(doc.value, id, place.prop, value));
+    return true;
+  };
+
+  /** Applies a field editor control's value at its place (KF-Z9S029). */
+  const editField = (field: HTMLElement) => {
+    // A field editor shows only for the selected node.
+    const id = selectedNodeId()!;
+    const place = JSON.parse(field.dataset.editorField!) as FieldPlace;
+    const kind = field.dataset.editorKind as ControlKind;
+    const key = placeKey(place);
+    if (kind === 'size')
+      customSize.value =
+        controlValue(field) === CUSTOM_SIZE ? `${id} ${key}` : '';
+    const { definitions, type } = fieldContext(
+      findNode(doc.value, id)!.node,
+      place,
+    );
+    const result = valueFromControl(
+      kind,
+      controlValue(field),
+      undefined,
+      type && { type, definitions },
+    );
+    if ('error' in result) {
+      fieldErrors.value = { ...fieldErrors.value, [key]: result.error };
+      return;
+    }
+    if (!writeField(place, result.value) && fieldErrors.value[key])
+      fieldErrors.value = {};
+  };
+
+  /**
+   * Opens the form for `place` in the selected node's prop: in the
+   * container the prop's type calls for, or, for a field nested in an open
+   * editor, in that editor's container (KF-Z9S029).
+   */
+  const openFieldAt = (place: FieldPlace) => {
+    // A Configure row shows only for the selected node.
+    const id = selectedNodeId()!;
+    const open = activeField();
+    const node = findNode(doc.value, id)!.node;
+    const prop = propsByKey
+      .get(node.type)!
+      .props.find((item) => item.name === place.prop)!;
+    const container =
+      open && open.prop === place.prop
+        ? open.container
+        : containerFor(
+            prop.type as never,
+            definitionsOf(node.type),
+            prop.iconSource,
+          );
+    openField.value = { node: id, ...place, container };
+    if (container === 'dialog' && wired) {
+      const dialog = wired.querySelector<HTMLDialogElement>(
+        `#${FIELD_DIALOG}`,
+      )!;
+      if (!dialog.open) openDialog(dialog);
+    }
+  };
+
+  /** Steps a field editor back one place, closing it from its first. */
+  const fieldBack = () => {
+    // Back shows only on an open field editor's step.
+    const open = activeField()!;
+    if (!open.path.length) {
+      openField.value = null;
+      return;
+    }
+    openField.value = { ...open, path: open.path.slice(0, -1) };
   };
 
   /** A new node of component `key`, seeded so it renders as added. */
@@ -2261,6 +2639,12 @@ export function createEditor(options: EditorOptions) {
       delegate<HTMLElement>(
         root,
         'change',
+        '[data-editor-field]',
+        (_event, field) => editField(field),
+      ),
+      delegate<HTMLElement>(
+        root,
+        'change',
         '[data-editor-name]',
         (_event, field) => {
           const id = selectedNodeId();
@@ -2426,6 +2810,44 @@ export function createEditor(options: EditorOptions) {
           if (id)
             commit(nodesToText(doc.value, id, target.dataset.editorContent!));
         },
+        [FIELD_OPEN_ACTION]: (_event, target) =>
+          openFieldAt(JSON.parse(target.dataset.editorOpen!) as FieldPlace),
+        [FIELD_BACK_ACTION]: fieldBack,
+        [FIELD_DONE_ACTION]: () =>
+          closeDialog(
+            root.querySelector<HTMLDialogElement>(`#${FIELD_DIALOG}`)!,
+          ),
+        [FIELD_RESET_ACTION]: (_event, target) => {
+          writeField(
+            JSON.parse(target.dataset.editorStep!) as FieldPlace,
+            undefined,
+          );
+        },
+        [FIELD_EXAMPLE_ACTION]: (_event, target) => {
+          const place = JSON.parse(target.dataset.editorStep!) as FieldPlace;
+          const { definitions, type } = fieldContext(
+            findNode(doc.value, selectedNodeId()!)!.node,
+            place,
+          );
+          // The button shows only for a step that has an example.
+          writeField(
+            place,
+            exampleValue(
+              type,
+              definitions,
+              stepTitle(place),
+              slotNamer(usedSlots(doc.value)),
+            )!,
+          );
+        },
+        [FIELD_JSON_ACTION]: (_event, target) => {
+          const key = placeKey(
+            JSON.parse(target.dataset.editorStep!) as FieldPlace,
+          );
+          const next = new Set(jsonSteps.value);
+          if (!next.delete(key)) next.add(key);
+          jsonSteps.value = next;
+        },
         [EXAMPLE_ACTION]: (_event, target) => {
           // The button shows only for the selected node's required prop
           // that has an example.
@@ -2547,6 +2969,19 @@ export function createEditor(options: EditorOptions) {
           select({ kind: 'node', id: node.dataset.kerfNode! });
         }
       }),
+      // KF-Z9S029: Back pops a field editor's pushed view; closing its
+      // dialog closes the editor.
+      wireNavStack(root.querySelector(`#${INSPECTOR_STACK}`)!, {
+        onBack: fieldBack,
+      }),
+      (() => {
+        const closed = (event: Event) => {
+          if ((event.target as Element).id === FIELD_DIALOG)
+            openField.value = null;
+        };
+        root.addEventListener('close', closed, true);
+        return () => root.removeEventListener('close', closed, true);
+      })(),
       wireTreeList(root, {
         canDrop: (move) => dropFor(move) !== undefined,
         onMove: applyMove,
