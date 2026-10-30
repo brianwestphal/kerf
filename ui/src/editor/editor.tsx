@@ -61,6 +61,7 @@ import {
 import { Badge } from '../components/feedback/badge/badge.js';
 import { EmptyState } from '../components/feedback/empty-state/empty-state.js';
 import { StateBanner } from '../components/feedback/state-banner/state-banner.js';
+import { CheckboxGroup } from '../components/forms/checkbox-group/checkbox-group.js';
 import { FilePickerTrigger } from '../components/forms/file-picker/file-picker.js';
 import { wireFilePickers } from '../components/forms/file-picker/wiring/wire-file-pickers.js';
 import {
@@ -69,6 +70,8 @@ import {
 } from '../components/forms/search-field/search-field.js';
 import { Select } from '../components/forms/select/select.js';
 import { Switch } from '../components/forms/switch/switch.js';
+import { TagField } from '../components/forms/tag-field/tag-field.js';
+import { wireTagFields } from '../components/forms/tag-field/wiring/wire-tag-fields.js';
 import { TextField } from '../components/forms/text-field/text-field.js';
 import { Row } from '../components/layout/row/row.js';
 import { wireWorkbench } from '../components/layout/workbench/wiring/wire-workbench.js';
@@ -397,6 +400,15 @@ function controlValue(field: HTMLElement): string | boolean {
   // The host registers `kui-select`, whose element reports its value.
   if (field.localName === 'kui-select')
     return (field as HTMLElement & { value: string }).value;
+  // A CheckboxGroup's checked values, in its choices' order (KF-A9ZHGW).
+  if (field.dataset.editorKind === 'enum-set')
+    return JSON.stringify(
+      [
+        ...field.querySelectorAll<HTMLInputElement>(
+          'input[type="checkbox"]:checked',
+        ),
+      ].map((input) => input.value),
+    );
   // Every other inspector control wraps one native input.
   const input = field.querySelector<HTMLInputElement | HTMLTextAreaElement>(
     'input, textarea',
@@ -879,6 +891,31 @@ export function createEditor(options: EditorOptions) {
         );
       case 'readonly':
         return undefined;
+      // KF-A9ZHGW: strings edit inline as tags, enum values as checkboxes.
+      case 'tags':
+        return (
+          <TagField
+            id={`editor-tags-${key}`}
+            label={prop.name}
+            tags={JSON.parse(String(control.raw)) as string[]}
+            error={error}
+            rootAttributes={marker('tags')}
+          />
+        );
+      case 'enum-set':
+        return (
+          <CheckboxGroup
+            label={prop.name}
+            name={`prop-${key}`}
+            choices={control.choices!.map((choice) => ({
+              value: choice,
+              label: choice,
+            }))}
+            value={JSON.parse(String(control.raw)) as string[]}
+            error={error}
+            rootAttributes={marker('enum-set')}
+          />
+        );
       case 'list': {
         // A list or object literal as JSON (KF-HNNWN9), with a placeholder
         // to start from while a required one is unset.
@@ -2277,26 +2314,27 @@ export function createEditor(options: EditorOptions) {
   };
 
   /** Applies one inspector control's value to the selected node. */
-  const editProp = (field: HTMLElement) => {
+  const editProp = (
+    field: HTMLElement,
+    /** A TagField's next tags, reported before it re-renders. */
+    raw = controlValue(field),
+  ) => {
     const id = selectedNodeId();
     const name = field.dataset.editorProp!;
     const kind = field.dataset.editorKind as ControlKind;
     if (!id) return;
     // Custom shows the builder field; a keyword or the default hides it.
     if (kind === 'size')
-      customSize.value =
-        controlValue(field) === CUSTOM_SIZE ? `${id} ${name}` : '';
+      customSize.value = raw === CUSTOM_SIZE ? `${id} ${name}` : '';
     const node = findNode(doc.value, id)!.node;
     // A field renders only for a prop of the node's props entry.
     const prop = propsByKey
       .get(node.type)!
       .props.find((item) => item.name === name)!;
-    const result = valueFromControl(
-      kind,
-      controlValue(field),
-      prop.cssValue?.helpers,
-      { type: prop.type as never, definitions: definitionsOf(node.type) },
-    );
+    const result = valueFromControl(kind, raw, prop.cssValue?.helpers, {
+      type: prop.type as never,
+      definitions: definitionsOf(node.type),
+    });
     if ('error' in result) {
       fieldErrors.value = { ...fieldErrors.value, [name]: result.error };
       return;
@@ -2321,22 +2359,25 @@ export function createEditor(options: EditorOptions) {
   };
 
   /** Applies a field editor control's value at its place (KF-Z9S029). */
-  const editField = (field: HTMLElement) => {
+  const editField = (
+    field: HTMLElement,
+    /** A TagField's next tags, reported before it re-renders. */
+    raw = controlValue(field),
+  ) => {
     // A field editor shows only for the selected node.
     const id = selectedNodeId()!;
     const place = JSON.parse(field.dataset.editorField!) as FieldPlace;
     const kind = field.dataset.editorKind as ControlKind;
     const key = placeKey(place);
     if (kind === 'size')
-      customSize.value =
-        controlValue(field) === CUSTOM_SIZE ? `${id} ${key}` : '';
+      customSize.value = raw === CUSTOM_SIZE ? `${id} ${key}` : '';
     const { definitions, type } = fieldContext(
       findNode(doc.value, id)!.node,
       place,
     );
     const result = valueFromControl(
       kind,
-      controlValue(field),
+      raw,
       undefined,
       type && { type, definitions },
     );
@@ -2633,13 +2674,13 @@ export function createEditor(options: EditorOptions) {
       delegate<HTMLElement>(
         root,
         'change',
-        '[data-editor-prop]',
+        '[data-editor-prop]:not([data-editor-kind="tags"])',
         (_event, field) => editProp(field),
       ),
       delegate<HTMLElement>(
         root,
         'change',
-        '[data-editor-field]',
+        '[data-editor-field]:not([data-editor-kind="tags"])',
         (_event, field) => editField(field),
       ),
       delegate<HTMLElement>(
@@ -2969,6 +3010,25 @@ export function createEditor(options: EditorOptions) {
           select({ kind: 'node', id: node.dataset.kerfNode! });
         }
       }),
+      // KF-A9ZHGW: a TagField reports its next tags; its root carries the
+      // prop or field place it edits. Wired on the Inspector and the field
+      // dialog only, so its SearchField mechanics leave the palette's
+      // filter alone.
+      ...[
+        root.querySelector<HTMLElement>('[data-workbench-rail="right"]')!,
+        root.querySelector<HTMLElement>(`#${FIELD_DIALOG}`)!,
+      ].map((scope) =>
+        wireTagFields(scope, {
+          onChange: ({ id, tags }) => {
+            const host = [
+              ...scope.querySelectorAll<HTMLElement>('[data-tag-field-id]'),
+            ].find((field) => field.dataset.tagFieldId === id)!;
+            const raw = JSON.stringify(tags);
+            if (host.dataset.editorField) editField(host, raw);
+            else editProp(host, raw);
+          },
+        }),
+      ),
       // KF-Z9S029: Back pops a field editor's pushed view; closing its
       // dialog closes the editor.
       wireNavStack(root.querySelector(`#${INSPECTOR_STACK}`)!, {

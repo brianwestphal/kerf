@@ -146,9 +146,13 @@ commits and is undoable, so the canvas updates while the form is open.
 Selecting another node closes the editor. Each step has **Edit as JSON**
 (and **Edit as form** to return), **Reset**, which unsets that step, and
 **Fill with example** when its type has required fields. Clearing an
-object's last field unsets it. Lists of objects and union items, string and
-enum lists, icon data, and the `fieldEditors` extension API still edit as
-JSON until their own editors land.
+object's last field unsets it. Lists of strings edit inline in a
+`TagField` and sets of enum values in a `CheckboxGroup`, at the top level
+and inside forms (KF-A9ZHGW: inline list editors); unchecking or removing
+the last one unsets the prop, and a value they cannot hold (a number, a
+string outside the set) keeps the JSON field. Lists of objects and union
+items, icon data, and the `fieldEditors` extension API still edit as JSON
+until their own editors land.
 
 The inspector's Control flow section (KF-90GTJN: editor control flow) shows a
 node only while a true/false param or item field holds (Show, which wraps the

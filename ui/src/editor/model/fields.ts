@@ -89,6 +89,19 @@ export function fieldEditorKind(
 }
 
 /**
+ * The values a set of enum values offers (KF-A9ZHGW: a Pane's
+ * `separators`), in the catalog's order; empty for any other type.
+ */
+export function enumSetValues(
+  type: ViewType | undefined,
+  definitions: Definitions,
+): readonly string[] {
+  if (fieldEditorKind(type, definitions) !== 'enum-set') return [];
+  const item = shape(shape(type, definitions)!.items, definitions)!;
+  return item.values as readonly string[];
+}
+
+/**
  * The members of a union a list editor can add: each object member with
  * fields, and a string member as plain text. Empty when any member is
  * neither, since such a list cannot be edited item by item.

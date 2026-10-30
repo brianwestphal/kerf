@@ -1094,3 +1094,48 @@ test('edits a Workbench mainPane of more than 10 fields in a dialog', async ({
     page.getByRole('button', { name: 'Configure mainPane' }),
   ).toContainText('1 field set');
 });
+
+// KF-A9ZHGW: a set of enum values edits inline in a CheckboxGroup, a list
+// of strings in a TagField.
+test('edits a Pane’s separators and a TagField’s tags inline', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const PANE = '01JB8Z1M6Q8E1X9V4S7K2R3T5A';
+  await area(page, 'Outline');
+  await page
+    .locator(`[data-action="editor-select-node"][data-item-id="${PANE}"]`)
+    .click();
+  const separators = page.locator('[data-editor-prop="separators"]');
+  await separators.getByLabel('block-end').check();
+  await expect(
+    page.locator(`[data-editor-canvas] [data-kerf-node="${PANE}"]`),
+  ).toHaveAttribute('data-separator-block-end', /.*/);
+  await separators.scrollIntoViewIfNeeded();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-a9zhgw-separators-1440.png'),
+    animations: 'disabled',
+  });
+
+  await area(page, 'Children');
+  await page.locator('[data-editor-add="component"]').click();
+  await page.getByRole('option', { name: 'TagField', exact: true }).click();
+  await page.getByRole('button', { name: 'Add', exact: true }).click();
+  await area(page, 'Properties');
+  const tags = page.locator('[data-editor-prop="tags"]');
+  const editor = tags.locator('[data-tag-field-editor]');
+  // Type after the seeded chips, at the editor's end.
+  await editor.focus();
+  await page.keyboard.press('End');
+  await page.keyboard.type('urgent');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('[data-editor-canvas]')).toContainText('urgent');
+  await expect(tags).toContainText('urgent');
+  await tags.scrollIntoViewIfNeeded();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-a9zhgw-tags-1440.png'),
+    animations: 'disabled',
+  });
+});

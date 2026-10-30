@@ -15,6 +15,7 @@ import {
   resolveType,
   type SlotNamer,
 } from './examples.js';
+import { enumSetValues, fieldEditorKind } from './fields.js';
 import type { InspectorProp } from './inspector.js';
 
 export type ControlKind =
@@ -25,15 +26,23 @@ export type ControlKind =
   | 'number'
   | 'css'
   | 'list'
+  | 'tags'
+  | 'enum-set'
   | 'readonly';
 
 type Definitions = Readonly<Record<string, ViewType>>;
 
 export interface Control {
   readonly kind: ControlKind;
-  /** select, size: the choices, with '' meaning "use the default". */
+  /**
+   * select, size: the choices, with '' meaning "use the default"; enum-set:
+   * the values it offers.
+   */
   readonly choices?: readonly string[];
-  /** The control's current raw value: text, a choice, or a checked state. */
+  /**
+   * The control's current raw value: text, a choice, or a checked state;
+   * tags and enum-set: the JSON of the strings it holds.
+   */
   readonly raw: string | boolean;
   /** size: the builder call of a custom (`$css`) value. */
   readonly css?: string;
@@ -126,6 +135,25 @@ export function controlFor(
 ): Control {
   const kind = prop.type.kind;
   if (isStructured(prop.type as ViewType, definitions)) {
+    // A list of strings edits in a TagField, a set of enum values in a
+    // CheckboxGroup (KF-A9ZHGW), while every value is one they can hold.
+    const strings =
+      value === undefined ||
+      (Array.isArray(value) && value.every((item) => typeof item === 'string'));
+    const editor = fieldEditorKind(
+      prop.type as ViewType,
+      definitions,
+      prop.iconSource,
+    );
+    if (editor === 'tags' && strings)
+      return { kind: 'tags', raw: JSON.stringify(value ?? []) };
+    const choices = enumSetValues(prop.type as ViewType, definitions);
+    if (
+      editor === 'enum-set' &&
+      strings &&
+      (value ?? []).every((item) => choices.includes(item as string))
+    )
+      return { kind: 'enum-set', choices, raw: JSON.stringify(value ?? []) };
     return value === undefined || !isBinding(value)
       ? {
           kind: 'list',
@@ -225,6 +253,12 @@ export function valueFromControl(
         : {
             error: `Not a ${type.type.text ? typeLabel(type.type.text) : 'value of this type'}.`,
           };
+    }
+    case 'tags':
+    case 'enum-set': {
+      // An empty list unsets the prop.
+      const items = JSON.parse(String(raw)) as string[];
+      return { value: items.length ? items : undefined };
     }
     case 'switch':
       return { value: raw === true };

@@ -6,9 +6,14 @@ import { mount } from 'kerfjs';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import propsJson from '../../../ai/component-props.json';
+import {
+  controlFor,
+  valueFromControl,
+} from '../../../src/editor/model/controls.js';
 import { findNode } from '../../../src/editor/model/document.js';
 import {
   containerFor,
+  enumSetValues,
   fieldEditorKind,
   fieldSummary,
   memberFor,
@@ -409,5 +414,136 @@ describe('object forms in the Inspector (KF-Z9S029)', () => {
     // `content` is a slot, shown as its value; `actions`, unset, as its type.
     expect(form.textContent).toMatch(/content\{"\$slot":"[^"]+"\}/);
     expect(form.textContent).toContain('actions');
+  });
+});
+
+describe('inline list editors (KF-A9ZHGW)', () => {
+  /** An editor with the inbox Pane selected. */
+  function pane() {
+    const root = document.createElement('div');
+    document.body.append(root);
+    const editor = createEditor();
+    mount(root, editor.render);
+    cleanup = editor.wire(root);
+    const id = '01JB8Z1M6Q8E1X9V4S7K2R3T5A';
+    editor.selection.value = { kind: 'node', id };
+    const props = () => findNode(editor.document.value, id)!.node.props ?? {};
+    return { root, editor, props };
+  }
+
+  /** Types into a TagField's editor and presses Enter to add the tag. */
+  function addTag(host: HTMLElement, text: string) {
+    const editor = host.querySelector<HTMLElement>('[data-tag-field-editor]')!;
+    const span =
+      editor.querySelector<HTMLElement>(
+        '[data-search-field-text]:last-of-type',
+      ) ?? editor;
+    span.textContent = text;
+    editor.dispatchEvent(
+      new InputEvent('input', { bubbles: true, inputType: 'insertText' }),
+    );
+    editor.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Enter',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+  }
+
+  /** Checks or unchecks a CheckboxGroup's choice, as a click does. */
+  function check(group: HTMLElement, value: string, checked = true) {
+    const input = group.querySelector<HTMLInputElement>(
+      `input[value="${value}"]`,
+    )!;
+    input.checked = checked;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  it('picks the inline control from the type and the value', () => {
+    const tags = {
+      name: 'tags',
+      type: { kind: 'array', items: { kind: 'string' } },
+      required: false,
+    } as const;
+    expect(controlFor(tags, undefined)).toEqual({ kind: 'tags', raw: '[]' });
+    expect(controlFor(tags, ['a'])).toEqual({ kind: 'tags', raw: '["a"]' });
+    // A list holding anything but strings stays JSON.
+    expect(controlFor(tags, [1] as never).kind).toBe('list');
+    const sides = {
+      name: 'sides',
+      type: { kind: 'array', items: { kind: 'enum', values: ['t', 'b'] } },
+      required: false,
+    } as const;
+    expect(controlFor(sides, ['b'])).toEqual({
+      kind: 'enum-set',
+      choices: ['t', 'b'],
+      raw: '["b"]',
+    });
+    // A value outside the set stays JSON, as does a binding.
+    expect(controlFor(sides, ['x']).kind).toBe('list');
+    expect(controlFor(sides, { $param: 'sides' } as never).kind).toBe(
+      'readonly',
+    );
+    expect(enumSetValues(sides.type as never, {})).toEqual(['t', 'b']);
+    expect(enumSetValues({ kind: 'string' } as never, {})).toEqual([]);
+  });
+
+  it('round-trips the inline values, an empty list unsetting the prop', () => {
+    expect(valueFromControl('tags', '["a","b"]')).toEqual({
+      value: ['a', 'b'],
+    });
+    expect(valueFromControl('enum-set', '[]')).toEqual({ value: undefined });
+  });
+
+  it('edits a Pane’s separators in a CheckboxGroup', () => {
+    const { root, props, editor } = pane();
+    const group = field(root, '[data-editor-prop="separators"]');
+    expect(group.dataset.editorKind).toBe('enum-set');
+    check(group, 'block-end');
+    expect(props().separators).toEqual(['block-end']);
+    check(field(root, '[data-editor-prop="separators"]'), 'block-start');
+    // Checked values keep the choices' order.
+    expect(props().separators).toEqual(['block-start', 'block-end']);
+    check(field(root, '[data-editor-prop="separators"]'), 'block-start', false);
+    check(field(root, '[data-editor-prop="separators"]'), 'block-end', false);
+    expect(props()).not.toHaveProperty('separators');
+    click(root, 'editor-undo');
+    expect(editor.document.value.root.props?.separators).toEqual(['block-end']);
+  });
+
+  it('edits a TagField’s tags inline', () => {
+    const { root, editor } = pane();
+    choose(field(root, '[data-editor-add="zone"]'), 'content');
+    choose(
+      field(root, '[data-editor-add="component"]'),
+      '@kerfjs/ui:tag-field',
+    );
+    click(root, 'editor-add-child');
+    const selected = editor.selection.value as { id: string };
+    const props = () =>
+      findNode(editor.document.value, selected.id)!.node.props ?? {};
+    const host = field(root, '[data-editor-prop="tags"]');
+    expect(host.dataset.editorKind).toBe('tags');
+    // A new TagField is seeded with three placeholder tags.
+    const seeded = props().tags as string[];
+    addTag(host, 'urgent');
+    expect(props().tags).toEqual([...seeded, 'urgent']);
+    addTag(field(root, '[data-editor-prop="tags"]'), 'later');
+    expect(props().tags).toEqual([...seeded, 'urgent', 'later']);
+    // A native change from inside the TagField does not commit on its own.
+    field(root, '[data-editor-prop="tags"]').dispatchEvent(
+      new Event('change', { bubbles: true }),
+    );
+    expect(props().tags).toEqual([...seeded, 'urgent', 'later']);
+  });
+
+  it('edits a set of sides inside an object form', () => {
+    const { root, props } = workbench();
+    opener(root, 'mainPane').click();
+    const group = at(root, 'mainPane', ['separators']);
+    expect(group.dataset.editorKind).toBe('enum-set');
+    check(group, 'inline-end');
+    expect(props().mainPane).toEqual({ separators: ['inline-end'] });
   });
 });
