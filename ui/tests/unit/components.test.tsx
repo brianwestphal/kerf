@@ -2658,6 +2658,21 @@ describe('production UI primitives', () => {
       }),
     );
     expect(responsiveBar).toContain('data-icon-only-at="wide"');
+    // KF-YBD6XJ: a segmented strip is a pill unless it asks to be rounded;
+    // other presentations never carry the shape.
+    expect(responsiveBar).not.toContain('data-shape');
+    const shaped = (presentation: 'segmented' | 'rail') =>
+      asHtml(
+        TabBar({
+          id: 'shaped',
+          label: 'Shaped',
+          presentation,
+          shape: 'rounded',
+          children: [],
+        }),
+      );
+    expect(shaped('segmented')).toContain('data-shape="rounded"');
+    expect(shaped('rail')).not.toContain('data-shape');
     expect(responsiveBar).toContain(
       'class="kui-tab-bar-item__name">Overview</span>',
     );

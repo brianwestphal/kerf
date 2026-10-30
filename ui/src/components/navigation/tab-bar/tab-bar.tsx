@@ -7,6 +7,9 @@ import {
 export type TabActivation = 'automatic' | 'manual';
 export type TabBarAllocation = 'intrinsic' | 'fill';
 export type TabBarPresentation = 'rail' | 'segmented' | 'inspector';
+
+/** A segmented strip's outline: a pill track, or the shared control radius. */
+export type TabBarShape = 'pill' | 'rounded';
 export type TabBarTrailingPlacement = 'separate' | 'adjacent';
 /** Tablist width where segmented TabBarItems switch to icon-only. */
 export type TabBarIconOnlyAt = 'wide' | 'narrow' | 'compact';
@@ -36,6 +39,13 @@ export interface TabBarProps {
   allocation?: TabBarAllocation;
   /** Named strip chrome for application rails, segmented tabs, or inspectors. */
   presentation?: TabBarPresentation;
+  /**
+   * A segmented strip's shape: `pill` (default), a pill track whose outer
+   * tabs follow its ends, or `rounded`, a track at the shared control radius
+   * (a field's or Button's) whose every tab is concentric with it, as in a
+   * narrow sidebar. Other presentations ignore it.
+   */
+  shape?: TabBarShape;
   /** Switch segmented TabBarItems to icon-only at tablist widths of 832, 704, or 448px. Each tab needs a leading icon. */
   iconOnlyAt?: TabBarIconOnlyAt;
   /** Keep a trailing action beside the final tab or at the far edge of the bar. */
@@ -54,6 +64,7 @@ const TAB_BAR_PROTECTED = new Set([
   'data-component',
   'data-icon-only-at',
   'data-presentation',
+  'data-shape',
   'data-snap-tabs',
   'data-tab-activation',
   'data-tab-bar-id',
@@ -72,6 +83,7 @@ export function TabBar({
   activation,
   allocation = 'intrinsic',
   presentation = 'rail',
+  shape = 'pill',
   iconOnlyAt,
   trailingPlacement = 'separate',
   snapTabs = false,
@@ -87,6 +99,9 @@ export function TabBar({
       data-tab-activation={activation}
       data-allocation={allocation}
       data-presentation={presentation}
+      data-shape={
+        presentation === 'segmented' && shape === 'rounded' ? shape : undefined
+      }
       data-icon-only-at={iconOnlyAt}
       data-trailing-placement={trailingPlacement}
       aria-label={label}

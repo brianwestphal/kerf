@@ -928,8 +928,10 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   `--kui-tab-bar-strip-*` tokens set compact strip geometry.
   An inspector TabBar uses the shared rounded rectangle radius on its strip
   and inset segmented tabs; an ordinary segmented TabBar keeps pill ends and
-  smaller interior tab corners. Configure the presentation instead of
-  restyling TabBarItem.
+  smaller interior tab corners, and `shape="rounded"` gives a segmented strip
+  the rounded rectangle radius with concentric tabs (a narrow sidebar's
+  strip). Configure the presentation and shape instead of restyling
+  TabBarItem.
   Put fixed controls in TabBar's `leading`, `trailing`, or `end` zones outside
   the scrolling tablist. `snapTabs` settles ordinary tabs at the strip's
   inline-start edge; there is no pinned-tab special case.

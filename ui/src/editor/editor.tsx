@@ -758,6 +758,8 @@ export function createEditor(options: EditorOptions) {
       id={id}
       label={label}
       presentation="segmented"
+      // KF-YBD6XJ: a narrow rail's strip is rounded, not a pill.
+      shape="rounded"
       allocation={allocation}
     >
       {areas.map(({ area, name, trailing }) => (

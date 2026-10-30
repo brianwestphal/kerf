@@ -239,14 +239,35 @@
   }
 }
 /* In a TabBar, the tab styles itself in the context of its parent strip. A
-   segmented strip's track is a pill, so each segment is a pill too
-   (KF-82MNT7): the selected segment reads as a rounded thumb wherever it
-   sits, and the ends stay concentric with the track (TabBar insets a compact
-   strip's tabs to match). */
+   segmented strip's outer ends follow the pill track: the first tab's leading
+   corners, and a filled strip's last tab's trailing corners, are pill-rounded
+   so each end is concentric with the track (TabBar insets a compact strip's
+   tabs to match). Only fill allocation carries the last tab to the track's
+   trailing end; an intrinsic strip's last tab stops short of it and keeps the
+   segment radius, as do the corners between tabs. */
 .kui-tab-bar[data-presentation="segmented"]
   .kui-tab-bar__tabs
-  > .kui-tab-bar-item {
-  border-radius: var(--kui-radius-pill);
+  > .kui-tab-bar-item:first-child {
+  border-start-start-radius: var(--kui-radius-pill);
+  border-end-start-radius: var(--kui-radius-pill);
+}
+.kui-tab-bar[data-presentation="segmented"][data-allocation="fill"]
+  .kui-tab-bar__tabs
+  > .kui-tab-bar-item:last-child {
+  border-start-end-radius: var(--kui-radius-pill);
+  border-end-end-radius: var(--kui-radius-pill);
+}
+/* In a rounded segmented strip (KF-YBD6XJ) every tab, the outer ones
+   included, is concentric with the track's control radius rather than the
+   pill. */
+.kui-tab-bar[data-presentation="segmented"][data-shape="rounded"]
+  .kui-tab-bar__tabs
+  > .kui-tab-bar-item:nth-child(n) {
+  border-radius: calc(
+    var(--kui-tab-bar-strip-radius, var(--kui-layout-rounded-radius)) -
+      var(--kui-tab-bar-strip-padding, 1px) -
+      var(--kui-tab-bar-strip-border-width, 1px)
+  );
 }
 /* Fill allocation shares the strip equally and centers each tab's content. */
 .kui-tab-bar[data-allocation="fill"] .kui-tab-bar__tabs > .kui-tab-bar-item {

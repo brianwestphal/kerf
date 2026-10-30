@@ -60,10 +60,9 @@ test('a filled segmented TabBar ends its strip concentric with the pill track', 
   ]) {
     expect(Math.abs(corner - concentric)).toBeLessThan(0.5);
   }
-  // KF-82MNT7: every segment is a pill, so the corners between tabs round
-  // as fully as the outer ends.
-  expect(Math.abs(geometry.firstInner - concentric)).toBeLessThan(0.5);
-  expect(Math.abs(geometry.lastInner - concentric)).toBeLessThan(0.5);
+  // The corners between tabs keep the smaller segment radius.
+  expect(geometry.firstInner).toBeLessThan(concentric / 2);
+  expect(geometry.lastInner).toBeLessThan(concentric / 2);
 });
 
 test('inspector tabs follow the rounded strip without changing segmented pill corners', async ({

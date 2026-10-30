@@ -80,6 +80,15 @@
     var(--kui-layout-pill-radius, calc(1px + remify(21px)))
   );
 }
+/* shape="rounded": the track takes the shared control radius instead of the
+   pill (KF-YBD6XJ); TabBarItem rounds itself concentric with it. */
+.kui-tab-bar[data-presentation="segmented"][data-shape="rounded"]
+  .kui-tab-bar__tabs {
+  border-radius: var(
+    --kui-tab-bar-strip-radius,
+    var(--kui-layout-rounded-radius)
+  );
+}
 /* A segmented strip's outer ends follow the pill track: a compact tab is inset
    from the track's ends by the same distance as from its top and bottom, so
    each end is concentric with the track. TabBarItem rounds its own outer corners

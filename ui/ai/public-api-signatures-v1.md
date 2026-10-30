@@ -1558,6 +1558,8 @@ import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 type TabActivation = 'automatic' | 'manual';
 type TabBarAllocation = 'intrinsic' | 'fill';
 type TabBarPresentation = 'rail' | 'segmented' | 'inspector';
+/** A segmented strip's outline: a pill track, or the shared control radius. */
+type TabBarShape = 'pill' | 'rounded';
 type TabBarTrailingPlacement = 'separate' | 'adjacent';
 /** Tablist width where segmented TabBarItems switch to icon-only. */
 type TabBarIconOnlyAt = 'wide' | 'narrow' | 'compact';
@@ -1586,6 +1588,13 @@ interface TabBarProps {
     allocation?: TabBarAllocation;
     /** Named strip chrome for application rails, segmented tabs, or inspectors. */
     presentation?: TabBarPresentation;
+    /**
+     * A segmented strip's shape: `pill` (default), a pill track whose outer
+     * tabs follow its ends, or `rounded`, a track at the shared control radius
+     * (a field's or Button's) whose every tab is concentric with it, as in a
+     * narrow sidebar. Other presentations ignore it.
+     */
+    shape?: TabBarShape;
     /** Switch segmented TabBarItems to icon-only at tablist widths of 832, 704, or 448px. Each tab needs a leading icon. */
     iconOnlyAt?: TabBarIconOnlyAt;
     /** Keep a trailing action beside the final tab or at the far edge of the bar. */
@@ -1599,9 +1608,9 @@ interface TabBarProps {
     rootAttributes?: RootDataAttributes;
 }
 /** Render a controlled tab strip. The application owns selection, order, and persistence. */
-declare function TabBar({ id, label, children, leading, trailing, end, className, activation, allocation, presentation, iconOnlyAt, trailingPlacement, snapTabs, slot, rootAttributes, }: TabBarProps): kerfjs.SafeHtml;
+declare function TabBar({ id, label, children, leading, trailing, end, className, activation, allocation, presentation, shape, iconOnlyAt, trailingPlacement, snapTabs, slot, rootAttributes, }: TabBarProps): kerfjs.SafeHtml;
 
-export { type TabActivation, TabBar, type TabBarAllocation, type TabBarIconOnlyAt, type TabBarPresentation, type TabBarProps, type TabBarTrailingPlacement };
+export { type TabActivation, TabBar, type TabBarAllocation, type TabBarIconOnlyAt, type TabBarPresentation, type TabBarProps, type TabBarShape, type TabBarTrailingPlacement };
 ```
 
 ## `@kerfjs/ui/wire-tab-bars`

@@ -13009,6 +13009,18 @@
           "description": "Named strip chrome for application rails, segmented tabs, or inspectors."
         },
         {
+          "name": "shape",
+          "type": {
+            "kind": "enum",
+            "values": ["pill", "rounded"],
+            "text": "TabBarShape | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "pill",
+          "description": "A segmented strip's shape: `pill` (default), a pill track whose outer\ntabs follow its ends, or `rounded`, a track at the shared control radius\n(a field's or Button's) whose every tab is concentric with it, as in a\nnarrow sidebar. Other presentations ignore it."
+        },
+        {
           "name": "iconOnlyAt",
           "type": {
             "kind": "enum",
