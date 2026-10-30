@@ -118,6 +118,8 @@ SHA-256 digest. Retention is deterministic:
 `--timeout` bounds navigation and browser operations, while `--settle` provides
 one small explicit post-navigation delay for applications with asynchronous
 startup. A timeout becomes `KUI-B001` evidence rather than an unstructured crash.
+A screenshot that cannot be captured is its own `KUI-B001` diagnostic; the
+context's other checks and evidence are still reported.
 The Node API accepts an `AbortSignal`; cancellation closes the active browser,
 removes screenshots from the interrupted run, does not write a partial report,
 and rejects with `AbortError`.

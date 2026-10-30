@@ -368,6 +368,63 @@ describe('browser evaluator against running downstream fixtures', () => {
     ONE_CONTEXT_TIMEOUT,
   );
 
+  it(
+    'reports a failed screenshot capture without losing the context checks',
+    async () => {
+      const { chromium } = await import('playwright');
+      const report = await evaluateUi({
+        url: `${origin}/bad`,
+        workspaceRoot: resolve('.'),
+        startDirectory: resolve('.'),
+        packageProfile,
+        browsers: ['chromium'],
+        contexts: oneContext,
+        outputDirectory: join(temporaryRoot, 'capture-failure'),
+        retention: 'always',
+        playwright: {
+          chromium: {
+            launch: async () => {
+              const browser = await chromium.launch();
+              const newContext = browser.newContext.bind(browser);
+              return Object.assign(Object.create(browser), {
+                close: () => browser.close(),
+                newContext: async (options: object) => {
+                  const context = await newContext(options);
+                  const newPage = context.newPage.bind(context);
+                  return Object.assign(Object.create(context), {
+                    close: () => context.close(),
+                    newPage: async () => {
+                      const page = await newPage();
+                      page.screenshot = async () => {
+                        throw new Error('fixture capture timed out');
+                      };
+                      return page;
+                    },
+                  });
+                },
+              });
+            },
+          },
+        },
+      });
+      expect(report.artifacts.files).toEqual([]);
+      const failures = report.diagnostics.filter(
+        ({ code }) => code === 'KUI-B001',
+      );
+      expect(failures).toEqual([
+        expect.objectContaining({
+          context: 'chromium:narrow-light',
+          message: expect.stringContaining('fixture capture timed out'),
+        }),
+      ]);
+      expect(failures[0].message).toContain('screenshot');
+      // The inspection that ran before the capture is still reported.
+      expect(report.diagnostics.map(({ code }) => code)).toContain('KUI-B010');
+      expect(report.contexts[0].evidence).toHaveProperty('focusSequence');
+    },
+    ONE_CONTEXT_TIMEOUT,
+  );
+
   it('turns browser launch failures into one stable diagnostic per context', async () => {
     const report = await evaluateUi({
       url: origin,

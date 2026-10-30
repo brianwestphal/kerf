@@ -234,6 +234,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **The UI evaluator names a failed screenshot capture.** When a full-page capture fails after a context's checks ran, `KUI-B001` now says the screenshot could not be captured and suggests a longer timeout, instead of telling you to check that the app is running (`KF-G8KKNY`).
+
 - **Kerf UI editor zone labels count items from 1.** A field zone read `views › 0 › content` while the item slot it replaces, and the `View 1` row that edits it, counted from 1; zone labels now read `views › 1 › content` too (the document keeps its 0-based `views.0.content` key) (`KF-3N67HR`).
 - **The Kerf UI editor icon picker shows each Lucide icon once, by its own name.** Lucide exports 255 aliases (`ArrowDownAz` for `ArrowDownAZ`, `Filter` for `Funnel`), which showed as duplicate tiles, and `ArrowDownAZ` was named `arrowDownAZ`; the picker now offers one tile per icon under Lucide's canonical name (`arrow-down-a-z`, `funnel`) while an alias still finds it in a search (`KF-NTK7YW`).
 - **Clearing a Kerf UI editor field commits in Safari.** When a node's problems appeared above its Inspector controls, the re-render turned one prop's input into another's; WebKit then fired no `change` for the next clear, so a cleared `label` stayed set. Each control is now keyed by its prop or field (`KF-QCBJ4F`).

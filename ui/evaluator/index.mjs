@@ -1114,8 +1114,20 @@ export async function evaluateUi({
               outputDirectory,
               `${browserName}-${matrixContext.id}.png`,
             );
-            await page.screenshot({ path: screenshotPath, fullPage: true });
-            screenshotPaths.push(screenshotPath);
+            // A failed capture keeps the inspection results and names itself,
+            // rather than reading as an unreachable app.
+            try {
+              await page.screenshot({ path: screenshotPath, fullPage: true });
+              screenshotPaths.push(screenshotPath);
+            } catch (error) {
+              if (signal?.aborted) throw error;
+              const item = reportDiagnostic('KUI-B001', contextId, {
+                message: `Could not capture the ${contextId} screenshot: ${error.message}`,
+                repair:
+                  'Raise the timeout for a long or heavy page, or retry on a less loaded machine; the other checks for this context still ran.',
+              });
+              if (includeDiagnostic(item)) contextDiagnostics.push(item);
+            }
           } catch (error) {
             if (signal?.aborted) throw cancellationError();
             const item = reportDiagnostic('KUI-B001', contextId, {
