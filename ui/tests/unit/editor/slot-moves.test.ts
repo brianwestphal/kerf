@@ -74,6 +74,34 @@ describe('preview slots', () => {
     const bare = { ...inbox, root: { id: PANE, type: '@kerfjs/ui:pane' } };
     expect(previewSlots(bare as ViewDocument).document).toBe(bare);
   });
+
+  it('stands a slot in for an empty zone it is asked about (KF-ZWJHJR)', () => {
+    const bare = {
+      ...inbox,
+      root: {
+        id: PANE,
+        type: '@kerfjs/ui:pane',
+        zones: { content: [{ id: ROW, type: '@kerfjs/ui:row' }] },
+      },
+    } as unknown as ViewDocument;
+    const { document, slots } = previewSlots(bare, (node) =>
+      node.type === '@kerfjs/ui:row' ? 'children' : 'content',
+    );
+    // The Pane's content holds the Row, so only the Row gets a stand-in.
+    expect([...slots.values()]).toEqual([
+      {
+        name: 'kuiEmptyPreview0',
+        address: { parent: ROW, zone: 'children', index: 0 },
+        empty: true,
+      },
+    ]);
+    const row = document.root.zones!.content![0] as {
+      zones: Record<string, unknown>;
+    };
+    expect(row.zones.children).toEqual([{ $slot: 'kuiEmptyPreview0' }]);
+    // The document itself is untouched.
+    expect(bare.root.zones!.content![0]).not.toHaveProperty('zones');
+  });
 });
 
 describe('placeChild', () => {

@@ -85,3 +85,19 @@
     outline-color: Highlight;
   }
 }
+
+/* KF-ZWJHJR: an empty container on the canvas shows where its children go,
+   so it has a size to see, select, and drop into. */
+.kui-editor__empty {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-block-size: 44px;
+  min-inline-size: 160px;
+  padding: var(--kui-space-s) var(--kui-space-m);
+  border: 1px dashed var(--kui-color-neutral-border-normal);
+  border-radius: var(--kui-radius-m);
+  text-align: center;
+}

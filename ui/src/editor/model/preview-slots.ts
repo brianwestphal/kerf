@@ -10,13 +10,23 @@ import type { SlotAddress } from './control-flow.js';
 export interface PreviewSlot {
   readonly name: string;
   readonly address: SlotAddress;
+  /**
+   * Set on a stand-in for an empty zone (KF-ZWJHJR: empty containers): the
+   * node that zone belongs to, which the placeholder selects and drops into.
+   */
+  readonly empty?: true;
 }
 
 /**
  * `document` with every `$slot` renamed to a unique preview name (declared
- * like the original), and the slot each preview name stands for.
+ * like the original), and the slot each preview name stands for. A node for
+ * which `emptyZoneOf` names a zone that holds nothing gets a stand-in slot
+ * there, so an empty container has something to see, select, and drop into.
  */
-export function previewSlots(document: ViewDocument): {
+export function previewSlots(
+  document: ViewDocument,
+  emptyZoneOf: (node: ViewNode) => string | undefined = () => undefined,
+): {
   readonly document: ViewDocument;
   readonly slots: ReadonlyMap<string, PreviewSlot>;
 } {
@@ -39,20 +49,29 @@ export function previewSlots(document: ViewDocument): {
       };
     return node(item);
   };
-  const node = (item: ViewNode): ViewNode =>
-    item.zones
-      ? {
-          ...item,
-          zones: Object.fromEntries(
-            Object.entries(item.zones).map(([zone, children]) => [
-              zone,
-              children.map((entry, index) =>
-                child(entry, { parent: item.id, zone, index }),
-              ),
-            ]),
-          ),
-        }
-      : item;
+  const node = (item: ViewNode): ViewNode => {
+    const zones = item.zones
+      ? Object.fromEntries(
+          Object.entries(item.zones).map(([zone, children]) => [
+            zone,
+            children.map((entry, index) =>
+              child(entry, { parent: item.id, zone, index }),
+            ),
+          ]),
+        )
+      : undefined;
+    const empty = emptyZoneOf(item);
+    if (empty !== undefined && !zones?.[empty]?.length) {
+      const preview = `kuiEmptyPreview${slots.size}`;
+      slots.set(preview, {
+        name: preview,
+        address: { parent: item.id, zone: empty, index: 0 },
+        empty: true,
+      });
+      return { ...item, zones: { ...zones, [empty]: [{ $slot: preview }] } };
+    }
+    return zones ? { ...item, zones } : item;
+  };
   const root = node(document.root);
   return slots.size
     ? {

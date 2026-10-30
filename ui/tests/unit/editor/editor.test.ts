@@ -188,6 +188,49 @@ describe('the editor shell', () => {
     ).not.toBeNull();
   });
 
+  it('shows an empty container as a placeholder that selects it and takes a drop (KF-ZWJHJR)', () => {
+    const PANE = '01JB8Z1M6Q8E1X9V4S7K2R3TP0';
+    const ROW = '01JB8Z1M6Q8E1X9V4S7K2R3TP1';
+    const { root, editor } = open({
+      document: {
+        schema: 'kerf-ui-document/v1',
+        name: 'Empty',
+        catalogs: ['@kerfjs/ui'],
+        root: {
+          id: PANE,
+          type: '@kerfjs/ui:pane',
+          zones: {
+            content: [
+              { id: ROW, type: '@kerfjs/ui:row' },
+              {
+                id: '01JB8Z1M6Q8E1X9V4S7K2R3TP2',
+                type: '@kerfjs/ui:button',
+                props: { children: 'Has a label' },
+              },
+            ],
+          },
+        },
+      } as never,
+    });
+    const canvas = root.querySelector('[data-editor-canvas]')!;
+    const empties = canvas.querySelectorAll<HTMLElement>('[data-editor-empty]');
+    // Only the Row is empty: the Pane holds nodes, the Button has a label.
+    expect(empties).toHaveLength(1);
+    expect(empties[0]!.textContent).toBe(
+      'Row is empty — drag a component here',
+    );
+    expect(
+      empties[0]!.closest('[data-kerf-node]')?.getAttribute('data-kerf-node'),
+    ).toBe(ROW);
+    empties[0]!.click();
+    expect(editor.selection.value).toEqual({ kind: 'node', id: ROW });
+    // The placeholder is preview-only: the document and its count are unchanged.
+    expect(editor.document.value.root.zones!.content![0]).not.toHaveProperty(
+      'zones',
+    );
+    expect(root.textContent).toContain('3 nodes');
+  });
+
   it('lists problems, marks their nodes in the outline, and selects one', () => {
     const document = globalThis.structuredClone(
       createEditor().document.value,

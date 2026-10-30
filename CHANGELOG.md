@@ -225,6 +225,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Empty containers show on the Kerf UI editor canvas.** A container whose main zone holds nothing (a new document's Pane, a Row just dropped in) previewed with no size, so it could not be seen, clicked, or dropped into. It now shows a placeholder ("Row is empty — drag a component here") that selects the node and takes a drop; the document is unchanged (`KF-ZWJHJR`).
 - **Drops land in a node's main zone in the Kerf UI editor.** Dropping a component on blank canvas, or inside a node, now fills the zone its `children` render into (a Pane's content) before any other, and Add a child starts on that zone, instead of the first zone listed (a Pane's header) (`KF-W10DXQ`).
 - **`@kerfjs/ui/styles.css` now holds the whole root-barrel layer.** It left out the stylesheets of `ListInsetControl`, `ListInsetText`, `SunkenPanel`, and `FloatingToolbar`. A root-barrel import paired with `styles.css`, as the Kerf UI editor's canvas does, therefore rendered those components unstyled: a `ListInsetControl` had no inset. The component-integrations check now fails when a root-barrel component's stylesheet does not reach `styles.css` (`KF-H29W31`).
 - **Singular counts in the Kerf UI editor's preview header.** A document with one node or one problem now reads "1 node" and "1 problem" instead of "1 nodes" and "1 problems" (`KF-X2YQZE`).

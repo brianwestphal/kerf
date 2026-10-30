@@ -307,12 +307,30 @@ const icons = new Proxy({} as Record<string, unknown>, {
  * The placeholders for one preview's slots, each marked with where its
  * `$slot` sits so the canvas can select it (KF-5RKX3W).
  */
-const slotPlaceholders = (placed: ReadonlyMap<string, PreviewSlot>) =>
+const slotPlaceholders = (
+  placed: ReadonlyMap<string, PreviewSlot>,
+  /** What a node is called, for an empty zone's stand-in. */
+  titleOf: (id: string) => string,
+) =>
   new Proxy({} as Record<string, () => SafeHtml>, {
     get: (_target, name) => {
       // previewSlots names every slot placed in a zone; any other name is a
       // slot inside a prop value (KF-SXDM56), which selects with its node.
       const slot = placed.get(String(name));
+      // KF-ZWJHJR: an empty container's stand-in belongs to its node, so a
+      // click selects the node and a drop lands inside it.
+      if (slot?.empty)
+        return () => (
+          <div
+            class="kui-editor__empty"
+            data-editor-empty={JSON.stringify(slot.address)}
+          >
+            {Text({
+              children: `${titleOf(slot.address.parent)} is empty — drag a component here`,
+              tone: 'quiet',
+            })}
+          </div>
+        );
       return () =>
         slot
           ? Text({
@@ -326,7 +344,8 @@ const slotPlaceholders = (placed: ReadonlyMap<string, PreviewSlot>) =>
 
 /** The canvas renderer for one catalog. */
 function canvasRenderer(catalog: EditorCatalog) {
-  const { viewCatalog, componentNames, components, placeholders } = catalog;
+  const { viewCatalog, componentNames, components, placeholders, propsByKey } =
+    catalog;
   /** Stands in for a node the preview cannot render; still selectable. */
   const brokenNode = (node: ViewNode): SafeHtml =>
     Badge({
@@ -335,9 +354,31 @@ function canvasRenderer(catalog: EditorCatalog) {
       rootAttributes: { 'data-kerf-node': node.id },
     });
 
+  const knownKeys = new Set(viewCatalog.components.keys());
+  /**
+   * The zone an empty container shows a stand-in in (KF-ZWJHJR): its main
+   * zone, while that zone and the `children` prop it renders are unset.
+   */
+  const emptyZoneOf = (node: ViewNode): string | undefined => {
+    if (node.type.startsWith('#') || node.props?.children !== undefined)
+      return undefined;
+    return legalZones(
+      node,
+      viewCatalog.entries.get(node.type) as Parameters<typeof legalZones>[1],
+      propsByKey.get(node.type)?.props ?? [],
+      knownKeys,
+    ).find((zone) => zone.primary)?.key;
+  };
+
   /** Renders the document onto the canvas, or explains why it cannot. */
   return (source: ViewDocument, problems: readonly Problem[]): SafeHtml => {
-    const { document, slots: placed } = previewSlots(source);
+    const { document, slots: placed } = previewSlots(source, emptyZoneOf);
+    const titles = new Map(
+      visitNodes(source).map(({ node }) => [
+        node.id,
+        node.name ?? nodeTitle(node, componentNames),
+      ]),
+    );
     const preview = {
       catalog: viewCatalog,
       components,
@@ -346,7 +387,7 @@ function canvasRenderer(catalog: EditorCatalog) {
         (label) => Text({ children: label }),
         (key) => placeholders[key]?.(),
       ),
-      slots: slotPlaceholders(placed),
+      slots: slotPlaceholders(placed, (id) => titles.get(id) ?? 'This node'),
       icons,
     };
     // A node whose component has no function here (an application component
