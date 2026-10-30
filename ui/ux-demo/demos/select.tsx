@@ -144,52 +144,62 @@ export function SelectDemo() {
         note="A multiple icon-only trigger keeps a fixed icon and counts the chosen filters; hover or keyboard focus shows a help tag with its name and chosen labels."
         align="inline-control"
       >
-        <ToolbarControlGroup
-          label="Label Filter"
-          content="icon"
-          focusRing="outline"
-          single
-        >
-          <Select<string>
-            name="ticket-label-filter"
-            multiple
-            value={ticketLabelFilter.value}
-            ariaLabel="Filter by Label"
-            presentation="toolbar-borderless"
-            selectedPresentation="icon-only"
-            triggerIcon={<LucideIcon icon={Funnel} name="funnel" />}
-            focusRingOwner="group"
-            choices={labelChoices}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Toolbar Filter"
+          leading={
+            <ToolbarControlGroup
+              label="Label Filter"
+              content="icon"
+              focusRing="outline"
+              single
+            >
+              <Select<string>
+                name="ticket-label-filter"
+                multiple
+                value={ticketLabelFilter.value}
+                ariaLabel="Filter by Label"
+                presentation="toolbar-borderless"
+                selectedPresentation="icon-only"
+                triggerIcon={<LucideIcon icon={Funnel} name="funnel" />}
+                focusRingOwner="group"
+                choices={labelChoices}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample
         label="Toolbar Filter Beside Actions"
         note="The pin button, filter, and menu each show their name as a help tag on hover or keyboard focus."
         align="inline-control"
       >
-        <ToolbarControlGroup label="Ticket View">
-          <ToolbarButton
-            ariaLabel="Pin View"
-            action="log-pin"
-            icon={<LucideIcon icon={Pin} name="pin" />}
-          />
-          <Select<string>
-            name="toolbar-ticket-label-filter"
-            multiple
-            value={ticketLabelFilter.value}
-            ariaLabel="Filter by Label"
-            presentation="toolbar-borderless"
-            selectedPresentation="icon-only"
-            triggerIcon={<LucideIcon icon={Funnel} name="funnel" />}
-            choices={labelChoices}
-          />
-          <PopupMenu
-            label="More Actions"
-            icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
-            items={[{ label: 'Archive', action: 'log-more' }]}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Toolbar Filter Beside Actions"
+          leading={
+            <ToolbarControlGroup label="Ticket View">
+              <ToolbarButton
+                ariaLabel="Pin View"
+                action="log-pin"
+                icon={<LucideIcon icon={Pin} name="pin" />}
+              />
+              <Select<string>
+                name="toolbar-ticket-label-filter"
+                multiple
+                value={ticketLabelFilter.value}
+                ariaLabel="Filter by Label"
+                presentation="toolbar-borderless"
+                selectedPresentation="icon-only"
+                triggerIcon={<LucideIcon icon={Funnel} name="funnel" />}
+                choices={labelChoices}
+              />
+              <PopupMenu
+                label="More Actions"
+                icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
+                items={[{ label: 'Archive', action: 'log-more' }]}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample
         label="Accessible Name Without a Visible Label"
@@ -248,96 +258,116 @@ export function SelectDemo() {
         note="An icon-only trigger keeps its caret; a single group grows to fit both. Hover or keyboard focus shows a help tag with its name and current choice."
         align="inline-control"
       >
-        <ToolbarControlGroup
-          label="Rendering Mode"
-          content="icon"
-          focusRing="outline"
-          single
-        >
-          <Select<string>
-            name="toolbar-default-rendering-balance"
-            value={selectedChoice.value}
-            ariaLabel="Default Toolbar Rendering Balance"
-            presentation="toolbar-borderless"
-            selectedPresentation="icon-only"
-            focusRingOwner="group"
-            choices={toolbarChoices}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Toolbar Icon"
+          leading={
+            <ToolbarControlGroup
+              label="Rendering Mode"
+              content="icon"
+              focusRing="outline"
+              single
+            >
+              <Select<string>
+                name="toolbar-default-rendering-balance"
+                value={selectedChoice.value}
+                ariaLabel="Default Toolbar Rendering Balance"
+                presentation="toolbar-borderless"
+                selectedPresentation="icon-only"
+                focusRingOwner="group"
+                choices={toolbarChoices}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample
         label="Round Toolbar Icon"
         note="An icon-only Select can omit its caret to match a round action trigger. The accessible name and current choice remain available on hover and focus."
         align="inline-control"
       >
-        <ToolbarControlGroup
-          label="Workspace Sort"
-          content="icon"
-          focusRing="outline"
-          shape="pill"
-          single
-        >
-          <Select<string>
-            name="toolbar-round-rendering-balance"
-            value={selectedChoice.value}
-            ariaLabel="Workspace Sort"
-            presentation="toolbar-borderless"
-            selectedPresentation="icon-only"
-            caret={false}
-            focusRingOwner="group"
-            choices={toolbarChoices}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Round Toolbar Icon"
+          leading={
+            <ToolbarControlGroup
+              label="Workspace Sort"
+              content="icon"
+              focusRing="outline"
+              shape="pill"
+              single
+            >
+              <Select<string>
+                name="toolbar-round-rendering-balance"
+                value={selectedChoice.value}
+                ariaLabel="Workspace Sort"
+                presentation="toolbar-borderless"
+                selectedPresentation="icon-only"
+                caret={false}
+                focusRingOwner="group"
+                choices={toolbarChoices}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample
         label="Round Toolbar Custom Icon"
         note="A custom selected icon stays centered in the same caret-free round trigger."
         align="inline-control"
       >
-        <ToolbarControlGroup
-          label="Custom Workspace Sort"
-          content="icon"
-          focusRing="outline"
-          shape="pill"
-          single
-        >
-          <Select<string>
-            name="toolbar-round-custom-rendering-balance"
-            value={selectedChoice.value}
-            ariaLabel="Custom Workspace Sort"
-            presentation="toolbar-borderless"
-            selectedPresentation="icon-only"
-            caret={false}
-            focusRingOwner="group"
-            renderSelected={(choice) => (
-              <LucideIcon
-                icon={choice.icon!}
-                name={choice.label.toLowerCase()}
+        <Toolbar
+          label="Round Toolbar Custom Icon"
+          leading={
+            <ToolbarControlGroup
+              label="Custom Workspace Sort"
+              content="icon"
+              focusRing="outline"
+              shape="pill"
+              single
+            >
+              <Select<string>
+                name="toolbar-round-custom-rendering-balance"
+                value={selectedChoice.value}
+                ariaLabel="Custom Workspace Sort"
+                presentation="toolbar-borderless"
+                selectedPresentation="icon-only"
+                caret={false}
+                focusRingOwner="group"
+                renderSelected={(choice) => (
+                  <LucideIcon
+                    icon={choice.icon!}
+                    name={choice.label.toLowerCase()}
+                  />
+                )}
+                choices={toolbarChoices}
               />
-            )}
-            choices={toolbarChoices}
-          />
-        </ToolbarControlGroup>
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample label="Compact Toolbar Icon" align="inline-control">
-        <ToolbarControlGroup
-          label="Rendering Mode"
-          size="compact"
-          content="icon"
-          focusRing="outline"
-          single
-        >
-          <Select<string>
-            name="toolbar-rendering-balance"
-            value={selectedChoice.value}
-            ariaLabel="Toolbar Rendering Balance"
-            presentation="toolbar-borderless"
-            size="compact"
-            selectedPresentation="icon-only"
-            focusRingOwner="group"
-            choices={toolbarChoices}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Compact Toolbar Icon"
+          leading={
+            <ToolbarControlGroup
+              label="Rendering Mode"
+              size="compact"
+              content="icon"
+              focusRing="outline"
+              single
+            >
+              <Select<string>
+                name="toolbar-rendering-balance"
+                value={selectedChoice.value}
+                ariaLabel="Toolbar Rendering Balance"
+                presentation="toolbar-borderless"
+                size="compact"
+                selectedPresentation="icon-only"
+                focusRingOwner="group"
+                choices={toolbarChoices}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample
         label="Long Options Within Viewport"

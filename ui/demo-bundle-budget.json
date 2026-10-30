@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 444800,
-  "measuredLargestJavaScriptGzip": 164546,
-  "measuredTotalJavaScriptGzip": 444714,
+  "totalJavaScriptGzip": 445100,
+  "measuredLargestJavaScriptGzip": 164547,
+  "measuredTotalJavaScriptGzip": 445067,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6515,6 +6515,22 @@
         "measuredTotalJavaScriptGzip": 444714,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 444800
+      }
+    },
+    {
+      "at": "2026-10-30T12:37:13.578Z",
+      "reason": "KF-0W87ST wraps 26 standalone ToolbarControlGroup demo specimens in a Toolbar to satisfy the composition rules",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 444714,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 444800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 445067,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 445100
       }
     }
   ]

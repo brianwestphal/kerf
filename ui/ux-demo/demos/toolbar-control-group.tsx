@@ -100,175 +100,220 @@ export function ToolbarControlGroupDemo() {
         }
         align="inline-control"
       >
-        <ToolbarControlGroup>
-          <SegmentedControl
-            id="toolbar-group-shape"
-            label="Group Shape"
-            value={shape}
-            action="select-segment-demo"
-            appearance="toolbar"
-            shape="pill"
-            size="small"
-            choices={[
-              { value: 'pill', label: 'Pill' },
-              { value: 'rounded', label: 'Rounded' },
-            ]}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Shape"
+          leading={
+            <ToolbarControlGroup>
+              <SegmentedControl
+                id="toolbar-group-shape"
+                label="Group Shape"
+                value={shape}
+                action="select-segment-demo"
+                appearance="toolbar"
+                shape="pill"
+                size="small"
+                choices={[
+                  { value: 'pill', label: 'Pill' },
+                  { value: 'rounded', label: 'Rounded' },
+                ]}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample
         label="Corner Count"
         note='A Badge with placement="corner" pins a count over the top-trailing corner of the button, which names the count itself.'
         align="inline-control"
       >
-        <ToolbarControlGroup shape={shape} single>
-          <button
-            type="button"
-            aria-label="Hidden Workspaces, 3 hidden"
-            data-action="log-more"
-            data-demo-corner-count=""
-          >
-            <LucideIcon icon={EyeOff} name="eye-off" />
-            <Badge
-              tone="warning"
-              appearance="solid"
-              size="compact"
-              placement="corner"
-              ariaHidden
-            >
-              3
-            </Badge>
-          </button>
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Corner Count"
+          leading={
+            <ToolbarControlGroup shape={shape} single>
+              <button
+                type="button"
+                aria-label="Hidden Workspaces, 3 hidden"
+                data-action="log-more"
+                data-demo-corner-count=""
+              >
+                <LucideIcon icon={EyeOff} name="eye-off" />
+                <Badge
+                  tone="warning"
+                  appearance="solid"
+                  size="compact"
+                  placement="corner"
+                  ariaHidden
+                >
+                  3
+                </Badge>
+              </button>
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample label="Segmented Choices" align="inline-control">
-        <ToolbarControlGroup shape={shape}>
-          <SegmentedControl
-            id="toolbar-view"
-            label="View Mode"
-            value={toolbarChoice.value}
-            action="select-segment-demo"
-            appearance="toolbar"
-            shape="pill"
-            size="small"
-            choices={[
-              {
-                value: 'list',
-                label: 'List View',
-                content: <LucideIcon icon={List} name="list" />,
-              },
-              {
-                value: 'columns',
-                label: 'Columns View',
-                content: <LucideIcon icon={Columns3} name="columns-3" />,
-              },
-              {
-                value: 'settings',
-                label: 'Settings View',
-                content: <LucideIcon icon={Settings} name="settings" />,
-              },
-            ]}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Segmented Choices"
+          leading={
+            <ToolbarControlGroup shape={shape}>
+              <SegmentedControl
+                id="toolbar-view"
+                label="View Mode"
+                value={toolbarChoice.value}
+                action="select-segment-demo"
+                appearance="toolbar"
+                shape="pill"
+                size="small"
+                choices={[
+                  {
+                    value: 'list',
+                    label: 'List View',
+                    content: <LucideIcon icon={List} name="list" />,
+                  },
+                  {
+                    value: 'columns',
+                    label: 'Columns View',
+                    content: <LucideIcon icon={Columns3} name="columns-3" />,
+                  },
+                  {
+                    value: 'settings',
+                    label: 'Settings View',
+                    content: <LucideIcon icon={Settings} name="settings" />,
+                  },
+                ]}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample label="Popup Menu" align="inline-control">
-        <ToolbarControlGroup
-          single
-          shape={shape}
-          nestedDropdown
-          menuInset="compact"
-        >
-          <PopupMenu
-            label="Sort Tickets"
-            icon={<LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />}
-            items={[
-              { label: 'Recently Updated', action: 'sort-recent' },
-              { label: 'Priority', action: 'sort-priority' },
-            ]}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Popup Menu"
+          leading={
+            <ToolbarControlGroup
+              single
+              shape={shape}
+              nestedDropdown
+              menuInset="compact"
+            >
+              <PopupMenu
+                label="Sort Tickets"
+                icon={<LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />}
+                items={[
+                  { label: 'Recently Updated', action: 'sort-recent' },
+                  { label: 'Priority', action: 'sort-priority' },
+                ]}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample label="Popup Menu (Icon Only)" align="inline-control">
-        <ToolbarControlGroup
-          single
-          shape={shape}
-          nestedDropdown
-          menuInset="compact"
-        >
-          <PopupMenu
-            label="Sort Direction"
-            icon={<LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />}
-            caret={false}
-            items={[
-              { label: 'Recently Updated', action: 'sort-recent' },
-              { label: 'Priority', action: 'sort-priority' },
-            ]}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Popup Menu (Icon Only)"
+          leading={
+            <ToolbarControlGroup
+              single
+              shape={shape}
+              nestedDropdown
+              menuInset="compact"
+            >
+              <PopupMenu
+                label="Sort Direction"
+                icon={<LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />}
+                caret={false}
+                items={[
+                  { label: 'Recently Updated', action: 'sort-recent' },
+                  { label: 'Priority', action: 'sort-priority' },
+                ]}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample label="Action Link" align="inline-control">
-        <ToolbarControlGroup content="mixed" shape={shape} single>
-          <ToolbarActionLink
-            href="https://github.com/brianwestphal/kerf"
-            label="Repository"
-            external
-            icon={<LucideIcon icon={ExternalLink} name="external-link" />}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Action Link"
+          leading={
+            <ToolbarControlGroup content="mixed" shape={shape} single>
+              <ToolbarActionLink
+                href="https://github.com/brianwestphal/kerf"
+                label="Repository"
+                external
+                icon={<LucideIcon icon={ExternalLink} name="external-link" />}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample
         label="Button Group"
         note="Name an icon-only button with aria-label (ToolbarButton's ariaLabel); hover or keyboard focus shows that name as a help tag."
         align="inline-control"
       >
-        <ToolbarControlGroup label="View Actions" shape={shape}>
-          <ToolbarButton
-            ariaLabel="Favorite View"
-            action="log-favorite"
-            icon={<LucideIcon icon={Star} name="star" />}
-          />
-          <ToolbarButton
-            ariaLabel="More Actions"
-            action="log-more"
-            icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Button Group"
+          leading={
+            <ToolbarControlGroup label="View Actions" shape={shape}>
+              <ToolbarButton
+                ariaLabel="Favorite View"
+                action="log-favorite"
+                icon={<LucideIcon icon={Star} name="star" />}
+              />
+              <ToolbarButton
+                ariaLabel="More Actions"
+                action="log-more"
+                icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample
         label="Select Beside Actions"
         note="An icon-only Select shares the group's inset, hover, and per-control focus ring with its sibling buttons."
         align="inline-control"
       >
-        <ToolbarControlGroup label="Ticket View" shape={shape}>
-          <ToolbarButton
-            ariaLabel="Pin View"
-            action="log-pin"
-            pressed
-            icon={<LucideIcon icon={Pin} name="pin" />}
-          />
-          <Select<string>
-            name="toolbar-group-sort"
-            value={toolbarSort.value}
-            ariaLabel="Sort Tickets"
-            presentation="toolbar-borderless"
-            selectedPresentation="icon-only"
-            choices={sortChoices}
-          />
-          <PopupMenu
-            label="More Actions"
-            icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
-            items={[{ label: 'Archive', action: 'log-more' }]}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Select Beside Actions"
+          leading={
+            <ToolbarControlGroup label="Ticket View" shape={shape}>
+              <ToolbarButton
+                ariaLabel="Pin View"
+                action="log-pin"
+                pressed
+                icon={<LucideIcon icon={Pin} name="pin" />}
+              />
+              <Select<string>
+                name="toolbar-group-sort"
+                value={toolbarSort.value}
+                ariaLabel="Sort Tickets"
+                presentation="toolbar-borderless"
+                selectedPresentation="icon-only"
+                choices={sortChoices}
+              />
+              <PopupMenu
+                label="More Actions"
+                icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
+                items={[{ label: 'Archive', action: 'log-more' }]}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample label="Single Button" align="inline-control">
-        <ToolbarControlGroup single shape={shape}>
-          <ToolbarButton
-            ariaLabel="Pin View"
-            action="log-pin"
-            icon={<LucideIcon icon={Pin} name="pin" />}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Single Button"
+          leading={
+            <ToolbarControlGroup single shape={shape}>
+              <ToolbarButton
+                ariaLabel="Pin View"
+                action="log-pin"
+                icon={<LucideIcon icon={Pin} name="pin" />}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample
         label="Busy Action"
@@ -304,84 +349,120 @@ export function ToolbarControlGroupDemo() {
         </button>
       </CatalogExample>
       <CatalogExample label="Borderless Group" align="inline-control">
-        <ToolbarControlGroup appearance="borderless" single shape={shape}>
-          <ToolbarButton
-            ariaLabel="Show Sidebar"
-            action="log-sidebar"
-            icon={<LucideIcon icon={PanelLeftOpen} name="panel-left-open" />}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Borderless Group"
+          leading={
+            <ToolbarControlGroup appearance="borderless" single shape={shape}>
+              <ToolbarButton
+                ariaLabel="Show Sidebar"
+                action="log-sidebar"
+                icon={
+                  <LucideIcon icon={PanelLeftOpen} name="panel-left-open" />
+                }
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample label="Push Button, Resting" align="inline-control">
-        <ToolbarControlGroup buttonAppearance="push" single shape={shape}>
-          <ToolbarButton
-            ariaLabel="Resting Comparison"
-            action="log-resting"
-            pressed={false}
-            icon={<LucideIcon icon={GitCompare} name="git-compare" />}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Push Button, Resting"
+          leading={
+            <ToolbarControlGroup buttonAppearance="push" single shape={shape}>
+              <ToolbarButton
+                ariaLabel="Resting Comparison"
+                action="log-resting"
+                pressed={false}
+                icon={<LucideIcon icon={GitCompare} name="git-compare" />}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample label="Push Button, Pressed" align="inline-control">
-        <ToolbarControlGroup buttonAppearance="push" single shape={shape}>
-          <ToolbarButton
-            ariaLabel="Pressed Comparison"
-            action="log-pressed"
-            pressed
-            icon={<LucideIcon icon={GitCompare} name="git-compare" />}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Push Button, Pressed"
+          leading={
+            <ToolbarControlGroup buttonAppearance="push" single shape={shape}>
+              <ToolbarButton
+                ariaLabel="Pressed Comparison"
+                action="log-pressed"
+                pressed
+                icon={<LucideIcon icon={GitCompare} name="git-compare" />}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample label="Pop Selected Tone" align="inline-control">
-        <ToolbarControlGroup
-          label="Featured Action"
-          selectedChrome="filled"
-          selectedTone="pop"
-          shape={shape}
-        >
-          <ToolbarButton
-            ariaLabel="Featured"
-            action="log-featured"
-            pressed
-            icon={<LucideIcon icon={Star} name="star" />}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Pop Selected Tone"
+          leading={
+            <ToolbarControlGroup
+              label="Featured Action"
+              selectedChrome="filled"
+              selectedTone="pop"
+              shape={shape}
+            >
+              <ToolbarButton
+                ariaLabel="Featured"
+                action="log-featured"
+                pressed
+                icon={<LucideIcon icon={Star} name="star" />}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample
         label="Icon-State Toggle"
         note='The filled star already shows the pressed state, so data-selected-chrome="none" keeps that one button from painting selected chrome; selectedChrome="none" does the same for a whole group.'
         align="inline-control"
       >
-        <ToolbarControlGroup label="Ticket Actions" shape={shape}>
-          <button
-            type="button"
-            aria-label="Up Next"
-            aria-pressed="true"
-            data-selected-chrome="none"
-            data-action="log-up-next"
-          >
-            <LucideIcon icon={Star} name="star" appearance="solid" />
-          </button>
-          <ToolbarButton
-            ariaLabel="Share"
-            action="log-share"
-            icon={<LucideIcon icon={Share2} name="share-2" />}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Icon-State Toggle"
+          leading={
+            <ToolbarControlGroup label="Ticket Actions" shape={shape}>
+              <button
+                type="button"
+                aria-label="Up Next"
+                aria-pressed="true"
+                data-selected-chrome="none"
+                data-action="log-up-next"
+              >
+                <LucideIcon icon={Star} name="star" appearance="solid" />
+              </button>
+              <ToolbarButton
+                ariaLabel="Share"
+                action="log-share"
+                icon={<LucideIcon icon={Share2} name="share-2" />}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample label="Dark Group" align="inline-control">
-        <ToolbarControlGroup label="Dark Navigation" tone="dark" shape={shape}>
-          <ToolbarButton
-            ariaLabel="Previous"
-            action="log-previous"
-            icon={<LucideIcon icon={ChevronLeft} name="chevron-left" />}
-          />
-          <ToolbarButton
-            ariaLabel="Next"
-            action="log-next"
-            icon={<LucideIcon icon={ChevronRight} name="chevron-right" />}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Dark Group"
+          leading={
+            <ToolbarControlGroup
+              label="Dark Navigation"
+              tone="dark"
+              shape={shape}
+            >
+              <ToolbarButton
+                ariaLabel="Previous"
+                action="log-previous"
+                icon={<LucideIcon icon={ChevronLeft} name="chevron-left" />}
+              />
+              <ToolbarButton
+                ariaLabel="Next"
+                action="log-next"
+                icon={<LucideIcon icon={ChevronRight} name="chevron-right" />}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample
         label="Glass Material"
@@ -469,55 +550,70 @@ export function ToolbarControlGroupDemo() {
         </Pane>
       </CatalogExample>
       <CatalogExample label="Compact Mixed Controls" align="inline-control">
-        <ToolbarControlGroup
-          label="Compact Formatting"
-          size="compact"
-          content="mixed"
-          nestedDropdown
-          shape={shape}
-        >
-          <button type="button" aria-pressed="true">
-            <LucideIcon icon={Star} name="star" /> Favorite
-          </button>
-          <PopupMenu text="More" items={[{ label: 'Archive' }]} />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Compact Mixed Controls"
+          leading={
+            <ToolbarControlGroup
+              label="Compact Formatting"
+              size="compact"
+              content="mixed"
+              nestedDropdown
+              shape={shape}
+            >
+              <button type="button" aria-pressed="true">
+                <LucideIcon icon={Star} name="star" /> Favorite
+              </button>
+              <PopupMenu text="More" items={[{ label: 'Archive' }]} />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample label="Avatar Profile" align="inline-control">
-        <ToolbarControlGroup
-          label="Profile"
-          content="avatar"
-          selectedTone="neutral"
-          scrim
-          single
-          shape={shape}
-          avatarImage={profileImageUrl}
-        >
-          <button type="button" aria-label="Open Brian Profile" />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Avatar Profile"
+          leading={
+            <ToolbarControlGroup
+              label="Profile"
+              content="avatar"
+              selectedTone="neutral"
+              scrim
+              single
+              shape={shape}
+              avatarImage={profileImageUrl}
+            >
+              <button type="button" aria-label="Open Brian Profile" />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample label="Avatar Selection" align="inline-control">
-        <ToolbarControlGroup
-          label="Profile View"
-          content="avatar"
-          selectedTone="neutral"
-          avatarImage={profileImageUrl}
-          shape={shape}
-        >
-          <button
-            type="button"
-            aria-label="Primary Profile"
-            aria-pressed={String(toolbarAvatarChoice.value === 'primary')}
-            data-action="select-avatar-demo"
-            data-avatar-value="primary"
-          />
-          <button
-            type="button"
-            aria-label="Secondary Profile"
-            aria-pressed={String(toolbarAvatarChoice.value === 'secondary')}
-            data-action="select-avatar-demo"
-            data-avatar-value="secondary"
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Avatar Selection"
+          leading={
+            <ToolbarControlGroup
+              label="Profile View"
+              content="avatar"
+              selectedTone="neutral"
+              avatarImage={profileImageUrl}
+              shape={shape}
+            >
+              <button
+                type="button"
+                aria-label="Primary Profile"
+                aria-pressed={String(toolbarAvatarChoice.value === 'primary')}
+                data-action="select-avatar-demo"
+                data-avatar-value="primary"
+              />
+              <button
+                type="button"
+                aria-label="Secondary Profile"
+                aria-pressed={String(toolbarAvatarChoice.value === 'secondary')}
+                data-action="select-avatar-demo"
+                data-avatar-value="secondary"
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample
         label="Collapsible Search"

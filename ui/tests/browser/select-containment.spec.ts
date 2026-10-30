@@ -7,10 +7,11 @@ for (const width of [1100, 390]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/?component=select');
     const select = page.locator('[name="toolbar-rendering-balance"]');
-    // Move the unchanged production group to controlled viewport anchors.
+    // Move the unchanged production toolbar (the specimen root since KF-0W87ST
+    // wrapped the group in a Toolbar) to controlled viewport anchors.
     // No Select or popup styles are overridden.
     await select.evaluate((element) => {
-      const group = element.parentElement!;
+      const group = element.closest<HTMLElement>('.kui-toolbar')!;
       group.style.position = 'fixed';
       group.style.top = '120px';
       element
@@ -21,7 +22,7 @@ for (const width of [1100, 390]) {
     });
     for (const left of [0, 86, width - 68]) {
       await select.evaluate((element, x) => {
-        element.parentElement!.style.left = `${x}px`;
+        element.closest<HTMLElement>('.kui-toolbar')!.style.left = `${x}px`;
       }, left);
       await select.getByRole('combobox').click();
       await expect(select).toHaveAttribute('open');
@@ -60,7 +61,7 @@ for (const width of [1100, 390]) {
     const resizedWidth = width === 1100 ? 390 : 1100;
     await page.setViewportSize({ width: resizedWidth, height: 844 });
     await select.evaluate((element, x) => {
-      element.parentElement!.style.left = `${x - 68}px`;
+      element.closest<HTMLElement>('.kui-toolbar')!.style.left = `${x - 68}px`;
     }, resizedWidth);
     await expect
       .poll(async () =>
@@ -76,7 +77,7 @@ for (const width of [1100, 390]) {
     await expect(select).not.toHaveAttribute('open');
     await page.setViewportSize({ width, height: 844 });
     await select.evaluate((element, x) => {
-      element.parentElement!.style.left = `${x - 68}px`;
+      element.closest<HTMLElement>('.kui-toolbar')!.style.left = `${x - 68}px`;
     }, width);
     await select.evaluate((element) => {
       element.classList.add('kui-select--fit-menu');
@@ -166,11 +167,14 @@ test('a tall Select listbox never covers its trigger at a short viewport', async
   await page.goto('/?component=select');
   const select = page.locator('[name="toolbar-rendering-balance"]');
   const combobox = select.getByRole('combobox');
-  // Move the unchanged production group to controlled viewport anchors and
-  // lengthen the listbox. No Select or popup styles are overridden.
+  // Move the unchanged production toolbar (the specimen root) to controlled
+  // viewport anchors, above the catalog footer it lands on at the lower
+  // anchor, and lengthen the listbox. No Select or popup styles are
+  // overridden.
   await select.evaluate((element) => {
-    const group = element.parentElement!;
+    const group = element.closest<HTMLElement>('.kui-toolbar')!;
     group.style.position = 'fixed';
+    group.style.zIndex = '1';
     group.style.left = '400px';
     const option = element.querySelector('.kui-select__option')!;
     for (let index = 0; index < 30; index += 1) {
@@ -184,7 +188,7 @@ test('a tall Select listbox never covers its trigger at a short viewport', async
     [480, 'top'],
   ] as const) {
     await select.evaluate((element, y) => {
-      element.parentElement!.style.top = `${y}px`;
+      element.closest<HTMLElement>('.kui-toolbar')!.style.top = `${y}px`;
     }, top);
     await combobox.click();
     await expect(select).toHaveAttribute('open');

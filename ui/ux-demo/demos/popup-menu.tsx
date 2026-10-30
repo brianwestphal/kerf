@@ -37,52 +37,62 @@ export function PopupMenuDemo() {
         note="A single group with nestedDropdown sizes the trigger as a toolbar button; menuInset sets the menu's inset. Hover or keyboard focus shows the label as a help tag."
         align="inline-control"
       >
-        <ToolbarControlGroup single nestedDropdown menuInset="compact">
-          <PopupMenu
-            label="Sort Tickets"
-            icon={<LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />}
-            items={[
-              { label: 'Recently Updated', action: 'sort-recent' },
-              { label: 'Priority', action: 'sort-priority' },
-            ]}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Icon Trigger in a Toolbar Group"
+          leading={
+            <ToolbarControlGroup single nestedDropdown menuInset="compact">
+              <PopupMenu
+                label="Sort Tickets"
+                icon={<LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />}
+                items={[
+                  { label: 'Recently Updated', action: 'sort-recent' },
+                  { label: 'Priority', action: 'sort-priority' },
+                ]}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample
         label="Grouped Commands with Icons"
         align="inline-control"
       >
-        <ToolbarControlGroup
-          single
-          content="mixed"
-          nestedDropdown
-          menuInset="compact"
-        >
-          <PopupMenu
-            text="Actions"
-            icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
-            items={[
-              { kind: 'heading', label: 'Ticket' },
-              {
-                label: 'Duplicate',
-                action: 'log-more',
-                icon: <LucideIcon icon={Copy} name="copy" />,
-              },
-              {
-                label: 'Archive',
-                action: 'log-more',
-                icon: <LucideIcon icon={Archive} name="archive" />,
-              },
-              { kind: 'divider' },
-              {
-                label: 'Delete',
-                action: 'log-more',
-                icon: <LucideIcon icon={Trash2} name="trash-2" />,
-                disabled: true,
-              },
-            ]}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Grouped Commands with Icons"
+          leading={
+            <ToolbarControlGroup
+              single
+              content="mixed"
+              nestedDropdown
+              menuInset="compact"
+            >
+              <PopupMenu
+                text="Actions"
+                icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
+                items={[
+                  { kind: 'heading', label: 'Ticket' },
+                  {
+                    label: 'Duplicate',
+                    action: 'log-more',
+                    icon: <LucideIcon icon={Copy} name="copy" />,
+                  },
+                  {
+                    label: 'Archive',
+                    action: 'log-more',
+                    icon: <LucideIcon icon={Archive} name="archive" />,
+                  },
+                  { kind: 'divider' },
+                  {
+                    label: 'Delete',
+                    action: 'log-more',
+                    icon: <LucideIcon icon={Trash2} name="trash-2" />,
+                    disabled: true,
+                  },
+                ]}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample label="Trailing Toolbar Menu" align="none">
         <Toolbar
