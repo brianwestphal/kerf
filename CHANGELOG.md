@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **The Kerf UI editor's component filter stays put.** The Filter Components field now sits in the Document rail's pinned header, under the tab strip, so it stays in view while the Components list scrolls (`KF-PR8MA6`).
+- **Pill-shaped segmented tabs.** In a `TabBar presentation="segmented"` every tab is now a pill inside the pill track, so the selected tab reads as a rounded thumb wherever it sits. Before, only the strip's outer ends were pill-rounded and the corners between tabs kept the small segment radius (`KF-82MNT7`).
 - **Clearer component groups in the Kerf UI editor.** The Components list titles each category with a default `ListHeader` and spaces the categories apart, as the catalog's sidebar does (`KF-K2VP9A`, `KF-YR81M0`).
 - **Every component renders as added in the Kerf UI editor.** A Workbench, SplitView, TabBar, ToolbarControlGroup, FloatingToolbar, and 18 other components showed "cannot render" when added, because their required zones and content started empty. A new node now gets placeholders for them: the zone's own component where the catalog names one (a TabBar gets a TabBarItem), otherwise a `Text` naming the zone ("Main"). Seeded numbers start at their default or 1 (a Grid's `columns`), icon data names a Lucide icon, and list-or-set unions seed a list. Every placeholder can be changed or removed like any other node (`KF-FGD8B3`).
 - **Filter the Kerf UI editor's components.** The Components area opens with a Filter Components field that narrows the palette to components whose name or category holds the text, with an empty state when nothing matches and a clear button (`KF-Y26SKM`).

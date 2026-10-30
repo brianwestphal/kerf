@@ -483,7 +483,7 @@ never give a Button `width: 100%` from application CSS.
 
 For application tabs, `TabBarItem presentation="icon-only"` retains its accessible `name`, `labelMaxWidth` truncates the visible name, and `attention` colors it through `--kui-tab-bar-item-attention-color`. Configure TabBar strip geometry through public `--kui-tab-bar-strip-*` tokens.
 
-`TabBar presentation="inspector"` uses the shared rounded rectangle radius for its strip and inset segmented tabs. Ordinary `presentation="segmented"` keeps pill strip ends and smaller corners between tabs; do not restyle TabBarItem to make one presentation match the other.
+`TabBar presentation="inspector"` uses the shared rounded rectangle radius for its strip and inset segmented tabs. Ordinary `presentation="segmented"` draws every tab as a pill inside its pill strip; do not restyle TabBarItem to make one presentation match the other.
 
 Set `TabBarItem dropTarget` while content is dragged over a tab to highlight the target without changing selection. Use `nameOverflow="visible"` for an inline loading treatment that needs the full visible name; the default is an ellipsis.
 

@@ -239,23 +239,14 @@
   }
 }
 /* In a TabBar, the tab styles itself in the context of its parent strip. A
-   segmented strip's outer ends follow the pill track: the first tab's leading
-   corners, and a filled strip's last tab's trailing corners, are pill-rounded
-   so each end is concentric with the track (TabBar insets a compact strip's
-   tabs to match). Only fill allocation carries the last tab to the track's
-   trailing end; an intrinsic strip's last tab stops short of it and keeps the
-   segment radius, as do the corners between tabs. */
+   segmented strip's track is a pill, so each segment is a pill too
+   (KF-82MNT7): the selected segment reads as a rounded thumb wherever it
+   sits, and the ends stay concentric with the track (TabBar insets a compact
+   strip's tabs to match). */
 .kui-tab-bar[data-presentation="segmented"]
   .kui-tab-bar__tabs
-  > .kui-tab-bar-item:first-child {
-  border-start-start-radius: var(--kui-radius-pill);
-  border-end-start-radius: var(--kui-radius-pill);
-}
-.kui-tab-bar[data-presentation="segmented"][data-allocation="fill"]
-  .kui-tab-bar__tabs
-  > .kui-tab-bar-item:last-child {
-  border-start-end-radius: var(--kui-radius-pill);
-  border-end-end-radius: var(--kui-radius-pill);
+  > .kui-tab-bar-item {
+  border-radius: var(--kui-radius-pill);
 }
 /* Fill allocation shares the strip equally and centers each tab's content. */
 .kui-tab-bar[data-allocation="fill"] .kui-tab-bar__tabs > .kui-tab-bar-item {
