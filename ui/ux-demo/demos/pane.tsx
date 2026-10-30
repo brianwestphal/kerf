@@ -324,8 +324,12 @@ export function PaneDemo() {
           appearance="sunken"
           chromePlacement="auto"
           label="Sunken Auto Workspace"
-          header={<Toolbar label="Header" leading={<span>Header</span>} />}
-          footer={<Toolbar label="Footer" leading={<span>Footer</span>} />}
+          header={
+            <Toolbar label="Header" leading={<ToolbarText text="Header" />} />
+          }
+          footer={
+            <Toolbar label="Footer" leading={<ToolbarText text="Footer" />} />
+          }
         >
           {Array.from({ length: 12 }, (_, index) => (
             <ContentItem>{`Entry ${index + 1}`}</ContentItem>

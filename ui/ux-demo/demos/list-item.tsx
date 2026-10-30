@@ -2,6 +2,7 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
 import { ListItem, ListItemLink } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { Text } from '@kerfjs/ui/text';
 import {
   Bell,
   CircleHelp,
@@ -155,7 +156,7 @@ export function ListItemDemo() {
           itemId="selected"
           label="Selected Item"
           icon={<LucideIcon icon={Inbox} name="inbox" />}
-          trailing={<span>12</span>}
+          trailing={<Text variant="span">12</Text>}
           selected
           rootAttributes={{ 'data-demo-drop-status': 'ready' }}
         />
@@ -166,9 +167,11 @@ export function ListItemDemo() {
           itemId="link"
           label="Jump to List Destination"
           icon={<LucideIcon icon={Folder} name="folder" />}
-          trailing={<span>Link</span>}
+          trailing={<Text variant="span">Link</Text>}
         />
-        <span id="list-item-link-target">List destination</span>
+        <Text variant="span" id="list-item-link-target">
+          List destination
+        </Text>
       </CatalogExample>
       <CatalogExample label="External Navigation Link" align="none">
         <ListItemLink
@@ -201,7 +204,7 @@ export function ListItemDemo() {
           itemId="spacious"
           label="Create a Project from an Existing Repository with a Longer Name"
           icon={<LucideIcon icon={Wrench} name="wrench" />}
-          trailing={<span>Open</span>}
+          trailing={<Text variant="span">Open</Text>}
           density="spacious"
           divider="after"
           multiline
@@ -275,7 +278,7 @@ export function ListItemDemo() {
           label="Loading Item"
           description="Loading description"
           icon={<LucideIcon icon={Folder} name="folder" />}
-          trailing={<span>0</span>}
+          trailing={<Text variant="span">0</Text>}
           placeholder
         />
       </CatalogExample>

@@ -3,6 +3,7 @@ import '@kerfjs/ui/lucide-icon.css';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
+import { Text } from '@kerfjs/ui/text';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { Bell, Columns3, Folder, List, Settings } from 'lucide';
 
@@ -68,7 +69,7 @@ export function SegmentedControlDemo() {
               content: (
                 <>
                   <LucideIcon icon={List} name="list" />
-                  <span>Summary</span>
+                  <Text variant="span">Summary</Text>
                 </>
               ),
             },
@@ -78,7 +79,7 @@ export function SegmentedControlDemo() {
               content: (
                 <>
                   <LucideIcon icon={Bell} name="bell" />
-                  <span>Activity</span>
+                  <Text variant="span">Activity</Text>
                 </>
               ),
             },
@@ -88,7 +89,7 @@ export function SegmentedControlDemo() {
               content: (
                 <>
                   <LucideIcon icon={Folder} name="folder" />
-                  <span>Files</span>
+                  <Text variant="span">Files</Text>
                 </>
               ),
             },

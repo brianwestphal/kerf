@@ -137,7 +137,7 @@ export function ListDemo() {
                   itemId="inbox"
                   label="Inbox"
                   icon={<LucideIcon icon={Inbox} name="inbox" />}
-                  trailing={<span>12</span>}
+                  trailing={<Text variant="span">12</Text>}
                   selected
                 />
                 {workspaceRows.map((row) => (

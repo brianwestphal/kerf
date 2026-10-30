@@ -2,6 +2,7 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { remify } from '@kerfjs/ui/css-values';
 import { DisclosureArrow } from '@kerfjs/ui/disclosure-arrow';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { Text } from '@kerfjs/ui/text';
 import { ArrowRight } from 'lucide';
 
 import {
@@ -24,7 +25,7 @@ export function DisclosureArrowDemo() {
           aria-expanded={String(disclosureOpen.value)}
         >
           <DisclosureArrow open={disclosureOpen.value} />
-          <span>Details</span>
+          <Text variant="span">Details</Text>
         </button>
       </CatalogExample>
       <CatalogExample
@@ -43,7 +44,7 @@ export function DisclosureArrowDemo() {
             closedDirection="left"
             icon={<LucideIcon icon={ArrowRight} name="arrow-right" />}
           />
-          <span>Preview</span>
+          <Text variant="span">Preview</Text>
         </button>
       </CatalogExample>
       <CatalogExample
@@ -62,7 +63,7 @@ export function DisclosureArrowDemo() {
           aria-expanded={String(sizedDisclosureOpen.value)}
         >
           <DisclosureArrow open={sizedDisclosureOpen.value} size={remify(24)} />
-          <span>Activity</span>
+          <Text variant="span">Activity</Text>
         </button>
       </CatalogExample>
     </CatalogExampleStack>

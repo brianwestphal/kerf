@@ -89,7 +89,9 @@ export function SelectDemo() {
                     }
                   />
                 ) : null}
-                <span>{choice.label}</span>
+                <Text variant="span" wrap="nowrap">
+                  {choice.label}
+                </Text>
               </Row>
             )}
           />
@@ -250,7 +252,11 @@ export function SelectDemo() {
           triggerWidth="fit-content"
           maxTriggerWidth={remify(160)}
           choices={[{ value: 'long', label: 'A Very Long Workspace Name' }]}
-          renderSelected={(choice) => <span>{choice.label}</span>}
+          renderSelected={(choice) => (
+            <Text variant="span" wrap="nowrap">
+              {choice.label}
+            </Text>
+          )}
         />
       </CatalogExample>
       <CatalogExample
