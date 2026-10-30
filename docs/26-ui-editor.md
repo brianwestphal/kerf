@@ -179,6 +179,13 @@ components the zone's name suggests first, under Suggested (an `icon` or
 first of them; the rest follow grouped by palette category. Changing the
 zone starts the choice over.
 
+A content prop that takes only nodes and is not the main `children` zone
+(a Button's `icon`, a ListItem's `trailing`; KF-5T3TE4: content rows) is a
+Properties row: empty, it adds the component the zone calls for (its
+first suggestion, or the only component it accepts) and selects it, or
+opens Children on that zone; filled, it names what fills it and selects
+it.
+
 Inspector rows follow the section's prop order, whatever control each
 takes (KF-DQFXWG: LucideIcon inspector): an icon or Configure row sits
 where its prop does rather than after every text field. Choosing an icon

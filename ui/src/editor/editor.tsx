@@ -261,6 +261,8 @@ const ADD_ACTION = 'editor-add-child';
 const REPLACE_ROOT_ACTION = 'editor-replace-root';
 const CONTENT_TO_NODES_ACTION = 'editor-content-to-nodes';
 const CONTENT_TO_TEXT_ACTION = 'editor-content-to-text';
+/** Adds a node to a content prop's zone from its Properties row (KF-5T3TE4). */
+const CONTENT_ADD_ACTION = 'editor-content-add';
 const EXAMPLE_ACTION = 'editor-fill-example';
 // KF-Z9S029: object forms in a pushed Inspector view or a dialog.
 const FIELD_OPEN_ACTION = 'editor-open-field';
@@ -1680,14 +1682,81 @@ export function createEditor(options: EditorOptions) {
    * nodes, or, while its zone holds nodes, a note with Use as text when
    * those nodes are one text run. Undefined for every other prop.
    */
+  /**
+   * The one component a zone of `node` calls for, if any: the first its name
+   * suggests, or the only one it accepts.
+   */
+  const suggestionFor = (node: ViewNode, zone: string) => {
+    const keys = addableIn(
+      zonesOf(node).find((option) => option.key === zone),
+    ).map((choice) => choice.value);
+    return (
+      suggestedComponents(zone, keys)[0] ??
+      (keys.length === 1 ? keys[0] : undefined)
+    );
+  };
+
+  /**
+   * A content prop that takes only nodes (a Button's `icon`), as a row
+   * (KF-5T3TE4): Add puts the zone's suggested component there; once
+   * filled, the row names what fills it and selects it.
+   */
+  const nodeContentRow = (node: ViewDocument['root'], prop: string) => {
+    const entries = node.zones?.[prop] ?? [];
+    const children = entries.filter(
+      (child): child is ViewNode => 'id' in child && 'type' in child,
+    );
+    const label = propLabel(prop);
+    if (!entries.length) {
+      const suggestion = suggestionFor(node, prop);
+      const adds = suggestion && componentNames.get(suggestion);
+      return (
+        <ListItem
+          label={label}
+          status="Not set"
+          accessibleLabel={
+            adds
+              ? `Add ${adds} to ${label.toLowerCase()}`
+              : `Add to ${label.toLowerCase()}`
+          }
+          action={CONTENT_ADD_ACTION}
+          trailing={<LucideIcon icon={Plus} name="plus" />}
+          rootAttributes={{ 'data-editor-content-add': prop }}
+        />
+      );
+    }
+    const first = children[0];
+    const icon = (first?.props?.icon as { $icon?: string } | undefined)?.$icon;
+    return (
+      <ListItem
+        label={label}
+        status={
+          entries.length > 1 || !first
+            ? `${entries.length} ${entries.length === 1 ? 'item' : 'items'}`
+            : `${first.name ?? nodeTitle(first, componentNames)}${icon ? ` · ${icon}` : ''}`
+        }
+        icon={icon ? iconOf(icon) : undefined}
+        accessibleLabel={`Select ${label.toLowerCase()}`}
+        action={OUTLINE_ACTION}
+        itemId={first?.id ?? node.id}
+        trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
+        rootAttributes={{ 'data-editor-content-node': prop }}
+      />
+    );
+  };
+
   const contentControl = (
     node: ViewDocument['root'],
     prop: (typeof propsByKey extends ReadonlyMap<string, infer C>
       ? C
       : never)['props'][number],
   ) => {
-    if (!prop.slot || !(prop.type as { acceptsText?: true }).acceptsText)
-      return undefined;
+    if (!prop.slot) return undefined;
+    // The main zone's children show in the outline, not as a row.
+    if (!(prop.type as { acceptsText?: true }).acceptsText)
+      return prop.name === 'children'
+        ? undefined
+        : nodeContentRow(node, prop.name);
     const content = contentOf(node, prop.name);
     const attributes = { 'data-editor-content': prop.name };
     if (content.kind !== 'nodes') {
@@ -2224,6 +2293,13 @@ export function createEditor(options: EditorOptions) {
                         }),
                 },
               ];
+            // A content prop that takes only nodes is a row (KF-5T3TE4).
+            if (
+              prop.slot &&
+              prop.name !== 'children' &&
+              !(prop.type as { acceptsText?: true }).acceptsText
+            )
+              return [{ kind: 'open', row: nodeContentRow(node, prop.name) }];
             const control =
               contentControl(node, prop) ?? propControl(prop, value, node.type);
             if (control) return [{ kind: 'edit' as const, row: control }];
@@ -3030,17 +3106,24 @@ export function createEditor(options: EditorOptions) {
     inspectorArea.value = 'properties';
   };
 
-  const addChild = () => {
+  /**
+   * Adds a component to a zone of the selected node: the Children area's
+   * chosen zone and component, or `chosen` (KF-5T3TE4: a content row's Add).
+   */
+  const addChild = (chosen?: { zone: string; key: string }) => {
     const id = selectedNodeId();
     if (!id) return;
     const root = document.querySelector<HTMLElement>(
       `[data-editor-add="zone"]`,
     );
-    const zone = root ? String(controlValue(root)) : addZone.value;
+    const zone =
+      chosen?.zone ?? (root ? String(controlValue(root)) : addZone.value);
     const picker = document.querySelector<HTMLElement>(
       `[data-editor-add="component"]`,
     );
-    const key = picker ? String(controlValue(picker)) : addComponent.value;
+    const key =
+      chosen?.key ??
+      (picker ? String(controlValue(picker)) : addComponent.value);
     const component = propsByKey.get(key);
     if (!zone || !component) return;
     // A content prop holds text or nodes, never both: a child added to a
@@ -3426,6 +3509,19 @@ export function createEditor(options: EditorOptions) {
           selection.value = null;
         },
         [ADD_ACTION]: () => addChild(),
+        [CONTENT_ADD_ACTION]: (_event, target) => {
+          const zone = target.dataset.editorContentAdd!;
+          const id = selectedNodeId()!;
+          const parent = findNode(doc.value, id)!.node;
+          const key = suggestionFor(parent, zone);
+          if (key) addChild({ zone, key });
+          else {
+            // Nothing to suggest: choose one in the Children area.
+            addZone.value = zone;
+            addComponent.value = '';
+            inspectorArea.value = 'children';
+          }
+        },
         [REPLACE_ROOT_ACTION]: () => replaceRootWith(),
         [CONTENT_TO_NODES_ACTION]: (_event, target) => {
           const id = selectedNodeId();

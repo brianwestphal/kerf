@@ -120,6 +120,59 @@ describe('editing the selected node', () => {
 });
 
 describe('structural edits', () => {
+  it('adds a node-only content prop from its Properties row and selects it (KF-5T3TE4)', () => {
+    const { root, editor, node } = open(COMPOSE);
+    const row = () =>
+      root.querySelector<HTMLElement>('[data-editor-content-add="icon"]');
+    expect(row()!.textContent).toContain('Not set');
+    row()!.click();
+    const [icon] = node()!.zones!.icon as { id: string; type: string }[];
+    expect(icon!.type).toBe('@kerfjs/ui:lucide-icon');
+    expect(editor.selection.value).toEqual({ kind: 'node', id: icon!.id });
+    // Back on the Button, the row names what fills it and selects it.
+    editor.selection.value = { kind: 'node', id: COMPOSE };
+    const filled = root.querySelector<HTMLElement>(
+      '[data-editor-content-node="icon"]',
+    )!;
+    expect(filled.textContent).toContain('LucideIcon · circle');
+    expect(row()).toBeNull();
+    filled.click();
+    expect(editor.selection.value).toEqual({ kind: 'node', id: icon!.id });
+  });
+
+  it('opens Children on a content prop it has nothing to suggest for', () => {
+    const { root, editor } = open(COMPOSE);
+    // Turn the Button into a ListItem-free case: a ListItem's trailing has
+    // no suggestion, so its row opens Children on that zone.
+    const id = '01JB8Z1M6Q8E1X9V4S7K2R3TQ1';
+    editor.document.value = {
+      ...editor.document.value,
+      root: {
+        id,
+        type: '@kerfjs/ui:list-item',
+        props: { label: 'Row' },
+      },
+    } as never;
+    editor.selection.value = { kind: 'node', id };
+    // The main zone has no row; trailing does.
+    expect(
+      root.querySelector('[data-editor-content-add="children"]'),
+    ).toBeNull();
+    root
+      .querySelector<HTMLElement>('[data-editor-content-add="trailing"]')!
+      .click();
+    expect(editor.selection.value).toEqual({ kind: 'node', id });
+    expect(
+      root.querySelector('[data-editor-add="zone"]')!.getAttribute('value'),
+    ).toBe('trailing');
+    expect(
+      root
+        .querySelector('[data-editor-add="zone"]')!
+        .closest('[role="tabpanel"]')!
+        .hasAttribute('hidden'),
+    ).toBe(false);
+  });
+
   it('suggests the components a zone is named for, grouped by category (KF-N8TW04)', () => {
     const { root } = open(COMPOSE);
     const picker = () => field(root, '[data-editor-add="component"]');
