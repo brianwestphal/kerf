@@ -287,6 +287,9 @@ function literalOf(value, type, definitions, onSlot) {
       return target.values.includes(value);
     case 'literal':
       return value === target.value;
+    // A builder call inside a list or object value (KF-3J9GJV).
+    case 'css-value':
+      return isObject(value) && parseCssCall(value.$css) !== undefined;
     case 'content':
       if (value instanceof ZoneFill) return true;
       if (onSlot && isObject(value) && '$slot' in value) return onSlot(value);
@@ -315,7 +318,9 @@ function literalOf(value, type, definitions, onSlot) {
       return (
         Object.entries(value).every(([name, item]) =>
           known.has(name)
-            ? literalOf(item, known.get(name).type, definitions, onSlot)
+            ? // An icon-data field names its icon (KF-3J9GJV).
+              (known.get(name).iconSource && ICON_NAME.test(item?.$icon ?? '')) ||
+              literalOf(item, known.get(name).type, definitions, onSlot)
             : index !== undefined &&
               name.startsWith(index.keyPrefix) &&
               literalOf(item, index.value, definitions, onSlot),

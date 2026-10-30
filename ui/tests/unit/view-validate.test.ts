@@ -367,6 +367,33 @@ describe('validateView: types, props, and values', () => {
     ).toEqual(['KUI-V004']);
   });
 
+  it('accepts $icon and $css inside list and object values (KF-3J9GJV)', () => {
+    const select = (choice: Fixture) =>
+      codes(
+        doc(
+          node('select', {
+            props: {
+              name: 'balance',
+              ariaLabel: 'Balance',
+              value: 'quiet',
+              choices: [{ value: 'quiet', label: 'Quiet', ...choice }],
+            },
+          }),
+        ),
+      );
+    expect(
+      select({
+        icon: { $icon: 'bell' },
+        color: { $css: 'uiColor("success-on-quiet")' },
+      }),
+    ).toEqual([]);
+    // Still checked: a builder call that does not parse, an icon name that
+    // is not kebab-case, and $icon on a field that is not icon data.
+    expect(select({ color: { $css: 'red' } })).toEqual(['KUI-V004']);
+    expect(select({ icon: { $icon: 'Bell' } })).toEqual(['KUI-V004']);
+    expect(select({ label: { $icon: 'bell' } })).toEqual(['KUI-V004']);
+  });
+
   it('KUI-V004: union props types must match one variant', () => {
     // Button is labeled (children) or icon-only (icon + ariaLabel).
     expect(

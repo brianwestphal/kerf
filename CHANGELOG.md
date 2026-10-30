@@ -228,6 +228,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **`validateView` accepts `$icon` and `$css` inside list and object values.** A Select choice's `icon` or `color` set in the Kerf UI editor was rejected with a type mismatch that dumped the whole `choices` value, although `interpretView` and the generated module already handled them (`KF-3J9GJV`).
 - **Variant problems say how to fix them in the Kerf UI editor.** A node whose props fit none of its component's variants listed only "props match none of its variants"; the Problems list and banner now add what would fix it, such as `set "label" or "ariaLabel"`, `remove "ariaLabel" or "label"`, or `set "toggle" to false` (`KF-TVZ06Y`).
 - **A gutter around the Kerf UI editor's canvas.** The preview sat flush against the canvas edges, so the selection ring of a node at the edge was drawn over its content; the canvas now leaves a small gutter so the ring and drop lines show whole (`KF-C4EW1V`).
 - **Node-only content props are editable from Properties in the Kerf UI editor.** A prop that takes only components, such as a Button's or ListItem's `icon` or a ListItem's `trailing`, showed as a read-only "—". Its row now adds the component the zone calls for (a LucideIcon for an icon) and selects it, or opens Children on that zone when there is no single choice; once filled, the row names what fills it ("LucideIcon · plus") and selects it (`KF-5T3TE4`).

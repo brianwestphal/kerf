@@ -643,7 +643,9 @@ application computes.
   each such field of a new node (`view1Content`, unique within the document)
   and lists it in the outline under its node.
 - A prop typed as Lucide icon data (`LucideIcon.icon`) is named with `$icon`,
-  never spelled as a nested array literal. The CLI does not check names; an
+  never spelled as a nested array literal. `$icon` and `$css` also work
+  inside list and object values, on an icon-data field (a Select choice's
+  `icon`) and a css-value field (its `color`) (KF-3J9GJV: nested values). The CLI does not check names; an
   unknown one fails the consumer's `tsc` on the generated import.
 - Object literals are checked against the prop's shape. An index signature
   (`rootAttributes`' `data-*`) allows only keys with its prefix, and protected
