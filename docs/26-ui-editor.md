@@ -218,7 +218,19 @@ names no builders gets a placeholder and hint for its grammar (KF-PE0PTT:
 grammar examples): a color suggests `uiColor("surface-raised")`,
 `fillColor`, or `colorVar`, a text color `uiColor("success-on-quiet")`,
 `foregroundColor`, or `foregroundColorVar`, a flex `flex(1)`, and anything
-else a length. A size prop, a union of a
+else a length.
+
+A typed choice (KF-3CKTKN: choice controls) edits a union of scalars (a
+Badge's `size`, a LucideIcon's `size`, a Button's `badge`, a Select's
+`value`), an enum of numbers or booleans (a `headingLevel`, a `tabIndex`),
+or an optional lone literal (a List's `selectionMode`) with one Select. Its
+fixed values (literals, enum values, `true` and `false`) keep their type, so
+a heading level is `2`, not `"2"`. A text, number, list, or object member is
+an option of its own ("Text…", "Number…", "List…", "Custom…") that starts
+from a placeholder and shows that member's control or form beneath the
+Select. A required lone literal is a fixed discriminant and stays
+read-only, as does a union with a member no control edits (rendered
+content). A size prop, a union of a
 css-value with keywords (a List, Row, or Grid `gap`, a layout `flex`, a
 Spacer or Skeleton `width`/`height`, a dialog `height` of `"viewport"`),
 gets a Select of its keywords, with spacing tokens in scale order (`none`,

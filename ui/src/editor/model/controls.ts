@@ -29,6 +29,7 @@ export type ControlKind =
   | 'tags'
   | 'enum-set'
   | 'icon'
+  | 'choice'
   | 'readonly';
 
 type Definitions = Readonly<Record<string, ViewType>>;
@@ -48,6 +49,136 @@ export interface Control {
   readonly raw: string | boolean;
   /** size: the builder call of a custom (`$css`) value. */
   readonly css?: string;
+  /**
+   * choice: each option's value (a typed value as JSON, or `#<n>` for an
+   * open member) and label; `raw` is the current option, '' while unset.
+   */
+  readonly options?: readonly ChoiceOption[];
+  /** choice: the open member the value holds, edited by its own control. */
+  readonly member?: ViewType;
+}
+
+/** One option of a typed choice (KF-3CKTKN). */
+export interface ChoiceOption {
+  readonly value: string;
+  readonly label: string;
+  /** An open member (text, a number, a list, an object) to edit after choosing. */
+  readonly member?: ViewType;
+}
+
+/** The labels an open member's option takes, by its kind. */
+const OPEN_LABELS: Readonly<Record<string, string>> = {
+  string: 'Text…',
+  number: 'Number…',
+  array: 'List…',
+  object: 'Custom…',
+};
+
+/**
+ * The options of a typed choice (KF-3CKTKN): a union of scalars, an enum
+ * of numbers or booleans, or a lone literal. Fixed values (literals, enum
+ * values, `true` and `false` for a boolean) are options themselves; text,
+ * number, list, and object members are options that open their own
+ * control. Undefined for any other type, or a union with a member no
+ * control edits (content, a function, a css-value).
+ */
+export function choiceOptions(
+  type: ViewType,
+  definitions: Definitions = {},
+): readonly ChoiceOption[] | undefined {
+  const root = resolveType(type, definitions) as
+    (UnionMember & { members?: readonly ViewType[] }) | undefined;
+  const fixed: unknown[] = [];
+  const open: ChoiceOption[] = [];
+  let editable = true;
+  const visit = (member: ViewType): void => {
+    const node = resolveType(member, definitions) as
+      (UnionMember & { props?: readonly unknown[] }) | undefined;
+    switch (node?.kind) {
+      case 'literal':
+        fixed.push(node.value);
+        break;
+      case 'enum':
+        fixed.push(...node.values!);
+        break;
+      case 'boolean':
+        fixed.push(true, false);
+        break;
+      case 'union':
+        (node.members as readonly ViewType[]).forEach(visit);
+        break;
+      case 'object':
+        // An object no form can fill (a ReadonlySet) is not offered.
+        if (node.props?.length)
+          open.push({ value: '', label: OPEN_LABELS.object!, member });
+        break;
+      case 'string':
+      case 'number':
+      case 'array':
+        open.push({ value: '', label: OPEN_LABELS[node.kind]!, member });
+        break;
+      default:
+        editable = false;
+    }
+  };
+  switch (root?.kind) {
+    case 'union':
+      root.members!.forEach(visit);
+      break;
+    case 'enum':
+      // A string enum is a plain Select already.
+      if (
+        !root.values?.length ||
+        root.values.every((item) => typeof item === 'string')
+      )
+        return undefined;
+      visit(type);
+      break;
+    case 'literal':
+      visit(type);
+      break;
+    default:
+      return undefined;
+  }
+  if (!editable) return undefined;
+  const seen = new Set<string>();
+  const options: ChoiceOption[] = [];
+  for (const value of fixed) {
+    const json = JSON.stringify(value);
+    if (seen.has(json)) continue;
+    seen.add(json);
+    options.push({ value: json, label: String(value) });
+  }
+  // Two open members of one kind (two object shapes) are numbered apart.
+  open.forEach((option, index) => {
+    const twin = open.filter((other) => other.label === option.label).length;
+    options.push({
+      ...option,
+      value: `#${index}`,
+      label:
+        twin > 1 ? option.label.replace('…', ` ${index + 1}…`) : option.label,
+    });
+  });
+  return options;
+}
+
+/** The open member a typed choice's value belongs to, by its JS type. */
+function openOptionFor(
+  options: readonly ChoiceOption[],
+  value: ViewValue,
+  definitions: Definitions,
+): ChoiceOption | undefined {
+  const kind = Array.isArray(value)
+    ? 'array'
+    : value === null
+      ? 'null'
+      : typeof value;
+  return options.find(
+    (option) =>
+      option.member &&
+      (resolveType(option.member, definitions) as { kind: string }).kind ===
+        kind,
+  );
 }
 
 /** The size choice that edits a css-values builder call instead. */
@@ -173,6 +304,24 @@ export function controlFor(
         }
       : { kind: 'readonly', raw: '' };
   }
+  // A union of scalars, a number or boolean enum, or a lone literal picks
+  // a typed value from a Select (KF-3CKTKN).
+  const options = sizeKeywords(prop.type as ViewType, definitions)
+    ? undefined
+    : choiceOptions(prop.type as ViewType, definitions);
+  // A required lone literal is a fixed discriminant (`kind: "divider"`).
+  const fixed = options?.length === 1 && !options[0]!.member && prop.required;
+  if (options && !fixed) {
+    if (value === undefined) return { kind: 'choice', options, raw: '' };
+    if (isBinding(value)) return { kind: 'readonly', raw: '' };
+    const json = JSON.stringify(value);
+    if (options.some((option) => option.value === json))
+      return { kind: 'choice', options, raw: json };
+    const open = openOptionFor(options, value, definitions);
+    return open
+      ? { kind: 'choice', options, raw: open.value, member: open.member }
+      : { kind: 'readonly', raw: '' };
+  }
   const keywords = sizeKeywords(prop.type as ViewType, definitions);
   if (keywords) {
     const choices = ['', ...keywords, CUSTOM_SIZE];
@@ -271,6 +420,18 @@ export function valueFromControl(
       // An empty list unsets the prop.
       const items = JSON.parse(String(raw)) as string[];
       return { value: items.length ? items : undefined };
+    }
+    case 'choice': {
+      if (raw === '') return { value: undefined };
+      if (!String(raw).startsWith('#'))
+        return { value: JSON.parse(String(raw)) as ViewValue };
+      // An open member starts from its placeholder, or empty.
+      const member = choiceOptions(type!.type, type!.definitions)!.find(
+        (option) => option.value === raw,
+      )!.member!;
+      // Text, numbers, and lists always have one; an object may need a
+      // value no placeholder stands for (a color).
+      return { value: exampleValue(member, type!.definitions, 'value') ?? {} };
     }
     case 'switch':
       return { value: raw === true };

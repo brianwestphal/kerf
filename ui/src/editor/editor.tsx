@@ -876,7 +876,7 @@ export function createEditor(options: EditorOptions) {
     type: string,
     /** A field inside a prop (KF-Z9S029: object forms); the prop itself by default. */
     place: FieldPlace = { prop: prop.name, path: [] },
-  ) => {
+  ): SafeHtml | undefined => {
     const control = controlFor(prop, value, definitionsOf(type));
     const key = placeKey(place);
     const error = fieldErrors.value[key];
@@ -886,7 +886,7 @@ export function createEditor(options: EditorOptions) {
             'data-editor-field': JSON.stringify(place),
             'data-editor-kind': kind,
           }
-        : { 'data-editor-prop': prop.name, 'data-editor-kind': kind };
+        : { 'data-editor-prop': place.prop, 'data-editor-kind': kind };
     // KF-PE0PTT: a color field suggests color builders, not a length.
     const grammar = cssGrammar(prop.type as never, definitionsOf(type));
     const builderField = (raw: string) => (
@@ -959,6 +959,44 @@ export function createEditor(options: EditorOptions) {
         return undefined;
       case 'icon':
         return iconRow(prop.name, String(control.raw), place);
+      // KF-3CKTKN: a typed value from a Select, and an open member's own
+      // control (text, a number, a list) or form (an object) beneath it.
+      case 'choice': {
+        const member = control.member && {
+          name: `${prop.name} value`,
+          type: control.member as InspectorProp['type'],
+          required: false,
+        };
+        return (
+          <>
+            <Select
+              name={`prop-${key}`}
+              label={prop.name}
+              value={String(control.raw)}
+              choices={[
+                {
+                  value: '',
+                  label:
+                    prop.default !== undefined
+                      ? `Default (${String(prop.default)})`
+                      : 'Not set',
+                },
+                ...control.options!.map(({ value, label }) => ({
+                  value,
+                  label,
+                })),
+              ]}
+              rootAttributes={marker('choice')}
+            />
+            {member
+              ? fieldEditorKind(member.type as never, definitionsOf(type)) ===
+                'object'
+                ? configureRow(prop.name, value as ViewValue, place)
+                : propControl(member, value, type, place)
+              : undefined}
+          </>
+        );
+      }
       // KF-A9ZHGW: strings edit inline as tags, enum values as checkboxes.
       case 'tags':
         return (
@@ -1165,10 +1203,16 @@ export function createEditor(options: EditorOptions) {
       .props.find((item) => item.name === place.prop)!;
     const definitions = definitionsOf(node.type);
     const propValue = node.props?.[place.prop] as ViewValue | undefined;
+    const value = valueAt(propValue, place.path);
     return {
       definitions,
-      type: typeAt(prop.type as never, definitions, place.path, propValue),
-      value: valueAt(propValue, place.path),
+      // A union's value edits as the member it holds (KF-3CKTKN).
+      type: memberFor(
+        typeAt(prop.type as never, definitions, place.path, propValue),
+        definitions,
+        value,
+      ),
+      value,
     };
   };
 

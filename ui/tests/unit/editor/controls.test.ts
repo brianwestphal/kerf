@@ -71,10 +71,10 @@ describe('controlFor', () => {
       raw: 'brand',
     });
     expect(controlFor(prop('button', 'tone'), undefined).raw).toBe('');
-    // Numeric enums (heading levels) stay read-only.
+    // Numeric enums (heading levels) pick a typed value (KF-3CKTKN).
     expect(
       controlFor(prop('toolbar-text', 'headingLevel'), undefined).kind,
-    ).toBe('readonly');
+    ).toBe('choice');
   });
 
   it('edits booleans, numbers, strings, and text-accepting content', () => {

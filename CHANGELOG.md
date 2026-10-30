@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Typed choices in the Kerf UI editor.** Props that take one of several kinds of value (a LucideIcon's `size` as a keyword or a number, a Button's `badge`, a Select's `value`), number or boolean enums (`headingLevel`, `tabIndex`), and optional literals (`selectionMode`) now edit in a Select that keeps the value's type, with a text, number, list, or form control for an open member, instead of a read-only row (`KF-3CKTKN`).
 - **Rounded segmented tab strips.** `TabBar` takes `shape="rounded"` with `presentation="segmented"` to draw the strip at the shared control radius, with every tab concentric inside it, instead of a pill track. The Kerf UI editor's Document and Inspector rail strips use it, as the UX review asked. Segmented strips stay pills by default, and the earlier change that drew every segmented tab as a pill is reverted (`KF-YBD6XJ`).
 - **An outlined, compact PopupMenu trigger.** `PopupMenu` takes `emphasis="secondary"` to outline its button trigger like a secondary `Button`, and `size="compact"` for a compact Button's height, so a menu outside a toolbar (an Add menu in a row of actions) matches the buttons beside it. The Kerf UI editor's list editor uses both for its **Add ▾** menu (`KF-MGKDJC`).
 - **Color fields suggest colors in the Kerf UI editor.** A color prop such as a Pane's `background` or a LucideIcon's `color` now shows a color builder placeholder (`uiColor("surface-raised")`) and hint instead of `px(8)` (`KF-PE0PTT`).

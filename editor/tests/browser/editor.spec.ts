@@ -1279,3 +1279,31 @@ test('adds a divider to a PopupMenu’s items from the Add menu', async ({
     animations: 'disabled',
   });
 });
+
+// KF-3CKTKN: a union of scalars or a number enum picks a typed value.
+test('sets a LucideIcon’s size from a keyword, then a number', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await addToPane(page, 'LucideIcon');
+  const size = page.locator(
+    '[data-editor-prop="size"][data-editor-kind="choice"]',
+  );
+  await size.click();
+  await page.getByRole('option', { name: 'Number…' }).click();
+  const number = page
+    .locator('[data-editor-prop="size"][data-editor-kind="number"]')
+    .getByRole('spinbutton');
+  await number.fill('40');
+  await number.press('Enter');
+  const icon = page.locator('[data-editor-canvas] svg').first();
+  await expect
+    .poll(async () => (await icon.boundingBox())?.width ?? 0)
+    .toBeGreaterThan(30);
+  await size.scrollIntoViewIfNeeded();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-3cktkn-icon-size-1440.png'),
+    animations: 'disabled',
+  });
+});
