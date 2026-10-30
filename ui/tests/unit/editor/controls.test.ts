@@ -1,15 +1,32 @@
-import { validateView, VIEW_DOCUMENT_SCHEMA_ID } from '@kerfjs/ui/view';
+import {
+  contractDigest,
+  contractOf,
+  interpretView,
+  validateView,
+  VIEW_DOCUMENT_SCHEMA_ID,
+  type ViewDocument,
+  type ViewNode,
+} from '@kerfjs/ui/view';
+import { mount } from 'kerfjs';
+import { Circle } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
 import {
   controlFor,
+  PLACEHOLDER_ICON,
+  seedNode,
   seedProps,
   sizeKeywords,
   valueFromControl,
 } from '../../../src/editor/model/controls.js';
 import { slotNamer } from '../../../src/editor/model/examples.js';
 import type { InspectorProp } from '../../../src/editor/model/inspector.js';
-import { componentNames, propsByKey, viewCatalog } from './kerf-catalog.js';
+import {
+  componentFunctions,
+  componentNames,
+  propsByKey,
+  viewCatalog,
+} from './kerf-catalog.js';
 
 const prop = (key: string, name: string) =>
   propsByKey
@@ -293,7 +310,7 @@ describe('seedProps', () => {
       },
       { name: 'later', required: false, type: { kind: 'string' } },
     ];
-    expect(seedProps(props, 'X')).toEqual({ count: 0, open: false, size: 's' });
+    expect(seedProps(props, 'X')).toEqual({ count: 1, open: false, size: 's' });
   });
 
   it('fills the smallest props variant it can, with its fixed values', () => {
@@ -338,38 +355,92 @@ describe('seedProps', () => {
   });
 
   it('leaves no required literal prop unfilled on any Kerf UI component', () => {
-    // Zones and slots fill from the outline: a missing one, or a variant
-    // that only a zone or slot keeps from matching, is that work, not a gap.
-    // Rendered content inside a value is an item slot (KF-SXDM56).
-    const missing = [...propsByKey.values()]
-      .filter((component) => component.source === 'kerf')
-      .flatMap((component) => {
-        const holes = new Set(
-          component.props
-            .filter((item) => item.zone || item.slot)
-            .map((item) => item.name),
-        );
-        const props = seeded(component.key);
-        const onlyHoles = (component.variants ?? []).some(
-          (variant) =>
-            variant.required.every(
-              (name) => holes.has(name) || name in props,
-            ) &&
-            Object.entries(variant.when ?? {}).every(
-              ([name, value]) => (props[name] ?? false) === value,
-            ),
-        );
-        return unfilled(component.key).filter(
-          (message) =>
-            !(
-              message.endsWith('props match none of its variants') && onlyHoles
-            ) &&
-            ![...holes].some((zone) => message.endsWith(`requires "${zone}"`)),
-        );
-      });
-    expect(missing).toEqual([]);
     expect(unfilled('@kerfjs/ui:combobox')).toEqual([]);
     expect(unfilled('@kerfjs/ui:select')).toEqual([]);
     expect(unfilled('@kerfjs/ui:popup-menu')).toEqual([]);
+  });
+});
+
+// KF-FGD8B3: every component added from the palette renders as added, with
+// placeholders for the zones and content it requires.
+describe('seedNode', () => {
+  let count = 0;
+  const makeId = () => `01J${String((count += 1)).padStart(23, '0')}`;
+  const seedCatalog = {
+    component: (key: string) => propsByKey.get(key),
+    name: (key: string) => componentNames.get(key)!,
+    definitions: (key: string) => viewCatalog.components.get(key)!.definitions,
+    entry: (key: string) => viewCatalog.entries.get(key) as never,
+  };
+  const seededDocument = (key: string) =>
+    ({
+      schema: VIEW_DOCUMENT_SCHEMA_ID,
+      name: 'Seeded',
+      catalogs: ['@kerfjs/ui'],
+      root: seedNode(key, seedCatalog, makeId, slotNamer([])),
+    }) as ViewDocument;
+
+  it('makes every cataloged component a document that validates and renders', () => {
+    const failures = [...propsByKey.keys()].flatMap((key) => {
+      const document = seededDocument(key);
+      const problems = validateView(document, viewCatalog).diagnostics;
+      if (problems.length)
+        return [`${key}: ${problems.map((item) => item.message).join('; ')}`];
+      try {
+        const html = interpretView(document, {
+          catalog: viewCatalog,
+          components: componentFunctions(),
+          icons: { [PLACEHOLDER_ICON]: Circle },
+          // The canvas fills every slot with a placeholder, as here.
+          slots: new Proxy({}, { get: () => () => 'slot' }),
+          contract: contractDigest(contractOf(document, viewCatalog)),
+        });
+        mount(globalThis.document.createElement('div'), () => html)();
+        return [];
+      } catch (error) {
+        return [`${key}: ${(error as Error).message}`];
+      }
+    });
+    expect(failures).toEqual([]);
+  });
+
+  it('fills a required zone with its accepted component, or a Text', () => {
+    const workbench = seededDocument('@kerfjs/ui:workbench').root;
+    expect(workbench.zones?.main).toEqual([
+      {
+        id: expect.any(String),
+        type: '@kerfjs/ui:text',
+        props: { children: 'Main' },
+      },
+    ]);
+    const split = seededDocument('@kerfjs/ui:split-view').root;
+    expect(Object.keys(split.zones ?? {})).toEqual(['list', 'detail']);
+    // A TabBar's tabs zone names TabBarItem, so it gets a seeded one.
+    const [tab] = seededDocument('@kerfjs/ui:tab-bar').root.zones!.tabs!;
+    expect((tab as ViewNode).type).toBe('@kerfjs/ui:tabs');
+    // A required content prop that takes no text holds a Text naming it.
+    expect(
+      seededDocument('@kerfjs/ui:toolbar-control-group').root.zones,
+    ).toEqual({
+      children: [
+        {
+          id: expect.any(String),
+          type: '@kerfjs/ui:text',
+          props: { children: 'ToolbarControlGroup' },
+        },
+      ],
+    });
+  });
+
+  it('seeds icon data, in-range numbers, and list-shaped unions', () => {
+    expect(seededDocument('@kerfjs/ui:lucide-icon').root.props?.icon).toEqual({
+      $icon: PLACEHOLDER_ICON,
+    });
+    expect(
+      Array.isArray(
+        seededDocument('@kerfjs/ui:tree-list').root.props?.expanded,
+      ),
+    ).toBe(true);
+    expect(seeded('@kerfjs/ui:grid').columns).toBe(1);
   });
 });

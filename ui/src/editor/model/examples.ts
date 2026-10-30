@@ -169,12 +169,18 @@ function example(
       return type.value as ViewValue;
     case 'enum':
       return type.values?.[0] as ViewValue | undefined;
-    case 'union':
+    case 'union': {
+      // An object with no required fields (a ReadonlySet) makes `{}`, which
+      // a list member renders where the object does not (KF-FGD8B3).
+      let fallback: ViewValue | undefined;
       for (const member of type.members ?? []) {
         const value = inner(member as ViewType);
-        if (value !== undefined) return value;
+        if (value === undefined) continue;
+        if (!isEmptyObject(value)) return value;
+        fallback ??= value;
       }
-      return undefined;
+      return fallback;
+    }
     case 'array': {
       const items: ViewValue[] = [];
       for (let item = 1; item <= EXAMPLE_ITEMS; item += 1) {
@@ -211,3 +217,9 @@ function example(
       return undefined;
   }
 }
+
+const isEmptyObject = (value: ViewValue) =>
+  value !== null &&
+  typeof value === 'object' &&
+  !Array.isArray(value) &&
+  Object.keys(value).length === 0;

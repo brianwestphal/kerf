@@ -3,6 +3,8 @@
 import {
   isLiteralOf,
   parseCssCall,
+  type ViewChild,
+  type ViewNode,
   type ViewType,
   type ViewValue,
 } from '@kerfjs/ui/view';
@@ -291,6 +293,9 @@ interface Variant {
   readonly when?: Readonly<Record<string, ViewValue>>;
 }
 
+/** The Lucide icon a seeded icon-data prop names. */
+export const PLACEHOLDER_ICON = 'circle';
+
 /** A starting literal for a prop, or undefined when none can be made up. */
 function seedFor(
   prop: InspectorProp,
@@ -305,7 +310,13 @@ function seedFor(
   };
   if (type.kind === 'string' || (type.kind === 'content' && type.acceptsText))
     return prop.name === 'action' ? 'action' : name;
-  if (type.kind === 'number') return 0;
+  // A count or size of 0 is often out of range (a Grid's columns), so a
+  // number starts on its default or 1 (KF-FGD8B3).
+  if (type.kind === 'number')
+    return typeof prop.default === 'number' ? prop.default : 1;
+  // Icon data names a Lucide icon rather than spelling out its nodes.
+  if ((prop as { iconSource?: string }).iconSource === 'lucide')
+    return { $icon: PLACEHOLDER_ICON };
   if (type.kind === 'boolean') return false;
   if (type.kind === 'enum' && typeof type.values?.[0] === 'string')
     return type.values[0];
@@ -400,4 +411,89 @@ export function seedProps(
     if (typeof picked[propName] === 'string' && byName.get(propName)?.required)
       picked[propName] = choice;
   return picked;
+}
+
+/** A composition zone, as the view catalog's entries list them. */
+interface SeedZone {
+  readonly id: string;
+  readonly jsx?: { readonly prop?: string };
+  readonly accepts: readonly string[];
+  readonly cardinality: { readonly min: number };
+}
+
+/** What seeding a node reads from the editor's catalog. */
+export interface SeedCatalog {
+  readonly component: (key: string) =>
+    | {
+        readonly props: readonly InspectorProp[];
+        readonly variants?: readonly Variant[];
+      }
+    | undefined;
+  readonly name: (key: string) => string;
+  readonly definitions: (key: string) => Definitions;
+  readonly entry: (
+    key: string,
+  ) =>
+    | { readonly package?: string; readonly zones?: readonly SeedZone[] }
+    | undefined;
+}
+
+/** How deep seeded children of seeded children go. */
+const SEED_DEPTH = 3;
+
+/**
+ * A new node of component `key` that renders as added (KF-FGD8B3): its
+ * required props seeded, and each zone or content prop it requires filled
+ * with placeholders the outline and inspector can then change or remove.
+ * A zone that names cataloged components gets the first of them, seeded the
+ * same way; any other gets a Text naming it.
+ */
+export function seedNode(
+  key: string,
+  catalog: SeedCatalog,
+  makeId: () => string,
+  slot?: SlotNamer,
+  depth = 0,
+): ViewNode {
+  const component = catalog.component(key)!;
+  const name = catalog.name(key);
+  const props = seedProps(
+    component.props,
+    name,
+    component.variants,
+    catalog.definitions(key),
+    slot,
+  );
+  const entry = catalog.entry(key);
+  const zones: Record<string, ViewChild[]> = {};
+  // Most zones take components rather than plain text, so a placeholder is
+  // the catalog's Text component where it has one.
+  const textKey = `${key.slice(0, key.indexOf(':'))}:text`;
+  const text = (label: string): ViewChild =>
+    catalog.component(textKey)
+      ? { id: makeId(), type: textKey, props: { children: label } }
+      : ({ id: makeId(), type: '#text', value: label } as ViewNode);
+  const label = (zone: string) =>
+    zone === 'children' ? name : zone.charAt(0).toUpperCase() + zone.slice(1);
+  for (const zone of entry?.zones ?? []) {
+    if (!zone.jsx?.prop || zone.cardinality.min < 1) continue;
+    const accepted = zone.accepts
+      .map((item) => (item.includes(':') ? item : `${entry?.package}:${item}`))
+      .find((item) => catalog.component(item));
+    zones[zone.id] = Array.from({ length: zone.cardinality.min }, () =>
+      accepted && depth < SEED_DEPTH
+        ? seedNode(accepted, catalog, makeId, slot, depth + 1)
+        : text(label(zone.id)),
+    );
+  }
+  // A required content prop that took no text holds a Text instead.
+  for (const prop of component.props)
+    if (prop.slot && !prop.zone && prop.required && !(prop.name in props))
+      zones[prop.name] ??= [text(label(prop.name))];
+  return {
+    id: makeId(),
+    type: key,
+    ...(Object.keys(props).length ? { props } : {}),
+    ...(Object.keys(zones).length ? { zones } : {}),
+  };
 }

@@ -117,7 +117,8 @@ import {
   type ControlKind,
   cssHint,
   CUSTOM_SIZE,
-  seedProps,
+  type SeedCatalog,
+  seedNode,
   typeLabel,
   valueFromControl,
 } from './model/controls.js';
@@ -1993,22 +1994,20 @@ export function createEditor(options: EditorOptions) {
     commit(setProp(doc.value, id, name, result.value));
   };
 
-  /** A new node of component `key` with its required props filled in. */
-  const seededNode = (key: string): ViewNode => {
-    const component = propsByKey.get(key)!;
-    const props = seedProps(
-      component.props,
-      componentNames.get(key)!,
-      component.variants,
-      definitionsOf(key),
+  /** A new node of component `key`, seeded so it renders as added. */
+  const seededNode = (key: string): ViewNode =>
+    seedNode(
+      key,
+      {
+        component: (item) => propsByKey.get(item),
+        name: (item) => componentNames.get(item)!,
+        definitions: definitionsOf,
+        entry: (item) =>
+          viewCatalog.entries.get(item) as ReturnType<SeedCatalog['entry']>,
+      },
+      newNodeId,
       slotNamer(usedSlots(doc.value)),
     );
-    return {
-      id: newNodeId(),
-      type: key,
-      ...(Object.keys(props).length ? { props } : {}),
-    };
-  };
 
   /** Adds the chosen component to the chosen zone and selects it. */
   /** Makes a new node of the chosen component the document's root. */

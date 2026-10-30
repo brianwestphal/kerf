@@ -85,6 +85,19 @@ required field that needs rendered content (a NavStack view's body, a row
 menu's icon) is seeded as an item slot (KF-SXDM56: item slots, §3.3) that
 the application fills; the outline lists each one under its node.
 
+Every component renders as added (KF-FGD8B3: render by default). Besides its
+required props, a new node gets placeholders for every zone and content prop
+it requires. A zone that names a cataloged component gets that component,
+seeded the same way (a TabBar gets a TabBarItem). Any other zone or required
+content prop gets a `Text` naming it, such as a Workbench's `main` holding a
+Text reading "Main". Numbers start on their default or 1, never 0, because 0
+is out of range for props such as a Grid's `columns`. Icon data names the
+`circle` Lucide icon. A union seeds a member that renders, so it seeds a list
+rather than an empty object. Placeholders are ordinary nodes and values that
+the outline and inspector change or remove like any other. A unit test seeds
+every cataloged component as a lone document and requires it to validate and
+render.
+
 The inspector's Control flow section (KF-90GTJN: editor control flow) shows a
 node only while a true/false param or item field holds (Show, which wraps the
 node in `$if`), repeats it for each item of a list param or in-scope list

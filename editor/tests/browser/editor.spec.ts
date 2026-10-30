@@ -976,3 +976,27 @@ for (const width of [1440, 900]) {
     });
   });
 }
+
+// KF-FGD8B3: a component whose required zones started empty (a Workbench's
+// main) renders as added, with editable placeholders.
+test('renders a Workbench chosen as the root with its placeholders', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.getByRole('button', { name: 'New' }).click();
+  await area(page, 'Outline');
+  await page.locator('[data-action="editor-select-node"]').first().click();
+  await area(page, 'Children');
+  await page.locator('[data-editor-root="component"]').click();
+  await page.getByRole('option', { name: 'Workbench', exact: true }).click();
+  await page.getByRole('button', { name: 'Replace' }).click();
+  const canvas = page.locator('[data-editor-canvas]');
+  await expect(canvas).not.toContainText('cannot render');
+  await expect(canvas).toContainText('Main');
+  await expect(page.getByText(/· valid$/)).toBeVisible();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-fgd8b3-workbench-root-1440.png'),
+    animations: 'disabled',
+  });
+});
