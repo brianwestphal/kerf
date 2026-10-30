@@ -858,8 +858,10 @@ type ListHeaderIndicatorProps = {
 } | {
     count?: never;
     countLabel?: never;
-    badge?: SafeHtml | undefined;
-    status?: SafeHtml | undefined;
+    /** Non-count indicator text or content; ListHeader wraps it in its own compact Badge. */
+    badge?: string | SafeHtml | undefined;
+    /** Status text or content, wrapped in its own compact Badge after `badge`. */
+    status?: string | SafeHtml | undefined;
 };
 type ListHeaderProps = ListHeaderBaseProps & ListHeaderIndicatorProps & ListHeaderModeProps;
 declare function ListHeader({ label, size, headingLevel, count, countLabel, badge, status, density, divider, inline, width, wrap, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, slot, }: ListHeaderProps): SafeHtml;

@@ -22,11 +22,7 @@ export function ListHeaderDemo() {
         </List>
       </CatalogExample>
       <CatalogExample align="none">
-        <ListHeader
-          label="Featured"
-          badge={<Text variant="span">New</Text>}
-          indicatorTone="pop"
-        />
+        <ListHeader label="Featured" badge="New" indicatorTone="pop" />
       </CatalogExample>
       <CatalogExample
         align="none"
@@ -52,7 +48,7 @@ export function ListHeaderDemo() {
       <CatalogExample align="none">
         <ListHeader
           label="Needs Attention"
-          status={<Text variant="span">3 blocked</Text>}
+          status="3 blocked"
           indicatorTone="danger"
           density="compact"
           divider="before"
@@ -68,11 +64,9 @@ export function ListHeaderDemo() {
         <ListHeader
           label="Purchases"
           badge={
-            unpricedCount > 0 ? (
-              <Text variant="span">{`${unpricedCount} lines unpriced`}</Text>
-            ) : undefined
+            unpricedCount > 0 ? `${unpricedCount} lines unpriced` : undefined
           }
-          status={<Text variant="span">Needs review</Text>}
+          status="Needs review"
           indicatorTone="danger"
         />
       </CatalogExample>
@@ -99,7 +93,7 @@ export function ListHeaderDemo() {
         <ListHeader label="Duplicates" count={2} countLabel="2 duplicates" />
       </CatalogExample>
       <CatalogExample align="none">
-        <ListHeader label="Preview" badge={<Text variant="span">New</Text>} />
+        <ListHeader label="Preview" badge="New" />
       </CatalogExample>
       <CatalogExample align="none">
         <ListHeader

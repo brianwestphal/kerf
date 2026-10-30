@@ -6350,10 +6350,12 @@
           "name": "badge",
           "type": {
             "kind": "content",
-            "text": "SafeHtml | undefined",
+            "acceptsText": true,
+            "text": "string | SafeHtml | undefined",
             "nullable": true
           },
           "required": false,
+          "description": "Non-count indicator text or content; ListHeader wraps it in its own compact Badge.",
           "variantOnly": true,
           "slot": true
         },
@@ -6361,10 +6363,12 @@
           "name": "status",
           "type": {
             "kind": "content",
-            "text": "SafeHtml | undefined",
+            "acceptsText": true,
+            "text": "string | SafeHtml | undefined",
             "nullable": true
           },
           "required": false,
+          "description": "Status text or content, wrapped in its own compact Badge after `badge`.",
           "variantOnly": true,
           "slot": true
         },

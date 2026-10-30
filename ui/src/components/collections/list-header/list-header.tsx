@@ -133,8 +133,10 @@ type ListHeaderIndicatorProps =
   | {
       count?: never;
       countLabel?: never;
-      badge?: SafeHtml | undefined;
-      status?: SafeHtml | undefined;
+      /** Non-count indicator text or content; ListHeader wraps it in its own compact Badge. */
+      badge?: string | SafeHtml | undefined;
+      /** Status text or content, wrapped in its own compact Badge after `badge`. */
+      status?: string | SafeHtml | undefined;
     };
 
 export type ListHeaderProps = ListHeaderBaseProps &

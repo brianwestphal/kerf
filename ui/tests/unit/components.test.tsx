@@ -2142,6 +2142,27 @@ describe('production UI primitives', () => {
     });
   });
 
+  // KF-ZYQVHD: plain-text badge/status, so authors and the editor stop
+  // wrapping copy in a span (or a Badge inside ListHeader's own Badge).
+  it('wraps plain-text ListHeader badge and status in its own escaped badges', () => {
+    const header = asHtml(
+      ListHeader({
+        label: 'Purchases',
+        badge: '3 lines <unpriced>',
+        status: 'Needs review',
+        indicatorTone: 'danger',
+      }),
+    );
+    expect(header).toContain('data-has-badge="true"');
+    expect(header.match(/data-component="badge"/g)).toHaveLength(2);
+    expect(header).toContain('>3 lines &lt;unpriced&gt;</span>');
+    expect(header).toContain('>Needs review</span>');
+    expect(header).toContain('data-tone="danger"');
+    const empty = asHtml(ListHeader({ label: 'Quiet', badge: '', status: '' }));
+    expect(empty).toContain('data-has-badge="false"');
+    expect(empty).not.toContain('data-component="badge"');
+  });
+
   it('renders ListItemLink with native navigation and inert loading states', () => {
     const link = asHtml(
       ListItemLink({

@@ -179,6 +179,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **`ListHeader` `badge` and `status` take plain text.** Both accept `string | SafeHtml`; ListHeader still wraps each in its own compact Badge, so `badge="New"` replaces `badge={<span>New</span>}` and the Kerf UI editor edits them as text fields instead of suggesting a Badge inside the Badge (`KF-ZYQVHD`).
 - **Promote an app-supplied prop from its own row in the Kerf UI editor.** A function or model prop such as a Select's `renderSelected` showed as a read-only "—"; its row now says the app supplies it and promotes it to a param when chosen. The Promote and Bind lists name props in words (`KF-D85GY0`).
 - **Item forms keep field order in the Kerf UI editor.** In a form for a list item or object (a Select choice), the Icon row and Configure rows now sit where their fields are instead of after every text field, and picking a choice's icon fills its `iconName` with the icon's name until you give it one of your own (`KF-3J47BY`).
 - **Add a child suggests what a zone holds in the Kerf UI editor.** The Component choice lists the components a zone is named for first, under Suggested (a Button's `icon` offers LucideIcon, a `badge` zone Badge), and starts on that suggestion; the rest follow grouped by the palette's categories instead of one alphabetical list of every component. Changing the zone starts its component choice over (`KF-N8TW04`).
