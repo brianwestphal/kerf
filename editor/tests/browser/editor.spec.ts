@@ -79,6 +79,18 @@ test('filters the components list as you type', async ({ page }, info) => {
   await page.getByRole('button', { name: 'Clear Filter' }).click();
   await expect(rows).toHaveCount(all);
   await expect(filter).toBeFocused();
+  // KF-PR8MA6: the filter is pinned in the rail's header, so scrolling to
+  // the end of the list leaves it in view above the rows.
+  await rows.last().scrollIntoViewIfNeeded();
+  await expect(filter).toBeInViewport();
+  const field = (await filter.boundingBox())!;
+  const firstVisible = (await rows.last().boundingBox())!;
+  expect(field.y + field.height).toBeLessThanOrEqual(firstVisible.y);
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-pr8ma6-filter-pinned-1440.png'),
+    animations: 'disabled',
+  });
 });
 
 test('opens a document file and reports one that is not a view document', async ({

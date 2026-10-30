@@ -1637,6 +1637,23 @@ export function createEditor(options: EditorOptions) {
     const nodes = outlineRows(document, componentNames).length;
     const problemList = problemsOf(document, validation.diagnostics);
     const problems = problemList.length;
+    // KF-PR8MA6: the Components filter sits in the rail's pinned header,
+    // under the strip, so it stays in reach while the list scrolls.
+    const paletteFilterField =
+      documentArea.value === 'components' ? (
+        <List controlInsets="trbl">
+          <SearchField
+            id="editor-palette-filter"
+            label="Filter Components"
+            placeholder="Filter components"
+            query={paletteFilter.value}
+            revision={paletteFilterRevision.value}
+            clearAction={PALETTE_CLEAR_ACTION}
+            clearLabel="Clear Filter"
+            editorAttributes={{ 'data-editor-palette-filter': '' }}
+          />
+        </List>
+      ) : undefined;
     const [documentStrip, ...documentPanels] = areaTabs(
       DOCUMENT_AREAS,
       'Document areas',
@@ -1659,18 +1676,6 @@ export function createEditor(options: EditorOptions) {
             const groups = paletteMatches();
             return (
               <>
-                <List controlInsets="trbl">
-                  <SearchField
-                    id="editor-palette-filter"
-                    label="Filter Components"
-                    placeholder="Filter components"
-                    query={paletteFilter.value}
-                    revision={paletteFilterRevision.value}
-                    clearAction={PALETTE_CLEAR_ACTION}
-                    clearLabel="Clear Filter"
-                    editorAttributes={{ 'data-editor-palette-filter': '' }}
-                  />
-                </List>
                 {groups.length ? (
                   palette(groups)
                 ) : (
@@ -1793,7 +1798,12 @@ export function createEditor(options: EditorOptions) {
               // KF-67K2VP: the strip stays pinned under the toolbar, so a
               // drag (or a click) reaches another area from anywhere in a
               // long panel.
-              header: documentStrip,
+              header: (
+                <>
+                  {documentStrip}
+                  {paletteFilterField}
+                </>
+              ),
               content: <List>{documentPanels}</List>,
             }}
             mainToolbar={{

@@ -60,6 +60,7 @@ describe('document rail areas', () => {
 
   it('filters the components by name or category (KF-Y26SKM)', () => {
     const { root } = open();
+    tab(root, strip, 'components').click();
     const components = panel(root, strip, 'components');
     const names = () =>
       [
@@ -69,8 +70,10 @@ describe('document rail areas', () => {
       [...components.querySelectorAll('[data-component="list-header"]')].map(
         (header) => header.textContent!.trim(),
       );
+    // KF-PR8MA6: the filter sits in the rail's pinned header, not the panel.
     const editor = () =>
-      components.querySelector<HTMLElement>('[data-editor-palette-filter]')!;
+      root.querySelector<HTMLElement>('[data-editor-palette-filter]')!;
+    expect(components.contains(editor())).toBe(false);
     const filter = (text: string) => {
       editor().textContent = text;
       editor().dispatchEvent(new Event('input', { bubbles: true }));
@@ -94,7 +97,7 @@ describe('document rail areas', () => {
 
     // Clear empties the field, rebuilds its editor, and lists everything.
     const before = editor();
-    components
+    root
       .querySelector<HTMLElement>(
         '[data-action="editor-clear-palette-filter"]',
       )!
@@ -103,8 +106,11 @@ describe('document rail areas', () => {
     expect(editor()).not.toBe(before);
     expect(editor().textContent).toBe('');
     expect(
-      components.querySelector('[data-action="editor-clear-palette-filter"]'),
+      root.querySelector('[data-action="editor-clear-palette-filter"]'),
     ).toBeNull();
+    // Only the Components area shows the filter.
+    tab(root, strip, 'outline').click();
+    expect(root.querySelector('[data-editor-palette-filter]')).toBeNull();
   });
 
   it('counts problems on the tab and lists them in its panel', () => {
