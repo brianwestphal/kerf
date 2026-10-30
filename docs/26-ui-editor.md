@@ -255,7 +255,8 @@ which places Web Awesome only through Kerf wrappers.
 
 A function, signal, or model prop (a Select's `renderSelected`, a
 SearchField's `model`) is read-only in the Inspector until **Promote to a
-param** makes it a prop-typed param (KF-H3CB2P). The canvas previews it with
+param** makes it a prop-typed param (KF-H3CB2P); its own row says the app
+supplies it and promotes it when chosen (KF-D85GY0: promote in place). The canvas previews it with
 a placeholder that does something typically useful, or nothing: Kerf UI's
 render a choice's label and give a SearchField a working model with no
 rules. A host adds or replaces them with

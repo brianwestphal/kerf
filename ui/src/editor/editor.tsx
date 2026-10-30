@@ -209,6 +209,7 @@ import {
   type FieldPath,
   fieldSummary,
   fieldZoneKeys,
+  isAppSupplied,
   listItemLabel,
   listMembers,
   memberFor,
@@ -299,6 +300,8 @@ const FIELD_REMOVE_ITEM_ACTION = 'editor-remove-item';
 // KF-EXA2WH: an application field editor's button sets its value.
 const FIELD_SET_ACTION = 'editor-set-field';
 const PROMOTE_ACTION = 'editor-promote';
+/** Promotes one app-supplied prop from its own row (KF-D85GY0). */
+const PROMOTE_PROP_ACTION = 'editor-promote-prop';
 const EXPORT_MODULE_ACTION = 'editor-export-module';
 const EXPORT_DECLARATIONS_ACTION = 'editor-export-declarations';
 const DOCUMENT_TOGGLE = 'editor-toggle-document';
@@ -1970,7 +1973,7 @@ export function createEditor(options: EditorOptions) {
             value={prop.name}
             choices={bindable.map((item) => ({
               value: item.name,
-              label: item.name,
+              label: propLabel(item.name),
             }))}
             rootAttributes={{ 'data-editor-bind': 'prop' }}
           />
@@ -2370,6 +2373,29 @@ export function createEditor(options: EditorOptions) {
                         }),
                 },
               ];
+            // KF-D85GY0: what the app supplies promotes from its own row.
+            if (
+              !isBinding(value) &&
+              isAppSupplied(prop.type as never, definitionsOf(node.type))
+            )
+              return [
+                {
+                  kind: 'open',
+                  row: (
+                    <ListItem
+                      label={propLabel(prop.name)}
+                      description="The app supplies it"
+                      status="Promote to a param"
+                      accessibleLabel={`Promote ${propLabel(prop.name).toLowerCase()} to a param`}
+                      action={PROMOTE_PROP_ACTION}
+                      trailing={
+                        <LucideIcon icon={ChevronRight} name="chevron-right" />
+                      }
+                      rootAttributes={{ 'data-editor-promote-prop': prop.name }}
+                    />
+                  ),
+                },
+              ];
             // A content prop that takes only nodes is a row (KF-5T3TE4).
             if (
               prop.slot &&
@@ -2418,7 +2444,7 @@ export function createEditor(options: EditorOptions) {
                 }
                 choices={promotable.map((prop) => ({
                   value: prop.name,
-                  label: prop.name,
+                  label: propLabel(prop.name),
                 }))}
                 rootAttributes={{ 'data-editor-promote': 'true' }}
               />
@@ -3289,13 +3315,14 @@ export function createEditor(options: EditorOptions) {
   };
 
   /** Promotes the chosen prop to a document param named after it. */
-  const promote = () => {
+  const promote = (chosen?: string) => {
     const id = selectedNodeId();
     if (!id) return;
     const node = findNode(doc.value, id)!.node;
     const component = propsByKey.get(node.type);
     const picker = document.querySelector<HTMLElement>('[data-editor-promote]');
-    const name = picker ? String(controlValue(picker)) : promoteProp.value;
+    const name =
+      chosen ?? (picker ? String(controlValue(picker)) : promoteProp.value);
     const prop = component?.props.find((item) => item.name === name);
     // A function, signal, or model becomes a param of its prop's own type.
     const type =
@@ -3882,6 +3909,8 @@ export function createEditor(options: EditorOptions) {
         },
         [ADD_SLOT_ACTION]: () => addSlot(),
         [PROMOTE_ACTION]: () => promote(),
+        [PROMOTE_PROP_ACTION]: (_event, target) =>
+          promote(target.dataset.editorPromoteProp),
         [OUTLINE_ACTION]: (_event, target) => {
           const id = target.dataset.itemId!;
           const address = slotRowAddress(id);

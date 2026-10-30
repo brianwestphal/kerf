@@ -419,7 +419,7 @@ test('binds a repeated row’s label to a document param', async ({
     )
     .click();
   await page.locator('[data-editor-bind="prop"]').click();
-  await page.getByRole('option', { name: 'label', exact: true }).click();
+  await page.getByRole('option', { name: 'Label', exact: true }).click();
   await expect(page.locator('[data-editor-bind="source"]')).toHaveAttribute(
     'value',
     '{"$bind":"item.label"}',
@@ -1410,11 +1410,8 @@ test('promotes a Select’s renderSelected to an app-supplied param', async ({
 }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await addToPane(page, 'Select');
-  await page.locator('[data-editor-promote]').click();
-  await page
-    .getByRole('option', { name: 'renderSelected', exact: true })
-    .click();
-  await page.getByRole('button', { name: 'Promote' }).click();
+  // KF-D85GY0: an app-supplied prop promotes from its own row.
+  await page.locator('[data-editor-promote-prop="renderSelected"]').click();
   await expect(page.getByText(/· valid$/)).toBeVisible();
   // The placeholder renders the chosen label.
   await expect(
@@ -1434,8 +1431,8 @@ test('promotes a Select’s choices to a param that keeps the list', async ({
   await page.setViewportSize({ width: 1440, height: 900 });
   await addToPane(page, 'Select');
   await page.locator('[data-editor-promote]').click();
-  await page.getByRole('option', { name: 'choices', exact: true }).click();
-  await page.getByRole('button', { name: 'Promote' }).click();
+  await page.getByRole('option', { name: 'Choices', exact: true }).click();
+  await page.getByRole('button', { name: 'Promote', exact: true }).click();
   await expect(page.getByText(/· valid$/)).toBeVisible();
   await expect(
     page.locator('[data-editor-canvas] [data-component="select"]').first(),

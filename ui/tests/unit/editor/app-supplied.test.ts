@@ -138,6 +138,27 @@ describe('promoting an app-supplied prop (KF-H3CB2P)', () => {
     expect(select.innerHTML).toContain('<span>Choice 1</span>');
   });
 
+  it('promotes an app-supplied prop from its own row (KF-D85GY0)', () => {
+    const { root, editor, node } = added('@kerfjs/ui:select');
+    const row = () =>
+      root.querySelector<HTMLElement>(
+        '[data-editor-promote-prop="renderSelected"]',
+      );
+    expect(row()!.textContent).toContain('The app supplies it');
+    row()!.click();
+    const bound = node().props?.renderSelected as { $param: string };
+    expect(editor.document.value.params?.[bound.$param]?.type).toMatchObject({
+      kind: 'prop',
+      prop: 'renderSelected',
+    });
+    // Promoted, it is no longer offered.
+    expect(row()).toBeNull();
+    // The Promote section names props in words too.
+    expect(field(root, '[data-editor-promote]').textContent).toContain(
+      'Placeholder text',
+    );
+  });
+
   it('previews a SearchField’s model with a working placeholder', () => {
     const { root, node } = added('@kerfjs/ui:search-field');
     promote(root, 'model');
