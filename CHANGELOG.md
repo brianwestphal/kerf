@@ -229,6 +229,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **A Select's value picks from its choices in the Kerf UI editor.** The `value` of a component with literal `choices` (Select, SegmentedControl, RadioGroup, …) is now a Select of those choices instead of a free text field labeled "Value value"; renaming the selected choice's value carries the value along in the same undo step, and a value that names no choice is shown as such with a hint. Props that take several kinds of value label the kind "<Prop> type" and the value "<Prop>" (`KF-9AWGPS`).
 - **`validateView` accepts `$icon` and `$css` inside list and object values.** A Select choice's `icon` or `color` set in the Kerf UI editor was rejected with a type mismatch that dumped the whole `choices` value, although `interpretView` and the generated module already handled them (`KF-3J9GJV`).
 - **Variant problems say how to fix them in the Kerf UI editor.** A node whose props fit none of its component's variants listed only "props match none of its variants"; the Problems list and banner now add what would fix it, such as `set "label" or "ariaLabel"`, `remove "ariaLabel" or "label"`, or `set "toggle" to false` (`KF-TVZ06Y`).
 - **A gutter around the Kerf UI editor's canvas.** The preview sat flush against the canvas edges, so the selection ring of a node at the edge was drawn over its content; the canvas now leaves a small gutter so the ring and drop lines show whole (`KF-C4EW1V`).

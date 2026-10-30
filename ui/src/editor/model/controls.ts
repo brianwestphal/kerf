@@ -37,6 +37,7 @@ export type ControlKind =
   | 'enum-set'
   | 'icon'
   | 'choice'
+  | 'value-choice'
   | 'readonly';
 
 type Definitions = Readonly<Record<string, ViewType>>;
@@ -850,4 +851,49 @@ export function seedNode(
     ...(Object.keys(props).length ? { props } : {}),
     ...(Object.keys(zones).length ? { zones } : {}),
   };
+}
+
+/** A choice a `value` prop can name: its value and how it reads. */
+export interface ValueChoice {
+  readonly value: string | number;
+  readonly label: string;
+}
+
+/**
+ * The choices a node's `value` picks from (KF-9AWGPS: a Select's value
+ * picks one of its choices): its literal `choices`, each an object with a
+ * string or number `value`, or undefined when there are none to offer.
+ */
+export function valueChoices(
+  props: Readonly<Record<string, ViewValue>> | undefined,
+): ValueChoice[] | undefined {
+  const choices = props?.choices;
+  if (!Array.isArray(choices) || !choices.length) return undefined;
+  const offered = choices.flatMap((choice) => {
+    const { value, label } = (choice ?? {}) as Record<string, ViewValue>;
+    return typeof value === 'string' || typeof value === 'number'
+      ? [{ value, label: typeof label === 'string' ? label : String(value) }]
+      : [];
+  });
+  return offered.length === choices.length ? offered : undefined;
+}
+
+/**
+ * `props` after choice `index`'s value changes to `next` (KF-9AWGPS): a
+ * single `value` that named the old value names the new one, so renaming
+ * the selected choice keeps it selected. Unchanged otherwise.
+ */
+export function followChoiceRename(
+  props: Readonly<Record<string, ViewValue>>,
+  index: number,
+  next: ViewValue | undefined,
+): Readonly<Record<string, ViewValue>> {
+  const old = (
+    (props.choices as readonly Record<string, ViewValue>[] | undefined)?.[
+      index
+    ] ?? {}
+  ).value;
+  return old !== undefined && props.value === old && next !== undefined
+    ? { ...props, value: next }
+    : props;
 }

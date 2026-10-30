@@ -9,9 +9,12 @@ import propsJson from '../../../ai/component-props.json';
 import {
   choiceOptions,
   controlFor,
+  followChoiceRename,
+  valueChoices,
   valueFromControl,
 } from '../../../src/editor/model/controls.js';
 import { findNode } from '../../../src/editor/model/document.js';
+import { setProp } from '../../../src/editor/model/edits.js';
 import { createEditor } from './kerf-catalog.js';
 
 const definitions = propsJson.definitions as unknown as Record<
@@ -173,7 +176,7 @@ function added(key: string) {
   field(root, '[data-action="editor-add-child"]').click();
   const { id } = editor.selection.value as { id: string };
   const props = () => findNode(editor.document.value, id)!.node.props ?? {};
-  return { root, props };
+  return { root, props, editor, id };
 }
 
 describe('choice controls in the Inspector (KF-3CKTKN)', () => {
@@ -229,5 +232,85 @@ describe('choice controls in the Inspector (KF-3CKTKN)', () => {
         `[data-editor-field='{"prop":"iconTile","path":["foreground"]}']`,
       ),
     ).not.toBeNull();
+  });
+});
+
+describe('a value picked from its choices (KF-9AWGPS)', () => {
+  it('offers the choices it names, keeps the type, and flags a stale value', () => {
+    expect(valueChoices(undefined)).toBeUndefined();
+    expect(valueChoices({ choices: [] })).toBeUndefined();
+    expect(
+      valueChoices({ choices: [{ value: 1, label: 'One' }, { value: 'b' }] }),
+    ).toEqual([
+      { value: 1, label: 'One' },
+      { value: 'b', label: 'b' },
+    ]);
+    expect(valueChoices({ choices: [null] })).toBeUndefined();
+    // A choice without a literal value offers nothing to pick from.
+    expect(
+      valueChoices({ choices: [{ value: { $param: 'x' } }] as never }),
+    ).toBeUndefined();
+    const props = {
+      value: 'b',
+      choices: [{ value: 'a' }, { value: 'b' }],
+    } as never;
+    expect(followChoiceRename(props, 1, 'bee')).toMatchObject({ value: 'bee' });
+    expect(followChoiceRename(props, 0, 'ay')).toBe(props);
+    expect(followChoiceRename(props, 1, undefined)).toBe(props);
+    expect(followChoiceRename(props, 5, 'x')).toBe(props);
+  });
+
+  it('picks a Select’s value from its choices and follows a renamed choice', () => {
+    const { root, props, editor, id } = added('@kerfjs/ui:select');
+    const value = () =>
+      field(
+        root,
+        '[data-editor-prop="value"][data-editor-kind="value-choice"]',
+      );
+    const options = () =>
+      [...value().querySelectorAll<HTMLElement>('[role="option"]')].map(
+        (option) => option.textContent,
+      );
+    expect(options()).toEqual(['Not set', 'Choice 1', 'Choice 2', 'Choice 3']);
+    choose(value(), '"choice-2"');
+    expect(props().value).toBe('choice-2');
+    // Picking it again changes nothing.
+    const unchanged = editor.document.value;
+    choose(value(), '"choice-2"');
+    expect(editor.document.value).toBe(unchanged);
+    // Renaming the selected choice's value carries the value along, in one
+    // undo step.
+    const opener = document.createElement('button');
+    opener.dataset.action = 'editor-open-field';
+    opener.dataset.editorOpen = JSON.stringify({ prop: 'choices', path: [1] });
+    root.append(opener);
+    opener.click();
+    const input = field(
+      root,
+      `[data-editor-field='{"prop":"choices","path":[1,"value"]}']`,
+    ).querySelector('input')!;
+    input.value = 'balanced';
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(props().value).toBe('balanced');
+    field(root, '[data-action="editor-undo"]').click();
+    expect(props()).toMatchObject({ value: 'choice-2' });
+    expect(
+      (props().choices as { value: string }[]).map((choice) => choice.value),
+    ).toEqual(['choice-1', 'choice-2', 'choice-3']);
+    // A value that names no choice is offered as it is, with a hint.
+    editor.document.value = setProp(editor.document.value, id, 'value', 'gone');
+    expect(options().at(-1)).toBe('gone (not one of the choices)');
+    expect(value().textContent).toContain('not one of the choices; pick one');
+    choose(value(), '');
+    expect(props()).not.toHaveProperty('value');
+  });
+
+  it('labels a typed choice’s kind and its value apart', () => {
+    const { root } = added('@kerfjs/ui:lucide-icon');
+    const size = field(
+      root,
+      '[data-editor-prop="size"][data-editor-kind="choice"]',
+    );
+    expect(size.textContent).toContain('Size type');
   });
 });

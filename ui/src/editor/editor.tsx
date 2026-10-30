@@ -141,10 +141,12 @@ import {
   cssHint,
   cssPlaceholder,
   CUSTOM_SIZE,
+  followChoiceRename,
   isBinding,
   type SeedCatalog,
   seedNode,
   typeLabel,
+  valueChoices,
   valueFromControl,
 } from './model/controls.js';
 import {
@@ -995,6 +997,45 @@ export function createEditor(options: EditorOptions) {
     const control = controlFor(prop, value, definitionsOf(type));
     const key = placeKey(place);
     const error = fieldErrors.value[key];
+    // KF-9AWGPS: a value beside literal choices picks one of them.
+    const offered =
+      prop.name === 'value' && !place.path.length && !Array.isArray(value)
+        ? valueChoices(findNode(doc.value, selectedNodeId()!)!.node.props)
+        : undefined;
+    if (offered && (value === undefined || !isBinding(value)))
+      return (
+        <Select
+          name={`prop-${key}`}
+          label={propLabel(prop.name)}
+          value={value === undefined ? '' : JSON.stringify(value)}
+          choices={[
+            { value: '', label: 'Not set' },
+            ...offered.map((choice) => ({
+              value: JSON.stringify(choice.value),
+              label: choice.label,
+            })),
+            ...(value === undefined ||
+            offered.some((choice) => choice.value === value)
+              ? []
+              : [
+                  {
+                    value: JSON.stringify(value),
+                    label: `${String(value)} (not one of the choices)`,
+                  },
+                ]),
+          ]}
+          hint={
+            value === undefined ||
+            offered.some((choice) => choice.value === value)
+              ? undefined
+              : 'This value is not one of the choices; pick one.'
+          }
+          rootAttributes={{
+            'data-editor-prop': place.prop,
+            'data-editor-kind': 'value-choice',
+          }}
+        />
+      );
     const marker = (kind: ControlKind) =>
       place.path.length
         ? {
@@ -1078,7 +1119,7 @@ export function createEditor(options: EditorOptions) {
       // control (text, a number, a list) or form (an object) beneath it.
       case 'choice': {
         const member = control.member && {
-          name: `${propLabel(prop.name)} value`,
+          name: propLabel(prop.name),
           type: control.member as InspectorProp['type'],
           required: false,
         };
@@ -1086,7 +1127,7 @@ export function createEditor(options: EditorOptions) {
           <>
             <Select
               name={`prop-${key}`}
-              label={propLabel(prop.name)}
+              label={`${propLabel(prop.name)} type`}
               value={String(control.raw)}
               choices={[
                 {
@@ -2992,6 +3033,13 @@ export function createEditor(options: EditorOptions) {
     const prop = propsByKey
       .get(node.type)!
       .props.find((item) => item.name === name)!;
+    // A value picked from the choices keeps its type (KF-9AWGPS).
+    if (kind === 'value-choice') {
+      const picked = raw ? (JSON.parse(String(raw)) as ViewValue) : undefined;
+      if (JSON.stringify(node.props?.[name]) !== JSON.stringify(picked))
+        commit(setProp(doc.value, id, name, picked));
+      return;
+    }
     const result = valueFromControl(kind, raw, prop.cssValue?.helpers, {
       type: prop.type as never,
       definitions: definitionsOf(node.type),
@@ -3016,11 +3064,25 @@ export function createEditor(options: EditorOptions) {
   /** Writes `next` at a field editor's place in the selected node's prop. */
   const writeField = (place: FieldPlace, next: ViewValue | undefined) => {
     const id = selectedNodeId()!;
-    const current = findNode(doc.value, id)!.node.props?.[place.prop] as
-      ViewValue | undefined;
+    const props = findNode(doc.value, id)!.node.props;
+    const current = props?.[place.prop] as ViewValue | undefined;
     const value = withValueAt(current, place.path, next);
     if (JSON.stringify(current) === JSON.stringify(value)) return false;
-    commit(setProp(doc.value, id, place.prop, value));
+    // KF-9AWGPS: renaming the selected choice keeps it selected.
+    const [index, field] = place.path;
+    const followed =
+      place.prop === 'choices' &&
+      typeof index === 'number' &&
+      field === 'value' &&
+      place.path.length === 2
+        ? followChoiceRename(props!, index, next).value
+        : props?.value;
+    const written = setProp(doc.value, id, place.prop, value);
+    commit(
+      followed === props?.value
+        ? written
+        : setProp(written, id, 'value', followed as ViewValue),
+    );
     return true;
   };
 

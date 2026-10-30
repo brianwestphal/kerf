@@ -202,6 +202,14 @@ prop that would do when several variants are one change away (`set
 "label" or "ariaLabel"`). The validator's own message, and so the CLI's,
 is unchanged, keeping the runtime entries within their size budgets.
 
+A `value` prop beside literal `choices` (KF-9AWGPS: value choices) is a
+Select of those choices' values, labeled by each choice's label; the
+value keeps its type (a number stays a number). Renaming the selected
+choice's value in its form renames `value` too, in the same undo step, and
+a value that names no choice appears as "(not one of the choices)" with a
+hint. A typed choice reads "<Prop> type" for the kind and "<Prop>" for the
+member's own control.
+
 Inspector rows, and an item form's fields, follow their prop or field
 order, whatever control each takes (KF-DQFXWG: LucideIcon inspector;
 KF-3J47BY: item forms): an icon or Configure row sits where its prop does
