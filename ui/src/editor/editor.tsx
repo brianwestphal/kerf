@@ -176,6 +176,7 @@ import {
   renameNode,
   replaceRoot,
   setProp,
+  suggestedComponents,
   withCatalog,
   type ZoneOption,
 } from './model/edits.js';
@@ -2062,11 +2063,26 @@ export function createEditor(options: EditorOptions) {
     return [...zones, ...fields];
   };
 
-  /** The components a zone takes, as Select choices. */
+  /** Each placeable component's palette category, in palette order. */
+  const categories = new Map(
+    catalog
+      .paletteGroups()
+      .flatMap((group) =>
+        group.items.map((item) => [item.key, group.category]),
+      ),
+  );
+
+  /**
+   * The components a zone takes, as Select choices: the ones its name
+   * suggests first, under Suggested (KF-N8TW04), then the rest by palette
+   * category.
+   */
   const addableIn = (
-    zone: { readonly accepts?: readonly string[] } | undefined,
-  ) =>
-    [...propsByKey.values()]
+    zone:
+      | { readonly key?: string; readonly accepts?: readonly string[] }
+      | undefined,
+  ) => {
+    const keys = [...propsByKey.values()]
       .filter(
         (candidate) =>
           // Kerf UI's and an application's own components; Web Awesome
@@ -2074,10 +2090,28 @@ export function createEditor(options: EditorOptions) {
           candidate.source !== 'webawesome' &&
           (!zone?.accepts || zone.accepts.includes(candidate.key)),
       )
-      .map((candidate) => ({
-        value: candidate.key,
-        label: componentNames.get(candidate.key)!,
-      }));
+      .map((candidate) => candidate.key);
+    const suggested = zone?.key ? suggestedComponents(zone.key, keys) : [];
+    const order = [...categories.keys()];
+    const rank = (key: string) =>
+      order.includes(key) ? order.indexOf(key) : order.length;
+    const rest = keys
+      .filter((key) => !suggested.includes(key))
+      .sort((a, b) => rank(a) - rank(b));
+    const group = (key: string) =>
+      suggested.length || categories.size
+        ? {
+            group: suggested.includes(key)
+              ? 'Suggested'
+              : (categories.get(key) ?? 'Other'),
+          }
+        : {};
+    return [...suggested, ...rest].map((key) => ({
+      value: key,
+      label: componentNames.get(key)!,
+      ...group(key),
+    }));
+  };
 
   /**
    * Replace the root (KF-KWQVDJ): start the document from another component,
@@ -3254,8 +3288,11 @@ export function createEditor(options: EditorOptions) {
         '[data-editor-add]',
         (_event, field) => {
           const value = String(controlValue(field));
-          if (field.dataset.editorAdd === 'zone') addZone.value = value;
-          else addComponent.value = value;
+          // A new zone starts on its own first suggestion.
+          if (field.dataset.editorAdd === 'zone') {
+            addZone.value = value;
+            addComponent.value = '';
+          } else addComponent.value = value;
         },
       ),
       delegate<HTMLElement>(

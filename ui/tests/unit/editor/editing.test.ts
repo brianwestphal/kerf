@@ -120,6 +120,31 @@ describe('editing the selected node', () => {
 });
 
 describe('structural edits', () => {
+  it('suggests the components a zone is named for, grouped by category (KF-N8TW04)', () => {
+    const { root } = open(COMPOSE);
+    const picker = () => field(root, '[data-editor-add="component"]');
+    const options = () =>
+      [...picker().querySelectorAll<HTMLElement>('[role="option"]')].map(
+        (option) => option.dataset.value,
+      );
+    // The Button's children zone suggests nothing, so it opens on the first
+    // category's first component.
+    expect(picker().getAttribute('value')).toBe(options()[0]);
+    expect(picker().textContent).not.toContain('Suggested');
+    choose(field(root, '[data-editor-add="zone"]'), 'icon');
+    expect(options()[0]).toBe('@kerfjs/ui:lucide-icon');
+    expect(picker().getAttribute('value')).toBe('@kerfjs/ui:lucide-icon');
+    expect(picker().textContent).toContain('Suggested');
+    expect(picker().textContent).toContain('Foundation');
+    // Every component is still offered, once.
+    expect(new Set(options()).size).toBe(options().length);
+    // Choosing another component sticks until the zone changes.
+    choose(picker(), '@kerfjs/ui:badge');
+    expect(picker().getAttribute('value')).toBe('@kerfjs/ui:badge');
+    choose(field(root, '[data-editor-add="zone"]'), 'children');
+    expect(picker().getAttribute('value')).toBe(options()[0]);
+  });
+
   it('moves a node within its zone and deletes it', () => {
     const { root, editor } = open(FOLDERS);
     const up = field(root, '[data-action="editor-move-up"]');

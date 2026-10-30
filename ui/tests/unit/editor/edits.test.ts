@@ -19,6 +19,7 @@ import {
   renameNode,
   replaceRoot,
   setProp,
+  suggestedComponents,
 } from '../../../src/editor/model/edits.js';
 import sample from '../../fixtures/view/inbox.kui.json';
 import { propsByKey, viewCatalog } from './kerf-catalog.js';
@@ -214,6 +215,22 @@ describe('names and props', () => {
       values: [],
     });
     expect(paramTypeFor({ kind: 'function' })).toBeUndefined();
+  });
+});
+
+describe('suggestedComponents (KF-N8TW04)', () => {
+  const keys = ['@kerfjs/ui:badge', '@kerfjs/ui:lucide-icon', '@kerfjs/ui:row'];
+  it('suggests components by the zone name', () => {
+    expect(suggestedComponents('icon', keys)).toEqual([
+      '@kerfjs/ui:lucide-icon',
+    ]);
+    expect(suggestedComponents('actionIcon', keys)).toEqual([
+      '@kerfjs/ui:lucide-icon',
+    ]);
+    expect(suggestedComponents('badge', keys)).toEqual(['@kerfjs/ui:badge']);
+    expect(suggestedComponents('children', keys)).toEqual([]);
+    // Only components that are available.
+    expect(suggestedComponents('icon', ['@kerfjs/ui:row'])).toEqual([]);
   });
 });
 

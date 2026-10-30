@@ -474,6 +474,29 @@ export function legalZones(
   return options;
 }
 
+/** Component ids a zone named like this usually holds, by name pattern. */
+const ZONE_SUGGESTIONS: readonly (readonly [RegExp, string])[] = [
+  [/icon$/i, 'lucide-icon'],
+  [/badge$/i, 'badge'],
+];
+
+/**
+ * The components to offer first for zone `zone` (KF-N8TW04: a Button's
+ * `icon` suggests LucideIcon), from `available` component keys: those whose
+ * id its name suggests, in `available`'s package order.
+ */
+export function suggestedComponents(
+  zone: string,
+  available: readonly string[],
+): string[] {
+  const ids = ZONE_SUGGESTIONS.filter(([pattern]) => pattern.test(zone)).map(
+    ([, id]) => id,
+  );
+  return available.filter((key) =>
+    ids.includes(key.slice(key.indexOf(':') + 1)),
+  );
+}
+
 /** `zones` with the primary zone first, the rest in their own order. */
 export function primaryFirst<Zone extends ZoneOption>(
   zones: readonly Zone[],

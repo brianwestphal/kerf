@@ -173,6 +173,12 @@ sub-selection, so the list opens in a dialog unless its items have at most
 Inspector. A list whose items no form edits (an application's `number[]`)
 keeps the JSON field.
 
+Add a child's Component choice (KF-N8TW04: zone suggestions) lists the
+components the zone's name suggests first, under Suggested (an `icon` or
+`…Icon` zone suggests LucideIcon, a `badge` zone Badge), and starts on the
+first of them; the rest follow grouped by palette category. Changing the
+zone starts the choice over.
+
 Inspector rows follow the section's prop order, whatever control each
 takes (KF-DQFXWG: LucideIcon inspector): an icon or Configure row sits
 where its prop does rather than after every text field. Choosing an icon
