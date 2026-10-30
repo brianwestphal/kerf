@@ -1,6 +1,13 @@
 // The problems list: validateView diagnostics mapped to the node each one is
 // about, so selecting a problem selects its node.
-import type { ViewDiagnostic, ViewDocument } from '@kerfjs/ui/view';
+import type {
+  ViewDiagnostic,
+  ViewDocument,
+  ViewNode,
+  ViewValue,
+} from '@kerfjs/ui/view';
+
+import { findNode } from './document.js';
 
 /** Splits `$.root.zones.header[0].props.tone` into object keys and indexes. */
 function segments(path: string): (string | number)[] {
@@ -43,13 +50,96 @@ export interface Problem {
   readonly nodeId?: string;
 }
 
+/** One of a component's prop variants (`component-props.json`). */
+export interface PropsVariant {
+  readonly required: readonly string[];
+  readonly forbidden: readonly string[];
+  readonly when?: Readonly<Record<string, ViewValue>>;
+}
+
+/** Whether a value is a binding (`$param`, `$bind`, …), not a literal. */
+const bound = (value: ViewValue | undefined) =>
+  typeof value === 'object' &&
+  value !== null &&
+  !Array.isArray(value) &&
+  Object.keys(value).some((key) => key.startsWith('$'));
+
+/**
+ * What would make `node` match one of `variants` (KF-TVZ06Y: a variant
+ * problem says how to fix it): the changes to the closest variant, or, when
+ * several are one set or one removal away, each prop that would do
+ * ("set "label" or "ariaLabel""); empty when a bound prop already might.
+ */
+export function variantFix(
+  node: ViewNode,
+  variants: readonly PropsVariant[],
+): string {
+  const props = node.props ?? {};
+  const present = new Set([
+    ...Object.keys(props),
+    ...Object.entries(node.zones ?? {})
+      .filter(([, children]) => children.length)
+      .map(([zone]) => zone),
+  ]);
+  const differs = (name: string, value: ViewValue) =>
+    present.has(name)
+      ? !bound(props[name]) && props[name] !== value
+      : value !== false;
+  const changes = variants.map((variant) => [
+    ...variant.required
+      .filter((name) => !present.has(name))
+      .map((name) => ['set', `"${name}"`] as const),
+    ...variant.forbidden
+      .filter((name) => present.has(name))
+      .map((name) => ['remove', `"${name}"`] as const),
+    ...Object.entries(variant.when ?? {})
+      .filter(([name, value]) => differs(name, value))
+      .map(
+        ([name, value]) =>
+          ['set', `"${name}" to ${JSON.stringify(value)}`] as const,
+      ),
+  ]);
+  const fewest = Math.min(...changes.map((steps) => steps.length));
+  const closest = changes.filter((steps) => steps.length === fewest);
+  const verb = closest[0]![0]?.[0];
+  if (fewest === 1 && closest.every(([step]) => step![0] === verb))
+    return `${verb} ${[...new Set(closest.map(([step]) => step![1]))].join(' or ')}`;
+  const verbs = new Map<string, string[]>();
+  for (const [each, what] of closest[0]!)
+    verbs.set(each, [...(verbs.get(each) ?? []), what]);
+  return [...verbs]
+    .map(([each, list]) => `${each} ${list.join(', ')}`)
+    .join('; ');
+}
+
+/** KUI-V004's message when a node's props fit none of its variants. */
+const NO_VARIANT = /props match none of its variants$/;
+
 export function problemsOf(
   document: ViewDocument,
   diagnostics: readonly ViewDiagnostic[],
+  /** A component's variants, so a variant problem can say how to fix it. */
+  variantsOf: (type: string) => readonly PropsVariant[] | undefined = () =>
+    undefined,
 ): Problem[] {
   return diagnostics.map((diagnostic) => {
     const nodeId = nodeIdForPath(document, diagnostic.path);
-    return nodeId ? { diagnostic, nodeId } : { diagnostic };
+    if (!nodeId) return { diagnostic };
+    const node = findNode(document, nodeId)!.node;
+    const variants = variantsOf(node.type);
+    const fix =
+      variants?.length && NO_VARIANT.test(diagnostic.message)
+        ? variantFix(node, variants)
+        : '';
+    return fix
+      ? {
+          diagnostic: {
+            ...diagnostic,
+            message: `${diagnostic.message}: ${fix}`,
+          },
+          nodeId,
+        }
+      : { diagnostic, nodeId };
   });
 }
 

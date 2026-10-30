@@ -6,9 +6,10 @@ import {
   nodeIdForPath,
   problemCounts,
   problemsOf,
+  variantFix,
 } from '../../../src/editor/model/problems.js';
 import sample from '../../fixtures/view/inbox.kui.json';
-import { viewCatalog } from './kerf-catalog.js';
+import { propsByKey, viewCatalog } from './kerf-catalog.js';
 
 const inbox = sample as unknown as ViewDocument;
 const broken = (): ViewDocument => {
@@ -76,5 +77,86 @@ describe('problemsOf and problemCounts', () => {
     expect([...problemCounts(problems)]).toEqual([
       ['01JB8Z1M6Q8E1X9V4S7K2R3T5D', 1],
     ]);
+  });
+});
+
+describe('variant problems (KF-TVZ06Y)', () => {
+  const variantsOf = (type: string) =>
+    (
+      propsByKey.get(type) as
+        { variants?: Parameters<typeof variantFix>[1] } | undefined
+    )?.variants;
+  const fix = (type: string, props: Record<string, unknown>, zones = {}) =>
+    variantFix(
+      { id: 'n', type: `@kerfjs/ui:${type}`, props, zones } as never,
+      variantsOf(`@kerfjs/ui:${type}`)!,
+    );
+
+  it('says which props would match a variant', () => {
+    expect(fix('text-field', {})).toBe('set "label" or "ariaLabel"');
+    expect(
+      variantFix(
+        { id: 'n', type: '@kerfjs/ui:text-field' } as never,
+        variantsOf('@kerfjs/ui:text-field')!,
+      ),
+    ).toBe('set "label" or "ariaLabel"');
+    expect(fix('text-field', { label: 'A', ariaLabel: 'A' })).toBe(
+      'remove "ariaLabel" or "label"',
+    );
+    // A Button's filled icon zone counts as set; an empty one does not.
+    expect(
+      fix(
+        'button',
+        {},
+        { icon: [{ id: 'i', type: '@kerfjs/ui:lucide-icon' }], children: [] },
+      ),
+    ).toBe('set "children" or "ariaLabel"');
+    // A mode prop left unset reads as its default, false.
+    expect(fix('list-header', { label: 'Files', expanded: true })).toMatch(
+      /remove "expanded"|set "toggle"/,
+    );
+    // A Button's icon zone counts as set.
+    expect(fix('button', { ariaLabel: 'Close' })).toBe(
+      'set "children" or "icon"',
+    );
+    expect(fix('list-header', { label: 'Files', toggle: true })).toBe(
+      'set "toggle" to false',
+    );
+    // A bound mode prop may already pick a variant: nothing to say.
+    expect(
+      fix('list-header', { label: 'Files', toggle: { $param: 'open' } }),
+    ).toBe('');
+    expect(fix('slider', { label: 'Volume', ariaLabel: 'Volume' })).toBe(
+      'set "id"; remove "ariaLabel"',
+    );
+  });
+
+  it('appends the fix to the validator’s variant problem, and only there', () => {
+    const document = {
+      ...inbox,
+      root: {
+        id: '01JB8Z1M6Q8E1X9V4S7K2R3TV1',
+        type: '@kerfjs/ui:text-field',
+        props: {},
+      },
+    } as unknown as ViewDocument;
+    const { diagnostics } = validateView(document, viewCatalog);
+    const [problem] = problemsOf(document, diagnostics, variantsOf);
+    expect(problem!.diagnostic.message).toBe(
+      '@kerfjs/ui:text-field props match none of its variants: set "label" or "ariaLabel"',
+    );
+    // Without variants, or for other problems, the message stays.
+    expect(problemsOf(document, diagnostics)[0]!.diagnostic.message).toBe(
+      diagnostics[0]!.message,
+    );
+    expect(
+      problemsOf(
+        broken(),
+        validateView(broken(), viewCatalog).diagnostics,
+        variantsOf,
+      ).map((item) => item.diagnostic.message),
+    ).toEqual(
+      validateView(broken(), viewCatalog).diagnostics.map((d) => d.message),
+    );
   });
 });

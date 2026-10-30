@@ -235,7 +235,12 @@ import {
   zoneLabel,
 } from './model/outline.js';
 import { type PreviewSlot, previewSlots } from './model/preview-slots.js';
-import { type Problem, problemCounts, problemsOf } from './model/problems.js';
+import {
+  type Problem,
+  problemCounts,
+  problemsOf,
+  type PropsVariant,
+} from './model/problems.js';
 import { sampleInputs } from './model/sample-inputs.js';
 
 export const WORKBENCH_ID = 'kerf-ui-editor';
@@ -606,6 +611,10 @@ function download(fileName: string, text: string): void {
 export function createEditor(options: EditorOptions) {
   const { catalog } = options;
   const { viewCatalog, propsByKey, componentNames } = catalog;
+  /** A component's prop variants, so a variant problem says how to fix it. */
+  const variantsOf = (type: string) =>
+    (propsByKey.get(type) as { variants?: readonly PropsVariant[] } | undefined)
+      ?.variants;
   const canvasContent = canvasRenderer(catalog);
   /** The type table component `key`'s props catalog declares. */
   const definitionsOf = (key: string) =>
@@ -2489,7 +2498,11 @@ export function createEditor(options: EditorOptions) {
     preview.value = contained(
       canvasContent(
         document,
-        problemsOf(document, validateView(document, viewCatalog).diagnostics),
+        problemsOf(
+          document,
+          validateView(document, viewCatalog).diagnostics,
+          variantsOf,
+        ),
       ),
     );
   });
@@ -2597,7 +2610,11 @@ export function createEditor(options: EditorOptions) {
     const document = doc.value;
     const validation = validateView(document, viewCatalog);
     const nodes = outlineRows(document, componentNames).length;
-    const problemList = problemsOf(document, validation.diagnostics);
+    const problemList = problemsOf(
+      document,
+      validation.diagnostics,
+      variantsOf,
+    );
     const problems = problemList.length;
     // KF-PR8MA6: the Components filter sits in the rail's pinned header,
     // under the strip, so it stays in reach while the list scrolls.

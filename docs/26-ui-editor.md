@@ -195,6 +195,13 @@ id and every name a unique one (`folderList2`); a copy that would add a
 validation problem is refused with a notice above the canvas. Copy and
 paste leave text fields and a text selection to the browser.
 
+A `KUI-V004` problem for props that fit none of a component's variants
+gains, in the editor, what would fix it (KF-TVZ06Y: variant hints): the
+changes to the closest variant (`set "id"; remove "ariaLabel"`), or each
+prop that would do when several variants are one change away (`set
+"label" or "ariaLabel"`). The validator's own message, and so the CLI's,
+is unchanged, keeping the runtime entries within their size budgets.
+
 Inspector rows follow the section's prop order, whatever control each
 takes (KF-DQFXWG: LucideIcon inspector): an icon or Configure row sits
 where its prop does rather than after every text field. Choosing an icon
