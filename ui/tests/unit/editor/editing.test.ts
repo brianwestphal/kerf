@@ -757,3 +757,38 @@ describe('the outline tree', () => {
     expect(row(FOLDERS)?.getAttribute('aria-selected')).toBe('true');
   });
 });
+
+// KF-QCBJ4F: a node's problems appear above its controls; unkeyed, the morph
+// turned one prop's input into another's (in WebKit the next clear then
+// fired no change event).
+describe('Inspector control identity', () => {
+  it('keeps each control’s input when a problem appears above them', () => {
+    const { root } = open();
+    const inputs = () =>
+      new Map(
+        [
+          ...root.querySelectorAll<HTMLElement>(
+            '[data-editor-prop], [data-editor-name]',
+          ),
+        ].map((control) => [
+          control.dataset.editorProp ?? 'ref name',
+          [control, control.querySelector('input, textarea')] as const,
+        ]),
+      );
+    const before = inputs();
+    expect(before.has('children')).toBe(true);
+    expect(root.querySelector('[data-editor-node-problem]')).toBeNull();
+    type(field(root, '[data-editor-prop="children"]'), '');
+    expect(root.querySelector('[data-editor-node-problem]')).not.toBeNull();
+    const after = inputs();
+    let compared = 0;
+    for (const [key, [control, input]] of before) {
+      const now = after.get(key);
+      if (!now) continue;
+      compared += 1;
+      expect(now[0], key).toBe(control);
+      expect(now[1], key).toBe(input);
+    }
+    expect(compared).toBeGreaterThan(3);
+  });
+});

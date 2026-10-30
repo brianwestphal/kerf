@@ -624,6 +624,13 @@ interface OpenField extends FieldPlace {
 /** A place's key for its error and Custom size state: `gap`, `mainPane.gap`. */
 const placeKey = (place: FieldPlace) => [place.prop, ...place.path].join('.');
 
+/**
+ * A control's morph key (KF-QCBJ4F): rows come and go above the controls
+ * (a node's problems), and an unkeyed morph then turned one prop's input
+ * into another's, which in WebKit swallowed the next edit's change event.
+ */
+const controlKey = (place: FieldPlace) => `editor-control:${placeKey(place)}`;
+
 /** Identifies what the Inspector shows, so a change of subject is detectable. */
 function selectionKey(selection: Selection): string {
   if (!selection) return '';
@@ -1120,6 +1127,7 @@ export function createEditor(options: EditorOptions) {
           rootAttributes={{
             'data-editor-prop': place.prop,
             'data-editor-kind': 'value-choice',
+            'data-key': controlKey(place),
           }}
         />
       );
@@ -1128,8 +1136,13 @@ export function createEditor(options: EditorOptions) {
         ? {
             'data-editor-field': JSON.stringify(place),
             'data-editor-kind': kind,
+            'data-key': controlKey(place),
           }
-        : { 'data-editor-prop': place.prop, 'data-editor-kind': kind };
+        : {
+            'data-editor-prop': place.prop,
+            'data-editor-kind': kind,
+            'data-key': controlKey(place),
+          };
     // KF-PE0PTT: a color field suggests color builders, not a length.
     const grammar = cssGrammar(prop.type as never, definitionsOf(type));
     const builderField = (raw: string) => (
@@ -2504,7 +2517,11 @@ export function createEditor(options: EditorOptions) {
     const properties = (
       <List>
         {own.length ? (
-          <List controlInsets="trbl" gap>
+          <List
+            controlInsets="trbl"
+            gap
+            rootAttributes={{ 'data-key': 'editor-node-problems' }}
+          >
             {own.map(({ diagnostic }) => (
               <StateBanner
                 tone="warning"
@@ -2515,7 +2532,10 @@ export function createEditor(options: EditorOptions) {
             ))}
           </List>
         ) : undefined}
-        <List controlInsets="trbl">
+        <List
+          controlInsets="trbl"
+          rootAttributes={{ 'data-key': 'editor-ref-name' }}
+        >
           <TextField
             label="Ref name"
             value={node.name ?? ''}
