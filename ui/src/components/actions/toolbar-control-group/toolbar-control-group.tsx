@@ -148,6 +148,15 @@ export type ToolbarButtonProps = ToolbarButtonContent & {
   action?: string;
   /** A toggle's state, reported as `aria-pressed`; unset for a plain action. */
   pressed?: boolean;
+  /**
+   * The id of a native `popover` element this button opens or closes (the
+   * Popover API's invoker; KF-PAMQNM).
+   */
+  popoverTarget?: string;
+  /** What the button does to its `popoverTarget`; the browser default is `toggle`. */
+  popoverTargetAction?: 'toggle' | 'show' | 'hide';
+  /** The kind of popup the button opens, reported as `aria-haspopup`. */
+  ariaHasPopup?: 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog';
   disabled?: boolean;
   /** Native hover text that says more than the accessible name. */
   title?: string;
@@ -179,6 +188,9 @@ export function ToolbarButton({
   ariaLabel,
   action,
   pressed,
+  popoverTarget,
+  popoverTargetAction,
+  ariaHasPopup,
   disabled = false,
   title,
   selectedChrome,
@@ -196,6 +208,9 @@ export function ToolbarButton({
       data-selected-chrome={selectedChrome}
       aria-label={ariaLabel}
       aria-pressed={pressed === undefined ? undefined : String(pressed)}
+      aria-haspopup={ariaHasPopup}
+      popoverTarget={popoverTarget}
+      popoverTargetAction={popoverTargetAction}
       title={title}
       disabled={disabled}
       slot={slot}

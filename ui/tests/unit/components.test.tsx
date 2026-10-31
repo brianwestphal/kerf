@@ -1047,6 +1047,23 @@ describe('production UI primitives', () => {
         glyph +
         'Favorite</button>',
     );
+    // KF-PAMQNM: a native popover invoker, and the popup it opens.
+    expect(
+      asHtml(
+        ToolbarButton({
+          children: 'Status',
+          popoverTarget: 'status-popover',
+          popoverTargetAction: 'show',
+          ariaHasPopup: 'dialog',
+        }),
+      ),
+    ).toBe(
+      '<button type="button" class="kui-toolbar-button" data-component="toolbar-button" aria-haspopup="dialog" popoverTarget="status-popover" popoverTargetAction="show">Status</button>',
+    );
+    // KF-CFWFAE: an avatar group's button is named by ariaLabel alone.
+    expect(asHtml(ToolbarButton({ ariaLabel: 'Open Profile' }))).toBe(
+      '<button type="button" class="kui-toolbar-button" data-component="toolbar-button" aria-label="Open Profile"></button>',
+    );
     // Inside a group it is the group's `> button`.
     expect(
       asHtml(

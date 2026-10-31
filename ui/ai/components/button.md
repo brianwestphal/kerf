@@ -47,6 +47,7 @@ Exact prop names and types: [`@kerfjs/ui/button`](../public-api-signatures-v1.md
 - leading icon
 - icon-only square (icon and ariaLabel, no label)
 - pressed toggle (aria-pressed) on any tone and emphasis
+- native popover invoker (popoverTarget, popoverTargetAction) with aria-haspopup (ariaHasPopup); not on a link
 - currentStep marker (aria-current="step") on a button or link
 - loading
 - disabled

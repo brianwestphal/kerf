@@ -709,10 +709,9 @@ export function SurfaceScaffoldDemo() {
         align="inline-control"
       >
         <ToolbarControlGroup single>
-          {/* Raw: ToolbarButton has no popoverTarget. */}
-          <button type="button" popoverTarget="catalog-popover-dialog">
+          <ToolbarButton popoverTarget="catalog-popover-dialog">
             Open Repository Status
-          </button>
+          </ToolbarButton>
         </ToolbarControlGroup>
         <PopoverDialogSurface
           id="catalog-popover-dialog"

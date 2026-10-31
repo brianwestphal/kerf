@@ -2,7 +2,10 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { CornerStatus } from '@kerfjs/ui/corner-status';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { StateBanner } from '@kerfjs/ui/state-banner';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 
 export function CornerStatusDemo() {
   return (
@@ -13,10 +16,9 @@ export function CornerStatusDemo() {
         align="inline-control"
       >
         <ToolbarControlGroup single>
-          {/* Raw: ToolbarButton has no popoverTarget. */}
-          <button type="button" popoverTarget="catalog-corner-status">
+          <ToolbarButton popoverTarget="catalog-corner-status">
             Toggle Loading Status
-          </button>
+          </ToolbarButton>
         </ToolbarControlGroup>
         <CornerStatus id="catalog-corner-status">
           <StateBanner

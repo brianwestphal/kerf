@@ -1,5 +1,6 @@
 import './anchored-request-popup.css';
 
+import { Button } from '@kerfjs/ui/button';
 import { Row } from '@kerfjs/ui/row';
 import { Text } from '@kerfjs/ui/text';
 
@@ -33,18 +34,17 @@ export function AnchoredRequestPopup({ id }: { id: string }) {
         The assistant wants to read three files in this workspace.
       </Text>
       <Row hAlign="right" controlInsets="l">
-        {/* Raw: Button has no popoverTarget/popoverTargetAction. */}
-        <button
-          type="button"
+        <Button
+          emphasis="secondary"
           popoverTarget={id}
           popoverTargetAction="hide"
-          data-anchored-request-deny
+          rootAttributes={{ 'data-anchored-request-deny': '' }}
         >
           Deny
-        </button>
-        <button type="button" popoverTarget={id} popoverTargetAction="hide">
+        </Button>
+        <Button popoverTarget={id} popoverTargetAction="hide">
           Allow
-        </button>
+        </Button>
       </Row>
     </div>
   );

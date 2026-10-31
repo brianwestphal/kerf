@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`Button` and `ToolbarButton` open native popovers.** `popoverTarget` and `popoverTargetAction` (`toggle`, `show`, `hide`) make either one the Popover API's invoker, and `ariaHasPopup` reports the popup it opens; a link `Button` refuses `popoverTarget`. The catalog's popover triggers and the anchored request popup's actions now use them (`KF-PAMQNM`).
+
 - **`Text` takes `weight="strong"`.** A title or key phrase that matters more than its neighbors renders inside a `<strong>` element (through every wrap, truncation, and line-cap mode), so view documents and the Kerf UI editor can express it instead of raw `<strong>` markup; the demos and recipes use it (`KF-6A9GJ2`).
 - **`ToolbarButton` in `@kerfjs/ui/toolbar-control-group`.** A ToolbarControlGroup's native `<button type="button">` as a component: icon-only with `ariaLabel`, or labeled, with `action`, `pressed`, `disabled`, `title`, and `selectedChrome="none"`. It renders exactly the button the group already styles, so view documents, the Kerf UI editor, and generated code can place toolbar actions (`KF-5ZEYKP`).
 - **A node's problems in its Inspector in the Kerf UI editor.** The selected node's problems lead its Properties, and a field a problem is about, or that a variant hint names, shows it as its error ("To fix: set "label" or "ariaLabel""). The document is validated once per edit for the canvas, the Problems list, and the Inspector (`KF-H782W9`).

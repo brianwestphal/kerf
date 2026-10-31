@@ -423,6 +423,15 @@ type ToolbarButtonProps = ToolbarButtonContent & {
     action?: string;
     /** A toggle's state, reported as `aria-pressed`; unset for a plain action. */
     pressed?: boolean;
+    /**
+     * The id of a native `popover` element this button opens or closes (the
+     * Popover API's invoker; KF-PAMQNM).
+     */
+    popoverTarget?: string;
+    /** What the button does to its `popoverTarget`; the browser default is `toggle`. */
+    popoverTargetAction?: 'toggle' | 'show' | 'hide';
+    /** The kind of popup the button opens, reported as `aria-haspopup`. */
+    ariaHasPopup?: 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog';
     disabled?: boolean;
     /** Native hover text that says more than the accessible name. */
     title?: string;
@@ -440,7 +449,7 @@ type ToolbarButtonProps = ToolbarButtonContent & {
  * focus ring, pressed chrome, and busy state, exactly as for a hand-written
  * `<button type="button">`.
  */
-declare function ToolbarButton({ children, icon, ariaLabel, action, pressed, disabled, title, selectedChrome, className, slot, rootAttributes, }: ToolbarButtonProps): kerfjs.SafeHtml;
+declare function ToolbarButton({ children, icon, ariaLabel, action, pressed, popoverTarget, popoverTargetAction, ariaHasPopup, disabled, title, selectedChrome, className, slot, rootAttributes, }: ToolbarButtonProps): kerfjs.SafeHtml;
 interface ToolbarControlGroupProps {
     children: KerfUiContent;
     label?: string;
@@ -7206,6 +7215,15 @@ interface ButtonOptions {
     /** Delegated `data-action` the application handles. */
     action?: string;
     /**
+     * The id of a native `popover` element this button opens or closes (the
+     * Popover API's invoker; KF-PAMQNM). A link Button cannot take it.
+     */
+    popoverTarget?: string;
+    /** What the button does to its `popoverTarget`; the browser default is `toggle`. */
+    popoverTargetAction?: 'toggle' | 'show' | 'hide';
+    /** The kind of popup the button opens, reported as `aria-haspopup`. */
+    ariaHasPopup?: 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog';
+    /**
      * Keep the button's focus ring inside its box when an ancestor clips
      * overflow. The inset ring is two-tone, a surface-colored line inside the
      * ring color, so it stays visible on a loud fill of the ring's own hue.
@@ -7245,7 +7263,7 @@ interface ButtonOptions {
  * Button for a dialog footer, a form, or a standalone action beside other
  * content.
  */
-declare function Button({ children, tone, emphasis, size, shape, fill, pressed, currentStep, icon, loading, disabled, type, name, value, form, href, target, action, focusRingInset, badge, badgeLabel, badgeTone, ariaLabel, title, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
+declare function Button({ children, tone, emphasis, size, shape, fill, pressed, currentStep, icon, loading, disabled, type, name, value, form, href, target, action, popoverTarget, popoverTargetAction, ariaHasPopup, focusRingInset, badge, badgeLabel, badgeTone, ariaLabel, title, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
 
 export { Button, type ButtonContent, type ButtonEmphasis, type ButtonLabel, type ButtonOptions, type ButtonProps, type ButtonRootAttributes, type ButtonShape, type ButtonSize, type ButtonTone, type ButtonType };
 ```

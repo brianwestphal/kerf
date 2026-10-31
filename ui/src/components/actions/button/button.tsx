@@ -104,6 +104,15 @@ export interface ButtonOptions {
   /** Delegated `data-action` the application handles. */
   action?: string;
   /**
+   * The id of a native `popover` element this button opens or closes (the
+   * Popover API's invoker; KF-PAMQNM). A link Button cannot take it.
+   */
+  popoverTarget?: string;
+  /** What the button does to its `popoverTarget`; the browser default is `toggle`. */
+  popoverTargetAction?: 'toggle' | 'show' | 'hide';
+  /** The kind of popup the button opens, reported as `aria-haspopup`. */
+  ariaHasPopup?: 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog';
+  /**
    * Keep the button's focus ring inside its box when an ancestor clips
    * overflow. The inset ring is two-tone, a surface-colored line inside the
    * ring color, so it stays visible on a loud fill of the ring's own hue.
@@ -163,6 +172,9 @@ export function Button({
   href,
   target,
   action,
+  popoverTarget,
+  popoverTargetAction,
+  ariaHasPopup,
   focusRingInset = false,
   badge,
   badgeLabel,
@@ -193,6 +205,7 @@ export function Button({
         ? `${ariaLabel}, ${badgeLabel}`
         : ariaLabel,
     title,
+    'aria-haspopup': ariaHasPopup,
     'aria-busy': loading ? 'true' : undefined,
     'aria-current': currentStep ? 'step' : undefined,
     slot,
@@ -240,6 +253,10 @@ export function Button({
   if (href !== undefined) {
     if (pressed !== undefined)
       throw new TypeError('A link Button cannot be a toggle (pressed).');
+    if (popoverTarget !== undefined)
+      throw new TypeError(
+        'A link Button cannot open a popover (popoverTarget).',
+      );
     return (
       <a
         {...shared}
@@ -261,6 +278,8 @@ export function Button({
       form={form}
       disabled={disabled}
       aria-pressed={pressed === undefined ? undefined : String(pressed)}
+      popoverTarget={popoverTarget}
+      popoverTargetAction={popoverTargetAction}
     >
       {content}
     </button>

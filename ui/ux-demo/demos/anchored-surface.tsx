@@ -3,7 +3,10 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { DialogSurface } from '@kerfjs/ui/surface-scaffold';
 import { Text } from '@kerfjs/ui/text';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { signal } from 'kerfjs';
 import { Volume2, VolumeX } from 'lucide';
 
@@ -38,18 +41,17 @@ export function AnchoredSurfaceDemo() {
         align="inline-control"
       >
         <ToolbarControlGroup label="Playback" tone="dark" single>
-          {/* Raw: ToolbarButton has no aria-haspopup. */}
-          <button
-            type="button"
-            aria-label="Volume"
-            aria-haspopup="dialog"
-            data-anchored-surface-trigger="media"
-          >
-            <LucideIcon
-              icon={muted ? VolumeX : Volume2}
-              name={muted ? 'volume-x' : 'volume-2'}
-            />
-          </button>
+          <ToolbarButton
+            ariaLabel="Volume"
+            ariaHasPopup="dialog"
+            rootAttributes={{ 'data-anchored-surface-trigger': 'media' }}
+            icon={
+              <LucideIcon
+                icon={muted ? VolumeX : Volume2}
+                name={muted ? 'volume-x' : 'volume-2'}
+              />
+            }
+          />
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample label="Help Inside a Modal" align="inline-control">

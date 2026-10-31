@@ -280,6 +280,25 @@ describe('Button', () => {
     expect(forged.hasAttribute('data-fill')).toBe(false);
   });
 
+  // KF-PAMQNM: a Button can be a native popover invoker naming its popup.
+  it('opens a popover and reports the popup it opens', () => {
+    const trigger = render(
+      <Button
+        popoverTarget="request"
+        popoverTargetAction="hide"
+        ariaHasPopup="dialog"
+      >
+        Deny
+      </Button>,
+    );
+    expect(trigger.getAttribute('popovertarget')).toBe('request');
+    expect(trigger.getAttribute('popovertargetaction')).toBe('hide');
+    expect(trigger.getAttribute('aria-haspopup')).toBe('dialog');
+    expect(() =>
+      Button({ children: 'Docs', href: '/docs', popoverTarget: 'request' }),
+    ).toThrow(/link Button cannot open a popover/);
+  });
+
   it('refuses to make a link a toggle', () => {
     expect(() =>
       Button({ children: 'Docs', href: '/docs', pressed: true }),

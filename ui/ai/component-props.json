@@ -720,6 +720,35 @@
           "description": "Delegated `data-action` the application handles."
         },
         {
+          "name": "popoverTarget",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "The id of a native `popover` element this button opens or closes (the\nPopover API's invoker; KF-PAMQNM). A link Button cannot take it."
+        },
+        {
+          "name": "popoverTargetAction",
+          "type": {
+            "kind": "enum",
+            "values": ["toggle", "show", "hide"],
+            "text": "\"toggle\" | \"show\" | \"hide\" | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "toggle",
+          "description": "What the button does to its `popoverTarget`; the browser default is `toggle`."
+        },
+        {
+          "name": "ariaHasPopup",
+          "type": {
+            "kind": "enum",
+            "values": ["menu", "listbox", "tree", "grid", "dialog"],
+            "text": "\"menu\" | \"listbox\" | \"tree\" | \"grid\" | \"dialog\" | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The kind of popup the button opens, reported as `aria-haspopup`."
+        },
+        {
           "name": "focusRingInset",
           "type": {
             "kind": "boolean",
@@ -5775,7 +5804,7 @@
                     "grid",
                     "true"
                   ],
-                  "text": "\"true\" | \"dialog\" | \"menu\" | \"listbox\" | \"tree\" | \"grid\" | undefined",
+                  "text": "\"menu\" | \"listbox\" | \"tree\" | \"grid\" | \"dialog\" | \"true\" | undefined",
                   "nullable": true
                 },
                 "required": false
@@ -5785,7 +5814,7 @@
               "keyPrefix": "data-",
               "value": { "kind": "string", "text": "string", "nullable": true }
             },
-            "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-item-id'?: undefined; 'data-kui-disabled'?: undefined; popoverTarget?: string | undefined; popoverTargetAction?: \"toggle\" | \"show\" | \"hide\" | undefined; 'aria-controls'?: string | undefined; 'aria-haspopup'?: \"true\" | \"dialog\" | \"menu\" | \"listbox\" | \"tree\" | \"grid\" | undefined; }>",
+            "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-action'?: undefined; 'data-item-id'?: undefined; 'data-kui-disabled'?: undefined; popoverTarget?: string | undefined; popoverTargetAction?: \"toggle\" | \"show\" | \"hide\" | undefined; 'aria-controls'?: string | undefined; 'aria-haspopup'?: \"menu\" | \"listbox\" | \"tree\" | \"grid\" | \"dialog\" | \"true\" | undefined; }>",
             "nullable": true
           },
           "required": false,
@@ -6306,7 +6335,7 @@
                     "grid",
                     "true"
                   ],
-                  "text": "\"true\" | \"dialog\" | \"menu\" | \"listbox\" | \"tree\" | \"grid\" | undefined",
+                  "text": "\"menu\" | \"listbox\" | \"tree\" | \"grid\" | \"dialog\" | \"true\" | undefined",
                   "nullable": true
                 },
                 "required": false
@@ -6316,7 +6345,7 @@
               "keyPrefix": "data-",
               "value": { "kind": "string", "text": "string", "nullable": true }
             },
-            "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-action'?: undefined; 'data-kui-disabled'?: undefined; popoverTarget?: string | undefined; popoverTargetAction?: \"toggle\" | \"show\" | \"hide\" | undefined; 'aria-controls'?: string | undefined; 'aria-haspopup'?: \"true\" | \"dialog\" | \"menu\" | \"listbox\" | \"tree\" | \"grid\" | undefined; }>",
+            "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-action'?: undefined; 'data-kui-disabled'?: undefined; popoverTarget?: string | undefined; popoverTargetAction?: \"toggle\" | \"show\" | \"hide\" | undefined; 'aria-controls'?: string | undefined; 'aria-haspopup'?: \"menu\" | \"listbox\" | \"tree\" | \"grid\" | \"dialog\" | \"true\" | undefined; }>",
             "nullable": true
           },
           "required": false,
@@ -11179,7 +11208,7 @@
           "type": {
             "kind": "enum",
             "values": ["menu", "dialog", "listbox"],
-            "text": "\"dialog\" | \"menu\" | \"listbox\" | undefined",
+            "text": "\"menu\" | \"listbox\" | \"dialog\" | undefined",
             "nullable": true
           },
           "required": false,
@@ -15133,6 +15162,35 @@
           },
           "required": false,
           "description": "A toggle's state, reported as `aria-pressed`; unset for a plain action."
+        },
+        {
+          "name": "popoverTarget",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "The id of a native `popover` element this button opens or closes (the\nPopover API's invoker; KF-PAMQNM)."
+        },
+        {
+          "name": "popoverTargetAction",
+          "type": {
+            "kind": "enum",
+            "values": ["toggle", "show", "hide"],
+            "text": "\"toggle\" | \"show\" | \"hide\" | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "toggle",
+          "description": "What the button does to its `popoverTarget`; the browser default is `toggle`."
+        },
+        {
+          "name": "ariaHasPopup",
+          "type": {
+            "kind": "enum",
+            "values": ["menu", "listbox", "tree", "grid", "dialog"],
+            "text": "\"menu\" | \"listbox\" | \"tree\" | \"grid\" | \"dialog\" | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The kind of popup the button opens, reported as `aria-haspopup`."
         },
         {
           "name": "disabled",
@@ -26327,7 +26385,7 @@
               "type": {
                 "kind": "enum",
                 "values": ["dialog", "menu", "listbox", "true"],
-                "text": "\"true\" | \"dialog\" | \"menu\" | \"listbox\" | undefined",
+                "text": "\"menu\" | \"listbox\" | \"dialog\" | \"true\" | undefined",
                 "nullable": true
               },
               "required": false,
@@ -26438,7 +26496,7 @@
               "type": {
                 "kind": "enum",
                 "values": ["dialog", "menu", "listbox", "true"],
-                "text": "\"true\" | \"dialog\" | \"menu\" | \"listbox\" | undefined",
+                "text": "\"menu\" | \"listbox\" | \"dialog\" | \"true\" | undefined",
                 "nullable": true
               },
               "required": false,

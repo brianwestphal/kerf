@@ -81,15 +81,13 @@ export function LayoutDemo() {
         </Text>
         <Spacer flex />
         <Row controlInsets="l">
-          {/* Raw: Button has no popoverTarget/popoverTargetAction. */}
-          <button
-            type="button"
+          <Button
             popoverTarget="layout-anchored-request"
             popoverTargetAction="show"
-            data-layout-anchor-trigger
+            rootAttributes={{ 'data-layout-anchor-trigger': '' }}
           >
             Show Request
-          </button>
+          </Button>
         </Row>
         <AnchoredRequestPopup id="layout-anchored-request" />
       </CatalogExample>
