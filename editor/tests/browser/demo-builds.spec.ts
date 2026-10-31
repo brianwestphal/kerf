@@ -527,6 +527,7 @@ test('builds SegmentedControl › Rounded Rectangle', async ({ page }) => {
       node(
         'segmented-control',
         {
+          id: 'inspector-section',
           label: 'Inspector Section',
           value: 'summary',
           action: 'select-segment-demo',
@@ -673,6 +674,7 @@ test('builds SegmentedControl › Pill', async ({ page }) => {
   expect(await exported(page)).toEqual(
     pane(
       node('segmented-control', {
+        id: 'display-density',
         label: 'Display Density',
         value: 'comfortable',
         action: 'select-segment-demo',
