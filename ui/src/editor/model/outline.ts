@@ -104,25 +104,19 @@ export function itemSlotRowNode(id: string): string | undefined {
 }
 
 /**
- * Orders two places in a node's props: by prop order, then by item index
- * (numerically), then by field name.
+ * A place in a node's props as a key that sorts in item order: the prop's
+ * position, then each item index zero-padded, so `tabs.10` follows
+ * `tabs.2`, then field names.
  */
-function comparePlaces(
-  a: readonly (string | number)[],
-  b: readonly (string | number)[],
+const placeKey = (
+  at: readonly (string | number)[],
   props: readonly string[],
-): number {
-  for (let index = 0; index < Math.min(a.length, b.length); index++) {
-    const [left, right] = [a[index]!, b[index]!];
-    if (left === right) continue;
-    if (index === 0)
-      return props.indexOf(String(left)) - props.indexOf(String(right));
-    if (typeof left === 'number' && typeof right === 'number')
-      return left - right;
-    return String(left) < String(right) ? -1 : 1;
-  }
-  return a.length - b.length;
-}
+): string =>
+  [props.indexOf(String(at[0])), ...at.slice(1)]
+    .map((part) =>
+      typeof part === 'number' ? String(part).padStart(8, '0') : part,
+    )
+    .join('.');
 
 /**
  * Every `$slot` inside `node`'s prop values, with its path in words and as
@@ -210,7 +204,9 @@ export function outlineTree(
       else own.push(...rows);
     }
     const props = Object.keys(node.props ?? {});
-    placed.sort((a, b) => comparePlaces(a.at, b.at, props));
+    placed.sort((a, b) =>
+      placeKey(a.at, props) < placeKey(b.at, props) ? -1 : 1,
+    );
     const children = [...placed.flatMap(({ rows }) => rows), ...own];
     return {
       id: node.id,
