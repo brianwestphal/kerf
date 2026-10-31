@@ -247,6 +247,24 @@ describe('valueFromControl', () => {
   it('converts raw control values and clears on empty input', () => {
     expect(valueFromControl('switch', true)).toEqual({ value: true });
     expect(valueFromControl('switch', false)).toEqual({ value: false });
+    // KF-K03GBN: a switch that matches the absent value clears the prop.
+    const unset = (value: boolean) => ({
+      type: { kind: 'boolean' } as const,
+      definitions: {},
+      unset: value,
+    });
+    expect(valueFromControl('switch', false, undefined, unset(false))).toEqual({
+      value: undefined,
+    });
+    expect(valueFromControl('switch', true, undefined, unset(false))).toEqual({
+      value: true,
+    });
+    expect(valueFromControl('switch', true, undefined, unset(true))).toEqual({
+      value: undefined,
+    });
+    expect(valueFromControl('switch', false, undefined, unset(true))).toEqual({
+      value: false,
+    });
     expect(valueFromControl('number', ' 4 ')).toEqual({ value: 4 });
     expect(valueFromControl('number', '')).toEqual({ value: undefined });
     expect(valueFromControl('number', 'four')).toEqual({

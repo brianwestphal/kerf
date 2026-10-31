@@ -234,6 +234,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Turning a switch off in the Kerf UI editor clears its prop.** An optional boolean switched back to its default (`showValue` off) no longer leaves `showValue: false` in the document; a prop that defaults on still records `false` (`KF-K03GBN`).
+
 - **The UI evaluator names a failed screenshot capture.** When a full-page capture fails after a context's checks ran, `KUI-B001` now says the screenshot could not be captured and suggests a longer timeout, instead of telling you to check that the app is running (`KF-G8KKNY`).
 
 - **Kerf UI editor zone labels count items from 1.** A field zone read `views › 0 › content` while the item slot it replaces, and the `View 1` row that edits it, counted from 1; zone labels now read `views › 1 › content` too (the document keeps its 0-based `views.0.content` key) (`KF-3N67HR`).

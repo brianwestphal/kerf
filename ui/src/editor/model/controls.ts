@@ -444,6 +444,11 @@ export function valueFromControl(
     readonly name?: string;
     readonly slot?: SlotNamer;
     readonly current?: ViewValue;
+    /**
+     * switch: the value an absent prop takes. A switch that matches it
+     * clears the prop rather than spelling the default (KF-K03GBN).
+     */
+    readonly unset?: boolean;
   },
 ): { readonly value: ViewValue | undefined } | { readonly error: string } {
   switch (kind) {
@@ -508,7 +513,9 @@ export function valueFromControl(
       return { value: { ...(start as object), ...kept } as ViewValue };
     }
     case 'switch':
-      return { value: raw === true };
+      return {
+        value: raw === type?.unset ? undefined : raw === true,
+      };
     case 'size':
       // Custom picks the builder field, which sets the value itself.
       return raw === 'true'

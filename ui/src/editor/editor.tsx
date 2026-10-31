@@ -3291,6 +3291,8 @@ export function createEditor(options: EditorOptions) {
       name,
       slot: slotNamer(usedSlots(doc.value)),
       current: node.props?.[name] as ViewValue | undefined,
+      // An optional boolean reads false when absent, unless it defaults on.
+      unset: prop.required ? undefined : prop.default === true,
     });
     if ('error' in result) {
       fieldErrors.value = { ...fieldErrors.value, [name]: result.error };
