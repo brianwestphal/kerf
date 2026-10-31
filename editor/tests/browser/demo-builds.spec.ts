@@ -783,3 +783,102 @@ test('builds StateBanner › Stacked Copy and Action', async ({ page }) => {
     ),
   );
 });
+
+test('builds Switch › Compact', async ({ page }) => {
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await dragComponent(page, 'Switch', () => emptySpot(page));
+  await select(page, /^List/);
+  await choose(page, 'gap', 'xs');
+  await select(page, /^Switch/);
+  await choose(page, 'size', 'compact');
+  await setText(page, 'label', 'Show avatars');
+  await setText(page, 'action', 'switch-demo');
+  await select(page, /^Switch/);
+  // Duplicating selects the copy.
+  await page.keyboard.press('ControlOrMeta+d');
+  await setText(page, 'label', 'Show timestamps');
+  await select(page, /^Switch/);
+  await turnOn(page, 'checked');
+  await expect(canvas(page).locator('.kui-switch')).toHaveCount(2);
+  const toggle = (label: string, checked?: true) =>
+    node('switch', {
+      size: 'compact',
+      label,
+      ...(checked ? { checked } : {}),
+      action: 'switch-demo',
+    });
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'xs' },
+        {
+          children: [toggle('Show avatars', true), toggle('Show timestamps')],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds ProgressBar › Tones and Compact Size', async ({ page }) => {
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await dragComponent(page, 'ProgressBar', () => emptySpot(page));
+  await select(page, /^List/);
+  await choose(page, 'gap', 'xs');
+  await select(page, /^ProgressBar/);
+  await setText(page, 'id', 'progress-bar-demo-confidence');
+  await setText(page, 'label', 'Confidence');
+  await setText(page, 'value', '0.82');
+  await choose(page, 'tone', 'success');
+  await turnOn(page, 'showValue');
+  await select(page, /^ProgressBar/);
+  await page.keyboard.press('ControlOrMeta+d');
+  await page.keyboard.press('ControlOrMeta+d');
+  await select(page, /^ProgressBar/, 1);
+  await setText(page, 'id', 'progress-bar-demo-storage');
+  await setText(page, 'label', 'Storage Used');
+  await setText(page, 'value', '0.93');
+  await choose(page, 'tone', 'warning');
+  await select(page, /^ProgressBar/, 2);
+  await setText(page, 'id', '');
+  await setText(page, 'label', '');
+  await setText(page, 'ariaLabel', 'Sync Progress');
+  await setText(page, 'value', '0.4');
+  await choose(page, 'tone', 'Default (brand)');
+  await page
+    .locator('[data-editor-prop="showValue"] .kui-switch__control')
+    .click();
+  await choose(page, 'size', 'compact');
+  await expect(canvas(page).locator('progress')).toHaveCount(3);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'xs' },
+        {
+          children: [
+            node('progress-bar', {
+              id: 'progress-bar-demo-confidence',
+              label: 'Confidence',
+              value: 0.82,
+              tone: 'success',
+              showValue: true,
+            }),
+            node('progress-bar', {
+              id: 'progress-bar-demo-storage',
+              label: 'Storage Used',
+              value: 0.93,
+              tone: 'warning',
+              showValue: true,
+            }),
+            node('progress-bar', {
+              ariaLabel: 'Sync Progress',
+              value: 0.4,
+              size: 'compact',
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});

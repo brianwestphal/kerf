@@ -113,9 +113,11 @@ export async function exported(page: Page): Promise<unknown> {
 function withoutIds(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(withoutIds);
   if (value === null || typeof value !== 'object') return value;
+  // A node's id, not an `id` prop.
+  const isNode = 'type' in value;
   return Object.fromEntries(
     Object.entries(value)
-      .filter(([key]) => key !== 'id')
+      .filter(([key]) => !(isNode && key === 'id'))
       .map(([key, inner]) => [key, withoutIds(inner)]),
   );
 }
