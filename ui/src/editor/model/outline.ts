@@ -103,18 +103,52 @@ export function itemSlotRowNode(id: string): string | undefined {
   return kind === 'item-slot' ? node : undefined;
 }
 
-/** Every `$slot` inside `node`'s prop values, with its path in words. */
-export function itemSlots(
-  node: ViewNode,
-): { readonly name: string; readonly path: string }[] {
-  const found: { name: string; path: string }[] = [];
+/**
+ * Orders two places in a node's props: by prop order, then by item index
+ * (numerically), then by field name.
+ */
+function comparePlaces(
+  a: readonly (string | number)[],
+  b: readonly (string | number)[],
+  props: readonly string[],
+): number {
+  for (let index = 0; index < Math.min(a.length, b.length); index++) {
+    const [left, right] = [a[index]!, b[index]!];
+    if (left === right) continue;
+    if (index === 0)
+      return props.indexOf(String(left)) - props.indexOf(String(right));
+    if (typeof left === 'number' && typeof right === 'number')
+      return left - right;
+    return String(left) < String(right) ? -1 : 1;
+  }
+  return a.length - b.length;
+}
+
+/**
+ * Every `$slot` inside `node`'s prop values, with its path in words and as
+ * the 0-based place a field zone key spells.
+ */
+export function itemSlots(node: ViewNode): {
+  readonly name: string;
+  readonly path: string;
+  readonly at: readonly (string | number)[];
+}[] {
+  const found: {
+    name: string;
+    path: string;
+    at: readonly (string | number)[];
+  }[] = [];
   const visit = (value: unknown, path: readonly (string | number)[]) => {
     if (Array.isArray(value))
       value.forEach((item, index) => visit(item, [...path, index + 1]));
     else if (value !== null && typeof value === 'object') {
       const { $slot } = value as { $slot?: unknown };
       if (typeof $slot === 'string')
-        found.push({ name: $slot, path: path.join(' › ') });
+        found.push({
+          name: $slot,
+          path: path.join(' › '),
+          at: path.map((part) => (typeof part === 'number' ? part - 1 : part)),
+        });
       else
         for (const [key, item] of Object.entries(value))
           visit(item, [...path, key]);
@@ -147,16 +181,37 @@ export function outlineTree(
     control: readonly string[],
   ): OutlineNode => {
     const component = nodeTitle(node, names);
-    // Content the application fills inside the node's props (KF-SXDM56).
-    const children: OutlineNode[] = itemSlots(node).map(({ name, path }) => ({
-      id: itemSlotRowId(node.id, path),
-      label: `${name} slot`,
-      detail: path,
-    }));
-    for (const [key, items] of Object.entries(node.zones ?? {}))
-      items.forEach((item, index) =>
-        children.push(...child(item, node.id, key, index, repeated, [])),
+    // Content inside the node's props: item slots the application fills
+    // (KF-SXDM56) and filled field zones, in item order (KF-KA5B40: tab 1's
+    // content before tab 2's slot), then the node's own zones.
+    const placed: { at: readonly (string | number)[]; rows: OutlineNode[] }[] =
+      itemSlots(node).map(({ name, path, at }) => ({
+        at,
+        rows: [
+          {
+            id: itemSlotRowId(node.id, path),
+            label: `${name} slot`,
+            detail: path,
+          },
+        ],
+      }));
+    const own: OutlineNode[] = [];
+    for (const [key, items] of Object.entries(node.zones ?? {})) {
+      const rows = items.flatMap((item, index) =>
+        child(item, node.id, key, index, repeated, []),
       );
+      if (key.includes('.'))
+        placed.push({
+          at: key
+            .split('.')
+            .map((part) => (/^\d+$/.test(part) ? Number(part) : part)),
+          rows,
+        });
+      else own.push(...rows);
+    }
+    const props = Object.keys(node.props ?? {});
+    placed.sort((a, b) => comparePlaces(a.at, b.at, props));
+    const children = [...placed.flatMap(({ rows }) => rows), ...own];
     return {
       id: node.id,
       label: node.name ?? component,

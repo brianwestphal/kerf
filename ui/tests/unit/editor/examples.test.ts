@@ -14,6 +14,7 @@ import {
   itemSlotRowId,
   itemSlotRowNode,
   itemSlots,
+  outlineTree,
 } from '../../../src/editor/model/outline.js';
 
 const t = (type: object) => type as never;
@@ -232,12 +233,52 @@ describe('item slots', () => {
       },
     } as never;
     expect(itemSlots(node)).toEqual([
-      { name: 'home', path: 'views › 1 › content' },
-      { name: 'more', path: 'trailingMenu › icon' },
+      {
+        name: 'home',
+        path: 'views › 1 › content',
+        at: ['views', 0, 'content'],
+      },
+      {
+        name: 'more',
+        path: 'trailingMenu › icon',
+        at: ['trailingMenu', 'icon'],
+      },
     ]);
     expect(itemSlots({ id: 'M', type: 'x' } as never)).toEqual([]);
     const id = itemSlotRowId('N', 'views › 1 › content');
     expect(itemSlotRowNode(id)).toBe('N');
     expect(itemSlotRowNode('N')).toBeUndefined();
+  });
+
+  it('lists filled field zones among item slots in item order (KF-KA5B40)', () => {
+    const tabs = {
+      id: 'T',
+      type: 'tabs',
+      props: {
+        label: 'Tabs',
+        tabs: [
+          { id: 'one' },
+          { id: 'two', content: { $slot: 'second' } },
+          { id: 'three', content: { $slot: 'third' } },
+          ...Array.from({ length: 8 }, (_, index) => ({ id: `more-${index}` })),
+        ],
+      },
+      zones: {
+        'tabs.10.content': [{ id: 'L', type: 'last' }],
+        trailing: [{ id: 'X', type: 'extra' }],
+        'tabs.0.content': [{ id: 'F', type: 'first' }],
+      },
+    };
+    const [root] = outlineTree(
+      { schema: 'kerf-ui-document/v1', root: tabs } as never,
+      new Map(),
+    );
+    expect(root!.children!.map(({ label }) => label)).toEqual([
+      'first',
+      'second slot',
+      'third slot',
+      'last',
+      'extra',
+    ]);
   });
 });
