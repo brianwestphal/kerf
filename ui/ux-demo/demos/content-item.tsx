@@ -355,20 +355,17 @@ export function ContentItemDemo() {
                   id === 'demand-a' ? 'Demand Line A' : 'Demand Line B',
                   'Review the quote and choose a decision.',
                 )}
-                <button type="button" data-action="log-card-primary">
-                  Open Quote
-                </button>
+                <Button action="log-card-primary">Open Quote</Button>
                 <PopupMenu
                   text="More Actions"
                   items={[{ label: 'Show Details', action: 'log-more' }]}
                 />
-                <button
-                  type="button"
-                  data-action="log-decision"
-                  data-decision="approve"
+                <Button
+                  action="log-decision"
+                  rootAttributes={{ 'data-decision': 'approve' }}
                 >
                   Approve
-                </button>
+                </Button>
               </Row>
             </ContentItem>
           ))}

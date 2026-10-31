@@ -10,7 +10,10 @@ import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
 import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
 import { Ellipsis, Funnel, RefreshCw } from 'lucide';
@@ -86,33 +89,27 @@ export const createRecipe: RecipeFactory = (announce) => {
                 />
               </ToolbarControlGroup>
               <ToolbarControlGroup label="Task Actions" buttonAppearance="push">
-                <button
-                  type="button"
-                  aria-label="Toggle Filters"
-                  aria-pressed={String(filtered.value)}
-                  data-action="recipe-action"
-                  data-recipe-command="filter"
-                >
-                  <LucideIcon icon={Funnel} name="funnel" />
-                </button>
-                <button
-                  type="button"
-                  aria-label="Refresh Tasks"
-                  data-action="recipe-action"
-                  data-recipe-command="refresh"
-                >
-                  <LucideIcon icon={RefreshCw} name="refresh-cw" />
-                </button>
+                <ToolbarButton
+                  ariaLabel="Toggle Filters"
+                  pressed={filtered.value}
+                  action="recipe-action"
+                  rootAttributes={{ 'data-recipe-command': 'filter' }}
+                  icon={<LucideIcon icon={Funnel} name="funnel" />}
+                />
+                <ToolbarButton
+                  ariaLabel="Refresh Tasks"
+                  action="recipe-action"
+                  rootAttributes={{ 'data-recipe-command': 'refresh' }}
+                  icon={<LucideIcon icon={RefreshCw} name="refresh-cw" />}
+                />
               </ToolbarControlGroup>
               <ToolbarControlGroup label="More Task Actions" single>
-                <button
-                  type="button"
-                  aria-label="More Task Actions"
-                  data-action="recipe-action"
-                  data-recipe-command="more"
-                >
-                  <LucideIcon icon={Ellipsis} name="ellipsis" />
-                </button>
+                <ToolbarButton
+                  ariaLabel="More Task Actions"
+                  action="recipe-action"
+                  rootAttributes={{ 'data-recipe-command': 'more' }}
+                  icon={<LucideIcon icon={Ellipsis} name="ellipsis" />}
+                />
               </ToolbarControlGroup>
             </>
           }

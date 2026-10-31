@@ -3,7 +3,10 @@ import { List } from '@kerfjs/ui/list';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { Wrench } from 'lucide';
@@ -31,9 +34,7 @@ export function HeadersDemo() {
             }
             trailing={
               <ToolbarControlGroup appearance="borderless" single>
-                <button type="button" data-action="log-add">
-                  New Pattern
-                </button>
+                <ToolbarButton action="log-add">New Pattern</ToolbarButton>
               </ToolbarControlGroup>
             }
           />
@@ -53,9 +54,7 @@ export function HeadersDemo() {
             }
             trailing={
               <ToolbarControlGroup appearance="borderless" single>
-                <button type="button" data-action="log-done">
-                  Done
-                </button>
+                <ToolbarButton action="log-done">Done</ToolbarButton>
               </ToolbarControlGroup>
             }
           />

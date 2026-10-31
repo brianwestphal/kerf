@@ -13,7 +13,10 @@ import { Skeleton } from '@kerfjs/ui/skeleton';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { signal } from 'kerfjs';
@@ -79,13 +82,12 @@ export const createRecipe: RecipeFactory = (announce) => {
                   content="text"
                   single
                 >
-                  <button
-                    type="button"
-                    data-action="recipe-action"
-                    data-recipe-command="toggle"
+                  <ToolbarButton
+                    action="recipe-action"
+                    rootAttributes={{ 'data-recipe-command': 'toggle' }}
                   >
                     {p ? 'Show Loaded' : 'Show Loading'}
-                  </button>
+                  </ToolbarButton>
                 </ToolbarControlGroup>
               }
             />

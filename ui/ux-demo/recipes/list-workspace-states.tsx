@@ -1,5 +1,6 @@
 import '@kerfjs/ui/layout.css';
 
+import { Button } from '@kerfjs/ui/button';
 import { EmptyState } from '@kerfjs/ui/empty-state';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
@@ -7,7 +8,10 @@ import { Pane } from '@kerfjs/ui/pane';
 import { Row } from '@kerfjs/ui/row';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
 
@@ -55,13 +59,12 @@ export const createRecipe: RecipeFactory = (announce) => {
           detail="The current workspace will appear when data is ready."
           busy
           action={
-            <button
-              type="button"
-              data-action="recipe-action"
-              data-recipe-command="load"
+            <Button
+              action="recipe-action"
+              rootAttributes={{ 'data-recipe-command': 'load' }}
             >
               Complete Load
-            </button>
+            </Button>
           }
         />
       );
@@ -71,13 +74,12 @@ export const createRecipe: RecipeFactory = (announce) => {
           title="No Release Tasks"
           detail="Create the first task for this milestone."
           action={
-            <button
-              type="button"
-              data-action="recipe-action"
-              data-recipe-command="create"
+            <Button
+              action="recipe-action"
+              rootAttributes={{ 'data-recipe-command': 'create' }}
             >
               Create Task
-            </button>
+            </Button>
           }
         />
       );
@@ -88,6 +90,8 @@ export const createRecipe: RecipeFactory = (announce) => {
           detail="Existing filters are preserved. Try again when the connection recovers."
           tone="danger"
           urgency="alert"
+          // Raw: StateBanner draws a plain button as its tone-matched pill;
+          // Button has no warning or pop tone and keeps its own look.
           action={
             <button
               type="button"
@@ -106,6 +110,8 @@ export const createRecipe: RecipeFactory = (announce) => {
             title="Showing Saved Results"
             detail="Refreshing in the background."
             tone="warning"
+            // Raw: StateBanner draws a plain button as its tone-matched pill;
+            // Button has no warning or pop tone and keeps its own look.
             action={
               <Row gap="xs" vAlign="middle">
                 <LoadingSpinner label="Refreshing release tasks…" />
@@ -150,27 +156,24 @@ export const createRecipe: RecipeFactory = (announce) => {
               content="text"
               buttonAppearance="push"
             >
-              <button
-                type="button"
-                data-action="recipe-action"
-                data-recipe-command="empty"
+              <ToolbarButton
+                action="recipe-action"
+                rootAttributes={{ 'data-recipe-command': 'empty' }}
               >
                 Clear
-              </button>
-              <button
-                type="button"
-                data-action="recipe-action"
-                data-recipe-command="fail"
+              </ToolbarButton>
+              <ToolbarButton
+                action="recipe-action"
+                rootAttributes={{ 'data-recipe-command': 'fail' }}
               >
                 Simulate Failure
-              </button>
-              <button
-                type="button"
-                data-action="recipe-action"
-                data-recipe-command="refresh"
+              </ToolbarButton>
+              <ToolbarButton
+                action="recipe-action"
+                rootAttributes={{ 'data-recipe-command': 'refresh' }}
               >
                 Refresh
-              </button>
+              </ToolbarButton>
             </ToolbarControlGroup>
           }
         />

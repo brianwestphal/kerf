@@ -6,7 +6,10 @@ import { Row } from '@kerfjs/ui/row';
 import { Spacer } from '@kerfjs/ui/spacer';
 import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 
 import {
@@ -35,9 +38,7 @@ export function LayoutDemo() {
               }
               trailing={
                 <ToolbarControlGroup appearance="borderless" single>
-                  <button type="button" data-action="log-add">
-                    New Item
-                  </button>
+                  <ToolbarButton action="log-add">New Item</ToolbarButton>
                 </ToolbarControlGroup>
               }
             />
@@ -80,6 +81,7 @@ export function LayoutDemo() {
         </Text>
         <Spacer flex />
         <Row controlInsets="l">
+          {/* Raw: Button has no popoverTarget/popoverTargetAction. */}
           <button
             type="button"
             popoverTarget="layout-anchored-request"

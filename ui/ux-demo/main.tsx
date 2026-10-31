@@ -15,6 +15,7 @@ import {
   openAnchoredSurface,
   openAnchoredSurfaceAt,
 } from '@kerfjs/ui/anchored-surface';
+import { Button } from '@kerfjs/ui/button';
 import {
   Catalog,
   type CatalogBackgroundStyle,
@@ -35,7 +36,10 @@ import { readSearchField } from '@kerfjs/ui/search-field';
 import { applySelection, selectionGesture } from '@kerfjs/ui/selection';
 import { closeDialog, openDialog } from '@kerfjs/ui/surface-scaffold';
 import { Text } from '@kerfjs/ui/text';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { revealCatalogEntry, wireCatalog } from '@kerfjs/ui/wire-catalog';
 import { wireCheckboxes } from '@kerfjs/ui/wire-checkboxes';
 import { readChoiceChips, wireChoiceChips } from '@kerfjs/ui/wire-choice-chips';
@@ -645,18 +649,16 @@ mount(app, () => {
               single
               buttonAppearance="push"
             >
-              <button
-                type="button"
-                data-action="toggle-recipe-notes"
-                aria-label={
+              <ToolbarButton
+                action="toggle-recipe-notes"
+                ariaLabel={
                   recipeNotesVisible.value
                     ? 'Hide Recipe Notes'
                     : 'Show Recipe Notes'
                 }
-                aria-pressed={String(recipeNotesVisible.value)}
-              >
-                <LucideIcon icon={StickyNote} name="sticky-note" />
-              </button>
+                pressed={recipeNotesVisible.value}
+                icon={<LucideIcon icon={StickyNote} name="sticky-note" />}
+              />
             </ToolbarControlGroup>
           ) : null}
         </>
@@ -2232,9 +2234,12 @@ const stopAnchoredSurfaceDemo = delegate(
     const content = () => (
       <div>
         <Text>Choose how to use this field in your workspace.</Text>
-        <button type="button" data-anchored-surface-action>
+        <Button
+          size="compact"
+          rootAttributes={{ 'data-anchored-surface-action': '' }}
+        >
           Got It
-        </button>
+        </Button>
       </div>
     );
     const options = { label: 'Field Help' };

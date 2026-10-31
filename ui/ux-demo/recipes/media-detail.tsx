@@ -15,7 +15,10 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { NavStack, type NavStackView } from '@kerfjs/ui/nav-stack';
 import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { wireScrollDividers } from '@kerfjs/ui/wire-scroll-dividers';
 import { signal } from 'kerfjs';
@@ -88,16 +91,29 @@ const artwork = () =>
     new Blob([ARTWORK], { type: 'image/svg+xml' }),
   ));
 
-const command = (name: string, label: string, icon: SafeIcon) => (
-  <button
-    type="button"
-    aria-label={label}
-    data-action="recipe-action"
-    data-recipe-command={name}
-  >
-    {icon}
-  </button>
-);
+/** A playback command: icon-only with `label` as its name, or labeled. */
+const command = (
+  name: string,
+  label: string,
+  icon: SafeIcon,
+  visibleLabel = false,
+) =>
+  visibleLabel ? (
+    <ToolbarButton
+      action="recipe-action"
+      rootAttributes={{ 'data-recipe-command': name }}
+      icon={icon}
+    >
+      {label}
+    </ToolbarButton>
+  ) : (
+    <ToolbarButton
+      ariaLabel={label}
+      action="recipe-action"
+      rootAttributes={{ 'data-recipe-command': name }}
+      icon={icon}
+    />
+  );
 
 type SafeIcon = ReturnType<typeof LucideIcon>;
 
@@ -173,10 +189,8 @@ export const createRecipe: RecipeFactory = (announce) => {
                 {command(
                   'play',
                   'Play',
-                  <>
-                    <LucideIcon icon={Play} name="play" />
-                    <span>Play</span>
-                  </>,
+                  <LucideIcon icon={Play} name="play" />,
+                  true,
                 )}
                 {command(
                   'shuffle',

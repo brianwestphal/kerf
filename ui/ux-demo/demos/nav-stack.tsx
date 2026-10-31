@@ -122,14 +122,12 @@ const iconButton = (
   name: string,
   pressed?: boolean,
 ) => (
-  <button
-    type="button"
-    aria-label={label}
-    aria-pressed={pressed === undefined ? undefined : String(pressed)}
-    data-action="nav-stack-demo-command"
-  >
-    <LucideIcon icon={icon} name={name} />
-  </button>
+  <ToolbarButton
+    ariaLabel={label}
+    icon={<LucideIcon icon={icon} name={name} />}
+    pressed={pressed}
+    action="nav-stack-demo-command"
+  />
 );
 
 const configuredRootView = (): NavStackView => ({

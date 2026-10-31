@@ -1,3 +1,4 @@
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { DialogSurface } from '@kerfjs/ui/surface-scaffold';
@@ -18,18 +19,18 @@ export function AnchoredSurfaceDemo() {
       rootAttributes={{ 'data-demo': 'anchored-surface' }}
     >
       <CatalogExample label="Interactive Help" align="inline-control">
-        <button type="button" data-anchored-surface-trigger="element">
+        <Button rootAttributes={{ 'data-anchored-surface-trigger': 'element' }}>
           Explain This Field
-        </button>
+        </Button>
       </CatalogExample>
       <CatalogExample
         label="Pointer Placement"
         note="Right-click or press the button. The content stays in the viewport near the pointer."
         align="inline-control"
       >
-        <button type="button" data-anchored-surface-trigger="pointer">
+        <Button rootAttributes={{ 'data-anchored-surface-trigger': 'pointer' }}>
           Open at Pointer
-        </button>
+        </Button>
       </CatalogExample>
       <CatalogExample
         label="Dark Tone for Media Chrome"
@@ -37,6 +38,7 @@ export function AnchoredSurfaceDemo() {
         align="inline-control"
       >
         <ToolbarControlGroup label="Playback" tone="dark" single>
+          {/* Raw: ToolbarButton has no aria-haspopup. */}
           <button
             type="button"
             aria-label="Volume"
@@ -51,22 +53,25 @@ export function AnchoredSurfaceDemo() {
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample label="Help Inside a Modal" align="inline-control">
-        <button type="button" data-anchored-surface-open-modal>
+        <Button rootAttributes={{ 'data-anchored-surface-open-modal': '' }}>
           Open Dialog
-        </button>
+        </Button>
         <DialogSurface
           label="Field Settings"
           rootAttributes={{ 'data-anchored-surface-modal': '' }}
           footer={
-            <button type="button" data-dialog-close>
+            <Button rootAttributes={{ 'data-dialog-close': '' }}>
               Close Dialog
-            </button>
+            </Button>
           }
         >
           <Text>Dialog content can open interactive anchored help.</Text>
-          <button type="button" data-anchored-surface-trigger="modal">
+          <Button
+            emphasis="secondary"
+            rootAttributes={{ 'data-anchored-surface-trigger': 'modal' }}
+          >
             Explain in Dialog
-          </button>
+          </Button>
         </DialogSurface>
       </CatalogExample>
     </CatalogExampleStack>

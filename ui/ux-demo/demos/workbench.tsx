@@ -11,7 +11,10 @@ import type { NavStackView } from '@kerfjs/ui/nav-stack';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Text } from '@kerfjs/ui/text';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { Workbench } from '@kerfjs/ui/workbench';
 import { signal } from 'kerfjs';
@@ -216,14 +219,12 @@ function iconGroup(
       single
       relocateOnCollapse={relocateOnCollapse}
     >
-      <button
-        type="button"
-        aria-label={label}
-        data-action="workbench-demo-command"
-        data-demo-command={name}
-      >
-        <LucideIcon icon={icon} name={name} />
-      </button>
+      <ToolbarButton
+        ariaLabel={label}
+        icon={<LucideIcon icon={icon} name={name} />}
+        action="workbench-demo-command"
+        rootAttributes={{ 'data-demo-command': name }}
+      />
     </ToolbarControlGroup>
   );
 }

@@ -134,7 +134,8 @@ describe('production composition recipes', () => {
     const more = template.content.querySelector<HTMLButtonElement>(
       '[data-recipe-command="more"]',
     );
-    expect(more?.classList.length).toBe(0);
+    // A ToolbarButton carries only its own class: no recipe hook restyles it.
+    expect([...(more?.classList ?? [])]).toEqual(['kui-toolbar-button']);
     expect(more?.parentElement?.getAttribute('data-component')).toBe(
       'toolbar-control-group',
     );

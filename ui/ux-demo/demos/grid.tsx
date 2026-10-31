@@ -1,3 +1,4 @@
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { px } from '@kerfjs/ui/css-values';
@@ -127,9 +128,9 @@ export function GridDemo() {
                 frame="framed"
               >
                 <strong>{name}</strong>
-                <button type="button" data-action="log-card-primary">
+                <Button size="compact" action="log-card-primary">
                   Add as Quote
-                </button>
+                </Button>
               </ContentItem>
             ),
           )}

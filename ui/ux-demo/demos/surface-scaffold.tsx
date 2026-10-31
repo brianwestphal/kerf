@@ -20,7 +20,10 @@ import {
 import { Text } from '@kerfjs/ui/text';
 import { TextField } from '@kerfjs/ui/text-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
 import { delegate } from 'kerfjs';
@@ -207,6 +210,9 @@ export function discardDraftSheet(): Promise<boolean> {
         <ListInsetText>{message}</ListInsetText>
         <Row hAlign="right" controlInsets="rl">
           <ToolbarControlGroup label="Discard Draft Actions" content="text">
+            {/* Raw: confirm()'s ok/cancel slots are typed Record<string,
+                string>, which ToolbarButton's data-only rootAttributes
+                does not accept. */}
             <button type="button" {...cancel}>
               Keep Editing
             </button>
@@ -234,9 +240,9 @@ export function openUpNextSheet(): Promise<string | undefined> {
         leading={<ToolbarText text="Up Next" size="xlarge" headingLevel={2} />}
         trailing={
           <ToolbarControlGroup label="Up Next Actions" content="text">
-            <button type="button" data-up-next-done>
+            <ToolbarButton rootAttributes={{ 'data-up-next-done': '' }}>
               Done
-            </button>
+            </ToolbarButton>
           </ToolbarControlGroup>
         }
       />
@@ -688,9 +694,9 @@ export function SurfaceScaffoldDemo() {
         align="inline-control"
       >
         <ToolbarControlGroup single>
-          <button type="button" data-action="open-overlay-sheet">
+          <ToolbarButton action="open-overlay-sheet">
             Discard Draft
-          </button>
+          </ToolbarButton>
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
@@ -699,9 +705,9 @@ export function SurfaceScaffoldDemo() {
         align="inline-control"
       >
         <ToolbarControlGroup single>
-          <button type="button" data-action="open-up-next-sheet">
+          <ToolbarButton action="open-up-next-sheet">
             Show Up Next
-          </button>
+          </ToolbarButton>
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
@@ -710,6 +716,7 @@ export function SurfaceScaffoldDemo() {
         align="inline-control"
       >
         <ToolbarControlGroup single>
+          {/* Raw: ToolbarButton has no popoverTarget. */}
           <button type="button" popoverTarget="catalog-popover-dialog">
             Open Repository Status
           </button>

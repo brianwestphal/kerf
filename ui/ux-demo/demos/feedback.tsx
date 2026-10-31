@@ -1,3 +1,4 @@
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { EmptyState } from '@kerfjs/ui/empty-state';
 import { List } from '@kerfjs/ui/list';
@@ -36,6 +37,8 @@ export function FeedbackDemo() {
                 <LucideIcon icon={Check} name="check" />
               )
             }
+            // Raw: StateBanner draws a plain button as its tone-matched pill;
+            // Button has no warning or pop tone and keeps its own look.
             action={
               <button type="button" data-action="cycle-tone">
                 Cycle Tone
@@ -46,11 +49,7 @@ export function FeedbackDemo() {
             title="Nothing Here Yet"
             detail="Create the first item when you are ready."
             icon={<LucideIcon icon={Search} name="search" />}
-            action={
-              <button type="button" data-action="log-add">
-                Create Item
-              </button>
-            }
+            action={<Button action="log-add">Create Item</Button>}
           />
           <Row vAlign="middle" wrap>
             <LoadingSpinner label="Loading preview…" />

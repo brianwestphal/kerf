@@ -1,5 +1,6 @@
 import { BackdropImage } from '@kerfjs/ui/backdrop-image';
 import { Badge } from '@kerfjs/ui/badge';
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { remify, uiColor } from '@kerfjs/ui/css-values';
@@ -130,23 +131,25 @@ export function ToolbarControlGroupDemo() {
           label="Corner Count"
           leading={
             <ToolbarControlGroup shape={shape} single>
-              <button
-                type="button"
-                aria-label="Hidden Workspaces, 3 hidden"
-                data-action="log-more"
-                data-demo-corner-count=""
-              >
-                <LucideIcon icon={EyeOff} name="eye-off" />
-                <Badge
-                  tone="warning"
-                  appearance="solid"
-                  size="compact"
-                  placement="corner"
-                  ariaHidden
-                >
-                  3
-                </Badge>
-              </button>
+              <ToolbarButton
+                ariaLabel="Hidden Workspaces, 3 hidden"
+                action="log-more"
+                rootAttributes={{ 'data-demo-corner-count': '' }}
+                icon={
+                  <>
+                    <LucideIcon icon={EyeOff} name="eye-off" />
+                    <Badge
+                      tone="warning"
+                      appearance="solid"
+                      size="compact"
+                      placement="corner"
+                      ariaHidden
+                    >
+                      3
+                    </Badge>
+                  </>
+                }
+              />
             </ToolbarControlGroup>
           }
         />
@@ -339,14 +342,16 @@ export function ToolbarControlGroupDemo() {
           busy={toolbarGroupBusy.value}
           busyLabel="Running pricing check"
         >
-          <button type="button" data-action="log-pricing-check">
-            <LucideIcon icon={GitCompare} name="git-compare" />
+          <ToolbarButton
+            action="log-pricing-check"
+            icon={<LucideIcon icon={GitCompare} name="git-compare" />}
+          >
             Price Check
-          </button>
+          </ToolbarButton>
         </ToolbarControlGroup>
-        <button type="button" data-action="toggle-toolbar-group-busy">
-          {toolbarGroupBusy.value ? 'Finish' : 'Start'} pricing check
-        </button>
+        <Button emphasis="secondary" action="toggle-toolbar-group-busy">
+          {`${toolbarGroupBusy.value ? 'Finish' : 'Start'} pricing check`}
+        </Button>
       </CatalogExample>
       <CatalogExample label="Borderless Group" align="inline-control">
         <Toolbar
@@ -416,22 +421,20 @@ export function ToolbarControlGroupDemo() {
       </CatalogExample>
       <CatalogExample
         label="Icon-State Toggle"
-        note='The filled star already shows the pressed state, so data-selected-chrome="none" keeps that one button from painting selected chrome; selectedChrome="none" does the same for a whole group.'
+        note='The filled star already shows the pressed state, so selectedChrome="none" on that one button keeps it from painting selected chrome; selectedChrome="none" on the group does the same for every button.'
         align="inline-control"
       >
         <Toolbar
           label="Icon-State Toggle"
           leading={
             <ToolbarControlGroup label="Ticket Actions" shape={shape}>
-              <button
-                type="button"
-                aria-label="Up Next"
-                aria-pressed="true"
-                data-selected-chrome="none"
-                data-action="log-up-next"
-              >
-                <LucideIcon icon={Star} name="star" appearance="solid" />
-              </button>
+              <ToolbarButton
+                ariaLabel="Up Next"
+                pressed
+                selectedChrome="none"
+                action="log-up-next"
+                icon={<LucideIcon icon={Star} name="star" appearance="solid" />}
+              />
               <ToolbarButton
                 ariaLabel="Share"
                 action="log-share"
@@ -560,9 +563,12 @@ export function ToolbarControlGroupDemo() {
               nestedDropdown
               shape={shape}
             >
-              <button type="button" aria-pressed="true">
-                <LucideIcon icon={Star} name="star" /> Favorite
-              </button>
+              <ToolbarButton
+                pressed
+                icon={<LucideIcon icon={Star} name="star" />}
+              >
+                Favorite
+              </ToolbarButton>
               <PopupMenu text="More" items={[{ label: 'Archive' }]} />
             </ToolbarControlGroup>
           }
@@ -581,6 +587,8 @@ export function ToolbarControlGroupDemo() {
               shape={shape}
               avatarImage={profileImageUrl}
             >
+              {/* Raw: ToolbarButton needs an icon or a label; an avatar
+                  button shows only the group's avatarImage. */}
               <button type="button" aria-label="Open Brian Profile" />
             </ToolbarControlGroup>
           }
@@ -597,6 +605,8 @@ export function ToolbarControlGroupDemo() {
               avatarImage={profileImageUrl}
               shape={shape}
             >
+              {/* Raw: ToolbarButton needs an icon or a label; an avatar
+                  button shows only the group's avatarImage. */}
               <button
                 type="button"
                 aria-label="Primary Profile"

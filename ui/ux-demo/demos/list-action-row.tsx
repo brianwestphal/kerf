@@ -1,3 +1,4 @@
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { fillColor, uiColor } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
@@ -320,9 +321,9 @@ export function ListActionRowDemo() {
         </List>
       </CatalogExample>
       <DemoListPopover id="list-action-row-popover" label="File Actions">
-        <button type="button" data-action="log-more">
+        <Button emphasis="secondary" action="log-more">
           Open Details
-        </button>
+        </Button>
       </DemoListPopover>
     </CatalogExampleStack>
   );

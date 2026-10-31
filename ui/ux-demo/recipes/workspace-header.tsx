@@ -5,7 +5,10 @@ import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 
 import type { RecipeFactory, RecipePresentation } from './types.js';
@@ -54,27 +57,24 @@ export const createRecipe: RecipeFactory = (announce) => ({
                 buttonAppearance="push"
                 content="text"
               >
-                <button
-                  type="button"
-                  data-action="recipe-action"
-                  data-recipe-command="share"
+                <ToolbarButton
+                  action="recipe-action"
+                  rootAttributes={{ 'data-recipe-command': 'share' }}
                 >
                   Share
-                </button>
-                <button
-                  type="button"
-                  data-action="recipe-action"
-                  data-recipe-command="more"
+                </ToolbarButton>
+                <ToolbarButton
+                  action="recipe-action"
+                  rootAttributes={{ 'data-recipe-command': 'more' }}
                 >
                   More Actions
-                </button>
-                <button
-                  type="button"
-                  data-action="recipe-action"
-                  data-recipe-command="publish"
+                </ToolbarButton>
+                <ToolbarButton
+                  action="recipe-action"
+                  rootAttributes={{ 'data-recipe-command': 'publish' }}
                 >
                   Publish Update
-                </button>
+                </ToolbarButton>
               </ToolbarControlGroup>
             }
           />

@@ -8,7 +8,10 @@ import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { signal } from 'kerfjs';
 import { ChevronRight } from 'lucide';
@@ -79,13 +82,9 @@ export function ListDetailDialogDemo() {
             title: 'Projects',
             toolbar: (
               <ToolbarControlGroup appearance="borderless" single>
-                <button
-                  type="button"
-                  aria-label="New Project"
-                  data-action="log-more"
-                >
+                <ToolbarButton ariaLabel="New Project" action="log-more">
                   New
-                </button>
+                </ToolbarButton>
               </ToolbarControlGroup>
             ),
             content: (

@@ -11,6 +11,8 @@ import {
   sizedDisclosureOpen,
 } from './state.js';
 
+// Raw buttons: DisclosureArrow is the specimen, shown inside an owning
+// native control that reports aria-expanded, which Button cannot express.
 export function DisclosureArrowDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'disclosure-arrow' }}>

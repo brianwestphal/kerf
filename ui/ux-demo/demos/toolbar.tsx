@@ -261,9 +261,7 @@ export function ToolbarDemo() {
             }
             trailing={
               <ToolbarControlGroup appearance="borderless" single>
-                <button type="button" data-action="log-add">
-                  Add
-                </button>
+                <ToolbarButton action="log-add">Add</ToolbarButton>
               </ToolbarControlGroup>
             }
           />
@@ -392,9 +390,7 @@ export function ToolbarDemo() {
           }
           trailing={
             <ToolbarControlGroup appearance="borderless" content="text" single>
-              <button type="button" data-action="log-add">
-                Publish
-              </button>
+              <ToolbarButton action="log-add">Publish</ToolbarButton>
             </ToolbarControlGroup>
           }
         />

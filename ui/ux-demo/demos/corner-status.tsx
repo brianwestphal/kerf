@@ -13,6 +13,7 @@ export function CornerStatusDemo() {
         align="inline-control"
       >
         <ToolbarControlGroup single>
+          {/* Raw: ToolbarButton has no popoverTarget. */}
           <button type="button" popoverTarget="catalog-corner-status">
             Toggle Loading Status
           </button>

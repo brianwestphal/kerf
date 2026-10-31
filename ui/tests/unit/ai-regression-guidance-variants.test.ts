@@ -77,6 +77,7 @@ describe(
         'ai/components/toolbar-text.md',
         'ai/components/row.md',
         'ai/components/list-item.md',
+        'ai/components/button.md',
         'ai/components/state-banner.md',
         'ai/components/empty-state.md',
         'ai/components/loading-spinner.md',

@@ -8,7 +8,10 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
 import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { signal } from 'kerfjs';
 import { Folder, Inbox, Plus, Settings, Users } from 'lucide';
 
@@ -41,26 +44,22 @@ export const createRecipe: RecipeFactory = (announce) => {
           dividerSides="t"
           leading={
             <ToolbarControlGroup appearance="borderless" single>
-              <button
-                type="button"
-                aria-label="Add Project"
-                data-action="recipe-action"
-                data-recipe-command="add"
-              >
-                <LucideIcon icon={Plus} name="plus" />
-              </button>
+              <ToolbarButton
+                ariaLabel="Add Project"
+                action="recipe-action"
+                rootAttributes={{ 'data-recipe-command': 'add' }}
+                icon={<LucideIcon icon={Plus} name="plus" />}
+              />
             </ToolbarControlGroup>
           }
           trailing={
             <ToolbarControlGroup appearance="borderless" single>
-              <button
-                type="button"
-                aria-label="Workspace Settings"
-                data-action="recipe-action"
-                data-recipe-command="settings"
-              >
-                <LucideIcon icon={Settings} name="settings" />
-              </button>
+              <ToolbarButton
+                ariaLabel="Workspace Settings"
+                action="recipe-action"
+                rootAttributes={{ 'data-recipe-command': 'settings' }}
+                icon={<LucideIcon icon={Settings} name="settings" />}
+              />
             </ToolbarControlGroup>
           }
         />

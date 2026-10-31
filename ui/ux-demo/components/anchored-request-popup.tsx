@@ -33,6 +33,7 @@ export function AnchoredRequestPopup({ id }: { id: string }) {
         The assistant wants to read three files in this workspace.
       </Text>
       <Row hAlign="right" controlInsets="l">
+        {/* Raw: Button has no popoverTarget/popoverTargetAction. */}
         <button
           type="button"
           popoverTarget={id}

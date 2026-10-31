@@ -5,7 +5,10 @@ import { List } from '@kerfjs/ui/list';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { wireWorkbench } from '@kerfjs/ui/wire-workbench';
@@ -78,22 +81,18 @@ export const createRecipe: RecipeFactory = (announce) => {
             appearance="borderless"
             label="Workspace Controls"
           >
-            <button
-              type="button"
-              aria-label="Notifications"
-              data-action="recipe-action"
-              data-recipe-command="notify"
-            >
-              <LucideIcon icon={Bell} name="bell" />
-            </button>
-            <button
-              type="button"
-              aria-label="Settings"
-              data-action="recipe-action"
-              data-recipe-command="settings"
-            >
-              <LucideIcon icon={Settings} name="settings" />
-            </button>
+            <ToolbarButton
+              ariaLabel="Notifications"
+              action="recipe-action"
+              rootAttributes={{ 'data-recipe-command': 'notify' }}
+              icon={<LucideIcon icon={Bell} name="bell" />}
+            />
+            <ToolbarButton
+              ariaLabel="Settings"
+              action="recipe-action"
+              rootAttributes={{ 'data-recipe-command': 'settings' }}
+              icon={<LucideIcon icon={Settings} name="settings" />}
+            />
           </ToolbarControlGroup>
         }
       />
@@ -133,13 +132,12 @@ export const createRecipe: RecipeFactory = (announce) => {
                 content="text"
                 single
               >
-                <button
-                  type="button"
-                  data-action="recipe-action"
-                  data-recipe-command="new"
+                <ToolbarButton
+                  action="recipe-action"
+                  rootAttributes={{ 'data-recipe-command': 'new' }}
                 >
                   New Task
-                </button>
+                </ToolbarButton>
               </ToolbarControlGroup>
             ),
           }}

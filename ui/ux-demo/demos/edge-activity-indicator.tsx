@@ -1,6 +1,9 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { EdgeActivityIndicator } from '@kerfjs/ui/edge-activity-indicator';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarButton,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 
 import { edgeActivityBusy, edgeActivityMessage } from './state.js';
 
@@ -15,20 +18,18 @@ export function EdgeActivityIndicatorDemo() {
         align="inline-control"
       >
         <ToolbarControlGroup label="Edge Activity">
-          <button
-            type="button"
-            aria-pressed={edgeActivityBusy.value ? 'true' : 'false'}
-            data-action="toggle-edge-activity-demo"
+          <ToolbarButton
+            pressed={edgeActivityBusy.value}
+            action="toggle-edge-activity-demo"
           >
             {edgeActivityBusy.value ? 'Stop Activity' : 'Start Activity'}
-          </button>
-          <button
-            type="button"
-            aria-pressed={edgeActivityMessage.value ? 'true' : 'false'}
-            data-action="toggle-edge-activity-message-demo"
+          </ToolbarButton>
+          <ToolbarButton
+            pressed={edgeActivityMessage.value}
+            action="toggle-edge-activity-message-demo"
           >
             Status Pill
-          </button>
+          </ToolbarButton>
         </ToolbarControlGroup>
         <EdgeActivityIndicator
           busy={edgeActivityBusy.value}
