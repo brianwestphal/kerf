@@ -397,7 +397,8 @@ doctor feedback covers local components too.
 
 A group's buttons are native `<button type="button">` elements; where a
 component is needed instead of markup (a view document, generated code), use
-`ToolbarButton` (icon-only with `ariaLabel`, or labeled), which renders the
+`ToolbarButton` (icon-only with `ariaLabel`, labeled, or `ariaLabel` alone in
+an avatar group, which shows the group's `avatarImage`), which renders the
 same button.
 
 Toolbar action links and menus are configuration, not application CSS: put

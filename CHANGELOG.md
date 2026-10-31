@@ -179,6 +179,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **`ToolbarButton` can be an avatar button.** In a `ToolbarControlGroup` with `content="avatar"`, a `ToolbarButton` takes `ariaLabel` alone and shows the group's `avatarImage`; its `icon` is optional for that form (`KF-CFWFAE`).
+
 - **Overlay render slots for buttons and errors are typed as `data-*` attributes.** `ConfirmRenderSlots`, `PromptRenderSlots`, `FormRenderSlots` / `FormRenderField`, and `ChoiceRenderSlots` type their `ok`, `cancel`, `error`, and `actions` slots as ``Record<`data-${string}`, string>`` (what they always held), so a component that accepts only data attributes, such as a Kerf UI `Button` or `ToolbarButton` via `rootAttributes`, can carry them. Input slots stay `Record<string, string>`; spreading any slot works as before (`KF-YRC20J`).
 
 - **`ListHeader` `badge` and `status` take plain text.** Both accept `string | SafeHtml`; ListHeader still wraps each in its own compact Badge, so `badge="New"` replaces `badge={<span>New</span>}` and the Kerf UI editor edits them as text fields instead of suggesting a Badge inside the Badge (`KF-ZYQVHD`).

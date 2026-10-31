@@ -587,9 +587,7 @@ export function ToolbarControlGroupDemo() {
               shape={shape}
               avatarImage={profileImageUrl}
             >
-              {/* Raw: ToolbarButton needs an icon or a label; an avatar
-                  button shows only the group's avatarImage. */}
-              <button type="button" aria-label="Open Brian Profile" />
+              <ToolbarButton ariaLabel="Open Brian Profile" />
             </ToolbarControlGroup>
           }
         />
@@ -605,21 +603,17 @@ export function ToolbarControlGroupDemo() {
               avatarImage={profileImageUrl}
               shape={shape}
             >
-              {/* Raw: ToolbarButton needs an icon or a label; an avatar
-                  button shows only the group's avatarImage. */}
-              <button
-                type="button"
-                aria-label="Primary Profile"
-                aria-pressed={String(toolbarAvatarChoice.value === 'primary')}
-                data-action="select-avatar-demo"
-                data-avatar-value="primary"
+              <ToolbarButton
+                ariaLabel="Primary Profile"
+                pressed={toolbarAvatarChoice.value === 'primary'}
+                action="select-avatar-demo"
+                rootAttributes={{ 'data-avatar-value': 'primary' }}
               />
-              <button
-                type="button"
-                aria-label="Secondary Profile"
-                aria-pressed={String(toolbarAvatarChoice.value === 'secondary')}
-                data-action="select-avatar-demo"
-                data-avatar-value="secondary"
+              <ToolbarButton
+                ariaLabel="Secondary Profile"
+                pressed={toolbarAvatarChoice.value === 'secondary'}
+                action="select-avatar-demo"
+                rootAttributes={{ 'data-avatar-value': 'secondary' }}
               />
             </ToolbarControlGroup>
           }

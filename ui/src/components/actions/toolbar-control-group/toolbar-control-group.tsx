@@ -119,7 +119,9 @@ export function ToolbarActionLink({
 
 /**
  * A ToolbarButton's content: a labeled button (its text names it), or an
- * icon-only control named by `ariaLabel`.
+ * icon-only control named by `ariaLabel`. In an avatar group
+ * (`content="avatar"`) the button shows the group's `avatarImage`, so it
+ * takes only `ariaLabel` (KF-CFWFAE).
  */
 export type ToolbarButtonContent =
   | {
@@ -132,9 +134,12 @@ export type ToolbarButtonContent =
     }
   | {
       children?: undefined;
-      /** The icon of an icon-only control. */
-      icon: KerfUiContent;
-      /** The accessible name of an icon-only control. */
+      /**
+       * The icon of an icon-only control; omitted in an avatar group, whose
+       * avatar image the button shows.
+       */
+      icon?: KerfUiContent;
+      /** The accessible name of an icon-only or avatar control. */
       ariaLabel: string;
     };
 

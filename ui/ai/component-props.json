@@ -15188,7 +15188,7 @@
       "nativeAttributes": [],
       "variants": [
         { "required": ["children"], "forbidden": [] },
-        { "required": ["icon", "ariaLabel"], "forbidden": ["children"] }
+        { "required": ["ariaLabel"], "forbidden": ["children"] }
       ],
       "dataChannel": "rootAttributes"
     },
