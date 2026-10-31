@@ -990,3 +990,28 @@ test('the dialog corner is concentric with a toolbar group at the body inset', a
   expect(await radius()).toBe('30px');
   await page.keyboard.press('Escape');
 });
+
+// KF-YRC20J: the bottom-sheet confirm's footer is two ToolbarButtons
+// carrying confirm()'s data-confirm slots; each closes the sheet with its
+// answer.
+test('the bottom-sheet confirm answers through its ToolbarButton footer', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 850 });
+  await page.goto('/?component=surface-scaffold');
+  const sheet = page.locator('.kerf-overlay');
+  for (const [name, answer, logged] of [
+    ['Keep Editing', 'cancel', 'Kept editing'],
+    ['Discard', 'ok', 'Draft discarded'],
+  ] as const) {
+    await page
+      .getByRole('button', { name: 'Discard Draft', exact: true })
+      .click();
+    const button = sheet.getByRole('button', { name, exact: true });
+    await expect(button).toHaveClass(/kui-toolbar-button/);
+    await expect(button).toHaveAttribute('data-confirm', answer);
+    await button.click();
+    await expect(sheet).toHaveCount(0);
+    await expect(page.getByText(logged, { exact: true })).toBeVisible();
+  }
+});

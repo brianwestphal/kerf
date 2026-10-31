@@ -179,6 +179,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Overlay render slots for buttons and errors are typed as `data-*` attributes.** `ConfirmRenderSlots`, `PromptRenderSlots`, `FormRenderSlots` / `FormRenderField`, and `ChoiceRenderSlots` type their `ok`, `cancel`, `error`, and `actions` slots as ``Record<`data-${string}`, string>`` (what they always held), so a component that accepts only data attributes, such as a Kerf UI `Button` or `ToolbarButton` via `rootAttributes`, can carry them. Input slots stay `Record<string, string>`; spreading any slot works as before (`KF-YRC20J`).
+
 - **`ListHeader` `badge` and `status` take plain text.** Both accept `string | SafeHtml`; ListHeader still wraps each in its own compact Badge, so `badge="New"` replaces `badge={<span>New</span>}` and the Kerf UI editor edits them as text fields instead of suggesting a Badge inside the Badge (`KF-ZYQVHD`).
 - **Promote an app-supplied prop from its own row in the Kerf UI editor.** A function or model prop such as a Select's `renderSelected` showed as a read-only "—"; its row now says the app supplies it and promotes it to a param when chosen. The Promote and Bind lists name props in words (`KF-D85GY0`).
 - **Item forms keep field order in the Kerf UI editor.** In a form for a list item or object (a Select choice), the Icon row and Configure rows now sit where their fields are instead of after every text field, and picking a choice's icon fills its `iconName` with the icon's name until you give it one of your own (`KF-3J47BY`).

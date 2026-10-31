@@ -210,15 +210,8 @@ export function discardDraftSheet(): Promise<boolean> {
         <ListInsetText>{message}</ListInsetText>
         <Row hAlign="right" controlInsets="rl">
           <ToolbarControlGroup label="Discard Draft Actions" content="text">
-            {/* Raw: confirm()'s ok/cancel slots are typed Record<string,
-                string>, which ToolbarButton's data-only rootAttributes
-                does not accept. */}
-            <button type="button" {...cancel}>
-              Keep Editing
-            </button>
-            <button type="button" {...ok}>
-              Discard
-            </button>
+            <ToolbarButton rootAttributes={cancel}>Keep Editing</ToolbarButton>
+            <ToolbarButton rootAttributes={ok}>Discard</ToolbarButton>
           </ToolbarControlGroup>
         </Row>
       </List>

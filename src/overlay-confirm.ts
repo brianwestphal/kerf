@@ -12,9 +12,9 @@ import {
 export interface ConfirmRenderSlots {
   message: string;
   /** Spread onto the confirm control. */
-  ok: Record<string, string>;
+  ok: Record<`data-${string}`, string>;
   /** Spread onto the cancel control. */
-  cancel: Record<string, string>;
+  cancel: Record<`data-${string}`, string>;
 }
 
 /** Options for {@link confirm}. */

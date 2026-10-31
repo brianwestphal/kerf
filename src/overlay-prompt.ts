@@ -63,9 +63,9 @@ export interface PromptOptions {
 export interface PromptRenderSlots {
   message: string;
   input: Record<string, string>;
-  error: Record<string, string>;
-  ok: Record<string, string>;
-  cancel: Record<string, string>;
+  error: Record<`data-${string}`, string>;
+  ok: Record<`data-${string}`, string>;
+  cancel: Record<`data-${string}`, string>;
 }
 
 /** A promise-based `window.prompt` replacement. */

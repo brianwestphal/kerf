@@ -18,7 +18,7 @@ export interface ChoiceAction<R> {
 /** Wiring slots for a {@link ChoiceOptions.render}. */
 export interface ChoiceRenderSlots {
   message: string;
-  actions: Array<Record<string, string>>;
+  actions: Array<Record<`data-${string}`, string>>;
 }
 
 /** Options for {@link choice}. */

@@ -24,14 +24,14 @@ export interface FormRenderField {
   name: string;
   label: string;
   input: Record<string, string>;
-  error: Record<string, string>;
+  error: Record<`data-${string}`, string>;
 }
 
 /** Wiring slots for a {@link FormOptions.render}. */
 export interface FormRenderSlots {
   fields: FormRenderField[];
-  ok: Record<string, string>;
-  cancel: Record<string, string>;
+  ok: Record<`data-${string}`, string>;
+  cancel: Record<`data-${string}`, string>;
 }
 
 /** Options for {@link form}. */
