@@ -716,3 +716,70 @@ test('builds ListHeader › Badge and Status Together', async ({ page }) => {
     ),
   );
 });
+
+test('builds EmptyState › Busy', async ({ page }) => {
+  await dragComponent(page, 'EmptyState', () => emptySpot(page));
+  await select(page, /^EmptyState/);
+  await setText(page, 'title', 'Loading Items');
+  await setText(page, 'detail', 'The current view will remain stable.');
+  await turnOn(page, 'busy');
+  await expect(
+    canvas(page).locator('.kui-empty-state[data-kerf-node]'),
+  ).toContainText('Loading Items');
+  expect(await exported(page)).toEqual(
+    pane(
+      node('empty-state', {
+        title: 'Loading Items',
+        detail: 'The current view will remain stable.',
+        busy: true,
+      }),
+    ),
+  );
+});
+
+test('builds StateBanner › Stacked Copy and Action', async ({ page }) => {
+  await dragComponent(page, 'StateBanner', () => emptySpot(page));
+  await select(page, /^StateBanner/);
+  await choose(page, 'tone', 'warning');
+  await setText(page, 'title', 'Migration Needs Review');
+  await setText(
+    page,
+    'detail',
+    'Check the imported projects before removing the old source.',
+  );
+  await choose(page, 'copyLayout', 'stacked');
+  await choose(page, 'actionPlacement', 'below');
+  await dragComponent(page, 'LucideIcon', () => zoneSpot(page, 'Icon'));
+  await select(page, /^StateBanner/);
+  await dragComponent(page, 'Button', () => zoneSpot(page, 'Action'));
+  await select(page, /^LucideIcon/);
+  await page.locator('[data-editor-icon-place]').first().click();
+  await page.keyboard.type('circle question mark');
+  await page.locator('[data-editor-icon="circle-question-mark"]').click();
+  await select(page, /^Button/);
+  await setText(page, 'children', 'Review Projects');
+  await choose(page, 'size', 'compact');
+  await expect(
+    canvas(page).locator('.kui-state-banner[data-kerf-node] .kui-button'),
+  ).toHaveText('Review Projects');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'state-banner',
+        {
+          tone: 'warning',
+          title: 'Migration Needs Review',
+          detail: 'Check the imported projects before removing the old source.',
+          copyLayout: 'stacked',
+          actionPlacement: 'below',
+        },
+        {
+          icon: [icon('circle-question-mark')],
+          action: [
+            node('button', { children: 'Review Projects', size: 'compact' }),
+          ],
+        },
+      ),
+    ),
+  );
+});
