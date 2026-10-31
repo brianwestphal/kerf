@@ -882,3 +882,49 @@ test('builds ProgressBar › Tones and Compact Size', async ({ page }) => {
     ),
   );
 });
+
+test('builds a DemoContentItem (ContentItem › List › Text)', async ({
+  page,
+}) => {
+  await dragComponent(page, 'ContentItem', () => emptySpot(page));
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await dragComponent(page, 'Text', () => emptySpot(page));
+  await select(page, /^List/);
+  await choose(page, 'gap', '2xs');
+  await select(page, /^Text/);
+  await setText(page, 'children', 'Projects');
+  await choose(page, 'variant', 'span');
+  await choose(page, 'weight', 'strong');
+  await select(page, /^Text/);
+  await page.keyboard.press('ControlOrMeta+d');
+  await setText(page, 'children', 'Each destination stays mounted.');
+  await choose(page, 'weight', 'Default (regular)');
+  await choose(page, 'tone', 'quiet');
+  await choose(page, 'size', 'compact');
+  await expect(
+    canvas(page).locator('.kui-content-item[data-kerf-node] strong'),
+  ).toHaveText('Projects');
+  const text = (children: string, props: Record<string, unknown>) =>
+    node('text', { children, variant: 'span', ...props });
+  expect(await exported(page)).toEqual(
+    pane(
+      node('content-item', undefined, {
+        children: [
+          node(
+            'list',
+            { gap: '2xs' },
+            {
+              children: [
+                text('Projects', { weight: 'strong' }),
+                text('Each destination stays mounted.', {
+                  tone: 'quiet',
+                  size: 'compact',
+                }),
+              ],
+            },
+          ),
+        ],
+      }),
+    ),
+  );
+});
