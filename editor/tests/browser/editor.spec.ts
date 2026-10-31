@@ -7,6 +7,7 @@ import {
   addChild,
   dragComponent,
   emptySpot,
+  exported,
   newDocument,
   select,
 } from './build.js';
@@ -1485,4 +1486,36 @@ test('fills a NavStack view’s slot-seeded content from its form', async ({
   await expect(
     page.locator('[data-editor-content-node="views.0.content"]'),
   ).toContainText('List');
+});
+
+// KF-HGG7MJ: a selected TabNavigator's tab content is a drop target on the
+// canvas, named after the item slot it replaces.
+test('drops a component into a tab’s content from the canvas', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.getByRole('button', { name: 'New' }).click();
+  await area(page, 'Outline');
+  await page.locator('[data-action="editor-select-node"]').first().click();
+  await area(page, 'Children');
+  await page.locator('[data-editor-root="component"]').click();
+  await page.getByRole('option', { name: 'TabNavigator', exact: true }).click();
+  await page.getByRole('button', { name: 'Replace' }).click();
+  const spot = page
+    .locator('[data-editor-canvas] [data-editor-empty]')
+    .filter({ hasText: 'tab1Content slot — drop here' });
+  await expect(spot).toBeVisible();
+  await dragComponent(page, 'ContentItem', () => spot);
+  await expect(spot).toHaveCount(0);
+  const document = (await exported(page)) as {
+    props: { tabs: { content?: unknown }[] };
+    zones: Record<string, unknown[]>;
+  };
+  expect(document.zones['tabs.0.content']).toEqual([
+    { type: '@kerfjs/ui:content-item' },
+  ]);
+  expect(document.props.tabs[0]).not.toHaveProperty('content');
+  expect(document.props.tabs[1]).toHaveProperty('content', {
+    $slot: 'tab2Content',
+  });
 });

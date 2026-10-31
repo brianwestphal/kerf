@@ -15,6 +15,8 @@ export interface PreviewSlot {
    * node that zone belongs to, which the placeholder selects and drops into.
    */
   readonly empty?: true;
+  /** The item slot a field zone's stand-in replaces (KF-HGG7MJ). */
+  readonly held?: string;
 }
 
 /**
@@ -63,16 +65,38 @@ export function previewSlots(
     const empties = emptyZonesOf(item).filter((zone) => !zones?.[zone]?.length);
     if (!empties.length) return zones ? { ...item, zones } : item;
     const filled: Record<string, ViewChild[]> = { ...zones };
+    // A field zone's stand-in (KF-HGG7MJ: a tab's content) replaces the
+    // value at its place in the props, which would otherwise render instead.
+    const props = empties.some((zone) => zone.includes('.'))
+      ? (globalThis.structuredClone(item.props ?? {}) as Record<
+          string,
+          unknown
+        >)
+      : item.props;
     for (const zone of empties) {
+      let held: string | undefined;
+      if (zone.includes('.')) {
+        const path = zone.split('.');
+        let place = props as Record<string, unknown> | undefined;
+        for (const key of path.slice(0, -1))
+          place = place?.[key] as Record<string, unknown> | undefined;
+        held = (place?.[path.at(-1)!] as { $slot?: string } | undefined)?.$slot;
+        if (place) delete place[path.at(-1)!];
+      }
       const preview = `kuiEmptyPreview${slots.size}`;
       slots.set(preview, {
         name: preview,
+        ...(held ? { held } : {}),
         address: { parent: item.id, zone, index: 0 },
         empty: true,
       });
       filled[zone] = [{ $slot: preview }];
     }
-    return { ...item, zones: filled };
+    return {
+      ...item,
+      ...(props ? { props: props as ViewNode['props'] } : {}),
+      zones: filled,
+    };
   };
   const root = node(document.root);
   return slots.size

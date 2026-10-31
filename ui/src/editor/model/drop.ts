@@ -14,6 +14,7 @@ import { findNode, visitNodes } from './document.js';
 import {
   addsProblems,
   insertNode,
+  ownFilledFields,
   placeChild,
   type Placement,
   placementOf,
@@ -61,7 +62,10 @@ export function dropPlacement(
   if (!from) return undefined;
   return placementAt(document, target, position, zonesOf, (to) => {
     const next = placeChild(document, from, to).document;
-    return next !== document && !addsProblems(document, next, catalog);
+    return (
+      next !== document &&
+      !addsProblems(document, ownFilledFields(next, catalog), catalog)
+    );
   });
 }
 
@@ -80,9 +84,12 @@ export function insertPlacement(
 ): Placement | undefined {
   return placementAt(document, target, position, zonesOf, (to) => {
     // As adding does, the node's package joins the document's catalogs.
-    const next = withCatalog(
-      insertNode(document, to.parent, to.zone, node, to.index),
-      node.type,
+    const next = ownFilledFields(
+      withCatalog(
+        insertNode(document, to.parent, to.zone, node, to.index),
+        node.type,
+      ),
+      catalog,
     );
     return !addsProblems(document, next, catalog, (diagnostic) =>
       unfilled(diagnostic, node.type),
@@ -169,7 +176,10 @@ export function moveDestinations(
         index: node.zones?.[zone]?.length ?? 0,
       };
       const next = placeNode(document, id, to);
-      if (next !== document && !addsProblems(document, next, catalog))
+      if (
+        next !== document &&
+        !addsProblems(document, ownFilledFields(next, catalog), catalog)
+      )
         destinations.push({
           label: `${node.name ?? title(node)} › ${zone}`,
           parent: node.id,

@@ -234,6 +234,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Drop into a tab's content on the Kerf UI editor canvas.** A selected node's seeded item slots (a TabNavigator tab's or NavStack view's content) show as drop stand-ins named after the slot, and a drop there fills the content. Before, the canvas showed only the slot's name, and a drop into its field zone was refused (`KF-HGG7MJ`).
+
 - **The Kerf UI editor's outline keeps a node's item content in item order.** A filled field zone (tab 1's content) is listed among the remaining item slots in tab order, rather than after them (`KF-KA5B40`).
 
 - **Turning a switch off in the Kerf UI editor clears its prop.** An optional boolean switched back to its default (`showValue` off) no longer leaves `showValue: false` in the document; a prop that defaults on still records `false` (`KF-K03GBN`).

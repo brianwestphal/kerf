@@ -10,7 +10,6 @@
 import {
   contractDigest,
   contractOf,
-  fieldZoneOf,
   interpretView,
   lucideExportName,
   previewView,
@@ -180,6 +179,7 @@ import {
   legalZones,
   moveNode,
   newNodeId,
+  ownFilledFields,
   paramTypeFor,
   pasteNode,
   placeChild,
@@ -241,6 +241,7 @@ import {
 } from './model/inspector.js';
 import {
   itemSlotRowNode,
+  itemSlots,
   nodeTitle,
   type OutlineNode,
   outlineParents,
@@ -357,7 +358,7 @@ const icons = new Proxy({} as Record<string, unknown>, {
 const slotPlaceholders = (
   placed: ReadonlyMap<string, PreviewSlot>,
   /** What an empty zone's stand-in says. */
-  emptyLabel: (address: SlotAddress) => string,
+  emptyLabel: (slot: PreviewSlot) => string,
 ) =>
   new Proxy({} as Record<string, () => SafeHtml>, {
     get: (_target, name) => {
@@ -372,7 +373,7 @@ const slotPlaceholders = (
             class="kui-editor__empty"
             data-editor-empty={JSON.stringify(slot.address)}
           >
-            {Text({ children: emptyLabel(slot.address), tone: 'quiet' })}
+            {Text({ children: emptyLabel(slot), tone: 'quiet' })}
           </div>
         );
       return () =>
@@ -418,11 +419,16 @@ function canvasRenderer(catalog: EditorCatalog) {
     node: ViewNode,
     selected: boolean,
   ): readonly string[] => {
-    if (node.type.startsWith('#') || node.props?.children !== undefined)
-      return [];
+    if (node.type.startsWith('#')) return [];
+    // KF-HGG7MJ: a selected node's item slots (a TabNavigator tab's
+    // content) are field zones a drop fills, so they show as empty zones.
+    const fieldSlots = selected
+      ? itemSlots(node).map(({ at }) => at.join('.'))
+      : [];
+    if (node.props?.children !== undefined) return fieldSlots;
     const zones = zonesFor(node);
     const primary = zones.find((zone) => zone.primary);
-    if (primary) return [primary.key];
+    if (primary) return [primary.key, ...fieldSlots];
     // KF-7BB55F: a container with no main zone (a Toolbar) shows each empty
     // zone while it holds nothing at all, or while it is selected.
     // Only composition zones: a content prop (a ListItem's label or icon)
@@ -438,9 +444,12 @@ function canvasRenderer(catalog: EditorCatalog) {
     return !selected &&
       Object.values(node.zones ?? {}).some((list) => list.length)
       ? []
-      : zones
-          .filter((zone) => composition.has(zone.key) && !zone.disabledReason)
-          .map((zone) => zone.key);
+      : [
+          ...zones
+            .filter((zone) => composition.has(zone.key) && !zone.disabledReason)
+            .map((zone) => zone.key),
+          ...fieldSlots,
+        ];
   };
 
   /** Renders the document onto the canvas, or explains why it cannot. */
@@ -470,11 +479,18 @@ function canvasRenderer(catalog: EditorCatalog) {
         (label) => Text({ children: label }),
         (key) => placeholders[key]?.(),
       ),
-      slots: slotPlaceholders(placed, ({ parent, zone }) =>
-        primaryZones.get(parent) === zone
-          ? `${titles.get(parent)!} is empty — drag a component here`
-          : `${propLabel(zone)} — drop here`,
-      ),
+      slots: slotPlaceholders(placed, ({ held, address: { parent, zone } }) => {
+        if (primaryZones.get(parent) === zone)
+          return `${titles.get(parent)!} is empty — drag a component here`;
+        // A field zone (a tab's content) names the item slot it replaces
+        // (KF-HGG7MJ), or its place.
+        const place = !zone.includes('.')
+          ? propLabel(zone)
+          : held
+            ? `${held} slot`
+            : zoneLabel(zone);
+        return `${place} — drop here`;
+      }),
       icons,
     };
     // A node whose component has no function here (an application component
@@ -763,7 +779,7 @@ export function createEditor(options: EditorOptions) {
   // against isMovable first).
   const commit = (next: ViewDocument) => {
     history.record(doc.value);
-    doc.value = ownFilledFields(next);
+    doc.value = ownFilledFields(next, viewCatalog);
     fieldErrors.value = {};
     editNotice.value = null;
     historyVersion.value += 1;
@@ -970,39 +986,6 @@ export function createEditor(options: EditorOptions) {
       </div>
     )),
   ];
-
-  /**
-   * `document` with each filled field zone owning its field (KF-PD6QC5): a
-   * placeholder the prop value held there (a seeded item slot, text) gives
-   * way to the zone's nodes, so the two never clash.
-   */
-  const ownFilledFields = (document: ViewDocument): ViewDocument => {
-    let next = document;
-    for (const { node } of visitNodes(document)) {
-      for (const [key, children] of Object.entries(node.zones ?? {})) {
-        const component = viewCatalog.components.get(node.type);
-        const field =
-          component &&
-          fieldZoneOf(component.component, component.definitions, key);
-        const own = node.props?.[field?.prop ?? ''] as ViewValue | undefined;
-        if (
-          !field ||
-          !children.length ||
-          valueAt(own, field.path) === undefined
-        )
-          continue;
-        // An object left with no other field stays, so the prop still
-        // reads as set (its rail kind, its toolbar).
-        next = setProp(
-          next,
-          node.id,
-          field.prop,
-          withValueAt(own, field.path, undefined) ?? {},
-        );
-      }
-    }
-    return next;
-  };
 
   /**
    * The Inspector's body for the selection, and for a node the chrome pinned

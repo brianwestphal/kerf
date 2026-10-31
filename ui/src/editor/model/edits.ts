@@ -2,6 +2,7 @@
 // that returns a new document, so the document stays the editor's only state
 // and history is a list of documents.
 import {
+  fieldZoneOf,
   validateView,
   type ViewCatalog,
   type ViewChild,
@@ -12,6 +13,7 @@ import {
 } from '@kerfjs/ui/view';
 
 import { findNode, visitNodes } from './document.js';
+import { valueAt, withValueAt } from './fields.js';
 
 type MutableNode = {
   id: string;
@@ -445,6 +447,39 @@ export function setProp(
   else props[prop] = value;
   if (Object.keys(props).length) node.props = props;
   else delete node.props;
+  return next;
+}
+
+/**
+ * `document` with each filled field zone owning its field (KF-PD6QC5): a
+ * placeholder the prop value held there (a seeded item slot, text) gives
+ * way to the zone's nodes, so the two never clash. Every edit commits
+ * through it, and a drop is judged after it (KF-HGG7MJ).
+ */
+export function ownFilledFields(
+  document: ViewDocument,
+  catalog: ViewCatalog,
+): ViewDocument {
+  let next = document;
+  for (const { node } of visitNodes(document)) {
+    for (const [key, children] of Object.entries(node.zones ?? {})) {
+      const component = catalog.components.get(node.type);
+      const field =
+        component &&
+        fieldZoneOf(component.component, component.definitions, key);
+      const own = node.props?.[field?.prop ?? ''] as ViewValue | undefined;
+      if (!field || !children.length || valueAt(own, field.path) === undefined)
+        continue;
+      // An object left with no other field stays, so the prop still reads
+      // as set (its rail kind, its toolbar).
+      next = setProp(
+        next,
+        node.id,
+        field.prop,
+        withValueAt(own, field.path, undefined) ?? {},
+      );
+    }
+  }
   return next;
 }
 

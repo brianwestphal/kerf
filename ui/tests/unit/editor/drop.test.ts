@@ -18,6 +18,7 @@ import {
   placementOf,
   placeNode,
 } from '../../../src/editor/model/edits.js';
+import { slotRowId } from '../../../src/editor/model/outline.js';
 import sample from '../../fixtures/view/inbox.kui.json';
 import { createEditor, propsByKey, viewCatalog } from './kerf-catalog.js';
 
@@ -245,6 +246,39 @@ describe('drops', () => {
     ).toBeUndefined();
     expect(place('missing', 'inside')).toBeUndefined();
     expect(place(PANE, 'before')).toBeUndefined();
+  });
+
+  // KF-HGG7MJ: a drop on an item slot's stand-in (a tab's content) fills
+  // its field zone; the zone then owns the field, so the slot never clashes.
+  it('places a new node in the field zone of an item slot', () => {
+    const navigator = '01JB8Z1M6Q8E1X9V4S7K2R3TAA';
+    const tabs: ViewDocument = {
+      ...inbox,
+      root: {
+        id: navigator,
+        type: '@kerfjs/ui:tab-navigator',
+        props: {
+          id: 'nav',
+          label: 'Nav',
+          active: 'a',
+          tabs: [{ id: 'a', label: 'A', content: { $slot: 'aContent' } }],
+        },
+      },
+    } as ViewDocument;
+    const item = {
+      id: '01JB8Z1M6Q8E1X9V4S7K2R3TAB',
+      type: '@kerfjs/ui:content-item',
+    };
+    expect(
+      insertPlacement(
+        tabs,
+        viewCatalog,
+        item,
+        slotRowId(navigator, 'tabs.0.content', 0),
+        'before',
+        () => ['tabs.0.content'],
+      ),
+    ).toEqual({ parent: navigator, zone: 'tabs.0.content', index: 0 });
   });
 
   // KF-DC23E9: a new node's own unfilled props and empty zones are for the

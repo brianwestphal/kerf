@@ -253,6 +253,10 @@ and selects them, leaving the form. A seeded item slot there reads
 place. Nodes placed there own the field: a
 seeded item slot or text at that path gives way, and an object left with no
 other field stays set as `{}`, so the rail still reads as a static panel.
+While its node is selected, the canvas shows each seeded item slot as a
+drop stand-in named after it ("tab1Content slot — drop here"; KF-HGG7MJ),
+so a whole-screen layout's tab or view content fills by dragging; a drop is
+judged after the zone takes the field, the same as Add.
 
 The props catalog generator (KF-24G2KV: remaining props) treats a union whose
 members are all content, text, or numbers as one content slot, including
