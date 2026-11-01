@@ -181,6 +181,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **A StateBanner's action is plain native buttons.** The banner draws each `<button type="button">` in its action as a pill in its own tone; a Kerf UI `Button` keeps its own fill, which clashes with the tone. The JSDoc, catalog guidance, and skill now say so, and the StateBanner demos use plain buttons (`KF-5TGWQG`).
 - **`ToolbarButton` can be an avatar button.** In a `ToolbarControlGroup` with `content="avatar"`, a `ToolbarButton` takes `ariaLabel` alone and shows the group's `avatarImage`; its `icon` is optional for that form (`KF-CFWFAE`).
 
 - **Overlay render slots for buttons and errors are typed as `data-*` attributes.** `ConfirmRenderSlots`, `PromptRenderSlots`, `FormRenderSlots` / `FormRenderField`, and `ChoiceRenderSlots` type their `ok`, `cancel`, `error`, and `actions` slots as ``Record<`data-${string}`, string>`` (what they always held), so a component that accepts only data attributes, such as a Kerf UI `Button` or `ToolbarButton` via `rootAttributes`, can carry them. Input slots stay `Record<string, string>`; spreading any slot works as before (`KF-YRC20J`).

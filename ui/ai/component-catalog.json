@@ -8624,11 +8624,13 @@
         "StateBanner"
       ],
       "useWhen": [
-        "Place persistent inline semantic status beside affected work."
+        "Place persistent inline semantic status beside affected work.",
+        "Give the action as plain native button elements (type=\"button\"); the banner draws each as a pill in its own tone."
       ],
       "avoidWhen": [
         "Do not use for an absent-content screen or transient confirmation.",
-        "Do not use pop as a substitute for success, warning, or danger."
+        "Do not use pop as a substitute for success, warning, or danger.",
+        "Do not put a Kerf UI Button in the action; it keeps its own fill, which clashes with the banner's tone."
       ],
       "alternatives": [
         {

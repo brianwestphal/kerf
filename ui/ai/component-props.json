@@ -11600,6 +11600,7 @@
             "nullable": true
           },
           "required": false,
+          "description": "The banner's action. Use plain native `<button type=\"button\">` elements:\nthe banner draws them as a pill in its own tone. A Kerf UI `Button` keeps\nits own fill, which does not match the banner's tone.",
           "zone": "action"
         },
         {

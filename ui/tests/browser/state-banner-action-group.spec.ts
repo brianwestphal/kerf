@@ -59,7 +59,7 @@ for (const { name, width, sidebar, beside } of cases) {
         left: line.left,
       }));
       const buttons = [
-        ...element.querySelectorAll('.kui-state-banner__action .kui-button'),
+        ...element.querySelectorAll('.kui-state-banner__action button'),
       ].map((button) => {
         const box = button.getBoundingClientRect();
         return {

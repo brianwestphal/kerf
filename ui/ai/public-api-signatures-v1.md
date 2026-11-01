@@ -4089,6 +4089,11 @@ interface StateBannerProps {
     /** Optional compact status or count shown beside the title. */
     badge?: string;
     icon?: SafeHtml;
+    /**
+     * The banner's action. Use plain native `<button type="button">` elements:
+     * the banner draws them as a pill in its own tone. A Kerf UI `Button` keeps
+     * its own fill, which does not match the banner's tone.
+     */
     action?: KerfUiContent;
     tone?: SemanticTone;
     urgency?: StateBannerUrgency;

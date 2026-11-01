@@ -1,4 +1,3 @@
-import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
@@ -33,9 +32,9 @@ export function StateBannerDemo() {
               detail="Semantic defaults remain overridable."
               icon={iconFor(tone)}
               action={
-                <Button size="compact" action={`log-${tone}`}>
+                <button type="button" data-action={`log-${tone}`}>
                   Act
-                </Button>
+                </button>
               }
             />
           </CatalogExample>
@@ -70,7 +69,7 @@ export function StateBannerDemo() {
           }
           copyLayout="stacked"
           actionPlacement="below"
-          action={<Button size="compact">Review Projects</Button>}
+          action={<button type="button">Review Projects</button>}
         />
       </CatalogExample>
       {/* A side action that holds several controls: on a narrow banner the
@@ -96,8 +95,8 @@ export function StateBannerDemo() {
               icon={<LucideIcon icon={CircleAlert} name="circle-alert" />}
               action={
                 <Row wrap hAlign="right">
-                  <Button size="compact">Retry Save</Button>
-                  <Button size="compact">Discard Changes</Button>
+                  <button type="button">Retry Save</button>
+                  <button type="button">Discard Changes</button>
                 </Row>
               }
             />
@@ -114,7 +113,7 @@ export function StateBannerDemo() {
             <LucideIcon icon={CircleQuestionMark} name="circle-question-mark" />
           }
           copyLayout="stacked"
-          action={<Button size="compact">Resume</Button>}
+          action={<button type="button">Resume</button>}
         />
       </CatalogExample>
       <CatalogExample label="Placeholder" align="none">

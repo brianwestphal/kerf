@@ -11,11 +11,13 @@ Polite status and assertive alert feedback with semantic tones, plus non-status 
 Present persistent inline feedback or attractive non-status emphasis with a named semantic tone.
 
 - Place persistent inline semantic status beside affected work.
+- Give the action as plain native button elements (type="button"); the banner draws each as a pill in its own tone.
 
 **Not when:**
 
 - Do not use for an absent-content screen or transient confirmation.
 - Do not use pop as a substitute for success, warning, or danger.
+- Do not put a Kerf UI Button in the action; it keeps its own fill, which clashes with the banner's tone.
 
 **Alternatives:**
 

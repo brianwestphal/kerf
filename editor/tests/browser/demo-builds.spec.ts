@@ -739,53 +739,6 @@ test('builds EmptyState › Busy', async ({ page }) => {
   );
 });
 
-test('builds StateBanner › Stacked Copy and Action', async ({ page }) => {
-  await dragComponent(page, 'StateBanner', () => emptySpot(page));
-  await select(page, /^StateBanner/);
-  await choose(page, 'tone', 'warning');
-  await setText(page, 'title', 'Migration Needs Review');
-  await setText(
-    page,
-    'detail',
-    'Check the imported projects before removing the old source.',
-  );
-  await choose(page, 'copyLayout', 'stacked');
-  await choose(page, 'actionPlacement', 'below');
-  await dragComponent(page, 'LucideIcon', () => zoneSpot(page, 'Icon'));
-  await select(page, /^StateBanner/);
-  await dragComponent(page, 'Button', () => zoneSpot(page, 'Action'));
-  await select(page, /^LucideIcon/);
-  await page.locator('[data-editor-icon-place]').first().click();
-  await page.keyboard.type('circle question mark');
-  await page.locator('[data-editor-icon="circle-question-mark"]').click();
-  await select(page, /^Button/);
-  await setText(page, 'children', 'Review Projects');
-  await choose(page, 'size', 'compact');
-  await expect(
-    canvas(page).locator('.kui-state-banner[data-kerf-node] .kui-button'),
-  ).toHaveText('Review Projects');
-  expect(await exported(page)).toEqual(
-    pane(
-      node(
-        'state-banner',
-        {
-          tone: 'warning',
-          title: 'Migration Needs Review',
-          detail: 'Check the imported projects before removing the old source.',
-          copyLayout: 'stacked',
-          actionPlacement: 'below',
-        },
-        {
-          icon: [icon('circle-question-mark')],
-          action: [
-            node('button', { children: 'Review Projects', size: 'compact' }),
-          ],
-        },
-      ),
-    ),
-  );
-});
-
 test('builds Switch › Compact', async ({ page }) => {
   await dragComponent(page, 'List', () => emptySpot(page));
   await dragComponent(page, 'Switch', () => emptySpot(page));
