@@ -1008,7 +1008,8 @@ test('builds TabNavigator › Persistent Tab Scenes', async ({ page }) => {
     await addChild(page, 'ContentItem', `tabs › ${index + 1} › content`);
     await addChild(page, 'List');
     await addChild(page, 'Text');
-    await scene(index, ...scenes[index]!);
+    const [title, detail] = scenes[index]!;
+    await scene(index, title, detail);
   }
   const navigator = canvas(page).locator('.kui-tab-scaffold[data-kerf-node]');
   await expect(navigator.getByRole('tab')).toHaveCount(3);
