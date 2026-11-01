@@ -258,6 +258,14 @@ drop stand-in named after it ("tab1Content slot — drop here"; KF-HGG7MJ),
 so a whole-screen layout's tab or view content fills by dragging; a drop is
 judged after the zone takes the field, the same as Add.
 
+A whole-screen layout (TabNavigator, NavStack, SplitView, Workbench) fills
+its parent's height and has none of its own, so placed inside a container it
+would collapse to its chrome. Below the document root, the canvas gives each
+one an editor-owned frame with a usable height (60% of the viewport, between
+320px and 640px, growing into room its parent leaves; KF-XXT6P4: nested
+layouts collapse on the canvas); as the root it fills the canvas as before.
+The frame is canvas-only and never reaches the document or the export.
+
 The props catalog generator (KF-24G2KV: remaining props) treats a union whose
 members are all content, text, or numbers as one content slot, including
 one a component's variants assemble (a Chip's `children`, a ListHeader's

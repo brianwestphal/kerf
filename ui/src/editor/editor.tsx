@@ -114,7 +114,7 @@ import {
   rememberPath,
 } from './autosave.js';
 import { type CanvasDropSurface, wireCanvasDrag } from './canvas-drag.js';
-import type { EditorCatalog } from './catalog.js';
+import type { ComponentFunction, EditorCatalog } from './catalog.js';
 import {
   ADD_SLOT_ACTION,
   addSlotFields,
@@ -387,10 +387,42 @@ const slotPlaceholders = (
     },
   });
 
+/**
+ * Kerf UI's whole-screen layouts: each fills its parent's height and has no
+ * height of its own, so it collapses to its chrome in a content-sized parent.
+ */
+const SCREEN_LAYOUTS = [
+  '@kerfjs/ui:nav-stack',
+  '@kerfjs/ui:split-view',
+  '@kerfjs/ui:tab-navigator',
+  '@kerfjs/ui:workbench',
+];
+
+/**
+ * KF-XXT6P4: a whole-screen layout placed below the document root renders in
+ * an editor-owned frame with a usable height, so its content shows on the
+ * canvas. As the root it fills the canvas as before.
+ */
+function framedScreens(
+  components: Readonly<Record<string, ComponentFunction>>,
+  rootId: string,
+): Readonly<Record<string, ComponentFunction>> {
+  const framed = { ...components };
+  for (const key of SCREEN_LAYOUTS.filter((key) => key in components)) {
+    const render = components[key]!;
+    framed[key] = ((props: { rootAttributes?: Record<string, string> }) =>
+      props.rootAttributes?.['data-kerf-node'] === rootId ? (
+        render(props as never)
+      ) : (
+        <div class="kui-editor__screen">{render(props as never)}</div>
+      )) as ComponentFunction;
+  }
+  return framed;
+}
+
 /** The canvas renderer for one catalog. */
 function canvasRenderer(catalog: EditorCatalog) {
-  const { viewCatalog, componentNames, components, placeholders, propsByKey } =
-    catalog;
+  const { viewCatalog, componentNames, placeholders, propsByKey } = catalog;
   /** Stands in for a node the preview cannot render; still selectable. */
   const brokenNode = (node: ViewNode): SafeHtml =>
     Badge({
@@ -471,6 +503,7 @@ function canvasRenderer(catalog: EditorCatalog) {
     const primaryZones = new Map(
       visitNodes(source).map(({ node }) => [node.id, primaryZoneOf(node)]),
     );
+    const components = framedScreens(catalog.components, document.root.id);
     const preview = {
       catalog: viewCatalog,
       components,

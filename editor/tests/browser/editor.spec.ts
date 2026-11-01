@@ -1519,3 +1519,38 @@ test('drops a component into a tab’s content from the canvas', async ({
     $slot: 'tab2Content',
   });
 });
+
+// KF-XXT6P4: a whole-screen layout placed inside a container gets a usable
+// height on the canvas, so its content and drop targets show.
+test('gives a TabNavigator inside the root Pane a usable height', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.getByRole('button', { name: 'New' }).click();
+  await dragComponent(page, 'TabNavigator', () => emptySpot(page));
+  await select(page, /^TabNavigator/);
+  const navigator = page.locator(
+    '[data-editor-canvas] .kui-tab-scaffold[data-kerf-node]',
+  );
+  const scenes = navigator.locator('.kui-tab-scaffold__scenes');
+  expect((await scenes.boundingBox())!.height).toBeGreaterThan(200);
+  const spot = page
+    .locator('[data-editor-canvas] [data-editor-empty]')
+    .filter({ hasText: 'tab1Content slot — drop here' });
+  await expect(spot).toBeVisible();
+  await page.screenshot({
+    path: test.info().outputPath('kf-xxt6p4-nested-tab-navigator-1440.png'),
+  });
+  await dragComponent(page, 'ContentItem', () => spot);
+  await expect(spot).toHaveCount(0);
+  const document = (await exported(page)) as {
+    zones: Record<string, { zones: Record<string, unknown[]> }[]>;
+  };
+  expect(document.zones.content[0].zones['tabs.0.content']).toEqual([
+    { type: '@kerfjs/ui:content-item' },
+  ]);
+  // The tab's content renders in the framed scene.
+  await expect(
+    navigator.locator('.kui-content-item[data-kerf-node]'),
+  ).toBeVisible();
+});

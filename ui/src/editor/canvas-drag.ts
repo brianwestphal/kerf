@@ -76,7 +76,11 @@ export interface CanvasDragOptions {
 
 /** Whether `element` sits in a row: its parent lays children out left to right. */
 function horizontal(element: HTMLElement): boolean {
-  const parent = element.parentElement;
+  // A nested whole-screen layout's frame stands in for it (KF-XXT6P4).
+  const frame = element.parentElement;
+  const parent = frame?.classList.contains('kui-editor__screen')
+    ? frame.parentElement
+    : frame;
   if (!parent) return false;
   const style = parent.ownerDocument.defaultView!.getComputedStyle(parent);
   return (
