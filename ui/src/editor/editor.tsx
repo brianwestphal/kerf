@@ -260,6 +260,7 @@ import {
   type PropsVariant,
 } from './model/problems.js';
 import { sampleInputs } from './model/sample-inputs.js';
+import { shownScenes } from './model/shown-scenes.js';
 
 export const WORKBENCH_ID = 'kerf-ui-editor';
 const OUTLINE_ACTION = 'editor-select-node';
@@ -491,8 +492,10 @@ function canvasRenderer(catalog: EditorCatalog) {
     /** The selected node, which shows its empty zones too (KF-7BB55F). */
     selected?: string,
   ): SafeHtml => {
-    const { document, slots: placed } = previewSlots(source, (node) =>
-      emptyZonesOf(node, node.id === selected),
+    // The selected node's tab shows, whatever tab the document opens on.
+    const { document, slots: placed } = previewSlots(
+      shownScenes(source, selected),
+      (node) => emptyZonesOf(node, node.id === selected),
     );
     const titles = new Map(
       visitNodes(source).map(({ node }) => [

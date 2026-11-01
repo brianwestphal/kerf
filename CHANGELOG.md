@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **The Kerf UI editor's canvas shows the tab you are editing.** Selecting a node inside a TabNavigator tab's content previews that tab, so its content, selection ring, and drop targets are visible; the document keeps the tab it opens on (`KF-YZPBFH`).
 - **`Button` and `ToolbarButton` open native popovers.** `popoverTarget` and `popoverTargetAction` (`toggle`, `show`, `hide`) make either one the Popover API's invoker, and `ariaHasPopup` reports the popup it opens; a link `Button` refuses `popoverTarget`. The catalog's popover triggers and the anchored request popup's actions now use them (`KF-PAMQNM`).
 
 - **`Text` takes `weight="strong"`.** A title or key phrase that matters more than its neighbors renders inside a `<strong>` element (through every wrap, truncation, and line-cap mode), so view documents and the Kerf UI editor can express it instead of raw `<strong>` markup; the demos and recipes use it (`KF-6A9GJ2`).

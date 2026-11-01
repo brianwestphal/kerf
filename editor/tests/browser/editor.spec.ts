@@ -1555,30 +1555,56 @@ test('gives a TabNavigator inside the root Pane a usable height', async ({
   ).toBeVisible();
 });
 
-// KF-ZC9EXM: a node in an inactive tab's scene sits under the active scene;
-// the selection ring hides rather than marking what is shown there.
-test('hides the selection ring for a node in an inactive tab', async ({
-  page,
-}) => {
+// KF-YZPBFH: the canvas shows the tab that holds the selected node, and
+// rings it there; the document keeps the tab it opens on.
+test('shows the tab that holds the selected node', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await newDocument(page);
   await dragComponent(page, 'TabNavigator', () => emptySpot(page));
   await select(page, /^TabNavigator/);
   const ring = page.locator('.kui-editor__selection');
-  await expect(ring).toBeVisible();
-  // Tab 2's content is inactive; the new node is selected there.
+  const scene = (index: number) =>
+    page.locator('[data-editor-canvas] .kui-tab-scaffold__scene').nth(index);
+  await expect(scene(0)).toHaveAttribute('data-active', 'true');
+  // Tab 2 isn't the active one; adding to it selects the new node there.
   await addChild(page, 'ContentItem', 'tabs › 2 › content');
+  await expect(scene(1)).toHaveAttribute('data-active', 'true');
+  await expect(
+    scene(1).locator('.kui-content-item[data-kerf-node]'),
+  ).toBeVisible();
+  await expect(ring).toBeVisible();
+  const ringBox = (await ring.boundingBox())!;
+  const itemBox = (await scene(1)
+    .locator('.kui-content-item[data-kerf-node]')
+    .boundingBox())!;
+  expect(Math.abs(ringBox.y - itemBox.y)).toBeLessThan(6);
+  await page.screenshot({
+    path: test.info().outputPath('kf-yzpbfh-selected-tab-1440.png'),
+  });
+  await select(page, /^TabNavigator/);
+  await expect(scene(0)).toHaveAttribute('data-active', 'true');
+  const document = (await exported(page)) as {
+    zones: { content: { props: { active: string } }[] };
+  };
+  expect(document.zones.content[0].props.active).toBe('tab-1');
+});
+
+// KF-ZC9EXM: a NavStack view below the top stays mounted but hidden under
+// it; the selection ring hides rather than marking what the top view shows.
+test('hides the selection ring for a node in a view below the top', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await newDocument(page);
+  await dragComponent(page, 'NavStack', () => emptySpot(page));
+  await select(page, /^NavStack/);
+  const ring = page.locator('.kui-editor__selection');
+  await expect(ring).toBeVisible();
+  await addChild(page, 'ContentItem', 'views › 1 › content');
   await expect(page.locator('[data-editor-prop]').first()).toBeVisible();
   await expect(ring).toBeHidden();
-  // A node in the active tab is ringed.
-  await select(page, /^TabNavigator/);
-  await dragComponent(page, 'ContentItem', () =>
-    page.locator('[data-editor-canvas] [data-editor-empty]', {
-      hasText: 'tab1Content slot — drop here',
-    }),
-  );
-  await select(page, /^ContentItem/, 0);
+  // A node in the top view is ringed.
+  await select(page, /^NavStack/);
+  await addChild(page, 'ContentItem', 'views › 3 › content');
   await expect(ring).toBeVisible();
-  await select(page, /^ContentItem/, 1);
-  await expect(ring).toBeHidden();
 });
