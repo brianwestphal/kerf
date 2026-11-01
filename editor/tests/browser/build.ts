@@ -147,17 +147,37 @@ const field = (page: Page, prop: string, path: readonly (string | number)[]) =>
     .locator(`[data-editor-field='${JSON.stringify({ prop, path })}']`)
     .first();
 
-/** Types `value` into a field of a prop value and commits it with Enter. */
+/**
+ * Types `value` into a field of a prop value and commits it with Enter. A
+ * typed choice's open member (a Number… badge) shares its place with the
+ * choice's Select; the text input is the one typed into.
+ */
 export async function setField(
   page: Page,
   prop: string,
   path: readonly (string | number)[],
   value: string,
 ) {
-  await field(page, prop, path).locator('input, textarea').first().click();
+  await page
+    .locator(`[data-editor-field='${JSON.stringify({ prop, path })}']`)
+    .locator('input, textarea')
+    .first()
+    .click();
   await page.keyboard.press('ControlOrMeta+a');
   await page.keyboard.type(value);
   await page.keyboard.press('Enter');
+}
+
+/** Picks `option` in a field's Select (an enum, or a typed choice's type). */
+export async function chooseField(
+  page: Page,
+  prop: string,
+  path: readonly (string | number)[],
+  option: string,
+) {
+  const select = field(page, prop, path);
+  await select.locator('.kui-select__trigger').click();
+  await select.getByRole('option', { name: option, exact: true }).click();
 }
 
 /** Turns a boolean field of a prop value on. */

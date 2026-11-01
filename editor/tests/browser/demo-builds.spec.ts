@@ -9,6 +9,7 @@ import {
   addIcon,
   canvas,
   choose,
+  chooseField,
   dragComponent,
   emptySpot,
   exported,
@@ -917,6 +918,163 @@ test('builds a DemoContentItem (ContentItem › List › Text)', async ({
           ),
         ],
       }),
+    ),
+  );
+});
+
+test('builds TabNavigator › Persistent Tab Scenes', async ({ page }) => {
+  await dragComponent(page, 'TabNavigator', () => emptySpot(page));
+  await select(page, /^TabNavigator/);
+  await setText(page, 'id', 'catalog-tab-scaffold');
+  await setText(page, 'label', 'Application Sections');
+  const dialog = page.locator('dialog[open]');
+  const item = (index: number) =>
+    dialog.locator('[data-action="editor-open-field"]').nth(index).click();
+  const back = () => dialog.getByRole('button', { name: 'Back' }).click();
+  // Settings carries a text-free dot, the tab list's other member.
+  await page.getByRole('button', { name: 'Configure tabs' }).click();
+  await dialog.getByRole('button', { name: 'Remove Tab 3' }).click();
+  await dialog.getByRole('button', { name: /Add/ }).last().click();
+  await page.getByRole('menuitem', { name: 'Dot badge' }).click();
+  await item(0);
+  await setField(page, 'tabs', [0, 'id'], 'projects');
+  await setField(page, 'tabs', [0, 'label'], 'Projects');
+  await chooseField(page, 'tabs', [0, 'appearance'], 'sunken');
+  await chooseField(page, 'tabs', [0, 'badge'], 'Number…');
+  await setField(page, 'tabs', [0, 'badge'], '3');
+  await setField(page, 'tabs', [0, 'badgeLabel'], '3 updated');
+  await back();
+  await item(1);
+  await setField(page, 'tabs', [1, 'id'], 'search');
+  await setField(page, 'tabs', [1, 'label'], 'Search');
+  await turnFieldOn(page, 'tabs', [1, 'deepInset']);
+  await chooseField(page, 'tabs', [1, 'tabIndex'], '0');
+  await turnFieldOn(page, 'tabs', [1, 'outlined']);
+  await back();
+  await item(2);
+  await setField(page, 'tabs', [2, 'id'], 'settings');
+  await setField(page, 'tabs', [2, 'label'], 'Settings');
+  await setField(page, 'tabs', [2, 'badgeLabel'], 'Update available');
+  await back();
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  await setText(page, 'active', 'projects');
+  const glyphs = ['folder-kanban', 'search', 'settings'];
+  for (const [index, glyph] of glyphs.entries()) {
+    await select(page, /^TabNavigator/);
+    await page.getByRole('button', { name: 'Configure tabs' }).click();
+    await item(index);
+    // The tab's Icon row adds a LucideIcon and selects it.
+    await dialog.getByText('Icon', { exact: true }).click();
+    await pickIcon(page, page.locator('[data-editor-icon-place]'), glyph);
+  }
+  // Each scene is a DemoContentItem. The demo's raw `.kui-content` wrapper
+  // around it has no component to place (KF-5H1X9S) and changes nothing
+  // around a single ContentItem.
+  const scene = async (nth: number, title: string, detail: string) => {
+    await select(page, /^List/, nth);
+    await choose(page, 'gap', '2xs');
+    await select(page, /^Text/, nth * 2);
+    await setText(page, 'children', title);
+    await choose(page, 'variant', 'span');
+    await choose(page, 'weight', 'strong');
+    await page.keyboard.press('ControlOrMeta+d');
+    await setText(page, 'children', detail);
+    await choose(page, 'weight', 'Default (regular)');
+    await choose(page, 'tone', 'quiet');
+    await choose(page, 'size', 'compact');
+  };
+  const scenes = [
+    ['Projects', 'Each destination stays mounted when inactive.'],
+    ['Search', 'This plain scene uses a deeper content inset.'],
+    ['Settings', 'Promote these destinations to a rail on desktop.'],
+  ] as const;
+  // The active tab's content is a drop target on the canvas.
+  await select(page, /^TabNavigator/);
+  await dragComponent(page, 'ContentItem', () =>
+    canvas(page).locator('[data-editor-empty]', {
+      hasText: 'tab1Content slot — drop here',
+    }),
+  );
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await dragComponent(page, 'Text', () => emptySpot(page));
+  await scene(0, ...scenes[0]);
+  // The inactive tabs' content takes children from Children › Add a child.
+  for (const index of [1, 2]) {
+    await select(page, /^TabNavigator/);
+    await addChild(page, 'ContentItem', `tabs › ${index + 1} › content`);
+    await addChild(page, 'List');
+    await addChild(page, 'Text');
+    await scene(index, ...scenes[index]!);
+  }
+  const navigator = canvas(page).locator('.kui-tab-scaffold[data-kerf-node]');
+  await expect(navigator.getByRole('tab')).toHaveCount(3);
+  await expect(navigator.locator('.kui-badge').first()).toHaveText('3');
+  await expect(
+    navigator.locator('.kui-content-item[data-kerf-node]').first(),
+  ).toContainText('Each destination stays mounted when inactive.');
+  await select(page, /^TabNavigator/);
+  await page.screenshot({
+    path: test.info().outputPath('kf-jn4pf5-tab-navigator-1440.png'),
+  });
+  const tab = (id: string, label: string, props: Record<string, unknown>) => ({
+    id,
+    label,
+    ...props,
+  });
+  const text = (children: string, props: Record<string, unknown>) =>
+    node('text', { children, variant: 'span', ...props });
+  const content = (title: string, detail: string) => [
+    node('content-item', undefined, {
+      children: [
+        node(
+          'list',
+          { gap: '2xs' },
+          {
+            children: [
+              text(title, { weight: 'strong' }),
+              text(detail, { tone: 'quiet', size: 'compact' }),
+            ],
+          },
+        ),
+      ],
+    }),
+  ];
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'tab-navigator',
+        {
+          id: 'catalog-tab-scaffold',
+          label: 'Application Sections',
+          tabs: [
+            tab('projects', 'Projects', {
+              appearance: 'sunken',
+              badge: 3,
+              badgeLabel: '3 updated',
+            }),
+            tab('search', 'Search', {
+              deepInset: true,
+              tabIndex: 0,
+              outlined: true,
+            }),
+            tab('settings', 'Settings', {
+              badge: true,
+              badgeLabel: 'Update available',
+            }),
+          ],
+          active: 'projects',
+        },
+        Object.fromEntries([
+          ...glyphs.map((glyph, index) => [
+            `tabs.${index}.icon`,
+            [icon(glyph)],
+          ]),
+          ...scenes.map(([title, detail], index) => [
+            `tabs.${index}.content`,
+            content(title, detail),
+          ]),
+        ]),
+      ),
     ),
   );
 });
