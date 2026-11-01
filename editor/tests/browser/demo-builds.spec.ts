@@ -2,7 +2,7 @@
 // person would (palette drags, outline and canvas selection, Inspector
 // fields), then exported and compared with what the demo renders. A
 // configuration the editor cannot build yet has a ticket instead of a test.
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 
 import {
   addChild,
@@ -922,6 +922,56 @@ test('builds a DemoContentItem (ContentItem › List › Text)', async ({
   );
 });
 
+/**
+ * Fills a DemoContentItem's List and its title and detail Texts (the
+ * composition the "builds a DemoContentItem" test assembles), given the
+ * outline positions of that List and of its one Text so far.
+ */
+async function demoTexts(
+  page: Page,
+  at: { readonly list: number; readonly text: number },
+  title: string,
+  detail: string,
+) {
+  await select(page, /^List(?!Item)/, at.list);
+  await choose(page, 'gap', '2xs');
+  await select(page, /^Text/, at.text);
+  await setText(page, 'children', title);
+  await choose(page, 'variant', 'span');
+  await choose(page, 'weight', 'strong');
+  await page.keyboard.press('ControlOrMeta+d');
+  await setText(page, 'children', detail);
+  await choose(page, 'weight', 'Default (regular)');
+  await choose(page, 'tone', 'quiet');
+  await choose(page, 'size', 'compact');
+}
+
+/** A DemoContentItem's nodes as the exported document spells them. */
+const demoContentItem = (title: string, detail: string) =>
+  node('content-item', undefined, {
+    children: [
+      node(
+        'list',
+        { gap: '2xs' },
+        {
+          children: [
+            node('text', {
+              children: title,
+              variant: 'span',
+              weight: 'strong',
+            }),
+            node('text', {
+              children: detail,
+              variant: 'span',
+              tone: 'quiet',
+              size: 'compact',
+            }),
+          ],
+        },
+      ),
+    ],
+  });
+
 test('builds TabNavigator › Persistent Tab Scenes', async ({ page }) => {
   await dragComponent(page, 'TabNavigator', () => emptySpot(page));
   await select(page, /^TabNavigator/);
@@ -974,19 +1024,6 @@ test('builds TabNavigator › Persistent Tab Scenes', async ({ page }) => {
   // Each scene is a DemoContentItem. The demo's raw `.kui-content` wrapper
   // around it has no component to place (KF-5H1X9S) and changes nothing
   // around a single ContentItem.
-  const scene = async (nth: number, title: string, detail: string) => {
-    await select(page, /^List/, nth);
-    await choose(page, 'gap', '2xs');
-    await select(page, /^Text/, nth * 2);
-    await setText(page, 'children', title);
-    await choose(page, 'variant', 'span');
-    await choose(page, 'weight', 'strong');
-    await page.keyboard.press('ControlOrMeta+d');
-    await setText(page, 'children', detail);
-    await choose(page, 'weight', 'Default (regular)');
-    await choose(page, 'tone', 'quiet');
-    await choose(page, 'size', 'compact');
-  };
   const scenes = [
     ['Projects', 'Each destination stays mounted when inactive.'],
     ['Search', 'This plain scene uses a deeper content inset.'],
@@ -1001,7 +1038,7 @@ test('builds TabNavigator › Persistent Tab Scenes', async ({ page }) => {
   );
   await dragComponent(page, 'List', () => emptySpot(page));
   await dragComponent(page, 'Text', () => emptySpot(page));
-  await scene(0, ...scenes[0]);
+  await demoTexts(page, { list: 0, text: 0 }, ...scenes[0]);
   // The inactive tabs' content takes children from Children › Add a child.
   for (const index of [1, 2]) {
     await select(page, /^TabNavigator/);
@@ -1009,7 +1046,7 @@ test('builds TabNavigator › Persistent Tab Scenes', async ({ page }) => {
     await addChild(page, 'List');
     await addChild(page, 'Text');
     const [title, detail] = scenes[index]!;
-    await scene(index, title, detail);
+    await demoTexts(page, { list: index, text: index * 2 }, title, detail);
   }
   const navigator = canvas(page).locator('.kui-tab-scaffold[data-kerf-node]');
   await expect(navigator.getByRole('tab')).toHaveCount(3);
@@ -1026,24 +1063,6 @@ test('builds TabNavigator › Persistent Tab Scenes', async ({ page }) => {
     label,
     ...props,
   });
-  const text = (children: string, props: Record<string, unknown>) =>
-    node('text', { children, variant: 'span', ...props });
-  const content = (title: string, detail: string) => [
-    node('content-item', undefined, {
-      children: [
-        node(
-          'list',
-          { gap: '2xs' },
-          {
-            children: [
-              text(title, { weight: 'strong' }),
-              text(detail, { tone: 'quiet', size: 'compact' }),
-            ],
-          },
-        ),
-      ],
-    }),
-  ];
   expect(await exported(page)).toEqual(
     pane(
       node(
@@ -1076,9 +1095,168 @@ test('builds TabNavigator › Persistent Tab Scenes', async ({ page }) => {
           ]),
           ...scenes.map(([title, detail], index) => [
             `tabs.${index}.content`,
-            content(title, detail),
+            [demoContentItem(title, detail)],
           ]),
         ]),
+      ),
+    ),
+  );
+});
+
+test('builds TabNavigator › NavStack Inside a Tab', async ({ page }) => {
+  await dragComponent(page, 'TabNavigator', () => emptySpot(page));
+  await select(page, /^TabNavigator/);
+  await setText(page, 'id', 'catalog-tab-scaffold-nested');
+  await setText(page, 'label', 'Project Sections');
+  const dialog = page.locator('dialog[open]');
+  const item = (index: number) =>
+    dialog.locator('[data-action="editor-open-field"]').nth(index).click();
+  const back = () => dialog.getByRole('button', { name: 'Back' }).click();
+  await page.getByRole('button', { name: 'Configure tabs' }).click();
+  await dialog.getByRole('button', { name: 'Remove Tab 3' }).click();
+  for (const [index, id] of ['projects', 'search'].entries()) {
+    await item(index);
+    await setField(page, 'tabs', [index, 'id'], id);
+    await setField(
+      page,
+      'tabs',
+      [index, 'label'],
+      id[0]!.toUpperCase() + id.slice(1),
+    );
+    await back();
+  }
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  await setText(page, 'active', 'projects');
+  const glyphs = ['folder-kanban', 'search'];
+  for (const [index, glyph] of glyphs.entries()) {
+    await select(page, /^TabNavigator/);
+    await page.getByRole('button', { name: 'Configure tabs' }).click();
+    await item(index);
+    await dialog.getByText('Icon', { exact: true }).click();
+    await pickIcon(page, page.locator('[data-editor-icon-place]'), glyph);
+  }
+  // The Projects tab owns a NavStack, dropped into its content.
+  await select(page, /^TabNavigator/);
+  await dragComponent(page, 'NavStack', () =>
+    canvas(page).locator('[data-editor-empty]', {
+      hasText: 'tab1Content slot — drop here',
+    }),
+  );
+  await select(page, /^NavStack/);
+  await setText(page, 'id', 'catalog-tab-scaffold-project-stack');
+  await setText(page, 'label', 'Projects Navigation');
+  await page.getByRole('button', { name: 'Configure views' }).click();
+  await dialog.getByRole('button', { name: 'Remove View 3' }).click();
+  await dialog.getByRole('button', { name: 'Remove View 2' }).click();
+  await item(0);
+  await setField(page, 'views', [0, 'key'], 'projects');
+  await dialog.getByText('Toolbar', { exact: true }).click();
+  await setField(page, 'views', [0, 'toolbar', 'title'], 'Projects');
+  await back();
+  await dialog.getByText('Pane', { exact: true }).click();
+  await chooseField(page, 'views', [0, 'pane', 'appearance'], 'sunken');
+  await back();
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  await select(page, /^NavStack/);
+  await dragComponent(page, 'List', () =>
+    canvas(page).locator('[data-editor-empty]', {
+      hasText: 'view1Content slot — drop here',
+    }),
+  );
+  await dragComponent(page, 'ListItem', () => emptySpot(page));
+  await select(page, /^ListItem/);
+  await setText(page, 'action', 'open-tab-scaffold-project');
+  await setText(page, 'itemId', 'atlas');
+  await setText(page, 'label', 'Project Atlas');
+  await setText(
+    page,
+    'description',
+    'Open this project while keeping the tab bar in place.',
+  );
+  // The trailing row's + opens Children › Add a child on its zone.
+  await page.locator('[data-editor-content-add="trailing"]').click();
+  await addChild(page, 'LucideIcon');
+  await select(page, /^LucideIcon/, 0);
+  await pickIcon(
+    page,
+    page.locator('[data-editor-icon-place]'),
+    'chevron-right',
+  );
+  // Search is a DemoContentItem scene.
+  await select(page, /^TabNavigator/);
+  await addChild(page, 'ContentItem', 'tabs › 2 › content');
+  await addChild(page, 'List');
+  await addChild(page, 'Text');
+  await demoTexts(
+    page,
+    { list: 1, text: 0 },
+    'Search',
+    'The Projects stack remains mounted.',
+  );
+  await select(page, /^TabNavigator/);
+  const navigator = canvas(page).locator('.kui-tab-scaffold[data-kerf-node]');
+  await expect(navigator.locator('.kui-nav-stack')).toContainText(
+    'Project Atlas',
+  );
+  await expect(navigator.getByRole('tab')).toHaveCount(2);
+  await page.screenshot({
+    path: test.info().outputPath('kf-jn4pf5-tab-navigator-nested-1440.png'),
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'tab-navigator',
+        {
+          id: 'catalog-tab-scaffold-nested',
+          label: 'Project Sections',
+          tabs: [
+            { id: 'projects', label: 'Projects' },
+            { id: 'search', label: 'Search' },
+          ],
+          active: 'projects',
+        },
+        {
+          'tabs.0.icon': [icon('folder-kanban')],
+          'tabs.1.icon': [icon('search')],
+          'tabs.0.content': [
+            node(
+              'nav-stack',
+              {
+                id: 'catalog-tab-scaffold-project-stack',
+                label: 'Projects Navigation',
+                views: [
+                  {
+                    key: 'projects',
+                    toolbar: { title: 'Projects' },
+                    pane: { appearance: 'sunken' },
+                  },
+                ],
+              },
+              {
+                'views.0.content': [
+                  node('list', undefined, {
+                    children: [
+                      node(
+                        'list-item',
+                        {
+                          label: 'Project Atlas',
+                          action: 'open-tab-scaffold-project',
+                          itemId: 'atlas',
+                          description:
+                            'Open this project while keeping the tab bar in place.',
+                        },
+                        { trailing: [icon('chevron-right')] },
+                      ),
+                    ],
+                  }),
+                ],
+              },
+            ),
+          ],
+          'tabs.1.content': [
+            demoContentItem('Search', 'The Projects stack remains mounted.'),
+          ],
+        },
       ),
     ),
   );
