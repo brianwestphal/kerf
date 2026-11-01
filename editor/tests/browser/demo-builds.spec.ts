@@ -719,6 +719,43 @@ test('builds ListHeader › Badge and Status Together', async ({ page }) => {
   );
 });
 
+test('builds EmptyState › Actionable', async ({ page }) => {
+  await dragComponent(page, 'EmptyState', () => emptySpot(page));
+  await select(page, /^EmptyState/);
+  await setText(page, 'title', 'Nothing Here Yet');
+  await setText(page, 'detail', 'Create the first item when you are ready.');
+  await dragComponent(page, 'LucideIcon', () => zoneSpot(page, 'Icon'));
+  await select(page, /^EmptyState/);
+  await dragComponent(page, 'Button', () => zoneSpot(page, 'Action'));
+  await select(page, /^LucideIcon/);
+  await page.locator('[data-editor-icon-place]').first().click();
+  await page.keyboard.type('search');
+  await page.locator('[data-editor-icon="search"]').click();
+  await select(page, /^Button/);
+  await setText(page, 'children', 'Create Item');
+  await setText(page, 'action', 'log-add');
+  await expect(
+    canvas(page).locator('.kui-empty-state[data-kerf-node] .kui-button'),
+  ).toHaveText('Create Item');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'empty-state',
+        {
+          title: 'Nothing Here Yet',
+          detail: 'Create the first item when you are ready.',
+        },
+        {
+          icon: [icon('search')],
+          action: [
+            node('button', { children: 'Create Item', action: 'log-add' }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
 test('builds EmptyState › Busy', async ({ page }) => {
   await dragComponent(page, 'EmptyState', () => emptySpot(page));
   await select(page, /^EmptyState/);
