@@ -4,6 +4,7 @@
 // configuration the editor cannot build yet has a ticket instead of a test.
 import { expect, type Page, test } from '@playwright/test';
 
+import { area } from './areas.js';
 import {
   addChild,
   addIcon,
@@ -1255,6 +1256,165 @@ test('builds TabNavigator › NavStack Inside a Tab', async ({ page }) => {
           ],
           'tabs.1.content': [
             demoContentItem('Search', 'The Projects stack remains mounted.'),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds NavStack › Interactive Push and Pop', async ({ page }) => {
+  await dragComponent(page, 'NavStack', () => emptySpot(page));
+  await select(page, /^NavStack/);
+  await setText(page, 'id', 'catalog-nav-stack');
+  await setText(page, 'label', 'Project Library');
+  await setText(page, 'backLabel', 'Back to Library');
+  const dialog = page.locator('dialog[open]');
+  const back = () => dialog.getByRole('button', { name: 'Back' }).click();
+  const configure = async (...rows: string[]) => {
+    await select(page, /^NavStack/);
+    await page.getByRole('button', { name: 'Configure views' }).click();
+    await dialog.locator('[data-action="editor-open-field"]').first().click();
+    for (const row of rows)
+      await dialog.getByText(row, { exact: true }).click();
+  };
+  // The demo's stack starts from one view: the library.
+  await page.getByRole('button', { name: 'Configure views' }).click();
+  await dialog.getByRole('button', { name: 'Remove View 3' }).click();
+  await dialog.getByRole('button', { name: 'Remove View 2' }).click();
+  await dialog.locator('[data-action="editor-open-field"]').first().click();
+  await setField(page, 'views', [0, 'key'], 'library');
+  await dialog.getByText('Pane', { exact: true }).click();
+  await chooseField(page, 'views', [0, 'pane', 'appearance'], 'sunken');
+  await back();
+  await dialog.getByText('Toolbar', { exact: true }).click();
+  await setField(page, 'views', [0, 'toolbar', 'title'], 'Library');
+  await back();
+  await dialog.getByText('Bottom toolbar', { exact: true }).click();
+  await setField(page, 'views', [0, 'bottomToolbar', 'label'], 'View Status');
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  // A toolbar zone's + opens Children › Add a child on that zone.
+  const toolbarText = async (rows: string[], text: string) => {
+    await configure(...rows);
+    // The new node is selected.
+    await addChild(page, 'ToolbarText');
+    await area(page, 'Properties');
+    await setText(page, 'text', text);
+    await choose(page, 'size', 'small');
+  };
+  await toolbarText(['Toolbar', 'Trailing'], 'Projects');
+  await toolbarText(['Bottom toolbar', 'Leading'], '2 saved projects');
+  // The library's content: a counted header over two project rows.
+  await select(page, /^NavStack/);
+  await dragComponent(page, 'List', () =>
+    canvas(page).locator('[data-editor-empty]', {
+      hasText: 'view1Content slot — drop here',
+    }),
+  );
+  await dragComponent(page, 'ListHeader', () => emptySpot(page));
+  await select(page, /^ListHeader/);
+  await setText(page, 'label', 'Saved Projects');
+  await setText(page, 'count', '2');
+  await setText(page, 'countLabel', '2 saved projects');
+  // Dropped on the header's bottom edge, the row lands after it.
+  await dragComponent(
+    page,
+    'ListItem',
+    () => canvas(page).locator('.kui-list-header[data-kerf-node]'),
+    0.9,
+  );
+  const projects = [
+    [
+      'atlas',
+      'Project Atlas',
+      'Navigation and workspace patterns for the Kerf UI catalog.',
+    ],
+    [
+      'relay',
+      'Project Relay',
+      'Interaction contracts shared across responsive application layouts.',
+    ],
+  ] as const;
+  await select(page, /^ListItem/);
+  await setText(page, 'action', 'open-nav-stack-project');
+  await turnOn(page, 'multiline');
+  // The icon row adds a LucideIcon; the trailing row opens Children.
+  await addIcon(page, 'icon', 'folder');
+  await select(page, /^ListItem/);
+  await page.locator('[data-editor-content-add="trailing"]').click();
+  await addChild(page, 'LucideIcon');
+  await area(page, 'Properties');
+  await pickIcon(
+    page,
+    page.locator('[data-editor-icon-place]'),
+    'chevron-right',
+  );
+  // The second row is a copy of the first with its own project.
+  await select(page, /^ListItem/);
+  await page.keyboard.press('ControlOrMeta+d');
+  for (const [index, [id, label, summary]] of projects.entries()) {
+    await select(page, /^ListItem/, index);
+    await setText(page, 'itemId', id);
+    await setText(page, 'label', label);
+    await setText(page, 'description', summary);
+  }
+  await select(page, /^NavStack/);
+  const stack = canvas(page).locator('.kui-nav-stack[data-kerf-node]');
+  await expect(stack.locator('.kui-list-item')).toHaveCount(2);
+  await expect(stack).toContainText('2 saved projects');
+  await page.screenshot({
+    path: test.info().outputPath('kf-jn4pf5-nav-stack-1440.png'),
+  });
+  const toolbarTextNode = (text: string) =>
+    node('toolbar-text', { text, size: 'small' });
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'nav-stack',
+        {
+          id: 'catalog-nav-stack',
+          label: 'Project Library',
+          backLabel: 'Back to Library',
+          views: [
+            {
+              key: 'library',
+              pane: { appearance: 'sunken' },
+              toolbar: { title: 'Library' },
+              bottomToolbar: { label: 'View Status' },
+            },
+          ],
+        },
+        {
+          'views.0.toolbar.trailing': [toolbarTextNode('Projects')],
+          'views.0.bottomToolbar.leading': [
+            toolbarTextNode('2 saved projects'),
+          ],
+          'views.0.content': [
+            node('list', undefined, {
+              children: [
+                node('list-header', {
+                  label: 'Saved Projects',
+                  count: 2,
+                  countLabel: '2 saved projects',
+                }),
+                ...projects.map(([id, label, summary]) =>
+                  node(
+                    'list-item',
+                    {
+                      action: 'open-nav-stack-project',
+                      multiline: true,
+                      itemId: id,
+                      label,
+                      description: summary,
+                    },
+                    {
+                      icon: [icon('folder')],
+                      trailing: [icon('chevron-right')],
+                    },
+                  ),
+                ),
+              ],
+            }),
           ],
         },
       ),
