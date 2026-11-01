@@ -974,6 +974,8 @@ const demoContentItem = (title: string, detail: string) =>
   });
 
 test('builds TabNavigator › Persistent Tab Scenes', async ({ page }) => {
+  // A whole screen built step by step runs long in Firefox.
+  test.slow();
   await dragComponent(page, 'TabNavigator', () => emptySpot(page));
   await select(page, /^TabNavigator/);
   await setText(page, 'id', 'catalog-tab-scaffold');
@@ -1105,6 +1107,8 @@ test('builds TabNavigator › Persistent Tab Scenes', async ({ page }) => {
 });
 
 test('builds TabNavigator › NavStack Inside a Tab', async ({ page }) => {
+  // A whole screen built step by step runs long in Firefox.
+  test.slow();
   await dragComponent(page, 'TabNavigator', () => emptySpot(page));
   await select(page, /^TabNavigator/);
   await setText(page, 'id', 'catalog-tab-scaffold-nested');
@@ -1264,6 +1268,8 @@ test('builds TabNavigator › NavStack Inside a Tab', async ({ page }) => {
 });
 
 test('builds NavStack › Interactive Push and Pop', async ({ page }) => {
+  // A whole screen built step by step runs long in Firefox.
+  test.slow();
   await dragComponent(page, 'NavStack', () => emptySpot(page));
   await select(page, /^NavStack/);
   await setText(page, 'id', 'catalog-nav-stack');
