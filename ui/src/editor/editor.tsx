@@ -1485,14 +1485,18 @@ export function createEditor(options: EditorOptions) {
     const definitions = definitionsOf(node.type);
     const propValue = node.props?.[place.prop] as ViewValue | undefined;
     const value = valueAt(propValue, place.path);
+    const declared = typeAt(
+      prop.type as never,
+      definitions,
+      place.path,
+      propValue,
+    );
     return {
       definitions,
       // A union's value edits as the member it holds (KF-3CKTKN).
-      type: memberFor(
-        typeAt(prop.type as never, definitions, place.path, propValue),
-        definitions,
-        value,
-      ),
+      type: memberFor(declared, definitions, value),
+      // The whole union, which a typed choice picks among.
+      declared,
       value,
     };
   };
@@ -3360,16 +3364,20 @@ export function createEditor(options: EditorOptions) {
     const key = placeKey(place);
     if (kind === 'size')
       customSize.value = raw === CUSTOM_SIZE ? `${id} ${key}` : '';
-    const { definitions, type } = fieldContext(
+    const { definitions, type, declared, value } = fieldContext(
       findNode(doc.value, id)!.node,
       place,
     );
-    const result = valueFromControl(
-      kind,
-      raw,
-      undefined,
-      type && { type, definitions },
-    );
+    // A typed choice picks a member of the whole union, starting from the
+    // value it replaces, as the Inspector’s own choice does (KF-ZAQQFK).
+    const result =
+      kind === 'choice'
+        ? valueFromControl(kind, raw, undefined, {
+            type: declared!,
+            definitions,
+            current: value,
+          })
+        : valueFromControl(kind, raw, undefined, type && { type, definitions });
     if ('error' in result) {
       fieldErrors.value = { ...fieldErrors.value, [key]: result.error };
       return;

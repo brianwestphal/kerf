@@ -241,6 +241,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **A list item's typed choice takes an open value in the Kerf UI editor.** Picking Number… or Text… for a field such as a tab's badge in a Configure dialog used to change nothing; it now sets the value and shows its control, as a typed choice in the Inspector does (`KF-ZAQQFK`).
 - **A whole-screen layout inside a container shows its content on the Kerf UI editor's canvas.** A TabNavigator, NavStack, SplitView, or Workbench placed below the document root used to collapse to its bar, hiding its content and drop targets; the canvas now frames it at a usable height (`KF-XXT6P4`).
 - **Drop into a tab's content on the Kerf UI editor canvas.** A selected node's seeded item slots (a TabNavigator tab's or NavStack view's content) show as drop stand-ins named after the slot, and a drop there fills the content. Before, the canvas showed only the slot's name, and a drop into its field zone was refused (`KF-HGG7MJ`).
 

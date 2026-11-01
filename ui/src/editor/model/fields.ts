@@ -276,12 +276,16 @@ export function memberFor(
   if (union?.kind !== 'union') return type;
   const members = union.members!;
   if (typeof value === 'string')
-    return members.find(
-      (member) => shape(member, definitions)?.kind === 'string',
+    return (
+      members.find((member) => shape(member, definitions)?.kind === 'string') ??
+      type
     );
   const objects = members.filter((member) =>
     isFormObject(shape(member, definitions)),
   );
+  // A union of scalars (a tab's `number | string` badge) has no member to
+  // narrow to.
+  if (!objects.length) return type;
   const fields = fieldsOf(value);
   if (!fields) return objects[0];
   return (

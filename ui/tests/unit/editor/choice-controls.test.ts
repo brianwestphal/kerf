@@ -305,6 +305,27 @@ describe('a value picked from its choices (KF-9AWGPS)', () => {
     expect(props()).not.toHaveProperty('value');
   });
 
+  // KF-ZAQQFK: a field form’s open member (a tab's count badge) commits
+  // its start value and shows its own control, as the Inspector's does.
+  it('sets a tab’s count badge from Number… in its item form', () => {
+    const { root, props } = added('@kerfjs/ui:tab-navigator');
+    const opener = document.createElement('button');
+    opener.dataset.action = 'editor-open-field';
+    opener.dataset.editorOpen = JSON.stringify({ prop: 'tabs', path: [0] });
+    root.append(opener);
+    opener.click();
+    const badge = () =>
+      field(root, `[data-editor-field='{"prop":"tabs","path":[0,"badge"]}']`);
+    choose(badge(), '#1');
+    const tab = () => (props().tabs as Record<string, unknown>[])[0]!;
+    expect(tab().badge).toBe(0);
+    const number = root.querySelector<HTMLElement>(
+      `[data-editor-field='{"prop":"tabs","path":[0,"badge"]}'][data-editor-kind="number"]`,
+    )!;
+    type(number, '3');
+    expect(tab().badge).toBe(3);
+  });
+
   it('labels a typed choice’s kind and its value apart', () => {
     const { root } = added('@kerfjs/ui:lucide-icon');
     const size = field(
