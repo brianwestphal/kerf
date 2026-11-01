@@ -265,7 +265,8 @@ export function typeAt(
 /**
  * The member of a union `type` that `value` belongs to: the object member
  * whose literal discriminant (`kind`) the value carries, else the first
- * object member, or the string member for text. Other types return as given.
+ * object member the value fits, else the first object member, or the string
+ * member for text. Other types, and unions of scalars, return as given.
  */
 export function memberFor(
   type: ViewType | undefined,
@@ -288,20 +289,35 @@ export function memberFor(
   if (!objects.length) return type;
   const fields = fieldsOf(value);
   if (!fields) return objects[0];
+  const typedFields = (member: ViewType) =>
+    shape(member, definitions)!.props!.map((field) => ({
+      field,
+      type: shape(field.type, definitions),
+    }));
+  const fits = (member: ViewType) =>
+    typedFields(member).every(({ field, type: literal }) => {
+      // A field the member forbids (`never`) rules it out when set: a
+      // static Workbench panel has no `navStack` (KF-907BXY).
+      if (literal?.kind === 'never') return fields[field.name] === undefined;
+      if (literal?.kind !== 'literal') return true;
+      const own = fields[field.name];
+      return own === undefined
+        ? field.required !== true
+        : own === (literal as { value?: unknown }).value;
+    });
+  // A member whose literal the value carries (a dot badge's `badge: true`)
+  // wins over an earlier one that only tolerates it (KF-2XH5XS).
+  const carries = (member: ViewType) =>
+    typedFields(member).some(
+      ({ field, type: literal }) =>
+        literal?.kind === 'literal' &&
+        fields[field.name] !== undefined &&
+        fields[field.name] === (literal as { value?: unknown }).value,
+    );
   return (
-    objects.find((member) =>
-      shape(member, definitions)!.props!.every((field) => {
-        const literal = shape(field.type, definitions);
-        // A field the member forbids (`never`) rules it out when set: a
-        // static Workbench panel has no `navStack` (KF-907BXY).
-        if (literal?.kind === 'never') return fields[field.name] === undefined;
-        if (literal?.kind !== 'literal') return true;
-        const own = fields[field.name];
-        return own === undefined
-          ? field.required !== true
-          : own === (literal as { value?: unknown }).value;
-      }),
-    ) ?? objects[0]
+    objects.find((member) => fits(member) && carries(member)) ??
+    objects.find(fits) ??
+    objects[0]
   );
 }
 

@@ -183,6 +183,24 @@ describe('field editor model', () => {
     });
   });
 
+  // KF-2XH5XS: a member whose literal the value carries wins over an
+  // earlier one that only tolerates it.
+  it('picks a dot-badge tab’s member over the count badge’s', () => {
+    const tabs = propsJson.components
+      .find((entry) => entry.export === 'TabNavigator')!
+      .props.find((prop) => prop.name === 'tabs')!.type as {
+      items: ViewType;
+    };
+    const member = (value: ViewValue) =>
+      (memberFor(tabs.items, definitions, value) as { text?: string }).text;
+    const tab = { id: 'settings', label: 'Settings' };
+    expect(
+      member({ ...tab, badge: true, badgeLabel: 'Update available' }),
+    ).toMatch(/DotBadge/);
+    expect(member({ ...tab, badge: 3 })).toMatch(/CountBadge/);
+    expect(member(tab)).toMatch(/CountBadge/);
+  });
+
   it('reads and writes at a path without changing the original', () => {
     const value = { gap: 'm', tint: { color: { $css: 'px(1)' } } };
     expect(valueAt(value, ['tint', 'color'])).toEqual({ $css: 'px(1)' });

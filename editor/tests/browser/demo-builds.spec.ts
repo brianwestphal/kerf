@@ -956,6 +956,10 @@ test('builds TabNavigator › Persistent Tab Scenes', async ({ page }) => {
   await setField(page, 'tabs', [2, 'label'], 'Settings');
   await setField(page, 'tabs', [2, 'badgeLabel'], 'Update available');
   await back();
+  // KF-2XH5XS: the list names each tab's member.
+  await expect(
+    dialog.locator('[data-action="editor-open-field"]').nth(2),
+  ).toContainText('Dot badge');
   await dialog.getByRole('button', { name: 'Done' }).click();
   await setText(page, 'active', 'projects');
   const glyphs = ['folder-kanban', 'search', 'settings'];
