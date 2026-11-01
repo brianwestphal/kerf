@@ -3207,7 +3207,13 @@ export function createEditor(options: EditorOptions) {
                 JSON.stringify(current.address),
             ) ?? null)
           : null;
-    if (!target) {
+    // A node in a hidden part of the canvas (an inactive tab's scene) keeps
+    // its box under what is shown; ringing it would mark something else
+    // (KF-ZC9EXM).
+    if (
+      !target ||
+      target.checkVisibility?.({ visibilityProperty: true }) === false
+    ) {
       highlight.hidden = true;
       return;
     }

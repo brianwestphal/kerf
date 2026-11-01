@@ -1554,3 +1554,31 @@ test('gives a TabNavigator inside the root Pane a usable height', async ({
     navigator.locator('.kui-content-item[data-kerf-node]'),
   ).toBeVisible();
 });
+
+// KF-ZC9EXM: a node in an inactive tab's scene sits under the active scene;
+// the selection ring hides rather than marking what is shown there.
+test('hides the selection ring for a node in an inactive tab', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await newDocument(page);
+  await dragComponent(page, 'TabNavigator', () => emptySpot(page));
+  await select(page, /^TabNavigator/);
+  const ring = page.locator('.kui-editor__selection');
+  await expect(ring).toBeVisible();
+  // Tab 2's content is inactive; the new node is selected there.
+  await addChild(page, 'ContentItem', 'tabs › 2 › content');
+  await expect(page.locator('[data-editor-prop]').first()).toBeVisible();
+  await expect(ring).toBeHidden();
+  // A node in the active tab is ringed.
+  await select(page, /^TabNavigator/);
+  await dragComponent(page, 'ContentItem', () =>
+    page.locator('[data-editor-canvas] [data-editor-empty]', {
+      hasText: 'tab1Content slot — drop here',
+    }),
+  );
+  await select(page, /^ContentItem/, 0);
+  await expect(ring).toBeVisible();
+  await select(page, /^ContentItem/, 1);
+  await expect(ring).toBeHidden();
+});

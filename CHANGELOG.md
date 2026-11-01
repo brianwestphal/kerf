@@ -241,6 +241,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **The Kerf UI editor's selection ring no longer marks the wrong content.** Selecting a node in an inactive tab drew the ring over the active tab's content at the same place; the ring now hides while the selected node can't be seen (`KF-ZC9EXM`).
 - **The Kerf UI editor recognizes a dot-badge tab.** A TabNavigator tab with `badge: true` was listed as a count-badge tab and edited with the count form; a union member whose literal the value carries now wins over an earlier member that only tolerates it (`KF-2XH5XS`).
 - **A list item's typed choice takes an open value in the Kerf UI editor.** Picking Number… or Text… for a field such as a tab's badge in a Configure dialog used to change nothing; it now sets the value and shows its control, as a typed choice in the Inspector does (`KF-ZAQQFK`).
 - **A whole-screen layout inside a container shows its content on the Kerf UI editor's canvas.** A TabNavigator, NavStack, SplitView, or Workbench placed below the document root used to collapse to its bar, hiding its content and drop targets; the canvas now frames it at a usable height (`KF-XXT6P4`).

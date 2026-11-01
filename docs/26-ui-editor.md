@@ -265,6 +265,10 @@ one an editor-owned frame with a usable height (60% of the viewport, between
 320px and 640px, growing into room its parent leaves; KF-XXT6P4: nested
 layouts collapse on the canvas); as the root it fills the canvas as before.
 The frame is canvas-only and never reaches the document or the export.
+A node selected in a part of the canvas that is hidden, such as an inactive
+tab's scene, gets no selection ring: the scene sits under the active one, and
+a ring there would mark what the active scene shows (KF-ZC9EXM: ring over a
+hidden tab's node).
 
 The props catalog generator (KF-24G2KV: remaining props) treats a union whose
 members are all content, text, or numbers as one content slot, including
