@@ -42,7 +42,7 @@ test('small buttons and toolbar-group buttons keep their own control heights', a
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/?component=state-banner');
+  await page.goto('/?component=button');
   const small = page.locator('.kui-button[data-size="compact"]').first();
   await expect(small).toBeVisible();
   expect(await visualHeight(small)).toBeLessThan(40);
