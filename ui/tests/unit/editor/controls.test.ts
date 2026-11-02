@@ -413,6 +413,16 @@ describe('seedProps', () => {
     ]);
   });
 
+  // KF-T3PYVC: a list whose placeholder items nothing numbers would hold
+  // copies (three stacked parallax effects), so it starts with one item; a
+  // union list whose items differ (a PopupMenu's) keeps three.
+  it('seeds one item when every placeholder item would be the same', () => {
+    expect(seeded('@kerfjs/ui:scroll-effect')).toEqual({
+      effects: [{ kind: 'parallax' }],
+    });
+    expect(seeded('@kerfjs/ui:popup-menu').items).toHaveLength(3);
+  });
+
   it('leaves no required literal prop unfilled on any Kerf UI component', () => {
     expect(unfilled('@kerfjs/ui:combobox')).toEqual([]);
     expect(unfilled('@kerfjs/ui:select')).toEqual([]);

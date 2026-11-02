@@ -21,7 +21,10 @@ interface TypeNode {
   readonly acceptsText?: true;
 }
 
-/** How many items a placeholder list holds. */
+/**
+ * How many items a placeholder list holds, when its items differ ("Choice 1",
+ * "Choice 2"); a list whose items would all be the same holds one.
+ */
 export const EXAMPLE_ITEMS = 3;
 
 /** `type` with its `ref`s followed, or undefined for an unknown name. */
@@ -193,7 +196,13 @@ function example(
         if (value === undefined) return undefined;
         items.push(value);
       }
-      return items;
+      // KF-T3PYVC: items nothing numbers (a ScrollEffect's `parallax`
+      // effects) would be copies of one another, stacked rather than told
+      // apart, so such a list starts with one.
+      const first = JSON.stringify(items[0]);
+      return items.every((value) => JSON.stringify(value) === first)
+        ? items.slice(0, 1)
+        : items;
     }
     case 'object': {
       const value: Record<string, ViewValue> = {};

@@ -45,6 +45,43 @@ describe('exampleValue', () => {
     ).toEqual({ $slot: expect.any(String) });
   });
 
+  // KF-T3PYVC: items with nothing to number them by would be copies, so the
+  // list holds one; one numbered field anywhere keeps all three.
+  it('seeds one item when every placeholder item would be the same', () => {
+    const kind = { name: 'kind', required: true, type: { kind: 'literal' } };
+    const effect = (value: string, extra: object[] = []) => ({
+      kind: 'object',
+      props: [{ ...kind, type: { kind: 'literal', value } }, ...extra],
+    });
+    const list = (...members: object[]) =>
+      t({ kind: 'array', items: { kind: 'union', members } });
+    expect(
+      exampleValue(list(effect('lift'), effect('fade')), {}, 'effects'),
+    ).toEqual([{ kind: 'lift' }]);
+    expect(
+      exampleValue(
+        t({ kind: 'array', items: { kind: 'boolean' } }),
+        {},
+        'flags',
+      ),
+    ).toEqual([false]);
+    expect(
+      exampleValue(
+        list(
+          effect('lift', [
+            { name: 'label', required: true, type: { kind: 'string' } },
+          ]),
+        ),
+        {},
+        'effects',
+      ),
+    ).toEqual([
+      { kind: 'lift', label: 'Effect 1' },
+      { kind: 'lift', label: 'Effect 2' },
+      { kind: 'lift', label: 'Effect 3' },
+    ]);
+  });
+
   it('numbers list items after the prop they fill', () => {
     expect(
       exampleValue(

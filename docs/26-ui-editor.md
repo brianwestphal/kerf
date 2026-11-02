@@ -85,7 +85,10 @@ component added from Add a child or the palette has its required lists,
 objects, and unions seeded from the props catalog's type graph, not a
 per-component table: three items numbered after the prop ("Suggestion 1",
 `{ value: "choice-1", label: "Choice 1" }`, `{ label: "Item 1" }`), and a
-required `value` starts on the first seeded choice. So a Combobox, a Select,
+required `value` starts on the first seeded choice. A list whose items
+nothing numbers would hold three copies, so it holds one instead
+(KF-T3PYVC: a ScrollEffect starts with one `parallax` effect, not three
+stacked). So a Combobox, a Select,
 or a PopupMenu renders as soon as it is added. The inspector edits such a
 prop as JSON, checked against the prop's type with `isLiteralOf`. While the
 prop is unset, **Fill with example** writes the placeholder back. Binding the

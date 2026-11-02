@@ -2138,9 +2138,11 @@ test('builds ScrollEffect › Reveal and Fade in a Feed', async ({ page }) => {
     dialog.locator('[data-action="editor-open-field"]').nth(index).click();
   const back = () => dialog.getByRole('button', { name: 'Back' }).click();
   await page.getByRole('button', { name: 'Configure effects' }).click();
-  // Start from no effects, then add a reveal twice and a fade.
+  // Remove the seeded parallax (one, KF-T3PYVC), then add a reveal twice and
+  // a fade.
   const remove = dialog.getByRole('button', { name: /^Remove / });
-  while ((await remove.count()) > 0) await remove.first().click();
+  await expect(remove).toHaveCount(1);
+  await remove.click();
   for (const preset of ['Reveal', 'Reveal', 'Fade']) {
     await dialog.getByRole('button', { name: /Add/ }).last().click();
     await page.getByRole('menuitem', { name: preset, exact: true }).click();
