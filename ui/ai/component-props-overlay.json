@@ -35,7 +35,8 @@
         },
         "pressed": {
           "group": "State",
-          "order": 1
+          "order": 1,
+          "control": "select"
         },
         "loading": {
           "group": "State",
@@ -290,7 +291,8 @@
         },
         "pressed": {
           "group": "State",
-          "order": 2
+          "order": 2,
+          "control": "select"
         },
         "busy": {
           "group": "State",
@@ -839,6 +841,13 @@
         "busyLabel": {
           "group": "State",
           "order": 3
+        }
+      }
+    },
+    "@kerfjs/ui:toolbar-control-group#ToolbarButton": {
+      "props": {
+        "pressed": {
+          "control": "select"
         }
       }
     },

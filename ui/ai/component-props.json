@@ -630,7 +630,8 @@
           "required": false,
           "description": "Make it a toggle: `aria-pressed` reports the state, and a pressed look is\ndrawn on top of the tone and emphasis. The application owns the state and\nflips it in its `action` handler. A link (`href`) cannot be a toggle.",
           "group": "State",
-          "order": 1
+          "order": 1,
+          "control": "select"
         },
         {
           "name": "currentStep",
@@ -6889,7 +6890,8 @@
           },
           "required": false,
           "group": "State",
-          "order": 2
+          "order": 2,
+          "control": "select"
         },
         {
           "name": "accessibleLabel",
@@ -15269,7 +15271,8 @@
             "nullable": true
           },
           "required": false,
-          "description": "A toggle's state, reported as `aria-pressed`; unset for a plain action."
+          "description": "A toggle's state, reported as `aria-pressed`; unset for a plain action.",
+          "control": "select"
         },
         {
           "name": "popoverTarget",

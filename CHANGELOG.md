@@ -255,6 +255,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **The Kerf UI editor's outline keeps a node's item content in item order.** A filled field zone (tab 1's content) is listed among the remaining item slots in tab order, rather than after them (`KF-KA5B40`).
 
+- **The Kerf UI editor can make an unpressed toggle.** `pressed` on `Button`, `ListItem`, and `ToolbarButton` edits with a Not set / Off / On Select instead of a switch, because unset means a plain action and `false` means a toggle that is off (`aria-pressed="false"`). Off now writes `pressed: false` (`KF-K9VBB4`).
 - **Turning a switch off in the Kerf UI editor clears its prop.** An optional boolean switched back to its default (`showValue` off) no longer leaves `showValue: false` in the document; a prop that defaults on still records `false` (`KF-K03GBN`).
 
 - **The UI evaluator names a failed screenshot capture.** When a full-page capture fails after a context's checks ran, `KUI-B001` now says the screenshot could not be captured and suggests a longer timeout, instead of telling you to check that the app is running (`KF-G8KKNY`).

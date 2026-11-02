@@ -86,6 +86,19 @@ describe('controlFor', () => {
       kind: 'switch',
       raw: false,
     });
+    // KF-K9VBB4: a toggle's `pressed` is Not set (a plain action), Off, or
+    // On, so an unpressed toggle stays expressible.
+    for (const key of [
+      'button',
+      'list-item',
+      'toolbar-control-group#ToolbarButton',
+    ])
+      expect(controlFor(prop(key, 'pressed'), false)).toEqual({
+        kind: 'select',
+        choices: ['', 'false', 'true'],
+        raw: 'false',
+      });
+    expect(controlFor(prop('button', 'pressed'), undefined).raw).toBe('');
     expect(controlFor(prop('list-header', 'count'), 3)).toEqual({
       kind: 'number',
       raw: '3',
@@ -264,6 +277,18 @@ describe('valueFromControl', () => {
     });
     expect(valueFromControl('switch', false, undefined, unset(true))).toEqual({
       value: false,
+    });
+    // KF-K9VBB4: a boolean whose unset state differs from false (a toggle's
+    // `pressed`) picks Not set / Off / On, and Off writes an explicit false.
+    const boolean = { type: { kind: 'boolean' } as const, definitions: {} };
+    expect(valueFromControl('select', 'false', undefined, boolean)).toEqual({
+      value: false,
+    });
+    expect(valueFromControl('select', 'true', undefined, boolean)).toEqual({
+      value: true,
+    });
+    expect(valueFromControl('select', '', undefined, boolean)).toEqual({
+      value: undefined,
     });
     expect(valueFromControl('number', ' 4 ')).toEqual({ value: 4 });
     expect(valueFromControl('number', '')).toEqual({ value: undefined });

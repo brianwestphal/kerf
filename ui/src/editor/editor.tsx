@@ -1270,7 +1270,11 @@ export function createEditor(options: EditorOptions) {
                   ? prop.default !== undefined
                     ? `Default (${String(prop.default)})`
                     : 'Not set'
-                  : choice,
+                  : prop.type.kind === 'boolean'
+                    ? choice === 'true'
+                      ? 'On'
+                      : 'Off'
+                    : choice,
             }))}
             rootAttributes={marker('select')}
           />

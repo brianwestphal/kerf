@@ -402,6 +402,15 @@ export function controlFor(
       };
     }
     case 'boolean':
+      // KF-K9VBB4: where unset differs from false (`pressed`: a plain
+      // action, not an unpressed toggle), the overlay's `select` hint gives
+      // Not set / Off / On, since a switch turned off clears the prop.
+      if (prop.control === 'select')
+        return {
+          kind: 'select',
+          choices: ['', 'false', 'true'],
+          raw: typeof value === 'boolean' ? String(value) : '',
+        };
       return {
         kind: 'switch',
         raw: typeof value === 'boolean' ? value : prop.default === true,
@@ -543,7 +552,14 @@ export function valueFromControl(
     }
     default: {
       const text = String(raw);
-      return { value: text === '' ? undefined : text };
+      if (text === '') return { value: undefined };
+      // A boolean's Not set / Off / On select (KF-K9VBB4) writes a boolean.
+      return {
+        value:
+          type && resolveType(type.type, type.definitions)?.kind === 'boolean'
+            ? text === 'true'
+            : text,
+      };
     }
   }
 }

@@ -17,7 +17,9 @@
   module with a contract-change report against the last export or a chosen
   existing module (KF-Y38YRT, KF-9J810J: editor export and compare);
 - editing in the editor (KF-KX77TV: editor editing): the inspector edits
-  literal props (a Select per string enum, a Switch per boolean, a text field
+  literal props (a Select per string enum, a Switch per boolean, or a Not
+  set / Off / On Select for a toggle's `pressed`, whose unset state differs
+  from false (KF-K9VBB4: an unpressed toggle), a text field
   for strings, text-accepting content, numbers, and `$css` builder calls, and
   a JSON field for list and object literals such as a Combobox's
   `suggestions`), renames nodes, promotes a literal prop to a document param, adds a child of
