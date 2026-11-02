@@ -21,6 +21,7 @@ Organize a sidebar, main area, inspector, or dialog column into fixed vertical h
 - A pane needs an app-chosen surface color, such as a media detail page painted in its artwork's color (background, a typed CssColor; also in PaneConfig).
 - A region should take on an app color (a media page in its artwork's color) with its text, quiet text, links, fills, and chrome material re-derived to keep AA (tint: { color, scheme }; also in PaneConfig).
 - The header lies over imagery and must be fully transparent, with glass control groups for legibility and the material fading back in once content scrolls beneath (headerPresentation: clear, scrollEdge: material).
+- A whole screen that is one pane with no navigation (a single settings or notes screen) must fill a definite-height parent such as .kui-app-root, a SizedRegion, or a grid cell, or the rest of a flex column, with its header and footer pinned and its content scrolling (fill). A screen that will push or pop views, or that needs compactChrome, is a one-entry NavStack instead.
 
 **Not when:**
 
@@ -61,6 +62,7 @@ Exact prop names and types: [`@kerfjs/ui/pane`](../public-api-signatures-v1.md#k
 - scoped tint re-deriving surface and text tokens from an app color (tint)
 - clear (transparent) overlay header, optionally with the scroll-edge material (headerPresentation: clear, scrollEdge: material)
 - compactChrome { header, footer }: fixed, scroll, or overlay (opened by compactChromeOpen), applied by a NavStack view, TabNavigator scene, full-screen dialog, or compact Workbench
+- content height (default) or filling a definite-height parent (fill)
 
 ## Composition
 
@@ -76,7 +78,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 ## State and wiring
 
-**The app owns:** root and content semantics; accessible labels; header, content, and footer children; which logical boundaries show separators; which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges); responsive placement and visibility; whether the chrome dividers follow the scroll, always show, or never show (chromeDividers); default or sunken scrolling work surface (appearance); whether to reserve a vertical scrollbar gutter for opaque edge-to-edge content (--kui-pane-scrollbar-gutter); optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined); whether the scrolling content clears overlaying chrome on its block edges (scrollClearance, also in PaneConfig, so a Workbench mainPane or panel pane, a CollapsiblePanel pane, or a NavStack view pane forwards it); whether the header is docked in its own row or laid over the scrolling content on the translucent chrome material (headerPresentation, also in PaneConfig); an optional app-chosen surface color that replaces the appearance's fill (background, a typed CssColor from @kerfjs/ui/css-values, also in PaneConfig, so a Workbench panel or mainPane, a CollapsiblePanel pane, or a NavStack view pane forwards it); an optional scoped tint (tint: { color, scheme }, also in PaneConfig): the color and the declared light or dark scheme it belongs to; Kerf does no color detection; an optional tint accent (tint.accent) that re-derives the brand ramp, links, and focus ring inside the tinted scope at AA.
+**The app owns:** root and content semantics; accessible labels; header, content, and footer children; which logical boundaries show separators; which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges); responsive placement and visibility; whether the chrome dividers follow the scroll, always show, or never show (chromeDividers); default or sunken scrolling work surface (appearance); whether to reserve a vertical scrollbar gutter for opaque edge-to-edge content (--kui-pane-scrollbar-gutter); optional keyboard or programmatic focus (tabIndex) and persistent focus outline (outlined); whether the scrolling content clears overlaying chrome on its block edges (scrollClearance, also in PaneConfig, so a Workbench mainPane or panel pane, a CollapsiblePanel pane, or a NavStack view pane forwards it); whether the header is docked in its own row or laid over the scrolling content on the translucent chrome material (headerPresentation, also in PaneConfig); an optional app-chosen surface color that replaces the appearance's fill (background, a typed CssColor from @kerfjs/ui/css-values, also in PaneConfig, so a Workbench panel or mainPane, a CollapsiblePanel pane, or a NavStack view pane forwards it); an optional scoped tint (tint: { color, scheme }, also in PaneConfig): the color and the declared light or dark scheme it belongs to; Kerf does no color detection; an optional tint accent (tint.accent) that re-derives the brand ramp, links, and focus ring inside the tinted scope at AA; whether the pane fills a definite-height parent or the rest of a flex column (fill) instead of taking its content's height; a NavStack view, TabNavigator scene, or Workbench region already fills its only-child Pane.
 
 **Wiring:** `wireScrollDividers`, `wirePaneChrome` is optional.
 
@@ -91,6 +93,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 Margin: child · border: conditional · padding: child (layout role: structure). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
 - The pane is unpadded; separators are independently opt-in on logical edges and default off.
+- The pane takes its content's height by default. fill gives it height: 100% and flex: 1 1 auto, the height a NavStack view, TabNavigator scene, or Workbench region gives an only-child Pane, so it fills a definite-height parent (or the rest of a flex column) with the header and footer pinned and the content scrolling; under a parent with no definite height it keeps its content height.
 - Safe areas: the root and separators paint through unsafe areas while header, content, and footer pad the sides the pane still reaches (routed by --kui-edge-inset-\*); content block insets are scroll padding.
 - The scrolling content exposes its resolved logical inline padding to descendants as --kui-pane-content-inset-inline-start/end, including safe areas and deepInset.
 - deepInset adds --kui-space-xs to every side of the scrolling content and its block scroll padding; header/footer chrome still owns safe-area padding at its edge.

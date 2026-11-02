@@ -6,7 +6,9 @@ This guide maps a **data + interaction + device** situation to the layout to
 reach for, and states the device-class threshold at which the presentation
 changes. The layouts:
 
-- [`NavStack`](nav-stack.md) — push/pop navigation (a single pane is a one-entry stack).
+- [`NavStack`](nav-stack.md) — push/pop navigation (a single pane that may
+  navigate is a one-entry stack; a single pane that never does can be a
+  [filled `Pane`](#one-pane-on-the-whole-screen)).
 - [`SplitView`](split-view.md) — list-detail (two panes, collapsing to a stack).
 - [`Workbench`](workbench.md) — the Xcode-like collapsible rails + drawer.
 - [`TabNavigator`](tab-navigator.md) — the iOS bottom tab bar (each tab a stack).
@@ -54,6 +56,41 @@ the root, wrap it in a [`SizedRegion`](../ai/components/sized-region.md):
 Don't place a whole-screen layout inside a component that sizes to its content
 (a `List`, a `ContentItem`): it collapses there, and that placement is not a
 supported composition.
+
+### One pane on the whole screen
+
+Two compositions fill the screen with a single pane. Pick by whether the screen
+navigates:
+
+- **A filled `Pane`** (`<Pane fill>`) as the direct child of `.kui-app-root`:
+  for a screen that is one pane and stays one pane, such as a notes screen or a
+  single settings form with no subpages. Its header and footer stay pinned and
+  its content scrolls between them, exactly as in a layout's view, with no stack
+  and no wiring. It has no back button, no view transitions, and no compact
+  chrome: `compactChrome` applies only where a container presents compactly.
+- **A one-entry [`NavStack`](nav-stack.md)**: for a screen that pushes views
+  (a settings subpage on tap) or will, or that needs the stack's chrome: a
+  title bar with a back control, a bottom toolbar, overlay or clear chrome,
+  `compactChrome`, and `wireNavStack`. Starting with one entry costs nothing
+  when the second view arrives.
+
+Without `fill`, a Pane takes its content's height, so a root Pane ends after
+its content. `fill` also takes the rest of a flex column or all of a
+`SizedRegion` or grid cell. A Pane that is the only child of a `NavStack`
+view, `TabNavigator` scene, or `Workbench` region already fills it; it needs
+no `fill`.
+
+```tsx
+<div class="kui-app-root">
+  <Pane
+    fill
+    label="Notes"
+    header={<Toolbar label="Notes" leading={<ToolbarText text="Notes" size="xlarge" />} />}
+  >
+    <ContentItem>…</ContentItem>
+  </Pane>
+</div>
+```
 
 ## Safe areas
 
@@ -229,6 +266,9 @@ because the dismissal is decided at the click.
 
 - **Settings screen (simple):** one `NavStack` entry per screen; push a subpage
   on tap. No `SplitView`/`Workbench` — it is a single flow.
+- **One-screen tool (no navigation):** a notes pad or a single form with no
+  subpages is a filled `Pane` (`fill`) in `.kui-app-root`. Switch it to a
+  one-entry `NavStack` the day it needs a second view.
 - **Mail (drill-down + two-pane):** `SplitView` with `list={<ThreadList/>}` and
   `detail={<Message/>}`, `compact={device.value.compact}`,
   `detailActive={selected != null}`. On desktop both panes show with a resizable

@@ -346,8 +346,12 @@
       }
     },
     "@kerfjs/ui:pane": {
-      "groups": ["Content", "Chrome", "Surface", "Semantics"],
+      "groups": ["Content", "Layout", "Chrome", "Surface", "Semantics"],
       "props": {
+        "fill": {
+          "group": "Layout",
+          "order": 1
+        },
         "label": {
           "group": "Content",
           "order": 1

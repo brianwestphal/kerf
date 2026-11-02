@@ -1,0 +1,83 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "PaneFill",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true,
+      "element": "section",
+      "label": "Notes"
+    },
+    "zones": {
+      "header": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Notes Header"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Notes",
+                  "size": "xlarge"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "footer": [
+        {
+          "id": "00000000000000000000000004",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Notes Footer"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "3 notes",
+                  "size": "small"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "content": [
+        {
+          "id": "00000000000000000000000006",
+          "type": "@kerfjs/ui:content-item",
+          "props": {
+            "children": "Groceries for the weekend"
+          }
+        },
+        {
+          "id": "00000000000000000000000007",
+          "type": "@kerfjs/ui:content-item",
+          "props": {
+            "children": "Call about the lease renewal"
+          }
+        },
+        {
+          "id": "00000000000000000000000008",
+          "type": "@kerfjs/ui:content-item",
+          "props": {
+            "children": "Book the ferry for Saturday"
+          }
+        }
+      ]
+    }
+  }
+}

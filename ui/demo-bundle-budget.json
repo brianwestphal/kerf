@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 448200,
-  "measuredLargestJavaScriptGzip": 164548,
-  "measuredTotalJavaScriptGzip": 448182,
+  "totalJavaScriptGzip": 448500,
+  "measuredLargestJavaScriptGzip": 164547,
+  "measuredTotalJavaScriptGzip": 448479,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6563,6 +6563,22 @@
         "measuredTotalJavaScriptGzip": 448182,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 448200
+      }
+    },
+    {
+      "at": "2026-11-02T08:58:30.546Z",
+      "reason": "KF-RMEME0 adds the Pane fill prop and the Pane catalog demo's Fill example with Height settings and a reset",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164548,
+        "measuredTotalJavaScriptGzip": 448182,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 448200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 448479,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 448500
       }
     }
   ]

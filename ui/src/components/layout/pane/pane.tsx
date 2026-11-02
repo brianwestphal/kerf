@@ -28,6 +28,7 @@ export type PaneContentElement = 'div' | 'main' | 'nav' | 'section';
 
 const paneProtectedAttributes = new Set([
   'data-component',
+  'data-fill',
   'data-chrome-placement',
   'data-compact-header',
   'data-compact-footer',
@@ -66,6 +67,7 @@ const allPaneSides: readonly PaneSeparatorSide[] = [
 type PaneRootAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
+    'data-fill'?: never;
     'data-separator-block-start'?: never;
     'data-separator-block-end'?: never;
     'data-separator-inline-start'?: never;
@@ -142,6 +144,15 @@ export interface PaneProps {
   children?: KerfUiContent;
   /** Optional fixed chrome below the scrolling content. */
   footer?: KerfUiContent;
+  /**
+   * Fill the height of a parent with a definite height, such as an app root
+   * (`.kui-app-root`), a `SizedRegion`, or a grid cell, or take the rest of a
+   * flex column. The header and footer stay pinned and the content scrolls
+   * between them, as in a NavStack view or Workbench region (which fill their
+   * Pane without this prop). Defaults to false: the pane takes its content's
+   * height.
+   */
+  fill?: boolean;
   /**
    * Whether the header and footer stay pinned around the scrolling content.
    * `fixed` (default) always pins them. `auto` pins them while the pane is
@@ -321,6 +332,7 @@ export function Pane({
   header,
   children,
   footer,
+  fill = false,
   chromePlacement = 'fixed',
   chromeDividers,
   compactChrome = {},
@@ -389,6 +401,7 @@ export function Pane({
       .trim(),
     id,
     'data-component': 'pane',
+    'data-fill': fill ? 'true' : undefined,
     'data-appearance': appearance === 'sunken' ? 'sunken' : undefined,
     'data-background': background === undefined ? undefined : '',
     'data-kui-tint': tinted['data-kui-tint'],

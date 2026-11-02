@@ -2184,3 +2184,71 @@ test('builds ScrollEffect › Reveal and Fade in a Feed', async ({ page }) => {
     ),
   );
 });
+
+// KF-RMEME0: the root Pane fills its parent (`fill`), so its footer rests at
+// the bottom edge and its content scrolls between the pinned header and footer.
+test('builds Pane › Fill', async ({ page }) => {
+  await select(page, /^Pane/);
+  await turnOn(page, 'fill');
+  await choose(page, 'element', 'section');
+  await setText(page, 'label', 'Notes');
+  const toolbar = async (zone: string, label: string) => {
+    await select(page, /^Pane/);
+    await addChild(page, 'Toolbar', zone);
+    await area(page, 'Properties');
+    await setText(page, 'label', label);
+    await dragComponent(page, 'ToolbarText', () => zoneSpot(page, 'Leading'));
+  };
+  await toolbar('header', 'Notes Header');
+  await toolbar('footer', 'Notes Footer');
+  await select(page, /^ToolbarText/);
+  await setText(page, 'text', 'Notes');
+  await choose(page, 'size', 'xlarge');
+  await select(page, /^ToolbarText/, 1);
+  await setText(page, 'text', '3 notes');
+  await choose(page, 'size', 'small');
+  const notes = [
+    'Groceries for the weekend',
+    'Call about the lease renewal',
+    'Book the ferry for Saturday',
+  ];
+  await select(page, /^Pane/);
+  await addChild(page, 'ContentItem', 'content');
+  await area(page, 'Properties');
+  await setText(page, 'children', notes[0]!);
+  for (const [index, note] of notes.entries()) {
+    if (index === 0) continue;
+    await select(page, /^ContentItem/, index - 1);
+    await page.keyboard.press('ControlOrMeta+d');
+    await setText(page, 'children', note);
+  }
+  const root = canvas(page).locator('.kui-pane[data-kerf-node]').first();
+  await expect(root).toHaveAttribute('data-fill', 'true');
+  await expect(root.locator('.kui-content-item')).toHaveText(notes);
+  const leading = (text: string, size: string) => [
+    node('toolbar-text', { text, size }),
+  ];
+  expect(await exported(page)).toEqual(
+    node(
+      'pane',
+      { fill: true, element: 'section', label: 'Notes' },
+      {
+        header: [
+          node(
+            'toolbar',
+            { label: 'Notes Header' },
+            { leading: leading('Notes', 'xlarge') },
+          ),
+        ],
+        content: notes.map((children) => node('content-item', { children })),
+        footer: [
+          node(
+            'toolbar',
+            { label: 'Notes Footer' },
+            { leading: leading('3 notes', 'small') },
+          ),
+        ],
+      },
+    ),
+  );
+});

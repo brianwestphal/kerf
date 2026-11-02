@@ -679,6 +679,11 @@
           "id": "an optional tint accent (tint.accent) that re-derives the brand ramp, links, and focus ring inside the tinted scope at AA",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "whether the pane fills a definite-height parent or the rest of a flex column (fill) instead of taking its content's height; a NavStack view, TabNavigator scene, or Workbench region already fills its only-child Pane",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -715,6 +720,7 @@
           "padding": "child",
           "notes": [
             "The pane is unpadded; separators are independently opt-in on logical edges and default off.",
+            "The pane takes its content's height by default. fill gives it height: 100% and flex: 1 1 auto, the height a NavStack view, TabNavigator scene, or Workbench region gives an only-child Pane, so it fills a definite-height parent (or the rest of a flex column) with the header and footer pinned and the content scrolling; under a parent with no definite height it keeps its content height.",
             "Safe areas: the root and separators paint through unsafe areas while header, content, and footer pad the sides the pane still reaches (routed by --kui-edge-inset-*); content block insets are scroll padding.",
             "The scrolling content exposes its resolved logical inline padding to descendants as --kui-pane-content-inset-inline-start/end, including safe areas and deepInset.",
             "deepInset adds --kui-space-xs to every side of the scrolling content and its block scroll padding; header/footer chrome still owns safe-area padding at its edge.",

@@ -103,6 +103,35 @@ describe('Pane', () => {
     expect(html.match(/data-deep-inset=/g)).toHaveLength(1);
   });
 
+  it('KF-RMEME0 opts into a protected parent fill without changing the content-height default', () => {
+    expect(String(Pane({ children: <span>Body</span> }))).not.toContain(
+      'data-fill',
+    );
+    expect(
+      String(Pane({ children: <span>Body</span>, fill: false })),
+    ).not.toContain('data-fill');
+    const html = String(
+      Pane({
+        children: <span>Body</span>,
+        fill: true,
+        rootAttributes: {
+          // @ts-expect-error the Pane owns its fill state.
+          'data-fill': 'false',
+        },
+      }),
+    );
+    expect(html).toContain('data-fill="true"');
+    expect(html.match(/data-fill=/g)).toHaveLength(1);
+
+    const unprotected = String(
+      Pane({
+        children: <span>Body</span>,
+        rootAttributes: { ['data-fill' as 'data-demo']: 'true' },
+      }),
+    );
+    expect(unprotected).not.toContain('data-fill');
+  });
+
   it('opts into protected scroll clearance without changing the default', () => {
     expect(String(Pane({ children: <span>Body</span> }))).not.toContain(
       'data-scroll-clearance',

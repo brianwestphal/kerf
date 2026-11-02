@@ -1141,7 +1141,12 @@ view's bottom and sides (none on top, under the chrome, or at the bottom, over
 a bottom toolbar), a scene's top and sides — which is exactly what the region
 itself would have padded; `nav-stack.css` / `tab-navigator.css` never size the
 Pane. A nested `NavStack` / `TabNavigator` already fills its region with its own
-`height: 100%`. The region's padding
+`height: 100%`. Outside those regions a Pane takes its content's height unless
+the app opts into `Pane.fill` (KF-RMEME0: `flex: 1 1 auto; height: 100%` in
+`pane.css`, the same height the region rules give, for a one-screen app whose
+root Pane sits in `.kui-app-root`, a `SizedRegion`, a grid cell, or a flex
+column); `ui/docs/app-layouts.md` "One pane on the whole screen" says when a
+filled Pane fits and when a one-entry `NavStack` does. The region's padding
 rule tests that with `region:not(:has(> delegated:only-child))` on the region
 itself, but the reset for its children is written on the child,
 `region > :not(:is(delegated):only-child)`, which has the same specificity and

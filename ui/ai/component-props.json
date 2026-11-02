@@ -8174,6 +8174,18 @@
           "zone": "footer"
         },
         {
+          "name": "fill",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Fill the height of a parent with a definite height, such as an app root\n(`.kui-app-root`), a `SizedRegion`, or a grid cell, or take the rest of a\nflex column. The header and footer stay pinned and the content scrolls\nbetween them, as in a NavStack view or Workbench region (which fill their\nPane without this prop). Defaults to false: the pane takes its content's\nheight.",
+          "group": "Layout",
+          "order": 1
+        },
+        {
           "name": "chromePlacement",
           "type": {
             "kind": "enum",
@@ -8497,6 +8509,15 @@
                 "required": false
               },
               {
+                "name": "data-fill",
+                "type": {
+                  "kind": "never",
+                  "text": "undefined",
+                  "nullable": true
+                },
+                "required": false
+              },
+              {
                 "name": "data-separator-block-start",
                 "type": {
                   "kind": "never",
@@ -8735,7 +8756,7 @@
               "keyPrefix": "data-",
               "value": { "kind": "string", "text": "string", "nullable": true }
             },
-            "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-separator-block-start'?: undefined; 'data-separator-block-end'?: undefined; 'data-separator-inline-start'?: undefined; 'data-separator-inline-end'?: undefined; 'data-safe-area-block-start'?: undefined; 'data-safe-area-block-end'?: undefined; 'data-safe-area-inline-start'?: undefined; 'data-safe-area-inline-end'?: undefined; 'data-chrome-placement'?: undefined; 'data-chrome-dividers'?: undefined; 'data-appearance'?: undefined; 'data-background'?: undefined; 'data-kui-tint'?: undefined; 'data-kui-tint-accent'?: undefined; 'data-deep-inset'?: undefined; 'data-outlined'?: undefined; 'data-scroll-clearance'?: undefined; 'data-header-presentation'?: undefined; 'data-header-material'?: undefined; 'data-scroll-edge'?: undefined; 'data-scroll-edge-distance'?: undefined; 'data-header-overlay'?: undefined; 'data-compact-header'?: undefined; 'data-compact-footer'?: undefined; 'data-compact-header-open'?: undefined; 'data-compact-footer-open'?: undefined; }>",
+            "text": "Readonly<Record<`data-${string}`, string | undefined> & { 'data-component'?: undefined; 'data-fill'?: undefined; 'data-separator-block-start'?: undefined; 'data-separator-block-end'?: undefined; 'data-separator-inline-start'?: undefined; 'data-separator-inline-end'?: undefined; 'data-safe-area-block-start'?: undefined; 'data-safe-area-block-end'?: undefined; 'data-safe-area-inline-start'?: undefined; 'data-safe-area-inline-end'?: undefined; 'data-chrome-placement'?: undefined; 'data-chrome-dividers'?: undefined; 'data-appearance'?: undefined; 'data-background'?: undefined; 'data-kui-tint'?: undefined; 'data-kui-tint-accent'?: undefined; 'data-deep-inset'?: undefined; 'data-outlined'?: undefined; 'data-scroll-clearance'?: undefined; 'data-header-presentation'?: undefined; 'data-header-material'?: undefined; 'data-scroll-edge'?: undefined; 'data-scroll-edge-distance'?: undefined; 'data-header-overlay'?: undefined; 'data-compact-header'?: undefined; 'data-compact-footer'?: undefined; 'data-compact-header-open'?: undefined; 'data-compact-footer-open'?: undefined; }>",
             "nullable": true
           },
           "required": false,
@@ -8752,7 +8773,7 @@
       ],
       "nativeAttributes": [],
       "dataChannel": "rootAttributes",
-      "groups": ["Content", "Chrome", "Surface", "Semantics"]
+      "groups": ["Content", "Layout", "Chrome", "Surface", "Semantics"]
     },
     {
       "key": "@kerfjs/ui:popup-menu",

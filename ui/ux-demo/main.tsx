@@ -155,6 +155,7 @@ import {
   TOGGLE_COMPACT_CHROME_DEMO_ACTION,
   toggleCompactChromeDemo,
 } from './demos/nav-stack.js';
+import { applyPaneSetting, resetPaneDemo } from './demos/pane.js';
 import {
   resetProgressDemo,
   STEP_PROGRESS_DEMO_ACTION,
@@ -1272,6 +1273,10 @@ const stopActions = delegateActions(app, 'click', {
   'edit-toolbar-title': () => {
     actionLog.value = 'Edit toolbar title requested';
   },
+  'pane-reset': () => {
+    resetPaneDemo();
+    actionLog.value = 'Pane reset';
+  },
   'scroll-effect-reset': () => {
     resetScrollEffectDemo();
     actionLog.value = 'Scroll effect reset';
@@ -1665,6 +1670,13 @@ const stopSelect = delegate(app, 'change', 'kui-select', (_event, element) => {
   }
   if (
     typeof value === 'string' &&
+    applyPaneSetting(element.getAttribute('name'), value)
+  ) {
+    actionLog.value = `Pane height: ${value}`;
+    return;
+  }
+  if (
+    typeof value === 'string' &&
     applyScrollEffectSetting(element.getAttribute('name'), value)
   ) {
     actionLog.value = `Scroll effect ${element.getAttribute('name')!.slice('scroll-effect-'.length)}: ${value}`;
@@ -1769,6 +1781,11 @@ const routeWires: Partial<Record<string, RouteWire>> = {
     wire: () => () => {},
   },
   slider: { reset: resetSliderDemo, target: 'canvas', wire: () => () => {} },
+  pane: {
+    reset: resetPaneDemo,
+    target: 'canvas',
+    wire: () => () => {},
+  },
   'scroll-effect': {
     reset: resetScrollEffectDemo,
     target: 'canvas',

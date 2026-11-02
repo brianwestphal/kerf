@@ -36,6 +36,29 @@ size) tall, and below that lets the whole pane scroll as one column, header,
 content, and footer together, so the content keeps its natural height. The
 default `fixed` always pins them.
 
+### Filling the parent's height
+
+A Pane takes its content's height by default, so its footer sits right after
+short content. Set `fill` to make it take the full height of a parent with a
+definite height (an app's `.kui-app-root`, a `SizedRegion`, a grid cell) or the
+rest of a flex column. The header and footer then stay pinned at the parent's
+edges and the content scrolls between them. Under a parent with no definite
+height, `fill` falls back to the content height.
+
+```tsx
+<div class="kui-app-root">
+  <Pane fill header={<NotesToolbar />} footer={<NotesStatus />}>
+    <ContentItem>Groceries for the weekend</ContentItem>
+  </Pane>
+</div>
+```
+
+A Pane that is the only child of a `NavStack` view, `TabNavigator` scene, or
+`Workbench` region already fills it, so it needs no `fill`. For a whole screen
+that is one pane, use a filled Pane when it never navigates and a one-entry
+`NavStack` when it pushes views or needs the stack's chrome; see
+[Choosing an app layout](app-layouts.md#one-pane-on-the-whole-screen).
+
 ### Deep content inset
 
 Set `deepInset` on a `Pane` to add 8px of padding on every side of its scrolling

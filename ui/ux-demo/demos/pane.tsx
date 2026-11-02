@@ -1,14 +1,20 @@
+import '@kerfjs/ui/select/register';
+
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { fillColor } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
+import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
+import { Select } from '@kerfjs/ui/select';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { Workbench } from '@kerfjs/ui/workbench';
+import { signal } from 'kerfjs';
 import { Bell, Calendar, Mail, ShieldCheck } from 'lucide';
 
 import { EdgeToEdgeTable } from '../components/edge-to-edge-table.js';
@@ -41,7 +47,53 @@ const inboxMessages = Array.from({ length: 18 }, (_, index) => {
   return { id: `inbox-${String(index + 1)}`, ...kind };
 });
 
+/** The Fill example's height, chosen in the Settings pane. */
+export type PaneFillDemoHeight = 'content' | 'fill';
+
+const PANE_FILL_INITIAL: PaneFillDemoHeight = 'fill';
+
+export const paneFillPlayground = signal<PaneFillDemoHeight>(PANE_FILL_INITIAL);
+
+/** Return the Fill example to its documented state. */
+export function resetPaneDemo(): void {
+  paneFillPlayground.value = PANE_FILL_INITIAL;
+}
+
+const PANE_HEIGHTS: { value: PaneFillDemoHeight; label: string }[] = [
+  { value: 'fill', label: 'Fill the Frame' },
+  { value: 'content', label: 'Content Height' },
+];
+
+/** Apply the Pane settings Select change; false when it is not one. */
+export function applyPaneSetting(name: string | null, value: string): boolean {
+  if (name !== 'pane-fill-height') return false;
+  const height = PANE_HEIGHTS.find((choice) => choice.value === value);
+  if (!height) return false;
+  paneFillPlayground.value = height.value;
+  return true;
+}
+
+/** The Pane entry's catalog settings: the Fill example's height and a reset. */
+export function PaneSettings() {
+  return (
+    <>
+      <ListInsetControl sides="trl">
+        <Select
+          name="pane-fill-height"
+          label="Height"
+          value={paneFillPlayground.value}
+          choices={PANE_HEIGHTS}
+        />
+      </ListInsetControl>
+      <ListInsetControl sides="trbl">
+        <Button action="pane-reset">Reset</Button>
+      </ListInsetControl>
+    </>
+  );
+}
+
 export function PaneDemo() {
+  const fill = paneFillPlayground.value === 'fill';
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'pane' }}>
       <CatalogExample
@@ -81,6 +133,34 @@ export function PaneDemo() {
         >
           <ContentItem>First content group</ContentItem>
           <ContentItem frame="framed">Framed content group</ContentItem>
+        </Pane>
+      </CatalogExample>
+      <CatalogExample
+        label="Fill"
+        note="fill takes the height of a parent with a definite height, such as the app root, so the footer rests at the frame's bottom edge and the content scrolls between the pinned header and footer. Choose Content Height in the Settings pane to see the default, which ends after its content."
+        viewport={{ width: 'medium', height: 'tall', frame: 'solid' }}
+      >
+        <Pane
+          fill={fill}
+          element="section"
+          label="Notes"
+          rootAttributes={{ 'data-fill-demo': 'pane' }}
+          header={
+            <Toolbar
+              label="Notes Header"
+              leading={<ToolbarText text="Notes" size="xlarge" />}
+            />
+          }
+          footer={
+            <Toolbar
+              label="Notes Footer"
+              leading={<ToolbarText text="3 notes" size="small" />}
+            />
+          }
+        >
+          <ContentItem>Groceries for the weekend</ContentItem>
+          <ContentItem>Call about the lease renewal</ContentItem>
+          <ContentItem>Book the ferry for Saturday</ContentItem>
         </Pane>
       </CatalogExample>
       <CatalogExample

@@ -438,7 +438,18 @@ describe('ai/component-props.json (generated from the built package)', async () 
     ).toEqual(['header', 'content', 'footer']);
     expect(prop(pane, 'background').type.kind).toBe('css-value');
     // Curated inspector grouping, with plumbing hidden by default.
-    expect(pane.groups).toEqual(['Content', 'Chrome', 'Surface', 'Semantics']);
+    expect(pane.groups).toEqual([
+      'Content',
+      'Layout',
+      'Chrome',
+      'Surface',
+      'Semantics',
+    ]);
+    // KF-RMEME0: `fill` is a plain boolean the inspector shows as a switch.
+    expect(prop(pane, 'fill')).toMatchObject({
+      group: 'Layout',
+      type: { kind: 'boolean' },
+    });
     expect(prop(pane, 'chromePlacement')).toMatchObject({
       group: 'Chrome',
       control: 'segmented',

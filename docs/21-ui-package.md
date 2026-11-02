@@ -391,6 +391,14 @@ slot without mixing authoring rules into the per-entry component catalog.
   restoration after reorder or automatic activation replaces the strip, and a
   disposer. The app applies changes and owns order,
   selection, panels, routing, close policy, and persistence.
+- **Pane height.** A `Pane` takes its content's height by default. The
+  opt-in `fill` prop (KF-RMEME0: give a root Pane its parent's height) makes it
+  take the full height of a definite-height parent (`.kui-app-root`, a
+  `SizedRegion`, a grid cell) or the rest of a flex column, so its header and
+  footer pin and its content scrolls, the same height a `NavStack` view,
+  `TabNavigator` scene, or `Workbench` region already gives an only-child Pane.
+  A one-screen app that never navigates uses a filled Pane; one that pushes
+  views uses a one-entry `NavStack` ([`23-app-layouts.md`](23-app-layouts.md)).
 - Dividers between pinned chrome and scrolling content are scroll state:
   `Toolbar` draws none by default, and `wireScrollDividers`
   (`@kerfjs/ui/wire-scroll-dividers`) reports each scroller's hidden edges so a

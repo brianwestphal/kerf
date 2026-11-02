@@ -2082,6 +2082,7 @@ type PaneElement = 'article' | 'aside' | 'div' | 'main' | 'section';
 type PaneContentElement = 'div' | 'main' | 'nav' | 'section';
 type PaneRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
+    'data-fill'?: never;
     'data-separator-block-start'?: never;
     'data-separator-block-end'?: never;
     'data-separator-inline-start'?: never;
@@ -2150,6 +2151,15 @@ interface PaneProps {
     children?: KerfUiContent;
     /** Optional fixed chrome below the scrolling content. */
     footer?: KerfUiContent;
+    /**
+     * Fill the height of a parent with a definite height, such as an app root
+     * (`.kui-app-root`), a `SizedRegion`, or a grid cell, or take the rest of a
+     * flex column. The header and footer stay pinned and the content scrolls
+     * between them, as in a NavStack view or Workbench region (which fill their
+     * Pane without this prop). Defaults to false: the pane takes its content's
+     * height.
+     */
+    fill?: boolean;
     /**
      * Whether the header and footer stay pinned around the scrolling content.
      * `fixed` (default) always pins them. `auto` pins them while the pane is
@@ -2290,7 +2300,7 @@ type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separator
  * each logical edge, so the same component works as a sidebar, main area,
  * inspector, or dialog column.
  */
-declare function Pane({ header, children, footer, chromePlacement, chromeDividers, compactChrome, compactChromeOpen, headerPresentation, scrollEdge, scrollEdgeDistance, appearance, background, tint, deepInset, scrollClearance, tabIndex, outlined, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
+declare function Pane({ header, children, footer, fill, chromePlacement, chromeDividers, compactChrome, compactChromeOpen, headerPresentation, scrollEdge, scrollEdgeDistance, appearance, background, tint, deepInset, scrollClearance, tabIndex, outlined, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
 
 export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlacement, type PaneCompactChrome, type PaneCompactChromePolicy, type PaneConfig, type PaneContentElement, type PaneElement, type PaneHeaderPresentation, type PaneProps, type PaneSeparatorSide, ScrollClearance, type ScrollEdge, SurfaceTint };
 ```

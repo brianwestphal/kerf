@@ -500,6 +500,15 @@
   }
 }
 
+/* `fill`: the pane takes the full height of a definite-height parent (an app
+   root, a SizedRegion, a grid cell) or the rest of a flex column, the height
+   the layouts below give a Pane they hold, so the grid rows pin its header and
+   footer and its content scrolls between them. */
+.kui-pane[data-fill="true"] {
+  flex: 1 1 auto;
+  height: 100%;
+}
+
 /* As the only child of a Workbench region (its main area or a panel's
    content, which the Workbench marks with `data-workbench-main` /
    `data-workbench-panel-content`), a Pane fills the region, so a

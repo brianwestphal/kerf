@@ -44,7 +44,7 @@ import { LoadingSpinnerDemo } from './loading-spinner.js';
 import { LucideIconDemo } from './lucide-icon.js';
 import { MessageComposerDemo } from './message-composer.js';
 import { NavStackDemo } from './nav-stack.js';
-import { PaneDemo } from './pane.js';
+import { PaneDemo, PaneSettings } from './pane.js';
 import { PopupMenuDemo } from './popup-menu.js';
 import { ProgressBarDemo } from './progress-bar.js';
 import { ProgressRingDemo } from './progress-ring.js';
@@ -179,5 +179,6 @@ export const demoSettings: Partial<
   >
 > = {
   badge: BadgeSettings,
+  pane: PaneSettings,
   'scroll-effect': ScrollEffectSettings,
 };
