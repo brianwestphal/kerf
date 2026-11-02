@@ -247,7 +247,9 @@ export function typeAt(
   let current = type;
   let at: ViewValue | undefined = value;
   for (const step of path) {
-    const resolved = shape(current, definitions);
+    // A union-typed object (a Workbench panel) holds one member's fields;
+    // its value picks the member a field step follows (KF-EZN7H2).
+    const resolved = shape(memberFor(current, definitions, at), definitions);
     if (typeof step === 'number') {
       if (resolved?.kind !== 'array') return undefined;
       at = Array.isArray(at) ? at[step] : undefined;

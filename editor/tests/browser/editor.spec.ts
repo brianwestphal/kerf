@@ -1358,6 +1358,39 @@ test('gives a Workbench a static left rail', async ({ page }, info) => {
   });
 });
 
+// KF-EZN7H2: a nested object in a panel (a union of static and navigation
+// panels) opens its own form, and its fields write inside the panel.
+test('configures the toolbar of a Workbench’s static bottom drawer', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await workbenchRoot(page);
+  await page
+    .locator('[data-editor-prop="bottomDrawer"][data-editor-kind="choice"]')
+    .click();
+  await page.getByRole('option', { name: 'Static panel…' }).click();
+  await page.getByRole('button', { name: 'Configure bottom drawer' }).click();
+  await page.getByRole('button', { name: 'Configure toolbar' }).click();
+  const label = page
+    .locator(
+      `[data-editor-field='{"prop":"bottomDrawer","path":["toolbar","label"]}']`,
+    )
+    .getByRole('textbox');
+  await label.fill('Console tools');
+  await label.press('Enter');
+  const root = (await exported(page)) as {
+    props: { bottomDrawer: unknown };
+  };
+  expect(root.props.bottomDrawer).toMatchObject({
+    toolbar: { label: 'Console tools' },
+  });
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-ezn7h2-bottom-drawer-toolbar-1440.png'),
+    animations: 'disabled',
+  });
+});
+
 // KF-PD6QC5: a rail's content and a toolbar's title take nodes.
 test('composes a Workbench’s left rail and toolbar title from nodes', async ({
   page,

@@ -12,6 +12,7 @@ import {
   memberFor,
   memberLabels,
   objectFields,
+  typeAt,
 } from '../../../src/editor/model/fields.js';
 import { createEditor } from './kerf-catalog.js';
 
@@ -45,6 +46,22 @@ describe('object members', () => {
     expect(
       memberFor(panel, definitions, { navStack: {}, toolbar: {} }),
     ).toMatchObject({ ref: 'WorkbenchNavigationPanel' });
+  });
+
+  it('follows a field of the member a panel holds (KF-EZN7H2)', () => {
+    const staticPanel = { content: 'x' };
+    expect(typeAt(panel, definitions, ['toolbar'], staticPanel)).toMatchObject({
+      ref: 'PanelToolbar',
+    });
+    expect(
+      typeAt(panel, definitions, ['toolbar', 'label'], staticPanel),
+    ).toMatchObject({ kind: 'string' });
+    // A navigation panel's own field resolves through its member too.
+    expect(
+      typeAt(panel, definitions, ['navStack'], { navStack: {} }),
+    ).toMatchObject({ kind: 'object' });
+    // A field neither member has stays unresolved.
+    expect(typeAt(panel, definitions, ['nope'], staticPanel)).toBeUndefined();
   });
 
   it('leaves forbidden fields out of a form', () => {
@@ -115,6 +132,30 @@ describe('a Workbench panel in the Inspector (KF-907BXY)', () => {
         `[data-editor-field='{"prop":"leftRail","path":["navStack"]}']`,
       ),
     ).toBeNull();
+    // KF-EZN7H2: a nested object row in the panel's form opens its form,
+    // and its fields write inside the panel.
+    field(
+      root,
+      `[data-editor-open='{"prop":"leftRail","path":["toolbar"]}']`,
+    ).click();
+    type(
+      field(
+        root,
+        `[data-editor-field='{"prop":"leftRail","path":["toolbar","label"]}']`,
+      ),
+      'Folder tools',
+    );
+    expect(rail()).toMatchObject({
+      label: 'Folders',
+      toolbar: { label: 'Folder tools' },
+    });
+    // Its content zones lead to Children › Add a child, at that zone.
+    field(root, '[data-editor-content-add="leftRail.toolbar.title"]').click();
+    expect(field(root, '[data-editor-add="zone"]').getAttribute('value')).toBe(
+      'leftRail.toolbar.title',
+    );
+    // That leaves the field editor; the panel's form reopens as before.
+    field(root, `[data-editor-open='{"prop":"leftRail","path":[]}']`).click();
     field(root, '#editor-inspector-stack [data-nav-back]').click();
 
     // Switching keeps the label both kinds share and drops the content.
