@@ -381,11 +381,12 @@ describe('the action log', () => {
     expect(listed()).toEqual(['threw', 'missing']);
     expect(surface.textContent).toContain('orderRow: no such order');
     expect(button().getAttribute('aria-label')).toBe('Action log');
-    // While open, a new action is not counted. (The open list follows the
-    // log live in a browser; here kerfjs/overlay is a second kerf copy
-    // whose mount does not track this one's signals.)
+    // While open, a new action is not counted, and the open list follows
+    // the log live (KF-T8SEX6: one kerf instance, so the surface's mount
+    // tracks the editor's signals), newest first.
     fire({ action: 'refresh', node: 'Button', event: 'click', outcome: 'ran' });
     expect(button().getAttribute('aria-label')).toBe('Action log');
+    expect(listed()).toEqual(['ran', 'threw', 'missing']);
     // A second press while open does nothing.
     button().click();
     expect(
