@@ -280,10 +280,14 @@ While a node inside a TabNavigator tab's content is selected, the canvas shows
 that tab, whatever tab the document opens on, so the ring and the tab's drop
 targets apply to what is being edited (KF-YZPBFH: show the selected node's
 tab). This is the canvas's own; the document keeps its
-`active`. A node selected in a part of the canvas that stays hidden, such as a
-NavStack view below the top, gets no selection ring: the view sits under the
-top one, and a ring there would mark what the top view shows (KF-ZC9EXM: ring
-over a hidden node).
+`active`. A NavStack shows its top view until the person chooses another
+under **Shown on the canvas** in the stack's Flow area (KF-RMZ2NP: Show this
+view); the canvas then previews the stack cut back to that view, again without
+changing the document, and choosing the top view returns to it. A node
+selected in a part of the canvas that stays hidden, such as a NavStack view
+below the shown one, gets no selection ring: the view sits under the shown one,
+and a ring there would mark what that view shows (KF-ZC9EXM: ring over a
+hidden node).
 
 The props catalog generator (KF-24G2KV: remaining props) treats a union whose
 members are all content, text, or numbers as one content slot, including

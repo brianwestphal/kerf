@@ -106,3 +106,108 @@ describe('the scene the canvas shows', () => {
     expect(scene(ids.first).getAttribute('data-active')).toBe('true');
   });
 });
+
+// KF-RMZ2NP: Show this view cuts a NavStack back to a lower view on the
+// canvas only.
+describe('the NavStack view the canvas shows', () => {
+  const STACK = '01JB8Z1M6Q8E1X9V4S7K2R3T7G';
+  const stackDocument = () =>
+    ({
+      schema: 'kerf-ui-document/v1',
+      name: 'Stack',
+      catalogs: ['@kerfjs/ui'],
+      root: {
+        id: STACK,
+        type: '@kerfjs/ui:nav-stack',
+        props: {
+          id: 'stack',
+          label: 'Stack',
+          views: [
+            { key: 'library', content: { $slot: 'libraryContent' } },
+            { key: 'project', content: { $slot: 'projectContent' } },
+          ],
+        },
+        zones: {
+          'views.1.toolbar.trailing': [spacer('01JB8Z1M6Q8E1X9V4S7K2R3T7H')],
+        },
+      },
+    }) as unknown as ViewDocument;
+  const views = (document: ViewDocument) =>
+    (document.root.props!.views as { key: string }[]).map(({ key }) => key);
+
+  it('cuts the stack back to the chosen view and drops later zones', () => {
+    const document = stackDocument();
+    const shown = shownScenes(document, undefined, new Map([[STACK, 0]]));
+    expect(views(shown)).toEqual(['library']);
+    expect(shown.root.zones).toEqual({});
+    expect(views(document)).toEqual(['library', 'project']);
+  });
+
+  it('ignores the top view, an index out of range, and a non-stack', () => {
+    const document = stackDocument();
+    for (const index of [1, 2, -1, 0.5])
+      expect(shownScenes(document, undefined, new Map([[STACK, index]]))).toBe(
+        document,
+      );
+    expect(shownScenes(document, undefined, new Map([['nope', 0]]))).toBe(
+      document,
+    );
+  });
+
+  it('cuts a stack with no zones', () => {
+    const document = stackDocument();
+    delete (document.root as { zones?: unknown }).zones;
+    expect(
+      views(shownScenes(document, undefined, new Map([[STACK, 0]]))),
+    ).toEqual(['library']);
+  });
+
+  it('offers no views for a stack whose views are a param', () => {
+    const root = globalThis.document.createElement('div');
+    globalThis.document.body.append(root);
+    const editor = createEditor();
+    mount(root, editor.render);
+    cleanup = editor.wire(root);
+    const document = stackDocument() as unknown as {
+      params: Record<string, unknown>;
+      root: { props: Record<string, unknown> };
+    };
+    document.params = {
+      stackViews: {
+        type: { kind: 'ref', ref: 'NavStackView[]' },
+      },
+    };
+    document.root.props.views = { $param: 'stackViews' };
+    editor.document.value = document as unknown as ViewDocument;
+    editor.selection.value = { kind: 'node', id: STACK };
+    expect(root.querySelector('[data-editor-shown-view]')).toBeNull();
+  });
+
+  it('shows a chosen view from the Flow area, and the top view again', () => {
+    const root = globalThis.document.createElement('div');
+    globalThis.document.body.append(root);
+    const editor = createEditor();
+    mount(root, editor.render);
+    cleanup = editor.wire(root);
+    editor.document.value = stackDocument();
+    editor.selection.value = { kind: 'node', id: STACK };
+    const row = (index: number) =>
+      root.querySelector<HTMLElement>(
+        `[data-editor-show-view='${JSON.stringify({ id: STACK, index })}']`,
+      )!;
+    const shownView = () =>
+      root.querySelector<HTMLElement>('[data-editor-shown-view]')!.dataset
+        .editorShownView;
+    const canvasViews = () =>
+      root.querySelectorAll('[data-editor-canvas] .kui-nav-stack__view').length;
+    expect(shownView()).toBe('1');
+    expect(canvasViews()).toBe(2);
+    row(0).click();
+    expect(shownView()).toBe('0');
+    expect(canvasViews()).toBe(1);
+    expect(views(editor.document.value)).toEqual(['library', 'project']);
+    row(1).click();
+    expect(shownView()).toBe('1');
+    expect(canvasViews()).toBe(2);
+  });
+});

@@ -1738,3 +1738,49 @@ test('lists a hint for a TabNavigator nested in a Pane', async ({ page }) => {
     path: test.info().outputPath('kf-kq72tw-hint-1440.png'),
   });
 });
+
+// KF-RMZ2NP: Show this view, in the Flow area, shows a NavStack's lower view
+// on the canvas so its nodes can be seen and ringed.
+test('shows a NavStack’s lower view from the Flow area', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await newDocument(page);
+  await dragComponent(page, 'NavStack', () => emptySpot(page));
+  await select(page, /^NavStack/);
+  await embedIn(page, 'SizedRegion');
+  await select(page, /^NavStack/);
+  await addChild(page, 'ContentItem', 'views › 1 › content');
+  const ring = page.locator('.kui-editor__selection');
+  // Below the top view, it is out of sight.
+  await expect(ring).toBeHidden();
+  await select(page, /^NavStack/);
+  await area(page, 'Flow');
+  const rows = page.locator('[data-editor-show-view]');
+  await expect(rows).toHaveCount(3);
+  await expect(rows.nth(2)).toContainText('Top view');
+  await rows.nth(0).click();
+  await page.screenshot({
+    path: test.info().outputPath('kf-rmz2np-flow-section-1440.png'),
+  });
+  const item = page.locator(
+    '[data-editor-canvas] .kui-content-item[data-kerf-node]',
+  );
+  await expect(item).toBeVisible();
+  await select(page, /^ContentItem/);
+  await expect(ring).toBeVisible();
+  await page.screenshot({
+    path: test.info().outputPath('kf-rmz2np-shown-view-1440.png'),
+  });
+  // The top view again: the stack shows its last view, the item is hidden.
+  await select(page, /^NavStack/);
+  await area(page, 'Flow');
+  await rows.nth(2).click();
+  await expect(item).toBeHidden();
+  const document = (await exported(page)) as {
+    zones: {
+      content: { zones: { children: { props: { views: unknown[] } }[] } }[];
+    };
+  };
+  expect(
+    document.zones.content[0]!.zones.children[0]!.props.views,
+  ).toHaveLength(3);
+});

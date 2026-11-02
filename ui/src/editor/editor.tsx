@@ -320,6 +320,7 @@ const ICON_CHOOSE_ACTION = 'editor-choose-icon';
 const ICON_REMOVE_ACTION = 'editor-remove-icon';
 const ICON_CLEAR_ACTION = 'editor-clear-icon-search';
 const ICON_DIALOG = 'editor-icon-dialog';
+const SHOW_VIEW_ACTION = 'editor-show-view';
 const EMBED_ACTION = 'editor-embed';
 const EMBED_OTHER_ACTION = 'editor-embed-other';
 const EMBED_CLEAR_ACTION = 'editor-embed-clear';
@@ -485,10 +486,12 @@ function canvasRenderer(catalog: EditorCatalog) {
     problems: readonly Problem[],
     /** The selected node, which shows its empty zones too (KF-7BB55F). */
     selected?: string,
+    /** KF-RMZ2NP: the lower view a NavStack shows, by node id. */
+    views?: ReadonlyMap<string, number>,
   ): SafeHtml => {
     // The selected node's tab shows, whatever tab the document opens on.
     const { document, slots: placed } = previewSlots(
-      shownScenes(source, selected),
+      shownScenes(source, selected, views),
       (node) => emptyZonesOf(node, node.id === selected),
     );
     const titles = new Map(
@@ -810,6 +813,11 @@ export function createEditor(options: EditorOptions) {
   /** The icon picker's search, and its field's revision (to clear it). */
   const iconQuery = signal('');
   const iconQueryRevision = signal(0);
+  /**
+   * The lower view each NavStack shows on the canvas, by node id
+   * (KF-RMZ2NP: Show this view); absent, a stack shows its top view.
+   */
+  const canvasViews = signal<ReadonlyMap<string, number>>(new Map());
   /** The node the Embed in dialog embeds, and its filter (KF-6MGYSG). */
   const embedTarget = signal<string | null>(null);
   const embedQuery = signal('');
@@ -2148,6 +2156,44 @@ export function createEditor(options: EditorOptions) {
   };
 
   /**
+   * Show this view (KF-RMZ2NP): a NavStack's views, the one the canvas shows
+   * marked; choosing another previews the stack cut back to it. The canvas
+   * shows the top view until one is chosen; the document never changes.
+   */
+  const viewsSection = (node: ViewNode) => {
+    const views = node.props?.views;
+    if (node.type !== '@kerfjs/ui:nav-stack' || !Array.isArray(views))
+      return undefined;
+    const top = views.length - 1;
+    // A choice past the top (views removed since) shows the top.
+    const current = Math.min(canvasViews.value.get(node.id) ?? top, top);
+    return (
+      <List rootAttributes={{ 'data-editor-shown-view': String(current) }}>
+        <ListHeader label="Shown on the canvas" size="xs" />
+        {views.map((view, index) => {
+          // Each view's key is a required string, its name in the stack.
+          const { key } = view as { key: string };
+          return (
+            <ListItem
+              label={key}
+              description={index === top ? 'Top view' : undefined}
+              action={SHOW_VIEW_ACTION}
+              itemId={`view-${index}`}
+              selected={index === current}
+              rootAttributes={{
+                'data-editor-show-view': JSON.stringify({
+                  id: node.id,
+                  index,
+                }),
+              }}
+            />
+          );
+        })}
+      </List>
+    );
+  };
+
+  /**
    * Embed in (KF-6MGYSG), in the Flow area beside the other commands that
    * restructure the node: its first containers, each offered only where it
    * can hold the node, then Other… for any container.
@@ -2845,6 +2891,7 @@ export function createEditor(options: EditorOptions) {
           fieldErrors.value['#item'],
           otherwiseChoices,
         )}
+        {viewsSection(node)}
         {embedSection(node.id)}
         {moveSection(node)}
       </List>
@@ -2942,6 +2989,7 @@ export function createEditor(options: EditorOptions) {
         doc.value,
         currentProblems.value,
         current?.kind === 'node' ? current.id : undefined,
+        canvasViews.value,
       ),
     );
   });
@@ -4287,6 +4335,18 @@ export function createEditor(options: EditorOptions) {
           if (dialog.open) closeDialog(dialog);
           embedTarget.value = null;
           embed(id, target.dataset.editorEmbed!);
+        },
+        [SHOW_VIEW_ACTION]: (_event, target) => {
+          const { id, index } = JSON.parse(target.dataset.editorShowView!) as {
+            id: string;
+            index: number;
+          };
+          const next = new Map(canvasViews.value);
+          // The top view is the default, so choosing it clears the choice.
+          const views = findNode(doc.value, id)!.node.props!.views as unknown[];
+          if (index === views.length - 1) next.delete(id);
+          else next.set(id, index);
+          canvasViews.value = next;
         },
         [EMBED_OTHER_ACTION]: () => {
           // Other… shows only with a node selected.

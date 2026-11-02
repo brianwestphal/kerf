@@ -19,6 +19,11 @@ const TAB_CONTENT = /^tabs\.(\d+)\.content$/;
 export function shownScenes(
   document: ViewDocument,
   selected: string | undefined,
+  /**
+   * KF-RMZ2NP: the view each NavStack shows on the canvas, by node id, when
+   * it is not the top one. The preview cuts the stack back to that view.
+   */
+  views: ReadonlyMap<string, number> = new Map(),
 ): ViewDocument {
   const visit =
     selected === undefined ? undefined : findNode(document, selected);
@@ -33,5 +38,42 @@ export function shownScenes(
     if (typeof id === 'string' && node.props?.active !== id)
       shown = setProp(shown, node.id, 'active', id);
   }
+  for (const [id, index] of views) shown = cutStack(shown, id, index);
   return shown;
+}
+
+const NAV_STACK = '@kerfjs/ui:nav-stack';
+
+/** A view's field zones (`views.2.content`), capturing the view's index. */
+const VIEW_ZONE = /^views\.(\d+)\./;
+
+/**
+ * `document` with NavStack `id` cut back to view `index`: the later views and
+ * their zones leave the preview, so `index` is the stack's top. Unchanged
+ * when `id` is no NavStack or `index` is not one of its lower views.
+ */
+function cutStack(
+  document: ViewDocument,
+  id: string,
+  index: number,
+): ViewDocument {
+  const node = findNode(document, id)?.node;
+  const views = node?.props?.views;
+  if (
+    node?.type !== NAV_STACK ||
+    !Array.isArray(views) ||
+    !Number.isInteger(index) ||
+    index < 0 ||
+    index >= views.length - 1
+  )
+    return document;
+  const next = setProp(document, id, 'views', views.slice(0, index + 1));
+  const cut = findNode(next, id)!.node as { zones?: Record<string, unknown> };
+  if (cut.zones)
+    cut.zones = Object.fromEntries(
+      Object.entries(cut.zones).filter(
+        ([key]) => Number(VIEW_ZONE.exec(key)?.[1] ?? -1) <= index,
+      ),
+    );
+  return next;
 }
