@@ -55,6 +55,11 @@ import { remify, uiColor } from '@kerfjs/ui/css-values';
   surface color.
 - `blur` (`{ radius?, blurredSrc?, dim? }`) blurs the image progressively as it
   scrolls away (see [Progressive blur](#progressive-blur)).
+- `deferOffscreen` skips painting the image block while it is off screen
+  (`content-visibility: auto`), for long feeds of media cards. It keeps the
+  block's reserved size. It is opt-in because a large scroll jump (scrollbar
+  drag, End or Home) paints newly visible images blank for a frame; see
+  [layout](layout.md).
 - `scrim`: `bottom` darkens toward the block end where an overlay title sits,
   `full` dims the image evenly. A scrim is dark in both color schemes, so the
   overlay takes the dark scheme over it: default-tone titles and controls read

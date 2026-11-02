@@ -486,6 +486,14 @@ timeline in the containing Pane's shared vertical scroller. Set
 image hero while preserving the card and its reserved media height. Enable it
 only when many media cards share a scrollport; it has no effect in browsers
 without `content-visibility`. The card body and controls remain in the layout.
+The gain is fewer compositor layers (453 to 42 in a measured 200-card feed),
+not faster frames, and it costs main-thread layout while scrolling. Its known
+trade-off: a scroll jump larger than the browser's content-visibility margin
+(a scrollbar drag, End or Home, a programmatic scroll restore) paints the newly
+visible heroes blank for a frame, and an End-key smooth scroll can show them
+blank for most of its frames, before they paint. Flings within the margin, feed
+height, scroll anchoring, fragment links, find in page, and print are
+unaffected. That is why it stays opt-in.
 `wireContentItems`
 also listens for image load/error from one containing root: a broken lead image
 hides its media block and removes its tint, leaving an ordinary ContentItem;

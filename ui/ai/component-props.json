@@ -164,7 +164,7 @@
             "nullable": true
           },
           "required": false,
-          "description": "Skip painting the image hero while it is off screen in a long feed."
+          "description": "Skip painting the image hero while it is off screen in a long feed.\nFewer compositor layers, but a large scroll jump (scrollbar drag,\nEnd/Home) paints newly visible heroes blank for a frame."
         },
         {
           "name": "underChrome",
@@ -24494,7 +24494,7 @@
             "nullable": true
           },
           "required": false,
-          "description": "Skip offscreen media painting in long feeds while retaining card geometry."
+          "description": "Skip offscreen media painting in long feeds while retaining card geometry.\nA large scroll jump paints newly visible heroes blank for a frame."
         },
         {
           "name": "fadeTo",

@@ -101,7 +101,9 @@ neither the layer count nor frame times compared with `content-visibility:
 auto`, and it added a one-to-two-frame pop after a scroll jump. For dense
 image feeds, `BackdropImage`'s `deferOffscreen` (and
 `ContentItem.media.deferOffscreen`) applies `content-visibility: auto` to the
-image hero instead. `ScrollEffect` offers no off-screen skipping of its own.
+image hero instead (opt-in, because a large scroll jump paints the newly
+visible heroes blank for a frame; see [layout](layout.md)). `ScrollEffect`
+offers no off-screen skipping of its own.
 
 ## Fallbacks
 

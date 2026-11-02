@@ -139,7 +139,9 @@ text at WCAG AA. Add `accent` to re-derive the brand ramp (loud fills, links, fo
 
 For many image-led `ContentItem` cards in one feed, opt into
 `media.deferOffscreen` to skip offscreen hero painting while retaining the
-card's reserved height and the shared scroll owner. `BackdropImage` exposes
+card's reserved height and the shared scroll owner. It trades fewer
+compositor layers for a blank-hero frame after large scroll jumps (scrollbar
+drag, End/Home), so keep it off for short feeds. `BackdropImage` exposes
 the same `deferOffscreen` option directly; leave it off for a single page hero.
 
 `SummaryRow` is an option in a labeled listbox by default. For a diagnostic

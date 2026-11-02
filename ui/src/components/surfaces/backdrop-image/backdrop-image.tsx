@@ -122,7 +122,11 @@ interface BackdropImageCommonProps {
    * statically blurred copy. Static (unblurred) wherever parallax is.
    */
   blur?: BackdropImageBlur;
-  /** Skip painting the image hero while it is off screen in a long feed. */
+  /**
+   * Skip painting the image hero while it is off screen in a long feed.
+   * Fewer compositor layers, but a large scroll jump (scrollbar drag,
+   * End/Home) paints newly visible heroes blank for a frame.
+   */
   deferOffscreen?: boolean;
   /**
    * Run the image up beneath the scroller's block-start inset: an overlay or
