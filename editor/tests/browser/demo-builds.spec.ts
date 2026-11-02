@@ -2482,10 +2482,10 @@ test('builds SplitView › Resizable, Collapsible List', async ({ page }) => {
   await addChild(page, 'Toolbar', 'header');
   await area(page, 'Properties');
   await setText(page, 'label', 'Threads');
-  // In this narrow column a canvas drop on Leading lands in Center
-  // (KF-K3EKKF), so the title goes in through Add a child.
-  await addChild(page, 'ToolbarText', 'leading');
-  await area(page, 'Properties');
+  // Even in this narrow column each empty zone is its own drop target
+  // (KF-K3EKKF).
+  await dragComponent(page, 'ToolbarText', () => zoneSpot(page, 'Leading'));
+  await select(page, /^ToolbarText/);
   await setText(page, 'text', 'Threads');
   await select(page, /^Toolbar(?!Text|Button|ControlGroup)/);
   await addChild(page, 'ToolbarControlGroup', 'trailing');

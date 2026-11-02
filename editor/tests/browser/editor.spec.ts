@@ -5,13 +5,16 @@ import { expect, type Page, test } from '@playwright/test';
 import { area } from './areas.js';
 import {
   addChild,
+  canvas,
   dragComponent,
   embedIn,
+  embedInOther,
   emptySpot,
   exported,
   newDocument,
   select,
   turnOff,
+  zoneSpot,
 } from './build.js';
 
 const COMPOSE = '01JB8Z1M6Q8E1X9V4S7K2R3T5D';
@@ -1388,6 +1391,59 @@ test('configures the toolbar of a Workbench’s static bottom drawer', async ({
   await page.screenshot({
     path: info.outputPath('kf-ezn7h2-bottom-drawer-toolbar-1440.png'),
     animations: 'disabled',
+  });
+});
+
+// KF-K3EKKF: in a narrow column an empty Toolbar's zone placeholders stay
+// inside their zones, so each is its own drop target.
+test('keeps an empty Toolbar’s zones apart in a narrow SplitView column', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await newDocument(page);
+  await dragComponent(page, 'SplitView', () => emptySpot(page));
+  await select(page, /^SplitView/);
+  await embedIn(page, 'SizedRegion');
+  await select(page, /^Text/);
+  await embedInOther(page, 'List');
+  await embedInOther(page, 'Pane');
+  await addChild(page, 'Toolbar', 'header');
+  const boxes = await canvas(page)
+    .locator('[data-editor-empty]')
+    .evaluateAll((spots) =>
+      spots.map((spot) => {
+        const own = spot.getBoundingClientRect();
+        const zone = spot.parentElement!.getBoundingClientRect();
+        return {
+          left: own.left,
+          right: own.right,
+          zoneLeft: zone.left,
+          zoneRight: zone.right,
+        };
+      }),
+    );
+  expect(boxes).toHaveLength(3);
+  for (const [index, box] of boxes.entries()) {
+    // Each placeholder fits its zone, and the next one starts after it.
+    expect(box.left).toBeGreaterThanOrEqual(box.zoneLeft - 0.5);
+    expect(box.right).toBeLessThanOrEqual(box.zoneRight + 0.5);
+    const next = boxes[index + 1];
+    if (next) expect(next.left).toBeGreaterThanOrEqual(box.right);
+  }
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-k3ekkf-narrow-toolbar-zones-1440.png'),
+    animations: 'disabled',
+  });
+  await dragComponent(page, 'ToolbarText', () => zoneSpot(page, 'Leading'));
+  const root = (await exported(page)) as {
+    zones: { content: [{ zones: { children: [unknown] } }] };
+  };
+  const splitView = root.zones.content[0].zones.children[0] as {
+    zones: { list: [{ zones: { header: [{ zones: unknown }] } }] };
+  };
+  expect(splitView.zones.list[0].zones.header[0].zones).toEqual({
+    leading: [{ type: '@kerfjs/ui:toolbar-text', props: expect.anything() }],
   });
 });
 
