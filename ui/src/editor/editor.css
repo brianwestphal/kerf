@@ -105,3 +105,34 @@
   border-radius: var(--kui-radius-m);
   text-align: center;
 }
+
+/* KF-60BEEJ: play mode. The editing UI stays mounted while playing, so its
+   wrapper adds no box of its own and hides as a whole. */
+.kui-editor__editing {
+  display: contents;
+}
+
+.kui-editor__editing[hidden] {
+  display: none;
+}
+
+/* The stage centers the played view's frame on a lowered backdrop and
+   scrolls when the frame is larger than it. */
+.kui-editor__stage {
+  display: flex;
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overflow: auto;
+  padding: var(--kui-space-l);
+  background: var(--kui-color-surface-lowered);
+}
+
+/* The frame keeps its viewport size, with its border (the device's edge)
+   outside it. */
+.kui-editor__device {
+  box-sizing: content-box;
+  flex: none;
+  margin: auto;
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  background: var(--kui-color-surface);
+}

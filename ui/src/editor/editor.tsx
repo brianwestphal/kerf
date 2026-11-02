@@ -40,6 +40,7 @@ import {
   GitCompare,
   Group,
   icons as lucideIcons,
+  Play,
   Plus,
   Redo2,
   Save,
@@ -264,6 +265,14 @@ import {
 } from './model/problems.js';
 import { sampleInputs } from './model/sample-inputs.js';
 import { shownScenes } from './model/shown-scenes.js';
+import {
+  createPlayer,
+  fromPeer,
+  isPlayPage,
+  PLAY_DOCUMENT,
+  PLAY_READY,
+  playPageUrl,
+} from './player.js';
 
 export const WORKBENCH_ID = 'kerf-ui-editor';
 const OUTLINE_ACTION = 'editor-select-node';
@@ -272,6 +281,11 @@ const PALETTE_ACTION = 'editor-show-component';
 const PALETTE_CLEAR_ACTION = 'editor-clear-palette-filter';
 const PROBLEM_ACTION = 'editor-select-problem';
 const NEW_ACTION = 'editor-new';
+// KF-60BEEJ: play mode's Play (Canvas toolbar) and Done (play bar).
+const PLAY_ACTION = 'editor-play';
+const PLAY_DONE_ACTION = 'editor-play-done';
+/** Play mode's fixed viewport until device presets (§11.2) land. */
+const PLAY_VIEWPORT = { width: 402, height: 874 } as const;
 // KF-MHY1GB: each rail switches between focus areas with a segmented tab strip.
 const DOCUMENT_TAB_ACTION = 'editor-document-tab';
 const INSPECTOR_TAB_ACTION = 'editor-inspector-tab';
@@ -488,11 +502,16 @@ function canvasRenderer(catalog: EditorCatalog) {
     selected?: string,
     /** KF-RMZ2NP: the lower view a NavStack shows, by node id. */
     views?: ReadonlyMap<string, number>,
+    /**
+     * KF-60BEEJ: play mode renders the view as it runs, with no stand-ins
+     * for empty containers to select or drop into.
+     */
+    play = false,
   ): SafeHtml => {
     // The selected node's tab shows, whatever tab the document opens on.
     const { document, slots: placed } = previewSlots(
       shownScenes(source, selected, views),
-      (node) => emptyZonesOf(node, node.id === selected),
+      play ? () => [] : (node) => emptyZonesOf(node, node.id === selected),
     );
     const titles = new Map(
       visitNodes(source).map(({ node }) => [
@@ -737,6 +756,31 @@ export function createEditor(options: EditorOptions) {
   const variantsOf = (type: string) =>
     (propsByKey.get(type) as { variants?: readonly PropsVariant[] } | undefined)
       ?.variants;
+  // KF-60BEEJ: on the play page (play mode's stage) this is the player:
+  // the document its editor sends, rendered and wired as it runs.
+  if (isPlayPage(globalThis.location)) {
+    const render = canvasRenderer(catalog);
+    const player = createPlayer(
+      options.document ?? emptyDocument(),
+      (document) =>
+        render(
+          document,
+          problemsOf(
+            document,
+            validateView(document, viewCatalog).diagnostics,
+            variantsOf,
+          ),
+          undefined,
+          undefined,
+          true,
+        ),
+    );
+    return {
+      ...player,
+      selection: signal<Selection>(null),
+      loadError: signal<string | null>(null),
+    };
+  }
   /** The document's validation, once per edit. */
   const validation = computed(() => validateView(doc.value, viewCatalog));
   /** The document's problems. */
@@ -781,6 +825,11 @@ export function createEditor(options: EditorOptions) {
   const doc = signal<ViewDocument>(options.document ?? emptyDocument());
   const selection = signal<Selection>(null);
   const loadError = signal<string | null>(null);
+  /**
+   * KF-60BEEJ: play mode is on. The editing UI stays mounted but hidden, so
+   * Done returns to it exactly as it was, selection included.
+   */
+  const playing = signal(false);
   /** Why the last duplicate or paste did not happen (KF-QAVK73). */
   const editNotice = signal<string | null>(null);
   /** The node Copy took, for Paste; held per editor, never shared. */
@@ -3097,6 +3146,43 @@ export function createEditor(options: EditorOptions) {
     );
   };
 
+  /**
+   * KF-60BEEJ: play mode's play bar and stage (docs/26-ui-editor.md §11.1).
+   * The stage's iframe loads this page as a play page, which asks for the
+   * document once it listens (wirePlay).
+   */
+  const playMode = () => (
+    <>
+      <Toolbar
+        label="Play"
+        rootAttributes={{ 'data-key': 'editor-play-bar' }}
+        safeAreaEdges={['block-start', 'inline-start', 'inline-end']}
+        dividerSides="b"
+        leading={
+          <Button tone="brand" emphasis="plain" action={PLAY_DONE_ACTION}>
+            Done
+          </Button>
+        }
+        center={
+          <ToolbarText
+            text="Phone"
+            description={`${PLAY_VIEWPORT.width} × ${PLAY_VIEWPORT.height}`}
+          />
+        }
+      />
+      <div class="kui-editor__stage" data-key="editor-stage" data-editor-stage>
+        <iframe
+          class="kui-editor__device"
+          title={`${documentFileName(doc.value)} (playing)`}
+          src={playPageUrl(globalThis.location.href)}
+          width={String(PLAY_VIEWPORT.width)}
+          height={String(PLAY_VIEWPORT.height)}
+          data-editor-play-frame
+        />
+      </div>
+    </>
+  );
+
   const render = () => {
     const document = doc.value;
     const nodes = outlineRows(document, componentNames).length;
@@ -3193,197 +3279,213 @@ export function createEditor(options: EditorOptions) {
     );
     return (
       <List fill rootAttributes={{ 'data-editor': 'kerf-ui-editor' }}>
-        <Toolbar
-          label="Kerf UI Editor"
-          safeAreaEdges={['block-start', 'inline-start', 'inline-end']}
-          responsive="wrap"
-          dividerSides="b"
-          leading={<ToolbarText text="Kerf UI Editor" />}
-          trailing={[
-            <Button
-              emphasis="plain"
-              action={NEW_ACTION}
-              icon={<LucideIcon icon={FilePlus} name="file-plus" />}
-            >
-              New
-            </Button>,
-            <FilePickerTrigger
-              label="Open"
-              accessibleLabel="Open a view document"
-              accept=".json,application/json"
-              pickerId="open-document"
-              emphasis="plain"
-              icon={<LucideIcon icon={FolderOpen} name="folder-open" />}
-            />,
-            <FilePickerTrigger
-              label="Compare"
-              accessibleLabel="Compare with an existing generated view module"
-              accept=".ts,.js,text/javascript,text/typescript"
-              pickerId="compare-module"
-              emphasis="plain"
-              icon={<LucideIcon icon={GitCompare} name="git-compare" />}
-              disabled={problems > 0}
-            />,
-            <ToolbarControlGroup
-              label="Export"
-              appearance="borderless"
-              single
-              nestedDropdown
-            >
-              <PopupMenu
-                text="Export"
-                icon={<LucideIcon icon={FileCode} name="file-code" />}
-                placement="bottom-end"
-                items={[
-                  // With storage the toolbar's Save As keeps the file; a
-                  // download is then an export of a copy.
-                  ...(autosave
-                    ? [{ label: 'Document (.kui.json)', action: SAVE_ACTION }]
-                    : []),
-                  {
-                    label: 'View module (.view.ts)',
-                    action: EXPORT_MODULE_ACTION,
-                    disabled: problems > 0,
-                    disabledReason: 'Fix the problems first',
-                  },
-                  {
-                    label: 'Declarations only (for interpretView)',
-                    action: EXPORT_DECLARATIONS_ACTION,
-                    disabled: problems > 0,
-                    disabledReason: 'Fix the problems first',
-                  },
-                ]}
-              />
-            </ToolbarControlGroup>,
-            <Button
-              emphasis="plain"
-              action={autosave ? SAVE_AS_ACTION : SAVE_ACTION}
-              icon={<LucideIcon icon={Save} name="save" />}
-            >
-              {autosave ? 'Save As…' : 'Save'}
-            </Button>,
-          ]}
-        />
-        {autosave ? saveAsDialog(document) : undefined}
-        {fieldDialog()}
-        {iconDialog()}
-        {embedDialog()}
-        <List flex>
-          <Workbench
-            id={WORKBENCH_ID}
-            label="Editor Panes"
-            leftRail={{
-              label: 'Document',
-              size: documentSize.value,
-              resizable: { min: 220, max: 420 },
-              collapsed: documentCollapsed.value,
-              toolbar: {
-                label: 'Document',
-                title: <ToolbarText text="Document" />,
-                toggle: { action: DOCUMENT_TOGGLE, name: 'Document' },
-              },
-              // KF-67K2VP: the strip stays pinned under the toolbar, so a
-              // drag (or a click) reaches another area from anywhere in a
-              // long panel.
-              header: (
-                <>
-                  {documentStrip}
-                  {paletteFilterField}
-                </>
-              ),
-              content: <List>{documentPanels}</List>,
-            }}
-            mainToolbar={{
-              label: 'Canvas',
-              // The previewed document draws its own title; the editor's main
-              // toolbar names the region and the document's state instead.
-              title: (
-                <ToolbarText
-                  text="Preview"
-                  description={`${fileState(document)} · ${nodes} ${nodes === 1 ? 'node' : 'nodes'} · ${problems === 0 ? 'valid' : `${problems} ${problems === 1 ? 'problem' : 'problems'}`}`}
-                />
-              ),
-              responsive: 'wrap',
-              trailing: (
-                <ToolbarControlGroup
-                  label="History"
-                  appearance="borderless"
-                  rootAttributes={{
-                    'data-history': String(historyVersion.value),
-                  }}
-                >
-                  <button
-                    type="button"
-                    aria-label="Undo"
-                    data-action={UNDO_ACTION}
-                    disabled={!history.canUndo}
-                  >
-                    <LucideIcon icon={Undo2} name="undo-2" />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Redo"
-                    data-action={REDO_ACTION}
-                    disabled={!history.canRedo}
-                  >
-                    <LucideIcon icon={Redo2} name="redo-2" />
-                  </button>
-                </ToolbarControlGroup>
-              ),
-            }}
-            mainHeader={
-              editNotice.value ? (
-                <StateBanner tone="warning" title={editNotice.value} />
-              ) : loadError.value ? (
-                <StateBanner
-                  tone="danger"
-                  title="That file could not be opened"
-                  detail={loadError.value}
-                />
-              ) : lastExport.value && !problems ? (
-                <StateBanner
-                  tone={lastExport.value.report.breaking ? 'warning' : 'info'}
-                  title={lastExport.value.report.title}
-                  detail={lastExport.value.report.detail}
-                />
-              ) : problems ? (
-                <StateBanner
-                  tone="warning"
-                  title={`${problems} ${problems === 1 ? 'problem' : 'problems'} in this document`}
-                  detail="Each one is listed under Problems in the Document rail; select one to inspect its node."
-                />
-              ) : undefined
-            }
-            main={canvas()}
-            rightRail={{
-              label: 'Inspector',
-              size: inspectorSize.value,
-              resizable: { min: 240, max: 480 },
-              collapsed: inspectorCollapsed.value,
-              toolbar: {
-                label: 'Inspector',
-                toggle: { action: INSPECTOR_TOGGLE, name: 'Inspector' },
-              },
-              // KF-Z9S029: an object's form pushes onto the Inspector.
-              navStack: {
-                id: INSPECTOR_STACK,
-                label: 'Inspector',
-                toolbarConfig: { titleSize: 'default' },
-                views: [
-                  {
-                    key: 'inspector',
-                    toolbar: {
-                      title: 'Inspector',
-                      trailing: nodeActions(document),
+        {/* KF-60BEEJ: hidden, not removed, while playing; keyed so the
+            morph keeps it (and everything wired inside it) as it is. */}
+        <div
+          class="kui-editor__editing"
+          data-key="editor-editing"
+          hidden={playing.value}
+        >
+          <Toolbar
+            label="Kerf UI Editor"
+            safeAreaEdges={['block-start', 'inline-start', 'inline-end']}
+            responsive="wrap"
+            dividerSides="b"
+            leading={<ToolbarText text="Kerf UI Editor" />}
+            trailing={[
+              <Button
+                emphasis="plain"
+                action={NEW_ACTION}
+                icon={<LucideIcon icon={FilePlus} name="file-plus" />}
+              >
+                New
+              </Button>,
+              <FilePickerTrigger
+                label="Open"
+                accessibleLabel="Open a view document"
+                accept=".json,application/json"
+                pickerId="open-document"
+                emphasis="plain"
+                icon={<LucideIcon icon={FolderOpen} name="folder-open" />}
+              />,
+              <FilePickerTrigger
+                label="Compare"
+                accessibleLabel="Compare with an existing generated view module"
+                accept=".ts,.js,text/javascript,text/typescript"
+                pickerId="compare-module"
+                emphasis="plain"
+                icon={<LucideIcon icon={GitCompare} name="git-compare" />}
+                disabled={problems > 0}
+              />,
+              <ToolbarControlGroup
+                label="Export"
+                appearance="borderless"
+                single
+                nestedDropdown
+              >
+                <PopupMenu
+                  text="Export"
+                  icon={<LucideIcon icon={FileCode} name="file-code" />}
+                  placement="bottom-end"
+                  items={[
+                    // With storage the toolbar's Save As keeps the file; a
+                    // download is then an export of a copy.
+                    ...(autosave
+                      ? [{ label: 'Document (.kui.json)', action: SAVE_ACTION }]
+                      : []),
+                    {
+                      label: 'View module (.view.ts)',
+                      action: EXPORT_MODULE_ACTION,
+                      disabled: problems > 0,
+                      disabledReason: 'Fix the problems first',
                     },
-                    ...inspector(document),
-                  },
-                  ...fieldViews(),
-                ],
-              },
-            }}
+                    {
+                      label: 'Declarations only (for interpretView)',
+                      action: EXPORT_DECLARATIONS_ACTION,
+                      disabled: problems > 0,
+                      disabledReason: 'Fix the problems first',
+                    },
+                  ]}
+                />
+              </ToolbarControlGroup>,
+              <Button
+                emphasis="plain"
+                action={autosave ? SAVE_AS_ACTION : SAVE_ACTION}
+                icon={<LucideIcon icon={Save} name="save" />}
+              >
+                {autosave ? 'Save As…' : 'Save'}
+              </Button>,
+            ]}
           />
-        </List>
+          {autosave ? saveAsDialog(document) : undefined}
+          {fieldDialog()}
+          {iconDialog()}
+          {embedDialog()}
+          <List flex>
+            <Workbench
+              id={WORKBENCH_ID}
+              label="Editor Panes"
+              leftRail={{
+                label: 'Document',
+                size: documentSize.value,
+                resizable: { min: 220, max: 420 },
+                collapsed: documentCollapsed.value,
+                toolbar: {
+                  label: 'Document',
+                  title: <ToolbarText text="Document" />,
+                  toggle: { action: DOCUMENT_TOGGLE, name: 'Document' },
+                },
+                // KF-67K2VP: the strip stays pinned under the toolbar, so a
+                // drag (or a click) reaches another area from anywhere in a
+                // long panel.
+                header: (
+                  <>
+                    {documentStrip}
+                    {paletteFilterField}
+                  </>
+                ),
+                content: <List>{documentPanels}</List>,
+              }}
+              mainToolbar={{
+                label: 'Canvas',
+                // The previewed document draws its own title; the editor's main
+                // toolbar names the region and the document's state instead.
+                title: (
+                  <ToolbarText
+                    text="Preview"
+                    description={`${fileState(document)} · ${nodes} ${nodes === 1 ? 'node' : 'nodes'} · ${problems === 0 ? 'valid' : `${problems} ${problems === 1 ? 'problem' : 'problems'}`}`}
+                  />
+                ),
+                responsive: 'wrap',
+                trailing: [
+                  <ToolbarControlGroup
+                    label="History"
+                    appearance="borderless"
+                    rootAttributes={{
+                      'data-history': String(historyVersion.value),
+                    }}
+                  >
+                    <button
+                      type="button"
+                      aria-label="Undo"
+                      data-action={UNDO_ACTION}
+                      disabled={!history.canUndo}
+                    >
+                      <LucideIcon icon={Undo2} name="undo-2" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Redo"
+                      data-action={REDO_ACTION}
+                      disabled={!history.canRedo}
+                    >
+                      <LucideIcon icon={Redo2} name="redo-2" />
+                    </button>
+                  </ToolbarControlGroup>,
+                  <Button
+                    emphasis="plain"
+                    action={PLAY_ACTION}
+                    icon={<LucideIcon icon={Play} name="play" />}
+                  >
+                    Play
+                  </Button>,
+                ],
+              }}
+              mainHeader={
+                editNotice.value ? (
+                  <StateBanner tone="warning" title={editNotice.value} />
+                ) : loadError.value ? (
+                  <StateBanner
+                    tone="danger"
+                    title="That file could not be opened"
+                    detail={loadError.value}
+                  />
+                ) : lastExport.value && !problems ? (
+                  <StateBanner
+                    tone={lastExport.value.report.breaking ? 'warning' : 'info'}
+                    title={lastExport.value.report.title}
+                    detail={lastExport.value.report.detail}
+                  />
+                ) : problems ? (
+                  <StateBanner
+                    tone="warning"
+                    title={`${problems} ${problems === 1 ? 'problem' : 'problems'} in this document`}
+                    detail="Each one is listed under Problems in the Document rail; select one to inspect its node."
+                  />
+                ) : undefined
+              }
+              main={canvas()}
+              rightRail={{
+                label: 'Inspector',
+                size: inspectorSize.value,
+                resizable: { min: 240, max: 480 },
+                collapsed: inspectorCollapsed.value,
+                toolbar: {
+                  label: 'Inspector',
+                  toggle: { action: INSPECTOR_TOGGLE, name: 'Inspector' },
+                },
+                // KF-Z9S029: an object's form pushes onto the Inspector.
+                navStack: {
+                  id: INSPECTOR_STACK,
+                  label: 'Inspector',
+                  toolbarConfig: { titleSize: 'default' },
+                  views: [
+                    {
+                      key: 'inspector',
+                      toolbar: {
+                        title: 'Inspector',
+                        trailing: nodeActions(document),
+                      },
+                      ...inspector(document),
+                    },
+                    ...fieldViews(),
+                  ],
+                },
+              }}
+            />
+          </List>
+        </div>
+        {playing.value ? playMode() : undefined}
       </List>
     );
   };
@@ -4015,6 +4117,45 @@ export function createEditor(options: EditorOptions) {
     ];
   };
 
+  /** KF-60BEEJ: enters play mode, with focus on Done. */
+  const enterPlay = (root: HTMLElement) => {
+    playing.value = true;
+    root
+      .querySelector<HTMLElement>(`[data-action="${PLAY_DONE_ACTION}"]`)
+      ?.focus();
+  };
+
+  /**
+   * Leaves play mode. The editing UI comes back as it was; the played view's
+   * frame, and with it every runtime state, is gone.
+   */
+  const leavePlay = (root: HTMLElement) => {
+    playing.value = false;
+    root.querySelector<HTMLElement>(`[data-action="${PLAY_ACTION}"]`)?.focus();
+  };
+
+  /** Sends the document to the stage's play page once it is listening. */
+  const wirePlay = (root: HTMLElement) => {
+    const view = root.ownerDocument.defaultView!;
+    const onMessage = (event: MessageEvent) => {
+      const frame = root.querySelector<HTMLIFrameElement>(
+        '[data-editor-play-frame]',
+      );
+      if (
+        !playing.value ||
+        !frame?.contentWindow ||
+        !fromPeer(event, view, frame.contentWindow) ||
+        (event.data as { type?: unknown } | null)?.type !== PLAY_READY
+      )
+        return;
+      frame.contentWindow.postMessage(
+        { type: PLAY_DOCUMENT, document: doc.value },
+        view.location.origin,
+      );
+    };
+    return on(view, 'message', (event) => onMessage(event as MessageEvent));
+  };
+
   const wire = (root: HTMLElement) => {
     wired = root;
     const toggle = (action: string, collapsed: typeof documentCollapsed) =>
@@ -4161,6 +4302,15 @@ export function createEditor(options: EditorOptions) {
       ),
       on(root.ownerDocument, 'keydown', (event) => {
         const key = event as KeyboardEvent;
+        // KF-60BEEJ: no editing key works while playing. A key inside the
+        // played view stays in its frame; Escape anywhere else leaves.
+        if (playing.value) {
+          if (key.key === 'Escape') {
+            key.preventDefault();
+            leavePlay(root);
+          }
+          return;
+        }
         const letter = key.key.toLowerCase();
         if (!(key.metaKey || key.ctrlKey) || !'zdcv'.includes(letter)) return;
         const target = key.target as Element | null;
@@ -4226,6 +4376,8 @@ export function createEditor(options: EditorOptions) {
             .querySelector<HTMLElement>('[data-editor-palette-filter]')
             ?.focus();
         },
+        [PLAY_ACTION]: () => enterPlay(root),
+        [PLAY_DONE_ACTION]: () => leavePlay(root),
         [UNDO_ACTION]: () => undo(),
         [REDO_ACTION]: () => redo(),
         [MOVE_UP_ACTION]: () => moveSelected(-1),
@@ -4758,6 +4910,7 @@ export function createEditor(options: EditorOptions) {
       })(),
     ];
     if (autosave) stops.push(...wireAutosave(root));
+    stops.push(wirePlay(root));
     const observer = new ResizeObserver(() => placeHighlight(root));
     observer.observe(root.querySelector('[data-editor-canvas]')!);
     return () => {

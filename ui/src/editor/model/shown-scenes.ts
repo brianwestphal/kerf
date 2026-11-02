@@ -52,7 +52,7 @@ const VIEW_ZONE = /^views\.(\d+)\./;
  * their zones leave the preview, so `index` is the stack's top. Unchanged
  * when `id` is no NavStack or `index` is not one of its lower views.
  */
-function cutStack(
+export function cutStack(
   document: ViewDocument,
   id: string,
   index: number,

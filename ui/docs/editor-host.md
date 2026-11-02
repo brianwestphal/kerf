@@ -191,3 +191,18 @@ editor.wire(root);
 The host loads the global stylesheets and registers `popup-menu/register` and
 `select/register`, as any Kerf UI app does. Give the mount element
 `class="kui-app-root"` so the editor fills the window.
+
+## Play mode
+
+**Play** in the Canvas toolbar runs the document as its users would, in a
+frame at a phone-sized viewport. **Done**, or Escape while focus is outside
+the frame, returns to editing with the selection as it was. The frame loads
+your editor page again with a `?kerf-ui-play` query, and `createEditor`
+returns the player on that page instead of the editor, so a host needs no
+extra route or code. The player gets the document from its editor by
+same-origin `postMessage`. Your host's page must keep `createEditor`,
+`mount`, and `wire` unconditional, and serve the same page for that query.
+Inside the frame, the components run with their real wiring. Tabs switch, a
+NavStack's back pops, and Workbench rails and sidebars collapse, all on a
+play-time copy of the document. Nothing you do in play mode changes the
+document.

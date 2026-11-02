@@ -101,3 +101,27 @@ test('an app’s field editor edits its own type', async ({ page }, info) => {
     animations: 'disabled',
   });
 });
+
+// KF-60BEEJ: play mode's frame loads the plugin's own page as a play page,
+// which renders the document the editor sends (an empty Pane, so it is
+// attached but has no size).
+test('an app’s dev server plays the document in the stage', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(EDITOR);
+  await expect(page.getByText('1 node · valid')).toBeVisible();
+  await page.locator('[data-action="editor-play"]').click();
+  const frame = page.locator('[data-editor-play-frame]');
+  await expect(frame).toHaveAttribute(
+    'src',
+    /\/__kerf-ui-editor\/\?kerf-ui-play/,
+  );
+  await expect(
+    page
+      .frameLocator('[data-editor-play-frame]')
+      .locator('[data-kerf-node][data-component="pane"]'),
+  ).toBeAttached();
+  await page.locator('[data-action="editor-play-done"]').click();
+  await expect(frame).toHaveCount(0);
+});

@@ -1203,8 +1203,34 @@ diff <doc…>` takes `--target js`, `--declarations-only`, and extra
 
 ## 11. Play mode (design; KF-95MPXS: interactive mode)
 
-**Status: design only, decisions signed off 2026-11-02.** Implementation is
-tracked by the follow-ups listed at the end of this section.
+**Status: partly built.** The core (KF-60BEEJ) is built: Play/Done, the
+iframe stage at a fixed 402×874 viewport, the play page, and the state
+adapters for TabNavigator, TabBar, NavStack back, and Workbench and
+sidebar collapse. Device presets and scale (§11.2, KF-R7KXSN), frames
+(KF-E8T0AY), and actions with the action log (§11.5, KF-RF6RCS) are not
+built yet. Their decisions were signed off on 2026-11-02.
+
+**As built (KF-60BEEJ).**
+
+- **The play page is the host's own editor page with `?kerf-ui-play`, not
+  a `/__kerf-ui-editor/play` route.** `createEditor` sees the flag and
+  returns a player with the editor's `{ render, wire }` shape (`ui/src/editor/player.ts`).
+  So the Vite plugin's page and the private editor's `main.ts` both serve it
+  unchanged, and the plugin's route match already ignores the query.
+- **The handshake:**
+  1. The player posts `kerf-ui-play:ready` to its parent.
+  2. The editor answers with `kerf-ui-play:document`.
+  3. Each side checks `event.origin` against its own and `event.source`
+     against its peer (the parent, or the stage iframe's `contentWindow`).
+- **Rendering** is the canvas renderer's play flag: the same sample inputs
+  and broken-node placeholders, without empty-zone stand-ins or selection.
+- **Leaving keeps the editor as it was.** The editing UI stays mounted but
+  hidden while playing, and Done shows it again with its selection, rail
+  state, and scroll. The stage's iframe, with all runtime state, is created
+  on each entry and removed on exit.
+- **Play mode covers the whole window, including the editor's app toolbar.**
+  The play bar replaces New, Open, Compare, Export, and Save, since play mode
+  can't change the document. The layout awaits sign-off on KF-60BEEJ.
 
 Play mode lets an author use the designed view as its users would. In play
 mode the canvas stops being an editing surface: clicks, keys, drags, and
