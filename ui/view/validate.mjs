@@ -699,6 +699,19 @@ function checkValueSlot(ctx, slot, at) {
 }
 
 /**
+ * Why a `rootAttributes` key cannot appear in a document (KF-65FTKX: data-*
+ * only), or undefined. Documents carry lowercase `data-*` names only; the
+ * node marker and other `data-kerf-*` names, the row key (`data-key`), and
+ * the editor's `data-editor-*` hooks are reserved for the generated view.
+ */
+export function dataAttributeProblem(key) {
+  if (!/^data-[a-z0-9]+(?:[-_.][a-z0-9]+)*$/.test(key))
+    return `"${key}" is not a lowercase data-* attribute name`;
+  if (/^data-(?:kerf-|editor-|key$)/.test(key))
+    return `"${key}" is reserved for the generated view and the editor`;
+}
+
+/**
  * How a component carries application `data-*` attributes (the node marker
  * and a row key): its `rootAttributes` prop, a Web Awesome element's own
  * attributes, or nothing. A generated `dataChannel` field wins when present.
@@ -875,6 +888,18 @@ function checkNode(ctx, node, at, scope, rowScoped, parentKey, text = false) {
     }
     present.add(name);
     if (!isObject(value) || Array.isArray(value)) literals.set(name, value);
+    // A literal data-* channel names only unreserved data-* keys (KF-65FTKX).
+    if (
+      name === 'rootAttributes' &&
+      isObject(value) &&
+      !isBinding(value) &&
+      Object.keys(value).filter((key) => {
+        const problem = dataAttributeProblem(key);
+        if (problem) ctx.report('KUI-V015', `${propAt}.${key}`, problem);
+        return problem;
+      }).length
+    )
+      continue;
     checkPropValue(
       ctx,
       prop ?? {

@@ -181,6 +181,13 @@ export function isLiteralOf(
  */
 export function parseCssCall(source: unknown): string[] | undefined;
 
+/**
+ * Why a `rootAttributes` key cannot appear in a view document, or undefined:
+ * it must be a lowercase `data-*` name that is not reserved (`data-kerf-*`,
+ * `data-key`, `data-editor-*`). `validateView` reports it as `KUI-V015`.
+ */
+export function dataAttributeProblem(key: string): string | undefined;
+
 /** How a catalog component carries `data-*` attributes for markers and row keys. */
 export function channelOf(component: {
   dataChannel?: string;

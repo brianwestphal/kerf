@@ -227,6 +227,18 @@ LucideIcon's `name`, while that name still follows the icon: unset, the
 old icon's name, or the seeded default.
 The node's own name field reads "Ref name".
 
+A component's `rootAttributes` (its `data-*` channel, §4.5) edits in the
+Inspector's **Data attributes** section (KF-65FTKX: data attributes), not as
+JSON: one Name and one Value field per attribute, side by side where the rail
+is wide and stacked where it is narrow, a Remove button for each, and **Add
+data attribute**, which appends an unused `data-name`. A name is checked as it
+is committed: it must be a lowercase, unreserved `data-*` name (§3.3,
+`KUI-V015`), one the component does not set itself (a Badge's `data-tone`),
+and not already in the list; otherwise the field shows why and the document
+keeps its name. Every change is one undo step, and removing the last
+attribute unsets the prop. A bound `rootAttributes` (`$param`) reads as its
+binding.
+
 An application registers its own editor for a named type (KF-EXA2WH: field
 editor API) with `createEditor({ fieldEditors })`, or with the Vite plugin's
 `fieldEditors` module (default `src/kerf-ui-field-editors.ts`). An editor
@@ -721,6 +733,14 @@ application computes.
 - Object literals are checked against the prop's shape. An index signature
   (`rootAttributes`' `data-*`) allows only keys with its prefix, and protected
   markers stay rejected.
+- A node's `rootAttributes` literal carries application `data-*` attributes
+  only (KF-65FTKX: data-* only), whatever else the component's TypeScript type
+  accepts (a List's `role`, an `aria-*` name): each key is a lowercase
+  `data-*` name, and `data-kerf-*` (the node marker, §4.5), `data-key` (the
+  row key the generated view merges into the same channel), and
+  `data-editor-*` (the editor's own hooks) are reserved. Anything else is
+  `KUI-V015`. Values are strings. `dataAttributeProblem(key)` from
+  `@kerfjs/ui/view` names the problem with one key.
 
 ### 3.4 Params
 
@@ -1107,6 +1127,7 @@ schema and the validator in agreement.
 | `KUI-V012` | `#view` source missing, cyclic, declaring slots, or given props that are not its params                                                |
 | `KUI-V013` | `$icon` on a non-icon prop, a malformed icon name, or (given `icons`) an unknown one                                                   |
 | `KUI-V014` | A control, link, or component that renders one, at any depth in the zones of a component whose root is a control or link               |
+| `KUI-V015` | A `rootAttributes` key that is not a lowercase `data-*` name, or a reserved one (`data-kerf-*`, `data-key`, `data-editor-*`; §3.3)     |
 
 **Hints** (KF-KQ72TW: non-blocking view hints) are advice about a valid
 document. They never set `valid` to false, and generation, export, and Compare

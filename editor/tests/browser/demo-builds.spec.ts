@@ -2076,3 +2076,47 @@ test('builds Badge › Category Tag', async ({ page }) => {
     ),
   );
 });
+
+// KF-65FTKX: rootAttributes edits as data-* name and value fields.
+test('builds Badge › Icon and Title', async ({ page }) => {
+  await dragComponent(page, 'Badge', () => emptySpot(page));
+  await select(page, /^Badge/);
+  await setText(page, 'children', '82%');
+  await choose(page, 'tone', 'success');
+  await setText(page, 'title', 'Confidence of the latest completion');
+  await setText(page, 'label', '82% confidence');
+  await page.locator('[data-action="editor-add-data-attribute"]').click();
+  const attribute = (part: string) =>
+    page.locator(
+      `[data-editor-attribute="0"][data-editor-attribute-part="${part}"]`,
+    );
+  const commit = async (part: string, text: string) => {
+    await attribute(part).locator('input').fill(text);
+    await attribute(part).locator('input').press('Enter');
+  };
+  // A reserved name is refused at the field; the document keeps its own.
+  await commit('name', 'data-kerf-node');
+  await expect(attribute('name')).toContainText('Reserved');
+  await commit('name', 'data-band');
+  await expect(attribute('name')).not.toContainText('Reserved');
+  await commit('value', 'high');
+  await addIcon(page, 'icon', 'gauge');
+  const badge = canvas(page).locator('.kui-badge[data-kerf-node]');
+  await expect(badge).toHaveText('82%');
+  await expect(badge).toHaveAttribute('data-band', 'high');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'badge',
+        {
+          children: '82%',
+          tone: 'success',
+          title: 'Confidence of the latest completion',
+          label: '82% confidence',
+          rootAttributes: { 'data-band': 'high' },
+        },
+        { icon: [icon('gauge')] },
+      ),
+    ),
+  );
+});

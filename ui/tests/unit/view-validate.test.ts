@@ -7,6 +7,7 @@ import { validateJsonSchemaSubset } from '../../scripts/lib/json-schema-subset.m
 import {
   channelOf,
   createViewCatalog,
+  dataAttributeProblem,
   isAssignable,
   isLiteralOf,
   parseCssCall,
@@ -847,10 +848,10 @@ describe('validateView: ids, names, scope, and control flow', () => {
         ),
       ),
     ).toEqual([]);
-    // Only the index signature's `data-` prefix, and never a protected marker.
+    // Only data-* names (KUI-V015, KF-65FTKX), and never a protected marker.
     expect(
       codes(doc(node('pane', { props: { rootAttributes: { title: 'x' } } }))),
-    ).toEqual(['KUI-V004']);
+    ).toEqual(['KUI-V015']);
     expect(
       codes(
         doc(
@@ -888,6 +889,48 @@ describe('validateView: ids, names, scope, and control flow', () => {
       codes(doc(node('text', { name: 'intro', props: { children: 'Hi' } }))),
     ).toEqual([]);
     expect(codes(doc(button({ name: 'save' })))).toEqual([]);
+  });
+
+  it('KUI-V015: rootAttributes names only unreserved data-* keys (KF-65FTKX)', () => {
+    const badge = (rootAttributes: unknown) =>
+      doc(
+        node('badge', {
+          props: { children: 'High', tone: 'success', rootAttributes },
+        }),
+      );
+    // A record channel (Button) and an indexed object channel (Badge).
+    expect(
+      codes(doc(button({ props: { rootAttributes: { 'data-band': 'h' } } }))),
+    ).toEqual([]);
+    expect(codes(badge({ 'data-band': 'high', 'data-x.y_z': '' }))).toEqual([]);
+    const result = validateView(
+      badge({
+        role: 'status',
+        'data-Band': 'x',
+        'data-kerf-node': 'n',
+        'data-key': 'k',
+        'data-editor-open': '{}',
+        'data-band': 'ok',
+      }),
+      catalog,
+    );
+    expect(result.diagnostics.map((item) => [item.code, item.path])).toEqual([
+      ['KUI-V015', '$.root.props.rootAttributes.role'],
+      ['KUI-V015', '$.root.props.rootAttributes.data-Band'],
+      ['KUI-V015', '$.root.props.rootAttributes.data-kerf-node'],
+      ['KUI-V015', '$.root.props.rootAttributes.data-key'],
+      ['KUI-V015', '$.root.props.rootAttributes.data-editor-open'],
+    ]);
+    expect(result.diagnostics[2]!.message).toMatch(/reserved/);
+    expect(
+      codes(
+        doc(button({ props: { rootAttributes: { 'data-kerf-node': 'x' } } })),
+      ),
+    ).toEqual(['KUI-V015']);
+    // A key the component protects stays a type mismatch.
+    expect(codes(badge({ 'data-tone': 'x' }))).toEqual(['KUI-V004']);
+    expect(dataAttributeProblem('data-band')).toBeUndefined();
+    expect(dataAttributeProblem('data-')).toMatch(/not a lowercase/);
   });
 });
 

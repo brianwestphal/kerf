@@ -4,6 +4,7 @@
 export {
   channelOf,
   createViewCatalog,
+  dataAttributeProblem,
   fieldZoneOf,
   isAssignable,
   isLiteralOf,

@@ -158,6 +158,15 @@ import {
   valueFromControl,
 } from './model/controls.js';
 import {
+  DATA_ATTRIBUTES_PROP,
+  type DataAttributeEdit,
+  dataAttributeNameError,
+  dataAttributes,
+  editDataAttributes,
+  newDataAttributeName,
+  protectedDataAttributes,
+} from './model/data-attributes.js';
+import {
   documentFileName,
   findNode,
   parseDocument,
@@ -238,6 +247,7 @@ import {
   matchIcons,
 } from './model/icons.js';
 import {
+  formatValue,
   groupedProps,
   type InspectorProp,
   inspectorSections,
@@ -335,6 +345,9 @@ const ICON_CHOOSE_ACTION = 'editor-choose-icon';
 const ICON_REMOVE_ACTION = 'editor-remove-icon';
 const ICON_CLEAR_ACTION = 'editor-clear-icon-search';
 const ICON_DIALOG = 'editor-icon-dialog';
+// KF-65FTKX: a component's data-* attributes.
+const DATA_ATTRIBUTE_ADD_ACTION = 'editor-add-data-attribute';
+const DATA_ATTRIBUTE_REMOVE_ACTION = 'editor-remove-data-attribute';
 const SHOW_VIEW_ACTION = 'editor-show-view';
 const EMBED_ACTION = 'editor-embed';
 const EMBED_OTHER_ACTION = 'editor-embed-other';
@@ -2746,6 +2759,147 @@ export function createEditor(options: EditorOptions) {
     );
   };
 
+  /**
+   * The node's data attributes (KF-65FTKX): its `rootAttributes` as name and
+   * value fields, limited to unreserved `data-*` names, with Add and Remove.
+   * Undefined for a component without the channel; a bound value reads as
+   * its binding.
+   */
+  const dataAttributesSection = (
+    node: ViewNode,
+    component: NonNullable<ReturnType<typeof propsByKey.get>>,
+  ) => {
+    const prop = component.props.find(
+      (item) => item.name === DATA_ATTRIBUTES_PROP,
+    );
+    if (!prop) return undefined;
+    const value = node.props?.[DATA_ATTRIBUTES_PROP] as ViewValue | undefined;
+    const attributes = dataAttributes(value);
+    // A hand-edited document's KUI-V015 shows at the name it is about.
+    const problems = new Map(
+      currentProblems.value
+        .filter(({ nodeId }) => nodeId === node.id)
+        .map(({ diagnostic }) => [
+          diagnostic.path.split(`.props.${DATA_ATTRIBUTES_PROP}.`)[1],
+          diagnostic.message,
+        ]),
+    );
+    return (
+      <>
+        <ListHeader label="Data attributes" size="xs" />
+        <List rootAttributes={{ 'data-key': 'editor-data-attributes' }}>
+          {attributes === undefined || !attributes.length ? (
+            <ListInsetText>
+              <Text tone="quiet">
+                {attributes
+                  ? "Application data-* identity on the component's root, such as data-band."
+                  : `${formatValue(value!)}; edit it where it is set.`}
+              </Text>
+            </ListInsetText>
+          ) : undefined}
+          {attributes === undefined ? undefined : (
+            <List controlInsets="trbl" gap>
+              {attributes.map(([name, text], index) => {
+                // Side by side in a wide rail, stacked in a narrow one, so
+                // every field keeps its label.
+                return (
+                  <Row
+                    gap="s"
+                    vAlign="bottom"
+                    rootAttributes={{
+                      'data-key': `editor-data-attribute-${index}`,
+                    }}
+                  >
+                    <Grid minColumnWidth={px(128)} gap="s" flex>
+                      <TextField
+                        label="Name"
+                        value={name}
+                        error={
+                          fieldErrors.value[`#data-attribute-${index}`] ??
+                          problems.get(name)
+                        }
+                        spellcheck={false}
+                        autocapitalize="off"
+                        rootAttributes={{
+                          'data-editor-attribute': `${index}`,
+                          'data-editor-attribute-part': 'name',
+                        }}
+                      />
+                      <TextField
+                        label="Value"
+                        value={text}
+                        rootAttributes={{
+                          'data-editor-attribute': `${index}`,
+                          'data-editor-attribute-part': 'value',
+                        }}
+                      />
+                    </Grid>
+                    <Button
+                      emphasis="plain"
+                      ariaLabel={`Remove ${name}`}
+                      icon={<LucideIcon icon={Trash} name="trash" />}
+                      action={DATA_ATTRIBUTE_REMOVE_ACTION}
+                      rootAttributes={{
+                        'data-editor-attribute-remove': `${index}`,
+                      }}
+                    />
+                  </Row>
+                );
+              })}
+              <Button
+                emphasis="secondary"
+                size="compact"
+                icon={<LucideIcon icon={Plus} name="plus" />}
+                action={DATA_ATTRIBUTE_ADD_ACTION}
+              >
+                Add data attribute
+              </Button>
+            </List>
+          )}
+        </List>
+      </>
+    );
+  };
+
+  /** Applies one data attribute edit to the selected node (KF-65FTKX). */
+  const editDataAttribute = (edit: DataAttributeEdit) => {
+    const id = selectedNodeId()!;
+    const node = findNode(doc.value, id)!.node;
+    const attributes = dataAttributes(
+      node.props?.[DATA_ATTRIBUTES_PROP] as ViewValue | undefined,
+    )!;
+    if (edit.kind === 'name') {
+      const prop = propsByKey
+        .get(node.type)!
+        .props.find((item) => item.name === DATA_ATTRIBUTES_PROP)!;
+      const error = dataAttributeNameError(
+        edit.name,
+        attributes,
+        edit.index,
+        protectedDataAttributes(prop.type as never, definitionsOf(node.type)),
+      );
+      const key = `#data-attribute-${edit.index}`;
+      if (error) {
+        fieldErrors.value = { ...fieldErrors.value, [key]: error };
+        return;
+      }
+      if (fieldErrors.value[key]) fieldErrors.value = {};
+      if (attributes[edit.index]![0] === edit.name) return;
+    }
+    if (edit.kind === 'value' && attributes[edit.index]![1] === edit.value)
+      return;
+    // Indexes shift on a remove, so a stale name error goes with it.
+    if (edit.kind === 'remove') fieldErrors.value = {};
+    commit(
+      setProp(
+        doc.value,
+        id,
+        DATA_ATTRIBUTES_PROP,
+        editDataAttributes(attributes, edit),
+      ),
+    );
+  };
+
   /** The inspector for a selected node: name, editable props, add child. */
   const nodeEditor = (
     node: ViewDocument['root'],
@@ -2905,6 +3059,7 @@ export function createEditor(options: EditorOptions) {
             ...inspectorRuns(rows, `${title} ${section.title}`),
           ];
         })}
+        {dataAttributesSection(node, component)}
         {promotable.length ? (
           <>
             <ListHeader label="Promote to a param" size="xs" />
@@ -4250,6 +4405,20 @@ export function createEditor(options: EditorOptions) {
       delegate<HTMLElement>(
         root,
         'change',
+        '[data-editor-attribute]',
+        (_event, field) => {
+          const index = Number(field.dataset.editorAttribute);
+          const raw = String(controlValue(field));
+          editDataAttribute(
+            field.dataset.editorAttributePart === 'name'
+              ? { kind: 'name', index, name: raw.trim() }
+              : { kind: 'value', index, value: raw },
+          );
+        },
+      ),
+      delegate<HTMLElement>(
+        root,
+        'change',
         '[data-editor-name]',
         (_event, field) => {
           const id = selectedNodeId();
@@ -4711,6 +4880,30 @@ export function createEditor(options: EditorOptions) {
             ),
           );
         },
+        [DATA_ATTRIBUTE_ADD_ACTION]: () => {
+          const node = findNode(doc.value, selectedNodeId()!)!.node;
+          const attributes = dataAttributes(
+            node.props?.[DATA_ATTRIBUTES_PROP] as ViewValue | undefined,
+          )!;
+          const prop = propsByKey
+            .get(node.type)!
+            .props.find((item) => item.name === DATA_ATTRIBUTES_PROP)!;
+          editDataAttribute({
+            kind: 'add',
+            name: newDataAttributeName(
+              attributes,
+              protectedDataAttributes(
+                prop.type as never,
+                definitionsOf(node.type),
+              ),
+            ),
+          });
+        },
+        [DATA_ATTRIBUTE_REMOVE_ACTION]: (_event, target) =>
+          editDataAttribute({
+            kind: 'remove',
+            index: Number(target.dataset.editorAttributeRemove),
+          }),
         [ADD_SLOT_ACTION]: () => addSlot(),
         [PROMOTE_ACTION]: () => promote(),
         [PROMOTE_PROP_ACTION]: (_event, target) =>

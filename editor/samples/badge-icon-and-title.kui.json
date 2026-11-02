@@ -1,0 +1,42 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "BadgeIconAndTitle",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:badge",
+          "props": {
+            "children": "82%",
+            "tone": "success",
+            "title": "Confidence of the latest completion",
+            "label": "82% confidence",
+            "rootAttributes": {
+              "data-band": "high"
+            }
+          },
+          "zones": {
+            "icon": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "gauge"
+                  },
+                  "name": "gauge"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
