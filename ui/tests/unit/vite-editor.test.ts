@@ -79,7 +79,7 @@ describe('the generated entry', () => {
     expect(code).toContain("import '@kerfjs/ui/select/register';");
     expect(code).toContain("import '@kerfjs/ui/surface-scaffold/register';");
     expect(code).toContain(
-      'createEditor({ catalog, storage: devServerStorage(), fieldEditors, devicePresets })',
+      'createEditor({ catalog, storage: devServerStorage(), fieldEditors, devicePresets, playHandlers })',
     );
     expect(editorEntry({ app: { props: [], composition: [] } })).toContain(
       'const registry = {};',
@@ -162,7 +162,7 @@ describe('kerfUiEditor', () => {
     const entry = () => plugin.load('\0virtual:kerf-ui-editor/entry')!;
     expect(entry()).toContain('const fieldEditors = undefined;');
     expect(entry()).toContain(
-      'createEditor({ catalog, storage: devServerStorage(), fieldEditors, devicePresets })',
+      'createEditor({ catalog, storage: devServerStorage(), fieldEditors, devicePresets, playHandlers })',
     );
     mkdirSync(join(app, 'src'), { recursive: true });
     writeFileSync(join(app, DEFAULT_FIELD_EDITORS), 'export default {};\n');
@@ -172,6 +172,18 @@ describe('kerfUiEditor', () => {
     const named = serve({ fieldEditors: 'src/missing.ts' }).plugin;
     expect(named.load('\0virtual:kerf-ui-editor/entry')).toContain(
       'const fieldEditors = undefined;',
+    );
+  });
+
+  // KF-RF6RCS: play mode's mock handlers come from a module the app names.
+  it('passes a named play handlers module to the editor', () => {
+    const entry = (options = {}) =>
+      serve(options).plugin.load('\0virtual:kerf-ui-editor/entry')!;
+    expect(entry()).toContain('const playHandlers = undefined;');
+    mkdirSync(join(app, 'src'), { recursive: true });
+    writeFileSync(join(app, 'src/handlers.ts'), 'export default {};\n');
+    expect(entry({ playHandlers: 'src/handlers.ts' })).toContain(
+      `import playHandlers from ${JSON.stringify(join(app, 'src/handlers.ts'))};`,
     );
   });
 

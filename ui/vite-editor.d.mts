@@ -56,6 +56,13 @@ export interface KerfUiEditorOptions {
    * or a function of the shipped list that returns the whole list.
    */
   devicePresets?: string;
+  /**
+   * A module, resolved against Vite's `root`, whose default export maps
+   * action names to play mode's mock handlers (`PlayHandlers` from
+   * `@kerfjs/ui/editor`). They run inside the play frame when the played
+   * view fires that action.
+   */
+  playHandlers?: string;
 }
 
 /** The connect-style middleware stack and HTML transform of a Vite dev server. */
@@ -115,6 +122,7 @@ export declare function editorEntry(options: {
   registry?: string;
   fieldEditors?: string;
   devicePresets?: string;
+  playHandlers?: string;
 }): string;
 /** Run the Kerf UI editor in this Vite dev server. */
 export declare function kerfUiEditor(

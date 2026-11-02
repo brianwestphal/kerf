@@ -7,10 +7,19 @@
 // editing stand-ins, and wires it for real over a play-time copy
 // (play-adapters.ts). Nothing it does reaches the edited document.
 import type { ViewDocument } from '@kerfjs/ui/view';
-import { effect, raw, type SafeHtml, signal } from 'kerfjs';
+import { delegate, effect, raw, type SafeHtml, signal } from 'kerfjs';
 
 import { deviceClass } from '../shared/environment/device-class.js';
+import {
+  type ActionLogEntry,
+  documentActions,
+  findNavStack,
+  type PlayActionContext,
+  type PlayHandlers,
+  pushView,
+} from './model/play-actions.js';
 import { type DeviceInsets, safeAreaTokens } from './model/play-device.js';
+import { popView } from './model/play-state.js';
 import { wirePlayState } from './play-adapters.js';
 
 /** The query flag that makes the editor page a play page. */
@@ -24,6 +33,21 @@ export const PLAY_DOCUMENT = 'kerf-ui-play:document';
  * (physical insets), sent with the document and whenever they change.
  */
 export const PLAY_ENVIRONMENT = 'kerf-ui-play:environment';
+/**
+ * KF-RF6RCS: the player's message to its editor for each fired action, with
+ * the action log's entry.
+ */
+export const PLAY_ACTION = 'kerf-ui-play:action';
+
+/** What the player needs from the editor besides the document. */
+export interface PlayerOptions {
+  /** The host's mock action handlers (KF-RF6RCS). */
+  readonly handlers?: PlayHandlers;
+  /** The canvas's sample param values for `document`. */
+  readonly inputs: (document: ViewDocument) => Record<string, unknown>;
+  /** A node's name in the action log: its author name, or component and id. */
+  readonly label: (document: ViewDocument, nodeId: string) => string;
+}
 
 /** Whether `location` is a play page. */
 export const isPlayPage = (location: Pick<Location, 'search'>): boolean =>
@@ -54,15 +78,38 @@ export const fromPeer = (
  */
 export function createPlayer(
   initial: ViewDocument,
-  preview: (document: ViewDocument) => SafeHtml,
+  preview: (
+    document: ViewDocument,
+    overrides: Readonly<Record<string, unknown>>,
+  ) => SafeHtml,
+  options: PlayerOptions,
 ) {
+  const { handlers = {}, inputs, label } = options;
   /** The play-time copy: what the view's own wiring changes. */
   const document = signal<ViewDocument>(initial);
+  /** The document as edited, which a pushed view comes from. */
+  let original = initial;
+  /** Param values a mock handler set (KF-RF6RCS). */
+  const overrides = signal<Readonly<Record<string, unknown>>>({});
   /** Nothing renders until the editor sends the document to play. */
   const received = signal(false);
 
   const render = (): SafeHtml =>
-    received.value ? preview(document.value) : raw('');
+    received.value ? preview(document.value, overrides.value) : raw('');
+
+  /** The view's param values now: defaults, samples, then handler-set values. */
+  const params = (): Record<string, unknown> => {
+    const current = document.value;
+    return {
+      ...Object.fromEntries(
+        Object.entries(current.params ?? {}).flatMap(([name, param]) =>
+          'default' in param ? [[name, param.default]] : [],
+        ),
+      ),
+      ...inputs(current),
+      ...overrides.value,
+    };
+  };
 
   const wire = (root: HTMLElement) => {
     const view = root.ownerDocument.defaultView!;
@@ -89,9 +136,87 @@ export function createPlayer(
         return;
       }
       if (data?.type !== PLAY_DOCUMENT || !data.document) return;
+      original = data.document;
       document.value = data.document;
       received.value = true;
     };
+    /** Tells the editor's action log about one fired action. */
+    const report = (entry: ActionLogEntry) =>
+      view.parent.postMessage(
+        { type: PLAY_ACTION, entry },
+        view.location.origin,
+      );
+    // KF-RF6RCS: the document's actions go to the host's mock handlers, as
+    // a generated view's `wire…` delegates them, and every one is logged.
+    const stopActions = delegate<HTMLElement>(
+      root,
+      'click',
+      '[data-action]',
+      (event, target) => {
+        const action = target.dataset.action!;
+        if (!documentActions(document.value).has(action)) return;
+        // Every rendered node carries its id, so an action has one.
+        const nodeId =
+          target.closest<HTMLElement>('[data-kerf-node]')!.dataset.kerfNode!;
+        const base = {
+          action,
+          node: label(document.value, nodeId),
+          event: event.type,
+        };
+        const handler = handlers[action];
+        if (!handler) {
+          report({ ...base, outcome: 'missing' });
+          return;
+        }
+        const failed = (error: unknown) =>
+          report({
+            ...base,
+            outcome: 'threw',
+            message: error instanceof Error ? error.message : String(error),
+          });
+        const context: PlayActionContext = {
+          action,
+          nodeId,
+          event,
+          params: params(),
+          view: {
+            root,
+            document: document.value,
+            key: target.closest<HTMLElement>('[data-key]')?.dataset.key,
+            setParams: (values) => {
+              overrides.value = { ...overrides.value, ...values };
+            },
+            navStack: (name) => {
+              const stack = findNavStack(document.value, name);
+              if (!stack) return undefined;
+              return {
+                push: (viewKey) => {
+                  document.value = pushView(
+                    document.value,
+                    original,
+                    stack.id,
+                    viewKey,
+                  );
+                },
+                pop: () => {
+                  document.value = popView(document.value, stack.id);
+                },
+              };
+            },
+          },
+        };
+        let result: unknown;
+        try {
+          result = handler(context);
+        } catch (error) {
+          failed(error);
+          return;
+        }
+        if (result instanceof Promise)
+          result.then(() => report({ ...base, outcome: 'ran' }), failed);
+        else report({ ...base, outcome: 'ran' });
+      },
+    );
     view.addEventListener('message', onMessage);
     // The class the played view's own deviceClass() reads, on the play
     // page's root, so a test (or an author's inspector) can see it follow
@@ -104,6 +229,7 @@ export function createPlayer(
     // Adapters follow the rendered view: the mount re-renders first.
     const stopSync = effect(() => {
       void document.value;
+      void overrides.value;
       void received.value;
       globalThis.queueMicrotask(play.sync);
     });
@@ -111,6 +237,7 @@ export function createPlayer(
     view.parent.postMessage({ type: PLAY_READY }, view.location.origin);
     return () => {
       view.removeEventListener('message', onMessage);
+      stopActions();
       stopDevice();
       stopSync();
       play.dispose();

@@ -125,3 +125,145 @@ test('an app’s dev server plays the document in the stage', async ({
   await page.locator('[data-action="editor-play-done"]').click();
   await expect(frame).toHaveCount(0);
 });
+
+// KF-RF6RCS: the app's mock handlers (the Vite plugin's `playHandlers`
+// module) run in the play frame, and every action fired is logged.
+const ordersDocument = {
+  schema: 'kerf-ui-document/v1',
+  name: 'Orders',
+  catalogs: ['@kerfjs/ui'],
+  params: {
+    orders: {
+      type: {
+        kind: 'array',
+        items: {
+          kind: 'object',
+          props: [
+            { name: 'id', type: { kind: 'string' }, required: true },
+            { name: 'title', type: { kind: 'string' }, required: true },
+          ],
+        },
+      },
+      default: [
+        { id: 'o-1', title: 'Order one' },
+        { id: 'o-2', title: 'Order two' },
+      ],
+    },
+    selectedId: { type: { kind: 'string' }, default: 'none' },
+  },
+  root: {
+    id: '01JB8Z1M6Q8E1X9V4S7K2R3T9A',
+    name: 'orders',
+    type: '@kerfjs/ui:nav-stack',
+    props: {
+      id: 'orders-stack',
+      label: 'Orders',
+      views: [
+        { key: 'list', toolbar: { title: 'Orders' } },
+        { key: 'order', toolbar: { title: 'Order' } },
+      ],
+    },
+    zones: {
+      'views.0.content': [
+        {
+          id: '01JB8Z1M6Q8E1X9V4S7K2R3T9B',
+          type: '@kerfjs/ui:list',
+          props: { ariaLabel: 'Orders' },
+          zones: {
+            children: [
+              {
+                $each: { $param: 'orders' },
+                as: 'order',
+                key: 'order.id',
+                template: {
+                  id: '01JB8Z1M6Q8E1X9V4S7K2R3T9C',
+                  name: 'orderRow',
+                  type: '@kerfjs/ui:list-item',
+                  props: {
+                    label: { $bind: 'order.title' },
+                    action: { $action: 'open-order' },
+                  },
+                },
+              },
+            ],
+          },
+        },
+        {
+          id: '01JB8Z1M6Q8E1X9V4S7K2R3T9E',
+          name: 'refreshButton',
+          type: '@kerfjs/ui:button',
+          props: { children: 'Refresh', action: { $action: 'refresh' } },
+        },
+      ],
+      'views.1.content': [
+        {
+          id: '01JB8Z1M6Q8E1X9V4S7K2R3T9F',
+          type: '@kerfjs/ui:text',
+          props: { children: { $param: 'selectedId' } },
+        },
+      ],
+    },
+  },
+};
+
+test('an app’s play handler pushes a view from a row, and actions are logged', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(EDITOR);
+  await page
+    .locator('input[type="file"]')
+    .first()
+    .setInputFiles({
+      name: 'orders.kui.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(ordersDocument)),
+    });
+  await expect(page.getByText(/· 5 nodes · valid$/)).toBeVisible();
+  await page.locator('[data-action="editor-play"]').click();
+  const view = page.frameLocator('[data-editor-play-frame]');
+  // The stack opens on its top view; back to the orders.
+  await view.locator('[data-nav-back]').click();
+  await expect(view.getByText('Order two')).toBeVisible();
+  // The row's action runs the app's handler: it remembers the row and
+  // pushes the order's view.
+  await view.getByText('Order two').click();
+  await expect(view.getByText('o-2', { exact: true })).toBeVisible();
+  await view.locator('[data-nav-back]').click();
+  // An action with no handler is only logged.
+  await view.getByRole('button', { name: 'Refresh' }).click();
+  const log = page.locator('[data-action="editor-play-log"]');
+  await expect(log).toHaveAttribute('aria-label', 'Action log, 2 new');
+  await expect(log.locator('.kui-badge')).toHaveText('2');
+  await log.click();
+  const surface = page.locator('[data-component="anchored-surface"]');
+  const entries = surface.locator('[data-editor-play-log-entry]');
+  await expect(entries).toHaveCount(2);
+  await expect(entries.nth(0)).toHaveAttribute(
+    'data-editor-play-log-entry',
+    'missing',
+  );
+  await expect(entries.nth(0)).toContainText('refresh');
+  await expect(entries.nth(0)).toContainText('refreshButton');
+  await expect(entries.nth(1)).toHaveAttribute(
+    'data-editor-play-log-entry',
+    'ran',
+  );
+  await expect(entries.nth(1)).toContainText('orderRow');
+  await expect(log).toHaveAttribute('aria-label', 'Action log');
+  // The open log follows new actions live.
+  await view.getByText('Order one').click();
+  await expect(entries).toHaveCount(3);
+  await expect(entries.nth(0)).toContainText('open-order');
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-rf6rcs-action-log-1440.png'),
+    animations: 'disabled',
+  });
+  // Leaving and playing again starts a fresh log.
+  await page.keyboard.press('Escape');
+  await page.locator('[data-action="editor-play-done"]').click();
+  await page.locator('[data-action="editor-play"]').click();
+  await expect(log).toHaveAttribute('aria-label', 'Action log');
+  await expect(log.locator('.kui-badge')).toHaveCount(0);
+});

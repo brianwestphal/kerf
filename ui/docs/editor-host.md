@@ -74,6 +74,9 @@ Options:
   `src/kerf-ui-field-editors.ts` when it exists.
 - `devicePresets`: a module, resolved the same way, whose default export is
   play mode's device presets (see Play mode). Only loaded when named.
+- `playHandlers`: a module, resolved the same way, whose default export maps
+  action names to play mode's mock handlers (see Play mode). Only loaded
+  when named.
 
 ```ts
 // src/kerf-ui-registry.ts
@@ -176,11 +179,12 @@ mount(root, editor.render);
 editor.wire(root);
 ```
 
-- `createEditor({ catalog, document?, save?, storage?, fieldEditors?, devicePresets? })`:
+- `createEditor({ catalog, document?, save?, storage?, fieldEditors?, devicePresets?, playHandlers? })`:
   `document` is the document to start with (default an empty Pane),
   `save(fileName, text)` replaces the default download for Save and Export,
   `fieldEditors` registers field editors by type name (above), and
-  `devicePresets` adds play mode's devices (below).
+  `devicePresets` adds play mode's devices and `playHandlers` its mock
+  action handlers (below).
 - `createEditorCatalog({ props, composition, selection?, components, placeholders? })`
   combines catalogs. Without a selection catalog a component is named by its
   export. `placeholders` maps `<component key>.<prop>` to a factory for the
@@ -253,3 +257,36 @@ export default devices;
 A preset's sizes are CSS pixels in portrait. `safeArea` is the insets an
 installed app gets per orientation; `browserChrome`, when given, is what a
 browser tab's chrome takes instead (it defaults to the safe areas).
+
+The view's actions (the names its `$action`s give) call your mock handlers
+when you register them, so a flow such as "row opens its detail" can be
+walked end to end. Pass `createEditor({ playHandlers })`, or name a module
+with the Vite plugin's `playHandlers` option. The handlers run inside the
+play frame.
+
+```ts
+// src/kerf-ui-play-handlers.ts (name it with the plugin's `playHandlers` option)
+import type { PlayHandlers } from "@kerfjs/ui/editor";
+
+const playHandlers: PlayHandlers = {
+  "open-order": ({ view }) => {
+    view.setParams({ selectedId: view.key ?? "" });
+    view.navStack("orders")?.push("order");
+  },
+};
+export default playHandlers;
+```
+
+A handler receives `{ action, nodeId, event, params, view }`:
+
+- `params` holds the view's current param values.
+- `view.key` is the row's `data-key`.
+- `view.setParams(values)` re-renders the view with new values.
+- `view.navStack(name)` finds a NavStack by its author name, `id`, or node
+  id. Its `push(viewKey)` shows one of the document's views for that stack,
+  and `pop()` goes back one.
+
+A handler may also open an overlay. A handler that throws (or rejects) is
+logged, and the view keeps running. An action with no handler is only
+logged. The play bar's **Action log** counts the actions you haven't seen
+and lists them, newest first, with whether a handler ran.

@@ -503,3 +503,9 @@
   outline: var(--kui-focus-ring);
   outline-offset: 2px;
 }
+
+/* KF-RF6RCS: the play bar's action log, in its anchored surface: a readable
+   width for its rows, within the window. */
+.kui-editor__action-log {
+  inline-size: min(380px, calc(100vw - 48px));
+}

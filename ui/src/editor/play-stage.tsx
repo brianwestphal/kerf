@@ -5,7 +5,7 @@
 // viewport and scales it. The frame's sizes are set here, outside the
 // morph, so a device change resizes the running view instead of reloading it.
 import { delegate, effect, type SafeHtml, signal } from 'kerfjs';
-import { Frame, HousePlus, RotateCwSquare } from 'lucide';
+import { Frame, HousePlus, Logs, RotateCwSquare } from 'lucide';
 
 import { Button } from '../components/actions/button/button.js';
 import { Toolbar } from '../components/actions/toolbar/toolbar.js';
@@ -13,10 +13,20 @@ import {
   ToolbarButton,
   ToolbarControlGroup,
 } from '../components/actions/toolbar-control-group/toolbar-control-group.js';
+import { List } from '../components/collections/list/list.js';
+import { SummaryRow } from '../components/collections/summary-row/summary-row.js';
+import { openAnchoredSurface } from '../components/feedback/anchored-surface/anchored-surface.js';
+import { Badge } from '../components/feedback/badge/badge.js';
+import { EmptyState } from '../components/feedback/empty-state/empty-state.js';
 import { Select } from '../components/forms/select/select.js';
 import { TextField } from '../components/forms/text-field/text-field.js';
 import { LucideIcon } from '../components/media/lucide-icon/lucide-icon.js';
 import { Text } from '../components/typography/text/text.js';
+import {
+  type ActionLogEntry,
+  type ActionOutcome,
+  logAction as withAction,
+} from './model/play-actions.js';
 import {
   clampFlexible,
   DEVICE_KIND_LABELS,
@@ -40,6 +50,19 @@ export const PLAY_SETTINGS_KEY = 'kerf-ui-editor:play';
 const ROTATE_ACTION = 'editor-play-rotate';
 const INSTALLED_ACTION = 'editor-play-installed';
 const CHROME_ACTION = 'editor-play-chrome';
+const LOG_ACTION = 'editor-play-log';
+
+/** KF-RF6RCS: how the action log names and tones each outcome. */
+const OUTCOMES: Readonly<
+  Record<
+    ActionOutcome,
+    { label: string; tone: 'success' | 'warning' | 'danger' }
+  >
+> = {
+  ran: { label: 'Handled', tone: 'success' },
+  missing: { label: 'No handler', tone: 'warning' },
+  threw: { label: 'Handler threw', tone: 'danger' },
+};
 
 /**
  * KF-E8T0AY: a mock status bar's generic signal and battery glyphs, shapes
@@ -112,6 +135,12 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
   const presetOf = (id: string) => presets.find((preset) => preset.id === id)!;
   const emulation = (): DeviceEmulation =>
     emulate(presetOf(settings.value.device), settings.value);
+  /** KF-RF6RCS: the actions fired since play mode began, newest first. */
+  const log = signal<readonly ActionLogEntry[]>([]);
+  /** Entries logged since the log was last open. */
+  const unseen = signal(0);
+  /** Whether the log is open, so new entries count as seen. */
+  let logOpen = false;
   const update = (change: Partial<PlaySettings>) => {
     settings.value = { ...settings.value, ...change };
     saveSettings(settings.value);
@@ -242,9 +271,39 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
           </>
         }
         trailing={
-          <Button tone="brand" emphasis="plain" action={doneAction}>
-            Done
-          </Button>
+          <>
+            <ToolbarControlGroup single>
+              <ToolbarButton
+                ariaLabel={
+                  unseen.value
+                    ? `Action log, ${unseen.value} new`
+                    : 'Action log'
+                }
+                title="Actions the view fired"
+                action={LOG_ACTION}
+                ariaHasPopup="dialog"
+                icon={
+                  <>
+                    <LucideIcon icon={Logs} name="logs" />
+                    {unseen.value ? (
+                      <Badge
+                        tone="info"
+                        appearance="solid"
+                        size="compact"
+                        placement="corner"
+                        ariaHidden
+                      >
+                        {unseen.value > 99 ? '99+' : String(unseen.value)}
+                      </Badge>
+                    ) : undefined}
+                  </>
+                }
+              />
+            </ToolbarControlGroup>
+            <Button tone="brand" emphasis="plain" action={doneAction}>
+              Done
+            </Button>
+          </>
         }
       />
     );
@@ -325,6 +384,56 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
     </>
   );
 
+  /** The action log's list, newest first. */
+  const logList = () => (
+    <div class="kui-editor__action-log" data-editor-play-log>
+      {log.value.length ? (
+        <List ariaLabel="Actions" gap="2xs">
+          {log.value.map((entry) => {
+            const outcome = OUTCOMES[entry.outcome];
+            return (
+              <SummaryRow
+                semanticRole="group"
+                ariaLabel={`${entry.action}, ${outcome.label}`}
+                title={
+                  <Text variant="span" font="monospace">
+                    {entry.action}
+                  </Text>
+                }
+                trailingMeta={entry.event}
+                rail={outcome.tone}
+                metadata={
+                  <>
+                    <Badge tone={outcome.tone} size="compact">
+                      {outcome.label}
+                    </Badge>
+                    <Text variant="span" tone="quiet">
+                      {entry.message
+                        ? `${entry.node}: ${entry.message}`
+                        : entry.node}
+                    </Text>
+                  </>
+                }
+                rootAttributes={{ 'data-editor-play-log-entry': entry.outcome }}
+              />
+            );
+          })}
+        </List>
+      ) : (
+        <EmptyState
+          title="No actions yet"
+          detail="Actions the view fires appear here, newest first."
+        />
+      )}
+    </div>
+  );
+
+  /** KF-RF6RCS: records one fired action. */
+  const logAction = (entry: ActionLogEntry) => {
+    log.value = withAction(log.value, entry);
+    if (!logOpen) unseen.value += 1;
+  };
+
   /** The physical safe areas the played view gets now. */
   const safeArea = () => emulation().safeArea;
 
@@ -335,6 +444,10 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
    */
   const start = (root: HTMLElement, onEnvironment: () => void) => {
     const view = root.ownerDocument.defaultView!;
+    // Each entry into play mode starts a fresh log.
+    log.value = [];
+    unseen.value = 0;
+    let closeLog: (() => void) | undefined;
     const stageEl = root.querySelector<HTMLElement>('[data-editor-stage]')!;
     const box = stageEl.querySelector<HTMLElement>('.kui-editor__device-box')!;
     const scaler = box.querySelector<HTMLElement>(
@@ -505,6 +618,28 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
       delegate<HTMLElement>(
         root,
         'click',
+        `[data-action="${LOG_ACTION}"]`,
+        (_event, trigger) => {
+          if (logOpen) return;
+          logOpen = true;
+          unseen.value = 0;
+          const handle = openAnchoredSurface(trigger, logList, {
+            label: 'Action log',
+            placement: 'bottom',
+            align: 'end',
+            initialFocus: false,
+          });
+          closeLog = () => handle.close();
+          void handle.result.then(() => {
+            logOpen = false;
+            closeLog = undefined;
+          });
+        },
+      ),
+      () => closeLog?.(),
+      delegate<HTMLElement>(
+        root,
+        'click',
         `[data-action="${CHROME_ACTION}"]`,
         () => update({ chrome: !settings.value.chrome }),
       ),
@@ -534,5 +669,5 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
     };
   };
 
-  return { render, start, safeArea, settings };
+  return { render, start, safeArea, settings, logAction, log };
 }

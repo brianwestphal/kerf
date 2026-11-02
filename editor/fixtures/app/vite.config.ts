@@ -11,7 +11,11 @@ export default defineConfig({
   root: fileURLToPath(new URL('.', import.meta.url)),
   plugins: [
     kerfUi(),
-    kerfUiEditor({ fieldEditors: 'src/kerf-ui-field-editors.tsx' }),
+    kerfUiEditor({
+      fieldEditors: 'src/kerf-ui-field-editors.tsx',
+      // KF-RF6RCS: play mode's mock action handlers.
+      playHandlers: 'src/kerf-ui-play-handlers.ts',
+    }),
   ],
   resolve: { alias: kerfAliases },
   esbuild: { jsx: 'automatic', jsxImportSource: 'kerfjs' },

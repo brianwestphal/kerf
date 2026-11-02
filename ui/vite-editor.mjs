@@ -177,7 +177,13 @@ export function editorPage() {
  * The generated entry: imports the editor, the catalogs, and each module a
  * catalog names, then mounts the editor over all of them.
  */
-export function editorEntry({ app, registry, fieldEditors, devicePresets }) {
+export function editorEntry({
+  app,
+  registry,
+  fieldEditors,
+  devicePresets,
+  playHandlers,
+}) {
   const kerfProps = readJson(
     resolve(import.meta.dirname, 'ai/component-props.json'),
   );
@@ -219,6 +225,9 @@ export function editorEntry({ app, registry, fieldEditors, devicePresets }) {
     devicePresets
       ? `import devicePresets from ${JSON.stringify(devicePresets)};`
       : 'const devicePresets = undefined;',
+    playHandlers
+      ? `import playHandlers from ${JSON.stringify(playHandlers)};`
+      : 'const playHandlers = undefined;',
     `const appProps = ${JSON.stringify(app.props)};`,
     `const appComposition = ${JSON.stringify(app.composition)};`,
     'const props = [kerfProps, ...appProps];',
@@ -232,7 +241,7 @@ export function editorEntry({ app, registry, fieldEditors, devicePresets }) {
     '  components: { ...componentMap(props, modules), ...registry },',
     '});',
     "const root = document.getElementById('kerf-ui-editor');",
-    'const editor = createEditor({ catalog, storage: devServerStorage(), fieldEditors, devicePresets });',
+    'const editor = createEditor({ catalog, storage: devServerStorage(), fieldEditors, devicePresets, playHandlers });',
     'mount(root, editor.render);',
     'editor.wire(root);',
     '',
@@ -272,6 +281,10 @@ export function kerfUiEditor(options = {}) {
         // KF-R7KXSN: play mode's extra or replacement device presets.
         devicePresets: options.devicePresets
           ? found(options.devicePresets)
+          : undefined,
+        // KF-RF6RCS: play mode's mock action handlers, run in the play frame.
+        playHandlers: options.playHandlers
+          ? found(options.playHandlers)
           : undefined,
       });
     },

@@ -1231,7 +1231,7 @@ diff <doc…>` takes `--target js`, `--declarations-only`, and extra
 
 ## 11. Play mode (design; KF-95MPXS: interactive mode)
 
-**Status: partly built.** The core (KF-60BEEJ) is built:
+**Status: built.** The core (KF-60BEEJ) is built:
 
 - Play/Done.
 - The iframe stage, with Fit scaling.
@@ -1241,11 +1241,8 @@ diff <doc…>` takes `--target js`, `--declarations-only`, and extra
 Device emulation (KF-R7KXSN) is built: presets, orientation, Installed app
 safe areas, Scale, and Flexible sizing (§11.2, §11.3).
 
-Mock device frames (KF-E8T0AY) are built.
-
-Not built yet:
-
-- Actions and the action log (§11.5, KF-RF6RCS).
+Mock device frames (KF-E8T0AY) are built, and so are host mock action
+handlers and the action log (§11.4, §11.5, KF-RF6RCS).
 
 Their decisions were signed off on 2026-11-02.
 
@@ -1356,6 +1353,51 @@ Their decisions were signed off on 2026-11-02.
   remembered, disabled for Flexible). Off, it hides every drawn part and
   squares the screen, without moving or resizing the frame.
 - **Not drawn:** laptops and monitors are upright only; they don't rotate.
+
+**As built (KF-RF6RCS).**
+
+- **Dispatch.** The player listens for `click` on `[data-action]` over the
+  view, as a generated view's `wire…` does with
+  `delegateActions(root, 'click')`.
+  - Only the document's own actions count: the names its `$action`s give
+    (`documentActions`). A component's literal `data-action` wiring, such as
+    a sidebar toggle, is not logged.
+  - A registered handler gets `{ action, nodeId, event, params, view }`:
+    - `params` holds the current param values: defaults, then the canvas's
+      sample values, then values handlers set.
+    - `view` is `{ root, document, key, setParams(values), navStack(name) }`.
+      `key` is the row's `data-key`, and `setParams` re-renders with the
+      new values.
+    - `navStack` finds a NavStack by author name, `id` prop, or node id. Its
+      `push(viewKey)` shows that view of the edited document on top (cutting
+      back to it when it's already in the stack), and `pop()` goes back
+      one.
+    - A handler may also open an overlay itself, since it runs in the frame.
+  - The outcome is `ran`, `missing`, or `threw`, with the message. An async
+    handler is logged when it settles, and a throw or rejection never stops
+    the view.
+- **Handlers load into the frame.** They come from
+  `createEditor({ playHandlers })`. The Vite plugin's `playHandlers` option
+  names a module the generated entry imports and passes on, so on the play
+  page `createEditor` hands them to the player. The editor page ignores
+  them.
+- **The log** lives in the editor, not the frame. The player posts each
+  entry as `kerf-ui-play:action`, and the editor checks the origin and
+  source.
+  - The play bar's Action log `ToolbarButton`, before Done, shows a corner
+    `Badge` with the unseen count (99+ past 99). It opens
+    `openAnchoredSurface` holding a `List` of static `SummaryRow`s
+    (`semanticRole="group"`), or an `EmptyState`.
+  - Each row shows the action, the event type, a status `Badge`, and the
+    node (author name, or component and id) with any message, on a rail
+    toned by the outcome.
+  - Opening the log marks entries seen, and the open list follows new
+    entries.
+  - The log keeps 200 entries, newest first (`model/play-actions.ts`), and
+    clears on each entry into play mode.
+- **Fixture:** `editor/fixtures/app/src/kerf-ui-play-handlers.ts`, whose
+  `open-order` sets `selectedId` from the row's key and pushes the `order`
+  view. `editor/tests/browser/host.spec.ts` plays it.
 
 Play mode lets an author use the designed view as its users would. In play
 mode the canvas stops being an editing surface: clicks, keys, drags, and

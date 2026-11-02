@@ -266,6 +266,7 @@ import {
   slotRowId,
   zoneLabel,
 } from './model/outline.js';
+import type { ActionLogEntry, PlayHandlers } from './model/play-actions.js';
 import {
   type DevicePresetsOption,
   resolveDevicePresets,
@@ -286,6 +287,7 @@ import {
   createPlayer,
   fromPeer,
   isPlayPage,
+  PLAY_ACTION as PLAY_ACTION_MESSAGE,
   PLAY_DOCUMENT,
   PLAY_ENVIRONMENT,
   PLAY_READY,
@@ -445,6 +447,17 @@ const slotPlaceholders = (
     },
   });
 
+/** The canvas's sample param values: text labels and app stand-ins. */
+const canvasInputs = (
+  document: ViewDocument,
+  placeholders: EditorCatalog['placeholders'],
+) =>
+  sampleInputs(
+    document,
+    (label) => Text({ children: label }),
+    (key) => placeholders[key]?.(),
+  );
+
 /** The canvas renderer for one catalog. */
 function canvasRenderer(catalog: EditorCatalog) {
   const { viewCatalog, componentNames, placeholders, propsByKey } = catalog;
@@ -525,6 +538,8 @@ function canvasRenderer(catalog: EditorCatalog) {
      * for empty containers to select or drop into.
      */
     play = false,
+    /** KF-RF6RCS: param values a play-mode handler set, over the samples. */
+    overrides?: Readonly<Record<string, unknown>>,
   ): SafeHtml => {
     // The selected node's tab shows, whatever tab the document opens on.
     const { document, slots: placed } = previewSlots(
@@ -544,11 +559,7 @@ function canvasRenderer(catalog: EditorCatalog) {
     const preview = {
       catalog: viewCatalog,
       components,
-      inputs: sampleInputs(
-        document,
-        (label) => Text({ children: label }),
-        (key) => placeholders[key]?.(),
-      ),
+      inputs: { ...canvasInputs(document, placeholders), ...overrides },
       slots: slotPlaceholders(placed, ({ held, address: { parent, zone } }) => {
         if (primaryZones.get(parent) === zone)
           return `${titles.get(parent)!} is empty — drag a component here`;
@@ -649,6 +660,15 @@ export type {
   FieldEditorControlKind,
   FieldEditors,
 } from './field-editors.js';
+export type {
+  ActionLogEntry,
+  ActionOutcome,
+  PlayActionContext,
+  PlayHandler,
+  PlayHandlers,
+  PlayNavStack,
+  PlayView,
+} from './model/play-actions.js';
 export {
   type DeviceFrame,
   type DeviceInsets,
@@ -685,6 +705,11 @@ export interface EditorOptions {
    * (replacing one with the same id); a function returns the whole list.
    */
   readonly devicePresets?: DevicePresetsOption;
+  /**
+   * KF-RF6RCS: play mode's mock action handlers, by action name. They run
+   * inside the play frame when the view fires that action.
+   */
+  readonly playHandlers?: PlayHandlers;
 }
 
 /** An inspector control's current value: a Select's, a switch's, or a field's. */
@@ -793,7 +818,7 @@ export function createEditor(options: EditorOptions) {
     const render = canvasRenderer(catalog);
     const player = createPlayer(
       options.document ?? emptyDocument(),
-      (document) =>
+      (document, overrides) =>
         render(
           document,
           problemsOf(
@@ -804,7 +829,17 @@ export function createEditor(options: EditorOptions) {
           undefined,
           undefined,
           true,
+          overrides,
         ),
+      // KF-RF6RCS: the host's mock handlers, given the canvas's samples.
+      {
+        handlers: options.playHandlers,
+        inputs: (document) => canvasInputs(document, catalog.placeholders),
+        label: (document, nodeId) => {
+          const { node } = findNode(document, nodeId)!;
+          return node.name ?? `${nodeTitle(node, componentNames)} ${nodeId}`;
+        },
+      },
     );
     return {
       ...player,
@@ -4380,10 +4415,19 @@ export function createEditor(options: EditorOptions) {
       if (
         !playing.value ||
         !frame?.contentWindow ||
-        !fromPeer(event, view, frame.contentWindow) ||
-        (event.data as { type?: unknown } | null)?.type !== PLAY_READY
+        !fromPeer(event, view, frame.contentWindow)
       )
         return;
+      const data = event.data as {
+        type?: unknown;
+        entry?: ActionLogEntry;
+      } | null;
+      // KF-RF6RCS: a fired action, for the play bar's action log.
+      if (data?.type === PLAY_ACTION_MESSAGE && data.entry) {
+        playStage.logAction(data.entry);
+        return;
+      }
+      if (data?.type !== PLAY_READY) return;
       sendEnvironment(root);
       frame.contentWindow.postMessage(
         { type: PLAY_DOCUMENT, document: doc.value },
