@@ -3,7 +3,8 @@
 // `$each`, and tab close, each a pure transition over the play-time copy
 // plus its wiring (docs/26-ui-editor.md §11.4). KF-7XQAFR: a value control
 // nested inside an `$each` row, and closing a row whose items come through
-// a `$bind`.
+// a `$bind`. KF-ZMBST3: a row inside another row is known by its path of
+// row keys.
 import type { ViewDocument } from '@kerfjs/ui/view';
 import { mount, raw } from 'kerfjs';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -23,6 +24,8 @@ import {
   markRows,
   nodeWithId,
   recordValue,
+  rowPath,
+  rowPathOf,
   rowPropsOf,
   setRowProp,
   withRowProps,
@@ -479,7 +482,121 @@ const nestedTabs = () => {
   );
 };
 
+/**
+ * KF-ZMBST3: a Switch in an inner row whose keys repeat across outer rows
+ * (`a` under both groups).
+ */
+const nestedSwitches = () =>
+  doc(
+    [
+      {
+        $each: { $param: 'groups' },
+        as: 'group',
+        key: 'group.id',
+        template: node(
+          80,
+          'row',
+          {},
+          {
+            children: [
+              {
+                $each: { $bind: 'group.items' },
+                as: 'item',
+                key: 'item.id',
+                template: node(
+                  81,
+                  'row',
+                  {},
+                  { children: [node(82, 'switch', { label: 'On' })] },
+                ),
+              },
+            ],
+          },
+        ),
+      },
+    ],
+    {
+      groups: {
+        type: rowType([
+          { name: 'id', type: str },
+          { name: 'items', type: rowType([{ name: 'id', type: str }]) },
+        ]),
+        default: [
+          { id: 'g1', items: [{ id: 'a' }, { id: 'b' }] },
+          { id: 'g2', items: [{ id: 'a' }] },
+        ],
+      },
+    },
+  );
+
 describe('play-time values (pure)', () => {
+  it('keys a row inside another row by its path (KF-ZMBST3)', () => {
+    expect(rowPath('a')).toBe(rowPath(['a']));
+    let rows = setRowProp({}, id(62), ['g2', 'a'], 'checked', true);
+    expect(rowPropsOf(rows, id(62), ['g2', 'a'])).toEqual({ checked: true });
+    expect(rowPropsOf(rows, id(62), ['g1', 'a'])).toEqual({});
+    expect(rowPropsOf(rows, id(62), 'a')).toEqual({});
+    rows = setRowProp(rows, id(62), ['g2', 'a'], 'open', true);
+    expect(rowPropsOf(rows, id(62), ['g2', 'a'])).toEqual({
+      checked: true,
+      open: true,
+    });
+    // A path read from marks: the outer rows' keys, then its own.
+    const marks =
+      (values: Record<string, unknown>) =>
+      (name: string): unknown =>
+        values[name];
+    expect(rowPathOf(marks({ 'data-key': 'r1' }))).toEqual(['r1']);
+    expect(
+      rowPathOf(
+        marks({
+          'data-kerf-outer-0': 'g1',
+          'data-kerf-outer-1': 7,
+          'data-kerf-row': 'x',
+          'data-key': 'ignored',
+        }),
+      ),
+    ).toEqual(['g1', '7', 'x']);
+    expect(rowPathOf(marks({ 'data-kerf-outer-0': 'g1' }))).toBeUndefined();
+    expect(rowPathOf(marks({ 'data-key': {} }))).toBeUndefined();
+    // The renderer lays a row's props over it by its path.
+    const seen: Record<string, unknown>[] = [];
+    const wrapped = withRowProps(
+      {
+        a: (props: Record<string, unknown>) => {
+          seen.push(props);
+          return raw('');
+        },
+      },
+      rows,
+    );
+    const at = (outer: string) => ({
+      'data-kerf-node': id(62),
+      'data-kerf-outer-0': outer,
+      'data-key': 'a',
+    });
+    wrapped.a({ rootAttributes: at('g2') });
+    wrapped.a({ rootAttributes: at('g1') });
+    expect(seen[0]!.checked).toBe(true);
+    expect(seen[1]!.checked).toBeUndefined();
+  });
+
+  it('records a value for a row by its path (KF-ZMBST3)', () => {
+    const source = nestedSwitches();
+    const recorded = recordValue(
+      source,
+      {},
+      id(82),
+      ['g2', 'a'],
+      'checked',
+      true,
+    );
+    expect(rowPropsOf(recorded.rows, id(82), ['g2', 'a'])).toEqual({
+      checked: true,
+    });
+    expect(rowPropsOf(recorded.rows, id(82), ['g1', 'a'])).toEqual({});
+  });
+
   it('lays per-row props over a repeated row', () => {
     const rows = setRowProp({}, id(16), 'r1', 'checked', true);
     expect(rowPropsOf(rows, id(16), 'r1')).toEqual({ checked: true });
@@ -578,9 +695,12 @@ describe('play-time values (pure)', () => {
     expect(mark(57)).toEqual({});
     // A node holding an inner `$each` takes the outer key; the inner row's
     // root keeps its data-key, and its own nodes take the inner key.
+    // KF-ZMBST3: both also take the outer row's key, outermost first.
+    const outer = { 'data-kerf-outer-0': { $bind: 'row.id' } };
     expect(mark(46).rootAttributes).toEqual(row);
-    expect(mark(54).rootAttributes).toBeUndefined();
+    expect(mark(54).rootAttributes).toEqual(outer);
     expect(mark(47).rootAttributes).toEqual({
+      ...outer,
       'data-kerf-row': { $bind: 'sub.id' },
     });
     expect(JSON.stringify(marked)).toContain('"$slot":"extra"');
@@ -652,6 +772,48 @@ describe('play-time layout transitions (pure)', () => {
     const placed = selectTabBarItem(row.document, id(22), row.rows);
     expect(propsOf(placed.document, 22).selected).toBe(true);
     expect(rowPropsOf(placed.rows, id(23), 't2')).toEqual({ selected: false });
+  });
+
+  it('selects a repeated tab per outer row’s bar (KF-ZMBST3)', () => {
+    const source = nestedTabs();
+    const g2 = selectTabBarItem(source, id(62), {}, ['g2', 'a']);
+    expect(rowPropsOf(g2.rows, id(62), ['g2', 'a'])).toEqual({
+      selected: true,
+    });
+    expect(rowPropsOf(g2.rows, id(62), ['g2', 'c'])).toEqual({
+      selected: false,
+    });
+    // Group 1's bar is another bar: its rows are untouched.
+    expect(rowPropsOf(g2.rows, id(62), ['g1', 'a'])).toEqual({});
+    // Selecting in group 1's bar keeps group 2's selection, and a row's
+    // other props.
+    const checked = setRowProp(g2.rows, id(62), ['g1', 'a'], 'checked', true);
+    const g1 = selectTabBarItem(source, id(62), checked, ['g1', 'b']);
+    expect(rowPropsOf(g1.rows, id(62), ['g1', 'b'])).toEqual({
+      selected: true,
+    });
+    expect(rowPropsOf(g1.rows, id(62), ['g1', 'a'])).toEqual({
+      selected: false,
+      checked: true,
+    });
+    expect(rowPropsOf(g1.rows, id(62), ['g2', 'a'])).toEqual({
+      selected: true,
+    });
+    // Moving the selection within group 2's bar clears its old row.
+    const moved = selectTabBarItem(source, id(62), g1.rows, ['g2', 'c']);
+    expect(rowPropsOf(moved.rows, id(62), ['g2', 'a'])).toEqual({
+      selected: false,
+    });
+    expect(rowPropsOf(moved.rows, id(62), ['g1', 'b'])).toEqual({
+      selected: true,
+    });
+    // A one-key row keeps its other props when another row selects.
+    const top = setRowProp({}, id(23), 't1', 'checked', true);
+    const selected = selectTabBarItem(layouts(), id(23), top, 't2');
+    expect(rowPropsOf(selected.rows, id(23), 't1')).toEqual({
+      selected: false,
+      checked: true,
+    });
   });
 
   it('closes a placed tab and hands its selection on', () => {
@@ -1009,5 +1171,53 @@ describe('the play page’s nested rows (KF-7XQAFR)', () => {
     expect(data('Id 3')).not.toBeNull();
     // The play copy is unchanged; the param moved.
     expect(JSON.stringify(player.document.value)).toContain(id(64));
+  });
+});
+
+describe('the play page’s rows inside rows (KF-ZMBST3)', () => {
+  it('keeps a Switch to its row when its key repeats across outer rows', async () => {
+    const { root } = await play(nestedSwitches());
+    const input = (group: string, key: string) =>
+      root.querySelector<HTMLInputElement>(
+        `[data-kerf-node="${id(81)}"][data-kerf-outer-0="${group}"][data-key="${key}"] input`,
+      )!;
+    input('g2', 'a').checked = true;
+    change(input('g2', 'a'));
+    await settled();
+    expect(input('g2', 'a').hasAttribute('checked')).toBe(true);
+    expect(input('g1', 'a').hasAttribute('checked')).toBe(false);
+    expect(input('g1', 'b').hasAttribute('checked')).toBe(false);
+    input('g1', 'a').checked = true;
+    change(input('g1', 'a'));
+    input('g2', 'a').checked = false;
+    change(input('g2', 'a'));
+    await settled();
+    expect(input('g1', 'a').hasAttribute('checked')).toBe(true);
+    expect(input('g2', 'a').hasAttribute('checked')).toBe(false);
+  });
+
+  it('selects and closes a tab in its own outer row’s bar', async () => {
+    const { root } = await play(nestedTabs());
+    const tab = (group: string, key: string) =>
+      root.querySelector<HTMLElement>(
+        `[data-kerf-node="${id(62)}"][data-kerf-outer-0="${group}"][data-key="${key}"]`,
+      );
+    tab('g2', 'a')!.click();
+    await settled();
+    expect(tab('g2', 'a')!.dataset.selected).toBe('true');
+    expect(tab('g1', 'a')!.dataset.selected).toBe('false');
+    tab('g1', 'b')!.click();
+    await settled();
+    expect(tab('g1', 'b')!.dataset.selected).toBe('true');
+    expect(tab('g2', 'a')!.dataset.selected).toBe('true');
+    // Closing group 2's selected `a` hands the selection to group 2's `c`.
+    tab('g2', 'a')!
+      .querySelector<HTMLElement>('.kui-tab-bar-item__close')!
+      .click();
+    await settled();
+    expect(tab('g2', 'a')).toBeNull();
+    expect(tab('g1', 'a')).not.toBeNull();
+    expect(tab('g2', 'c')!.dataset.selected).toBe('true');
+    expect(tab('g1', 'b')!.dataset.selected).toBe('true');
   });
 });

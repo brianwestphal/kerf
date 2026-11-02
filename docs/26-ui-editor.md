@@ -815,7 +815,10 @@ never styled from outside. This matches Kerf UI's "configure, never override".
     its outer row, and its rows still carry `data-key`, so a row action in
     an inner row reports the inner row's key. Inner keys need only be
     unique within their outer row; a keyed ref (§4.4) on an inner template
-    returns the first row with that key.
+    returns the first row with that key. (KF-ZMBST3 kept that contract: to
+    reach an inner row in a later outer row, take the outer row's element
+    first and query inside it. Play mode keys its row state by the full
+    path of row keys instead, §11.4.)
   - A `#view` inside an `$each` template cannot compose a document that has
     its own top-level `$each` (`KUI-V016`): that document's generated module
     renders a keyed `each()`, and it cannot know it is rendered inside a
@@ -1649,6 +1652,17 @@ document and its param values by `postMessage` and renders them with
   handler (below). The copy is discarded on exit, and the edited document is
   never changed. This resolves the §9 limitation for play mode; the editing
   canvas stays static.
+- **Repeated rows keep their own play-time state.** A change to a node
+  repeated by `$each` (a Switch's value, a repeated tab's selection) lives
+  in per-row state that the play renderer lays over that row's props,
+  never in the document node every row shares. A node nested inside a row
+  is marked with its row's key (`data-kerf-row`, KF-7XQAFR). A row inside
+  another row's repeat (§3.5) is known by its **row path**, the keys of
+  every enclosing row, outermost first, then its own (KF-ZMBST3). So tab
+  `a` in group 1 and tab `a` in group 2 are separate rows: the play page
+  marks such nodes with each outer row's key (`data-kerf-outer-0`, `-1`, …).
+  A TabBar repeated per outer row is one bar per row: selecting a tab
+  changes only that row's bar.
 - **Params** use the same values the canvas preview uses (example and
   placeholder values, §3.4). There is no separate params editor.
 - **Actions** (`$action`, §4.2) call a **mock handler** when the host

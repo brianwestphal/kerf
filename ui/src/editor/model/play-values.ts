@@ -10,7 +10,9 @@
 //   keyed by the row's `data-key`, which the play renderer lays over that
 //   row's props (`withRowProps`). KF-7XQAFR: a node nested inside a row
 //   (not the template's root) carries its row's key as `data-kerf-row`
-//   (`markRows`), so it changes for its row too.
+//   (`markRows`), so it changes for its row too. KF-ZMBST3: a row inside
+//   another row is known by its path of row keys (`data-kerf-outer-<n>`
+//   marks), so a key repeated across outer rows names separate rows.
 //
 // Each returns its inputs unchanged when nothing applies.
 import {
@@ -26,48 +28,72 @@ import type { SafeHtml } from 'kerfjs';
 import { findNode, visitNodes } from './document.js';
 import { setProp } from './edits.js';
 
-/** One repeated node's per-row props: under every row, then by row key. */
+/**
+ * A row, by its key and (KF-ZMBST3) the keys of the rows it sits in. A
+ * repeat inside another's row needs its keys unique only within the outer
+ * row, so a row is known by its **path**: every enclosing row's key,
+ * outermost first, ending in its own. A plain string is a one-key path.
+ */
+export type RowKey = string | readonly string[];
+
+/** `key` as a path. */
+const pathOf = (key: RowKey): readonly string[] =>
+  typeof key === 'string' ? [key] : key;
+
+/** A row path as `RowState` stores it. */
+export const rowPath = (key: RowKey): string => JSON.stringify(pathOf(key));
+
+type Props = Readonly<Record<string, unknown>>;
+
+/**
+ * One repeated node's per-row props: under every row; under every row of
+ * one outer row (`under`, by the outer row's `rowPath`; KF-ZMBST3); then by
+ * the row's own `rowPath`.
+ */
 export interface RowState {
-  readonly every: Readonly<Record<string, unknown>>;
-  readonly keys: Readonly<Record<string, Readonly<Record<string, unknown>>>>;
+  readonly every: Props;
+  readonly under?: Readonly<Record<string, Props>>;
+  readonly keys: Readonly<Record<string, Props>>;
 }
 
 /** Per-row props of the play copy's repeated nodes, by node id. */
 export type RowProps = Readonly<Record<string, RowState>>;
 
-/** `rows` with node `id`'s rows set to `every` and `keys`. */
+/** `rows` with node `id`'s rows set to `state`. */
 export function setRowProps(
   rows: RowProps,
   id: string,
-  every: Readonly<Record<string, unknown>>,
-  keys: RowState['keys'],
+  state: RowState,
 ): RowProps {
-  return { ...rows, [id]: { every, keys } };
+  return { ...rows, [id]: state };
 }
 
 /** `rows` with node `id`'s row `key` taking `prop` = `value`. */
 export function setRowProp(
   rows: RowProps,
   id: string,
-  key: string,
+  key: RowKey,
   prop: string,
   value: unknown,
 ): RowProps {
   const current = rows[id] ?? { every: {}, keys: {} };
-  return setRowProps(rows, id, current.every, {
-    ...current.keys,
-    [key]: { ...current.keys[key], [prop]: value },
+  const path = rowPath(key);
+  return setRowProps(rows, id, {
+    ...current,
+    keys: { ...current.keys, [path]: { ...current.keys[path], [prop]: value } },
   });
 }
 
 /** The props `rows` lays over node `id`'s row `key`. */
-export const rowPropsOf = (
-  rows: RowProps,
-  id: string,
-  key: string,
-): Readonly<Record<string, unknown>> => {
+export const rowPropsOf = (rows: RowProps, id: string, key: RowKey): Props => {
   const state = rows[id];
-  return state ? { ...state.every, ...state.keys[key] } : {};
+  if (!state) return {};
+  const path = pathOf(key);
+  return {
+    ...state.every,
+    ...(path.length > 1 ? state.under?.[rowPath(path.slice(0, -1))] : {}),
+    ...state.keys[rowPath(path)],
+  };
 };
 
 /**
@@ -95,24 +121,41 @@ export function fresh<Value>(value: Value): Value {
  */
 export const ROW_MARK = 'data-kerf-row';
 
+/**
+ * KF-ZMBST3: the marks naming the rows around a node's own row, outermost
+ * first: `data-kerf-outer-0`, `data-kerf-outer-1`, ….
+ */
+export const OUTER_MARK = 'data-kerf-outer-';
+
 type Each = Extract<ViewChild, { $each: unknown }>;
 
 /**
- * `document` with every node nested inside an `$each` row (not the
- * template's root, which has its `data-key`) marked with its row's key: a
- * `$bind` to the innermost `$each`'s key, through the node's data channel.
- * Play mode only, after validation, which reserves `data-kerf-*` for the
- * renderer. A node with no data channel, or whose `rootAttributes` is an
- * expression, stays unmarked.
+ * `document` with every node inside an `$each` row marked with the keys of
+ * its rows (`$bind`s to each enclosing `$each`'s key), through the node's
+ * data channel: a node nested in a row (not the template's root, which has
+ * its `data-key`) takes its row's key as `data-kerf-row`, and (KF-ZMBST3) a
+ * node in a row inside other rows takes each outer row's key as
+ * `data-kerf-outer-<depth>`. Play mode only, after validation, which
+ * reserves `data-kerf-*` for the renderer. A node with no data channel, or
+ * whose `rootAttributes` is an expression, stays unmarked.
  */
 export function markRows(
   document: ViewDocument,
   catalog: ViewCatalog,
 ): ViewDocument {
-  const mark = (node: ViewNode, key: string): ViewNode => {
+  const mark = (
+    node: ViewNode,
+    keys: readonly string[],
+    root: boolean,
+  ): ViewNode => {
+    const marks: Record<string, ViewValue> = Object.fromEntries(
+      keys
+        .slice(0, -1)
+        .map((key, depth) => [`${OUTER_MARK}${depth}`, { $bind: key }]),
+    );
+    if (!root) marks[ROW_MARK] = { $bind: keys.at(-1)! };
     const component = catalog.components.get(node.type)?.component;
-    if (!component) return node;
-    const bind = { $bind: key };
+    if (!component || Object.keys(marks).length === 0) return node;
     switch (channelOf(component as Parameters<typeof channelOf>[0])) {
       case 'rootAttributes': {
         const base = node.props?.rootAttributes ?? {};
@@ -122,47 +165,50 @@ export function markRows(
           ...node,
           props: {
             ...node.props,
-            rootAttributes: { ...(base as object), [ROW_MARK]: bind },
+            rootAttributes: { ...(base as object), ...marks },
           },
         };
       }
       case 'native':
       case 'attributes':
-        return { ...node, props: { ...node.props, [ROW_MARK]: bind } };
+        return { ...node, props: { ...node.props, ...marks } };
       default:
         return node;
     }
   };
-  const child = (item: ViewChild, key: string | undefined): ViewChild => {
+  const child = (item: ViewChild, keys: readonly string[]): ViewChild => {
     if ('$each' in item)
-      return { ...item, template: node(item.template, item.key, false) };
+      return {
+        ...item,
+        template: node(item.template, [...keys, item.key], true),
+      };
     if ('$if' in item)
       return {
         ...item,
-        then: child(item.then, key),
-        ...(item.else ? { else: child(item.else, key) } : {}),
+        then: child(item.then, keys),
+        ...(item.else ? { else: child(item.else, keys) } : {}),
       };
     if ('$slot' in item) return item;
-    return node(item, key, true);
+    return node(item, keys, false);
   };
   const node = (
     item: ViewNode,
-    key: string | undefined,
-    nested: boolean,
+    keys: readonly string[],
+    root: boolean,
   ): ViewNode => {
-    const marked = key !== undefined && nested ? mark(item, key) : item;
+    const marked = keys.length > 0 ? mark(item, keys, root) : item;
     if (!item.zones) return marked;
     return {
       ...marked,
       zones: Object.fromEntries(
         Object.entries(item.zones).map(([zone, children]) => [
           zone,
-          children.map((entry) => child(entry, key)),
+          children.map((entry) => child(entry, keys)),
         ]),
       ),
     };
   };
-  return { ...document, root: node(document.root, undefined, false) };
+  return { ...document, root: node(document.root, [], false) };
 }
 
 type ComponentFunction = (props: Record<string, unknown>) => SafeHtml;
@@ -174,11 +220,32 @@ const rowKeyOf = (value: unknown): string | undefined =>
     : undefined;
 
 /**
+ * The path of the row a node is in, from its marks (its props, or the
+ * attributes of its rendered element; `marks` reads one by name): the outer
+ * rows' keys (KF-ZMBST3), then its own row's, `data-kerf-row` for a node
+ * nested in the row (KF-7XQAFR) or `data-key` for the template's root.
+ * Undefined outside any row.
+ */
+export function rowPathOf(
+  marks: (name: string) => unknown,
+): readonly string[] | undefined {
+  const key = rowKeyOf(marks(ROW_MARK) ?? marks('data-key'));
+  if (key === undefined) return undefined;
+  const path: string[] = [];
+  for (
+    let outer = rowKeyOf(marks(`${OUTER_MARK}0`));
+    outer !== undefined;
+    outer = rowKeyOf(marks(`${OUTER_MARK}${path.length}`))
+  )
+    path.push(outer);
+  return [...path, key];
+}
+
+/**
  * `components` with each repeated row's play-time props laid over the props
- * the document gives it. A row is known by the node id and row key the
- * renderer marks it with, in `rootAttributes` or directly on the props: a
- * template's root by its `data-key`, a node nested in the row by its
- * `data-kerf-row` (KF-7XQAFR).
+ * the document gives it. A row is known by the node id and row path the
+ * renderer marks it with (`rowPathOf`), in `rootAttributes` or directly on
+ * the props.
  */
 export function withRowProps<
   Components extends Readonly<Record<string, unknown>>,
@@ -195,10 +262,10 @@ export function withRowProps<
               unknown
             >;
             const id = marks['data-kerf-node'];
-            const key = rowKeyOf(marks[ROW_MARK] ?? marks['data-key']);
+            const path = rowPathOf((name) => marks[name]);
             return (render as ComponentFunction)(
-              typeof id === 'string' && key !== undefined
-                ? { ...props, ...rowPropsOf(rows, id, key) }
+              typeof id === 'string' && path !== undefined
+                ? { ...props, ...rowPropsOf(rows, id, path) }
                 : props,
             );
           },
@@ -235,7 +302,7 @@ export function recordValue(
   document: ViewDocument,
   rows: RowProps,
   id: string,
-  key: string | undefined,
+  key: RowKey | undefined,
   prop: string,
   value: unknown,
 ): RecordedValue {

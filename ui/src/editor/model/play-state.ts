@@ -18,7 +18,13 @@ import {
 } from '../../components/navigation/tab-bar/wiring/wire-tab-bars.js';
 import { findNode, visitNodes } from './document.js';
 import { removeNode, setProp } from './edits.js';
-import { type RowProps, setRowProps } from './play-values.js';
+import {
+  type RowKey,
+  rowPath,
+  type RowProps,
+  type RowState,
+  setRowProps,
+} from './play-values.js';
 import { cutStack } from './shown-scenes.js';
 
 export const TAB_NAVIGATOR = '@kerfjs/ui:tab-navigator';
@@ -95,23 +101,70 @@ function barItems(bar: ViewNode) {
 }
 
 /**
+ * A repeated TabBarItem's rows with none selected: the rows inside outer row
+ * `outer` (a row path; KF-ZMBST3), or every row when `outer` is undefined.
+ * Then row `selected`, when given, is selected. Rows keep their other props.
+ */
+function deselectRows(
+  state: RowState | undefined,
+  outer: readonly string[] | undefined,
+  selected: readonly string[] | undefined,
+): RowState {
+  const { every = {}, under = {}, keys = {} } = state ?? {};
+  const inScope = (path: string) => {
+    if (!outer) return true;
+    const parts = JSON.parse(path) as string[];
+    return (
+      parts.length === outer.length + 1 &&
+      outer.every((part, at) => parts[at] === part)
+    );
+  };
+  const nextKeys = Object.fromEntries(
+    Object.entries(keys).map(([path, props]) => [
+      path,
+      inScope(path)
+        ? Object.fromEntries(
+            Object.entries(props).filter(([prop]) => prop !== 'selected'),
+          )
+        : props,
+    ]),
+  );
+  if (selected)
+    nextKeys[rowPath(selected)] = {
+      ...nextKeys[rowPath(selected)],
+      selected: true,
+    };
+  return outer && outer.length > 0
+    ? {
+        every,
+        under: { ...under, [rowPath(outer)]: { selected: false } },
+        keys: nextKeys,
+      }
+    : { every: { ...every, selected: false }, under, keys: nextKeys };
+}
+
+/**
  * TabBarItem `id` becomes its TabBar's selected tab: it is `selected`, and
  * every other TabBarItem in the same bar is not. A TabBarItem repeated by
  * `$each` (KF-XV732Q) keeps its selection per row, in `rows`: `key` is the
  * selected row's, and every other row of every repeated item in the bar is
- * not selected. Returns the inputs themselves when nothing applies.
+ * not selected. KF-ZMBST3: a bar repeated inside an outer row is one bar per
+ * outer row, so `key`'s path scopes that to the selected row's outer row;
+ * the other outer rows' bars keep their selection. Returns the inputs
+ * themselves when nothing applies.
  */
 export function selectTabBarItem(
   document: ViewDocument,
   id: string,
   rows: RowProps = {},
-  key?: string,
+  key?: RowKey,
 ): { document: ViewDocument; rows: RowProps } {
   const visit = findNode(document, id);
   const bar = visit?.ancestors.at(-1)?.node;
   if (visit?.node.type !== TAB_BAR_ITEM || bar?.type !== TAB_BAR)
     return { document, rows };
   const repeated = visit.repeated && key !== undefined;
+  const path = typeof key === 'string' ? [key] : key;
   let next = document;
   let nextRows = rows;
   for (const item of barItems(bar)) {
@@ -119,8 +172,11 @@ export function selectTabBarItem(
       nextRows = setRowProps(
         nextRows,
         item.node.id,
-        { selected: false },
-        repeated && item.node.id === id ? { [key]: { selected: true } } : {},
+        deselectRows(
+          nextRows[item.node.id],
+          repeated ? path!.slice(0, -1) : undefined,
+          repeated && item.node.id === id ? path! : undefined,
+        ),
       );
       continue;
     }

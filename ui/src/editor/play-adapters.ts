@@ -10,7 +10,8 @@
 // SplitView, value controls (model/play-values.ts), sidebars with several
 // toggles, per-row TabBarItem selection, and tab close. KF-7XQAFR: a value
 // control nested inside an `$each` row records for its row (`data-kerf-row`),
-// and a repeated tab closes wherever its items come from.
+// and a repeated tab closes wherever its items come from. KF-ZMBST3: a row
+// inside another row is known by its path of row keys.
 import type { ViewDocument } from '@kerfjs/ui/view';
 import {
   delegate,
@@ -69,6 +70,8 @@ import {
   closeRow,
   nodeWithId,
   recordValue,
+  type RowKey,
+  rowPathOf,
   type RowProps,
   rowPropsOf,
 } from './model/play-values.js';
@@ -124,10 +127,15 @@ const panelOf = (
 const defaultSize = (key: WorkbenchPanelKey) =>
   key === 'bottomDrawer' ? 220 : 280;
 
+/** The path of the row `element` (a rendered node) is in (KF-ZMBST3). */
+const rowAt = (element: HTMLElement) =>
+  rowPathOf((name) => element.getAttribute(name) ?? undefined);
+
 /**
- * The nearest rendered node at or above `element`, with its row key: a
- * template root's `data-key`, or (KF-7XQAFR) the `data-kerf-row` of a node
- * nested inside a row.
+ * The nearest rendered node at or above `element`, with its `data-key` (a
+ * template root's) and the path of the row it is in: (KF-7XQAFR) a node
+ * nested inside a row is in that row too, and (KF-ZMBST3) a row inside
+ * other rows is known by their keys as well as its own.
  */
 const nodeAt = (element: Element | null) => {
   const rendered = element?.closest<HTMLElement>('[data-kerf-node]');
@@ -136,7 +144,7 @@ const nodeAt = (element: Element | null) => {
         element: rendered,
         id: rendered.dataset.kerfNode!,
         key: rendered.dataset.key,
-        row: rendered.dataset.kerfRow ?? rendered.dataset.key,
+        row: rowAt(rendered),
       }
     : undefined;
 };
@@ -388,7 +396,7 @@ export function wirePlayState(
   /** Records the person's change to node `id`'s `prop` (row `key`). */
   const record = (
     id: string,
-    key: string | undefined,
+    key: RowKey | undefined,
     prop: string,
     value: unknown,
   ) => {
@@ -447,7 +455,7 @@ export function wirePlayState(
       if (findNode(state.value, at.id)?.node.type === TAB_BAR_ITEM) return at;
     return undefined;
   };
-  const selectItem = (id: string, key: string | undefined) => {
+  const selectItem = (id: string, key: RowKey | undefined) => {
     const selected = selectTabBarItem(state.value, id, rows.value, key);
     rows.value = selected.rows;
     state.value = selected.document;
@@ -513,7 +521,7 @@ export function wirePlayState(
         );
         if (!closed) return;
         // A closed selected row hands its selection to a neighbor row.
-        if (rowPropsOf(rows.value, at.id, at.key).selected === true) {
+        if (rowPropsOf(rows.value, at.id, at.row!).selected === true) {
           const siblings = [
             ...at.element.parentElement!.querySelectorAll<HTMLElement>(
               `:scope > [data-kerf-node="${at.id}"]`,
@@ -521,7 +529,7 @@ export function wirePlayState(
           ];
           const index = siblings.indexOf(at.element);
           const neighbor = siblings[index + 1] ?? siblings[index - 1];
-          if (neighbor) selectItem(at.id, neighbor.dataset.key);
+          if (neighbor) selectItem(at.id, rowAt(neighbor));
         }
         setParams(closed);
       },
@@ -536,7 +544,9 @@ export function wirePlayState(
       (_event, target) => {
         if (target.closest('.kui-tab-bar-item__close')) return;
         const at = tabItemAt(target);
-        if (at) selectItem(at.id, at.key);
+        // A placed tab (no `data-key`) selects in the document, even when
+        // its bar sits in a row.
+        if (at) selectItem(at.id, at.key === undefined ? undefined : at.row);
       },
     ),
     () => {

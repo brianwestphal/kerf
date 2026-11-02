@@ -797,3 +797,100 @@ test('closing a tab repeated from an outer row’s array closes only that tab', 
     0,
   );
 });
+
+// KF-ZMBST3: inner rows whose keys repeat across outer rows keep their own
+// play-time state: a Switch per item, and a tab selection per group's bar.
+const groupSwitchesDocument = {
+  schema: 'kerf-ui-document/v1',
+  name: 'GroupSwitches',
+  catalogs: ['@kerfjs/ui'],
+  params: {
+    groups: {
+      type: {
+        kind: 'array',
+        items: {
+          kind: 'object',
+          props: [
+            { name: 'id', type: { kind: 'string' }, required: true },
+            { name: 'items', type: itemsParam().type, required: true },
+          ],
+        },
+      },
+      default: [1, 2].map((n) => ({
+        id: `g${n}`,
+        items: [{ id: 'a', name: `A${n}` }],
+      })),
+    },
+  },
+  root: kui(
+    50,
+    'pane',
+    {},
+    {
+      content: [
+        {
+          $each: { $param: 'groups' },
+          as: 'group',
+          key: 'group.id',
+          template: kui(
+            51,
+            'row',
+            {},
+            {
+              children: [
+                {
+                  $each: { $bind: 'group.items' },
+                  as: 'item',
+                  key: 'item.id',
+                  template: kui(
+                    52,
+                    'row',
+                    {},
+                    {
+                      children: [
+                        kui(53, 'switch', { label: { $bind: 'item.name' } }),
+                      ],
+                    },
+                  ),
+                },
+              ],
+            },
+          ),
+        },
+      ],
+    },
+  ),
+};
+
+test('inner rows sharing a key across outer rows keep their own state', async ({
+  page,
+}) => {
+  const view = await openPlayed(page, groupSwitchesDocument, 4);
+  const toggle = (name: string) => view.getByRole('switch', { name });
+  await toggle('A2').check();
+  await expect(toggle('A2')).toBeChecked();
+  await expect(toggle('A1')).not.toBeChecked();
+  await toggle('A1').check();
+  await toggle('A2').uncheck();
+  await expect(toggle('A1')).toBeChecked();
+  await expect(toggle('A2')).not.toBeChecked();
+});
+
+test('a TabBar repeated per group keeps its own selection', async ({
+  page,
+}) => {
+  const view = await openPlayed(page, groupsDocument, 3);
+  const tab = (name: string) => view.getByRole('tab', { name, exact: true });
+  await tab('A2').click();
+  await expect(tab('A2')).toHaveAttribute('aria-selected', 'true');
+  await expect(tab('A1')).toHaveAttribute('aria-selected', 'false');
+  await tab('B1').click();
+  await expect(tab('B1')).toHaveAttribute('aria-selected', 'true');
+  await expect(tab('A2')).toHaveAttribute('aria-selected', 'true');
+  await expect(tab('A1')).toHaveAttribute('aria-selected', 'false');
+  // Closing group 2's selected tab hands its selection to group 2's next.
+  await view.getByRole('button', { name: 'Close A2' }).click();
+  await expect(tab('A2')).toHaveCount(0);
+  await expect(tab('B2')).toHaveAttribute('aria-selected', 'true');
+  await expect(tab('B1')).toHaveAttribute('aria-selected', 'true');
+});
