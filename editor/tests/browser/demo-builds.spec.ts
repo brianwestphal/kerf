@@ -1614,3 +1614,181 @@ test('builds NavStack › Configured Toolbar', async ({ page }) => {
     ),
   );
 });
+
+test('builds NavStack › Overlay Chrome', async ({ page }) => {
+  // A whole screen built step by step runs long in Firefox.
+  test.slow();
+  await dragComponent(page, 'NavStack', () => emptySpot(page));
+  await select(page, /^NavStack/);
+  // Below the root it needs a height of its own (KF-6MGYSG).
+  await embedIn(page, 'SizedRegion');
+  await select(page, /^NavStack/);
+  await setText(page, 'id', 'catalog-nav-stack-overlay');
+  await setText(page, 'label', 'Overlay Inbox');
+  await setText(page, 'backLabel', 'Back to Inbox');
+  await choose(page, 'chromePresentation', 'overlay');
+  await choose(page, 'bottomToolbarPresentation', 'overlay');
+  const dialog = page.locator('dialog[open]');
+  const stack = page.locator('#editor-inspector-stack');
+  // The stack's own bottom toolbar, laid over its views.
+  await page.getByRole('button', { name: 'Configure bottom toolbar' }).click();
+  await setField(page, 'bottomToolbar', ['label'], 'Inbox Actions');
+  await stack.getByRole('button', { name: 'Back' }).click();
+  const bottomZone = async (zone: string, component: string) => {
+    await select(page, /^NavStack/);
+    await page
+      .getByRole('button', { name: 'Configure bottom toolbar' })
+      .click();
+    await stack.getByText(zone, { exact: true }).click();
+    // The new node is selected.
+    await addChild(page, component);
+    await area(page, 'Properties');
+  };
+  const command = async (nth: number, ariaLabel: string, glyph: string) => {
+    await select(page, /^ToolbarButton/, nth);
+    await setText(page, 'ariaLabel', ariaLabel);
+    await setText(page, 'children', '');
+    await setText(page, 'action', 'nav-stack-demo-command');
+    await addIcon(page, 'icon', glyph);
+  };
+  await bottomZone('Leading', 'ToolbarControlGroup');
+  await setText(page, 'label', 'Filter');
+  await choose(page, 'appearance', 'borderless');
+  await turnOn(page, 'single');
+  await command(0, 'Filter Messages', 'funnel');
+  await bottomZone('Center', 'ToolbarText');
+  await setText(page, 'text', 'Updated Just Now');
+  await choose(page, 'size', 'small');
+  await bottomZone('Trailing', 'ToolbarControlGroup');
+  await setText(page, 'label', 'Compose');
+  await choose(page, 'appearance', 'borderless');
+  await turnOn(page, 'single');
+  await command(1, 'New Message', 'square-pen');
+  // One inbox view.
+  await select(page, /^NavStack/);
+  await page.getByRole('button', { name: 'Configure views' }).click();
+  await dialog.getByRole('button', { name: 'Remove View 3' }).click();
+  await dialog.getByRole('button', { name: 'Remove View 2' }).click();
+  await dialog.locator('[data-action="editor-open-field"]').first().click();
+  await setField(page, 'views', [0, 'key'], 'inbox');
+  await dialog.getByText('Toolbar', { exact: true }).click();
+  await setField(page, 'views', [0, 'toolbar', 'title'], 'Inbox');
+  await dialog.getByRole('button', { name: 'Back' }).click();
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  // The inbox: four kinds of message, repeated.
+  await select(page, /^NavStack/);
+  await dragComponent(page, 'List', () =>
+    canvas(page).locator('[data-editor-empty]', {
+      hasText: 'view1Content slot — drop here',
+    }),
+  );
+  await dragComponent(page, 'ListItem', () =>
+    canvas(page).locator('[data-editor-empty]', { hasText: 'List is empty' }),
+  );
+  const kinds = [
+    ['Design Review', 'calendar', 'brand'],
+    ['Backup Complete', 'shield-check', 'success'],
+    ['Storage Almost Full', 'bell', 'warning'],
+    ['Weekly Summary', 'mail', 'neutral'],
+  ] as const;
+  await select(page, /^ListItem/);
+  await setText(page, 'action', 'open-overlay-nav-stack-message');
+  await addIcon(page, 'icon', 'calendar');
+  for (const [index, [label, glyph, tone]] of kinds.entries()) {
+    if (index > 0) {
+      await select(page, /^ListItem/, index - 1);
+      await page.keyboard.press('ControlOrMeta+d');
+      // The icon a copy brings is the kind before's; pick its own. The
+      // copy's icon is the outline row right after it.
+      await area(page, 'Outline');
+      const rows = page.locator('[data-action="editor-select-node"]');
+      const texts = await rows.allTextContents();
+      let seen = -1;
+      const at = texts.findIndex(
+        (text) => /^ListItem/.test(text) && ++seen === index,
+      );
+      await rows.nth(at + 1).click();
+      await area(page, 'Properties');
+      await pickIcon(page, page.locator('[data-editor-icon-place]'), glyph);
+    }
+    await select(page, /^ListItem/, index);
+    await setText(page, 'label', label);
+    await choose(page, 'iconTile', tone);
+  }
+  // The rest repeat the four kinds in order: copy one, paste after the last.
+  for (let index = kinds.length; index < 18; index += 1) {
+    await select(page, /^ListItem/, index - kinds.length);
+    await page.keyboard.press('ControlOrMeta+c');
+    await select(page, /^ListItem/, index - 1);
+    await page.keyboard.press('ControlOrMeta+v');
+  }
+  for (let index = 0; index < 18; index += 1) {
+    await select(page, /^ListItem/, index);
+    await setText(page, 'itemId', `overlay-inbox-${index + 1}`);
+  }
+  await select(page, /^NavStack/);
+  const navStack = canvas(page).locator('.kui-nav-stack[data-kerf-node]');
+  await expect(navStack.locator('.kui-list-item')).toHaveCount(18);
+  await expect(navStack).toContainText('Updated Just Now');
+  await page.screenshot({
+    path: test.info().outputPath('kf-jn4pf5-nav-stack-overlay-1440.png'),
+  });
+  const button = (ariaLabel: string, glyph: string) =>
+    node(
+      'toolbar-control-group#ToolbarButton',
+      { ariaLabel, action: 'nav-stack-demo-command' },
+      { icon: [icon(glyph)] },
+    );
+  const group = (label: string, child: unknown) =>
+    node(
+      'toolbar-control-group',
+      { label, appearance: 'borderless', single: true },
+      { children: [child] },
+    );
+  expect(await exported(page)).toEqual(
+    pane(
+      sized(
+        node(
+          'nav-stack',
+          {
+            id: 'catalog-nav-stack-overlay',
+            label: 'Overlay Inbox',
+            backLabel: 'Back to Inbox',
+            chromePresentation: 'overlay',
+            bottomToolbarPresentation: 'overlay',
+            bottomToolbar: { label: 'Inbox Actions' },
+            views: [{ key: 'inbox', toolbar: { title: 'Inbox' } }],
+          },
+          {
+            'bottomToolbar.leading': [
+              group('Filter', button('Filter Messages', 'funnel')),
+            ],
+            'bottomToolbar.center': [
+              node('toolbar-text', { text: 'Updated Just Now', size: 'small' }),
+            ],
+            'bottomToolbar.trailing': [
+              group('Compose', button('New Message', 'square-pen')),
+            ],
+            'views.0.content': [
+              node('list', undefined, {
+                children: Array.from({ length: 18 }, (_, index) => {
+                  const [label, glyph, tone] = kinds[index % 4]!;
+                  return node(
+                    'list-item',
+                    {
+                      action: 'open-overlay-nav-stack-message',
+                      label,
+                      iconTile: tone,
+                      itemId: `overlay-inbox-${index + 1}`,
+                    },
+                    { icon: [icon(glyph)] },
+                  );
+                }),
+              }),
+            ],
+          },
+        ),
+      ),
+    ),
+  );
+});
