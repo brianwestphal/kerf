@@ -125,7 +125,12 @@ export const SAMPLES = new URL('../../samples/', import.meta.url);
  */
 async function saveSample(document: { name: string; root: unknown }) {
   const info = test.info();
-  if (info.project.name !== 'chromium') return;
+  if (
+    info.project.name !== 'chromium' ||
+    !info.file.endsWith('demo-builds.spec.ts') ||
+    !info.title.startsWith('builds ')
+  )
+    return;
   const { name, file } = sampleName(info.title);
   const ids = new Map<string, string>();
   const renumber = (value: unknown): unknown => {
