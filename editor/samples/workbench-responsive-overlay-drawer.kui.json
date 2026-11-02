@@ -1,0 +1,169 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "WorkbenchResponsiveOverlayDrawer",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sized-region",
+          "props": {
+            "minHeight": {
+              "$css": "rem(20)"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:workbench",
+                "props": {
+                  "id": "catalog-workbench-responsive-drawer",
+                  "label": "Responsive Drawer Workbench",
+                  "mainToolbar": {
+                    "label": "Editor"
+                  },
+                  "overlayBackdrop": true,
+                  "mainBottomToolbar": {
+                    "label": "Editor Status"
+                  },
+                  "bottomDrawer": {
+                    "label": "Output",
+                    "size": 180,
+                    "responsiveOverlayAt": "narrow",
+                    "toolbar": {
+                      "label": "Output",
+                      "toggle": {
+                        "action": "toggle-workbench-output",
+                        "name": "Output"
+                      }
+                    }
+                  }
+                },
+                "zones": {
+                  "main": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:content-item",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:list",
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000006",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Narrow the Workbench",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000007",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "At 704 px or narrower the output drawer overlays the bottom of the editor instead of taking its own track.",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            },
+                            "props": {
+                              "gap": "2xs"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "mainToolbar.title": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:toolbar-text",
+                      "props": {
+                        "text": "Editor",
+                        "size": "xlarge"
+                      }
+                    }
+                  ],
+                  "mainBottomToolbar.leading": [
+                    {
+                      "id": "00000000000000000000000009",
+                      "type": "@kerfjs/ui:toolbar-text",
+                      "props": {
+                        "text": "Ready",
+                        "size": "small"
+                      }
+                    }
+                  ],
+                  "bottomDrawer.content": [
+                    {
+                      "id": "00000000000000000000000010",
+                      "type": "@kerfjs/ui:content-item",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000011",
+                            "type": "@kerfjs/ui:list",
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000012",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Build Output",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000013",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Inline above 704 px; an overlay below it",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            },
+                            "props": {
+                              "gap": "2xs"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "bottomDrawer.toolbar.title": [
+                    {
+                      "id": "00000000000000000000000014",
+                      "type": "@kerfjs/ui:toolbar-text",
+                      "props": {
+                        "text": "Output"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

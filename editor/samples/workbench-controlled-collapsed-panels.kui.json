@@ -1,0 +1,333 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "WorkbenchControlledCollapsedPanels",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sized-region",
+          "props": {
+            "minHeight": {
+              "$css": "rem(20)"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:workbench",
+                "props": {
+                  "id": "catalog-workbench-collapsed",
+                  "label": "Focused Editor Workbench",
+                  "mainToolbar": {
+                    "label": "Editor"
+                  },
+                  "leftRail": {
+                    "label": "Navigator",
+                    "toolbar": {
+                      "label": "Navigator",
+                      "toggle": {
+                        "action": "toggle-workbench-collapsed-navigator",
+                        "name": "Navigator"
+                      }
+                    },
+                    "collapsed": true
+                  },
+                  "rightRail": {
+                    "label": "Inspector"
+                  },
+                  "bottomDrawer": {
+                    "label": "Console",
+                    "size": 120,
+                    "separator": "hidden",
+                    "collapseMotion": "fade-slide",
+                    "contentOverflow": "visible",
+                    "toolbar": {
+                      "label": "Console",
+                      "toggle": {
+                        "action": "toggle-workbench-console",
+                        "name": "Console"
+                      }
+                    },
+                    "collapsed": true
+                  }
+                },
+                "zones": {
+                  "main": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:content-item",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:list",
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000006",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "App-Owned Collapsed Flags",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000007",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "A closed panel lends its always-available groups and its toggle to the editor toolbars.",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            },
+                            "props": {
+                              "gap": "2xs"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "mainToolbar.title": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:toolbar-text",
+                      "props": {
+                        "text": "Editor",
+                        "size": "xlarge"
+                      }
+                    }
+                  ],
+                  "leftRail.content": [
+                    {
+                      "id": "00000000000000000000000009",
+                      "type": "@kerfjs/ui:content-item",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000010",
+                            "type": "@kerfjs/ui:list",
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000011",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Navigator",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000012",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Still mounted",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            },
+                            "props": {
+                              "gap": "2xs"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "rightRail.content": [
+                    {
+                      "id": "00000000000000000000000013",
+                      "type": "@kerfjs/ui:content-item",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000014",
+                            "type": "@kerfjs/ui:list",
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000015",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Inspector",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000016",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Visible peripheral panel",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            },
+                            "props": {
+                              "gap": "2xs"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "bottomDrawer.content": [
+                    {
+                      "id": "00000000000000000000000017",
+                      "type": "@kerfjs/ui:content-item",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000018",
+                            "type": "@kerfjs/ui:list",
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000019",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Console",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000020",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Still mounted",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            },
+                            "props": {
+                              "gap": "2xs"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "bottomDrawer.toolbar.title": [
+                    {
+                      "id": "00000000000000000000000021",
+                      "type": "@kerfjs/ui:toolbar-text",
+                      "props": {
+                        "text": "Console"
+                      }
+                    }
+                  ],
+                  "leftRail.toolbar.leading": [
+                    {
+                      "id": "00000000000000000000000022",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000023",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "ariaLabel": "New File",
+                              "action": "workbench-demo-command",
+                              "rootAttributes": {
+                                "data-demo-command": "file-plus"
+                              }
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000024",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "file-plus"
+                                    },
+                                    "name": "file-plus"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "label": "New File",
+                        "appearance": "borderless",
+                        "single": true
+                      }
+                    }
+                  ],
+                  "leftRail.toolbar.trailing": [
+                    {
+                      "id": "00000000000000000000000025",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000026",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "ariaLabel": "Search Files",
+                              "action": "workbench-demo-command",
+                              "rootAttributes": {
+                                "data-demo-command": "search"
+                              }
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000027",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "search"
+                                    },
+                                    "name": "search"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "label": "Search Files",
+                        "appearance": "borderless",
+                        "single": true,
+                        "relocateOnCollapse": true
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

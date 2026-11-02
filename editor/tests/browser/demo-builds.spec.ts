@@ -2282,7 +2282,9 @@ test('builds Workbench › Full Desktop Workspace', async ({ page }) => {
   await embedInOther(page, 'ContentItem');
   // Each panel is a static panel whose content slot takes a DemoContentItem.
   await panel(page, 'leftRail', 'Navigator');
-  await panel(page, 'rightRail', 'Inspector', true);
+  await panel(page, 'rightRail', 'Inspector', () =>
+    chooseField(page, 'rightRail', ['tabIndex'], '0'),
+  );
   await panel(page, 'bottomDrawer', 'Console');
   // The outline lists the panels' content before the work area's.
   const regions = [
@@ -2335,27 +2337,22 @@ test('builds Workbench › Full Desktop Workspace', async ({ page }) => {
 });
 
 /**
- * Makes Workbench panel `prop` a static panel named `label` (keyboard
- * focusable when `focusable`) and drops a DemoContentItem's ContentItem,
- * List, and Text into its content slot on the canvas.
+ * Makes Workbench panel `prop` a static panel named `label`, sets its other
+ * fields with `fields` while its form is open, and drops a DemoContentItem's
+ * ContentItem, List, and Text into its content slot on the canvas.
  */
 async function panel(
   page: Page,
   prop: string,
   label: string,
-  focusable = false,
+  fields?: () => Promise<void>,
 ) {
   await select(page, /^Workbench/);
   await choose(page, prop, 'Static panel…');
-  // leftRail's form opens from "Configure left rail".
-  const words = prop.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`);
-  await page.getByRole('button', { name: `Configure ${words}` }).click();
+  await configure(page, prop);
   await setField(page, prop, ['label'], label);
-  if (focusable) await chooseField(page, prop, ['tabIndex'], '0');
-  await page
-    .locator('#editor-inspector-stack')
-    .getByRole('button', { name: 'Back' })
-    .click();
+  await fields?.();
+  await back(page);
   await dragComponent(page, 'ContentItem', () =>
     canvas(page).locator('[data-editor-empty]', {
       hasText: `${prop}Content slot — drop here`,
@@ -2364,6 +2361,909 @@ async function panel(
   await dragComponent(page, 'List', () => emptySpot(page));
   await dragComponent(page, 'Text', () => emptySpot(page));
 }
+
+/** Opens a Workbench prop's form from its row (`Configure left rail`). */
+async function configure(page: Page, prop: string) {
+  const words = prop.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`);
+  await page.getByRole('button', { name: `Configure ${words}` }).click();
+}
+
+/** Opens the form of the object at `path` inside prop `prop`'s form. */
+const openField = (
+  page: Page,
+  prop: string,
+  path: readonly (string | number)[],
+) =>
+  page
+    .locator(`[data-editor-open='${JSON.stringify({ prop, path })}']`)
+    // A row of a form the stack has left stays in the page, hidden.
+    .filter({ visible: true })
+    .first()
+    .click();
+
+/** Leaves the Inspector's open form for the one it was opened from. */
+const back = (page: Page) =>
+  page
+    .locator('#editor-inspector-stack')
+    .getByRole('button', { name: 'Back', exact: true })
+    .click();
+
+/** Leaves every open form for the selected node's Properties. */
+async function backOut(page: Page) {
+  const button = page
+    .locator('#editor-inspector-stack')
+    .getByRole('button', { name: 'Back', exact: true });
+  while (await button.isVisible()) await button.click();
+}
+
+/**
+ * Adds a ToolbarText reading `text` to content field `zone` of the open
+ * form (`mainToolbar.title`), from its row's add button, at `size` if given.
+ */
+async function toolbarText(
+  page: Page,
+  zone: string,
+  text: string,
+  size?: string,
+) {
+  await page.locator(`[data-editor-content-add="${zone}"]`).click();
+  await addChild(page, 'ToolbarText');
+  await area(page, 'Properties');
+  await setText(page, 'text', text);
+  if (size) await choose(page, 'size', size);
+}
+
+/** A ToolbarText node as the exported document spells it. */
+const toolbarTextNode = (text: string, size?: string) =>
+  node('toolbar-text', { text, ...(size ? { size } : {}) });
+
+/**
+ * Starts a Workbench build: the Workbench in a SizedRegion, with `id` and
+ * `label`, its seeded work-area Text embedded as a DemoContentItem's title,
+ * and an xlarge title on a main toolbar labeled the same.
+ */
+async function workbench(
+  page: Page,
+  id: string,
+  label: string,
+  mainTitle: string,
+) {
+  await dragComponent(page, 'Workbench', () => emptySpot(page));
+  await select(page, /^Workbench/);
+  // Below the root it needs a height of its own (KF-6MGYSG).
+  await embedIn(page, 'SizedRegion');
+  await select(page, /^Workbench/);
+  await setText(page, 'id', id);
+  await setText(page, 'label', label);
+  await select(page, /^Text/);
+  await embedInOther(page, 'List');
+  await embedInOther(page, 'ContentItem');
+  await select(page, /^Workbench/);
+  await configure(page, 'mainToolbar');
+  await setField(page, 'mainToolbar', ['label'], mainTitle);
+  await toolbarText(page, 'mainToolbar.title', mainTitle, 'xlarge');
+}
+
+test('builds Workbench › Responsive Overlay Drawer', async ({ page }) => {
+  // A whole screen built step by step runs long in Firefox.
+  test.slow();
+  await workbench(
+    page,
+    'catalog-workbench-responsive-drawer',
+    'Responsive Drawer Workbench',
+    'Editor',
+  );
+  await select(page, /^Workbench/);
+  await turnOn(page, 'overlayBackdrop');
+  await configure(page, 'mainBottomToolbar');
+  await setField(page, 'mainBottomToolbar', ['label'], 'Editor Status');
+  await toolbarText(page, 'mainBottomToolbar.leading', 'Ready', 'small');
+  // The output drawer: 180px, an overlay at narrow widths, with a titled
+  // toolbar whose toggle hides it.
+  await panel(page, 'bottomDrawer', 'Output', async () => {
+    await setField(page, 'bottomDrawer', ['size'], '180');
+    await chooseField(page, 'bottomDrawer', ['responsiveOverlayAt'], 'narrow');
+    await openField(page, 'bottomDrawer', ['toolbar']);
+    await setField(page, 'bottomDrawer', ['toolbar', 'label'], 'Output');
+    await openField(page, 'bottomDrawer', ['toolbar', 'toggle']);
+    await setField(
+      page,
+      'bottomDrawer',
+      ['toolbar', 'toggle', 'action'],
+      'toggle-workbench-output',
+    );
+    await setField(
+      page,
+      'bottomDrawer',
+      ['toolbar', 'toggle', 'name'],
+      'Output',
+    );
+    await back(page);
+    await back(page);
+  });
+  const regions = [
+    ['Build Output', 'Inline above 704 px; an overlay below it'],
+    [
+      'Narrow the Workbench',
+      'At 704 px or narrower the output drawer overlays the bottom of the editor instead of taking its own track.',
+    ],
+  ] as const;
+  for (const [index, [title, detail]] of regions.entries())
+    await demoTexts(page, { list: index, text: index * 2 }, title, detail);
+  // The drawer's toolbar title, from its form.
+  await select(page, /^Workbench/);
+  await configure(page, 'bottomDrawer');
+  await openField(page, 'bottomDrawer', ['toolbar']);
+  await toolbarText(page, 'bottomDrawer.toolbar.title', 'Output');
+  await select(page, /^Workbench/);
+  const shell = canvas(page).locator('.kui-workbench[data-kerf-node]');
+  await expect(shell.locator('strong')).toHaveText([
+    'Narrow the Workbench',
+    'Build Output',
+  ]);
+  await page.screenshot({
+    path: test.info().outputPath('kf-jn4pf5-workbench-drawer-1440.png'),
+  });
+  const [drawer, editor] = regions.map(([title, detail]) =>
+    demoContentItem(title, detail),
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      sized(
+        node(
+          'workbench',
+          {
+            id: 'catalog-workbench-responsive-drawer',
+            label: 'Responsive Drawer Workbench',
+            mainToolbar: { label: 'Editor' },
+            overlayBackdrop: true,
+            mainBottomToolbar: { label: 'Editor Status' },
+            bottomDrawer: {
+              label: 'Output',
+              size: 180,
+              responsiveOverlayAt: 'narrow',
+              toolbar: {
+                label: 'Output',
+                toggle: { action: 'toggle-workbench-output', name: 'Output' },
+              },
+            },
+          },
+          {
+            main: [editor],
+            'mainToolbar.title': [toolbarTextNode('Editor', 'xlarge')],
+            'mainBottomToolbar.leading': [toolbarTextNode('Ready', 'small')],
+            'bottomDrawer.content': [drawer],
+            'bottomDrawer.toolbar.title': [toolbarTextNode('Output')],
+          },
+        ),
+      ),
+    ),
+  );
+});
+
+/**
+ * Opens the forms down to panel `prop`'s content field `zone`
+ * (`toolbar.leading`) and adds the Workbench demo's `iconGroup` to it: a
+ * borderless single ToolbarControlGroup named `label` holding one icon ToolbarButton (the outline's `nth`) that runs
+ * the demo command `glyph`, kept beside the toggle on collapse when
+ * `relocate`.
+ */
+async function iconGroup(
+  page: Page,
+  prop: string,
+  zone: string,
+  [label, glyph, nth]: readonly [string, string, number],
+  relocate = false,
+) {
+  await select(page, /^Workbench/);
+  await configure(page, prop);
+  const steps = zone
+    .split('.')
+    .map((step) => (/^\d+$/.test(step) ? Number(step) : step));
+  for (let depth = 1; depth < steps.length; depth += 1)
+    await openField(page, prop, steps.slice(0, depth));
+  await page.locator(`[data-editor-content-add="${prop}.${zone}"]`).click();
+  await addChild(page, 'ToolbarControlGroup');
+  await area(page, 'Properties');
+  await setText(page, 'label', label);
+  await choose(page, 'appearance', 'borderless');
+  await turnOn(page, 'single');
+  if (relocate) await turnOn(page, 'relocateOnCollapse');
+  await select(page, /^ToolbarButton/, nth);
+  await setText(page, 'ariaLabel', label);
+  await setText(page, 'children', '');
+  await setText(page, 'action', 'workbench-demo-command');
+  await dataAttribute(page, 'data-demo-command', glyph);
+  await addIcon(page, 'icon', glyph);
+}
+
+/** An `iconGroup` as the exported document spells it. */
+const iconGroupNode = (label: string, glyph: string, relocate = false) =>
+  node(
+    'toolbar-control-group',
+    {
+      label,
+      appearance: 'borderless',
+      single: true,
+      ...(relocate ? { relocateOnCollapse: true } : {}),
+    },
+    {
+      children: [
+        node(
+          'toolbar-control-group#ToolbarButton',
+          {
+            ariaLabel: label,
+            action: 'workbench-demo-command',
+            rootAttributes: { 'data-demo-command': glyph },
+          },
+          { icon: [icon(glyph)] },
+        ),
+      ],
+    },
+  );
+
+/** Sets panel `prop`'s toolbar label and its toggle's action and name. */
+async function panelToolbar(
+  page: Page,
+  prop: string,
+  label: string,
+  action: string,
+) {
+  await openField(page, prop, ['toolbar']);
+  await setField(page, prop, ['toolbar', 'label'], label);
+  await openField(page, prop, ['toolbar', 'toggle']);
+  await setField(page, prop, ['toolbar', 'toggle', 'action'], action);
+  await setField(page, prop, ['toolbar', 'toggle', 'name'], label);
+  await back(page);
+  await back(page);
+}
+
+test('builds Workbench › Controlled Collapsed Panels', async ({ page }) => {
+  // A whole screen built step by step runs long in Firefox.
+  test.slow();
+  await workbench(
+    page,
+    'catalog-workbench-collapsed',
+    'Focused Editor Workbench',
+    'Editor',
+  );
+  await panel(page, 'leftRail', 'Navigator', () =>
+    panelToolbar(
+      page,
+      'leftRail',
+      'Navigator',
+      'toggle-workbench-collapsed-navigator',
+    ),
+  );
+  await panel(page, 'rightRail', 'Inspector');
+  // The console: 120px, with no separator, fading as it slides, and its
+  // content free to overflow.
+  await panel(page, 'bottomDrawer', 'Console', async () => {
+    await setField(page, 'bottomDrawer', ['size'], '120');
+    await chooseField(page, 'bottomDrawer', ['separator'], 'hidden');
+    await chooseField(page, 'bottomDrawer', ['collapseMotion'], 'fade-slide');
+    await chooseField(page, 'bottomDrawer', ['contentOverflow'], 'visible');
+    await panelToolbar(
+      page,
+      'bottomDrawer',
+      'Console',
+      'toggle-workbench-console',
+    );
+  });
+  const regions = [
+    ['Navigator', 'Still mounted'],
+    ['Inspector', 'Visible peripheral panel'],
+    ['Console', 'Still mounted'],
+    [
+      'App-Owned Collapsed Flags',
+      'A closed panel lends its always-available groups and its toggle to the editor toolbars.',
+    ],
+  ] as const;
+  for (const [index, [title, detail]] of regions.entries())
+    await demoTexts(page, { list: index, text: index * 2 }, title, detail);
+  await select(page, /^Workbench/);
+  await configure(page, 'bottomDrawer');
+  await openField(page, 'bottomDrawer', ['toolbar']);
+  await toolbarText(page, 'bottomDrawer.toolbar.title', 'Console');
+  // The navigator's always-available groups: New File stays in the closed
+  // panel, Search Files moves to the editor toolbar.
+  await iconGroup(page, 'leftRail', 'toolbar.leading', [
+    'New File',
+    'file-plus',
+    0,
+  ]);
+  await iconGroup(
+    page,
+    'leftRail',
+    'toolbar.trailing',
+    ['Search Files', 'search', 1],
+    true,
+  );
+  // Both start closed, as the app's flags say.
+  for (const prop of ['leftRail', 'bottomDrawer']) {
+    await select(page, /^Workbench/);
+    await configure(page, prop);
+    await turnFieldOn(page, prop, ['collapsed']);
+    await back(page);
+  }
+  await select(page, /^Workbench/);
+  const shell = canvas(page).locator('.kui-workbench[data-kerf-node]');
+  // The closed panels stay mounted; Search Files and the navigator's
+  // toggle lead the editor toolbar.
+  await expect(shell.locator('strong')).toHaveText([
+    'Navigator',
+    'App-Owned Collapsed Flags',
+    'Console',
+    'Inspector',
+  ]);
+  await expect(
+    shell.getByRole('button', { name: 'Search Files' }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: test.info().outputPath('kf-jn4pf5-workbench-collapsed-1440.png'),
+  });
+  const [navigator, inspector, drawer, editor] = regions.map(
+    ([title, detail]) => demoContentItem(title, detail),
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      sized(
+        node(
+          'workbench',
+          {
+            id: 'catalog-workbench-collapsed',
+            label: 'Focused Editor Workbench',
+            mainToolbar: { label: 'Editor' },
+            leftRail: {
+              label: 'Navigator',
+              collapsed: true,
+              toolbar: {
+                label: 'Navigator',
+                toggle: {
+                  action: 'toggle-workbench-collapsed-navigator',
+                  name: 'Navigator',
+                },
+              },
+            },
+            rightRail: { label: 'Inspector' },
+            bottomDrawer: {
+              label: 'Console',
+              collapsed: true,
+              size: 120,
+              separator: 'hidden',
+              collapseMotion: 'fade-slide',
+              contentOverflow: 'visible',
+              toolbar: {
+                label: 'Console',
+                toggle: { action: 'toggle-workbench-console', name: 'Console' },
+              },
+            },
+          },
+          {
+            main: [editor],
+            'mainToolbar.title': [toolbarTextNode('Editor', 'xlarge')],
+            'leftRail.content': [navigator],
+            'leftRail.toolbar.leading': [
+              iconGroupNode('New File', 'file-plus'),
+            ],
+            'leftRail.toolbar.trailing': [
+              iconGroupNode('Search Files', 'search', true),
+            ],
+            'rightRail.content': [inspector],
+            'bottomDrawer.content': [drawer],
+            'bottomDrawer.toolbar.title': [toolbarTextNode('Console')],
+          },
+        ),
+      ),
+    ),
+  );
+});
+
+/** Makes panel `prop` resizable between `min` and `max` px from `size`. */
+async function resizablePanel(
+  page: Page,
+  prop: string,
+  size: number,
+  [min, max]: readonly [number, number],
+) {
+  await setField(page, prop, ['size'], String(size));
+  await chooseField(page, prop, ['resizable'], 'Custom…');
+  await openField(page, prop, ['resizable']);
+  await setField(page, prop, ['resizable', 'min'], String(min));
+  await setField(page, prop, ['resizable', 'max'], String(max));
+  await back(page);
+}
+
+/** Adds data attribute `name` reading `value` to the selected node. */
+async function dataAttribute(page: Page, name: string, value: string) {
+  await page.locator('[data-action="editor-add-data-attribute"]').click();
+  const part = (which: string) =>
+    page
+      .locator(
+        `[data-editor-attribute="0"][data-editor-attribute-part="${which}"]`,
+      )
+      .locator('input');
+  await part('name').fill(name);
+  await part('name').press('Enter');
+  await part('value').fill(value);
+  await part('value').press('Enter');
+}
+
+test('builds Workbench › Resizable Panels', async ({ page }) => {
+  // Thirteen inspector rows, each named in the Inspector, outrun a slow
+  // test's budget in Firefox.
+  test.setTimeout(240_000);
+  await workbench(
+    page,
+    'catalog-workbench-resizable',
+    'Resizable Workbench',
+    'Editor',
+  );
+  await select(page, /^Workbench/);
+  await turnOn(page, 'overlayBackdrop');
+  // The work area: the resize instructions above an interactive item that
+  // shows what an open overlay rail covers.
+  await select(page, /^ContentItem/);
+  await embedInOther(page, 'List');
+  await choose(page, 'gap', 'l');
+  await addChild(page, 'ContentItem', 'children');
+  await area(page, 'Properties');
+  await turnOn(page, 'interactive');
+  await setText(page, 'action', 'workbench-demo-command');
+  await setText(page, 'itemId', 'underlay');
+  await setText(page, 'ariaLabel', 'Select Underlying Item');
+  await setText(page, 'children', 'Select Underlying Item');
+  await dataAttribute(page, 'data-demo-underlay', '');
+  // The navigator: 240px, resizable from 180 to 400.
+  await panel(page, 'leftRail', 'Navigator', async () => {
+    await resizablePanel(page, 'leftRail', 240, [180, 400]);
+    await panelToolbar(
+      page,
+      'leftRail',
+      'Navigator',
+      'toggle-workbench-navigator',
+    );
+  });
+  // The inspector: 160px, resizable from 160 to 360, with a ticket header,
+  // an updated footer, and a bottom toolbar's search.
+  await panel(page, 'rightRail', 'Inspector', async () => {
+    await resizablePanel(page, 'rightRail', 160, [160, 360]);
+    await panelToolbar(
+      page,
+      'rightRail',
+      'Inspector',
+      'toggle-workbench-inspector',
+    );
+    await openField(page, 'rightRail', ['headerList']);
+    await chooseField(page, 'rightRail', ['headerList', 'gap'], '2xs');
+    await chooseField(page, 'rightRail', ['headerList', 'textInsets'], 'trbl');
+    await back(page);
+    await openField(page, 'rightRail', ['footerList']);
+    await chooseField(page, 'rightRail', ['footerList', 'textInsets'], 'trbl');
+    await back(page);
+    await openField(page, 'rightRail', ['bottomToolbar']);
+    await setField(
+      page,
+      'rightRail',
+      ['bottomToolbar', 'label'],
+      'Inspector Actions',
+    );
+    await back(page);
+  });
+  await select(page, /^ContentItem/, 1);
+  await embedInOther(page, 'List');
+  await choose(page, 'gap', 'l');
+  // The console: 160px, resizable from 120 to 320, scrolling its content,
+  // which ends in a menu that opens upward.
+  await panel(page, 'bottomDrawer', 'Console', async () => {
+    await resizablePanel(page, 'bottomDrawer', 160, [120, 320]);
+    await chooseField(page, 'bottomDrawer', ['contentOverflow'], 'auto');
+  });
+  await select(page, /^ContentItem/, 2);
+  await embedInOther(page, 'List');
+  await choose(page, 'gap', 'l');
+  await addChild(page, 'PopupMenu', 'children');
+  await area(page, 'Properties');
+  await setText(page, 'text', 'Create Item');
+  await choose(page, 'placement', 'top-start');
+  await page.getByRole('button', { name: 'Configure items' }).click();
+  const dialog = page.locator('dialog[open]');
+  await dialog.getByRole('button', { name: 'Remove Item 3' }).click();
+  const items = [
+    ['New Terminal', 'create-terminal'],
+    ['New Task', 'create-task'],
+  ] as const;
+  for (const [index, [label, action]] of items.entries()) {
+    await dialog.getByText(`Item ${index + 1}`, { exact: true }).click();
+    await setField(page, 'items', [index, 'label'], label);
+    await setField(page, 'items', [index, 'action'], action);
+    await dialog.getByRole('button', { name: 'Back' }).click();
+  }
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  // Each region's DemoContentItem; a panel's list holds its rows above the
+  // DemoContentItem's own List.
+  const regions = [
+    ['Files and Symbols', '180–400 px wide'],
+    ['Selection', '160–360 px wide'],
+    ['Console', '120–320 px tall'],
+    [
+      'Resize the Panels',
+      'Drag a separator, or focus it and use the arrow keys, Home, or End. The editor keeps at least 320 px, so a rail stops growing there; a hidden panel returns at its last size.',
+    ],
+  ] as const;
+  const lists = [0, 2, 4, 6];
+  for (const [index, [title, detail]] of regions.entries())
+    await demoTexts(
+      page,
+      { list: lists[index]!, text: index * 2 },
+      title,
+      detail,
+    );
+  // The inspector's twelve fields: the Selection row duplicated, then
+  // each copy named in turn.
+  const fields = 12;
+  await select(page, /^ContentItem/, 1);
+  for (let copy = 0; copy < fields; copy += 1)
+    await page.keyboard.press('ControlOrMeta+d');
+  await expect(outlineRow(page, /^ContentItem/)).toHaveCount(fields + 5);
+  for (let field = 1; field <= fields; field += 1) {
+    await select(page, /^Text/, 2 + field * 2);
+    await setText(page, 'children', `Field ${field}`);
+    await select(page, /^Text/, 3 + field * 2);
+    await setText(page, 'children', 'Scrollable inspector detail');
+  }
+  // The inspector's header, footer, and bottom toolbar content.
+  await select(page, /^Workbench/);
+  await configure(page, 'rightRail');
+  await toolbarText(page, 'rightRail.header', 'Ticket #42');
+  await choose(page, 'headingLevel', '3');
+  await page.keyboard.press('ControlOrMeta+d');
+  await setText(page, 'text', 'Open for review');
+  await choose(page, 'headingLevel', 'Not set');
+  await choose(page, 'size', 'small');
+  await select(page, /^Workbench/);
+  await configure(page, 'rightRail');
+  await toolbarText(page, 'rightRail.footer', 'Updated just now', 'small');
+  await iconGroup(page, 'rightRail', 'bottomToolbar.trailing', [
+    'Search Inspector',
+    'search',
+    0,
+  ]);
+  // The toolbars' titles.
+  for (const [prop, title] of [
+    ['leftRail', 'Navigator'],
+    ['rightRail', 'Inspector'],
+  ] as const) {
+    await select(page, /^Workbench/);
+    await configure(page, prop);
+    await openField(page, prop, ['toolbar']);
+    await toolbarText(page, `${prop}.toolbar.title`, title);
+  }
+  // The inspector starts hidden, as the app's flag says.
+  await select(page, /^Workbench/);
+  await configure(page, 'rightRail');
+  await turnFieldOn(page, 'rightRail', ['collapsed']);
+  await back(page);
+  await select(page, /^Workbench/);
+  const shell = canvas(page).locator('.kui-workbench[data-kerf-node]');
+  await expect(shell.locator('strong')).toHaveCount(fields + 4);
+  await expect(
+    shell.getByRole('button', { name: 'Select Underlying Item' }),
+  ).toBeVisible();
+  await expect(
+    shell.getByRole('button', { name: 'Create Item' }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: test.info().outputPath('kf-jn4pf5-workbench-resizable-1440.png'),
+  });
+  const [navigator, selection, output, editor] = regions.map(
+    ([title, detail]) => demoContentItem(title, detail),
+  );
+  const list = (...children: unknown[]) =>
+    node('list', { gap: 'l' }, { children });
+  expect(await exported(page)).toEqual(
+    pane(
+      sized(
+        node(
+          'workbench',
+          {
+            id: 'catalog-workbench-resizable',
+            label: 'Resizable Workbench',
+            mainToolbar: { label: 'Editor' },
+            overlayBackdrop: true,
+            leftRail: {
+              label: 'Navigator',
+              size: 240,
+              resizable: { min: 180, max: 400 },
+              toolbar: {
+                label: 'Navigator',
+                toggle: {
+                  action: 'toggle-workbench-navigator',
+                  name: 'Navigator',
+                },
+              },
+            },
+            rightRail: {
+              label: 'Inspector',
+              size: 160,
+              resizable: { min: 160, max: 360 },
+              collapsed: true,
+              toolbar: {
+                label: 'Inspector',
+                toggle: {
+                  action: 'toggle-workbench-inspector',
+                  name: 'Inspector',
+                },
+              },
+              headerList: { gap: '2xs', textInsets: 'trbl' },
+              footerList: { textInsets: 'trbl' },
+              bottomToolbar: { label: 'Inspector Actions' },
+            },
+            bottomDrawer: {
+              label: 'Console',
+              size: 160,
+              resizable: { min: 120, max: 320 },
+              contentOverflow: 'auto',
+            },
+          },
+          {
+            main: [
+              list(
+                editor,
+                node('content-item', {
+                  interactive: true,
+                  action: 'workbench-demo-command',
+                  itemId: 'underlay',
+                  ariaLabel: 'Select Underlying Item',
+                  children: 'Select Underlying Item',
+                  rootAttributes: { 'data-demo-underlay': '' },
+                }),
+              ),
+            ],
+            'mainToolbar.title': [toolbarTextNode('Editor', 'xlarge')],
+            'leftRail.content': [navigator],
+            'leftRail.toolbar.title': [toolbarTextNode('Navigator')],
+            'rightRail.content': [
+              list(
+                selection,
+                ...Array.from({ length: fields }, (_, index) =>
+                  demoContentItem(
+                    `Field ${index + 1}`,
+                    'Scrollable inspector detail',
+                  ),
+                ),
+              ),
+            ],
+            'rightRail.toolbar.title': [toolbarTextNode('Inspector')],
+            'rightRail.header': [
+              node('toolbar-text', { text: 'Ticket #42', headingLevel: 3 }),
+              toolbarTextNode('Open for review', 'small'),
+            ],
+            'rightRail.footer': [toolbarTextNode('Updated just now', 'small')],
+            'rightRail.bottomToolbar.trailing': [
+              iconGroupNode('Search Inspector', 'search'),
+            ],
+            'bottomDrawer.content': [
+              list(
+                output,
+                node('popup-menu', {
+                  text: 'Create Item',
+                  placement: 'top-start',
+                  items: items.map(([label, action]) => ({ label, action })),
+                }),
+              ),
+            ],
+          },
+        ),
+      ),
+    ),
+  );
+});
+
+test('builds Workbench › Navigating Ticket Rail', async ({ page }) => {
+  // A whole screen built step by step runs long in Firefox.
+  test.setTimeout(180_000);
+  await workbench(
+    page,
+    'catalog-workbench-navigation',
+    'Ticket Workbench',
+    'Workspace',
+  );
+  await demoTexts(
+    page,
+    { list: 0, text: 0 },
+    'Workspace',
+    'Open a ticket in the right rail.',
+  );
+  // The right rail: a 360px navigation panel whose toolbar keeps only the
+  // rail toggle, over a NavStack starting at the ticket collection.
+  await select(page, /^Workbench/);
+  await choose(page, 'rightRail', 'Navigation panel…');
+  await configure(page, 'rightRail');
+  await setField(page, 'rightRail', ['label'], 'Tickets');
+  await setField(page, 'rightRail', ['size'], '360');
+  await openField(page, 'rightRail', ['toolbar']);
+  await setField(
+    page,
+    'rightRail',
+    ['toolbar', 'label'],
+    'Ticket Rail Toolbar',
+  );
+  await openField(page, 'rightRail', ['toolbar', 'toggle']);
+  await setField(
+    page,
+    'rightRail',
+    ['toolbar', 'toggle', 'action'],
+    'toggle-workbench-ticket-rail',
+  );
+  await setField(page, 'rightRail', ['toolbar', 'toggle', 'name'], 'Tickets');
+  await back(page);
+  await back(page);
+  const view = ['navStack', 'views', 0] as const;
+  await openField(page, 'rightRail', ['navStack']);
+  await setField(
+    page,
+    'rightRail',
+    ['navStack', 'id'],
+    'catalog-workbench-ticket-stack',
+  );
+  await setField(page, 'rightRail', ['navStack', 'label'], 'Ticket Navigation');
+  // The detail views are pushed while the app runs; the stack starts with
+  // the collection alone.
+  await openField(page, 'rightRail', ['navStack', 'views']);
+  await page.getByRole('button', { name: 'Remove View 3' }).click();
+  await page.getByRole('button', { name: 'Remove View 2' }).click();
+  await openField(page, 'rightRail', view);
+  await setField(page, 'rightRail', [...view, 'key'], 'collection');
+  await openField(page, 'rightRail', [...view, 'toolbar']);
+  await setField(page, 'rightRail', [...view, 'toolbar', 'title'], 'Tickets');
+  await backOut(page);
+  // The collection's three tickets: one interactive ContentItem with a
+  // DemoContentItem-style List, duplicated, then each renamed.
+  await select(page, /^Workbench/);
+  await dragComponent(page, 'List', () =>
+    canvas(page).locator('[data-editor-empty]', {
+      hasText: 'view1Content slot — drop here',
+    }),
+  );
+  await select(page, /^List(?!Item)/);
+  await choose(page, 'gap', 'l');
+  await addChild(page, 'ContentItem', 'children');
+  await area(page, 'Properties');
+  await turnOn(page, 'interactive');
+  await setText(page, 'action', 'open-workbench-ticket');
+  await addChild(page, 'List', 'children');
+  await addChild(page, 'Text', 'children');
+  // The rail's Lists come before the work area's in the outline.
+  await demoTexts(
+    page,
+    { list: 1, text: 0 },
+    'T-42',
+    'Review the workspace rail',
+  );
+  const tickets = ['T-42', 'T-43', 'T-44'];
+  await select(page, /^ContentItem/);
+  await page.keyboard.press('ControlOrMeta+d');
+  await page.keyboard.press('ControlOrMeta+d');
+  for (const [index, id] of tickets.entries()) {
+    await select(page, /^ContentItem/, index);
+    await setText(page, 'itemId', id);
+    await setText(page, 'ariaLabel', `Open Ticket ${id}`);
+    await select(page, /^Text/, index * 2);
+    await setText(page, 'children', id);
+  }
+  // The collection's header: a level-3 title over a quiet count.
+  await select(page, /^Workbench/);
+  await configure(page, 'rightRail');
+  await openField(page, 'rightRail', ['navStack']);
+  await openField(page, 'rightRail', ['navStack', 'views']);
+  await openField(page, 'rightRail', view);
+  await page
+    .locator('[data-editor-content-add="rightRail.navStack.views.0.header"]')
+    .click();
+  await addChild(page, 'List');
+  await area(page, 'Properties');
+  await choose(page, 'gap', '2xs');
+  await choose(page, 'textInsets', 'rl');
+  await addChild(page, 'ToolbarText', 'children');
+  await area(page, 'Properties');
+  await setText(page, 'text', 'Ticket Queue');
+  await choose(page, 'headingLevel', '3');
+  // The header's List, by the zone its outline row names.
+  await select(page, /^List.*header$/);
+  await addChild(page, 'Text', 'children');
+  await area(page, 'Properties');
+  await setText(page, 'children', 'Three open tickets');
+  await choose(page, 'tone', 'quiet');
+  await choose(page, 'size', 'compact');
+  await iconGroup(page, 'rightRail', 'navStack.views.0.toolbar.leading', [
+    'Choose Project',
+    'search',
+    0,
+  ]);
+  await select(page, /^Workbench/);
+  const shell = canvas(page).locator('.kui-workbench[data-kerf-node]');
+  await expect(shell.getByRole('button', { name: /^Open Ticket/ })).toHaveCount(
+    3,
+  );
+  await expect(shell.locator('strong')).toHaveText(['Workspace', ...tickets]);
+  await page.screenshot({
+    path: test.info().outputPath('kf-jn4pf5-workbench-navigation-1440.png'),
+  });
+  const ticket = (id: string) => {
+    const item = demoContentItem(id, 'Review the workspace rail');
+    return {
+      ...item,
+      props: {
+        interactive: true,
+        action: 'open-workbench-ticket',
+        itemId: id,
+        ariaLabel: `Open Ticket ${id}`,
+      },
+    };
+  };
+  expect(await exported(page)).toEqual(
+    pane(
+      sized(
+        node(
+          'workbench',
+          {
+            id: 'catalog-workbench-navigation',
+            label: 'Ticket Workbench',
+            mainToolbar: { label: 'Workspace' },
+            rightRail: {
+              label: 'Tickets',
+              size: 360,
+              toolbar: {
+                label: 'Ticket Rail Toolbar',
+                toggle: {
+                  action: 'toggle-workbench-ticket-rail',
+                  name: 'Tickets',
+                },
+              },
+              navStack: {
+                id: 'catalog-workbench-ticket-stack',
+                label: 'Ticket Navigation',
+                views: [{ key: 'collection', toolbar: { title: 'Tickets' } }],
+              },
+            },
+          },
+          {
+            main: [
+              demoContentItem('Workspace', 'Open a ticket in the right rail.'),
+            ],
+            'mainToolbar.title': [toolbarTextNode('Workspace', 'xlarge')],
+            'rightRail.navStack.views.0.content': [
+              node('list', { gap: 'l' }, { children: tickets.map(ticket) }),
+            ],
+            'rightRail.navStack.views.0.header': [
+              node(
+                'list',
+                { gap: '2xs', textInsets: 'rl' },
+                {
+                  children: [
+                    node('toolbar-text', {
+                      text: 'Ticket Queue',
+                      headingLevel: 3,
+                    }),
+                    node('text', {
+                      children: 'Three open tickets',
+                      tone: 'quiet',
+                      size: 'compact',
+                    }),
+                  ],
+                },
+              ),
+            ],
+            'rightRail.navStack.views.0.toolbar.leading': [
+              iconGroupNode('Choose Project', 'search'),
+            ],
+          },
+        ),
+      ),
+    ),
+  );
+});
 
 test('builds SplitView › Roomy List-Detail Split', async ({ page }) => {
   // A whole screen built step by step runs long in Firefox.

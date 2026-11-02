@@ -1,0 +1,333 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "WorkbenchNavigatingTicketRail",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sized-region",
+          "props": {
+            "minHeight": {
+              "$css": "rem(20)"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:workbench",
+                "props": {
+                  "id": "catalog-workbench-navigation",
+                  "label": "Ticket Workbench",
+                  "mainToolbar": {
+                    "label": "Workspace"
+                  },
+                  "rightRail": {
+                    "navStack": {
+                      "id": "catalog-workbench-ticket-stack",
+                      "label": "Ticket Navigation",
+                      "views": [
+                        {
+                          "key": "collection",
+                          "toolbar": {
+                            "title": "Tickets"
+                          }
+                        }
+                      ]
+                    },
+                    "toolbar": {
+                      "label": "Ticket Rail Toolbar",
+                      "toggle": {
+                        "action": "toggle-workbench-ticket-rail",
+                        "name": "Tickets"
+                      }
+                    },
+                    "label": "Tickets",
+                    "size": 360
+                  }
+                },
+                "zones": {
+                  "main": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:content-item",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:list",
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000006",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Workspace",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000007",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Open a ticket in the right rail.",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            },
+                            "props": {
+                              "gap": "2xs"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "mainToolbar.title": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:toolbar-text",
+                      "props": {
+                        "text": "Workspace",
+                        "size": "xlarge"
+                      }
+                    }
+                  ],
+                  "rightRail.navStack.views.0.content": [
+                    {
+                      "id": "00000000000000000000000009",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "l"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000010",
+                            "type": "@kerfjs/ui:content-item",
+                            "props": {
+                              "interactive": true,
+                              "action": "open-workbench-ticket",
+                              "itemId": "T-42",
+                              "ariaLabel": "Open Ticket T-42"
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000011",
+                                  "type": "@kerfjs/ui:list",
+                                  "zones": {
+                                    "children": [
+                                      {
+                                        "id": "00000000000000000000000012",
+                                        "type": "@kerfjs/ui:text",
+                                        "props": {
+                                          "children": "T-42",
+                                          "variant": "span",
+                                          "weight": "strong"
+                                        }
+                                      },
+                                      {
+                                        "id": "00000000000000000000000013",
+                                        "type": "@kerfjs/ui:text",
+                                        "props": {
+                                          "children": "Review the workspace rail",
+                                          "variant": "span",
+                                          "tone": "quiet",
+                                          "size": "compact"
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  "props": {
+                                    "gap": "2xs"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000014",
+                            "type": "@kerfjs/ui:content-item",
+                            "props": {
+                              "interactive": true,
+                              "action": "open-workbench-ticket",
+                              "itemId": "T-43",
+                              "ariaLabel": "Open Ticket T-43"
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000015",
+                                  "type": "@kerfjs/ui:list",
+                                  "zones": {
+                                    "children": [
+                                      {
+                                        "id": "00000000000000000000000016",
+                                        "type": "@kerfjs/ui:text",
+                                        "props": {
+                                          "children": "T-43",
+                                          "variant": "span",
+                                          "weight": "strong"
+                                        }
+                                      },
+                                      {
+                                        "id": "00000000000000000000000017",
+                                        "type": "@kerfjs/ui:text",
+                                        "props": {
+                                          "children": "Review the workspace rail",
+                                          "variant": "span",
+                                          "tone": "quiet",
+                                          "size": "compact"
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  "props": {
+                                    "gap": "2xs"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000018",
+                            "type": "@kerfjs/ui:content-item",
+                            "props": {
+                              "interactive": true,
+                              "action": "open-workbench-ticket",
+                              "itemId": "T-44",
+                              "ariaLabel": "Open Ticket T-44"
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000019",
+                                  "type": "@kerfjs/ui:list",
+                                  "zones": {
+                                    "children": [
+                                      {
+                                        "id": "00000000000000000000000020",
+                                        "type": "@kerfjs/ui:text",
+                                        "props": {
+                                          "children": "T-44",
+                                          "variant": "span",
+                                          "weight": "strong"
+                                        }
+                                      },
+                                      {
+                                        "id": "00000000000000000000000021",
+                                        "type": "@kerfjs/ui:text",
+                                        "props": {
+                                          "children": "Review the workspace rail",
+                                          "variant": "span",
+                                          "tone": "quiet",
+                                          "size": "compact"
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  "props": {
+                                    "gap": "2xs"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "rightRail.navStack.views.0.header": [
+                    {
+                      "id": "00000000000000000000000022",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs",
+                        "textInsets": "rl"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000023",
+                            "type": "@kerfjs/ui:toolbar-text",
+                            "props": {
+                              "text": "Ticket Queue",
+                              "headingLevel": 3
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000024",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Three open tickets",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "rightRail.navStack.views.0.toolbar.leading": [
+                    {
+                      "id": "00000000000000000000000025",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000026",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "ariaLabel": "Choose Project",
+                              "action": "workbench-demo-command",
+                              "rootAttributes": {
+                                "data-demo-command": "search"
+                              }
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000027",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "search"
+                                    },
+                                    "name": "search"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "label": "Choose Project",
+                        "appearance": "borderless",
+                        "single": true
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
