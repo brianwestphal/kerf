@@ -1295,11 +1295,21 @@ document and its param values by `postMessage` and renders them with
 
 ### 11.4 Behavior while playing
 
-- **Component wiring runs for real.** The host page installs the same
-  `wire…` helpers an application would (NavStack push and pop, sidebar
-  collapse, TabNavigator and TabBar, popups, search fields, scroll dividers)
-  over the played root, and disposes them on exit. This resolves the §9
-  limitation for play mode; the editing canvas stays static.
+- **Component wiring runs for real, over play-time state.** Kerf UI's
+  interactive components are controlled: their `wire…` helpers report intent
+  (`wireTabNavigator`'s `onSelect`, `wireNavStack`'s `onBack`) and the
+  application re-renders with new props. So the play page keeps a play-time
+  copy of the document and a table of built-in **state adapters**, one per
+  controlled component. Each adapter installs the component's helper and maps
+  its callbacks onto prop changes in that copy: a TabNavigator or TabBar
+  selection sets `active`, a NavStack back pops its `views`, and a sidebar or
+  Workbench rail toggle flips its collapsed state. The view then re-renders
+  through the normal morph. Helpers that need no app state (scroll dividers,
+  text fields, search fields, sliders) are installed as they are. A forward
+  NavStack push, or anything else an application decides, comes from a mock
+  handler (below). The copy is discarded on exit, and the edited document is
+  never changed. This resolves the §9 limitation for play mode; the editing
+  canvas stays static.
 - **Params** use the same values the canvas preview uses (example and
   placeholder values, §3.4). There is no separate params editor.
 - **Actions** (`$action`, §4.2) call a **mock handler** when the host
