@@ -1427,3 +1427,170 @@ test('builds NavStack › Interactive Push and Pop', async ({ page }) => {
     ),
   );
 });
+
+test('builds NavStack › Configured Toolbar', async ({ page }) => {
+  // A whole screen built step by step runs long in Firefox.
+  test.slow();
+  await dragComponent(page, 'NavStack', () => emptySpot(page));
+  await select(page, /^NavStack/);
+  await setText(page, 'id', 'catalog-nav-stack-configured');
+  await setText(page, 'label', 'Configured Project Library');
+  const dialog = page.locator('dialog[open]');
+  const back = () => dialog.getByRole('button', { name: 'Back' }).click();
+  // toolbarConfig: a level-2 title with a bottom divider.
+  await page.getByRole('button', { name: 'Configure toolbar config' }).click();
+  await chooseField(page, 'toolbarConfig', ['headingLevel'], '2');
+  await chooseField(page, 'toolbarConfig', ['dividerSides'], 'b');
+  // A form this small opens in the Inspector; its back button returns.
+  await page
+    .locator('#editor-inspector-stack')
+    .getByRole('button', { name: 'Back' })
+    .click();
+  await page.getByRole('button', { name: 'Configure views' }).click();
+  await dialog.getByRole('button', { name: 'Remove View 3' }).click();
+  await dialog.getByRole('button', { name: 'Remove View 2' }).click();
+  await dialog.locator('[data-action="editor-open-field"]').first().click();
+  await setField(page, 'views', [0, 'key'], 'library');
+  await dialog.getByText('Toolbar', { exact: true }).click();
+  await setField(page, 'views', [0, 'toolbar', 'title'], 'Library');
+  await back();
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  // A toolbar zone's + opens Children › Add a child on that zone; the new
+  // group is selected, holding one seeded ToolbarButton.
+  const group = async (zone: string, label: string) => {
+    await select(page, /^NavStack/);
+    await page.getByRole('button', { name: 'Configure views' }).click();
+    await dialog.locator('[data-action="editor-open-field"]').first().click();
+    await dialog.getByText('Toolbar', { exact: true }).click();
+    await dialog.getByText(zone, { exact: true }).click();
+    await addChild(page, 'ToolbarControlGroup');
+    await area(page, 'Properties');
+    await setText(page, 'label', label);
+  };
+  /** The seeded button as an icon command. */
+  const command = async (nth: number, ariaLabel: string, glyph: string) => {
+    await select(page, /^ToolbarButton/, nth);
+    await setText(page, 'ariaLabel', ariaLabel);
+    await setText(page, 'children', '');
+    await setText(page, 'action', 'nav-stack-demo-command');
+    await addIcon(page, 'icon', glyph);
+  };
+  await group('Leading', 'Sidebar');
+  await choose(page, 'appearance', 'borderless');
+  await turnOn(page, 'single');
+  await command(0, 'Show Sidebar', 'panel-left');
+  // The center group sorts before the leading one in the outline.
+  await group('Center', 'Project Layout');
+  await command(0, 'List Layout', 'list');
+  await select(page, /^ToolbarButton/, 0);
+  await page.keyboard.press('ControlOrMeta+d');
+  await setText(page, 'ariaLabel', 'Grid Layout');
+  await select(page, /^LucideIcon/, 1);
+  await pickIcon(page, page.locator('[data-editor-icon-place]'), 'layout-grid');
+  await select(page, /^ToolbarButton/, 0);
+  await turnOn(page, 'pressed');
+  // The library's two project rows.
+  await select(page, /^NavStack/);
+  await dragComponent(page, 'List', () =>
+    canvas(page).locator('[data-editor-empty]', {
+      hasText: 'view1Content slot — drop here',
+    }),
+  );
+  await dragComponent(page, 'ListItem', () =>
+    canvas(page).locator('[data-editor-empty]', { hasText: 'List is empty' }),
+  );
+  await select(page, /^ListItem/);
+  await setText(page, 'action', 'open-configured-nav-stack-project');
+  await addIcon(page, 'icon', 'folder');
+  await select(page, /^ListItem/);
+  await page.locator('[data-editor-content-add="trailing"]').click();
+  await addChild(page, 'LucideIcon');
+  await area(page, 'Properties');
+  await pickIcon(
+    page,
+    page.locator('[data-editor-icon-place]'),
+    'chevron-right',
+  );
+  await select(page, /^ListItem/);
+  await page.keyboard.press('ControlOrMeta+d');
+  const projects = [
+    ['atlas', 'Project Atlas'],
+    ['relay', 'Project Relay'],
+  ] as const;
+  for (const [index, [id, label]] of projects.entries()) {
+    await select(page, /^ListItem/, index);
+    await setText(page, 'itemId', id);
+    await setText(page, 'label', label);
+  }
+  await select(page, /^NavStack/);
+  const stack = canvas(page).locator('.kui-nav-stack[data-kerf-node]');
+  await expect(stack.locator('.kui-list-item')).toHaveCount(2);
+  await expect(stack.locator('.kui-toolbar-control-group button')).toHaveCount(
+    3,
+  );
+  await page.screenshot({
+    path: test.info().outputPath('kf-jn4pf5-nav-stack-configured-1440.png'),
+  });
+  const button = (
+    ariaLabel: string,
+    glyph: string,
+    props: Record<string, unknown> = {},
+  ) =>
+    node(
+      'toolbar-control-group#ToolbarButton',
+      { ariaLabel, action: 'nav-stack-demo-command', ...props },
+      { icon: [icon(glyph)] },
+    );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'nav-stack',
+        {
+          id: 'catalog-nav-stack-configured',
+          label: 'Configured Project Library',
+          toolbarConfig: { headingLevel: 2, dividerSides: 'b' },
+          views: [{ key: 'library', toolbar: { title: 'Library' } }],
+        },
+        {
+          'views.0.toolbar.leading': [
+            node(
+              'toolbar-control-group',
+              { label: 'Sidebar', appearance: 'borderless', single: true },
+              { children: [button('Show Sidebar', 'panel-left')] },
+            ),
+          ],
+          'views.0.toolbar.center': [
+            node(
+              'toolbar-control-group',
+              { label: 'Project Layout' },
+              {
+                children: [
+                  button('List Layout', 'list', { pressed: true }),
+                  button('Grid Layout', 'layout-grid'),
+                ],
+              },
+            ),
+          ],
+          'views.0.content': [
+            node('list', undefined, {
+              children: projects.map(([id, label]) =>
+                node(
+                  'list-item',
+                  {
+                    action: 'open-configured-nav-stack-project',
+                    itemId: id,
+                    label,
+                  },
+                  {
+                    icon: [icon('folder')],
+                    trailing: [icon('chevron-right')],
+                  },
+                ),
+              ),
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
