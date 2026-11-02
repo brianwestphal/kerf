@@ -13,6 +13,7 @@ import {
   emulate,
   FLEXIBLE_MAX,
   FLEXIBLE_MIN,
+  frameBands,
   parsePlaySettings,
   resolveDevicePresets,
   safeAreaTokens,
@@ -171,6 +172,60 @@ describe('emulation', () => {
         ).toBeLessThan(app.viewport.width * app.viewport.height);
       }
     }
+  });
+
+  // KF-YC59PH: a tab's top chrome is the status bar, then a top toolbar.
+  it('splits a tab’s top band into the status bar and the browser’s toolbar', () => {
+    const bands = (
+      id: string,
+      change: Partial<typeof DEFAULT_PLAY_SETTINGS> = {},
+    ) => frameBands(emulate(preset(id), settings(change)));
+    // iPhone portrait: the toolbar is at the bottom; the top is all status bar.
+    expect(bands('iphone')).toEqual({ status: 62, toolbar: 0, bottom: 134 });
+    // iPhone landscape: no status bar, a compact address bar at the top.
+    expect(bands('iphone', { orientation: 'landscape' })).toEqual({
+      status: 0,
+      toolbar: 50,
+      bottom: 21,
+    });
+    expect(bands('iphone-se', { orientation: 'landscape' })).toEqual({
+      status: 0,
+      toolbar: 50,
+      bottom: 0,
+    });
+    // Chrome for Android and iPad Safari: the toolbar below the status bar.
+    expect(bands('android-compact')).toEqual({
+      status: 50,
+      toolbar: 56,
+      bottom: 24,
+    });
+    expect(bands('ipad-mini', { orientation: 'landscape' })).toEqual({
+      status: 24,
+      toolbar: 50,
+      bottom: 20,
+    });
+    // Installed, the safe areas hold the bands and no toolbar.
+    expect(bands('ipad-mini', { installed: true })).toEqual({
+      status: 24,
+      toolbar: 0,
+      bottom: 20,
+    });
+    // A preset whose chrome is shorter than its safe area keeps no toolbar.
+    const short: DevicePreset = {
+      ...preset('iphone'),
+      browserChrome: {
+        portrait: { top: 40, right: 0, bottom: 0, left: 0 },
+        landscape: { top: 0, right: 0, bottom: 0, left: 0 },
+      },
+    };
+    expect(frameBands(emulate(short, settings()))).toEqual({
+      status: 40,
+      toolbar: 0,
+      bottom: 0,
+    });
+    // Desktops and Flexible draw no bands.
+    expect(bands('desktop-1080')).toEqual({ status: 0, toolbar: 0, bottom: 0 });
+    expect(bands('flexible')).toEqual({ status: 0, toolbar: 0, bottom: 0 });
   });
 
   it('sizes Flexible from its own fields, whichever way it faces', () => {
@@ -341,10 +396,14 @@ describe('the play bar', () => {
       orientation: 'portrait',
       installed: 'false',
       chrome: 'true',
-      toolbar: 'true',
+      toolbar: 'bottom',
     });
     // A tab's chrome bands hold the status bar and the address bar.
-    expect([band('status'), band('bottom')]).toEqual(['62px', '134px']);
+    expect([band('status'), band('toolbar'), band('bottom')]).toEqual([
+      '62px',
+      '0px',
+      '134px',
+    ]);
     control('[data-action="editor-play-installed"]').click();
     // An installed app's safe areas hold them instead; no address bar.
     expect([band('status'), band('bottom')]).toEqual(['62px', '34px']);
@@ -352,8 +411,20 @@ describe('the play bar', () => {
     control('[data-action="editor-play-rotate"]').click();
     expect(body.dataset.orientation).toBe('landscape');
     expect([band('status'), band('bottom')]).toEqual(['0px', '21px']);
+    // KF-YC59PH: back in a tab, landscape's address bar is at the top.
+    control('[data-action="editor-play-installed"]').click();
+    expect(body.dataset.toolbar).toBe('top');
+    expect([band('status'), band('toolbar')]).toEqual(['0px', '50px']);
     choose(control('[data-editor-play="device"]'), 'android-compact');
     expect(body.dataset.frame).toBe('punch-hole');
+    expect(body.dataset.toolbar).toBe('top');
+    choose(control('[data-editor-play="device"]'), 'ipad-mini');
+    expect(body.dataset.toolbar).toBe('top');
+    expect([band('status'), band('toolbar'), band('bottom')]).toEqual([
+      '24px',
+      '50px',
+      '20px',
+    ]);
     choose(control('[data-editor-play="device"]'), 'desktop-1080');
     expect(body.dataset).toMatchObject({
       frame: 'monitor',

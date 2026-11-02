@@ -342,8 +342,8 @@
   pointer-events: none;
 }
 
-/* The status bar fills the top band: the safe area an installed app runs
-   under, or a tab's chrome. Phones hide it in landscape. */
+/* The status bar fills the device's top safe area, above a tab's top
+   toolbar when it has one. Phones hide it in landscape. */
 .kui-editor__device-body:is(
     [data-frame="dynamic-island"],
     [data-frame="punch-hole"],
@@ -408,14 +408,31 @@
   translate: 0 -50%;
 }
 
-/* A browser tab's address bar, at the top of its bottom toolbar band when
-   the band has room for one; a pill no taller than Safari's. */
-.kui-editor__device-body[data-toolbar="true"] .kui-editor__device-address {
-  inset: calc(100% - var(--_kui-editor-bottom) + 3px) 20% auto;
+/* A browser tab's address bar, a pill no taller than Safari's: at the top
+   of its bottom toolbar band when the band has room for one, or centered in
+   the top toolbar band below the status bar (iPad Safari, Chrome for
+   Android, iPhone landscape). */
+.kui-editor__device-body:is([data-toolbar="bottom"], [data-toolbar="top"])
+  .kui-editor__device-address {
   display: block;
-  block-size: min(calc(var(--_kui-editor-bottom) - 19px), 40px);
   border-radius: var(--kui-radius-pill);
   background: var(--kui-color-neutral-fill-normal);
+}
+
+.kui-editor__device-body[data-toolbar="bottom"] .kui-editor__device-address {
+  inset: calc(100% - var(--_kui-editor-bottom) + 3px) 20% auto;
+  block-size: min(calc(var(--_kui-editor-bottom) - 19px), 40px);
+}
+
+.kui-editor__device-body[data-toolbar="top"] .kui-editor__device-address {
+  --_kui-editor-address: min(calc(var(--_kui-editor-toolbar) - 14px), 36px);
+
+  inset: calc(
+      var(--_kui-editor-status) +
+        (var(--_kui-editor-toolbar) - var(--_kui-editor-address)) / 2
+    )
+    12% auto;
+  block-size: var(--_kui-editor-address);
 }
 
 /* The home indicator, along the bottom edge. */

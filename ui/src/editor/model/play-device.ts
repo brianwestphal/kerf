@@ -429,6 +429,8 @@ export interface DeviceEmulation {
   readonly chrome: DeviceInsets;
   /** The safe areas the played view gets; none in a browser tab. */
   readonly safeArea: DeviceInsets;
+  /** The device's own safe areas, installed or not: where its status bar is. */
+  readonly screenSafeArea: DeviceInsets;
   readonly orientation: DeviceOrientation;
   readonly installed: boolean;
 }
@@ -445,6 +447,7 @@ export function emulate(
       offset: { top: 0, left: 0 },
       chrome: NONE,
       safeArea: NONE,
+      screenSafeArea: NONE,
       orientation:
         settings.flexible.width > settings.flexible.height
           ? 'landscape'
@@ -472,6 +475,7 @@ export function emulate(
     offset: { top: chrome.top, left: chrome.left },
     chrome,
     safeArea: installed ? safe : NONE,
+    screenSafeArea: safe,
     orientation,
     installed,
   };
@@ -510,13 +514,24 @@ export function safeAreaTokens(
  * KF-E8T0AY: the heights a mock frame draws its status bar and bottom
  * band (home indicator, a tab's toolbar) in: the safe areas an installed
  * app runs under, or the browser chrome around a tab's viewport.
+ * KF-YC59PH: a tab's top chrome splits into the status bar (the device's
+ * own safe area) and, below it, the browser's top toolbar (`toolbar`), where
+ * the frame draws its address bar; zero where the toolbar is at the bottom.
  */
 export function frameBands(emulated: DeviceEmulation): {
   readonly status: number;
+  readonly toolbar: number;
   readonly bottom: number;
 } {
-  const insets = emulated.installed ? emulated.safeArea : emulated.chrome;
-  return { status: insets.top, bottom: insets.bottom };
+  if (emulated.installed)
+    return {
+      status: emulated.safeArea.top,
+      toolbar: 0,
+      bottom: emulated.safeArea.bottom,
+    };
+  const { chrome } = emulated;
+  const status = Math.min(emulated.screenSafeArea.top, chrome.top);
+  return { status, toolbar: chrome.top - status, bottom: chrome.bottom };
 }
 
 /** The play bar's short description of an emulation, such as "402 × 778". */

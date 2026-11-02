@@ -1385,13 +1385,16 @@ Their decisions were signed off on 2026-11-02.
   - A status bar ("12:00" and generic signal and battery glyphs). Phones
     drop it in landscape.
   - A home indicator.
-  - In a tab, a browser address bar (a pill at most 40px tall) at the top
-    of the bottom band wherever it has room for one (30px or more): the
-    iPhones in portrait, where Safari's toolbar sits at the bottom
-    (KF-FNQFPJ). A top toolbar (iPad Safari, Chrome for Android, iPhone
-    landscape) is part of the top band, which the status bar fills.
-  - The status bar and bottom band are the safe areas an installed app
-    runs under, or a tab's chrome bands.
+  - In a tab, a browser address bar (a pill) in the browser's toolbar band
+    wherever that band has room for one (30px or more):
+    - at the top of the bottom band, at most 40px tall, on the iPhones in
+      portrait, where Safari's toolbar sits at the bottom (KF-FNQFPJ);
+    - centered in the top toolbar band, at most 36px tall, on iPad Safari,
+      Chrome for Android, and the iPhones in landscape (KF-YC59PH: a tab's
+      top chrome splits into the device's own top safe area, where the
+      status bar goes, and the toolbar below it).
+  - Installed, the status bar and bottom band are the safe areas the app
+    runs under and no address bar is drawn.
 - **No branding.** There's no artwork, logo, or wordmark, only shapes.
 - **Colors** come from tokens, so both schemes read:
   - the body is `--kui-color-neutral-fill-loud` (dark gray in light mode,

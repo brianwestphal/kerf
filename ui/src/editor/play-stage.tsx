@@ -486,11 +486,17 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
       body.dataset.chrome = String(settings.value.chrome);
       const bands = frameBands(emulated);
       body.style.setProperty('--_kui-editor-status', `${bands.status}px`);
+      body.style.setProperty('--_kui-editor-toolbar', `${bands.toolbar}px`);
       body.style.setProperty('--_kui-editor-bottom', `${bands.bottom}px`);
-      // A tab's bottom band holds an address bar when it has room for one.
-      body.dataset.toolbar = String(
-        !emulated.installed && installs(preset.kind) && bands.bottom >= 30,
-      );
+      // A tab draws its address bar in the browser's toolbar band, top
+      // (KF-YC59PH) or bottom, when that band has room for one.
+      const tab = !emulated.installed && installs(preset.kind);
+      body.dataset.toolbar =
+        tab && bands.toolbar >= 30
+          ? 'top'
+          : tab && bands.bottom >= 30
+            ? 'bottom'
+            : 'false';
       const style = view.getComputedStyle(stageEl);
       const outer = { width: body.offsetWidth, height: body.offsetHeight };
       const chosen = settings.value.scale;
