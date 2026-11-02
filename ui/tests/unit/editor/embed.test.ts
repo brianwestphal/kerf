@@ -78,6 +78,25 @@ describe('embedNode', () => {
     ]);
   });
 
+  it('writes no props for a container without any (KF-QX497W)', () => {
+    for (const props of [undefined, {}]) {
+      const result = embedNode(
+        pane([button]),
+        BUTTON,
+        { type: '@kerfjs/ui:list', props },
+        'children',
+        () => '01JB8Z1M6Q8E1X9V4S7K2R3TA9',
+      )!;
+      expect(result.document.root.zones!.content).toEqual([
+        {
+          id: '01JB8Z1M6Q8E1X9V4S7K2R3TA9',
+          type: '@kerfjs/ui:list',
+          zones: { children: [button] },
+        },
+      ]);
+    }
+  });
+
   it('leaves the root alone', () => {
     expect(
       embedNode(
@@ -165,6 +184,9 @@ describe('Embed in', () => {
       .querySelector<HTMLElement>('[data-editor-embed="@kerfjs/ui:row"]')!
       .click();
     expect(first(editor).type).toBe('@kerfjs/ui:row');
+    // A container with no props of its own has no `props`, as a palette
+    // drop writes it (KF-QX497W).
+    expect(first(editor)).not.toHaveProperty('props');
     expect(
       findNode(editor.document.value, BUTTON)!.ancestors.at(-1)!.zone,
     ).toBe('children');

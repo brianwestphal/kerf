@@ -398,7 +398,11 @@ export function embedNode(
   const wrapper: MutableNode = {
     id: makeId(),
     type: container.type,
-    ...(container.props ? { props: { ...container.props } } : {}),
+    // No props reads as no `props` key, as a palette drop writes it
+    // (KF-QX497W).
+    ...(container.props && Object.keys(container.props).length
+      ? { props: { ...container.props } }
+      : {}),
     zones: { [zone]: [found.node as ViewChild] },
   };
   found.list!.splice(found.index!, 1, wrapper as ViewChild);

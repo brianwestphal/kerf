@@ -47,15 +47,11 @@
                     {
                       "id": "00000000000000000000000004",
                       "type": "@kerfjs/ui:content-item",
-                      "props": {},
                       "zones": {
                         "children": [
                           {
                             "id": "00000000000000000000000005",
                             "type": "@kerfjs/ui:list",
-                            "props": {
-                              "gap": "2xs"
-                            },
                             "zones": {
                               "children": [
                                 {
@@ -78,6 +74,9 @@
                                   }
                                 }
                               ]
+                            },
+                            "props": {
+                              "gap": "2xs"
                             }
                           }
                         ]

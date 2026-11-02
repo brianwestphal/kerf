@@ -2323,9 +2323,7 @@ test('builds Workbench › Full Desktop Workspace', async ({ page }) => {
             bottomDrawer: { label: 'Console' },
           },
           {
-            // Embed in leaves the new ContentItem an empty props object
-            // (KF-QX497W).
-            main: [{ ...editor, props: {} }],
+            main: [editor],
             'leftRail.content': [navigator],
             'rightRail.content': [inspector],
             'bottomDrawer.content': [drawer],
@@ -2424,21 +2422,16 @@ test('builds SplitView › Roomy List-Detail Split', async ({ page }) => {
           },
           {
             list: [
-              node(
-                'list',
-                // Embed in leaves an empty props object (KF-QX497W).
-                {},
-                {
-                  children: [
-                    node('list-header', {
-                      label: 'Inbox',
-                      count: MESSAGES.length,
-                      countLabel: `${MESSAGES.length} messages`,
-                    }),
-                    ...messageItems('select-roomy-split-view-message'),
-                  ],
-                },
-              ),
+              node('list', undefined, {
+                children: [
+                  node('list-header', {
+                    label: 'Inbox',
+                    count: MESSAGES.length,
+                    countLabel: `${MESSAGES.length} messages`,
+                  }),
+                  ...messageItems('select-roomy-split-view-message'),
+                ],
+              }),
             ],
             detail: [messageDetailNode()],
           },
@@ -2561,48 +2554,37 @@ test('builds SplitView › Resizable, Collapsible List', async ({ page }) => {
           },
           {
             list: [
-              node(
-                'pane',
-                // Embed in leaves an empty props object (KF-QX497W).
-                {},
-                {
-                  header: [
-                    node(
-                      'toolbar',
-                      { label: 'Threads' },
-                      {
-                        leading: [node('toolbar-text', { text: 'Threads' })],
-                        trailing: [
-                          node(
-                            'toolbar-control-group',
-                            {
-                              label: 'Hide Threads',
-                              appearance: 'borderless',
-                              single: true,
-                            },
-                            {
-                              children: [
-                                button('Hide Threads', 'panel-left-close'),
-                              ],
-                            },
-                          ),
-                        ],
-                      },
-                    ),
-                  ],
-                  content: [
-                    node(
-                      'list',
-                      {},
-                      {
-                        children: messageItems(
-                          'select-roomy-split-view-message',
+              node('pane', undefined, {
+                header: [
+                  node(
+                    'toolbar',
+                    { label: 'Threads' },
+                    {
+                      leading: [node('toolbar-text', { text: 'Threads' })],
+                      trailing: [
+                        node(
+                          'toolbar-control-group',
+                          {
+                            label: 'Hide Threads',
+                            appearance: 'borderless',
+                            single: true,
+                          },
+                          {
+                            children: [
+                              button('Hide Threads', 'panel-left-close'),
+                            ],
+                          },
                         ),
-                      },
-                    ),
-                  ],
-                },
-              ),
+                      ],
+                    },
+                  ),
+                ],
+                content: [
+                  node('list', undefined, {
+                    children: messageItems('select-roomy-split-view-message'),
+                  }),
+                ],
+              }),
             ],
             detail: [messageDetailNode()],
             'resizable.restoreControl': [
@@ -2867,24 +2849,19 @@ function messageDetailNode() {
   const [first] = MESSAGES;
   const text = (children: string, props: Record<string, unknown>) =>
     node('text', { children, variant: 'span', ...props });
-  return node(
-    'content-item',
-    // Embed in leaves an empty props object (KF-QX497W).
-    {},
-    {
-      children: [
-        node(
-          'list',
-          { gap: '2xs' },
-          {
-            children: [
-              text(`From ${first.sender}`, { tone: 'quiet', size: 'compact' }),
-              text(first.subject, { weight: 'strong' }),
-              text(first.body, { tone: 'quiet', size: 'compact' }),
-            ],
-          },
-        ),
-      ],
-    },
-  );
+  return node('content-item', undefined, {
+    children: [
+      node(
+        'list',
+        { gap: '2xs' },
+        {
+          children: [
+            text(`From ${first.sender}`, { tone: 'quiet', size: 'compact' }),
+            text(first.subject, { weight: 'strong' }),
+            text(first.body, { tone: 'quiet', size: 'compact' }),
+          ],
+        },
+      ),
+    ],
+  });
 }
