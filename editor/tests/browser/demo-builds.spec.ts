@@ -2014,3 +2014,65 @@ const inboxNodes = (action: string) =>
       );
     }),
   });
+
+test('builds Badge › Count', async ({ page }) => {
+  await dragComponent(page, 'Badge', () => emptySpot(page));
+  await select(page, /^Badge/);
+  await setText(page, 'children', '12');
+  await choose(page, 'tone', 'info');
+  await choose(page, 'appearance', 'solid');
+  await choose(page, 'size', 'compact');
+  await setText(page, 'label', '12 unread items');
+  await expect(canvas(page).locator('.kui-badge[data-kerf-node]')).toHaveText(
+    '12',
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node('badge', {
+        children: '12',
+        tone: 'info',
+        appearance: 'solid',
+        size: 'compact',
+        label: '12 unread items',
+      }),
+    ),
+  );
+});
+
+test('builds Badge › Dot', async ({ page }) => {
+  await dragComponent(page, 'Badge', () => emptySpot(page));
+  await select(page, /^Badge/);
+  await choose(page, 'tone', 'danger');
+  await choose(page, 'size', 'dot');
+  // A dot carries no text: clear the seeded placeholder.
+  await setText(page, 'children', '');
+  await setText(page, 'label', 'New activity');
+  await expect(canvas(page).locator('.kui-badge[data-kerf-node]')).toHaveCount(
+    1,
+  );
+  expect(await exported(page)).toEqual(
+    pane(node('badge', { tone: 'danger', size: 'dot', label: 'New activity' })),
+  );
+});
+
+test('builds Badge › Category Tag', async ({ page }) => {
+  await dragComponent(page, 'Badge', () => emptySpot(page));
+  await select(page, /^Badge/);
+  await setText(page, 'children', 'Design');
+  await choose(page, 'tone', 'pop');
+  await choose(page, 'appearance', 'outline');
+  await choose(page, 'shape', 'rounded');
+  await expect(canvas(page).locator('.kui-badge[data-kerf-node]')).toHaveText(
+    'Design',
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node('badge', {
+        children: 'Design',
+        tone: 'pop',
+        appearance: 'outline',
+        shape: 'rounded',
+      }),
+    ),
+  );
+});

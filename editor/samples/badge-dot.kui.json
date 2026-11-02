@@ -1,0 +1,24 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "BadgeDot",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:badge",
+          "props": {
+            "tone": "danger",
+            "size": "dot",
+            "label": "New activity"
+          }
+        }
+      ]
+    }
+  }
+}
