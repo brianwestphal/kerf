@@ -19,6 +19,7 @@ import {
   icon,
   newDocument,
   node,
+  outlineRow,
   page as pane,
   pickIcon,
   select,
@@ -2622,6 +2623,126 @@ test('builds SplitView › Resizable, Collapsible List', async ({ page }) => {
               ),
             ],
           },
+        ),
+      ),
+    ),
+  );
+});
+
+test('builds TabNavigator › Translucent Tab Bar', async ({ page }) => {
+  // Forty-eight rows, each named in the Inspector, outrun even a slow
+  // test's budget in Firefox.
+  test.setTimeout(240_000);
+  await dragComponent(page, 'TabNavigator', () => emptySpot(page));
+  await select(page, /^TabNavigator/);
+  // Below the root it needs a height of its own (KF-6MGYSG).
+  await embedIn(page, 'SizedRegion');
+  await select(page, /^TabNavigator/);
+  await setText(page, 'id', 'catalog-tab-scaffold-overlay');
+  await setText(page, 'label', 'Mail Sections');
+  await choose(page, 'barPresentation', 'overlay');
+  const dialog = page.locator('dialog[open]');
+  const item = (index: number) =>
+    dialog.locator('[data-action="editor-open-field"]').nth(index).click();
+  const sections = [
+    ['inbox', 'Inbox', 'Message', 'inbox'],
+    ['sent', 'Sent', 'Sent message', 'send'],
+  ] as const;
+  await page.getByRole('button', { name: 'Configure tabs' }).click();
+  await dialog.getByRole('button', { name: 'Remove Tab 3' }).click();
+  for (const [index, [id, label, , glyph]] of sections.entries()) {
+    await item(index);
+    await setField(page, 'tabs', [index, 'id'], id);
+    await setField(page, 'tabs', [index, 'label'], label);
+    // The tab's Icon row adds a LucideIcon and selects it.
+    await dialog.getByText('Icon', { exact: true }).click();
+    await pickIcon(page, page.locator('[data-editor-icon-place]'), glyph);
+    await select(page, /^TabNavigator/);
+    await page.getByRole('button', { name: 'Configure tabs' }).click();
+  }
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  await setText(page, 'active', 'inbox');
+  const rows = 24;
+  /**
+   * Fills the List just added to section `index`'s tab with its rows: one
+   * ListItem described once, duplicated, then each named in turn.
+   */
+  const messages = async (index: number) => {
+    const [prefix, , name] = sections[index]!;
+    await addChild(page, 'ListItem');
+    await area(page, 'Properties');
+    await setText(page, 'action', 'log-tab-scaffold-message');
+    await setText(
+      page,
+      'description',
+      'Scrolls visibly beneath the translucent tab bar.',
+    );
+    // Duplicate from the outline, where the shortcut acts on the node.
+    await select(page, /^ListItem/, index * rows);
+    for (let copy = 1; copy < rows; copy += 1)
+      await page.keyboard.press('ControlOrMeta+d');
+    await expect(outlineRow(page, /^ListItem/)).toHaveCount((index + 1) * rows);
+    for (let row = 0; row < rows; row += 1) {
+      await select(page, /^ListItem/, index * rows + row);
+      await setText(page, 'itemId', `${prefix}-${row + 1}`);
+      await setText(page, 'label', `${name} ${row + 1}`);
+    }
+  };
+  // The active tab's content is a drop target on the canvas; the inactive
+  // tab's takes children from Children › Add a child.
+  await select(page, /^TabNavigator/);
+  await dragComponent(page, 'List', () =>
+    canvas(page).locator('[data-editor-empty]', {
+      hasText: 'tab1Content slot — drop here',
+    }),
+  );
+  await select(page, /^List(?!Item)/);
+  await messages(0);
+  await select(page, /^TabNavigator/);
+  await addChild(page, 'List', 'tabs › 2 › content');
+  await messages(1);
+  await select(page, /^TabNavigator/);
+  const navigator = canvas(page).locator('.kui-tab-scaffold[data-kerf-node]');
+  await expect(navigator.getByRole('tab')).toHaveText(['Inbox', 'Sent']);
+  await expect(
+    navigator.locator('.kui-list-item[data-kerf-node]').first(),
+  ).toContainText('Message 1');
+  await page.screenshot({
+    path: test.info().outputPath('kf-jn4pf5-tab-navigator-overlay-1440.png'),
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      sized(
+        node(
+          'tab-navigator',
+          {
+            id: 'catalog-tab-scaffold-overlay',
+            label: 'Mail Sections',
+            barPresentation: 'overlay',
+            tabs: sections.map(([id, label]) => ({ id, label })),
+            active: 'inbox',
+          },
+          Object.fromEntries(
+            sections.flatMap(([prefix, , name, glyph], index) => [
+              [`tabs.${index}.icon`, [icon(glyph)]],
+              [
+                `tabs.${index}.content`,
+                [
+                  node('list', undefined, {
+                    children: Array.from({ length: rows }, (_, row) =>
+                      node('list-item', {
+                        action: 'log-tab-scaffold-message',
+                        itemId: `${prefix}-${row + 1}`,
+                        label: `${name} ${row + 1}`,
+                        description:
+                          'Scrolls visibly beneath the translucent tab bar.',
+                      }),
+                    ),
+                  }),
+                ],
+              ],
+            ]),
+          ),
         ),
       ),
     ),

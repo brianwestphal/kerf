@@ -1,0 +1,577 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TabNavigatorTranslucentTabBar",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sized-region",
+          "props": {
+            "minHeight": {
+              "$css": "rem(20)"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:tab-navigator",
+                "props": {
+                  "id": "catalog-tab-scaffold-overlay",
+                  "label": "Mail Sections",
+                  "tabs": [
+                    {
+                      "id": "inbox",
+                      "label": "Inbox"
+                    },
+                    {
+                      "id": "sent",
+                      "label": "Sent"
+                    }
+                  ],
+                  "active": "inbox",
+                  "barPresentation": "overlay"
+                },
+                "zones": {
+                  "tabs.0.icon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "inbox"
+                        },
+                        "name": "inbox"
+                      }
+                    }
+                  ],
+                  "tabs.1.icon": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "send"
+                        },
+                        "name": "send"
+                      }
+                    }
+                  ],
+                  "tabs.0.content": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:list",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000007",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 1",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-1"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000008",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 2",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-2"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000009",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 3",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-3"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000010",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 4",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-4"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000011",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 5",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-5"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000012",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 6",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-6"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000013",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 7",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-7"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000014",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 8",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-8"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000015",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 9",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-9"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000016",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 10",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-10"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000017",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 11",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-11"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000018",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 12",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-12"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000019",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 13",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-13"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000020",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 14",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-14"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000021",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 15",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-15"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000022",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 16",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-16"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000023",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 17",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-17"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000024",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 18",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-18"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000025",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 19",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-19"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000026",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 20",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-20"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000027",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 21",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-21"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000028",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 22",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-22"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000029",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 23",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-23"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000030",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Message 24",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "inbox-24"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "tabs.1.content": [
+                    {
+                      "id": "00000000000000000000000031",
+                      "type": "@kerfjs/ui:list",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000032",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 1",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-1"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000033",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 2",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-2"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000034",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 3",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-3"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000035",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 4",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-4"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000036",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 5",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-5"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000037",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 6",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-6"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000038",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 7",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-7"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000039",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 8",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-8"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000040",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 9",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-9"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000041",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 10",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-10"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000042",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 11",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-11"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000043",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 12",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-12"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000044",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 13",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-13"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000045",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 14",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-14"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000046",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 15",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-15"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000047",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 16",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-16"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000048",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 17",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-17"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000049",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 18",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-18"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000050",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 19",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-19"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000051",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 20",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-20"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000052",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 21",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-21"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000053",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 22",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-22"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000054",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 23",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-23"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000055",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Sent message 24",
+                              "action": "log-tab-scaffold-message",
+                              "description": "Scrolls visibly beneath the translucent tab bar.",
+                              "itemId": "sent-24"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
