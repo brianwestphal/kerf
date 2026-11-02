@@ -76,7 +76,7 @@ const openDocument = async (page: Page) => {
 
 /**
  * Fit: the frame, scaled down, sits whole inside the stage and keeps its
- * 402×874 viewport (its border sits outside it).
+ * viewport: the default iPhone 17 in a browser tab, 402×778 (KF-R7KXSN).
  */
 const expectFits = async (page: Page) => {
   const frame = page.locator('[data-editor-play-frame]');
@@ -87,14 +87,14 @@ const expectFits = async (page: Page) => {
   expect(box.y).toBeGreaterThanOrEqual(stageBox.y);
   expect(box.x + box.width).toBeLessThanOrEqual(stageBox.x + stageBox.width);
   expect(box.y + box.height).toBeLessThanOrEqual(stageBox.y + stageBox.height);
-  // Scaled evenly from the 404×876 bordered frame.
-  expect(box.width / box.height).toBeCloseTo(404 / 876, 2);
+  // Scaled evenly.
+  expect(box.width / box.height).toBeCloseTo(402 / 778, 2);
   expect(
     await page
       .frameLocator('[data-editor-play-frame]')
       .locator('html')
       .evaluate(() => [window.innerWidth, window.innerHeight]),
-  ).toEqual([402, 874]);
+  ).toEqual([402, 778]);
   return box;
 };
 
@@ -157,7 +157,7 @@ test('Fit scales the frame to a short stage and follows its resizes', async ({
         (await page.locator('[data-editor-play-frame]').boundingBox())!.height,
       ),
     )
-    .toBe(876);
+    .toBe(778);
   await expectFits(page);
   await page.setViewportSize({ width: 1440, height: 700 });
   await expect
@@ -197,4 +197,144 @@ test('the stage runs the view for real and never selects', async ({ page }) => {
   // Playing again starts fresh, from the document.
   await play(page);
   await expect(stage(page).getByText('Atlas details')).toBeVisible();
+});
+
+// KF-R7KXSN: device presets, orientation, scale, and installed-app safe
+// areas (docs/26-ui-editor.md §11.1–§11.3).
+const chooseIn = async (page: Page, control: string, option: string) => {
+  const select = page.locator(`[data-editor-play="${control}"]`);
+  await select.locator('.kui-select__trigger').click();
+  await select.getByRole('option', { name: option, exact: true }).click();
+};
+const frameViewport = (page: Page) =>
+  stage(page)
+    .locator('html')
+    .evaluate(() => [window.innerWidth, window.innerHeight]);
+const deviceClassIn = (page: Page) =>
+  stage(page).locator('html').getAttribute('data-kerf-play-device');
+
+/** The frame lies inside the stage (Fit). */
+const expectWithinStage = async (page: Page) => {
+  const stageBox = (await page.locator('[data-editor-stage]').boundingBox())!;
+  const box = (await page.locator('[data-editor-play-frame]').boundingBox())!;
+  expect(box.x).toBeGreaterThanOrEqual(stageBox.x);
+  expect(box.y).toBeGreaterThanOrEqual(stageBox.y);
+  expect(box.x + box.width).toBeLessThanOrEqual(stageBox.x + stageBox.width);
+  expect(box.y + box.height).toBeLessThanOrEqual(stageBox.y + stageBox.height);
+};
+
+test('the device menu sizes the frame, and deviceClass() inside follows it', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openDocument(page);
+  await play(page);
+  await expect(stage(page).getByText('Atlas details')).toBeVisible();
+  await expect.poll(() => deviceClassIn(page)).toBe('mobile portrait');
+  await chooseIn(page, 'device', 'iPad Pro 13"');
+  await expect.poll(() => frameViewport(page)).toEqual([1032, 1332]);
+  await expect.poll(() => deviceClassIn(page)).toBe('desktop portrait');
+  // The view keeps running: no reload, so its runtime state survives.
+  await stage(page).locator('[data-nav-back]').click();
+  await expect(stage(page).getByText('All projects')).toBeVisible();
+  await page.locator('[data-action="editor-play-rotate"]').click();
+  await expect.poll(() => frameViewport(page)).toEqual([1376, 988]);
+  await expect.poll(() => deviceClassIn(page)).toBe('desktop landscape');
+  await expect(stage(page).getByText('All projects')).toBeVisible();
+  await chooseIn(page, 'device', 'MacBook Pro 16"');
+  await expect.poll(() => frameViewport(page)).toEqual([1728, 1117]);
+  await expect.poll(() => deviceClassIn(page)).toBe('xl-desktop landscape');
+  await expect(
+    page.locator('[data-action="editor-play-rotate"]'),
+  ).toBeDisabled();
+  await expectWithinStage(page);
+  // The choice is remembered: playing again after a reload starts there.
+  await page.locator('[data-action="editor-play-done"]').click();
+  await page.reload();
+  await openDocument(page);
+  await play(page);
+  await expect.poll(() => frameViewport(page)).toEqual([1728, 1117]);
+});
+
+test('Installed app moves the content below the safe area', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openDocument(page);
+  await play(page);
+  const title = stage(page).getByText('Atlas details');
+  await expect(title).toBeVisible();
+  const top = () =>
+    title.evaluate((element) => element.getBoundingClientRect().top);
+  expect(await frameViewport(page)).toEqual([402, 778]);
+  const tab = await top();
+  await page.locator('[data-action="editor-play-installed"]').click();
+  await expect.poll(() => frameViewport(page)).toEqual([402, 874]);
+  // The iPhone 17's 62px status-bar safe area, now under the view's chrome.
+  await expect.poll(top).toBe(tab + 62);
+  await expect(
+    page.locator('[data-action="editor-play-installed"]'),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await page.locator('[data-action="editor-play-installed"]').click();
+  await expect.poll(top).toBe(tab);
+});
+
+test('a fixed scale overflows and scrolls the stage; Fit returns', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await openDocument(page);
+  await play(page);
+  await chooseIn(page, 'scale', '150%');
+  const frame = page.locator('[data-editor-play-frame]');
+  await expect
+    .poll(async () => Math.round((await frame.boundingBox())!.height))
+    .toBe(Math.round(778 * 1.5));
+  const overflow = () =>
+    page
+      .locator('[data-editor-stage]')
+      .evaluate((element) => element.scrollHeight - element.clientHeight);
+  expect(await overflow()).toBeGreaterThan(0);
+  // The viewport inside never changes with the scale.
+  expect(await frameViewport(page)).toEqual([402, 778]);
+  await chooseIn(page, 'scale', 'Fit');
+  await expect.poll(overflow).toBe(0);
+  await expectWithinStage(page);
+});
+
+test('Flexible resizes from its fields and its drag handles', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openDocument(page);
+  await play(page);
+  await chooseIn(page, 'device', 'Flexible');
+  await expect.poll(() => frameViewport(page)).toEqual([800, 600]);
+  await expect(
+    page.locator('[data-action="editor-play-rotate"]'),
+  ).toBeDisabled();
+  const width = page.locator('[data-editor-play-size="width"] input');
+  await width.fill('640');
+  await width.press('Enter');
+  await width.blur();
+  await expect.poll(() => frameViewport(page)).toEqual([640, 600]);
+  // Drag the bottom handle 50px down; the viewport grows by that much at
+  // the stage's scale.
+  const handle = page.locator('.kui-editor__resize[data-edge="block-end"]');
+  const scale = Number(
+    await page.locator('.kui-editor__device-box').getAttribute('data-scale'),
+  );
+  const box = (await handle.boundingBox())!;
+  const x = box.x + box.width / 2;
+  const y = box.y + box.height / 2;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x, y + 50, { steps: 4 });
+  await page.mouse.up();
+  await expect
+    .poll(async () => (await frameViewport(page))[1])
+    .toBe(Math.round(600 + 50 / scale));
+  await expect(
+    page.locator('[data-editor-play-size="height"] input'),
+  ).toHaveValue(String(Math.round(600 + 50 / scale)));
 });

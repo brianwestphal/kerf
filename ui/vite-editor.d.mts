@@ -49,6 +49,13 @@ export interface KerfUiEditorOptions {
    * `src/kerf-ui-field-editors.ts` when it exists.
    */
   fieldEditors?: string;
+  /**
+   * A module, resolved against Vite's `root`, whose default export is play
+   * mode's device presets (`DevicePresetsOption` from `@kerfjs/ui/editor`):
+   * an array added to the shipped presets (replacing any with the same id),
+   * or a function of the shipped list that returns the whole list.
+   */
+  devicePresets?: string;
 }
 
 /** The connect-style middleware stack and HTML transform of a Vite dev server. */
@@ -107,6 +114,7 @@ export declare function editorEntry(options: {
   app: ApplicationCatalogs;
   registry?: string;
   fieldEditors?: string;
+  devicePresets?: string;
 }): string;
 /** Run the Kerf UI editor in this Vite dev server. */
 export declare function kerfUiEditor(

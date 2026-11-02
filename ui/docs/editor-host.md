@@ -72,6 +72,8 @@ Options:
 - `fieldEditors`: a module, resolved the same way, whose default export maps
   type names to field editors (below). Default:
   `src/kerf-ui-field-editors.ts` when it exists.
+- `devicePresets`: a module, resolved the same way, whose default export is
+  play mode's device presets (see Play mode). Only loaded when named.
 
 ```ts
 // src/kerf-ui-registry.ts
@@ -174,10 +176,11 @@ mount(root, editor.render);
 editor.wire(root);
 ```
 
-- `createEditor({ catalog, document?, save?, storage?, fieldEditors? })`:
+- `createEditor({ catalog, document?, save?, storage?, fieldEditors?, devicePresets? })`:
   `document` is the document to start with (default an empty Pane),
   `save(fileName, text)` replaces the default download for Save and Export,
-  and `fieldEditors` registers field editors by type name (above).
+  `fieldEditors` registers field editors by type name (above), and
+  `devicePresets` adds play mode's devices (below).
 - `createEditorCatalog({ props, composition, selection?, components, placeholders? })`
   combines catalogs. Without a selection catalog a component is named by its
   export. `placeholders` maps `<component key>.<prop>` to a factory for the
@@ -207,3 +210,46 @@ Inside the frame, the components run with their real wiring. Tabs switch, a
 NavStack's back pops, and Workbench rails and sidebars collapse, all on a
 play-time copy of the document. Nothing you do in play mode changes the
 document.
+
+The play bar picks the device: phones, tablets, laptops and desktops, and
+Flexible (a width and height you type or drag). Phones and tablets rotate
+and have an **Installed app** toggle. Off, the view runs as a browser tab:
+the device's safe areas are outside the page, as with the default
+`viewport-fit`. On, the view fills the device and gets its safe areas
+through Kerf UI's `--kui-safe-area-*` tokens, so components that claim safe
+areas lay out as on the device. **Scale** is Fit (the default, never larger
+than 100%) or a fixed percentage, which may overflow and scroll the stage.
+The frame's viewport is always the device's, so media queries and
+`deviceClass()` inside it answer for that device. Touch input, pixel
+density, and the on-screen keyboard aren't emulated. The editor remembers
+the choice per browser.
+
+Add your own devices with `createEditor({ devicePresets })`, or the Vite
+plugin's `devicePresets` module. An array adds presets, replacing a shipped
+one with the same `id`; a function receives the shipped list
+(`SHIPPED_DEVICE_PRESETS`) and returns the whole list.
+
+```ts
+// src/kerf-ui-devices.ts (name it with the plugin's `devicePresets` option)
+import type { DevicePreset } from "@kerfjs/ui/editor";
+
+const devices: DevicePreset[] = [
+  {
+    id: "kiosk",
+    label: "Store kiosk",
+    kind: "tablet",
+    width: 1080,
+    height: 1920,
+    safeArea: {
+      portrait: { top: 0, right: 0, bottom: 0, left: 0 },
+      landscape: { top: 0, right: 0, bottom: 0, left: 0 },
+    },
+    frame: "tablet",
+  },
+];
+export default devices;
+```
+
+A preset's sizes are CSS pixels in portrait. `safeArea` is the insets an
+installed app gets per orientation; `browserChrome`, when given, is what a
+browser tab's chrome takes instead (it defaults to the safe areas).

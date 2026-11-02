@@ -79,7 +79,7 @@ describe('the generated entry', () => {
     expect(code).toContain("import '@kerfjs/ui/select/register';");
     expect(code).toContain("import '@kerfjs/ui/surface-scaffold/register';");
     expect(code).toContain(
-      'createEditor({ catalog, storage: devServerStorage(), fieldEditors })',
+      'createEditor({ catalog, storage: devServerStorage(), fieldEditors, devicePresets })',
     );
     expect(editorEntry({ app: { props: [], composition: [] } })).toContain(
       'const registry = {};',
@@ -162,7 +162,7 @@ describe('kerfUiEditor', () => {
     const entry = () => plugin.load('\0virtual:kerf-ui-editor/entry')!;
     expect(entry()).toContain('const fieldEditors = undefined;');
     expect(entry()).toContain(
-      'createEditor({ catalog, storage: devServerStorage(), fieldEditors })',
+      'createEditor({ catalog, storage: devServerStorage(), fieldEditors, devicePresets })',
     );
     mkdirSync(join(app, 'src'), { recursive: true });
     writeFileSync(join(app, DEFAULT_FIELD_EDITORS), 'export default {};\n');
@@ -172,6 +172,21 @@ describe('kerfUiEditor', () => {
     const named = serve({ fieldEditors: 'src/missing.ts' }).plugin;
     expect(named.load('\0virtual:kerf-ui-editor/entry')).toContain(
       'const fieldEditors = undefined;',
+    );
+  });
+
+  // KF-R7KXSN: play mode's device presets come from a module the app names.
+  it('passes a named device presets module to the editor', () => {
+    const entry = (options = {}) =>
+      serve(options).plugin.load('\0virtual:kerf-ui-editor/entry')!;
+    expect(entry()).toContain('const devicePresets = undefined;');
+    mkdirSync(join(app, 'src'), { recursive: true });
+    writeFileSync(join(app, 'src/devices.ts'), 'export default [];\n');
+    expect(entry({ devicePresets: 'src/devices.ts' })).toContain(
+      `import devicePresets from ${JSON.stringify(join(app, 'src/devices.ts'))};`,
+    );
+    expect(entry({ devicePresets: 'src/missing.ts' })).toContain(
+      'const devicePresets = undefined;',
     );
   });
 

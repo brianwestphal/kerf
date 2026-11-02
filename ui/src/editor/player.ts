@@ -9,6 +9,8 @@
 import type { ViewDocument } from '@kerfjs/ui/view';
 import { effect, raw, type SafeHtml, signal } from 'kerfjs';
 
+import { deviceClass } from '../shared/environment/device-class.js';
+import { type DeviceInsets, safeAreaTokens } from './model/play-device.js';
 import { wirePlayState } from './play-adapters.js';
 
 /** The query flag that makes the editor page a play page. */
@@ -17,6 +19,11 @@ export const PLAY_PARAM = 'kerf-ui-play';
 export const PLAY_READY = 'kerf-ui-play:ready';
 /** The editor's message carrying the document to play. */
 export const PLAY_DOCUMENT = 'kerf-ui-play:document';
+/**
+ * KF-R7KXSN: the editor's message carrying the emulated device's safe areas
+ * (physical insets), sent with the document and whenever they change.
+ */
+export const PLAY_ENVIRONMENT = 'kerf-ui-play:environment';
 
 /** Whether `location` is a play page. */
 export const isPlayPage = (location: Pick<Location, 'search'>): boolean =>
@@ -60,14 +67,40 @@ export function createPlayer(
   const wire = (root: HTMLElement) => {
     const view = root.ownerDocument.defaultView!;
     const play = wirePlayState(root, document);
+    const html = root.ownerDocument.documentElement;
     const onMessage = (event: MessageEvent) => {
       if (!fromPeer(event, view, view.parent)) return;
-      const data = event.data as { type?: unknown; document?: ViewDocument };
+      const data = event.data as {
+        type?: unknown;
+        document?: ViewDocument;
+        safeArea?: DeviceInsets;
+      };
+      if (data?.type === PLAY_ENVIRONMENT && data.safeArea) {
+        // A frame cannot set env(safe-area-inset-*), so the emulated
+        // device's insets go into Kerf UI's own tokens on :root.
+        const direction =
+          html.dir === 'rtl' || view.getComputedStyle(html).direction === 'rtl'
+            ? 'rtl'
+            : 'ltr';
+        for (const [token, value] of Object.entries(
+          safeAreaTokens(data.safeArea, direction),
+        ))
+          html.style.setProperty(token, value);
+        return;
+      }
       if (data?.type !== PLAY_DOCUMENT || !data.document) return;
       document.value = data.document;
       received.value = true;
     };
     view.addEventListener('message', onMessage);
+    // The class the played view's own deviceClass() reads, on the play
+    // page's root, so a test (or an author's inspector) can see it follow
+    // the device.
+    const device = deviceClass();
+    const stopDevice = effect(() => {
+      const { size, orientation } = device.value;
+      html.dataset.kerfPlayDevice = `${size} ${orientation}`;
+    });
     // Adapters follow the rendered view: the mount re-renders first.
     const stopSync = effect(() => {
       void document.value;
@@ -78,6 +111,7 @@ export function createPlayer(
     view.parent.postMessage({ type: PLAY_READY }, view.location.origin);
     return () => {
       view.removeEventListener('message', onMessage);
+      stopDevice();
       stopSync();
       play.dispose();
     };

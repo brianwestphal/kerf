@@ -116,26 +116,27 @@
   display: none;
 }
 
-/* The stage centers the played view's frame on a lowered backdrop. The
-   frame is scaled to fit it (Fit), so nothing overflows. */
+/* The stage centers the device on a lowered backdrop. Fit scales the device
+   to it, so nothing overflows; a fixed scale may overflow, and the stage
+   then scrolls (KF-R7KXSN). */
 .kui-editor__stage {
   display: flex;
   flex: 1 1 auto;
   min-block-size: 0;
-  overflow: hidden;
+  overflow: auto;
   padding: var(--kui-space-l);
   background: var(--kui-color-surface-lowered);
 }
 
-/* The room the scaled frame takes; the editor sets its size as the stage
-   resizes. */
+/* The room the scaled device takes; the editor sets its size as the stage
+   and the device change. */
 .kui-editor__device-box {
   position: relative;
   flex: none;
   margin: auto;
 }
 
-/* Scales the frame from its top-left corner into the box. */
+/* Scales the device from its top-left corner into the box. */
 .kui-editor__device-scaler {
   position: absolute;
   top: 0;
@@ -143,11 +144,61 @@
   transform-origin: 0 0;
 }
 
-/* The frame keeps its viewport size, with its border (the device's edge)
-   outside it. */
+/* The device's whole screen, with its edge outside it. In a browser tab the
+   frame sits inside it, below and beside the browser's chrome. */
 .kui-editor__device {
-  display: block;
+  position: relative;
   box-sizing: content-box;
   border: 1px solid var(--kui-color-neutral-border-normal);
+  background: var(--kui-color-neutral-fill-quiet);
+}
+
+/* The played view's frame: the device's viewport. */
+.kui-editor__device-frame {
+  position: absolute;
+  display: block;
+  border: 0;
   background: var(--kui-color-surface);
+}
+
+/* Flexible's resize handles, along the device's trailing and bottom edges
+   (outside the scaled device, so they stay a constant size). */
+.kui-editor__resize {
+  position: absolute;
+  z-index: 1;
+  border-radius: var(--kui-radius-pill);
+  background: var(--kui-color-neutral-border-normal);
+  touch-action: none;
+}
+
+.kui-editor__resize[hidden] {
+  display: none;
+}
+
+.kui-editor__resize[data-edge="inline-end"] {
+  inset-block: 50% auto;
+  inset-inline-start: calc(100% + var(--kui-space-2xs));
+  inline-size: 6px;
+  block-size: 48px;
+  translate: 0 -50%;
+  cursor: ew-resize;
+}
+
+.kui-editor__resize[data-edge="block-end"] {
+  inset-inline: 50% auto;
+  inset-block-start: calc(100% + var(--kui-space-2xs));
+  inline-size: 48px;
+  block-size: 6px;
+  translate: -50% 0;
+  cursor: ns-resize;
+}
+
+.kui-editor__resize:hover,
+.kui-editor__resize[data-dragging] {
+  background: var(--kui-color-brand-border-loud);
+}
+
+.kui-editor__resize:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 2px;
 }

@@ -177,7 +177,7 @@ export function editorPage() {
  * The generated entry: imports the editor, the catalogs, and each module a
  * catalog names, then mounts the editor over all of them.
  */
-export function editorEntry({ app, registry, fieldEditors }) {
+export function editorEntry({ app, registry, fieldEditors, devicePresets }) {
   const kerfProps = readJson(
     resolve(import.meta.dirname, 'ai/component-props.json'),
   );
@@ -216,6 +216,9 @@ export function editorEntry({ app, registry, fieldEditors }) {
     fieldEditors
       ? `import fieldEditors from ${JSON.stringify(fieldEditors)};`
       : 'const fieldEditors = undefined;',
+    devicePresets
+      ? `import devicePresets from ${JSON.stringify(devicePresets)};`
+      : 'const devicePresets = undefined;',
     `const appProps = ${JSON.stringify(app.props)};`,
     `const appComposition = ${JSON.stringify(app.composition)};`,
     'const props = [kerfProps, ...appProps];',
@@ -229,7 +232,7 @@ export function editorEntry({ app, registry, fieldEditors }) {
     '  components: { ...componentMap(props, modules), ...registry },',
     '});',
     "const root = document.getElementById('kerf-ui-editor');",
-    'const editor = createEditor({ catalog, storage: devServerStorage(), fieldEditors });',
+    'const editor = createEditor({ catalog, storage: devServerStorage(), fieldEditors, devicePresets });',
     'mount(root, editor.render);',
     'editor.wire(root);',
     '',
@@ -266,6 +269,10 @@ export function kerfUiEditor(options = {}) {
         app: applicationCatalogs(root),
         registry: found(options.registry ?? DEFAULT_REGISTRY),
         fieldEditors: found(options.fieldEditors ?? DEFAULT_FIELD_EDITORS),
+        // KF-R7KXSN: play mode's extra or replacement device presets.
+        devicePresets: options.devicePresets
+          ? found(options.devicePresets)
+          : undefined,
       });
     },
     configureServer(server) {

@@ -17,6 +17,7 @@ import {
 } from '../../../src/editor/model/play-state.js';
 import {
   PLAY_DOCUMENT,
+  PLAY_ENVIRONMENT,
   PLAY_READY,
   playPageUrl,
 } from '../../../src/editor/player.js';
@@ -328,8 +329,10 @@ describe('play mode in the editor', () => {
     const frame = root.querySelector<HTMLIFrameElement>(
       '[data-editor-play-frame]',
     )!;
+    // KF-R7KXSN: the default iPhone 17 in a browser tab: its 874 tall
+    // screen less the 62 and 34 safe areas the tab's page sits inside.
     expect(frame.getAttribute('width')).toBe('402');
-    expect(frame.getAttribute('height')).toBe('874');
+    expect(frame.getAttribute('height')).toBe('778');
     expect(new URL(frame.src).searchParams.has('kerf-ui-play')).toBe(true);
     expect(root.querySelector('[data-editor-stage]')).not.toBeNull();
     // Fit sizes the frame's room and scale (happy-dom lays nothing out, so
@@ -385,10 +388,21 @@ describe('play mode in the editor', () => {
     ready(stage as never, 'https://elsewhere.example');
     expect(post).not.toHaveBeenCalled();
     ready(stage as never);
-    expect(post).toHaveBeenCalledWith(
-      { type: PLAY_DOCUMENT, document: editor.document.value },
-      location.origin,
-    );
+    // The device's safe areas first (none in a browser tab), then the
+    // document, so the view renders once with the right insets.
+    expect(post.mock.calls).toEqual([
+      [
+        {
+          type: PLAY_ENVIRONMENT,
+          safeArea: { top: 0, right: 0, bottom: 0, left: 0 },
+        },
+        location.origin,
+      ],
+      [
+        { type: PLAY_DOCUMENT, document: editor.document.value },
+        location.origin,
+      ],
+    ]);
     click(root.querySelector('[data-action="editor-play-done"]'));
     click(root.querySelector('[data-action="editor-play"]'));
     expect(root.querySelector('[data-editor-play-frame]')).not.toBe(frame);

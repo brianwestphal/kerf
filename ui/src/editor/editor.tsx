@@ -266,7 +266,10 @@ import {
   slotRowId,
   zoneLabel,
 } from './model/outline.js';
-import { fitScale, scaledBox } from './model/play-fit.js';
+import {
+  type DevicePresetsOption,
+  resolveDevicePresets,
+} from './model/play-device.js';
 import { type PreviewSlot, previewSlots } from './model/preview-slots.js';
 import {
   placementReason,
@@ -278,13 +281,14 @@ import {
 } from './model/problems.js';
 import { sampleInputs } from './model/sample-inputs.js';
 import { shownScenes } from './model/shown-scenes.js';
+import { createPlayStage } from './play-stage.js';
 import {
   createPlayer,
   fromPeer,
   isPlayPage,
   PLAY_DOCUMENT,
+  PLAY_ENVIRONMENT,
   PLAY_READY,
-  playPageUrl,
 } from './player.js';
 
 export const WORKBENCH_ID = 'kerf-ui-editor';
@@ -297,8 +301,6 @@ const NEW_ACTION = 'editor-new';
 // KF-60BEEJ: play mode's Play (Canvas toolbar) and Done (play bar).
 const PLAY_ACTION = 'editor-play';
 const PLAY_DONE_ACTION = 'editor-play-done';
-/** Play mode's fixed viewport until device presets (§11.2) land. */
-const PLAY_VIEWPORT = { width: 402, height: 874 } as const;
 // KF-MHY1GB: each rail switches between focus areas with a segmented tab strip.
 const DOCUMENT_TAB_ACTION = 'editor-document-tab';
 const INSPECTOR_TAB_ACTION = 'editor-inspector-tab';
@@ -647,6 +649,14 @@ export type {
   FieldEditorControlKind,
   FieldEditors,
 } from './field-editors.js';
+export {
+  type DeviceFrame,
+  type DeviceInsets,
+  type DeviceKind,
+  type DevicePreset,
+  type DevicePresetsOption,
+  SHIPPED_DEVICE_PRESETS,
+} from './model/play-device.js';
 
 export interface EditorOptions {
   /** The document to start with; the default is an empty Pane. */
@@ -670,6 +680,11 @@ export interface EditorOptions {
    * replaces the type-driven form wherever a prop or field has that type.
    */
   readonly fieldEditors?: FieldEditors;
+  /**
+   * KF-R7KXSN: play mode's devices. An array adds to the shipped presets
+   * (replacing one with the same id); a function returns the whole list.
+   */
+  readonly devicePresets?: DevicePresetsOption;
 }
 
 /** An inspector control's current value: a Select's, a switch's, or a field's. */
@@ -846,6 +861,11 @@ export function createEditor(options: EditorOptions) {
    * Done returns to it exactly as it was, selection included.
    */
   const playing = signal(false);
+  /** KF-R7KXSN: the play bar's device, scale, and the stage that shows it. */
+  const playStage = createPlayStage({
+    presets: resolveDevicePresets(options.devicePresets),
+    doneAction: PLAY_DONE_ACTION,
+  });
   /** Why the last duplicate or paste did not happen (KF-QAVK73). */
   const editNotice = signal<string | null>(null);
   /** The node Copy took, for Paste; held per editor, never shared. */
@@ -3378,44 +3398,8 @@ export function createEditor(options: EditorOptions) {
    * The stage's iframe loads this page as a play page, which asks for the
    * document once it listens (wirePlay).
    */
-  const playMode = () => (
-    <>
-      <Toolbar
-        label="Play"
-        rootAttributes={{ 'data-key': 'editor-play-bar' }}
-        safeAreaEdges={['block-start', 'inline-start', 'inline-end']}
-        dividerSides="b"
-        leading={
-          <ToolbarText
-            text="Phone"
-            description={`${PLAY_VIEWPORT.width} × ${PLAY_VIEWPORT.height}`}
-          />
-        }
-        trailing={
-          <Button tone="brand" emphasis="plain" action={PLAY_DONE_ACTION}>
-            Done
-          </Button>
-        }
-      />
-      <div class="kui-editor__stage" data-key="editor-stage" data-editor-stage>
-        {/* The box reserves the scaled frame's room; the scaler scales it
-            (fitPlay). Their sizes are set as the stage resizes, so the
-            morph leaves them be. */}
-        <div class="kui-editor__device-box" data-morph-skip>
-          <div class="kui-editor__device-scaler">
-            <iframe
-              class="kui-editor__device"
-              title={`${documentFileName(doc.value)} (playing)`}
-              src={playPageUrl(globalThis.location.href)}
-              width={String(PLAY_VIEWPORT.width)}
-              height={String(PLAY_VIEWPORT.height)}
-              data-editor-play-frame
-            />
-          </div>
-        </div>
-      </div>
-    </>
-  );
+  const playMode = () =>
+    playStage.render(`${documentFileName(doc.value)} (playing)`);
 
   const render = () => {
     const document = doc.value;
@@ -4357,61 +4341,31 @@ export function createEditor(options: EditorOptions) {
     root
       .querySelector<HTMLElement>(`[data-action="${PLAY_DONE_ACTION}"]`)
       ?.focus();
-    stopFit = fitPlay(root);
+    stopStage = playStage.start(root, () => sendEnvironment(root));
   };
 
-  /** Stops scaling the stage's frame; set while playing. */
-  let stopFit: (() => void) | undefined;
+  /** Stops the stage's layout and controls; set while playing. */
+  let stopStage: (() => void) | undefined;
 
-  /**
-   * Fit (docs/26-ui-editor.md §11.1): scales the stage's frame down until
-   * it fits the stage, never up, now and whenever the stage resizes. The
-   * transform is on the frame's wrapper, so the frame keeps its viewport.
-   */
-  const fitPlay = (root: HTMLElement) => {
-    const view = root.ownerDocument.defaultView!;
-    const stage = root.querySelector<HTMLElement>('[data-editor-stage]')!;
-    const box = stage.querySelector<HTMLElement>('.kui-editor__device-box')!;
-    const scaler = box.firstElementChild as HTMLElement;
-    const frame = scaler.firstElementChild as HTMLElement;
-    const fit = () => {
-      const style = view.getComputedStyle(stage);
-      const frameSize = {
-        width: frame.offsetWidth,
-        height: frame.offsetHeight,
-      };
-      const scale = fitScale(
-        {
-          width:
-            stage.clientWidth -
-            parseFloat(style.paddingLeft) -
-            parseFloat(style.paddingRight),
-          height:
-            stage.clientHeight -
-            parseFloat(style.paddingTop) -
-            parseFloat(style.paddingBottom),
-        },
-        frameSize,
-      );
-      const reserved = scaledBox(frameSize, scale);
-      box.style.width = `${reserved.width}px`;
-      box.style.height = `${reserved.height}px`;
-      scaler.style.transform = `scale(${scale})`;
-      box.dataset.scale = String(scale);
-    };
-    fit();
-    const observer = new ResizeObserver(fit);
-    observer.observe(stage);
-    return () => observer.disconnect();
-  };
+  /** The stage's frame window, while playing. */
+  const playWindow = (root: HTMLElement) =>
+    root.querySelector<HTMLIFrameElement>('[data-editor-play-frame]')
+      ?.contentWindow ?? null;
+
+  /** KF-R7KXSN: tells the played view its device's safe areas. */
+  const sendEnvironment = (root: HTMLElement) =>
+    playWindow(root)?.postMessage(
+      { type: PLAY_ENVIRONMENT, safeArea: playStage.safeArea() },
+      root.ownerDocument.defaultView!.location.origin,
+    );
 
   /**
    * Leaves play mode. The editing UI comes back as it was; the played view's
    * frame, and with it every runtime state, is gone.
    */
   const leavePlay = (root: HTMLElement) => {
-    stopFit?.();
-    stopFit = undefined;
+    stopStage?.();
+    stopStage = undefined;
     playing.value = false;
     root.querySelector<HTMLElement>(`[data-action="${PLAY_ACTION}"]`)?.focus();
   };
@@ -4430,6 +4384,7 @@ export function createEditor(options: EditorOptions) {
         (event.data as { type?: unknown } | null)?.type !== PLAY_READY
       )
         return;
+      sendEnvironment(root);
       frame.contentWindow.postMessage(
         { type: PLAY_DOCUMENT, document: doc.value },
         view.location.origin,
@@ -4440,8 +4395,8 @@ export function createEditor(options: EditorOptions) {
     );
     return () => {
       stop();
-      stopFit?.();
-      stopFit = undefined;
+      stopStage?.();
+      stopStage = undefined;
     };
   };
 

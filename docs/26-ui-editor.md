@@ -1234,13 +1234,15 @@ diff <doc…>` takes `--target js`, `--declarations-only`, and extra
 **Status: partly built.** The core (KF-60BEEJ) is built:
 
 - Play/Done.
-- The iframe stage at a fixed 402×874 viewport, with Fit scaling.
+- The iframe stage, with Fit scaling.
 - The play page.
 - The state adapters for TabNavigator, TabBar, NavStack back, and Workbench and sidebar collapse.
 
+Device emulation (KF-R7KXSN) is built: presets, orientation, Installed app
+safe areas, Scale, and Flexible sizing (§11.2, §11.3).
+
 Not built yet:
 
-- Device presets and the Scale select (§11.2, KF-R7KXSN).
 - Frames (KF-E8T0AY).
 - Actions and the action log (§11.5, KF-RF6RCS).
 
@@ -1269,12 +1271,53 @@ Their decisions were signed off on 2026-11-02.
   can't change the document. The maintainer signed this layout off on
   2026-11-02: the device at the play bar's leading end, and Done, plain
   brand-tone text, at its trailing end.
-- **Fit is built now; the other scales come with the Scale select.** The
-  frame's wrapper reserves the scaled box, and a CSS transform scales the
-  frame down to the stage's content box, never up. A `ResizeObserver` on the
-  stage recomputes the scale (`model/play-fit.ts`). The iframe keeps its
-  402×874 layout size, so the viewport inside it is unchanged, and the stage
-  never scrolls.
+- **Fit.** The device's wrapper reserves the scaled box, and a CSS
+  transform scales the device down to the stage's content box, never up. A
+  `ResizeObserver` on the stage recomputes the scale (`model/play-fit.ts`).
+  The iframe keeps its layout size, so the viewport inside it is unchanged.
+
+**As built (KF-R7KXSN).**
+
+- **Presets** are data in `ui/src/editor/model/play-device.ts`, with each
+  number's source in a comment. The pure functions there do the work:
+  - `emulate` turns a preset and the play bar's choices into the device
+    size, the frame's viewport and offset, and the safe areas.
+  - `safeAreaTokens` maps insets onto the logical tokens, mirrored in RTL.
+  - `resolveDevicePresets` merges a host's presets.
+  - `parsePlaySettings` reads the remembered choice leniently.
+- **The play bar and stage** live in `ui/src/editor/play-stage.tsx`:
+  - The Device `Select` is grouped by kind and shows the viewport size
+    beside the name.
+  - A `ToolbarControlGroup` holds Landscape and Installed app; both are
+    disabled for desktops and Flexible.
+  - The Scale `Select` has Fit, 50%, 75%, 100%, 125%, and 150%.
+  - For Flexible, two compact number `TextField`s and two `separator`
+    handles on the device's trailing and bottom edges. A handle drags with
+    the pointer (its travel divided by the scale) or steps with the arrow
+    keys (10px, or 50px with Shift).
+- **Sizing happens outside the morph.** The frame's size and offset are set
+  directly, so changing the device resizes the running view instead of
+  reloading it. Its runtime state survives a device change.
+- **Safe areas reach the play page by message.** A third message,
+  `kerf-ui-play:environment`, carries the physical insets, sent before the
+  document and again whenever they change. The player writes
+  `--kui-safe-area-*` on its `:root` and names its own `deviceClass()` on
+  `data-kerf-play-device`, which tests read.
+- **Defaults and memory.** Play mode starts on the iPhone 17 in a browser
+  tab (402×778 viewport) at Fit. The choice is remembered in
+  `localStorage` (`kerf-ui-editor:play`), and every storage access tolerates
+  failure.
+- **Hosts** extend the list with `createEditor({ devicePresets })` or the
+  Vite plugin's `devicePresets` module option.
+- **Audit:** every `env(safe-area-inset-*)` in `ui/src` is the fallback of a
+  `var(--kui-safe-area-*, …)` read, and `foundation.css` always defines the
+  tokens, so nothing bypasses them.
+- **Deviations:**
+  - The "not emulated" note isn't in the device menu yet. `Select` has no
+    popup note, and its `hint` renders below the trigger, which a toolbar
+    can't hold. KF-59BF6C tracks the component gap; the note is in
+    `ui/docs/editor-host.md` meanwhile.
+  - Browser toolbars aren't subtracted (§11.3).
 
 Play mode lets an author use the designed view as its users would. In play
 mode the canvas stops being an editing surface: clicks, keys, drags, and
@@ -1304,7 +1347,7 @@ Play mode replaces the Workbench's rails and canvas with two regions:
 | Chrome        | `ToolbarButton` toggle                                             | Shows or hides the mock device frame. Layout is identical either way.                                                   |
 | Action log    | `ToolbarButton` with a count `Badge`, opening a `Popover` list     | §11.5                                                                                                                   |
 
-Flexible shows width and height fields, and drag handles on the stage's
+Flexible shows width and height fields, and drag handles on the device's
 trailing and bottom edges resize the viewport live.
 
 ### 11.2 Device presets
@@ -1317,18 +1360,29 @@ or replace it through `createEditor({ devicePresets })` and the Vite plugin's
 option of the same name. The shipped list covers the sizes and safe-area
 shapes that matter, not every model. It includes:
 
-- Phones: iPhone SE (375×667, no notch), a current iPhone (402×874, Dynamic
-  Island), a current iPhone Pro Max (440×956), and a compact Android
-  (412×915, punch-hole).
-- Tablets: iPad mini (744×1133), iPad Air 11" (820×1180), iPad Pro 13"
-  (1032×1376).
-- Laptop/Desktop: MacBook Air 13" (1470×956), MacBook Pro 16" (1728×1117), a
-  1920×1080 desktop.
+- Phones:
+  - iPhone SE (375×667, Home button)
+  - iPhone 17 (402×874, Dynamic Island)
+  - iPhone 17 Pro Max (440×956)
+  - Android (Pixel 8; 412×915, punch-hole)
+- Tablets:
+  - iPad mini (756×1158, the current model per Apple's spec page; the
+    previous model was 744×1133)
+  - iPad Air 11" (820×1180)
+  - iPad Pro 13" (1032×1376)
+- Laptop/Desktop:
+  - MacBook Air 13" (1470×956)
+  - MacBook Pro 16" (1728×1117)
+  - a 1920×1080 desktop
 - Flexible.
 
-The exact current-model numbers are reviewed when the list is implemented.
-Each preset's sizes, safe areas, and browser-chrome heights are cited in a
-comment beside it.
+Each preset's sizes and safe areas are cited in a comment beside them. The
+sources are:
+
+- Chrome DevTools' emulated devices
+- useyourloaf's iPhone 17 table
+- Apple's spec pages (iPad and MacBook resolutions, halved for 2x)
+- Apple's iPad Pro tech talk (24pt status bar, 20pt home indicator)
 
 ### 11.3 Viewport emulation
 
@@ -1353,6 +1407,13 @@ document and its param values by `postMessage` and renders them with
   `browserChrome`. The mock frame draws the browser's toolbars in that space,
   and no safe-area insets reach the page (the browser's chrome absorbs them),
   matching mobile Safari's default `viewport-fit` behavior.
+  - `browserChrome` defaults to the preset's safe areas, since a page
+    without `viewport-fit=cover` is laid out inside them (WebKit, "Designing
+    Websites for iPhone X").
+  - The browsers' own toolbars aren't subtracted: their heights change with
+    scrolling and settings, and no published source gives them. A preset may
+    set `browserChrome` explicitly. KF-FNQFPJ tracks measuring them on real
+    devices.
 - **Installed app (on).** The viewport is the full device size, and the
   preset's safe areas apply: content runs beneath the status bar and home
   indicator, and the frame draws only the device body, status bar, and home
