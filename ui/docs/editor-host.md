@@ -210,8 +210,9 @@ returns the player on that page instead of the editor, so a host needs no
 extra route or code. The player gets the document from its editor by
 same-origin `postMessage`. Your host's page must keep `createEditor`,
 `mount`, and `wire` unconditional, and serve the same page for that query.
-Inside the frame, the components run with their real wiring. Tabs switch, a
-NavStack's back pops, and Workbench rails and sidebars collapse, all on a
+Inside the frame, the components run with their real wiring. Each NavStack
+starts at its first view, as an app launches; your mock handlers push the
+rest (below). Tabs switch, a NavStack's back pops, and Workbench rails and sidebars collapse, all on a
 play-time copy of the document. Nothing you do in play mode changes the
 document.
 

@@ -55,6 +55,20 @@ export function selectTab(
   return setProp(document, id, 'active', tabId);
 }
 
+/**
+ * KF-BFE3EC: the play copy a played view starts from. Every NavStack opens
+ * at its first (root) view, the way an app launches; a mock handler pushes
+ * the rest from the edited document (`view.navStack(name).push(key)`). The
+ * later views' zones leave with them, and with those any NavStack nested in
+ * them. Returns `document` itself when every stack already shows its root.
+ */
+export function rootViews(document: ViewDocument): ViewDocument {
+  let next = document;
+  for (const { node } of visitNodes(document))
+    if (node.type === NAV_STACK) next = cutStack(next, node.id, 0);
+  return next;
+}
+
 /** NavStack `id`'s back control pops its top view. */
 export function popView(document: ViewDocument, id: string): ViewDocument {
   const views = nodeOf(document, id, NAV_STACK)?.props?.views;

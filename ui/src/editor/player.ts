@@ -19,7 +19,7 @@ import {
   pushView,
 } from './model/play-actions.js';
 import { type DeviceInsets, safeAreaTokens } from './model/play-device.js';
-import { popView } from './model/play-state.js';
+import { popView, rootViews } from './model/play-state.js';
 import { wirePlayState } from './play-adapters.js';
 
 /** The query flag that makes the editor page a play page. */
@@ -137,7 +137,9 @@ export function createPlayer(
       }
       if (data?.type !== PLAY_DOCUMENT || !data.document) return;
       original = data.document;
-      document.value = data.document;
+      // KF-BFE3EC: each NavStack starts at its root view, as an app
+      // launches; handlers push the rest from `original`.
+      document.value = rootViews(data.document);
       received.value = true;
     };
     /** Tells the editor's action log about one fired action. */

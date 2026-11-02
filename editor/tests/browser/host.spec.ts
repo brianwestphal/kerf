@@ -222,9 +222,9 @@ test('an app’s play handler pushes a view from a row, and actions are logged',
   await expect(page.getByText(/· 5 nodes · valid$/)).toBeVisible();
   await page.locator('[data-action="editor-play"]').click();
   const view = page.frameLocator('[data-editor-play-frame]');
-  // The stack opens on its top view; back to the orders.
-  await view.locator('[data-nav-back]').click();
+  // KF-BFE3EC: the stack opens on its root view, the orders, with no Back.
   await expect(view.getByText('Order two')).toBeVisible();
+  await expect(view.locator('[data-nav-back]')).toHaveCount(0);
   // The row's action runs the app's handler: it remembers the row and
   // pushes the order's view.
   await view.getByText('Order two').click();

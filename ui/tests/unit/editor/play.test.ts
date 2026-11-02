@@ -5,10 +5,12 @@ import type { ViewDocument } from '@kerfjs/ui/view';
 import { mount } from 'kerfjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { PlayHandlers } from '../../../src/editor/model/play-actions.js';
 import { fitScale, scaledBox } from '../../../src/editor/model/play-fit.js';
 import {
   popView,
   reorderTabBarItems,
+  rootViews,
   selectTab,
   selectTabBarItem,
   setSidebarCollapsed,
@@ -46,6 +48,7 @@ const ids = {
   toggle: '01JB8Z1M6Q8E1X9V4S7K2R3T8N',
   main: '01JB8Z1M6Q8E1X9V4S7K2R3T8P',
   rail: '01JB8Z1M6Q8E1X9V4S7K2R3T8Q',
+  open: '01JB8Z1M6Q8E1X9V4S7K2R3T8R',
 };
 
 const text = (id: string, children: string) => ({
@@ -89,7 +92,17 @@ const tabsAndStack = () =>
               ],
             },
             zones: {
-              'views.0.content': [text(ids.first, 'All projects')],
+              'views.0.content': [
+                text(ids.first, 'All projects'),
+                {
+                  id: ids.open,
+                  type: '@kerfjs/ui:button',
+                  props: {
+                    children: 'Open Atlas',
+                    action: { $action: 'open-atlas' },
+                  },
+                },
+              ],
               'views.1.content': [text(ids.second, 'Atlas details')],
             },
           },
@@ -181,6 +194,10 @@ const barsAndPanels = () =>
     },
   }) as unknown as ViewDocument;
 
+/** The NavStack node in `tabsAndStack()`. */
+const findStack = (document: ViewDocument) =>
+  (document.root.zones as Record<string, unknown[]>)['tabs.0.content']![0];
+
 const nodeProps = (document: ViewDocument, id: string) => {
   const find = (node: Record<string, unknown>): Record<string, unknown> => {
     if (node.id === id) return (node.props ?? {}) as Record<string, unknown>;
@@ -234,6 +251,28 @@ describe('play-time state transitions', () => {
     expect(JSON.stringify(popped)).not.toContain('Atlas details');
     expect(popView(popped, ids.stack)).toBe(popped);
     expect(popView(source, ids.tabs)).toBe(source);
+  });
+
+  it('starts every NavStack at its root view (KF-BFE3EC)', () => {
+    const source = tabsAndStack();
+    const started = rootViews(source);
+    expect(nodeProps(started, ids.stack).views).toHaveLength(1);
+    expect(JSON.stringify(started)).not.toContain('Atlas details');
+    expect(nodeProps(source, ids.stack).views).toHaveLength(2);
+    // Already at the root: the same document.
+    expect(rootViews(started)).toBe(started);
+    // A stack nested in a later view leaves with that view.
+    const nested = globalThis.structuredClone(source) as ViewDocument;
+    const zones = (findStack(nested) as { zones: Record<string, unknown[]> })
+      .zones;
+    zones['views.1.content'] = [
+      {
+        ...(globalThis.structuredClone(findStack(source)) as object),
+        id: ids.panel,
+      },
+    ];
+    const cut = rootViews(nested);
+    expect(JSON.stringify(cut)).not.toContain(ids.panel);
   });
 
   it('selects one TabBarItem in its bar', () => {
@@ -296,10 +335,17 @@ describe('play-time state transitions', () => {
 });
 
 /** Opens the editor on `document` (or the player, on a play page). */
+/** KF-BFE3EC: the mock handler that pushes the stack's Atlas view. */
+const playHandlers: PlayHandlers = {
+  'open-atlas': ({ view }) => view.navStack('projects-stack')!.push('atlas'),
+};
+
 function open(document?: ViewDocument) {
   const root = globalThis.document.createElement('div');
   globalThis.document.body.append(root);
-  const editor = createEditor(document ? { document } : {});
+  const editor = createEditor(
+    document ? { document, playHandlers } : { playHandlers },
+  );
   mount(root, editor.render);
   const unwire = editor.wire(root);
   cleanup = unwire;
@@ -444,6 +490,8 @@ describe('the play page', () => {
   it('disposes the wiring of a node a newly sent document no longer has', async () => {
     const { root } = play(tabsAndStack());
     await settled();
+    click(root.querySelector('[data-action="open-atlas"]'));
+    await settled();
     const stack = root.querySelector('[data-component="nav-stack"]')!;
     window.dispatchEvent(
       new MessageEvent('message', {
@@ -477,7 +525,7 @@ describe('the play page', () => {
         source: window,
       }),
     );
-    expect(root.textContent).toContain('Atlas details');
+    expect(root.textContent).toContain('All projects');
   });
 
   it('rewires an element the morph reuses for another node', async () => {
@@ -497,6 +545,9 @@ describe('the play page', () => {
     );
     await settled();
     expect(root.querySelector('[data-component="nav-stack"]')).toBe(stack);
+    click(root.querySelector('[data-action="open-atlas"]'));
+    await settled();
+    expect(nodeProps(editor.document.value, ids.panel).views).toHaveLength(2);
     click(root.querySelector('[data-nav-back]'));
     expect(nodeProps(editor.document.value, ids.panel).views).toHaveLength(1);
   });
@@ -537,6 +588,13 @@ describe('the play page', () => {
     const { root, editor } = play(source);
     await settled();
     expect(root.querySelector('[data-editor-canvas]')).toBeNull();
+    // KF-BFE3EC: the stack starts at its root view, as an app launches.
+    expect(root.textContent).toContain('All projects');
+    expect(root.textContent).not.toContain('Atlas details');
+    expect(nodeProps(editor.document.value, ids.stack).views).toHaveLength(1);
+    // A handler pushes the rest from the document as edited.
+    click(root.querySelector('[data-action="open-atlas"]'));
+    await settled();
     expect(root.textContent).toContain('Atlas details');
     click(root.querySelector('[data-nav-back]'));
     expect(nodeProps(editor.document.value, ids.stack).views).toHaveLength(1);

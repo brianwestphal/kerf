@@ -1254,7 +1254,8 @@ Device emulation (KF-R7KXSN) is built: presets, orientation, Installed app
 safe areas, Scale, and Flexible sizing (§11.2, §11.3).
 
 Mock device frames (KF-E8T0AY) are built, and so are host mock action
-handlers and the action log (§11.4, §11.5, KF-RF6RCS).
+handlers and the action log (§11.4, §11.5, KF-RF6RCS). Each NavStack starts
+at its root view (KF-BFE3EC, §11.4).
 
 Their decisions were signed off on 2026-11-02.
 
@@ -1411,6 +1412,20 @@ Their decisions were signed off on 2026-11-02.
   `open-order` sets `selectedId` from the row's key and pushes the `order`
   view. `editor/tests/browser/host.spec.ts` plays it.
 
+**As built (KF-BFE3EC).** The maintainer decided on 2026-11-02 that play
+starts each NavStack at its first (root) view, the way an app launches.
+
+- When the document arrives, the player cuts every NavStack in the play
+  copy back to its first view (`rootViews` in `model/play-state.ts`). The
+  later views' zones leave with them, and so does any NavStack nested in
+  them.
+- Handlers push the rest with `view.navStack(name).push(key)`, which takes
+  the view from the document as edited.
+- The editing canvas still shows whichever view you're editing (Shown on
+  the canvas, KF-RMZ2NP).
+- The fixture's orders open on the list, so a row opens its order directly,
+  with no Back first.
+
 Play mode lets an author use the designed view as its users would. In play
 mode the canvas stops being an editing surface: clicks, keys, drags, and
 scrolls reach the components, never the editor's selection, drop targets, or
@@ -1523,7 +1538,8 @@ document and its param values by `postMessage` and renders them with
   interactive components are controlled: their `wire…` helpers report intent
   (`wireTabNavigator`'s `onSelect`, `wireNavStack`'s `onBack`) and the
   application re-renders with new props. So the play page keeps a play-time
-  copy of the document and a table of built-in **state adapters**, one per
+  copy of the document, in which each NavStack starts at its first (root)
+  view, as an app launches (KF-BFE3EC) and a table of built-in **state adapters**, one per
   controlled component. Each adapter installs the component's helper and maps
   its callbacks onto prop changes in that copy: a TabNavigator or TabBar
   selection sets `active`, a NavStack back pops its `views`, and a sidebar or

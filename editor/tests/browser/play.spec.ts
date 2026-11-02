@@ -123,7 +123,10 @@ test('Play shows the stage at the device viewport and Done restores the editor',
   await expect(frame).toBeVisible();
   await expectFits(page);
   await expect(page.locator('[data-action="editor-play-done"]')).toBeFocused();
-  await expect(stage(page).getByText('Atlas details')).toBeVisible();
+  // KF-BFE3EC: play starts the stack at its root view, though the canvas
+  // shows the view being edited.
+  await expect(stage(page).getByText('All projects')).toBeVisible();
+  await expect(stage(page).getByText('Atlas details')).toHaveCount(0);
   await page.locator('[data-action="editor-play-done"]').click();
   await expect(frame).toHaveCount(0);
   await expect(page.locator('[data-editor-canvas]')).toBeVisible();
@@ -175,11 +178,11 @@ test('the stage runs the view for real and never selects', async ({ page }) => {
   await expect(page.getByText('Nothing selected')).toBeVisible();
   await play(page);
   const view = stage(page);
-  await expect(view.getByText('Atlas details')).toBeVisible();
-  // NavStack back pops the play copy's top view.
-  await view.locator('[data-nav-back]').click();
+  // KF-BFE3EC: the stack starts at its root view, with no Back; a host's
+  // mock handler pushes the rest (host.spec.ts).
   await expect(view.getByText('All projects')).toBeVisible();
   await expect(view.getByText('Atlas details')).toHaveCount(0);
+  await expect(view.locator('[data-nav-back]')).toHaveCount(0);
   // A TabNavigator tab switches the scene.
   await view.locator('[data-tab-scaffold-tab="search"]').click();
   await expect(view.getByText('Search everything')).toBeVisible();
@@ -196,7 +199,7 @@ test('the stage runs the view for real and never selects', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Undo' })).toBeDisabled();
   // Playing again starts fresh, from the document.
   await play(page);
-  await expect(stage(page).getByText('Atlas details')).toBeVisible();
+  await expect(stage(page).getByText('All projects')).toBeVisible();
 });
 
 // KF-R7KXSN: device presets, orientation, scale, and installed-app safe
@@ -229,18 +232,18 @@ test('the device menu sizes the frame, and deviceClass() inside follows it', asy
   await page.setViewportSize({ width: 1440, height: 900 });
   await openDocument(page);
   await play(page);
-  await expect(stage(page).getByText('Atlas details')).toBeVisible();
+  await expect(stage(page).getByText('All projects')).toBeVisible();
   await expect.poll(() => deviceClassIn(page)).toBe('mobile portrait');
   await chooseIn(page, 'device', 'iPad Pro 13"');
   await expect.poll(() => frameViewport(page)).toEqual([1032, 1332]);
   await expect.poll(() => deviceClassIn(page)).toBe('desktop portrait');
   // The view keeps running: no reload, so its runtime state survives.
-  await stage(page).locator('[data-nav-back]').click();
-  await expect(stage(page).getByText('All projects')).toBeVisible();
+  await stage(page).locator('[data-tab-scaffold-tab="search"]').click();
+  await expect(stage(page).getByText('Search everything')).toBeVisible();
   await page.locator('[data-action="editor-play-rotate"]').click();
   await expect.poll(() => frameViewport(page)).toEqual([1376, 988]);
   await expect.poll(() => deviceClassIn(page)).toBe('desktop landscape');
-  await expect(stage(page).getByText('All projects')).toBeVisible();
+  await expect(stage(page).getByText('Search everything')).toBeVisible();
   await chooseIn(page, 'device', 'MacBook Pro 16"');
   await expect.poll(() => frameViewport(page)).toEqual([1728, 1117]);
   await expect.poll(() => deviceClassIn(page)).toBe('xl-desktop landscape');
@@ -262,7 +265,7 @@ test('Installed app moves the content below the safe area', async ({
   await page.setViewportSize({ width: 1440, height: 900 });
   await openDocument(page);
   await play(page);
-  const title = stage(page).getByText('Atlas details');
+  const title = stage(page).getByText('All projects');
   await expect(title).toBeVisible();
   const top = () =>
     title.evaluate((element) => element.getBoundingClientRect().top);
@@ -346,7 +349,7 @@ test('the Chrome toggle hides the device frame without moving the view', async (
   await page.setViewportSize({ width: 1440, height: 900 });
   await openDocument(page);
   await play(page);
-  await expect(stage(page).getByText('Atlas details')).toBeVisible();
+  await expect(stage(page).getByText('All projects')).toBeVisible();
   const frame = page.locator('[data-editor-play-frame]');
   const bezel = page.locator('.kui-editor__device-bezel');
   const chrome = page.locator('[data-action="editor-play-chrome"]');
@@ -372,6 +375,6 @@ test('the Chrome toggle hides the device frame without moving the view', async (
   // The frame's parts never take a click from the view.
   await chooseIn(page, 'device', 'iPhone 17');
   await page.locator('[data-action="editor-play-installed"]').click();
-  await stage(page).locator('[data-nav-back]').click();
-  await expect(stage(page).getByText('All projects')).toBeVisible();
+  await stage(page).locator('[data-tab-scaffold-tab="search"]').click();
+  await expect(stage(page).getByText('Search everything')).toBeVisible();
 });
