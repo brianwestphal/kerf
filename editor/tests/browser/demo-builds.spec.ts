@@ -2396,61 +2396,12 @@ test('builds SplitView › Roomy List-Detail Split', async ({ page }) => {
   await setText(page, 'label', 'Inbox');
   await setText(page, 'count', String(MESSAGES.length));
   await setText(page, 'countLabel', `${MESSAGES.length} messages`);
-  await select(page, /^List(?!Item|Header)/);
-  await addChild(page, 'ListItem');
-  await area(page, 'Properties');
-  await setText(page, 'action', 'select-roomy-split-view-message');
-  await turnOn(page, 'multiline');
-  await addIcon(page, 'icon', 'message-square-text');
-  await setText(page, 'name', 'message');
-  await select(page, /^ListItem/);
-  await page.locator('[data-editor-content-add="trailing"]').click();
-  await addChild(page, 'LucideIcon');
-  await area(page, 'Properties');
-  await pickIcon(
-    page,
-    page.locator('[data-editor-icon-place]'),
-    'chevron-right',
-  );
-  await select(page, /^ListItem/);
-  await page.keyboard.press('ControlOrMeta+d');
-  await page.keyboard.press('ControlOrMeta+d');
-  for (const [index, message] of MESSAGES.entries()) {
-    await select(page, /^ListItem/, index);
-    await setText(page, 'itemId', message.id);
-    await setText(page, 'label', message.subject);
-    await setText(
-      page,
-      'description',
-      `${message.sender} · ${message.preview}`,
-    );
-  }
-  // The first message is the one in view.
-  await select(page, /^ListItem/);
-  await turnOn(page, 'selected');
+  await messageRows(page, 'select-roomy-split-view-message');
   await select(page, /^Text/);
   await page.locator('[data-action="editor-delete"]').click();
   // The detail pane's seeded Text becomes a DemoContentItem's eyebrow.
+  await messageDetail(page);
   const [first] = MESSAGES;
-  await select(page, /^Text/);
-  await embedInOther(page, 'List');
-  await choose(page, 'gap', '2xs');
-  await embedInOther(page, 'ContentItem');
-  await select(page, /^Text/);
-  await setText(page, 'children', `From ${first.sender}`);
-  await choose(page, 'variant', 'span');
-  await choose(page, 'tone', 'quiet');
-  await choose(page, 'size', 'compact');
-  await page.keyboard.press('ControlOrMeta+d');
-  await setText(page, 'children', first.subject);
-  await choose(page, 'tone', 'Not set');
-  await choose(page, 'size', 'Not set');
-  await choose(page, 'weight', 'strong');
-  await page.keyboard.press('ControlOrMeta+d');
-  await setText(page, 'children', first.body);
-  await choose(page, 'weight', 'Default (regular)');
-  await choose(page, 'tone', 'quiet');
-  await choose(page, 'size', 'compact');
   await select(page, /^SplitView/);
   const split = canvas(page).locator('.kui-split-view[data-kerf-node]');
   await expect(split.locator('.kui-list-item')).toHaveCount(3);
@@ -2458,8 +2409,6 @@ test('builds SplitView › Roomy List-Detail Split', async ({ page }) => {
   await page.screenshot({
     path: test.info().outputPath('kf-jn4pf5-split-view-roomy-1440.png'),
   });
-  const text = (children: string, props: Record<string, unknown>) =>
-    node('text', { children, variant: 'span', ...props });
   expect(await exported(page)).toEqual(
     pane(
       sized(
@@ -2485,48 +2434,187 @@ test('builds SplitView › Roomy List-Detail Split', async ({ page }) => {
                       count: MESSAGES.length,
                       countLabel: `${MESSAGES.length} messages`,
                     }),
-                    ...MESSAGES.map((message, index) =>
-                      node(
-                        'list-item',
-                        {
-                          action: 'select-roomy-split-view-message',
-                          itemId: message.id,
-                          label: message.subject,
-                          description: `${message.sender} · ${message.preview}`,
-                          ...(index === 0 ? { selected: true } : {}),
-                          multiline: true,
-                        },
-                        {
-                          icon: [
-                            icon('message-square-text', { name: 'message' }),
-                          ],
-                          trailing: [icon('chevron-right')],
-                        },
-                      ),
+                    ...messageItems('select-roomy-split-view-message'),
+                  ],
+                },
+              ),
+            ],
+            detail: [messageDetailNode()],
+          },
+        ),
+      ),
+    ),
+  );
+});
+
+// SplitView › Interactive Compact Drill-Down waits on KF-YCM09F: its empty
+// detail is a raw <div />.
+test('builds SplitView › Resizable, Collapsible List', async ({ page }) => {
+  // A whole screen built step by step runs long in Firefox.
+  test.slow();
+  await dragComponent(page, 'SplitView', () => emptySpot(page));
+  await select(page, /^SplitView/);
+  // Below the root it needs a height of its own (KF-6MGYSG).
+  await embedIn(page, 'SizedRegion');
+  await select(page, /^SplitView/);
+  await setText(page, 'id', 'catalog-split-view-resizable');
+  await setText(page, 'label', 'Resizable Messages');
+  await setText(page, 'listTitle', 'Threads');
+  await setText(page, 'detailTitle', 'Project update');
+  // The list's ResizableRegion: 280px between 220 and 420, a hidden
+  // separator, and a fade-slide collapse restored from the bottom corner.
+  const dialog = page.locator('dialog[open]');
+  await page.getByRole('button', { name: 'Configure resizable' }).click();
+  await setField(page, 'resizable', ['size'], '280');
+  await setField(page, 'resizable', ['min'], '220');
+  await setField(page, 'resizable', ['max'], '420');
+  await chooseField(page, 'resizable', ['separator'], 'hidden');
+  await chooseField(page, 'resizable', ['collapseMotion'], 'fade-slide');
+  await chooseField(page, 'resizable', ['restorePosition'], 'bottom-start');
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  /** The seeded ToolbarButton `nth` as an icon command. */
+  const command = async (nth: number, ariaLabel: string, glyph: string) => {
+    await select(page, /^ToolbarButton/, nth);
+    await setText(page, 'ariaLabel', ariaLabel);
+    await setText(page, 'children', '');
+    await setText(page, 'action', 'toggle-split-view-list');
+    await addIcon(page, 'icon', glyph);
+  };
+  // The list pane: a Pane whose header toolbar names the threads and hides
+  // them, over the message rows.
+  await select(page, /^Text/);
+  await embedInOther(page, 'List');
+  await embedInOther(page, 'Pane');
+  await addChild(page, 'Toolbar', 'header');
+  await area(page, 'Properties');
+  await setText(page, 'label', 'Threads');
+  // In this narrow column a canvas drop on Leading lands in Center
+  // (KF-K3EKKF), so the title goes in through Add a child.
+  await addChild(page, 'ToolbarText', 'leading');
+  await area(page, 'Properties');
+  await setText(page, 'text', 'Threads');
+  await select(page, /^Toolbar(?!Text|Button|ControlGroup)/);
+  await addChild(page, 'ToolbarControlGroup', 'trailing');
+  await area(page, 'Properties');
+  await setText(page, 'label', 'Hide Threads');
+  await choose(page, 'appearance', 'borderless');
+  await turnOn(page, 'single');
+  await command(0, 'Hide Threads', 'panel-left-close');
+  await messageRows(page, 'select-roomy-split-view-message');
+  await select(page, /^Text/);
+  await page.locator('[data-action="editor-delete"]').click();
+  await messageDetail(page);
+  // The restore control: a FloatingToolbar docked in the corner, holding
+  // the button that shows the threads again.
+  await select(page, /^SplitView/);
+  await page.getByRole('button', { name: 'Configure resizable' }).click();
+  await dialog.getByRole('button', { name: 'Add to restore control' }).click();
+  await addChild(page, 'FloatingToolbar');
+  await area(page, 'Properties');
+  await setText(page, 'label', 'Threads');
+  await choose(page, 'position', 'bottom-start');
+  await addChild(page, 'ToolbarControlGroup');
+  await area(page, 'Properties');
+  await setText(page, 'label', 'Threads');
+  await turnOn(page, 'single');
+  // The outline lists the restore control before the list pane.
+  await command(0, 'Show Threads', 'panel-left-open');
+  // The FloatingToolbar arrived holding a placeholder Text.
+  await select(page, /^Text/);
+  await expect(page.locator('[data-editor-prop="children"] input')).toHaveValue(
+    'FloatingToolbar',
+  );
+  await page.locator('[data-action="editor-delete"]').click();
+  await select(page, /^SplitView/);
+  const [first] = MESSAGES;
+  const split = canvas(page).locator('.kui-split-view[data-kerf-node]');
+  await expect(split.locator('.kui-list-item')).toHaveCount(3);
+  await expect(split.locator('strong')).toHaveText(first.subject);
+  await page.screenshot({
+    path: test.info().outputPath('kf-jn4pf5-split-view-resizable-1440.png'),
+  });
+  const button = (ariaLabel: string, glyph: string) =>
+    node(
+      'toolbar-control-group#ToolbarButton',
+      { ariaLabel, action: 'toggle-split-view-list' },
+      { icon: [icon(glyph)] },
+    );
+  expect(await exported(page)).toEqual(
+    pane(
+      sized(
+        node(
+          'split-view',
+          {
+            id: 'catalog-split-view-resizable',
+            label: 'Resizable Messages',
+            listTitle: 'Threads',
+            detailTitle: first.subject,
+            resizable: {
+              size: 280,
+              min: 220,
+              max: 420,
+              separator: 'hidden',
+              collapseMotion: 'fade-slide',
+              restorePosition: 'bottom-start',
+            },
+          },
+          {
+            list: [
+              node(
+                'pane',
+                // Embed in leaves an empty props object (KF-QX497W).
+                {},
+                {
+                  header: [
+                    node(
+                      'toolbar',
+                      { label: 'Threads' },
+                      {
+                        leading: [node('toolbar-text', { text: 'Threads' })],
+                        trailing: [
+                          node(
+                            'toolbar-control-group',
+                            {
+                              label: 'Hide Threads',
+                              appearance: 'borderless',
+                              single: true,
+                            },
+                            {
+                              children: [
+                                button('Hide Threads', 'panel-left-close'),
+                              ],
+                            },
+                          ),
+                        ],
+                      },
+                    ),
+                  ],
+                  content: [
+                    node(
+                      'list',
+                      {},
+                      {
+                        children: messageItems(
+                          'select-roomy-split-view-message',
+                        ),
+                      },
                     ),
                   ],
                 },
               ),
             ],
-            detail: [
+            detail: [messageDetailNode()],
+            'resizable.restoreControl': [
               node(
-                'content-item',
-                // Embed in leaves an empty props object (KF-QX497W).
-                {},
+                'floating-toolbar',
+                { label: 'Threads', position: 'bottom-start' },
                 {
                   children: [
                     node(
-                      'list',
-                      { gap: '2xs' },
+                      'toolbar-control-group',
+                      { label: 'Threads', single: true },
                       {
-                        children: [
-                          text(`From ${first.sender}`, {
-                            tone: 'quiet',
-                            size: 'compact',
-                          }),
-                          text(first.subject, { weight: 'strong' }),
-                          text(first.body, { tone: 'quiet', size: 'compact' }),
-                        ],
+                        children: [button('Show Threads', 'panel-left-open')],
                       },
                     ),
                   ],
@@ -2564,3 +2652,118 @@ const MESSAGES = [
     body: 'The beta milestones now have owners. The final readiness check is scheduled for next week.',
   },
 ] as const;
+
+/**
+ * Adds the three message rows to the document's first List, the first one
+ * selected, each opening `action` (the split-view demo's `messageList`).
+ */
+async function messageRows(page: Page, action: string) {
+  await select(page, /^List(?!Item|Header)/);
+  await addChild(page, 'ListItem');
+  await area(page, 'Properties');
+  await setText(page, 'action', action);
+  await turnOn(page, 'multiline');
+  await addIcon(page, 'icon', 'message-square-text');
+  // The demo names the glyph's icon "message".
+  await setText(page, 'name', 'message');
+  await select(page, /^ListItem/);
+  await page.locator('[data-editor-content-add="trailing"]').click();
+  await addChild(page, 'LucideIcon');
+  await area(page, 'Properties');
+  await pickIcon(
+    page,
+    page.locator('[data-editor-icon-place]'),
+    'chevron-right',
+  );
+  await select(page, /^ListItem/);
+  await page.keyboard.press('ControlOrMeta+d');
+  await page.keyboard.press('ControlOrMeta+d');
+  for (const [index, message] of MESSAGES.entries()) {
+    await select(page, /^ListItem/, index);
+    await setText(page, 'itemId', message.id);
+    await setText(page, 'label', message.subject);
+    await setText(
+      page,
+      'description',
+      `${message.sender} · ${message.preview}`,
+    );
+  }
+  // The first message is the one in view.
+  await select(page, /^ListItem/);
+  await turnOn(page, 'selected');
+}
+
+/** The rows `messageRows` builds, as the exported document spells them. */
+const messageItems = (action: string) =>
+  MESSAGES.map((message, index) =>
+    node(
+      'list-item',
+      {
+        action,
+        itemId: message.id,
+        label: message.subject,
+        description: `${message.sender} · ${message.preview}`,
+        ...(index === 0 ? { selected: true } : {}),
+        multiline: true,
+      },
+      {
+        icon: [icon('message-square-text', { name: 'message' })],
+        trailing: [icon('chevron-right')],
+      },
+    ),
+  );
+
+/**
+ * Turns the first Text, the detail pane's seeded one, into the first
+ * message's detail: a DemoContentItem with an eyebrow, by embedding it in a
+ * List and the List in a ContentItem.
+ */
+async function messageDetail(page: Page) {
+  const [first] = MESSAGES;
+  await select(page, /^Text/);
+  await embedInOther(page, 'List');
+  await choose(page, 'gap', '2xs');
+  await embedInOther(page, 'ContentItem');
+  await select(page, /^Text/);
+  await setText(page, 'children', `From ${first.sender}`);
+  await choose(page, 'variant', 'span');
+  await choose(page, 'tone', 'quiet');
+  await choose(page, 'size', 'compact');
+  await page.keyboard.press('ControlOrMeta+d');
+  await setText(page, 'children', first.subject);
+  await choose(page, 'tone', 'Not set');
+  await choose(page, 'size', 'Not set');
+  await choose(page, 'weight', 'strong');
+  await page.keyboard.press('ControlOrMeta+d');
+  await setText(page, 'children', first.body);
+  await choose(page, 'weight', 'Default (regular)');
+  await choose(page, 'tone', 'quiet');
+  await choose(page, 'size', 'compact');
+}
+
+/** The detail `messageDetail` builds, as the exported document spells it. */
+function messageDetailNode() {
+  const [first] = MESSAGES;
+  const text = (children: string, props: Record<string, unknown>) =>
+    node('text', { children, variant: 'span', ...props });
+  return node(
+    'content-item',
+    // Embed in leaves an empty props object (KF-QX497W).
+    {},
+    {
+      children: [
+        node(
+          'list',
+          { gap: '2xs' },
+          {
+            children: [
+              text(`From ${first.sender}`, { tone: 'quiet', size: 'compact' }),
+              text(first.subject, { weight: 'strong' }),
+              text(first.body, { tone: 'quiet', size: 'compact' }),
+            ],
+          },
+        ),
+      ],
+    },
+  );
+}
