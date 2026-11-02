@@ -1789,6 +1789,165 @@ test('builds NavStack › Overlay Chrome', async ({ page }) => {
   );
 });
 
+test('builds NavStack › Compact Chrome', async ({ page }) => {
+  // A whole screen built step by step runs long in Firefox.
+  test.slow();
+  await dragComponent(page, 'NavStack', () => emptySpot(page));
+  await select(page, /^NavStack/);
+  // Below the root it needs a height of its own (KF-6MGYSG).
+  await embedIn(page, 'SizedRegion');
+  await select(page, /^NavStack/);
+  await setText(page, 'id', 'catalog-nav-stack-compact-chrome');
+  await setText(page, 'label', 'Compact Chrome Messages');
+  await setText(page, 'backLabel', 'Back to Messages');
+  const dialog = page.locator('dialog[open]');
+  const back = () => dialog.getByRole('button', { name: 'Back' }).click();
+  const configure = async (...rows: string[]) => {
+    await select(page, /^NavStack/);
+    await page.getByRole('button', { name: 'Configure views' }).click();
+    await dialog.locator('[data-action="editor-open-field"]').first().click();
+    for (const row of rows)
+      await dialog.getByText(row, { exact: true }).click();
+  };
+  // One view, the message list, whose Pane declares its compact chrome: the
+  // filter header lies over the list until opened, the status footer
+  // scrolls with it.
+  await page.getByRole('button', { name: 'Configure views' }).click();
+  await dialog.getByRole('button', { name: 'Remove View 3' }).click();
+  await dialog.getByRole('button', { name: 'Remove View 2' }).click();
+  await dialog.locator('[data-action="editor-open-field"]').first().click();
+  await setField(page, 'views', [0, 'key'], 'compact');
+  await dialog.getByText('Toolbar', { exact: true }).click();
+  await setField(page, 'views', [0, 'toolbar', 'title'], 'Messages');
+  await back();
+  for (const list of ['headerList', 'footerList'] as const) {
+    await dialog
+      .getByText(list === 'headerList' ? 'Header list' : 'Footer list', {
+        exact: true,
+      })
+      .click();
+    await chooseField(page, 'views', [0, list, 'textInsets'], 'trbl');
+    await back();
+  }
+  await dialog.getByText('Pane', { exact: true }).click();
+  await dialog.getByText('Compact chrome', { exact: true }).click();
+  await chooseField(
+    page,
+    'views',
+    [0, 'pane', 'compactChrome', 'header'],
+    'overlay',
+  );
+  await chooseField(
+    page,
+    'views',
+    [0, 'pane', 'compactChrome', 'footer'],
+    'scroll',
+  );
+  await back();
+  // The filters start closed: the demo passes `header: false`.
+  await dialog.getByText('Compact chrome open', { exact: true }).click();
+  await turnFieldOn(page, 'views', [0, 'pane', 'compactChromeOpen', 'header']);
+  await turnFieldOn(page, 'views', [0, 'pane', 'compactChromeOpen', 'header']);
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  // The toolbar's Filter toggle, off while the filters are closed.
+  await configure('Toolbar', 'Trailing');
+  await addChild(page, 'ToolbarControlGroup');
+  await area(page, 'Properties');
+  await setText(page, 'label', 'Filter');
+  await choose(page, 'appearance', 'borderless');
+  await turnOn(page, 'single');
+  await select(page, /^ToolbarButton/);
+  await setText(page, 'ariaLabel', 'Show Filters');
+  await setText(page, 'children', '');
+  await setText(page, 'action', 'toggle-compact-chrome-demo');
+  await addIcon(page, 'icon', 'funnel');
+  // Off, not unset: a toggle whose filters are closed (KF-K9VBB4).
+  await select(page, /^ToolbarButton/);
+  await choose(page, 'pressed', 'Off');
+  // The header and footer lines.
+  const line = async (row: string, text: string) => {
+    await configure(row);
+    await addChild(page, 'Text');
+    await area(page, 'Properties');
+    await setText(page, 'children', text);
+    await choose(page, 'size', 'compact');
+    await choose(page, 'tone', 'quiet');
+    await turnOn(page, 'flush');
+  };
+  await line('Header', 'Showing unread messages from this week');
+  await line('Footer', '18 messages, updated just now');
+  // The messages.
+  await select(page, /^NavStack/);
+  await dragComponent(page, 'List', () =>
+    canvas(page).locator('[data-editor-empty]', {
+      hasText: 'view1Content slot — drop here',
+    }),
+  );
+  await dragComponent(page, 'ListItem', () =>
+    canvas(page).locator('[data-editor-empty]', { hasText: 'List is empty' }),
+  );
+  await inbox(page, 'open-compact-chrome-message');
+  await select(page, /^NavStack/);
+  const navStack = canvas(page).locator('.kui-nav-stack[data-kerf-node]');
+  await expect(navStack.locator('.kui-list-item')).toHaveCount(18);
+  await expect(navStack).toContainText('18 messages, updated just now');
+  await page.screenshot({
+    path: test.info().outputPath('kf-jn4pf5-nav-stack-compact-1440.png'),
+  });
+  const text = (children: string) =>
+    node('text', { children, size: 'compact', tone: 'quiet', flush: true });
+  expect(await exported(page)).toEqual(
+    pane(
+      sized(
+        node(
+          'nav-stack',
+          {
+            id: 'catalog-nav-stack-compact-chrome',
+            label: 'Compact Chrome Messages',
+            backLabel: 'Back to Messages',
+            views: [
+              {
+                key: 'compact',
+                toolbar: { title: 'Messages' },
+                headerList: { textInsets: 'trbl' },
+                footerList: { textInsets: 'trbl' },
+                pane: {
+                  compactChrome: { header: 'overlay', footer: 'scroll' },
+                  compactChromeOpen: { header: false },
+                },
+              },
+            ],
+          },
+          {
+            'views.0.toolbar.trailing': [
+              node(
+                'toolbar-control-group',
+                { label: 'Filter', appearance: 'borderless', single: true },
+                {
+                  children: [
+                    node(
+                      'toolbar-control-group#ToolbarButton',
+                      {
+                        ariaLabel: 'Show Filters',
+                        action: 'toggle-compact-chrome-demo',
+                        pressed: false,
+                      },
+                      { icon: [icon('funnel')] },
+                    ),
+                  ],
+                },
+              ),
+            ],
+            'views.0.header': [text('Showing unread messages from this week')],
+            'views.0.footer': [text('18 messages, updated just now')],
+            'views.0.content': [inboxNodes('open-compact-chrome-message')],
+          },
+        ),
+      ),
+    ),
+  );
+});
+
 /** The inbox's four kinds of message, as the NavStack demo's INBOX has them. */
 const INBOX_KINDS = [
   ['Design Review', 'calendar', 'brand'],
