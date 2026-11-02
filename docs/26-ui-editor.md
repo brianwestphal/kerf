@@ -1164,7 +1164,8 @@ documents.
 - **Behavior stays in code.** The document cannot express signals,
   computation, effects, or handlers. Interactive previews of wired layouts
   (collapsing rails, NavStack pushes) require the editor to run the real
-  wiring against its canvas.
+  wiring; play mode (§11, design) does that in an emulated device viewport,
+  with host-registered mock handlers for actions.
 - **Validation is only as strict as the catalogs.** Most composition entries
   are still permissive defaults, and `accepts` concepts such as `fixed-chrome`
   are not yet defined as sets.
@@ -1199,3 +1200,147 @@ diff <doc…>` takes `--target js`, `--declarations-only`, and extra
    inspector editing with undo (KF-KX77TV: editor editing), and bindings
    (KF-K5TKCV), control flow (KF-90GTJN), richer value editing (KF-YR91FA),
    and outline drag-and-drop with a Move to picker (KF-WXP6AB).
+
+## 11. Play mode (design; KF-95MPXS: interactive mode)
+
+**Status: design only, decisions signed off 2026-11-02.** Implementation is
+tracked by the follow-ups listed at the end of this section.
+
+Play mode lets an author use the designed view as its users would. In play
+mode the canvas stops being an editing surface: clicks, keys, drags, and
+scrolls reach the components, never the editor's selection, drop targets, or
+outline. **Play** in the Canvas toolbar enters it; **Done** (or Escape when
+focus is outside the played view) returns to editing with the selection
+the author had before. The document can't be edited while playing, and
+leaving play mode discards all runtime state (signals, scroll positions,
+pushed views). Undo history is untouched.
+
+### 11.1 Layout
+
+Play mode replaces the Workbench's rails and canvas with two regions:
+
+- **A play bar** across the top: a `Toolbar` that owns every control below,
+  with Done at its leading end and the action log at its trailing end.
+- **The stage**, which fills the rest. It centers the device on a neutral
+  backdrop, scaled to fit when needed.
+
+| Control       | Component                                                          | Behavior                                                                                                                |
+| ------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| Device        | `Select` grouped by kind (Phone, Tablet, Laptop/Desktop, Flexible) | Picks a preset (§11.2). Remembered per browser.                                                                         |
+| Orientation   | `ToolbarButton` toggle (rotate icon)                               | Swaps width and height and the safe-area sides. Disabled for desktops and Flexible.                                     |
+| Installed app | `ToolbarButton` toggle (Phones and tablets only)                   | Off: a browser tab. On: a standalone, installed web app (§11.3).                                                        |
+| Scale         | `Select`: Fit (default), 50%, 75%, 100%, 125%, 150%                | Fit scales the device down until it fits the stage, never up. A fixed scale may overflow the stage, which then scrolls. |
+| Chrome        | `ToolbarButton` toggle                                             | Shows or hides the mock device frame. Layout is identical either way.                                                   |
+| Action log    | `ToolbarButton` with a count `Badge`, opening a `Popover` list     | §11.5                                                                                                                   |
+
+Flexible shows width and height fields, and drag handles on the stage's
+trailing and bottom edges resize the viewport live.
+
+### 11.2 Device presets
+
+A preset is data, not code: `{ id, label, kind, width, height,
+safeArea: { portrait, landscape }, browserChrome, frame }` in CSS pixels, with
+`browserChrome` giving the block-start/block-end space a mobile browser's
+toolbars take in a tab. The list ships with the editor, and a host can extend
+or replace it through `createEditor({ devicePresets })` and the Vite plugin's
+option of the same name. The shipped list covers the sizes and safe-area
+shapes that matter, not every model. It includes:
+
+- Phones: iPhone SE (375×667, no notch), a current iPhone (402×874, Dynamic
+  Island), a current iPhone Pro Max (440×956), and a compact Android
+  (412×915, punch-hole).
+- Tablets: iPad mini (744×1133), iPad Air 11" (820×1180), iPad Pro 13"
+  (1032×1376).
+- Laptop/Desktop: MacBook Air 13" (1470×956), MacBook Pro 16" (1728×1117), a
+  1920×1080 desktop.
+- Flexible.
+
+The exact current-model numbers are reviewed when the list is implemented.
+Each preset's sizes, safe areas, and browser-chrome heights are cited in a
+comment beside it.
+
+### 11.3 Viewport emulation
+
+The played view renders in an **`iframe` sized to the preset's CSS viewport**,
+not in the editor's own document, so that everything keyed to the viewport
+responds as it would on the device: media and container queries,
+`deviceClass()` (which reads `innerWidth`/`matchMedia` of its own window),
+`dvh`/`svh` units, fixed and sticky positioning, and overlays and toasts
+hosted at `body`. The iframe is a host page served by the editor's host (the
+Vite plugin's `/__kerf-ui-editor/play`, or the private editor's own page) that
+loads the same catalogs and global CSS as the canvas. It receives the
+document and its param values by `postMessage` and renders them with
+`interpretView`, plus the real wiring (§11.4).
+
+- **Safe areas.** The iframe can't set `env(safe-area-inset-*)`, so the host
+  page sets Kerf UI's own tokens (`--kui-safe-area-block-start`, …, from
+  `foundation.css`) on `:root` from the preset. That covers every component
+  that reads the tokens. A component that reads `env()` directly isn't
+  emulated, so an implementation audit lists any such reads and routes them
+  through the tokens.
+- **Browser tab (Installed app off).** The viewport is the device size minus
+  `browserChrome`. The mock frame draws the browser's toolbars in that space,
+  and no safe-area insets reach the page (the browser's chrome absorbs them),
+  matching mobile Safari's default `viewport-fit` behavior.
+- **Installed app (on).** The viewport is the full device size, and the
+  preset's safe areas apply: content runs beneath the status bar and home
+  indicator, and the frame draws only the device body, status bar, and home
+  indicator.
+- **Scale** is a CSS `transform` on the iframe's wrapper, so the iframe's
+  layout size, and therefore every viewport query, stays the preset's.
+- **Not emulated:** touch input (`pointer: coarse`, `hover: none`), device
+  pixel ratio, the on-screen keyboard, and the browser's own scrolling chrome
+  collapse. The play bar says so in its device menu's hint. Real-device checks
+  stay a manual test-plan item.
+
+### 11.4 Behavior while playing
+
+- **Component wiring runs for real.** The host page installs the same
+  `wire…` helpers an application would (NavStack push and pop, sidebar
+  collapse, TabNavigator and TabBar, popups, search fields, scroll dividers)
+  over the played root, and disposes them on exit. This resolves the §9
+  limitation for play mode; the editing canvas stays static.
+- **Params** use the same values the canvas preview uses (example and
+  placeholder values, §3.4). There is no separate params editor.
+- **Actions** (`$action`, §4.2) call a **mock handler** when the host
+  registered one for that action name, and are otherwise only logged.
+  Handlers come from `createEditor({ playHandlers })` or from a module the
+  Vite plugin names (`playHandlers: './editor/play-handlers.ts'`), loaded
+  into the play iframe. A handler receives `{ action, nodeId, event, params,
+view }`. It may change params (re-rendering the view), call a NavStack
+  handle, or open an overlay, so a flow like "row → push detail" can be
+  walked end to end. A handler that throws is logged as an error, and the
+  view keeps running.
+- **Selection is off.** No selection ring, hover outline, drop indicator, or
+  canvas key binding is active inside the stage.
+
+### 11.5 Action log
+
+Each fired action adds an entry with the action name, the node's author name
+(or component and id), the event type, and whether a mock handler ran (or
+threw, with its message). The newest entries are at the top, capped at 200,
+and the log clears on each entry into play mode. The play bar's log button
+shows the unseen count.
+
+### 11.6 Verification (when built)
+
+- Unit: preset math (orientation swap, browser-chrome subtraction, Fit
+  scale), the safe-area token mapping, and handler dispatch with logging.
+- Browser (Chromium + WebKit): enter and leave play mode, and check that
+  canvas clicks reach components and never select. A NavStack push and pop
+  through real wiring. `deviceClass()` inside the frame reports the preset's
+  class across the size switches. Installed-app on/off moves the content's
+  block-start inset by the preset's safe area. A registered handler runs and
+  is logged, and an unregistered action is logged.
+- Real-browser visual review of the play bar and frames at wide and narrow
+  editor widths, every device kind, both orientations, and both app modes.
+
+### 11.7 Implementation tickets
+
+- KF-60BEEJ (play mode core): Play/Done, the iframe host page, real wiring,
+  and selection off. The play bar's layout gets sign-off here before the
+  other tickets build on it.
+- KF-R7KXSN (device emulation): presets, orientation, scale, Flexible
+  resizing, and installed-app safe areas.
+- KF-E8T0AY (device frames): unbranded mock device chrome.
+- KF-RF6RCS (actions): host mock handlers and the action log.
