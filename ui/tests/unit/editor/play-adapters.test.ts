@@ -11,6 +11,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import {
   closeTabBarItem,
+  closeTabBarItemInRow,
   followCompact,
   selectListItem,
   selectTabBarItem,
@@ -19,6 +20,7 @@ import {
   setWorkbenchPanelSize,
 } from '../../../src/editor/model/play-state.js';
 import {
+  CLOSED,
   closeRow,
   eachOf,
   markRows,
@@ -486,6 +488,59 @@ const nestedTabs = () => {
  * KF-ZMBST3: a Switch in an inner row whose keys repeat across outer rows
  * (`a` under both groups).
  */
+/**
+ * KF-36QBFM: a TabBar repeated per group holding placed tabs (Home, which
+ * the document selects, and More) beside its group's repeated tabs.
+ */
+const placedInRows = () =>
+  doc(
+    [
+      {
+        $each: { $param: 'groups' },
+        as: 'group',
+        key: 'group.id',
+        template: node(
+          83,
+          'tab-bar',
+          { id: { $bind: 'group.id' }, label: 'Group' },
+          {
+            tabs: [
+              node(84, 'tabs', { id: 'home', name: 'Home', selected: true }),
+              node(85, 'tabs', { id: 'more', name: 'More' }),
+              {
+                $each: { $bind: 'group.tabs' },
+                as: 'tab',
+                key: 'tab.id',
+                template: node(86, 'tabs', {
+                  id: { $bind: 'tab.id' },
+                  name: { $bind: 'tab.name' },
+                }),
+              },
+            ],
+          },
+        ),
+      },
+    ],
+    {
+      groups: {
+        type: rowType([
+          { name: 'id', type: str },
+          {
+            name: 'tabs',
+            type: rowType([
+              { name: 'id', type: str },
+              { name: 'name', type: str },
+            ]),
+          },
+        ]),
+        default: [1, 2].map((n) => ({
+          id: `g${n}`,
+          tabs: [{ id: 'a', name: `A${n}` }],
+        })),
+      },
+    },
+  );
+
 const nestedSwitches = () =>
   doc(
     [
@@ -816,6 +871,63 @@ describe('play-time layout transitions (pure)', () => {
     });
   });
 
+  it('selects and closes a placed tab per row of a repeated bar (KF-36QBFM)', () => {
+    const source = placedInRows();
+    // A placed tab selects for its bar's row; the document never changes.
+    const more = selectTabBarItem(source, id(85), {}, ['g2']);
+    expect(more.document).toBe(source);
+    expect(rowPropsOf(more.rows, id(85), ['g2'])).toEqual({ selected: true });
+    expect(rowPropsOf(more.rows, id(84), ['g2'])).toEqual({ selected: false });
+    expect(rowPropsOf(more.rows, id(84), ['g1'])).toEqual({});
+    expect(rowPropsOf(more.rows, id(86), ['g2', 'a'])).toEqual({
+      selected: false,
+    });
+    expect(rowPropsOf(more.rows, id(86), ['g1', 'a'])).toEqual({});
+    // A repeated tab in group 1's bar deselects group 1's placed tabs only.
+    const a1 = selectTabBarItem(source, id(86), more.rows, ['g1', 'a']);
+    expect(a1.document).toBe(source);
+    expect(rowPropsOf(a1.rows, id(84), ['g1'])).toEqual({ selected: false });
+    expect(rowPropsOf(a1.rows, id(85), ['g2'])).toEqual({ selected: true });
+    // A repeated tab with no row selects no row and clears its own rows.
+    const none = selectTabBarItem(source, id(86), a1.rows);
+    expect(rowPropsOf(none.rows, id(86), ['g1', 'a'])).toEqual({
+      selected: false,
+    });
+    // Closing group 1's Home (selected by the document) hides it for group
+    // 1 and hands the selection to More; group 2 keeps Home.
+    const home = selectTabBarItem(source, id(84), {}, ['g1']).rows;
+    const closed = closeTabBarItemInRow(source, home, id(84), ['g1']);
+    expect(rowPropsOf(closed, id(84), ['g1'])[CLOSED]).toBe(true);
+    expect(rowPropsOf(closed, id(85), ['g1'])).toEqual({ selected: true });
+    expect(rowPropsOf(closed, id(84), ['g2'])).toEqual({});
+    // The document's own selection counts when the row has none.
+    const fromDocument = closeTabBarItemInRow(source, {}, id(84), ['g2']);
+    expect(rowPropsOf(fromDocument, id(85), ['g2'])).toEqual({
+      selected: true,
+    });
+    // An unselected tab hands nothing on; the last open one has no
+    // neighbor to hand to.
+    const unselected = closeTabBarItemInRow(source, closed, id(85), ['g2']);
+    expect(rowPropsOf(unselected, id(84), ['g2'])).toEqual({});
+    const last = closeTabBarItemInRow(source, closed, id(85), ['g1']);
+    expect(rowPropsOf(last, id(85), ['g1'])[CLOSED]).toBe(true);
+    // A closed tab, a repeated tab, and another node close nothing.
+    expect(closeTabBarItemInRow(source, closed, id(84), ['g1'])).toBe(closed);
+    expect(closeTabBarItemInRow(source, closed, id(86), ['g1'])).toBe(closed);
+    expect(closeTabBarItemInRow(source, closed, id(83), ['g1'])).toBe(closed);
+    // A closed node renders nothing in its row.
+    const wrapped = withRowProps(
+      { a: (props: Record<string, unknown>) => raw(String(props.name)) },
+      closed,
+    );
+    const at = (row: string) => ({
+      name: 'Home',
+      rootAttributes: { 'data-kerf-node': id(84), 'data-kerf-row': row },
+    });
+    expect(String(wrapped.a(at('g1')))).toBe('');
+    expect(String(wrapped.a(at('g2')))).toBe('Home');
+  });
+
   it('closes a placed tab and hands its selection on', () => {
     const source = layouts();
     const closed = closeTabBarItem(source, id(21));
@@ -1144,10 +1256,10 @@ describe('the play page’s nested rows (KF-7XQAFR)', () => {
   });
 
   it('closes a tab repeated from a param object’s array', async () => {
-    // An `$each` inside another's row does not render yet (KF-CFA1S1), so
-    // the play page closes a `$bind` into a param's object. A `$bind` reads
-    // no default (KF-8P3H7F), so `data` takes the canvas's sample tabs
-    // ("Id", "Id 2", "Id 3").
+    // Only the `data` bar plays here: a `$bind` into a param's object. Its
+    // default is dropped, so `data` takes the canvas's sample tabs ("Id",
+    // "Id 2", "Id 3"). A tab repeated from an outer row's array closes in
+    // the rows-inside-rows tests (KF-ZMBST3) below.
     const source = nestedTabs();
     const content = (
       source.root.zones as { content: readonly ViewDocument['root'][] }
@@ -1219,5 +1331,39 @@ describe('the play page’s rows inside rows (KF-ZMBST3)', () => {
     expect(tab('g1', 'a')).not.toBeNull();
     expect(tab('g2', 'c')!.dataset.selected).toBe('true');
     expect(tab('g1', 'b')!.dataset.selected).toBe('true');
+  });
+
+  it('selects and closes a placed tab in its own row’s bar (KF-36QBFM)', async () => {
+    const { root, player } = await play(placedInRows());
+    const placed = (n: number, group: string) =>
+      root.querySelector<HTMLElement>(
+        `[data-kerf-node="${id(n)}"][data-kerf-row="${group}"]`,
+      );
+    const repeated = (group: string) =>
+      root.querySelector<HTMLElement>(
+        `[data-kerf-node="${id(86)}"][data-kerf-outer-0="${group}"]`,
+      )!;
+    const before = player.document.value;
+    placed(85, 'g2')!.click();
+    await settled();
+    expect(placed(85, 'g2')!.dataset.selected).toBe('true');
+    expect(placed(84, 'g2')!.dataset.selected).toBe('false');
+    expect(placed(84, 'g1')!.dataset.selected).toBe('true');
+    expect(placed(85, 'g1')!.dataset.selected).toBe('false');
+    // A repeated tab in group 1 leaves group 2's placed selection alone.
+    repeated('g1').click();
+    await settled();
+    expect(repeated('g1').dataset.selected).toBe('true');
+    expect(placed(84, 'g1')!.dataset.selected).toBe('false');
+    expect(placed(85, 'g2')!.dataset.selected).toBe('true');
+    // Closing group 2's selected More hides it there and selects Home.
+    placed(85, 'g2')!
+      .querySelector<HTMLElement>('.kui-tab-bar-item__close')!
+      .click();
+    await settled();
+    expect(placed(85, 'g2')).toBeNull();
+    expect(placed(85, 'g1')).not.toBeNull();
+    expect(placed(84, 'g2')!.dataset.selected).toBe('true');
+    expect(player.document.value).toBe(before);
   });
 });

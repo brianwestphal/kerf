@@ -894,3 +894,75 @@ test('a TabBar repeated per group keeps its own selection', async ({
   await expect(tab('B2')).toHaveAttribute('aria-selected', 'true');
   await expect(tab('B1')).toHaveAttribute('aria-selected', 'true');
 });
+
+// KF-36QBFM: a tab placed directly in a TabBar repeated per group is one
+// node every group's bar shares, yet it selects and closes per group.
+const placedGroupsDocument = {
+  ...groupsDocument,
+  name: 'PlacedGroups',
+  root: kui(
+    60,
+    'pane',
+    {},
+    {
+      content: [
+        {
+          $each: { $param: 'groups' },
+          as: 'group',
+          key: 'group.id',
+          template: kui(
+            61,
+            'tab-bar',
+            { id: { $bind: 'group.id' }, label: { $bind: 'group.name' } },
+            {
+              tabs: [
+                kui(62, 'tabs', { id: 'home', name: 'Home', selected: true }),
+                kui(63, 'tabs', { id: 'more', name: 'More' }),
+                {
+                  $each: { $bind: 'group.tabs' },
+                  as: 'tab',
+                  key: 'tab.id',
+                  template: kui(64, 'tabs', {
+                    id: { $bind: 'tab.id' },
+                    name: { $bind: 'tab.name' },
+                  }),
+                },
+              ],
+            },
+          ),
+        },
+      ],
+    },
+  ),
+};
+
+test('a tab placed in a TabBar repeated per group selects and closes per group', async ({
+  page,
+}) => {
+  const view = await openPlayed(page, placedGroupsDocument, 5);
+  const group = (n: number) =>
+    view.locator(`[data-kerf-node="${xid(61)}"][data-key="g${n}"]`);
+  const tab = (n: number, name: string) =>
+    group(n).getByRole('tab', { name, exact: true });
+  for (const n of [1, 2, 3])
+    await expect(tab(n, 'Home')).toHaveAttribute('aria-selected', 'true');
+  await tab(2, 'More').click();
+  await expect(tab(2, 'More')).toHaveAttribute('aria-selected', 'true');
+  await expect(tab(2, 'Home')).toHaveAttribute('aria-selected', 'false');
+  for (const n of [1, 3]) {
+    await expect(tab(n, 'Home')).toHaveAttribute('aria-selected', 'true');
+    await expect(tab(n, 'More')).toHaveAttribute('aria-selected', 'false');
+  }
+  // A repeated tab in group 1 leaves group 2's placed selection alone.
+  await tab(1, 'A1').click();
+  await expect(tab(1, 'A1')).toHaveAttribute('aria-selected', 'true');
+  await expect(tab(1, 'Home')).toHaveAttribute('aria-selected', 'false');
+  await expect(tab(2, 'More')).toHaveAttribute('aria-selected', 'true');
+  // Closing group 2's selected More closes it there only, and Home takes
+  // the selection.
+  await group(2).getByRole('button', { name: 'Close More' }).click();
+  await expect(tab(2, 'More')).toHaveCount(0);
+  await expect(tab(2, 'Home')).toHaveAttribute('aria-selected', 'true');
+  await expect(tab(1, 'More')).toHaveCount(1);
+  await expect(tab(3, 'More')).toHaveCount(1);
+});

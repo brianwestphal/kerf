@@ -44,6 +44,7 @@ import { wireScrollDividers } from '../wiring/wire-scroll-dividers.js';
 import { findNode } from './model/document.js';
 import {
   closeTabBarItem,
+  closeTabBarItemInRow,
   COLLAPSIBLE_PANEL,
   followCompact,
   LIST_ITEM,
@@ -510,7 +511,16 @@ export function wirePlayState(
         const at = tabItemAt(close);
         if (!at) return;
         if (at.key === undefined) {
-          state.value = closeTabBarItem(state.value, at.id);
+          // KF-36QBFM: a placed tab in a bar inside a row closes for that
+          // row only.
+          if (at.row)
+            rows.value = closeTabBarItemInRow(
+              state.value,
+              rows.value,
+              at.id,
+              at.row,
+            );
+          else state.value = closeTabBarItem(state.value, at.id);
           return;
         }
         const closed = closeRow(
@@ -544,9 +554,10 @@ export function wirePlayState(
       (_event, target) => {
         if (target.closest('.kui-tab-bar-item__close')) return;
         const at = tabItemAt(target);
-        // A placed tab (no `data-key`) selects in the document, even when
-        // its bar sits in a row.
-        if (at) selectItem(at.id, at.key === undefined ? undefined : at.row);
+        // A repeated tab selects by its row path; KF-36QBFM: a placed tab
+        // in a bar inside a row selects for that row (its path is the
+        // bar's row), and anywhere else in the document.
+        if (at) selectItem(at.id, at.row);
       },
     ),
     () => {

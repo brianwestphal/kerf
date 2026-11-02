@@ -19,10 +19,13 @@ import {
 import { findNode, visitNodes } from './document.js';
 import { removeNode, setProp } from './edits.js';
 import {
+  CLOSED,
   type RowKey,
   rowPath,
   type RowProps,
+  rowPropsOf,
   type RowState,
+  setRowProp,
   setRowProps,
 } from './play-values.js';
 import { cutStack } from './shown-scenes.js';
@@ -150,7 +153,10 @@ function deselectRows(
  * selected row's, and every other row of every repeated item in the bar is
  * not selected. KF-ZMBST3: a bar repeated inside an outer row is one bar per
  * outer row, so `key`'s path scopes that to the selected row's outer row;
- * the other outer rows' bars keep their selection. Returns the inputs
+ * the other outer rows' bars keep their selection. KF-36QBFM: for a placed
+ * TabBarItem, `key` is the path of the row its bar sits in, if any; its
+ * bar's placed items then keep their selection for that row, in `rows`,
+ * not in the document every row's bar shares. Returns the inputs
  * themselves when nothing applies.
  */
 export function selectTabBarItem(
@@ -163,8 +169,16 @@ export function selectTabBarItem(
   const bar = visit?.ancestors.at(-1)?.node;
   if (visit?.node.type !== TAB_BAR_ITEM || bar?.type !== TAB_BAR)
     return { document, rows };
-  const repeated = visit.repeated && key !== undefined;
+  // Repeated by its bar's own `$each` (KF-36QBFM: `visit.repeated` is
+  // also true for a placed item in a bar that sits in a row).
+  const own = barItems(bar).some(
+    (item) => item.repeated && item.node.id === id,
+  );
+  const repeated = own && key !== undefined;
   const path = typeof key === 'string' ? [key] : key;
+  // The path of the row the bar sits in, when it sits in one.
+  const barRow = repeated ? path!.slice(0, -1) : own ? undefined : path;
+  const inRow = barRow && barRow.length > 0 ? barRow : undefined;
   let next = document;
   let nextRows = rows;
   for (const item of barItems(bar)) {
@@ -174,9 +188,19 @@ export function selectTabBarItem(
         item.node.id,
         deselectRows(
           nextRows[item.node.id],
-          repeated ? path!.slice(0, -1) : undefined,
+          repeated ? barRow : inRow,
           repeated && item.node.id === id ? path! : undefined,
         ),
+      );
+      continue;
+    }
+    if (inRow) {
+      nextRows = setRowProp(
+        nextRows,
+        item.node.id,
+        inRow,
+        'selected',
+        !repeated && item.node.id === id,
       );
       continue;
     }
@@ -213,6 +237,39 @@ export function closeTabBarItem(
     if (neighbor) next = setProp(next, neighbor.node.id, 'selected', true);
   }
   return next;
+}
+
+/**
+ * KF-36QBFM: TabBarItem `id`, placed directly in a TabBar that sits in row
+ * `key` (a row path), closes in that row only: every row's bar shares the
+ * node, so it is hidden for the row (`CLOSED`, in `rows`) instead of leaving
+ * the play copy. When it was selected there, the row's next open placed
+ * item (or else the previous one) becomes selected. Returns `rows` when
+ * nothing applies.
+ */
+export function closeTabBarItemInRow(
+  document: ViewDocument,
+  rows: RowProps,
+  id: string,
+  key: RowKey,
+): RowProps {
+  const visit = findNode(document, id);
+  const bar = visit?.ancestors.at(-1)?.node;
+  if (visit?.node.type !== TAB_BAR_ITEM || bar?.type !== TAB_BAR) return rows;
+  // Only the bar's open placed items: a repeated or closed `id` is not one.
+  const open = barItems(bar).filter(
+    (item) =>
+      !item.repeated && rowPropsOf(rows, item.node.id, key)[CLOSED] !== true,
+  );
+  const at = open.findIndex((item) => item.node.id === id);
+  if (at < 0) return rows;
+  const props = rowPropsOf(rows, id, key);
+  const selected = (props.selected ?? visit.node.props?.selected) === true;
+  const next = setRowProp(rows, id, key, CLOSED, true);
+  const neighbor = open[at + 1] ?? open[at - 1];
+  return selected && neighbor
+    ? selectTabBarItem(document, neighbor.node.id, next, key).rows
+    : next;
 }
 
 /**

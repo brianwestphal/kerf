@@ -1662,7 +1662,10 @@ document and its param values by `postMessage` and renders them with
   `a` in group 1 and tab `a` in group 2 are separate rows: the play page
   marks such nodes with each outer row's key (`data-kerf-outer-0`, `-1`, …).
   A TabBar repeated per outer row is one bar per row: selecting a tab
-  changes only that row's bar.
+  changes only that row's bar. That includes a tab placed directly in
+  the bar (KF-36QBFM): every row's bar shares its node, so its selection
+  is kept per row, and closing it hides it in that row's bar only (the
+  row's next open placed tab takes the selection).
 - **Params** use the same values the canvas preview uses (example and
   placeholder values, §3.4). There is no separate params editor.
 - **Actions** (`$action`, §4.2) call a **mock handler** when the host

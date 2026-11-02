@@ -23,10 +23,17 @@ import {
   type ViewNode,
   type ViewValue,
 } from '@kerfjs/ui/view';
-import type { SafeHtml } from 'kerfjs';
+import { raw, type SafeHtml } from 'kerfjs';
 
 import { findNode, visitNodes } from './document.js';
 import { setProp } from './edits.js';
+
+/**
+ * KF-36QBFM: the play-time row prop that hides a node in one row (a placed
+ * tab closed in one row's bar, when every row's bar shares the node). The
+ * renderer reads it and never passes it to the component.
+ */
+export const CLOSED = '$kerfPlayClosed';
 
 /**
  * A row, by its key and (KF-ZMBST3) the keys of the rows it sits in. A
@@ -245,7 +252,7 @@ export function rowPathOf(
  * `components` with each repeated row's play-time props laid over the props
  * the document gives it. A row is known by the node id and row path the
  * renderer marks it with (`rowPathOf`), in `rootAttributes` or directly on
- * the props.
+ * the props. A node `CLOSED` for its row renders nothing there.
  */
 export function withRowProps<
   Components extends Readonly<Record<string, unknown>>,
@@ -263,11 +270,12 @@ export function withRowProps<
             >;
             const id = marks['data-kerf-node'];
             const path = rowPathOf((name) => marks[name]);
-            return (render as ComponentFunction)(
-              typeof id === 'string' && path !== undefined
-                ? { ...props, ...rowPropsOf(rows, id, path) }
-                : props,
-            );
+            if (typeof id !== 'string' || path === undefined)
+              return (render as ComponentFunction)(props);
+            const { [CLOSED]: closed, ...row } = rowPropsOf(rows, id, path);
+            return closed === true
+              ? raw('')
+              : (render as ComponentFunction)({ ...props, ...row });
           },
     ]),
   ) as Components;
