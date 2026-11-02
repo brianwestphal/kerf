@@ -6,6 +6,19 @@ for (const width of [1100, 390]) {
   }, testInfo) => {
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/?component=select');
+    // The Select entry has a Settings pane (KF-59BF6C: Popup Note), which at
+    // wide widths sits over the right viewport edge this test pins the
+    // toolbar to. Hide it so the measured edge is the viewport's.
+    const hide = page
+      .locator('#kui-catalog-right-rail')
+      .getByRole('button', { name: 'Hide Settings' });
+    if (await hide.isVisible()) {
+      await hide.click();
+      await expect(page.locator('.kui-catalog')).toHaveAttribute(
+        'data-settings-collapsed',
+        'true',
+      );
+    }
     const select = page.locator('[name="toolbar-rendering-balance"]');
     // Move the unchanged production toolbar (the specimen root since KF-0W87ST
     // wrapped the group in a Toolbar) to controlled viewport anchors.
