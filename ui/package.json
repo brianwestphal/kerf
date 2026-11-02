@@ -149,6 +149,11 @@
       "browser": "./dist/browser/grid.js",
       "import": "./dist/grid.js"
     },
+    "./sized-region": {
+      "types": "./dist/sized-region.d.ts",
+      "browser": "./dist/browser/sized-region.js",
+      "import": "./dist/sized-region.js"
+    },
     "./spacer": {
       "types": "./dist/spacer.d.ts",
       "browser": "./dist/browser/spacer.js",
@@ -631,6 +636,7 @@
     "./list.css": "./dist/styles/list.css",
     "./row.css": "./dist/styles/row.css",
     "./grid.css": "./dist/styles/grid.css",
+    "./sized-region.css": "./dist/styles/sized-region.css",
     "./spacer.css": "./dist/styles/spacer.css",
     "./list-action-row.css": "./dist/styles/list-action-row.css",
     "./list-item.css": "./dist/styles/list-item.css",

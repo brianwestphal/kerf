@@ -4256,6 +4256,157 @@
       }
     },
     {
+      "id": "sized-region",
+      "name": "SizedRegion",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A region that gives content which cannot size itself a definite height: fill the room its parent gives, a typed height, or minimum and maximum bounds.",
+      "uses": [],
+      "purpose": "Give a whole-screen layout (TabNavigator, NavStack, SplitView, Workbench) placed below an app's root a usable height. Those layouts fill their parent's height and have none of their own, so in a parent that sizes to its content they collapse to their bar.",
+      "publicExports": [
+        "SizedRegion"
+      ],
+      "cssValueProps": [
+        {
+          "path": "height",
+          "grammar": "length",
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [
+            "fill"
+          ],
+          "canonicalShorthands": [
+            "fill"
+          ],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "height=\"fill\"",
+            "height={rem(30)}",
+            "height={pct(60)}"
+          ]
+        },
+        {
+          "path": "minHeight",
+          "grammar": "length",
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "minHeight={rem(20)}"
+          ]
+        },
+        {
+          "path": "maxHeight",
+          "grammar": "length",
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "maxHeight={rem(40)}"
+          ]
+        }
+      ],
+      "useWhen": [
+        "A whole-screen layout sits below the app's root, beside other content in a Pane's content, or in a region the app sizes, and should fill the room it is given.",
+        "A whole-screen layout must keep a usable height in a parent that sizes to its content; give the region a minHeight or a length.",
+        "Bound a whole-screen layout's height with maxHeight so it does not grow past a readable size."
+      ],
+      "avoidWhen": [
+        "Do not wrap a whole-screen layout that is already the app's root or fills a Pane the app sizes; it fills that height on its own.",
+        "Do not use SizedRegion to force an ordinary component's size; components size to their content and tokens, and List, Grid, Row, and SunkenPanel have their own fill and flex props.",
+        "Do not rely on min-height in app CSS around a whole-screen layout; it does not give the layout a definite height. Use SizedRegion's minHeight."
+      ],
+      "alternatives": [
+        {
+          "id": "list",
+          "relationship": "parent-sizing-alternative",
+          "when": "Use List's fill, flex, minHeight, and maxHeight to size a List itself."
+        },
+        {
+          "id": "resize",
+          "relationship": "nearest",
+          "when": "Use ResizableRegion when the person drags to change the size."
+        }
+      ],
+      "appOwns": [
+        "the height, or the parent height a fill takes",
+        "the bounds",
+        "the content"
+      ],
+      "variants": [
+        "fill (default)",
+        "typed height",
+        "minimum and maximum bounds"
+      ],
+      "accessibility": [
+        "SizedRegion is a plain structural div with no role; its content keeps its own landmarks and names."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none",
+        "notes": [
+          "A one-cell grid: its child fills the region, and a minHeight alone gives that child a definite height. fill grows within a flex column (a Pane's content) or takes all of a parent with a definite height; in a parent that sizes to its content it has nothing to take."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/sized-region",
+        "manualCssImport": "@kerfjs/ui/sized-region.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-sized-region"
+      ],
+      "publicTokens": [],
+      "rootElement": "div",
+      "links": {
+        "catalogRoute": "?component=sized-region",
+        "documentation": "docs/app-layouts.md",
+        "recipe": "docs/app-layouts.md#sizing-a-nested-layout"
+      }
+    },
+    {
       "id": "spacer",
       "name": "Spacer",
       "category": "Structure",

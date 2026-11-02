@@ -3531,6 +3531,100 @@
       }
     },
     {
+      "key": "@kerfjs/ui:sized-region",
+      "package": "@kerfjs/ui",
+      "id": "sized-region",
+      "name": "SizedRegion",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the height, or the parent height a fill takes",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "the bounds", "owner": "application", "required": false },
+        { "id": "the content", "owner": "application", "required": false }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "none",
+          "notes": [
+            "A one-cell grid: its child fills the region, and a minHeight alone gives that child a definite height. fill grows within a flex column (a Pane's content) or takes all of a parent with a definite height; in a parent that sizes to its content it has nothing to take."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "SizedRegion is a plain structural div with no role; its content keeps its own landmarks and names."
+        ]
+      },
+      "cssValueProps": [
+        {
+          "path": "height",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": ["fill"],
+          "canonicalShorthands": ["fill"],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "height=\"fill\"",
+            "height={rem(30)}",
+            "height={pct(60)}"
+          ]
+        },
+        {
+          "path": "minHeight",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["minHeight={rem(20)}"]
+        },
+        {
+          "path": "maxHeight",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["maxHeight={rem(40)}"]
+        }
+      ],
+      "boundaries": {
+        "rootClass": "kui-sized-region",
+        "publicClasses": ["kui-sized-region"],
+        "rootElement": "div",
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:spacer",
       "package": "@kerfjs/ui",
       "id": "spacer",

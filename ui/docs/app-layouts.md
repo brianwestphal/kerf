@@ -26,6 +26,35 @@ and applying `.kui-app-root` to the direct mount container; see the
 height with `100dvh`; a full-viewport app instead adds `data-viewport="locked"`
 to its `.kui-app-root`, which locks the document (not the shell) to `100dvh`.
 
+### Sizing a nested layout
+
+A whole-screen layout fills its parent's height and has none of its own: its
+scenes are positioned over the space they are given, so they add no height.
+As the app's root, or filling a Pane the app sizes, it fills that height. Below
+the root, wrap it in a [`SizedRegion`](../ai/components/sized-region.md):
+
+- **`height="fill"`** (the default) takes the rest of a flex column, such as a
+  Pane's content after the items above it, or all of a parent with a definite
+  height.
+- **`minHeight`** gives the layout a usable height even in content that sizes
+  to itself. An ordinary `min-height` in app CSS does not: a percentage height
+  never resolves against it, so the layout still collapses to its bar.
+- **`maxHeight`** stops a fill from growing past a readable size, and a typed
+  `height` sets it outright.
+
+```tsx
+<Pane label="Project">
+  <ContentItem>…</ContentItem>
+  <SizedRegion minHeight={rem(20)}>
+    <NavStack id="activity" label="Activity" views={views} />
+  </SizedRegion>
+</Pane>
+```
+
+Don't place a whole-screen layout inside a component that sizes to its content
+(a `List`, a `ContentItem`): it collapses there, and that placement is not a
+supported composition.
+
 ## Safe areas
 
 On a device with unsafe areas (a notch, rounded corners, a home indicator) and a

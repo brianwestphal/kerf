@@ -1421,6 +1421,31 @@ Verification: `ui/tests/unit/pane.test.tsx` (attributes and dropping),
 roomy Workbench and no container, open and closed), and the NavStack
 catalog's Compact Chrome example.
 
+### 3.9 Sizing a nested layout — `SizedRegion` (`@kerfjs/ui/sized-region`)
+
+**Shipped (KF-63XR5K: SizedRegion gives a nested whole-screen layout a definite height).** The four
+layouts above are `height: 100%` with absolutely positioned scenes, so they have
+no height of their own: a percentage height only resolves against a parent
+with a definite height, and otherwise computes to `auto`, which leaves just the
+bar. As the app root (a `.kui-app-root` chain) or the only child of another
+layout's view, tab, or region they fill it. Below the root, `SizedRegion` gives
+one a definite height: a one-cell grid (`grid-template: minmax(0, 1fr) /
+minmax(0, 1fr)`), because a grid item's percentage height resolves against its
+grid area even when the region's own height comes only from `min-height`.
+
+- `height` — a typed `CssLength`, or `'fill'` (the default: `flex: 1 1 auto;
+height: 100%`, the rest of a flex column such as a Pane's content, or all of
+  a parent with a definite height).
+- `minHeight` / `maxHeight` — typed bounds; `minHeight` alone sizes the layout
+  in content that sizes to itself.
+- `children` (optional, so the editor shows an empty drop target), `id`,
+  `className`, `slot`, `rootAttributes`.
+
+A whole-screen layout inside a component that sizes to its content (`List`,
+`ContentItem`) collapses, and that placement is unsupported. A non-blocking
+hint for it is KF-KQ72TW (view hints: flag a layout nothing gives a height).
+Verified in Chromium, Firefox, and WebKit by `ui/tests/browser/sized-region.spec.ts`.
+
 ## 4. Responsive presentation matrix
 
 The rule each layout encodes, summarized (`compact` = handset or portrait

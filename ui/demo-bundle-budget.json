@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 445100,
+  "totalJavaScriptGzip": 445700,
   "measuredLargestJavaScriptGzip": 164547,
-  "measuredTotalJavaScriptGzip": 445067,
+  "measuredTotalJavaScriptGzip": 445641,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6531,6 +6531,22 @@
         "measuredTotalJavaScriptGzip": 445067,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 445100
+      }
+    },
+    {
+      "at": "2026-11-02T00:51:31.192Z",
+      "reason": "KF-63XR5K adds the SizedRegion component and its catalog demo (three NavStack examples)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 445067,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 445100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 445641,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 445700
       }
     }
   ]

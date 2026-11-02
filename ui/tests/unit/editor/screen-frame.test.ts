@@ -61,4 +61,41 @@ describe('whole-screen layouts on the canvas', () => {
     ).not.toBeNull();
     expect(canvas.querySelector('.kui-editor__screen')).toBeNull();
   });
+
+  // KF-63XR5K: a parent that already gives the layout a height keeps it.
+  it('leaves a layout unframed in a SizedRegion or another layout', () => {
+    const inner = {
+      id: '01JB8Z1M6Q8E1X9V4S7K2R3T6F',
+      type: '@kerfjs/ui:nav-stack',
+      props: {
+        id: 'inner',
+        label: 'Inner',
+        views: [{ key: 'one', content: { $slot: 'oneContent' } }],
+      },
+    };
+    const outer = {
+      ...navigator,
+      zones: { ...navigator.zones, detail: [inner] },
+    };
+    const canvas = canvasOf(
+      doc({
+        id: '01JB8Z1M6Q8E1X9V4S7K2R3T6B',
+        type: '@kerfjs/ui:pane',
+        zones: {
+          content: [
+            {
+              id: '01JB8Z1M6Q8E1X9V4S7K2R3T6E',
+              type: '@kerfjs/ui:sized-region',
+              zones: { children: [outer] },
+            },
+          ],
+        },
+      }),
+    );
+    const parentOf = (id: string) =>
+      canvas.querySelector(`[data-kerf-node="${id}"]`)!.parentElement!;
+    expect(parentOf(outer.id).classList).toContain('kui-sized-region');
+    expect(parentOf(inner.id).classList).not.toContain('kui-editor__screen');
+    expect(canvas.querySelector('.kui-editor__screen')).toBeNull();
+  });
 });

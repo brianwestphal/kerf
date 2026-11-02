@@ -488,6 +488,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "sized-region",
+    "name": "SizedRegion",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Give a whole-screen layout (TabNavigator, NavStack, SplitView, Workbench) placed below an app's root a usable height. Those layouts fill their parent's height and have none of their own, so in a parent that sizes to its content they collapse to their bar.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/sized-region.tsx",
+    "componentSource": "ui/src/components/layout/sized-region/sized-region.tsx",
+    "documentation": "ui/docs/app-layouts.md"
+  },
+  {
     "id": "spacer",
     "name": "Spacer",
     "category": "Structure",

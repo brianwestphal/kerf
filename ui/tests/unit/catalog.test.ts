@@ -566,6 +566,7 @@ describe('UX catalog metadata', () => {
       'Grid',
       'ColumnTrack',
       'ContentSwap',
+      'SizedRegion',
       'Spacer',
       'List',
       'ListHeader',

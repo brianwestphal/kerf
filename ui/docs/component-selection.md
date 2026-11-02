@@ -138,6 +138,10 @@ Use `Row`, `Grid`, or `List` spacing shorthands for repeated sibling spacing: `g
 `gap="m"`, and the other `UiSpaceName` values resolve to their matching
 `--kui-space-*` token. Use `Spacer` for one deliberate empty width or height, or
 pass `flex` to consume the remaining space along a flex parent's main axis.
+Use `SizedRegion` to give a whole-screen layout (`NavStack`, `SplitView`,
+`TabNavigator`, `Workbench`) below an app's root a usable height: it fills the
+room its parent gives, or takes a typed height and `minHeight`/`maxHeight`
+bounds. It is not for sizing ordinary components, which size to their content.
 Pass `gap={{ column: 'none', row: 'm' }}` when the axes need different values;
 each axis accepts the same token or complete typed length as the scalar form.
 The canonical rhythm is `none`, `2xs`, `xs`, `m`, and `l`; use `s` and `xl`

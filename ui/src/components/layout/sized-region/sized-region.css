@@ -1,0 +1,22 @@
+/* A one-cell grid: a grid item's percentage height resolves against its grid
+   area, so content that is `height: 100%` (a whole-screen layout) fills the
+   region even when its height comes only from `min-height`. */
+.kui-sized-region {
+  --_kui-sized-region-height: auto;
+  --_kui-sized-region-min-height: 0px;
+  --_kui-sized-region-max-height: none;
+  display: grid;
+  box-sizing: border-box;
+  min-width: 0;
+  height: var(--_kui-sized-region-height);
+  min-height: var(--_kui-sized-region-min-height);
+  max-height: var(--_kui-sized-region-max-height);
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+}
+
+/* `fill`: the rest of a flex column (a Pane's content), or all of a parent
+   with a definite height. */
+.kui-sized-region[data-fill="true"] {
+  flex: 1 1 auto;
+  height: 100%;
+}

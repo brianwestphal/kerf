@@ -785,6 +785,12 @@ action on click or keyboard activation. The application owns the editing control
 and the swap between display and edit states. An actionable title is a button,
 so place any required heading landmark on another element in the view.
 
+`SizedRegion` gives content that cannot size itself, a whole-screen layout
+below the app root, a definite height: `height="fill"` by default, or a typed
+`height` and `minHeight`/`maxHeight`. It is a one-cell grid so its child's
+`height: 100%` resolves even when only `minHeight` is set. It is not for sizing
+ordinary components. See [App layouts](app-layouts.md#sizing-a-nested-layout).
+
 `ValuePreview` displays a literal read-only string in a bounded, keyboard-scrollable
 `output` with an accessible label. It preserves line breaks and wraps long
 tokens without painting a second surface; compose it inside `SunkenPanel` for

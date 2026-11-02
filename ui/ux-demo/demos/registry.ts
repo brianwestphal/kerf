@@ -54,6 +54,7 @@ import { RowDemo } from './row.js';
 import { SearchFieldDemo } from './search-field.js';
 import { SegmentedControlDemo } from './segmented-control.js';
 import { SelectDemo } from './select.js';
+import { SizedRegionDemo } from './sized-region.js';
 import { SkeletonDemo } from './skeleton.js';
 import { SliderDemo } from './slider.js';
 import { SpacerDemo } from './spacer.js';
@@ -116,6 +117,7 @@ export const demos = {
   list: ListDemo,
   row: RowDemo,
   grid: GridDemo,
+  'sized-region': SizedRegionDemo,
   spacer: SpacerDemo,
   'list-header': ListHeaderDemo,
   'list-action-row': ListActionRowDemo,

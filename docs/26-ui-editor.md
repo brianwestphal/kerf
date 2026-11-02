@@ -264,7 +264,11 @@ would collapse to its chrome. Below the document root, the canvas gives each
 one an editor-owned frame with a usable height (60% of the viewport, between
 320px and 640px, growing into room its parent leaves; KF-XXT6P4: nested
 layouts collapse on the canvas); as the root it fills the canvas as before.
-The frame is canvas-only and never reaches the document or the export.
+The frame is canvas-only and never reaches the document or the export. A
+layout whose parent already gives it a height gets no frame: a `SizedRegion`
+(KF-63XR5K: SizedRegion gives a nested layout a definite height), or another
+whole-screen layout's tab, view, or region. Documents size a nested layout with
+a `SizedRegion`, which exports with the document and sizes it the same in an app.
 While a node inside a TabNavigator tab's content is selected, the canvas shows
 that tab, whatever tab the document opens on, so the ring and the tab's drop
 targets apply to what is being edited (KF-YZPBFH: show the selected node's

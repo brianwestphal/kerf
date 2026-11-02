@@ -1630,6 +1630,10 @@ color tokens); `BadgeTone` and `StateBannerTone` are deprecated aliases.
 when an earlier banner disappears (`KF-KDF5YG`).
 
 The UI shared theme and foundation define translucent lowered surfaces and neutral decorative fills/borders; the SunkenPanel catalog composes public components directly without prototype CSS.
+`ui/src/components/layout/sized-region/` owns `SizedRegion` (KF-63XR5K: a
+definite height for a nested whole-screen layout), a one-cell grid with fill,
+typed height, and min/max bounds; `ui/tests/unit/sized-region.test.tsx` and
+`ui/tests/browser/sized-region.spec.ts` (three engines, against the demo) cover it.
 `ui/src/components/data-display/value-preview/` owns the `ValuePreview`
 read-only output and bounded scrolling styles. Public subpath and catalog demo
 compose it with `SunkenPanel`; unit and browser tests cover escaped literal

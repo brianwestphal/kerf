@@ -374,6 +374,10 @@ export {
   type RowProps,
   type VerticalAlignment,
 } from './components/layout/row/row.js';
+export {
+  SizedRegion,
+  type SizedRegionProps,
+} from './components/layout/sized-region/sized-region.js';
 export { Spacer, type SpacerProps } from './components/layout/spacer/spacer.js';
 export {
   LucideIcon,

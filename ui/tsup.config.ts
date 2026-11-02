@@ -21,6 +21,7 @@ const entries = [
   'list',
   'row',
   'grid',
+  'sized-region',
   'spacer',
   'list-action-row',
   'list-item',

@@ -399,20 +399,34 @@ const SCREEN_LAYOUTS = [
   '@kerfjs/ui:workbench',
 ];
 
+/** The region that gives a whole-screen layout its height (KF-63XR5K). */
+const SIZED_REGION = '@kerfjs/ui:sized-region';
+
 /**
  * KF-XXT6P4: a whole-screen layout placed below the document root renders in
  * an editor-owned frame with a usable height, so its content shows on the
- * canvas. As the root it fills the canvas as before.
+ * canvas. As the root it fills the canvas as before, and a parent that
+ * already gives it a height keeps doing so (KF-63XR5K): a SizedRegion, or
+ * another whole-screen layout's tab, view, or region.
  */
 function framedScreens(
   components: Readonly<Record<string, ComponentFunction>>,
-  rootId: string,
+  document: ViewDocument,
 ): Readonly<Record<string, ComponentFunction>> {
+  const sized = new Set([
+    document.root.id,
+    ...visitNodes(document).flatMap(({ node, ancestors }) => {
+      const parent = ancestors.at(-1)?.node.type;
+      return parent === SIZED_REGION || SCREEN_LAYOUTS.includes(parent!)
+        ? [node.id]
+        : [];
+    }),
+  ]);
   const framed = { ...components };
   for (const key of SCREEN_LAYOUTS.filter((key) => key in components)) {
     const render = components[key]!;
     framed[key] = ((props: { rootAttributes?: Record<string, string> }) =>
-      props.rootAttributes?.['data-kerf-node'] === rootId ? (
+      sized.has(props.rootAttributes?.['data-kerf-node'] ?? '') ? (
         render(props as never)
       ) : (
         <div class="kui-editor__screen">{render(props as never)}</div>
@@ -506,7 +520,7 @@ function canvasRenderer(catalog: EditorCatalog) {
     const primaryZones = new Map(
       visitNodes(source).map(({ node }) => [node.id, primaryZoneOf(node)]),
     );
-    const components = framedScreens(catalog.components, document.root.id);
+    const components = framedScreens(catalog.components, document);
     const preview = {
       catalog: viewCatalog,
       components,

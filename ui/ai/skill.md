@@ -83,6 +83,18 @@ twice through a wrapper, a second background, or an unnecessary override.
 Check the resulting contrast in both color schemes, especially over a custom
 backdrop. See `../docs/webawesome-theme.md#contextual-transparency`.
 
+### Nested whole-screen layouts need a SizedRegion
+
+`NavStack`, `SplitView`, `TabNavigator`, and `Workbench` fill their parent's
+height and have none of their own. As the app's root (or the only child of
+another layout's view, tab, or region) they fill it. Placed below the root
+beside other content, wrap one in `SizedRegion` from `@kerfjs/ui/sized-region`:
+its default `height="fill"` takes the rest of a flex column such as a Pane's
+content, and `minHeight` gives a usable height even in content that sizes to
+itself (an app-CSS `min-height` does not). Do not put a whole-screen layout in a
+`List` or `ContentItem`, and do not use `SizedRegion` to size ordinary
+components. See `../docs/app-layouts.md#sizing-a-nested-layout`.
+
 ### Clear chrome over imagery
 
 For a header or bar laid over imagery (an Apple-Music-style detail page), use

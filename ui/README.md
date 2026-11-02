@@ -238,6 +238,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `List`                                                       | `@kerfjs/ui/list`                       | `@kerfjs/ui/list.css`                    |
 | `Row`                                                        | `@kerfjs/ui/row`                        | `@kerfjs/ui/row.css`                     |
 | `Grid`                                                       | `@kerfjs/ui/grid`                       | `@kerfjs/ui/grid.css`                    |
+| `SizedRegion`                                                | `@kerfjs/ui/sized-region`               | `@kerfjs/ui/sized-region.css`            |
 | `Spacer`                                                     | `@kerfjs/ui/spacer`                     | `@kerfjs/ui/spacer.css`                  |
 | Typed CSS dimension builders                                 | `@kerfjs/ui/css-values`                 | —                                        |
 | `ListActionRow`                                              | `@kerfjs/ui/list-action-row`            | `@kerfjs/ui/list-action-row.css`         |

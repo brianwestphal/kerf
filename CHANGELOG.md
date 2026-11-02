@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **`SizedRegion` gives a nested whole-screen layout a height.** `NavStack`, `SplitView`, `TabNavigator`, and `Workbench` have no height of their own and collapsed to their bar below an app's root. Wrap one in `SizedRegion` (`@kerfjs/ui/sized-region`): `height="fill"` (the default) takes the rest of a Pane's content, and `minHeight` alone gives a usable height even in content that sizes to itself. The Kerf UI editor no longer frames a layout whose parent already sizes it (`KF-63XR5K`).
 - **The Kerf UI editor's canvas shows the tab you are editing.** Selecting a node inside a TabNavigator tab's content previews that tab, so its content, selection ring, and drop targets are visible; the document keeps the tab it opens on (`KF-YZPBFH`).
 - **`Button` and `ToolbarButton` open native popovers.** `popoverTarget` and `popoverTargetAction` (`toggle`, `show`, `hide`) make either one the Popover API's invoker, and `ariaHasPopup` reports the popup it opens; a link `Button` refuses `popoverTarget`. The catalog's popover triggers and the anchored request popup's actions now use them (`KF-PAMQNM`).
 

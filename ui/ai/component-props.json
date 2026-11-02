@@ -10713,6 +10713,113 @@
       "groups": ["Content", "Appearance", "State"]
     },
     {
+      "key": "@kerfjs/ui:sized-region",
+      "id": "sized-region",
+      "source": "kerf",
+      "import": "@kerfjs/ui/sized-region",
+      "export": "SizedRegion",
+      "description": "Gives content that cannot size itself a definite height: a whole-screen\nlayout placed below an app's root, which otherwise collapses to its bar.\nNot for sizing ordinary components; those size to their content.",
+      "props": [
+        {
+          "name": "height",
+          "type": {
+            "kind": "union",
+            "members": [
+              {
+                "kind": "css-value",
+                "grammar": "CssLength",
+                "text": "CssLength"
+              },
+              { "kind": "literal", "value": "fill", "text": "\"fill\"" }
+            ],
+            "text": "CssLength | \"fill\" | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The region's height: a typed `CssLength`, or `'fill'` to take the height\nits parent gives it (the rest of a flex column such as a Pane's content,\nor all of a parent with a definite height). Defaults to `'fill'`. Inside\na parent that sizes to its content, `'fill'` has nothing to take, so\ngive the region a `minHeight` or a length.",
+          "cssValue": {
+            "grammar": "length",
+            "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+            "rawPolicy": "forbid"
+          }
+        },
+        {
+          "name": "minHeight",
+          "type": {
+            "kind": "css-value",
+            "grammar": "CssLength",
+            "text": "CssLength",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The least height, a typed `CssLength`. Unlike `min-height` on an\nordinary box, it gives the content a usable height on its own, even in\na parent that sizes to its content.",
+          "cssValue": {
+            "grammar": "length",
+            "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+            "rawPolicy": "forbid"
+          }
+        },
+        {
+          "name": "maxHeight",
+          "type": {
+            "kind": "css-value",
+            "grammar": "CssLength",
+            "text": "CssLength",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The greatest height, a typed `CssLength`.",
+          "cssValue": {
+            "grammar": "length",
+            "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+            "rawPolicy": "forbid"
+          }
+        },
+        {
+          "name": "children",
+          "type": {
+            "kind": "content",
+            "text": "KerfUiContent",
+            "nullable": true
+          },
+          "required": false,
+          "description": "One piece of content that fills the region: a whole-screen layout\n(TabNavigator, NavStack, SplitView, Workbench) or another component\nthat fills its parent's height.",
+          "slot": true
+        },
+        {
+          "name": "id",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false
+        },
+        {
+          "name": "className",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "control": "hidden"
+        },
+        {
+          "name": "slot",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
+        }
+      ],
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
+    },
+    {
       "key": "@kerfjs/ui:skeleton",
       "id": "skeleton",
       "source": "kerf",

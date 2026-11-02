@@ -1608,3 +1608,37 @@ test('hides the selection ring for a node in a view below the top', async ({
   await addChild(page, 'ContentItem', 'views › 3 › content');
   await expect(ring).toBeVisible();
 });
+
+// KF-63XR5K: a SizedRegion gives a nested layout its height on the canvas,
+// as in an app; the canvas's own frame stays out of its way.
+test('sizes a TabNavigator inside a SizedRegion as the region says', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await newDocument(page);
+  await dragComponent(page, 'SizedRegion', () => emptySpot(page));
+  await select(page, /^SizedRegion/);
+  await page
+    .locator('[data-editor-prop="minHeight"] input')
+    .first()
+    .fill('rem(25)');
+  await page.keyboard.press('Enter');
+  await dragComponent(page, 'TabNavigator', () => emptySpot(page));
+  const region = page.locator(
+    '[data-editor-canvas] .kui-sized-region[data-kerf-node]',
+  );
+  const navigator = region.locator('.kui-tab-scaffold[data-kerf-node]');
+  await expect(navigator).toBeVisible();
+  expect((await region.boundingBox())!.height).toBeCloseTo(400, 0);
+  expect((await navigator.boundingBox())!.height).toBeCloseTo(400, 0);
+  await expect(page.locator('.kui-editor__screen')).toHaveCount(0);
+  const document = (await exported(page)) as {
+    zones: { content: { props: unknown; zones: { children: unknown[] } }[] };
+  };
+  expect(document.zones.content[0]!.props).toEqual({
+    minHeight: { $css: 'rem(25)' },
+  });
+  await page.screenshot({
+    path: test.info().outputPath('kf-63xr5k-editor-sized-region-1440.png'),
+  });
+});

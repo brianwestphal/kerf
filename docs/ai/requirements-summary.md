@@ -404,6 +404,9 @@ recipes, and apps no longer hand-write `.kui-content-item` modifier classes.
 `success`, `warning`, and `danger` coordinate quiet semantic fills, borders,
 and foregrounds with `StateBanner`. `transparent` is the default. A lowered
 inset surface around a stack remains `SunkenPanel`.
+`SizedRegion` (shipped, docs/23 §3.9, `ui/docs/app-layouts.md#sizing-a-nested-layout`)
+gives a whole-screen layout below the app root a definite height (fill, typed
+height, min/max); a non-blocking hint for an unsized nested layout is KF-KQ72TW.
 `ValuePreview` (shipped, `ui/docs/value-preview.md`) renders a literal,
 read-only multiline string as a labelled, keyboard-scrollable `output` with
 bounded height, preserved newlines, and long-token wrapping. It composes

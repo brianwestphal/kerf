@@ -589,6 +589,11 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   shorthands for repeated rhythm; use `Spacer` for one typed empty width/height
   or flexible main-axis gap. Use `space`, `px`, `rem`, `em`, `pct`, `lengthVar`, and
   `calc(plus(...))` for typed runtime composition. `remify()` is source-CSS only.
+- **Give a nested whole-screen layout a SizedRegion.** `NavStack`, `SplitView`,
+  `TabNavigator`, and `Workbench` have no height of their own; below the app's
+  root, wrap one in `SizedRegion` (`height="fill"` by default, or `minHeight` /
+  `maxHeight` / a typed `height`). App-CSS `min-height` does not give them a
+  height, and they do not belong in a `List` or `ContentItem`.
 - **Keep nested highlight corners concentric.** Inset hover and selection surfaces
   follow the owning control's pill or rounded shape; their radius is the outer
   radius minus `--kui-layout-highlight-inset`. Do not give an inner highlight an
