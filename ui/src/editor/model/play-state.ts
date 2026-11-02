@@ -17,7 +17,8 @@ import {
   type TabReorder,
 } from '../../components/navigation/tab-bar/wiring/wire-tab-bars.js';
 import { findNode, visitNodes } from './document.js';
-import { setProp } from './edits.js';
+import { removeNode, setProp } from './edits.js';
+import { type RowProps, setRowProps } from './play-values.js';
 import { cutStack } from './shown-scenes.js';
 
 export const TAB_NAVIGATOR = '@kerfjs/ui:tab-navigator';
@@ -27,6 +28,10 @@ export const TAB_BAR = '@kerfjs/ui:tab-bar';
 export const TAB_BAR_ITEM = '@kerfjs/ui:tabs';
 export const WORKBENCH = '@kerfjs/ui:workbench';
 export const COLLAPSIBLE_PANEL = '@kerfjs/ui:collapsible-panel';
+export const SPLIT_VIEW = '@kerfjs/ui:split-view';
+/** ResizableRegion's catalog key. */
+export const RESIZABLE_REGION = '@kerfjs/ui:resize';
+export const LIST_ITEM = '@kerfjs/ui:list-item';
 const PANEL_TOGGLE = '@kerfjs/ui:collapsible-panel#CollapsiblePanelToggle';
 const PANEL_RELOCATED =
   '@kerfjs/ui:collapsible-panel#CollapsiblePanelRelocated';
@@ -77,30 +82,79 @@ export function popView(document: ViewDocument, id: string): ViewDocument {
     : document;
 }
 
+/** A TabBar's items: the nodes placed in it, and each `$each` template. */
+function barItems(bar: ViewNode) {
+  return Object.values(bar.zones ?? {}).flatMap((children) =>
+    children.flatMap((child) => {
+      const node = '$each' in child ? child.template : child;
+      return 'type' in node && node.type === TAB_BAR_ITEM
+        ? [{ node, repeated: '$each' in child }]
+        : [];
+    }),
+  );
+}
+
 /**
  * TabBarItem `id` becomes its TabBar's selected tab: it is `selected`, and
- * every other TabBarItem placed directly in the same bar is not.
+ * every other TabBarItem in the same bar is not. A TabBarItem repeated by
+ * `$each` (KF-XV732Q) keeps its selection per row, in `rows`: `key` is the
+ * selected row's, and every other row of every repeated item in the bar is
+ * not selected. Returns the inputs themselves when nothing applies.
  */
 export function selectTabBarItem(
+  document: ViewDocument,
+  id: string,
+  rows: RowProps = {},
+  key?: string,
+): { document: ViewDocument; rows: RowProps } {
+  const visit = findNode(document, id);
+  const bar = visit?.ancestors.at(-1)?.node;
+  if (visit?.node.type !== TAB_BAR_ITEM || bar?.type !== TAB_BAR)
+    return { document, rows };
+  const repeated = visit.repeated && key !== undefined;
+  let next = document;
+  let nextRows = rows;
+  for (const item of barItems(bar)) {
+    if (item.repeated) {
+      nextRows = setRowProps(
+        nextRows,
+        item.node.id,
+        { selected: false },
+        repeated && item.node.id === id ? { [key]: { selected: true } } : {},
+      );
+      continue;
+    }
+    const selected = !repeated && item.node.id === id;
+    if (Boolean(item.node.props?.selected) !== selected)
+      next = setProp(next, item.node.id, 'selected', selected || undefined);
+  }
+  return { document: next, rows: nextRows };
+}
+
+/**
+ * TabBarItem `id`, placed directly in its TabBar, closes: it leaves the play
+ * copy, and when it was selected the next item (or else the previous one)
+ * becomes selected. A repeated item closes through its `$each` source
+ * instead (`closeRow`). Returns `document` when nothing applies.
+ */
+export function closeTabBarItem(
   document: ViewDocument,
   id: string,
 ): ViewDocument {
   const visit = findNode(document, id);
   const bar = visit?.ancestors.at(-1)?.node;
-  if (visit?.node.type !== TAB_BAR_ITEM || bar?.type !== TAB_BAR)
+  if (
+    visit?.node.type !== TAB_BAR_ITEM ||
+    bar?.type !== TAB_BAR ||
+    visit.repeated
+  )
     return document;
-  // The item sits in one of the bar's zones.
-  const items = Object.values(bar.zones!).flatMap((children) =>
-    children.filter(
-      (child): child is ViewNode =>
-        'type' in child && child.type === TAB_BAR_ITEM,
-    ),
-  );
-  let next = document;
-  for (const item of items) {
-    const selected = item.id === id;
-    if (Boolean(item.props?.selected) !== selected)
-      next = setProp(next, item.id, 'selected', selected || undefined);
+  const placed = barItems(bar).filter((item) => !item.repeated);
+  const at = placed.findIndex((item) => item.node.id === id);
+  let next = removeNode(document, id);
+  if (visit.node.props?.selected === true) {
+    const neighbor = placed[at + 1] ?? placed[at - 1];
+    if (neighbor) next = setProp(next, neighbor.node.id, 'selected', true);
   }
   return next;
 }
@@ -200,4 +254,108 @@ export function sidebarToggleActions(
       actions.add(node.props.action);
   }
   return [...actions];
+}
+
+/** Workbench `id`'s resizable `panel` takes `size` (KF-XV732Q). */
+export function setWorkbenchPanelSize(
+  document: ViewDocument,
+  id: string,
+  panel: WorkbenchPanelKey,
+  size: number,
+): ViewDocument {
+  const value = nodeOf(document, id, WORKBENCH)?.props?.[panel];
+  if (!value || typeof value !== 'object' || Array.isArray(value))
+    return document;
+  const current = value as Record<string, ViewValue>;
+  if (current.size === size) return document;
+  return setProp(document, id, panel, { ...current, size });
+}
+
+/**
+ * The ResizableRegion whose region id is `regionId` takes `size`: a
+ * ResizableRegion node whose `id` prop it is, or the resizable list of the
+ * SplitView whose `id` prop is its prefix (SplitView renders its list
+ * region as `<id>-list`).
+ */
+export function setRegionSize(
+  document: ViewDocument,
+  regionId: string,
+  size: number,
+): ViewDocument {
+  for (const { node } of visitNodes(document)) {
+    if (node.type === RESIZABLE_REGION && node.props?.id === regionId)
+      return node.props.size === size
+        ? document
+        : setProp(document, node.id, 'size', size);
+    const resizable = node.props?.resizable;
+    if (
+      node.type === SPLIT_VIEW &&
+      `${String(node.props?.id)}-list` === regionId &&
+      resizable &&
+      typeof resizable === 'object' &&
+      !Array.isArray(resizable)
+    ) {
+      const current = resizable as Record<string, ViewValue>;
+      return current.size === size
+        ? document
+        : setProp(document, node.id, 'resizable', { ...current, size });
+    }
+  }
+  return document;
+}
+
+/**
+ * Every SplitView whose `compact` is not an expression follows the played
+ * device: `compact` is the frame's `deviceClass().compact`, as the
+ * component asks an app to derive it. Leaving compact drops a pushed
+ * detail.
+ */
+export function followCompact(
+  document: ViewDocument,
+  compact: boolean,
+): ViewDocument {
+  let next = document;
+  for (const { node } of visitNodes(document)) {
+    if (node.type !== SPLIT_VIEW) continue;
+    const current = node.props?.compact;
+    if (current !== undefined && typeof current !== 'boolean') continue;
+    if (Boolean(current) === compact) continue;
+    next = setProp(next, node.id, 'compact', compact || undefined);
+    if (!compact && node.props?.detailActive === true)
+      next = setProp(next, node.id, 'detailActive', undefined);
+  }
+  return next;
+}
+
+/** SplitView `id` shows its detail over the list (compact) or not. */
+export function setDetailActive(
+  document: ViewDocument,
+  id: string,
+  active: boolean,
+): ViewDocument {
+  const node = nodeOf(document, id, SPLIT_VIEW);
+  if (!node || Boolean(node.props?.detailActive) === active) return document;
+  return setProp(document, id, 'detailActive', active || undefined);
+}
+
+/**
+ * ListItem `id`, placed in a list, becomes its list's selected row: it is
+ * `selected`, and every other ListItem placed beside it is not.
+ */
+export function selectListItem(
+  document: ViewDocument,
+  id: string,
+): ViewDocument {
+  const visit = findNode(document, id);
+  const parent = visit?.ancestors.at(-1);
+  if (visit?.node.type !== LIST_ITEM || !parent || visit.repeated)
+    return document;
+  let next = document;
+  for (const child of parent.node.zones![parent.zone]!) {
+    if (!('type' in child) || child.type !== LIST_ITEM) continue;
+    const selected = child.id === id;
+    if (Boolean(child.props?.selected) !== selected)
+      next = setProp(next, child.id, 'selected', selected || undefined);
+  }
+  return next;
 }

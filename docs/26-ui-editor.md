@@ -1255,7 +1255,9 @@ safe areas, Scale, and Flexible sizing (§11.2, §11.3).
 
 Mock device frames (KF-E8T0AY) are built, and so are host mock action
 handlers and the action log (§11.4, §11.5, KF-RF6RCS). Each NavStack starts
-at its root view (KF-BFE3EC, §11.4).
+at its root view (KF-BFE3EC, §11.4), and more components respond while
+playing: resizing, SplitView, value controls, sidebars with several
+toggles, repeated tabs, and tab close (KF-XV732Q).
 
 Their decisions were signed off on 2026-11-02.
 
@@ -1426,6 +1428,52 @@ starts each NavStack at its first (root) view, the way an app launches.
 - The fixture's orders open on the list, so a row opens its order directly,
   with no Back first.
 
+**As built (KF-XV732Q).** More adapters, in the same split: pure
+transitions in `model/play-state.ts` and `model/play-values.ts`, wiring in
+`play-adapters.ts`.
+
+- **Resizing.** A Workbench panel with `resizable` gets a `size` signal
+  for `wireWorkbench`, mirrored into the panel's `size` (from the
+  Workbench's default when unset). `wireResizableRegions` commits go to a
+  ResizableRegion's `size` by its `id` prop, or to a SplitView's
+  `resizable.size` (its list region is `<id>-list`).
+- **SplitView.** `compact` follows the frame's `deviceClass().compact`, the
+  derivation the component documents, unless the prop is an expression.
+  Leaving compact drops a pushed detail. A ListItem in the list becomes
+  its list's selected row, and in compact it also pushes the detail
+  (`detailActive`); the inner stack's back pops it (`wireNavStack`). A
+  ListItem with `pressed` toggles instead of selecting.
+- **Value controls.** One table maps a control to the prop its change
+  sets and how to read it: Switch and Checkbox `checked`; RadioGroup,
+  Slider, Select, and ChoiceChips `value` on `change`; SegmentedControl
+  `value` and a ListItem's `pressed` on click; Disclosure `open` on
+  `toggle`; Combobox, ColorField, ColorPicker (`value`) and TagField
+  (`tags`) through their helpers' callbacks, matched by `id` prop
+  (`wireChoiceChips` is installed too). The change goes where the value
+  lives (`recordValue`):
+  - a literal or unset prop changes in the play copy;
+  - a `$param` prop changes that param, so everything bound to it
+    follows;
+  - another expression (`$bind`, `$css`) is left to the document;
+  - a node repeated by `$each` changes for its row only.
+- **Per-row props.** A repeated row's play-time props live beside the
+  play copy, by node id and `data-key`. The play renderer wraps the
+  catalog's component functions (`withRowProps`) to lay them over that
+  row's props. While any row has them, the player renders fresh item
+  objects, since `each()` memoizes a row by its item's identity.
+- **Repeated TabBarItems.** Selecting one selects its row only, and clears
+  every other item in the bar, placed or repeated.
+- **Tab close.** A placed TabBarItem's close removes it from the play
+  copy, handing its selection to the next item (or the previous one). A
+  repeated one leaves its `$each` param's items, handing a selection to
+  the neighbor row. Delete and Backspace close through the close button,
+  as `wireTabBars` does.
+- **A sidebar toggled by several actions.** `wireSidebar` takes the first
+  toggle action; any other action naming the panel flips the same state.
+- **Limits (follow-ups):** a value control nested inside a repeated row
+  (not the template's root) has no row key, so it changes only in the
+  DOM; a repeated tab's close needs its `$each` to read a `$param`.
+
 Play mode lets an author use the designed view as its users would. In play
 mode the canvas stops being an editing surface: clicks, keys, drags, and
 scrolls reach the components, never the editor's selection, drop targets, or
@@ -1543,7 +1591,9 @@ document and its param values by `postMessage` and renders them with
   controlled component. Each adapter installs the component's helper and maps
   its callbacks onto prop changes in that copy: a TabNavigator or TabBar
   selection sets `active`, a NavStack back pops its `views`, and a sidebar or
-  Workbench rail toggle flips its collapsed state. The view then re-renders
+  Workbench rail toggle flips its collapsed state (KF-XV732Q adds resizing,
+  SplitView, value controls, repeated tabs, and tab close). The view then
+  re-renders
   through the normal morph. Helpers that need no app state (scroll dividers,
   text fields, search fields, sliders) are installed as they are. A forward
   NavStack push, or anything else an application decides, comes from a mock

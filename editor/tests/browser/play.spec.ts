@@ -378,3 +378,221 @@ test('the Chrome toggle hides the device frame without moving the view', async (
   await stage(page).locator('[data-tab-scaffold-tab="search"]').click();
   await expect(stage(page).getByText('Search everything')).toBeVisible();
 });
+
+// KF-XV732Q: more play-time adapters — value controls, rows repeated by
+// `$each`, tab close, resizing, a sidebar toggled by several actions, and a
+// SplitView that follows the device (docs/26-ui-editor.md §11.4).
+const xid = (n: number) =>
+  `01JB8Z1M6Q8E1X9V4S7K2R3X${String(n).padStart(2, '0')}`;
+const kui = (n: number, type: string, props: object, zones?: object) => ({
+  id: xid(n),
+  type: `@kerfjs/ui:${type}`,
+  props,
+  ...(zones ? { zones } : {}),
+});
+const options = (...values: string[]) =>
+  values.map((value) => ({
+    value,
+    label: value[0]!.toUpperCase() + value.slice(1),
+  }));
+const itemsParam = (...names: string[]) => ({
+  type: {
+    kind: 'array',
+    items: {
+      kind: 'object',
+      props: [
+        { name: 'id', type: { kind: 'string' }, required: true },
+        { name: 'name', type: { kind: 'string' }, required: true },
+      ],
+    },
+  },
+  default: names.map((name) => ({ id: name.toLowerCase(), name })),
+});
+
+/** Value controls, repeated tabs, a region, and a sidebar with two toggles. */
+const controlsDocument = {
+  schema: 'kerf-ui-document/v1',
+  name: 'Controls',
+  catalogs: ['@kerfjs/ui'],
+  params: { tabs: itemsParam('Inbox', 'Drafts', 'Sent') },
+  root: kui(
+    0,
+    'pane',
+    {},
+    {
+      content: [
+        kui(
+          1,
+          'tab-bar',
+          { id: 'mail', label: 'Mail' },
+          {
+            tabs: [
+              {
+                $each: { $param: 'tabs' },
+                as: 'tab',
+                key: 'tab.id',
+                template: kui(2, 'tabs', {
+                  id: { $bind: 'tab.id' },
+                  name: { $bind: 'tab.name' },
+                }),
+              },
+            ],
+          },
+        ),
+        kui(3, 'segmented-control', {
+          id: 'view',
+          label: 'View',
+          value: 'list',
+          choices: options('list', 'grid'),
+        }),
+        kui(4, 'switch', { label: 'Wifi' }),
+        kui(5, 'select', {
+          name: 'color',
+          label: 'Color',
+          value: 'red',
+          choices: options('red', 'blue'),
+        }),
+        kui(6, 'slider', { id: 'volume', label: 'Volume', value: 10 }),
+        kui(
+          7,
+          'resize',
+          { id: 'region', label: 'Region', size: 160, min: 120, max: 240 },
+          { children: [kui(8, 'text', { children: 'Region body' })] },
+        ),
+        kui(9, 'collapsible-panel', {
+          id: 'side',
+          side: 'left',
+          label: 'Side',
+          toolbar: {
+            label: 'Side',
+            toggle: { action: 'toggle-side', name: 'Side' },
+          },
+        }),
+        {
+          id: xid(10),
+          type: '@kerfjs/ui:collapsible-panel#CollapsiblePanelToggle',
+          props: {
+            side: 'left',
+            collapsed: false,
+            action: 'open-side',
+            panelId: 'side',
+          },
+        },
+      ],
+    },
+  ),
+};
+
+/** A SplitView of two rows and their detail. */
+const splitDocument = {
+  schema: 'kerf-ui-document/v1',
+  name: 'Split',
+  catalogs: ['@kerfjs/ui'],
+  root: kui(
+    20,
+    'split-view',
+    { id: 'split', label: 'Split', listTitle: 'Notes', detailTitle: 'Note' },
+    {
+      list: [
+        kui(
+          21,
+          'list',
+          { ariaLabel: 'Notes' },
+          {
+            children: [
+              kui(22, 'list-item', { label: 'Groceries', action: 'open-note' }),
+              kui(23, 'list-item', { label: 'Packing', action: 'open-note' }),
+            ],
+          },
+        ),
+      ],
+      detail: [kui(24, 'text', { children: 'Note details' })],
+    },
+  ),
+};
+
+const openPlayed = async (page: Page, played: object, nodes: number) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page
+    .locator('input[type="file"]')
+    .first()
+    .setInputFiles({
+      name: 'played.kui.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(played)),
+    });
+  await expect(
+    page.getByText(new RegExp(`· ${nodes} nodes · valid$`)),
+  ).toBeVisible();
+  await play(page);
+  return stage(page);
+};
+
+test('value controls, repeated tabs, and a region keep what the person did', async ({
+  page,
+}) => {
+  const view = await openPlayed(page, controlsDocument, 11);
+  const node = (n: number) => view.locator(`[data-kerf-node="${xid(n)}"]`);
+  const tab = (key: string) =>
+    view.locator(`[data-kerf-node="${xid(2)}"][data-key="${key}"]`);
+  // A repeated tab selects for its row only.
+  await tab('drafts').getByRole('tab').click();
+  await expect(tab('drafts')).toHaveAttribute('data-selected', 'true');
+  await expect(tab('inbox')).toHaveAttribute('data-selected', 'false');
+  await expect(tab('sent')).toHaveAttribute('data-selected', 'false');
+  // The controls record their values in the play copy.
+  const grid = node(3).getByRole('button', { name: 'Grid' });
+  await grid.click();
+  await expect(grid).toHaveAttribute('aria-pressed', 'true');
+  await node(4).getByRole('switch').check();
+  await node(5).locator('.kui-select__trigger').click();
+  await node(5).getByRole('option', { name: 'Blue', exact: true }).click();
+  await expect(node(5).locator('.kui-select__trigger')).toContainText('Blue');
+  await node(6).getByRole('slider').focus();
+  await page.keyboard.press('End');
+  await expect(node(6).getByRole('slider')).toHaveValue('100');
+  const handle = node(7).getByRole('separator');
+  await handle.focus();
+  await page.keyboard.press('End');
+  await expect(handle).toHaveAttribute('aria-valuenow', '240');
+  // A re-render (closing the selected tab) keeps every value, and hands the
+  // selection to the next tab.
+  await tab('drafts').getByRole('button', { name: 'Close Drafts' }).click();
+  await expect(tab('drafts')).toHaveCount(0);
+  await expect(tab('sent')).toHaveAttribute('data-selected', 'true');
+  await expect(grid).toHaveAttribute('aria-pressed', 'true');
+  await expect(node(4).getByRole('switch')).toBeChecked();
+  await expect(node(5).locator('.kui-select__trigger')).toContainText('Blue');
+  await expect(node(6).getByRole('slider')).toHaveValue('100');
+  await expect(handle).toHaveAttribute('aria-valuenow', '240');
+  // The sidebar collapses from its own toggle and opens from the other.
+  const panel = view.locator('[data-collapsible-panel="side"]');
+  await view.locator('[data-action="toggle-side"]').first().click();
+  await expect(panel).toHaveAttribute('data-collapsed', 'true');
+  await view.locator('[data-action="open-side"]').click();
+  await expect(panel).toHaveAttribute('data-collapsed', 'false');
+});
+
+test('a SplitView follows the device: rows push the detail on a phone', async ({
+  page,
+}) => {
+  const view = await openPlayed(page, splitDocument, 5);
+  const split = view.locator('[data-component="split-view"]');
+  // The default iPhone 17 is compact.
+  await expect(split).toHaveAttribute('data-split-mode', 'compact');
+  await view.getByRole('button', { name: 'Packing' }).click();
+  await expect(view.getByText('Note details')).toBeVisible();
+  await view.locator('[data-nav-back]').click();
+  await expect(view.getByRole('button', { name: 'Packing' })).toBeVisible();
+  await expect(view.getByText('Note details')).toHaveCount(0);
+  // A roomy device shows both panes, and the chosen row stays selected.
+  await chooseIn(page, 'device', 'iPad Pro 13"');
+  await page.locator('[data-action="editor-play-rotate"]').click();
+  await expect(split).toHaveAttribute('data-split-mode', 'split');
+  await expect(view.getByText('Note details')).toBeVisible();
+  await expect(view.getByRole('button', { name: 'Packing' })).toHaveAttribute(
+    'aria-current',
+    'page',
+  );
+});

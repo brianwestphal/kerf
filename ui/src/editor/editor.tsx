@@ -271,6 +271,7 @@ import {
   type DevicePresetsOption,
   resolveDevicePresets,
 } from './model/play-device.js';
+import { type RowProps, withRowProps } from './model/play-values.js';
 import { type PreviewSlot, previewSlots } from './model/preview-slots.js';
 import {
   placementReason,
@@ -540,6 +541,8 @@ function canvasRenderer(catalog: EditorCatalog) {
     play = false,
     /** KF-RF6RCS: param values a play-mode handler set, over the samples. */
     overrides?: Readonly<Record<string, unknown>>,
+    /** KF-XV732Q: play-time props of repeated rows, by node id and key. */
+    rows: RowProps = {},
   ): SafeHtml => {
     // The selected node's tab shows, whatever tab the document opens on.
     const { document, slots: placed } = previewSlots(
@@ -555,7 +558,7 @@ function canvasRenderer(catalog: EditorCatalog) {
     const primaryZones = new Map(
       visitNodes(source).map(({ node }) => [node.id, primaryZoneOf(node)]),
     );
-    const { components } = catalog;
+    const components = withRowProps(catalog.components, rows);
     const preview = {
       catalog: viewCatalog,
       components,
@@ -831,7 +834,7 @@ export function createEditor(options: EditorOptions) {
     const render = canvasRenderer(catalog);
     const player = createPlayer(
       options.document ?? emptyDocument(),
-      (document, overrides) =>
+      (document, overrides, rows) =>
         render(
           document,
           problemsOf(
@@ -843,6 +846,7 @@ export function createEditor(options: EditorOptions) {
           undefined,
           true,
           overrides,
+          rows,
         ),
       // KF-RF6RCS: the host's mock handlers, given the canvas's samples.
       {

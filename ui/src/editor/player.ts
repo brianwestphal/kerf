@@ -20,6 +20,7 @@ import {
 } from './model/play-actions.js';
 import { type DeviceInsets, safeAreaTokens } from './model/play-device.js';
 import { popView, rootViews } from './model/play-state.js';
+import { fresh, type RowProps } from './model/play-values.js';
 import { wirePlayState } from './play-adapters.js';
 
 /** The query flag that makes the editor page a play page. */
@@ -81,6 +82,7 @@ export function createPlayer(
   preview: (
     document: ViewDocument,
     overrides: Readonly<Record<string, unknown>>,
+    rows: RowProps,
   ) => SafeHtml,
   options: PlayerOptions,
 ) {
@@ -91,11 +93,22 @@ export function createPlayer(
   let original = initial;
   /** Param values a mock handler set (KF-RF6RCS). */
   const overrides = signal<Readonly<Record<string, unknown>>>({});
+  /** Per-row props of repeated nodes (KF-XV732Q). */
+  const rows = signal<RowProps>({});
   /** Nothing renders until the editor sends the document to play. */
   const received = signal(false);
 
-  const render = (): SafeHtml =>
-    received.value ? preview(document.value, overrides.value) : raw('');
+  const render = (): SafeHtml => {
+    if (!received.value) return raw('');
+    // KF-XV732Q: rows with play-time props render from fresh items.
+    const repeated = Object.keys(rows.value).length > 0;
+    return repeated
+      ? preview(fresh(document.value), fresh(overrides.value), rows.value)
+      : preview(document.value, overrides.value, rows.value);
+  };
+  const setParams = (values: Readonly<Record<string, unknown>>) => {
+    overrides.value = { ...overrides.value, ...values };
+  };
 
   /** The view's param values now: defaults, samples, then handler-set values. */
   const params = (): Record<string, unknown> => {
@@ -113,7 +126,14 @@ export function createPlayer(
 
   const wire = (root: HTMLElement) => {
     const view = root.ownerDocument.defaultView!;
-    const play = wirePlayState(root, document);
+    // The class the played view's own deviceClass() reads.
+    const device = deviceClass();
+    const play = wirePlayState(root, document, {
+      rows,
+      params,
+      setParams,
+      device,
+    });
     const html = root.ownerDocument.documentElement;
     const onMessage = (event: MessageEvent) => {
       if (!fromPeer(event, view, view.parent)) return;
@@ -140,6 +160,7 @@ export function createPlayer(
       // KF-BFE3EC: each NavStack starts at its root view, as an app
       // launches; handlers push the rest from `original`.
       document.value = rootViews(data.document);
+      rows.value = {};
       received.value = true;
     };
     /** Tells the editor's action log about one fired action. */
@@ -185,9 +206,7 @@ export function createPlayer(
             root,
             document: document.value,
             key: target.closest<HTMLElement>('[data-key]')?.dataset.key,
-            setParams: (values) => {
-              overrides.value = { ...overrides.value, ...values };
-            },
+            setParams,
             navStack: (name) => {
               const stack = findNavStack(document.value, name);
               if (!stack) return undefined;
@@ -220,10 +239,8 @@ export function createPlayer(
       },
     );
     view.addEventListener('message', onMessage);
-    // The class the played view's own deviceClass() reads, on the play
-    // page's root, so a test (or an author's inspector) can see it follow
-    // the device.
-    const device = deviceClass();
+    // That class on the play page's root, so a test (or an author's
+    // inspector) can see it follow the device.
     const stopDevice = effect(() => {
       const { size, orientation } = device.value;
       html.dataset.kerfPlayDevice = `${size} ${orientation}`;
@@ -232,6 +249,7 @@ export function createPlayer(
     const stopSync = effect(() => {
       void document.value;
       void overrides.value;
+      void rows.value;
       void received.value;
       globalThis.queueMicrotask(play.sync);
     });

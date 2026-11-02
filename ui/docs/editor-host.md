@@ -212,7 +212,11 @@ same-origin `postMessage`. Your host's page must keep `createEditor`,
 `mount`, and `wire` unconditional, and serve the same page for that query.
 Inside the frame, the components run with their real wiring. Each NavStack
 starts at its first view, as an app launches; your mock handlers push the
-rest (below). Tabs switch, a NavStack's back pops, and Workbench rails and sidebars collapse, all on a
+rest (below). Tabs switch and close, a NavStack's back pops, regions and
+Workbench panels resize, a SplitView collapses on a phone-sized device
+and pushes its detail from a row, value controls (switches, selects,
+sliders, segmented controls, chips, and the rest) keep what you set, a
+repeated tab selects for its own row, and Workbench rails and sidebars collapse, all on a
 play-time copy of the document. Nothing you do in play mode changes the
 document.
 

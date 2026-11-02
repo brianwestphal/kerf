@@ -277,11 +277,11 @@ describe('play-time state transitions', () => {
 
   it('selects one TabBarItem in its bar', () => {
     const source = barsAndPanels();
-    const next = selectTabBarItem(source, ids.itemB);
+    const next = selectTabBarItem(source, ids.itemB).document;
     expect(nodeProps(next, ids.itemB).selected).toBe(true);
     expect(nodeProps(next, ids.itemA).selected).toBeUndefined();
-    expect(selectTabBarItem(next, ids.itemB)).toBe(next);
-    expect(selectTabBarItem(source, ids.bar)).toBe(source);
+    expect(selectTabBarItem(next, ids.itemB).document).toBe(next);
+    expect(selectTabBarItem(source, ids.bar).document).toBe(source);
   });
 
   it("reorders a TabBar's items", () => {
