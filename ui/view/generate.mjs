@@ -275,6 +275,8 @@ function createEmitter(document, catalog, imports, importFrom) {
 
   const children = (list, scope, slot) => {
     const items = list.map((child) => childExpr(child, scope, slot));
+    // KF-YCM09F: an empty zone is an explicit null.
+    if (items.length === 0) return raw('null');
     return items.length === 1 ? items[0] : arr(items);
   };
 

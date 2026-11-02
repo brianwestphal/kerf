@@ -291,7 +291,7 @@ export function SplitViewDemo() {
           compact
           detailActive={Boolean(compactSelection)}
           listTitle="Inbox"
-          detailTitle={compactSelection?.subject ?? ''}
+          detailTitle={compactSelection?.subject}
           backLabel="Back to Inbox"
           compactStack={{
             toolbarConfig: { headingLevel: 2, dividerSides: 'b' },
@@ -310,7 +310,7 @@ export function SplitViewDemo() {
             },
           }}
           list={messageList('open-split-view-message')}
-          detail={compactSelection ? messageDetail(compactSelection) : <div />}
+          detail={compactSelection ? messageDetail(compactSelection) : null}
         />
       </CatalogExample>
     </CatalogExampleStack>

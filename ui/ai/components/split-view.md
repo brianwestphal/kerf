@@ -54,7 +54,7 @@ Exact prop names and types: [`@kerfjs/ui/split-view`](../public-api-signatures-v
 Zones (a zone is bound to JSX only through its listed prop; never assume the zone id is a prop):
 
 - `list` — JSX prop `list`; accepts `list-region`; exactly 1.
-- `detail` — JSX prop `detail`; accepts `detail-region`; exactly 1.
+- `detail` — JSX prop `detail`; accepts `detail-region`; 0–1.
 
 ## State and wiring
 

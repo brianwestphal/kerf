@@ -223,7 +223,7 @@ describe('component composition catalog contract', () => {
     );
   });
 
-  it("names only real component props as JSX zones, required exactly when the zone's minimum is non-zero", async () => {
+  it("names only real component props as JSX zones, required exactly when the zone's minimum is non-zero (or the prop takes null)", async () => {
     // A zone naming a renamed or removed prop makes kerf-ui-doctor report an
     // error no consumer can satisfy (MessageComposer `actions` → `trailing`).
     const composition = await readJson<ComponentComposition>(
@@ -281,7 +281,18 @@ describe('component composition catalog contract', () => {
         const optional = declared.every(
           (symbol) => (symbol.flags & ts.SymbolFlags.Optional) !== 0,
         );
-        if (optional === zone.cardinality.min > 0) {
+        // A required prop that takes null may sit on a zone that can be
+        // empty: it is passed, as null when the zone holds nothing
+        // (KF-YCM09F: SplitView's `detail` with nothing selected).
+        const nullable = declared.every((symbol) => {
+          const type = checker.getTypeOfSymbol(symbol);
+          return (type.isUnion() ? type.types : [type]).some(
+            (member) => (member.flags & ts.TypeFlags.Null) !== 0,
+          );
+        });
+        const explicitNull =
+          !optional && zone.cardinality.min === 0 && nullable;
+        if (!explicitNull && optional === zone.cardinality.min > 0) {
           mismatches.push(
             `${entry.name}: zone \`${zone.id}\` min ${zone.cardinality.min} but prop \`${prop}\` is ${optional ? 'optional' : 'required'}`,
           );

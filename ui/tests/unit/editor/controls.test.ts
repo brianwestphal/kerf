@@ -449,6 +449,14 @@ describe('seedNode', () => {
       root: seedNode(key, seedCatalog, makeId, slotNamer([])),
     }) as ViewDocument;
 
+  // KF-YCM09F: SplitView's composition lets `detail` be empty, but the prop
+  // is required, so a new SplitView still starts with a detail to replace.
+  it('seeds a required zone the composition lets stay empty', () => {
+    const { zones } = seededDocument('@kerfjs/ui:split-view').root as ViewNode;
+    expect(zones?.detail).toHaveLength(1);
+    expect(zones?.list).toHaveLength(1);
+  });
+
   it('makes every cataloged component a document that validates and renders', () => {
     const failures = [...propsByKey.keys()].flatMap((key) => {
       const document = seededDocument(key);

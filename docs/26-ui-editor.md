@@ -692,6 +692,14 @@ A node is `{ id, type, name?, props?, zones? }`.
   with `zone`; otherwise it is the content prop's name (a prop marked `slot`).
   Children are nodes, `#text` runs, `$each`, `$if`, or `$slot` (§3.5–3.6).
   Writing a zone through `props` instead is an error.
+- An **empty zone list** is an explicit `null` (KF-YCM09F): the interpreter
+  and the generated module pass `null` for the prop. It satisfies a required
+  prop whose type takes `null` (SplitView's `detail` with nothing selected),
+  while a zone left out entirely still leaves the prop missing (`KUI-V005`).
+  The composition's cardinality still applies to it (`KUI-L203`), so only a
+  zone whose minimum is 0 can stay empty without a problem. Removing a
+  zone's last child leaves its empty list, and a new node still seeds a
+  child in every zone of a required prop.
 - A **field zone** (KF-PD6QC5: field zones) is a key that names a content
   field inside a prop value: the prop, then field names and list indexes,
   dot-separated (`leftRail.content`, `mainToolbar.title`,

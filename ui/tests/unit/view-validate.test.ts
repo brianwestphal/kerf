@@ -1018,13 +1018,28 @@ describe('validateView: composition (KUI-L201–L204)', () => {
     ]);
   });
 
+  // KF-YCM09F: SplitView with nothing selected has an empty detail.
+  it('takes an empty SplitView detail as an explicit null, not a missing one', () => {
+    const split = (zones: Fixture) =>
+      node('split-view', {
+        props: { id: 'mail', label: 'Mail' },
+        zones,
+      });
+    const list = () => node('list', { zones: { children: [] } });
+    expect(codes(doc(split({ list: [list()], detail: [] })))).toEqual([]);
+    expect(codes(doc(split({ list: [list()] })))).toEqual(['KUI-V005']);
+  });
+
   it('KUI-L202 and KUI-L203: TabBar zones and cardinality', () => {
     const tab = () => node('tabs', { props: { id: 'a', name: 'A' } });
     const bar = (zones: Fixture) =>
       node('tab-bar', { props: { id: 'tabs', label: 'Files' }, zones });
     expect(codes(doc(bar({ tabs: [tab()] })))).toEqual([]);
-    // An empty required zone is both a missing prop and a cardinality error.
-    expect(codes(doc(bar({ tabs: [] })))).toEqual(['KUI-V005', 'KUI-L203']);
+    // An empty zone is an explicit null, which the nullable `children` prop
+    // takes (KF-YCM09F); TabBar's composition still wants a tab.
+    expect(codes(doc(bar({ tabs: [] })))).toEqual(['KUI-L203']);
+    // A zone left out entirely is a missing prop as well.
+    expect(codes(doc(bar({})))).toEqual(['KUI-V005', 'KUI-L203']);
     expect(
       codes(
         doc(

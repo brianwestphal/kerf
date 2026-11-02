@@ -969,7 +969,14 @@ function checkNode(ctx, node, at, scope, rowScoped, parentKey, text = false) {
         `"${binding.prop}" is set in both \`props\` and \`zones\``,
       );
     }
-    if (children.length > 0) present.add(binding.prop);
+    // KF-YCM09F: an empty zone list is an explicit null, which a required
+    // prop of a nullable type (SplitView's `detail` with nothing selected)
+    // accepts; a zone left out entirely still leaves the prop missing.
+    if (
+      children.length > 0 ||
+      (!field && byName.get(binding.prop)?.type?.nullable === true)
+    )
+      present.add(binding.prop);
     // A field inside a value another component renders (a view's toolbar
     // config) places its children in that component (KF-THTR71).
     const parent =

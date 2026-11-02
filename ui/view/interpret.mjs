@@ -141,6 +141,8 @@ function renderDocument(document, inputs, slots, options) {
 
   const children = (list, scope, slot) => {
     const items = list.map((child) => childValue(child, scope, slot));
+    // KF-YCM09F: an empty zone is an explicit null.
+    if (items.length === 0) return null;
     return items.length === 1 ? items[0] : items;
   };
 

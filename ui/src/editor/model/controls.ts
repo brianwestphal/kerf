@@ -877,14 +877,23 @@ export function seedNode(
   const label = (zone: string) =>
     zone === 'children' ? name : zone.charAt(0).toUpperCase() + zone.slice(1);
   for (const zone of entry?.zones ?? []) {
-    if (!zone.jsx?.prop || zone.cardinality.min < 1) continue;
+    // A zone the composition may leave empty is still seeded when its prop
+    // is required (KF-YCM09F: SplitView's `detail`), so a new node starts
+    // with a child to replace rather than a missing prop.
+    const prop = zone.jsx?.prop;
+    const required = component.props.some(
+      ({ name, required }) => name === prop && required,
+    );
+    if (!prop || (zone.cardinality.min < 1 && !required)) continue;
     const accepted = zone.accepts
       .map((item) => (item.includes(':') ? item : `${entry?.package}:${item}`))
       .find((item) => catalog.component(item));
-    zones[zone.id] = Array.from({ length: zone.cardinality.min }, () =>
-      accepted && depth < SEED_DEPTH
-        ? seedNode(accepted, catalog, makeId, slot, depth + 1)
-        : text(label(zone.id)),
+    zones[zone.id] = Array.from(
+      { length: Math.max(zone.cardinality.min, 1) },
+      () =>
+        accepted && depth < SEED_DEPTH
+          ? seedNode(accepted, catalog, makeId, slot, depth + 1)
+          : text(label(zone.id)),
     );
   }
   // A required content prop that took no text holds a cataloged child of

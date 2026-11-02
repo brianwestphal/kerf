@@ -261,7 +261,7 @@ import * as NavWiring from '@kerfjs/ui/wire-nav-stack';
 const dispose = UI.wireSearchFields(root);
 const disposeResize = UI.wireResizableRegions(root);
 const disposeNav = NavWiring.wireNavStack(root);
-export const view = <><UI.Toolbar leading={<button>Save</button>} /><UI.SplitView list={<div />} /><Field.SearchField tokens={[]} onTokensChange={() => {}} /></>;
+export const view = <><UI.Toolbar leading={<button>Save</button>} /><UI.SplitView detail={<div />} /><Field.SearchField tokens={[]} onTokensChange={() => {}} /></>;
 void dispose;
 void disposeResize;
 void disposeNav;

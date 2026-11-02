@@ -184,3 +184,50 @@ describe('prop-typed params for lists and objects', () => {
     expect(code).toContain('inputs.options ??');
   });
 });
+
+// KF-YCM09F: an empty zone is an explicit null, so SplitView's required but
+// nullable `detail` can be built empty (nothing selected yet).
+describe('an empty zone', () => {
+  const document = {
+    schema: 'kerf-ui-document/v1',
+    name: 'Mail',
+    catalogs: ['@kerfjs/ui'],
+    root: {
+      id: '01JB8Z1M6Q8E1X9V4S7K2R3T9A',
+      type: '@kerfjs/ui:split-view',
+      props: { id: 'mail', label: 'Mail' },
+      zones: {
+        list: [
+          {
+            id: '01JB8Z1M6Q8E1X9V4S7K2R3T9B',
+            type: '@kerfjs/ui:text',
+            props: { children: 'Inbox' },
+          },
+        ],
+        detail: [],
+      },
+    },
+  };
+
+  it('validates and generates as a null prop', () => {
+    expect(validateView(document, catalog).diagnostics).toEqual([]);
+    expect(generateView(document, catalog).code).toMatch(/detail: null\b/);
+  });
+
+  it('interprets as a null prop', () => {
+    const SplitView = vi.fn((props: { detail: unknown }) =>
+      raw(`<p>${props.detail === null ? 'null' : 'other'}</p>`),
+    );
+    const html = String(
+      interpretView(document as never, {
+        catalog,
+        components: {
+          '@kerfjs/ui:split-view': SplitView,
+          '@kerfjs/ui:text': () => raw('<span>Inbox</span>'),
+        } as Record<string, (props: never) => SafeHtml>,
+        contract: contractDigest(contractOf(document as never, catalog)),
+      }),
+    );
+    expect(html).toContain('<p>null</p>');
+  });
+});

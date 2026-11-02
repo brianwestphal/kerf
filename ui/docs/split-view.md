@@ -46,12 +46,15 @@ const selected = signal<string | null>(null);
   compact={device.value.compact}
   detailActive={selected.value !== null}
   list={<ThreadList />}
-  detail={<Message id={selected.value} />}
+  detail={selected.value === null ? null : <Message id={selected.value} />}
   listTitle="Threads"
   detailTitle="Message"
   resizable={{ size: 320, min: 220, max: 480 }}
 />;
 ```
+
+`detail` is required but takes `null`: pass `null` while nothing is selected
+rather than an empty element.
 
 - **Roomy** (`compact: false`): both panes show. With `resizable`, the list sits
   in a `ResizableRegion` (wire it with `wireResizableRegions`); without it the
