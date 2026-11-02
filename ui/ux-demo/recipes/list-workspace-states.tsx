@@ -5,7 +5,6 @@ import { EmptyState } from '@kerfjs/ui/empty-state';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { Pane } from '@kerfjs/ui/pane';
-import { Row } from '@kerfjs/ui/row';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import {
@@ -90,16 +89,15 @@ export const createRecipe: RecipeFactory = (announce) => {
           detail="Existing filters are preserved. Try again when the connection recovers."
           tone="danger"
           urgency="alert"
-          // Raw: StateBanner draws a plain button as its tone-matched pill;
-          // Button has no warning or pop tone and keeps its own look.
           action={
-            <button
-              type="button"
-              data-action="recipe-action"
-              data-recipe-command="retry"
+            <Button
+              size="compact"
+              shape="pill"
+              action="recipe-action"
+              rootAttributes={{ 'data-recipe-command': 'retry' }}
             >
               Retry
-            </button>
+            </Button>
           }
         />
       );
@@ -110,19 +108,18 @@ export const createRecipe: RecipeFactory = (announce) => {
             title="Showing Saved Results"
             detail="Refreshing in the background."
             tone="warning"
-            // Raw: StateBanner draws a plain button as its tone-matched pill;
-            // Button has no warning or pop tone and keeps its own look.
             action={
-              <Row gap="xs" vAlign="middle">
+              <>
                 <LoadingSpinner label="Refreshing release tasks…" />
-                <button
-                  type="button"
-                  data-action="recipe-action"
-                  data-recipe-command="finish"
+                <Button
+                  size="compact"
+                  shape="pill"
+                  action="recipe-action"
+                  rootAttributes={{ 'data-recipe-command': 'finish' }}
                 >
                   Finish Refresh
-                </button>
-              </Row>
+                </Button>
+              </>
             }
           />
         )}

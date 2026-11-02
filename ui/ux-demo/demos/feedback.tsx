@@ -37,12 +37,10 @@ export function FeedbackDemo() {
                 <LucideIcon icon={Check} name="check" />
               )
             }
-            // Raw: StateBanner draws a plain button as its tone-matched pill;
-            // Button has no warning or pop tone and keeps its own look.
             action={
-              <button type="button" data-action="cycle-tone">
+              <Button size="compact" shape="pill" action="cycle-tone">
                 Cycle Tone
-              </button>
+              </Button>
             }
           />
           <EmptyState

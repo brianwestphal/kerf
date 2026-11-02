@@ -246,9 +246,7 @@
 }
 /* `below` always gives the action its own end-aligned trailing row. */
 .kui-state-banner[data-action-placement="below"] > .kui-state-banner__action {
-  display: flex;
   flex-basis: 100%;
-  justify-content: flex-end;
 }
 .kui-state-banner__copy strong {
   margin-inline-end: var(--kui-layout-item-gap, remify(8px));
@@ -273,16 +271,23 @@
   overflow: clip;
   text-overflow: ellipsis;
 }
-/* Content-sized and end-aligned on whichever line it lands; on its own line
-   it may shrink to the line so a wrapping action group (a `Row wrap`) wraps
-   its controls instead of overflowing the banner. */
+/* A horizontal list of controls (Buttons, a spinner, a Row of them),
+   content-sized and end-aligned on whichever line it lands. On its own line
+   it may shrink to the line, and its controls then wrap onto further
+   end-aligned rows instead of overflowing the banner. A neutral Button takes
+   the banner's tone in here (button.css); `--_kui-state-banner-foreground`
+   and the action background tokens are the context the banner provides. */
 .kui-state-banner__action {
+  display: flex;
   max-width: 100%;
   margin-inline-start: auto;
   flex: 0 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--kui-layout-item-gap, remify(8px));
 }
-/* A plain action button takes the banner's own pill; a Button keeps its own
-   look. */
+/* A plain native action button takes the same pill. */
 .kui-state-banner__action button:not(.kui-button) {
   min-height: remify(28.8px);
   padding: 0 remify(11.2px);

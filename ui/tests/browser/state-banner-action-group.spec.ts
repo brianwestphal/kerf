@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
 
 /**
- * A side-placed StateBanner action that holds several controls (a wrapping
- * Row of buttons) must never overlap the copy. On a narrow banner, whether
+ * A side-placed StateBanner action that holds several controls (two pill
+ * Buttons, which the action wraps as a horizontal list) must never overlap the copy. On a narrow banner, whether
  * the viewport is a phone or the banner sits in a narrow container on a wide
  * screen, the action drops to its own trailing row below the copy so the
  * title keeps the banner's full width; on a roomy banner it stays beside the

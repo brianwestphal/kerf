@@ -199,6 +199,42 @@
     calc((var(--_kui-toolbar-band) - var(--_kui-button-height)) / 2)
   );
 }
+/* In a StateBanner's action, a neutral Button takes the banner's tone instead
+   of its own gray: a primary one is the banner's translucent pill fill with a
+   tone-colored border, a secondary one a tone outline, and a plain one tone
+   text. Brand, success, and danger Buttons keep their own tone. The banner
+   provides `--_kui-state-banner-foreground` and its action fills as context.
+   A pressed toggle keeps the brand accent. */
+.kui-state-banner__action
+  .kui-button[data-tone="neutral"]:not([aria-pressed="true"]) {
+  --_kui-button-fill: var(--_kui-state-banner-action-background);
+  --_kui-button-text: var(--_kui-state-banner-foreground);
+  --_kui-button-border: var(--_kui-state-banner-foreground);
+  --_kui-button-quiet: var(--_kui-state-banner-action-hover-background);
+  --_kui-button-on-quiet: var(--_kui-state-banner-foreground);
+  --_kui-button-outline: var(--_kui-state-banner-foreground);
+}
+.kui-state-banner__action
+  .kui-button[data-tone="neutral"]:is(
+    [data-emphasis="secondary"],
+    [data-emphasis="plain"]
+  ) {
+  --_kui-button-fill: transparent;
+}
+.kui-state-banner__action
+  .kui-button[data-tone="neutral"][data-emphasis="plain"] {
+  --_kui-button-border: transparent;
+}
+@media (hover: hover) {
+  .kui-state-banner__action
+    .kui-button[data-tone="neutral"]:not(
+      :disabled,
+      [aria-disabled="true"],
+      [data-loading]
+    ):hover {
+    background-color: var(--_kui-state-banner-action-hover-background);
+  }
+}
 /* Beside a field in a ListInsetControl, the square keeps its size instead of
    growing to share the row, and lines up with the field below its label. */
 .kui-list-inset-control > .kui-button[data-icon-only] {

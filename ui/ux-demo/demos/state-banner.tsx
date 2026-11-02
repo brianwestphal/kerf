@@ -1,6 +1,6 @@
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { Row } from '@kerfjs/ui/row';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Check, CircleAlert, CircleQuestionMark } from 'lucide';
 
@@ -32,9 +32,9 @@ export function StateBannerDemo() {
               detail="Semantic defaults remain overridable."
               icon={iconFor(tone)}
               action={
-                <button type="button" data-action={`log-${tone}`}>
+                <Button size="compact" shape="pill" action={`log-${tone}`}>
                   Act
-                </button>
+                </Button>
               }
             />
           </CatalogExample>
@@ -69,7 +69,11 @@ export function StateBannerDemo() {
           }
           copyLayout="stacked"
           actionPlacement="below"
-          action={<button type="button">Review Projects</button>}
+          action={
+            <Button size="compact" shape="pill">
+              Review Projects
+            </Button>
+          }
         />
       </CatalogExample>
       {/* A side action that holds several controls: on a narrow banner the
@@ -94,10 +98,14 @@ export function StateBannerDemo() {
               title="Markup was not saved. Retry or discard your changes."
               icon={<LucideIcon icon={CircleAlert} name="circle-alert" />}
               action={
-                <Row wrap hAlign="right">
-                  <button type="button">Retry Save</button>
-                  <button type="button">Discard Changes</button>
-                </Row>
+                <>
+                  <Button size="compact" shape="pill">
+                    Retry Save
+                  </Button>
+                  <Button size="compact" shape="pill">
+                    Discard Changes
+                  </Button>
+                </>
               }
             />
           </CatalogExample>
@@ -113,7 +121,11 @@ export function StateBannerDemo() {
             <LucideIcon icon={CircleQuestionMark} name="circle-question-mark" />
           }
           copyLayout="stacked"
-          action={<button type="button">Resume</button>}
+          action={
+            <Button size="compact" shape="pill">
+              Resume
+            </Button>
+          }
         />
       </CatalogExample>
       <CatalogExample label="Placeholder" align="none">

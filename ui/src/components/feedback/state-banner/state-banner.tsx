@@ -44,9 +44,11 @@ export interface StateBannerProps {
   badge?: string;
   icon?: SafeHtml;
   /**
-   * The banner's action. Use plain native `<button type="button">` elements:
-   * the banner draws them as a pill in its own tone. A Kerf UI `Button` keeps
-   * its own fill, which does not match the banner's tone.
+   * The banner's action: one or more controls, laid out as a wrapping,
+   * end-aligned horizontal list. Use Kerf UI `Button`s (`size="compact"`,
+   * `shape="pill"`); a neutral Button takes the banner's tone, while a brand,
+   * success, or danger Button keeps its own. Other controls, such as a
+   * `LoadingSpinner`, sit beside them.
    */
   action?: KerfUiContent;
   tone?: SemanticTone;

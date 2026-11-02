@@ -8776,12 +8776,12 @@
       ],
       "useWhen": [
         "Place persistent inline semantic status beside affected work.",
-        "Give the action as plain native button elements (type=\"button\"); the banner draws each as a pill in its own tone."
+        "Give the action as one or more compact pill Buttons (size=\"compact\", shape=\"pill\"), with any other controls beside them; a neutral Button takes the banner's tone and the action lays them out as a wrapping horizontal list."
       ],
       "avoidWhen": [
         "Do not use for an absent-content screen or transient confirmation.",
         "Do not use pop as a substitute for success, warning, or danger.",
-        "Do not put a Kerf UI Button in the action; it keeps its own fill, which clashes with the banner's tone."
+        "Do not wrap the action's controls in a Row or restyle them to match the tone; the action already lays them out, and a neutral Button already follows the tone."
       ],
       "alternatives": [
         {
