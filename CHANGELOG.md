@@ -244,6 +244,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Icon-only buttons look complete on the Kerf UI editor canvas.** A Button or ToolbarButton with an icon and no text showed a full "is empty — drag a component here" stand-in that swamped its toolbar; a node holding something in another zone now shows its main-zone stand-in only while it is selected (`KF-6EV4Q5`).
 - **Toolbar controls in a view's toolbar validate.** A `ToolbarControlGroup` in a NavStack view's (or a Pane's or Workbench's) toolbar config renders inside that Toolbar, but `validateView` reported `KUI-L201` for it and the editor showed the layout as unable to render. Composition entries can now name the config types they render (`configTypes`), and a content field inside one is placed in that component (`KF-THTR71`).
 - **The Kerf UI editor's selection ring no longer marks the wrong content.** Selecting a node in an inactive tab drew the ring over the active tab's content at the same place; the ring now hides while the selected node can't be seen (`KF-ZC9EXM`).
 - **The Kerf UI editor recognizes a dot-badge tab.** A TabNavigator tab with `badge: true` was listed as a count-badge tab and edited with the count form; a union member whose literal the value carries now wins over an earlier member that only tolerates it (`KF-2XH5XS`).

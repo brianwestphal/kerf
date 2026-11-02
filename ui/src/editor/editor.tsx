@@ -476,7 +476,11 @@ function canvasRenderer(catalog: EditorCatalog) {
     if (node.props?.children !== undefined) return fieldSlots;
     const zones = zonesFor(node);
     const primary = zones.find((zone) => zone.primary);
-    if (primary) return [primary.key, ...fieldSlots];
+    const holds = Object.values(node.zones ?? {}).some((list) => list.length);
+    // KF-6EV4Q5: a node that holds something in another zone (an icon-only
+    // button) is not empty; its main zone shows while it is selected.
+    if (primary)
+      return !selected && holds ? fieldSlots : [primary.key, ...fieldSlots];
     // KF-7BB55F: a container with no main zone (a Toolbar) shows each empty
     // zone while it holds nothing at all, or while it is selected.
     // Only composition zones: a content prop (a ListItem's label or icon)
@@ -489,8 +493,7 @@ function canvasRenderer(catalog: EditorCatalog) {
         )?.zones ?? []
       ).map((zone) => zone.id),
     );
-    return !selected &&
-      Object.values(node.zones ?? {}).some((list) => list.length)
+    return !selected && holds
       ? []
       : [
           ...zones

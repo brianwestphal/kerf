@@ -289,6 +289,51 @@ describe('the editor shell', () => {
     expect(root.textContent).toContain('3 nodes');
   });
 
+  it('shows an icon-only button as complete until it is selected (KF-6EV4Q5)', () => {
+    const BUTTON = '01JB8Z1M6Q8E1X9V4S7K2R3TP4';
+    const { root, editor } = open({
+      document: {
+        schema: 'kerf-ui-document/v1',
+        name: 'Icon Button',
+        catalogs: ['@kerfjs/ui'],
+        root: {
+          id: '01JB8Z1M6Q8E1X9V4S7K2R3TP3',
+          type: '@kerfjs/ui:pane',
+          zones: {
+            content: [
+              {
+                id: BUTTON,
+                type: '@kerfjs/ui:button',
+                props: { ariaLabel: 'Refresh' },
+                zones: {
+                  icon: [
+                    {
+                      id: '01JB8Z1M6Q8E1X9V4S7K2R3TP5',
+                      type: '@kerfjs/ui:lucide-icon',
+                      props: {
+                        icon: { $icon: 'refresh-cw' },
+                        name: 'refresh-cw',
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      } as never,
+    });
+    const empties = () =>
+      root.querySelectorAll('[data-editor-canvas] [data-editor-empty]');
+    expect(empties()).toHaveLength(0);
+    // Selected, its label zone still takes a drop.
+    editor.selection.value = { kind: 'node', id: BUTTON };
+    expect(empties()).toHaveLength(1);
+    expect(empties()[0]!.textContent).toBe(
+      'Button is empty — drag a component here',
+    );
+  });
+
   it('lists problems, marks their nodes in the outline, and selects one', () => {
     const document = globalThis.structuredClone(
       createEditor().document.value,
