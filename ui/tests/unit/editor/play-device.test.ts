@@ -90,10 +90,10 @@ describe('emulation', () => {
   it('subtracts a browser tab’s chrome and gives it no safe areas', () => {
     const tab = emulate(preset('iphone'), settings());
     expect(tab.device).toEqual({ width: 402, height: 874 });
-    expect(tab.viewport).toEqual({ width: 402, height: 778 });
+    expect(tab.viewport).toEqual({ width: 402, height: 678 });
     expect(tab.offset).toEqual({ top: 62, left: 0 });
     expect(tab.safeArea).toEqual({ top: 0, right: 0, bottom: 0, left: 0 });
-    expect(viewportLabel(tab)).toBe('402 × 778');
+    expect(viewportLabel(tab)).toBe('402 × 678');
   });
 
   it('runs an installed app on the whole screen, under its safe areas', () => {
@@ -109,8 +109,8 @@ describe('emulation', () => {
       settings({ orientation: 'landscape' }),
     );
     expect(tab.device).toEqual({ width: 874, height: 402 });
-    expect(tab.viewport).toEqual({ width: 750, height: 381 });
-    expect(tab.offset).toEqual({ top: 0, left: 62 });
+    expect(tab.viewport).toEqual({ width: 750, height: 331 });
+    expect(tab.offset).toEqual({ top: 50, left: 62 });
     const app = emulate(
       preset('iphone'),
       settings({ orientation: 'landscape', installed: true }),
@@ -140,6 +140,37 @@ describe('emulation', () => {
       width: 412,
       height: 809,
     });
+  });
+
+  it('falls back to the safe areas for a preset without browser chrome', () => {
+    const phone: DevicePreset = {
+      ...preset('iphone'),
+      browserChrome: undefined,
+    };
+    expect(emulate(phone, settings()).viewport).toEqual({
+      width: 402,
+      height: 778,
+    });
+  });
+
+  // KF-FNQFPJ: every shipped phone and tablet estimates its browser's toolbars.
+  it('subtracts the estimated browser toolbars on every shipped mobile preset', () => {
+    for (const shipped of SHIPPED_DEVICE_PRESETS.filter(({ kind }) =>
+      ['phone', 'tablet'].includes(kind),
+    )) {
+      expect(shipped.browserChrome, shipped.id).toBeDefined();
+      for (const orientation of ['portrait', 'landscape'] as const) {
+        const tab = emulate(shipped, settings({ orientation }));
+        const app = emulate(
+          shipped,
+          settings({ orientation, installed: true }),
+        );
+        expect(
+          tab.viewport.width * tab.viewport.height,
+          `${shipped.id} ${orientation}`,
+        ).toBeLessThan(app.viewport.width * app.viewport.height);
+      }
+    }
   });
 
   it('sizes Flexible from its own fields, whichever way it faces', () => {
@@ -255,11 +286,11 @@ describe('the play bar', () => {
 
   it('switches devices, rotates, and installs, telling the view its safe areas', () => {
     const { control, size, post, frame } = play();
-    expect(size()).toEqual(['402', '778']);
+    expect(size()).toEqual(['402', '678']);
     choose(control('[data-editor-play="device"]'), 'ipad-mini');
-    expect(size()).toEqual(['756', '1114']);
+    expect(size()).toEqual(['756', '1064']);
     control('[data-action="editor-play-rotate"]').click();
-    expect(size()).toEqual(['1158', '712']);
+    expect(size()).toEqual(['1158', '662']);
     expect(
       control('[data-action="editor-play-rotate"]').getAttribute(
         'aria-pressed',
@@ -268,7 +299,7 @@ describe('the play bar', () => {
     expect(post).not.toHaveBeenCalled();
     // Back and forth.
     control('[data-action="editor-play-rotate"]').click();
-    expect(size()).toEqual(['756', '1114']);
+    expect(size()).toEqual(['756', '1064']);
     control('[data-action="editor-play-rotate"]').click();
     control('[data-action="editor-play-installed"]').click();
     expect(size()).toEqual(['1158', '756']);
@@ -313,7 +344,7 @@ describe('the play bar', () => {
       toolbar: 'true',
     });
     // A tab's chrome bands hold the status bar and the address bar.
-    expect([band('status'), band('bottom')]).toEqual(['62px', '34px']);
+    expect([band('status'), band('bottom')]).toEqual(['62px', '134px']);
     control('[data-action="editor-play-installed"]').click();
     // An installed app's safe areas hold them instead; no address bar.
     expect([band('status'), band('bottom')]).toEqual(['62px', '34px']);
@@ -432,9 +463,9 @@ describe('the play bar', () => {
       throw new Error('blocked');
     });
     const blocked = play();
-    expect(blocked.size()).toEqual(['402', '778']);
+    expect(blocked.size()).toEqual(['402', '678']);
     choose(blocked.control('[data-editor-play="device"]'), 'iphone-se');
-    expect(blocked.size()).toEqual(['375', '647']);
+    expect(blocked.size()).toEqual(['375', '553']);
   });
 
   it('takes a host’s presets', () => {

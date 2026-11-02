@@ -1347,7 +1347,7 @@ Their decisions were signed off on 2026-11-02.
   `--kui-safe-area-*` on its `:root` and names its own `deviceClass()` on
   `data-kerf-play-device`, which tests read.
 - **Defaults and memory.** Play mode starts on the iPhone 17 in a browser
-  tab (402×778 viewport) at Fit. The choice is remembered in
+  tab (402×678 viewport) at Fit. The choice is remembered in
   `localStorage` (`kerf-ui-editor:play`), and every storage access tolerates
   failure.
 - **Hosts** extend the list with `createEditor({ devicePresets })` or the
@@ -1356,7 +1356,7 @@ Their decisions were signed off on 2026-11-02.
   `var(--kui-safe-area-*, …)` read, and `foundation.css` always defines the
   tokens, so nothing bypasses them.
 - **Deviations:**
-  - Browser toolbars aren't subtracted (§11.3).
+  - Browser toolbar heights are estimates, not measurements (§11.3).
 - **The "not emulated" note** is the Device `Select`'s `popupNote`
   (KF-59BF6C): quiet text at the bottom of the open device menu, announced
   as the listbox's description.
@@ -1377,9 +1377,11 @@ Their decisions were signed off on 2026-11-02.
   - A status bar ("12:00" and generic signal and battery glyphs). Phones
     drop it in landscape.
   - A home indicator.
-  - In a tab, a browser address bar wherever the bottom band has room for
-    one (30px or more). Today that's only the iPhone 17 and Pro Max in
-    portrait, since `browserChrome` is the safe areas (KF-FNQFPJ).
+  - In a tab, a browser address bar (a pill at most 40px tall) at the top
+    of the bottom band wherever it has room for one (30px or more): the
+    iPhones in portrait, where Safari's toolbar sits at the bottom
+    (KF-FNQFPJ). A top toolbar (iPad Safari, Chrome for Android, iPhone
+    landscape) is part of the top band, which the status bar fills.
   - The status bar and bottom band are the safe areas an installed app
     runs under, or a tab's chrome bands.
 - **No branding.** There's no artwork, logo, or wordmark, only shapes.
@@ -1616,10 +1618,16 @@ document and its param values by `postMessage` and renders them with
   - `browserChrome` defaults to the preset's safe areas, since a page
     without `viewport-fit=cover` is laid out inside them (WebKit, "Designing
     Websites for iPhone X").
-  - The browsers' own toolbars aren't subtracted: their heights change with
-    scrolling and settings, and no published source gives them. A preset may
-    set `browserChrome` explicitly. KF-FNQFPJ tracks measuring them on real
-    devices.
+  - Every shipped phone and tablet sets `browserChrome` explicitly: its
+    browser's toolbars, fully expanded (the page's smallest viewport), plus
+    the safe areas. No published source gives the toolbar heights, so they
+    are estimates from community `innerHeight` reports, which the maintainer
+    accepted over real-device measurement (KF-FNQFPJ): Safari on iPhone
+    keeps its address bar and toolbar in about 100px above the home
+    indicator (a compact 50px bar on top in landscape), Safari on iPad about
+    50px of tab and address bar under the status bar, and Chrome for Android
+    a 56px toolbar under the status bar and about 24px of gesture bar. The
+    default iPhone 17 tab is 402×678.
 - **Installed app (on).** The viewport is the full device size, and the
   preset's safe areas apply: content runs beneath the status bar and home
   indicator, and the frame draws only the device body, status bar, and home

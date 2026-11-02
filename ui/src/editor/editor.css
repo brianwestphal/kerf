@@ -408,12 +408,12 @@
   translate: 0 -50%;
 }
 
-/* A browser tab's address bar, in its bottom toolbar band when the band has
-   room for one. */
+/* A browser tab's address bar, at the top of its bottom toolbar band when
+   the band has room for one; a pill no taller than Safari's. */
 .kui-editor__device-body[data-toolbar="true"] .kui-editor__device-address {
   inset: calc(100% - var(--_kui-editor-bottom) + 3px) 20% auto;
   display: block;
-  block-size: calc(var(--_kui-editor-bottom) - 19px);
+  block-size: min(calc(var(--_kui-editor-bottom) - 19px), 40px);
   border-radius: var(--kui-radius-pill);
   background: var(--kui-color-neutral-fill-normal);
 }

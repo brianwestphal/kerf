@@ -76,7 +76,7 @@ const openDocument = async (page: Page) => {
 
 /**
  * Fit: the frame, scaled down, sits whole inside the stage and keeps its
- * viewport: the default iPhone 17 in a browser tab, 402×778 (KF-R7KXSN).
+ * viewport: the default iPhone 17 in a browser tab, 402×678 (KF-R7KXSN).
  */
 const expectFits = async (page: Page) => {
   const frame = page.locator('[data-editor-play-frame]');
@@ -88,13 +88,13 @@ const expectFits = async (page: Page) => {
   expect(box.x + box.width).toBeLessThanOrEqual(stageBox.x + stageBox.width);
   expect(box.y + box.height).toBeLessThanOrEqual(stageBox.y + stageBox.height);
   // Scaled evenly.
-  expect(box.width / box.height).toBeCloseTo(402 / 778, 2);
+  expect(box.width / box.height).toBeCloseTo(402 / 678, 2);
   expect(
     await page
       .frameLocator('[data-editor-play-frame]')
       .locator('html')
       .evaluate(() => [window.innerWidth, window.innerHeight]),
-  ).toEqual([402, 778]);
+  ).toEqual([402, 678]);
   return box;
 };
 
@@ -160,7 +160,7 @@ test('Fit scales the frame to a short stage and follows its resizes', async ({
         (await page.locator('[data-editor-play-frame]').boundingBox())!.height,
       ),
     )
-    .toBe(778);
+    .toBe(678);
   await expectFits(page);
   await page.setViewportSize({ width: 1440, height: 700 });
   await expect
@@ -269,7 +269,7 @@ test('Installed app moves the content below the safe area', async ({
   await expect(title).toBeVisible();
   const top = () =>
     title.evaluate((element) => element.getBoundingClientRect().top);
-  expect(await frameViewport(page)).toEqual([402, 778]);
+  expect(await frameViewport(page)).toEqual([402, 678]);
   const tab = await top();
   await page.locator('[data-action="editor-play-installed"]').click();
   await expect.poll(() => frameViewport(page)).toEqual([402, 874]);
@@ -292,14 +292,14 @@ test('a fixed scale overflows and scrolls the stage; Fit returns', async ({
   const frame = page.locator('[data-editor-play-frame]');
   await expect
     .poll(async () => Math.round((await frame.boundingBox())!.height))
-    .toBe(Math.round(778 * 1.5));
+    .toBe(Math.round(678 * 1.5));
   const overflow = () =>
     page
       .locator('[data-editor-stage]')
       .evaluate((element) => element.scrollHeight - element.clientHeight);
   expect(await overflow()).toBeGreaterThan(0);
   // The viewport inside never changes with the scale.
-  expect(await frameViewport(page)).toEqual([402, 778]);
+  expect(await frameViewport(page)).toEqual([402, 678]);
   await chooseIn(page, 'scale', 'Fit');
   await expect.poll(overflow).toBe(0);
   await expectWithinStage(page);

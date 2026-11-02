@@ -85,9 +85,17 @@ const insets = (top: number, right: number, bottom: number, left: number) => ({
  * [webkit-fit] WebKit, "Designing Websites for iPhone X"
  *   (webkit.org/blog/7929/): without `viewport-fit=cover` a page is laid
  *   out inside the safe area, so a tab's viewport is the device minus it.
- *   The browsers' own toolbars are not subtracted: their heights vary with
- *   scrolling and settings, and no published source gives them (see the
- *   real-device follow-up in docs/26-ui-editor.md §11.3).
+ * [estimate] KF-FNQFPJ: no published source gives the mobile browsers'
+ *   toolbar heights, so each preset's `browserChrome` is an estimate of the
+ *   toolbars fully expanded (the page's smallest viewport), from community
+ *   reports of `innerHeight`. The maintainer accepted estimates over
+ *   real-device measurements (2026-11-02).
+ *   - Safari on iPhone, bottom tab bar: the status bar on top, and about 100
+ *     (address bar and toolbar) above the home indicator in portrait. In
+ *     landscape, a compact address bar of about 50 on top.
+ *   - Safari on iPad: about 50 of tab and address bar under the status bar.
+ *   - Chrome for Android: a 56 toolbar under the status bar, and about 24 of
+ *     gesture bar at the bottom.
  */
 
 /** The devices play mode ships with (docs/26-ui-editor.md §11.2). */
@@ -103,6 +111,12 @@ export const SHIPPED_DEVICE_PRESETS: readonly DevicePreset[] = [
     // a translucent status bar runs beneath. The status bar hides in
     // landscape. [devtools omits this preset's insets]
     safeArea: { portrait: insets(20, 0, 0, 0), landscape: NONE },
+    // [estimate] Portrait: the status bar, then about 94 of address bar and
+    // toolbar (a 553 viewport). Landscape: a compact address bar.
+    browserChrome: {
+      portrait: insets(20, 0, 94, 0),
+      landscape: insets(50, 0, 0, 0),
+    },
     frame: 'home-button',
   },
   {
@@ -120,6 +134,13 @@ export const SHIPPED_DEVICE_PRESETS: readonly DevicePreset[] = [
       portrait: insets(62, 0, 34, 0),
       landscape: insets(0, 62, 21, 62),
     },
+    // [estimate] Portrait: the Dynamic Island's status bar, then about 100
+    // of address bar and toolbar above the 34 home indicator. Landscape: a
+    // compact address bar between the side insets.
+    browserChrome: {
+      portrait: insets(62, 0, 134, 0),
+      landscape: insets(50, 62, 21, 62),
+    },
     frame: 'dynamic-island',
   },
   {
@@ -133,6 +154,13 @@ export const SHIPPED_DEVICE_PRESETS: readonly DevicePreset[] = [
     safeArea: {
       portrait: insets(62, 0, 34, 0),
       landscape: insets(0, 62, 21, 62),
+    },
+    // [estimate] Portrait: the Dynamic Island's status bar, then about 100
+    // of address bar and toolbar above the 34 home indicator. Landscape: a
+    // compact address bar between the side insets.
+    browserChrome: {
+      portrait: insets(62, 0, 134, 0),
+      landscape: insets(50, 62, 21, 62),
     },
     frame: 'dynamic-island',
   },
@@ -149,6 +177,13 @@ export const SHIPPED_DEVICE_PRESETS: readonly DevicePreset[] = [
       portrait: insets(50, 0, 0, 0),
       landscape: insets(0, 50, 0, 0),
     },
+    // [estimate] The status bar and Chrome's 56 toolbar on top, the gesture
+    // bar at the bottom. Landscape: the toolbar on top, the status bar's
+    // inset on the right.
+    browserChrome: {
+      portrait: insets(106, 0, 24, 0),
+      landscape: insets(56, 50, 24, 0),
+    },
     frame: 'punch-hole',
   },
   {
@@ -162,6 +197,12 @@ export const SHIPPED_DEVICE_PRESETS: readonly DevicePreset[] = [
     safeArea: {
       portrait: insets(24, 0, 20, 0),
       landscape: insets(24, 0, 20, 0),
+    },
+    // [estimate] The status bar and Safari's tab and address bar on top,
+    // the home indicator at the bottom.
+    browserChrome: {
+      portrait: insets(74, 0, 20, 0),
+      landscape: insets(74, 0, 20, 0),
     },
     frame: 'tablet',
   },
@@ -177,6 +218,12 @@ export const SHIPPED_DEVICE_PRESETS: readonly DevicePreset[] = [
       portrait: insets(24, 0, 20, 0),
       landscape: insets(24, 0, 20, 0),
     },
+    // [estimate] The status bar and Safari's tab and address bar on top,
+    // the home indicator at the bottom.
+    browserChrome: {
+      portrait: insets(74, 0, 20, 0),
+      landscape: insets(74, 0, 20, 0),
+    },
     frame: 'tablet',
   },
   {
@@ -191,6 +238,12 @@ export const SHIPPED_DEVICE_PRESETS: readonly DevicePreset[] = [
     safeArea: {
       portrait: insets(24, 0, 20, 0),
       landscape: insets(24, 0, 20, 0),
+    },
+    // [estimate] The status bar and Safari's tab and address bar on top,
+    // the home indicator at the bottom.
+    browserChrome: {
+      portrait: insets(74, 0, 20, 0),
+      landscape: insets(74, 0, 20, 0),
     },
     frame: 'tablet',
   },

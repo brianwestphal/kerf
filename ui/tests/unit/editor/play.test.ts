@@ -375,10 +375,11 @@ describe('play mode in the editor', () => {
     const frame = root.querySelector<HTMLIFrameElement>(
       '[data-editor-play-frame]',
     )!;
-    // KF-R7KXSN: the default iPhone 17 in a browser tab: its 874 tall
-    // screen less the 62 and 34 safe areas the tab's page sits inside.
+    // KF-R7KXSN, KF-FNQFPJ: the default iPhone 17 in a browser tab: its 874
+    // tall screen less the 62 status bar and Safari's estimated 134 bottom
+    // toolbar band.
     expect(frame.getAttribute('width')).toBe('402');
-    expect(frame.getAttribute('height')).toBe('778');
+    expect(frame.getAttribute('height')).toBe('678');
     expect(new URL(frame.src).searchParams.has('kerf-ui-play')).toBe(true);
     expect(root.querySelector('[data-editor-stage]')).not.toBeNull();
     // Fit sizes the frame's room and scale (happy-dom lays nothing out, so
