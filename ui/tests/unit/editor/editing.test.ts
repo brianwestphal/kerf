@@ -653,6 +653,21 @@ describe('replacing the root (KF-KWQVDJ)', () => {
     expect(editor.document.value).toBe(original);
   });
 
+  // KF-Z70DBC: a Pane that becomes the root starts filled, as New's does.
+  it('starts a replaced root Pane with fill on, and a NavStack without it', () => {
+    const { root, editor } = open(PANE);
+    const picker = () => field(root, '[data-editor-root="component"]');
+    choose(picker(), '@kerfjs/ui:nav-stack');
+    click(root, 'editor-replace-root');
+    expect(editor.document.value.root.props?.fill).toBeUndefined();
+    choose(picker(), '@kerfjs/ui:pane');
+    click(root, 'editor-replace-root');
+    expect(editor.document.value.root).toMatchObject({
+      type: '@kerfjs/ui:pane',
+      props: { fill: true },
+    });
+  });
+
   it('is offered only for the root', () => {
     const { root } = open(TOOLBAR);
     expect(root.querySelector('[data-editor-root]')).toBeNull();

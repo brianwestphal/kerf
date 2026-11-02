@@ -11,9 +11,21 @@ import {
   exported,
   newDocument,
   select,
+  turnOff,
 } from './build.js';
 
 const COMPOSE = '01JB8Z1M6Q8E1X9V4S7K2R3T5D';
+
+/**
+ * Starts a new document whose root Pane takes its content's height: New's
+ * Pane fills the canvas (KF-Z70DBC), which gives a nested whole-screen layout
+ * a height of its own.
+ */
+async function contentHeightDocument(page: Page) {
+  await newDocument(page);
+  await select(page, /^Pane/);
+  await turnOff(page, 'fill');
+}
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
@@ -1528,7 +1540,7 @@ test('embeds a nested TabNavigator from its hint, giving it a height', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await newDocument(page);
+  await contentHeightDocument(page);
   await dragComponent(page, 'TabNavigator', () => emptySpot(page));
   const navigator = page.locator(
     '[data-editor-canvas] .kui-tab-scaffold[data-kerf-node]',
@@ -1694,7 +1706,7 @@ test('sizes a TabNavigator inside a SizedRegion as the region says', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await newDocument(page);
+  await contentHeightDocument(page);
   await dragComponent(page, 'SizedRegion', () => emptySpot(page));
   await select(page, /^SizedRegion/);
   await page

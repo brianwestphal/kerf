@@ -88,6 +88,12 @@ export async function turnOn(page: Page, name: string) {
   await expect(prop(page, name).getByRole('switch')).toBeChecked();
 }
 
+/** Turns a boolean prop off with its switch. */
+export async function turnOff(page: Page, name: string) {
+  await prop(page, name).locator('.kui-switch__control').click();
+  await expect(prop(page, name).getByRole('switch')).not.toBeChecked();
+}
+
 /** Adds the suggested node to a content prop (an icon) and picks its glyph. */
 export async function addIcon(page: Page, prop: string, glyph: string) {
   await page.locator(`[data-editor-content-add="${prop}"]`).click();
@@ -183,9 +189,12 @@ export const node = (
 export const icon = (glyph: string, props: Record<string, unknown> = {}) =>
   node('lucide-icon', { icon: { $icon: glyph }, name: glyph, ...props });
 
-/** The new document's root Pane holding `content`. */
+/**
+ * The new document's root Pane holding `content`. It starts with `fill` on
+ * (KF-Z70DBC), so the view fills an app's or play mode's screen.
+ */
 export const page = (...content: unknown[]) =>
-  node('pane', undefined, { content });
+  node('pane', { fill: true }, { content });
 
 /** A field inside a prop value, by its place (`choices`, `[0, 'label']`). */
 const field = (page: Page, prop: string, path: readonly (string | number)[]) =>

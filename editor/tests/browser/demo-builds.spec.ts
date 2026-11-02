@@ -2187,9 +2187,12 @@ test('builds ScrollEffect › Reveal and Fade in a Feed', async ({ page }) => {
 
 // KF-RMEME0: the root Pane fills its parent (`fill`), so its footer rests at
 // the bottom edge and its content scrolls between the pinned header and footer.
+// A new document's root Pane starts with `fill` on (KF-Z70DBC).
 test('builds Pane › Fill', async ({ page }) => {
   await select(page, /^Pane/);
-  await turnOn(page, 'fill');
+  await expect(
+    page.locator('[data-editor-prop="fill"]').getByRole('switch'),
+  ).toBeChecked();
   await choose(page, 'element', 'section');
   await setText(page, 'label', 'Notes');
   const toolbar = async (zone: string, label: string) => {

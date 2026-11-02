@@ -58,13 +58,20 @@ loads saves to a new draft instead. A pending change saves as the page hides.
 With storage, a copy downloads from Export's Document (.kui.json); without
 it, Save downloads as before. New (KF-QSSTMX) starts an empty document (an
 empty Pane) with no history or selection; with storage it is a new draft,
-saved at once, and the previous document stays in its own file.
+saved at once, and the previous document stays in its own file. The new
+root Pane starts with `fill` on (KF-Z70DBC), so a new view fills the screen
+in an app's `.kui-app-root` and in play mode instead of ending after its
+content; authors can turn it off in Properties. The editor's first draft,
+when the host passes no document, is the same empty document.
 
 **Replace the root** (KF-KWQVDJ: choose the root) starts a document from any
 component. Selecting the root shows it in the Children area: a component
 picker and Replace swap the whole tree for a new, seeded node of that
 component and select it; params, slots, and the document's name stay, and
-Undo restores the previous tree. Full-height layouts (NavStack,
+Undo restores the previous tree. A Pane chosen as the root starts with
+`fill` on, as New's does: it takes the same position, so it fills the same
+screen. A Pane added anywhere else keeps the plain seed, since `fill` only
+reaches the screen from the root. Full-height layouts (NavStack,
 TabNavigator, SplitView, Workbench) fill the view only as the root: nested
 in a Pane's content they have no definite height and preview, as they would
 render, as their chrome alone.

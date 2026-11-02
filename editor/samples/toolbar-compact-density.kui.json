@@ -7,6 +7,9 @@
   "root": {
     "id": "00000000000000000000000001",
     "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
     "zones": {
       "content": [
         {

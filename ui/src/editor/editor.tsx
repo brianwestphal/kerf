@@ -628,13 +628,26 @@ function contained(preview: SafeHtml): SafeHtml {
   }
 }
 
-/** A new document: an empty Pane in Kerf UI's catalog. */
+const PANE = '@kerfjs/ui:pane';
+
+/**
+ * A fresh root `node` (KF-Z70DBC: a new root Pane fills): a Pane that becomes
+ * the root starts with `fill` on, so the view fills an app's or play mode's
+ * screen instead of showing at its content height. Authors can turn it off.
+ */
+function asRoot(node: ViewNode): ViewNode {
+  return node.type === PANE
+    ? { ...node, props: { fill: true, ...node.props } }
+    : node;
+}
+
+/** A new document: an empty, filling Pane in Kerf UI's catalog. */
 export function emptyDocument(): ViewDocument {
   return {
     schema: 'kerf-ui-document/v1',
     name: 'Untitled',
     catalogs: ['@kerfjs/ui'],
-    root: { id: newNodeId(), type: '@kerfjs/ui:pane' },
+    root: asRoot({ id: newNodeId(), type: PANE }),
   } as ViewDocument;
 }
 
@@ -4101,7 +4114,7 @@ export function createEditor(options: EditorOptions) {
     const picker = document.querySelector<HTMLElement>(
       '[data-editor-root="component"]',
     )!;
-    const root = seededNode(String(controlValue(picker)));
+    const root = asRoot(seededNode(String(controlValue(picker))));
     commit(replaceRoot(doc.value, root));
     select({ kind: 'node', id: root.id });
     inspectorArea.value = 'properties';

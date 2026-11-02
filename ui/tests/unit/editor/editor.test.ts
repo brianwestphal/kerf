@@ -63,7 +63,8 @@ describe('the editor shell', () => {
     root.querySelector<HTMLElement>('[data-action="editor-new"]')!.click();
     expect(editor.document.value).toMatchObject({
       name: 'Untitled',
-      root: { type: '@kerfjs/ui:pane' },
+      // KF-Z70DBC: the new root Pane fills the screen in apps and play mode.
+      root: { type: '@kerfjs/ui:pane', props: { fill: true } },
     });
     expect(root.textContent).toContain('untitled.kui.json · 1 node · valid');
   });
