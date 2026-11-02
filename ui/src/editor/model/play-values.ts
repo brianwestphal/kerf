@@ -8,10 +8,19 @@
 // - a `$param` prop changes that param, so everything bound to it follows;
 // - a node repeated by `$each` changes for its row only, in `RowProps`,
 //   keyed by the row's `data-key`, which the play renderer lays over that
-//   row's props (`withRowProps`).
+//   row's props (`withRowProps`). KF-7XQAFR: a node nested inside a row
+//   (not the template's root) carries its row's key as `data-kerf-row`
+//   (`markRows`), so it changes for its row too.
 //
 // Each returns its inputs unchanged when nothing applies.
-import type { ViewChild, ViewDocument, ViewValue } from '@kerfjs/ui/view';
+import {
+  channelOf,
+  type ViewCatalog,
+  type ViewChild,
+  type ViewDocument,
+  type ViewNode,
+  type ViewValue,
+} from '@kerfjs/ui/view';
 import type { SafeHtml } from 'kerfjs';
 
 import { findNode, visitNodes } from './document.js';
@@ -80,12 +89,96 @@ export function fresh<Value>(value: Value): Value {
   return value;
 }
 
+/**
+ * KF-7XQAFR: the mark naming the row a node nested inside an `$each` row
+ * belongs to. The interpreter gives only the template's root a `data-key`.
+ */
+export const ROW_MARK = 'data-kerf-row';
+
+type Each = Extract<ViewChild, { $each: unknown }>;
+
+/**
+ * `document` with every node nested inside an `$each` row (not the
+ * template's root, which has its `data-key`) marked with its row's key: a
+ * `$bind` to the innermost `$each`'s key, through the node's data channel.
+ * Play mode only, after validation, which reserves `data-kerf-*` for the
+ * renderer. A node with no data channel, or whose `rootAttributes` is an
+ * expression, stays unmarked.
+ */
+export function markRows(
+  document: ViewDocument,
+  catalog: ViewCatalog,
+): ViewDocument {
+  const mark = (node: ViewNode, key: string): ViewNode => {
+    const component = catalog.components.get(node.type)?.component;
+    if (!component) return node;
+    const bind = { $bind: key };
+    switch (channelOf(component as Parameters<typeof channelOf>[0])) {
+      case 'rootAttributes': {
+        const base = node.props?.rootAttributes ?? {};
+        if (isExpression(base) || typeof base !== 'object' || base === null)
+          return node;
+        return {
+          ...node,
+          props: {
+            ...node.props,
+            rootAttributes: { ...(base as object), [ROW_MARK]: bind },
+          },
+        };
+      }
+      case 'native':
+      case 'attributes':
+        return { ...node, props: { ...node.props, [ROW_MARK]: bind } };
+      default:
+        return node;
+    }
+  };
+  const child = (item: ViewChild, key: string | undefined): ViewChild => {
+    if ('$each' in item)
+      return { ...item, template: node(item.template, item.key, false) };
+    if ('$if' in item)
+      return {
+        ...item,
+        then: child(item.then, key),
+        ...(item.else ? { else: child(item.else, key) } : {}),
+      };
+    if ('$slot' in item) return item;
+    return node(item, key, true);
+  };
+  const node = (
+    item: ViewNode,
+    key: string | undefined,
+    nested: boolean,
+  ): ViewNode => {
+    const marked = key !== undefined && nested ? mark(item, key) : item;
+    if (!item.zones) return marked;
+    return {
+      ...marked,
+      zones: Object.fromEntries(
+        Object.entries(item.zones).map(([zone, children]) => [
+          zone,
+          children.map((entry) => child(entry, key)),
+        ]),
+      ),
+    };
+  };
+  return { ...document, root: node(document.root, undefined, false) };
+}
+
 type ComponentFunction = (props: Record<string, unknown>) => SafeHtml;
+
+/** A row mark's value as the DOM spells it, or undefined. */
+const rowKeyOf = (value: unknown): string | undefined =>
+  typeof value === 'string' || typeof value === 'number'
+    ? String(value)
+    : undefined;
 
 /**
  * `components` with each repeated row's play-time props laid over the props
  * the document gives it. A row is known by the node id and row key the
- * renderer marks it with, in `rootAttributes` or directly on the props.
+ * renderer marks it with, in `rootAttributes` or directly on the props: a
+ * template's root by its `data-key`, a node nested in the row by its
+ * `data-kerf-row` (KF-7XQAFR).
  */
 export function withRowProps<
   Components extends Readonly<Record<string, unknown>>,
@@ -102,9 +195,9 @@ export function withRowProps<
               unknown
             >;
             const id = marks['data-kerf-node'];
-            const key = marks['data-key'];
+            const key = rowKeyOf(marks[ROW_MARK] ?? marks['data-key']);
             return (render as ComponentFunction)(
-              typeof id === 'string' && typeof key === 'string'
+              typeof id === 'string' && key !== undefined
                 ? { ...props, ...rowPropsOf(rows, id, key) }
                 : props,
             );
@@ -187,30 +280,106 @@ export function eachOf(
   return undefined;
 }
 
+const isBind = (value: unknown): value is { $bind: string } =>
+  typeof value === 'object' &&
+  value !== null &&
+  typeof (value as { $bind?: unknown }).$bind === 'string';
+
+/** Row `item`'s key under `each`, as the DOM spells it. */
+const keyOf = (each: Each, item: unknown) =>
+  String(
+    each.key
+      .split('.')
+      .slice(1)
+      .reduce<unknown>(
+        (value, part) => (value as Record<string, unknown> | null)?.[part],
+        item,
+      ),
+  );
+
+/** One step from a param's value down to a row's items. */
+type Step = string | { readonly each: Each; readonly key: string };
+
 /**
- * Row `key` of node `id` closes: when its `$each` repeats a `$param`'s
- * items, that param without the item whose key is `key`. Undefined when the
- * rows come from anywhere else.
+ * Where `source` (an `$each`'s items) lives: a param and the steps down to
+ * it. A `$bind` whose head is an enclosing `$each`'s `as` steps into that
+ * outer row's item, found by its key in `keys`; any other head is a param.
+ */
+function sourceOf(
+  source: ViewValue,
+  enclosing: readonly Each[],
+  keys: Readonly<Record<string, string>>,
+): { param: string; steps: readonly Step[] } | undefined {
+  if (isParam(source)) return { param: source.$param, steps: [] };
+  if (!isBind(source)) return undefined;
+  const [head, ...rest] = source.$bind.split('.') as [string, ...string[]];
+  let at = enclosing.length - 1;
+  while (at >= 0 && enclosing[at]!.as !== head) at -= 1;
+  if (at < 0) return { param: head, steps: rest };
+  const outer = enclosing[at]!;
+  const key = keys[outer.template.id];
+  if (key === undefined) return undefined;
+  const base = sourceOf(outer.$each, enclosing.slice(0, at), keys);
+  return (
+    base && {
+      param: base.param,
+      steps: [...base.steps, { each: outer, key }, ...rest],
+    }
+  );
+}
+
+/** `value` with the items `steps` lead to replaced by `change(items)`. */
+function updateAt(
+  value: unknown,
+  steps: readonly Step[],
+  change: (items: readonly unknown[]) => unknown[],
+): unknown {
+  if (steps.length === 0)
+    return Array.isArray(value) ? change(value) : undefined;
+  const [step, ...rest] = steps as [Step, ...Step[]];
+  if (typeof step === 'string') {
+    if (typeof value !== 'object' || value === null || Array.isArray(value))
+      return undefined;
+    const next = updateAt(
+      (value as Record<string, unknown>)[step],
+      rest,
+      change,
+    );
+    return next === undefined ? undefined : { ...value, [step]: next };
+  }
+  if (!Array.isArray(value)) return undefined;
+  const at = value.findIndex((item) => keyOf(step.each, item) === step.key);
+  if (at < 0) return undefined;
+  const next = updateAt(value[at], rest, change);
+  if (next === undefined) return undefined;
+  const items = [...value];
+  items[at] = next;
+  return items;
+}
+
+/**
+ * Node `id`'s row closes. `keys` holds its row key, and the row key of each
+ * enclosing `$each` row, by template node id. The rows' items come from a
+ * param, directly (`$param`) or through `$bind`s, possibly to an outer
+ * row's item (KF-7XQAFR): the result is that param without the closed
+ * item. Undefined when the items cannot be traced to a param.
  */
 export function closeRow(
   document: ViewDocument,
   id: string,
-  key: string,
+  keys: Readonly<Record<string, string>>,
   params: Readonly<Record<string, unknown>>,
 ): Readonly<Record<string, unknown>> | undefined {
   const each = eachOf(document, id);
-  if (!each || !isParam(each.$each)) return undefined;
-  const items = params[each.$each.$param];
-  if (!Array.isArray(items)) return undefined;
-  const path = each.key.split('.').slice(1);
-  const keyOf = (item: unknown) =>
-    String(
-      path.reduce<unknown>(
-        (value, part) => (value as Record<string, unknown> | null)?.[part],
-        item,
-      ),
-    );
-  return {
-    [each.$each.$param]: items.filter((item) => keyOf(item) !== key),
-  };
+  const key = keys[id];
+  if (!each || key === undefined) return undefined;
+  const enclosing = findNode(document, id)!.ancestors.flatMap(
+    ({ node }) => eachOf(document, node.id) ?? [],
+  );
+  const source = sourceOf(each.$each, enclosing, keys);
+  if (!source) return undefined;
+  const next = updateAt(params[source.param], source.steps, (items) =>
+    items.filter((item) => keyOf(each, item) !== key),
+  );
+  return next === undefined ? undefined : { [source.param]: next };
 }

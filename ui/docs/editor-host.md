@@ -216,7 +216,8 @@ rest (below). Tabs switch and close, a NavStack's back pops, regions and
 Workbench panels resize, a SplitView collapses on a phone-sized device
 and pushes its detail from a row, value controls (switches, selects,
 sliders, segmented controls, chips, and the rest) keep what you set, a
-repeated tab selects for its own row, and Workbench rails and sidebars collapse, all on a
+repeated tab selects for its own row (and a control inside a repeated
+row keeps its own row's value), and Workbench rails and sidebars collapse, all on a
 play-time copy of the document. Nothing you do in play mode changes the
 document.
 

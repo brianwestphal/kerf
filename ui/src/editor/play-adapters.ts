@@ -8,7 +8,9 @@
 // (scroll dividers, text, search, slider, checkbox fields, tab-strip keys)
 // are installed once over the root, as they are. KF-XV732Q adds resizing,
 // SplitView, value controls (model/play-values.ts), sidebars with several
-// toggles, per-row TabBarItem selection, and tab close.
+// toggles, per-row TabBarItem selection, and tab close. KF-7XQAFR: a value
+// control nested inside an `$each` row records for its row (`data-kerf-row`),
+// and a repeated tab closes wherever its items come from.
 import type { ViewDocument } from '@kerfjs/ui/view';
 import {
   delegate,
@@ -122,7 +124,11 @@ const panelOf = (
 const defaultSize = (key: WorkbenchPanelKey) =>
   key === 'bottomDrawer' ? 220 : 280;
 
-/** The nearest rendered node at or above `element`, with its row key. */
+/**
+ * The nearest rendered node at or above `element`, with its row key: a
+ * template root's `data-key`, or (KF-7XQAFR) the `data-kerf-row` of a node
+ * nested inside a row.
+ */
 const nodeAt = (element: Element | null) => {
   const rendered = element?.closest<HTMLElement>('[data-kerf-node]');
   return rendered
@@ -130,8 +136,24 @@ const nodeAt = (element: Element | null) => {
         element: rendered,
         id: rendered.dataset.kerfNode!,
         key: rendered.dataset.key,
+        row: rendered.dataset.kerfRow ?? rendered.dataset.key,
       }
     : undefined;
+};
+
+/**
+ * The row keys of `element`'s row and every row it sits in, by template
+ * node id (KF-7XQAFR), innermost first wins.
+ */
+const rowKeysAt = (element: HTMLElement, root: HTMLElement) => {
+  const keys: Record<string, string> = {};
+  for (
+    let row = element.closest<HTMLElement>('[data-kerf-node][data-key]');
+    row && root.contains(row);
+    row = row.parentElement!.closest<HTMLElement>('[data-kerf-node][data-key]')
+  )
+    keys[row.dataset.kerfNode!] ??= row.dataset.key!;
+  return keys;
 };
 
 const ADAPTERS: Readonly<
@@ -397,7 +419,7 @@ export function wirePlayState(
       const node = findNode(state.peek(), at.id)?.node;
       const reader = node && readers[node.type];
       const change = reader?.(at.element, event, state.peek(), at.id);
-      if (change) record(at.id, at.key, change.prop, change.value);
+      if (change) record(at.id, at.row, change.prop, change.value);
     };
   const onChange = onValue(ON_CHANGE);
   const onClick = onValue(ON_CLICK);
@@ -409,7 +431,7 @@ export function wirePlayState(
       at?.element === details &&
       findNode(state.peek(), at.id)?.node.type === '@kerfjs/ui:disclosure'
     )
-      record(at.id, at.key, 'open', (details as HTMLDetailsElement).open);
+      record(at.id, at.row, 'open', (details as HTMLDetailsElement).open);
   };
   root.addEventListener('change', onChange);
   root.addEventListener('click', onClick);
@@ -470,7 +492,8 @@ export function wirePlayState(
       },
     }),
     // KF-XV732Q: a tab's close removes it from the play copy; a repeated
-    // tab leaves its `$each` param's items.
+    // tab leaves its `$each`'s items, in the param they come from
+    // (KF-7XQAFR: also through a `$bind`, such as an outer row's array).
     delegate<HTMLElement>(
       root,
       'click',
@@ -482,7 +505,12 @@ export function wirePlayState(
           state.value = closeTabBarItem(state.value, at.id);
           return;
         }
-        const closed = closeRow(state.value, at.id, at.key, params());
+        const closed = closeRow(
+          state.value,
+          at.id,
+          rowKeysAt(at.element, root),
+          params(),
+        );
         if (!closed) return;
         // A closed selected row hands its selection to a neighbor row.
         if (rowPropsOf(rows.value, at.id, at.key).selected === true) {

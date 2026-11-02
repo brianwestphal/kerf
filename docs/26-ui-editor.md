@@ -1469,9 +1469,31 @@ transitions in `model/play-state.ts` and `model/play-values.ts`, wiring in
   as `wireTabBars` does.
 - **A sidebar toggled by several actions.** `wireSidebar` takes the first
   toggle action; any other action naming the panel flips the same state.
-- **Limits (follow-ups):** a value control nested inside a repeated row
-  (not the template's root) has no row key, so it changes only in the
-  DOM; a repeated tab's close needs its `$each` to read a `$param`.
+- **Limits:** KF-7XQAFR (below) lifts both of this ticket's limits.
+
+**As built (KF-7XQAFR).** Nested rows, in the same split.
+
+- **A control nested in a row.** The interpreter gives only a template's
+  root a `data-key`. In play, the canvas renderer first marks every other
+  node of a template with `data-kerf-row`, a `$bind` to its innermost
+  `$each`'s key, through the node's data channel (`rootAttributes`, or the
+  prop of a native or Web Awesome component; `markRows`). A node with no
+  data channel, or whose `rootAttributes` is an expression, stays unmarked.
+  The marks use the renderer's reserved `data-kerf-*` names, so play
+  renders with `previewView` over a document the player already validated.
+  `withRowProps` and the value adapters read `data-kerf-row` before
+  `data-key`, so a Switch in a repeated Row keeps its row's value.
+- **Closing a row whose items aren't a `$param`.** `closeRow` traces the
+  `$each`'s items to a param: a `$bind` whose head is an enclosing
+  `$each`'s `as` steps into that outer row's item (found by its row key,
+  read from the row's enclosing `[data-kerf-node][data-key]` elements);
+  any other head is the param itself. The param comes back without the
+  closed item, in a param object (`data.tabs`) or an outer row's array.
+- **Limits (follow-ups):** an `$each` inside another `$each`'s row throws
+  in the renderer (KF-CFA1S1), so the outer-row case is pure-tested only.
+  A `$bind` into a param reads no default (KF-8P3H7F). Row keys are per
+  template, so an inner row whose key repeats across outer rows shares its
+  play-time props.
 
 Play mode lets an author use the designed view as its users would. In play
 mode the canvas stops being an editing surface: clicks, keys, drags, and

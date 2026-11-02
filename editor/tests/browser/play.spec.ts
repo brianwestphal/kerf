@@ -615,3 +615,93 @@ test('the device menu notes what play mode does not emulate', async ({
     note,
   );
 });
+
+// KF-7XQAFR: a Switch nested inside an `$each` row keeps its value to its
+// row, and a tab repeated from a `$bind` (a param object's array) closes.
+const rowsDocument = {
+  schema: 'kerf-ui-document/v1',
+  name: 'Rows',
+  catalogs: ['@kerfjs/ui'],
+  params: {
+    rows: itemsParam('Alpha', 'Beta'),
+    // No default: the canvas's sample tabs are "Name", "Name 2", "Name 3".
+    data: {
+      type: {
+        kind: 'object',
+        props: [{ name: 'tabs', type: itemsParam().type, required: true }],
+      },
+    },
+  },
+  root: kui(
+    30,
+    'pane',
+    {},
+    {
+      content: [
+        {
+          $each: { $param: 'rows' },
+          as: 'row',
+          key: 'row.id',
+          template: kui(
+            31,
+            'row',
+            {},
+            {
+              children: [
+                kui(32, 'text', { children: { $bind: 'row.name' } }),
+                kui(33, 'switch', { label: 'Notify' }),
+              ],
+            },
+          ),
+        },
+        kui(
+          34,
+          'tab-bar',
+          { id: 'data', label: 'Data' },
+          {
+            tabs: [
+              {
+                $each: { $bind: 'data.tabs' },
+                as: 'tab',
+                key: 'tab.id',
+                template: kui(35, 'tabs', {
+                  id: { $bind: 'tab.id' },
+                  name: { $bind: 'tab.name' },
+                }),
+              },
+            ],
+          },
+        ),
+      ],
+    },
+  ),
+};
+
+test('a Switch nested in a row keeps its row’s value, and a bound tab closes', async ({
+  page,
+}) => {
+  const view = await openPlayed(page, rowsDocument, 6);
+  const toggle = (key: string) =>
+    view
+      .locator(`[data-kerf-node="${xid(31)}"][data-key="${key}"]`)
+      .getByRole('switch');
+  await toggle('beta').check();
+  await expect(toggle('beta')).toBeChecked();
+  await expect(toggle('alpha')).not.toBeChecked();
+  // Closing a tab re-renders the view; each row keeps its own value.
+  const tab = (name: string) => view.getByRole('tab', { name, exact: true });
+  await expect(tab('Name 2')).toBeVisible();
+  await view.getByRole('button', { name: 'Close Name 2' }).click();
+  await expect(tab('Name 2')).toHaveCount(0);
+  await expect(tab('Name')).toBeVisible();
+  await expect(tab('Name 3')).toBeVisible();
+  await expect(toggle('beta')).toBeChecked();
+  await expect(toggle('alpha')).not.toBeChecked();
+  // The other row toggles on its own.
+  await toggle('alpha').check();
+  await toggle('beta').uncheck();
+  await view.getByRole('button', { name: 'Close Name 3' }).click();
+  await expect(tab('Name 3')).toHaveCount(0);
+  await expect(toggle('alpha')).toBeChecked();
+  await expect(toggle('beta')).not.toBeChecked();
+});

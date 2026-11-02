@@ -1,7 +1,9 @@
 // KF-XV732Q: more play-time state adapters. Resizing, SplitView, value
 // controls, sidebars toggled by several actions, TabBarItems repeated by
 // `$each`, and tab close, each a pure transition over the play-time copy
-// plus its wiring (docs/26-ui-editor.md §11.4).
+// plus its wiring (docs/26-ui-editor.md §11.4). KF-7XQAFR: a value control
+// nested inside an `$each` row, and closing a row whose items come through
+// a `$bind`.
 import type { ViewDocument } from '@kerfjs/ui/view';
 import { mount, raw } from 'kerfjs';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -18,6 +20,7 @@ import {
 import {
   closeRow,
   eachOf,
+  markRows,
   nodeWithId,
   recordValue,
   rowPropsOf,
@@ -25,7 +28,7 @@ import {
   withRowProps,
 } from '../../../src/editor/model/play-values.js';
 import { PLAY_DOCUMENT, playPageUrl } from '../../../src/editor/player.js';
-import { createEditor } from './kerf-catalog.js';
+import { createEditor, viewCatalog } from './kerf-catalog.js';
 
 const id = (n: number) =>
   `01JB8Z1M6Q8E1X9V4S7K2R3W${String(n).padStart(2, '0')}`;
@@ -280,6 +283,202 @@ const layouts = () =>
     { tabs: tabsParam },
   );
 
+const rowType = (props: { name: string; type: object }[]) => ({
+  kind: 'array',
+  items: {
+    kind: 'object',
+    props: props.map((prop) => ({ ...prop, required: true })),
+  },
+});
+const str = { kind: 'string' };
+
+/** KF-7XQAFR: controls nested inside `$each` rows, and an inner `$each`. */
+const nestedRows = () =>
+  doc([
+    {
+      $each: { $param: 'rows' },
+      as: 'row',
+      key: 'row.id',
+      template: node(
+        40,
+        'list-item',
+        { label: { $bind: 'row.name' } },
+        {
+          trailing: [
+            node(41, 'switch', {
+              label: 'On',
+              rootAttributes: { 'data-x': '1' },
+            }),
+            node(42, 'switch', { label: 'Off' }),
+            {
+              $if: { $param: 'flag' },
+              then: node(43, 'text', { children: 'then' }),
+              else: node(44, 'text', { children: 'else' }),
+            },
+            { $if: { $param: 'flag' }, then: node(53, 'nope', {}) },
+            node(45, 'switch', {
+              label: 'Expr',
+              rootAttributes: { $param: 'attrs' },
+            }),
+            { $slot: 'extra' },
+            { id: id(49), type: '#text', value: 'hi' },
+            node(50, 'wa-badge', {}),
+            node(57, 'collapsible-panel#CollapsiblePanelRelocated', {}),
+            node(
+              46,
+              'list-item',
+              { label: 'Inner' },
+              {
+                trailing: [
+                  {
+                    $each: { $bind: 'row.subs' },
+                    as: 'sub',
+                    key: 'sub.id',
+                    template: node(
+                      54,
+                      'list-item',
+                      { label: 'Sub' },
+                      { trailing: [node(47, 'switch', { label: 'Sub' })] },
+                    ),
+                  },
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    },
+    node(48, 'switch', { label: 'Outside' }),
+  ]);
+
+/** KF-7XQAFR: a repeated Row holding its item's name and a Switch. */
+const switchRows = () =>
+  doc(
+    [
+      {
+        $each: { $param: 'rows' },
+        as: 'row',
+        key: 'row.id',
+        template: node(
+          51,
+          'row',
+          {},
+          {
+            children: [
+              node(56, 'text', { children: { $bind: 'row.name' } }),
+              node(52, 'switch', { label: 'On' }),
+            ],
+          },
+        ),
+      },
+    ],
+    {
+      rows: {
+        type: rowType([
+          { name: 'id', type: str },
+          { name: 'name', type: str },
+        ]),
+        default: [
+          { id: 'r1', name: 'One' },
+          { id: 'r2', name: 'Two' },
+        ],
+      },
+    },
+  );
+
+/**
+ * KF-7XQAFR: TabBars repeated per group, each repeating the group's tabs
+ * (a `$bind` to the outer row's array), and a TabBar over a param object's
+ * tabs.
+ */
+const nestedTabs = () => {
+  const tabType = rowType([
+    { name: 'id', type: str },
+    { name: 'name', type: str },
+  ]);
+  return doc(
+    [
+      {
+        $each: { $param: 'groups' },
+        as: 'group',
+        key: 'group.id',
+        template: node(
+          61,
+          'tab-bar',
+          { id: { $bind: 'group.id' }, label: 'Group' },
+          {
+            tabs: [
+              {
+                $each: { $bind: 'group.tabs' },
+                as: 'tab',
+                key: 'tab.id',
+                template: node(62, 'tabs', {
+                  id: { $bind: 'tab.id' },
+                  name: { $bind: 'tab.name' },
+                }),
+              },
+            ],
+          },
+        ),
+      },
+      node(
+        63,
+        'tab-bar',
+        { id: 'data', label: 'Data' },
+        {
+          tabs: [
+            {
+              $each: { $bind: 'data.tabs' },
+              as: 'tab',
+              key: 'tab.id',
+              template: node(64, 'tabs', {
+                id: { $bind: 'tab.id' },
+                name: { $bind: 'tab.name' },
+              }),
+            },
+          ],
+        },
+      ),
+    ],
+    {
+      groups: {
+        type: rowType([
+          { name: 'id', type: str },
+          { name: 'tabs', type: tabType },
+        ]),
+        default: [
+          {
+            id: 'g1',
+            tabs: [
+              { id: 'a', name: 'A1' },
+              { id: 'b', name: 'B1' },
+            ],
+          },
+          {
+            id: 'g2',
+            tabs: [
+              { id: 'a', name: 'A2' },
+              { id: 'c', name: 'C2' },
+            ],
+          },
+        ],
+      },
+      data: {
+        type: {
+          kind: 'object',
+          props: [{ name: 'tabs', type: tabType, required: true }],
+        },
+        default: {
+          tabs: [
+            { id: 'p', name: 'P' },
+            { id: 'q', name: 'Q' },
+          ],
+        },
+      },
+    },
+  );
+};
+
 describe('play-time values (pure)', () => {
   it('lays per-row props over a repeated row', () => {
     const rows = setRowProp({}, id(16), 'r1', 'checked', true);
@@ -346,14 +545,100 @@ describe('play-time values (pure)', () => {
     expect(eachOf(source, id(23))?.as).toBe('tab');
     expect(eachOf(source, id(21))).toBeUndefined();
     const params = { tabs: tabsParam.default };
-    expect(closeRow(source, id(23), 't2', params)).toEqual({
+    expect(closeRow(source, id(23), { [id(23)]: 't2' }, params)).toEqual({
       tabs: [
         { id: 't1', name: 'One' },
         { id: 't3', name: 'Three' },
       ],
     });
-    expect(closeRow(source, id(23), 't2', {})).toBeUndefined();
-    expect(closeRow(source, id(21), 'a', params)).toBeUndefined();
+    expect(closeRow(source, id(23), { [id(23)]: 't2' }, {})).toBeUndefined();
+    expect(closeRow(source, id(23), {}, params)).toBeUndefined();
+    expect(closeRow(source, id(21), { [id(21)]: 'a' }, params)).toBeUndefined();
+  });
+
+  it('marks the nodes nested in a row with the row’s key (KF-7XQAFR)', () => {
+    const marked = markRows(nestedRows(), viewCatalog);
+    const mark = (n: number) => propsOf(marked, n);
+    const row = { 'data-kerf-row': { $bind: 'row.id' } };
+    // The template's root keeps its data-key; outside rows nothing changes.
+    expect(mark(40)).toEqual(propsOf(nestedRows(), 40));
+    expect(mark(48)).toEqual(propsOf(nestedRows(), 48));
+    // A rootAttributes component, beside its own attributes.
+    expect(mark(41).rootAttributes).toEqual({ 'data-x': '1', ...row });
+    expect(mark(42).rootAttributes).toEqual(row);
+    // A native component and a Web Awesome element, as a prop; through `$if`.
+    expect(mark(43)['data-kerf-row']).toEqual(row['data-kerf-row']);
+    expect(mark(44)['data-kerf-row']).toEqual(row['data-kerf-row']);
+    expect(mark(50)['data-kerf-row']).toEqual(row['data-kerf-row']);
+    // An expression rootAttributes, a #text, and an unknown type stay as is.
+    expect(mark(45).rootAttributes).toEqual({ $param: 'attrs' });
+    expect(mark(49)).toEqual({});
+    expect(mark(53)).toEqual({});
+    // A component with no data channel carries no mark.
+    expect(mark(57)).toEqual({});
+    // A node holding an inner `$each` takes the outer key; the inner row's
+    // root keeps its data-key, and its own nodes take the inner key.
+    expect(mark(46).rootAttributes).toEqual(row);
+    expect(mark(54).rootAttributes).toBeUndefined();
+    expect(mark(47).rootAttributes).toEqual({
+      'data-kerf-row': { $bind: 'sub.id' },
+    });
+    expect(JSON.stringify(marked)).toContain('"$slot":"extra"');
+  });
+
+  it('closes a row whose items come through a $bind (KF-7XQAFR)', () => {
+    const source = nestedTabs();
+    const groups = [
+      { id: 'g1', tabs: [{ id: 'a', name: 'A' }] },
+      {
+        id: 'g2',
+        tabs: [
+          { id: 'a', name: 'A' },
+          { id: 'c', name: 'C' },
+        ],
+      },
+    ];
+    const keys = { [id(62)]: 'a', [id(61)]: 'g2' };
+    // An outer row's array: only that row's item closes.
+    expect(closeRow(source, id(62), keys, { groups })).toEqual({
+      groups: [groups[0], { ...groups[1], tabs: [{ id: 'c', name: 'C' }] }],
+    });
+    // Without the outer row's key, or with one no row has, nothing closes.
+    expect(
+      closeRow(source, id(62), { [id(62)]: 'a' }, { groups }),
+    ).toBeUndefined();
+    expect(
+      closeRow(source, id(62), { ...keys, [id(61)]: 'g9' }, { groups }),
+    ).toBeUndefined();
+    // An outer row whose item lacks the array, or a param that is no list.
+    expect(
+      closeRow(source, id(62), keys, { groups: [{ id: 'g2' }] }),
+    ).toBeUndefined();
+    expect(closeRow(source, id(62), keys, { groups: 'x' })).toBeUndefined();
+    // A `$bind` into a param's object.
+    const data = {
+      tabs: [
+        { id: 'p', name: 'P' },
+        { id: 'q', name: 'Q' },
+      ],
+    };
+    expect(closeRow(source, id(64), { [id(64)]: 'p' }, { data })).toEqual({
+      data: { tabs: [{ id: 'q', name: 'Q' }] },
+    });
+    expect(
+      closeRow(source, id(64), { [id(64)]: 'p' }, { data: [data] }),
+    ).toBeUndefined();
+    expect(closeRow(source, id(64), { [id(64)]: 'p' }, {})).toBeUndefined();
+    // A source that is neither a param nor a bind closes nothing.
+    const literal = doc([
+      {
+        $each: [{ id: 'x' }],
+        as: 'tab',
+        key: 'tab.id',
+        template: node(70, 'tabs', { name: 'X' }),
+      },
+    ]);
+    expect(closeRow(literal, id(70), { [id(70)]: 'x' }, {})).toBeUndefined();
   });
 });
 
@@ -667,5 +952,62 @@ describe('the play page’s layouts', () => {
     } finally {
       happyDOM.setViewport({ width, height: 768 });
     }
+  });
+});
+
+describe('the play page’s nested rows (KF-7XQAFR)', () => {
+  it('keeps a Switch nested in a repeated row to its row', async () => {
+    const { root, player } = await play(switchRows());
+    const switches = () =>
+      root.querySelectorAll<HTMLInputElement>(
+        `[data-kerf-node="${id(52)}"] input`,
+      );
+    expect(
+      root
+        .querySelector(`[data-kerf-node="${id(52)}"]`)!
+        .getAttribute('data-kerf-row'),
+    ).toBe('r1');
+    switches()[1]!.checked = true;
+    change(switches()[1]!);
+    await settled();
+    // The row re-renders with its own value; the other row keeps its own.
+    expect(switches()[0]!.hasAttribute('checked')).toBe(false);
+    expect(switches()[1]!.hasAttribute('checked')).toBe(true);
+    // Only the row's props change, never the play copy's node.
+    expect(JSON.stringify(player.document.value)).not.toContain('checked');
+    switches()[1]!.checked = false;
+    change(switches()[1]!);
+    await settled();
+    expect(switches()[1]!.hasAttribute('checked')).toBe(false);
+  });
+
+  it('closes a tab repeated from a param object’s array', async () => {
+    // An `$each` inside another's row does not render yet (KF-CFA1S1), so
+    // the play page closes a `$bind` into a param's object. A `$bind` reads
+    // no default (KF-8P3H7F), so `data` takes the canvas's sample tabs
+    // ("Id", "Id 2", "Id 3").
+    const source = nestedTabs();
+    const content = (
+      source.root.zones as { content: readonly ViewDocument['root'][] }
+    ).content;
+    const { type } = source.params!.data!;
+    const { root, player } = await play({
+      ...source,
+      params: { data: { type } },
+      root: { ...source.root, zones: { content: [content[1]!] } },
+    });
+    const data = (key: string) =>
+      root.querySelector<HTMLElement>(
+        `[data-kerf-node="${id(64)}"][data-key="${key}"]`,
+      );
+    data('Id 2')!
+      .querySelector<HTMLElement>('.kui-tab-bar-item__close')!
+      .click();
+    await settled();
+    expect(data('Id 2')).toBeNull();
+    expect(data('Id')).not.toBeNull();
+    expect(data('Id 3')).not.toBeNull();
+    // The play copy is unchanged; the param moved.
+    expect(JSON.stringify(player.document.value)).toContain(id(64));
   });
 });

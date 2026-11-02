@@ -271,7 +271,7 @@ import {
   type DevicePresetsOption,
   resolveDevicePresets,
 } from './model/play-device.js';
-import { type RowProps, withRowProps } from './model/play-values.js';
+import { markRows, type RowProps, withRowProps } from './model/play-values.js';
 import { type PreviewSlot, previewSlots } from './model/preview-slots.js';
 import {
   placementReason,
@@ -545,10 +545,12 @@ function canvasRenderer(catalog: EditorCatalog) {
     rows: RowProps = {},
   ): SafeHtml => {
     // The selected node's tab shows, whatever tab the document opens on.
-    const { document, slots: placed } = previewSlots(
+    const { document: shown, slots: placed } = previewSlots(
       shownScenes(source, selected, views),
       play ? () => [] : (node) => emptyZonesOf(node, node.id === selected),
     );
+    // KF-7XQAFR: in play, a node nested in a row carries its row's key.
+    const document = play ? markRows(shown, viewCatalog) : shown;
     const titles = new Map(
       visitNodes(source).map(({ node }) => [
         node.id,
@@ -595,6 +597,12 @@ function canvasRenderer(catalog: EditorCatalog) {
       });
     }
     try {
+      // KF-7XQAFR: play's row marks use the renderer's reserved
+      // `data-kerf-*` names, so play renders without interpretView's
+      // validation; `problems` already holds the document's own. A node
+      // that throws stands in for itself, as on the canvas.
+      if (play)
+        return previewView(document, { ...preview, placeholder: brokenNode });
       return interpretView(document, {
         ...preview,
         // The editor previews any document, so it checks it against itself.
