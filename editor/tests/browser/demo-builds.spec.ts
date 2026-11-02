@@ -1558,7 +1558,10 @@ test('builds NavStack › Configured Toolbar', async ({ page }) => {
   await select(page, /^LucideIcon/, 1);
   await pickIcon(page, page.locator('[data-editor-icon-place]'), 'layout-grid');
   await select(page, /^ToolbarButton/, 0);
-  await turnOn(page, 'pressed');
+  await choose(page, 'pressed', 'On');
+  // The other layout is a toggle that is off, not a plain action (KF-K9VBB4).
+  await select(page, /^ToolbarButton/, 1);
+  await choose(page, 'pressed', 'Off');
   // The library's two project rows.
   await select(page, /^NavStack/);
   await dragComponent(page, 'List', () =>
@@ -1637,7 +1640,7 @@ test('builds NavStack › Configured Toolbar', async ({ page }) => {
                 {
                   children: [
                     button('List Layout', 'list', { pressed: true }),
-                    button('Grid Layout', 'layout-grid'),
+                    button('Grid Layout', 'layout-grid', { pressed: false }),
                   ],
                 },
               ),

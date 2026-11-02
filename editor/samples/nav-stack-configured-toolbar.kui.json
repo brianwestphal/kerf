@@ -110,7 +110,8 @@
                             "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
                             "props": {
                               "ariaLabel": "Grid Layout",
-                              "action": "nav-stack-demo-command"
+                              "action": "nav-stack-demo-command",
+                              "pressed": false
                             },
                             "zones": {
                               "icon": [
