@@ -705,3 +705,95 @@ test('a Switch nested in a row keeps its row’s value, and a bound tab closes',
   await expect(toggle('alpha')).toBeChecked();
   await expect(toggle('beta')).not.toBeChecked();
 });
+
+// KF-SN9EP4: a TabBar repeated per group, each repeating its group's tabs
+// (`{ $bind: 'group.tabs' }`, a repeat inside a repeat's row, which renders
+// since KF-CFA1S1). Every group has a tab `a`, so closing group 2's tab `a`
+// must find the group by its outer row key and leave the others alone.
+const groupsDocument = {
+  schema: 'kerf-ui-document/v1',
+  name: 'Groups',
+  catalogs: ['@kerfjs/ui'],
+  params: {
+    groups: {
+      type: {
+        kind: 'array',
+        items: {
+          kind: 'object',
+          props: [
+            { name: 'id', type: { kind: 'string' }, required: true },
+            { name: 'name', type: { kind: 'string' }, required: true },
+            { name: 'tabs', type: itemsParam().type, required: true },
+          ],
+        },
+      },
+      default: [1, 2, 3].map((n) => ({
+        id: `g${n}`,
+        name: `Group ${n}`,
+        tabs: [
+          { id: 'a', name: `A${n}` },
+          { id: 'b', name: `B${n}` },
+        ],
+      })),
+    },
+  },
+  root: kui(
+    40,
+    'pane',
+    {},
+    {
+      content: [
+        {
+          $each: { $param: 'groups' },
+          as: 'group',
+          key: 'group.id',
+          template: kui(
+            41,
+            'tab-bar',
+            { id: { $bind: 'group.id' }, label: { $bind: 'group.name' } },
+            {
+              tabs: [
+                {
+                  $each: { $bind: 'group.tabs' },
+                  as: 'tab',
+                  key: 'tab.id',
+                  template: kui(42, 'tabs', {
+                    id: { $bind: 'tab.id' },
+                    name: { $bind: 'tab.name' },
+                  }),
+                },
+              ],
+            },
+          ),
+        },
+      ],
+    },
+  ),
+};
+
+test('closing a tab repeated from an outer row’s array closes only that tab', async ({
+  page,
+}) => {
+  const view = await openPlayed(page, groupsDocument, 3);
+  const tab = (name: string) => view.getByRole('tab', { name, exact: true });
+  const group = (n: number) =>
+    view.locator(`[data-kerf-node="${xid(41)}"][data-key="g${n}"]`);
+  for (const n of [1, 2, 3]) {
+    await expect(group(n).getByRole('tab')).toHaveCount(2);
+    await expect(tab(`A${n}`)).toBeVisible();
+  }
+  await group(2).getByRole('button', { name: 'Close A2' }).click();
+  await expect(tab('A2')).toHaveCount(0);
+  await expect(group(2).getByRole('tab')).toHaveCount(1);
+  await expect(tab('B2')).toBeVisible();
+  // The other groups keep both tabs, `a` included.
+  for (const n of [1, 3]) {
+    await expect(group(n).getByRole('tab')).toHaveCount(2);
+    await expect(tab(`A${n}`)).toBeVisible();
+    await expect(tab(`B${n}`)).toBeVisible();
+  }
+  // The canvas still renders the document.
+  await expect(page.getByText('This document cannot be previewed')).toHaveCount(
+    0,
+  );
+});
