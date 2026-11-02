@@ -13,6 +13,7 @@ import {
   chooseField,
   dragComponent,
   embedIn,
+  embedInOther,
   emptySpot,
   exported,
   icon,
@@ -2257,3 +2258,309 @@ test('builds Pane › Fill', async ({ page }) => {
     ),
   );
 });
+
+// The other Workbench configurations wait on KF-EZN7H2: a panel's nested
+// Configure rows (its toolbar, toggle, pane) do not open yet.
+test('builds Workbench › Full Desktop Workspace', async ({ page }) => {
+  // A whole screen built step by step runs long in Firefox.
+  test.slow();
+  await dragComponent(page, 'Workbench', () => emptySpot(page));
+  await select(page, /^Workbench/);
+  // Below the root it needs a height of its own (KF-6MGYSG).
+  await embedIn(page, 'SizedRegion');
+  await select(page, /^Workbench/);
+  await setText(page, 'id', 'catalog-workbench-full');
+  await setText(page, 'label', 'Project Workbench');
+  await setText(page, 'mainLabel', 'Editor');
+  await choose(page, 'mainTabIndex', '0');
+  await turnOn(page, 'mainOutlined');
+  // The work area holds one node, so its seeded Text becomes the title of a
+  // DemoContentItem by embedding it in a List, then the List in a ContentItem.
+  await select(page, /^Text/);
+  await embedInOther(page, 'List');
+  await embedInOther(page, 'ContentItem');
+  // Each panel is a static panel whose content slot takes a DemoContentItem.
+  await panel(page, 'leftRail', 'Navigator');
+  await panel(page, 'rightRail', 'Inspector', true);
+  await panel(page, 'bottomDrawer', 'Console');
+  // The outline lists the panels' content before the work area's.
+  const regions = [
+    ['Navigator', 'Files and symbols'],
+    ['Inspector', 'Selection details'],
+    ['Console', 'Build output and diagnostics'],
+    ['Editor', 'The central work area expands into free space.'],
+  ] as const;
+  for (const [index, [title, detail]] of regions.entries())
+    await demoTexts(page, { list: index, text: index * 2 }, title, detail);
+  await select(page, /^Workbench/);
+  const workbench = canvas(page).locator('.kui-workbench[data-kerf-node]');
+  await expect(workbench.locator('strong')).toHaveText([
+    'Navigator',
+    'Editor',
+    'Console',
+    'Inspector',
+  ]);
+  await page.screenshot({
+    path: test.info().outputPath('kf-jn4pf5-workbench-full-1440.png'),
+  });
+  const [navigator, inspector, drawer, editor] = regions.map(
+    ([title, detail]) => demoContentItem(title, detail),
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      sized(
+        node(
+          'workbench',
+          {
+            id: 'catalog-workbench-full',
+            label: 'Project Workbench',
+            mainLabel: 'Editor',
+            mainTabIndex: 0,
+            mainOutlined: true,
+            leftRail: { label: 'Navigator' },
+            rightRail: { label: 'Inspector', tabIndex: 0 },
+            bottomDrawer: { label: 'Console' },
+          },
+          {
+            // Embed in leaves the new ContentItem an empty props object
+            // (KF-QX497W).
+            main: [{ ...editor, props: {} }],
+            'leftRail.content': [navigator],
+            'rightRail.content': [inspector],
+            'bottomDrawer.content': [drawer],
+          },
+        ),
+      ),
+    ),
+  );
+});
+
+/**
+ * Makes Workbench panel `prop` a static panel named `label` (keyboard
+ * focusable when `focusable`) and drops a DemoContentItem's ContentItem,
+ * List, and Text into its content slot on the canvas.
+ */
+async function panel(
+  page: Page,
+  prop: string,
+  label: string,
+  focusable = false,
+) {
+  await select(page, /^Workbench/);
+  await choose(page, prop, 'Static panel…');
+  // leftRail's form opens from "Configure left rail".
+  const words = prop.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`);
+  await page.getByRole('button', { name: `Configure ${words}` }).click();
+  await setField(page, prop, ['label'], label);
+  if (focusable) await chooseField(page, prop, ['tabIndex'], '0');
+  await page
+    .locator('#editor-inspector-stack')
+    .getByRole('button', { name: 'Back' })
+    .click();
+  await dragComponent(page, 'ContentItem', () =>
+    canvas(page).locator('[data-editor-empty]', {
+      hasText: `${prop}Content slot — drop here`,
+    }),
+  );
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await dragComponent(page, 'Text', () => emptySpot(page));
+}
+
+test('builds SplitView › Roomy List-Detail Split', async ({ page }) => {
+  // A whole screen built step by step runs long in Firefox.
+  test.slow();
+  await dragComponent(page, 'SplitView', () => emptySpot(page));
+  await select(page, /^SplitView/);
+  // Below the root it needs a height of its own (KF-6MGYSG).
+  await embedIn(page, 'SizedRegion');
+  await select(page, /^SplitView/);
+  await setText(page, 'id', 'catalog-split-view-roomy');
+  await setText(page, 'label', 'Messages');
+  await setText(page, 'listTitle', 'Threads');
+  await setText(page, 'detailTitle', 'Project update');
+  // A 240px list column, capped at 40% of the split.
+  await choose(page, 'listWidth', 'Custom…');
+  await page.getByRole('button', { name: 'Configure list width' }).click();
+  await setField(page, 'listWidth', ['size'], '240');
+  await setField(page, 'listWidth', ['maxFraction'], '0.4');
+  await page
+    .locator('#editor-inspector-stack')
+    .getByRole('button', { name: 'Back' })
+    .click();
+  // The list pane's seeded Text becomes the list: embedded in a List, which
+  // takes the counted header and the message rows, and then deleted.
+  await select(page, /^Text/);
+  await embedInOther(page, 'List');
+  await addChild(page, 'ListHeader', 'children');
+  await area(page, 'Properties');
+  await setText(page, 'label', 'Inbox');
+  await setText(page, 'count', String(MESSAGES.length));
+  await setText(page, 'countLabel', `${MESSAGES.length} messages`);
+  await select(page, /^List(?!Item|Header)/);
+  await addChild(page, 'ListItem');
+  await area(page, 'Properties');
+  await setText(page, 'action', 'select-roomy-split-view-message');
+  await turnOn(page, 'multiline');
+  await addIcon(page, 'icon', 'message-square-text');
+  await setText(page, 'name', 'message');
+  await select(page, /^ListItem/);
+  await page.locator('[data-editor-content-add="trailing"]').click();
+  await addChild(page, 'LucideIcon');
+  await area(page, 'Properties');
+  await pickIcon(
+    page,
+    page.locator('[data-editor-icon-place]'),
+    'chevron-right',
+  );
+  await select(page, /^ListItem/);
+  await page.keyboard.press('ControlOrMeta+d');
+  await page.keyboard.press('ControlOrMeta+d');
+  for (const [index, message] of MESSAGES.entries()) {
+    await select(page, /^ListItem/, index);
+    await setText(page, 'itemId', message.id);
+    await setText(page, 'label', message.subject);
+    await setText(
+      page,
+      'description',
+      `${message.sender} · ${message.preview}`,
+    );
+  }
+  // The first message is the one in view.
+  await select(page, /^ListItem/);
+  await turnOn(page, 'selected');
+  await select(page, /^Text/);
+  await page.locator('[data-action="editor-delete"]').click();
+  // The detail pane's seeded Text becomes a DemoContentItem's eyebrow.
+  const [first] = MESSAGES;
+  await select(page, /^Text/);
+  await embedInOther(page, 'List');
+  await choose(page, 'gap', '2xs');
+  await embedInOther(page, 'ContentItem');
+  await select(page, /^Text/);
+  await setText(page, 'children', `From ${first.sender}`);
+  await choose(page, 'variant', 'span');
+  await choose(page, 'tone', 'quiet');
+  await choose(page, 'size', 'compact');
+  await page.keyboard.press('ControlOrMeta+d');
+  await setText(page, 'children', first.subject);
+  await choose(page, 'tone', 'Not set');
+  await choose(page, 'size', 'Not set');
+  await choose(page, 'weight', 'strong');
+  await page.keyboard.press('ControlOrMeta+d');
+  await setText(page, 'children', first.body);
+  await choose(page, 'weight', 'Default (regular)');
+  await choose(page, 'tone', 'quiet');
+  await choose(page, 'size', 'compact');
+  await select(page, /^SplitView/);
+  const split = canvas(page).locator('.kui-split-view[data-kerf-node]');
+  await expect(split.locator('.kui-list-item')).toHaveCount(3);
+  await expect(split.locator('strong')).toHaveText(first.subject);
+  await page.screenshot({
+    path: test.info().outputPath('kf-jn4pf5-split-view-roomy-1440.png'),
+  });
+  const text = (children: string, props: Record<string, unknown>) =>
+    node('text', { children, variant: 'span', ...props });
+  expect(await exported(page)).toEqual(
+    pane(
+      sized(
+        node(
+          'split-view',
+          {
+            id: 'catalog-split-view-roomy',
+            label: 'Messages',
+            listTitle: 'Threads',
+            detailTitle: first.subject,
+            listWidth: { size: 240, maxFraction: 0.4 },
+          },
+          {
+            list: [
+              node(
+                'list',
+                // Embed in leaves an empty props object (KF-QX497W).
+                {},
+                {
+                  children: [
+                    node('list-header', {
+                      label: 'Inbox',
+                      count: MESSAGES.length,
+                      countLabel: `${MESSAGES.length} messages`,
+                    }),
+                    ...MESSAGES.map((message, index) =>
+                      node(
+                        'list-item',
+                        {
+                          action: 'select-roomy-split-view-message',
+                          itemId: message.id,
+                          label: message.subject,
+                          description: `${message.sender} · ${message.preview}`,
+                          ...(index === 0 ? { selected: true } : {}),
+                          multiline: true,
+                        },
+                        {
+                          icon: [
+                            icon('message-square-text', { name: 'message' }),
+                          ],
+                          trailing: [icon('chevron-right')],
+                        },
+                      ),
+                    ),
+                  ],
+                },
+              ),
+            ],
+            detail: [
+              node(
+                'content-item',
+                // Embed in leaves an empty props object (KF-QX497W).
+                {},
+                {
+                  children: [
+                    node(
+                      'list',
+                      { gap: '2xs' },
+                      {
+                        children: [
+                          text(`From ${first.sender}`, {
+                            tone: 'quiet',
+                            size: 'compact',
+                          }),
+                          text(first.subject, { weight: 'strong' }),
+                          text(first.body, { tone: 'quiet', size: 'compact' }),
+                        ],
+                      },
+                    ),
+                  ],
+                },
+              ),
+            ],
+          },
+        ),
+      ),
+    ),
+  );
+});
+
+/** The split-view demo's messages (`ui/ux-demo/demos/split-view.tsx`). */
+const MESSAGES = [
+  {
+    id: 'project-update',
+    subject: 'Project update',
+    sender: 'Mina Chen',
+    preview: 'The interaction pass is ready for review.',
+    body: 'The interaction pass is ready. Please review the navigation and responsive states before Thursday.',
+  },
+  {
+    id: 'design-review',
+    subject: 'Design review',
+    sender: 'Sam Rivera',
+    preview: 'Notes from today’s component review.',
+    body: 'Today’s review notes cover list density, detail hierarchy, and the remaining compact-layout checks.',
+  },
+  {
+    id: 'launch-plan',
+    subject: 'Launch plan',
+    sender: 'Avery Singh',
+    preview: 'Beta milestones and owner assignments.',
+    body: 'The beta milestones now have owners. The final readiness check is scheduled for next week.',
+  },
+] as const;

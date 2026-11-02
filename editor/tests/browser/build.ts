@@ -248,6 +248,22 @@ export async function embedIn(page: Page, name: string) {
     .click();
 }
 
+/**
+ * Embeds the selected node in a container the Embed in section does not
+ * offer first, through Other… and its filter; the container is selected
+ * afterwards.
+ */
+export async function embedInOther(page: Page, name: string) {
+  await area(page, 'Flow');
+  await page.getByRole('button', { name: 'Other…' }).click();
+  const dialog = page.locator('dialog[open]');
+  // The filter has focus when the dialog opens.
+  await expect(dialog.getByRole('searchbox')).toBeFocused();
+  await page.keyboard.type(name);
+  await dialog.getByRole('button', { name, exact: true }).click();
+  await expect(dialog).toHaveCount(0);
+}
+
 /** A whole-screen layout embedded as Embed in › SizedRegion leaves it. */
 export const sized = (layout: unknown) =>
   node(

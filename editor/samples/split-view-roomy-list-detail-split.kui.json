@@ -1,0 +1,230 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SplitViewRoomyListDetailSplit",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sized-region",
+          "props": {
+            "minHeight": {
+              "$css": "rem(20)"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:split-view",
+                "props": {
+                  "id": "catalog-split-view-roomy",
+                  "label": "Messages",
+                  "listTitle": "Threads",
+                  "detailTitle": "Project update",
+                  "listWidth": {
+                    "size": 240,
+                    "maxFraction": 0.4
+                  }
+                },
+                "zones": {
+                  "list": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:list",
+                      "props": {},
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:list-header",
+                            "props": {
+                              "label": "Inbox",
+                              "count": 3,
+                              "countLabel": "3 messages"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Project update",
+                              "action": "select-roomy-split-view-message",
+                              "multiline": true,
+                              "itemId": "project-update",
+                              "description": "Mina Chen · The interaction pass is ready for review.",
+                              "selected": true
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000007",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "message-square-text"
+                                    },
+                                    "name": "message"
+                                  }
+                                }
+                              ],
+                              "trailing": [
+                                {
+                                  "id": "00000000000000000000000008",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "chevron-right"
+                                    },
+                                    "name": "chevron-right"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000009",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Design review",
+                              "action": "select-roomy-split-view-message",
+                              "multiline": true,
+                              "itemId": "design-review",
+                              "description": "Sam Rivera · Notes from today’s component review."
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000010",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "message-square-text"
+                                    },
+                                    "name": "message"
+                                  }
+                                }
+                              ],
+                              "trailing": [
+                                {
+                                  "id": "00000000000000000000000011",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "chevron-right"
+                                    },
+                                    "name": "chevron-right"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000012",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Launch plan",
+                              "action": "select-roomy-split-view-message",
+                              "multiline": true,
+                              "itemId": "launch-plan",
+                              "description": "Avery Singh · Beta milestones and owner assignments."
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000013",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "message-square-text"
+                                    },
+                                    "name": "message"
+                                  }
+                                }
+                              ],
+                              "trailing": [
+                                {
+                                  "id": "00000000000000000000000014",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "chevron-right"
+                                    },
+                                    "name": "chevron-right"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "detail": [
+                    {
+                      "id": "00000000000000000000000015",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {},
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000016",
+                            "type": "@kerfjs/ui:list",
+                            "props": {
+                              "gap": "2xs"
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000017",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "From Mina Chen",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000018",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Project update",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000019",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "The interaction pass is ready. Please review the navigation and responsive states before Thursday.",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
