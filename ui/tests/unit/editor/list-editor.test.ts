@@ -203,11 +203,28 @@ describe(
       const labels = rows(root, 'items');
       expect(labels.at(-2)).toContain('Divider');
       expect(labels.at(-1)).toContain('Heading');
-      // A divider's form has nothing to edit but its fixed kind.
-      open(root, 'items', [(props().items as unknown[]).length - 2]);
+      // A divider's form has nothing to edit but its kind, which switches
+      // it to another entry (KF-BGKYYH).
+      const at = (props().items as unknown[]).length - 2;
+      open(root, 'items', [at]);
       const dialog = field(root, '#editor-field-dialog');
-      expect(dialog.querySelector('[data-editor-field]')).toBeNull();
+      expect(
+        [...dialog.querySelectorAll<HTMLElement>('[data-editor-field]')].map(
+          (control) => control.dataset.editorKind,
+        ),
+      ).toEqual(['choice']);
       expect(dialog.textContent).toContain('Kind');
+      // Item, Heading, Divider: a heading keeps nothing of a divider.
+      choose(
+        field(
+          root,
+          `[data-editor-field='${place('items', [at])}'][data-editor-kind="choice"]`,
+        ),
+        '#1',
+      );
+      expect((props().items as unknown[])[at]).toMatchObject({
+        kind: 'heading',
+      });
     });
 
     it('edits a Combobox’s text suggestion in a text field', () => {

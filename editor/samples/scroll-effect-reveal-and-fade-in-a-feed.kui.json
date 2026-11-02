@@ -1,0 +1,80 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ScrollEffectRevealAndFadeInAFeed",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:scroll-effect",
+          "props": {
+            "effects": [
+              {
+                "kind": "reveal",
+                "range": "entry",
+                "rangeEnd": 50
+              },
+              {
+                "kind": "scale",
+                "range": "entry",
+                "rangeEnd": 50,
+                "from": 0.94
+              },
+              {
+                "kind": "fade",
+                "range": "exit"
+              }
+            ]
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:list",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Harbor Survey",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Tide tables and mooring notes for the north basin.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "gap": "2xs"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

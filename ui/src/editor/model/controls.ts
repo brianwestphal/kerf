@@ -502,7 +502,8 @@ export function valueFromControl(
           type!.slot,
         ) ?? {};
       // Switching between object members keeps the fields both share
-      // (a panel's label and size; KF-907BXY).
+      // (a panel's label and size; KF-907BXY), but never the old member's
+      // literal discriminant (an effect's `kind`; KF-BGKYYH).
       const current = type!.current;
       if (
         !isDynamic(current) ||
@@ -513,7 +514,17 @@ export function valueFromControl(
         return { value: start };
       const kept = Object.fromEntries(
         objectFields(member, type!.definitions)
-          .filter((field) => field.name in (current as object))
+          .filter(
+            (field) =>
+              field.name in (current as object) &&
+              (resolveType(field.type as ViewType, type!.definitions)?.kind !==
+                'literal' ||
+                isLiteralOf(
+                  (current as Record<string, ViewValue>)[field.name]!,
+                  field.type as ViewType,
+                  type!.definitions,
+                )),
+          )
           .map((field) => [
             field.name,
             (current as Record<string, ViewValue>)[field.name]!,

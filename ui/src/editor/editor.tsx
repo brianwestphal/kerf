@@ -143,6 +143,7 @@ import {
   slotAt,
 } from './model/control-flow.js';
 import {
+  choiceOptions,
   controlFor,
   type ControlKind,
   cssGrammar,
@@ -233,6 +234,7 @@ import {
   listItemLabel,
   listMembers,
   memberFor,
+  memberSwitchField,
   objectFields,
   propLabel,
   stepTitle,
@@ -1665,12 +1667,26 @@ export function createEditor(options: EditorOptions) {
       place.path,
       propValue,
     );
+    // A list item's place narrows to its member; its list declares the
+    // union the item's member switch picks among (KF-BGKYYH).
+    const list =
+      typeof place.path.at(-1) === 'number'
+        ? (typeAt(
+            prop.type as never,
+            definitions,
+            place.path.slice(0, -1),
+            propValue,
+          ) as { items?: ViewType } | undefined)
+        : undefined;
     return {
       definitions,
       // A union's value edits as the member it holds (KF-3CKTKN).
       type: memberFor(declared, definitions, value),
       // The whole union, which a typed choice picks among.
       declared,
+      /** A list item's declared item type: the union its members share. */
+      items: (list && resolveType(list as never, definitions)?.items) as
+        ViewType | undefined,
       value,
     };
   };
@@ -1893,10 +1909,23 @@ export function createEditor(options: EditorOptions) {
    * their own editors, and fields no control edits as a value table.
    */
   const objectForm = (node: ViewNode, place: FieldPlace) => {
-    const { definitions, type, value } = fieldContext(node, place);
+    const { definitions, type, declared, items, value } = fieldContext(
+      node,
+      place,
+    );
+    const union = items ?? declared;
     const record = (value ?? {}) as Record<string, ViewValue>;
+    // KF-BGKYYH: a discriminated union's item (a ScrollEffect effect)
+    // switches its member from a Select in place of its fixed `kind`.
+    const switchField = memberSwitchField(union, definitions);
+    const switcher = switchField
+      ? memberSwitch(switchField, union!, definitions, value, place)
+      : undefined;
     // KF-3J47BY: rows keep the fields' order, as the Inspector's do.
-    const rows = objectFields(type, definitions).map((field): InspectorRow => {
+    const fields = objectFields(type, definitions).filter(
+      (field) => field.name !== switchField,
+    );
+    const rows = fields.map((field): InspectorRow => {
       const at = { prop: place.prop, path: [...place.path, field.name] };
       const fieldValue = record[field.name];
       const control = controlFor(field, fieldValue, definitions);
@@ -1950,7 +1979,49 @@ export function createEditor(options: EditorOptions) {
             row: propControl(field, fieldValue as never, node.type, at)!,
           };
     });
-    return <List>{inspectorRuns(rows, `${stepTitle(place)} fields`)}</List>;
+    return (
+      <List>
+        {inspectorRuns(
+          switcher ? [{ kind: 'edit', row: switcher }, ...rows] : rows,
+          `${stepTitle(place)} fields`,
+        )}
+      </List>
+    );
+  };
+
+  /**
+   * The Select that switches a discriminated union's value between its
+   * members (KF-BGKYYH), labeled by the discriminant ("Kind"). Choosing one
+   * starts from its placeholder and keeps the fields the two share (a
+   * `range`), as a typed choice does.
+   */
+  const memberSwitch = (
+    field: string,
+    declared: ViewType,
+    definitions: Readonly<Record<string, ViewType>>,
+    value: ViewValue | undefined,
+    place: FieldPlace,
+  ) => {
+    // Every member is an object (memberSwitchField), so each is an option
+    // and the item's value holds one of them.
+    const options = choiceOptions(declared, definitions)!;
+    const member = memberFor(declared, definitions, value);
+    return (
+      <Select
+        name={`field-${placeKey(place)}-${field}`}
+        label={propLabel(field)}
+        value={options.find((option) => option.member === member)!.value}
+        choices={options.map(({ value: option, label }) => ({
+          value: option,
+          label: label.replace(/…$/, ''),
+        }))}
+        rootAttributes={{
+          'data-editor-field': JSON.stringify(place),
+          'data-editor-kind': 'choice',
+          'data-key': `${controlKey(place)}-${field}`,
+        }}
+      />
+    );
   };
 
   /**
@@ -3838,7 +3909,7 @@ export function createEditor(options: EditorOptions) {
     const key = placeKey(place);
     if (kind === 'size')
       customSize.value = raw === CUSTOM_SIZE ? `${id} ${key}` : '';
-    const { definitions, type, declared, value } = fieldContext(
+    const { definitions, type, declared, items, value } = fieldContext(
       findNode(doc.value, id)!.node,
       place,
     );
@@ -3847,7 +3918,7 @@ export function createEditor(options: EditorOptions) {
     const result =
       kind === 'choice'
         ? valueFromControl(kind, raw, undefined, {
-            type: declared!,
+            type: (items ?? declared)!,
             definitions,
             current: value,
           })

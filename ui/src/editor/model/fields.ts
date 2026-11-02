@@ -321,6 +321,26 @@ export function memberFor(
   );
 }
 
+/**
+ * The field that tells a discriminated union's members apart (KF-BGKYYH: a
+ * ScrollEffect effect's or a PopupMenu entry's `kind`), when `type` is such
+ * a union of object members, so an item's form can switch its member; else
+ * undefined. The props catalog names it as the union's `discriminant`.
+ */
+export function memberSwitchField(
+  type: ViewType | undefined,
+  definitions: Definitions,
+): string | undefined {
+  const union = shape(type, definitions) as
+    (TypeShape & { readonly discriminant?: readonly string[] }) | undefined;
+  const field = union?.kind === 'union' ? union.discriminant?.[0] : undefined;
+  return field &&
+    union!.members!.length > 1 &&
+    union!.members!.every((member) => isFormObject(shape(member, definitions)))
+    ? field
+    : undefined;
+}
+
 type Fields = Readonly<Record<string, ViewValue>>;
 
 /** `value`'s fields when it is an object literal, else undefined. */

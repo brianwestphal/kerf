@@ -2120,3 +2120,67 @@ test('builds Badge › Icon and Title', async ({ page }) => {
     ),
   );
 });
+
+// KF-BGKYYH: one card of the feed (the demo repeats it for each story),
+// with its effects built in the effects list editor, one switched by Kind.
+test('builds ScrollEffect › Reveal and Fade in a Feed', async ({ page }) => {
+  const title = 'Harbor Survey';
+  const detail = 'Tide tables and mooring notes for the north basin.';
+  await dragComponent(page, 'ScrollEffect', () => emptySpot(page));
+  await select(page, /^ScrollEffect/);
+  await addChild(page, 'ContentItem');
+  await addChild(page, 'List');
+  await addChild(page, 'Text');
+  await demoTexts(page, { list: 0, text: 0 }, title, detail);
+  await select(page, /^ScrollEffect/);
+  const dialog = page.locator('dialog[open]');
+  const item = (index: number) =>
+    dialog.locator('[data-action="editor-open-field"]').nth(index).click();
+  const back = () => dialog.getByRole('button', { name: 'Back' }).click();
+  await page.getByRole('button', { name: 'Configure effects' }).click();
+  // Start from no effects, then add a reveal twice and a fade.
+  const remove = dialog.getByRole('button', { name: /^Remove / });
+  while ((await remove.count()) > 0) await remove.first().click();
+  for (const preset of ['Reveal', 'Reveal', 'Fade']) {
+    await dialog.getByRole('button', { name: /Add/ }).last().click();
+    await page.getByRole('menuitem', { name: preset, exact: true }).click();
+  }
+  await item(0);
+  await chooseField(page, 'effects', [0, 'range'], 'entry');
+  await setField(page, 'effects', [0, 'rangeEnd'], '50');
+  await back();
+  // The second becomes a scale: its range carries over, and `from` appears.
+  await item(1);
+  await chooseField(page, 'effects', [1, 'range'], 'entry');
+  await setField(page, 'effects', [1, 'rangeEnd'], '50');
+  await chooseField(page, 'effects', [1], 'Scale');
+  await setField(page, 'effects', [1, 'from'], '0.94');
+  await back();
+  await item(2);
+  await chooseField(page, 'effects', [2, 'range'], 'exit');
+  await back();
+  await expect(dialog.locator('[data-action="editor-open-field"]')).toHaveText([
+    /Reveal/,
+    /Scale/,
+    /Fade/,
+  ]);
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  await expect(canvas(page).locator('[data-kerf-node] strong')).toHaveText(
+    title,
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'scroll-effect',
+        {
+          effects: [
+            { kind: 'reveal', range: 'entry', rangeEnd: 50 },
+            { kind: 'scale', range: 'entry', rangeEnd: 50, from: 0.94 },
+            { kind: 'fade', range: 'exit' },
+          ],
+        },
+        { children: [demoContentItem(title, detail)] },
+      ),
+    ),
+  );
+});

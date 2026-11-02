@@ -171,7 +171,14 @@ that opens the item's form, with a Remove action and drag or
 Alt+Shift+Arrow reordering. **Add** appends an item numbered after the list
 ("Choice 4"); a union list's **Add ▾** menu offers each member, named by its
 literal kind or its type name ("Item", "Heading", "Divider"; "Text" for a
-string), and its rows name the member. A text item edits in a text field,
+string), and its rows name the member. An item of a discriminated union
+(one the props catalog gives a `discriminant`, such as a ScrollEffect's
+`effects` or a PopupMenu's `items`) switches its member from a Select named
+after that field, **Kind**, in place of the fixed `kind` row (KF-BGKYYH:
+effect kinds): the new member starts from its placeholder and keeps the
+fields the two share (an effect's `range`, `rangeStart`, and `rangeEnd`),
+never the old discriminant, and its own option fields (a scale's `from` and
+`to`) appear in the form. A text item edits in a text field,
 and clearing it keeps the item. A list and its item form are a
 sub-selection, so the list opens in a dialog unless its items have at most
 3 fields and nothing nested (a Slider's `ticks`), which push in the
