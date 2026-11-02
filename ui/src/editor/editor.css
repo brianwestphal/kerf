@@ -144,12 +144,313 @@
   transform-origin: 0 0;
 }
 
+/* KF-E8T0AY: the mock device's body. Its padding is the bezel, plus a foot
+   (a laptop's deck, a monitor's stand) below it, by frame and orientation.
+   The padding stays when Chrome hides the frame, so hiding it never moves
+   the view; every drawn part is decoration that ignores the pointer. */
+.kui-editor__device-body {
+  --_kui-editor-bezel-top: 0px;
+  --_kui-editor-bezel-end: 0px;
+  --_kui-editor-bezel-bottom: 0px;
+  --_kui-editor-bezel-start: 0px;
+  --_kui-editor-foot: 0px;
+  --_kui-editor-radius: 0px;
+  --_kui-editor-screen-radius: 0px;
+  --_kui-editor-body-fill: var(--kui-color-neutral-fill-loud);
+  position: relative;
+  padding: var(--_kui-editor-bezel-top) var(--_kui-editor-bezel-end)
+    calc(var(--_kui-editor-bezel-bottom) + var(--_kui-editor-foot))
+    var(--_kui-editor-bezel-start);
+}
+
+.kui-editor__device-body:is(
+  [data-frame="dynamic-island"],
+  [data-frame="punch-hole"]
+) {
+  --_kui-editor-bezel-top: 12px;
+  --_kui-editor-bezel-end: 12px;
+  --_kui-editor-bezel-bottom: 12px;
+  --_kui-editor-bezel-start: 12px;
+  --_kui-editor-radius: 64px;
+  --_kui-editor-screen-radius: 52px;
+}
+
+.kui-editor__device-body[data-frame="punch-hole"] {
+  --_kui-editor-radius: 48px;
+  --_kui-editor-screen-radius: 36px;
+}
+
+/* A Home-button phone: tall bezels above and below the screen (beside it in
+   landscape), the button in the lower one. */
+.kui-editor__device-body[data-frame="home-button"] {
+  --_kui-editor-bezel-top: 72px;
+  --_kui-editor-bezel-end: 14px;
+  --_kui-editor-bezel-bottom: 72px;
+  --_kui-editor-bezel-start: 14px;
+  --_kui-editor-radius: 56px;
+}
+
+.kui-editor__device-body[data-frame="home-button"][data-orientation="landscape"] {
+  --_kui-editor-bezel-top: 14px;
+  --_kui-editor-bezel-end: 72px;
+  --_kui-editor-bezel-bottom: 14px;
+  --_kui-editor-bezel-start: 72px;
+}
+
+.kui-editor__device-body[data-frame="tablet"] {
+  --_kui-editor-bezel-top: 20px;
+  --_kui-editor-bezel-end: 20px;
+  --_kui-editor-bezel-bottom: 20px;
+  --_kui-editor-bezel-start: 20px;
+  --_kui-editor-radius: 40px;
+  --_kui-editor-screen-radius: 20px;
+}
+
+/* A laptop: a bezel with a window title bar above the screen, on a deck. */
+.kui-editor__device-body[data-frame="laptop"] {
+  --_kui-editor-bezel-top: 48px;
+  --_kui-editor-bezel-end: 14px;
+  --_kui-editor-bezel-bottom: 14px;
+  --_kui-editor-bezel-start: 14px;
+  --_kui-editor-foot: 18px;
+  --_kui-editor-radius: 18px;
+}
+
+/* A monitor: a bezel on a stand. */
+.kui-editor__device-body[data-frame="monitor"] {
+  --_kui-editor-bezel-top: 16px;
+  --_kui-editor-bezel-end: 16px;
+  --_kui-editor-bezel-bottom: 16px;
+  --_kui-editor-bezel-start: 16px;
+  --_kui-editor-foot: 96px;
+  --_kui-editor-radius: 12px;
+}
+
+.kui-editor__device-bezel,
+.kui-editor__device-foot {
+  position: absolute;
+  pointer-events: none;
+}
+
+.kui-editor__device-bezel {
+  inset: 0 0 var(--_kui-editor-foot);
+  border-radius: var(--_kui-editor-radius);
+  background: var(--_kui-editor-body-fill);
+  box-shadow: inset 0 0 0 1px var(--kui-color-neutral-border-loud);
+}
+
+.kui-editor__device-body[data-frame="none"] .kui-editor__device-bezel,
+.kui-editor__device-body:not([data-frame="laptop"], [data-frame="monitor"])
+  .kui-editor__device-foot {
+  display: none;
+}
+
+.kui-editor__device-foot {
+  inset: auto 0 0;
+  block-size: var(--_kui-editor-foot);
+}
+
+/* The laptop's deck, the width of the screen's body. */
+.kui-editor__device-body[data-frame="laptop"] .kui-editor__device-foot {
+  border-radius: 0 0 14px 14px;
+  background: var(--_kui-editor-body-fill);
+  box-shadow: inset 0 0 0 1px var(--kui-color-neutral-border-loud);
+}
+
+/* The monitor's stand: a neck and a base. */
+.kui-editor__device-body[data-frame="monitor"] .kui-editor__device-foot {
+  background:
+    linear-gradient(var(--_kui-editor-body-fill), var(--_kui-editor-body-fill))
+      center top / 12% calc(100% - 12px) no-repeat,
+    linear-gradient(var(--_kui-editor-body-fill), var(--_kui-editor-body-fill))
+      center bottom / 32% 12px no-repeat;
+}
+
+/* The laptop's window title bar, in the bezel above the screen, with three
+   neutral window controls. */
+.kui-editor__device-titlebar {
+  display: none;
+}
+
+.kui-editor__device-body[data-frame="laptop"] .kui-editor__device-titlebar {
+  position: absolute;
+  inset: 14px 14px auto;
+  display: flex;
+  block-size: 34px;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  padding-inline: 12px;
+  border-radius: 8px 8px 0 0;
+  background: var(--kui-color-surface-raised);
+}
+
+.kui-editor__device-titlebar > span {
+  inline-size: 12px;
+  block-size: 12px;
+  border-radius: var(--kui-radius-circle);
+  background: var(--kui-color-neutral-border-loud);
+}
+
+/* A Home-button phone's button, centered in its lower bezel. */
+.kui-editor__device-button {
+  display: none;
+}
+
+.kui-editor__device-body[data-frame="home-button"] .kui-editor__device-button {
+  position: absolute;
+  inset-block-end: 14px;
+  inset-inline-start: 50%;
+  display: block;
+  inline-size: 44px;
+  block-size: 44px;
+  box-sizing: border-box;
+  border: 2px solid var(--kui-color-neutral-on-loud);
+  border-radius: var(--kui-radius-circle);
+  opacity: 0.6;
+  translate: -50% 0;
+}
+
+.kui-editor__device-body[data-frame="home-button"][data-orientation="landscape"]
+  .kui-editor__device-button {
+  inset-block: 50% auto;
+  inset-inline: auto 14px;
+  translate: 0 -50%;
+}
+
 /* The device's whole screen, with its edge outside it. In a browser tab the
    frame sits inside it, below and beside the browser's chrome. */
 .kui-editor__device {
   position: relative;
   box-sizing: content-box;
+  overflow: hidden;
   border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: var(--_kui-editor-screen-radius);
+  background: var(--kui-color-surface-raised);
+}
+
+/* The screen's drawn parts: over the view, never in its way. */
+.kui-editor__device-status,
+.kui-editor__device-cutout,
+.kui-editor__device-address,
+.kui-editor__device-home {
+  position: absolute;
+  z-index: 1;
+  display: none;
+  pointer-events: none;
+}
+
+/* The status bar fills the top band: the safe area an installed app runs
+   under, or a tab's chrome. Phones hide it in landscape. */
+.kui-editor__device-body:is(
+    [data-frame="dynamic-island"],
+    [data-frame="punch-hole"],
+    [data-frame="home-button"]
+  )[data-orientation="portrait"]
+  .kui-editor__device-status,
+.kui-editor__device-body[data-frame="tablet"] .kui-editor__device-status {
+  inset: 0 0 auto;
+  display: flex;
+  block-size: var(--_kui-editor-status);
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding-inline: 32px 24px;
+  color: var(--kui-color-text);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.kui-editor__device-body:is([data-frame="tablet"], [data-frame="home-button"])
+  .kui-editor__device-status {
+  padding-inline: 16px;
+  font-size: 12px;
+}
+
+/* A camera cutout: a pill below the top edge, or a round hole; at the
+   leading edge in landscape (a hole on the trailing edge). */
+.kui-editor__device-cutout {
+  border-radius: var(--kui-radius-pill);
+  background: #000;
+}
+
+.kui-editor__device-body[data-frame="dynamic-island"]
+  .kui-editor__device-cutout {
+  inset: 11px auto auto 50%;
+  display: block;
+  inline-size: 126px;
+  block-size: 37px;
+  translate: -50% 0;
+}
+
+.kui-editor__device-body[data-frame="dynamic-island"][data-orientation="landscape"]
+  .kui-editor__device-cutout {
+  inset: 50% auto auto 11px;
+  inline-size: 37px;
+  block-size: 126px;
+  translate: 0 -50%;
+}
+
+.kui-editor__device-body[data-frame="punch-hole"] .kui-editor__device-cutout {
+  inset: 14px auto auto 50%;
+  display: block;
+  inline-size: 22px;
+  block-size: 22px;
+  translate: -50% 0;
+}
+
+.kui-editor__device-body[data-frame="punch-hole"][data-orientation="landscape"]
+  .kui-editor__device-cutout {
+  inset: 50% 14px auto auto;
+  translate: 0 -50%;
+}
+
+/* A browser tab's address bar, in its bottom toolbar band when the band has
+   room for one. */
+.kui-editor__device-body[data-toolbar="true"] .kui-editor__device-address {
+  inset: calc(100% - var(--_kui-editor-bottom) + 3px) 20% auto;
+  display: block;
+  block-size: calc(var(--_kui-editor-bottom) - 19px);
+  border-radius: var(--kui-radius-pill);
+  background: var(--kui-color-neutral-fill-normal);
+}
+
+/* The home indicator, along the bottom edge. */
+.kui-editor__device-body:is(
+    [data-frame="dynamic-island"],
+    [data-frame="punch-hole"],
+    [data-frame="tablet"]
+  )
+  .kui-editor__device-home {
+  inset: auto auto 6px 50%;
+  display: block;
+  inline-size: min(134px, 36%);
+  block-size: 5px;
+  border-radius: var(--kui-radius-pill);
+  background: var(--kui-color-text);
+  translate: -50% 0;
+}
+
+.kui-editor__device-body[data-frame="tablet"] .kui-editor__device-home {
+  inline-size: min(320px, 30%);
+}
+
+/* Chrome off: nothing drawn, the same layout. */
+.kui-editor__device-body[data-chrome="false"]
+  :is(
+    .kui-editor__device-bezel,
+    .kui-editor__device-foot,
+    .kui-editor__device-status,
+    .kui-editor__device-cutout,
+    .kui-editor__device-address,
+    .kui-editor__device-home
+  ) {
+  visibility: hidden;
+}
+
+.kui-editor__device-body[data-chrome="false"] .kui-editor__device {
+  border-radius: 0;
   background: var(--kui-color-neutral-fill-quiet);
 }
 

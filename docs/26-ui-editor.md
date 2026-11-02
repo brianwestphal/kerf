@@ -1241,9 +1241,10 @@ diff <doc…>` takes `--target js`, `--declarations-only`, and extra
 Device emulation (KF-R7KXSN) is built: presets, orientation, Installed app
 safe areas, Scale, and Flexible sizing (§11.2, §11.3).
 
+Mock device frames (KF-E8T0AY) are built.
+
 Not built yet:
 
-- Frames (KF-E8T0AY).
 - Actions and the action log (§11.5, KF-RF6RCS).
 
 Their decisions were signed off on 2026-11-02.
@@ -1318,6 +1319,43 @@ Their decisions were signed off on 2026-11-02.
     can't hold. KF-59BF6C tracks the component gap; the note is in
     `ui/docs/editor-host.md` meanwhile.
   - Browser toolbars aren't subtracted (§11.3).
+
+**As built (KF-E8T0AY).**
+
+- **The frame is CSS shapes around the screen**, keyed on the preset's
+  `frame`:
+  - `dynamic-island`: a pill cutout.
+  - `punch-hole`: a round camera.
+  - `home-button`: tall bezels and a round button.
+  - `tablet`.
+  - `laptop`: a bezel, a window title bar with three neutral controls, and
+    a deck.
+  - `monitor`: a bezel and a stand.
+  - `none`: Flexible.
+- **The screen's parts:**
+  - A status bar ("12:00" and generic signal and battery glyphs). Phones
+    drop it in landscape.
+  - A home indicator.
+  - In a tab, a browser address bar wherever the bottom band has room for
+    one (30px or more). Today that's only the iPhone 17 and Pro Max in
+    portrait, since `browserChrome` is the safe areas (KF-FNQFPJ).
+  - The status bar and bottom band are the safe areas an installed app
+    runs under, or a tab's chrome bands.
+- **No branding.** There's no artwork, logo, or wordmark, only shapes.
+- **Colors** come from tokens, so both schemes read:
+  - the body is `--kui-color-neutral-fill-loud` (dark gray in light mode,
+    light gray in dark mode), with a `--kui-color-neutral-border-loud` rim
+  - the cutouts are black
+  - the status bar and home indicator use `--kui-color-text`, the scheme the
+    played page also follows
+  - a tab's bands use `--kui-color-surface-raised`
+- **Layout.** The body's padding (the bezel and any foot) is the same with
+  the frame shown or hidden. Every drawn part is absolutely positioned,
+  `aria-hidden`, and ignores the pointer. Fit measures the whole body.
+- **Chrome** is the play bar's Device frame toggle (on by default,
+  remembered, disabled for Flexible). Off, it hides every drawn part and
+  squares the screen, without moving or resizing the frame.
+- **Not drawn:** laptops and monitors are upright only; they don't rotate.
 
 Play mode lets an author use the designed view as its users would. In play
 mode the canvas stops being an editing surface: clicks, keys, drags, and

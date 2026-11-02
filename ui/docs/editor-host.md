@@ -219,7 +219,7 @@ the device's safe areas are outside the page, as with the default
 through Kerf UI's `--kui-safe-area-*` tokens, so components that claim safe
 areas lay out as on the device. **Scale** is Fit (the default, never larger
 than 100%) or a fixed percentage, which may overflow and scroll the stage.
-The frame's viewport is always the device's, so media queries and
+The view sits in a generic mock of the device. The **Device frame** toggle hides it without changing the layout. The frame's viewport is always the device's, so media queries and
 `deviceClass()` inside it answer for that device. Touch input, pixel
 density, and the on-screen keyboard aren't emulated. The editor remembers
 the choice per browser.

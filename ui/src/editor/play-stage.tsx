@@ -5,7 +5,7 @@
 // viewport and scales it. The frame's sizes are set here, outside the
 // morph, so a device change resizes the running view instead of reloading it.
 import { delegate, effect, type SafeHtml, signal } from 'kerfjs';
-import { HousePlus, RotateCwSquare } from 'lucide';
+import { Frame, HousePlus, RotateCwSquare } from 'lucide';
 
 import { Button } from '../components/actions/button/button.js';
 import { Toolbar } from '../components/actions/toolbar/toolbar.js';
@@ -23,6 +23,7 @@ import {
   type DeviceEmulation,
   type DevicePreset,
   emulate,
+  frameBands,
   installs,
   parsePlaySettings,
   PLAY_SCALES,
@@ -38,6 +39,32 @@ import { playPageUrl } from './player.js';
 export const PLAY_SETTINGS_KEY = 'kerf-ui-editor:play';
 const ROTATE_ACTION = 'editor-play-rotate';
 const INSTALLED_ACTION = 'editor-play-installed';
+const CHROME_ACTION = 'editor-play-chrome';
+
+/**
+ * KF-E8T0AY: a mock status bar's generic signal and battery glyphs, shapes
+ * only, in the text color.
+ */
+const statusGlyphs = (
+  <svg viewBox="0 0 44 12" width="44" height="12" aria-hidden="true">
+    <rect x="0" y="8" width="3" height="4" rx="1" fill="currentColor" />
+    <rect x="5" y="6" width="3" height="6" rx="1" fill="currentColor" />
+    <rect x="10" y="3" width="3" height="9" rx="1" fill="currentColor" />
+    <rect x="15" y="0" width="3" height="12" rx="1" fill="currentColor" />
+    <rect
+      x="23.5"
+      y="0.5"
+      width="17"
+      height="11"
+      rx="3"
+      fill="none"
+      stroke="currentColor"
+      opacity="0.5"
+    />
+    <rect x="25.5" y="2.5" width="11" height="7" rx="1.5" fill="currentColor" />
+    <rect x="42" y="4" width="2" height="4" rx="1" fill="currentColor" />
+  </svg>
+);
 
 /** Adds a listener and returns its disposer. */
 function on<Type extends keyof HTMLElementEventMap>(
@@ -185,6 +212,18 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
                 disabled={!installs(preset.kind)}
                 icon={<LucideIcon icon={HousePlus} name="house-plus" />}
               />
+              <ToolbarButton
+                ariaLabel="Device frame"
+                title={
+                  flexible
+                    ? 'Flexible has no device frame'
+                    : 'Show the mock device around the view'
+                }
+                action={CHROME_ACTION}
+                pressed={!flexible && current.chrome}
+                disabled={flexible}
+                icon={<LucideIcon icon={Frame} name="frame" />}
+              />
             </ToolbarControlGroup>
             <ToolbarControlGroup single focusRing="outline">
               <Select<PlayScale>
@@ -221,15 +260,36 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
       <div class="kui-editor__stage" data-key="editor-stage" data-editor-stage>
         <div class="kui-editor__device-box" data-morph-skip>
           <div class="kui-editor__device-scaler">
-            <div class="kui-editor__device" data-editor-play-device>
-              <iframe
-                class="kui-editor__device-frame"
-                title={title}
-                src={playPageUrl(globalThis.location.href)}
-                width={String(emulated.viewport.width)}
-                height={String(emulated.viewport.height)}
-                data-editor-play-frame
-              />
+            {/* KF-E8T0AY: the mock device. Its body's padding is the
+                bezel, the same with the frame shown or hidden; every
+                drawn part is decoration over or around the screen. */}
+            <div class="kui-editor__device-body" data-editor-play-body>
+              <div class="kui-editor__device-bezel" aria-hidden="true">
+                <span class="kui-editor__device-titlebar">
+                  <span />
+                  <span />
+                  <span />
+                </span>
+                <span class="kui-editor__device-button" />
+              </div>
+              <div class="kui-editor__device-foot" aria-hidden="true" />
+              <div class="kui-editor__device" data-editor-play-device>
+                <iframe
+                  class="kui-editor__device-frame"
+                  title={title}
+                  src={playPageUrl(globalThis.location.href)}
+                  width={String(emulated.viewport.width)}
+                  height={String(emulated.viewport.height)}
+                  data-editor-play-frame
+                />
+                <span class="kui-editor__device-status" aria-hidden="true">
+                  <span class="kui-editor__device-time">12:00</span>
+                  {statusGlyphs}
+                </span>
+                <span class="kui-editor__device-cutout" aria-hidden="true" />
+                <span class="kui-editor__device-address" aria-hidden="true" />
+                <span class="kui-editor__device-home" aria-hidden="true" />
+              </div>
             </div>
           </div>
           {/* Flexible's resize handles, on the device's trailing and
@@ -280,6 +340,7 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
     const scaler = box.querySelector<HTMLElement>(
       '.kui-editor__device-scaler',
     )!;
+    const body = box.querySelector<HTMLElement>('[data-editor-play-body]')!;
     const screen = box.querySelector<HTMLElement>('[data-editor-play-device]')!;
     const frame = box.querySelector<HTMLIFrameElement>(
       '[data-editor-play-frame]',
@@ -298,10 +359,22 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
       frame.height = String(viewport.height);
       frame.style.top = `${offset.top}px`;
       frame.style.left = `${offset.left}px`;
-      screen.dataset.orientation = emulated.orientation;
-      screen.dataset.installed = String(emulated.installed);
+      // KF-E8T0AY: the frame follows the device, its orientation and app
+      // mode, and the Chrome toggle; its bands follow the emulation.
+      const preset = presetOf(settings.value.device);
+      body.dataset.frame = preset.frame;
+      body.dataset.orientation = emulated.orientation;
+      body.dataset.installed = String(emulated.installed);
+      body.dataset.chrome = String(settings.value.chrome);
+      const bands = frameBands(emulated);
+      body.style.setProperty('--_kui-editor-status', `${bands.status}px`);
+      body.style.setProperty('--_kui-editor-bottom', `${bands.bottom}px`);
+      // A tab's bottom band holds an address bar when it has room for one.
+      body.dataset.toolbar = String(
+        !emulated.installed && installs(preset.kind) && bands.bottom >= 30,
+      );
       const style = view.getComputedStyle(stageEl);
-      const outer = { width: screen.offsetWidth, height: screen.offsetHeight };
+      const outer = { width: body.offsetWidth, height: body.offsetHeight };
       const chosen = settings.value.scale;
       scale =
         chosen === 'fit'
@@ -324,7 +397,7 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
       box.style.height = `${reserved.height}px`;
       scaler.style.transform = `scale(${scale})`;
       box.dataset.scale = String(scale);
-      const flexible = presetOf(settings.value.device).kind === 'flexible';
+      const flexible = preset.kind === 'flexible';
       for (const handle of handles) {
         handle.hidden = !flexible;
         const side = handle.dataset.edge === 'inline-end' ? 'width' : 'height';
@@ -428,6 +501,12 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
         'click',
         `[data-action="${INSTALLED_ACTION}"]`,
         () => update({ installed: !settings.value.installed }),
+      ),
+      delegate<HTMLElement>(
+        root,
+        'click',
+        `[data-action="${CHROME_ACTION}"]`,
+        () => update({ chrome: !settings.value.chrome }),
       ),
       ...handles.map((handle) =>
         on(handle, 'pointerdown', (event) => onPointerDown(event, handle)),

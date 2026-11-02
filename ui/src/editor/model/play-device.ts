@@ -301,6 +301,8 @@ export interface PlaySettings {
   /** On: an installed web app. Off: a browser tab. */
   readonly installed: boolean;
   readonly scale: PlayScale;
+  /** KF-E8T0AY: whether the mock device frame shows. */
+  readonly chrome: boolean;
   /** The Flexible device's viewport. */
   readonly flexible: PlaySize;
 }
@@ -310,6 +312,7 @@ export const DEFAULT_PLAY_SETTINGS: PlaySettings = {
   orientation: 'portrait',
   installed: false,
   scale: 'fit',
+  chrome: true,
   flexible: { width: 800, height: 600 },
 };
 
@@ -350,6 +353,7 @@ export function parsePlaySettings(
         : fallback,
     orientation: value.orientation === 'landscape' ? 'landscape' : 'portrait',
     installed: value.installed === true,
+    chrome: value.chrome !== false,
     scale: PLAY_SCALES.some(({ value: scale }) => scale === value.scale)
       ? (value.scale as PlayScale)
       : 'fit',
@@ -447,6 +451,19 @@ export function safeAreaTokens(
     '--kui-safe-area-inline-start': `${rtl ? insets.right : insets.left}px`,
     '--kui-safe-area-inline-end': `${rtl ? insets.left : insets.right}px`,
   };
+}
+
+/**
+ * KF-E8T0AY: the heights a mock frame draws its status bar and bottom
+ * band (home indicator, a tab's toolbar) in: the safe areas an installed
+ * app runs under, or the browser chrome around a tab's viewport.
+ */
+export function frameBands(emulated: DeviceEmulation): {
+  readonly status: number;
+  readonly bottom: number;
+} {
+  const insets = emulated.installed ? emulated.safeArea : emulated.chrome;
+  return { status: insets.top, bottom: insets.bottom };
 }
 
 /** The play bar's short description of an emulation, such as "402 × 778". */

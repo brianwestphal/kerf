@@ -338,3 +338,40 @@ test('Flexible resizes from its fields and its drag handles', async ({
     page.locator('[data-editor-play-size="height"] input'),
   ).toHaveValue(String(Math.round(600 + 50 / scale)));
 });
+
+// KF-E8T0AY: the mock device frame never changes the view's layout.
+test('the Chrome toggle hides the device frame without moving the view', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openDocument(page);
+  await play(page);
+  await expect(stage(page).getByText('Atlas details')).toBeVisible();
+  const frame = page.locator('[data-editor-play-frame]');
+  const bezel = page.locator('.kui-editor__device-bezel');
+  const chrome = page.locator('[data-action="editor-play-chrome"]');
+  for (const [device, scale] of [
+    ['iPhone 17', 'Fit'],
+    ['iPhone SE', '100%'],
+    ['MacBook Air 13"', 'Fit'],
+  ] as const) {
+    await chooseIn(page, 'device', device);
+    await chooseIn(page, 'scale', scale);
+    await expect(bezel).toBeVisible();
+    const shown = await frame.boundingBox();
+    const viewport = await frameViewport(page);
+    await chrome.click();
+    await expect(chrome).toHaveAttribute('aria-pressed', 'false');
+    await expect(bezel).toBeHidden();
+    expect(await frame.boundingBox()).toEqual(shown);
+    expect(await frameViewport(page)).toEqual(viewport);
+    await chrome.click();
+    await expect(bezel).toBeVisible();
+    expect(await frame.boundingBox()).toEqual(shown);
+  }
+  // The frame's parts never take a click from the view.
+  await chooseIn(page, 'device', 'iPhone 17');
+  await page.locator('[data-action="editor-play-installed"]').click();
+  await stage(page).locator('[data-nav-back]').click();
+  await expect(stage(page).getByText('All projects')).toBeVisible();
+});

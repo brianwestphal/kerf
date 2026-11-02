@@ -184,6 +184,7 @@ describe('emulation', () => {
           orientation: 'landscape',
           installed: true,
           scale: '0.5',
+          chrome: false,
           flexible: { width: 50, height: 99999 },
         },
         presets,
@@ -193,6 +194,7 @@ describe('emulation', () => {
       orientation: 'landscape',
       installed: true,
       scale: '0.5',
+      chrome: false,
       flexible: { width: FLEXIBLE_MIN, height: FLEXIBLE_MAX },
     });
     expect(
@@ -295,6 +297,59 @@ describe('the play bar', () => {
       expect(
         control(`[data-action="${action}"]`).hasAttribute('disabled'),
       ).toBe(true);
+  });
+
+  // KF-E8T0AY: the mock device frame.
+  it('draws the device’s frame for its kind, orientation, and app mode', () => {
+    const { control } = play();
+    const body = control('[data-editor-play-body]');
+    const band = (name: string) =>
+      body.style.getPropertyValue(`--_kui-editor-${name}`);
+    expect(body.dataset).toMatchObject({
+      frame: 'dynamic-island',
+      orientation: 'portrait',
+      installed: 'false',
+      chrome: 'true',
+      toolbar: 'true',
+    });
+    // A tab's chrome bands hold the status bar and the address bar.
+    expect([band('status'), band('bottom')]).toEqual(['62px', '34px']);
+    control('[data-action="editor-play-installed"]').click();
+    // An installed app's safe areas hold them instead; no address bar.
+    expect([band('status'), band('bottom')]).toEqual(['62px', '34px']);
+    expect(body.dataset.toolbar).toBe('false');
+    control('[data-action="editor-play-rotate"]').click();
+    expect(body.dataset.orientation).toBe('landscape');
+    expect([band('status'), band('bottom')]).toEqual(['0px', '21px']);
+    choose(control('[data-editor-play="device"]'), 'android-compact');
+    expect(body.dataset.frame).toBe('punch-hole');
+    choose(control('[data-editor-play="device"]'), 'desktop-1080');
+    expect(body.dataset).toMatchObject({
+      frame: 'monitor',
+      orientation: 'portrait',
+      toolbar: 'false',
+    });
+  });
+
+  it('hides the frame with Chrome, remembered, and has none for Flexible', () => {
+    const { control } = play();
+    const chrome = control('[data-action="editor-play-chrome"]');
+    expect(chrome.getAttribute('aria-pressed')).toBe('true');
+    chrome.click();
+    expect(control('[data-editor-play-body]').dataset.chrome).toBe('false');
+    expect(
+      control('[data-action="editor-play-chrome"]').getAttribute(
+        'aria-pressed',
+      ),
+    ).toBe('false');
+    expect(
+      JSON.parse(globalThis.localStorage.getItem(PLAY_SETTINGS_KEY)!).chrome,
+    ).toBe(false);
+    choose(control('[data-editor-play="device"]'), 'flexible');
+    const flexible = control('[data-action="editor-play-chrome"]');
+    expect(flexible.hasAttribute('disabled')).toBe(true);
+    expect(flexible.getAttribute('aria-pressed')).toBe('false');
+    expect(control('[data-editor-play-body]').dataset.frame).toBe('none');
   });
 
   it('scales by a fixed factor, and back to Fit', () => {
