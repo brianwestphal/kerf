@@ -157,6 +157,11 @@ export type PopupMenuProps = PopupMenuTrigger & {
    * height, or `compact`, the height and type of a compact `Button`.
    */
   size?: PopupMenuSize;
+  /**
+   * Quiet text at the bottom of the open menu, below its items, announced as
+   * the menu's description. Submenus don't show it.
+   */
+  popupNote?: string;
   /** Application `data-*` metadata on the menu root. */
   rootAttributes?: PopupMenuDataAttributes;
   /** Native named-slot assignment when composed inside a web component. */
@@ -273,6 +278,7 @@ function renderMenu(
   entries: readonly PopupMenuEntry[],
   name: string | undefined,
   submenu: boolean,
+  note?: string,
 ) {
   return (
     <div
@@ -281,9 +287,15 @@ function renderMenu(
       popover="manual"
       tabindex={-1}
       aria-label={name}
+      aria-description={note}
       data-submenu={submenu ? '' : undefined}
     >
       {renderEntries(entries)}
+      {note ? (
+        <div class="kui-popup-menu__note" aria-hidden="true">
+          {note}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -348,6 +360,7 @@ interface PopupMenuContentProps {
   caret: boolean;
   disabled: boolean;
   items: readonly PopupMenuEntry[];
+  popupNote: string | undefined;
 }
 
 /** The trigger and the menu: everything inside the root. */
@@ -360,6 +373,7 @@ function renderContent({
   caret,
   disabled,
   items,
+  popupNote,
 }: PopupMenuContentProps): SafeHtml {
   return (
     <>
@@ -396,7 +410,7 @@ function renderContent({
           ) : null}
         </button>
       )}
-      {renderMenu(items, text ?? label, false)}
+      {renderMenu(items, text ?? label, false, popupNote)}
     </>
   );
 }
@@ -427,6 +441,7 @@ export function PopupMenu({
   slot,
   context = false,
   anchor,
+  popupNote,
 }: PopupMenuProps) {
   if (
     anchor !== undefined &&
@@ -449,6 +464,8 @@ export function PopupMenu({
       String(context),
       // Only a content trigger adds a part, so other menus keep their keys.
       ...(triggerContent === undefined ? [] : [String(triggerContent)]),
+      // Only a note adds a part, so other menus keep their keys.
+      ...(popupNote === undefined ? [] : [`note:${popupNote}`]),
     ],
     items,
   );
@@ -463,6 +480,7 @@ export function PopupMenu({
       caret,
       disabled,
       items,
+      popupNote,
     });
     cachePopupMenuContent(cacheKey, content);
   }

@@ -54,7 +54,7 @@ import { RowDemo } from './row.js';
 import { ScrollEffectDemo, ScrollEffectSettings } from './scroll-effect.js';
 import { SearchFieldDemo } from './search-field.js';
 import { SegmentedControlDemo } from './segmented-control.js';
-import { SelectDemo } from './select.js';
+import { SelectDemo, SelectSettings } from './select.js';
 import { SizedRegionDemo } from './sized-region.js';
 import { SkeletonDemo } from './skeleton.js';
 import { SliderDemo } from './slider.js';
@@ -179,6 +179,7 @@ export const demoSettings: Partial<
   >
 > = {
   badge: BadgeSettings,
+  select: SelectSettings,
   pane: PaneSettings,
   'scroll-effect': ScrollEffectSettings,
 };

@@ -51,6 +51,9 @@ const ROTATE_ACTION = 'editor-play-rotate';
 const INSTALLED_ACTION = 'editor-play-installed';
 const CHROME_ACTION = 'editor-play-chrome';
 const LOG_ACTION = 'editor-play-log';
+/** The device menu's note: what play mode doesn't emulate (§11.3). */
+export const NOT_EMULATED =
+  'Touch, pixel density, and the on-screen keyboard aren’t emulated.';
 
 /** KF-RF6RCS: how the action log names and tones each outcome. */
 const OUTCOMES: Readonly<
@@ -187,6 +190,8 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
                     </>
                   )
                 }
+                // KF-59BF6C: what play mode doesn't emulate (§11.3).
+                popupNote={NOT_EMULATED}
                 rootAttributes={{ 'data-editor-play': 'device' }}
               />
             </ToolbarControlGroup>

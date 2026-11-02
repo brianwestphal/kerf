@@ -596,3 +596,22 @@ test('a SplitView follows the device: rows push the detail on a phone', async ({
     'page',
   );
 });
+
+// KF-59BF6C: the device menu says what play mode doesn't emulate.
+test('the device menu notes what play mode does not emulate', async ({
+  page,
+}) => {
+  const note =
+    'Touch, pixel density, and the on-screen keyboard aren’t emulated.';
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openDocument(page);
+  await play(page);
+  const select = page.locator('[data-editor-play="device"]');
+  await select.locator('.kui-select__trigger').click();
+  await expect(select.locator('.kui-select__note')).toBeVisible();
+  await expect(select.locator('.kui-select__note')).toHaveText(note);
+  await expect(select.getByRole('listbox')).toHaveAttribute(
+    'aria-description',
+    note,
+  );
+});

@@ -99,6 +99,12 @@
   --_kui-popup-group-title-padding: remify(3.2px) remify(12px) remify(4.8px);
   --_kui-popup-group-title-font-weight: 750;
   --_kui-popup-caret-open-rotation: -180deg;
+  /* A popup's note (KF-59BF6C: `popupNote`): quiet text below the choices,
+     set off by a hairline, on the group titles' horizontal inset. */
+  --_kui-popup-note-gap: remify(4px);
+  --_kui-popup-note-padding: remify(8px) remify(12px) remify(4px);
+  --_kui-popup-note-font-size: var(--kui-font-s);
+  --_kui-popup-note-line-height: 1.4;
   /* The theme's brand text color as the root resolves it. A scoped tint
      clamps its lightness for links and brand text (below); it lives outside
      the palette block, so a tint inherits the root's brand rather than

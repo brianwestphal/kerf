@@ -1242,7 +1242,10 @@ application handles `kui-request-close` and updates its state. See
 `ui/tests/browser/dialog-stack.spec.ts`.
 `ui/src/components/forms/select/select.tsx` renders disabled choices and opt-in multiple-select action
 buttons; the Select controller applies select-all or clear and publishes a
-`change` event for changed values.
+`change` event for changed values. Select and PopupMenu (`popup-menu.tsx`)
+take a `popupNote` (KF-59BF6C), the popup's last child and the listbox's or
+menu's `aria-description`, styled by each from the shared
+`--_kui-popup-note-*` tokens in `foundation.css`.
 Safe areas: `ui/src/foundation.css` defines the `--kui-safe-area-*` device insets
 (default `env(safe-area-inset-*)`); the pane and layout stylesheets route the
 inherited `--kui-edge-inset-*` edge context so surfaces paint through unsafe areas

@@ -485,6 +485,20 @@
   text-transform: uppercase;
 }
 
+/* KF-59BF6C: the popup note, below the choices. It wraps to the width the
+   choices give the popup and never widens it. */
+.kui-select__note {
+  margin-block-start: calc(
+    var(--_kui-popup-note-gap) + var(--_kui-popup-row-gap)
+  );
+  padding: var(--_kui-popup-note-padding);
+  border-block-start: 1px solid var(--kui-color-neutral-border-quiet);
+  color: var(--kui-color-text-quiet);
+  font-size: var(--_kui-popup-note-font-size);
+  line-height: var(--_kui-popup-note-line-height);
+  contain: inline-size;
+}
+
 .kui-select__actions {
   display: flex;
   gap: remify(4px);

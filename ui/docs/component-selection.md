@@ -522,6 +522,9 @@ selected text stays on one ellipsized line when the trigger narrows.
 For an unavailable entry, set `SelectChoice.disabled` and optionally
 `disabledReason`; the option stays visible but cannot be chosen. A multiple
 `Select` can opt in to `selectAllLabel` and `clearLabel` footer buttons.
+A `popupNote` on `Select` or `PopupMenu` puts quiet text at the bottom of the
+open popup (what the choices leave out); a toolbar Select uses it where a
+form Select would use `hint`.
 Select all includes only enabled choices, Clear removes the selection, and
 both report changes through the normal `input` and `change` events. The app
 still owns the controlled `value` and localized action labels.

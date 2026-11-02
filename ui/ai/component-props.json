@@ -8915,6 +8915,12 @@
           "description": "The button trigger's size: `standard` (default), the 44px control\nheight, or `compact`, the height and type of a compact `Button`."
         },
         {
+          "name": "popupNote",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Quiet text at the bottom of the open menu, below its items, announced as\nthe menu's description. Submenus don't show it."
+        },
+        {
           "name": "rootAttributes",
           "type": {
             "kind": "object",
@@ -10457,6 +10463,12 @@
           "description": "Supporting text shown below the control and announced as its description.",
           "group": "Content",
           "order": 7
+        },
+        {
+          "name": "popupNote",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Quiet text at the bottom of the open popup, below the choices, announced\nas the listbox's description: what the choices leave out, for instance.\nUnlike `hint`, it needs no room below the trigger, so a toolbar Select\ncan carry one."
         },
         {
           "name": "disabled",

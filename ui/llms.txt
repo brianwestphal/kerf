@@ -483,6 +483,10 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   repair popup timing or anchor placement; raw Web Awesome selects stay native.
   Use `hint` for supporting text below the control and `placeholderText` only
   for the empty value inside it; loading placeholders retain the visible hint.
+  `popupNote` (on `Select` and `PopupMenu`) is quiet text at the bottom of
+  the open popup, announced as the listbox's or menu's description; use it
+  for what the choices leave out, notably in a toolbar Select, which has no
+  room for a `hint` below its trigger.
 - **Trust the defaults.** Render a control at its natural size and color (a
   `LucideIcon` is 24px); if it looks wrong, fix the surrounding layout, not the
   control. Never force a component's width/height to size it — that leaves a halo

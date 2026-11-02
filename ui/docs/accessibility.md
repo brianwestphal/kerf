@@ -65,6 +65,12 @@ popup open, select only enabled choices or clear the selection, and emit the
 ordinary `input` and `change` events only when the value changes. Their labels
 come from the application so they can be localized.
 
+A `popupNote` (on `Select` and on `PopupMenu`'s top-level menu) is quiet text
+at the bottom of the open popup. It is the listbox's or menu's
+`aria-description`, so a screen reader announces it with the list, and the
+visible line is `aria-hidden`: it is never an option or menu item and takes no
+focus.
+
 A toolbar filter menu (a "Filter by label" funnel) is a multiple Select with
 `selectedPresentation="icon-only"` and a fixed `triggerIcon`; the types accept
 `triggerIcon` only there, and require it there, because no single chosen

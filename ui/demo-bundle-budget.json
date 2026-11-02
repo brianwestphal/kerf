@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 448500,
+  "totalJavaScriptGzip": 449100,
   "measuredLargestJavaScriptGzip": 164547,
-  "measuredTotalJavaScriptGzip": 448479,
+  "measuredTotalJavaScriptGzip": 449002,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6579,6 +6579,22 @@
         "measuredTotalJavaScriptGzip": 448479,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 448500
+      }
+    },
+    {
+      "at": "2026-11-02T11:47:00.515Z",
+      "reason": "KF-59BF6C: the Select demo's Popup Note example and its Settings pane (popupNote on Select and PopupMenu)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 448479,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 448500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 449002,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 449100
       }
     }
   ]

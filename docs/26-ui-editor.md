@@ -1326,11 +1326,10 @@ Their decisions were signed off on 2026-11-02.
   `var(--kui-safe-area-*, …)` read, and `foundation.css` always defines the
   tokens, so nothing bypasses them.
 - **Deviations:**
-  - The "not emulated" note isn't in the device menu yet. `Select` has no
-    popup note, and its `hint` renders below the trigger, which a toolbar
-    can't hold. KF-59BF6C tracks the component gap; the note is in
-    `ui/docs/editor-host.md` meanwhile.
   - Browser toolbars aren't subtracted (§11.3).
+- **The "not emulated" note** is the Device `Select`'s `popupNote`
+  (KF-59BF6C): quiet text at the bottom of the open device menu, announced
+  as the listbox's description.
 
 **As built (KF-E8T0AY).**
 
@@ -1577,8 +1576,9 @@ document and its param values by `postMessage` and renders them with
   layout size, and therefore every viewport query, stays the preset's.
 - **Not emulated:** touch input (`pointer: coarse`, `hover: none`), device
   pixel ratio, the on-screen keyboard, and the browser's own scrolling chrome
-  collapse. The play bar says so in its device menu's hint. Real-device checks
-  stay a manual test-plan item.
+  collapse. The play bar says so in a note at the bottom of its device menu
+  (the Device `Select`'s `popupNote`). Real-device checks stay a manual
+  test-plan item.
 
 ### 11.4 Behavior while playing
 

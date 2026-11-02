@@ -724,6 +724,11 @@ type PopupMenuProps = PopupMenuTrigger & {
      * height, or `compact`, the height and type of a compact `Button`.
      */
     size?: PopupMenuSize;
+    /**
+     * Quiet text at the bottom of the open menu, below its items, announced as
+     * the menu's description. Submenus don't show it.
+     */
+    popupNote?: string;
     /** Application `data-*` metadata on the menu root. */
     rootAttributes?: PopupMenuDataAttributes;
     /** Native named-slot assignment when composed inside a web component. */
@@ -765,7 +770,7 @@ declare function closePopupMenu(menu: PopupMenuElement): void;
  * submenus appear above or below their parent menu so their rows do not cover
  * the parent list.
  */
-declare function PopupMenu({ text, label, icon, triggerContent, items, placement, caret, disabled, emphasis, size, rootAttributes, slot, context, anchor, }: PopupMenuProps): SafeHtml;
+declare function PopupMenu({ text, label, icon, triggerContent, items, placement, caret, disabled, emphasis, size, rootAttributes, slot, context, anchor, popupNote, }: PopupMenuProps): SafeHtml;
 
 export { PopupMenu, type PopupMenuAnchor, type PopupMenuDivider, type PopupMenuElement, type PopupMenuEmphasis, type PopupMenuEntry, type PopupMenuHeading, type PopupMenuItem, type PopupMenuPlacement, type PopupMenuProps, type PopupMenuSize, closePopupMenu, openPopupMenu, openPopupMenuAt };
 ```
@@ -3986,6 +3991,13 @@ interface SelectBaseProps<Value extends string = string> {
     placeholderText?: string;
     /** Supporting text shown below the control and announced as its description. */
     hint?: string;
+    /**
+     * Quiet text at the bottom of the open popup, below the choices, announced
+     * as the listbox's description: what the choices leave out, for instance.
+     * Unlike `hint`, it needs no room below the trigger, so a toolbar Select
+     * can carry one.
+     */
+    popupNote?: string;
     disabled?: boolean;
     /** Match menu width to the trigger; default menus grow to content within viewport gutters. */
     fitMenu?: boolean;

@@ -59,6 +59,7 @@ Exact prop names and types: [`@kerfjs/ui/select`](../public-api-signatures-v1.md
 - opt-in select-all and clear actions for multiple selection
 - multiple icon-only filter trigger with a fixed triggerIcon
 - maxTriggerWidth / minTriggerWidth bounds on the closed trigger under any presentation, ellipsizing custom selected content
+- popupNote: quiet text at the bottom of the open popup
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
 
@@ -88,6 +89,7 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 - Verify the live value, standard events, focus, and rendered output.
 - The trigger is a native button with role="combobox", aria-haspopup="listbox", and aria-expanded. A nonempty label names it (the visible label is aria-hidden text beside it); otherwise ariaLabel names it without adding control height, including custom selected content.
 - Hint text is visible below the control and is the trigger's aria-description; placeholderText remains the empty value inside the closed control.
+- popupNote is quiet text at the bottom of the open popup, below the choices (and a multiple Select's actions), and the listbox's aria-description; the visible line is aria-hidden, never an option, and wraps to the choices' width. Use it, not hint, for what the choices leave out in a toolbar Select, which has no room below its trigger.
 - Import select/register once: it defines the form-associated kui-select root (value, name, form submission, and form reset) and wires every Select in the document. The listbox opens below the trigger in the top layer, flipping above when short and capped at the viewport edges. Do not add consumer popup timing or position repairs.
 - Keyboard: Enter, Space, ArrowDown, or ArrowUp on the trigger opens on the chosen option (Home/End on the first/last), and typing opens on a matching label; in the listbox the arrows move and wrap, Home/End jump, typing a label's first letters moves to it, Enter or Space chooses, Escape closes and returns focus to the trigger, and Tab closes and continues from the trigger.
 - With multiple, the listbox (aria-multiselectable) stays open while choices toggle (pointer, Enter, or Space) and closes on an outside press, Escape, or Tab; each chosen option shows a check, and the closed control summarizes the chosen labels in choice order.

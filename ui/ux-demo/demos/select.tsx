@@ -1,7 +1,9 @@
 import { Badge } from '@kerfjs/ui/badge';
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { remify, uiColor } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
+import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
@@ -13,6 +15,7 @@ import {
   ToolbarButton,
   ToolbarControlGroup,
 } from '@kerfjs/ui/toolbar-control-group';
+import { signal } from 'kerfjs';
 import { Bell, Ellipsis, Funnel, Pin, SlidersHorizontal, Wrench } from 'lucide';
 
 import {
@@ -36,6 +39,72 @@ const labelChoices = [
   { value: 'design', label: 'Design' },
   { value: 'performance', label: 'Performance' },
 ];
+
+/** KF-59BF6C: whether the Popup Note example's Select carries its note. */
+export type SelectPopupNoteSetting = 'shown' | 'hidden';
+const POPUP_NOTE_INITIAL: SelectPopupNoteSetting = 'shown';
+const POPUP_DEVICE_INITIAL = 'phone';
+export const selectPopupNote =
+  signal<SelectPopupNoteSetting>(POPUP_NOTE_INITIAL);
+/** The Popup Note example's chosen device. */
+export const popupNoteDevice = signal(POPUP_DEVICE_INITIAL);
+
+const POPUP_NOTE_CHOICES: { value: SelectPopupNoteSetting; label: string }[] = [
+  { value: 'shown', label: 'Shown' },
+  { value: 'hidden', label: 'Hidden' },
+];
+const deviceChoices = [
+  { value: 'phone', label: 'Phone', group: 'Handheld' },
+  { value: 'tablet', label: 'Tablet', group: 'Handheld' },
+  { value: 'laptop', label: 'Laptop', group: 'Desktop' },
+];
+
+/** Return the Popup Note example to its documented state. */
+export function resetSelectDemo(): void {
+  selectPopupNote.value = POPUP_NOTE_INITIAL;
+  popupNoteDevice.value = POPUP_DEVICE_INITIAL;
+}
+
+/**
+ * Apply a Select entry change (its settings pane, or the Popup Note
+ * example's own choice); false when it is not one.
+ */
+export function applySelectSetting(
+  name: string | null,
+  value: string,
+): boolean {
+  if (name === 'select-popup-note') {
+    const setting = POPUP_NOTE_CHOICES.find((choice) => choice.value === value);
+    if (!setting) return false;
+    selectPopupNote.value = setting.value;
+    return true;
+  }
+  if (name === 'popup-note-device') {
+    if (!deviceChoices.some((choice) => choice.value === value)) return false;
+    popupNoteDevice.value = value;
+    return true;
+  }
+  return false;
+}
+
+/** The Select entry's catalog settings: the Popup Note example and a reset. */
+export function SelectSettings() {
+  return (
+    <>
+      <ListInsetControl sides="trl">
+        <Select
+          name="select-popup-note"
+          label="Popup Note"
+          value={selectPopupNote.value}
+          choices={POPUP_NOTE_CHOICES}
+        />
+      </ListInsetControl>
+      <ListInsetControl sides="trbl">
+        <Button action="select-reset">Reset</Button>
+      </ListInsetControl>
+    </>
+  );
+}
 
 export function SelectDemo() {
   return (
@@ -338,6 +407,33 @@ export function SelectDemo() {
                   />
                 )}
                 choices={toolbarChoices}
+              />
+            </ToolbarControlGroup>
+          }
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Popup Note"
+        note="popupNote is quiet text below the choices, announced as the listbox's description. A toolbar Select has no room for a hint below its trigger. Hide it in the Settings pane."
+        align="inline-control"
+        rootAttributes={{ 'data-select-popup-note': '' }}
+      >
+        <Toolbar
+          label="Preview Device"
+          leading={
+            <ToolbarControlGroup label="Preview Device" single>
+              <Select<string>
+                name="popup-note-device"
+                value={popupNoteDevice.value}
+                ariaLabel="Preview Device"
+                presentation="toolbar-borderless"
+                focusRingOwner="group"
+                choices={deviceChoices}
+                popupNote={
+                  selectPopupNote.value === 'shown'
+                    ? 'Touch input and the on-screen keyboard aren’t emulated.'
+                    : undefined
+                }
               />
             </ToolbarControlGroup>
           }

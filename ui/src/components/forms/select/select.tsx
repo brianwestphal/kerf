@@ -84,6 +84,13 @@ interface SelectBaseProps<Value extends string = string> {
   placeholderText?: string;
   /** Supporting text shown below the control and announced as its description. */
   hint?: string;
+  /**
+   * Quiet text at the bottom of the open popup, below the choices, announced
+   * as the listbox's description: what the choices leave out, for instance.
+   * Unlike `hint`, it needs no room below the trigger, so a toolbar Select
+   * can carry one.
+   */
+  popupNote?: string;
   disabled?: boolean;
   /** Match menu width to the trigger; default menus grow to content within viewport gutters. */
   fitMenu?: boolean;
@@ -240,6 +247,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
     className = '',
     placeholderText,
     hint,
+    popupNote,
     disabled = false,
     fitMenu = false,
     placeholder = false,
@@ -433,6 +441,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
           role="listbox"
           aria-label={accessibleName}
           aria-multiselectable={multiple ? 'true' : undefined}
+          aria-description={popupNote}
         >
           {ungrouped.map(option)}
           {groups.map((group, index) => (
@@ -472,6 +481,11 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
                 {props.clearLabel}
               </button>
             ) : null}
+          </div>
+        ) : null}
+        {popupNote ? (
+          <div class="kui-select__note" aria-hidden="true">
+            {popupNote}
           </div>
         ) : null}
       </div>

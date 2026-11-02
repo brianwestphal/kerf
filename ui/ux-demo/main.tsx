@@ -170,6 +170,7 @@ import {
   SearchFieldHelp,
   TOKEN_SEARCH_HELP_SURFACE_ID,
 } from './demos/search-field.js';
+import { applySelectSetting, resetSelectDemo } from './demos/select.js';
 import {
   resetSliderDemo,
   SET_SLIDER_DEMO_ACTION,
@@ -1277,6 +1278,10 @@ const stopActions = delegateActions(app, 'click', {
     resetPaneDemo();
     actionLog.value = 'Pane reset';
   },
+  'select-reset': () => {
+    resetSelectDemo();
+    actionLog.value = 'Select reset';
+  },
   'scroll-effect-reset': () => {
     resetScrollEffectDemo();
     actionLog.value = 'Scroll effect reset';
@@ -1670,6 +1675,13 @@ const stopSelect = delegate(app, 'change', 'kui-select', (_event, element) => {
   }
   if (
     typeof value === 'string' &&
+    applySelectSetting(element.getAttribute('name'), value)
+  ) {
+    actionLog.value = `Select ${element.getAttribute('name')!}: ${value}`;
+    return;
+  }
+  if (
+    typeof value === 'string' &&
     applyPaneSetting(element.getAttribute('name'), value)
   ) {
     actionLog.value = `Pane height: ${value}`;
@@ -1783,6 +1795,11 @@ const routeWires: Partial<Record<string, RouteWire>> = {
   slider: { reset: resetSliderDemo, target: 'canvas', wire: () => () => {} },
   pane: {
     reset: resetPaneDemo,
+    target: 'canvas',
+    wire: () => () => {},
+  },
+  select: {
+    reset: resetSelectDemo,
     target: 'canvas',
     wire: () => () => {},
   },
