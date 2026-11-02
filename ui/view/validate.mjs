@@ -69,10 +69,20 @@ export function createViewCatalog({ props = [], composition = [] }) {
     }
   }
   const entries = new Map();
+  // A config type another component renders as an entry (KF-THTR71), keyed
+  // `package:TypeName` since type names are only unique within a package.
+  const configParents = new Map();
   for (const document of composition) {
-    for (const entry of document.entries ?? []) entries.set(entry.key, entry);
+    for (const entry of document.entries ?? []) {
+      entries.set(entry.key, entry);
+      for (const name of entry.configTypes ?? [])
+        configParents.set(
+          `${keyOf(entry.key).split(':')[0]}:${name}`,
+          entry.key,
+        );
+    }
   }
-  return { components, entries };
+  return { components, entries, configParents };
 }
 
 function resolveType(type, definitions) {
@@ -105,12 +115,36 @@ const INDEX = /^\d+$/;
  * other key.
  */
 export function fieldZoneOf(component, definitions, key) {
+  const walked = walkField(component, definitions, key);
+  if (!walked) return undefined;
+  const content = walked.types
+    .flatMap((type) => membersOf(type, definitions))
+    .find((type) => type.kind === 'content');
+  return content
+    ? {
+        prop: walked.name,
+        path: walked.path.map((step) =>
+          INDEX.test(step) ? Number(step) : step,
+        ),
+        text: content.acceptsText === true,
+      }
+    : undefined;
+}
+
+/**
+ * The types a field zone key reaches in a component's prop value, with the
+ * named types (`ref`s) of the value that holds that field: a NavStack view's
+ * `views.0.toolbar.leading` is held by a `NavStackViewToolbar`.
+ */
+function walkField(component, definitions, key) {
   if (typeof key !== 'string' || !key.includes('.')) return undefined;
   const [name, ...path] = key.split('.');
   const prop = component.props.find((item) => item.name === name);
   if (!prop || prop.slot || prop.zone) return undefined;
   let types = [prop.type];
+  let holders = [];
   for (const step of path) {
+    holders = types.flatMap((type) => (type.kind === 'ref' ? [type.ref] : []));
     const next = [];
     for (const type of types.flatMap((item) => membersOf(item, definitions))) {
       if (INDEX.test(step)) {
@@ -127,16 +161,22 @@ export function fieldZoneOf(component, definitions, key) {
     if (!next.length) return undefined;
     types = next;
   }
-  const content = types
-    .flatMap((type) => membersOf(type, definitions))
-    .find((type) => type.kind === 'content');
-  return content
-    ? {
-        prop: name,
-        path: path.map((step) => (INDEX.test(step) ? Number(step) : step)),
-        text: content.acceptsText === true,
-      }
-    : undefined;
+  return { name, path, types, holders };
+}
+
+/**
+ * The component a field zone's children are placed in (KF-THTR71): a
+ * content field inside a value another component renders, such as a
+ * NavStack view's toolbar config, which renders as a Toolbar. Undefined when
+ * the field's holder is no cataloged config type.
+ */
+function fieldParent(ctx, node, component, definitions, key) {
+  const pkg = keyOf(node.type).split(':')[0];
+  for (const holder of walkField(component, definitions, key)?.holders ?? []) {
+    const parent = ctx.catalog.configParents?.get(`${pkg}:${holder}`);
+    if (parent) return parent;
+  }
+  return undefined;
 }
 
 /**
@@ -905,6 +945,11 @@ function checkNode(ctx, node, at, scope, rowScoped, parentKey, text = false) {
       );
     }
     if (children.length > 0) present.add(binding.prop);
+    // A field inside a value another component renders (a view's toolbar
+    // config) places its children in that component (KF-THTR71).
+    const parent =
+      (field && fieldParent(ctx, node, component, definitions, zoneKey)) ||
+      node.type;
     children.forEach((child, index) =>
       checkChild(
         ctx,
@@ -912,7 +957,7 @@ function checkNode(ctx, node, at, scope, rowScoped, parentKey, text = false) {
         `${zoneAt}[${index}]`,
         scope,
         rowScoped,
-        node.type,
+        parent,
         binding.text,
       ),
     );

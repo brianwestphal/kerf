@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "description": "gzip byte budgets for the @kerfjs/ui/view runtime entries, measured by scripts/check-view-bundle.mjs with kerfjs external. Lower a budget with --update-budget when an entry shrinks.",
   "entries": {
-    "interpretView": 11500,
-    "validateView": 8300
+    "interpretView": 11600,
+    "validateView": 8400
   },
   "measured": {
-    "interpretView": 11417,
-    "validateView": 8162
+    "interpretView": 11543,
+    "validateView": 8322
   }
 }

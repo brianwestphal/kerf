@@ -1,6 +1,13 @@
 {
   "@kerfjs/ui:toolbar": {
     "_source": "docs/component-selection.md#toolbar-composition",
+    "configTypes": [
+      "NavStackViewToolbar",
+      "PanelBottomToolbar",
+      "PanelToolbar",
+      "WorkbenchMainBottomToolbar",
+      "WorkbenchMainToolbar"
+    ],
     "contexts": [
       "application-chrome",
       "page-header",

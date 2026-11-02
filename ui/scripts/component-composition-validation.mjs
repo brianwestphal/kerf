@@ -73,6 +73,15 @@ export function validateComposition(catalog, options = {}) {
         else if (root === entry.key)
           fail(`${at} rendersAs cannot name the entry itself`);
     }
+    if ('configTypes' in entry) {
+      if (!isStringList(entry.configTypes) || !entry.configTypes.length)
+        fail(`${at} configTypes must be a non-empty unique string list`);
+      for (const name of Array.isArray(entry.configTypes)
+        ? entry.configTypes
+        : [])
+        if (typeof name !== 'string' || !/^[A-Z][A-Za-z0-9]*$/.test(name))
+          fail(`${at} configTypes name ${name} must be a type name`);
+    }
     for (const field of ['insetFreeChildren', 'insetFreeWhen'])
       if (field in entry) {
         const conditions = entry[field];

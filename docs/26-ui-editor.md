@@ -1133,6 +1133,14 @@ apply to a JSON tree instead of JSX: `KUI-L201` (disallowed direct parent),
 counts an `$each` as zero-or-more, an `$if` as zero-or-one, and a `$slot` as
 exactly one.
 
+A field zone inside a value another component renders takes that component as
+its parent (KF-THTR71: a ToolbarControlGroup in a NavStack view's toolbar
+failed `KUI-L201`). A composition entry's `configTypes` names those value
+types; Kerf UI's Toolbar lists `NavStackViewToolbar`, `PanelBottomToolbar`,
+`PanelToolbar`, `WorkbenchMainBottomToolbar`, and `WorkbenchMainToolbar`, so a
+ToolbarControlGroup in `views.0.toolbar.leading` has a Toolbar parent.
+`createViewCatalog` indexes them as `configParents`, keyed `package:TypeName`.
+
 The ESLint rule and the document validator read the same
 `component-composition.json`, so the two cannot drift. Composition entries
 still marked `generated-permissive-default` allow anything, as the catalog

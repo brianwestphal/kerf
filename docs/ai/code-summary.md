@@ -736,7 +736,10 @@ validator for the Kerf UI editor, `docs/26-ui-editor.md`). `validate.mjs`
 `KUI-V001`–`V014` ids are registered in
 `ui/ai/application-ui-diagnostic-ids-v1.json`, along with `KUI-H001`, the first
 non-blocking hint `validateView` returns in its `hints` list (KF-KQ72TW: a
-nested whole-screen layout nothing gives a height). `KUI-V014` (KF-0P9WWB: a
+nested whole-screen layout nothing gives a height). A composition entry's
+`configTypes` (KF-THTR71) names prop-value types another component renders as
+it; `createViewCatalog` indexes them as `configParents`, and a field zone inside
+one (a NavStack view's toolbar) takes that component as its parent. `KUI-V014` (KF-0P9WWB: a
 control or link inside a component whose root is one) reads each composition
 entry's `content` rules (`interactive` / per-export `exports`, each
 `{ kind: root | contains, whenProps? }`), declared in

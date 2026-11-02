@@ -1448,3 +1448,63 @@ describe('KUI-H001 unsized nested layout hints', () => {
     expect(hintsOf(null).hints).toEqual([]);
   });
 });
+
+// KF-THTR71: a NavStack view's toolbar config renders as a Toolbar, so a
+// ToolbarControlGroup in its leading/center zones has a Toolbar parent.
+describe('content fields inside a value another component renders', () => {
+  const group = () =>
+    node('toolbar-control-group', {
+      props: { label: 'Sidebar' },
+      zones: {
+        children: [
+          node('toolbar-control-group#ToolbarButton', {
+            props: { ariaLabel: 'Show Sidebar', children: 'Show' },
+          }),
+        ],
+      },
+    });
+  const stack = (zones: Fixture) =>
+    node('nav-stack', {
+      props: {
+        id: 'stack',
+        label: 'Stack',
+        views: [
+          {
+            key: 'library',
+            content: { $slot: 'libraryContent' },
+            toolbar: { title: 'Library' },
+            bottomToolbar: { label: 'Status' },
+          },
+        ],
+      },
+      zones,
+    });
+
+  it('accepts a ToolbarControlGroup in a view toolbar or bottom toolbar', () => {
+    const result = validateView(
+      doc(
+        stack({
+          'views.0.toolbar.leading': [group()],
+          'views.0.toolbar.center': [group()],
+          'views.0.bottomToolbar.trailing': [group()],
+        }),
+      ),
+      catalog,
+    );
+    expect(
+      result.diagnostics.map(({ code, path }) => `${code} ${path}`),
+    ).toEqual([]);
+  });
+
+  it('still requires a Toolbar for a group placed elsewhere', () => {
+    expect(
+      codes(doc(node('pane', { zones: { content: [group()] } }))),
+    ).toContain('KUI-L201');
+  });
+
+  it('indexes each config type under its package', () => {
+    expect(catalog.configParents?.get('@kerfjs/ui:NavStackViewToolbar')).toBe(
+      ui('toolbar'),
+    );
+  });
+});

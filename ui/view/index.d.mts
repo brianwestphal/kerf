@@ -93,6 +93,12 @@ export interface ViewCatalog {
     { component: unknown; definitions: Record<string, ViewType> }
   >;
   readonly entries: ReadonlyMap<string, unknown>;
+  /**
+   * Config types another component renders as a cataloged one, keyed
+   * `package:TypeName` (a NavStack view's toolbar config renders as a
+   * Toolbar); a content field inside one is placed in that component.
+   */
+  readonly configParents?: ReadonlyMap<string, string>;
 }
 
 /** Indexes component-props and composition catalogs (Kerf UI's and any consumer's). */
