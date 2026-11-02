@@ -180,6 +180,29 @@ export async function chooseField(
   await select.getByRole('option', { name: option, exact: true }).click();
 }
 
+/**
+ * Embeds the selected node in a new container from the Embed in section of
+ * the Inspector's Flow area (KF-6MGYSG); the container is selected afterwards.
+ */
+export async function embedIn(page: Page, name: string) {
+  await area(page, 'Flow');
+  await page
+    .locator('[data-editor-embed-section] [data-editor-embed]', {
+      hasText: new RegExp(`^${name}$`),
+    })
+    .click();
+}
+
+/** A whole-screen layout embedded as Embed in › SizedRegion leaves it. */
+export const sized = (layout: unknown) =>
+  node(
+    'sized-region',
+    { minHeight: { $css: 'rem(20)' } },
+    {
+      children: [layout],
+    },
+  );
+
 /** Turns a boolean field of a prop value on. */
 export async function turnFieldOn(
   page: Page,

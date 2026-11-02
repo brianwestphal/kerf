@@ -38,6 +38,7 @@ import {
   FilePlus,
   FolderOpen,
   GitCompare,
+  Group,
   icons as lucideIcons,
   Plus,
   Redo2,
@@ -114,7 +115,7 @@ import {
   rememberPath,
 } from './autosave.js';
 import { type CanvasDropSurface, wireCanvasDrag } from './canvas-drag.js';
-import type { ComponentFunction, EditorCatalog } from './catalog.js';
+import type { EditorCatalog } from './catalog.js';
 import {
   ADD_SLOT_ACTION,
   addSlotFields,
@@ -173,6 +174,7 @@ import {
   bindingOptions,
   copyChild,
   duplicateNode,
+  embedNode,
   History,
   insertNode,
   isMovable,
@@ -318,6 +320,27 @@ const ICON_CHOOSE_ACTION = 'editor-choose-icon';
 const ICON_REMOVE_ACTION = 'editor-remove-icon';
 const ICON_CLEAR_ACTION = 'editor-clear-icon-search';
 const ICON_DIALOG = 'editor-icon-dialog';
+const EMBED_ACTION = 'editor-embed';
+const EMBED_OTHER_ACTION = 'editor-embed-other';
+const EMBED_CLEAR_ACTION = 'editor-embed-clear';
+const EMBED_DIALOG = 'editor-embed-dialog';
+/**
+ * The containers Embed in offers first (KF-6MGYSG); Other… lists every
+ * container that can hold the node.
+ */
+const EMBED_FIRST = [
+  '@kerfjs/ui:sized-region',
+  '@kerfjs/ui:list-inset-control',
+  '@kerfjs/ui:list-inset-text',
+];
+/**
+ * Props a new container starts with when it embeds a node: a SizedRegion
+ * keeps a usable height even where its parent sizes to its content, such as
+ * the canvas's root Pane.
+ */
+const EMBED_PROPS: Readonly<Record<string, Record<string, ViewValue>>> = {
+  '@kerfjs/ui:sized-region': { minHeight: { $css: 'rem(20)' } },
+};
 // KF-CY1D5W: a list of objects or union items edits item by item.
 const FIELD_ADD_ITEM_ACTION = 'editor-add-item';
 const FIELD_REMOVE_ITEM_ACTION = 'editor-remove-item';
@@ -388,53 +411,6 @@ const slotPlaceholders = (
           : Text({ children: `${String(name)} slot`, tone: 'quiet' });
     },
   });
-
-/**
- * Kerf UI's whole-screen layouts: each fills its parent's height and has no
- * height of its own, so it collapses to its chrome in a content-sized parent.
- */
-const SCREEN_LAYOUTS = [
-  '@kerfjs/ui:nav-stack',
-  '@kerfjs/ui:split-view',
-  '@kerfjs/ui:tab-navigator',
-  '@kerfjs/ui:workbench',
-];
-
-/** The region that gives a whole-screen layout its height (KF-63XR5K). */
-const SIZED_REGION = '@kerfjs/ui:sized-region';
-
-/**
- * KF-XXT6P4: a whole-screen layout placed below the document root renders in
- * an editor-owned frame with a usable height, so its content shows on the
- * canvas. As the root it fills the canvas as before, and a parent that
- * already gives it a height keeps doing so (KF-63XR5K): a SizedRegion, or
- * another whole-screen layout's tab, view, or region.
- */
-function framedScreens(
-  components: Readonly<Record<string, ComponentFunction>>,
-  document: ViewDocument,
-): Readonly<Record<string, ComponentFunction>> {
-  const sized = new Set([
-    document.root.id,
-    ...visitNodes(document).flatMap(({ node, ancestors }) => {
-      const parent = ancestors.at(-1)?.node.type;
-      return parent === SIZED_REGION || SCREEN_LAYOUTS.includes(parent!)
-        ? [node.id]
-        : [];
-    }),
-  ]);
-  const framed = { ...components };
-  for (const key of SCREEN_LAYOUTS.filter((key) => key in components)) {
-    const render = components[key]!;
-    framed[key] = ((props: { rootAttributes?: Record<string, string> }) =>
-      sized.has(props.rootAttributes?.['data-kerf-node'] ?? '') ? (
-        render(props as never)
-      ) : (
-        <div class="kui-editor__screen">{render(props as never)}</div>
-      )) as ComponentFunction;
-  }
-  return framed;
-}
 
 /** The canvas renderer for one catalog. */
 function canvasRenderer(catalog: EditorCatalog) {
@@ -524,7 +500,7 @@ function canvasRenderer(catalog: EditorCatalog) {
     const primaryZones = new Map(
       visitNodes(source).map(({ node }) => [node.id, primaryZoneOf(node)]),
     );
-    const components = framedScreens(catalog.components, document);
+    const { components } = catalog;
     const preview = {
       catalog: viewCatalog,
       components,
@@ -834,6 +810,10 @@ export function createEditor(options: EditorOptions) {
   /** The icon picker's search, and its field's revision (to clear it). */
   const iconQuery = signal('');
   const iconQueryRevision = signal(0);
+  /** The node the Embed in dialog embeds, and its filter (KF-6MGYSG). */
+  const embedTarget = signal<string | null>(null);
+  const embedQuery = signal('');
+  const embedQueryRevision = signal(0);
   /** Every Lucide icon's document name, listed on first use. */
   let allIcons: readonly string[] | undefined;
   let allAliases: ReadonlyMap<string, readonly string[]> | undefined;
@@ -955,6 +935,36 @@ export function createEditor(options: EditorOptions) {
         disabled={!nodeId}
       />
     ));
+
+  /**
+   * One row per hint; a nested layout's hint (`KUI-H001`) carries its fix,
+   * Embed in SizedRegion (KF-6MGYSG).
+   */
+  const hintRows = (hints: readonly Problem[]) => {
+    const plain = problemRows(hints);
+    return hints.map(({ diagnostic, nodeId }, index) =>
+      // KUI-H001 is about a Kerf UI layout node, so it has a node id and
+      // SizedRegion is cataloged.
+      diagnostic.code === 'KUI-H001' ? (
+        <ListActionRow
+          action={PROBLEM_ACTION}
+          itemId={nodeId!}
+          label={diagnostic.message}
+          description={`${diagnostic.code} · ${diagnostic.path}`}
+          multiline
+          trailingAction={EMBED_ACTION}
+          trailingActionLabel="Embed in SizedRegion"
+          trailingActionIcon={<LucideIcon icon={Group} name="group" />}
+          trailingActionAttributes={{
+            'data-editor-embed': EMBED_FIRST[0]!,
+            'data-editor-embed-node': nodeId!,
+          }}
+        />
+      ) : (
+        plain[index]!
+      ),
+    );
+  };
 
   /**
    * The palette's groups, narrowed to components whose name or category
@@ -1435,6 +1445,63 @@ export function createEditor(options: EditorOptions) {
       rootAttributes={{ 'data-editor-icon-place': JSON.stringify(place) }}
     />
   );
+
+  /**
+   * Embed in › Other… (KF-6MGYSG): every container that can hold the node,
+   * narrowed by a filter over component names; choosing one embeds it.
+   */
+  const embedDialog = () => {
+    const id = embedTarget.value;
+    const query = embedQuery.value.trim().toLocaleLowerCase();
+    const choices = id
+      ? catalog
+          .paletteGroups()
+          .flatMap((group) => group.items)
+          .filter((item) => item.name.toLocaleLowerCase().includes(query))
+          .filter((item) => embedded(id, item.key) !== undefined)
+      : [];
+    return (
+      <DialogSurface
+        id={EMBED_DIALOG}
+        label="Embed In"
+        size="medium"
+        rootAttributes={{ 'data-key': EMBED_DIALOG }}
+        footer={
+          <Button rootAttributes={{ 'data-dialog-close': '' }}>Cancel</Button>
+        }
+      >
+        <List controlInsets="trbl" gap>
+          <SearchField
+            id="editor-embed-search"
+            label="Filter Containers"
+            placeholder="Filter containers"
+            query={embedQuery.value}
+            revision={embedQueryRevision.value}
+            clearAction={EMBED_CLEAR_ACTION}
+            clearLabel="Clear Filter"
+            editorAttributes={{ 'data-editor-embed-search': '' }}
+          />
+        </List>
+        {choices.length ? (
+          <List>
+            {choices.map((item) => (
+              <ListItem
+                label={item.name}
+                action={EMBED_ACTION}
+                itemId={item.key}
+                rootAttributes={{ 'data-editor-embed': item.key }}
+              />
+            ))}
+          </List>
+        ) : (
+          <EmptyState
+            title="No matching container"
+            detail="No container that can hold this node has that name."
+          />
+        )}
+      </DialogSurface>
+    );
+  };
 
   /**
    * The icon picker: a search over the Lucide names and the matching icons
@@ -2079,6 +2146,37 @@ export function createEditor(options: EditorOptions) {
     const count = findNode(document, parent)!.node.zones![zone]!.length;
     return { up: index > 0, down: index < count - 1, remove: true };
   };
+
+  /**
+   * Embed in (KF-6MGYSG), in the Flow area beside the other commands that
+   * restructure the node: its first containers, each offered only where it
+   * can hold the node, then Other… for any container.
+   */
+  const embedSection = (id: string) =>
+    placementOf(doc.value, id) ? (
+      <List rootAttributes={{ 'data-editor-embed-section': '' }}>
+        <ListHeader label="Embed in" size="xs" />
+        {EMBED_FIRST.filter((key) => propsByKey.has(key)).map((key) => {
+          const legal = embedFirstLegal.value.has(key);
+          return (
+            <ListItem
+              label={componentNames.get(key)!}
+              action={EMBED_ACTION}
+              itemId={key}
+              disabled={!legal}
+              description={legal ? undefined : 'It cannot hold this node here.'}
+              rootAttributes={{ 'data-editor-embed': key }}
+            />
+          );
+        })}
+        <ListItem
+          label="Other…"
+          action={EMBED_OTHER_ACTION}
+          itemId="other"
+          trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
+        />
+      </List>
+    ) : undefined;
 
   /** Move and delete controls for the selected node, when it can move. */
   const nodeActions = (document: ViewDocument) => {
@@ -2747,6 +2845,7 @@ export function createEditor(options: EditorOptions) {
           fieldErrors.value['#item'],
           otherwiseChoices,
         )}
+        {embedSection(node.id)}
         {moveSection(node)}
       </List>
     );
@@ -3030,7 +3129,7 @@ export function createEditor(options: EditorOptions) {
                       count={hints}
                       countLabel={`${hints} ${hints === 1 ? 'hint' : 'hints'}`}
                     />
-                    {problemRows(hintList)}
+                    {hintRows(hintList)}
                   </List>
                 ) : undefined}
               </List>
@@ -3116,6 +3215,7 @@ export function createEditor(options: EditorOptions) {
         {autosave ? saveAsDialog(document) : undefined}
         {fieldDialog()}
         {iconDialog()}
+        {embedDialog()}
         <List flex>
           <Workbench
             id={WORKBENCH_ID}
@@ -3540,6 +3640,52 @@ export function createEditor(options: EditorOptions) {
       newNodeId,
       slotNamer(usedSlots(doc.value)),
     );
+
+  /**
+   * Node `id` embedded in a new container of component `key` (KF-6MGYSG):
+   * undefined when the container has no main zone, the node is not in a
+   * zone, or the result adds a problem.
+   */
+  const embedded = (id: string, key: string) => {
+    const seeded = seededNode(key);
+    const zone = zonesOf(seeded).find(
+      (option) => option.primary && !option.disabledReason,
+    )?.key;
+    if (!zone) return undefined;
+    const result = embedNode(
+      doc.value,
+      id,
+      { type: key, props: { ...seeded.props, ...EMBED_PROPS[key] } },
+      zone,
+    );
+    return result && !addsProblems(doc.value, result.document, viewCatalog)
+      ? result
+      : undefined;
+  };
+
+  /**
+   * The first containers that can hold the selected node, checked once per
+   * edit or selection rather than on every render.
+   */
+  const embedFirstLegal = computed(() => {
+    const id = selectedNodeId();
+    return new Set(
+      id
+        ? EMBED_FIRST.filter(
+            (key) => propsByKey.has(key) && embedded(id, key) !== undefined,
+          )
+        : [],
+    );
+  });
+
+  /** Embeds node `id` in a new `key` container and selects the container. */
+  const embed = (id: string, key: string) => {
+    const result = embedded(id, key);
+    if (!result) return;
+    commit(result.document);
+    select({ kind: 'node', id: result.id });
+    inspectorArea.value = 'properties';
+  };
 
   /** Adds the chosen component to the chosen zone and selects it. */
   /** Makes a new node of the chosen component the document's root. */
@@ -3999,6 +4145,14 @@ export function createEditor(options: EditorOptions) {
       delegate<HTMLElement>(
         root,
         'input',
+        '[data-editor-embed-search]',
+        (_event, editor) => {
+          embedQuery.value = readSearchField(editor).query;
+        },
+      ),
+      delegate<HTMLElement>(
+        root,
+        'input',
         '[data-editor-icon-search]',
         (_event, editor) => {
           iconQuery.value = readSearchField(editor).query;
@@ -4118,6 +4272,40 @@ export function createEditor(options: EditorOptions) {
           openDialog(root.querySelector<HTMLDialogElement>(`#${ICON_DIALOG}`)!);
           // KF-GQHRC0: typing searches at once.
           root.querySelector<HTMLElement>('[data-editor-icon-search]')!.focus();
+        },
+        // KF-6MGYSG: Embed in, from the Inspector's menu, its Other… dialog,
+        // or a hint row's fix (which names the node it is about).
+        [EMBED_ACTION]: (_event, target) => {
+          // The Flow section and Other… act on the selected node.
+          const id =
+            target.dataset.editorEmbedNode ??
+            embedTarget.value ??
+            selectedNodeId()!;
+          const dialog = root.querySelector<HTMLDialogElement>(
+            `#${EMBED_DIALOG}`,
+          )!;
+          if (dialog.open) closeDialog(dialog);
+          embedTarget.value = null;
+          embed(id, target.dataset.editorEmbed!);
+        },
+        [EMBED_OTHER_ACTION]: () => {
+          // Other… shows only with a node selected.
+          embedTarget.value = selectedNodeId()!;
+          embedQuery.value = '';
+          embedQueryRevision.value += 1;
+          openDialog(
+            root.querySelector<HTMLDialogElement>(`#${EMBED_DIALOG}`)!,
+          );
+          root
+            .querySelector<HTMLElement>('[data-editor-embed-search]')!
+            .focus();
+        },
+        [EMBED_CLEAR_ACTION]: () => {
+          embedQuery.value = '';
+          embedQueryRevision.value += 1;
+          root
+            .querySelector<HTMLElement>('[data-editor-embed-search]')!
+            .focus();
         },
         [ICON_CLEAR_ACTION]: () => {
           iconQuery.value = '';

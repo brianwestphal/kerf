@@ -376,6 +376,35 @@ export function duplicateNode(
   return pasteNode(document, node, { ...at, index: at.index + 1 }, makeId);
 }
 
+/**
+ * Node `id` embedded in a new container (KF-6MGYSG: Embed in): the container
+ * takes the node's place in its zone and holds it in `zone`, its main zone.
+ * Undefined when the node does not sit directly in a zone (the root, a
+ * repeated template, a branch).
+ */
+export function embedNode(
+  document: ViewDocument,
+  id: string,
+  container: {
+    readonly type: string;
+    readonly props?: Record<string, ViewValue>;
+  },
+  zone: string,
+  makeId: () => string = newNodeId,
+): { readonly document: ViewDocument; readonly id: string } | undefined {
+  if (!placementOf(document, id)) return undefined;
+  const next = clone(document);
+  const found = locate(next, id)!;
+  const wrapper: MutableNode = {
+    id: makeId(),
+    type: container.type,
+    ...(container.props ? { props: { ...container.props } } : {}),
+    zones: { [zone]: [found.node as ViewChild] },
+  };
+  found.list!.splice(found.index!, 1, wrapper as ViewChild);
+  return { document: withCatalog(next, container.type), id: wrapper.id };
+}
+
 /** Moves a node into another zone (of any node), at the end. */
 export function moveNodeTo(
   document: ViewDocument,

@@ -260,19 +260,26 @@ judged after the zone takes the field, the same as Add.
 
 A whole-screen layout (TabNavigator, NavStack, SplitView, Workbench) fills
 its parent's height and has none of its own, so placed inside a container it
-would collapse to its chrome. Below the document root, the canvas gives each
-one an editor-owned frame with a usable height (60% of the viewport, between
-320px and 640px, growing into room its parent leaves; KF-XXT6P4: nested
-layouts collapse on the canvas); as the root it fills the canvas as before.
-The frame is canvas-only and never reaches the document or the export. A
-layout whose parent already gives it a height gets no frame: a `SizedRegion`
-(KF-63XR5K: SizedRegion gives a nested layout a definite height), or another
-whole-screen layout's tab, view, or region. Documents size a nested layout with
-a `SizedRegion`, which exports with the document and sizes it the same in an app.
+collapses to its chrome. The canvas shows that as it is, the same as an app
+would (KF-6MGYSG: the editor-owned frame KF-XXT6P4 added is gone, so the canvas
+no longer shows a height the export lacks). The `KUI-H001` hint names the
+collapse, and its row's **Embed in SizedRegion** fixes it: the layout moves
+into a new `SizedRegion` in its place, with `minHeight: rem(20)` so it keeps a
+usable height even where its parent sizes to its content, as the canvas's root
+Pane does. As the root, or in another layout's tab, view, or region, a layout
+fills that height.
+
+**Embed in** (KF-6MGYSG) is a general command on the selected node, a menu in
+the Inspector's toolbar: SizedRegion, ListInsetControl, and ListInsetText,
+each offered only where it can hold the node (the result must add no
+validation problem), then **Other…**, a dialog that filters every container by
+name. The new container takes the node's place, holds it in its main zone,
+starts with its seeded props, and is selected; the step is one undo.
+
 While a node inside a TabNavigator tab's content is selected, the canvas shows
 that tab, whatever tab the document opens on, so the ring and the tab's drop
 targets apply to what is being edited (KF-YZPBFH: show the selected node's
-tab). Like the frame, this is the canvas's own; the document keeps its
+tab). This is the canvas's own; the document keeps its
 `active`. A node selected in a part of the canvas that stays hidden, such as a
 NavStack view below the top, gets no selection ring: the view sits under the
 top one, and a ring there would mark what the top view shows (KF-ZC9EXM: ring

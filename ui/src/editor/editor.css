@@ -13,17 +13,6 @@
   padding: var(--kui-space-s);
 }
 
-/* KF-XXT6P4: a whole-screen layout (TabNavigator, NavStack, SplitView,
-   Workbench) placed below the root fills this frame instead of collapsing to
-   its chrome. It grows into the room its parent leaves. */
-.kui-editor__screen {
-  display: flex;
-  flex: 1 0 auto;
-  flex-direction: column;
-  block-size: clamp(320px, 60vh, 640px);
-  min-inline-size: min(100%, 320px);
-}
-
 .kui-editor__selection {
   position: absolute;
   pointer-events: none;

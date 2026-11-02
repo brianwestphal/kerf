@@ -6,6 +6,7 @@ import { area } from './areas.js';
 import {
   addChild,
   dragComponent,
+  embedIn,
   emptySpot,
   exported,
   newDocument,
@@ -1520,39 +1521,109 @@ test('drops a component into a tab’s content from the canvas', async ({
   });
 });
 
-// KF-XXT6P4: a whole-screen layout placed inside a container gets a usable
-// height on the canvas, so its content and drop targets show.
-test('gives a TabNavigator inside the root Pane a usable height', async ({
+// KF-6MGYSG: a whole-screen layout placed inside the root Pane shows as it
+// would in an app, collapsed to its bar, until its hint's fix embeds it in a
+// SizedRegion; then its content and drop targets show.
+test('embeds a nested TabNavigator from its hint, giving it a height', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.getByRole('button', { name: 'New' }).click();
+  await newDocument(page);
   await dragComponent(page, 'TabNavigator', () => emptySpot(page));
-  await select(page, /^TabNavigator/);
   const navigator = page.locator(
     '[data-editor-canvas] .kui-tab-scaffold[data-kerf-node]',
   );
   const scenes = navigator.locator('.kui-tab-scaffold__scenes');
-  expect((await scenes.boundingBox())!.height).toBeGreaterThan(200);
+  expect((await scenes.boundingBox())!.height).toBeLessThan(5);
+  await area(page, 'Problems');
+  await page
+    .locator('[data-editor-hints]')
+    .getByRole('button', { name: 'Embed in SizedRegion' })
+    .click();
+  await expect(page.locator('[data-editor-hints]')).toHaveCount(0);
+  await expect
+    .poll(async () => (await scenes.boundingBox())!.height)
+    .toBeGreaterThan(200);
+  await select(page, /^TabNavigator/);
   const spot = page
     .locator('[data-editor-canvas] [data-editor-empty]')
     .filter({ hasText: 'tab1Content slot — drop here' });
   await expect(spot).toBeVisible();
   await page.screenshot({
-    path: test.info().outputPath('kf-xxt6p4-nested-tab-navigator-1440.png'),
+    path: test.info().outputPath('kf-6mgysg-embedded-tab-navigator-1440.png'),
   });
   await dragComponent(page, 'ContentItem', () => spot);
   await expect(spot).toHaveCount(0);
   const document = (await exported(page)) as {
-    zones: Record<string, { zones: Record<string, unknown[]> }[]>;
+    zones: {
+      content: {
+        type: string;
+        props: unknown;
+        zones: { children: { zones: Record<string, unknown[]> }[] };
+      }[];
+    };
   };
-  expect(document.zones.content[0].zones['tabs.0.content']).toEqual([
-    { type: '@kerfjs/ui:content-item' },
-  ]);
-  // The tab's content renders in the framed scene.
+  expect(document.zones.content[0]!.type).toBe('@kerfjs/ui:sized-region');
+  expect(document.zones.content[0]!.props).toEqual({
+    minHeight: { $css: 'rem(20)' },
+  });
+  expect(
+    document.zones.content[0]!.zones.children[0]!.zones['tabs.0.content'],
+  ).toEqual([{ type: '@kerfjs/ui:content-item' }]);
   await expect(
     navigator.locator('.kui-content-item[data-kerf-node]'),
   ).toBeVisible();
+});
+
+// KF-6MGYSG: Embed in, in the Inspector's Flow area, with Other… for any
+// container.
+test('embeds the selected node from the Flow area’s Embed in section', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await newDocument(page);
+  await dragComponent(page, 'Button', () => emptySpot(page));
+  await select(page, /^Button/);
+  await area(page, 'Flow');
+  const section = page.locator('[data-editor-embed-section]');
+  for (const name of ['SizedRegion', 'ListInsetControl', 'ListInsetText'])
+    await expect(
+      section.locator('[data-editor-embed]', { hasText: name }),
+    ).toBeVisible();
+  // The Inspector's title keeps its whole width.
+  const title = page
+    .locator('#editor-inspector-stack .kui-toolbar-text')
+    .first();
+  expect(await title.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(
+    true,
+  );
+  await page.screenshot({
+    path: test.info().outputPath('kf-6mgysg-embed-section-1440.png'),
+  });
+  await section.getByText('Other…').click();
+  const dialog = page.locator('#editor-embed-dialog');
+  await expect(dialog).toBeVisible();
+  await page.keyboard.type('row');
+  await expect(
+    dialog.locator('[data-editor-embed="@kerfjs/ui:row"]'),
+  ).toBeVisible();
+  await expect(
+    dialog.locator('[data-editor-embed="@kerfjs/ui:list"]'),
+  ).toHaveCount(0);
+  await page.screenshot({
+    path: test.info().outputPath('kf-6mgysg-embed-other-1440.png'),
+  });
+  await dialog.locator('[data-editor-embed="@kerfjs/ui:row"]').click();
+  await expect(dialog).toBeHidden();
+  const document = (await exported(page)) as {
+    zones: {
+      content: { type: string; zones: Record<string, { type: string }[]> }[];
+    };
+  };
+  expect(document.zones.content[0]!.type).toBe('@kerfjs/ui:row');
+  expect(
+    document.zones.content[0]!.zones.children!.map(({ type }) => type),
+  ).toEqual(['@kerfjs/ui:button']);
 });
 
 // KF-YZPBFH: the canvas shows the tab that holds the selected node, and
@@ -1561,6 +1632,8 @@ test('shows the tab that holds the selected node', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await newDocument(page);
   await dragComponent(page, 'TabNavigator', () => emptySpot(page));
+  await select(page, /^TabNavigator/);
+  await embedIn(page, 'SizedRegion');
   await select(page, /^TabNavigator/);
   const ring = page.locator('.kui-editor__selection');
   const scene = (index: number) =>
@@ -1584,9 +1657,13 @@ test('shows the tab that holds the selected node', async ({ page }) => {
   await select(page, /^TabNavigator/);
   await expect(scene(0)).toHaveAttribute('data-active', 'true');
   const document = (await exported(page)) as {
-    zones: { content: { props: { active: string } }[] };
+    zones: {
+      content: { zones: { children: { props: { active: string } }[] } }[];
+    };
   };
-  expect(document.zones.content[0].props.active).toBe('tab-1');
+  expect(document.zones.content[0].zones.children[0].props.active).toBe(
+    'tab-1',
+  );
 });
 
 // KF-ZC9EXM: a NavStack view below the top stays mounted but hidden under
@@ -1597,6 +1674,8 @@ test('hides the selection ring for a node in a view below the top', async ({
   await page.setViewportSize({ width: 1440, height: 900 });
   await newDocument(page);
   await dragComponent(page, 'NavStack', () => emptySpot(page));
+  await select(page, /^NavStack/);
+  await embedIn(page, 'SizedRegion');
   await select(page, /^NavStack/);
   const ring = page.locator('.kui-editor__selection');
   await expect(ring).toBeVisible();

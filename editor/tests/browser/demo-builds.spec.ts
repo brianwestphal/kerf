@@ -12,6 +12,7 @@ import {
   choose,
   chooseField,
   dragComponent,
+  embedIn,
   emptySpot,
   exported,
   icon,
@@ -22,6 +23,7 @@ import {
   select,
   setField,
   setText,
+  sized,
   turnFieldOn,
   turnOn,
   zoneSpot,
@@ -978,6 +980,9 @@ test('builds TabNavigator › Persistent Tab Scenes', async ({ page }) => {
   test.slow();
   await dragComponent(page, 'TabNavigator', () => emptySpot(page));
   await select(page, /^TabNavigator/);
+  // Below the root it needs a height of its own (KF-6MGYSG).
+  await embedIn(page, 'SizedRegion');
+  await select(page, /^TabNavigator/);
   await setText(page, 'id', 'catalog-tab-scaffold');
   await setText(page, 'label', 'Application Sections');
   const dialog = page.locator('dialog[open]');
@@ -1068,39 +1073,41 @@ test('builds TabNavigator › Persistent Tab Scenes', async ({ page }) => {
   });
   expect(await exported(page)).toEqual(
     pane(
-      node(
-        'tab-navigator',
-        {
-          id: 'catalog-tab-scaffold',
-          label: 'Application Sections',
-          tabs: [
-            tab('projects', 'Projects', {
-              appearance: 'sunken',
-              badge: 3,
-              badgeLabel: '3 updated',
-            }),
-            tab('search', 'Search', {
-              deepInset: true,
-              tabIndex: 0,
-              outlined: true,
-            }),
-            tab('settings', 'Settings', {
-              badge: true,
-              badgeLabel: 'Update available',
-            }),
-          ],
-          active: 'projects',
-        },
-        Object.fromEntries([
-          ...glyphs.map((glyph, index) => [
-            `tabs.${index}.icon`,
-            [icon(glyph)],
+      sized(
+        node(
+          'tab-navigator',
+          {
+            id: 'catalog-tab-scaffold',
+            label: 'Application Sections',
+            tabs: [
+              tab('projects', 'Projects', {
+                appearance: 'sunken',
+                badge: 3,
+                badgeLabel: '3 updated',
+              }),
+              tab('search', 'Search', {
+                deepInset: true,
+                tabIndex: 0,
+                outlined: true,
+              }),
+              tab('settings', 'Settings', {
+                badge: true,
+                badgeLabel: 'Update available',
+              }),
+            ],
+            active: 'projects',
+          },
+          Object.fromEntries([
+            ...glyphs.map((glyph, index) => [
+              `tabs.${index}.icon`,
+              [icon(glyph)],
+            ]),
+            ...scenes.map(([title, detail], index) => [
+              `tabs.${index}.content`,
+              [demoContentItem(title, detail)],
+            ]),
           ]),
-          ...scenes.map(([title, detail], index) => [
-            `tabs.${index}.content`,
-            [demoContentItem(title, detail)],
-          ]),
-        ]),
+        ),
       ),
     ),
   );
@@ -1110,6 +1117,9 @@ test('builds TabNavigator › NavStack Inside a Tab', async ({ page }) => {
   // A whole screen built step by step runs long in Firefox.
   test.slow();
   await dragComponent(page, 'TabNavigator', () => emptySpot(page));
+  await select(page, /^TabNavigator/);
+  // Below the root it needs a height of its own (KF-6MGYSG).
+  await embedIn(page, 'SizedRegion');
   await select(page, /^TabNavigator/);
   await setText(page, 'id', 'catalog-tab-scaffold-nested');
   await setText(page, 'label', 'Project Sections');
@@ -1209,59 +1219,61 @@ test('builds TabNavigator › NavStack Inside a Tab', async ({ page }) => {
   });
   expect(await exported(page)).toEqual(
     pane(
-      node(
-        'tab-navigator',
-        {
-          id: 'catalog-tab-scaffold-nested',
-          label: 'Project Sections',
-          tabs: [
-            { id: 'projects', label: 'Projects' },
-            { id: 'search', label: 'Search' },
-          ],
-          active: 'projects',
-        },
-        {
-          'tabs.0.icon': [icon('folder-kanban')],
-          'tabs.1.icon': [icon('search')],
-          'tabs.0.content': [
-            node(
-              'nav-stack',
-              {
-                id: 'catalog-tab-scaffold-project-stack',
-                label: 'Projects Navigation',
-                views: [
-                  {
-                    key: 'projects',
-                    toolbar: { title: 'Projects' },
-                    pane: { appearance: 'sunken' },
-                  },
-                ],
-              },
-              {
-                'views.0.content': [
-                  node('list', undefined, {
-                    children: [
-                      node(
-                        'list-item',
-                        {
-                          label: 'Project Atlas',
-                          action: 'open-tab-scaffold-project',
-                          itemId: 'atlas',
-                          description:
-                            'Open this project while keeping the tab bar in place.',
-                        },
-                        { trailing: [icon('chevron-right')] },
-                      ),
-                    ],
-                  }),
-                ],
-              },
-            ),
-          ],
-          'tabs.1.content': [
-            demoContentItem('Search', 'The Projects stack remains mounted.'),
-          ],
-        },
+      sized(
+        node(
+          'tab-navigator',
+          {
+            id: 'catalog-tab-scaffold-nested',
+            label: 'Project Sections',
+            tabs: [
+              { id: 'projects', label: 'Projects' },
+              { id: 'search', label: 'Search' },
+            ],
+            active: 'projects',
+          },
+          {
+            'tabs.0.icon': [icon('folder-kanban')],
+            'tabs.1.icon': [icon('search')],
+            'tabs.0.content': [
+              node(
+                'nav-stack',
+                {
+                  id: 'catalog-tab-scaffold-project-stack',
+                  label: 'Projects Navigation',
+                  views: [
+                    {
+                      key: 'projects',
+                      toolbar: { title: 'Projects' },
+                      pane: { appearance: 'sunken' },
+                    },
+                  ],
+                },
+                {
+                  'views.0.content': [
+                    node('list', undefined, {
+                      children: [
+                        node(
+                          'list-item',
+                          {
+                            label: 'Project Atlas',
+                            action: 'open-tab-scaffold-project',
+                            itemId: 'atlas',
+                            description:
+                              'Open this project while keeping the tab bar in place.',
+                          },
+                          { trailing: [icon('chevron-right')] },
+                        ),
+                      ],
+                    }),
+                  ],
+                },
+              ),
+            ],
+            'tabs.1.content': [
+              demoContentItem('Search', 'The Projects stack remains mounted.'),
+            ],
+          },
+        ),
       ),
     ),
   );
@@ -1271,6 +1283,9 @@ test('builds NavStack › Interactive Push and Pop', async ({ page }) => {
   // A whole screen built step by step runs long in Firefox.
   test.slow();
   await dragComponent(page, 'NavStack', () => emptySpot(page));
+  await select(page, /^NavStack/);
+  // Below the root it needs a height of its own (KF-6MGYSG).
+  await embedIn(page, 'SizedRegion');
   await select(page, /^NavStack/);
   await setText(page, 'id', 'catalog-nav-stack');
   await setText(page, 'label', 'Project Library');
@@ -1375,54 +1390,56 @@ test('builds NavStack › Interactive Push and Pop', async ({ page }) => {
     node('toolbar-text', { text, size: 'small' });
   expect(await exported(page)).toEqual(
     pane(
-      node(
-        'nav-stack',
-        {
-          id: 'catalog-nav-stack',
-          label: 'Project Library',
-          backLabel: 'Back to Library',
-          views: [
-            {
-              key: 'library',
-              pane: { appearance: 'sunken' },
-              toolbar: { title: 'Library' },
-              bottomToolbar: { label: 'View Status' },
-            },
-          ],
-        },
-        {
-          'views.0.toolbar.trailing': [toolbarTextNode('Projects')],
-          'views.0.bottomToolbar.leading': [
-            toolbarTextNode('2 saved projects'),
-          ],
-          'views.0.content': [
-            node('list', undefined, {
-              children: [
-                node('list-header', {
-                  label: 'Saved Projects',
-                  count: 2,
-                  countLabel: '2 saved projects',
-                }),
-                ...projects.map(([id, label, summary]) =>
-                  node(
-                    'list-item',
-                    {
-                      action: 'open-nav-stack-project',
-                      multiline: true,
-                      itemId: id,
-                      label,
-                      description: summary,
-                    },
-                    {
-                      icon: [icon('folder')],
-                      trailing: [icon('chevron-right')],
-                    },
+      sized(
+        node(
+          'nav-stack',
+          {
+            id: 'catalog-nav-stack',
+            label: 'Project Library',
+            backLabel: 'Back to Library',
+            views: [
+              {
+                key: 'library',
+                pane: { appearance: 'sunken' },
+                toolbar: { title: 'Library' },
+                bottomToolbar: { label: 'View Status' },
+              },
+            ],
+          },
+          {
+            'views.0.toolbar.trailing': [toolbarTextNode('Projects')],
+            'views.0.bottomToolbar.leading': [
+              toolbarTextNode('2 saved projects'),
+            ],
+            'views.0.content': [
+              node('list', undefined, {
+                children: [
+                  node('list-header', {
+                    label: 'Saved Projects',
+                    count: 2,
+                    countLabel: '2 saved projects',
+                  }),
+                  ...projects.map(([id, label, summary]) =>
+                    node(
+                      'list-item',
+                      {
+                        action: 'open-nav-stack-project',
+                        multiline: true,
+                        itemId: id,
+                        label,
+                        description: summary,
+                      },
+                      {
+                        icon: [icon('folder')],
+                        trailing: [icon('chevron-right')],
+                      },
+                    ),
                   ),
-                ),
-              ],
-            }),
-          ],
-        },
+                ],
+              }),
+            ],
+          },
+        ),
       ),
     ),
   );
@@ -1432,6 +1449,9 @@ test('builds NavStack › Configured Toolbar', async ({ page }) => {
   // A whole screen built step by step runs long in Firefox.
   test.slow();
   await dragComponent(page, 'NavStack', () => emptySpot(page));
+  await select(page, /^NavStack/);
+  // Below the root it needs a height of its own (KF-6MGYSG).
+  await embedIn(page, 'SizedRegion');
   await select(page, /^NavStack/);
   await setText(page, 'id', 'catalog-nav-stack-configured');
   await setText(page, 'label', 'Configured Project Library');
@@ -1543,53 +1563,55 @@ test('builds NavStack › Configured Toolbar', async ({ page }) => {
     );
   expect(await exported(page)).toEqual(
     pane(
-      node(
-        'nav-stack',
-        {
-          id: 'catalog-nav-stack-configured',
-          label: 'Configured Project Library',
-          toolbarConfig: { headingLevel: 2, dividerSides: 'b' },
-          views: [{ key: 'library', toolbar: { title: 'Library' } }],
-        },
-        {
-          'views.0.toolbar.leading': [
-            node(
-              'toolbar-control-group',
-              { label: 'Sidebar', appearance: 'borderless', single: true },
-              { children: [button('Show Sidebar', 'panel-left')] },
-            ),
-          ],
-          'views.0.toolbar.center': [
-            node(
-              'toolbar-control-group',
-              { label: 'Project Layout' },
-              {
-                children: [
-                  button('List Layout', 'list', { pressed: true }),
-                  button('Grid Layout', 'layout-grid'),
-                ],
-              },
-            ),
-          ],
-          'views.0.content': [
-            node('list', undefined, {
-              children: projects.map(([id, label]) =>
-                node(
-                  'list-item',
-                  {
-                    action: 'open-configured-nav-stack-project',
-                    itemId: id,
-                    label,
-                  },
-                  {
-                    icon: [icon('folder')],
-                    trailing: [icon('chevron-right')],
-                  },
-                ),
+      sized(
+        node(
+          'nav-stack',
+          {
+            id: 'catalog-nav-stack-configured',
+            label: 'Configured Project Library',
+            toolbarConfig: { headingLevel: 2, dividerSides: 'b' },
+            views: [{ key: 'library', toolbar: { title: 'Library' } }],
+          },
+          {
+            'views.0.toolbar.leading': [
+              node(
+                'toolbar-control-group',
+                { label: 'Sidebar', appearance: 'borderless', single: true },
+                { children: [button('Show Sidebar', 'panel-left')] },
               ),
-            }),
-          ],
-        },
+            ],
+            'views.0.toolbar.center': [
+              node(
+                'toolbar-control-group',
+                { label: 'Project Layout' },
+                {
+                  children: [
+                    button('List Layout', 'list', { pressed: true }),
+                    button('Grid Layout', 'layout-grid'),
+                  ],
+                },
+              ),
+            ],
+            'views.0.content': [
+              node('list', undefined, {
+                children: projects.map(([id, label]) =>
+                  node(
+                    'list-item',
+                    {
+                      action: 'open-configured-nav-stack-project',
+                      itemId: id,
+                      label,
+                    },
+                    {
+                      icon: [icon('folder')],
+                      trailing: [icon('chevron-right')],
+                    },
+                  ),
+                ),
+              }),
+            ],
+          },
+        ),
       ),
     ),
   );
