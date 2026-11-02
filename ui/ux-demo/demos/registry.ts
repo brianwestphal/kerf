@@ -51,6 +51,7 @@ import { ProgressRingDemo } from './progress-ring.js';
 import { RadioGroupDemo } from './radio-group.js';
 import { ResizeDemo } from './resize.js';
 import { RowDemo } from './row.js';
+import { ScrollEffectDemo, ScrollEffectSettings } from './scroll-effect.js';
 import { SearchFieldDemo } from './search-field.js';
 import { SegmentedControlDemo } from './segmented-control.js';
 import { SelectDemo } from './select.js';
@@ -148,6 +149,7 @@ export const demos = {
   'column-track': ColumnTrackDemo,
   'content-swap': ContentSwapDemo,
   'backdrop-image': BackdropImageDemo,
+  'scroll-effect': ScrollEffectDemo,
   'file-picker': FilePickerDemo,
   combobox: ComboboxDemo,
   'summary-row': SummaryRowDemo,
@@ -177,4 +179,5 @@ export const demoSettings: Partial<
   >
 > = {
   badge: BadgeSettings,
+  'scroll-effect': ScrollEffectSettings,
 };

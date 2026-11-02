@@ -24,6 +24,17 @@ Playwright cannot raise a virtual keyboard; the overlap formula is unit-tested
 (`tests/unit/dialog-surface-controller.test.tsx`) and a simulated keyboard is covered
 in `tests/browser/dialog-bottom-sheet.spec.ts`.
 
+## ScrollEffect and BackdropImage: OS transparency and slow displays
+
+Route: `?component=scroll-effect` and `?component=backdrop-image`. Playwright
+cannot emulate `prefers-reduced-transparency` or `update: slow`, so their
+static fallbacks are pinned only by stylesheet unit tests
+(`tests/unit/scroll-effect.test.tsx`). On macOS, turn on Reduce Transparency
+(Accessibility, Display) and scroll each example in Safari and Chrome: every
+card stays in place, fully opaque, and undimmed, and the BackdropImage image
+stays static and sharp. On an e-ink reader or print preview, the same
+examples render at rest.
+
 ## Automated coverage summary
 
 The feed-card route `?component=content-item`, example "Image-Tinted Feed

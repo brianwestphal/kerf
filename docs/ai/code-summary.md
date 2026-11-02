@@ -1173,8 +1173,8 @@ Tests: `ui/tests/unit/chip-link.test.tsx`, `ui/tests/unit/chip-action.test.tsx`,
 `ui/tests/unit/chip-icon-truncate.test.tsx`, `ui/tests/browser/chip.spec.ts`.
 `ui/src/components/surfaces/backdrop-image/backdrop-image.tsx` (`@kerfjs/ui/backdrop-image`)
 renders a scrolling view's hero, an inline ContentItem media block, or tiled
-image: a hero block (a named
-`view-timeline`) holding a clipped, masked backdrop whose `__layers` animate
+image: a hero block (the shared scroll-effect layer's
+`data-kui-scroll-timeline` subject, see ScrollEffect) holding a clipped, masked backdrop whose `__layers` animate
 only `transform` over the block's `exit-crossing` range for parallax, a
 `blur` copy (`__blurred`, filtered once or an app `blurredSrc`) and `__dim`
 layer whose `opacity` alone ramps over the same range, an optional scrim, an `overlay` slot over its block end, and `children` below on
@@ -1637,6 +1637,18 @@ color tokens); `BadgeTone` and `StateBannerTone` are deprecated aliases.
 when an earlier banner disappears (`KF-KDF5YG`).
 
 The UI shared theme and foundation define translucent lowered surfaces and neutral decorative fills/borders; the SunkenPanel catalog composes public components directly without prototype CSS.
+`ui/src/components/surfaces/scroll-effect/` owns `ScrollEffect` (KF-YCX1XH:
+scroll-linked parallax/reveal/fade/scale/dim presets on any content) and
+`scroll-effect.css`, which is also the shared scroll-effect layer:
+`[data-kui-scroll-timeline]` is the named view-timeline subject,
+`[data-kui-scroll-effect="translate|scale|opacity"]` animates one generic
+compositor-only keyframe family configured by inline
+`--_kui-scroll-effect-from/to/range`, and the static-fallback matrix is
+written once. `ui/src/shared/styles/scroll-effect-layer.ts` formats those
+inline inputs; BackdropImage marks its hero, `__layers`, `__blurred`, and
+`__dim` with it, and its public CSS entry imports `scroll-effect.css`. Tests:
+`ui/tests/unit/scroll-effect.test.tsx`, `ui/tests/browser/scroll-effect.spec.ts`
+(Chromium/WebKit animate, every fallback static).
 `ui/src/components/layout/sized-region/` owns `SizedRegion` (KF-63XR5K: a
 definite height for a nested whole-screen layout), a one-cell grid with fill,
 typed height, and min/max bounds; `ui/tests/unit/sized-region.test.tsx` and

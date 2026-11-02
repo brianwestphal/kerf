@@ -52,8 +52,9 @@
   view-timeline-inset: 0px;
 }
 
-/* The hero is the scroll-timeline subject: its own block of scroll drives
-   the parallax, whatever sits above it and however tall it is. */
+/* The hero is the scroll-timeline subject (data-kui-scroll-timeline, from the
+   shared scroll-effect layer): its own block of scroll drives the parallax,
+   whatever sits above it and however tall it is. */
 .kui-backdrop-image__hero {
   display: grid;
   position: relative;
@@ -62,7 +63,6 @@
       var(--_kui-backdrop-image-bleed-block-start)
   );
   grid-template: minmax(0, 1fr) / minmax(0, 1fr);
-  view-timeline: --kui-backdrop-image block;
 }
 
 /* Dense feeds can skip offscreen image painting without changing the height
@@ -171,73 +171,17 @@
     var(--_kui-backdrop-image-inset-end);
 }
 
-/* Parallax: as the hero scrolls out past the scroller's start edge, the
-   layer slides down by the lag factor of that distance, so the image moves
-   slower than the content. The blurred copy and dim layer fade in over the
-   same range. Only transform and opacity animate, on a scroll-driven
-   timeline the compositor runs; the blur filter is never animated, and there
-   is no scroll listener and no background-attachment: fixed. Without
-   scroll-driven animations (Firefox today) or with reduced motion the image
-   stays static and sharp. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .kui-backdrop-image[data-parallax="scroll"] .kui-backdrop-image__layers {
-      animation: kui-backdrop-image-parallax linear both;
-      animation-timeline: --kui-backdrop-image;
-      animation-range: exit-crossing 0% exit-crossing 100%;
-    }
-
-    /* The blur reaches full strength halfway through the exit, while most
-       of the image is still in view; ramping over the whole exit left it
-       barely visible before the image had scrolled away. */
-    .kui-backdrop-image[data-blur]
-      :is(.kui-backdrop-image__blurred, .kui-backdrop-image__dim) {
-      animation: kui-backdrop-image-reveal linear both;
-      animation-timeline: --kui-backdrop-image;
-      animation-range: exit-crossing 0% exit-crossing 50%;
-    }
-  }
-}
-
-@keyframes kui-backdrop-image-parallax {
-  from {
-    transform: none;
-  }
-  to {
-    transform: translateY(calc(var(--_kui-backdrop-image-parallax) * 100%));
-  }
-}
-
-@keyframes kui-backdrop-image-reveal {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* The document-wide static-effects switch and slow-update displays (e-ink,
-   print) get the same static, sharp image as reduced motion. */
-:root[data-kui-effects="static"]
-  .kui-backdrop-image[data-parallax="scroll"]
-  .kui-backdrop-image__layers,
-:root[data-kui-effects="static"]
-  .kui-backdrop-image[data-blur]
-  :is(.kui-backdrop-image__blurred, .kui-backdrop-image__dim) {
-  animation: none;
-}
-
-@media (update: slow),
-  (prefers-reduced-transparency: reduce),
-  (prefers-contrast: more),
-  (forced-colors: active) {
-  .kui-backdrop-image[data-parallax="scroll"] .kui-backdrop-image__layers,
-  .kui-backdrop-image[data-blur]
-    :is(.kui-backdrop-image__blurred, .kui-backdrop-image__dim) {
-    animation: none;
-  }
-}
+/* Parallax and the progressive blur run on the shared scroll-effect layer
+   (scroll-effect.css), which this stylesheet's public entry imports. As the
+   hero scrolls out past the scroller's start edge, the layers slide down by
+   the lag factor of that distance (exit-crossing 0% to 100%), so the image
+   moves slower than the content; the blurred copy and dim layer fade in over
+   the first half of the same range, so the blur is at full strength while
+   most of the image is still in view. Only transform and opacity animate; the
+   blur filter is never animated. The shared layer owns the static fallbacks:
+   no scroll-driven animation support (Firefox today), reduced motion,
+   data-kui-effects="static", update: slow, reduced transparency, increased
+   contrast, and forced colors all leave the image static and sharp. */
 
 /* Reduced transparency or increased contrast: no dissolve. The image ends on
    a hard edge over solid fadeTo, and overlay content sits on a solid fadeTo

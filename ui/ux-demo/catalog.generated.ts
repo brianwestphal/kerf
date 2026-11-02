@@ -196,6 +196,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/backdrop-image.md"
   },
   {
+    "id": "scroll-effect",
+    "name": "ScrollEffect",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Hook scroll-linked effects to any content without a scroll listener: each preset animates only transform or opacity on the wrapper's own CSS view timeline over an entry, exit, cover, or contain range, and the shared scroll-effect layer (also under BackdropImage) leaves the content static, visible, and undimmed wherever scroll-driven motion is unsupported or unwanted.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/scroll-effect.tsx",
+    "componentSource": "ui/src/components/surfaces/scroll-effect/scroll-effect.tsx",
+    "documentation": "ui/docs/scroll-effect.md"
+  },
+  {
     "id": "toolbar",
     "name": "Toolbar",
     "category": "Structure",

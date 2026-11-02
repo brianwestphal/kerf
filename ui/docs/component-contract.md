@@ -785,6 +785,14 @@ action on click or keyboard activation. The application owns the editing control
 and the swap between display and edit states. An actionable title is a button,
 so place any required heading landmark on another element in the view.
 
+`ScrollEffect` wraps content in a scroll-timeline subject and nests one layer
+per `parallax`, `reveal`, `fade`, or `scale` effect (in array order), plus an
+`aria-hidden` dim overlay. Each layer animates only `transform` or `opacity`
+over a range of the wrapper's own view timeline, and the wrapper clips a
+parallax or a scale above 1. The shared scroll-effect layer behind it (also
+under `BackdropImage`) owns the static fallbacks; its markers are package
+internals. See [ScrollEffect](scroll-effect.md).
+
 `SizedRegion` gives content that cannot size itself, a whole-screen layout
 below the app root, a definite height: `height="fill"` by default, or a typed
 `height` and `minHeight`/`maxHeight`. It is a one-cell grid so its child's

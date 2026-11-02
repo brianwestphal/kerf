@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 445700,
-  "measuredLargestJavaScriptGzip": 164547,
-  "measuredTotalJavaScriptGzip": 445641,
+  "totalJavaScriptGzip": 448200,
+  "measuredLargestJavaScriptGzip": 164548,
+  "measuredTotalJavaScriptGzip": 448182,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6547,6 +6547,22 @@
         "measuredTotalJavaScriptGzip": 445641,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 445700
+      }
+    },
+    {
+      "at": "2026-11-02T07:05:31.268Z",
+      "reason": "KF-YCX1XH adds the ScrollEffect component, its shared scroll-effect layer, and its catalog demo with settings",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 445641,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 445700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164548,
+        "measuredTotalJavaScriptGzip": 448182,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 448200
       }
     }
   ]

@@ -562,6 +562,12 @@ native button for a delegated one-shot action, such as inserting a search help
 filter token, with hover, press, focus-ring, and disabled states; it is
 exclusive with `href` and `removeAction`, and a compact rounded action chip
 keeps a compact Badge's row height in a compact ValueTable cell (shipped).
+ScrollEffect (shipped, `ui/docs/scroll-effect.md`) wraps any content and
+runs `parallax`, `reveal`, `fade`, `scale`, and `dim` presets over an entry,
+exit, cover, or contain range of its own view timeline (transform and opacity
+only, nested in array order), on the shared scroll-effect layer that also
+drives BackdropImage; static under every BackdropImage fallback plus forced
+colors. No blur preset and no IntersectionObserver gating (deliberate).
 BackdropImage (shipped) opens a scrolling Pane or NavStack view with a hero or
 tiled image (`src`/`srcset`/`alt`, `fit`, `position`, `repeat`, typed
 `height`): `parallax` (`none`, `subtle`, or a 0 to 1 factor) lags it on a

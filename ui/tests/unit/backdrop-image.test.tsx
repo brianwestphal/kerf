@@ -235,7 +235,7 @@ describe('BackdropImage blur', () => {
       'data-parallax="none" data-blur="filter" style="--_kui-backdrop-image-blur:1.5rem"',
     );
     expect(html).toContain(
-      '<img class="kui-backdrop-image__blurred" src="/hero.jpg" srcset="/hero-800.jpg 800w" sizes="100vw" alt="" aria-hidden="true" decoding="async">',
+      '<img class="kui-backdrop-image__blurred" data-kui-scroll-effect="opacity" style="--_kui-scroll-effect-range:exit-crossing 0% exit-crossing 50%" src="/hero.jpg" srcset="/hero-800.jpg 800w" sizes="100vw" alt="" aria-hidden="true" decoding="async">',
     );
     expect(html).not.toContain('__dim');
   });
@@ -253,10 +253,10 @@ describe('BackdropImage blur', () => {
       'data-blur="asset" style="--_kui-backdrop-image-dim:0.4"',
     );
     expect(html).toContain(
-      '<img class="kui-backdrop-image__blurred" src="/hero-blur.jpg" alt="" aria-hidden="true" decoding="async">',
+      '<img class="kui-backdrop-image__blurred" data-kui-scroll-effect="opacity" style="--_kui-scroll-effect-range:exit-crossing 0% exit-crossing 50%" src="/hero-blur.jpg" alt="" aria-hidden="true" decoding="async">',
     );
     expect(html).toContain(
-      '</div><div class="kui-backdrop-image__dim"></div></div>',
+      '</div><div class="kui-backdrop-image__dim" data-kui-scroll-effect="opacity" style="--_kui-scroll-effect-range:exit-crossing 0% exit-crossing 50%"></div></div>',
     );
     expect(
       String(
@@ -279,7 +279,7 @@ describe('BackdropImage blur', () => {
       }),
     );
     expect(html).toContain(
-      '<div class="kui-backdrop-image__blurred" aria-hidden="true" style="background-image:url(&quot;/tile.svg&quot;);background-repeat:repeat"></div>',
+      '<div class="kui-backdrop-image__blurred" aria-hidden="true" data-kui-scroll-effect="opacity" style="background-image:url(&quot;/tile.svg&quot;);background-repeat:repeat;--_kui-scroll-effect-range:exit-crossing 0% exit-crossing 50%"></div>',
     );
   });
 
@@ -299,64 +299,50 @@ describe('BackdropImage blur', () => {
 });
 
 describe('BackdropImage stylesheet', () => {
-  it('drives parallax only through a guarded, transform-only scroll timeline', () => {
+  // The scroll timeline, keyframes, and static fallbacks moved to the shared
+  // scroll-effect layer (KF-YCX1XH); tests/unit/scroll-effect.test.tsx pins
+  // that stylesheet. Here: BackdropImage marks its own elements for it.
+  it('drives parallax and the blur ramp through the shared scroll-effect layer', () => {
     expect(css.replace(/\/\*[\s\S]*?\*\//g, '')).not.toMatch(
-      /background-attachment/,
+      /background-attachment|@keyframes|animation/,
     );
-    expect(css).toMatch(
-      /@supports \(animation-timeline: view\(\)\) \{\s*@media \(prefers-reduced-motion: no-preference\)/,
+    const facade = readFileSync(
+      resolve(import.meta.dirname, '../../src/backdrop-image.css'),
+      'utf8',
     );
-    expect(css).toContain('animation-timeline: --kui-backdrop-image;');
-    expect(css).toContain(
-      'animation-range: exit-crossing 0% exit-crossing 100%;',
+    expect(facade).toContain('@import "./scroll-effect.css";');
+    const html = String(
+      BackdropImage({
+        src: '/a.jpg',
+        alt: '',
+        parallax: 0.6,
+        blur: { dim: 0.2 },
+      }),
     );
-    // The blur ramps over the first half of the exit.
-    expect(css).toContain(
-      'animation-range: exit-crossing 0% exit-crossing 50%;',
+    expect(html).toContain(
+      '<div class="kui-backdrop-image__hero" data-kui-scroll-timeline="">',
     );
-    const keyframes =
-      /@keyframes kui-backdrop-image-parallax \{([\s\S]*?)\n\}/.exec(css)?.[1];
-    expect(keyframes).toBeDefined();
+    expect(html).toContain(
+      '<div class="kui-backdrop-image__layers" data-kui-scroll-effect="translate" style="--_kui-scroll-effect-from:0;--_kui-scroll-effect-to:var(--_kui-backdrop-image-parallax);--_kui-scroll-effect-range:exit-crossing 0% exit-crossing 100%">',
+    );
+    // The blurred copy and dim layer ramp over the first half of the exit.
     expect(
-      keyframes!.match(/^\s+([a-z-]+):/gm)?.map((line) => line.trim()),
-    ).toEqual(['transform:', 'transform:']);
+      html.match(
+        /data-kui-scroll-effect="opacity" style="--_kui-scroll-effect-range:exit-crossing 0% exit-crossing 50%"/g,
+      ),
+    ).toHaveLength(2);
+    expect(String(BackdropImage({ src: '/a.jpg', alt: '' }))).not.toContain(
+      'data-kui-scroll',
+    );
   });
 
-  it('turns parallax and the blur ramp off for static effects and slow displays, and the fade off for reduced transparency', () => {
-    const block = (start: RegExp) => {
-      const match = start.exec(css);
-      expect(match).not.toBeNull();
-      return css.slice(match!.index, css.indexOf('}', match!.index) + 1);
-    };
-    for (const rule of [
-      block(/:root\[data-kui-effects="static"\]/),
-      block(/@media \(update: slow\),/),
-    ]) {
-      expect(rule).toContain('.kui-backdrop-image[data-parallax="scroll"]');
-      expect(rule).toContain('.kui-backdrop-image__layers');
-      expect(rule).toContain('.kui-backdrop-image[data-blur]');
-      expect(rule).toContain(
-        ':is(.kui-backdrop-image__blurred, .kui-backdrop-image__dim)',
-      );
-      expect(rule).toMatch(/\{\s*animation: none;\s*\}$/);
-    }
+  it('drops the fade for reduced transparency and never animates the filter', () => {
     expect(css).toMatch(
       /@media \(prefers-reduced-transparency: reduce\), \(prefers-contrast: more\) \{\s*\.kui-backdrop-image\[data-fade="true"\] \.kui-backdrop-image__backdrop \{\s*mask-image: none;/,
     );
     expect(css).toMatch(
       /\.kui-backdrop-image\[data-fade="true"\] \.kui-backdrop-image__overlay \{\s*background-color: var\(--_kui-backdrop-image-fade-to\);/,
     );
-  });
-
-  it('ramps only opacity for the blur and never animates the filter', () => {
-    const reveal = /@keyframes kui-backdrop-image-reveal \{([\s\S]*?)\n\}/.exec(
-      css,
-    )?.[1];
-    expect(
-      reveal!.match(/^\s+([a-z-]+):/gm)?.map((line) => line.trim()),
-    ).toEqual(['opacity:', 'opacity:']);
-    for (const [, body] of css.matchAll(/@keyframes [\w-]+ \{([\s\S]*?)\n\}/g))
-      expect(body).not.toContain('filter');
     expect(css).toMatch(
       /\.kui-backdrop-image\[data-blur="filter"\] \.kui-backdrop-image__blurred \{[^}]*filter: blur\(var\(--_kui-backdrop-image-blur\)\);/,
     );

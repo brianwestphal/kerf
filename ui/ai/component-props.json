@@ -9788,6 +9788,54 @@
       "dataChannel": "rootAttributes"
     },
     {
+      "key": "@kerfjs/ui:scroll-effect",
+      "id": "scroll-effect",
+      "source": "kerf",
+      "import": "@kerfjs/ui/scroll-effect",
+      "export": "ScrollEffect",
+      "description": "Applies scroll-linked effects to any content without a scroll listener:\neach effect animates only `transform` or `opacity` on the wrapper's own\nCSS view timeline, which the compositor runs. Kerf owns the static\nfallbacks: the content rests in place, fully visible and undimmed, without\nscroll-driven animation support, under reduced motion, under\n`data-kui-effects=\"static\"`, on slow-update displays, and under reduced\ntransparency, increased contrast, or forced colors.",
+      "props": [
+        {
+          "name": "effects",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "ref": "ScrollEffectSpec",
+              "text": "ScrollEffectSpec"
+            },
+            "text": "readonly ScrollEffectSpec[]"
+          },
+          "required": true,
+          "description": "The effects. They compose: transforms stack in array order (the first is\noutermost) and opacities multiply, so `reveal` on `entry` with `fade` on\n`exit` fades content in and out. Repeating a kind stacks it the same way\n(each `dim` adds its own overlay)."
+        },
+        {
+          "name": "children",
+          "type": {
+            "kind": "content",
+            "text": "KerfUiContent",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The content the effects apply to.",
+          "slot": true
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as an editor node\nmarker; the component's own markers stay protected.",
+          "control": "hidden"
+        }
+      ],
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
+    },
+    {
       "key": "@kerfjs/ui:search-field",
       "id": "search-field",
       "source": "kerf",
@@ -26332,6 +26380,240 @@
         "value": { "kind": "string", "text": "string", "nullable": true }
       },
       "text": "RowRootAttributes"
+    },
+    "ScrollEffectDim": {
+      "kind": "object",
+      "props": [
+        {
+          "name": "kind",
+          "type": { "kind": "literal", "value": "dim", "text": "\"dim\"" },
+          "required": true
+        },
+        {
+          "name": "to",
+          "type": { "kind": "number", "text": "number", "nullable": true },
+          "required": false
+        },
+        {
+          "name": "range",
+          "type": {
+            "kind": "enum",
+            "values": ["entry", "exit", "cover", "contain"],
+            "text": "ScrollEffectRange | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The timeline range. Each preset has its own default."
+        },
+        {
+          "name": "rangeStart",
+          "type": { "kind": "number", "text": "number", "nullable": true },
+          "required": false,
+          "description": "Where the effect starts within `range`, from 0 to 100 percent. Default 0."
+        },
+        {
+          "name": "rangeEnd",
+          "type": { "kind": "number", "text": "number", "nullable": true },
+          "required": false,
+          "description": "Where the effect ends within `range`, from 0 to 100 percent. Default 100."
+        }
+      ],
+      "text": "ScrollEffectDim"
+    },
+    "ScrollEffectFade": {
+      "kind": "object",
+      "props": [
+        {
+          "name": "kind",
+          "type": { "kind": "literal", "value": "fade", "text": "\"fade\"" },
+          "required": true
+        },
+        {
+          "name": "range",
+          "type": {
+            "kind": "enum",
+            "values": ["entry", "exit", "cover", "contain"],
+            "text": "ScrollEffectRange | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The timeline range. Each preset has its own default."
+        },
+        {
+          "name": "rangeStart",
+          "type": { "kind": "number", "text": "number", "nullable": true },
+          "required": false,
+          "description": "Where the effect starts within `range`, from 0 to 100 percent. Default 0."
+        },
+        {
+          "name": "rangeEnd",
+          "type": { "kind": "number", "text": "number", "nullable": true },
+          "required": false,
+          "description": "Where the effect ends within `range`, from 0 to 100 percent. Default 100."
+        }
+      ],
+      "text": "ScrollEffectFade"
+    },
+    "ScrollEffectParallax": {
+      "kind": "object",
+      "props": [
+        {
+          "name": "kind",
+          "type": {
+            "kind": "literal",
+            "value": "parallax",
+            "text": "\"parallax\""
+          },
+          "required": true
+        },
+        {
+          "name": "lag",
+          "type": {
+            "kind": "union",
+            "members": [
+              { "kind": "number", "text": "number" },
+              { "kind": "literal", "value": "subtle", "text": "\"subtle\"" }
+            ],
+            "text": "number | \"subtle\" | undefined",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "range",
+          "type": {
+            "kind": "enum",
+            "values": ["entry", "exit", "cover", "contain"],
+            "text": "ScrollEffectRange | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The timeline range. Each preset has its own default."
+        },
+        {
+          "name": "rangeStart",
+          "type": { "kind": "number", "text": "number", "nullable": true },
+          "required": false,
+          "description": "Where the effect starts within `range`, from 0 to 100 percent. Default 0."
+        },
+        {
+          "name": "rangeEnd",
+          "type": { "kind": "number", "text": "number", "nullable": true },
+          "required": false,
+          "description": "Where the effect ends within `range`, from 0 to 100 percent. Default 100."
+        }
+      ],
+      "text": "ScrollEffectParallax"
+    },
+    "ScrollEffectReveal": {
+      "kind": "object",
+      "props": [
+        {
+          "name": "kind",
+          "type": {
+            "kind": "literal",
+            "value": "reveal",
+            "text": "\"reveal\""
+          },
+          "required": true
+        },
+        {
+          "name": "range",
+          "type": {
+            "kind": "enum",
+            "values": ["entry", "exit", "cover", "contain"],
+            "text": "ScrollEffectRange | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The timeline range. Each preset has its own default."
+        },
+        {
+          "name": "rangeStart",
+          "type": { "kind": "number", "text": "number", "nullable": true },
+          "required": false,
+          "description": "Where the effect starts within `range`, from 0 to 100 percent. Default 0."
+        },
+        {
+          "name": "rangeEnd",
+          "type": { "kind": "number", "text": "number", "nullable": true },
+          "required": false,
+          "description": "Where the effect ends within `range`, from 0 to 100 percent. Default 100."
+        }
+      ],
+      "text": "ScrollEffectReveal"
+    },
+    "ScrollEffectScale": {
+      "kind": "object",
+      "props": [
+        {
+          "name": "kind",
+          "type": { "kind": "literal", "value": "scale", "text": "\"scale\"" },
+          "required": true
+        },
+        {
+          "name": "from",
+          "type": { "kind": "number", "text": "number", "nullable": true },
+          "required": false
+        },
+        {
+          "name": "to",
+          "type": { "kind": "number", "text": "number", "nullable": true },
+          "required": false
+        },
+        {
+          "name": "range",
+          "type": {
+            "kind": "enum",
+            "values": ["entry", "exit", "cover", "contain"],
+            "text": "ScrollEffectRange | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The timeline range. Each preset has its own default."
+        },
+        {
+          "name": "rangeStart",
+          "type": { "kind": "number", "text": "number", "nullable": true },
+          "required": false,
+          "description": "Where the effect starts within `range`, from 0 to 100 percent. Default 0."
+        },
+        {
+          "name": "rangeEnd",
+          "type": { "kind": "number", "text": "number", "nullable": true },
+          "required": false,
+          "description": "Where the effect ends within `range`, from 0 to 100 percent. Default 100."
+        }
+      ],
+      "text": "ScrollEffectScale"
+    },
+    "ScrollEffectSpec": {
+      "kind": "union",
+      "members": [
+        {
+          "kind": "ref",
+          "ref": "ScrollEffectParallax",
+          "text": "ScrollEffectParallax"
+        },
+        {
+          "kind": "ref",
+          "ref": "ScrollEffectReveal",
+          "text": "ScrollEffectReveal"
+        },
+        {
+          "kind": "ref",
+          "ref": "ScrollEffectFade",
+          "text": "ScrollEffectFade"
+        },
+        {
+          "kind": "ref",
+          "ref": "ScrollEffectScale",
+          "text": "ScrollEffectScale"
+        },
+        { "kind": "ref", "ref": "ScrollEffectDim", "text": "ScrollEffectDim" }
+      ],
+      "discriminant": ["kind"],
+      "text": "ScrollEffectSpec"
     },
     "SearchFieldModel": {
       "kind": "object",

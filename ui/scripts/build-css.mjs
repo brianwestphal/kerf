@@ -27,6 +27,25 @@ async function cssFiles(directory, prefix = '') {
   return files;
 }
 
+const FACADE =
+  /^\/\* Public stylesheet entry; implementation is colocated with the component\. \*\/\s+((?:@import ["'][^"']+["'];\s*)+)$/;
+
+/**
+ * A public stylesheet entry (a facade of only `@import`s) ships as one
+ * self-contained file: each import is inlined in order, recursing into
+ * imported facades, so `backdrop-image.css` carries the shared scroll-effect
+ * layer it builds on even when it is read or concatenated as text.
+ */
+async function inlineFacade(path) {
+  const css = await readFile(path, 'utf8');
+  const facade = FACADE.exec(css);
+  if (!facade) return css;
+  const parts = [];
+  for (const [, target] of facade[1].matchAll(/@import ["']([^"']+)["'];/g))
+    parts.push(await inlineFacade(resolve(dirname(path), target)));
+  return parts.join('\n');
+}
+
 const files = (await cssFiles(sourceDirectory)).sort();
 
 await mkdir(outputDirectory, { recursive: true });
@@ -35,17 +54,10 @@ await Promise.all(
     const source = new URL(file, sourceDirectory);
     const output = new URL(file, outputDirectory);
     await mkdir(dirname(fileURLToPath(output)), { recursive: true });
-    const facade = await readFile(source, 'utf8');
-    const implementation = facade.match(
-      /^\/\* Public stylesheet entry; implementation is colocated with the component\. \*\/\s+@import ["']([^"']+)["'];\s*$/,
-    );
-    const input = implementation
-      ? resolve(dirname(fileURLToPath(source)), implementation[1])
-      : fileURLToPath(source);
     const result = await postcss([remifyCss()]).process(
-      implementation ? await readFile(input, 'utf8') : facade,
+      await inlineFacade(fileURLToPath(source)),
       {
-        from: input,
+        from: fileURLToPath(source),
         to: fileURLToPath(output),
         map: false,
       },

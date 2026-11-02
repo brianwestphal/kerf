@@ -45,6 +45,7 @@
 @import "./corner-status.css";
 @import "./column-track.css";
 @import "./content-swap.css";
+@import "./scroll-effect.css";
 @import "./backdrop-image.css";
 @import "./file-picker.css";
 @import "./text-field.css";

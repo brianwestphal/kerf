@@ -8,6 +8,7 @@ import {
   type CssLength,
   remify,
 } from '../../../shared/styles/css-values.js';
+import { scrollEffectLayerStyle } from '../../../shared/styles/scroll-effect-layer.js';
 
 /** How a single image fills the backdrop (`object-fit`). */
 export type BackdropImageFit = 'cover' | 'contain' | 'fill';
@@ -276,10 +277,21 @@ export function BackdropImage(props: BackdropImageProps) {
   ]
     .filter(Boolean)
     .join(';');
+  // The shared scroll-effect layer animates the parallax and the blur ramp:
+  // the hero is the timeline subject, the layers lag by the parallax factor
+  // over its exit, and the blurred copy and dim layer fade in over the first
+  // half of that exit.
+  const animated = factor !== 0 || blur !== undefined;
+  const reveal = scrollEffectLayerStyle({
+    family: 'opacity',
+    range: 'exit-crossing 0% exit-crossing 50%',
+  });
   const image = (className: string, source: string, copy: boolean) =>
     props.repeat === undefined ? (
       <img
         class={className}
+        data-kui-scroll-effect={copy ? 'opacity' : undefined}
+        style={copy ? reveal : undefined}
         src={source}
         srcSet={source === src ? props.srcset : undefined}
         sizes={source === src ? props.sizes : undefined}
@@ -294,7 +306,8 @@ export function BackdropImage(props: BackdropImageProps) {
         role={!copy && alt ? 'img' : undefined}
         aria-label={!copy && alt ? alt : undefined}
         aria-hidden={copy ? 'true' : undefined}
-        style={`background-image:${cssUrl(source)};background-repeat:${props.repeat}`}
+        data-kui-scroll-effect={copy ? 'opacity' : undefined}
+        style={`background-image:${cssUrl(source)};background-repeat:${props.repeat}${copy ? `;${reveal}` : ''}`}
       />
     );
   const hasOverlay =
@@ -325,9 +338,25 @@ export function BackdropImage(props: BackdropImageProps) {
       style={style || undefined}
       slot={slot}
     >
-      <div class="kui-backdrop-image__hero">
+      <div
+        class="kui-backdrop-image__hero"
+        data-kui-scroll-timeline={animated ? '' : undefined}
+      >
         <div class="kui-backdrop-image__backdrop">
-          <div class="kui-backdrop-image__layers">
+          <div
+            class="kui-backdrop-image__layers"
+            data-kui-scroll-effect={factor === 0 ? undefined : 'translate'}
+            style={
+              factor === 0
+                ? undefined
+                : scrollEffectLayerStyle({
+                    family: 'translate',
+                    from: 0,
+                    to: 'var(--_kui-backdrop-image-parallax)',
+                    range: 'exit-crossing 0% exit-crossing 100%',
+                  })
+            }
+          >
             {image('kui-backdrop-image__media', src, false)}
             {blur === undefined
               ? null
@@ -337,7 +366,13 @@ export function BackdropImage(props: BackdropImageProps) {
                   true,
                 )}
           </div>
-          {dim === 0 ? null : <div class="kui-backdrop-image__dim" />}
+          {dim === 0 ? null : (
+            <div
+              class="kui-backdrop-image__dim"
+              data-kui-scroll-effect="opacity"
+              style={reveal}
+            />
+          )}
           {scrim === 'none' ? null : <div class="kui-backdrop-image__scrim" />}
         </div>
         {hasOverlay ? (

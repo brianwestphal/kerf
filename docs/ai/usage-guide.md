@@ -279,6 +279,17 @@ For a dense image-led feed, `ContentItem.media.deferOffscreen` (or
 changing the card's reserved height or its scroll owner. Enable it only after
 checking visible image readiness in the target feed.
 
+Use `ScrollEffect` (`@kerfjs/ui/scroll-effect`) to tie effects on any other
+content to its own scroll position: `effects={[{ kind: 'reveal', range:
+'entry' }, { kind: 'fade', range: 'exit' }]}` with the `parallax` (`lag`),
+`reveal`, `fade`, `scale` (`from`/`to`), and `dim` (`to`) presets, each over an
+`entry`, `exit`, `cover`, or `contain` range with optional
+`rangeStart`/`rangeEnd` percentages. Only transform and opacity animate, and
+every effect is at rest (content in place and visible) under reduced motion,
+the static-effects switch, and the other static fallbacks. It runs on the same
+shared scroll-effect layer as BackdropImage. Never hand-roll scroll listeners
+or `animation-timeline` CSS.
+
 Use `SummaryRow` for selectable list or board summaries. Its default root is
 an option; for a diagnostic row with a nested recovery button, set
 `semanticRole="group"` and `ariaLabel`. The group keeps the row's visual state

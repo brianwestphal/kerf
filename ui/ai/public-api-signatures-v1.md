@@ -4891,6 +4891,97 @@ declare function BackdropImage(props: BackdropImageProps): kerfjs.SafeHtml;
 export { BackdropImage, type BackdropImageBlur, type BackdropImageFit, type BackdropImageParallax, type BackdropImagePosition, type BackdropImageProps, type BackdropImageRepeat, type BackdropImageScrim, type BackdropImageSingleProps, type BackdropImageTiledProps };
 ```
 
+## `@kerfjs/ui/scroll-effect`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
+
+/**
+ * The part of the wrapper's view timeline an effect runs over, as the CSS
+ * named timeline ranges: `entry` while it scrolls into view, `exit` while it
+ * scrolls out, `cover` from first to last visible pixel, and `contain` while
+ * it is fully in view (or fully covers the view).
+ */
+type ScrollEffectRange = 'entry' | 'exit' | 'cover' | 'contain';
+/** Where an effect runs, shared by every preset. */
+interface ScrollEffectRangeOptions {
+    /** The timeline range. Each preset has its own default. */
+    range?: ScrollEffectRange;
+    /** Where the effect starts within `range`, from 0 to 100 percent. Default 0. */
+    rangeStart?: number;
+    /** Where the effect ends within `range`, from 0 to 100 percent. Default 100. */
+    rangeEnd?: number;
+}
+/**
+ * The content lags the scroll by `lag` (0 to 1; `subtle` is 0.35), the way
+ * BackdropImage's parallax does. Over `exit` (the default) it moves by the lag
+ * times its own height, which is exactly the lag factor of the scroll there;
+ * over `entry` it settles into place, and over `cover` or `contain` it passes
+ * its resting place halfway. The wrapper clips the moving content.
+ */
+interface ScrollEffectParallax extends ScrollEffectRangeOptions {
+    kind: 'parallax';
+    lag?: number | 'subtle';
+}
+/** The content fades in from transparent. Default range `entry`. */
+interface ScrollEffectReveal extends ScrollEffectRangeOptions {
+    kind: 'reveal';
+}
+/** The content fades out to transparent. Default range `exit`. */
+interface ScrollEffectFade extends ScrollEffectRangeOptions {
+    kind: 'fade';
+}
+/**
+ * The content scales from `from` to `to` (each above 0, at most 2; defaults
+ * 0.96 and 1) around its center. Default range `entry`. The wrapper clips a
+ * scale above 1.
+ */
+interface ScrollEffectScale extends ScrollEffectRangeOptions {
+    kind: 'scale';
+    from?: number;
+    to?: number;
+}
+/**
+ * A black layer over the content ramps to opacity `to` (0 to 1; default
+ * 0.5). Default range `exit`.
+ */
+interface ScrollEffectDim extends ScrollEffectRangeOptions {
+    kind: 'dim';
+    to?: number;
+}
+/** One scroll-linked effect preset. */
+type ScrollEffectSpec = ScrollEffectParallax | ScrollEffectReveal | ScrollEffectFade | ScrollEffectScale | ScrollEffectDim;
+type ScrollEffectKind = ScrollEffectSpec['kind'];
+interface ScrollEffectProps {
+    /**
+     * The effects. They compose: transforms stack in array order (the first is
+     * outermost) and opacities multiply, so `reveal` on `entry` with `fade` on
+     * `exit` fades content in and out. Repeating a kind stacks it the same way
+     * (each `dim` adds its own overlay).
+     */
+    effects: readonly ScrollEffectSpec[];
+    /** The content the effects apply to. */
+    children?: KerfUiContent;
+    /** Application `data-*` metadata on the root, such as an editor node
+     * marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
+}
+/**
+ * Applies scroll-linked effects to any content without a scroll listener:
+ * each effect animates only `transform` or `opacity` on the wrapper's own
+ * CSS view timeline, which the compositor runs. Kerf owns the static
+ * fallbacks: the content rests in place, fully visible and undimmed, without
+ * scroll-driven animation support, under reduced motion, under
+ * `data-kui-effects="static"`, on slow-update displays, and under reduced
+ * transparency, increased contrast, or forced colors.
+ */
+declare function ScrollEffect({ effects, children, rootAttributes, }: ScrollEffectProps): kerfjs.SafeHtml;
+
+export { ScrollEffect, type ScrollEffectDim, type ScrollEffectFade, type ScrollEffectKind, type ScrollEffectParallax, type ScrollEffectProps, type ScrollEffectRange, type ScrollEffectRangeOptions, type ScrollEffectReveal, type ScrollEffectScale, type ScrollEffectSpec };
+```
+
 ## `@kerfjs/ui/wire-toolbar-visibility`
 
 ```ts

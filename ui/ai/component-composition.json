@@ -1691,6 +1691,71 @@
       }
     },
     {
+      "key": "@kerfjs/ui:scroll-effect",
+      "package": "@kerfjs/ui",
+      "id": "scroll-effect",
+      "name": "ScrollEffect",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the content inside and the effects list",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "each effect's range and its start and end percentages",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "placing it in a vertically scrolling region",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "none",
+          "notes": [
+            "A block box that adds no spacing; its content keeps its own geometry.",
+            "It clips its content while a parallax or a scale above 1 is present, so moving content never draws over its neighbors."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Effects run only with prefers-reduced-motion: no-preference and scroll-driven animation support; under data-kui-effects=\"static\", on slow-update displays, and under reduced transparency, increased contrast, or forced colors every layer is at rest: content in place, fully opaque, and undimmed. The wrappers add no roles and the dim layer is aria-hidden, so assistive technology reads the content unchanged."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-scroll-effect",
+        "publicClasses": ["kui-scroll-effect"],
+        "rootElement": "div",
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:toolbar",
       "package": "@kerfjs/ui",
       "id": "toolbar",

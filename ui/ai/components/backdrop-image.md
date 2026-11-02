@@ -23,6 +23,7 @@ Open a scrolling Pane or NavStack view with a hero or tiled backdrop image (an a
 
 - [Pane](./pane.md) (composes-with) — Place BackdropImage first in a Pane's scrolling content (or a NavStack view) so its scroller drives the parallax.
 - [SunkenPanel](./sunken-panel.md) (nearest) — Use SunkenPanel for a lowered work surface without imagery.
+- [ScrollEffect](./scroll-effect.md) (nearest) — Use ScrollEffect to add parallax, reveal, fade, scale, or dim to content that is not a backdrop image; BackdropImage runs on the same scroll-effect layer.
 
 ## Imports
 
@@ -80,6 +81,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [Pane](./pane.md), [SunkenPanel](./sunken-panel.md).
+- Components: [Pane](./pane.md), [SunkenPanel](./sunken-panel.md), [ScrollEffect](./scroll-effect.md).
 - Docs: [`docs/backdrop-image.md`](../../docs/backdrop-image.md), [`docs/backdrop-image.md#fallbacks`](../../docs/backdrop-image.md#fallbacks).
 - UX catalog route: `?component=backdrop-image`.

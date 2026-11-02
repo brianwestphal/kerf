@@ -1009,6 +1009,21 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   `BackdropImage.deferOffscreen` directly) to skip offscreen hero painting while
   preserving card height and the shared scroll owner.
 
+- **Tie content effects to scroll with `ScrollEffect`.** `@kerfjs/ui/scroll-effect`
+  wraps any content and runs presets on its own CSS view timeline:
+  `parallax` (`lag`, default `exit`), `reveal` (default `entry`), `fade`
+  (default `exit`), `scale` (`from`/`to`, default `entry`), and `dim` (`to`,
+  default `exit`), each with `range` (`entry`, `exit`, `cover`, `contain`) and
+  `rangeStart`/`rangeEnd` percentages; effects (repeats too) nest in
+  array order. Only transform and opacity animate. It is static (content in
+  place, opaque, undimmed) without scroll-driven animations, under reduced
+  motion, `data-kui-effects="static"`, slow-update displays, reduced
+  transparency, increased contrast, or forced colors, so never hide essential
+  content in a revealed state. There is no blur preset (BackdropImage owns the
+  image blur) and no IntersectionObserver gating. BackdropImage runs on the
+  same shared layer. Never hand-roll scroll listeners or `animation-timeline`
+  CSS.
+
 - **Use `MessageComposer` for a chat or prompt composer.** `@kerfjs/ui/message-composer`
   renders a raised frame (standard border, large radius, `shadow-l`) whose
   border turns brand while focus is within, a borderless textarea that grows

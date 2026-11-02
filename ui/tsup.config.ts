@@ -85,6 +85,7 @@ const entries = [
   'corner-status',
   'column-track',
   'content-swap',
+  'scroll-effect',
   'backdrop-image',
   'file-picker',
   'combobox',

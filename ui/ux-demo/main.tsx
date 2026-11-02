@@ -162,6 +162,10 @@ import {
 } from './demos/progress-bar.js';
 import { demos, demoSettings } from './demos/registry.js';
 import {
+  applyScrollEffectSetting,
+  resetScrollEffectDemo,
+} from './demos/scroll-effect.js';
+import {
   SearchFieldHelp,
   TOKEN_SEARCH_HELP_SURFACE_ID,
 } from './demos/search-field.js';
@@ -1268,6 +1272,10 @@ const stopActions = delegateActions(app, 'click', {
   'edit-toolbar-title': () => {
     actionLog.value = 'Edit toolbar title requested';
   },
+  'scroll-effect-reset': () => {
+    resetScrollEffectDemo();
+    actionLog.value = 'Scroll effect reset';
+  },
   'log-backdrop-track': () => {
     actionLog.value = 'Track selected';
   },
@@ -1655,6 +1663,13 @@ const stopSelect = delegate(app, 'change', 'kui-select', (_event, element) => {
     actionLog.value = `Badge ${element.getAttribute('name')!.slice('badge-playground-'.length)}: ${value}`;
     return;
   }
+  if (
+    typeof value === 'string' &&
+    applyScrollEffectSetting(element.getAttribute('name'), value)
+  ) {
+    actionLog.value = `Scroll effect ${element.getAttribute('name')!.slice('scroll-effect-'.length)}: ${value}`;
+    return;
+  }
   if (value === 'quiet' || value === 'balanced' || value === 'explicit')
     selectedChoice.value = value;
   if (
@@ -1754,6 +1769,11 @@ const routeWires: Partial<Record<string, RouteWire>> = {
     wire: () => () => {},
   },
   slider: { reset: resetSliderDemo, target: 'canvas', wire: () => () => {} },
+  'scroll-effect': {
+    reset: resetScrollEffectDemo,
+    target: 'canvas',
+    wire: () => () => {},
+  },
   'column-explorer': {
     reset: resetColumnExplorerDemo,
     target: 'canvas',

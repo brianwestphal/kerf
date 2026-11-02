@@ -441,6 +441,19 @@ export {
   type EditorFrameProps,
 } from './components/surfaces/editor-frame/editor-frame.js';
 export {
+  ScrollEffect,
+  type ScrollEffectDim,
+  type ScrollEffectFade,
+  type ScrollEffectKind,
+  type ScrollEffectParallax,
+  type ScrollEffectProps,
+  type ScrollEffectRange,
+  type ScrollEffectRangeOptions,
+  type ScrollEffectReveal,
+  type ScrollEffectScale,
+  type ScrollEffectSpec,
+} from './components/surfaces/scroll-effect/scroll-effect.js';
+export {
   ensureSunkenTexture,
   SunkenPanel,
   type SunkenPanelProps,

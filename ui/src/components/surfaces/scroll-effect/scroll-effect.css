@@ -1,0 +1,121 @@
+/* ScrollEffect, and the shared scroll-effect layer it and BackdropImage are
+   built on. The layer is attribute-driven so each component marks only
+   elements it renders itself (src/shared/styles/scroll-effect-layer.ts):
+   - [data-kui-scroll-timeline] is a named view-timeline subject;
+   - [data-kui-scroll-effect] animates one keyframe family over a range of the
+     nearest subject's timeline, configured by inline custom properties.
+   Only transform and opacity animate, on a scroll-driven timeline the
+   compositor runs. No filter ever animates, and there is no scroll listener
+   and no background-attachment: fixed. Every layer is static (it rests at its
+   own base style) without scroll-driven animation support, under reduced
+   motion, under data-kui-effects="static", on slow-update displays, and under
+   reduced transparency, increased contrast, or forced colors. */
+
+/* The wrapper is the timeline subject and never moves itself, so its own
+   scroll position (not its animated layers') drives the effects. */
+.kui-scroll-effect {
+  display: flow-root;
+  position: relative;
+  min-width: 0;
+}
+
+/* A lagging or growing layer stays inside the wrapper instead of drawing
+   over the content around it. */
+.kui-scroll-effect[data-clip="true"] {
+  overflow: clip;
+}
+
+.kui-scroll-effect__layer {
+  display: flow-root;
+  min-width: 0;
+}
+
+/* The dim layer darkens the content toward its peak opacity; at rest (and in
+   every static fallback) it is fully transparent. */
+.kui-scroll-effect__dim {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+[data-kui-scroll-timeline] {
+  view-timeline-name: --kui-scroll-effect;
+  view-timeline-axis: block;
+}
+
+/* Defaults, set on each layer so a nested layer never inherits another's
+   inputs. */
+[data-kui-scroll-effect] {
+  --_kui-scroll-effect-from: 0;
+  --_kui-scroll-effect-to: 1;
+  --_kui-scroll-effect-range: cover 0% cover 100%;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-kui-scroll-effect] {
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --kui-scroll-effect;
+      animation-range: var(--_kui-scroll-effect-range);
+    }
+
+    [data-kui-scroll-effect="translate"] {
+      animation-name: kui-scroll-effect-translate;
+    }
+
+    [data-kui-scroll-effect="scale"] {
+      animation-name: kui-scroll-effect-scale;
+    }
+
+    [data-kui-scroll-effect="opacity"] {
+      animation-name: kui-scroll-effect-opacity;
+    }
+  }
+}
+
+/* A block-axis offset in multiples of the layer's own height. */
+@keyframes kui-scroll-effect-translate {
+  from {
+    transform: translateY(calc(var(--_kui-scroll-effect-from) * 100%));
+  }
+  to {
+    transform: translateY(calc(var(--_kui-scroll-effect-to) * 100%));
+  }
+}
+
+@keyframes kui-scroll-effect-scale {
+  from {
+    transform: scale(var(--_kui-scroll-effect-from));
+  }
+  to {
+    transform: scale(var(--_kui-scroll-effect-to));
+  }
+}
+
+@keyframes kui-scroll-effect-opacity {
+  from {
+    opacity: var(--_kui-scroll-effect-from);
+  }
+  to {
+    opacity: var(--_kui-scroll-effect-to);
+  }
+}
+
+/* The document-wide static-effects switch and slow-update displays (e-ink,
+   print) get the same static result as reduced motion, and so do reduced
+   transparency, increased contrast, and forced colors. */
+:root[data-kui-effects="static"] [data-kui-scroll-effect] {
+  animation: none;
+}
+
+@media (update: slow),
+  (prefers-reduced-transparency: reduce),
+  (prefers-contrast: more),
+  (forced-colors: active) {
+  [data-kui-scroll-effect] {
+    animation: none;
+  }
+}

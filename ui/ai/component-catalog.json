@@ -1741,6 +1741,11 @@
           "id": "sunken-panel",
           "relationship": "nearest",
           "when": "Use SunkenPanel for a lowered work surface without imagery."
+        },
+        {
+          "id": "scroll-effect",
+          "relationship": "nearest",
+          "when": "Use ScrollEffect to add parallax, reveal, fade, scale, or dim to content that is not a backdrop image; BackdropImage runs on the same scroll-effect layer."
         }
       ],
       "appOwns": [
@@ -1789,6 +1794,84 @@
         "catalogRoute": "?component=backdrop-image",
         "documentation": "docs/backdrop-image.md",
         "recipe": "docs/backdrop-image.md#fallbacks"
+      }
+    },
+    {
+      "id": "scroll-effect",
+      "name": "ScrollEffect",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A wrapper that ties compositor-only effects (parallax, reveal, fade, scale, dim) on any content to its own scroll position, with Kerf-owned static fallbacks.",
+      "uses": [],
+      "purpose": "Hook scroll-linked effects to any content without a scroll listener: each preset animates only transform or opacity on the wrapper's own CSS view timeline over an entry, exit, cover, or contain range, and the shared scroll-effect layer (also under BackdropImage) leaves the content static, visible, and undimmed wherever scroll-driven motion is unsupported or unwanted.",
+      "publicExports": [
+        "ScrollEffect"
+      ],
+      "useWhen": [
+        "Content should fade or scale in as it scrolls into view, fade or dim as it scrolls away, or lag the scroll (parallax), driven by its own position in the scroller.",
+        "Several effects should compose on one block (for example reveal on entry and fade on exit) without app CSS animations, scroll listeners, or IntersectionObserver wiring."
+      ],
+      "avoidWhen": [
+        "Do not use it for a hero or backdrop image; BackdropImage owns image parallax, the progressive blur, and the fade into a surface color.",
+        "Do not hand-roll scroll listeners, animation-timeline CSS, or animated filters around content in app CSS; configure ScrollEffect presets instead.",
+        "Do not put essential information only in a revealed state; content must read correctly in the static fallback, where every effect is at rest.",
+        "Do not use it for state transitions (opening, swapping, or dismissing content); use ContentSwap or the component that owns that motion."
+      ],
+      "alternatives": [
+        {
+          "id": "backdrop-image",
+          "relationship": "nearest",
+          "when": "Use BackdropImage for a scrolling view that opens with an image that lags, blurs, and fades into a surface color."
+        },
+        {
+          "id": "content-swap",
+          "relationship": "nearest",
+          "when": "Use ContentSwap for motion that follows a state change rather than the scroll position."
+        }
+      ],
+      "appOwns": [
+        "the content inside and the effects list",
+        "each effect's range and its start and end percentages",
+        "placing it in a vertically scrolling region"
+      ],
+      "variants": [
+        "parallax with a 0 to 1 lag factor or subtle (0.35)",
+        "reveal (fade in) and fade (fade out)",
+        "scale from and to a factor",
+        "dim toward a peak opacity",
+        "entry, exit, cover, or contain ranges with optional start and end percentages",
+        "composed effects: transforms stack in array order and opacities multiply"
+      ],
+      "accessibility": [
+        "Effects run only with prefers-reduced-motion: no-preference and scroll-driven animation support; under data-kui-effects=\"static\", on slow-update displays, and under reduced transparency, increased contrast, or forced colors every layer is at rest: content in place, fully opaque, and undimmed. The wrappers add no roles and the dim layer is aria-hidden, so assistive technology reads the content unchanged."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none",
+        "notes": [
+          "A block box that adds no spacing; its content keeps its own geometry.",
+          "It clips its content while a parallax or a scale above 1 is present, so moving content never draws over its neighbors."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/scroll-effect",
+        "manualCssImport": "@kerfjs/ui/scroll-effect.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-scroll-effect"
+      ],
+      "publicTokens": [],
+      "rootElement": "div",
+      "links": {
+        "catalogRoute": "?component=scroll-effect",
+        "documentation": "docs/scroll-effect.md",
+        "recipe": "docs/scroll-effect.md#fallbacks"
       }
     },
     {

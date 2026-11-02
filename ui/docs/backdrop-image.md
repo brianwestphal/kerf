@@ -92,6 +92,11 @@ factor times that distance, so the image moves slower than the content. There
 is no scroll listener and no `background-attachment: fixed`, and the compositor
 runs the animation.
 
+The timeline, the keyframes, and the fallbacks below come from the shared
+scroll-effect layer that [`ScrollEffect`](scroll-effect.md) also runs on, so
+`@kerfjs/ui/backdrop-image.css` imports `@kerfjs/ui/scroll-effect.css`. Use
+`ScrollEffect` to give other content parallax, reveal, fade, scale, or dim.
+
 ## Progressive blur
 
 `blur` stacks a blurred copy of the image over the sharp one and fades the

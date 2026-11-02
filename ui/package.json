@@ -560,6 +560,11 @@
       "types": "./dist/selection.d.ts",
       "import": "./dist/selection.js"
     },
+    "./scroll-effect": {
+      "types": "./dist/scroll-effect.d.ts",
+      "browser": "./dist/browser/scroll-effect.js",
+      "import": "./dist/scroll-effect.js"
+    },
     "./backdrop-image": {
       "types": "./dist/backdrop-image.d.ts",
       "browser": "./dist/browser/backdrop-image.js",
@@ -679,6 +684,7 @@
     "./corner-status.css": "./dist/styles/corner-status.css",
     "./column-track.css": "./dist/styles/column-track.css",
     "./content-swap.css": "./dist/styles/content-swap.css",
+    "./scroll-effect.css": "./dist/styles/scroll-effect.css",
     "./backdrop-image.css": "./dist/styles/backdrop-image.css",
     "./file-picker.css": "./dist/styles/file-picker.css",
     "./text-field.css": "./dist/styles/text-field.css",
