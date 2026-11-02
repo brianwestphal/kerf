@@ -800,6 +800,19 @@ never styled from outside. This matches Kerf UI's "configure, never override".
     `data-key`.
   - `as` must not shadow a param, an outer item, or a name the generated
     module uses (`inputs`, `slots`, `each`, `handlers`).
+  - An `$each` inside another `$each`'s template (KF-CFA1S1: nested repeats)
+    renders as a plain `items.map(…)` in both the generated module and
+    `interpretView`, not a keyed `each()`. kerf never reconciles a list
+    inside a row: the row is flattened to HTML, and a keyed `each()` there
+    throws (`docs/16-list-identity.md` §16.2). The inner list re-renders with
+    its outer row, and its rows still carry `data-key`, so a row action in
+    an inner row reports the inner row's key. Inner keys need only be
+    unique within their outer row; a keyed ref (§4.4) on an inner template
+    returns the first row with that key.
+  - A `#view` inside an `$each` template cannot compose a document that has
+    its own top-level `$each` (`KUI-V016`): that document's generated module
+    renders a keyed `each()`, and it cannot know it is rendered inside a
+    row. Put the repeat in the composing document instead.
 - **`$if`**: `{ "$if": <boolean value>, "then": <child>, "else"?: <child> }`.
   The condition is a param, a binding, or a literal.
 
@@ -1098,7 +1111,10 @@ surface a human reads: "adds the action `archive`, removes the input
   are identical.
 - Rendering semantics match the generated module exactly. A differential test
   pins this: for the inbox fixture, interpreted output equals the generated
-  `renderInbox` output byte for byte across several input sets.
+  `renderInbox` output byte for byte across several input sets. Nested
+  repeats (§3.5) have their own differential test: a freshly generated
+  module and the interpreter, both mounted, render the same markup through a
+  sequence of input changes.
 - Size is gated by `npm --prefix ui run check:view-bundle`, which is part of
   the ui `check` (KF-CTCNWJ: view bundle budget). Budgets live in
   `ui/view-bundle-budget.json` and ratchet: an entry more than 350 B under
@@ -1147,6 +1163,7 @@ schema and the validator in agreement.
 | `KUI-V013` | `$icon` on a non-icon prop, a malformed icon name, or (given `icons`) an unknown one                                                   |
 | `KUI-V014` | A control, link, or component that renders one, at any depth in the zones of a component whose root is a control or link               |
 | `KUI-V015` | A `rootAttributes` key that is not a lowercase `data-*` name, or a reserved one (`data-kerf-*`, `data-key`, `data-editor-*`; §3.3)     |
+| `KUI-V016` | An `$each` at the top of a document that a `#view` composes inside an `$each` row (§3.5); reported at the composed `$each`'s path      |
 
 **Hints** (KF-KQ72TW: non-blocking view hints) are advice about a valid
 document. They never set `valid` to false, and generation, export, and Compare

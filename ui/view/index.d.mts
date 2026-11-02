@@ -109,7 +109,7 @@ export function createViewCatalog(input: {
 
 export interface ViewDiagnostic {
   /**
-   * `KUI-V001`–`KUI-V014`, or `KUI-L201`–`KUI-L204` for composition; a hint
+   * `KUI-V001`–`KUI-V016`, or `KUI-L201`–`KUI-L204` for composition; a hint
    * is `KUI-H001` (a whole-screen layout below the root whose place has no
    * height: not in a SizedRegion, another layout, or a filled Pane's content).
    */

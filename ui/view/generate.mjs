@@ -277,6 +277,16 @@ function createEmitter(document, catalog, imports, importFrom) {
     if ('$each' in child) {
       const inner = new Map(scope).set(child.as, true);
       const template = nodeExpr(child.template, inner, child.key, slot);
+      // Scope holds only `$each` items, so a non-empty scope is a row
+      // template. kerf never reconciles a list inside a row (a keyed each()
+      // there throws), so an inner repeat is a plain map that re-renders with
+      // its row (KF-CFA1S1).
+      if (scope.size > 0) {
+        return call(
+          `${flat(value(child.$each, scope))}.map((${child.as}) => `,
+          template,
+        );
+      }
       imports.value('kerfjs', 'each');
       return call(
         `each(${flat(value(child.$each, scope))}, (${child.as}) => `,

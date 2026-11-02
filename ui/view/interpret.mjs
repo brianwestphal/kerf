@@ -144,17 +144,22 @@ function renderDocument(document, inputs, slots, options) {
       // The key path starts with `as` (validation requires it); read the rest
       // from the item.
       const rest = child.key.split('.').slice(1);
-      return each(
-        value(child.$each, scope),
-        (item) =>
-          nodeValue(
-            child.template,
-            new Map(scope).set(child.as, item),
-            readPath(item, rest),
-            slot,
-          ),
-        { key: child.template.id },
-      );
+      const items = value(child.$each, scope);
+      const row = (item) =>
+        nodeValue(
+          child.template,
+          new Map(scope).set(child.as, item),
+          readPath(item, rest),
+          slot,
+        );
+      // Scope holds only `$each` items, so a non-empty scope is a row
+      // template. kerf never reconciles a list inside a row (the row is
+      // flattened to HTML, and a keyed each() there throws), so an inner
+      // repeat is a plain map that re-renders with its row, as the generated
+      // module writes it (KF-CFA1S1).
+      return scope.size
+        ? items.map(row)
+        : each(items, row, { key: child.template.id });
     }
     if ('$if' in child) {
       if (value(child.$if, scope)) return childValue(child.then, scope, slot);

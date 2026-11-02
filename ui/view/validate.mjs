@@ -1019,6 +1019,16 @@ function checkChild(ctx, child, at, scope, rowScoped, parentKey, text = false) {
   if ('$each' in child) {
     for (const key of only(child, ['$each', 'as', 'key', 'template']))
       ctx.report('KUI-V001', `${at}.${key}`, 'unknown `$each` field');
+    // KF-CFA1S1: an inner `$each` in this document renders as a plain map, but
+    // a document composed into another's row cannot know it is in one: its
+    // module renders a keyed each(), which kerf refuses inside a row render.
+    if (ctx.rowHost && !rowScoped) {
+      ctx.report(
+        'KUI-V016',
+        at,
+        'a document composed into an `$each` row cannot repeat; move the `$each` into the composing document',
+      );
+    }
     const source = dynamicType(ctx, child.$each, scope, `${at}.$each`);
     const list = source ? resolveType(source, {}) : undefined;
     if (source === null)
@@ -1253,6 +1263,8 @@ function checkView(ctx, node, at, scope, rowScoped) {
     viewStack: [...ctx.viewStack, node.src],
     // A composed document inside a control renders inside it too.
     interactiveHost: ctx.interactiveHost,
+    // ... and one inside a row renders inside that row.
+    rowHost: ctx.rowHost || rowScoped,
   });
   for (const diagnostic of nested.diagnostics) {
     ctx.report(
@@ -1517,6 +1529,7 @@ export function validateView(document, catalog, options = {}) {
     checkedSlots: new WeakSet(),
     packages: undefined,
     interactiveHost: options.interactiveHost,
+    rowHost: options.rowHost === true,
     report(code, path, message) {
       diagnostics.push({ code, path, message });
     },
