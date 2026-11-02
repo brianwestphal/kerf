@@ -23,9 +23,7 @@ import { FilePlus, Search } from 'lucide';
 import { DemoContentItem } from './demo-content-item.js';
 
 const region = (title: string, detail: string) => (
-  <div class="kui-content">
-    <DemoContentItem title={title} detail={detail} />
-  </div>
+  <DemoContentItem title={title} detail={detail} />
 );
 
 /** The resizable example's id, which `wireWorkbench` targets. */
@@ -103,7 +101,7 @@ function ticketCollectionView(): NavStackView {
       </List>
     ),
     content: (
-      <div class="kui-content">
+      <List gap="l">
         {ticketIds.map((id) => (
           <ContentItem
             interactive
@@ -121,7 +119,7 @@ function ticketCollectionView(): NavStackView {
             </List>
           </ContentItem>
         ))}
-      </div>
+      </List>
     ),
   };
 }
@@ -153,14 +151,14 @@ function ticketDetailView(id: string): NavStackView {
       </List>
     ),
     content: (
-      <div class="kui-content">
+      <List gap="l">
         {Array.from({ length: 14 }, (_, index) => (
           <DemoContentItem
             title={`${workbenchTicketSection.value === 'overview' ? 'Detail' : 'Event'} ${index + 1}`}
             detail={`${id} has its own scrolling content below fixed chrome.`}
           />
         ))}
-      </div>
+      </List>
     ),
   };
 }
@@ -332,7 +330,7 @@ export function WorkbenchDemo() {
           overlayBackdrop
           mainToolbar={{ label: 'Editor', title: mainTitle('Editor') }}
           main={
-            <div class="kui-content">
+            <List gap="l">
               <DemoContentItem
                 title="Resize the Panels"
                 detail="Drag a separator, or focus it and use the arrow keys, Home, or End. The editor keeps at least 320 px, so a rail stops growing there; a hidden panel returns at its last size."
@@ -346,7 +344,7 @@ export function WorkbenchDemo() {
               >
                 Select Underlying Item
               </ContentItem>
-            </div>
+            </List>
           }
           leftRail={{
             label: 'Navigator',
@@ -387,7 +385,7 @@ export function WorkbenchDemo() {
               trailing: iconGroup('Search Inspector', Search, 'search'),
             },
             content: (
-              <div class="kui-content">
+              <List gap="l">
                 <DemoContentItem title="Selection" detail="160–360 px wide" />
                 {Array.from({ length: 12 }, (_, index) => (
                   <DemoContentItem
@@ -395,7 +393,7 @@ export function WorkbenchDemo() {
                     detail="Scrollable inspector detail"
                   />
                 ))}
-              </div>
+              </List>
             ),
             collapsed: workbenchInspectorCollapsed.value,
             size: workbenchInspectorSize.value,
@@ -404,7 +402,7 @@ export function WorkbenchDemo() {
           bottomDrawer={{
             label: 'Console',
             content: (
-              <div class="kui-content">
+              <List gap="l">
                 <DemoContentItem title="Console" detail="120–320 px tall" />
                 <PopupMenu
                   text="Create Item"
@@ -414,7 +412,7 @@ export function WorkbenchDemo() {
                     { label: 'New Task', action: 'create-task' },
                   ]}
                 />
-              </div>
+              </List>
             ),
             size: workbenchConsoleSize.value,
             resizable: { min: 120, max: 320 },

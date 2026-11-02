@@ -26,9 +26,7 @@ import { DemoContentItem } from './demo-content-item.js';
 type DemoTabId = 'projects' | 'search' | 'settings';
 
 const scene = (title: string, detail: string) => (
-  <div class="kui-content">
-    <DemoContentItem title={title} detail={detail} />
-  </div>
+  <DemoContentItem title={title} detail={detail} />
 );
 
 const tabs: readonly TabNavigatorTab<DemoTabId>[] = [

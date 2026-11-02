@@ -1029,9 +1029,7 @@ test('builds TabNavigator › Persistent Tab Scenes', async ({ page }) => {
     await dialog.getByText('Icon', { exact: true }).click();
     await pickIcon(page, page.locator('[data-editor-icon-place]'), glyph);
   }
-  // Each scene is a DemoContentItem. The demo's raw `.kui-content` wrapper
-  // around it has no component to place (KF-5H1X9S) and changes nothing
-  // around a single ContentItem.
+  // Each scene is a DemoContentItem, as the demo writes it.
   const scenes = [
     ['Projects', 'Each destination stays mounted when inactive.'],
     ['Search', 'This plain scene uses a deeper content inset.'],

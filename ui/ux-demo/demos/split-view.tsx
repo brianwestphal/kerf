@@ -171,13 +171,11 @@ function messageList(
 
 function messageDetail(message: Message) {
   return (
-    <div class="kui-content">
-      <DemoContentItem
-        eyebrow={`From ${message.sender}`}
-        title={message.subject}
-        detail={message.body}
-      />
-    </div>
+    <DemoContentItem
+      eyebrow={`From ${message.sender}`}
+      title={message.subject}
+      detail={message.body}
+    />
   );
 }
 

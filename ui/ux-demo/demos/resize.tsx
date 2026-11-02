@@ -74,16 +74,14 @@ export function ResizeDemo() {
           min={120}
           max={240}
         >
-          <div class="kui-content">
-            <PopupMenu
-              text="Create Item"
-              placement="top-start"
-              items={[
-                { label: 'New Terminal', action: 'create-terminal' },
-                { label: 'New Task', action: 'create-task' },
-              ]}
-            />
-          </div>
+          <PopupMenu
+            text="Create Item"
+            placement="top-start"
+            items={[
+              { label: 'New Terminal', action: 'create-terminal' },
+              { label: 'New Task', action: 'create-task' },
+            ]}
+          />
         </ResizableRegion>
       </CatalogExample>
       <CatalogExample

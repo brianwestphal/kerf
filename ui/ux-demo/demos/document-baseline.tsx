@@ -32,20 +32,16 @@ export function DocumentBaselineDemo() {
             listTitle="Mailboxes"
             detailTitle="Inbox"
             list={
-              <div class="kui-content">
-                <DemoContentItem
-                  title="Mailboxes"
-                  detail="The list pane fills the root height."
-                />
-              </div>
+              <DemoContentItem
+                title="Mailboxes"
+                detail="The list pane fills the root height."
+              />
             }
             detail={
-              <div class="kui-content">
-                <DemoContentItem
-                  title="Inbox"
-                  detail="The detail pane fills it too."
-                />
-              </div>
+              <DemoContentItem
+                title="Inbox"
+                detail="The detail pane fills it too."
+              />
             }
           />
         </div>

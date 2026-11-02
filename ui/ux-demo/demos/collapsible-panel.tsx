@@ -24,9 +24,7 @@ import { FilePlus, Search } from 'lucide';
 import { DemoContentItem } from './demo-content-item.js';
 
 const content = (title: string, detail: string) => (
-  <div class="kui-content">
-    <DemoContentItem title={title} detail={detail} />
-  </div>
+  <DemoContentItem title={title} detail={detail} />
 );
 
 /** The restore example's drawer id, which `wireSidebar` targets. */
