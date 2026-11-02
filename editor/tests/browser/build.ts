@@ -1,8 +1,9 @@
-import { readFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, type Locator, type Page, test } from '@playwright/test';
 
 import { area } from './areas.js';
+import { sampleName } from './sample-name.js';
 
 /**
  * Building a document the way a person does (KF-JN4PF5: build every ux-demo
@@ -107,7 +108,47 @@ export async function exported(page: Page): Promise<unknown> {
     page.getByRole('menuitem', { name: 'Document (.kui.json)' }).click(),
   ]);
   const document = JSON.parse(await readFile((await download.path())!, 'utf8'));
+  await saveSample(document);
   return withoutIds(document.root);
+}
+
+/** Where each build's document is saved, for the editor's Open to load. */
+export const SAMPLES = new URL('../../samples/', import.meta.url);
+
+/**
+ * Saves the exported document as the build's sample (`samples/<name>.kui.json`),
+ * so each ux-demo configuration the editor builds can be opened in it. The
+ * last export of a test wins. Chromium alone writes, so engines never race;
+ * the document takes the test's name (`sampleName`) and node ids renumbered
+ * in document order, so a rerun leaves an unchanged build's file
+ * byte-identical.
+ */
+async function saveSample(document: { name: string; root: unknown }) {
+  const info = test.info();
+  if (info.project.name !== 'chromium') return;
+  const { name, file } = sampleName(info.title);
+  const ids = new Map<string, string>();
+  const renumber = (value: unknown): unknown => {
+    if (Array.isArray(value)) return value.map(renumber);
+    if (value === null || typeof value !== 'object') return value;
+    return Object.fromEntries(
+      Object.entries(value).map(([key, inner]) => {
+        if (key === 'id' && 'type' in value && typeof inner === 'string') {
+          if (!ids.has(inner))
+            ids.set(inner, String(ids.size + 1).padStart(26, '0'));
+          return [key, ids.get(inner)];
+        }
+        return [key, renumber(inner)];
+      }),
+    );
+  };
+  const sample = { ...document, name, root: renumber(document.root) };
+  await mkdir(SAMPLES, { recursive: true });
+  await writeFile(
+    new URL(file, SAMPLES),
+    // Stable two-space JSON, as the editor's own Save writes it.
+    `${JSON.stringify(sample, null, 2)}\n`,
+  );
 }
 
 function withoutIds(value: unknown): unknown {

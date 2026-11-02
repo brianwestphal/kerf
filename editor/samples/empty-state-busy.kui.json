@@ -1,0 +1,24 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "EmptyStateBusy",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:empty-state",
+          "props": {
+            "title": "Loading Items",
+            "detail": "The current view will remain stable.",
+            "busy": true
+          }
+        }
+      ]
+    }
+  }
+}

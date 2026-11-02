@@ -55,6 +55,18 @@ it uses ship from `@kerfjs/ui/view`, so tools and applications work without it.
 Drag-and-drop placement, non-literal `$css` editing, and adding control flow
 come later.
 
+## Demo build samples
+
+`samples/` holds one `.kui.json` document per ux-demo configuration the editor
+can build. `tests/browser/demo-builds.spec.ts` builds each one the way a person
+would (palette drags, outline and canvas clicks, Inspector fields), and its
+Chromium run saves the exported document there, named after the build, with
+node ids numbered in document order so that an unchanged build rewrites the
+same bytes. Open any sample with **Open** to inspect or keep editing it.
+`tests/unit/samples.test.ts` requires exactly one valid sample per build, and
+`tests/browser/samples.spec.ts` opens each one through **Open**. After you add
+or change a build, rerun it in Chromium and commit the updated sample.
+
 ## Develop
 
 The editor resolves `kerfjs` to the repository source and `@kerfjs/ui` to the

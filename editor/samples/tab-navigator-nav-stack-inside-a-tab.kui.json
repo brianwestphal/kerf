@@ -1,0 +1,170 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TabNavigatorNavStackInsideATab",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sized-region",
+          "props": {
+            "minHeight": {
+              "$css": "rem(20)"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:tab-navigator",
+                "props": {
+                  "id": "catalog-tab-scaffold-nested",
+                  "label": "Project Sections",
+                  "tabs": [
+                    {
+                      "id": "projects",
+                      "label": "Projects"
+                    },
+                    {
+                      "id": "search",
+                      "label": "Search"
+                    }
+                  ],
+                  "active": "projects"
+                },
+                "zones": {
+                  "tabs.0.icon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "folder-kanban"
+                        },
+                        "name": "folder-kanban"
+                      }
+                    }
+                  ],
+                  "tabs.1.icon": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "search"
+                        },
+                        "name": "search"
+                      }
+                    }
+                  ],
+                  "tabs.0.content": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:nav-stack",
+                      "props": {
+                        "id": "catalog-tab-scaffold-project-stack",
+                        "label": "Projects Navigation",
+                        "views": [
+                          {
+                            "key": "projects",
+                            "toolbar": {
+                              "title": "Projects"
+                            },
+                            "pane": {
+                              "appearance": "sunken"
+                            }
+                          }
+                        ]
+                      },
+                      "zones": {
+                        "views.0.content": [
+                          {
+                            "id": "00000000000000000000000007",
+                            "type": "@kerfjs/ui:list",
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000008",
+                                  "type": "@kerfjs/ui:list-item",
+                                  "props": {
+                                    "label": "Project Atlas",
+                                    "action": "open-tab-scaffold-project",
+                                    "itemId": "atlas",
+                                    "description": "Open this project while keeping the tab bar in place."
+                                  },
+                                  "zones": {
+                                    "trailing": [
+                                      {
+                                        "id": "00000000000000000000000009",
+                                        "type": "@kerfjs/ui:lucide-icon",
+                                        "props": {
+                                          "icon": {
+                                            "$icon": "chevron-right"
+                                          },
+                                          "name": "chevron-right"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "tabs.1.content": [
+                    {
+                      "id": "00000000000000000000000010",
+                      "type": "@kerfjs/ui:content-item",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000011",
+                            "type": "@kerfjs/ui:list",
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000012",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Search",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000013",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "The Projects stack remains mounted.",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            },
+                            "props": {
+                              "gap": "2xs"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

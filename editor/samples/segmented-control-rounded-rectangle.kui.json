@@ -1,0 +1,103 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SegmentedControlRoundedRectangle",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:segmented-control",
+          "props": {
+            "id": "inspector-section",
+            "label": "Inspector Section",
+            "value": "summary",
+            "choices": [
+              {
+                "value": "summary",
+                "label": "Summary"
+              },
+              {
+                "value": "activity",
+                "label": "Activity"
+              },
+              {
+                "value": "files",
+                "label": "Files"
+              }
+            ],
+            "action": "select-segment-demo",
+            "shape": "rounded",
+            "layout": "equal"
+          },
+          "zones": {
+            "choices.0.content": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "list"
+                  },
+                  "name": "list"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "Summary",
+                  "variant": "span"
+                }
+              }
+            ],
+            "choices.1.content": [
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "bell"
+                  },
+                  "name": "bell"
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "Activity",
+                  "variant": "span"
+                }
+              }
+            ],
+            "choices.2.content": [
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "folder"
+                  },
+                  "name": "folder"
+                }
+              },
+              {
+                "id": "00000000000000000000000008",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "Files",
+                  "variant": "span"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

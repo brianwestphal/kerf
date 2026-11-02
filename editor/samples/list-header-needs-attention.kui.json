@@ -1,0 +1,27 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListHeaderNeedsAttention",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list-header",
+          "props": {
+            "label": "Needs Attention",
+            "status": "3 blocked",
+            "indicatorTone": "danger",
+            "density": "compact",
+            "divider": "before",
+            "headingLevel": 3
+          }
+        }
+      ]
+    }
+  }
+}

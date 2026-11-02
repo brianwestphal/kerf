@@ -1,0 +1,53 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "DemoContentItem",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:content-item",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "Projects",
+                        "variant": "span",
+                        "weight": "strong"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "Each destination stays mounted.",
+                        "variant": "span",
+                        "tone": "quiet",
+                        "size": "compact"
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "gap": "2xs"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

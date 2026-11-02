@@ -1,0 +1,47 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "EmptyStateActionable",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:empty-state",
+          "props": {
+            "title": "Nothing Here Yet",
+            "detail": "Create the first item when you are ready."
+          },
+          "zones": {
+            "icon": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "search"
+                  },
+                  "name": "search"
+                }
+              }
+            ],
+            "action": [
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Create Item",
+                  "action": "log-add"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

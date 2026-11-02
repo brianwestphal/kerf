@@ -1,0 +1,100 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ButtonCompactAndIcons",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:row",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "New Item",
+                  "size": "compact",
+                  "action": "log-more"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "plus"
+                        },
+                        "name": "plus",
+                        "size": "s"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Download",
+                  "emphasis": "secondary",
+                  "href": "#button"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "download"
+                        },
+                        "name": "download",
+                        "size": "s"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Remove",
+                  "action": "log-more",
+                  "tone": "danger",
+                  "emphasis": "plain"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "trash"
+                        },
+                        "name": "trash",
+                        "size": "s"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "props": {
+            "wrap": true,
+            "vAlign": "middle"
+          }
+        }
+      ]
+    }
+  }
+}

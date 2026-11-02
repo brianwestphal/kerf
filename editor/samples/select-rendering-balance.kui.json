@@ -1,0 +1,80 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SelectRenderingBalance",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:select",
+                "props": {
+                  "name": "rendering-balance",
+                  "choices": [
+                    {
+                      "value": "quiet",
+                      "label": "Quiet",
+                      "group": "Attention",
+                      "color": {
+                        "$css": "uiColor(\"success-on-quiet\")"
+                      },
+                      "icon": {
+                        "$icon": "bell"
+                      },
+                      "iconName": "bell"
+                    },
+                    {
+                      "value": "balanced",
+                      "label": "Balanced",
+                      "group": "Attention",
+                      "icon": {
+                        "$icon": "sliders-horizontal"
+                      },
+                      "iconName": "sliders-horizontal"
+                    },
+                    {
+                      "value": "explicit",
+                      "label": "Explicit",
+                      "group": "Control",
+                      "separatorBefore": true,
+                      "icon": {
+                        "$icon": "wrench"
+                      },
+                      "iconName": "wrench"
+                    }
+                  ],
+                  "value": "quiet",
+                  "ariaLabel": "Rendering Balance",
+                  "renderSelected": {
+                    "$param": "nodeRenderSelected"
+                  }
+                }
+              }
+            ]
+          },
+          "props": {
+            "gap": "xs"
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "nodeRenderSelected": {
+      "type": {
+        "kind": "prop",
+        "component": "@kerfjs/ui:select",
+        "prop": "renderSelected"
+      }
+    }
+  }
+}

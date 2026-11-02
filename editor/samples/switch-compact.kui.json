@@ -1,0 +1,45 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SwitchCompact",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:switch",
+                "props": {
+                  "label": "Show avatars",
+                  "size": "compact",
+                  "action": "switch-demo",
+                  "checked": true
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:switch",
+                "props": {
+                  "label": "Show timestamps",
+                  "size": "compact",
+                  "action": "switch-demo"
+                }
+              }
+            ]
+          },
+          "props": {
+            "gap": "xs"
+          }
+        }
+      ]
+    }
+  }
+}

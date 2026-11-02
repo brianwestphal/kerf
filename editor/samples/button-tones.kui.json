@@ -1,0 +1,61 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ButtonTones",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:row",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Cancel",
+                  "action": "log-more"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Save",
+                  "tone": "brand",
+                  "action": "log-more"
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Price Check",
+                  "tone": "success",
+                  "action": "log-more"
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Delete",
+                  "tone": "danger",
+                  "action": "log-more"
+                }
+              }
+            ]
+          },
+          "props": {
+            "wrap": true
+          }
+        }
+      ]
+    }
+  }
+}

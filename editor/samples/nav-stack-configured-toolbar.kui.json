@@ -1,0 +1,225 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "NavStackConfiguredToolbar",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sized-region",
+          "props": {
+            "minHeight": {
+              "$css": "rem(20)"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:nav-stack",
+                "props": {
+                  "id": "catalog-nav-stack-configured",
+                  "label": "Configured Project Library",
+                  "views": [
+                    {
+                      "key": "library",
+                      "toolbar": {
+                        "title": "Library"
+                      }
+                    }
+                  ],
+                  "toolbarConfig": {
+                    "headingLevel": 2,
+                    "dividerSides": "b"
+                  }
+                },
+                "zones": {
+                  "views.0.toolbar.leading": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "ariaLabel": "Show Sidebar",
+                              "action": "nav-stack-demo-command"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000006",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "panel-left"
+                                    },
+                                    "name": "panel-left"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "label": "Sidebar",
+                        "appearance": "borderless",
+                        "single": true
+                      }
+                    }
+                  ],
+                  "views.0.toolbar.center": [
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000008",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "ariaLabel": "List Layout",
+                              "action": "nav-stack-demo-command",
+                              "pressed": true
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000009",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "list"
+                                    },
+                                    "name": "list"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000010",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "ariaLabel": "Grid Layout",
+                              "action": "nav-stack-demo-command"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000011",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "layout-grid"
+                                    },
+                                    "name": "layout-grid"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "label": "Project Layout"
+                      }
+                    }
+                  ],
+                  "views.0.content": [
+                    {
+                      "id": "00000000000000000000000012",
+                      "type": "@kerfjs/ui:list",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000013",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Project Atlas",
+                              "action": "open-configured-nav-stack-project",
+                              "itemId": "atlas"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000014",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "folder"
+                                    },
+                                    "name": "folder"
+                                  }
+                                }
+                              ],
+                              "trailing": [
+                                {
+                                  "id": "00000000000000000000000015",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "chevron-right"
+                                    },
+                                    "name": "chevron-right"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000016",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Project Relay",
+                              "action": "open-configured-nav-stack-project",
+                              "itemId": "relay"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000017",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "folder"
+                                    },
+                                    "name": "folder"
+                                  }
+                                }
+                              ],
+                              "trailing": [
+                                {
+                                  "id": "00000000000000000000000018",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "chevron-right"
+                                    },
+                                    "name": "chevron-right"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

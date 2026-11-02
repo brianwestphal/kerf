@@ -1,0 +1,578 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "NavStackOverlayChrome",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sized-region",
+          "props": {
+            "minHeight": {
+              "$css": "rem(20)"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:nav-stack",
+                "props": {
+                  "id": "catalog-nav-stack-overlay",
+                  "label": "Overlay Inbox",
+                  "views": [
+                    {
+                      "key": "inbox",
+                      "toolbar": {
+                        "title": "Inbox"
+                      }
+                    }
+                  ],
+                  "backLabel": "Back to Inbox",
+                  "chromePresentation": "overlay",
+                  "bottomToolbarPresentation": "overlay",
+                  "bottomToolbar": {
+                    "label": "Inbox Actions"
+                  }
+                },
+                "zones": {
+                  "bottomToolbar.leading": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "ariaLabel": "Filter Messages",
+                              "action": "nav-stack-demo-command"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000006",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "funnel"
+                                    },
+                                    "name": "funnel"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "label": "Filter",
+                        "appearance": "borderless",
+                        "single": true
+                      }
+                    }
+                  ],
+                  "bottomToolbar.center": [
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:toolbar-text",
+                      "props": {
+                        "text": "Updated Just Now",
+                        "size": "small"
+                      }
+                    }
+                  ],
+                  "bottomToolbar.trailing": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000009",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "ariaLabel": "New Message",
+                              "action": "nav-stack-demo-command"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000010",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "square-pen"
+                                    },
+                                    "name": "square-pen"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "label": "Compose",
+                        "appearance": "borderless",
+                        "single": true
+                      }
+                    }
+                  ],
+                  "views.0.content": [
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:list",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000012",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Design Review",
+                              "action": "open-overlay-nav-stack-message",
+                              "iconTile": "brand",
+                              "itemId": "overlay-inbox-1"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000013",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "calendar"
+                                    },
+                                    "name": "calendar"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000014",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Backup Complete",
+                              "action": "open-overlay-nav-stack-message",
+                              "iconTile": "success",
+                              "itemId": "overlay-inbox-2"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000015",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "shield-check"
+                                    },
+                                    "name": "shield-check"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000016",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Storage Almost Full",
+                              "action": "open-overlay-nav-stack-message",
+                              "iconTile": "warning",
+                              "itemId": "overlay-inbox-3"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000017",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "bell"
+                                    },
+                                    "name": "bell"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000018",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Weekly Summary",
+                              "action": "open-overlay-nav-stack-message",
+                              "iconTile": "neutral",
+                              "itemId": "overlay-inbox-4"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000019",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "mail"
+                                    },
+                                    "name": "mail"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000020",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Design Review",
+                              "action": "open-overlay-nav-stack-message",
+                              "iconTile": "brand",
+                              "itemId": "overlay-inbox-5"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000021",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "calendar"
+                                    },
+                                    "name": "calendar"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000022",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Backup Complete",
+                              "action": "open-overlay-nav-stack-message",
+                              "iconTile": "success",
+                              "itemId": "overlay-inbox-6"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000023",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "shield-check"
+                                    },
+                                    "name": "shield-check"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000024",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Storage Almost Full",
+                              "action": "open-overlay-nav-stack-message",
+                              "iconTile": "warning",
+                              "itemId": "overlay-inbox-7"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000025",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "bell"
+                                    },
+                                    "name": "bell"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000026",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Weekly Summary",
+                              "action": "open-overlay-nav-stack-message",
+                              "iconTile": "neutral",
+                              "itemId": "overlay-inbox-8"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000027",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "mail"
+                                    },
+                                    "name": "mail"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000028",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Design Review",
+                              "action": "open-overlay-nav-stack-message",
+                              "iconTile": "brand",
+                              "itemId": "overlay-inbox-9"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000029",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "calendar"
+                                    },
+                                    "name": "calendar"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000030",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Backup Complete",
+                              "action": "open-overlay-nav-stack-message",
+                              "iconTile": "success",
+                              "itemId": "overlay-inbox-10"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000031",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "shield-check"
+                                    },
+                                    "name": "shield-check"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000032",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Storage Almost Full",
+                              "action": "open-overlay-nav-stack-message",
+                              "iconTile": "warning",
+                              "itemId": "overlay-inbox-11"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000033",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "bell"
+                                    },
+                                    "name": "bell"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000034",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Weekly Summary",
+                              "action": "open-overlay-nav-stack-message",
+                              "iconTile": "neutral",
+                              "itemId": "overlay-inbox-12"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000035",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "mail"
+                                    },
+                                    "name": "mail"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000036",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Design Review",
+                              "action": "open-overlay-nav-stack-message",
+                              "iconTile": "brand",
+                              "itemId": "overlay-inbox-13"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000037",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "calendar"
+                                    },
+                                    "name": "calendar"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000038",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Backup Complete",
+                              "action": "open-overlay-nav-stack-message",
+                              "iconTile": "success",
+                              "itemId": "overlay-inbox-14"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000039",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "shield-check"
+                                    },
+                                    "name": "shield-check"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000040",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Storage Almost Full",
+                              "action": "open-overlay-nav-stack-message",
+                              "iconTile": "warning",
+                              "itemId": "overlay-inbox-15"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000041",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "bell"
+                                    },
+                                    "name": "bell"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000042",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Weekly Summary",
+                              "action": "open-overlay-nav-stack-message",
+                              "iconTile": "neutral",
+                              "itemId": "overlay-inbox-16"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000043",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "mail"
+                                    },
+                                    "name": "mail"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000044",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Design Review",
+                              "action": "open-overlay-nav-stack-message",
+                              "iconTile": "brand",
+                              "itemId": "overlay-inbox-17"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000045",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "calendar"
+                                    },
+                                    "name": "calendar"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000046",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Backup Complete",
+                              "action": "open-overlay-nav-stack-message",
+                              "iconTile": "success",
+                              "itemId": "overlay-inbox-18"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000047",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "shield-check"
+                                    },
+                                    "name": "shield-check"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

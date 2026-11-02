@@ -1,0 +1,217 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TabNavigatorPersistentTabScenes",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sized-region",
+          "props": {
+            "minHeight": {
+              "$css": "rem(20)"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:tab-navigator",
+                "props": {
+                  "id": "catalog-tab-scaffold",
+                  "label": "Application Sections",
+                  "tabs": [
+                    {
+                      "id": "projects",
+                      "label": "Projects",
+                      "appearance": "sunken",
+                      "badge": 3,
+                      "badgeLabel": "3 updated"
+                    },
+                    {
+                      "id": "search",
+                      "label": "Search",
+                      "deepInset": true,
+                      "tabIndex": 0,
+                      "outlined": true
+                    },
+                    {
+                      "id": "settings",
+                      "label": "Settings",
+                      "badge": true,
+                      "badgeLabel": "Update available"
+                    }
+                  ],
+                  "active": "projects"
+                },
+                "zones": {
+                  "tabs.0.icon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "folder-kanban"
+                        },
+                        "name": "folder-kanban"
+                      }
+                    }
+                  ],
+                  "tabs.1.icon": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "search"
+                        },
+                        "name": "search"
+                      }
+                    }
+                  ],
+                  "tabs.2.icon": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "settings"
+                        },
+                        "name": "settings"
+                      }
+                    }
+                  ],
+                  "tabs.0.content": [
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:content-item",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000008",
+                            "type": "@kerfjs/ui:list",
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000009",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Projects",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000010",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Each destination stays mounted when inactive.",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            },
+                            "props": {
+                              "gap": "2xs"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "tabs.1.content": [
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:content-item",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000012",
+                            "type": "@kerfjs/ui:list",
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000013",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Search",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000014",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "This plain scene uses a deeper content inset.",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            },
+                            "props": {
+                              "gap": "2xs"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "tabs.2.content": [
+                    {
+                      "id": "00000000000000000000000015",
+                      "type": "@kerfjs/ui:content-item",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000016",
+                            "type": "@kerfjs/ui:list",
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000017",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Settings",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000018",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Promote these destinations to a rail on desktop.",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            },
+                            "props": {
+                              "gap": "2xs"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

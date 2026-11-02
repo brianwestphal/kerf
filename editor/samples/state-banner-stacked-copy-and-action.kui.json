@@ -1,0 +1,51 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "StateBannerStackedCopyAndAction",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:state-banner",
+          "props": {
+            "title": "Migration Needs Review",
+            "tone": "warning",
+            "detail": "Check the imported projects before removing the old source.",
+            "copyLayout": "stacked",
+            "actionPlacement": "below"
+          },
+          "zones": {
+            "icon": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "circle-question-mark"
+                  },
+                  "name": "circle-question-mark"
+                }
+              }
+            ],
+            "action": [
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Review Projects",
+                  "size": "compact",
+                  "shape": "pill"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

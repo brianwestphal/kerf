@@ -1,0 +1,166 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "NavStackInteractivePushAndPop",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sized-region",
+          "props": {
+            "minHeight": {
+              "$css": "rem(20)"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:nav-stack",
+                "props": {
+                  "id": "catalog-nav-stack",
+                  "label": "Project Library",
+                  "views": [
+                    {
+                      "key": "library",
+                      "pane": {
+                        "appearance": "sunken"
+                      },
+                      "toolbar": {
+                        "title": "Library"
+                      },
+                      "bottomToolbar": {
+                        "label": "View Status"
+                      }
+                    }
+                  ],
+                  "backLabel": "Back to Library"
+                },
+                "zones": {
+                  "views.0.toolbar.trailing": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:toolbar-text",
+                      "props": {
+                        "text": "Projects",
+                        "size": "small"
+                      }
+                    }
+                  ],
+                  "views.0.bottomToolbar.leading": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:toolbar-text",
+                      "props": {
+                        "text": "2 saved projects",
+                        "size": "small"
+                      }
+                    }
+                  ],
+                  "views.0.content": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:list",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000007",
+                            "type": "@kerfjs/ui:list-header",
+                            "props": {
+                              "label": "Saved Projects",
+                              "count": 2,
+                              "countLabel": "2 saved projects"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000008",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Project Atlas",
+                              "action": "open-nav-stack-project",
+                              "multiline": true,
+                              "itemId": "atlas",
+                              "description": "Navigation and workspace patterns for the Kerf UI catalog."
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000009",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "folder"
+                                    },
+                                    "name": "folder"
+                                  }
+                                }
+                              ],
+                              "trailing": [
+                                {
+                                  "id": "00000000000000000000000010",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "chevron-right"
+                                    },
+                                    "name": "chevron-right"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000011",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Project Relay",
+                              "action": "open-nav-stack-project",
+                              "multiline": true,
+                              "itemId": "relay",
+                              "description": "Interaction contracts shared across responsive application layouts."
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000012",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "folder"
+                                    },
+                                    "name": "folder"
+                                  }
+                                }
+                              ],
+                              "trailing": [
+                                {
+                                  "id": "00000000000000000000000013",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "chevron-right"
+                                    },
+                                    "name": "chevron-right"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

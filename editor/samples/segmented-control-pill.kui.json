@@ -1,0 +1,44 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SegmentedControlPill",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:segmented-control",
+          "props": {
+            "id": "display-density",
+            "label": "Display Density",
+            "value": "comfortable",
+            "choices": [
+              {
+                "value": "compact",
+                "label": "Compact"
+              },
+              {
+                "value": "comfortable",
+                "label": "Comfortable"
+              },
+              {
+                "value": "roomy",
+                "label": "Roomy",
+                "disabled": true,
+                "title": "Roomy density is unavailable"
+              }
+            ],
+            "action": "select-segment-demo",
+            "appearance": "outlined",
+            "shape": "pill",
+            "size": "small"
+          }
+        }
+      ]
+    }
+  }
+}

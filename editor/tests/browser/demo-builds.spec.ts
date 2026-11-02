@@ -1737,47 +1737,7 @@ test('builds NavStack › Overlay Chrome', async ({ page }) => {
   await dragComponent(page, 'ListItem', () =>
     canvas(page).locator('[data-editor-empty]', { hasText: 'List is empty' }),
   );
-  const kinds = [
-    ['Design Review', 'calendar', 'brand'],
-    ['Backup Complete', 'shield-check', 'success'],
-    ['Storage Almost Full', 'bell', 'warning'],
-    ['Weekly Summary', 'mail', 'neutral'],
-  ] as const;
-  await select(page, /^ListItem/);
-  await setText(page, 'action', 'open-overlay-nav-stack-message');
-  await addIcon(page, 'icon', 'calendar');
-  for (const [index, [label, glyph, tone]] of kinds.entries()) {
-    if (index > 0) {
-      await select(page, /^ListItem/, index - 1);
-      await page.keyboard.press('ControlOrMeta+d');
-      // The icon a copy brings is the kind before's; pick its own. The
-      // copy's icon is the outline row right after it.
-      await area(page, 'Outline');
-      const rows = page.locator('[data-action="editor-select-node"]');
-      const texts = await rows.allTextContents();
-      let seen = -1;
-      const at = texts.findIndex(
-        (text) => /^ListItem/.test(text) && ++seen === index,
-      );
-      await rows.nth(at + 1).click();
-      await area(page, 'Properties');
-      await pickIcon(page, page.locator('[data-editor-icon-place]'), glyph);
-    }
-    await select(page, /^ListItem/, index);
-    await setText(page, 'label', label);
-    await choose(page, 'iconTile', tone);
-  }
-  // The rest repeat the four kinds in order: copy one, paste after the last.
-  for (let index = kinds.length; index < 18; index += 1) {
-    await select(page, /^ListItem/, index - kinds.length);
-    await page.keyboard.press('ControlOrMeta+c');
-    await select(page, /^ListItem/, index - 1);
-    await page.keyboard.press('ControlOrMeta+v');
-  }
-  for (let index = 0; index < 18; index += 1) {
-    await select(page, /^ListItem/, index);
-    await setText(page, 'itemId', `overlay-inbox-${index + 1}`);
-  }
+  await inbox(page, 'open-overlay-nav-stack-message');
   await select(page, /^NavStack/);
   const navStack = canvas(page).locator('.kui-nav-stack[data-kerf-node]');
   await expect(navStack.locator('.kui-list-item')).toHaveCount(18);
@@ -1821,26 +1781,74 @@ test('builds NavStack › Overlay Chrome', async ({ page }) => {
             'bottomToolbar.trailing': [
               group('Compose', button('New Message', 'square-pen')),
             ],
-            'views.0.content': [
-              node('list', undefined, {
-                children: Array.from({ length: 18 }, (_, index) => {
-                  const [label, glyph, tone] = kinds[index % 4]!;
-                  return node(
-                    'list-item',
-                    {
-                      action: 'open-overlay-nav-stack-message',
-                      label,
-                      iconTile: tone,
-                      itemId: `overlay-inbox-${index + 1}`,
-                    },
-                    { icon: [icon(glyph)] },
-                  );
-                }),
-              }),
-            ],
+            'views.0.content': [inboxNodes('open-overlay-nav-stack-message')],
           },
         ),
       ),
     ),
   );
 });
+
+/** The inbox's four kinds of message, as the NavStack demo's INBOX has them. */
+const INBOX_KINDS = [
+  ['Design Review', 'calendar', 'brand'],
+  ['Backup Complete', 'shield-check', 'success'],
+  ['Storage Almost Full', 'bell', 'warning'],
+  ['Weekly Summary', 'mail', 'neutral'],
+] as const;
+
+/**
+ * Fills the empty List just dropped into a NavStack view with the NavStack
+ * demo's 18-row inbox: four kinds of message with icon tiles, repeated, each
+ * row running `action`.
+ */
+async function inbox(page: Page, action: string) {
+  await select(page, /^ListItem/);
+  await setText(page, 'action', action);
+  await addIcon(page, 'icon', 'calendar');
+  for (const [index, [label, glyph, tone]] of INBOX_KINDS.entries()) {
+    if (index > 0) {
+      await select(page, /^ListItem/, index - 1);
+      await page.keyboard.press('ControlOrMeta+d');
+      // The icon a copy brings is the kind before's; pick its own. The
+      // copy's icon is the outline row right after it.
+      await area(page, 'Outline');
+      const rows = page.locator('[data-action="editor-select-node"]');
+      const texts = await rows.allTextContents();
+      let seen = -1;
+      const at = texts.findIndex(
+        (text) => /^ListItem/.test(text) && ++seen === index,
+      );
+      await rows.nth(at + 1).click();
+      await area(page, 'Properties');
+      await pickIcon(page, page.locator('[data-editor-icon-place]'), glyph);
+    }
+    await select(page, /^ListItem/, index);
+    await setText(page, 'label', label);
+    await choose(page, 'iconTile', tone);
+  }
+  // The rest repeat the four kinds in order: copy one, paste after the last.
+  for (let index = INBOX_KINDS.length; index < 18; index += 1) {
+    await select(page, /^ListItem/, index - INBOX_KINDS.length);
+    await page.keyboard.press('ControlOrMeta+c');
+    await select(page, /^ListItem/, index - 1);
+    await page.keyboard.press('ControlOrMeta+v');
+  }
+  for (let index = 0; index < 18; index += 1) {
+    await select(page, /^ListItem/, index);
+    await setText(page, 'itemId', `overlay-inbox-${index + 1}`);
+  }
+}
+
+/** The inbox `inbox()` builds, as the exported document spells it. */
+const inboxNodes = (action: string) =>
+  node('list', undefined, {
+    children: Array.from({ length: 18 }, (_, index) => {
+      const [label, glyph, tone] = INBOX_KINDS[index % 4]!;
+      return node(
+        'list-item',
+        { action, label, iconTile: tone, itemId: `overlay-inbox-${index + 1}` },
+        { icon: [icon(glyph)] },
+      );
+    }),
+  });

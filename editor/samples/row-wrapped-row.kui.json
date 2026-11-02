@@ -1,0 +1,90 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RowWrappedRow",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sunken-panel",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:row",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:badge",
+                      "props": {
+                        "children": "Alpha",
+                        "appearance": "outline",
+                        "shape": "rounded",
+                        "size": "default"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:badge",
+                      "props": {
+                        "children": "Beta release",
+                        "appearance": "outline",
+                        "shape": "rounded",
+                        "size": "default"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:badge",
+                      "props": {
+                        "children": "Gamma",
+                        "appearance": "outline",
+                        "shape": "rounded",
+                        "size": "default"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:badge",
+                      "props": {
+                        "children": "Delta workspace",
+                        "appearance": "outline",
+                        "shape": "rounded",
+                        "size": "default"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:badge",
+                      "props": {
+                        "children": "Epsilon",
+                        "appearance": "outline",
+                        "shape": "rounded",
+                        "size": "default"
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "hAlign": "full",
+                  "vAlign": "middle",
+                  "gap": "m",
+                  "wrap": true
+                }
+              }
+            ]
+          },
+          "props": {
+            "ariaLabel": "Layout Example"
+          }
+        }
+      ]
+    }
+  }
+}

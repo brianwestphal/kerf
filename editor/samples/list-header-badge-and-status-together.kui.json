@@ -1,0 +1,25 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListHeaderBadgeAndStatusTogether",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list-header",
+          "props": {
+            "label": "Purchases",
+            "badge": "3 lines unpriced",
+            "status": "Needs review",
+            "indicatorTone": "danger"
+          }
+        }
+      ]
+    }
+  }
+}

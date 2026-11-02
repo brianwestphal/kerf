@@ -1,0 +1,57 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ProgressBarTonesAndCompactSize",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:progress-bar",
+                "props": {
+                  "label": "Confidence",
+                  "id": "progress-bar-demo-confidence",
+                  "value": 0.82,
+                  "tone": "success",
+                  "showValue": true
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:progress-bar",
+                "props": {
+                  "label": "Storage Used",
+                  "id": "progress-bar-demo-storage",
+                  "value": 0.93,
+                  "tone": "warning",
+                  "showValue": true
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:progress-bar",
+                "props": {
+                  "value": 0.4,
+                  "ariaLabel": "Sync Progress",
+                  "size": "compact"
+                }
+              }
+            ]
+          },
+          "props": {
+            "gap": "xs"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListItemDividedList",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Ana Ruiz",
+                  "action": "log-projects",
+                  "description": "Member",
+                  "divider": "after",
+                  "itemId": "member-0"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Ben Okafor",
+                  "action": "log-projects",
+                  "description": "Member",
+                  "divider": "after",
+                  "itemId": "member-1",
+                  "selected": true
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Chen Wei",
+                  "action": "log-projects",
+                  "description": "Member",
+                  "divider": "after",
+                  "itemId": "member-2"
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Dana Holt",
+                  "action": "log-projects",
+                  "description": "Member",
+                  "itemId": "member-3"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
