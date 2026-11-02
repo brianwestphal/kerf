@@ -254,6 +254,7 @@ import {
   slotRowId,
   zoneLabel,
 } from './model/outline.js';
+import { fitScale, scaledBox } from './model/play-fit.js';
 import { type PreviewSlot, previewSlots } from './model/preview-slots.js';
 import {
   placementReason,
@@ -3159,26 +3160,33 @@ export function createEditor(options: EditorOptions) {
         safeAreaEdges={['block-start', 'inline-start', 'inline-end']}
         dividerSides="b"
         leading={
-          <Button tone="brand" emphasis="plain" action={PLAY_DONE_ACTION}>
-            Done
-          </Button>
-        }
-        center={
           <ToolbarText
             text="Phone"
             description={`${PLAY_VIEWPORT.width} × ${PLAY_VIEWPORT.height}`}
           />
         }
+        trailing={
+          <Button tone="brand" emphasis="plain" action={PLAY_DONE_ACTION}>
+            Done
+          </Button>
+        }
       />
       <div class="kui-editor__stage" data-key="editor-stage" data-editor-stage>
-        <iframe
-          class="kui-editor__device"
-          title={`${documentFileName(doc.value)} (playing)`}
-          src={playPageUrl(globalThis.location.href)}
-          width={String(PLAY_VIEWPORT.width)}
-          height={String(PLAY_VIEWPORT.height)}
-          data-editor-play-frame
-        />
+        {/* The box reserves the scaled frame's room; the scaler scales it
+            (fitPlay). Their sizes are set as the stage resizes, so the
+            morph leaves them be. */}
+        <div class="kui-editor__device-box" data-morph-skip>
+          <div class="kui-editor__device-scaler">
+            <iframe
+              class="kui-editor__device"
+              title={`${documentFileName(doc.value)} (playing)`}
+              src={playPageUrl(globalThis.location.href)}
+              width={String(PLAY_VIEWPORT.width)}
+              height={String(PLAY_VIEWPORT.height)}
+              data-editor-play-frame
+            />
+          </div>
+        </div>
       </div>
     </>
   );
@@ -4123,6 +4131,52 @@ export function createEditor(options: EditorOptions) {
     root
       .querySelector<HTMLElement>(`[data-action="${PLAY_DONE_ACTION}"]`)
       ?.focus();
+    stopFit = fitPlay(root);
+  };
+
+  /** Stops scaling the stage's frame; set while playing. */
+  let stopFit: (() => void) | undefined;
+
+  /**
+   * Fit (docs/26-ui-editor.md §11.1): scales the stage's frame down until
+   * it fits the stage, never up, now and whenever the stage resizes. The
+   * transform is on the frame's wrapper, so the frame keeps its viewport.
+   */
+  const fitPlay = (root: HTMLElement) => {
+    const view = root.ownerDocument.defaultView!;
+    const stage = root.querySelector<HTMLElement>('[data-editor-stage]')!;
+    const box = stage.querySelector<HTMLElement>('.kui-editor__device-box')!;
+    const scaler = box.firstElementChild as HTMLElement;
+    const frame = scaler.firstElementChild as HTMLElement;
+    const fit = () => {
+      const style = view.getComputedStyle(stage);
+      const frameSize = {
+        width: frame.offsetWidth,
+        height: frame.offsetHeight,
+      };
+      const scale = fitScale(
+        {
+          width:
+            stage.clientWidth -
+            parseFloat(style.paddingLeft) -
+            parseFloat(style.paddingRight),
+          height:
+            stage.clientHeight -
+            parseFloat(style.paddingTop) -
+            parseFloat(style.paddingBottom),
+        },
+        frameSize,
+      );
+      const reserved = scaledBox(frameSize, scale);
+      box.style.width = `${reserved.width}px`;
+      box.style.height = `${reserved.height}px`;
+      scaler.style.transform = `scale(${scale})`;
+      box.dataset.scale = String(scale);
+    };
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(stage);
+    return () => observer.disconnect();
   };
 
   /**
@@ -4130,6 +4184,8 @@ export function createEditor(options: EditorOptions) {
    * frame, and with it every runtime state, is gone.
    */
   const leavePlay = (root: HTMLElement) => {
+    stopFit?.();
+    stopFit = undefined;
     playing.value = false;
     root.querySelector<HTMLElement>(`[data-action="${PLAY_ACTION}"]`)?.focus();
   };
@@ -4153,7 +4209,14 @@ export function createEditor(options: EditorOptions) {
         view.location.origin,
       );
     };
-    return on(view, 'message', (event) => onMessage(event as MessageEvent));
+    const stop = on(view, 'message', (event) =>
+      onMessage(event as MessageEvent),
+    );
+    return () => {
+      stop();
+      stopFit?.();
+      stopFit = undefined;
+    };
   };
 
   const wire = (root: HTMLElement) => {

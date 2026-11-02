@@ -1203,12 +1203,20 @@ diff <doc…>` takes `--target js`, `--declarations-only`, and extra
 
 ## 11. Play mode (design; KF-95MPXS: interactive mode)
 
-**Status: partly built.** The core (KF-60BEEJ) is built: Play/Done, the
-iframe stage at a fixed 402×874 viewport, the play page, and the state
-adapters for TabNavigator, TabBar, NavStack back, and Workbench and
-sidebar collapse. Device presets and scale (§11.2, KF-R7KXSN), frames
-(KF-E8T0AY), and actions with the action log (§11.5, KF-RF6RCS) are not
-built yet. Their decisions were signed off on 2026-11-02.
+**Status: partly built.** The core (KF-60BEEJ) is built:
+
+- Play/Done.
+- The iframe stage at a fixed 402×874 viewport, with Fit scaling.
+- The play page.
+- The state adapters for TabNavigator, TabBar, NavStack back, and Workbench and sidebar collapse.
+
+Not built yet:
+
+- Device presets and the Scale select (§11.2, KF-R7KXSN).
+- Frames (KF-E8T0AY).
+- Actions and the action log (§11.5, KF-RF6RCS).
+
+Their decisions were signed off on 2026-11-02.
 
 **As built (KF-60BEEJ).**
 
@@ -1230,7 +1238,15 @@ built yet. Their decisions were signed off on 2026-11-02.
   on each entry and removed on exit.
 - **Play mode covers the whole window, including the editor's app toolbar.**
   The play bar replaces New, Open, Compare, Export, and Save, since play mode
-  can't change the document. The layout awaits sign-off on KF-60BEEJ.
+  can't change the document. The maintainer signed this layout off on
+  2026-11-02: the device at the play bar's leading end, and Done, plain
+  brand-tone text, at its trailing end.
+- **Fit is built now; the other scales come with the Scale select.** The
+  frame's wrapper reserves the scaled box, and a CSS transform scales the
+  frame down to the stage's content box, never up. A `ResizeObserver` on the
+  stage recomputes the scale (`model/play-fit.ts`). The iframe keeps its
+  402×874 layout size, so the viewport inside it is unchanged, and the stage
+  never scrolls.
 
 Play mode lets an author use the designed view as its users would. In play
 mode the canvas stops being an editing surface: clicks, keys, drags, and
@@ -1246,7 +1262,8 @@ pushed views). Undo history is untouched.
 Play mode replaces the Workbench's rails and canvas with two regions:
 
 - **A play bar** across the top: a `Toolbar` that owns every control below,
-  with Done at its leading end and the action log at its trailing end.
+  with the device at its leading end and Done at its trailing end, after the
+  action log.
 - **The stage**, which fills the rest. It centers the device on a neutral
   backdrop, scaled to fit when needed.
 

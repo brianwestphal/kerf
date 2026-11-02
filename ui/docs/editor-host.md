@@ -195,7 +195,8 @@ The host loads the global stylesheets and registers `popup-menu/register` and
 ## Play mode
 
 **Play** in the Canvas toolbar runs the document as its users would, in a
-frame at a phone-sized viewport. **Done**, or Escape while focus is outside
+frame at a phone-sized viewport, scaled down to fit when the window is
+smaller. **Done**, or Escape while focus is outside
 the frame, returns to editing with the selection as it was. The frame loads
 your editor page again with a `?kerf-ui-play` query, and `createEditor`
 returns the player on that page instead of the editor, so a host needs no

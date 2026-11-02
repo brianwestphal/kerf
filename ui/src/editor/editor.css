@@ -116,23 +116,38 @@
   display: none;
 }
 
-/* The stage centers the played view's frame on a lowered backdrop and
-   scrolls when the frame is larger than it. */
+/* The stage centers the played view's frame on a lowered backdrop. The
+   frame is scaled to fit it (Fit), so nothing overflows. */
 .kui-editor__stage {
   display: flex;
   flex: 1 1 auto;
   min-block-size: 0;
-  overflow: auto;
+  overflow: hidden;
   padding: var(--kui-space-l);
   background: var(--kui-color-surface-lowered);
+}
+
+/* The room the scaled frame takes; the editor sets its size as the stage
+   resizes. */
+.kui-editor__device-box {
+  position: relative;
+  flex: none;
+  margin: auto;
+}
+
+/* Scales the frame from its top-left corner into the box. */
+.kui-editor__device-scaler {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
 }
 
 /* The frame keeps its viewport size, with its border (the device's edge)
    outside it. */
 .kui-editor__device {
+  display: block;
   box-sizing: content-box;
-  flex: none;
-  margin: auto;
   border: 1px solid var(--kui-color-neutral-border-normal);
   background: var(--kui-color-surface);
 }

@@ -5,6 +5,7 @@ import type { ViewDocument } from '@kerfjs/ui/view';
 import { mount } from 'kerfjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { fitScale, scaledBox } from '../../../src/editor/model/play-fit.js';
 import {
   popView,
   reorderTabBarItems,
@@ -194,6 +195,26 @@ const nodeProps = (document: ViewDocument, id: string) => {
   return find(document.root as unknown as Record<string, unknown>);
 };
 
+describe('Fit', () => {
+  const frame = { width: 404, height: 876 };
+
+  it('scales the frame down to the stage, by its tighter side', () => {
+    // A short stage: the height decides.
+    expect(fitScale({ width: 1392, height: 438 }, frame)).toBe(0.5);
+    // A narrow stage: the width decides.
+    expect(fitScale({ width: 202, height: 2000 }, frame)).toBe(0.5);
+    expect(scaledBox(frame, 0.5)).toEqual({ width: 202, height: 438 });
+  });
+
+  it('never scales up, never below zero, and leaves an unmeasured frame be', () => {
+    expect(fitScale({ width: 2000, height: 2000 }, frame)).toBe(1);
+    expect(fitScale({ width: -48, height: 400 }, frame)).toBe(0);
+    expect(fitScale({ width: 100, height: 100 }, { width: 0, height: 0 })).toBe(
+      1,
+    );
+  });
+});
+
 describe('play-time state transitions', () => {
   it('selects a TabNavigator tab, and leaves an unknown node alone', () => {
     const source = tabsAndStack();
@@ -311,6 +332,13 @@ describe('play mode in the editor', () => {
     expect(frame.getAttribute('height')).toBe('874');
     expect(new URL(frame.src).searchParams.has('kerf-ui-play')).toBe(true);
     expect(root.querySelector('[data-editor-stage]')).not.toBeNull();
+    // Fit sizes the frame's room and scale (happy-dom lays nothing out, so
+    // an unmeasured frame stays at 1).
+    const box = root.querySelector<HTMLElement>('.kui-editor__device-box')!;
+    expect(box.dataset.scale).toBe('1');
+    expect((box.firstElementChild as HTMLElement).style.transform).toBe(
+      'scale(1)',
+    );
     click(root.querySelector('[data-action="editor-play-done"]'));
     expect(root.querySelector('[data-editor-play-frame]')).toBeNull();
     // The same editing UI, with the same selection.

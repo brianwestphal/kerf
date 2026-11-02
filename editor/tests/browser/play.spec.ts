@@ -74,6 +74,30 @@ const openDocument = async (page: Page) => {
   await expect(page.getByText(/· 5 nodes · valid$/)).toBeVisible();
 };
 
+/**
+ * Fit: the frame, scaled down, sits whole inside the stage and keeps its
+ * 402×874 viewport (its border sits outside it).
+ */
+const expectFits = async (page: Page) => {
+  const frame = page.locator('[data-editor-play-frame]');
+  await expect(frame).toBeVisible();
+  const stageBox = (await page.locator('[data-editor-stage]').boundingBox())!;
+  const box = (await frame.boundingBox())!;
+  expect(box.x).toBeGreaterThanOrEqual(stageBox.x);
+  expect(box.y).toBeGreaterThanOrEqual(stageBox.y);
+  expect(box.x + box.width).toBeLessThanOrEqual(stageBox.x + stageBox.width);
+  expect(box.y + box.height).toBeLessThanOrEqual(stageBox.y + stageBox.height);
+  // Scaled evenly from the 404×876 bordered frame.
+  expect(box.width / box.height).toBeCloseTo(404 / 876, 2);
+  expect(
+    await page
+      .frameLocator('[data-editor-play-frame]')
+      .locator('html')
+      .evaluate(() => [window.innerWidth, window.innerHeight]),
+  ).toEqual([402, 874]);
+  return box;
+};
+
 const play = (page: Page) =>
   page.locator('[data-action="editor-play"]').click();
 const stage = (page: Page) => page.frameLocator('[data-editor-play-frame]');
@@ -97,15 +121,7 @@ test('Play shows the stage at the device viewport and Done restores the editor',
   await expect(page.locator('.kui-editor__editing')).toBeHidden();
   const frame = page.locator('[data-editor-play-frame]');
   await expect(frame).toBeVisible();
-  const box = (await frame.boundingBox())!;
-  // The frame's border sits outside its 402×874 viewport.
-  expect(Math.round(box.width)).toBe(404);
-  expect(Math.round(box.height)).toBe(876);
-  expect(
-    await stage(page)
-      .locator('html')
-      .evaluate(() => [window.innerWidth, window.innerHeight]),
-  ).toEqual([402, 874]);
+  await expectFits(page);
   await expect(page.locator('[data-action="editor-play-done"]')).toBeFocused();
   await expect(stage(page).getByText('Atlas details')).toBeVisible();
   await page.locator('[data-action="editor-play-done"]').click();
@@ -115,6 +131,42 @@ test('Play shows the stage at the device viewport and Done restores the editor',
   await expect(highlight).toBeVisible();
   expect(await highlight.boundingBox()).toEqual(ring);
   await expect(children).toHaveValue('Atlas details');
+});
+
+test('Fit scales the frame to a short stage and follows its resizes', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 700 });
+  await openDocument(page);
+  await play(page);
+  const short = await expectFits(page);
+  expect(short.height).toBeLessThan(876);
+  // The stage never scrolls.
+  const stageScroll = await page
+    .locator('[data-editor-stage]')
+    .evaluate((stage) => [
+      stage.scrollHeight - stage.clientHeight,
+      stage.scrollWidth - stage.clientWidth,
+    ]);
+  expect(stageScroll).toEqual([0, 0]);
+  // A taller window scales it up again, never past its own size.
+  await page.setViewportSize({ width: 1440, height: 1200 });
+  await expect
+    .poll(async () =>
+      Math.round(
+        (await page.locator('[data-editor-play-frame]').boundingBox())!.height,
+      ),
+    )
+    .toBe(876);
+  await expectFits(page);
+  await page.setViewportSize({ width: 1440, height: 700 });
+  await expect
+    .poll(async () =>
+      Math.round(
+        (await page.locator('[data-editor-play-frame]').boundingBox())!.height,
+      ),
+    )
+    .toBe(Math.round(short.height));
 });
 
 test('the stage runs the view for real and never selects', async ({ page }) => {
