@@ -296,9 +296,11 @@ would (KF-6MGYSG: the editor-owned frame KF-XXT6P4 added is gone, so the canvas
 no longer shows a height the export lacks). The `KUI-H001` hint names the
 collapse, and its row's **Embed in SizedRegion** fixes it: the layout moves
 into a new `SizedRegion` in its place, with `minHeight: rem(20)` so it keeps a
-usable height even where its parent sizes to its content, as the canvas's root
-Pane does. As the root, or in another layout's tab, view, or region, a layout
-fills that height.
+usable height even where its parent sizes to its content, as a root Pane
+without `fill` does. As the root, in another layout's tab, view, or region, or
+in the content of a filled Pane that itself has a height (New's root Pane, which
+starts with `fill`), a layout fills that height and gets no hint
+(KF-AMEZB3).
 
 **Embed in** (KF-6MGYSG) is a general command on the selected node, a menu in
 the Inspector's toolbar: SizedRegion, ListInsetControl, and ListInsetText,
@@ -1152,9 +1154,9 @@ ignore them. `kerf-ui-view` prints each as a `hint` line with exit code 0, and
 the editor lists them under a Hints header in the Problems rail, with a
 neutral count on the tab when there are no problems.
 
-| Id         | Condition                                                                                                                                |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `KUI-H001` | A `NavStack`, `SplitView`, `TabNavigator`, or `Workbench` below the root whose parent is not a `SizedRegion` or another of those layouts |
+| Id         | Condition                                                                                                                                                                                                                                        |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `KUI-H001` | A `NavStack`, `SplitView`, `TabNavigator`, or `Workbench` below the root whose place has no height: its parent is not a `SizedRegion`, another of those layouts, or the content of a `Pane` with a literal `fill: true` that itself has a height |
 
 `KUI-H001` follows `$if` and `$each`. Such a layout has no height of its own and
 collapses to its bar; wrapping it in a `SizedRegion` gives it one.

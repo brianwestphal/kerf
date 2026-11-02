@@ -196,6 +196,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **`KUI-H001` stays quiet in a filled Pane (KF-AMEZB3).** A `NavStack`, `SplitView`, `TabNavigator`, or `Workbench` in the content of a `Pane` with `fill: true` that itself has a height (the root, or inside a `SizedRegion` or layout) no longer gets the "collapses to its bar" hint, since the filled Pane gives it a height. New's root Pane starts filled, so a layout dropped into a new document is no longer flagged.
 - **A StateBanner's action takes Kerf UI Buttons, laid out as a horizontal list.** Put compact pill `Button`s (`size="compact" shape="pill"`) in `action`. A neutral Button takes the banner's tone: a primary one is the translucent tone pill, a secondary one a tone outline, a plain one tone text. Brand, success, and danger Buttons keep their own tone. The action lays out its controls (several Buttons, a `LoadingSpinner` beside one) as a wrapping, end-aligned row, so no `Row` wrapper is needed. Plain `<button>`s still get the pill. The demos, recipes, and guidance use Buttons, and the editor can build a banner action again (`KF-Q87Q17`, replacing `KF-5TGWQG`'s plain-button contract).
 - **`ToolbarButton` can be an avatar button.** In a `ToolbarControlGroup` with `content="avatar"`, a `ToolbarButton` takes `ariaLabel` alone and shows the group's `avatarImage`; its `icon` is optional for that form (`KF-CFWFAE`).
 

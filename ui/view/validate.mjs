@@ -1440,37 +1440,55 @@ const SCREEN_LAYOUTS = new Set([
 ]);
 const SIZED_REGION = '@kerfjs/ui:sized-region';
 
+const PANE = '@kerfjs/ui:pane';
+
+/**
+ * Whether `node`'s `zone` gives a child a definite height. A SizedRegion or
+ * another whole-screen layout always does. A Pane with a literal `fill: true`
+ * gives its `content` zone one when the Pane itself sits in a sized place (the
+ * root, inside a SizedRegion or layout), since its rows then have a height
+ * (KF-AMEZB3: a filled root Pane sizes a nested layout).
+ */
+function zoneSizes(node, zone, sized) {
+  if (node.type === SIZED_REGION || SCREEN_LAYOUTS.has(node.type)) return true;
+  return (
+    sized &&
+    node.type === PANE &&
+    zone === 'content' &&
+    isObject(node.props) &&
+    node.props.fill === true
+  );
+}
+
 /**
  * `KUI-H001` hints (non-blocking): a whole-screen layout below the root whose
- * parent is not a SizedRegion or another whole-screen layout.
+ * place has no definite height: its parent is not a SizedRegion, another
+ * whole-screen layout, or a filled Pane's content in a sized place. `sized`
+ * is whether `node` itself sits in a place with a definite height.
  */
-function hintUnsizedLayouts(node, at, parentType, hints) {
+function hintUnsizedLayouts(node, at, sized, hints, isRoot = false) {
   if (!isObject(node) || typeof node.type !== 'string') return;
-  if (
-    parentType !== undefined &&
-    SCREEN_LAYOUTS.has(node.type) &&
-    parentType !== SIZED_REGION &&
-    !SCREEN_LAYOUTS.has(parentType)
-  )
+  if (!isRoot && !sized && SCREEN_LAYOUTS.has(node.type))
     hints.push({
       code: 'KUI-H001',
       path: at,
       message: `${node.type} has no height of its own here and collapses to its bar; wrap it in ${SIZED_REGION}`,
     });
-  const child = (item, path) => {
+  const child = (item, path, childSized) => {
     if (!isObject(item)) return;
-    if ('$each' in item) child(item.template, `${path}.template`);
+    if ('$each' in item) child(item.template, `${path}.template`, childSized);
     else if ('$if' in item) {
-      child(item.then, `${path}.then`);
-      if ('else' in item) child(item.else, `${path}.else`);
-    } else hintUnsizedLayouts(item, path, node.type, hints);
+      child(item.then, `${path}.then`, childSized);
+      if ('else' in item) child(item.else, `${path}.else`, childSized);
+    } else hintUnsizedLayouts(item, path, childSized, hints);
   };
   for (const [zone, children] of Object.entries(
     isObject(node.zones) ? node.zones : {},
   )) {
+    const childSized = zoneSizes(node, zone, sized);
     if (Array.isArray(children))
       children.forEach((item, index) =>
-        child(item, `${at}.zones.${zone}[${index}]`),
+        child(item, `${at}.zones.${zone}[${index}]`, childSized),
       );
   }
 }
@@ -1650,6 +1668,6 @@ export function validateView(document, catalog, options = {}) {
     checkNode(ctx, document.root, '$.root', new Map(), false, undefined);
   }
   const hints = [];
-  hintUnsizedLayouts(document.root, '$.root', undefined, hints);
+  hintUnsizedLayouts(document.root, '$.root', true, hints, true);
   return { valid: diagnostics.length === 0, diagnostics, hints, actions };
 }

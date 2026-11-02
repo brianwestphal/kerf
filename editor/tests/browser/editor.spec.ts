@@ -1536,6 +1536,23 @@ test('drops a component into a tab’s content from the canvas', async ({
 // KF-6MGYSG: a whole-screen layout placed inside the root Pane shows as it
 // would in an app, collapsed to its bar, until its hint's fix embeds it in a
 // SizedRegion; then its content and drop targets show.
+// KF-AMEZB3: New's root Pane fills, so a layout dropped in its content has a
+// height and no KUI-H001 hint.
+test('gives a TabNavigator in a filled root Pane a height, with no hint', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await newDocument(page);
+  await dragComponent(page, 'TabNavigator', () => emptySpot(page));
+  const scenes = page.locator(
+    '[data-editor-canvas] .kui-tab-scaffold[data-kerf-node] .kui-tab-scaffold__scenes',
+  );
+  await expect
+    .poll(async () => (await scenes.boundingBox())!.height)
+    .toBeGreaterThan(200);
+  await expect(page.locator('[data-editor-hints]')).toHaveCount(0);
+});
+
 test('embeds a nested TabNavigator from its hint, giving it a height', async ({
   page,
 }) => {
@@ -1738,7 +1755,8 @@ test('sizes a TabNavigator inside a SizedRegion as the region says', async ({
 // problems; the document stays valid.
 test('lists a hint for a TabNavigator nested in a Pane', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await newDocument(page);
+  // A content-height Pane: a filled one gives the layout a height (KF-AMEZB3).
+  await contentHeightDocument(page);
   await dragComponent(page, 'TabNavigator', () => emptySpot(page));
   await area(page, 'Problems');
   const hints = page.locator('[data-editor-hints]');

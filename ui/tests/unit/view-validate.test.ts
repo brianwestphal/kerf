@@ -1490,6 +1490,72 @@ describe('KUI-H001 unsized nested layout hints', () => {
   it('returns no hints for a document that is not an object', () => {
     expect(hintsOf(null).hints).toEqual([]);
   });
+
+  // KF-AMEZB3: a filled Pane in a sized place gives its content a height.
+  it('stays quiet for a layout in a filled root Pane', () => {
+    const filled = (zones: Record<string, unknown[]>) =>
+      node('pane', { props: { fill: true }, zones });
+    expect(hintsOf(doc(filled({ content: [stack()] }))).hints).toEqual([]);
+    expect(
+      hintsOf(
+        doc(
+          filled({
+            content: [{ $if: { $param: 'shown' }, then: stack() }],
+          }),
+        ),
+      ).hints,
+    ).toEqual([]);
+    expect(
+      hintsOf(
+        doc(
+          node('sized-region', {
+            zones: { children: [filled({ content: [stack()] })] },
+          }),
+        ),
+      ).hints,
+    ).toEqual([]);
+  });
+
+  it('still hints where a filled Pane has no height to fill', () => {
+    const paths = (document: unknown) =>
+      hintsOf(document).hints.map(({ path }) => path);
+    // A filled Pane nested in an unfilled Pane's content: no height to fill.
+    expect(
+      paths(
+        doc(
+          node('pane', {
+            zones: {
+              content: [
+                node('pane', {
+                  props: { fill: true },
+                  zones: { content: [stack()] },
+                }),
+              ],
+            },
+          }),
+        ),
+      ),
+    ).toEqual(['$.root.zones.content[0].zones.content[0]']);
+    // The header row is sized by its content, not by the fill.
+    expect(
+      paths(
+        doc(
+          node('pane', { props: { fill: true }, zones: { header: [stack()] } }),
+        ),
+      ),
+    ).toEqual(['$.root.zones.header[0]']);
+    // A bound fill is not known to be on.
+    expect(
+      paths(
+        doc(
+          node('pane', {
+            props: { fill: { $param: 'filled' } },
+            zones: { content: [stack()] },
+          }),
+        ),
+      ),
+    ).toEqual(['$.root.zones.content[0]']);
+  });
 });
 
 // KF-THTR71: a NavStack view's toolbar config renders as a Toolbar, so a
