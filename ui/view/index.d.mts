@@ -76,6 +76,10 @@ export interface ViewDocument {
       string,
       {
         readonly type: ViewType;
+        /**
+         * Used when the input is `null` or `undefined`, by a `$param` and by
+         * a `$bind` path that starts at this param.
+         */
         readonly default?: unknown;
         readonly description?: string;
       }

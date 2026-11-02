@@ -109,7 +109,12 @@ function renderDocument(document, inputs, slots, options) {
     }
     if (isObject(raw) && '$bind' in raw) {
       const [head, ...rest] = raw.$bind.split('.');
-      return readPath(scope.has(head) ? scope.get(head) : inputs[head], rest);
+      // A head that is not an item is a param, read with its default as a
+      // `$param` is (KF-8P3H7F).
+      return readPath(
+        scope.has(head) ? scope.get(head) : value({ $param: head }, scope),
+        rest,
+      );
     }
     if (isObject(raw) && '$action' in raw) return raw.$action;
     if (isObject(raw) && '$icon' in raw) {

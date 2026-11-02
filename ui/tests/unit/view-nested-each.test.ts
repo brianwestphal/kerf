@@ -4,14 +4,8 @@
 // render the inner repeat as a plain map that re-renders with its row, and
 // validation rejects the one shape neither can render: a composed document
 // whose own repeat lands inside the composing document's row (KUI-V016).
-import {
-  mkdirSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from 'node:fs';
-import { join, relative, resolve } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 import { mount, type SafeHtml, signal } from 'kerfjs';
 import { afterAll, describe, expect, it, vi } from 'vitest';
@@ -27,6 +21,7 @@ import {
   previewView,
   validateView,
 } from '../../view/index.mjs';
+import { generatedViewScratch } from './helpers/generated-view.js';
 
 const root = resolve(import.meta.dirname, '../..');
 const readJson = (path: string) =>
@@ -125,30 +120,10 @@ interface GeneratedGroups {
   ): () => void;
 }
 
-// Inside the package (Vite serves files under its root), in the ignored
-// test-results folder, removed after the suite.
-mkdirSync(join(root, 'test-results'), { recursive: true });
-const scratch = mkdtempSync(join(root, 'test-results/kui-nested-each-'));
-afterAll(() => rmSync(scratch, { recursive: true, force: true }));
-
-/**
- * Generates the document's JavaScript module and imports it, with each
- * component import pointed at this package's source (the interpreter's
- * components), so the two render through the same functions.
- */
-async function loadGenerated(document: object): Promise<GeneratedGroups> {
-  const { code } = generateView(document as never, catalog, { target: 'js' });
-  const file = join(scratch, 'groups.view.mjs');
-  writeFileSync(
-    file,
-    code.replace(
-      /from '@kerfjs\/ui\/([a-z-]+)'/g,
-      (_match, name: string) =>
-        `from './${relative(scratch, resolve(root, 'src', `${name}.js`))}'`,
-    ),
-  );
-  return (await import(/* @vite-ignore */ file)) as GeneratedGroups;
-}
+const generated = generatedViewScratch();
+afterAll(() => generated.dispose());
+const loadGenerated = (document: object) =>
+  generated.load<GeneratedGroups>(document, catalog);
 
 const fixtures: Groups[] = [
   { groups: [] },
@@ -182,7 +157,7 @@ describe('a repeat inside a repeat row', () => {
   });
 
   it('renders identically through the interpreter and the generated module, mounted', async () => {
-    const generated = await loadGenerated(groupsDocument());
+    const viewModule = await loadGenerated(groupsDocument());
     const { digest } = generateView(groupsDocument() as never, catalog);
     const state = signal<Groups>(fixtures[0]!);
     const interpreted = document.createElement('div');
@@ -196,7 +171,7 @@ describe('a repeat inside a repeat row', () => {
         contract: digest,
       }),
     );
-    mount(fromModule, () => generated.renderGroups(state.value));
+    mount(fromModule, () => viewModule.renderGroups(state.value));
     // Empty, filled, a changed inner list, then back to empty.
     const sequence: Groups[] = [
       fixtures[1]!,
@@ -228,7 +203,7 @@ describe('a repeat inside a repeat row', () => {
 
     // A row action in an inner row reports the inner row's key.
     const open = vi.fn();
-    const dispose = generated.wireGroups(interpreted, { 'open-tab': open });
+    const dispose = viewModule.wireGroups(interpreted, { 'open-tab': open });
     const row = interpreted.querySelector('[data-key="b"]')!;
     (row.querySelector('[data-action]') ?? row).dispatchEvent(
       new MouseEvent('click', { bubbles: true }),

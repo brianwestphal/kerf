@@ -221,8 +221,13 @@ function createEmitter(document, catalog, imports, importFrom) {
     }
     if (isObject(input) && '$bind' in input) {
       const [head, ...rest] = input.$bind.split('.');
+      // A head that is not an item is a param, read with its default as a
+      // `$param` is (KF-8P3H7F).
       return raw(
-        [scope.has(head) ? head : `inputs.${head}`, ...rest].join('.'),
+        [
+          scope.has(head) ? head : flat(value({ $param: head }, scope)),
+          ...rest,
+        ].join('.'),
       );
     }
     if (isObject(input) && '$action' in input)

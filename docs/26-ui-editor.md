@@ -768,6 +768,13 @@ a descriptor in the component-props type grammar (`string`, `number`,
 `boolean`, `enum`, `content`, `array`, `object`). A param with no default
 becomes a required input. `content` params are application-rendered `SafeHtml`.
 
+A default applies wherever the param is read: a `$param`, and the head of a
+`$bind` path into it (KF-8P3H7F: bound defaults). `{ "$bind": "data.tabs" }`
+over a defaulted `data` reads `(inputs.data ?? <default>).tabs` in the
+generated module, and `interpretView` does the same, so an app (or the editor
+canvas, which samples only params without a default) may omit `data`.
+`null` takes the default too, as `??` does.
+
 A **prop-typed param** (KF-H3CB2P: app-supplied values),
 `{ "kind": "prop", "component": "@kerfjs/ui:select", "prop": "renderSelected" }`,
 has exactly the type of one catalog component's prop. It carries a value a
@@ -1130,7 +1137,10 @@ surface a human reads: "adds the action `archive`, removes the input
   never use it: interpretView's strictness is what protects a deployed client.
 - `$css` is evaluated by walking its parsed call tree (`parseCssTree`) over
   the `@kerfjs/ui/css-values` builders, never by `eval`. `$param` defaults
-  apply to `null` as well as `undefined`, as `??` does in generated code.
+  apply to `null` as well as `undefined`, as `??` does in generated code,
+  and so do the defaults of a param a `$bind` path starts from (§3.4).
+  `ui/tests/unit/view-bind-defaults.test.ts` diffs a freshly generated module
+  against the interpreter for an omitted, a `null`, and a given input.
 
 ## 8. Validation
 
