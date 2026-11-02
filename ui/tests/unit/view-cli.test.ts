@@ -71,6 +71,28 @@ describe('kerf-ui-view', () => {
     });
   });
 
+  // KF-KQ72TW: a hint is printed for a valid document and never fails it.
+  it('prints hints without failing', () => {
+    const document = JSON.parse(readFileSync(documentPath, 'utf8'));
+    document.root.zones.content.push({
+      id: '01JB8Z1M6Q8E1X9V4S7K2R3T9Z',
+      type: '@kerfjs/ui:nav-stack',
+      props: {
+        id: 'stack',
+        label: 'Stack',
+        views: [{ key: 'one', content: { $slot: 'oneContent' } }],
+      },
+    });
+    writeFileSync(documentPath, JSON.stringify(document));
+    const index = document.root.zones.content.length - 1;
+    const generated = run(['generate', documentPath]);
+    expect(generated.code).toBe(0);
+    expect(generated.output).toContain(
+      `${documentPath}: hint KUI-H001 $.root.zones.content[${index}]: @kerfjs/ui:nav-stack has no height of its own here`,
+    );
+    expect(generated.output).toMatch(/inbox\.view\.ts: kui1:/);
+  });
+
   it('diffs the contract against the existing module', () => {
     expect(run(['diff', documentPath]).output).toContain(
       'BREAKING action "compose" added',

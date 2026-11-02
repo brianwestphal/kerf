@@ -1358,11 +1358,61 @@ function checkComposition(
 }
 
 /**
- * Validates a view document. Returns `{ valid, diagnostics, actions }`, where
- * each diagnostic is `{ code, path, message }` (a `KUI-V###` document id or a
- * `KUI-L201`–`L204` composition id) and `actions` maps each action name to
- * its `row` or `view` scope. `options.resolveView(src)` loads a composed
- * document; without it, `#view` nodes are checked for shape only.
+ * Kerf UI's whole-screen layouts: each fills its parent's height and has no
+ * height of its own, so below the root it collapses to its bar unless a
+ * SizedRegion or another of these layouts gives it a height (KF-KQ72TW).
+ */
+const SCREEN_LAYOUTS = new Set([
+  '@kerfjs/ui:nav-stack',
+  '@kerfjs/ui:split-view',
+  '@kerfjs/ui:tab-navigator',
+  '@kerfjs/ui:workbench',
+]);
+const SIZED_REGION = '@kerfjs/ui:sized-region';
+
+/**
+ * `KUI-H001` hints (non-blocking): a whole-screen layout below the root whose
+ * parent is not a SizedRegion or another whole-screen layout.
+ */
+function hintUnsizedLayouts(node, at, parentType, hints) {
+  if (!isObject(node) || typeof node.type !== 'string') return;
+  if (
+    parentType !== undefined &&
+    SCREEN_LAYOUTS.has(node.type) &&
+    parentType !== SIZED_REGION &&
+    !SCREEN_LAYOUTS.has(parentType)
+  )
+    hints.push({
+      code: 'KUI-H001',
+      path: at,
+      message: `${node.type} has no height of its own here and collapses to its bar; wrap it in ${SIZED_REGION}`,
+    });
+  const child = (item, path) => {
+    if (!isObject(item)) return;
+    if ('$each' in item) child(item.template, `${path}.template`);
+    else if ('$if' in item) {
+      child(item.then, `${path}.then`);
+      if ('else' in item) child(item.else, `${path}.else`);
+    } else hintUnsizedLayouts(item, path, node.type, hints);
+  };
+  for (const [zone, children] of Object.entries(
+    isObject(node.zones) ? node.zones : {},
+  )) {
+    if (Array.isArray(children))
+      children.forEach((item, index) =>
+        child(item, `${at}.zones.${zone}[${index}]`),
+      );
+  }
+}
+
+/**
+ * Validates a view document. Returns `{ valid, diagnostics, hints, actions }`,
+ * where each diagnostic is `{ code, path, message }` (a `KUI-V###` document id
+ * or a `KUI-L201`–`L204` composition id) and `actions` maps each action name
+ * to its `row` or `view` scope. `hints` are non-blocking `KUI-H###` advice
+ * about a valid document (a nested layout with no height); they never make it
+ * invalid. `options.resolveView(src)` loads a composed document; without it,
+ * `#view` nodes are checked for shape only.
  */
 export function validateView(document, catalog, options = {}) {
   const diagnostics = [];
@@ -1422,7 +1472,7 @@ export function validateView(document, catalog, options = {}) {
 
   if (!isObject(document)) {
     ctx.report('KUI-V001', '$', 'a view document is a JSON object');
-    return { valid: false, diagnostics, actions };
+    return { valid: false, diagnostics, hints: [], actions };
   }
   for (const key of only(document, [
     '$schema',
@@ -1529,5 +1579,7 @@ export function validateView(document, catalog, options = {}) {
   } else {
     checkNode(ctx, document.root, '$.root', new Map(), false, undefined);
   }
-  return { valid: diagnostics.length === 0, diagnostics, actions };
+  const hints = [];
+  hintUnsizedLayouts(document.root, '$.root', undefined, hints);
+  return { valid: diagnostics.length === 0, diagnostics, hints, actions };
 }

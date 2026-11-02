@@ -1364,3 +1364,87 @@ describe('isAssignable and isLiteralOf', () => {
     expect(isLiteralOf('x', { kind: 'ref', ref: 'Missing' })).toBe(true);
   });
 });
+
+// KF-KQ72TW: a whole-screen layout below the root with no sizing parent is a
+// non-blocking hint; it never makes the document invalid.
+describe('KUI-H001 unsized nested layout hints', () => {
+  const stack = () =>
+    node('nav-stack', {
+      props: {
+        id: 'inner',
+        label: 'Inner',
+        views: [{ key: 'one', content: { $slot: 'oneContent' } }],
+      },
+    });
+  const hintsOf = (document: unknown) => validateView(document, catalog);
+
+  it('hints a layout in a Pane, keeping the document valid', () => {
+    const result = hintsOf(
+      doc(node('pane', { zones: { content: [stack()] } })),
+    );
+    expect(result.valid).toBe(true);
+    expect(result.diagnostics).toEqual([]);
+    expect(result.hints).toEqual([
+      {
+        code: 'KUI-H001',
+        path: '$.root.zones.content[0]',
+        message: `${ui('nav-stack')} has no height of its own here and collapses to its bar; wrap it in ${ui('sized-region')}`,
+      },
+    ]);
+  });
+
+  it('finds a layout in a $each template or an $if branch', () => {
+    const result = hintsOf(
+      doc(
+        node('pane', {
+          zones: {
+            content: [
+              { $if: { $param: 'show' }, then: stack(), else: stack() },
+            ],
+          },
+        }),
+        { params: { show: { type: { kind: 'boolean' } } } },
+      ),
+    );
+    expect(result.hints.map((hint) => hint.path)).toEqual([
+      '$.root.zones.content[0].then',
+      '$.root.zones.content[0].else',
+    ]);
+  });
+
+  it('leaves the root, a SizedRegion child, and a nested layout alone', () => {
+    expect(hintsOf(doc(stack())).hints).toEqual([]);
+    expect(
+      hintsOf(
+        doc(
+          node('pane', {
+            zones: {
+              content: [
+                node('sized-region', { zones: { children: [stack()] } }),
+              ],
+            },
+          }),
+        ),
+      ).hints,
+    ).toEqual([]);
+    expect(
+      hintsOf(
+        doc(
+          node('tab-navigator', {
+            props: {
+              id: 'sections',
+              label: 'Sections',
+              tabs: [{ id: 'one', label: 'One' }],
+              active: 'one',
+            },
+            zones: { 'tabs.0.content': [stack()] },
+          }),
+        ),
+      ).hints,
+    ).toEqual([]);
+  });
+
+  it('returns no hints for a document that is not an object', () => {
+    expect(hintsOf(null).hints).toEqual([]);
+  });
+});

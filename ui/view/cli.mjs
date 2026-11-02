@@ -177,6 +177,11 @@ export function run(argv) {
       }
       continue;
     }
+    // Hints are advice: printed, never a failure.
+    for (const item of validation.hints)
+      lines.push(
+        `${documentPath}: hint ${item.code} ${item.path}: ${item.message}`,
+      );
     const modulePath = viewModulePath(documentPath, options.target);
     const generated = generateView(document, catalog, {
       source: basename(documentPath),

@@ -1071,7 +1071,8 @@ surface a human reads: "adds the action `archive`, removes the input
 ids. `catalog` comes from `createViewCatalog({ props, composition })` over
 `component-props.json` / `component-composition.json` documents (Kerf UI's and
 any consumer's). The result is `{ valid, diagnostics: [{ code, path, message }],
-actions }`, where `actions` maps each action name to its `row` or `view` scope.
+hints, actions }`, where `actions` maps each action name to its `row` or `view`
+scope and `hints` holds non-blocking advice in the same shape (below).
 The module is pure, with no Node APIs, so the editor runs it in the browser.
 Structure is checked by hand, so no schema engine ships at runtime.
 `ui/ai/view-document.schema.json` serves editors and IDEs, and a test keeps the
@@ -1093,6 +1094,19 @@ schema and the validator in agreement.
 | `KUI-V012` | `#view` source missing, cyclic, declaring slots, or given props that are not its params                                                |
 | `KUI-V013` | `$icon` on a non-icon prop, a malformed icon name, or (given `icons`) an unknown one                                                   |
 | `KUI-V014` | A control, link, or component that renders one, at any depth in the zones of a component whose root is a control or link               |
+
+**Hints** (KF-KQ72TW: non-blocking view hints) are advice about a valid
+document. They never set `valid` to false, and generation, export, and Compare
+ignore them. `kerf-ui-view` prints each as a `hint` line with exit code 0, and
+the editor lists them under a Hints header in the Problems rail, with a
+neutral count on the tab when there are no problems.
+
+| Id         | Condition                                                                                                                                |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `KUI-H001` | A `NavStack`, `SplitView`, `TabNavigator`, or `Workbench` below the root whose parent is not a `SizedRegion` or another of those layouts |
+
+`KUI-H001` follows `$if` and `$each`. Such a layout has no height of its own and
+collapses to its bar; wrapping it in a `SizedRegion` gives it one.
 
 `KUI-V014` reads each composition entry's `content.interactive` rules, which
 the selection catalog declares and `catalog:sync` projects. A `root` rule

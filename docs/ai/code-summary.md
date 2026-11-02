@@ -734,7 +734,9 @@ validator for the Kerf UI editor, `docs/26-ui-editor.md`). `validate.mjs`
 `parseCssCall`, `channelOf`) is re-exported by `index.mjs` and typed by
 `index.d.mts`. The shape schema is `ui/ai/view-document.schema.json`, and the
 `KUI-V001`–`V014` ids are registered in
-`ui/ai/application-ui-diagnostic-ids-v1.json`. `KUI-V014` (KF-0P9WWB: a
+`ui/ai/application-ui-diagnostic-ids-v1.json`, along with `KUI-H001`, the first
+non-blocking hint `validateView` returns in its `hints` list (KF-KQ72TW: a
+nested whole-screen layout nothing gives a height). `KUI-V014` (KF-0P9WWB: a
 control or link inside a component whose root is one) reads each composition
 entry's `content` rules (`interactive` / per-export `exports`, each
 `{ kind: root | contains, whenProps? }`), declared in

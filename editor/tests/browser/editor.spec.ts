@@ -1642,3 +1642,20 @@ test('sizes a TabNavigator inside a SizedRegion as the region says', async ({
     path: test.info().outputPath('kf-63xr5k-editor-sized-region-1440.png'),
   });
 });
+
+// KF-KQ72TW: a nested layout with no height is a hint, listed apart from
+// problems; the document stays valid.
+test('lists a hint for a TabNavigator nested in a Pane', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await newDocument(page);
+  await dragComponent(page, 'TabNavigator', () => emptySpot(page));
+  await area(page, 'Problems');
+  const hints = page.locator('[data-editor-hints]');
+  await expect(hints).toContainText(
+    'TabNavigator has no height of its own here and collapses to its bar; wrap it in SizedRegion',
+  );
+  await expect(page.getByText('valid', { exact: false }).first()).toBeVisible();
+  await page.screenshot({
+    path: test.info().outputPath('kf-kq72tw-hint-1440.png'),
+  });
+});

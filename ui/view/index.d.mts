@@ -102,7 +102,10 @@ export function createViewCatalog(input: {
 }): ViewCatalog;
 
 export interface ViewDiagnostic {
-  /** `KUI-V001`–`KUI-V014`, or `KUI-L201`–`KUI-L204` for composition. */
+  /**
+   * `KUI-V001`–`KUI-V014`, or `KUI-L201`–`KUI-L204` for composition; a hint
+   * is `KUI-H001` (a whole-screen layout below the root with no height).
+   */
   readonly code: string;
   /** JSON path into the document, such as `$.root.zones.header[0]`. */
   readonly path: string;
@@ -112,6 +115,11 @@ export interface ViewDiagnostic {
 export interface ViewValidation {
   readonly valid: boolean;
   readonly diagnostics: readonly ViewDiagnostic[];
+  /**
+   * Non-blocking advice about the document (`KUI-H###`); hints never make it
+   * invalid, and export and generation ignore them.
+   */
+  readonly hints: readonly ViewDiagnostic[];
   /** Every action name with its `row` (inside `$each`) or `view` scope. */
   readonly actions: ReadonlyMap<string, 'row' | 'view'>;
 }

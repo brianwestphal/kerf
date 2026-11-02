@@ -709,7 +709,7 @@ The local CI advisory validates the globally newest-created completed main run t
 
 Generated `*.view.ts` modules are read-only. They export typed inputs, an exhaustive action-handler interface over `delegateActions` (row-scoped actions carry the row key), `SafeHtml` slots, `data-kerf-node`-resolved refs typed by `rootElement`, and a `kui1:` FNV-1a contract digest that excludes layout. Re-export shows a breaking/non-breaking contract diff, then the app's `tsc` reports exactly what broke. `interpretView` (`@kerfjs/ui/view`) renders server-driven documents after checking the digest. `KUI-V001`–`V014` plus JSON-tree `KUI-L201`–`L204` validate documents; `KUI-V014` rejects a control or link inside a component whose root is one, from the catalog's `content.interactive` rules.
 
-Shipped: `ui/ai/component-props.json`, `ui/ai/view-document.schema.json`, `validateView`, the generator and CLI, and the interpreter. Remaining work: `data-*` channels for unmarked components, and the private `editor/` app.
+Shipped: `ui/ai/component-props.json`, `ui/ai/view-document.schema.json`, `validateView` (with non-blocking `hints`, `KUI-H001` for an unsized nested layout), the generator and CLI, and the interpreter. Remaining work: `data-*` channels for unmarked components, and the private `editor/` app.
 
 ## Update triggers
 

@@ -258,6 +258,7 @@ import {
   problemCounts,
   problemsOf,
   type PropsVariant,
+  readableMessage,
 } from './model/problems.js';
 import { sampleInputs } from './model/sample-inputs.js';
 import { shownScenes } from './model/shown-scenes.js';
@@ -754,13 +755,24 @@ export function createEditor(options: EditorOptions) {
   const variantsOf = (type: string) =>
     (propsByKey.get(type) as { variants?: readonly PropsVariant[] } | undefined)
       ?.variants;
-  /** The document's problems, validated once per edit. */
+  /** The document's validation, once per edit. */
+  const validation = computed(() => validateView(doc.value, viewCatalog));
+  /** The document's problems. */
   const currentProblems = computed(() =>
-    problemsOf(
-      doc.value,
-      validateView(doc.value, viewCatalog).diagnostics,
-      variantsOf,
-    ),
+    problemsOf(doc.value, validation.value.diagnostics, variantsOf),
+  );
+  /**
+   * Non-blocking advice (KF-KQ72TW: a nested layout with no height), with
+   * component keys written as names. Hints never block export or Compare.
+   */
+  const currentHints = computed(() =>
+    problemsOf(doc.value, validation.value.hints).map((hint) => ({
+      ...hint,
+      diagnostic: {
+        ...hint.diagnostic,
+        message: readableMessage(hint.diagnostic.message, componentNames),
+      },
+    })),
   );
   /**
    * The selected node's problems by the prop each is about (KF-H782W9): a
@@ -2936,6 +2948,8 @@ export function createEditor(options: EditorOptions) {
     const nodes = outlineRows(document, componentNames).length;
     const problemList = currentProblems.value;
     const problems = problemList.length;
+    const hintList = currentHints.value;
+    const hints = hintList.length;
     // KF-PR8MA6: the Components filter sits in the rail's pinned header,
     // under the strip, so it stays in reach while the list scrolls.
     const paletteFilterField =
@@ -2997,12 +3011,29 @@ export function createEditor(options: EditorOptions) {
             >
               {problems}
             </Badge>
+          ) : hints ? (
+            <Badge label={`${hints} ${hints === 1 ? 'hint' : 'hints'}`}>
+              {hints}
+            </Badge>
           ) : undefined,
-          panel: problems ? (
-            <List>{problemRows(problemList)}</List>
-          ) : (
-            <EmptyState title="No problems" detail="The document is valid." />
-          ),
+          panel:
+            problems || hints ? (
+              <List gap="m">
+                {problems ? <List>{problemRows(problemList)}</List> : undefined}
+                {hints ? (
+                  <List rootAttributes={{ 'data-editor-hints': '' }}>
+                    <ListHeader
+                      label="Hints"
+                      count={hints}
+                      countLabel={`${hints} ${hints === 1 ? 'hint' : 'hints'}`}
+                    />
+                    {problemRows(hintList)}
+                  </List>
+                ) : undefined}
+              </List>
+            ) : (
+              <EmptyState title="No problems" detail="The document is valid." />
+            ),
         },
       ],
     );
