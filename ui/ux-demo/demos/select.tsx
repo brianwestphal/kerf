@@ -468,34 +468,37 @@ export function SelectDemo() {
         label="Long Options Within Viewport"
         align="inline-control"
       >
-        <Row hAlign="right">
-          <ToolbarControlGroup
-            label="Project Attention"
-            size="compact"
-            content="icon"
-            single
-          >
-            <Select<string>
-              name="viewport-attention"
-              value={selectedChoice.value}
-              ariaLabel="Project Attention"
-              presentation="toolbar-borderless"
+        <Toolbar
+          label="Long Options Within Viewport"
+          trailing={
+            <ToolbarControlGroup
+              label="Project Attention"
               size="compact"
-              selectedPresentation="icon-only"
-              focusRingOwner="group"
-              choices={[
-                { value: 'quiet', label: 'Quiet', icon: Bell },
-                {
-                  value: 'balanced',
-                  label:
-                    'Attention Needed for Project Configuration and Deployment Settings',
-                  icon: SlidersHorizontal,
-                },
-                { value: 'explicit', label: 'Explicit', icon: Wrench },
-              ]}
-            />
-          </ToolbarControlGroup>
-        </Row>
+              content="icon"
+              single
+            >
+              <Select<string>
+                name="viewport-attention"
+                value={selectedChoice.value}
+                ariaLabel="Project Attention"
+                presentation="toolbar-borderless"
+                size="compact"
+                selectedPresentation="icon-only"
+                focusRingOwner="group"
+                choices={[
+                  { value: 'quiet', label: 'Quiet', icon: Bell },
+                  {
+                    value: 'balanced',
+                    label:
+                      'Attention Needed for Project Configuration and Deployment Settings',
+                    icon: SlidersHorizontal,
+                  },
+                  { value: 'explicit', label: 'Explicit', icon: Wrench },
+                ]}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample label="Navigation Label" align="inline-control">
         <Select<string>
