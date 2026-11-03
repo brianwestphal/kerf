@@ -10579,9 +10579,9 @@ test('builds SplitView › Resizable, Collapsible List', async ({ page }) => {
   await command(0, 'Show Threads', 'panel-left-open');
   // The FloatingToolbar arrived holding a placeholder Text.
   await select(page, /^Text/);
-  await expect(page.locator('[data-editor-prop="children"] input')).toHaveValue(
-    'FloatingToolbar',
-  );
+  await expect(
+    page.locator('[data-editor-prop="children"] :is(input, textarea)'),
+  ).toHaveValue('FloatingToolbar');
   await page.locator('[data-action="editor-delete"]').click();
   await select(page, /^SplitView/);
   const [first] = MESSAGES;

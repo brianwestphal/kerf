@@ -76,13 +76,21 @@ export async function unset(page: Page, name: string) {
   await expect(toggle).toHaveAttribute('aria-pressed', 'true');
 }
 
-/** Types `value` into a text prop and commits it with Enter (empty is ""). */
+/**
+ * Types `value` into a text prop and commits it (empty is ""): Enter for a
+ * one-line field, and leaving the field (Tab) for a multi-line one, where
+ * Enter types a line break (KF-8FCJ02).
+ */
 export async function setText(page: Page, name: string, value: string) {
-  await prop(page, name).locator('input, textarea').first().click();
+  const field = prop(page, name).locator('input, textarea').first();
+  await field.click();
   await page.keyboard.press('ControlOrMeta+a');
   if (value) await page.keyboard.type(value);
   else await page.keyboard.press('Backspace');
-  await page.keyboard.press('Enter');
+  const multiline = await field.evaluate(
+    (element) => element.tagName === 'TEXTAREA',
+  );
+  await page.keyboard.press(multiline ? 'Tab' : 'Enter');
 }
 
 /** Picks `option` in an enum prop's Select. */
