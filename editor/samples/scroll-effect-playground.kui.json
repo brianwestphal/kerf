@@ -1,0 +1,848 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ScrollEffectPlayground",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "label": "Playground",
+      "rootAttributes": {
+        "data-scroll-effect-demo": "playground"
+      }
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Earlier Story 1",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000009",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Earlier Story 2",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000010",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000011",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000012",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000013",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Earlier Story 3",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000014",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000015",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000016",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000017",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Earlier Story 4",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000018",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000019",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000020",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000021",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Earlier Story 5",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000022",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000023",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000024",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000025",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Earlier Story 6",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000026",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000027",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000028",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000029",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Earlier Story 7",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000030",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000031",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000032",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000033",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Earlier Story 8",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000034",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000035",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000036",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000037",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Earlier Story 9",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000038",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000039",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000040",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000041",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Earlier Story 10",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000042",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000043",
+                "type": "@kerfjs/ui:scroll-effect",
+                "props": {
+                  "effects": [
+                    {
+                      "kind": "reveal"
+                    },
+                    {
+                      "kind": "fade"
+                    }
+                  ],
+                  "rootAttributes": {
+                    "data-scroll-effect-target": ""
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000044",
+                      "type": "@kerfjs/ui:content-item",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000045",
+                            "type": "@kerfjs/ui:list",
+                            "props": {
+                              "gap": "2xs"
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000046",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Night Harbor",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000047",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "This card carries the effect. Change the preset or its range in Settings.",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000048",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000049",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000050",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Later Story 1",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000051",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000052",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000053",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000054",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Later Story 2",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000055",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000056",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000057",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000058",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Later Story 3",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000059",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000060",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000061",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000062",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Later Story 4",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000063",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000064",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000065",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000066",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Later Story 5",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000067",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000068",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000069",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000070",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Later Story 6",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000071",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000072",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000073",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000074",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Later Story 7",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000075",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000076",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000077",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000078",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Later Story 8",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000079",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000080",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000081",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000082",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Later Story 9",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000083",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000084",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000085",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000086",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Later Story 10",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000087",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scroll the pane to move Night Harbor through the view.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

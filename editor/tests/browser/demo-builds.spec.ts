@@ -17343,6 +17343,120 @@ test('builds AnchoredSurface › Dark Tone for Media Chrome', async ({
   );
 });
 
+// KF-B516FB: examples recorded as not built, by design:
+// - Toast (3) and Tooltip (2): shown by `toast()` / `tooltip()` calls, not
+//   placed in a view.
+// - Foundation › Semantic Palette and Type and Spacing: token showcases.
+// - EditorFrame (4): the frame wraps the app's own native textarea (source)
+//   or rendered content (preview); that markup is the app's by contract.
+// - DocumentBaseline › Full-Height Application Root: the specimen is the
+//   app's root element itself, not a composition of components.
+// AnchoredSurface › Help Inside a Modal waits on how the editor shows a
+// closed modal dialog (KF-SYGSD0).
+// KF-B516FB: a settings-driven playground builds its default state;
+// badgePlayground starts info, quiet, pill and default.
+test('builds Badge › Playground', async ({ page }) => {
+  await dragComponent(page, 'Badge', () => emptySpot(page));
+  await select(page, /^Badge/);
+  await applySpec(page, {
+    choices: { tone: 'info' },
+    text: { children: 'Ready' },
+  });
+  // Its other settings start at the Badge's own defaults.
+  await expect(
+    canvas(page).locator('.kui-badge[data-kerf-node]'),
+  ).toHaveAttribute('data-appearance', 'quiet');
+  expect(await exported(page)).toEqual(
+    pane(node('badge', { children: 'Ready', tone: 'info' })),
+  );
+});
+
+const FILLER_DETAIL = 'Scroll the pane to move Night Harbor through the view.';
+
+// scrollEffectPlayground starts as reveal-fade over the default range.
+test('builds ScrollEffect › Playground', async ({ page }) => {
+  test.setTimeout(test.info().timeout * 8);
+  const stories = (when: string) =>
+    Array.from({ length: 10 }, (_, index) => `${when} Story ${index + 1}`);
+  /** Ten DemoContentItems: one built, nine duplicated and retitled. */
+  const fillers = async (titles: readonly string[], firstText: number) => {
+    await contentItemInto(page, /^List(?!Item)/, 0, titles[0]!, FILLER_DETAIL);
+    for (const [index, title] of titles.slice(1).entries()) {
+      await select(page, /^ContentItem/, -1);
+      await page.keyboard.press('ControlOrMeta+d');
+      await select(page, /^Text(?![A-Z])/, firstText + (index + 1) * 2);
+      await setText(page, 'children', title);
+    }
+  };
+  await rootPane(
+    page,
+    {
+      text: { label: 'Playground' },
+      data: [['data-scroll-effect-demo', 'playground']],
+    },
+    {},
+  );
+  await addInto(page, /^Pane/, 'List');
+  await fillers(stories('Earlier'), 0);
+  await addInto(page, /^List(?!Item)/, 'ScrollEffect', 0);
+  await area(page, 'Properties');
+  await applySpec(page, { data: [['data-scroll-effect-target', '']] });
+  const dialog = page.locator('dialog[open]');
+  await page.getByRole('button', { name: 'Configure effects' }).click();
+  await dialog.getByRole('button', { name: /^Remove / }).click();
+  for (const preset of ['Reveal', 'Fade']) {
+    await dialog.getByRole('button', { name: /Add/ }).last().click();
+    await page.getByRole('menuitem', { name: preset, exact: true }).click();
+  }
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  await contentItemInto(
+    page,
+    /^ScrollEffect/,
+    0,
+    'Night Harbor',
+    'This card carries the effect. Change the preset or its range in Settings.',
+  );
+  await fillers(stories('Later'), 22);
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    rootPaneNode(
+      {
+        label: 'Playground',
+        rootAttributes: { 'data-scroll-effect-demo': 'playground' },
+      },
+      {
+        content: [
+          node('list', undefined, {
+            children: [
+              ...stories('Earlier').map((title) =>
+                demoContentItem(title, FILLER_DETAIL),
+              ),
+              node(
+                'scroll-effect',
+                {
+                  effects: [{ kind: 'reveal' }, { kind: 'fade' }],
+                  rootAttributes: { 'data-scroll-effect-target': '' },
+                },
+                {
+                  children: [
+                    demoContentItem(
+                      'Night Harbor',
+                      'This card carries the effect. Change the preset or its range in Settings.',
+                    ),
+                  ],
+                },
+              ),
+              ...stories('Later').map((title) =>
+                demoContentItem(title, FILLER_DETAIL),
+              ),
+            ],
+          }),
+        ],
+      },
+    ),
+  );
+});
+
 test('builds Text › Strong Emphasis', async ({ page }) => {
   await rootTexts(page, [
     {
