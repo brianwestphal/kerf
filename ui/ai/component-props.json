@@ -13544,7 +13544,9 @@
             "text": "boolean | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "default": true,
+          "description": "Show the tab's close button (default `true`); `false` makes a fixed tab."
         },
         {
           "name": "draggable",

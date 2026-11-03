@@ -397,6 +397,15 @@ describe('ai/component-props.json (generated from the built package)', async () 
     ).toEqual(['header', 'footer']);
   });
 
+  // KF-X2E1B1: a default-on boolean records its default, so the editor's
+  // switch can write false (a fixed, non-closable tab).
+  it('records TabBarItem closable as on by default', () => {
+    expect(prop(component('@kerfjs/ui:tabs'), 'closable')).toMatchObject({
+      type: { kind: 'boolean' },
+      default: true,
+    });
+  });
+
   // KF-3T47XJ: unset `pressed` is a plain action and false an unpressed
   // toggle, so every boolean `pressed` offers Not set / Off / On; a switch
   // turned off would clear it.

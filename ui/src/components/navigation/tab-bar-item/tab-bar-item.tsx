@@ -51,6 +51,7 @@ export interface TabBarItemProps {
   attention?: boolean;
   /** Highlight this tab as the target of a drag over its content. */
   dropTarget?: boolean;
+  /** Show the tab's close button (default `true`); `false` makes a fixed tab. */
   closable?: boolean;
   draggable?: boolean;
   leading?: KerfUiContent;
