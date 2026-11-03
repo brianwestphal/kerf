@@ -265,12 +265,22 @@ function describeNonNull(ctx, type, members, text, depth) {
     };
   }
   const build = () => {
-    // `true` | `false` print as separate members; fold them back into boolean.
+    // `true` | `false` print as separate members; fold them back into
+    // boolean. A lone `true` (a Button's dot badge) stays that literal, so
+    // nothing offers the `false` the type excludes (KF-FY62FK).
+    const booleans = members.filter(
+      (member) => member.flags & ts.TypeFlags.BooleanLiteral,
+    );
     const folded = [];
     let sawBoolean = false;
     for (const member of members) {
       if (member.flags & ts.TypeFlags.BooleanLiteral) {
-        if (!sawBoolean) folded.push({ kind: 'boolean', text: 'boolean' });
+        if (!sawBoolean)
+          folded.push(
+            booleans.length === 1
+              ? describeType(ctx, member, depth + 1)
+              : { kind: 'boolean', text: 'boolean' },
+          );
         sawBoolean = true;
         continue;
       }

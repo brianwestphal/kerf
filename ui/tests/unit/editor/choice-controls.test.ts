@@ -45,12 +45,9 @@ describe('typed choices', () => {
       'xl',
       'Number…',
     ]);
-    expect(labels('Button', 'badge')).toEqual([
-      'true',
-      'false',
-      'Text…',
-      'Number…',
-    ]);
+    // A lone `true` or `false` member offers only itself (KF-FY62FK).
+    expect(labels('Button', 'badge')).toEqual(['true', 'Text…', 'Number…']);
+    expect(labels('Combobox', 'createLabel')).toEqual(['false', 'Text…']);
     expect(labels('Select', 'value')).toEqual(['Text…', 'List…']);
     expect(labels('ToolbarText', 'headingLevel')).toEqual([
       '1',

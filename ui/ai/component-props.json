@@ -766,7 +766,7 @@
             "members": [
               { "kind": "string", "text": "string" },
               { "kind": "number", "text": "number" },
-              { "kind": "boolean", "text": "boolean" }
+              { "kind": "literal", "value": true, "text": "true" }
             ],
             "text": "string | number | true | undefined",
             "nullable": true
@@ -2789,7 +2789,7 @@
             "kind": "union",
             "members": [
               { "kind": "string", "text": "string" },
-              { "kind": "boolean", "text": "boolean" }
+              { "kind": "literal", "value": false, "text": "false" }
             ],
             "text": "string | false | undefined",
             "nullable": true

@@ -412,6 +412,12 @@ describe('ai/component-props.json (generated from the built package)', async () 
       acceptsText: true,
     });
     expect(prop(button, 'icon').type.acceptsText).toBeUndefined();
+    // KF-FY62FK: a lone `true` member stays that literal, not a boolean.
+    expect(prop(button, 'badge').type.members).toEqual([
+      { kind: 'string', text: 'string' },
+      { kind: 'number', text: 'number' },
+      { kind: 'literal', value: true, text: 'true' },
+    ]);
   });
 
   it('ListHeader: the toggle discriminant and toggle-only props', () => {
