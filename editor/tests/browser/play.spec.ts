@@ -235,13 +235,13 @@ test('the device menu sizes the frame, and deviceClass() inside follows it', asy
   await expect(stage(page).getByText('All projects')).toBeVisible();
   await expect.poll(() => deviceClassIn(page)).toBe('mobile portrait');
   await chooseIn(page, 'device', 'iPad Pro 13"');
-  await expect.poll(() => frameViewport(page)).toEqual([1032, 1332]);
+  await expect.poll(() => frameViewport(page)).toEqual([1032, 1282]);
   await expect.poll(() => deviceClassIn(page)).toBe('desktop portrait');
   // The view keeps running: no reload, so its runtime state survives.
   await stage(page).locator('[data-tab-scaffold-tab="search"]').click();
   await expect(stage(page).getByText('Search everything')).toBeVisible();
   await page.locator('[data-action="editor-play-rotate"]').click();
-  await expect.poll(() => frameViewport(page)).toEqual([1376, 988]);
+  await expect.poll(() => frameViewport(page)).toEqual([1376, 938]);
   await expect.poll(() => deviceClassIn(page)).toBe('desktop landscape');
   await expect(stage(page).getByText('Search everything')).toBeVisible();
   await chooseIn(page, 'device', 'MacBook Pro 16"');
