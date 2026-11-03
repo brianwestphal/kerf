@@ -9590,18 +9590,39 @@ async function configure(page: Page, prop: string) {
   await page.getByRole('button', { name: `Configure ${words}` }).click();
 }
 
-/** Opens the form of the object at `path` inside prop `prop`'s form. */
-const openField = (
+/**
+ * Opens the form of the object at `path` inside prop `prop`'s form, and
+ * waits until one of its own fields shows. KF-52Q3AP: in WebKit a click that
+ * lands while the Inspector re-renders from the previous commit can be
+ * dropped, leaving the form unopened, so a row that did not open is clicked
+ * again.
+ */
+async function openField(
   page: Page,
   prop: string,
   path: readonly (string | number)[],
-) =>
-  page
+) {
+  const row = page
     .locator(`[data-editor-open='${JSON.stringify({ prop, path })}']`)
     // A row of a form the stack has left stays in the page, hidden.
     .filter({ visible: true })
-    .first()
-    .click();
+    .first();
+  // A field (or nested row) inside the opened form: its path extends this
+  // one, so a top-level form's fields start with a quoted field name.
+  const open = JSON.stringify({ prop, path }).slice(0, -2);
+  const inside = path.length ? `${open},` : `${open}"`;
+  const opened = page
+    .locator(
+      `[data-editor-field^='${inside}'], [data-editor-open^='${inside}']`,
+    )
+    .filter({ visible: true })
+    .first();
+  await row.click();
+  await expect(async () => {
+    if (!(await opened.isVisible())) await row.click();
+    await expect(opened).toBeVisible({ timeout: 2_000 });
+  }).toPass({ timeout: 30_000 });
+}
 
 /** Leaves the Inspector's open form for the one it was opened from. */
 const back = (page: Page) =>
