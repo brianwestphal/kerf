@@ -1,0 +1,201 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ChipDownloadableFilesInTranscriptBubbles",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "label": "Referenced Files"
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "gap": "xs",
+            "rootAttributes": {
+              "data-demo-chip-transcript": ""
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "bubble": "end",
+                  "appearance": "brand-loud"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:grid",
+                      "props": {
+                        "columns": 1,
+                        "gap": "xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Why is the build red?",
+                              "variant": "span"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:row",
+                            "props": {
+                              "gap": "xs",
+                              "wrap": true,
+                              "rootAttributes": {
+                                "data-demo-chip-files": "user"
+                              }
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000007",
+                                  "type": "@kerfjs/ui:chip",
+                                  "props": {
+                                    "children": "failing-checks.log",
+                                    "tone": "inherit",
+                                    "truncate": true,
+                                    "href": "data:text/plain;charset=utf-8,bundle%20budget%3A%20%2B213%20B",
+                                    "download": "failing-checks.log"
+                                  },
+                                  "zones": {
+                                    "icon": [
+                                      {
+                                        "id": "00000000000000000000000008",
+                                        "type": "@kerfjs/ui:lucide-icon",
+                                        "props": {
+                                          "icon": {
+                                            "$icon": "file-text"
+                                          },
+                                          "name": "file-text"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "bubble": "start",
+                  "appearance": "neutral"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000010",
+                      "type": "@kerfjs/ui:grid",
+                      "props": {
+                        "columns": 1,
+                        "gap": "xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000011",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "The bundle budget grew and one design template drifted.",
+                              "variant": "span"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000012",
+                            "type": "@kerfjs/ui:row",
+                            "props": {
+                              "gap": "xs",
+                              "wrap": true,
+                              "rootAttributes": {
+                                "data-demo-chip-files": "assistant"
+                              }
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000013",
+                                  "type": "@kerfjs/ui:chip",
+                                  "props": {
+                                    "children": "chip.tsx",
+                                    "tone": "inherit",
+                                    "truncate": true,
+                                    "href": "data:text/plain;charset=utf-8,export%20function%20Chip()%20%7B%7D",
+                                    "download": "chip.tsx"
+                                  },
+                                  "zones": {
+                                    "icon": [
+                                      {
+                                        "id": "00000000000000000000000014",
+                                        "type": "@kerfjs/ui:lucide-icon",
+                                        "props": {
+                                          "icon": {
+                                            "$icon": "file-code"
+                                          },
+                                          "name": "file-code"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000015",
+                                  "type": "@kerfjs/ui:chip",
+                                  "props": {
+                                    "children": "design-template-drift-report-2026-10-13.md",
+                                    "tone": "inherit",
+                                    "truncate": true,
+                                    "href": "data:text/plain;charset=utf-8,%23%20Design%20template%20drift",
+                                    "download": "design-template-drift-report-2026-10-13.md"
+                                  },
+                                  "zones": {
+                                    "icon": [
+                                      {
+                                        "id": "00000000000000000000000016",
+                                        "type": "@kerfjs/ui:lucide-icon",
+                                        "props": {
+                                          "icon": {
+                                            "$icon": "file-text"
+                                          },
+                                          "name": "file-text"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

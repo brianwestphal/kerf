@@ -16374,6 +16374,498 @@ test('builds LucideIcon › Inline with Text', async ({ page }) => {
   );
 });
 
+// KF-B516FB: bannerTone starts as `info`, so the banner is a status saying
+// Everything Is Connected with a check.
+test('builds Feedback › Persistent, Empty, and Loading Feedback', async ({
+  page,
+}) => {
+  test.slow();
+  const glyph = async (zone: string, name: string) => {
+    await addChild(page, 'LucideIcon', zone);
+    await area(page, 'Properties');
+    await pickIcon(page, page.locator('[data-editor-icon-place]'), name);
+  };
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List/);
+  await choose(page, 'gap', 'm');
+  await addInto(page, /^List/, 'StateBanner');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { tone: 'info', urgency: 'status' },
+    text: {
+      title: 'Everything Is Connected',
+      detail: 'State is expressed with text and color.',
+    },
+  });
+  await glyph('icon', 'check');
+  await select(page, /^StateBanner/);
+  await addChild(page, 'Button', 'action');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { size: 'compact', shape: 'pill' },
+    text: { children: 'Cycle Tone', action: 'cycle-tone' },
+  });
+  await addInto(page, /^List/, 'EmptyState');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    text: {
+      title: 'Nothing Here Yet',
+      detail: 'Create the first item when you are ready.',
+    },
+  });
+  await glyph('icon', 'search');
+  await select(page, /^EmptyState/);
+  await addChild(page, 'Button', 'action');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    text: { children: 'Create Item', action: 'log-add' },
+  });
+  await addInto(page, /^List/, 'Row');
+  await area(page, 'Properties');
+  await applySpec(page, { choices: { vAlign: 'middle' }, flags: ['wrap'] });
+  for (const [label, text] of [
+    ['Loading preview…', 'Meaningfully labeled progress'],
+    [undefined, 'Decorative progress'],
+  ] as const) {
+    await addInto(page, /^Row/, 'LoadingSpinner');
+    await area(page, 'Properties');
+    if (label) await setText(page, 'label', label);
+    await addInto(page, /^Row/, 'Text');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { variant: 'span' },
+      text: { children: text },
+    });
+  }
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'm' },
+        {
+          children: [
+            node(
+              'state-banner',
+              {
+                tone: 'info',
+                urgency: 'status',
+                title: 'Everything Is Connected',
+                detail: 'State is expressed with text and color.',
+              },
+              {
+                icon: [icon('check')],
+                action: [
+                  node('button', {
+                    children: 'Cycle Tone',
+                    size: 'compact',
+                    shape: 'pill',
+                    action: 'cycle-tone',
+                  }),
+                ],
+              },
+            ),
+            node(
+              'empty-state',
+              {
+                title: 'Nothing Here Yet',
+                detail: 'Create the first item when you are ready.',
+              },
+              {
+                icon: [icon('search')],
+                action: [
+                  node('button', {
+                    children: 'Create Item',
+                    action: 'log-add',
+                  }),
+                ],
+              },
+            ),
+            node(
+              'row',
+              { vAlign: 'middle', wrap: true },
+              {
+                children: [
+                  node('loading-spinner', { label: 'Loading preview…' }),
+                  node('text', {
+                    children: 'Meaningfully labeled progress',
+                    variant: 'span',
+                  }),
+                  node('loading-spinner'),
+                  node('text', {
+                    children: 'Decorative progress',
+                    variant: 'span',
+                  }),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds Headers › Page and Panel Headings', async ({ page }) => {
+  test.slow();
+  const rows = [
+    ['Package', '@kerfjs/ui'],
+    ['Rendering', 'Kerf SafeHtml'],
+    ['Styles', 'Explicit CSS subpaths'],
+  ] as const;
+  /** A borderless single group in toolbar `nth`'s trailing zone. */
+  const trailingAction = async (nth: number, label: string, action: string) => {
+    await zoneGroup(
+      page,
+      'trailing',
+      { choices: { appearance: 'borderless' }, flags: ['single'] },
+      { nth, keepButton: true },
+    );
+    await select(page, /^ToolbarButton/, -1);
+    await applySpec(page, { text: { children: label, action } });
+  };
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List/);
+  await choose(page, 'gap', 'none');
+  // The page heading.
+  await addInto(page, /^List/, 'Toolbar');
+  await setText(page, 'label', 'UI Foundations');
+  await zoneText(page, 'leading', {
+    choices: { size: 'xlarge', headingLevel: '1' },
+    text: { text: 'UI Foundations', id: 'headers-page-title' },
+  });
+  await trailingAction(0, 'New Pattern', 'log-add');
+  // The panel heading, with an icon tile before its title.
+  await addInto(page, /^List/, 'Toolbar');
+  await setText(page, 'label', 'Package Details');
+  await zoneGroup(
+    page,
+    'leading',
+    { choices: { appearance: 'borderless' }, flags: ['single'] },
+    { nth: 1 },
+  );
+  await addInto(page, /^ToolbarControlGroup/, 'LucideIcon', 1);
+  await area(page, 'Properties');
+  await pickIcon(page, page.locator('[data-editor-icon-place]'), 'wrench');
+  await zoneText(
+    page,
+    'leading',
+    {
+      choices: { size: 'xlarge' },
+      text: { text: 'Package Details', id: 'headers-panel-title' },
+    },
+    1,
+  );
+  await trailingAction(1, 'Done', 'log-done');
+  await addInto(page, /^List/, 'ListInsetText');
+  await area(page, 'Properties');
+  await choose(page, 'sides', 'rl');
+  await setText(
+    page,
+    'children',
+    'Production-backed primitives with explicit contracts.',
+  );
+  await addInto(page, /^List/, 'ValueTable');
+  await valueTable(
+    page,
+    { text: { label: 'Package Metadata' } },
+    rows.map(([label, value]) => ({ text: { label, value } })),
+  );
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  const action = (label: string, actionName: string) =>
+    node(
+      'toolbar-control-group',
+      { appearance: 'borderless', single: true },
+      {
+        children: [
+          node('toolbar-control-group#ToolbarButton', {
+            children: label,
+            action: actionName,
+          }),
+        ],
+      },
+    );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'none' },
+        {
+          children: [
+            node(
+              'toolbar',
+              { label: 'UI Foundations' },
+              {
+                leading: [
+                  node('toolbar-text', {
+                    text: 'UI Foundations',
+                    size: 'xlarge',
+                    headingLevel: 1,
+                    id: 'headers-page-title',
+                  }),
+                ],
+                trailing: [action('New Pattern', 'log-add')],
+              },
+            ),
+            node(
+              'toolbar',
+              { label: 'Package Details' },
+              {
+                leading: [
+                  node(
+                    'toolbar-control-group',
+                    { appearance: 'borderless', single: true },
+                    { children: [icon('wrench')] },
+                  ),
+                  node('toolbar-text', {
+                    text: 'Package Details',
+                    size: 'xlarge',
+                    id: 'headers-panel-title',
+                  }),
+                ],
+                trailing: [action('Done', 'log-done')],
+              },
+            ),
+            node('list-inset-text', {
+              sides: 'rl',
+              children: 'Production-backed primitives with explicit contracts.',
+            }),
+            node(
+              'value-table',
+              { label: 'Package Metadata' },
+              {
+                children: rows.map(([label, value]) =>
+                  node('value-table#ValueTableRow', { label, value }),
+                ),
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+/** A transcript file the Chip demo offers for download. */
+const TRANSCRIPT_FILES = {
+  user: [['failing-checks.log', 'file-text', 'bundle budget: +213 B']],
+  assistant: [
+    ['chip.tsx', 'file-code', 'export function Chip() {}'],
+    [
+      'design-template-drift-report-2026-10-13.md',
+      'file-text',
+      '# Design template drift',
+    ],
+  ],
+} as const;
+
+const fileHref = (body: string) =>
+  `data:text/plain;charset=utf-8,${encodeURIComponent(body)}`;
+
+test('builds Chip › Downloadable Files in Transcript Bubbles', async ({
+  page,
+}) => {
+  test.setTimeout(test.info().timeout * 6);
+  const bubbles = [
+    ['user', 'end', 'brand-loud', 'Why is the build red?'],
+    [
+      'assistant',
+      'start',
+      'neutral',
+      'The bundle budget grew and one design template drifted.',
+    ],
+  ] as const;
+  await rootPane(page, { text: { label: 'Referenced Files' } }, {});
+  await addInto(page, /^Pane/, 'List');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { gap: 'xs' },
+    data: [['data-demo-chip-transcript', '']],
+  });
+  for (const [index, [group, bubble, appearance, text]] of bubbles.entries()) {
+    await addInto(page, /^List(?!Item)/, 'ContentItem', 0);
+    await area(page, 'Properties');
+    await applySpec(page, { choices: { bubble, appearance } });
+    await addChild(page, 'Grid');
+    await area(page, 'Properties');
+    await applySpec(page, { choices: { gap: 'xs' }, text: { columns: '1' } });
+    await addChild(page, 'Text');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { variant: 'span' },
+      text: { children: text },
+    });
+    await addInto(page, /^Grid/, 'Row', index);
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { gap: 'xs' },
+      flags: ['wrap'],
+      data: [['data-demo-chip-files', group]],
+    });
+    for (const [name, glyph, body] of TRANSCRIPT_FILES[group]) {
+      await addInto(page, /^Row/, 'Chip', index);
+      await area(page, 'Properties');
+      await applySpec(page, {
+        choices: { tone: 'inherit' },
+        flags: ['truncate'],
+        text: { children: name, href: fileHref(body) },
+        unions: { download: ['Text…', name] },
+      });
+      await addIcon(page, 'icon', glyph);
+    }
+  }
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    rootPaneNode(
+      { label: 'Referenced Files' },
+      {
+        content: [
+          node(
+            'list',
+            {
+              gap: 'xs',
+              rootAttributes: { 'data-demo-chip-transcript': '' },
+            },
+            {
+              children: bubbles.map(([group, bubble, appearance, text]) =>
+                node(
+                  'content-item',
+                  { bubble, appearance },
+                  {
+                    children: [
+                      node(
+                        'grid',
+                        { gap: 'xs', columns: 1 },
+                        {
+                          children: [
+                            node('text', { children: text, variant: 'span' }),
+                            node(
+                              'row',
+                              {
+                                gap: 'xs',
+                                wrap: true,
+                                rootAttributes: {
+                                  'data-demo-chip-files': group,
+                                },
+                              },
+                              {
+                                children: TRANSCRIPT_FILES[group].map(
+                                  ([name, glyph, body]) =>
+                                    node(
+                                      'chip',
+                                      {
+                                        children: name,
+                                        tone: 'inherit',
+                                        href: fileHref(body),
+                                        download: name,
+                                        truncate: true,
+                                      },
+                                      { icon: [icon(glyph)] },
+                                    ),
+                                ),
+                              },
+                            ),
+                          ],
+                        },
+                      ),
+                    ],
+                  },
+                ),
+              ),
+            },
+          ),
+        ],
+      },
+    ),
+  );
+});
+
+const SEARCH_FILTERS = [
+  ['Status', ['is:draft', 'is:sent', 'is:awarded'], []],
+  ['Ownership', ['is:mine', 'is:shared'], []],
+  ['Site', ['site:Karachi', 'site:Lahore', 'site:Islamabad'], []],
+  ['Content', ['has:questions', 'has:attachments'], ['has:attachments']],
+] as const;
+
+test('builds Chip › Action Chips in a Value Table', async ({ page }) => {
+  test.setTimeout(test.info().timeout * 8);
+  await dragComponent(page, 'ValueTable', () => emptySpot(page));
+  await valueTable(
+    page,
+    { choices: { density: 'compact' }, text: { label: 'Search Filters' } },
+    SEARCH_FILTERS.map(([label]) => ({ text: { label, value: '' } })),
+  );
+  for (const [index, [, tokens, unavailable]] of SEARCH_FILTERS.entries()) {
+    // The value holds a Row of chips.
+    await select(page, /^ValueTableRow/, index);
+    await addChild(page, 'Row', 'value');
+    await area(page, 'Properties');
+    await applySpec(page, { choices: { gap: '2xs' }, flags: ['wrap'] });
+    // The row's empty value text became a run beside the Row; it goes.
+    await area(page, 'Outline');
+    await outlineRow(page, /^Text “”/)
+      .first()
+      .click();
+    await deleteSelected(page);
+    for (const token of tokens) {
+      await addInto(page, /^Row/, 'Chip', index);
+      await area(page, 'Properties');
+      await applySpec(page, {
+        choices: { size: 'compact', shape: 'rounded' },
+        flags: (unavailable as readonly string[]).includes(token)
+          ? ['disabled']
+          : [],
+        text: {
+          children: token,
+          action: 'log-chip-insert',
+          actionLabel: `Insert filter ${token}`,
+          itemId: token,
+        },
+      });
+    }
+  }
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'value-table',
+        { label: 'Search Filters', density: 'compact' },
+        {
+          children: SEARCH_FILTERS.map(([label, tokens, unavailable]) =>
+            node(
+              'value-table#ValueTableRow',
+              { label },
+              {
+                value: [
+                  node(
+                    'row',
+                    { gap: '2xs', wrap: true },
+                    {
+                      children: tokens.map((token) =>
+                        node('chip', {
+                          children: token,
+                          action: 'log-chip-insert',
+                          actionLabel: `Insert filter ${token}`,
+                          itemId: token,
+                          size: 'compact',
+                          shape: 'rounded',
+                          ...((unavailable as readonly string[]).includes(token)
+                            ? { disabled: true }
+                            : {}),
+                        }),
+                      ),
+                    },
+                  ),
+                ],
+              },
+            ),
+          ),
+        },
+      ),
+    ),
+  );
+});
+
 test('builds Text › Strong Emphasis', async ({ page }) => {
   await rootTexts(page, [
     {

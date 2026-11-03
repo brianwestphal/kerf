@@ -1,0 +1,179 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "HeadersPageAndPanelHeadings",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "gap": "none"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar",
+                "props": {
+                  "label": "UI Foundations"
+                },
+                "zones": {
+                  "leading": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:toolbar-text",
+                      "props": {
+                        "text": "UI Foundations",
+                        "size": "xlarge",
+                        "headingLevel": 1,
+                        "id": "headers-page-title"
+                      }
+                    }
+                  ],
+                  "trailing": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "children": "New Pattern",
+                              "action": "log-add"
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "appearance": "borderless",
+                        "single": true
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:toolbar",
+                "props": {
+                  "label": "Package Details"
+                },
+                "zones": {
+                  "leading": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000009",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "wrench"
+                              },
+                              "name": "wrench"
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "appearance": "borderless",
+                        "single": true
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000010",
+                      "type": "@kerfjs/ui:toolbar-text",
+                      "props": {
+                        "text": "Package Details",
+                        "size": "xlarge",
+                        "id": "headers-panel-title"
+                      }
+                    }
+                  ],
+                  "trailing": [
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000012",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "children": "Done",
+                              "action": "log-done"
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "appearance": "borderless",
+                        "single": true
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000013",
+                "type": "@kerfjs/ui:list-inset-text",
+                "props": {
+                  "children": "Production-backed primitives with explicit contracts.",
+                  "sides": "rl"
+                }
+              },
+              {
+                "id": "00000000000000000000000014",
+                "type": "@kerfjs/ui:value-table",
+                "props": {
+                  "label": "Package Metadata"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000015",
+                      "type": "@kerfjs/ui:value-table#ValueTableRow",
+                      "props": {
+                        "label": "Package",
+                        "value": "@kerfjs/ui"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000016",
+                      "type": "@kerfjs/ui:value-table#ValueTableRow",
+                      "props": {
+                        "label": "Rendering",
+                        "value": "Kerf SafeHtml"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000017",
+                      "type": "@kerfjs/ui:value-table#ValueTableRow",
+                      "props": {
+                        "label": "Styles",
+                        "value": "Explicit CSS subpaths"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

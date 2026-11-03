@@ -1,0 +1,243 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ChipActionChipsInAValueTable",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:value-table",
+          "props": {
+            "label": "Search Filters",
+            "density": "compact"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:value-table#ValueTableRow",
+                "props": {
+                  "label": "Status"
+                },
+                "zones": {
+                  "value": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:row",
+                      "props": {
+                        "gap": "2xs",
+                        "wrap": true
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:chip",
+                            "props": {
+                              "children": "is:draft",
+                              "size": "compact",
+                              "shape": "rounded",
+                              "action": "log-chip-insert",
+                              "actionLabel": "Insert filter is:draft",
+                              "itemId": "is:draft"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:chip",
+                            "props": {
+                              "children": "is:sent",
+                              "size": "compact",
+                              "shape": "rounded",
+                              "action": "log-chip-insert",
+                              "actionLabel": "Insert filter is:sent",
+                              "itemId": "is:sent"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000007",
+                            "type": "@kerfjs/ui:chip",
+                            "props": {
+                              "children": "is:awarded",
+                              "size": "compact",
+                              "shape": "rounded",
+                              "action": "log-chip-insert",
+                              "actionLabel": "Insert filter is:awarded",
+                              "itemId": "is:awarded"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000008",
+                "type": "@kerfjs/ui:value-table#ValueTableRow",
+                "props": {
+                  "label": "Ownership"
+                },
+                "zones": {
+                  "value": [
+                    {
+                      "id": "00000000000000000000000009",
+                      "type": "@kerfjs/ui:row",
+                      "props": {
+                        "gap": "2xs",
+                        "wrap": true
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000010",
+                            "type": "@kerfjs/ui:chip",
+                            "props": {
+                              "children": "is:mine",
+                              "size": "compact",
+                              "shape": "rounded",
+                              "action": "log-chip-insert",
+                              "actionLabel": "Insert filter is:mine",
+                              "itemId": "is:mine"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000011",
+                            "type": "@kerfjs/ui:chip",
+                            "props": {
+                              "children": "is:shared",
+                              "size": "compact",
+                              "shape": "rounded",
+                              "action": "log-chip-insert",
+                              "actionLabel": "Insert filter is:shared",
+                              "itemId": "is:shared"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000012",
+                "type": "@kerfjs/ui:value-table#ValueTableRow",
+                "props": {
+                  "label": "Site"
+                },
+                "zones": {
+                  "value": [
+                    {
+                      "id": "00000000000000000000000013",
+                      "type": "@kerfjs/ui:row",
+                      "props": {
+                        "gap": "2xs",
+                        "wrap": true
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000014",
+                            "type": "@kerfjs/ui:chip",
+                            "props": {
+                              "children": "site:Karachi",
+                              "size": "compact",
+                              "shape": "rounded",
+                              "action": "log-chip-insert",
+                              "actionLabel": "Insert filter site:Karachi",
+                              "itemId": "site:Karachi"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000015",
+                            "type": "@kerfjs/ui:chip",
+                            "props": {
+                              "children": "site:Lahore",
+                              "size": "compact",
+                              "shape": "rounded",
+                              "action": "log-chip-insert",
+                              "actionLabel": "Insert filter site:Lahore",
+                              "itemId": "site:Lahore"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000016",
+                            "type": "@kerfjs/ui:chip",
+                            "props": {
+                              "children": "site:Islamabad",
+                              "size": "compact",
+                              "shape": "rounded",
+                              "action": "log-chip-insert",
+                              "actionLabel": "Insert filter site:Islamabad",
+                              "itemId": "site:Islamabad"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000017",
+                "type": "@kerfjs/ui:value-table#ValueTableRow",
+                "props": {
+                  "label": "Content"
+                },
+                "zones": {
+                  "value": [
+                    {
+                      "id": "00000000000000000000000018",
+                      "type": "@kerfjs/ui:row",
+                      "props": {
+                        "gap": "2xs",
+                        "wrap": true
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000019",
+                            "type": "@kerfjs/ui:chip",
+                            "props": {
+                              "children": "has:questions",
+                              "size": "compact",
+                              "shape": "rounded",
+                              "action": "log-chip-insert",
+                              "actionLabel": "Insert filter has:questions",
+                              "itemId": "has:questions"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000020",
+                            "type": "@kerfjs/ui:chip",
+                            "props": {
+                              "children": "has:attachments",
+                              "size": "compact",
+                              "shape": "rounded",
+                              "disabled": true,
+                              "action": "log-chip-insert",
+                              "actionLabel": "Insert filter has:attachments",
+                              "itemId": "has:attachments"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

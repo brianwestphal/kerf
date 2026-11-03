@@ -1,0 +1,136 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "FeedbackPersistentEmptyAndLoadingFeedback",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "gap": "m"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:state-banner",
+                "props": {
+                  "title": "Everything Is Connected",
+                  "tone": "info",
+                  "urgency": "status",
+                  "detail": "State is expressed with text and color."
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "check"
+                        },
+                        "name": "check"
+                      }
+                    }
+                  ],
+                  "action": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:button",
+                      "props": {
+                        "children": "Cycle Tone",
+                        "size": "compact",
+                        "shape": "pill",
+                        "action": "cycle-tone"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:empty-state",
+                "props": {
+                  "title": "Nothing Here Yet",
+                  "detail": "Create the first item when you are ready."
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "search"
+                        },
+                        "name": "search"
+                      }
+                    }
+                  ],
+                  "action": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:button",
+                      "props": {
+                        "children": "Create Item",
+                        "action": "log-add"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:row",
+                "props": {
+                  "vAlign": "middle",
+                  "wrap": true
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000010",
+                      "type": "@kerfjs/ui:loading-spinner",
+                      "props": {
+                        "label": "Loading preview…"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "Meaningfully labeled progress",
+                        "variant": "span"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000012",
+                      "type": "@kerfjs/ui:loading-spinner"
+                    },
+                    {
+                      "id": "00000000000000000000000013",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "Decorative progress",
+                        "variant": "span"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
