@@ -288,6 +288,224 @@ test('builds TextField › Labels and Hints', async ({ page }) => {
   );
 });
 
+/**
+ * A List (gap xs) of TextFields, one per entry of `fields`: each entry's
+ * `text` props are typed, its `choices` chosen and its `flags` turned on.
+ */
+type FieldSpec = {
+  readonly text?: Readonly<Record<string, string>>;
+  readonly choices?: Readonly<Record<string, string>>;
+  readonly flags?: readonly string[];
+  /** A `string | number` prop: its kind (`Text…`/`Number…`), then its value. */
+  readonly unions?: Readonly<Record<string, readonly [string, string]>>;
+};
+async function textFields(page: Page, fields: readonly FieldSpec[]) {
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await dragComponent(page, 'TextField', () => emptySpot(page));
+  await select(page, /^List/);
+  await choose(page, 'gap', 'xs');
+  await select(page, /^TextField/);
+  for (let copy = 1; copy < fields.length; copy += 1)
+    await page.keyboard.press('ControlOrMeta+d');
+  for (const [index, field] of fields.entries()) {
+    await select(page, /^TextField/, index);
+    // Choices first: a type or multiline can change which props show.
+    for (const [name, option] of Object.entries(field.choices ?? {}))
+      await choose(page, name, option);
+    for (const name of field.flags ?? []) await turnOn(page, name);
+    for (const [name, value] of Object.entries(field.text ?? {}))
+      await setText(page, name, value);
+    for (const [name, [kind, value]] of Object.entries(field.unions ?? {})) {
+      await choose(page, name, kind);
+      const input = page
+        .locator(
+          `[data-editor-prop="${name}"]:not([data-editor-kind="choice"]) input`,
+        )
+        .first();
+      await input.fill(value);
+      await input.press('Enter');
+    }
+  }
+  await expect(canvas(page).locator('.kui-text-field')).toHaveCount(
+    fields.length,
+  );
+}
+
+/** The List `textFields` builds, holding `props` per field. */
+const textFieldList = (props: readonly Record<string, unknown>[]) =>
+  pane(
+    node(
+      'list',
+      { gap: 'xs' },
+      { children: props.map((each) => node('text-field', each)) },
+    ),
+  );
+
+test('builds TextField › Validation', async ({ page }) => {
+  await textFields(page, [
+    {
+      choices: { type: 'email' },
+      flags: ['required'],
+      text: {
+        label: 'Email',
+        value: 'robin@',
+        hint: 'Used for sign-in.',
+        error: 'Enter a complete email address.',
+      },
+    },
+    { flags: ['readOnly'], text: { label: 'Owner', value: 'Design Systems' } },
+  ]);
+  await expect(canvas(page).locator('[aria-invalid="true"]')).toHaveCount(1);
+  expect(await exported(page)).toEqual(
+    textFieldList([
+      {
+        type: 'email',
+        required: true,
+        label: 'Email',
+        value: 'robin@',
+        hint: 'Used for sign-in.',
+        error: 'Enter a complete email address.',
+      },
+      { readOnly: true, label: 'Owner', value: 'Design Systems' },
+    ]),
+  );
+});
+
+test('builds TextField › Compact', async ({ page }) => {
+  await textFields(page, [
+    { choices: { size: 'compact' }, text: { label: 'Quantity', value: '12' } },
+    {
+      choices: { size: 'compact' },
+      flags: ['disabled'],
+      text: { label: 'Unit', value: 'pieces' },
+    },
+  ]);
+  expect(await exported(page)).toEqual(
+    textFieldList([
+      { size: 'compact', label: 'Quantity', value: '12' },
+      { size: 'compact', disabled: true, label: 'Unit', value: 'pieces' },
+    ]),
+  );
+});
+
+test('builds TextField › Multiple Lines', async ({ page }) => {
+  await textFields(page, [
+    {
+      flags: ['multiline', 'showCount'],
+      text: {
+        rows: '4',
+        label: 'Release Note',
+        value: 'Every free component has a focused catalog route.',
+        hint: 'Markdown is supported.',
+        maxLength: '200',
+      },
+    },
+    {
+      flags: ['multiline'],
+      text: {
+        rows: '2',
+        maxRows: '6',
+        label: 'Comment',
+        placeholder: 'Grows as you type',
+      },
+    },
+  ]);
+  await expect(canvas(page).locator('textarea')).toHaveCount(2);
+  expect(await exported(page)).toEqual(
+    textFieldList([
+      {
+        multiline: true,
+        showCount: true,
+        rows: 4,
+        label: 'Release Note',
+        value: 'Every free component has a focused catalog route.',
+        hint: 'Markdown is supported.',
+        maxLength: 200,
+      },
+      {
+        multiline: true,
+        rows: 2,
+        maxRows: 6,
+        label: 'Comment',
+        placeholder: 'Grows as you type',
+      },
+    ]),
+  );
+});
+
+test('builds TextField › Native Date', async ({ page }) => {
+  await textFields(page, [
+    {
+      choices: { type: 'date' },
+      flags: ['required'],
+      text: { label: 'Needed By', name: 'neededBy', value: '2026-11-12' },
+    },
+    {
+      choices: { type: 'date' },
+      flags: ['readOnly'],
+      text: { label: 'Received On', name: 'receivedOn', value: '2026-10-18' },
+    },
+  ]);
+  await expect(canvas(page).locator('input[type="date"]')).toHaveCount(2);
+  expect(await exported(page)).toEqual(
+    textFieldList([
+      {
+        type: 'date',
+        required: true,
+        label: 'Needed By',
+        name: 'neededBy',
+        value: '2026-11-12',
+      },
+      {
+        type: 'date',
+        readOnly: true,
+        label: 'Received On',
+        name: 'receivedOn',
+        value: '2026-10-18',
+      },
+    ]),
+  );
+});
+
+test('builds TextField › Numeric Constraints', async ({ page }) => {
+  await textFields(page, [
+    {
+      choices: { type: 'number' },
+      text: { label: 'Customs Duty', value: '12.50' },
+      unions: {
+        min: ['Text…', '0'],
+        max: ['Text…', '100'],
+        step: ['Text…', '0.01'],
+      },
+    },
+    {
+      choices: { type: 'number' },
+      text: { label: 'Exchange Rate', value: '1.2345' },
+      unions: { step: ['Text…', 'any'] },
+    },
+    {
+      choices: { type: 'number' },
+      text: { label: 'AI Budget', value: '10' },
+      unions: { min: ['Number…', '0'], step: ['Number…', '1'] },
+    },
+  ]);
+  await expect(canvas(page).locator('input[type="number"]')).toHaveCount(3);
+  expect(await exported(page)).toEqual(
+    textFieldList([
+      {
+        type: 'number',
+        label: 'Customs Duty',
+        value: '12.50',
+        min: '0',
+        max: '100',
+        step: '0.01',
+      },
+      { type: 'number', label: 'Exchange Rate', value: '1.2345', step: 'any' },
+      { type: 'number', label: 'AI Budget', value: '10', min: 0, step: 1 },
+    ]),
+  );
+});
+
 test('builds ListItem › Divided List', async ({ page }) => {
   await dragComponent(page, 'List', () => emptySpot(page));
   await dragComponent(page, 'ListItem', () => emptySpot(page));

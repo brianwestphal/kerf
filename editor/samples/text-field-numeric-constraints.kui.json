@@ -1,0 +1,62 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TextFieldNumericConstraints",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:text-field",
+                "props": {
+                  "label": "Customs Duty",
+                  "type": "number",
+                  "value": "12.50",
+                  "min": "0",
+                  "max": "100",
+                  "step": "0.01"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:text-field",
+                "props": {
+                  "label": "Exchange Rate",
+                  "type": "number",
+                  "value": "1.2345",
+                  "step": "any"
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:text-field",
+                "props": {
+                  "label": "AI Budget",
+                  "type": "number",
+                  "value": "10",
+                  "min": 0,
+                  "step": 1
+                }
+              }
+            ]
+          },
+          "props": {
+            "gap": "xs"
+          }
+        }
+      ]
+    }
+  }
+}

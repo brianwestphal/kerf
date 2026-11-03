@@ -1,0 +1,53 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TextFieldMultipleLines",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:text-field",
+                "props": {
+                  "label": "Release Note",
+                  "multiline": true,
+                  "showCount": true,
+                  "rows": 4,
+                  "value": "Every free component has a focused catalog route.",
+                  "hint": "Markdown is supported.",
+                  "maxLength": 200
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:text-field",
+                "props": {
+                  "label": "Comment",
+                  "multiline": true,
+                  "rows": 2,
+                  "maxRows": 6,
+                  "placeholder": "Grows as you type"
+                }
+              }
+            ]
+          },
+          "props": {
+            "gap": "xs"
+          }
+        }
+      ]
+    }
+  }
+}
