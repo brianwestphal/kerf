@@ -21,7 +21,6 @@ import {
   componentOwnershipFacts,
   contextualComponents,
   configurationFor,
-  ownsClassBlock,
   privateVariableOwner,
   reportGap,
   restyledComponents,
@@ -87,7 +86,67 @@ export const UI_ANALYSIS_RULES = Object.freeze({
     severity: 'error',
     title: "Another component's public class is rendered as markup",
   },
+  'KUI-L024': {
+    severity: 'review',
+    title: 'Web Awesome appearance scope in application CSS',
+  },
+  'KUI-L025': {
+    severity: 'review',
+    title: 'Web Awesome token written without Web Awesome',
+  },
 });
+
+/** Web Awesome appearance-scope classes, which need its theme to do anything. */
+const WA_SCOPE_CLASS = /\.(wa-(?:light|dark|invert|theme-default))(?![\w-])/;
+let foundationWaReads;
+/**
+ * The `--wa-*` names Kerf's foundation.css reads (each feeds a `--kui-*`
+ * token), so writing one themes Kerf even without Web Awesome. Read from the
+ * package source in this repository and from `dist/` when installed; an
+ * unreadable foundation yields `undefined`, which disables KUI-L025.
+ */
+async function foundationWebAwesomeReads() {
+  if (foundationWaReads === undefined) {
+    foundationWaReads = (async () => {
+      for (const candidate of [
+        '../src/foundation.css',
+        '../dist/styles/foundation.css',
+      ])
+        try {
+          const css = await readFile(
+            resolve(import.meta.dirname, candidate),
+            'utf8',
+          );
+          return new Set(
+            [...css.matchAll(/var\(\s*(--wa-[\w-]+)/g)].map(
+              (match) => match[1],
+            ),
+          );
+        } catch {
+          // Try the next location.
+        }
+      return undefined;
+    })();
+  }
+  return foundationWaReads;
+}
+
+/** Whether the package at `directory` depends on Web Awesome. */
+async function dependsOnWebAwesome(directory) {
+  try {
+    const manifest = JSON.parse(
+      await readFile(resolve(directory, 'package.json'), 'utf8'),
+    );
+    return [
+      manifest.dependencies,
+      manifest.devDependencies,
+      manifest.peerDependencies,
+      manifest.optionalDependencies,
+    ].some((deps) => deps && '@awesome.me/webawesome' in deps);
+  } catch {
+    return true;
+  }
+}
 
 const ownershipAction =
   "Configure the component through its typed props, variants, or public tokens; style only your own elements (in the component's context when needed). If no configuration covers the need, report the component gap to its package instead of overriding it.";
@@ -845,6 +904,7 @@ async function inspectCss(
   isForeign = () => true,
   ownershipEvidence,
   ownershipContext = 'subject',
+  webAwesome = { installed: true },
 ) {
   let root;
   try {
@@ -868,6 +928,30 @@ async function inspectCss(
       ),
     siblingOnLoud,
   );
+  // KUI-L024 / KUI-L025: Web Awesome scope classes and token writes do
+  // nothing in an application without Web Awesome.
+  root.walkRules((rule) => {
+    const scope = WA_SCOPE_CLASS.exec(rule.selector);
+    if (scope)
+      diagnostics.push(
+        diagnostic(
+          'KUI-L024',
+          location(file, rule),
+          `\`.${scope[1]}\` is a Web Awesome appearance scope that does nothing without its theme. Use the \`scheme\` prop on ContentItem, Pane, NavStack, or TabNavigator, or the \`.kui-light\` / \`.kui-dark\` / \`.kui-invert\` scope.`,
+        ),
+      );
+  });
+  if (!webAwesome.installed && webAwesome.foundationReads)
+    root.walkDecls(/^--wa-/, (decl) => {
+      if (webAwesome.foundationReads.has(decl.prop)) return;
+      diagnostics.push(
+        diagnostic(
+          'KUI-L025',
+          location(file, decl),
+          `\`${decl.prop}\` is a Web Awesome token, and this package does not depend on @awesome.me/webawesome, so nothing reads it. Theme Kerf through its \`--kui-*\` tokens instead.`,
+        ),
+      );
+    });
   root.walkRules((rule) => {
     const subjects = subjectClasses(rule.selector);
     inspectComponentOwnership(
@@ -2204,6 +2288,10 @@ export async function analyzeUiProject({
             }
           : undefined,
         ownershipContext,
+        {
+          installed: await dependsOnWebAwesome(own?.directory ?? root),
+          foundationReads: await foundationWebAwesomeReads(),
+        },
       );
       recordDiagnostics(fileDiagnostics, context);
     }

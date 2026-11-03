@@ -808,6 +808,54 @@ export const App = () => <StateBanner title="Ready" />;`,
   });
 });
 
+// KF-J0MCPN: Web Awesome scope classes and token writes in application CSS.
+describe('KUI-L024 / KUI-L025 Web Awesome names in application CSS', () => {
+  async function analyze(css: string, dependencies: Record<string, string>) {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-wa-'));
+    await mkdir(join(root, 'src'));
+    await writeFile(
+      join(root, 'package.json'),
+      JSON.stringify({ name: 'wa-app', dependencies }),
+    );
+    await writeFile(join(root, 'src/theme.css'), css);
+    const report = await analyzeUiProject({ root, paths: ['src/theme.css'] });
+    return report.diagnostics
+      .filter(({ ruleId }) => ruleId === 'KUI-L024' || ruleId === 'KUI-L025')
+      .map(({ ruleId, severity, location }) => ({
+        ruleId,
+        severity,
+        line: location.line,
+      }));
+  }
+
+  it('reports a Web Awesome scope class in a selector, with or without Web Awesome', async () => {
+    const css =
+      '.wa-dark .panel { color: red; }\n.wa-darkish { color: red; }\n.card.wa-invert { color: red; }\n.kui-dark .panel { color: red; }';
+    const variants: Record<string, string>[] = [
+      {},
+      { '@awesome.me/webawesome': '^3.14.0' },
+    ];
+    for (const dependencies of variants)
+      expect(await analyze(css, dependencies)).toEqual([
+        { ruleId: 'KUI-L024', severity: 'review', line: 1 },
+        { ruleId: 'KUI-L024', severity: 'review', line: 3 },
+      ]);
+  });
+
+  it('reports a Web Awesome token write that nothing reads without Web Awesome', async () => {
+    const css =
+      ':root {\n  --wa-form-control-height: 3rem;\n  --wa-font-size-m: 17px;\n}';
+    // foundation.css reads --wa-font-size-m into --kui-font-m, so that write
+    // themes Kerf; --wa-form-control-height feeds nothing without Web Awesome.
+    expect(await analyze(css, {})).toEqual([
+      { ruleId: 'KUI-L025', severity: 'review', line: 2 },
+    ]);
+    expect(await analyze(css, { '@awesome.me/webawesome': '^3.14.0' })).toEqual(
+      [],
+    );
+  });
+});
+
 describe('KUI-L018 loud fill / on-loud pairing', () => {
   const tones = ['neutral', 'brand', 'success', 'warning', 'danger', 'pop'];
 

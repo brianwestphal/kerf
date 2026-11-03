@@ -55,31 +55,33 @@ policy, or analysis inputs to the containing application.
 
 ## Diagnostics and exit behavior
 
-| Rule       | Kind   | Meaning                                                                               |
-| ---------- | ------ | ------------------------------------------------------------------------------------- |
-| `KUI-L001` | error  | A stylesheet reaches into a private or unknown `.kui-*` selector.                     |
-| `KUI-L002` | error  | A stylesheet references an unknown or private `--kui-*` token.                        |
-| `KUI-L003` | error  | One element combines public classes that claim the same geometry.                     |
-| `KUI-L004` | review | Nested literal classes both add a content inset.                                      |
-| `KUI-L005` | —      | Retired; folded into `KUI-L019` (see below).                                          |
-| `KUI-L006` | review | Literal spacing falls outside Kerf's approved scale.                                  |
-| `KUI-L007` | error  | A declared scroll owner is nested inside another scroll owner.                        |
-| `KUI-L008` | review | A dynamic class expression cannot be classified soundly.                              |
-| `KUI-L009` | error  | A stylesheet cannot be parsed.                                                        |
-| `KUI-L010` | error  | A selector reaches a private Kerf descendant from a public root.                      |
-| `KUI-L011` | error  | A `::part()` target is not cataloged as a public extension point.                     |
-| `KUI-L012` | error  | CSS assigns a Kerf token without a public configuration contract.                     |
-| `KUI-L013` | error  | A CSS-adjacent prop uses an unknown shorthand or raw literal.                         |
-| `KUI-L014` | error  | A typed helper produces the wrong property grammar.                                   |
-| `KUI-L015` | error  | An expression-only helper is passed without a composer.                               |
-| `KUI-L016` | error  | A removed declaration-list escape hatch is used.                                      |
-| `KUI-L017` | review | A valid but exceptional off-scale shorthand needs justification.                      |
-| `KUI-L018` | review | A loud fill override lacks a governing `on-loud`, or the literal pair is below 4.5:1. |
-| `KUI-L019` | error  | A rule's subject is another package's component (class, `data-component`, or tag).    |
-| `KUI-L020` | error  | CSS reads or writes another component's private `--_*` variable.                      |
-| `KUI-L021` | error  | CSS overrides a component token that a typed prop sets.                               |
-| `KUI-L022` | error  | A class placed on a component's root is styled by the application (a hook class).     |
-| `KUI-L023` | error  | A source module renders another component's public class as its own markup.           |
+| Rule       | Kind   | Meaning                                                                                  |
+| ---------- | ------ | ---------------------------------------------------------------------------------------- |
+| `KUI-L001` | error  | A stylesheet reaches into a private or unknown `.kui-*` selector.                        |
+| `KUI-L002` | error  | A stylesheet references an unknown or private `--kui-*` token.                           |
+| `KUI-L003` | error  | One element combines public classes that claim the same geometry.                        |
+| `KUI-L004` | review | Nested literal classes both add a content inset.                                         |
+| `KUI-L005` | —      | Retired; folded into `KUI-L019` (see below).                                             |
+| `KUI-L006` | review | Literal spacing falls outside Kerf's approved scale.                                     |
+| `KUI-L007` | error  | A declared scroll owner is nested inside another scroll owner.                           |
+| `KUI-L008` | review | A dynamic class expression cannot be classified soundly.                                 |
+| `KUI-L009` | error  | A stylesheet cannot be parsed.                                                           |
+| `KUI-L010` | error  | A selector reaches a private Kerf descendant from a public root.                         |
+| `KUI-L011` | error  | A `::part()` target is not cataloged as a public extension point.                        |
+| `KUI-L012` | error  | CSS assigns a Kerf token without a public configuration contract.                        |
+| `KUI-L013` | error  | A CSS-adjacent prop uses an unknown shorthand or raw literal.                            |
+| `KUI-L014` | error  | A typed helper produces the wrong property grammar.                                      |
+| `KUI-L015` | error  | An expression-only helper is passed without a composer.                                  |
+| `KUI-L016` | error  | A removed declaration-list escape hatch is used.                                         |
+| `KUI-L017` | review | A valid but exceptional off-scale shorthand needs justification.                         |
+| `KUI-L018` | review | A loud fill override lacks a governing `on-loud`, or the literal pair is below 4.5:1.    |
+| `KUI-L019` | error  | A rule's subject is another package's component (class, `data-component`, or tag).       |
+| `KUI-L020` | error  | CSS reads or writes another component's private `--_*` variable.                         |
+| `KUI-L021` | error  | CSS overrides a component token that a typed prop sets.                                  |
+| `KUI-L022` | error  | A class placed on a component's root is styled by the application (a hook class).        |
+| `KUI-L023` | error  | A source module renders another component's public class as its own markup.              |
+| `KUI-L024` | review | A selector names a Web Awesome appearance scope (`.wa-light`, `.wa-dark`, `.wa-invert`). |
+| `KUI-L025` | review | CSS writes a `--wa-*` token nothing reads, in a package without Web Awesome.             |
 
 For `KUI-L004` and `KUI-L007`, scroll and inset declarations belong to the
 subject of each CSS selector. An ancestor class used only to qualify a
@@ -295,6 +297,22 @@ such exceptions at your convenience.
 `KerfUiContent` props. Direct content is valid; `ToolbarControlGroup` remains a
 presentation choice for shared control chrome. The id stays in the registry so
 existing profile exceptions still load, but new profiles should not use it.
+
+## Web Awesome names in application CSS (`KUI-L024`, `KUI-L025`)
+
+`KUI-L024` reports a selector that names `.wa-light`, `.wa-dark`, `.wa-invert`,
+or `.wa-theme-default`. Those classes take effect only through the Web Awesome
+theme; Kerf's own scopes work everywhere: the `scheme` prop on `ContentItem`,
+`Pane`, `NavStack`, or `TabNavigator`, or the `.kui-light` / `.kui-dark` /
+`.kui-invert` classes. It is the stylesheet half of the `eslint-plugin-kerfjs`
+`KUI-L302` finding for JSX class names.
+
+`KUI-L025` reports a `--wa-*` custom-property write when the stylesheet's
+package does not depend on `@awesome.me/webawesome`, because nothing reads it.
+Writes to the `--wa-*` values Kerf's `foundation.css` reads (such as
+`--wa-font-size-m`, which feeds `--kui-font-m`) are legitimate theming and are
+not reported. A stylesheet whose package manifest cannot be read is treated as
+having Web Awesome.
 
 ## Loud fill / on-loud pairing (`KUI-L018`)
 
