@@ -1283,7 +1283,7 @@ export function createEditor(options: EditorOptions) {
             <List controlInsets="trbl">
               <TextField
                 label="Text"
-                value={(visit.node as { value?: string }).value ?? ''}
+                value={(visit.node as { value: string }).value}
                 hint="A run of text beside the other nodes in its zone."
                 rootAttributes={{ 'data-editor-text-run': visit.node.id }}
               />
@@ -3213,17 +3213,9 @@ export function createEditor(options: EditorOptions) {
     const components = addableIn(zone, node.type);
     const addable = [
       ...components,
-      // Last, in its own group when the components are grouped.
+      // Last, in a group of its own after the components' groups.
       ...(takesText
-        ? [
-            {
-              value: TEXT_RUN,
-              label: 'Text run',
-              ...(components.some((item) => 'group' in item)
-                ? { group: 'Text' }
-                : {}),
-            },
-          ]
+        ? [{ value: TEXT_RUN, label: 'Text run', group: 'Text' }]
         : []),
     ];
     // What can show otherwise: what the zone holding this node accepts.

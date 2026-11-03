@@ -23,6 +23,7 @@ import {
   renameParam,
   replaceRoot,
   setProp,
+  setTextRun,
   suggestedComponents,
 } from '../../../src/editor/model/edits.js';
 import sample from '../../fixtures/view/inbox.kui.json';
@@ -252,6 +253,26 @@ describe('names and props', () => {
     expect(renameParam({ ...inbox, params: undefined }, 'title', 'x')).toEqual({
       error: 'No param title.',
     });
+  });
+
+  // KF-YBMVVM: a text run's text is edited in place.
+  it('sets a text run and refuses a node that is not one', () => {
+    const doc = {
+      ...inbox,
+      root: {
+        ...inbox.root,
+        zones: {
+          ...inbox.root.zones,
+          footer: [{ id: 'run', type: '#text', value: 'Hi' }],
+        },
+      },
+    } as ViewDocument;
+    const next = setTextRun(doc, 'run', 'Hello');
+    expect(
+      (findNode(next, 'run')?.node as { value?: string } | undefined)?.value,
+    ).toBe('Hello');
+    expect(() => setTextRun(doc, COMPOSE, 'x')).toThrow(/no text run/);
+    expect(() => setTextRun(doc, 'missing', 'x')).toThrow(/no text run/);
   });
 
   it('maps prop types to param types', () => {
