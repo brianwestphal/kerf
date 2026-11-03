@@ -1,0 +1,180 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TabBarProjectStripPrimaryAction",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:tab-bar",
+          "props": {
+            "id": "raw-action-tab-bar",
+            "label": "Project Tabs with Primary Action",
+            "trailingPlacement": "adjacent"
+          },
+          "zones": {
+            "tabs": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "overflow-overview",
+                  "name": "Overview",
+                  "selected": true,
+                  "closable": false
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "overflow-backlog",
+                  "name": "Backlog",
+                  "closable": false
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "overflow-activity",
+                  "name": "Activity",
+                  "closable": false
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "overflow-automations",
+                  "name": "Automations",
+                  "closable": false
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "overflow-settings",
+                  "name": "Settings",
+                  "closable": false
+                }
+              },
+              {
+                "id": "00000000000000000000000008",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "overflow-releases",
+                  "name": "Releases",
+                  "closable": false
+                }
+              },
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "overflow-milestones",
+                  "name": "Milestones",
+                  "closable": false
+                }
+              },
+              {
+                "id": "00000000000000000000000010",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "overflow-reports",
+                  "name": "Reports",
+                  "closable": false
+                }
+              },
+              {
+                "id": "00000000000000000000000011",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "overflow-integrations",
+                  "name": "Integrations",
+                  "closable": false
+                }
+              },
+              {
+                "id": "00000000000000000000000012",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "overflow-members",
+                  "name": "Members",
+                  "closable": false
+                }
+              }
+            ],
+            "leading": [
+              {
+                "id": "00000000000000000000000013",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000014",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Project Grid",
+                        "action": "log-more"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000015",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "layout-grid"
+                              },
+                              "name": "layout-grid"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "appearance": "borderless",
+                  "single": true
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "00000000000000000000000016",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Add Tab",
+                  "emphasis": "plain",
+                  "action": "log-more"
+                }
+              }
+            ],
+            "end": [
+              {
+                "id": "00000000000000000000000017",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "New Ticket…",
+                  "tone": "brand",
+                  "action": "log-add"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

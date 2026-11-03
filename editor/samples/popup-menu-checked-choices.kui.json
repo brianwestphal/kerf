@@ -1,0 +1,47 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "PopupMenuCheckedChoices",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:popup-menu",
+          "props": {
+            "items": [
+              {
+                "label": "Updated",
+                "action": "sort-recent",
+                "checked": true
+              },
+              {
+                "label": "Priority",
+                "action": "sort-priority",
+                "checked": false
+              },
+              {
+                "kind": "divider"
+              },
+              {
+                "label": "More Sort Options",
+                "action": "log-more"
+              }
+            ],
+            "text": "Sort Choices",
+            "rootAttributes": {
+              "data-popup-checked-menu": ""
+            }
+          }
+        }
+      ]
+    }
+  }
+}

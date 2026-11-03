@@ -1,0 +1,158 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TabBarInspectorAdjacentAndEndActions",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:tab-bar",
+          "props": {
+            "id": "inspector-tab-bar",
+            "label": "Inspector Tab Bar",
+            "presentation": "inspector",
+            "trailingPlacement": "adjacent"
+          },
+          "zones": {
+            "tabs": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "split-overview",
+                  "name": "Overview",
+                  "presentation": "segmented",
+                  "size": "compact",
+                  "selected": true,
+                  "closable": false
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "split-backlog",
+                  "name": "Backlog",
+                  "presentation": "segmented",
+                  "size": "compact",
+                  "closable": false
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "split-activity",
+                  "name": "Activity",
+                  "presentation": "segmented",
+                  "size": "compact",
+                  "closable": false
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "split-automations",
+                  "name": "Automations",
+                  "presentation": "segmented",
+                  "size": "compact",
+                  "closable": false
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "split-settings",
+                  "name": "Settings",
+                  "presentation": "segmented",
+                  "size": "compact",
+                  "closable": false
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "00000000000000000000000008",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000009",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Add Inspector Section"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000010",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "plus"
+                              },
+                              "name": "plus"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "appearance": "borderless",
+                  "single": true
+                }
+              }
+            ],
+            "end": [
+              {
+                "id": "00000000000000000000000011",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000012",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Create Workspace Item"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000013",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "square-plus"
+                              },
+                              "name": "square-plus"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "appearance": "borderless",
+                  "single": true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

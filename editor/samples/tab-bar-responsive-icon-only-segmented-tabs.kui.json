@@ -1,0 +1,83 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TabBarResponsiveIconOnlySegmentedTabs",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:tab-bar",
+          "props": {
+            "id": "responsive-icon-tab-bar",
+            "label": "Responsive Project Tabs",
+            "presentation": "segmented",
+            "iconOnlyAt": "wide"
+          },
+          "zones": {
+            "tabs": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "responsive-overview",
+                  "name": "Overview",
+                  "presentation": "segmented",
+                  "size": "compact",
+                  "selected": true,
+                  "closable": false
+                },
+                "zones": {
+                  "leading-decoration": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "panel-left"
+                        },
+                        "name": "panel-left"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "responsive-activity",
+                  "name": "Activity",
+                  "presentation": "segmented",
+                  "size": "compact",
+                  "closable": false
+                },
+                "zones": {
+                  "leading-decoration": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "square-plus"
+                        },
+                        "name": "square-plus"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

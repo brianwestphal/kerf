@@ -1,0 +1,67 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TabBarCompactProjectTabs",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:tab-bar",
+          "props": {
+            "id": "compact-project-tab-bar",
+            "label": "Compact Project Tabs"
+          },
+          "zones": {
+            "tabs": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "compact-inspector",
+                  "name": "Inspector",
+                  "presentation": "icon-only",
+                  "size": "compact",
+                  "closable": false
+                },
+                "zones": {
+                  "leading-decoration": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "panel-left"
+                        },
+                        "name": "panel-left"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "compact-attention",
+                  "name": "A Project with a Longer Name",
+                  "size": "compact",
+                  "attention": true,
+                  "closable": false,
+                  "labelMaxWidth": 112
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

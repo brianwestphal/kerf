@@ -1,0 +1,52 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TabsDropTargetAndVisibleName",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:tab-bar",
+          "props": {
+            "id": "tab-bar-item-drop-target",
+            "label": "Drop-Target TabBarItem Specimen"
+          },
+          "zones": {
+            "tabs": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "project-grid",
+                  "name": "Project Grid",
+                  "selected": true,
+                  "closable": false
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "accounting",
+                  "name": "Accounting Project",
+                  "nameOverflow": "visible",
+                  "dropTarget": true,
+                  "closable": false,
+                  "labelMaxWidth": 80
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

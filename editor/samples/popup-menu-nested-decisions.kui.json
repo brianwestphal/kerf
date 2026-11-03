@@ -1,0 +1,118 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "PopupMenuNestedDecisions",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:popup-menu",
+          "props": {
+            "items": [
+              {
+                "label": "Decide",
+                "submenu": [
+                  {
+                    "kind": "heading",
+                    "label": "Review"
+                  },
+                  {
+                    "label": "Approve",
+                    "action": "log-decision",
+                    "checked": true,
+                    "attributes": {
+                      "data-decision": "approve"
+                    }
+                  },
+                  {
+                    "label": "Reject",
+                    "action": "log-decision",
+                    "tone": "danger",
+                    "disabled": true,
+                    "disabledReason": "A price is required",
+                    "attributes": {
+                      "data-decision": "reject"
+                    }
+                  },
+                  {
+                    "kind": "divider"
+                  },
+                  {
+                    "kind": "heading",
+                    "label": "More"
+                  },
+                  {
+                    "label": "Other…",
+                    "action": "log-decision",
+                    "attributes": {
+                      "data-decision": "other"
+                    }
+                  }
+                ]
+              }
+            ],
+            "text": "Decide"
+          },
+          "zones": {
+            "items.0.icon": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "gavel"
+                  },
+                  "name": "decide"
+                }
+              }
+            ],
+            "items.0.submenu.1.icon": [
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "thumbs-up"
+                  },
+                  "name": "approve"
+                }
+              }
+            ],
+            "items.0.submenu.2.icon": [
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "thumbs-down"
+                  },
+                  "name": "reject"
+                }
+              }
+            ],
+            "items.0.submenu.5.icon": [
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "ellipsis"
+                  },
+                  "name": "other"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

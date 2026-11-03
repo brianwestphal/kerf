@@ -1,0 +1,122 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "PopupMenuGroupedCommandsWithIcons",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Grouped Commands with Icons"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:popup-menu",
+                      "props": {
+                        "items": [
+                          {
+                            "kind": "heading",
+                            "label": "Ticket"
+                          },
+                          {
+                            "label": "Duplicate",
+                            "action": "log-more"
+                          },
+                          {
+                            "label": "Archive",
+                            "action": "log-more"
+                          },
+                          {
+                            "kind": "divider"
+                          },
+                          {
+                            "label": "Delete",
+                            "action": "log-more",
+                            "disabled": true
+                          }
+                        ],
+                        "text": "Actions"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "ellipsis"
+                              },
+                              "name": "ellipsis"
+                            }
+                          }
+                        ],
+                        "items.1.icon": [
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "copy"
+                              },
+                              "name": "copy"
+                            }
+                          }
+                        ],
+                        "items.2.icon": [
+                          {
+                            "id": "00000000000000000000000007",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "archive"
+                              },
+                              "name": "archive"
+                            }
+                          }
+                        ],
+                        "items.4.icon": [
+                          {
+                            "id": "00000000000000000000000008",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "trash"
+                              },
+                              "name": "trash"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "content": "mixed",
+                  "menuInset": "compact",
+                  "single": true,
+                  "nestedDropdown": true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TabBarSegmentedFillAllocation",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:tab-bar",
+          "props": {
+            "id": "segmented-tab-bar",
+            "label": "Segmented Tab Bar",
+            "presentation": "segmented",
+            "allocation": "fill"
+          },
+          "zones": {
+            "tabs": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "segmented-one",
+                  "name": "Overview",
+                  "presentation": "segmented",
+                  "size": "compact",
+                  "selected": true,
+                  "closable": false
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "segmented-two",
+                  "name": "Activity",
+                  "presentation": "segmented",
+                  "size": "compact",
+                  "closable": false
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

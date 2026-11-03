@@ -1055,6 +1055,8 @@ type FieldSpec = {
   readonly unions?: Readonly<Record<string, readonly [string, string]>>;
   /** Text props cleared with their Not set toggle (a seeded placeholder). */
   readonly unsets?: readonly string[];
+  /** Boolean props on by default, turned off. */
+  readonly offs?: readonly string[];
   /** Data attributes, `[name, value]`, added to the node's root. */
   readonly data?: readonly (readonly [string, string])[];
 };
@@ -1064,6 +1066,7 @@ async function applySpec(page: Page, field: FieldSpec) {
   for (const [name, option] of Object.entries(field.choices ?? {}))
     await choose(page, name, option);
   for (const name of field.flags ?? []) await turnOn(page, name);
+  for (const name of field.offs ?? []) await turnOff(page, name);
   for (const [name, value] of Object.entries(field.text ?? {}))
     await setText(page, name, value);
   for (const [name, [kind, value]] of Object.entries(field.unions ?? {})) {
@@ -11236,6 +11239,1057 @@ test('builds ToolbarControlGroup › Glass Material', async ({ page }) => {
           ],
         },
       ),
+    ),
+  );
+});
+
+/**
+ * Opens the selected `owner`'s `prop` form down to the entry at `steps`
+ * (indexes, with a nested list's key between them) and follows its `zone`
+ * row, which places that zone's content (an icon zone, its icon).
+ */
+async function entryZone(
+  page: Page,
+  owner: RegExp,
+  prop: string,
+  steps: readonly (number | string)[],
+  zone: string,
+) {
+  await select(page, owner);
+  const open = (path: readonly (number | string)[]) =>
+    page
+      .locator(`[data-editor-open='${JSON.stringify({ prop, path })}']`)
+      .filter({ visible: true })
+      .first()
+      .click();
+  await open([]);
+  const asList = page
+    .getByRole('button', { name: 'Edit as list' })
+    .filter({ visible: true });
+  if (await asList.count()) await asList.click();
+  for (let depth = 1; depth <= steps.length; depth += 1)
+    await open(steps.slice(0, depth));
+  await page
+    .locator(`[data-editor-content-add="${[prop, ...steps, zone].join('.')}"]`)
+    .click();
+  await expect(page.locator('dialog[open]')).toHaveCount(0);
+}
+
+/** Places each `[steps, glyph, name?]` icon in the PopupMenu's items. */
+async function menuIcons(
+  page: Page,
+  icons: readonly (readonly [readonly (number | string)[], string, string?])[],
+) {
+  for (const [steps, glyph, name] of icons) {
+    await entryZone(page, /^PopupMenu/, 'items', steps, 'icon');
+    await area(page, 'Properties');
+    await pickIcon(page, page.locator('[data-editor-icon-place]'), glyph);
+    if (name) await setText(page, 'name', name);
+  }
+}
+
+/** The icon zones `menuIcons` fills, as the export spells them. */
+const menuIconZones = (
+  icons: readonly (readonly [readonly (number | string)[], string, string?])[],
+) =>
+  Object.fromEntries(
+    icons.map(([steps, glyph, name]) => [
+      ['items', ...steps, 'icon'].join('.'),
+      [icon(glyph, name ? { name } : {})],
+    ]),
+  );
+
+test('builds PopupMenu › Grouped Commands with Icons', async ({ page }) => {
+  const items = [
+    { kind: 'heading', label: 'Ticket' },
+    { label: 'Duplicate', action: 'log-more' },
+    { label: 'Archive', action: 'log-more' },
+    { kind: 'divider' },
+    { label: 'Delete', action: 'log-more', disabled: true },
+  ];
+  const icons = [
+    [[1], 'copy'],
+    [[2], 'archive'],
+    [[4], 'trash'],
+  ] as const;
+  await toolbar(page, 'Grouped Commands with Icons');
+  await zoneGroup(page, 'leading', {
+    choices: { content: 'mixed', menuInset: 'compact' },
+    flags: ['single', 'nestedDropdown'],
+  });
+  await addInto(page, /^ToolbarControlGroup/, 'PopupMenu');
+  await setText(page, 'text', 'Actions');
+  await unset(page, 'label');
+  await addIcon(page, 'icon', 'ellipsis');
+  await select(page, /^PopupMenu/);
+  await editAsJson(page, 'items', items);
+  await menuIcons(page, icons);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'toolbar',
+        { label: 'Grouped Commands with Icons' },
+        {
+          leading: [
+            node(
+              'toolbar-control-group',
+              {
+                single: true,
+                content: 'mixed',
+                nestedDropdown: true,
+                menuInset: 'compact',
+              },
+              {
+                children: [
+                  node(
+                    'popup-menu',
+                    { text: 'Actions', items },
+                    { icon: [icon('ellipsis')], ...menuIconZones(icons) },
+                  ),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds PopupMenu › Trailing Toolbar Menu', async ({ page }) => {
+  const items = [
+    { label: 'Export', action: 'log-more' },
+    { label: 'Print', action: 'log-more' },
+  ];
+  await toolbar(page, 'Ticket View');
+  await zoneText(page, 'leading', {
+    choices: { size: 'xlarge' },
+    text: { text: 'Tickets' },
+  });
+  await zoneGroup(page, 'trailing', {
+    choices: { menuInset: 'compact' },
+    flags: ['single', 'nestedDropdown'],
+  });
+  await addInto(page, /^ToolbarControlGroup/, 'PopupMenu');
+  await setText(page, 'label', 'More Actions');
+  await unset(page, 'text');
+  await choose(page, 'placement', 'bottom-end');
+  await addIcon(page, 'icon', 'ellipsis');
+  await select(page, /^PopupMenu/);
+  await editAsJson(page, 'items', items);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'toolbar',
+        { label: 'Ticket View' },
+        {
+          leading: [node('toolbar-text', { text: 'Tickets', size: 'xlarge' })],
+          trailing: [
+            node(
+              'toolbar-control-group',
+              { single: true, nestedDropdown: true, menuInset: 'compact' },
+              {
+                children: [
+                  node(
+                    'popup-menu',
+                    { label: 'More Actions', placement: 'bottom-end', items },
+                    { icon: [icon('ellipsis')] },
+                  ),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds PopupMenu › Outlined Trigger Beside Buttons', async ({ page }) => {
+  const items = ['Item', 'Heading', 'Divider'].map((label) => ({
+    label,
+    action: 'log-more',
+  }));
+  await dragComponent(page, 'Row', () => emptySpot(page));
+  await select(page, /^Row/);
+  await choose(page, 'gap', 's');
+  await turnOn(page, 'wrap');
+  await addChild(page, 'PopupMenu');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { emphasis: 'secondary', size: 'compact' },
+    text: { text: 'Add' },
+    unsets: ['label'],
+  });
+  await addIcon(page, 'icon', 'plus');
+  await select(page, /^PopupMenu/);
+  await editAsJson(page, 'items', items);
+  await addInto(page, /^Row/, 'Button');
+  await applySpec(page, {
+    choices: { emphasis: 'secondary', size: 'compact' },
+    text: { children: 'Reset', action: 'log-more' },
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'row',
+        { gap: 's', wrap: true },
+        {
+          children: [
+            node(
+              'popup-menu',
+              { text: 'Add', emphasis: 'secondary', size: 'compact', items },
+              { icon: [icon('plus')] },
+            ),
+            node('button', {
+              children: 'Reset',
+              emphasis: 'secondary',
+              size: 'compact',
+              action: 'log-more',
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+/** Places a lone PopupMenu set up by `spec`, with `items`. */
+async function lonePopupMenu(page: Page, spec: FieldSpec, items: unknown) {
+  await dragComponent(page, 'PopupMenu', () => emptySpot(page));
+  await select(page, /^PopupMenu/);
+  await applySpec(page, spec);
+  await editAsJson(page, 'items', items);
+}
+
+test('builds PopupMenu › Status Badge Trigger', async ({ page }) => {
+  const items = [
+    { label: 'Not Started', action: 'log-more', checked: false },
+    {
+      label: 'Started',
+      checked: true,
+      submenu: [
+        { label: 'Working', action: 'log-more', checked: true },
+        { label: 'Testing', action: 'log-more', checked: false },
+      ],
+    },
+    { label: 'Completed', action: 'log-more', checked: false },
+  ];
+  await lonePopupMenu(
+    page,
+    {
+      text: { label: 'Status: Started' },
+      unsets: ['text'],
+      data: [['data-popup-badge-menu', '']],
+    },
+    items,
+  );
+  await addChild(page, 'Badge', 'triggerContent');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { tone: 'info', appearance: 'solid' },
+    text: { children: 'Started' },
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'popup-menu',
+        {
+          label: 'Status: Started',
+          items,
+          rootAttributes: { 'data-popup-badge-menu': '' },
+        },
+        {
+          triggerContent: [
+            node('badge', {
+              children: 'Started',
+              tone: 'info',
+              appearance: 'solid',
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+// popupSortChoice starts as 'recent'.
+test('builds PopupMenu › Checked Choices', async ({ page }) => {
+  const items = [
+    { label: 'Updated', action: 'sort-recent', checked: true },
+    { label: 'Priority', action: 'sort-priority', checked: false },
+    { kind: 'divider' },
+    { label: 'More Sort Options', action: 'log-more' },
+  ];
+  await lonePopupMenu(
+    page,
+    {
+      text: { text: 'Sort Choices' },
+      unsets: ['label'],
+      data: [['data-popup-checked-menu', '']],
+    },
+    items,
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node('popup-menu', {
+        text: 'Sort Choices',
+        items,
+        rootAttributes: { 'data-popup-checked-menu': '' },
+      }),
+    ),
+  );
+});
+
+test('builds PopupMenu › Nested Decisions', async ({ page }) => {
+  const items = [
+    {
+      label: 'Decide',
+      submenu: [
+        { kind: 'heading', label: 'Review' },
+        {
+          label: 'Approve',
+          action: 'log-decision',
+          checked: true,
+          attributes: { 'data-decision': 'approve' },
+        },
+        {
+          label: 'Reject',
+          action: 'log-decision',
+          tone: 'danger',
+          disabled: true,
+          disabledReason: 'A price is required',
+          attributes: { 'data-decision': 'reject' },
+        },
+        { kind: 'divider' },
+        { kind: 'heading', label: 'More' },
+        {
+          label: 'Other…',
+          action: 'log-decision',
+          attributes: { 'data-decision': 'other' },
+        },
+      ],
+    },
+  ];
+  // The demo names each glyph after its decision.
+  const icons = [
+    [[0], 'gavel', 'decide'],
+    [[0, 'submenu', 1], 'thumbs-up', 'approve'],
+    [[0, 'submenu', 2], 'thumbs-down', 'reject'],
+    [[0, 'submenu', 5], 'ellipsis', 'other'],
+  ] as const;
+  await lonePopupMenu(
+    page,
+    { text: { text: 'Decide' }, unsets: ['label'] },
+    items,
+  );
+  await menuIcons(page, icons);
+  expect(await exported(page)).toEqual(
+    pane(node('popup-menu', { text: 'Decide', items }, menuIconZones(icons))),
+  );
+});
+
+test('builds PopupMenu › Standalone in a Popup Surface', async ({ page }) => {
+  const items = [
+    { label: 'Inbox', action: 'log-more' },
+    { label: 'Archive', action: 'log-more' },
+  ];
+  await dragComponent(page, 'PopupSurface', () => emptySpot(page));
+  await select(page, /^PopupSurface/);
+  await choose(page, 'inset', 'list-zero');
+  await addInto(page, /^PopupSurface/, 'PopupMenu', 0, 0);
+  await select(page, /^PopupMenu/);
+  await applySpec(page, { text: { text: 'Choose View' }, unsets: ['label'] });
+  await editAsJson(page, 'items', items);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'surface-scaffold#PopupSurface',
+        { inset: 'list-zero' },
+        { children: [node('popup-menu', { text: 'Choose View', items })] },
+      ),
+    ),
+  );
+});
+
+/** A TabBarItem FieldSpec plus its icons and trailing spinner. */
+type TabSpec = FieldSpec & {
+  readonly leading?: string;
+  readonly closeIcon?: readonly [string, string];
+  readonly spinner?: boolean;
+};
+
+/**
+ * Places a TabBar (set up by `bar`) holding one TabBarItem per spec, each
+ * added to its tabs zone and set up in turn.
+ */
+async function tabBar(page: Page, bar: FieldSpec, tabs: readonly TabSpec[]) {
+  await dragComponent(page, 'TabBar', () => emptySpot(page));
+  await select(page, /^TabBar(?!Item)/);
+  await applySpec(page, bar);
+  // The TabBar arrives holding one TabBarItem: the first tab.
+  for (const [index, tab] of tabs.entries()) {
+    if (index === 0) await select(page, /^TabBarItem/);
+    else {
+      await select(page, /^TabBar(?!Item)/);
+      await addChild(page, 'TabBarItem', 'tabs');
+      await area(page, 'Properties');
+    }
+    await applySpec(page, tab);
+    // The tab's decorations are zones, filled from Children › Add a child.
+    const place = async (zone: string, glyph: string) => {
+      await select(page, /^TabBarItem/, -1);
+      await addChild(page, 'LucideIcon', zone);
+      await pickIcon(page, page.locator('[data-editor-icon-place]'), glyph);
+    };
+    if (tab.leading) await place('leading-decoration', tab.leading);
+    if (tab.closeIcon) {
+      await place('close-icon', tab.closeIcon[0]);
+      await setText(page, 'name', tab.closeIcon[1]);
+    }
+    if (tab.spinner) {
+      await select(page, /^TabBarItem/, -1);
+      await addChild(page, 'LoadingSpinner', 'trailing-decoration');
+    }
+  }
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+}
+
+/** The TabBar `tabBar` builds, given each tab's exported props. */
+const tabBarNode = (
+  bar: Record<string, unknown>,
+  tabs: readonly (readonly [Record<string, unknown>, TabSpec])[],
+) =>
+  node('tab-bar', bar, {
+    tabs: tabs.map(([props, spec]) => {
+      const zones: Record<string, unknown[]> = {};
+      if (spec.leading) zones['leading-decoration'] = [icon(spec.leading)];
+      if (spec.spinner)
+        zones['trailing-decoration'] = [node('loading-spinner')];
+      if (spec.closeIcon)
+        zones['close-icon'] = [
+          icon(spec.closeIcon[0], { name: spec.closeIcon[1] }),
+        ];
+      return node('tabs', props, Object.keys(zones).length ? zones : undefined);
+    }),
+  });
+
+// The demo's non-data and mixed-case root attributes are protection
+// fixtures TabBarItem drops; a view document carries only data-*.
+test('builds Tabs › Selected and Closable', async ({ page }) => {
+  const tab: TabSpec = {
+    flags: ['selected'],
+    text: { id: 'guidelines', name: 'Guidelines' },
+    data: [['data-demo-tab-source', 'workspace']],
+    leading: 'panel-left',
+    closeIcon: ['x', 'custom-tab-close'],
+  };
+  await tabBar(
+    page,
+    {
+      text: {
+        id: 'tab-bar-item-selected',
+        label: 'Selected TabBarItem Specimen',
+      },
+    },
+    [tab],
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      tabBarNode(
+        { id: 'tab-bar-item-selected', label: 'Selected TabBarItem Specimen' },
+        [
+          [
+            {
+              id: 'guidelines',
+              name: 'Guidelines',
+              selected: true,
+              rootAttributes: { 'data-demo-tab-source': 'workspace' },
+            },
+            tab,
+          ],
+        ],
+      ),
+    ),
+  );
+});
+
+test('builds Tabs › Compact and Segmented', async ({ page }) => {
+  const tabs: TabSpec[] = [
+    {
+      choices: { presentation: 'segmented', size: 'compact' },
+      flags: ['selected'],
+      offs: ['closable'],
+      text: { id: 'activity', name: 'Activity' },
+    },
+    {
+      choices: { presentation: 'icon-only', size: 'compact' },
+      offs: ['closable'],
+      text: { id: 'status', name: 'Status' },
+      leading: 'circle-dot',
+    },
+  ];
+  await tabBar(
+    page,
+    {
+      choices: { presentation: 'segmented' },
+      text: {
+        id: 'tab-bar-item-compact',
+        label: 'Compact TabBarItem Specimen',
+      },
+    },
+    tabs,
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      tabBarNode(
+        {
+          id: 'tab-bar-item-compact',
+          label: 'Compact TabBarItem Specimen',
+          presentation: 'segmented',
+        },
+        [
+          [
+            {
+              id: 'activity',
+              name: 'Activity',
+              selected: true,
+              closable: false,
+              presentation: 'segmented',
+              size: 'compact',
+            },
+            tabs[0]!,
+          ],
+          [
+            {
+              id: 'status',
+              name: 'Status',
+              closable: false,
+              presentation: 'icon-only',
+              size: 'compact',
+            },
+            tabs[1]!,
+          ],
+        ],
+      ),
+    ),
+  );
+});
+
+test('builds Tabs › Truncated Label', async ({ page }) => {
+  const tab: TabSpec = {
+    flags: ['selected'],
+    offs: ['closable'],
+    text: {
+      id: 'long-label',
+      name: 'A Deliberately Long Document Name',
+      labelMaxWidth: '120',
+    },
+  };
+  const bar = {
+    id: 'tab-bar-item-truncated',
+    label: 'Truncated TabBarItem Specimen',
+  };
+  await tabBar(page, { text: bar }, [tab]);
+  expect(await exported(page)).toEqual(
+    pane(
+      tabBarNode(bar, [
+        [
+          {
+            id: 'long-label',
+            name: 'A Deliberately Long Document Name',
+            selected: true,
+            closable: false,
+            labelMaxWidth: 120,
+          },
+          tab,
+        ],
+      ]),
+    ),
+  );
+});
+
+test('builds Tabs › Drop Target and Visible Name', async ({ page }) => {
+  const tabs: TabSpec[] = [
+    {
+      flags: ['selected'],
+      offs: ['closable'],
+      text: { id: 'project-grid', name: 'Project Grid' },
+    },
+    {
+      choices: { nameOverflow: 'visible' },
+      flags: ['dropTarget'],
+      offs: ['closable'],
+      text: {
+        id: 'accounting',
+        name: 'Accounting Project',
+        labelMaxWidth: '80',
+      },
+    },
+  ];
+  const bar = {
+    id: 'tab-bar-item-drop-target',
+    label: 'Drop-Target TabBarItem Specimen',
+  };
+  await tabBar(page, { text: bar }, tabs);
+  expect(await exported(page)).toEqual(
+    pane(
+      tabBarNode(bar, [
+        [
+          {
+            id: 'project-grid',
+            name: 'Project Grid',
+            selected: true,
+            closable: false,
+          },
+          tabs[0]!,
+        ],
+        [
+          {
+            id: 'accounting',
+            name: 'Accounting Project',
+            closable: false,
+            dropTarget: true,
+            labelMaxWidth: 80,
+            nameOverflow: 'visible',
+          },
+          tabs[1]!,
+        ],
+      ]),
+    ),
+  );
+});
+
+test('builds Tabs › Placeholder', async ({ page }) => {
+  const tab: TabSpec = {
+    flags: ['placeholder'],
+    text: { id: 'loading', name: '' },
+  };
+  const bar = {
+    id: 'tab-bar-item-placeholder',
+    label: 'Loading TabBarItem Specimen',
+  };
+  await tabBar(page, { text: bar }, [tab]);
+  expect(await exported(page)).toEqual(
+    pane(
+      tabBarNode(bar, [[{ id: 'loading', name: '', placeholder: true }, tab]]),
+    ),
+  );
+});
+
+test('builds Tabs › Pending', async ({ page }) => {
+  const tabs: TabSpec[] = [
+    { flags: ['selected'], text: { id: 'hot-sheet', name: 'hot-sheet' } },
+    { flags: ['pending'], text: { id: 'alpha', name: 'alpha' }, spinner: true },
+    { text: { id: 'beta', name: 'beta' } },
+  ];
+  const bar = {
+    id: 'tab-bar-item-pending',
+    label: 'Pending TabBarItem Specimen',
+  };
+  await tabBar(page, { text: bar }, tabs);
+  expect(await exported(page)).toEqual(
+    pane(
+      tabBarNode(bar, [
+        [{ id: 'hot-sheet', name: 'hot-sheet', selected: true }, tabs[0]!],
+        [{ id: 'alpha', name: 'alpha', pending: true }, tabs[1]!],
+        [{ id: 'beta', name: 'beta' }, tabs[2]!],
+      ]),
+    ),
+  );
+});
+
+/** A non-closable tab named `name`, first selected, at `id`. */
+const plainTab = (
+  id: string,
+  name: string,
+  selected: boolean,
+  extra: FieldSpec = {},
+): TabSpec => ({
+  ...extra,
+  flags: [...(selected ? ['selected'] : []), ...(extra.flags ?? [])],
+  offs: ['closable'],
+  text: { id, name, ...extra.text },
+});
+
+/** `plainTab`'s exported props. */
+const plainTabProps = (
+  id: string,
+  name: string,
+  selected: boolean,
+  extra: Record<string, unknown> = {},
+) => ({
+  id,
+  name,
+  ...(selected ? { selected: true } : {}),
+  closable: false,
+  ...extra,
+});
+
+/** Adds a borderless single group, one icon button, to TabBar `zone`. */
+async function tabBarGroup(
+  page: Page,
+  zone: string,
+  button: FieldSpec,
+  glyph: string,
+) {
+  await select(page, /^TabBar(?!Item)/);
+  await addChild(page, 'ToolbarControlGroup', zone);
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { appearance: 'borderless' },
+    flags: ['single'],
+  });
+  await select(page, /^ToolbarButton/, -1);
+  await iconButton(page, button, glyph);
+}
+
+/** `tabBarGroup`'s exported group. */
+const tabBarGroupNode = (button: Record<string, unknown>, glyph: string) =>
+  buttonGroupNode({ appearance: 'borderless', single: true }, [
+    [button, glyph],
+  ]);
+
+/** Adds a Button (set up by `spec`) to TabBar `zone`. */
+async function tabBarButton(page: Page, zone: string, spec: FieldSpec) {
+  await select(page, /^TabBar(?!Item)/);
+  await addChild(page, 'Button', zone);
+  await area(page, 'Properties');
+  await applySpec(page, spec);
+}
+
+/** The demos' two pill or segmented tabs. */
+const pairTabs = (presentation: 'pill' | 'segmented') =>
+  (
+    [
+      [`${presentation}-one`, 'Overview', true],
+      [`${presentation}-two`, 'Activity', false],
+    ] as const
+  ).map(
+    ([id, name, selected]) =>
+      [
+        plainTab(id, name, selected, {
+          choices:
+            presentation === 'segmented'
+              ? { presentation, size: 'compact' }
+              : { presentation, size: 'default' },
+        }),
+        plainTabProps(id, name, selected, {
+          presentation,
+          size: presentation === 'segmented' ? 'compact' : 'default',
+        }),
+      ] as const,
+  );
+
+test('builds TabBar › Rail · Intrinsic Allocation', async ({ page }) => {
+  const tabs = pairTabs('pill');
+  const bar = { id: 'rail-tab-bar', label: 'Rail Tab Bar' };
+  await tabBar(
+    page,
+    { text: bar },
+    tabs.map(([spec]) => spec),
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      tabBarNode(
+        bar,
+        tabs.map(([spec, props]) => [props, spec]),
+      ),
+    ),
+  );
+});
+
+test('builds TabBar › Segmented · Fill Allocation', async ({ page }) => {
+  const tabs = pairTabs('segmented');
+  const bar = { id: 'segmented-tab-bar', label: 'Segmented Tab Bar' };
+  await tabBar(
+    page,
+    { choices: { presentation: 'segmented', allocation: 'fill' }, text: bar },
+    tabs.map(([spec]) => spec),
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      tabBarNode(
+        { ...bar, presentation: 'segmented', allocation: 'fill' },
+        tabs.map(([spec, props]) => [props, spec]),
+      ),
+    ),
+  );
+});
+
+test('builds TabBar › Responsive Icon-Only Segmented Tabs', async ({
+  page,
+}) => {
+  const segmented = { presentation: 'segmented', size: 'compact' };
+  const tabs = (
+    [
+      ['responsive-overview', 'Overview', true, 'panel-left'],
+      ['responsive-activity', 'Activity', false, 'square-plus'],
+    ] as const
+  ).map(
+    ([id, name, selected, leading]) =>
+      [
+        { ...plainTab(id, name, selected, { choices: segmented }), leading },
+        plainTabProps(id, name, selected, segmented),
+      ] as const,
+  );
+  const bar = {
+    id: 'responsive-icon-tab-bar',
+    label: 'Responsive Project Tabs',
+  };
+  await tabBar(
+    page,
+    { choices: { presentation: 'segmented', iconOnlyAt: 'wide' }, text: bar },
+    tabs.map(([spec]) => spec),
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      tabBarNode(
+        { ...bar, presentation: 'segmented', iconOnlyAt: 'wide' },
+        tabs.map(([spec, props]) => [props, spec]),
+      ),
+    ),
+  );
+});
+
+const SPLIT_NAMES = [
+  'Overview',
+  'Backlog',
+  'Activity',
+  'Automations',
+  'Settings',
+];
+const OVERFLOW_NAMES = [
+  ...SPLIT_NAMES,
+  'Releases',
+  'Milestones',
+  'Reports',
+  'Integrations',
+  'Members',
+];
+
+/** Non-closable tabs named `names`, ids `${prefix}-<name>`, first selected. */
+const namedTabs = (
+  prefix: string,
+  names: readonly string[],
+  extra: Readonly<Record<string, string>> = {},
+) =>
+  names.map((name, index) => {
+    const id = `${prefix}-${name.toLowerCase()}`;
+    return [
+      plainTab(id, name, index === 0, { choices: extra }),
+      plainTabProps(id, name, index === 0, extra),
+    ] as const;
+  });
+
+test('builds TabBar › Inspector · Adjacent and End Actions', async ({
+  page,
+}) => {
+  test.slow();
+  const tabs = namedTabs('split', SPLIT_NAMES, {
+    presentation: 'segmented',
+    size: 'compact',
+  });
+  const bar = { id: 'inspector-tab-bar', label: 'Inspector Tab Bar' };
+  await tabBar(
+    page,
+    {
+      choices: { presentation: 'inspector', trailingPlacement: 'adjacent' },
+      text: bar,
+    },
+    tabs.map(([spec]) => spec),
+  );
+  await tabBarGroup(
+    page,
+    'trailing',
+    { text: { ariaLabel: 'Add Inspector Section' } },
+    'plus',
+  );
+  await tabBarGroup(
+    page,
+    'end',
+    { text: { ariaLabel: 'Create Workspace Item' } },
+    'square-plus',
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'tab-bar',
+        { ...bar, presentation: 'inspector', trailingPlacement: 'adjacent' },
+        {
+          ...(
+            tabBarNode(
+              bar,
+              tabs.map(([spec, props]) => [props, spec]),
+            ) as {
+              zones: Record<string, unknown[]>;
+            }
+          ).zones,
+          trailing: [
+            tabBarGroupNode({ ariaLabel: 'Add Inspector Section' }, 'plus'),
+          ],
+          end: [
+            tabBarGroupNode(
+              { ariaLabel: 'Create Workspace Item' },
+              'square-plus',
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds TabBar › Project Strip · Primary Action', async ({ page }) => {
+  test.slow();
+  const tabs = namedTabs('overflow', OVERFLOW_NAMES);
+  const bar = {
+    id: 'raw-action-tab-bar',
+    label: 'Project Tabs with Primary Action',
+  };
+  await tabBar(
+    page,
+    { choices: { trailingPlacement: 'adjacent' }, text: bar },
+    tabs.map(([spec]) => spec),
+  );
+  await tabBarGroup(
+    page,
+    'leading',
+    { text: { ariaLabel: 'Project Grid', action: 'log-more' } },
+    'layout-grid',
+  );
+  await tabBarButton(page, 'trailing', {
+    choices: { emphasis: 'plain' },
+    text: { children: 'Add Tab', action: 'log-more' },
+  });
+  await tabBarButton(page, 'end', {
+    choices: { tone: 'brand' },
+    text: { children: 'New Ticket…', action: 'log-add' },
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'tab-bar',
+        { ...bar, trailingPlacement: 'adjacent' },
+        {
+          ...(
+            tabBarNode(
+              bar,
+              tabs.map(([spec, props]) => [props, spec]),
+            ) as {
+              zones: Record<string, unknown[]>;
+            }
+          ).zones,
+          leading: [
+            tabBarGroupNode(
+              { ariaLabel: 'Project Grid', action: 'log-more' },
+              'layout-grid',
+            ),
+          ],
+          trailing: [
+            node('button', {
+              children: 'Add Tab',
+              emphasis: 'plain',
+              action: 'log-more',
+            }),
+          ],
+          end: [
+            node('button', {
+              children: 'New Ticket…',
+              tone: 'brand',
+              action: 'log-add',
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds TabBar › Compact Project Tabs', async ({ page }) => {
+  // The strip tokens are the catalog viewport's, not the view's.
+  const tabs = [
+    [
+      {
+        ...plainTab('compact-inspector', 'Inspector', false, {
+          choices: { presentation: 'icon-only', size: 'compact' },
+        }),
+        leading: 'panel-left',
+      },
+      plainTabProps('compact-inspector', 'Inspector', false, {
+        presentation: 'icon-only',
+        size: 'compact',
+      }),
+    ],
+    [
+      plainTab('compact-attention', 'A Project with a Longer Name', false, {
+        choices: { size: 'compact' },
+        flags: ['attention'],
+        text: { labelMaxWidth: '112' },
+      }),
+      plainTabProps(
+        'compact-attention',
+        'A Project with a Longer Name',
+        false,
+        {
+          size: 'compact',
+          labelMaxWidth: 112,
+          attention: true,
+        },
+      ),
+    ],
+  ] as const;
+  const bar = { id: 'compact-project-tab-bar', label: 'Compact Project Tabs' };
+  await tabBar(
+    page,
+    { text: bar },
+    tabs.map(([spec]) => spec),
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      tabBarNode(
+        bar,
+        tabs.map(([spec, props]) => [props, spec]),
+      ),
+    ),
+  );
+});
+
+test('builds TabBar › Overflow · Scroll Dividers', async ({ page }) => {
+  test.slow();
+  const tabs = namedTabs('overflow', OVERFLOW_NAMES);
+  const bar = { id: 'overflow-tab-bar', label: 'Overflowing Tab Bar' };
+  await tabBar(
+    page,
+    { text: bar },
+    tabs.map(([spec]) => spec),
+  );
+  await tabBarGroup(
+    page,
+    'leading',
+    { text: { ariaLabel: 'Show Sidebar' } },
+    'panel-left',
+  );
+  await tabBarGroup(
+    page,
+    'trailing',
+    { text: { ariaLabel: 'Add Tab' } },
+    'plus',
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node('tab-bar', bar, {
+        ...(
+          tabBarNode(
+            bar,
+            tabs.map(([spec, props]) => [props, spec]),
+          ) as {
+            zones: Record<string, unknown[]>;
+          }
+        ).zones,
+        leading: [tabBarGroupNode({ ariaLabel: 'Show Sidebar' }, 'panel-left')],
+        trailing: [tabBarGroupNode({ ariaLabel: 'Add Tab' }, 'plus')],
+      }),
     ),
   );
 });

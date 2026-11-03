@@ -1,0 +1,69 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "PopupMenuStatusBadgeTrigger",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:popup-menu",
+          "props": {
+            "items": [
+              {
+                "label": "Not Started",
+                "action": "log-more",
+                "checked": false
+              },
+              {
+                "label": "Started",
+                "checked": true,
+                "submenu": [
+                  {
+                    "label": "Working",
+                    "action": "log-more",
+                    "checked": true
+                  },
+                  {
+                    "label": "Testing",
+                    "action": "log-more",
+                    "checked": false
+                  }
+                ]
+              },
+              {
+                "label": "Completed",
+                "action": "log-more",
+                "checked": false
+              }
+            ],
+            "label": "Status: Started",
+            "rootAttributes": {
+              "data-popup-badge-menu": ""
+            }
+          },
+          "zones": {
+            "triggerContent": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:badge",
+                "props": {
+                  "children": "Started",
+                  "tone": "info",
+                  "appearance": "solid"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
