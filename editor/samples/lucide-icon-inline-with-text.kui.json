@@ -1,0 +1,52 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "LucideIconInlineWithText",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "rootAttributes": {
+              "data-demo-icon-inline": ""
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "#text",
+                "value": "Notifications "
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "bell"
+                  },
+                  "name": "bell-inline",
+                  "inline": true
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "#text",
+                "value": " are ready."
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

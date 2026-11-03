@@ -383,12 +383,18 @@ describe('the editor shell', () => {
           zones: {
             children: [
               { id: '01JB8Z1M6Q8E1X9V4S7K2R3TYB', type: '#text', value: 'Go' },
+              { id: '01JB8Z1M6Q8E1X9V4S7K2R3TYC', type: '@acme:widget' },
             ],
           },
         },
       },
     });
+    // KF-YBMVVM: a text run edits its text.
     editor.selection.value = { kind: 'node', id: '01JB8Z1M6Q8E1X9V4S7K2R3TYB' };
+    expect(
+      root.querySelector('[data-editor-text-run] input')?.getAttribute('value'),
+    ).toBe('Go');
+    editor.selection.value = { kind: 'node', id: '01JB8Z1M6Q8E1X9V4S7K2R3TYC' };
     expect(root.textContent).toContain('This node has no props to inspect.');
     editor.selection.value = { kind: 'node', id: 'gone' };
     expect(root.textContent).toContain('Nothing selected');

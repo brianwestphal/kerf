@@ -16248,6 +16248,132 @@ test('builds Text › Semantic Variants', async ({ page }) => {
   );
 });
 
+/**
+ * KF-YBMVVM: adds a text run reading `value` to the `nth` `parent`'s zone,
+ * after the nodes already in it.
+ */
+async function textRun(page: Page, parent: RegExp, nth: number, value: string) {
+  await select(page, parent, nth);
+  await addChild(page, 'Text run');
+  const field = page.locator('[data-editor-text-run] input');
+  await field.click();
+  await page.keyboard.press('ControlOrMeta+a');
+  await page.keyboard.type(value);
+  await page.keyboard.press('Enter');
+}
+
+/** A `#text` run as the exported document spells it. */
+const runNode = (value: string) => ({ type: '#text', value });
+
+test('builds Text › Control Margins', async ({ page }) => {
+  test.slow();
+  const copy = [
+    [
+      'A paragraph aligned with neighboring content items.',
+      'trbl',
+      'margin-all',
+    ],
+    [
+      'Horizontal margins keep the same text column without a vertical gutter.',
+      'rl',
+      'margin-horizontal',
+    ],
+  ] as const;
+  const flushCopy =
+    'Flush supporting copy retains the exterior control gutter.';
+  await rootTexts(page, [
+    ...copy.map(([text, sides, hook]) => ({
+      text,
+      spec: {
+        choices: { controlMargins: sides },
+        data: [['data-demo-copy', hook]] as [string, string][],
+      },
+    })),
+    {
+      text: flushCopy,
+      spec: {
+        choices: { controlMargins: 'rl' },
+        flags: ['flush'],
+        data: [['data-demo-copy', 'margin-flush']] as [string, string][],
+      },
+    },
+    { text: 'Inline ' },
+  ]);
+  // The sentence: its text becomes a run, then the inline Text and the
+  // run after it follow.
+  await page.getByRole('button', { name: 'Use as nodes' }).click();
+  await addChild(page, 'Text');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { variant: 'span', controlMargins: 'rl' },
+    text: { children: 'copy' },
+    data: [['data-demo-copy', 'margin-inline']],
+  });
+  await textRun(page, /^Text(?![A-Z])/, 3, ' stays in its sentence.');
+  // The runs keep their spaces on the canvas.
+  await expect(canvas(page)).toContainText(
+    'Inline copy stays in its sentence.',
+  );
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      ...copy.map(([text, sides, hook]) =>
+        textNode(text, {
+          controlMargins: sides,
+          rootAttributes: { 'data-demo-copy': hook },
+        }),
+      ),
+      textNode(flushCopy, {
+        controlMargins: 'rl',
+        flush: true,
+        rootAttributes: { 'data-demo-copy': 'margin-flush' },
+      }),
+      node('text', undefined, {
+        children: [
+          runNode('Inline '),
+          textNode('copy', {
+            variant: 'span',
+            controlMargins: 'rl',
+            rootAttributes: { 'data-demo-copy': 'margin-inline' },
+          }),
+          runNode(' stays in its sentence.'),
+        ],
+      }),
+    ),
+  );
+});
+
+test('builds LucideIcon › Inline with Text', async ({ page }) => {
+  await rootTexts(page, [
+    {
+      text: 'Notifications ',
+      spec: { data: [['data-demo-icon-inline', '']] },
+    },
+  ]);
+  await page.getByRole('button', { name: 'Use as nodes' }).click();
+  await addChild(page, 'LucideIcon');
+  await area(page, 'Properties');
+  await pickIcon(page, page.locator('[data-editor-icon-place]'), 'bell');
+  await applySpec(page, { text: { name: 'bell-inline' }, flags: ['inline'] });
+  await textRun(page, /^Text(?![A-Z])/, 0, ' are ready.');
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'text',
+        { rootAttributes: { 'data-demo-icon-inline': '' } },
+        {
+          children: [
+            runNode('Notifications '),
+            icon('bell', { name: 'bell-inline', inline: true }),
+            runNode(' are ready.'),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
 test('builds Text › Strong Emphasis', async ({ page }) => {
   await rootTexts(page, [
     {

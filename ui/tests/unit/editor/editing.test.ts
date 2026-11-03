@@ -956,3 +956,45 @@ describe('renaming a param', () => {
     expect(node()?.props?.text).toEqual({ $param: 'title' });
   });
 });
+
+// KF-YBMVVM: a zone that takes text takes text runs beside its nodes, and a
+// run's text is edited in its own Inspector.
+describe('text runs', () => {
+  it('adds a run after the zone’s text and edits it, undoably', () => {
+    const { root, node } = open(COMPOSE);
+    choose(field(root, '[data-editor-add="zone"]'), 'children');
+    const component = field(root, '[data-editor-add="component"]');
+    expect(
+      [...component.querySelectorAll('[role="option"]')].some(
+        (option) => option.textContent === 'Text run',
+      ),
+    ).toBe(true);
+    choose(component, '#text');
+    click(root, 'editor-add-child');
+    // The zone's text became a run, and the new run follows it.
+    const runs = () =>
+      (node()?.zones?.children ?? []) as readonly {
+        type: string;
+        value?: string;
+      }[];
+    expect(runs().map((run) => [run.type, run.value])).toEqual([
+      ['#text', 'Compose'],
+      ['#text', 'Text'],
+    ]);
+    const text = field(root, '[data-editor-text-run]');
+    type(text, ' now');
+    expect(runs()[1]!.value).toBe(' now');
+    click(root, 'editor-undo');
+    expect(runs()[1]!.value).toBe('Text');
+  });
+
+  it('offers no text run where a zone takes only nodes', () => {
+    const { root } = open(TOOLBAR);
+    const component = field(root, '[data-editor-add="component"]');
+    expect(
+      [...component.querySelectorAll('[role="option"]')].some(
+        (option) => option.textContent === 'Text run',
+      ),
+    ).toBe(false);
+  });
+});

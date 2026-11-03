@@ -210,6 +210,7 @@ import {
   renameParam,
   replaceRoot,
   setProp,
+  setTextRun,
   suggestedComponents,
   withCatalog,
   type ZoneOption,
@@ -331,6 +332,8 @@ const DELETE_ACTION = 'editor-delete';
 /** Copies the selected node right after itself (KF-QAVK73). */
 const DUPLICATE_ACTION = 'editor-duplicate';
 const ADD_ACTION = 'editor-add-child';
+/** Add a child's choice for a text run in a text-accepting zone (KF-YBMVVM). */
+const TEXT_RUN = '#text';
 const REPLACE_ROOT_ACTION = 'editor-replace-root';
 const CONTENT_TO_NODES_ACTION = 'editor-content-to-nodes';
 const CONTENT_TO_TEXT_ACTION = 'editor-content-to-text';
@@ -1271,6 +1274,23 @@ export function createEditor(options: EditorOptions) {
     const title = visit
       ? nodeTitle(visit.node, componentNames)
       : componentNames.get(key!)!;
+    // KF-YBMVVM: a text run beside nodes in a zone edits its text here.
+    if (visit?.node.type === TEXT_RUN)
+      return {
+        content: (
+          <List>
+            <ListHeader label={title} />
+            <List controlInsets="trbl">
+              <TextField
+                label="Text"
+                value={(visit.node as { value?: string }).value ?? ''}
+                hint="A run of text beside the other nodes in its zone."
+                rootAttributes={{ 'data-editor-text-run': visit.node.id }}
+              />
+            </List>
+          </List>
+        ),
+      };
     if (!component) {
       return {
         content: (
@@ -3183,7 +3203,29 @@ export function createEditor(options: EditorOptions) {
       zones.find(
         (option) => option.key === addZone.value && !option.disabledReason,
       ) ?? primaryFirst(zones).find((option) => !option.disabledReason);
-    const addable = addableIn(zone, node.type);
+    // KF-YBMVVM: a zone that takes text takes a text run beside its nodes.
+    const takesText = component.props.some(
+      (prop) =>
+        prop.name === zone?.key &&
+        prop.slot &&
+        (prop.type as { acceptsText?: true }).acceptsText,
+    );
+    const components = addableIn(zone, node.type);
+    const addable = [
+      ...components,
+      // Last, in its own group when the components are grouped.
+      ...(takesText
+        ? [
+            {
+              value: TEXT_RUN,
+              label: 'Text run',
+              ...(components.some((item) => 'group' in item)
+                ? { group: 'Text' }
+                : {}),
+            },
+          ]
+        : []),
+    ];
     // What can show otherwise: what the zone holding this node accepts.
     const parent = findNode(doc.value, node.id)?.ancestors.at(-1);
     const otherwiseChoices = parent
@@ -4370,7 +4412,7 @@ export function createEditor(options: EditorOptions) {
       chosen?.key ??
       (picker ? String(controlValue(picker)) : addComponent.value);
     const component = propsByKey.get(key);
-    if (!zone || !component) return;
+    if (!zone || (!component && key !== TEXT_RUN)) return;
     // A content prop holds text or nodes, never both: a child added to a
     // prop that holds text takes the text into the zone first (KF-YR91FA).
     const parent = findNode(doc.value, id)!.node;
@@ -4379,8 +4421,15 @@ export function createEditor(options: EditorOptions) {
       ?.props.some((prop) => prop.name === zone && prop.slot)
       ? textToNodes(doc.value, id, zone)
       : doc.value;
-    const child = seededNode(key);
-    commit(withCatalog(insertNode(base, id, zone, child), key));
+    const child =
+      key === TEXT_RUN
+        ? ({ id: newNodeId(), type: TEXT_RUN, value: 'Text' } as ViewNode)
+        : seededNode(key);
+    commit(
+      key === TEXT_RUN
+        ? insertNode(base, id, zone, child)
+        : withCatalog(insertNode(base, id, zone, child), key),
+    );
     select({ kind: 'node', id: child.id });
     inspectorArea.value = 'properties';
     // The new node's form opens at its top; take keyboard focus there too,
@@ -4690,6 +4739,19 @@ export function createEditor(options: EditorOptions) {
           if ('error' in result) fieldErrors.value = { '#name': result.error };
           else commit(result.document);
         },
+      ),
+      delegate<HTMLElement>(
+        root,
+        'change',
+        '[data-editor-text-run]',
+        (_event, field) =>
+          commit(
+            setTextRun(
+              doc.value,
+              field.dataset.editorTextRun!,
+              String(controlValue(field)),
+            ),
+          ),
       ),
       delegate<HTMLElement>(
         root,

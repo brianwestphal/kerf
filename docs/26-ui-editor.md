@@ -447,6 +447,11 @@ it, adding a child to that zone does the same first, and **Use as text**
 moves a zone that is one text run back. While the zone holds nodes, the field
 says how many and points to the outline.
 
+Text runs are nodes of their own (KF-YBMVVM: editable text runs): a
+selected `#text` run's Inspector edits its text, and a text-accepting zone
+offers **Text run** last in Add a child, so text can follow a node in a
+sentence such as `Inline <Text>copy</Text> stays in its sentence.`
+
 Nodes move by dragging outline rows (KF-WXP6AB: drag placement): a node that
 sits directly in a zone drags before or after another node, slot, repeated
 row, or conditional node (landing beside the whole repeat or condition), or

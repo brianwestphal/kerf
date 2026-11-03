@@ -1,0 +1,82 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TextControlMargins",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "A paragraph aligned with neighboring content items.",
+            "controlMargins": "trbl",
+            "rootAttributes": {
+              "data-demo-copy": "margin-all"
+            }
+          }
+        },
+        {
+          "id": "00000000000000000000000003",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Horizontal margins keep the same text column without a vertical gutter.",
+            "controlMargins": "rl",
+            "rootAttributes": {
+              "data-demo-copy": "margin-horizontal"
+            }
+          }
+        },
+        {
+          "id": "00000000000000000000000004",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Flush supporting copy retains the exterior control gutter.",
+            "controlMargins": "rl",
+            "flush": true,
+            "rootAttributes": {
+              "data-demo-copy": "margin-flush"
+            }
+          }
+        },
+        {
+          "id": "00000000000000000000000005",
+          "type": "@kerfjs/ui:text",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000006",
+                "type": "#text",
+                "value": "Inline "
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "copy",
+                  "variant": "span",
+                  "controlMargins": "rl",
+                  "rootAttributes": {
+                    "data-demo-copy": "margin-inline"
+                  }
+                }
+              },
+              {
+                "id": "00000000000000000000000008",
+                "type": "#text",
+                "value": " stays in its sentence."
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

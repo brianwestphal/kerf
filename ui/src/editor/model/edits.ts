@@ -484,6 +484,23 @@ export function setProp(
 }
 
 /**
+ * `document` with text run `id` reading `value` (KF-YBMVVM: a `#text` run in
+ * a zone that mixes text and nodes is edited in the Inspector).
+ */
+export function setTextRun(
+  document: ViewDocument,
+  id: string,
+  value: string,
+): ViewDocument {
+  const next = clone(document);
+  const node = locate(next, id)?.node as
+    (MutableNode & { value?: string }) | undefined;
+  if (node?.type !== '#text') throw new Error(`no text run ${id}`);
+  node.value = value;
+  return next;
+}
+
+/**
  * `document` with each filled field zone owning its field (KF-PD6QC5): a
  * placeholder the prop value held there (a seeded item slot, text) gives
  * way to the zone's nodes, so the two never clash. Every edit commits
