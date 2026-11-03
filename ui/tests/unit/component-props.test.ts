@@ -301,6 +301,43 @@ describe('component-props helpers', () => {
     applyOverlay(component, undefined, untouched);
     expect(untouched).toEqual([]);
   });
+
+  // KF-H1X3S7: a value's options list must name a sibling prop.
+  it('takes a value prop’s choices from a named sibling list', () => {
+    const component: ComponentProps = {
+      key: 'pkg:swatches',
+      id: 'swatches',
+      source: 'kerf',
+      props: [
+        { name: 'value', type: { kind: 'string' }, required: false },
+        { name: 'swatches', type: { kind: 'array' }, required: true },
+      ],
+    };
+    const problems: string[] = [];
+    applyOverlay(
+      component,
+      {
+        components: {
+          'pkg:swatches': { props: { value: { choicesFrom: 'swatches' } } },
+        },
+      },
+      problems,
+    );
+    expect(prop(component, 'value')).toMatchObject({ choicesFrom: 'swatches' });
+    expect(problems).toEqual([]);
+    applyOverlay(
+      component,
+      {
+        components: {
+          'pkg:swatches': { props: { value: { choicesFrom: 'colors' } } },
+        },
+      },
+      problems,
+    );
+    expect(problems).toEqual([
+      'pkg:swatches: prop "value" takes choices from unknown prop "colors"',
+    ]);
+  });
 });
 
 describe('inspector control defaults', () => {

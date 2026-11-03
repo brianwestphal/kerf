@@ -1334,7 +1334,7 @@ export function createEditor(options: EditorOptions) {
       : undefined;
     const offered =
       owner && (picker!.multiple || !Array.isArray(value))
-        ? valueChoices(owner)
+        ? valueChoices(owner, prop.choicesFrom)
         : undefined;
     if (offered && picker!.multiple && !isBinding(value as never)) {
       // A single value picked before `multiple` was on stays picked.
@@ -4074,18 +4074,23 @@ export function createEditor(options: EditorOptions) {
   /** Writes `next` at a field editor's place in the selected node's prop. */
   const writeField = (place: FieldPlace, next: ViewValue | undefined) => {
     const id = selectedNodeId()!;
-    const props = findNode(doc.value, id)!.node.props;
+    const node = findNode(doc.value, id)!.node;
+    const props = node.props;
     const current = props?.[place.prop] as ViewValue | undefined;
     const value = withValueAt(current, place.path, next);
     if (JSON.stringify(current) === JSON.stringify(value)) return false;
-    // KF-9AWGPS: renaming the selected choice keeps it selected.
+    // KF-9AWGPS: renaming the selected choice keeps it selected, in the
+    // value's own options list (KF-H1X3S7: a ColorSwatches' swatches).
+    const list =
+      propsByKey.get(node.type)?.props.find((item) => item.name === 'value')
+        ?.choicesFrom ?? 'choices';
     const [index, field] = place.path;
     const followed =
-      place.prop === 'choices' &&
+      place.prop === list &&
       typeof index === 'number' &&
       field === 'value' &&
       place.path.length === 2
-        ? followChoiceRename(props!, index, next).value
+        ? followChoiceRename(props!, index, next, list).value
         : props?.value;
     const written = setProp(doc.value, id, place.prop, value);
     commit(

@@ -56,6 +56,11 @@
         "default": {
           "description": "A default the types and JSDoc do not state.",
           "type": ["string", "number", "boolean"]
+        },
+        "choicesFrom": {
+          "description": "A value prop's options list: the name of the sibling list prop whose items' `value` and `label` an editor offers for it (a ColorSwatches `swatches`). Without it, an editor reads `choices`.",
+          "type": "string",
+          "minLength": 1
         }
       }
     }

@@ -1028,8 +1028,10 @@ export interface ValueChoice {
  */
 export function valueChoices(
   props: Readonly<Record<string, ViewValue>> | undefined,
+  /** The options list prop (KF-H1X3S7: a ColorSwatches' `swatches`). */
+  list = 'choices',
 ): ValueChoice[] | undefined {
-  const choices = props?.choices;
+  const choices = props?.[list];
   if (!Array.isArray(choices) || !choices.length) return undefined;
   const offered = choices.flatMap((choice) => {
     const { value, label } = (choice ?? {}) as Record<string, ViewValue>;
@@ -1096,9 +1098,11 @@ export function followChoiceRename(
   props: Readonly<Record<string, ViewValue>>,
   index: number,
   next: ViewValue | undefined,
+  /** The options list prop (KF-H1X3S7: a ColorSwatches' `swatches`). */
+  list = 'choices',
 ): Readonly<Record<string, ViewValue>> {
   const old = (
-    (props.choices as readonly Record<string, ViewValue>[] | undefined)?.[
+    (props[list] as readonly Record<string, ViewValue>[] | undefined)?.[
       index
     ] ?? {}
   ).value;

@@ -3637,9 +3637,8 @@ async function colorSwatches(
   await select(page, /^ColorSwatches/, nth);
   await editAsJson(page, 'swatches', swatches);
   await applySpec(page, spec);
-  // The value is typed: the value picker reads `choices`, not `swatches`
-  // (KF-H1X3S7).
-  await setText(page, 'value', pick);
+  // The value picks a swatch by its label (KF-H1X3S7).
+  await choose(page, 'value', pick);
 }
 
 test('builds ColorSwatches › Fixed Palette', async ({ page }) => {
@@ -3656,7 +3655,7 @@ test('builds ColorSwatches › Fixed Palette', async ({ page }) => {
         action: 'pick-swatch-demo',
       },
     },
-    '#0a84ff',
+    'Blue',
   );
   await expect(canvas(page).locator('input[type="radio"]')).toHaveCount(10);
   expect(await exported(page)).toEqual(
@@ -3691,7 +3690,7 @@ test('builds ColorSwatches › No Color, Compact, and Disabled', async ({
         action: 'pick-swatch-demo',
       },
     },
-    'none',
+    'No Color',
   );
   await colorSwatches(
     page,
@@ -3702,7 +3701,7 @@ test('builds ColorSwatches › No Color, Compact, and Disabled', async ({
       flags: ['disabled'],
       text: { name: 'locked-color', label: 'Locked Color' },
     },
-    '#34c759',
+    'Green',
   );
   expect(await exported(page)).toEqual(
     pane(

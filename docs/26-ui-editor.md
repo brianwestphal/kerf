@@ -238,6 +238,11 @@ a value that names no choice appears as "(not one of the choices)" with a
 hint. A typed choice reads "<Prop> type" for the kind and "<Prop>" for the
 member's own control.
 
+A component whose options live in another list declares it with the
+overlay's `choicesFrom` (KF-H1X3S7): a ColorSwatches `value` is a Select of
+its `swatches`, labeled by each swatch's label, and renaming a swatch's
+value carries `value` along the same way.
+
 An array `value` picks several choices instead (KF-8MEWP2: multi-value
 picker): a CheckboxGroup's value, or a ChoiceChips value once `multiple` is
 on, is a checkbox per choice, committed in choice order, and none checked is

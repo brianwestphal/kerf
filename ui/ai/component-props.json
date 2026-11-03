@@ -2403,7 +2403,8 @@
           "name": "value",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "The chosen swatch's value."
+          "description": "The chosen swatch's value.",
+          "choicesFrom": "swatches"
         },
         {
           "name": "size",

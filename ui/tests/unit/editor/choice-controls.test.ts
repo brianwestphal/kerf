@@ -263,6 +263,51 @@ describe('a value picked from its choices (KF-9AWGPS)', () => {
     expect(followChoiceRename(props, 0, 'ay')).toBe(props);
     expect(followChoiceRename(props, 1, undefined)).toBe(props);
     expect(followChoiceRename(props, 5, 'x')).toBe(props);
+    // KF-H1X3S7: another options list, such as a ColorSwatches' swatches.
+    const swatches = [
+      { value: 'none', label: 'No Color' },
+      { value: '#0a84ff', label: 'Blue' },
+    ];
+    expect(valueChoices({ swatches }, 'swatches')).toEqual(swatches);
+    expect(valueChoices({ swatches })).toBeUndefined();
+    const swatched = { value: '#0a84ff', swatches } as never;
+    expect(
+      followChoiceRename(swatched, 1, '#0b85ff', 'swatches'),
+    ).toMatchObject({ value: '#0b85ff' });
+    expect(followChoiceRename(swatched, 1, '#0b85ff')).toBe(swatched);
+  });
+
+  // KF-H1X3S7: ColorSwatches declares `swatches` as its value's options.
+  it('picks a ColorSwatches value by swatch label and follows a renamed swatch', () => {
+    const { root, props, editor, id } = added('@kerfjs/ui:color-swatches');
+    editor.document.value = setProp(editor.document.value, id, 'swatches', [
+      { value: 'none', label: 'No Color', color: 'transparent' },
+      { value: '#0a84ff', label: 'Blue', color: '#0a84ff' },
+    ]);
+    const value = () =>
+      field(
+        root,
+        '[data-editor-prop="value"][data-editor-kind="value-choice"]',
+      );
+    expect(
+      [...value().querySelectorAll<HTMLElement>('[role="option"]')].map(
+        (option) => option.textContent,
+      ),
+    ).toEqual(['Not set', 'No Color', 'Blue']);
+    choose(value(), '"#0a84ff"');
+    expect(props().value).toBe('#0a84ff');
+    const opener = document.createElement('button');
+    opener.dataset.action = 'editor-open-field';
+    opener.dataset.editorOpen = JSON.stringify({ prop: 'swatches', path: [1] });
+    root.append(opener);
+    opener.click();
+    const input = field(
+      root,
+      `[data-editor-field='{"prop":"swatches","path":[1,"value"]}']`,
+    ).querySelector('input')!;
+    input.value = '#0b85ff';
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(props().value).toBe('#0b85ff');
   });
 
   it('picks a Select’s value from its choices and follows a renamed choice', () => {

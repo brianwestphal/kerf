@@ -99,6 +99,9 @@
         }
       }
     },
+    "@kerfjs/ui:color-swatches": {
+      "props": { "value": { "choicesFrom": "swatches" } }
+    },
     "@kerfjs/ui:empty-state": {
       "groups": ["Content", "State"],
       "props": {

@@ -16,6 +16,11 @@ export interface InspectorProp {
   readonly cssValue?: { readonly helpers?: readonly string[] };
   /** Icon data (`'lucide'`): edits in the icon picker (KF-AJHJB8). */
   readonly iconSource?: string;
+  /**
+   * A value prop's options list, when it is not `choices` (KF-H1X3S7: a
+   * ColorSwatches `value` picks from its `swatches`).
+   */
+  readonly choicesFrom?: string;
 }
 
 export interface InspectorComponent {

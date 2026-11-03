@@ -232,6 +232,10 @@
         "order": {
           "type": "integer",
           "minimum": 0
+        },
+        "choicesFrom": {
+          "description": "The sibling list prop whose items' `value` and `label` an editor offers for this value prop. Without it, an editor reads `choices`.",
+          "type": "string"
         }
       }
     },

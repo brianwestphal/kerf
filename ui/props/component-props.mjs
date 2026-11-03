@@ -900,6 +900,16 @@ export function applyOverlay(component, overlay, problems) {
     else
       problems.push(`${component.key}: overlay names unknown prop "${name}"`);
   }
+  // KF-H1X3S7: a value's options list names a sibling list prop.
+  for (const prop of component.props) {
+    if (
+      prop.choicesFrom !== undefined &&
+      !component.props.some((item) => item.name === prop.choicesFrom)
+    )
+      problems.push(
+        `${component.key}: prop "${prop.name}" takes choices from unknown prop "${prop.choicesFrom}"`,
+      );
+  }
   if (curated.groups) component.groups = curated.groups;
   for (const [name, fields] of Object.entries(curated.props ?? {})) {
     if (fields.group && !curated.groups?.includes(fields.group)) {
