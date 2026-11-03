@@ -1,0 +1,128 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ToolbarControlGroupSelectBesideActions",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Select Beside Actions"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "pressed": true,
+                        "ariaLabel": "Pin View",
+                        "action": "log-pin"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "pin"
+                              },
+                              "name": "pin"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:select",
+                      "props": {
+                        "name": "toolbar-group-sort",
+                        "choices": [
+                          {
+                            "value": "recent",
+                            "label": "Recently Updated",
+                            "icon": {
+                              "$icon": "calendar-clock"
+                            },
+                            "iconName": "calendar-clock"
+                          },
+                          {
+                            "value": "priority",
+                            "label": "Priority",
+                            "icon": {
+                              "$icon": "flag"
+                            },
+                            "iconName": "flag"
+                          },
+                          {
+                            "value": "title",
+                            "label": "Title",
+                            "icon": {
+                              "$icon": "arrow-down-a-z"
+                            },
+                            "iconName": "arrow-down-a-z"
+                          }
+                        ],
+                        "value": "recent",
+                        "presentation": "toolbar-borderless",
+                        "selectedPresentation": "icon-only",
+                        "ariaLabel": "Sort Tickets"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:popup-menu",
+                      "props": {
+                        "items": [
+                          {
+                            "label": "Archive",
+                            "action": "log-more"
+                          }
+                        ],
+                        "label": "More Actions"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000008",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "ellipsis"
+                              },
+                              "name": "ellipsis"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "shape": "pill",
+                  "label": "Ticket View"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

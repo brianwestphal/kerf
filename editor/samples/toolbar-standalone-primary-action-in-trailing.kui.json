@@ -1,0 +1,82 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ToolbarStandalonePrimaryActionInTrailing",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "responsive": "wrap",
+            "label": "Project Heading"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Project Tickets",
+                  "size": "large"
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Refresh Tickets"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "refresh-cw"
+                              },
+                              "name": "refresh-cw"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "single": true,
+                  "label": "Other Actions"
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "New Ticket…",
+                  "tone": "brand",
+                  "action": "log-add"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

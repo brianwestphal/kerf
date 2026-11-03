@@ -1,0 +1,119 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ToolbarTextSupportingText",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Command Editor Heading"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "square-terminal"
+                        },
+                        "name": "square-terminal"
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "tileTone": "brand",
+                  "single": true,
+                  "label": "Commands"
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Custom Commands",
+                  "size": "xlarge",
+                  "headingLevel": 2,
+                  "id": "toolbar-text-description-title",
+                  "description": "Changes save automatically.",
+                  "descriptionId": "toolbar-text-description-copy"
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Close"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000008",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "x"
+                              },
+                              "name": "x"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "single": true,
+                  "label": "Close"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "00000000000000000000000009",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Repository Status Heading"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000010",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Repository Status",
+                  "size": "xlarge",
+                  "description": "Working tree is clean"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

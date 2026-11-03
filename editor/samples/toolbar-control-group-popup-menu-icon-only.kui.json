@@ -1,0 +1,75 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ToolbarControlGroupPopupMenuIconOnly",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Popup Menu (Icon Only)"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:popup-menu",
+                      "props": {
+                        "items": [
+                          {
+                            "label": "Recently Updated",
+                            "action": "sort-recent"
+                          },
+                          {
+                            "label": "Priority",
+                            "action": "sort-priority"
+                          }
+                        ],
+                        "label": "Sort Direction",
+                        "caret": false
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "arrow-down-a-z"
+                              },
+                              "name": "arrow-down-a-z"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "menuInset": "compact",
+                  "shape": "pill",
+                  "single": true,
+                  "nestedDropdown": true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

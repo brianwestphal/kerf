@@ -1,0 +1,180 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ToolbarContainerWidthVisibility",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Workspace Width Visibility"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Workspace",
+                  "hideBelow": {
+                    "$css": "px(176)"
+                  }
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Refresh Workspace",
+                        "action": "width-refresh"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "refresh-cw"
+                              },
+                              "name": "refresh-cw"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "single": true,
+                  "label": "Refresh Workspace"
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Filter Workspace",
+                        "action": "width-filter"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000009",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "funnel"
+                              },
+                              "name": "funnel"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000010",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Workspace Settings",
+                        "action": "log-settings"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000011",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "settings"
+                              },
+                              "name": "settings"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "label": "Workspace Utilities",
+                  "hideBelow": {
+                    "$css": "px(416)"
+                  }
+                }
+              },
+              {
+                "id": "00000000000000000000000012",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000013",
+                      "type": "@kerfjs/ui:popup-menu",
+                      "props": {
+                        "items": [
+                          {
+                            "label": "Filter Workspace",
+                            "action": "width-filter"
+                          },
+                          {
+                            "label": "Workspace Settings",
+                            "action": "log-settings"
+                          }
+                        ],
+                        "label": "More Workspace Actions"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000014",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "ellipsis"
+                              },
+                              "name": "ellipsis"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "single": true,
+                  "nestedDropdown": true,
+                  "label": "More Workspace Actions",
+                  "showBelow": {
+                    "$css": "px(416)"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ToolbarControlGroupGlassMaterial",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:pane",
+          "props": {
+            "headerPresentation": "clear",
+            "scrollEdge": "material",
+            "label": "Glass Over Artwork"
+          },
+          "zones": {
+            "header": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar",
+                "props": {
+                  "label": "Glass Controls"
+                },
+                "zones": {
+                  "leading": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "ariaLabel": "Earlier Photo",
+                              "action": "log-previous"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000006",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "chevron-left"
+                                    },
+                                    "name": "chevron-left"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000007",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "ariaLabel": "Later Photo",
+                              "action": "log-next"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000008",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "chevron-right"
+                                    },
+                                    "name": "chevron-right"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "material": "glass",
+                        "shape": "pill",
+                        "label": "Glass Navigation"
+                      }
+                    }
+                  ],
+                  "trailing": [
+                    {
+                      "id": "00000000000000000000000009",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000010",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "ariaLabel": "Share Photo",
+                              "action": "log-share"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000011",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "share-2"
+                                    },
+                                    "name": "share-2"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "material": "glass",
+                        "shape": "pill",
+                        "single": true,
+                        "label": "Glass Share"
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "content": [
+              {
+                "id": "00000000000000000000000012",
+                "type": "@kerfjs/ui:backdrop-image",
+                "props": {
+                  "src": {
+                    "$param": "nodeSrc"
+                  },
+                  "alt": "",
+                  "underChrome": true,
+                  "height": {
+                    "$css": "rem(12.5)"
+                  },
+                  "fadeTo": {
+                    "$css": "uiColor('surface')"
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000013",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "children": "Coastal Ridge"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000014",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "children": "Harbor Lights"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000015",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "children": "Northbound"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000016",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "children": "Glass Coast"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "nodeSrc": {
+      "type": {
+        "kind": "string"
+      },
+      "default": "BackdropImage"
+    }
+  }
+}

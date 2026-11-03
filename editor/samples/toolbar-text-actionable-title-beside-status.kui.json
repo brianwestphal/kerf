@@ -1,0 +1,73 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ToolbarTextActionableTitleBesideStatus",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Demand Toolbar"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Annual Maintenance Procurement Plan",
+                  "size": "large",
+                  "action": "edit-toolbar-title"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:chip",
+                "props": {
+                  "children": "Approved",
+                  "tone": "success"
+                }
+              }
+            ],
+            "center": [
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:search-field",
+                      "props": {
+                        "id": "toolbar-text-demand-search",
+                        "label": "Search Demands",
+                        "presentation": "toolbar-group",
+                        "fill": true,
+                        "placeholder": "Search demands"
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "content": "search",
+                  "sizing": "grow",
+                  "expanded": true,
+                  "label": "Search"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

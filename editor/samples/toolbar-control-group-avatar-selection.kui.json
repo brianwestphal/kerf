@@ -1,0 +1,77 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ToolbarControlGroupAvatarSelection",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Avatar Selection"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "pressed": true,
+                        "ariaLabel": "Primary Profile",
+                        "action": "select-avatar-demo",
+                        "rootAttributes": {
+                          "data-avatar-value": "primary"
+                        }
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "pressed": false,
+                        "ariaLabel": "Secondary Profile",
+                        "action": "select-avatar-demo",
+                        "rootAttributes": {
+                          "data-avatar-value": "secondary"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "content": "avatar",
+                  "selectedTone": "neutral",
+                  "shape": "pill",
+                  "label": "Profile View",
+                  "avatarImage": {
+                    "$param": "nodeAvatarImage"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "nodeAvatarImage": {
+      "type": {
+        "kind": "string"
+      }
+    }
+  }
+}
