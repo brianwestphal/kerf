@@ -14824,7 +14824,8 @@ test('builds Pane › Tinted Surface', async ({ page }) => {
 });
 
 test('builds Pane › Overlay Header', async ({ page }) => {
-  test.slow();
+  // KF-Z9QDK8: 40s locally, past a slow test's 180s under CI's load.
+  test.setTimeout(test.info().timeout * 8);
   const kinds = [
     ['Design Review', 'calendar', 'brand'],
     ['Backup Complete', 'shield-check', 'success'],
