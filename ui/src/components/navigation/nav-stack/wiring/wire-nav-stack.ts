@@ -513,6 +513,9 @@ export function wireNavStack(
       );
       poppedTop.dataset.navExiting = 'true';
       poppedTop.setAttribute('aria-hidden', 'true');
+      // KF-SBP2MV: it slides out over the revealed view, so it takes no
+      // input; a click in that moment belongs to the view beneath.
+      poppedTop.setAttribute('inert', '');
       viewport.append(poppedTop);
       void poppedTop.offsetWidth;
       play(poppedTop, 'exiting');

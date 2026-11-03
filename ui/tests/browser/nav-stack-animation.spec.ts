@@ -135,3 +135,36 @@ test('an immediate pop then re-push of the same key settles old mechanics', asyn
   await expect(stack.locator('[data-nav-key="project-atlas"]')).toHaveCount(1);
   await expect(stack.locator('[data-nav-detail-focus]')).toBeFocused();
 });
+
+test('a click during a pop goes to the revealed view, not the one sliding out (KF-SBP2MV)', async ({
+  page,
+}) => {
+  await page.goto('/?component=nav-stack');
+  const stack = page.locator('#catalog-nav-stack');
+  // A long pop keeps the outgoing view over the revealed one while clicking.
+  await page.addStyleTag({
+    content:
+      '#catalog-nav-stack { --kui-nav-stack-transition-duration: 5000ms !important; }',
+  });
+  const push = stack.locator('[data-nav-key="library"] button[data-action]');
+  await push.first().click();
+  await expect(stack).toHaveAttribute('data-depth', '2');
+  await stack.locator('[data-nav-back]').filter({ visible: true }).click();
+  const exiting = stack.locator('[data-nav-exiting="true"]');
+  await expect(exiting).toHaveAttribute('inert', '');
+  // The revealed view's push button sits under the sliding view.
+  const box = (await push.first().boundingBox())!;
+  const point = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  const hit = await page.evaluate(
+    ({ x, y }) =>
+      Boolean(
+        document
+          .elementFromPoint(x, y)
+          ?.closest('[data-nav-key="library"]:not([data-nav-exiting])'),
+      ),
+    point,
+  );
+  expect(hit).toBe(true);
+  await page.mouse.click(point.x, point.y);
+  await expect(stack).toHaveAttribute('data-depth', '2');
+});

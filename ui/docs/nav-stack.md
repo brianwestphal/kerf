@@ -348,7 +348,8 @@ unsafe area but can always be scrolled clear. A view whose only child is a
 
 `wireNavStack(root, { onBack, duration? })` observes the rendered stack and
 animates each change: a pushed view slides in from the trailing edge; a popped
-view slides back off it over the revealed view; and snapshots of the previous
+view slides back off it over the revealed view, inert, so a click or key
+press during the slide reaches the revealed view; and snapshots of the previous
 top and bottom chrome cross-fade into the active view's chrome. The preserved
 underlying view remains visible during a push, while remaining inaccessible.
 Starting transforms and opacity apply instantly before the transition begins.

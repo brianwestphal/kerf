@@ -178,6 +178,8 @@
 .kui-nav-stack__view[data-nav-exiting="true"] {
   z-index: 1;
   visibility: visible;
+  /* The outgoing view only animates; input goes to the revealed view. */
+  pointer-events: none;
 }
 
 /* Push: the incoming view starts off the trailing edge and slides to rest.

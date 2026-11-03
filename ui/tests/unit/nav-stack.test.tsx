@@ -677,6 +677,9 @@ describe('wireNavStack', () => {
     // The removed top is brought back to animate out.
     const exiting = viewport.querySelector('[data-nav-exiting="true"]');
     expect(exiting).not.toBeNull();
+    // KF-SBP2MV: it slides out over the revealed view without taking input.
+    expect(exiting!.hasAttribute('inert')).toBe(true);
+    expect(exiting!.getAttribute('aria-hidden')).toBe('true');
     await delay(30);
     expect(viewport.querySelector('[data-nav-exiting="true"]')).toBeNull();
     dispose();
