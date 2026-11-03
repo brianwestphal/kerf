@@ -255,6 +255,35 @@ describe('size controls (KF-Q5AXNP)', () => {
     expect(
       sizeOf('list', 'gap', { column: { $param: 'gap' }, row: 'm' }).raw,
     ).toBe('axes');
+    // A nested union is read through; its boolean literal is no axis value.
+    const css = { kind: 'css-value', text: 'CssLength' };
+    expect(
+      sizeAxisType({
+        kind: 'union',
+        text: 'Gap',
+        members: [
+          css,
+          { kind: 'literal', value: true },
+          {
+            kind: 'union',
+            members: [
+              { kind: 'literal', value: 's' },
+              {
+                kind: 'object',
+                props: [
+                  { name: 'row', type: css, required: true },
+                  { name: 'column', type: css, required: true },
+                ],
+              },
+            ],
+          },
+        ],
+      } as never),
+    ).toEqual({
+      kind: 'union',
+      members: [css, { kind: 'literal', value: 's' }],
+      text: 'axis size',
+    });
     // A size union without a `{ column, row }` member offers no axes.
     expect(sizeOf('row', 'flex').choices).not.toContain('axes');
     expect(sizeAxisType(prop('row', 'flex').type as never)).toBeUndefined();

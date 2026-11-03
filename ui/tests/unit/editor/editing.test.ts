@@ -583,6 +583,36 @@ describe('list props (KF-HNNWN9)', () => {
     expect(node()?.props).not.toHaveProperty('gap');
   });
 
+  it('splits a gap into columns and rows, each its own size (KF-VA14AP)', () => {
+    const { root, editor, node } = open(FOLDERS);
+    const gap = () =>
+      field(root, '[data-editor-prop="gap"][data-editor-kind="size"]');
+    const axis = (name: string, kind = 'size') =>
+      root.querySelector<HTMLElement>(
+        `[data-editor-field='${JSON.stringify({ prop: 'gap', path: [name] })}'][data-editor-kind="${kind}"]`,
+      );
+    expect(axis('column')).toBeNull();
+    choose(gap(), 'l');
+    choose(gap(), 'axes');
+    expect(node()?.props?.gap).toEqual({ column: 'l', row: 'l' });
+    expect(gap().getAttribute('value')).toBe('axes');
+    choose(axis('column')!, 'none');
+    expect(node()?.props?.gap).toEqual({ column: 'none', row: 'l' });
+    // Custom… keeps the axis's value until its builder field sets one.
+    choose(axis('row')!, 'custom');
+    expect(node()?.props?.gap).toEqual({ column: 'none', row: 'l' });
+    type(axis('row', 'css')!, 'px(12)');
+    expect(node()?.props?.gap).toEqual({
+      column: 'none',
+      row: { $css: 'px(12)' },
+    });
+    expect(validateView(editor.document.value, viewCatalog).valid).toBe(true);
+    // A keyword for the whole gap leaves Columns and rows.
+    choose(gap(), 'm');
+    expect(node()?.props?.gap).toBe('m');
+    expect(axis('column')).toBeNull();
+  });
+
   // KF-CY1D5W: a list of union items opens its list editor; its typed JSON
   // stays one click away there.
   const openSuggestions = (root: HTMLElement) =>
