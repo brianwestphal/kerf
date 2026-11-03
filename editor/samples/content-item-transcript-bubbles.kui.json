@@ -1,0 +1,109 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ContentItemTranscriptBubbles",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:pane",
+          "props": {
+            "label": "Assistant Conversation"
+          },
+          "zones": {
+            "content": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "gap": "xs",
+                  "rootAttributes": {
+                    "data-demo-transcript": ""
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "bubble": "end",
+                        "appearance": "brand-loud",
+                        "rootAttributes": {
+                          "data-demo-bubble": "user"
+                        }
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Summarize the failing checks.",
+                              "variant": "span"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "bubble": "start",
+                        "appearance": "neutral",
+                        "rootAttributes": {
+                          "data-demo-bubble": "assistant"
+                        }
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000007",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Two checks fail: the bundle budget grew by 213 bytes, and the design-template drift render is missing the new variant.",
+                              "variant": "span"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "bubble": "end",
+                        "appearance": "brand-loud"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000009",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Thanks!",
+                              "variant": "span"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

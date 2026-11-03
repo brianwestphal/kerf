@@ -1,0 +1,75 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ContentItemFocusableItemAndOutlinedDropTarget",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:pane",
+          "props": {
+            "deepInset": true,
+            "label": "Drop Target Items"
+          },
+          "zones": {
+            "content": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Drop Target",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Drop a file here or focus this item.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "tabIndex": 0,
+                  "outlined": true,
+                  "rootAttributes": {
+                    "data-demo-item": "outlined"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

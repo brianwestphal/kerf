@@ -1,0 +1,95 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ContentItemFlushContentAndSeparateCardActions",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:pane",
+          "props": {
+            "label": "Quotation Preview"
+          },
+          "zones": {
+            "content": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "flush": true,
+                  "rootAttributes": {
+                    "data-demo-item": "flush"
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "A compact markdown preview can reach the item's block edges.",
+                        "variant": "p"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "frame": "framed",
+                  "rootAttributes": {
+                    "data-demo-item": "multi-action-card"
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:row",
+                      "props": {
+                        "vAlign": "middle",
+                        "wrap": true
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000007",
+                            "type": "@kerfjs/ui:button",
+                            "props": {
+                              "children": "Open Quotation",
+                              "emphasis": "plain",
+                              "action": "log-card-primary"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000008",
+                            "type": "@kerfjs/ui:button",
+                            "props": {
+                              "children": "More Actions",
+                              "emphasis": "plain",
+                              "action": "log-more"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

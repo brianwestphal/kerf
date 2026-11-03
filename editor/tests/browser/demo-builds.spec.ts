@@ -13534,6 +13534,339 @@ test('builds Grid › Sparse Document Tiles', async ({ page }) => {
   );
 });
 
+/** A nested Pane (set up by `spec`) at the first empty spot; Pane 1. */
+async function nestedPane(page: Page, spec: FieldSpec) {
+  await dragComponent(page, 'Pane', () => emptySpot(page));
+  await select(page, /^Pane/, 1);
+  await applySpec(page, spec);
+}
+
+const nestedPaneNode = (props: Record<string, unknown>, content: unknown[]) =>
+  node('pane', props, { content });
+
+/** A DemoContentItem in the nested Pane, then `spec` on that item. */
+async function copyItem(
+  page: Page,
+  title: string,
+  detail: string,
+  spec: FieldSpec,
+  index = 0,
+) {
+  await contentItemInto(page, /^Pane/, 1, title, detail);
+  await select(page, /^ContentItem/, index);
+  await applySpec(page, spec);
+}
+
+/** `copyItem`'s node: a DemoContentItem given `props`. */
+const copyItemNode = (
+  title: string,
+  detail: string,
+  props: Record<string, unknown>,
+) => ({ ...demoContentItem(title, detail), props });
+
+test('builds ContentItem › Unframed and Framed Items', async ({ page }) => {
+  await nestedPane(page, { text: { label: 'Content Items' } });
+  await copyItem(
+    page,
+    'Workspace Details',
+    'An ordinary item sits directly on the surface.',
+    { data: [['data-demo-item', 'plain']] },
+  );
+  await copyItem(
+    page,
+    'Unsaved Changes',
+    'A framed item reads as visibly bounded without moving its content.',
+    { choices: { frame: 'framed' }, data: [['data-demo-item', 'framed']] },
+    1,
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      nestedPaneNode({ label: 'Content Items' }, [
+        copyItemNode(
+          'Workspace Details',
+          'An ordinary item sits directly on the surface.',
+          { rootAttributes: { 'data-demo-item': 'plain' } },
+        ),
+        copyItemNode(
+          'Unsaved Changes',
+          'A framed item reads as visibly bounded without moving its content.',
+          { frame: 'framed', rootAttributes: { 'data-demo-item': 'framed' } },
+        ),
+      ]),
+    ),
+  );
+});
+
+test('builds ContentItem › Focusable Item and Outlined Drop Target', async ({
+  page,
+}) => {
+  await nestedPane(page, {
+    flags: ['deepInset'],
+    text: { label: 'Drop Target Items' },
+  });
+  await copyItem(page, 'Drop Target', 'Drop a file here or focus this item.', {
+    choices: { tabIndex: '0' },
+    flags: ['outlined'],
+    data: [['data-demo-item', 'outlined']],
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      nestedPaneNode({ label: 'Drop Target Items', deepInset: true }, [
+        copyItemNode('Drop Target', 'Drop a file here or focus this item.', {
+          tabIndex: 0,
+          outlined: true,
+          rootAttributes: { 'data-demo-item': 'outlined' },
+        }),
+      ]),
+    ),
+  );
+});
+
+test('builds ContentItem › Surface and Semantic Appearances', async ({
+  page,
+}) => {
+  test.slow();
+  const appearances = [
+    'transparent',
+    'surface',
+    'neutral',
+    'info',
+    'pop',
+    'success',
+    'warning',
+    'danger',
+  ];
+  await grid(
+    page,
+    {
+      choices: { gap: 'xs' },
+      text: { columns: '' },
+      data: [['data-demo-item-appearances', '']],
+    },
+    { minColumnWidth: 'rem(12)' },
+  );
+  for (const appearance of appearances) {
+    await addInto(page, /^Grid/, 'ContentItem');
+    await applySpec(page, {
+      choices: { appearance },
+      data: [['data-demo-item', `appearance-${appearance}`]],
+    });
+    await addChild(page, 'Text');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { variant: 'span', weight: 'strong' },
+      text: { children: appearance },
+    });
+  }
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'grid',
+        {
+          minColumnWidth: { $css: 'rem(12)' },
+          gap: 'xs',
+          rootAttributes: { 'data-demo-item-appearances': '' },
+        },
+        {
+          children: appearances.map((appearance) =>
+            node(
+              'content-item',
+              {
+                appearance,
+                rootAttributes: {
+                  'data-demo-item': `appearance-${appearance}`,
+                },
+              },
+              {
+                children: [
+                  textNode(appearance, { variant: 'span', weight: 'strong' }),
+                ],
+              },
+            ),
+          ),
+        },
+      ),
+    ),
+  );
+});
+
+test('builds ContentItem › Flush Content and Separate Card Actions', async ({
+  page,
+}) => {
+  await nestedPane(page, { text: { label: 'Quotation Preview' } });
+  await addInto(page, /^Pane/, 'ContentItem', 1);
+  await applySpec(page, {
+    flags: ['flush'],
+    data: [['data-demo-item', 'flush']],
+  });
+  await addChild(page, 'Text');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { variant: 'p' },
+    text: {
+      children: "A compact markdown preview can reach the item's block edges.",
+    },
+  });
+  await addInto(page, /^Pane/, 'ContentItem', 1);
+  await applySpec(page, {
+    choices: { frame: 'framed' },
+    data: [['data-demo-item', 'multi-action-card']],
+  });
+  await addChild(page, 'Row');
+  await area(page, 'Properties');
+  await applySpec(page, { choices: { vAlign: 'middle' }, flags: ['wrap'] });
+  for (const [label, action] of [
+    ['Open Quotation', 'log-card-primary'],
+    ['More Actions', 'log-more'],
+  ] as const) {
+    await addInto(page, /^Row/, 'Button');
+    await applySpec(page, {
+      choices: { emphasis: 'plain' },
+      text: { children: label, action },
+    });
+  }
+  expect(await exported(page)).toEqual(
+    pane(
+      nestedPaneNode({ label: 'Quotation Preview' }, [
+        node(
+          'content-item',
+          { flush: true, rootAttributes: { 'data-demo-item': 'flush' } },
+          {
+            children: [
+              textNode(
+                "A compact markdown preview can reach the item's block edges.",
+                { variant: 'p' },
+              ),
+            ],
+          },
+        ),
+        node(
+          'content-item',
+          {
+            frame: 'framed',
+            rootAttributes: { 'data-demo-item': 'multi-action-card' },
+          },
+          {
+            children: [
+              node(
+                'row',
+                { vAlign: 'middle', wrap: true },
+                {
+                  children: [
+                    node('button', {
+                      children: 'Open Quotation',
+                      emphasis: 'plain',
+                      action: 'log-card-primary',
+                    }),
+                    node('button', {
+                      children: 'More Actions',
+                      emphasis: 'plain',
+                      action: 'log-more',
+                    }),
+                  ],
+                },
+              ),
+            ],
+          },
+        ),
+      ]),
+    ),
+  );
+});
+
+test('builds ContentItem › Transcript Bubbles', async ({ page }) => {
+  const bubbles = [
+    ['end', 'brand-loud', 'Summarize the failing checks.', 'user'],
+    [
+      'start',
+      'neutral',
+      'Two checks fail: the bundle budget grew by 213 bytes, and the design-template drift render is missing the new variant.',
+      'assistant',
+    ],
+    ['end', 'brand-loud', 'Thanks!', undefined],
+  ] as const;
+  await nestedPane(page, { text: { label: 'Assistant Conversation' } });
+  await addInto(page, /^Pane/, 'List', 1);
+  await applySpec(page, {
+    choices: { gap: 'xs' },
+    data: [['data-demo-transcript', '']],
+  });
+  for (const [bubble, appearance, copy, who] of bubbles) {
+    await addInto(page, /^List(?![A-Z])/, 'ContentItem');
+    await applySpec(page, {
+      choices: { bubble, appearance },
+      data: who ? [['data-demo-bubble', who]] : [],
+    });
+    await addChild(page, 'Text');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { variant: 'span' },
+      text: { children: copy },
+    });
+  }
+  expect(await exported(page)).toEqual(
+    pane(
+      nestedPaneNode({ label: 'Assistant Conversation' }, [
+        node(
+          'list',
+          { gap: 'xs', rootAttributes: { 'data-demo-transcript': '' } },
+          {
+            children: bubbles.map(([bubble, appearance, copy, who]) =>
+              node(
+                'content-item',
+                {
+                  bubble,
+                  appearance,
+                  ...(who
+                    ? { rootAttributes: { 'data-demo-bubble': who } }
+                    : {}),
+                },
+                { children: [textNode(copy, { variant: 'span' })] },
+              ),
+            ),
+          },
+        ),
+      ]),
+    ),
+  );
+});
+
+test('builds ContentItem › Pill Shape', async ({ page }) => {
+  await nestedPane(page, { text: { label: 'Pill Content Item' } });
+  await addInto(page, /^Pane/, 'ContentItem', 1);
+  await applySpec(page, {
+    choices: { frame: 'framed', shape: 'pill' },
+    data: [['data-demo-item', 'pill']],
+  });
+  await addChild(page, 'Text');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { variant: 'span' },
+    text: { children: 'Three reviewers approved this change.' },
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      nestedPaneNode({ label: 'Pill Content Item' }, [
+        node(
+          'content-item',
+          {
+            frame: 'framed',
+            shape: 'pill',
+            rootAttributes: { 'data-demo-item': 'pill' },
+          },
+          {
+            children: [
+              textNode('Three reviewers approved this change.', {
+                variant: 'span',
+              }),
+            ],
+          },
+        ),
+      ]),
+    ),
+  );
+});
+
 /** A ToolbarText node as the exported document spells it. */
 const toolbarTextNode = (text: string, size?: string) =>
   node('toolbar-text', { text, ...(size ? { size } : {}) });

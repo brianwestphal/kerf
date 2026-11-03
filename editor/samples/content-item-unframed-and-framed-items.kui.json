@@ -1,0 +1,116 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ContentItemUnframedAndFramedItems",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:pane",
+          "props": {
+            "label": "Content Items"
+          },
+          "zones": {
+            "content": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Workspace Details",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "An ordinary item sits directly on the surface.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "rootAttributes": {
+                    "data-demo-item": "plain"
+                  }
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000009",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Unsaved Changes",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000010",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "A framed item reads as visibly bounded without moving its content.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "frame": "framed",
+                  "rootAttributes": {
+                    "data-demo-item": "framed"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

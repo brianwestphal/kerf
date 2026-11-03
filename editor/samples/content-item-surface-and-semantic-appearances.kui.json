@@ -1,0 +1,219 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ContentItemSurfaceAndSemanticAppearances",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:grid",
+          "props": {
+            "gap": "xs",
+            "rootAttributes": {
+              "data-demo-item-appearances": ""
+            },
+            "minColumnWidth": {
+              "$css": "rem(12)"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "appearance": "transparent",
+                  "rootAttributes": {
+                    "data-demo-item": "appearance-transparent"
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "transparent",
+                        "variant": "span",
+                        "weight": "strong"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "appearance": "surface",
+                  "rootAttributes": {
+                    "data-demo-item": "appearance-surface"
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "surface",
+                        "variant": "span",
+                        "weight": "strong"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "appearance": "neutral",
+                  "rootAttributes": {
+                    "data-demo-item": "appearance-neutral"
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "neutral",
+                        "variant": "span",
+                        "weight": "strong"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "appearance": "info",
+                  "rootAttributes": {
+                    "data-demo-item": "appearance-info"
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000010",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "info",
+                        "variant": "span",
+                        "weight": "strong"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000011",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "appearance": "pop",
+                  "rootAttributes": {
+                    "data-demo-item": "appearance-pop"
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000012",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "pop",
+                        "variant": "span",
+                        "weight": "strong"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000013",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "appearance": "success",
+                  "rootAttributes": {
+                    "data-demo-item": "appearance-success"
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000014",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "success",
+                        "variant": "span",
+                        "weight": "strong"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000015",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "appearance": "warning",
+                  "rootAttributes": {
+                    "data-demo-item": "appearance-warning"
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000016",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "warning",
+                        "variant": "span",
+                        "weight": "strong"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000017",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "appearance": "danger",
+                  "rootAttributes": {
+                    "data-demo-item": "appearance-danger"
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000018",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "danger",
+                        "variant": "span",
+                        "weight": "strong"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
