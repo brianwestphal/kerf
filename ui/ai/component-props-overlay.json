@@ -184,6 +184,13 @@
         }
       }
     },
+    "@kerfjs/ui:list-action-row": {
+      "props": {
+        "pressed": {
+          "control": "select"
+        }
+      }
+    },
     "@kerfjs/ui:list-header": {
       "groups": ["Content", "Mode", "Appearance"],
       "props": {

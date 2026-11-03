@@ -5431,7 +5431,8 @@
             "text": "boolean | undefined",
             "nullable": true
           },
-          "required": false
+          "required": false,
+          "control": "select"
         },
         {
           "name": "accessibleLabel",

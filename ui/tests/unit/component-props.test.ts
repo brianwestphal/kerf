@@ -397,6 +397,22 @@ describe('ai/component-props.json (generated from the built package)', async () 
     ).toEqual(['header', 'footer']);
   });
 
+  // KF-3T47XJ: unset `pressed` is a plain action and false an unpressed
+  // toggle, so every boolean `pressed` offers Not set / Off / On; a switch
+  // turned off would clear it.
+  it('gives every boolean pressed prop the Not set / Off / On select', () => {
+    const pressed = document.components.flatMap((item) =>
+      item.props
+        .filter(
+          (entry) => entry.name === 'pressed' && entry.type.kind === 'boolean',
+        )
+        .map((entry) => [item.key, entry.control]),
+    );
+    expect(pressed.length).toBeGreaterThanOrEqual(4);
+    for (const [key, control] of pressed)
+      expect({ key, control }).toEqual({ key, control: 'select' });
+  });
+
   it('Button: labeled or icon-only variants, enum defaults, and the overlay', () => {
     const button = component('@kerfjs/ui:button');
     expect(button.import).toBe('@kerfjs/ui/button');
