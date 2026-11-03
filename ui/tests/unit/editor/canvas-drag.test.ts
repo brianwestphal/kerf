@@ -677,7 +677,7 @@ describe('canvas drag', () => {
     expect(caption().hidden).toBe(false);
     expect(caption().hasAttribute('data-refused')).toBe(true);
     expect(caption().textContent).toBe(
-      'ToolbarControlGroup goes in Toolbar or FloatingToolbar or TabBar',
+      'ToolbarControlGroup goes in Toolbar or FloatingToolbar or TabBar or MessageComposer',
     );
     // A drop there changes nothing; leaving clears the refusal.
     const before = editor.document.value;
@@ -700,7 +700,7 @@ describe('canvas drag', () => {
     under = pane;
     move('pointermove', 400, 500);
     expect(caption().textContent).toBe(
-      'ToolbarControlGroup goes in Toolbar or FloatingToolbar or TabBar',
+      'ToolbarControlGroup goes in Toolbar or FloatingToolbar or TabBar or MessageComposer',
     );
     move('pointerup', 400, 500);
     // A Toolbar cannot go inside its own group.
