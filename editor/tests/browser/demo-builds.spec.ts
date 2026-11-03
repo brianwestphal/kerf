@@ -770,6 +770,149 @@ test('builds LoadingSpinner › Spinner Colors', async ({ page }) => {
   );
 });
 
+/** A Chip configured by `spec`, removable through the demo's action. */
+async function chip(page: Page, text: string, spec: FieldSpec) {
+  await dragComponent(page, 'Chip', () => emptySpot(page));
+  await select(page, /^Chip(?![A-Z])/);
+  await setText(page, 'children', text);
+  await applySpec(page, spec);
+  await setText(page, 'removeAction', 'log-chip-remove');
+}
+
+test('builds Chip › Removable Tag', async ({ page }) => {
+  await chip(page, 'Urgent', {
+    choices: { tone: 'info' },
+    text: { itemId: 'urgent', removeLabel: 'Remove Urgent tag' },
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      node('chip', {
+        children: 'Urgent',
+        tone: 'info',
+        itemId: 'urgent',
+        removeLabel: 'Remove Urgent tag',
+        removeAction: 'log-chip-remove',
+      }),
+    ),
+  );
+});
+
+test('builds Chip › Compact', async ({ page }) => {
+  await chip(page, 'Reviewed', {
+    choices: {
+      tone: 'success',
+      appearance: 'outline',
+      shape: 'rounded',
+      size: 'compact',
+    },
+    text: { itemId: 'reviewed', removeLabel: 'Remove Reviewed tag' },
+  });
+  await addIcon(page, 'icon', 'check');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'chip',
+        {
+          children: 'Reviewed',
+          tone: 'success',
+          appearance: 'outline',
+          shape: 'rounded',
+          size: 'compact',
+          itemId: 'reviewed',
+          removeLabel: 'Remove Reviewed tag',
+          removeAction: 'log-chip-remove',
+        },
+        { icon: [icon('check')] },
+      ),
+    ),
+  );
+});
+
+test('builds Chip › Disabled', async ({ page }) => {
+  await chip(page, 'Locked', {
+    choices: { tone: 'warning' },
+    flags: ['disabled'],
+    text: { itemId: 'locked', removeLabel: 'Remove Locked tag' },
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      node('chip', {
+        children: 'Locked',
+        tone: 'warning',
+        disabled: true,
+        itemId: 'locked',
+        removeLabel: 'Remove Locked tag',
+        removeAction: 'log-chip-remove',
+      }),
+    ),
+  );
+});
+
+/** Types builder call `value` into css-value prop `name` of the selection. */
+async function setCss(page: Page, name: string, value: string) {
+  // A length-or-keyword prop picks Custom… to show its builder field.
+  const css = page.locator(
+    `[data-editor-prop="${name}"][data-editor-kind="css"]`,
+  );
+  if (
+    !(await css.count()) &&
+    (await page.locator(`[data-editor-prop="${name}"]`).count())
+  )
+    await choose(page, name, 'Custom…');
+  const field = page
+    .locator(`[data-editor-prop="${name}"][data-editor-kind="css"]`)
+    .or(page.locator(`[data-editor-prop="${name}"]:not([data-editor-kind])`))
+    .getByRole('textbox')
+    .first();
+  await field.fill(value);
+  await field.press('Enter');
+}
+
+test('builds Skeleton › Primitive', async ({ page }) => {
+  await stacked(page, 'List', 'Skeleton', [{}, {}, {}, {}], () =>
+    choose(page, 'gap', 'm'),
+  );
+  const css = [
+    { width: 'em(12)' },
+    { width: 'em(8)', height: 'em(1.5)', radius: 'em(0.75)' },
+    {},
+    { width: 'em(6)' },
+  ];
+  for (const [index, props] of css.entries()) {
+    await select(page, /^Skeleton/, index);
+    for (const [name, value] of Object.entries(props))
+      await setCss(page, name, value);
+  }
+  await select(page, /^Skeleton/, 2);
+  await setText(page, 'lines', '3');
+  await select(page, /^Skeleton/, 3);
+  await setText(page, 'label', 'Loading value…');
+  const $css = (value: string) => ({ $css: value });
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'm' },
+        {
+          children: [
+            node('skeleton', { width: $css('em(12)') }),
+            node('skeleton', {
+              width: $css('em(8)'),
+              height: $css('em(1.5)'),
+              radius: $css('em(0.75)'),
+            }),
+            node('skeleton', { lines: 3 }),
+            node('skeleton', { width: $css('em(6)'), label: 'Loading value…' }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+// Skeleton › In Composition waits on KF-3Y2GS2: its placeholder rows need a
+// required value of "", which the editor can't write yet.
+
 test('builds ProgressRing › Tones and Indeterminate', async ({ page }) => {
   await stacked(
     page,

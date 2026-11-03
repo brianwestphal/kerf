@@ -1,0 +1,70 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SkeletonPrimitive",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:skeleton",
+                "props": {
+                  "width": {
+                    "$css": "em(12)"
+                  }
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:skeleton",
+                "props": {
+                  "width": {
+                    "$css": "em(8)"
+                  },
+                  "height": {
+                    "$css": "em(1.5)"
+                  },
+                  "radius": {
+                    "$css": "em(0.75)"
+                  }
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:skeleton",
+                "props": {
+                  "lines": 3
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:skeleton",
+                "props": {
+                  "width": {
+                    "$css": "em(6)"
+                  },
+                  "label": "Loading value…"
+                }
+              }
+            ]
+          },
+          "props": {
+            "gap": "m"
+          }
+        }
+      ]
+    }
+  }
+}
