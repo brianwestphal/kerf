@@ -1,0 +1,160 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListDividerBetweenRegions",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:row",
+          "props": {
+            "gap": "none"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "flex": "none",
+                  "dividerSides": "r"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Inbox",
+                        "action": "log-inbox",
+                        "selected": true,
+                        "itemId": "divider-inbox"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "inbox"
+                              },
+                              "name": "inbox"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Projects",
+                        "action": "log-projects",
+                        "itemId": "divider-projects"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000007",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "folder"
+                              },
+                              "name": "folder"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Drafts",
+                        "action": "log-drafts",
+                        "itemId": "divider-drafts"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000009",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "file-text"
+                              },
+                              "name": "file-text"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000010",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "flex": true
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:content-item",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000012",
+                            "type": "@kerfjs/ui:list",
+                            "props": {
+                              "gap": "2xs"
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000013",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Inbox",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000014",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "12 unread conversations. The selected folder's contents appear in this region.",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

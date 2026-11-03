@@ -1,0 +1,107 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListActionRowDraggingAndInsertionStates",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list-action-row",
+                "props": {
+                  "label": "Drops Above This Row",
+                  "action": "select-list-action-row",
+                  "dropPosition": "before",
+                  "draggable": true,
+                  "itemId": "reorder-before",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Actions for the row below the drop"
+                },
+                "zones": {
+                  "trailingActionIcon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "ellipsis"
+                        },
+                        "name": "ellipsis"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:list-action-row",
+                "props": {
+                  "label": "Row Being Dragged",
+                  "action": "select-list-action-row",
+                  "draggable": true,
+                  "dragging": true,
+                  "itemId": "reorder-dragging",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Actions for the dragged row"
+                },
+                "zones": {
+                  "trailingActionIcon": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "ellipsis"
+                        },
+                        "name": "ellipsis"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:list-action-row",
+                "props": {
+                  "label": "Drops Below This Row",
+                  "action": "select-list-action-row",
+                  "dropPosition": "after",
+                  "draggable": true,
+                  "itemId": "reorder-after",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Actions for the row above the drop"
+                },
+                "zones": {
+                  "trailingActionIcon": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "ellipsis"
+                        },
+                        "name": "ellipsis"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

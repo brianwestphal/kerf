@@ -1,0 +1,59 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListItemDraggingAndInsertionStates",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Drops Above This Row",
+                  "action": "log-projects",
+                  "dropPosition": "before",
+                  "draggable": true,
+                  "itemId": "reorder-before"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Row Being Dragged",
+                  "action": "log-projects",
+                  "draggable": true,
+                  "dragging": true,
+                  "itemId": "reorder-dragging"
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Drops Below This Row",
+                  "action": "log-projects",
+                  "dropPosition": "after",
+                  "draggable": true,
+                  "itemId": "reorder-after"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

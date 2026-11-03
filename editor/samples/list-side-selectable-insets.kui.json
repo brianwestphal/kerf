@@ -1,0 +1,75 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListSideSelectableInsets",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sunken-panel",
+          "props": {
+            "ariaLabel": "Layout Example"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "gap": "xs",
+                  "textInsets": "l",
+                  "controlInsets": "rb"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:chip",
+                      "props": {
+                        "children": "Text-aligned left edge"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:text-field",
+                      "props": {
+                        "label": "Inset List Control",
+                        "value": "Control edge"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "textInsets": "t"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000007",
+                            "type": "@kerfjs/ui:chip",
+                            "props": {
+                              "children": "Nested text-aligned top edge"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

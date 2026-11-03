@@ -1,0 +1,68 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListInsetControlInsetASelfBorderedControl",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sunken-panel",
+          "props": {
+            "ariaLabel": "List Inset Example"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:state-banner",
+                "props": {
+                  "title": "A Content Item, for Reference",
+                  "tone": "info",
+                  "detail": "Its edges are the alignment reference."
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "check"
+                        },
+                        "name": "check"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:list-inset-control",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:text-field",
+                      "props": {
+                        "label": "Filter Records",
+                        "placeholder": "An input that owns its border and padding"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

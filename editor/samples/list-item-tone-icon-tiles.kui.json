@@ -1,0 +1,151 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListItemToneIconTiles",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "General",
+                  "action": "select-icon-tile-row",
+                  "iconTile": "neutral",
+                  "itemId": "tile-general"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "settings"
+                        },
+                        "name": "settings"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Notifications",
+                  "action": "select-icon-tile-row",
+                  "iconTile": "brand",
+                  "itemId": "tile-notifications"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "bell"
+                        },
+                        "name": "bell"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Backups",
+                  "action": "select-icon-tile-row",
+                  "iconTile": "success",
+                  "itemId": "tile-backups"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "shield-check"
+                        },
+                        "name": "shield-check"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Storage",
+                  "action": "select-icon-tile-row",
+                  "iconTile": "warning",
+                  "itemId": "tile-storage"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000010",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "hard-drive"
+                        },
+                        "name": "hard-drive"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000011",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Reset Workspace",
+                  "action": "select-icon-tile-row",
+                  "iconTile": "danger",
+                  "itemId": "tile-reset"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000012",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "trash"
+                        },
+                        "name": "trash"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "props": {
+            "rootAttributes": {
+              "data-demo-icon-tiles": "list-item"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

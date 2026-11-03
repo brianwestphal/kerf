@@ -1,0 +1,148 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListActionRowCompactRows",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list-action-row",
+                "props": {
+                  "label": "Open Folder",
+                  "action": "select-list-action-row",
+                  "density": "compact",
+                  "trailingActionVisibility": "interaction",
+                  "itemId": "compact-open-folder",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Actions for Open Folder"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "folder"
+                        },
+                        "name": "folder"
+                      }
+                    }
+                  ],
+                  "trailingActionIcon": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "ellipsis"
+                        },
+                        "name": "ellipsis"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:list-action-row",
+                "props": {
+                  "label": "Run Tests",
+                  "action": "select-list-action-row",
+                  "density": "compact",
+                  "trailingActionVisibility": "interaction",
+                  "itemId": "compact-run-tests",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Actions for Run Tests"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "terminal"
+                        },
+                        "name": "terminal"
+                      }
+                    }
+                  ],
+                  "trailingActionIcon": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "ellipsis"
+                        },
+                        "name": "ellipsis"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:list-action-row",
+                "props": {
+                  "label": "Read Docs",
+                  "action": "select-list-action-row",
+                  "density": "compact",
+                  "trailingActionVisibility": "interaction",
+                  "itemId": "compact-read-docs",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Actions for Read Docs"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000010",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "book-open"
+                        },
+                        "name": "book-open"
+                      }
+                    }
+                  ],
+                  "trailingActionIcon": [
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "ellipsis"
+                        },
+                        "name": "ellipsis"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "props": {
+            "rootAttributes": {
+              "data-demo-compact-rows": "list-action-row"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

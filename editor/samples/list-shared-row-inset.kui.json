@@ -1,0 +1,114 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListSharedRowInset",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "rootAttributes": {
+              "data-demo-row-inset-list": ""
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Inbox",
+                  "action": "log-inbox",
+                  "itemId": "inset-inbox"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "inbox"
+                        },
+                        "name": "inbox"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:list-action-row",
+                "props": {
+                  "label": "Projects",
+                  "action": "log-projects",
+                  "itemId": "inset-projects",
+                  "trailingAction": "log-settings",
+                  "trailingActionLabel": "Project Options"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "folder"
+                        },
+                        "name": "folder"
+                      }
+                    }
+                  ],
+                  "trailingActionIcon": [
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "ellipsis"
+                        },
+                        "name": "ellipsis"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000008",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Settings",
+                  "action": "log-settings",
+                  "itemId": "inset-settings"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000009",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "settings"
+                        },
+                        "name": "settings"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

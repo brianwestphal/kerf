@@ -1,0 +1,28 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListItemExternalNavigationLink",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list-item#ListItemLink",
+          "props": {
+            "href": "https://example.com",
+            "label": "Open External Example",
+            "external": true,
+            "itemId": "external-link"
+          }
+        }
+      ]
+    }
+  }
+}

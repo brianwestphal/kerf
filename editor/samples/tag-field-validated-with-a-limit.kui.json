@@ -23,14 +23,14 @@
                 "props": {
                   "id": "tag-field-demo-recipients",
                   "label": "Recipients",
+                  "tags": [
+                    "mara@example.com"
+                  ],
                   "required": true,
                   "name": "recipients",
                   "max": 3,
                   "placeholder": "Add an email address…",
-                  "hint": "Up to three addresses.",
-                  "tags": [
-                    "mara@example.com"
-                  ]
+                  "hint": "Up to three addresses."
                 }
               },
               {
@@ -39,11 +39,11 @@
                 "props": {
                   "id": "tag-field-demo-locked",
                   "label": "Locked Labels",
-                  "disabled": true,
                   "tags": [
                     "release",
                     "frozen"
-                  ]
+                  ],
+                  "disabled": true
                 }
               }
             ]

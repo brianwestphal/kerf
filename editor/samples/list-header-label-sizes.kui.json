@@ -1,0 +1,77 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListHeaderLabelSizes",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list-header",
+                "props": {
+                  "label": "Extra Small",
+                  "size": "xs",
+                  "headingLevel": 3
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:list-header",
+                "props": {
+                  "label": "Small",
+                  "size": "sm",
+                  "headingLevel": 3
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:list-header",
+                "props": {
+                  "label": "Medium",
+                  "size": "m",
+                  "headingLevel": 3
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:list-header",
+                "props": {
+                  "label": "Large",
+                  "size": "l",
+                  "headingLevel": 3
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:list-header",
+                "props": {
+                  "label": "Extra Large",
+                  "size": "xl",
+                  "headingLevel": 3
+                }
+              }
+            ]
+          },
+          "props": {
+            "gap": "xs",
+            "rootAttributes": {
+              "data-demo-list-header-sizes": ""
+            }
+          }
+        }
+      ]
+    }
+  }
+}

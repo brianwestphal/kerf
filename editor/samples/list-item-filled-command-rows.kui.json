@@ -1,0 +1,45 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListItemFilledCommandRows",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "New Project",
+                  "action": "log-projects",
+                  "itemId": "tone-rest"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Current Project",
+                  "action": "log-projects",
+                  "selected": true,
+                  "itemId": "tone-selected"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

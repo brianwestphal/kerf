@@ -1,0 +1,60 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListItemNativeNavigationLink",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list-item#ListItemLink",
+          "props": {
+            "href": "#list-item-link-target",
+            "label": "Jump to List Destination",
+            "itemId": "link"
+          },
+          "zones": {
+            "icon": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "folder"
+                  },
+                  "name": "folder"
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "Link",
+                  "variant": "span"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "00000000000000000000000005",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "List destination",
+            "variant": "span",
+            "id": "list-item-link-target"
+          }
+        }
+      ]
+    }
+  }
+}

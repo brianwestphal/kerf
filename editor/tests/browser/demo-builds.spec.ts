@@ -1839,9 +1839,13 @@ async function configureChoices(
       await chooseField(page, 'choices', [index, 'swatch'], 'Custom…');
       await setField(page, 'choices', [index, 'swatch'], choice.swatch);
     }
-    await dialog.getByRole('button', { name: 'Back' }).click();
+    await dialog
+      .getByRole('button', { name: 'Back', exact: true })
+      .filter({ visible: true })
+      .click();
   }
-  await dialog.getByRole('button', { name: 'Done' }).click();
+  // A choice may itself be labeled Done.
+  await dialog.locator('[data-action="editor-field-done"]').click();
   for (const [index, choice] of choices.entries()) {
     if (!choice.glyph) continue;
     await select(page, owner);
@@ -2611,18 +2615,29 @@ async function editAsJson(page: Page, prop: string, value: unknown) {
   } else await back(page);
 }
 
-/** Replaces a tags prop's tags: Backspace removes, Enter adds. */
+/**
+ * Replaces a tags prop's tags: Enter adds each new one, then the old ones
+ * are removed (adding first keeps a required list from emptying).
+ */
 async function setTags(page: Page, prop: string, tags: readonly string[]) {
-  const control = page.locator(`[data-editor-prop="${prop}"]`).first();
-  await control.getByRole('button', { name: /^Clear / }).click();
-  await control.getByRole('searchbox').click();
+  // A union's tags follow its type Select, which shares the prop name.
+  const control = page
+    .locator(`[data-editor-prop="${prop}"]:not([data-editor-kind="choice"])`)
+    .first();
+  const remove = control.getByRole('button', { name: /^Remove / });
+  const old = await remove.count();
+  // A click could land on a chip; focus the editor and type at its end.
+  await control.getByRole('searchbox').focus();
+  await page.keyboard.press('ControlOrMeta+End');
   for (const tag of tags) {
     await page.keyboard.type(tag);
     await page.keyboard.press('Enter');
   }
-  await expect(control.getByRole('button', { name: /^Remove / })).toHaveCount(
-    tags.length,
-  );
+  await expect(remove).toHaveCount(old + tags.length);
+  for (let left = old; left > 0; left -= 1) {
+    await remove.first().click();
+    await expect(remove).toHaveCount(left - 1 + tags.length);
+  }
 }
 
 // Live demo state is a static snapshot of each demo's first render.
@@ -3978,6 +3993,214 @@ test('builds TextField › End Toggle', async ({ page }) => {
   );
 });
 
+/** The demos' DemoListInsetPane: a SunkenPanel named for the example. */
+async function insetPane(page: Page) {
+  await dragComponent(page, 'SunkenPanel', () => emptySpot(page));
+  await select(page, /^SunkenPanel/);
+  await setText(page, 'ariaLabel', 'List Inset Example');
+}
+
+const insetPaneNode = (...children: unknown[]) =>
+  node('sunken-panel', { ariaLabel: 'List Inset Example' }, { children });
+
+/** A reference StateBanner with a check icon, added to the SunkenPanel. */
+async function referenceBanner(page: Page, tone: string, detail: string) {
+  await select(page, /^SunkenPanel/);
+  await addChild(page, 'StateBanner');
+  await applySpec(page, {
+    choices: { tone },
+    text: { title: 'A Content Item, for Reference', detail },
+  });
+  await addChild(page, 'LucideIcon', 'icon');
+  await pickIcon(page, page.locator('[data-editor-icon-place]'), 'check');
+}
+
+const referenceBannerNode = (tone: string, detail: string) =>
+  node(
+    'state-banner',
+    { tone, title: 'A Content Item, for Reference', detail },
+    { icon: [icon('check')] },
+  );
+
+/** Adds a ListInsetText reading `text` (on `sides`) to the SunkenPanel. */
+async function insetText(page: Page, text: string, sides?: string) {
+  await select(page, /^SunkenPanel/);
+  await addChild(page, 'ListInsetText');
+  await setText(page, 'children', text);
+  if (sides) await choose(page, 'sides', sides);
+}
+
+const insetTextNode = (children: string, sides?: string) =>
+  node('list-inset-text', { children, ...(sides ? { sides } : {}) });
+
+/**
+ * Adds a ListInsetControl (on `sides`) holding a `component`, set up by
+ * `spec`, to the SunkenPanel; the inset's seeded text gives way to it.
+ */
+async function insetControl(
+  page: Page,
+  component: string,
+  spec: FieldSpec,
+  sides?: string,
+) {
+  await select(page, /^SunkenPanel/);
+  await addChild(page, 'ListInsetControl');
+  if (sides) await choose(page, 'sides', sides);
+  await addChild(page, component);
+  // Adding a child turned the inset's seeded text into a Text node.
+  await select(page, /^Text(?![A-Z])/);
+  await area(page, 'Flow');
+  await page.getByRole('button', { name: 'Delete', exact: true }).click();
+  await select(page, new RegExp(`^${component}(?![A-Z])`), -1);
+  await applySpec(page, spec);
+}
+
+const insetControlNode = (child: unknown, sides?: string) =>
+  node('list-inset-control', sides ? { sides } : undefined, {
+    children: [child],
+  });
+
+test('builds ListInsetText › Inset Bare Text', async ({ page }) => {
+  const text =
+    'Aligned plain text — its left edge lands at the same inset as the item above.';
+  await insetPane(page);
+  await referenceBanner(page, 'neutral', 'Note where its title text starts.');
+  await insetText(page, text);
+  expect(await exported(page)).toEqual(
+    pane(
+      insetPaneNode(
+        referenceBannerNode('neutral', 'Note where its title text starts.'),
+        insetTextNode(text),
+      ),
+    ),
+  );
+});
+
+test('builds ListInsetText › Horizontal-Only Inset', async ({ page }) => {
+  const lines = [
+    'First tight line — aligned, no vertical box space.',
+    'Second tight line, packed against the first.',
+  ];
+  await insetPane(page);
+  for (const line of lines) await insetText(page, line, 'rl');
+  expect(await exported(page)).toEqual(
+    pane(insetPaneNode(...lines.map((line) => insetTextNode(line, 'rl')))),
+  );
+});
+
+test('builds ListInsetText › Selected Physical Sides', async ({ page }) => {
+  const text = 'Top, bottom, and left are inset; the right edge stays flush.';
+  await insetPane(page);
+  await insetText(page, text, 'tbl');
+  expect(await exported(page)).toEqual(
+    pane(insetPaneNode(insetTextNode(text, 'tbl'))),
+  );
+});
+
+test('builds ListInsetControl › Inset a Self-Bordered Control', async ({
+  page,
+}) => {
+  await insetPane(page);
+  await referenceBanner(page, 'info', 'Its edges are the alignment reference.');
+  await insetControl(page, 'TextField', {
+    text: {
+      label: 'Filter Records',
+      placeholder: 'An input that owns its border and padding',
+    },
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      insetPaneNode(
+        referenceBannerNode('info', 'Its edges are the alignment reference.'),
+        insetControlNode(
+          node('text-field', {
+            label: 'Filter Records',
+            placeholder: 'An input that owns its border and padding',
+          }),
+        ),
+      ),
+    ),
+  );
+});
+
+test('builds ListInsetControl › Selected Physical Sides', async ({ page }) => {
+  await insetPane(page);
+  await insetControl(
+    page,
+    'TextField',
+    {
+      text: {
+        label: 'Filter Selected Sides',
+        placeholder: 'Right and bottom inset',
+      },
+    },
+    'rb',
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      insetPaneNode(
+        insetControlNode(
+          node('text-field', {
+            label: 'Filter Selected Sides',
+            placeholder: 'Right and bottom inset',
+          }),
+          'rb',
+        ),
+      ),
+    ),
+  );
+});
+
+test('builds ListInsetControl › Stretch Any Self-Bordered Control', async ({
+  page,
+}) => {
+  const statuses: readonly ChoiceSpec[] = [
+    { value: 'review', label: 'In Review' },
+    { value: 'ready', label: 'Ready' },
+    { value: 'done', label: 'Done' },
+  ];
+  await insetPane(page);
+  await insetControl(page, 'Select', {}, 'trl');
+  await configureSelect(page, {
+    choices: statuses,
+    props: { text: { name: 'demo-inset-status', label: 'Status' } },
+    pick: 'In Review',
+  });
+  await insetControl(
+    page,
+    'TextField',
+    { text: { label: 'Assignee', placeholder: 'Search people' } },
+    'trl',
+  );
+  await insetControl(page, 'Button', {
+    choices: { emphasis: 'secondary' },
+    text: { children: 'Assign' },
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      insetPaneNode(
+        insetControlNode(
+          selectNode(
+            { name: 'demo-inset-status', value: 'review', label: 'Status' },
+            { choices: statuses },
+          ),
+          'trl',
+        ),
+        insetControlNode(
+          node('text-field', {
+            label: 'Assignee',
+            placeholder: 'Search people',
+          }),
+          'trl',
+        ),
+        insetControlNode(
+          node('button', { children: 'Assign', emphasis: 'secondary' }),
+        ),
+      ),
+    ),
+  );
+});
+
 test('builds ListItem › Divided List', async ({ page }) => {
   await dragComponent(page, 'List', () => emptySpot(page));
   await dragComponent(page, 'ListItem', () => emptySpot(page));
@@ -4008,6 +4231,340 @@ test('builds ListItem › Divided List', async ({ page }) => {
             ...(index < names.length - 1 ? { divider: 'after' } : {}),
             ...(index === 1 ? { selected: true } : {}),
           }),
+        ),
+      }),
+    ),
+  );
+});
+
+/** A ListItem FieldSpec plus its icon and a trailing span Text. */
+type ItemSpec = FieldSpec & {
+  readonly glyph?: string;
+  readonly trailing?: string;
+};
+
+/** Gives the `index`th node named `name` its icon and trailing Text. */
+async function itemContent(
+  page: Page,
+  name: RegExp,
+  index: number,
+  { glyph, trailing }: ItemSpec,
+) {
+  if (glyph) {
+    await select(page, name, index);
+    await addIcon(page, 'icon', glyph);
+  }
+  if (!trailing) return;
+  await select(page, name, index);
+  await addChild(page, 'Text', 'trailing');
+  await applySpec(page, {
+    choices: { variant: 'span' },
+    text: { children: trailing },
+  });
+}
+
+/** A List of ListItems, each set up by its spec. */
+async function listItems(
+  page: Page,
+  items: readonly ItemSpec[],
+  data?: readonly [string, string],
+) {
+  await stacked(page, 'List', 'ListItem', items, async () => {
+    if (data) await dataAttribute(page, ...data);
+  });
+  for (const [index, item] of items.entries())
+    await itemContent(page, /^ListItem(?![A-Z])/, index, item);
+  await expect(
+    canvas(page).locator('.kui-list-item[data-kerf-node]'),
+  ).toHaveCount(items.length);
+}
+
+/** The node an ItemSpec builds (of `type`), given its props. */
+const itemNode = (
+  props: Record<string, unknown>,
+  { glyph, trailing }: ItemSpec,
+  type = 'list-item',
+) =>
+  node(
+    type,
+    props,
+    glyph || trailing
+      ? {
+          ...(glyph ? { icon: [icon(glyph)] } : {}),
+          ...(trailing
+            ? {
+                trailing: [
+                  node('text', { children: trailing, variant: 'span' }),
+                ],
+              }
+            : {}),
+        }
+      : undefined,
+  );
+
+test('builds ListItem › Filled Command Rows', async ({ page }) => {
+  // The demo's list-item tokens are the catalog viewport's, not the view's.
+  const rows = [
+    { action: 'log-projects', itemId: 'tone-rest', label: 'New Project' },
+    {
+      action: 'log-projects',
+      itemId: 'tone-selected',
+      label: 'Current Project',
+      selected: true,
+    },
+  ];
+  const specs: ItemSpec[] = rows.map(({ selected, ...text }) => ({
+    text,
+    flags: selected ? ['selected'] : [],
+  }));
+  await listItems(page, specs);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('list', undefined, {
+        children: rows.map((props, index) => itemNode(props, specs[index]!)),
+      }),
+    ),
+  );
+});
+
+test('builds ListItem › Tone Icon Tiles', async ({ page }) => {
+  // The tile current at first render (tile-run-tests) names no row here.
+  const settings = [
+    ['tile-general', 'General', 'settings', 'neutral'],
+    ['tile-notifications', 'Notifications', 'bell', 'brand'],
+    ['tile-backups', 'Backups', 'shield-check', 'success'],
+    ['tile-storage', 'Storage', 'hard-drive', 'warning'],
+    ['tile-reset', 'Reset Workspace', 'trash', 'danger'],
+  ] as const;
+  const specs: ItemSpec[] = settings.map(([itemId, label, glyph, tone]) => ({
+    choices: { iconTile: tone },
+    text: { action: 'select-icon-tile-row', itemId, label },
+    glyph,
+  }));
+  await listItems(page, specs, ['data-demo-icon-tiles', 'list-item']);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { rootAttributes: { 'data-demo-icon-tiles': 'list-item' } },
+        {
+          children: settings.map(([itemId, label, , tone], index) =>
+            itemNode(
+              { action: 'select-icon-tile-row', itemId, label, iconTile: tone },
+              specs[index]!,
+            ),
+          ),
+        },
+      ),
+    ),
+  );
+});
+
+// KF-86PM4R: Text's id is a prop, so the link's destination builds too.
+test('builds ListItem › Native Navigation Link', async ({ page }) => {
+  const link: ItemSpec = {
+    text: {
+      href: '#list-item-link-target',
+      itemId: 'link',
+      label: 'Jump to List Destination',
+    },
+    glyph: 'folder',
+    trailing: 'Link',
+  };
+  await dragComponent(page, 'ListItemLink', () => emptySpot(page));
+  await select(page, /^ListItemLink/);
+  await applySpec(page, link);
+  await itemContent(page, /^ListItemLink/, 0, link);
+  await addInto(page, /^Pane/, 'Text');
+  await select(page, /^Text(?![A-Z])/, 1);
+  await applySpec(page, {
+    choices: { variant: 'span' },
+    text: { children: 'List destination', id: 'list-item-link-target' },
+  });
+  await expect(canvas(page).locator('#list-item-link-target')).toHaveText(
+    'List destination',
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      itemNode(
+        {
+          href: '#list-item-link-target',
+          itemId: 'link',
+          label: 'Jump to List Destination',
+        },
+        link,
+        'list-item#ListItemLink',
+      ),
+      node('text', {
+        children: 'List destination',
+        variant: 'span',
+        id: 'list-item-link-target',
+      }),
+    ),
+  );
+});
+
+test('builds ListItem › External Navigation Link', async ({ page }) => {
+  await dragComponent(page, 'ListItemLink', () => emptySpot(page));
+  await select(page, /^ListItemLink/);
+  await applySpec(page, {
+    flags: ['external'],
+    text: {
+      href: 'https://example.com',
+      itemId: 'external-link',
+      label: 'Open External Example',
+    },
+  });
+  await expect(
+    canvas(page).locator('a[href="https://example.com"]'),
+  ).toBeVisible();
+  expect(await exported(page)).toEqual(
+    pane(
+      node('list-item#ListItemLink', {
+        href: 'https://example.com',
+        itemId: 'external-link',
+        label: 'Open External Example',
+        external: true,
+      }),
+    ),
+  );
+});
+
+test('builds ListItem › Spacious Option and Centered Icon', async ({
+  page,
+}) => {
+  const spec: ItemSpec = {
+    choices: {
+      density: 'spacious',
+      divider: 'after',
+      multilineIconAlign: 'center',
+    },
+    flags: ['multiline'],
+    text: {
+      action: 'log-settings',
+      itemId: 'spacious',
+      label: 'Create a Project from an Existing Repository with a Longer Name',
+    },
+    glyph: 'wrench',
+    trailing: 'Open',
+  };
+  await dragComponent(page, 'ListItem', () => emptySpot(page));
+  await select(page, /^ListItem/);
+  await applySpec(page, spec);
+  await itemContent(page, /^ListItem(?![A-Z])/, 0, spec);
+  expect(await exported(page)).toEqual(
+    pane(
+      itemNode(
+        {
+          action: 'log-settings',
+          itemId: 'spacious',
+          label:
+            'Create a Project from an Existing Repository with a Longer Name',
+          density: 'spacious',
+          divider: 'after',
+          multiline: true,
+          multilineIconAlign: 'center',
+        },
+        spec,
+      ),
+    ),
+  );
+});
+
+test('builds ListItem › Drop Target', async ({ page }) => {
+  await dragComponent(page, 'ListItem', () => emptySpot(page));
+  await select(page, /^ListItem/);
+  await applySpec(page, {
+    text: {
+      action: 'log-projects',
+      itemId: 'drag-target',
+      label: 'Move Ticket Here',
+      state: 'drag-target',
+    },
+  });
+  await expect(
+    canvas(page).locator('.kui-list-item[data-state="drag-target"]'),
+  ).toHaveCount(1);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('list-item', {
+        action: 'log-projects',
+        itemId: 'drag-target',
+        label: 'Move Ticket Here',
+        state: 'drag-target',
+      }),
+    ),
+  );
+});
+
+// The reorder is the app's wiring; rows start unpressed toggles.
+test('builds ListItem › Drag to Reorder', async ({ page }) => {
+  const commands = [
+    ['run-tests', 'Run Tests'],
+    ['build', 'Build Package'],
+    ['lint', 'Lint Sources'],
+    ['deploy-preview', 'Deploy Preview'],
+  ] as const;
+  const specs: ItemSpec[] = commands.map(([itemId, label]) => ({
+    choices: { pressed: 'Off' },
+    flags: ['draggable'],
+    text: { action: 'toggle-reorder-row', itemId, label },
+    glyph: 'grip-vertical',
+  }));
+  await listItems(page, specs, ['data-list-id', 'demo-reorder-commands']);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { rootAttributes: { 'data-list-id': 'demo-reorder-commands' } },
+        {
+          children: commands.map(([itemId, label], index) =>
+            itemNode(
+              {
+                action: 'toggle-reorder-row',
+                itemId,
+                label,
+                pressed: false,
+                draggable: true,
+              },
+              specs[index]!,
+            ),
+          ),
+        },
+      ),
+    ),
+  );
+});
+
+test('builds ListItem › Dragging and Insertion States', async ({ page }) => {
+  const rows = [
+    ['reorder-before', 'Drops Above This Row', { dropPosition: 'before' }],
+    ['reorder-dragging', 'Row Being Dragged', { dragging: true }],
+    ['reorder-after', 'Drops Below This Row', { dropPosition: 'after' }],
+  ] as const;
+  const specs: ItemSpec[] = rows.map(([itemId, label, state]) => ({
+    choices:
+      'dropPosition' in state
+        ? { dropPosition: state.dropPosition }
+        : ({} as Record<string, string>),
+    flags: 'dragging' in state ? ['draggable', 'dragging'] : ['draggable'],
+    text: { action: 'log-projects', itemId, label },
+  }));
+  await listItems(page, specs);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('list', undefined, {
+        children: rows.map(([itemId, label, state], index) =>
+          itemNode(
+            {
+              action: 'log-projects',
+              itemId,
+              label,
+              draggable: true,
+              ...state,
+            },
+            specs[index]!,
+          ),
         ),
       }),
     ),
@@ -5091,6 +5648,1216 @@ test('builds Row › Wrapped Row', async ({ page }) => {
               },
             ),
           ],
+        },
+      ),
+    ),
+  );
+});
+
+const shortcuts = [
+  ['New Ticket', 'Create a ticket in the current project.', 'N'],
+  ['Search', 'Focus the search field.', '/'],
+  ['Complete Ticket', 'Mark the selected ticket done.', '⌘ ↵'],
+] as const;
+
+/** Deletes the selected node with Flow › Delete. */
+async function deleteSelected(page: Page) {
+  await area(page, 'Flow');
+  await page.getByRole('button', { name: 'Delete', exact: true }).click();
+}
+
+/**
+ * Adds `component` to the selected container; when the container held
+ * seeded text, that text became a Text node, and is deleted.
+ */
+async function addInto(
+  page: Page,
+  parent: RegExp,
+  component: string,
+  parentIndex = 0,
+  seededText?: number,
+) {
+  await select(page, parent, parentIndex);
+  await addChild(page, component);
+  if (seededText === undefined) return;
+  await select(page, /^Text(?![A-Z])/, seededText);
+  await deleteSelected(page);
+}
+
+test('builds FramedList › Settings Rows', async ({ page }) => {
+  test.slow();
+  await dragComponent(page, 'FramedList', () => emptySpot(page));
+  await select(page, /^FramedList(?!Row)/);
+  await setText(page, 'label', 'Keyboard Shortcuts');
+  // The list's and the row's seeded text each became a Text; neither stays.
+  await addInto(page, /^FramedList(?!Row)/, 'FramedListRow', 0, 0);
+  await addInto(page, /^FramedListRow/, 'Row', 0, 0);
+  await select(page, /^Row/);
+  await choose(page, 'gap', 's');
+  await choose(page, 'vAlign', 'middle');
+  for (const component of ['List', 'Text', 'Button', 'Button'])
+    await addInto(page, /^Row/, component);
+  await select(page, /^List(?![A-Z])/);
+  await choose(page, 'flex', 'true');
+  await addInto(page, /^List(?![A-Z])/, 'Text');
+  await addInto(page, /^List(?![A-Z])/, 'Text');
+  // Outline order: the List's two Texts, then the Row's keys Text.
+  const [name, detail, keys] = shortcuts[0];
+  await select(page, /^Text(?![A-Z])/, 0);
+  await applySpec(page, {
+    choices: { variant: 'span' },
+    text: { children: name },
+  });
+  await select(page, /^Text(?![A-Z])/, 1);
+  await applySpec(page, {
+    choices: { variant: 'span', tone: 'quiet', size: 'compact' },
+    text: { children: detail },
+  });
+  await select(page, /^Text(?![A-Z])/, 2);
+  await applySpec(page, {
+    choices: { variant: 'span', font: 'monospace', wrap: 'nowrap' },
+    text: { children: keys },
+  });
+  for (const [index, [verb, glyph]] of [
+    ['Edit', 'pencil'],
+    ['Reset', 'rotate-ccw'],
+  ].entries()) {
+    await select(page, /^Button(?![A-Z])/, index);
+    await applySpec(page, {
+      choices: { emphasis: 'plain' },
+      unsets: ['children'],
+      text: {
+        ariaLabel: `${verb} ${name} Shortcut`,
+        action: `log-${verb.toLowerCase()}-shortcut`,
+      },
+    });
+    await addIcon(page, 'icon', glyph);
+  }
+  await select(page, /^FramedListRow/);
+  await page.keyboard.press('ControlOrMeta+d');
+  await page.keyboard.press('ControlOrMeta+d');
+  for (const [row, [name, detail, keys]] of shortcuts.entries()) {
+    if (row === 0) continue;
+    for (const [at, text] of [name, detail, keys].entries()) {
+      await select(page, /^Text(?![A-Z])/, row * 3 + at);
+      await setText(page, 'children', text);
+    }
+    for (const [at, verb] of ['Edit', 'Reset'].entries()) {
+      await select(page, /^Button(?![A-Z])/, row * 2 + at);
+      await setText(page, 'ariaLabel', `${verb} ${name} Shortcut`);
+    }
+  }
+  await select(page, /^FramedListRow/, 1);
+  await turnOn(page, 'highlighted');
+  await expect(
+    canvas(page).locator('.kui-framed-list__row[data-kerf-node]'),
+  ).toHaveCount(3);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'framed-list',
+        { label: 'Keyboard Shortcuts' },
+        {
+          children: shortcuts.map(([name, detail, keys], row) =>
+            node(
+              'framed-list#FramedListRow',
+              row === 1 ? { highlighted: true } : undefined,
+              {
+                children: [
+                  node(
+                    'row',
+                    { gap: 's', vAlign: 'middle' },
+                    {
+                      children: [
+                        node(
+                          'list',
+                          { flex: true },
+                          {
+                            children: [
+                              node('text', { children: name, variant: 'span' }),
+                              node('text', {
+                                children: detail,
+                                variant: 'span',
+                                tone: 'quiet',
+                                size: 'compact',
+                              }),
+                            ],
+                          },
+                        ),
+                        node('text', {
+                          children: keys,
+                          variant: 'span',
+                          font: 'monospace',
+                          wrap: 'nowrap',
+                        }),
+                        buttonNode(
+                          {
+                            ariaLabel: `Edit ${name} Shortcut`,
+                            emphasis: 'plain',
+                            action: 'log-edit-shortcut',
+                          },
+                          'pencil',
+                        ),
+                        buttonNode(
+                          {
+                            ariaLabel: `Reset ${name} Shortcut`,
+                            emphasis: 'plain',
+                            action: 'log-reset-shortcut',
+                          },
+                          'rotate-ccw',
+                        ),
+                      ],
+                    },
+                  ),
+                ],
+              },
+            ),
+          ),
+        },
+      ),
+    ),
+  );
+});
+
+test('builds FramedList › Base Surface', async ({ page }) => {
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List(?![A-Z])/);
+  await choose(page, 'controlInsets', 'tb');
+  await addChild(page, 'FramedList');
+  await select(page, /^FramedList(?!Row)/);
+  await setText(page, 'label', 'Accounts');
+  await choose(page, 'surface', 'base');
+  await addInto(page, /^FramedList(?!Row)/, 'FramedListRow', 0, 0);
+  await addInto(page, /^FramedList(?!Row)/, 'FramedListRow');
+  for (const [index, text] of [
+    'GitHub · connected',
+    'Linear · not connected',
+  ].entries()) {
+    // Adding a Text turns the row's seeded text into a Text of its own,
+    // which is kept; the added one is not.
+    await addInto(page, /^FramedListRow/, 'Text', index);
+    await deleteSelected(page);
+    await select(page, /^Text(?![A-Z])/, index);
+    await applySpec(page, {
+      choices: { variant: 'span' },
+      text: { children: text },
+    });
+  }
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { controlInsets: 'tb' },
+        {
+          children: [
+            node(
+              'framed-list',
+              { label: 'Accounts', surface: 'base' },
+              {
+                children: [
+                  ...['GitHub · connected', 'Linear · not connected'].map(
+                    (children) =>
+                      node('framed-list#FramedListRow', undefined, {
+                        children: [node('text', { children, variant: 'span' })],
+                      }),
+                  ),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+/** The TreeList › Compact Outline demo's nodes; all but the root drag. */
+const OUTLINE_NODES = [
+  {
+    id: 'pane',
+    label: 'Pane',
+    description: 'Root',
+    children: [
+      {
+        id: 'toolbar',
+        label: 'Toolbar',
+        description: 'header',
+        draggable: true,
+        children: [
+          {
+            id: 'title',
+            label: 'ToolbarText',
+            description: 'leading',
+            draggable: true,
+          },
+          {
+            id: 'compose',
+            label: 'composeButton',
+            description: 'trailing',
+            draggable: true,
+          },
+        ],
+      },
+      {
+        id: 'folders',
+        label: 'folderList',
+        description: 'content',
+        draggable: true,
+        children: [],
+      },
+    ],
+  },
+];
+
+/** The TreeList › Files demo's first render: docs is not loaded yet. */
+const FILE_NODES = [
+  {
+    id: 'src',
+    label: 'src',
+    children: [
+      {
+        id: 'components',
+        label: 'components',
+        children: [
+          { id: 'button', label: 'button.tsx' },
+          { id: 'list-item', label: 'list-item.tsx' },
+          {
+            id: 'legacy',
+            label: 'legacy.tsx',
+            description: 'Read-only',
+            disabled: true,
+          },
+        ],
+      },
+      { id: 'index', label: 'index.ts' },
+    ],
+  },
+  { id: 'docs', label: 'docs', hasChildren: true },
+  { id: 'readme', label: 'README.md' },
+];
+
+/** Each Files node's icon, by its place in `nodes`. */
+const FILE_ICONS: readonly (readonly [readonly number[], string])[] = [
+  [[0], 'folder'],
+  [[0, 0], 'folder'],
+  [[0, 0, 0], 'file-code'],
+  [[0, 0, 1], 'file-code'],
+  [[0, 0, 2], 'file-code'],
+  [[0, 1], 'file-code'],
+  [[1], 'folder'],
+  [[2], 'file'],
+];
+
+/** A tree node's zone name: `nodes.0.children.1.icon` for [0, 1]. */
+const treeZone = (at: readonly number[], zone: string) =>
+  `nodes.${at.join('.children.')}.${zone}`;
+
+/**
+ * Opens the selected TreeList's nodes form down to the node at `at`, then
+ * follows its `zone` row, which closes the form for the zone's content.
+ */
+async function treeNodeZone(page: Page, at: readonly number[], zone: string) {
+  await select(page, /^TreeList/);
+  const open = (path: readonly (number | string)[]) =>
+    page
+      .locator(
+        `[data-editor-open='${JSON.stringify({ prop: 'nodes', path })}']`,
+      )
+      .filter({ visible: true })
+      .first()
+      .click();
+  await open([]);
+  // The form remembers JSON mode, which nodes were last set in.
+  const asList = page
+    .getByRole('button', { name: 'Edit as list' })
+    .filter({ visible: true });
+  if (await asList.count()) await asList.click();
+  const path: (number | string)[] = [];
+  for (const [depth, index] of at.entries()) {
+    if (depth > 0) {
+      path.push('children');
+      await open(path);
+    }
+    path.push(index);
+    await open(path);
+  }
+  await page
+    .locator(`[data-editor-content-add="${treeZone(at, zone)}"]`)
+    .click();
+  await expect(page.locator('dialog[open]')).toHaveCount(0);
+}
+
+test('builds TreeList › Files', async ({ page }) => {
+  test.slow();
+  await dragComponent(page, 'TreeList', () => emptySpot(page));
+  await select(page, /^TreeList/);
+  await applySpec(page, {
+    text: {
+      id: 'files',
+      label: 'Files',
+      selected: 'button',
+      action: 'tree-list-demo-pick',
+      toggleAction: 'tree-list-demo-toggle',
+    },
+  });
+  await editAsJson(page, 'nodes', FILE_NODES);
+  await choose(page, 'expanded', 'List…');
+  await setTags(page, 'expanded', ['src', 'components']);
+  for (const [at, glyph] of FILE_ICONS) {
+    await treeNodeZone(page, at, 'icon');
+    // An icon zone's row places the icon itself, selected.
+    await area(page, 'Properties');
+    await pickIcon(page, page.locator('[data-editor-icon-place]'), glyph);
+  }
+  // components counts its three files with a Badge.
+  await treeNodeZone(page, [0, 0], 'trailing');
+  await addChild(page, 'Badge');
+  await select(page, /^Badge/);
+  await setText(page, 'children', '3');
+  const tree = canvas(page).locator('.kui-tree-list');
+  await expect(tree.locator('[data-item-id="legacy"]')).toBeVisible();
+  await expect(tree.locator('.kui-badge')).toHaveText('3');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'tree-list',
+        {
+          id: 'files',
+          label: 'Files',
+          nodes: FILE_NODES,
+          expanded: ['src', 'components'],
+          selected: 'button',
+          action: 'tree-list-demo-pick',
+          toggleAction: 'tree-list-demo-toggle',
+        },
+        {
+          ...Object.fromEntries(
+            FILE_ICONS.map(([at, glyph]) => [
+              treeZone(at, 'icon'),
+              [icon(glyph)],
+            ]),
+          ),
+          [treeZone([0, 0], 'trailing')]: [node('badge', { children: '3' })],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds TreeList › Compact Outline', async ({ page }) => {
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await addInto(page, /^List(?![A-Z])/, 'ListItem');
+  await select(page, /^ListItem/);
+  await applySpec(page, {
+    text: {
+      label: 'New node',
+      description: 'Drag onto the outline, or choose to add at the end',
+      action: 'tree-list-demo-new',
+    },
+    data: [['data-tree-list-demo-new', '']],
+  });
+  await addIcon(page, 'icon', 'plus');
+  await addInto(page, /^Pane/, 'TreeList');
+  await select(page, /^TreeList/);
+  await applySpec(page, {
+    choices: { density: 'compact' },
+    text: {
+      id: 'outline',
+      label: 'Document outline',
+      action: 'tree-list-demo-pick',
+      toggleAction: 'tree-list-demo-toggle',
+    },
+  });
+  await editAsJson(page, 'nodes', OUTLINE_NODES);
+  await choose(page, 'expanded', 'List…');
+  await setTags(page, 'expanded', ['pane', 'toolbar', 'folders']);
+  await expect(
+    canvas(page).locator('.kui-tree-list [data-item-id="compose"]'),
+  ).toBeVisible();
+  expect(await exported(page)).toEqual(
+    pane(
+      node('list', undefined, {
+        children: [
+          node(
+            'list-item',
+            {
+              label: 'New node',
+              description: 'Drag onto the outline, or choose to add at the end',
+              action: 'tree-list-demo-new',
+              rootAttributes: { 'data-tree-list-demo-new': '' },
+            },
+            { icon: [icon('plus')] },
+          ),
+        ],
+      }),
+      node('tree-list', {
+        id: 'outline',
+        label: 'Document outline',
+        nodes: OUTLINE_NODES,
+        expanded: ['pane', 'toolbar', 'folders'],
+        action: 'tree-list-demo-pick',
+        toggleAction: 'tree-list-demo-toggle',
+        density: 'compact',
+      }),
+    ),
+  );
+});
+
+/** A ListActionRow FieldSpec plus its icons and a custom icon tile. */
+type ActionRowSpec = FieldSpec & {
+  readonly glyph?: string;
+  readonly trailingGlyph?: string;
+  readonly tile?: { readonly color: string; readonly foreground?: string };
+};
+
+/**
+ * Gives the `index`th ListActionRow its trailing button's icon; the
+ * palette's row seeds a trailing menu, which the button replaces.
+ */
+async function trailingButton(page: Page, index: number, glyph: string) {
+  await select(page, /^ListActionRow/, index);
+  await addIcon(page, 'trailingActionIcon', glyph);
+  await select(page, /^ListActionRow/, index);
+  await page.getByRole('button', { name: 'Configure trailing menu' }).click();
+  await page
+    .locator('[data-action="editor-reset-field"]')
+    .filter({ visible: true })
+    .click();
+}
+
+/** A List of ListActionRows, each set up by its spec. */
+async function actionRows(
+  page: Page,
+  rows: readonly ActionRowSpec[],
+  data?: readonly [string, string],
+) {
+  await stacked(page, 'List', 'ListActionRow', rows, async () => {
+    if (data) await dataAttribute(page, ...data);
+  });
+  for (const [index, row] of rows.entries()) {
+    await select(page, /^ListActionRow/, index);
+    if (row.tile) {
+      await choose(page, 'iconTile', 'Custom…');
+      await page.getByRole('button', { name: 'Configure icon tile' }).click();
+      await setField(page, 'iconTile', ['color'], row.tile.color);
+      if (row.tile.foreground)
+        await setField(page, 'iconTile', ['foreground'], row.tile.foreground);
+      await back(page);
+    }
+    if (row.glyph) {
+      await select(page, /^ListActionRow/, index);
+      await addIcon(page, 'icon', row.glyph);
+    }
+    await trailingButton(page, index, row.trailingGlyph!);
+  }
+  await expect(
+    canvas(page).locator('.kui-list-action-row[data-kerf-node]'),
+  ).toHaveCount(rows.length);
+}
+
+/** The ListActionRow node an ActionRowSpec builds, given its props. */
+const actionRowNode = (
+  props: Record<string, unknown>,
+  { glyph, trailingGlyph, tile }: ActionRowSpec,
+) =>
+  node(
+    'list-action-row',
+    {
+      ...props,
+      ...(tile
+        ? {
+            iconTile: {
+              color: { $css: tile.color },
+              ...(tile.foreground
+                ? { foreground: { $css: tile.foreground } }
+                : {}),
+            },
+          }
+        : {}),
+    },
+    glyph || trailingGlyph
+      ? {
+          ...(glyph ? { icon: [icon(glyph)] } : {}),
+          ...(trailingGlyph
+            ? { trailingActionIcon: [icon(trailingGlyph)] }
+            : {}),
+        }
+      : undefined,
+  );
+
+const tileCommands = [
+  [
+    'tile-run-tests',
+    'Run Tests',
+    'npm test',
+    'terminal',
+    "fillColor('#30a46c')",
+  ],
+  [
+    'tile-deploy-preview',
+    'Deploy Preview',
+    'npm run deploy',
+    'rocket',
+    "fillColor('#0090ff')",
+  ],
+  [
+    'tile-format-code',
+    'Format Code',
+    'npm run format',
+    'paintbrush',
+    "fillColor('#ffc53d')",
+  ],
+  [
+    'tile-clean-build',
+    'Clean Build',
+    'npm run clean',
+    'trash',
+    "fillColor('#e5484d')",
+  ],
+  [
+    'tile-open-docs',
+    'Open Docs',
+    'npm run docs',
+    'book-open',
+    "uiColor('brand-fill-loud')",
+  ],
+] as const;
+
+test('builds ListActionRow › Colored Icon Tiles', async ({ page }) => {
+  test.slow();
+  const props = tileCommands.map(([itemId, label, description], index) => ({
+    label,
+    description,
+    action: 'select-icon-tile-row',
+    itemId,
+    ...(index === 0 ? { selected: true } : {}),
+    trailingAction: 'open-list-action-row-actions',
+    trailingActionLabel: `Edit ${label}`,
+    trailingActionVisibility: 'interaction',
+  }));
+  const specs: ActionRowSpec[] = tileCommands.map(
+    ([itemId, label, description, glyph, color], index) => ({
+      choices: { trailingActionVisibility: 'interaction' },
+      flags: index === 0 ? ['selected'] : [],
+      text: {
+        label,
+        description,
+        action: 'select-icon-tile-row',
+        itemId,
+        trailingAction: 'open-list-action-row-actions',
+        trailingActionLabel: `Edit ${label}`,
+      },
+      glyph,
+      trailingGlyph: 'pencil',
+      tile: {
+        color,
+        ...(index === 4 ? { foreground: "uiColor('brand-on-loud')" } : {}),
+      },
+    }),
+  );
+  await actionRows(page, specs, ['data-demo-icon-tiles', 'list-action-row']);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { rootAttributes: { 'data-demo-icon-tiles': 'list-action-row' } },
+        {
+          children: specs.map((spec, index) =>
+            actionRowNode(props[index]!, spec),
+          ),
+        },
+      ),
+    ),
+  );
+});
+
+test('builds ListActionRow › Compact Rows', async ({ page }) => {
+  const commands = [
+    ['compact-open-folder', 'Open Folder', 'folder'],
+    ['compact-run-tests', 'Run Tests', 'terminal'],
+    ['compact-read-docs', 'Read Docs', 'book-open'],
+  ] as const;
+  const props = commands.map(([itemId, label]) => ({
+    label,
+    density: 'compact',
+    action: 'select-list-action-row',
+    itemId,
+    trailingAction: 'open-list-action-row-actions',
+    trailingActionLabel: `Actions for ${label}`,
+    trailingActionVisibility: 'interaction',
+  }));
+  const specs: ActionRowSpec[] = commands.map(([itemId, label, glyph]) => ({
+    choices: { density: 'compact', trailingActionVisibility: 'interaction' },
+    text: {
+      label,
+      action: 'select-list-action-row',
+      itemId,
+      trailingAction: 'open-list-action-row-actions',
+      trailingActionLabel: `Actions for ${label}`,
+    },
+    glyph,
+    trailingGlyph: 'ellipsis',
+  }));
+  await actionRows(page, specs, ['data-demo-compact-rows', 'list-action-row']);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { rootAttributes: { 'data-demo-compact-rows': 'list-action-row' } },
+        {
+          children: specs.map((spec, index) =>
+            actionRowNode(props[index]!, spec),
+          ),
+        },
+      ),
+    ),
+  );
+});
+
+// The reorder itself is the app's wiring (wireListReorder); rows start
+// unpressed, a toggle that is off rather than a plain action.
+test('builds ListActionRow › Drag to Reorder', async ({ page }) => {
+  const files = [
+    ['readme', 'README.md'],
+    ['changelog', 'CHANGELOG.md'],
+    ['package', 'package.json'],
+  ] as const;
+  const props = files.map(([itemId, label]) => ({
+    label,
+    action: 'toggle-reorder-row',
+    itemId,
+    pressed: false,
+    draggable: true,
+    trailingAction: 'open-list-action-row-actions',
+    trailingActionLabel: `Actions for ${label}`,
+    trailingActionVisibility: 'interaction',
+  }));
+  const specs: ActionRowSpec[] = files.map(([itemId, label]) => ({
+    choices: { pressed: 'Off', trailingActionVisibility: 'interaction' },
+    flags: ['draggable'],
+    text: {
+      label,
+      action: 'toggle-reorder-row',
+      itemId,
+      trailingAction: 'open-list-action-row-actions',
+      trailingActionLabel: `Actions for ${label}`,
+    },
+    glyph: 'grip-vertical',
+    trailingGlyph: 'ellipsis',
+  }));
+  await actionRows(page, specs, ['data-list-id', 'demo-reorder-files']);
+  await expect(
+    canvas(page).locator('.kui-list-action-row [aria-pressed="false"]'),
+  ).toHaveCount(3);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { rootAttributes: { 'data-list-id': 'demo-reorder-files' } },
+        {
+          children: specs.map((spec, index) =>
+            actionRowNode(props[index]!, spec),
+          ),
+        },
+      ),
+    ),
+  );
+});
+
+test('builds ListActionRow › Dragging and Insertion States', async ({
+  page,
+}) => {
+  const rows = [
+    ['Drops Above This Row', 'reorder-before', 'the row below the drop'],
+    ['Row Being Dragged', 'reorder-dragging', 'the dragged row'],
+    ['Drops Below This Row', 'reorder-after', 'the row above the drop'],
+  ] as const;
+  const state = [
+    { dropPosition: 'before' },
+    { dragging: true },
+    { dropPosition: 'after' },
+  ];
+  const props = rows.map(([label, itemId, which], index) => ({
+    label,
+    action: 'select-list-action-row',
+    itemId,
+    draggable: true,
+    ...state[index],
+    trailingAction: 'open-list-action-row-actions',
+    trailingActionLabel: `Actions for ${which}`,
+  }));
+  const specs: ActionRowSpec[] = rows.map(([label, itemId, which], index) => ({
+    choices:
+      index === 1
+        ? ({} as Record<string, string>)
+        : { dropPosition: index === 0 ? 'before' : 'after' },
+    flags: index === 1 ? ['draggable', 'dragging'] : ['draggable'],
+    text: {
+      label,
+      action: 'select-list-action-row',
+      itemId,
+      trailingAction: 'open-list-action-row-actions',
+      trailingActionLabel: `Actions for ${which}`,
+    },
+    trailingGlyph: 'ellipsis',
+  }));
+  await actionRows(page, specs);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('list', undefined, {
+        children: specs.map((spec, index) =>
+          actionRowNode(props[index]!, spec),
+        ),
+      }),
+    ),
+  );
+});
+
+/**
+ * Adds a DemoContentItem (ContentItem › List › title and detail Texts) to
+ * the `index`th node named `parent`.
+ */
+async function contentItemInto(
+  page: Page,
+  parent: RegExp,
+  index: number,
+  title: string,
+  detail: string,
+) {
+  await addInto(page, parent, 'ContentItem', index);
+  await addChild(page, 'List');
+  await choose(page, 'gap', '2xs');
+  await addChild(page, 'Text');
+  await applySpec(page, {
+    choices: { variant: 'span', weight: 'strong' },
+    text: { children: title },
+  });
+  // Focus is still in the Inspector, so the Duplicate button copies it.
+  await page.getByRole('button', { name: 'Duplicate', exact: true }).click();
+  await applySpec(page, {
+    choices: {
+      weight: 'Default (regular)',
+      tone: 'quiet',
+      size: 'compact',
+    },
+    text: { children: detail },
+  });
+}
+
+test('builds List › Shared Row Dividers', async ({ page }) => {
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List(?![A-Z])/);
+  await dataAttribute(page, 'data-demo-divider-list', '');
+  await addChild(page, 'ListHeader');
+  await applySpec(page, {
+    choices: { divider: 'both' },
+    text: { label: 'Section' },
+  });
+  await addInto(page, /^List(?![A-Z])/, 'ListItem');
+  await applySpec(page, {
+    choices: { divider: 'both' },
+    text: { action: 'log-inbox', itemId: 'divider-row', label: 'Regular Row' },
+  });
+  await addInto(page, /^List(?![A-Z])/, 'ListActionRow');
+  await applySpec(page, {
+    choices: { divider: 'both' },
+    text: {
+      action: 'log-projects',
+      itemId: 'divider-action-row',
+      label: 'Action Row',
+      trailingAction: 'log-settings',
+      trailingActionLabel: 'Action row options',
+    },
+  });
+  await trailingButton(page, 0, 'ellipsis');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { rootAttributes: { 'data-demo-divider-list': '' } },
+        {
+          children: [
+            node('list-header', { label: 'Section', divider: 'both' }),
+            node('list-item', {
+              action: 'log-inbox',
+              itemId: 'divider-row',
+              label: 'Regular Row',
+              divider: 'both',
+            }),
+            actionRowNode(
+              {
+                action: 'log-projects',
+                itemId: 'divider-action-row',
+                label: 'Action Row',
+                divider: 'both',
+                trailingAction: 'log-settings',
+                trailingActionLabel: 'Action row options',
+              },
+              { trailingGlyph: 'ellipsis' },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds List › Shared Row Inset', async ({ page }) => {
+  // The --kui-list-row-padding-inline token is the catalog viewport's.
+  const inbox: ItemSpec = {
+    text: { action: 'log-inbox', itemId: 'inset-inbox', label: 'Inbox' },
+    glyph: 'inbox',
+  };
+  const settings: ItemSpec = {
+    text: {
+      action: 'log-settings',
+      itemId: 'inset-settings',
+      label: 'Settings',
+    },
+    glyph: 'settings',
+  };
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List(?![A-Z])/);
+  await dataAttribute(page, 'data-demo-row-inset-list', '');
+  await addChild(page, 'ListItem');
+  await applySpec(page, inbox);
+  await addInto(page, /^List(?![A-Z])/, 'ListActionRow');
+  await applySpec(page, {
+    text: {
+      action: 'log-projects',
+      itemId: 'inset-projects',
+      label: 'Projects',
+      trailingAction: 'log-settings',
+      trailingActionLabel: 'Project Options',
+    },
+  });
+  await addIcon(page, 'icon', 'folder');
+  await trailingButton(page, 0, 'ellipsis');
+  await addInto(page, /^List(?![A-Z])/, 'ListItem');
+  await applySpec(page, settings);
+  await itemContent(page, /^ListItem(?![A-Z])/, 0, inbox);
+  await itemContent(page, /^ListItem(?![A-Z])/, 1, settings);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { rootAttributes: { 'data-demo-row-inset-list': '' } },
+        {
+          children: [
+            itemNode(inbox.text!, inbox),
+            actionRowNode(
+              {
+                action: 'log-projects',
+                itemId: 'inset-projects',
+                label: 'Projects',
+                trailingAction: 'log-settings',
+                trailingActionLabel: 'Project Options',
+              },
+              { glyph: 'folder', trailingGlyph: 'ellipsis' },
+            ),
+            itemNode(settings.text!, settings),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+/** A DemoFrameShell: the SunkenPanel the layout demos frame examples in. */
+async function frameShell(page: Page) {
+  await dragComponent(page, 'SunkenPanel', () => emptySpot(page));
+  await select(page, /^SunkenPanel/);
+  await setText(page, 'ariaLabel', 'Layout Example');
+}
+
+const frameShellNode = (...children: unknown[]) =>
+  node('sunken-panel', { ariaLabel: 'Layout Example' }, { children });
+
+test('builds List › Physical-Axis Alignment', async ({ page }) => {
+  const chips = ['Top', 'Middle', 'Bottom'];
+  await frameShell(page);
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List(?![A-Z])/);
+  await applySpec(page, {
+    choices: { gap: 'xs', hAlign: 'right', vAlign: 'full' },
+  });
+  for (const text of chips) {
+    await addInto(page, /^List(?![A-Z])/, 'Chip');
+    await setText(page, 'children', text);
+  }
+  await expect(canvas(page).locator('.kui-chip[data-kerf-node]')).toHaveText(
+    chips,
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      frameShellNode(
+        node(
+          'list',
+          { gap: 'xs', hAlign: 'right', vAlign: 'full' },
+          { children: chips.map((children) => node('chip', { children })) },
+        ),
+      ),
+    ),
+  );
+});
+
+test('builds List › Side-Selectable Insets', async ({ page }) => {
+  await frameShell(page);
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List(?![A-Z])/);
+  await applySpec(page, {
+    choices: { gap: 'xs', textInsets: 'l', controlInsets: 'rb' },
+  });
+  await addChild(page, 'Chip');
+  await setText(page, 'children', 'Text-aligned left edge');
+  await addInto(page, /^List(?![A-Z])/, 'TextField');
+  await applySpec(page, {
+    text: { label: 'Inset List Control', value: 'Control edge' },
+  });
+  await addInto(page, /^List(?![A-Z])/, 'List');
+  await choose(page, 'textInsets', 't');
+  await addChild(page, 'Chip');
+  await setText(page, 'children', 'Nested text-aligned top edge');
+  expect(await exported(page)).toEqual(
+    pane(
+      frameShellNode(
+        node(
+          'list',
+          { gap: 'xs', textInsets: 'l', controlInsets: 'rb' },
+          {
+            children: [
+              node('chip', { children: 'Text-aligned left edge' }),
+              node('text-field', {
+                label: 'Inset List Control',
+                value: 'Control edge',
+              }),
+              node(
+                'list',
+                { textInsets: 't' },
+                {
+                  children: [
+                    node('chip', { children: 'Nested text-aligned top edge' }),
+                  ],
+                },
+              ),
+            ],
+          },
+        ),
+      ),
+    ),
+  );
+});
+
+test('builds List › Surface Behind a Strip', async ({ page }) => {
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List(?![A-Z])/);
+  await applySpec(page, {
+    choices: { surface: 'base', controlInsets: 'tb', dividerSides: 'b' },
+  });
+  await addChild(page, 'StateBanner');
+  await applySpec(page, {
+    choices: { tone: 'info' },
+    text: {
+      title: 'Codex Hooks Are Not Installed',
+      detail: 'Install them to sync agent activity.',
+    },
+  });
+  await addChild(page, 'LucideIcon', 'icon');
+  await pickIcon(
+    page,
+    page.locator('[data-editor-icon-place]'),
+    'circle-question-mark',
+  );
+  await addInto(page, /^Pane/, 'List');
+  await choose(page, 'controlInsets', 'tb');
+  await contentItemInto(
+    page,
+    /^List(?![A-Z])/,
+    1,
+    'Work Area',
+    'The lowered region continues below the strip.',
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { surface: 'base', controlInsets: 'tb', dividerSides: 'b' },
+        {
+          children: [
+            node(
+              'state-banner',
+              {
+                tone: 'info',
+                title: 'Codex Hooks Are Not Installed',
+                detail: 'Install them to sync agent activity.',
+              },
+              { icon: [icon('circle-question-mark')] },
+            ),
+          ],
+        },
+      ),
+      node(
+        'list',
+        { controlInsets: 'tb' },
+        {
+          children: [
+            demoContentItem(
+              'Work Area',
+              'The lowered region continues below the strip.',
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds List › Page Column', async ({ page }) => {
+  const body =
+    'A settings page keeps its forms at a readable width however wide the window grows, with no application CSS around the column.';
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List(?![A-Z])/);
+  await applySpec(page, {
+    choices: { inset: 'document', contentWidth: 'compact', gap: 'm' },
+    data: [['data-demo-page-column', '']],
+  });
+  await addChild(page, 'Text');
+  await applySpec(page, {
+    choices: { variant: 'h3' },
+    text: { children: 'Settings' },
+  });
+  await addInto(page, /^List(?![A-Z])/, 'Text');
+  await setText(page, 'children', body);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        {
+          inset: 'document',
+          contentWidth: 'compact',
+          gap: 'm',
+          rootAttributes: { 'data-demo-page-column': '' },
+        },
+        {
+          children: [
+            node('text', { children: 'Settings', variant: 'h3' }),
+            node('text', { children: body }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds List › Divider Between Regions', async ({ page }) => {
+  const folders = [
+    ['log-inbox', 'divider-inbox', 'Inbox', 'inbox'],
+    ['log-projects', 'divider-projects', 'Projects', 'folder'],
+    ['log-drafts', 'divider-drafts', 'Drafts', 'file-text'],
+  ] as const;
+  const specs: ItemSpec[] = folders.map(
+    ([action, itemId, label, glyph], index) => ({
+      flags: index === 0 ? ['selected'] : [],
+      text: { action, itemId, label },
+      glyph,
+    }),
+  );
+  await dragComponent(page, 'Row', () => emptySpot(page));
+  await select(page, /^Row/);
+  await choose(page, 'gap', 'none');
+  await addChild(page, 'List');
+  await applySpec(page, { choices: { flex: 'none', dividerSides: 'r' } });
+  for (const spec of specs) {
+    await addInto(page, /^List(?![A-Z])/, 'ListItem');
+    await applySpec(page, spec);
+  }
+  for (const [index, spec] of specs.entries())
+    await itemContent(page, /^ListItem(?![A-Z])/, index, spec);
+  await addInto(page, /^Row/, 'List');
+  await choose(page, 'flex', 'true');
+  await contentItemInto(
+    page,
+    /^List(?![A-Z])/,
+    1,
+    'Inbox',
+    "12 unread conversations. The selected folder's contents appear in this region.",
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'row',
+        { gap: 'none' },
+        {
+          children: [
+            node(
+              'list',
+              { flex: 'none', dividerSides: 'r' },
+              {
+                children: folders.map(([action, itemId, label], index) =>
+                  itemNode(
+                    {
+                      action,
+                      itemId,
+                      label,
+                      ...(index === 0 ? { selected: true } : {}),
+                    },
+                    specs[index]!,
+                  ),
+                ),
+              },
+            ),
+            node(
+              'list',
+              { flex: true },
+              {
+                children: [
+                  demoContentItem(
+                    'Inbox',
+                    "12 unread conversations. The selected folder's contents appear in this region.",
+                  ),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds ListHeader › Label Sizes', async ({ page }) => {
+  const sizes = [
+    ['Extra Small', 'xs'],
+    ['Small', 'sm'],
+    ['Medium', 'm'],
+    ['Large', 'l'],
+    ['Extra Large', 'xl'],
+  ] as const;
+  await stacked(
+    page,
+    'List',
+    'ListHeader',
+    sizes.map(([label, size]) => ({
+      choices: { size, headingLevel: '3' },
+      text: { label },
+    })),
+    async () => {
+      await choose(page, 'gap', 'xs');
+      await dataAttribute(page, 'data-demo-list-header-sizes', '');
+    },
+  );
+  await expect(
+    canvas(page).locator('.kui-list-header[data-kerf-node] h3'),
+  ).toHaveText(sizes.map(([label]) => label));
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'xs', rootAttributes: { 'data-demo-list-header-sizes': '' } },
+        {
+          children: sizes.map(([label, size]) =>
+            node('list-header', { label, size, headingLevel: 3 }),
+          ),
         },
       ),
     ),

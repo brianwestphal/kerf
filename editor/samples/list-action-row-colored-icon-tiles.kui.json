@@ -1,0 +1,255 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListActionRowColoredIconTiles",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list-action-row",
+                "props": {
+                  "label": "Run Tests",
+                  "action": "select-icon-tile-row",
+                  "trailingActionVisibility": "interaction",
+                  "selected": true,
+                  "description": "npm test",
+                  "itemId": "tile-run-tests",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Edit Run Tests",
+                  "iconTile": {
+                    "color": {
+                      "$css": "fillColor('#30a46c')"
+                    }
+                  }
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "terminal"
+                        },
+                        "name": "terminal"
+                      }
+                    }
+                  ],
+                  "trailingActionIcon": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "pencil"
+                        },
+                        "name": "pencil"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:list-action-row",
+                "props": {
+                  "label": "Deploy Preview",
+                  "action": "select-icon-tile-row",
+                  "trailingActionVisibility": "interaction",
+                  "description": "npm run deploy",
+                  "itemId": "tile-deploy-preview",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Edit Deploy Preview",
+                  "iconTile": {
+                    "color": {
+                      "$css": "fillColor('#0090ff')"
+                    }
+                  }
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "rocket"
+                        },
+                        "name": "rocket"
+                      }
+                    }
+                  ],
+                  "trailingActionIcon": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "pencil"
+                        },
+                        "name": "pencil"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:list-action-row",
+                "props": {
+                  "label": "Format Code",
+                  "action": "select-icon-tile-row",
+                  "trailingActionVisibility": "interaction",
+                  "description": "npm run format",
+                  "itemId": "tile-format-code",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Edit Format Code",
+                  "iconTile": {
+                    "color": {
+                      "$css": "fillColor('#ffc53d')"
+                    }
+                  }
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000010",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "paintbrush"
+                        },
+                        "name": "paintbrush"
+                      }
+                    }
+                  ],
+                  "trailingActionIcon": [
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "pencil"
+                        },
+                        "name": "pencil"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000012",
+                "type": "@kerfjs/ui:list-action-row",
+                "props": {
+                  "label": "Clean Build",
+                  "action": "select-icon-tile-row",
+                  "trailingActionVisibility": "interaction",
+                  "description": "npm run clean",
+                  "itemId": "tile-clean-build",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Edit Clean Build",
+                  "iconTile": {
+                    "color": {
+                      "$css": "fillColor('#e5484d')"
+                    }
+                  }
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000013",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "trash"
+                        },
+                        "name": "trash"
+                      }
+                    }
+                  ],
+                  "trailingActionIcon": [
+                    {
+                      "id": "00000000000000000000000014",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "pencil"
+                        },
+                        "name": "pencil"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000015",
+                "type": "@kerfjs/ui:list-action-row",
+                "props": {
+                  "label": "Open Docs",
+                  "action": "select-icon-tile-row",
+                  "trailingActionVisibility": "interaction",
+                  "description": "npm run docs",
+                  "itemId": "tile-open-docs",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Edit Open Docs",
+                  "iconTile": {
+                    "color": {
+                      "$css": "uiColor('brand-fill-loud')"
+                    },
+                    "foreground": {
+                      "$css": "uiColor('brand-on-loud')"
+                    }
+                  }
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000016",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "book-open"
+                        },
+                        "name": "book-open"
+                      }
+                    }
+                  ],
+                  "trailingActionIcon": [
+                    {
+                      "id": "00000000000000000000000017",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "pencil"
+                        },
+                        "name": "pencil"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "props": {
+            "rootAttributes": {
+              "data-demo-icon-tiles": "list-action-row"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

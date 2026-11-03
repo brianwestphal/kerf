@@ -1,0 +1,151 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListActionRowDragToReorder",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list-action-row",
+                "props": {
+                  "label": "README.md",
+                  "action": "toggle-reorder-row",
+                  "pressed": false,
+                  "trailingActionVisibility": "interaction",
+                  "draggable": true,
+                  "itemId": "readme",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Actions for README.md"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "grip-vertical"
+                        },
+                        "name": "grip-vertical"
+                      }
+                    }
+                  ],
+                  "trailingActionIcon": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "ellipsis"
+                        },
+                        "name": "ellipsis"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:list-action-row",
+                "props": {
+                  "label": "CHANGELOG.md",
+                  "action": "toggle-reorder-row",
+                  "pressed": false,
+                  "trailingActionVisibility": "interaction",
+                  "draggable": true,
+                  "itemId": "changelog",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Actions for CHANGELOG.md"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "grip-vertical"
+                        },
+                        "name": "grip-vertical"
+                      }
+                    }
+                  ],
+                  "trailingActionIcon": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "ellipsis"
+                        },
+                        "name": "ellipsis"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:list-action-row",
+                "props": {
+                  "label": "package.json",
+                  "action": "toggle-reorder-row",
+                  "pressed": false,
+                  "trailingActionVisibility": "interaction",
+                  "draggable": true,
+                  "itemId": "package",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Actions for package.json"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000010",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "grip-vertical"
+                        },
+                        "name": "grip-vertical"
+                      }
+                    }
+                  ],
+                  "trailingActionIcon": [
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "ellipsis"
+                        },
+                        "name": "ellipsis"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "props": {
+            "rootAttributes": {
+              "data-list-id": "demo-reorder-files"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

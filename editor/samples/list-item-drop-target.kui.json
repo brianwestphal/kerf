@@ -1,0 +1,28 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListItemDropTarget",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list-item",
+          "props": {
+            "label": "Move Ticket Here",
+            "action": "log-projects",
+            "itemId": "drag-target",
+            "state": "drag-target"
+          }
+        }
+      ]
+    }
+  }
+}

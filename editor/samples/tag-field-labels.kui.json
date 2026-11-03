@@ -18,12 +18,12 @@
           "props": {
             "id": "tag-field-demo-labels",
             "label": "Labels",
-            "name": "labels",
-            "hint": "Press Enter or a comma to add a label.",
             "tags": [
               "bug",
               "docs"
-            ]
+            ],
+            "name": "labels",
+            "hint": "Press Enter or a comma to add a label."
           }
         }
       ]

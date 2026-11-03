@@ -1,0 +1,104 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TreeListCompactOutline",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "New node",
+                  "action": "tree-list-demo-new",
+                  "description": "Drag onto the outline, or choose to add at the end",
+                  "rootAttributes": {
+                    "data-tree-list-demo-new": ""
+                  }
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "plus"
+                        },
+                        "name": "plus"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "00000000000000000000000005",
+          "type": "@kerfjs/ui:tree-list",
+          "props": {
+            "id": "outline",
+            "label": "Document outline",
+            "nodes": [
+              {
+                "id": "pane",
+                "label": "Pane",
+                "description": "Root",
+                "children": [
+                  {
+                    "id": "toolbar",
+                    "label": "Toolbar",
+                    "description": "header",
+                    "draggable": true,
+                    "children": [
+                      {
+                        "id": "title",
+                        "label": "ToolbarText",
+                        "description": "leading",
+                        "draggable": true
+                      },
+                      {
+                        "id": "compose",
+                        "label": "composeButton",
+                        "description": "trailing",
+                        "draggable": true
+                      }
+                    ]
+                  },
+                  {
+                    "id": "folders",
+                    "label": "folderList",
+                    "description": "content",
+                    "draggable": true,
+                    "children": []
+                  }
+                ]
+              }
+            ],
+            "expanded": [
+              "pane",
+              "toolbar",
+              "folders"
+            ],
+            "action": "tree-list-demo-pick",
+            "toggleAction": "tree-list-demo-toggle",
+            "density": "compact"
+          }
+        }
+      ]
+    }
+  }
+}

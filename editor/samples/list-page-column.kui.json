@@ -1,0 +1,49 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListPageColumn",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "inset": "document",
+            "contentWidth": "compact",
+            "gap": "m",
+            "rootAttributes": {
+              "data-demo-page-column": ""
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "Settings",
+                  "variant": "h3"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "A settings page keeps its forms at a readable width however wide the window grows, with no application CSS around the column."
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
