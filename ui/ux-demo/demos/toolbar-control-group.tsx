@@ -4,20 +4,20 @@ import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { remify, uiColor } from '@kerfjs/ui/css-values';
+import { List } from '@kerfjs/ui/list';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
 import { PopupMenu } from '@kerfjs/ui/popup-menu';
-import { Row } from '@kerfjs/ui/row';
 import { SearchField } from '@kerfjs/ui/search-field';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
-import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import {
   ToolbarActionLink,
   ToolbarButton,
   ToolbarControlGroup,
 } from '@kerfjs/ui/toolbar-control-group';
+import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import {
   ArrowDownAZ,
   CalendarClock,
@@ -29,7 +29,7 @@ import {
   EyeOff,
   Flag,
   GitCompare,
-  List,
+  List as ListIcon,
   PanelLeftOpen,
   Pin,
   Settings,
@@ -73,22 +73,27 @@ export function ToolbarControlGroupDemo() {
         rootAttributes={{ 'data-demo-section': 'icon-tile-tones' }}
       >
         {(['neutral', 'brand', 'success', 'warning', 'danger'] as const).map(
-          (tileTone) => (
-            <Row vAlign="middle">
-              <ToolbarControlGroup
-                single
-                tileTone={tileTone}
-                shape={shape}
-                label={`${tileTone.charAt(0).toUpperCase() + tileTone.slice(1)} Icon Tile`}
-              >
-                <LucideIcon icon={Settings} name="settings" />
-              </ToolbarControlGroup>
-              <Text flush>
-                {tileTone.charAt(0).toUpperCase() + tileTone.slice(1)} Heading
-                Identity
-              </Text>
-            </Row>
-          ),
+          (tileTone) => {
+            const tone = tileTone.charAt(0).toUpperCase() + tileTone.slice(1);
+            return (
+              <Toolbar
+                label={`${tone} Heading`}
+                leading={
+                  <>
+                    <ToolbarControlGroup
+                      single
+                      tileTone={tileTone}
+                      shape={shape}
+                      label={`${tone} Icon Tile`}
+                    >
+                      <LucideIcon icon={Settings} name="settings" />
+                    </ToolbarControlGroup>
+                    <ToolbarText text={`${tone} Heading Identity`} />
+                  </>
+                }
+              />
+            );
+          },
         )}
       </CatalogExample>
       <CatalogExample
@@ -171,7 +176,7 @@ export function ToolbarControlGroupDemo() {
                   {
                     value: 'list',
                     label: 'List View',
-                    content: <LucideIcon icon={List} name="list" />,
+                    content: <LucideIcon icon={ListIcon} name="list" />,
                   },
                   {
                     value: 'columns',
@@ -323,35 +328,44 @@ export function ToolbarControlGroupDemo() {
         note="The original action keeps its size while inert; a status announces the work. A labeled group hides its text under the spinner too."
         align="inline-control"
       >
-        <ToolbarControlGroup
-          single
-          shape={shape}
-          busy={toolbarGroupBusy.value}
-          busyLabel="Running pricing check"
-        >
-          <ToolbarButton
-            ariaLabel="Run Pricing Check"
-            action="log-pricing-check"
-            icon={<LucideIcon icon={GitCompare} name="git-compare" />}
-          />
-        </ToolbarControlGroup>
-        <ToolbarControlGroup
-          single
-          content="mixed"
-          shape={shape}
-          busy={toolbarGroupBusy.value}
-          busyLabel="Running pricing check"
-        >
-          <ToolbarButton
-            action="log-pricing-check"
-            icon={<LucideIcon icon={GitCompare} name="git-compare" />}
-          >
-            Price Check
-          </ToolbarButton>
-        </ToolbarControlGroup>
-        <Button emphasis="secondary" action="toggle-toolbar-group-busy">
-          {`${toolbarGroupBusy.value ? 'Finish' : 'Start'} pricing check`}
-        </Button>
+        <Toolbar
+          label="Busy Action"
+          leading={
+            <>
+              <ToolbarControlGroup
+                single
+                shape={shape}
+                busy={toolbarGroupBusy.value}
+                busyLabel="Running pricing check"
+              >
+                <ToolbarButton
+                  ariaLabel="Run Pricing Check"
+                  action="log-pricing-check"
+                  icon={<LucideIcon icon={GitCompare} name="git-compare" />}
+                />
+              </ToolbarControlGroup>
+              <ToolbarControlGroup
+                single
+                content="mixed"
+                shape={shape}
+                busy={toolbarGroupBusy.value}
+                busyLabel="Running pricing check"
+              >
+                <ToolbarButton
+                  action="log-pricing-check"
+                  icon={<LucideIcon icon={GitCompare} name="git-compare" />}
+                >
+                  Price Check
+                </ToolbarButton>
+              </ToolbarControlGroup>
+            </>
+          }
+          trailing={
+            <Button emphasis="secondary" action="toggle-toolbar-group-busy">
+              {`${toolbarGroupBusy.value ? 'Finish' : 'Start'} pricing check`}
+            </Button>
+          }
+        />
       </CatalogExample>
       <CatalogExample label="Borderless Group" align="inline-control">
         <Toolbar
@@ -635,26 +649,34 @@ export function ToolbarControlGroupDemo() {
         align="inline-control"
         viewport={{ width: 'compact' }}
       >
-        <div data-demo-section="toolbar-group-search">
-          <ToolbarControlGroup
-            shape={shape}
-            content="search"
-            focusRing="halo"
-            expandedOverflow="visible"
-            expanded={toolbarGroupSearchOpen.value}
-            single={!toolbarGroupSearchOpen.value}
-          >
-            <SearchField
-              id="toolbar-group-search"
-              label="Search Views"
-              collapsible
-              expanded={toolbarGroupSearchOpen.value}
-              presentation="toolbar-group"
-              placeholder="Search views"
-              expandLabel="Open search"
-            />
-          </ToolbarControlGroup>
-        </div>
+        <List
+          gap="none"
+          rootAttributes={{ 'data-demo-section': 'toolbar-group-search' }}
+        >
+          <Toolbar
+            label="Collapsible Search"
+            leading={
+              <ToolbarControlGroup
+                shape={shape}
+                content="search"
+                focusRing="halo"
+                expandedOverflow="visible"
+                expanded={toolbarGroupSearchOpen.value}
+                single={!toolbarGroupSearchOpen.value}
+              >
+                <SearchField
+                  id="toolbar-group-search"
+                  label="Search Views"
+                  collapsible
+                  expanded={toolbarGroupSearchOpen.value}
+                  presentation="toolbar-group"
+                  placeholder="Search views"
+                  expandLabel="Open search"
+                />
+              </ToolbarControlGroup>
+            }
+          />
+        </List>
       </CatalogExample>
       <CatalogExample
         label="Wrapping Zone Sizing"
@@ -662,7 +684,10 @@ export function ToolbarControlGroupDemo() {
         align="none"
         viewport={{ width: 'full' }}
       >
-        <div data-demo-section="toolbar-group-sizing">
+        <List
+          gap="none"
+          rootAttributes={{ 'data-demo-section': 'toolbar-group-sizing' }}
+        >
           <Toolbar
             responsive="stack"
             trailing={
@@ -687,7 +712,7 @@ export function ToolbarControlGroupDemo() {
                 <ToolbarControlGroup label="View" single>
                   <ToolbarButton
                     ariaLabel="List View"
-                    icon={<LucideIcon icon={List} name="list" />}
+                    icon={<LucideIcon icon={ListIcon} name="list" />}
                   />
                 </ToolbarControlGroup>
                 <ToolbarControlGroup label="Sort" single>
@@ -749,7 +774,7 @@ export function ToolbarControlGroupDemo() {
               </>
             }
           />
-        </div>
+        </List>
       </CatalogExample>
     </CatalogExampleStack>
   );

@@ -1,0 +1,111 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ToolbarControlGroupBusyAction",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Busy Action"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Run Pricing Check",
+                        "action": "log-pricing-check"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "git-compare"
+                              },
+                              "name": "git-compare"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "shape": "pill",
+                  "single": true,
+                  "busyLabel": "Running pricing check"
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "children": "Price Check",
+                        "action": "log-pricing-check"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000008",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "git-compare"
+                              },
+                              "name": "git-compare"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "content": "mixed",
+                  "shape": "pill",
+                  "single": true,
+                  "busyLabel": "Running pricing check"
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Start pricing check",
+                  "emphasis": "secondary",
+                  "action": "toggle-toolbar-group-busy"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

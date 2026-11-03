@@ -10974,6 +10974,439 @@ test('builds ToolbarControlGroup › Select Beside Actions', async ({ page }) =>
   );
 });
 
+// KF-921WVX: each tone is a heading identity, a Toolbar holding the tile
+// group and a ToolbarText. The demo's toolbarGroupShape starts as 'pill'.
+const tileTones = ['neutral', 'brand', 'success', 'warning', 'danger'] as const;
+const toneName = (tone: string) => tone.charAt(0).toUpperCase() + tone.slice(1);
+
+test('builds ToolbarControlGroup › Icon Tile Tones', async ({ page }) => {
+  test.slow();
+  for (const [index, tone] of tileTones.entries()) {
+    if (index === 0) await toolbar(page, `${toneName(tone)} Heading`);
+    else {
+      await addInto(page, /^Pane/, 'Toolbar');
+      await setText(page, 'label', `${toneName(tone)} Heading`);
+    }
+    await zoneGroup(
+      page,
+      'leading',
+      {
+        choices: { tileTone: tone, shape: 'pill' },
+        flags: ['single'],
+        text: { label: `${toneName(tone)} Icon Tile` },
+      },
+      { nth: index },
+    );
+    await addInto(page, /^ToolbarControlGroup/, 'LucideIcon', index);
+    await pickIcon(page, page.locator('[data-editor-icon-place]'), 'settings');
+    await zoneText(
+      page,
+      'leading',
+      { text: { text: `${toneName(tone)} Heading Identity` } },
+      index,
+    );
+  }
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      ...tileTones.map((tone) =>
+        node(
+          'toolbar',
+          { label: `${toneName(tone)} Heading` },
+          {
+            leading: [
+              node(
+                'toolbar-control-group',
+                {
+                  single: true,
+                  tileTone: tone,
+                  shape: 'pill',
+                  label: `${toneName(tone)} Icon Tile`,
+                },
+                { children: [icon('settings')] },
+              ),
+              node('toolbar-text', {
+                text: `${toneName(tone)} Heading Identity`,
+              }),
+            ],
+          },
+        ),
+      ),
+    ),
+  );
+});
+
+test('builds ToolbarControlGroup › Busy Action', async ({ page }) => {
+  // toolbarGroupBusy starts false, which an unset `busy` is.
+  const busyGroup = (flags: string[], choices = {}): FieldSpec => ({
+    choices: { ...choices, shape: 'pill' },
+    flags,
+    text: { busyLabel: 'Running pricing check' },
+  });
+  await toolbar(page, 'Busy Action');
+  await buttonGroup(page, 'leading', busyGroup(['single']), [
+    [
+      {
+        text: { ariaLabel: 'Run Pricing Check', action: 'log-pricing-check' },
+      },
+      'git-compare',
+    ],
+  ]);
+  await zoneGroup(
+    page,
+    'leading',
+    busyGroup(['single'], { content: 'mixed' }),
+    {
+      keepButton: true,
+    },
+  );
+  await select(page, /^ToolbarButton/, -1);
+  await applySpec(page, {
+    text: { children: 'Price Check', action: 'log-pricing-check' },
+  });
+  await addIcon(page, 'icon', 'git-compare');
+  await select(page, TOOLBAR);
+  await addChild(page, 'Button', 'trailing');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { emphasis: 'secondary' },
+    text: {
+      children: 'Start pricing check',
+      action: 'toggle-toolbar-group-busy',
+    },
+  });
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'toolbar',
+        { label: 'Busy Action' },
+        {
+          leading: [
+            buttonGroupNode(
+              {
+                single: true,
+                shape: 'pill',
+                busyLabel: 'Running pricing check',
+              },
+              [
+                [
+                  {
+                    ariaLabel: 'Run Pricing Check',
+                    action: 'log-pricing-check',
+                  },
+                  'git-compare',
+                ],
+              ],
+            ),
+            node(
+              'toolbar-control-group',
+              {
+                single: true,
+                content: 'mixed',
+                shape: 'pill',
+                busyLabel: 'Running pricing check',
+              },
+              {
+                children: [
+                  node(
+                    'toolbar-control-group#ToolbarButton',
+                    { children: 'Price Check', action: 'log-pricing-check' },
+                    { icon: [icon('git-compare')] },
+                  ),
+                ],
+              },
+            ),
+          ],
+          trailing: [
+            node('button', {
+              children: 'Start pricing check',
+              emphasis: 'secondary',
+              action: 'toggle-toolbar-group-busy',
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+/** Places a List with no gap, carrying `section` as its demo hook. */
+async function demoSection(page: Page, section: string) {
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List/);
+  await choose(page, 'gap', 'none');
+  await dataAttribute(page, 'data-demo-section', section);
+}
+
+/** The List `demoSection` builds, holding `children`. */
+const demoSectionNode = (section: string, children: unknown[]) =>
+  node(
+    'list',
+    { gap: 'none', rootAttributes: { 'data-demo-section': section } },
+    { children },
+  );
+
+/** Adds a SearchField to the last ToolbarControlGroup, set up by `spec`. */
+async function groupSearch(page: Page, spec: FieldSpec) {
+  await select(page, /^ToolbarControlGroup/, -1);
+  await addChild(page, 'SearchField');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    ...spec,
+    choices: { presentation: 'toolbar-group', ...spec.choices },
+  });
+}
+
+test('builds ToolbarControlGroup › Collapsible Search', async ({ page }) => {
+  // toolbarGroupSearchOpen starts closed: the group is single and neither
+  // the group nor the field is expanded.
+  await demoSection(page, 'toolbar-group-search');
+  await addInto(page, /^List/, 'Toolbar');
+  await setText(page, 'label', 'Collapsible Search');
+  await zoneGroup(page, 'leading', {
+    choices: {
+      shape: 'pill',
+      content: 'search',
+      focusRing: 'halo',
+      expandedOverflow: 'visible',
+    },
+    flags: ['single'],
+  });
+  await groupSearch(page, {
+    flags: ['collapsible'],
+    text: {
+      id: 'toolbar-group-search',
+      label: 'Search Views',
+      placeholder: 'Search views',
+      expandLabel: 'Open search',
+    },
+  });
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      demoSectionNode('toolbar-group-search', [
+        node(
+          'toolbar',
+          { label: 'Collapsible Search' },
+          {
+            leading: [
+              node(
+                'toolbar-control-group',
+                {
+                  shape: 'pill',
+                  content: 'search',
+                  focusRing: 'halo',
+                  expandedOverflow: 'visible',
+                  single: true,
+                },
+                {
+                  children: [
+                    node('search-field', {
+                      id: 'toolbar-group-search',
+                      label: 'Search Views',
+                      collapsible: true,
+                      presentation: 'toolbar-group',
+                      placeholder: 'Search views',
+                      expandLabel: 'Open search',
+                    }),
+                  ],
+                },
+              ),
+            ],
+          },
+        ),
+      ]),
+    ),
+  );
+});
+
+test('builds ToolbarControlGroup › Wrapping Zone Sizing', async ({ page }) => {
+  test.slow();
+  // toolbarStackSearchOpen starts closed: the rail search is single,
+  // content-sized, and neither expanded nor filling.
+  const views: readonly ChoiceSpec[] = [
+    { value: 'list', label: 'List' },
+    { value: 'board', label: 'Board' },
+  ];
+  const sortGroup = (nth: number) =>
+    buttonGroup(
+      page,
+      'trailing',
+      { flags: ['single'], text: { label: 'Sort' } },
+      [[{ text: { ariaLabel: 'Sort Tickets' } }, 'arrow-down-a-z']],
+      { nth },
+    );
+  await demoSection(page, 'toolbar-group-sizing');
+  for (const nth of [0, 1]) {
+    await addInto(page, /^List/, 'Toolbar');
+    await select(page, TOOLBAR, nth);
+    await unset(page, 'label');
+    await choose(page, 'responsive', 'stack');
+  }
+  // The first toolbar: a growing search, then View and Sort.
+  await zoneGroup(page, 'trailing', {
+    choices: { content: 'search', sizing: 'grow' },
+    flags: ['expanded', 'single'],
+    text: { growBasis: '19rem', label: 'Search' },
+  });
+  await groupSearch(page, {
+    flags: ['collapsible', 'expanded'],
+    text: {
+      id: 'toolbar-group-grow-search',
+      label: 'Search Tickets',
+      placeholder: 'Search tickets',
+    },
+  });
+  await buttonGroup(
+    page,
+    'trailing',
+    { flags: ['single'], text: { label: 'View' } },
+    [[{ text: { ariaLabel: 'List View' } }, 'list']],
+  );
+  await sortGroup(0);
+  // The rail: a filling SegmentedControl, Sort, and a collapsed search.
+  await zoneGroup(
+    page,
+    'trailing',
+    { choices: { sizing: 'fill' }, text: { label: 'Rail View' } },
+    { nth: 1 },
+  );
+  await addInto(page, /^ToolbarControlGroup/, 'SegmentedControl', -1);
+  await configureChoices(page, /^SegmentedControl/, views);
+  await select(page, /^SegmentedControl/);
+  // KF-FMGEJ6: WebKit drops the label commit when it repeats the group's
+  // "Rail View", so commit another value first.
+  await setText(page, 'label', 'Rail');
+  await applySpec(page, {
+    choices: { appearance: 'toolbar' },
+    text: {
+      id: 'toolbar-group-fill-view',
+      label: 'Rail View',
+      action: 'select-segment-demo',
+    },
+  });
+  await choose(page, 'value', 'List');
+  await sortGroup(1);
+  await zoneGroup(
+    page,
+    'trailing',
+    {
+      choices: {
+        content: 'search',
+        visibility: 'hide-collapsed-tiny',
+        sizing: 'content',
+        placement: 'end',
+      },
+      flags: ['single'],
+      text: { label: 'Search' },
+    },
+    { nth: 1 },
+  );
+  await groupSearch(page, {
+    flags: ['collapsible'],
+    text: {
+      id: 'toolbar-stack-search',
+      label: 'Search Tickets',
+      expandLabel: 'Open search',
+      placeholder: 'Search tickets',
+    },
+  });
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  const sortNode = buttonGroupNode({ label: 'Sort', single: true }, [
+    [{ ariaLabel: 'Sort Tickets' }, 'arrow-down-a-z'],
+  ]);
+  expect(await exported(page)).toEqual(
+    pane(
+      demoSectionNode('toolbar-group-sizing', [
+        node(
+          'toolbar',
+          { responsive: 'stack' },
+          {
+            trailing: [
+              node(
+                'toolbar-control-group',
+                {
+                  content: 'search',
+                  sizing: 'grow',
+                  growBasis: '19rem',
+                  expanded: true,
+                  single: true,
+                  label: 'Search',
+                },
+                {
+                  children: [
+                    node('search-field', {
+                      id: 'toolbar-group-grow-search',
+                      label: 'Search Tickets',
+                      collapsible: true,
+                      expanded: true,
+                      presentation: 'toolbar-group',
+                      placeholder: 'Search tickets',
+                    }),
+                  ],
+                },
+              ),
+              buttonGroupNode({ label: 'View', single: true }, [
+                [{ ariaLabel: 'List View' }, 'list'],
+              ]),
+              sortNode,
+            ],
+          },
+        ),
+        node(
+          'toolbar',
+          { responsive: 'stack' },
+          {
+            trailing: [
+              node(
+                'toolbar-control-group',
+                { sizing: 'fill', label: 'Rail View' },
+                {
+                  children: [
+                    node('segmented-control', {
+                      id: 'toolbar-group-fill-view',
+                      label: 'Rail View',
+                      value: 'list',
+                      action: 'select-segment-demo',
+                      appearance: 'toolbar',
+                      choices: choiceValues(views),
+                    }),
+                  ],
+                },
+              ),
+              sortNode,
+              node(
+                'toolbar-control-group',
+                {
+                  content: 'search',
+                  visibility: 'hide-collapsed-tiny',
+                  sizing: 'content',
+                  placement: 'end',
+                  single: true,
+                  label: 'Search',
+                },
+                {
+                  children: [
+                    node('search-field', {
+                      id: 'toolbar-stack-search',
+                      label: 'Search Tickets',
+                      collapsible: true,
+                      presentation: 'toolbar-group',
+                      expandLabel: 'Open search',
+                      placeholder: 'Search tickets',
+                    }),
+                  ],
+                },
+              ),
+            ],
+          },
+        ),
+      ]),
+    ),
+  );
+});
+
 test('builds ToolbarControlGroup › Compact Mixed Controls', async ({
   page,
 }) => {

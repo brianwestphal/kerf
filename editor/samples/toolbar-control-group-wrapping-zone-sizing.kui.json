@@ -1,0 +1,242 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ToolbarControlGroupWrappingZoneSizing",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "gap": "none",
+            "rootAttributes": {
+              "data-demo-section": "toolbar-group-sizing"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar",
+                "props": {
+                  "responsive": "stack"
+                },
+                "zones": {
+                  "trailing": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:search-field",
+                            "props": {
+                              "id": "toolbar-group-grow-search",
+                              "label": "Search Tickets",
+                              "presentation": "toolbar-group",
+                              "collapsible": true,
+                              "expanded": true,
+                              "placeholder": "Search tickets"
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "content": "search",
+                        "sizing": "grow",
+                        "expanded": true,
+                        "single": true,
+                        "growBasis": "19rem",
+                        "label": "Search"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000007",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "ariaLabel": "List View"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000008",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "list"
+                                    },
+                                    "name": "list"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "single": true,
+                        "label": "View"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000009",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000010",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "ariaLabel": "Sort Tickets"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000011",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "arrow-down-a-z"
+                                    },
+                                    "name": "arrow-down-a-z"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "single": true,
+                        "label": "Sort"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000012",
+                "type": "@kerfjs/ui:toolbar",
+                "props": {
+                  "responsive": "stack"
+                },
+                "zones": {
+                  "trailing": [
+                    {
+                      "id": "00000000000000000000000013",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000014",
+                            "type": "@kerfjs/ui:segmented-control",
+                            "props": {
+                              "id": "toolbar-group-fill-view",
+                              "label": "Rail View",
+                              "value": "list",
+                              "choices": [
+                                {
+                                  "value": "list",
+                                  "label": "List"
+                                },
+                                {
+                                  "value": "board",
+                                  "label": "Board"
+                                }
+                              ],
+                              "appearance": "toolbar",
+                              "action": "select-segment-demo"
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "sizing": "fill",
+                        "label": "Rail View"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000015",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000016",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "ariaLabel": "Sort Tickets"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000017",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "arrow-down-a-z"
+                                    },
+                                    "name": "arrow-down-a-z"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "single": true,
+                        "label": "Sort"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000018",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000019",
+                            "type": "@kerfjs/ui:search-field",
+                            "props": {
+                              "id": "toolbar-stack-search",
+                              "label": "Search Tickets",
+                              "presentation": "toolbar-group",
+                              "collapsible": true,
+                              "expandLabel": "Open search",
+                              "placeholder": "Search tickets"
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "content": "search",
+                        "visibility": "hide-collapsed-tiny",
+                        "sizing": "content",
+                        "placement": "end",
+                        "single": true,
+                        "label": "Search"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
