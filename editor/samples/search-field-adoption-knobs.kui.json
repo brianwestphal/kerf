@@ -1,0 +1,114 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SearchFieldAdoptionKnobs",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:search-field",
+                "props": {
+                  "id": "adoption-search",
+                  "label": "Filter Records",
+                  "collapsible": true,
+                  "expanded": true,
+                  "clearAction": "clear-adoption-search",
+                  "placeholder": "Filter records",
+                  "tokenPlaceholder": "Add a filter…",
+                  "expandLabel": "Open filter",
+                  "editorAttributes": {
+                    "data-demo-adoption-search": "true"
+                  }
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:row",
+                "props": {
+                  "wrap": true,
+                  "ariaLabel": "Filter Suggestions",
+                  "rootAttributes": {
+                    "data-search-field-keep-open": ""
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:button",
+                      "props": {
+                        "children": "status:open",
+                        "size": "compact",
+                        "emphasis": "secondary",
+                        "action": "add-adoption-token",
+                        "rootAttributes": {
+                          "data-token-value": "status:open"
+                        }
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:button",
+                      "props": {
+                        "children": "owner:me",
+                        "size": "compact",
+                        "emphasis": "secondary",
+                        "action": "add-adoption-token",
+                        "rootAttributes": {
+                          "data-token-value": "owner:me"
+                        }
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:button",
+                      "props": {
+                        "children": "due:today",
+                        "size": "compact",
+                        "emphasis": "secondary",
+                        "action": "add-adoption-token",
+                        "rootAttributes": {
+                          "data-token-value": "due:today"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000008",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "No edits yet",
+                  "variant": "span",
+                  "tone": "quiet",
+                  "size": "compact",
+                  "live": "polite",
+                  "rootAttributes": {
+                    "data-demo-adoption-readout": ""
+                  }
+                }
+              }
+            ]
+          },
+          "props": {
+            "gap": "xs"
+          }
+        }
+      ]
+    }
+  }
+}

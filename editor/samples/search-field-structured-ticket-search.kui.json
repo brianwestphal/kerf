@@ -1,0 +1,90 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SearchFieldStructuredTicketSearch",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:search-field",
+                "props": {
+                  "id": "catalog-search",
+                  "label": "Search Tickets",
+                  "autofocus": true,
+                  "query": "NOT  AND parser",
+                  "tokens": [
+                    {
+                      "value": "tag:client",
+                      "label": "tag:client",
+                      "offset": 4,
+                      "accessibleLabel": "client tag"
+                    },
+                    {
+                      "value": "is:active",
+                      "label": "is:active",
+                      "offset": 4
+                    }
+                  ],
+                  "editorAttributes": {
+                    "data-demo-search-field": "true"
+                  },
+                  "trailingAction": {
+                    "label": "Search Help",
+                    "action": "toggle-search-field-help",
+                    "id": "catalog-search-field-help",
+                    "haspopup": "dialog",
+                    "expanded": false
+                  }
+                },
+                "zones": {
+                  "trailingAction.icon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "circle-question-mark"
+                        },
+                        "name": "circle-question-mark"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "2 filters · NOT  AND parser",
+                  "variant": "span",
+                  "tone": "quiet",
+                  "size": "compact",
+                  "live": "polite",
+                  "rootAttributes": {
+                    "data-demo-search-field-readout": ""
+                  }
+                }
+              }
+            ]
+          },
+          "props": {
+            "gap": "xs"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -3609,6 +3609,275 @@ test('builds SearchField › Saved-View Form Fields', async ({ page }) => {
   );
 });
 
+/** A quiet compact readout Text, live, carrying data hook `hook`. */
+async function readout(page: Page, text: string, hook: string) {
+  await applySpec(page, {
+    choices: {
+      variant: 'span',
+      tone: 'quiet',
+      size: 'compact',
+      live: 'polite',
+    },
+    text: { children: text },
+    data: [[hook, '']],
+  });
+}
+
+const readoutNode = (text: string, hook: string) =>
+  node('text', {
+    children: text,
+    variant: 'span',
+    tone: 'quiet',
+    size: 'compact',
+    live: 'polite',
+    rootAttributes: { [hook]: '' },
+  });
+
+test('builds SearchField › Structured Ticket Search', async ({ page }) => {
+  // The query and tokens start as below and the help is closed, so the
+  // readout reads "2 filters · NOT  AND parser" (KF-7V2VGS).
+  const query = 'NOT  AND parser';
+  const tokens = [
+    {
+      value: 'tag:client',
+      label: 'tag:client',
+      offset: 4,
+      accessibleLabel: 'client tag',
+    },
+    { value: 'is:active', label: 'is:active', offset: 4 },
+  ];
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await dragComponent(page, 'SearchField', () => emptySpot(page));
+  await select(page, /^List/);
+  await choose(page, 'gap', 'xs');
+  await select(page, /^SearchField/);
+  await applySpec(page, {
+    flags: ['autofocus'],
+    text: { id: 'catalog-search', label: 'Search Tickets', query },
+  });
+  await editAsJson(page, 'tokens', tokens);
+  await editAsJson(page, 'editorAttributes', {
+    'data-demo-search-field': 'true',
+  });
+  // The help button: the trailing action's object member (KF-BT1YG0).
+  await choose(page, 'trailingAction', 'Custom 1…');
+  await openField(page, 'trailingAction', []);
+  await setField(page, 'trailingAction', ['label'], 'Search Help');
+  await setField(
+    page,
+    'trailingAction',
+    ['action'],
+    'toggle-search-field-help',
+  );
+  await setField(page, 'trailingAction', ['id'], 'catalog-search-field-help');
+  await chooseField(page, 'trailingAction', ['haspopup'], 'dialog');
+  // On, then off: the help starts closed.
+  await turnFieldOn(page, 'trailingAction', ['expanded']);
+  await turnFieldOn(page, 'trailingAction', ['expanded']);
+  await page
+    .locator('[data-editor-content-add="trailingAction.icon"]')
+    .filter({ visible: true })
+    .click();
+  await area(page, 'Properties');
+  await pickIcon(
+    page,
+    page.locator('[data-editor-icon-place]'),
+    'circle-question-mark',
+  );
+  await select(page, /^List/);
+  await addChild(page, 'Text');
+  await readout(page, `2 filters · ${query}`, 'data-demo-search-field-readout');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'xs' },
+        {
+          children: [
+            node(
+              'search-field',
+              {
+                id: 'catalog-search',
+                label: 'Search Tickets',
+                query,
+                tokens,
+                autofocus: true,
+                trailingAction: {
+                  label: 'Search Help',
+                  action: 'toggle-search-field-help',
+                  id: 'catalog-search-field-help',
+                  expanded: false,
+                  haspopup: 'dialog',
+                },
+                editorAttributes: { 'data-demo-search-field': 'true' },
+              },
+              { 'trailingAction.icon': [icon('circle-question-mark')] },
+            ),
+            readoutNode(
+              `2 filters · ${query}`,
+              'data-demo-search-field-readout',
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds SearchField › Grammar Assisted Search', async ({ page }) => {
+  // The app supplies the grammar model, promoted to a param. Its result
+  // starts as "No free text · 0 filters".
+  const result = 'No free text · 0 filters';
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await dragComponent(page, 'SearchField', () => emptySpot(page));
+  await select(page, /^List/);
+  await choose(page, 'gap', 'xs');
+  await select(page, /^SearchField/);
+  await applySpec(page, {
+    text: { id: 'grammar-search', label: 'Search with Filters' },
+  });
+  await page.locator('[data-editor-promote-prop="model"]').click();
+  for (const [label, action] of [
+    ['Add Release Tag', 'commit-grammar-release'],
+    ['Load Saved Search', 'replace-grammar-search'],
+  ] as const) {
+    await select(page, /^List/);
+    await addChild(page, 'Button');
+    await applySpec(page, {
+      choices: { size: 'compact', emphasis: 'secondary' },
+      text: { children: label, action },
+    });
+  }
+  await select(page, /^List/);
+  await addChild(page, 'Text');
+  await applySpec(page, {
+    choices: { variant: 'span', tone: 'quiet', size: 'compact' },
+    text: { children: result },
+    data: [['data-demo-grammar-result', '']],
+  });
+  const button = (children: string, action: string) =>
+    node('button', {
+      children,
+      size: 'compact',
+      emphasis: 'secondary',
+      action,
+    });
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'xs' },
+        {
+          children: [
+            node('search-field', {
+              id: 'grammar-search',
+              label: 'Search with Filters',
+              model: { $param: 'nodeModel' },
+            }),
+            button('Add Release Tag', 'commit-grammar-release'),
+            button('Load Saved Search', 'replace-grammar-search'),
+            node('text', {
+              children: result,
+              variant: 'span',
+              tone: 'quiet',
+              size: 'compact',
+              rootAttributes: { 'data-demo-grammar-result': '' },
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds SearchField › Adoption Knobs', async ({ page }) => {
+  // adoptionOpen starts open with an empty query and no tokens (unset), and
+  // the readout as "No edits yet".
+  const suggestions = ['status:open', 'owner:me', 'due:today'];
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await dragComponent(page, 'SearchField', () => emptySpot(page));
+  await select(page, /^List/);
+  await choose(page, 'gap', 'xs');
+  await select(page, /^SearchField/);
+  await applySpec(page, {
+    flags: ['collapsible', 'expanded'],
+    text: {
+      id: 'adoption-search',
+      clearAction: 'clear-adoption-search',
+      label: 'Filter Records',
+      placeholder: 'Filter records',
+      tokenPlaceholder: 'Add a filter…',
+      expandLabel: 'Open filter',
+    },
+  });
+  await editAsJson(page, 'editorAttributes', {
+    'data-demo-adoption-search': 'true',
+  });
+  // The suggestions keep the empty field open: a named group (KF-7V2VGS).
+  await select(page, /^List/);
+  await addChild(page, 'Row');
+  await applySpec(page, {
+    flags: ['wrap'],
+    text: { ariaLabel: 'Filter Suggestions' },
+    data: [['data-search-field-keep-open', '']],
+  });
+  for (const value of suggestions) {
+    await select(page, /^Row/);
+    await addChild(page, 'Button');
+    await applySpec(page, {
+      choices: { size: 'compact', emphasis: 'secondary' },
+      text: { children: value, action: 'add-adoption-token' },
+      data: [['data-token-value', value]],
+    });
+  }
+  await select(page, /^List/);
+  await addChild(page, 'Text');
+  await readout(page, 'No edits yet', 'data-demo-adoption-readout');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'xs' },
+        {
+          children: [
+            node('search-field', {
+              id: 'adoption-search',
+              clearAction: 'clear-adoption-search',
+              label: 'Filter Records',
+              collapsible: true,
+              expanded: true,
+              placeholder: 'Filter records',
+              tokenPlaceholder: 'Add a filter…',
+              expandLabel: 'Open filter',
+              editorAttributes: { 'data-demo-adoption-search': 'true' },
+            }),
+            node(
+              'row',
+              {
+                wrap: true,
+                ariaLabel: 'Filter Suggestions',
+                rootAttributes: { 'data-search-field-keep-open': '' },
+              },
+              {
+                children: suggestions.map((value) =>
+                  node('button', {
+                    children: value,
+                    size: 'compact',
+                    emphasis: 'secondary',
+                    action: 'add-adoption-token',
+                    rootAttributes: { 'data-token-value': value },
+                  }),
+                ),
+              },
+            ),
+            readoutNode('No edits yet', 'data-demo-adoption-readout'),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
 test('builds SearchField › Collapsible', async ({ page }) => {
   // collapsibleSearchOpen starts closed, which an unset `expanded` is.
   await dragComponent(page, 'SearchField', () => emptySpot(page));
