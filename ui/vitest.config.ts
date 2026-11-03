@@ -27,6 +27,10 @@ export default defineConfig({
   },
   test: {
     environment: 'happy-dom',
+    // KF-773V87: the editor's DOM tests mount the whole editor in happy-dom.
+    // Alone each takes about 1s; with the full suite in parallel (225 files)
+    // they ran 5–8s and failed vitest's 5s default in the push gate.
+    testTimeout: 20_000,
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
