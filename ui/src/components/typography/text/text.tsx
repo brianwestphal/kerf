@@ -47,8 +47,13 @@ export type TextContent =
 
 type TextCommonProps = Omit<
   KerfBaseAttrs,
-  'children' | 'class' | 'className'
+  'children' | 'class' | 'className' | 'id'
 > & {
+  /**
+   * The element's id, for a link or `aria-*` reference to target (a
+   * `ListItemLink href="#…"` destination, for example).
+   */
+  id?: string;
   /** Native heading, paragraph, or inline span element to render. Defaults to `p`. */
   variant?: TextVariant;
   /** Semantic foreground treatment. Defaults to the inherited foreground. */

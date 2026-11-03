@@ -5633,7 +5633,12 @@ type TextTruncate = 'end' | 'middle' | 'start';
  */
 type TextTruncateKeep = number | 'segment';
 type TextContent = KerfUiContent | string | number | readonly TextContent[];
-type TextCommonProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
+type TextCommonProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className' | 'id'> & {
+    /**
+     * The element's id, for a link or `aria-*` reference to target (a
+     * `ListItemLink href="#…"` destination, for example).
+     */
+    id?: string;
     /** Native heading, paragraph, or inline span element to render. Defaults to `p`. */
     variant?: TextVariant;
     /** Semantic foreground treatment. Defaults to the inherited foreground. */

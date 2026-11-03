@@ -272,3 +272,19 @@ describe('Text live region and root attributes', () => {
     expect(String(Text({ children: 'Quiet' }))).not.toContain('aria-live');
   });
 });
+
+// KF-86PM4R: `id` is a declared prop, so a link can target a Text the
+// editor builds.
+describe('Text id', () => {
+  it('renders its id on the element', () => {
+    const html = String(
+      Text({
+        variant: 'span',
+        id: 'list-item-link-target',
+        children: 'List destination',
+      }),
+    );
+    expect(html).toMatch(/^<span[^>]* id="list-item-link-target"/);
+    expect(String(Text({ children: 'No id' }))).not.toContain(' id=');
+  });
+});
