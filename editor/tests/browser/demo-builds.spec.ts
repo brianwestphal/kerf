@@ -2878,7 +2878,7 @@ test('builds ChoiceChips › Compact with Icons', async ({ page }) => {
 
 test('builds ChoiceChips › Icon Picker', async ({ page }) => {
   // Twenty-two choices, each with an icon placed through its form.
-  test.setTimeout(240_000);
+  test.setTimeout(test.info().timeout * 8);
   const icons: readonly ChoiceSpec[] = (
     [
       ['star', 'Star'],
@@ -8597,7 +8597,7 @@ test('builds NavStack › Configured Toolbar', async ({ page }) => {
 test('builds NavStack › Overlay Chrome', async ({ page }) => {
   // Eighteen inbox rows built one by one outrun a slow test's budget in
   // WebKit on CI.
-  test.setTimeout(240_000);
+  test.setTimeout(test.info().timeout * 8);
   await dragComponent(page, 'NavStack', () => emptySpot(page));
   await select(page, /^NavStack/);
   // Below the root it needs a height of its own (KF-6MGYSG).
@@ -8721,7 +8721,7 @@ test('builds NavStack › Overlay Chrome', async ({ page }) => {
 test('builds NavStack › Compact Chrome', async ({ page }) => {
   // Eighteen inbox rows built one by one outrun a slow test's budget in
   // WebKit on CI.
-  test.setTimeout(240_000);
+  test.setTimeout(test.info().timeout * 8);
   await dragComponent(page, 'NavStack', () => emptySpot(page));
   await select(page, /^NavStack/);
   // Below the root it needs a height of its own (KF-6MGYSG).
@@ -15288,7 +15288,7 @@ async function dataAttribute(
 test('builds Workbench › Resizable Panels', async ({ page }) => {
   // Thirteen inspector rows, each named in the Inspector, outrun a slow
   // test's budget in Firefox.
-  test.setTimeout(240_000);
+  test.setTimeout(test.info().timeout * 8);
   await workbench(
     page,
     'catalog-workbench-resizable',
@@ -15559,7 +15559,7 @@ test('builds Workbench › Resizable Panels', async ({ page }) => {
 
 test('builds Workbench › Navigating Ticket Rail', async ({ page }) => {
   // A whole screen built step by step runs long in Firefox.
-  test.setTimeout(180_000);
+  test.setTimeout(test.info().timeout * 6);
   await workbench(
     page,
     'catalog-workbench-navigation',
@@ -16183,7 +16183,7 @@ test('builds SplitView › Resizable, Collapsible List', async ({ page }) => {
 test('builds TabNavigator › Translucent Tab Bar', async ({ page }) => {
   // Forty-eight rows, each named in the Inspector, outrun even a slow
   // test's budget in Firefox.
-  test.setTimeout(240_000);
+  test.setTimeout(test.info().timeout * 8);
   await dragComponent(page, 'TabNavigator', () => emptySpot(page));
   await select(page, /^TabNavigator/);
   // Below the root it needs a height of its own (KF-6MGYSG).
