@@ -183,8 +183,53 @@ jobs:
         run: npm ci && npm run build
       - run: npm ci
       - run: npm run check
-      - run: npx playwright install --with-deps chromium firefox webkit
-      - run: npm run test:e2e
+
+  # KF-PW9DA7: the editor's Playwright flows, one engine per job, fully
+  # parallel. The demo builds made one serial job run ~2 hours, long enough
+  # that every push cancelled it before it reported.
+  editor-browser:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    defaults:
+      run:
+        working-directory: editor
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '${{ env.NODE_VERSION }}'
+          cache: npm
+          cache-dependency-path: editor/package-lock.json
+      - name: Install kerfjs build dependencies
+        working-directory: .
+        run: npm ci
+      - name: Build the local kerfjs peer
+        working-directory: .
+        run: npm run build
+      - name: Install and build @kerfjs/ui
+        working-directory: ui
+        run: npm ci && npm run build
+      - run: npm ci
+      # KF-CKCT2J: Azure's Ubuntu mirror intermittently delays browser OS
+      # packages; use the primary Ubuntu archive.
+      - name: Use Ubuntu archive for browser dependencies
+        run: sudo sed -i 's#azure.archive.ubuntu.com#archive.ubuntu.com#g' /etc/apt/apt-mirrors.txt
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Run editor browser tests
+        id: editor_browser
+        run: npm run test:e2e -- --project=${{ matrix.browser }}
+      - name: Upload failed editor browser evidence
+        if: ${{ !cancelled() && steps.editor_browser.outcome == 'failure' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: editor-browser-failure-${{ matrix.browser }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            editor/test-results/**/trace.zip
+            editor/test-results/**/test-failed-*.png
+            editor/test-results/**/error-context.md
 
   # Run the full browser suite in each engine concurrently. The package check
   # remains the stable `ui` status check; each browser reports its own result.

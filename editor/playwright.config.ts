@@ -2,8 +2,11 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests/browser',
-  fullyParallel: false,
-  workers: 2,
+  // KF-PW9DA7: every build starts from a new document, so tests run in
+  // parallel across workers (the demo-builds file alone holds hundreds);
+  // CI runs one engine per job.
+  fullyParallel: true,
+  workers: process.env.CI ? 4 : 2,
   reporter: [['list']],
   use: {
     baseURL: 'http://127.0.0.1:42917',
