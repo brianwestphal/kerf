@@ -279,8 +279,12 @@ function workbench() {
   const root = document.createElement('div');
   document.body.append(root);
   const editor = createEditor();
-  mount(root, editor.render);
-  cleanup = editor.wire(root);
+  const stopMount = mount(root, editor.render);
+  const unwireEditor = editor.wire(root);
+  cleanup = () => {
+    unwireEditor();
+    stopMount();
+  };
   editor.selection.value = {
     kind: 'node',
     id: editor.document.value.root.id,
@@ -458,8 +462,12 @@ describe('inline list editors (KF-A9ZHGW)', () => {
     const root = document.createElement('div');
     document.body.append(root);
     const editor = createEditor();
-    mount(root, editor.render);
-    cleanup = editor.wire(root);
+    const stopMount = mount(root, editor.render);
+    const unwireEditor = editor.wire(root);
+    cleanup = () => {
+      unwireEditor();
+      stopMount();
+    };
     const id = '01JB8Z1M6Q8E1X9V4S7K2R3T5A';
     editor.selection.value = { kind: 'node', id };
     const props = () => findNode(editor.document.value, id)!.node.props ?? {};

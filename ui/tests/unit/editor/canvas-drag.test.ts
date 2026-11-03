@@ -47,13 +47,17 @@ function setUp() {
   document.body.append(root);
   let under: Element | null = null;
   const editor = createEditor();
-  mount(root, editor.render);
+  const stopMount = mount(root, editor.render);
   // The editor's own wiring uses elementFromPoint; point it at the stub.
   Object.defineProperty(document, 'elementFromPoint', {
     configurable: true,
     value: () => under,
   });
-  cleanup = editor.wire(root);
+  const unwireEditor = editor.wire(root);
+  cleanup = () => {
+    unwireEditor();
+    stopMount();
+  };
   const canvas = root.querySelector<HTMLElement>('[data-editor-canvas]')!;
   at(canvas, 0, 0, 800, 600);
   const node = (id: string) =>
@@ -527,13 +531,17 @@ describe('canvas drag', () => {
         },
       } as ViewDocument,
     });
-    mount(root, editor.render);
+    const stopMount = mount(root, editor.render);
     let under: Element | null = null;
     Object.defineProperty(document, 'elementFromPoint', {
       configurable: true,
       value: () => under,
     });
-    cleanup = editor.wire(root);
+    const unwireEditor = editor.wire(root);
+    cleanup = () => {
+      unwireEditor();
+      stopMount();
+    };
     const canvas = root.querySelector<HTMLElement>('[data-editor-canvas]')!;
     at(canvas, 0, 0, 800, 600);
     const empties = [
@@ -633,13 +641,17 @@ describe('canvas drag', () => {
         },
       } as ViewDocument,
     });
-    mount(root, editor.render);
+    const stopMount = mount(root, editor.render);
     let under: Element | null = null;
     Object.defineProperty(document, 'elementFromPoint', {
       configurable: true,
       value: () => under,
     });
-    cleanup = editor.wire(root);
+    const unwireEditor = editor.wire(root);
+    cleanup = () => {
+      unwireEditor();
+      stopMount();
+    };
     const canvas = root.querySelector<HTMLElement>('[data-editor-canvas]')!;
     at(canvas, 0, 0, 800, 600);
     const pane = canvas.querySelector<HTMLElement>(
@@ -727,13 +739,17 @@ describe('canvas drag', () => {
         root: { id: PANE, type: '@kerfjs/ui:pane' },
       } as ViewDocument,
     });
-    mount(root, editor.render);
+    const stopMount = mount(root, editor.render);
     let under: Element | null = null;
     Object.defineProperty(document, 'elementFromPoint', {
       configurable: true,
       value: () => under,
     });
-    cleanup = editor.wire(root);
+    const unwireEditor = editor.wire(root);
+    cleanup = () => {
+      unwireEditor();
+      stopMount();
+    };
     const canvas = root.querySelector<HTMLElement>('[data-editor-canvas]')!;
     at(canvas, 0, 0, 800, 600);
     const pane = canvas.querySelector<HTMLElement>(

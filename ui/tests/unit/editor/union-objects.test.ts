@@ -100,8 +100,12 @@ describe('a Workbench panel in the Inspector (KF-907BXY)', () => {
     const root = document.createElement('div');
     document.body.append(root);
     const editor = createEditor();
-    mount(root, editor.render);
-    cleanup = editor.wire(root);
+    const stopMount = mount(root, editor.render);
+    const unwireEditor = editor.wire(root);
+    cleanup = () => {
+      unwireEditor();
+      stopMount();
+    };
     editor.selection.value = {
       kind: 'node',
       id: editor.document.value.root.id,

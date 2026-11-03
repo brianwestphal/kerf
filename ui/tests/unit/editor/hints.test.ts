@@ -39,8 +39,12 @@ function open(document: ViewDocument) {
   const root = window.document.createElement('div');
   window.document.body.append(root);
   const editor = createEditor({ document });
-  mount(root, editor.render);
-  cleanup = editor.wire(root);
+  const stopMount = mount(root, editor.render);
+  const unwireEditor = editor.wire(root);
+  cleanup = () => {
+    unwireEditor();
+    stopMount();
+  };
   return { root, editor };
 }
 

@@ -36,8 +36,12 @@ function open(id = COMPOSE, edit?: (document: ViewDocument) => ViewDocument) {
   document.body.append(root);
   const editor = createEditor();
   if (edit) editor.document.value = edit(editor.document.value);
-  mount(root, editor.render);
-  cleanup = editor.wire(root);
+  const stopMount = mount(root, editor.render);
+  const unwireEditor = editor.wire(root);
+  cleanup = () => {
+    unwireEditor();
+    stopMount();
+  };
   editor.selection.value = { kind: 'node', id };
   return { root, editor };
 }

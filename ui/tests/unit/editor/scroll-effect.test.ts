@@ -100,8 +100,12 @@ function addedScrollEffect() {
   const root = document.createElement('div');
   document.body.append(root);
   const editor = createEditor();
-  mount(root, editor.render);
-  cleanup = editor.wire(root);
+  const stopMount = mount(root, editor.render);
+  const unwireEditor = editor.wire(root);
+  cleanup = () => {
+    unwireEditor();
+    stopMount();
+  };
   editor.selection.value = { kind: 'node', id: PANE };
   choose(field(root, '[data-editor-add="zone"]'), 'content');
   choose(

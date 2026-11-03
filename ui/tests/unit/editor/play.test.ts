@@ -346,9 +346,12 @@ function open(document?: ViewDocument) {
   const editor = createEditor(
     document ? { document, playHandlers } : { playHandlers },
   );
-  mount(root, editor.render);
+  const stopMount = mount(root, editor.render);
   const unwire = editor.wire(root);
-  cleanup = unwire;
+  cleanup = () => {
+    unwire();
+    stopMount();
+  };
   return { root, editor };
 }
 

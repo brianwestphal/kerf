@@ -146,8 +146,12 @@ function added(key: string) {
   const root = document.createElement('div');
   document.body.append(root);
   const editor = createEditor();
-  mount(root, editor.render);
-  cleanup = editor.wire(root);
+  const stopMount = mount(root, editor.render);
+  const unwireEditor = editor.wire(root);
+  cleanup = () => {
+    unwireEditor();
+    stopMount();
+  };
   editor.selection.value = { kind: 'node', id: PANE };
   choose(root.querySelector('[data-editor-add="zone"]')!, 'content');
   choose(root.querySelector('[data-editor-add="component"]')!, key);

@@ -100,8 +100,12 @@ function added(key: string) {
   const root = document.createElement('div');
   document.body.append(root);
   const editor = createEditor();
-  mount(root, editor.render);
-  cleanup = editor.wire(root);
+  const stopMount = mount(root, editor.render);
+  const unwireEditor = editor.wire(root);
+  cleanup = () => {
+    unwireEditor();
+    stopMount();
+  };
   editor.selection.value = { kind: 'node', id: PANE };
   choose(field(root, '[data-editor-add="zone"]'), 'content');
   choose(field(root, '[data-editor-add="component"]'), key);
@@ -366,8 +370,12 @@ describe('a list no field editor takes (KF-CY1D5W)', () => {
         },
       } as never,
     });
-    mount(root, editor.render);
-    cleanup = editor.wire(root);
+    const stopMount = mount(root, editor.render);
+    const unwireEditor = editor.wire(root);
+    cleanup = () => {
+      unwireEditor();
+      stopMount();
+    };
     editor.selection.value = { kind: 'node', id: SPARK };
     expect(field(root, '[data-editor-prop="values"]').dataset.editorKind).toBe(
       'list',

@@ -42,8 +42,12 @@ describe('a preview that fails when mounted', () => {
     const root = document.createElement('div');
     document.body.append(root);
     const editor = createEditor({ catalog });
-    mount(root, editor.render);
-    cleanup = editor.wire(root);
+    const stopMount = mount(root, editor.render);
+    const unwireEditor = editor.wire(root);
+    cleanup = () => {
+      unwireEditor();
+      stopMount();
+    };
     const canvas = root.querySelector('[data-editor-canvas]')!;
     expect(canvas.textContent).toContain('This document cannot be previewed');
     expect(canvas.textContent).toContain('exactly one is required');

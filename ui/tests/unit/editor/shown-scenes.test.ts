@@ -90,8 +90,12 @@ describe('the scene the canvas shows', () => {
     const root = globalThis.document.createElement('div');
     globalThis.document.body.append(root);
     const editor = createEditor();
-    mount(root, editor.render);
-    cleanup = editor.wire(root);
+    const stopMount = mount(root, editor.render);
+    const unwireEditor = editor.wire(root);
+    cleanup = () => {
+      unwireEditor();
+      stopMount();
+    };
     editor.document.value = sample();
     const scene = (id: string) =>
       root
@@ -166,8 +170,12 @@ describe('the NavStack view the canvas shows', () => {
     const root = globalThis.document.createElement('div');
     globalThis.document.body.append(root);
     const editor = createEditor();
-    mount(root, editor.render);
-    cleanup = editor.wire(root);
+    const stopMount = mount(root, editor.render);
+    const unwireEditor = editor.wire(root);
+    cleanup = () => {
+      unwireEditor();
+      stopMount();
+    };
     const document = stackDocument() as unknown as {
       params: Record<string, unknown>;
       root: { props: Record<string, unknown> };
@@ -187,8 +195,12 @@ describe('the NavStack view the canvas shows', () => {
     const root = globalThis.document.createElement('div');
     globalThis.document.body.append(root);
     const editor = createEditor();
-    mount(root, editor.render);
-    cleanup = editor.wire(root);
+    const stopMount = mount(root, editor.render);
+    const unwireEditor = editor.wire(root);
+    cleanup = () => {
+      unwireEditor();
+      stopMount();
+    };
     editor.document.value = stackDocument();
     editor.selection.value = { kind: 'node', id: STACK };
     const row = (index: number) =>

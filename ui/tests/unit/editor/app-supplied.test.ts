@@ -100,8 +100,12 @@ function added(key: string, options = {}) {
   const root = document.createElement('div');
   document.body.append(root);
   const editor = createEditor(options);
-  mount(root, editor.render);
-  cleanup = editor.wire(root);
+  const stopMount = mount(root, editor.render);
+  const unwireEditor = editor.wire(root);
+  cleanup = () => {
+    unwireEditor();
+    stopMount();
+  };
   editor.selection.value = { kind: 'node', id: '01JB8Z1M6Q8E1X9V4S7K2R3T5A' };
   choose(field(root, '[data-editor-add="zone"]'), 'content');
   choose(field(root, '[data-editor-add="component"]'), key);

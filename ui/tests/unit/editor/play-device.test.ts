@@ -324,8 +324,12 @@ describe('the play bar', () => {
     const root = document.createElement('div');
     document.body.append(root);
     const editor = createEditor(options);
-    mount(root, editor.render);
-    cleanup = editor.wire(root);
+    const stopMount = mount(root, editor.render);
+    const unwireEditor = editor.wire(root);
+    cleanup = () => {
+      unwireEditor();
+      stopMount();
+    };
     (root.querySelector('[data-action="editor-play"]') as HTMLElement).click();
     const frame = () =>
       root.querySelector<HTMLIFrameElement>('[data-editor-play-frame]')!;

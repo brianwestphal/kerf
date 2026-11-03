@@ -14,9 +14,12 @@ function open(options: Parameters<typeof createEditor>[0] = {}) {
   const root = document.createElement('div');
   document.body.append(root);
   const editor = createEditor(options);
-  mount(root, editor.render);
+  const stopMount = mount(root, editor.render);
   const unwire = editor.wire(root);
-  cleanup = unwire;
+  cleanup = () => {
+    unwire();
+    stopMount();
+  };
   return { root, editor };
 }
 

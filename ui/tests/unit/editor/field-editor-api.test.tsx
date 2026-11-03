@@ -38,8 +38,12 @@ function workbench(fieldEditors: Record<string, FieldEditor>) {
   const root = document.createElement('div');
   document.body.append(root);
   const editor = createEditor({ fieldEditors });
-  mount(root, editor.render);
-  cleanup = editor.wire(root);
+  const stopMount = mount(root, editor.render);
+  const unwireEditor = editor.wire(root);
+  cleanup = () => {
+    unwireEditor();
+    stopMount();
+  };
   editor.selection.value = { kind: 'node', id: editor.document.value.root.id };
   choose(field(root, '[data-editor-root="component"]'), '@kerfjs/ui:workbench');
   field(root, '[data-action="editor-replace-root"]').click();

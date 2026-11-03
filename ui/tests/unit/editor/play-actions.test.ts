@@ -320,8 +320,12 @@ describe('the action log', () => {
     const root = document.createElement('div');
     document.body.append(root);
     const editor = createEditor();
-    mount(root, editor.render);
-    cleanup = editor.wire(root);
+    const stopMount = mount(root, editor.render);
+    const unwireEditor = editor.wire(root);
+    cleanup = () => {
+      unwireEditor();
+      stopMount();
+    };
     const enter = () => {
       root.querySelector<HTMLElement>('[data-action="editor-play"]')!.click();
       const frame = root.querySelector<HTMLIFrameElement>(
@@ -421,8 +425,12 @@ describe('the action log', () => {
     const root = document.createElement('div');
     document.body.append(root);
     const editor = createEditor();
-    mount(root, editor.render);
-    cleanup = editor.wire(root);
+    const stopMount = mount(root, editor.render);
+    const unwireEditor = editor.wire(root);
+    cleanup = () => {
+      unwireEditor();
+      stopMount();
+    };
     root.querySelector<HTMLElement>('[data-action="editor-play"]')!.click();
     root.querySelector<HTMLElement>('[data-action="editor-play-log"]')!.click();
     expect(

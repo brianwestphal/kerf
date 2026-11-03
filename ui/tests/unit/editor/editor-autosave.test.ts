@@ -60,8 +60,12 @@ function open(storage: EditorStorage) {
   const root = document.createElement('div');
   document.body.append(root);
   const editor = createEditor({ storage });
-  mount(root, editor.render);
-  cleanup = editor.wire(root);
+  const stopMount = mount(root, editor.render);
+  const unwireEditor = editor.wire(root);
+  cleanup = () => {
+    unwireEditor();
+    stopMount();
+  };
   return { root, editor };
 }
 
