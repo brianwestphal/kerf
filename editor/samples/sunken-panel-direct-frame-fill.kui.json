@@ -1,0 +1,37 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SunkenPanelDirectFrameFill",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sunken-panel",
+          "props": {
+            "fill": true,
+            "ariaLabel": "Full-Height Work Surface"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "Full-height surface"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

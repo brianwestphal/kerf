@@ -1,0 +1,89 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "PanePaneStructureAndSeparators",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "element": "section",
+      "label": "Pane Anatomy",
+      "separators": [
+        "block-start",
+        "block-end",
+        "inline-start",
+        "inline-end"
+      ]
+    },
+    "zones": {
+      "header": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Pane Header"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Pane Header",
+                  "size": "large"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "00000000000000000000000004",
+          "type": "@kerfjs/ui:list-inset-text",
+          "props": {
+            "children": "Optional secondary header row"
+          }
+        }
+      ],
+      "footer": [
+        {
+          "id": "00000000000000000000000005",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Pane Footer"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Optional footer",
+                  "size": "small"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "content": [
+        {
+          "id": "00000000000000000000000007",
+          "type": "@kerfjs/ui:content-item",
+          "props": {
+            "children": "First content group"
+          }
+        },
+        {
+          "id": "00000000000000000000000008",
+          "type": "@kerfjs/ui:content-item",
+          "props": {
+            "children": "Framed content group",
+            "frame": "framed"
+          }
+        }
+      ]
+    }
+  }
+}

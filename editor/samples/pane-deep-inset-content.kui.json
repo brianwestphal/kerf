@@ -1,0 +1,62 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "PaneDeepInsetContent",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "deepInset": true,
+      "label": "Deep Inset Example"
+    },
+    "zones": {
+      "header": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Deep Inset Header"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Projects",
+                  "size": "large"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "content": [
+        {
+          "id": "00000000000000000000000004",
+          "type": "@kerfjs/ui:content-item",
+          "props": {
+            "children": "Direct content item"
+          }
+        },
+        {
+          "id": "00000000000000000000000005",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "children": "Nested List content item"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

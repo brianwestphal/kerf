@@ -1,0 +1,31 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "PaneFocusablePaneAndPersistentOutline",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "element": "section",
+      "tabIndex": 0,
+      "outlined": true,
+      "label": "Drop Target Pane",
+      "rootAttributes": {
+        "data-demo-focus-pane": ""
+      }
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:content-item",
+          "props": {
+            "children": "Drop a project here."
+          }
+        }
+      ]
+    }
+  }
+}

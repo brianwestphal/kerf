@@ -1,0 +1,484 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "PaneOverlayHeader",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "element": "section",
+      "headerPresentation": "overlay",
+      "label": "Inbox",
+      "rootAttributes": {
+        "data-overlay-header-demo": "pane"
+      }
+    },
+    "zones": {
+      "header": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Inbox Header"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Inbox",
+                  "size": "xlarge"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "content": [
+        {
+          "id": "00000000000000000000000004",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Design Review",
+                  "action": "log-inbox",
+                  "iconTile": "brand",
+                  "itemId": "inbox-1"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "calendar"
+                        },
+                        "name": "calendar"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Backup Complete",
+                  "action": "log-inbox",
+                  "iconTile": "success",
+                  "itemId": "inbox-2"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "shield-check"
+                        },
+                        "name": "shield-check"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Storage Almost Full",
+                  "action": "log-inbox",
+                  "iconTile": "warning",
+                  "itemId": "inbox-3"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000010",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "bell"
+                        },
+                        "name": "bell"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000011",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Weekly Summary",
+                  "action": "log-inbox",
+                  "iconTile": "neutral",
+                  "itemId": "inbox-4"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000012",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "mail"
+                        },
+                        "name": "mail"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000013",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Design Review",
+                  "action": "log-inbox",
+                  "iconTile": "brand",
+                  "itemId": "inbox-5"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000014",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "calendar"
+                        },
+                        "name": "calendar"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000015",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Backup Complete",
+                  "action": "log-inbox",
+                  "iconTile": "success",
+                  "itemId": "inbox-6"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000016",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "shield-check"
+                        },
+                        "name": "shield-check"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000017",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Storage Almost Full",
+                  "action": "log-inbox",
+                  "iconTile": "warning",
+                  "itemId": "inbox-7"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000018",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "bell"
+                        },
+                        "name": "bell"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000019",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Weekly Summary",
+                  "action": "log-inbox",
+                  "iconTile": "neutral",
+                  "itemId": "inbox-8"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000020",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "mail"
+                        },
+                        "name": "mail"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000021",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Design Review",
+                  "action": "log-inbox",
+                  "iconTile": "brand",
+                  "itemId": "inbox-9"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000022",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "calendar"
+                        },
+                        "name": "calendar"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000023",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Backup Complete",
+                  "action": "log-inbox",
+                  "iconTile": "success",
+                  "itemId": "inbox-10"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000024",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "shield-check"
+                        },
+                        "name": "shield-check"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000025",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Storage Almost Full",
+                  "action": "log-inbox",
+                  "iconTile": "warning",
+                  "itemId": "inbox-11"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000026",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "bell"
+                        },
+                        "name": "bell"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000027",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Weekly Summary",
+                  "action": "log-inbox",
+                  "iconTile": "neutral",
+                  "itemId": "inbox-12"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000028",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "mail"
+                        },
+                        "name": "mail"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000029",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Design Review",
+                  "action": "log-inbox",
+                  "iconTile": "brand",
+                  "itemId": "inbox-13"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000030",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "calendar"
+                        },
+                        "name": "calendar"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000031",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Backup Complete",
+                  "action": "log-inbox",
+                  "iconTile": "success",
+                  "itemId": "inbox-14"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000032",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "shield-check"
+                        },
+                        "name": "shield-check"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000033",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Storage Almost Full",
+                  "action": "log-inbox",
+                  "iconTile": "warning",
+                  "itemId": "inbox-15"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000034",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "bell"
+                        },
+                        "name": "bell"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000035",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Weekly Summary",
+                  "action": "log-inbox",
+                  "iconTile": "neutral",
+                  "itemId": "inbox-16"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000036",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "mail"
+                        },
+                        "name": "mail"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000037",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Design Review",
+                  "action": "log-inbox",
+                  "iconTile": "brand",
+                  "itemId": "inbox-17"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000038",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "calendar"
+                        },
+                        "name": "calendar"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000039",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Backup Complete",
+                  "action": "log-inbox",
+                  "iconTile": "success",
+                  "itemId": "inbox-18"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000040",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "shield-check"
+                        },
+                        "name": "shield-check"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

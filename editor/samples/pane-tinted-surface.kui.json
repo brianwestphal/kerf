@@ -1,0 +1,107 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "PaneTintedSurface",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "element": "section",
+      "headerPresentation": "overlay",
+      "label": "Album",
+      "rootAttributes": {
+        "data-tint-demo": "pane"
+      },
+      "tint": {
+        "color": {
+          "$css": "fillColor('#5b2a86')"
+        },
+        "scheme": "dark"
+      }
+    },
+    "zones": {
+      "header": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Album Header"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Night Drive",
+                  "size": "xlarge",
+                  "description": "12 songs, 48 minutes"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "content": [
+        {
+          "id": "00000000000000000000000004",
+          "type": "@kerfjs/ui:content-item",
+          "props": {
+            "children": "1. Overture"
+          }
+        },
+        {
+          "id": "00000000000000000000000005",
+          "type": "@kerfjs/ui:content-item",
+          "props": {
+            "children": "2. Neon Rain"
+          }
+        },
+        {
+          "id": "00000000000000000000000006",
+          "type": "@kerfjs/ui:content-item",
+          "props": {
+            "children": "3. Coastline"
+          }
+        },
+        {
+          "id": "00000000000000000000000007",
+          "type": "@kerfjs/ui:content-item",
+          "props": {
+            "children": "4. Last Exit"
+          }
+        },
+        {
+          "id": "00000000000000000000000008",
+          "type": "@kerfjs/ui:content-item",
+          "props": {
+            "children": "5. Afterglow"
+          }
+        },
+        {
+          "id": "00000000000000000000000009",
+          "type": "@kerfjs/ui:content-item",
+          "props": {
+            "children": "6. Static"
+          }
+        },
+        {
+          "id": "00000000000000000000000010",
+          "type": "@kerfjs/ui:content-item",
+          "props": {
+            "children": "7. Slow Burn"
+          }
+        },
+        {
+          "id": "00000000000000000000000011",
+          "type": "@kerfjs/ui:content-item",
+          "props": {
+            "children": "8. Homeward"
+          }
+        }
+      ]
+    }
+  }
+}

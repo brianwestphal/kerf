@@ -6126,10 +6126,12 @@ const shortcuts = [
   ['Complete Ticket', 'Mark the selected ticket done.', '⌘ ↵'],
 ] as const;
 
-/** Deletes the selected node with Flow › Delete. */
+/**
+ * Deletes the selected node with the Inspector's Delete, which a bare text
+ * node (with no Flow area) has too.
+ */
 async function deleteSelected(page: Page) {
-  await area(page, 'Flow');
-  await page.getByRole('button', { name: 'Delete', exact: true }).click();
+  await page.locator('[data-action="editor-delete"]').click();
 }
 
 /**
@@ -12290,6 +12292,708 @@ test('builds TabBar › Overflow · Scroll Dividers', async ({ page }) => {
         leading: [tabBarGroupNode({ ariaLabel: 'Show Sidebar' }, 'panel-left')],
         trailing: [tabBarGroupNode({ ariaLabel: 'Add Tab' }, 'plus')],
       }),
+    ),
+  );
+});
+
+/** Adds a Text reading `text` (with `spec`) to the `nth` `parent`. */
+async function textInto(
+  page: Page,
+  parent: RegExp,
+  text: string,
+  nth = 0,
+  spec: FieldSpec = {},
+) {
+  await addInto(page, parent, 'Text', nth);
+  await applySpec(page, { ...spec, text: { children: text, ...spec.text } });
+}
+
+const textNode = (children: string, props: Record<string, unknown> = {}) =>
+  node('text', { children, ...props });
+
+/** Places a SunkenPanel, set up by `spec`, at the first empty spot. */
+async function sunkenPanel(page: Page, spec: FieldSpec, nth = 0) {
+  await dragComponent(page, 'SunkenPanel', () => emptySpot(page));
+  await select(page, /^SunkenPanel/, nth);
+  await applySpec(page, spec);
+}
+
+const SUNKEN = /^SunkenPanel/;
+
+test('builds SunkenPanel › Rounded Application Work Area', async ({ page }) => {
+  await sunkenPanel(page, { text: { ariaLabel: 'Release Workspace' } });
+  await addChild(page, 'StateBanner');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { tone: 'neutral' },
+    text: { title: 'Release Candidate Ready' },
+  });
+  await addInto(page, SUNKEN, 'ValueTable');
+  await valueTable(page, { text: { label: 'Release Details' } }, [
+    { text: { label: 'Version', value: '5.0.0-beta.2' } },
+    { text: { label: 'Checks', value: 'Passing' } },
+  ]);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'sunken-panel',
+        { ariaLabel: 'Release Workspace' },
+        {
+          children: [
+            node('state-banner', {
+              tone: 'neutral',
+              title: 'Release Candidate Ready',
+            }),
+            node(
+              'value-table',
+              { label: 'Release Details' },
+              {
+                children: [
+                  node('value-table#ValueTableRow', {
+                    label: 'Version',
+                    value: '5.0.0-beta.2',
+                  }),
+                  node('value-table#ValueTableRow', {
+                    label: 'Checks',
+                    value: 'Passing',
+                  }),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds SunkenPanel › Focusable Outlined Surface', async ({ page }) => {
+  await sunkenPanel(page, {
+    choices: { tabIndex: '0' },
+    flags: ['outlined'],
+    text: { ariaLabel: 'Selected Work Surface' },
+  });
+  await textInto(page, SUNKEN, 'Selected work surface');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'sunken-panel',
+        { ariaLabel: 'Selected Work Surface', tabIndex: 0, outlined: true },
+        { children: [textNode('Selected work surface')] },
+      ),
+    ),
+  );
+});
+
+test('builds SunkenPanel › Square-Corner Content Stack', async ({ page }) => {
+  const lines = [
+    'Recent activity',
+    'Three checks completed.',
+    'One beta is ready to publish.',
+  ];
+  await sunkenPanel(page, { choices: { shape: 'square' } });
+  for (const line of lines) await textInto(page, SUNKEN, line);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'sunken-panel',
+        { shape: 'square' },
+        { children: lines.map((line) => textNode(line)) },
+      ),
+    ),
+  );
+});
+
+test('builds SunkenPanel › Panel Fills a Work Area', async ({ page }) => {
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List(?![A-Z])/);
+  await choose(page, 'flex', 'true');
+  await addChild(page, 'ContentItem');
+  await area(page, 'Properties');
+  await choose(page, 'appearance', 'info');
+  await addChild(page, 'Text');
+  await area(page, 'Properties');
+  await setText(page, 'children', 'Work area');
+  await addInto(page, /^List(?![A-Z])/, 'SunkenPanel');
+  await applySpec(page, {
+    choices: { flex: 'true' },
+    text: { ariaLabel: 'Growing Work Surface' },
+  });
+  await textInto(
+    page,
+    SUNKEN,
+    'Content stays at the top while the surface fills space.',
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { flex: true },
+        {
+          children: [
+            node(
+              'content-item',
+              { appearance: 'info' },
+              { children: [textNode('Work area')] },
+            ),
+            node(
+              'sunken-panel',
+              { flex: true, ariaLabel: 'Growing Work Surface' },
+              {
+                children: [
+                  textNode(
+                    'Content stays at the top while the surface fills space.',
+                  ),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds SunkenPanel › Direct Frame Fill', async ({ page }) => {
+  await sunkenPanel(page, {
+    flags: ['fill'],
+    text: { ariaLabel: 'Full-Height Work Surface' },
+  });
+  await textInto(page, SUNKEN, 'Full-height surface');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'sunken-panel',
+        { fill: true, ariaLabel: 'Full-Height Work Surface' },
+        { children: [textNode('Full-height surface')] },
+      ),
+    ),
+  );
+});
+
+test('builds SunkenPanel › Nested Surfaces', async ({ page }) => {
+  const layers = ['First', 'Second', 'Third'];
+  await sunkenPanel(page, { text: { ariaLabel: 'First Layer' } });
+  await textInto(page, SUNKEN, 'First layer', 0);
+  for (const [depth, layer] of layers.slice(1).entries()) {
+    await addInto(page, SUNKEN, 'SunkenPanel', depth);
+    await setText(page, 'ariaLabel', `${layer} Layer`);
+    await textInto(page, SUNKEN, `${layer} layer`, depth + 1);
+  }
+  await addInto(page, SUNKEN, 'Button', 2);
+  await setText(page, 'children', 'Focus Nested Control');
+  const third = node(
+    'sunken-panel',
+    { ariaLabel: 'Third Layer' },
+    {
+      children: [
+        textNode('Third layer'),
+        node('button', { children: 'Focus Nested Control' }),
+      ],
+    },
+  );
+  const second = node(
+    'sunken-panel',
+    { ariaLabel: 'Second Layer' },
+    { children: [textNode('Second layer'), third] },
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'sunken-panel',
+        { ariaLabel: 'First Layer' },
+        { children: [textNode('First layer'), second] },
+      ),
+    ),
+  );
+});
+
+test('builds SunkenPanel › Pane and Nested Panel', async ({ page }) => {
+  await dragComponent(page, 'Pane', () => emptySpot(page));
+  await select(page, /^Pane/, 1);
+  await applySpec(page, {
+    choices: { appearance: 'sunken' },
+    text: { label: 'Layered Pane' },
+  });
+  await sunkenPanel(page, { text: { ariaLabel: 'Pane Content Layer' } });
+  await textInto(page, SUNKEN, 'The same lowered token paints both surfaces.');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'pane',
+        { appearance: 'sunken', label: 'Layered Pane' },
+        {
+          content: [
+            node(
+              'sunken-panel',
+              { ariaLabel: 'Pane Content Layer' },
+              {
+                children: [
+                  textNode('The same lowered token paints both surfaces.'),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds SunkenPanel › Nested Sunken Surfaces', async ({ page }) => {
+  await sunkenPanel(page, { text: { ariaLabel: 'Nested Sunken Disclosure' } });
+  await textInto(page, SUNKEN, 'Kerf sunken panel');
+  await addInto(page, SUNKEN, 'Disclosure');
+  await applySpec(page, {
+    choices: { appearance: 'sunken' },
+    flags: ['open'],
+    text: { title: 'Nested Details' },
+  });
+  // The Disclosure's seeded text (the second Text) gives way to the child.
+  await addInto(page, /^Disclosure/, 'Text');
+  // A bare text node has no Properties: pick its outline row directly.
+  await area(page, 'Outline');
+  await outlineRow(page, /^Text “Disclosure”/).click();
+  await deleteSelected(page);
+  await select(page, /^Text(?![A-Z])/, -1);
+  await setText(page, 'children', 'The lowered surface compounds here too.');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'sunken-panel',
+        { ariaLabel: 'Nested Sunken Disclosure' },
+        {
+          children: [
+            textNode('Kerf sunken panel'),
+            node(
+              'disclosure',
+              { title: 'Nested Details', appearance: 'sunken', open: true },
+              {
+                children: [textNode('The lowered surface compounds here too.')],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+/** A Pane chrome Toolbar: its label and its leading ToolbarText. */
+type ChromeSpec = {
+  readonly label: string;
+  readonly text: string;
+  readonly size?: string;
+  readonly description?: string;
+};
+
+/**
+ * Sets up the document's root Pane as a demo Pane: `spec` (fill turned off,
+ * as the demos leave it), header and footer Toolbars, and ContentItems.
+ */
+async function rootPane(
+  page: Page,
+  spec: FieldSpec,
+  {
+    header,
+    footer,
+    items = [],
+  }: {
+    header?: ChromeSpec;
+    footer?: ChromeSpec;
+    items?: readonly string[];
+  },
+) {
+  await select(page, /^Pane/);
+  // The root starts filled; a spec naming fill keeps it.
+  const keepFill = spec.flags?.includes('fill') ?? false;
+  await applySpec(page, {
+    ...spec,
+    flags: spec.flags?.filter((flag) => flag !== 'fill'),
+    offs: [...(keepFill ? [] : ['fill']), ...(spec.offs ?? [])],
+  });
+  for (const [zone, chrome] of [
+    ['header', header],
+    ['footer', footer],
+  ] as const) {
+    if (!chrome) continue;
+    await select(page, /^Pane/);
+    await addChild(page, 'Toolbar', zone);
+    await area(page, 'Properties');
+    await setText(page, 'label', chrome.label);
+    await addChild(page, 'ToolbarText', 'leading');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: chrome.size ? { size: chrome.size } : {},
+      text: {
+        text: chrome.text,
+        ...(chrome.description ? { description: chrome.description } : {}),
+      },
+    });
+  }
+  for (const item of items) {
+    await select(page, /^Pane/);
+    await addChild(page, 'ContentItem', 'content');
+    await area(page, 'Properties');
+    await setText(page, 'children', item);
+  }
+}
+
+/** A chrome Toolbar node. */
+const chromeNode = ({ label, text, size, description }: ChromeSpec) =>
+  node(
+    'toolbar',
+    { label },
+    {
+      leading: [
+        node('toolbar-text', {
+          text,
+          ...(description ? { description } : {}),
+          ...(size ? { size } : {}),
+        }),
+      ],
+    },
+  );
+
+/** The root Pane `rootPane` builds, given its exported props. */
+const rootPaneNode = (
+  props: Record<string, unknown>,
+  {
+    header,
+    footer,
+    content = [],
+  }: { header?: unknown[]; footer?: unknown[]; content?: unknown[] },
+) =>
+  node('pane', props, {
+    ...(header ? { header } : {}),
+    content,
+    ...(footer ? { footer } : {}),
+  });
+
+const items = (texts: readonly string[]) =>
+  texts.map((children) => node('content-item', { children }));
+
+test('builds Pane › Pane Structure and Separators', async ({ page }) => {
+  const header = { label: 'Pane Header', text: 'Pane Header', size: 'large' };
+  const footer = {
+    label: 'Pane Footer',
+    text: 'Optional footer',
+    size: 'small',
+  };
+  await rootPane(
+    page,
+    { choices: { element: 'section' }, text: { label: 'Pane Anatomy' } },
+    { header, footer, items: ['First content group'] },
+  );
+  await select(page, /^Pane/);
+  const sides = ['block-start', 'block-end', 'inline-start', 'inline-end'];
+  const separators = page.locator('[data-editor-prop="separators"]').first();
+  for (const side of sides)
+    await separators.getByRole('checkbox', { name: side, exact: true }).check();
+  await select(page, /^Pane/);
+  await addChild(page, 'ListInsetText', 'header');
+  await area(page, 'Properties');
+  await setText(page, 'children', 'Optional secondary header row');
+  await select(page, /^Pane/);
+  await addChild(page, 'ContentItem', 'content');
+  await area(page, 'Properties');
+  await setText(page, 'children', 'Framed content group');
+  await choose(page, 'frame', 'framed');
+  expect(await exported(page)).toEqual(
+    rootPaneNode(
+      { element: 'section', label: 'Pane Anatomy', separators: sides },
+      {
+        header: [
+          chromeNode(header),
+          node('list-inset-text', {
+            children: 'Optional secondary header row',
+          }),
+        ],
+        content: [
+          ...items(['First content group']),
+          node('content-item', {
+            children: 'Framed content group',
+            frame: 'framed',
+          }),
+        ],
+        footer: [chromeNode(footer)],
+      },
+    ),
+  );
+});
+
+test('builds Pane › Focusable Pane and Persistent Outline', async ({
+  page,
+}) => {
+  await rootPane(
+    page,
+    {
+      choices: { element: 'section', tabIndex: '0' },
+      flags: ['outlined'],
+      text: { label: 'Drop Target Pane' },
+      data: [['data-demo-focus-pane', '']],
+    },
+    { items: ['Drop a project here.'] },
+  );
+  expect(await exported(page)).toEqual(
+    rootPaneNode(
+      {
+        element: 'section',
+        label: 'Drop Target Pane',
+        tabIndex: 0,
+        outlined: true,
+        rootAttributes: { 'data-demo-focus-pane': '' },
+      },
+      { content: items(['Drop a project here.']) },
+    ),
+  );
+});
+
+test('builds Pane › Deep Inset Content', async ({ page }) => {
+  const header = {
+    label: 'Deep Inset Header',
+    text: 'Projects',
+    size: 'large',
+  };
+  await rootPane(
+    page,
+    { flags: ['deepInset'], text: { label: 'Deep Inset Example' } },
+    { header, items: ['Direct content item'] },
+  );
+  await select(page, /^Pane/);
+  await addChild(page, 'List', 'content');
+  await addChild(page, 'ContentItem');
+  await area(page, 'Properties');
+  await setText(page, 'children', 'Nested List content item');
+  expect(await exported(page)).toEqual(
+    rootPaneNode(
+      { label: 'Deep Inset Example', deepInset: true },
+      {
+        header: [chromeNode(header)],
+        content: [
+          ...items(['Direct content item']),
+          node('list', undefined, {
+            children: items(['Nested List content item']),
+          }),
+        ],
+      },
+    ),
+  );
+});
+
+test('builds Pane › Scroll Dividers', async ({ page }) => {
+  test.slow();
+  const updates = Array.from({ length: 12 }, (_, i) => `Update ${i + 1}`);
+  const header = { label: 'Activity Header', text: 'Activity', size: 'large' };
+  const footer = {
+    label: 'Activity Footer',
+    text: '12 updates',
+    size: 'small',
+  };
+  await rootPane(
+    page,
+    {
+      choices: { element: 'section', appearance: 'sunken' },
+      text: { label: 'Scrolling Pane' },
+      data: [['data-scroll-divider-demo', 'pane']],
+    },
+    { header, footer, items: updates },
+  );
+  expect(await exported(page)).toEqual(
+    rootPaneNode(
+      {
+        element: 'section',
+        label: 'Scrolling Pane',
+        appearance: 'sunken',
+        rootAttributes: { 'data-scroll-divider-demo': 'pane' },
+      },
+      {
+        header: [chromeNode(header)],
+        content: items(updates),
+        footer: [chromeNode(footer)],
+      },
+    ),
+  );
+});
+
+const albumHeader = (description?: string) => ({
+  label: 'Album Header',
+  text: 'Night Drive',
+  size: 'xlarge',
+  ...(description ? { description } : {}),
+});
+
+test('builds Pane › Background Color', async ({ page }) => {
+  const songs = ['Overture', 'Neon Rain', 'Coastline', 'Last Exit'].map(
+    (title, index) => `${index + 1}. ${title}`,
+  );
+  await rootPane(
+    page,
+    {
+      choices: { element: 'section' },
+      text: { label: 'Album' },
+      data: [['data-background-demo', 'pane']],
+    },
+    { header: albumHeader(), items: songs },
+  );
+  await select(page, /^Pane/);
+  await setCss(page, 'background', "fillColor('light-dark(#e6edfb, #1b2438)')");
+  expect(await exported(page)).toEqual(
+    rootPaneNode(
+      {
+        element: 'section',
+        label: 'Album',
+        background: { $css: "fillColor('light-dark(#e6edfb, #1b2438)')" },
+        rootAttributes: { 'data-background-demo': 'pane' },
+      },
+      { header: [chromeNode(albumHeader())], content: items(songs) },
+    ),
+  );
+});
+
+test('builds Pane › Tinted Surface', async ({ page }) => {
+  test.slow();
+  const songs = [
+    'Overture',
+    'Neon Rain',
+    'Coastline',
+    'Last Exit',
+    'Afterglow',
+    'Static',
+    'Slow Burn',
+    'Homeward',
+  ].map((title, index) => `${index + 1}. ${title}`);
+  const header = albumHeader('12 songs, 48 minutes');
+  await rootPane(
+    page,
+    {
+      choices: { element: 'section', headerPresentation: 'overlay' },
+      text: { label: 'Album' },
+      data: [['data-tint-demo', 'pane']],
+    },
+    { header, items: songs },
+  );
+  await select(page, /^Pane/);
+  await page.getByRole('button', { name: 'Configure tint' }).click();
+  await setField(page, 'tint', ['color'], "fillColor('#5b2a86')");
+  await chooseField(page, 'tint', ['scheme'], 'dark');
+  await back(page);
+  expect(await exported(page)).toEqual(
+    rootPaneNode(
+      {
+        element: 'section',
+        label: 'Album',
+        tint: { color: { $css: "fillColor('#5b2a86')" }, scheme: 'dark' },
+        headerPresentation: 'overlay',
+        rootAttributes: { 'data-tint-demo': 'pane' },
+      },
+      { header: [chromeNode(header)], content: items(songs) },
+    ),
+  );
+});
+
+test('builds Pane › Overlay Header', async ({ page }) => {
+  test.slow();
+  const kinds = [
+    ['Design Review', 'calendar', 'brand'],
+    ['Backup Complete', 'shield-check', 'success'],
+    ['Storage Almost Full', 'bell', 'warning'],
+    ['Weekly Summary', 'mail', 'neutral'],
+  ] as const;
+  const messages = Array.from({ length: 18 }, (_, index) => ({
+    id: `inbox-${index + 1}`,
+    ...(([label, glyph, tone]) => ({ label, glyph, tone }))(
+      kinds[index % kinds.length]!,
+    ),
+  }));
+  const header = { label: 'Inbox Header', text: 'Inbox', size: 'xlarge' };
+  await rootPane(
+    page,
+    {
+      choices: { element: 'section', headerPresentation: 'overlay' },
+      text: { label: 'Inbox' },
+      data: [['data-overlay-header-demo', 'pane']],
+    },
+    { header },
+  );
+  await select(page, /^Pane/);
+  await addChild(page, 'List', 'content');
+  // One row, set up and duplicated: each copy then takes its message.
+  await addChild(page, 'ListItem');
+  await area(page, 'Properties');
+  await setText(page, 'action', 'log-inbox');
+  for (let copy = 1; copy < messages.length; copy += 1)
+    await page.getByRole('button', { name: 'Duplicate', exact: true }).click();
+  for (const [index, message] of messages.entries()) {
+    await select(page, /^ListItem/, index);
+    await applySpec(page, {
+      choices: { iconTile: message.tone },
+      text: { itemId: message.id, label: message.label },
+    });
+    await addIcon(page, 'icon', message.glyph);
+  }
+  expect(await exported(page)).toEqual(
+    rootPaneNode(
+      {
+        element: 'section',
+        label: 'Inbox',
+        headerPresentation: 'overlay',
+        rootAttributes: { 'data-overlay-header-demo': 'pane' },
+      },
+      {
+        header: [chromeNode(header)],
+        content: [
+          node('list', undefined, {
+            children: messages.map((message) =>
+              node(
+                'list-item',
+                {
+                  action: 'log-inbox',
+                  itemId: message.id,
+                  label: message.label,
+                  iconTile: message.tone,
+                },
+                { icon: [icon(message.glyph)] },
+              ),
+            ),
+          }),
+        ],
+      },
+    ),
+  );
+});
+
+test('builds Pane › Sunken Auto Chrome', async ({ page }) => {
+  test.slow();
+  const entries = Array.from({ length: 12 }, (_, i) => `Entry ${i + 1}`);
+  await rootPane(
+    page,
+    {
+      choices: { appearance: 'sunken', chromePlacement: 'auto' },
+      text: { label: 'Sunken Auto Workspace' },
+      // Auto chrome measures a definite height, which the demo's tall
+      // frame gives; at the root, the default fill gives it the canvas.
+      flags: ['fill'],
+    },
+    {
+      header: { label: 'Header', text: 'Header' },
+      footer: { label: 'Footer', text: 'Footer' },
+      items: entries,
+    },
+  );
+  expect(await exported(page)).toEqual(
+    rootPaneNode(
+      {
+        fill: true,
+        appearance: 'sunken',
+        chromePlacement: 'auto',
+        label: 'Sunken Auto Workspace',
+      },
+      {
+        header: [chromeNode({ label: 'Header', text: 'Header' })],
+        content: items(entries),
+        footer: [chromeNode({ label: 'Footer', text: 'Footer' })],
+      },
     ),
   );
 });
