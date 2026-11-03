@@ -1,0 +1,56 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SwitchSettings",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:switch",
+                "props": {
+                  "label": "Live updates",
+                  "checked": true,
+                  "hint": "The list refreshes as tickets change.",
+                  "action": "switch-demo"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:switch",
+                "props": {
+                  "label": "Compact navigation",
+                  "action": "switch-demo"
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:switch",
+                "props": {
+                  "label": "Managed setting",
+                  "checked": true,
+                  "disabled": true
+                }
+              }
+            ]
+          },
+          "props": {
+            "gap": "xs"
+          }
+        }
+      ]
+    }
+  }
+}

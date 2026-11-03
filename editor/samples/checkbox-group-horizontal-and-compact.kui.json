@@ -1,0 +1,44 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "CheckboxGroupHorizontalAndCompact",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:checkbox-group",
+          "props": {
+            "name": "platforms",
+            "choices": [
+              {
+                "value": "macos",
+                "label": "macOS"
+              },
+              {
+                "value": "windows",
+                "label": "Windows"
+              },
+              {
+                "value": "linux",
+                "label": "Linux"
+              }
+            ],
+            "label": "Platforms",
+            "size": "compact",
+            "orientation": "horizontal",
+            "error": "Choose a platform.",
+            "action": "checkbox-group-demo"
+          }
+        }
+      ]
+    }
+  }
+}

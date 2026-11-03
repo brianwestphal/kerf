@@ -1,0 +1,72 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ChoiceChipsSectionStrip",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:choice-chips",
+          "props": {
+            "name": "feed-section",
+            "choices": [
+              {
+                "value": "all",
+                "label": "All"
+              },
+              {
+                "value": "business",
+                "label": "Business"
+              },
+              {
+                "value": "money",
+                "label": "Money"
+              },
+              {
+                "value": "technology",
+                "label": "Technology"
+              },
+              {
+                "value": "science",
+                "label": "Science"
+              },
+              {
+                "value": "health",
+                "label": "Health"
+              },
+              {
+                "value": "sports",
+                "label": "Sports"
+              },
+              {
+                "value": "culture",
+                "label": "Culture"
+              },
+              {
+                "value": "travel",
+                "label": "Travel"
+              },
+              {
+                "value": "transport",
+                "label": "Transport"
+              }
+            ],
+            "label": "Feed Section",
+            "overflow": "scroll",
+            "id": "choice-chips-section",
+            "action": "choice-chips-demo",
+            "value": "all"
+          }
+        }
+      ]
+    }
+  }
+}

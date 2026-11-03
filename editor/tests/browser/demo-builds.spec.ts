@@ -1770,6 +1770,793 @@ test('builds ProgressRing › Tones and Indeterminate', async ({ page }) => {
   );
 });
 
+/** One choice of a `choices` prop, as the Configure choices form sets it. */
+type ChoiceSpec = {
+  readonly value: string;
+  readonly label: string;
+  readonly hint?: string;
+  readonly title?: string;
+  readonly disabled?: boolean;
+  /** `transparent`, or a color builder call typed through Custom…. */
+  readonly swatch?: string;
+  /** An icon placed in the choice's node zone (`icon` or `content`). */
+  readonly glyph?: string;
+};
+
+/**
+ * Fills the selected `owner`'s `choices` from Configure choices (adding rows
+ * past the three seeded ones), then places each choice's icon in its `zone`
+ * through the form's content row.
+ */
+async function configureChoices(
+  page: Page,
+  owner: RegExp,
+  choices: readonly ChoiceSpec[],
+  zone = 'icon',
+) {
+  await select(page, owner);
+  await page.getByRole('button', { name: 'Configure choices' }).click();
+  const dialog = page.locator('dialog[open]');
+  for (let added = 3; added < choices.length; added += 1)
+    await dialog.getByRole('button', { name: 'Add', exact: true }).click();
+  for (const [index, choice] of choices.entries()) {
+    await dialog.getByText(`Choice ${index + 1}`, { exact: true }).click();
+    await setField(page, 'choices', [index, 'value'], choice.value);
+    await setField(page, 'choices', [index, 'label'], choice.label);
+    if (choice.hint)
+      await setField(page, 'choices', [index, 'hint'], choice.hint);
+    if (choice.title)
+      await setField(page, 'choices', [index, 'title'], choice.title);
+    if (choice.disabled)
+      await turnFieldOn(page, 'choices', [index, 'disabled']);
+    if (choice.swatch === 'transparent')
+      await chooseField(page, 'choices', [index, 'swatch'], 'transparent');
+    else if (choice.swatch) {
+      await chooseField(page, 'choices', [index, 'swatch'], 'Custom…');
+      await setField(page, 'choices', [index, 'swatch'], choice.swatch);
+    }
+    await dialog.getByRole('button', { name: 'Back' }).click();
+  }
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  for (const [index, choice] of choices.entries()) {
+    if (!choice.glyph) continue;
+    await select(page, owner);
+    await page.getByRole('button', { name: 'Configure choices' }).click();
+    await dialog.getByText(choice.label, { exact: true }).click();
+    // The content row closes the form.
+    await page
+      .locator(`[data-editor-content-add="choices.${index}.${zone}"]`)
+      .click();
+    await expect(dialog).toHaveCount(0);
+    // An icon zone's row places the icon itself; a content zone's row
+    // leads to Add a child, its zone chosen. Either way the icon is selected.
+    if (zone === 'icon') await area(page, 'Properties');
+    else await addChild(page, 'LucideIcon');
+    await pickIcon(
+      page,
+      page.locator('[data-editor-icon-place]'),
+      choice.glyph,
+    );
+  }
+}
+
+/** The `choices` value a list of ChoiceSpecs exports (icons are zones). */
+const choiceValues = (choices: readonly ChoiceSpec[]) =>
+  choices.map(({ glyph: _glyph, swatch, ...rest }) => ({
+    ...rest,
+    ...(swatch === 'transparent'
+      ? { swatch }
+      : swatch
+        ? { swatch: { $css: swatch } }
+        : {}),
+  }));
+
+/** The icon zones a list of ChoiceSpecs exports. */
+const choiceZones = (choices: readonly ChoiceSpec[], zone = 'icon') =>
+  Object.fromEntries(
+    choices.flatMap((choice, index) =>
+      choice.glyph ? [[`choices.${index}.${zone}`, [icon(choice.glyph)]]] : [],
+    ),
+  );
+
+/**
+ * Picks `labels` in an array value's multi-choice control (KF-8MEWP2), in
+ * choice order; none picked is `[]`.
+ */
+async function chooseValues(page: Page, labels: readonly string[]) {
+  const control = page.locator(
+    '[data-editor-prop="value"][data-editor-kind="value-choices"]',
+  );
+  await expect(control).toBeVisible();
+  const boxes = control.locator('input[type="checkbox"]');
+  for (let index = 0; index < (await boxes.count()); index += 1) {
+    const box = boxes.nth(index);
+    const name = await box.evaluate(
+      (input) => input.closest('label')?.textContent?.trim() ?? '',
+    );
+    if ((await box.isChecked()) !== labels.includes(name)) await box.click();
+  }
+  const checked = await control
+    .locator('input:checked')
+    .evaluateAll((inputs) =>
+      inputs.map((input) => input.closest('label')?.textContent?.trim()),
+    );
+  expect(checked).toEqual(labels);
+}
+
+/** Picks the empty value `""` in a value picker (KF-8MEWP2). */
+async function chooseEmptyValue(page: Page) {
+  await choose(page, 'value', 'Empty ("")');
+}
+
+// Live demo state is a static snapshot of the demo's first render here, as
+// in SegmentedControl › Pill: the snapshot is the document's initial state,
+// and the demo's action handler is what changes it.
+test('builds Checkbox › Mixed State', async ({ page }) => {
+  // checkboxTasks starts as ['design']: All is mixed, Design is checked.
+  await stacked(
+    page,
+    'List',
+    'Checkbox',
+    [
+      {
+        text: {
+          label: 'All tasks',
+          name: 'tasks-all',
+          action: 'checkbox-demo',
+        },
+        flags: ['indeterminate'],
+      },
+      ...[
+        ['design', 'Design review'],
+        ['build', 'Build release'],
+        ['ship', 'Ship to customers'],
+      ].map(([value, label]) => ({
+        text: {
+          label: label!,
+          name: 'tasks',
+          value: value!,
+          action: 'checkbox-demo',
+        },
+        ...(value === 'design' ? { flags: ['checked'] } : {}),
+      })),
+    ],
+    () => choose(page, 'gap', 'xs'),
+  );
+  await expect(canvas(page).locator('.kui-checkbox')).toHaveCount(4);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'xs' },
+        {
+          children: [
+            node('checkbox', {
+              label: 'All tasks',
+              name: 'tasks-all',
+              indeterminate: true,
+              action: 'checkbox-demo',
+            }),
+            node('checkbox', {
+              label: 'Design review',
+              name: 'tasks',
+              value: 'design',
+              checked: true,
+              action: 'checkbox-demo',
+            }),
+            node('checkbox', {
+              label: 'Build release',
+              name: 'tasks',
+              value: 'build',
+              action: 'checkbox-demo',
+            }),
+            node('checkbox', {
+              label: 'Ship to customers',
+              name: 'tasks',
+              value: 'ship',
+              action: 'checkbox-demo',
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds Switch › Settings', async ({ page }) => {
+  // switchLiveUpdates starts on, so its hint is the live one.
+  await stacked(
+    page,
+    'List',
+    'Switch',
+    [
+      {
+        text: {
+          label: 'Live updates',
+          hint: 'The list refreshes as tickets change.',
+          action: 'switch-demo',
+        },
+        flags: ['checked'],
+      },
+      { text: { label: 'Compact navigation', action: 'switch-demo' } },
+      { text: { label: 'Managed setting' }, flags: ['checked', 'disabled'] },
+    ],
+    () => choose(page, 'gap', 'xs'),
+  );
+  await expect(canvas(page).locator('.kui-switch')).toHaveCount(3);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'xs' },
+        {
+          children: [
+            node('switch', {
+              label: 'Live updates',
+              checked: true,
+              hint: 'The list refreshes as tickets change.',
+              action: 'switch-demo',
+            }),
+            node('switch', {
+              label: 'Compact navigation',
+              action: 'switch-demo',
+            }),
+            node('switch', {
+              label: 'Managed setting',
+              checked: true,
+              disabled: true,
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+const channelChoices: readonly ChoiceSpec[] = [
+  { value: 'email', label: 'Email' },
+  {
+    value: 'push',
+    label: 'Push notifications',
+    hint: 'On devices where you are signed in.',
+  },
+  { value: 'digest', label: 'Weekly digest' },
+  { value: 'sms', label: 'Text messages', disabled: true },
+];
+
+test('builds CheckboxGroup › Vertical', async ({ page }) => {
+  await dragComponent(page, 'CheckboxGroup', () => emptySpot(page));
+  await configureChoices(page, /^CheckboxGroup/, channelChoices);
+  await select(page, /^CheckboxGroup/);
+  // checkboxGroupChannels starts as ['email'].
+  await applySpec(page, {
+    text: {
+      label: 'Notification Channels',
+      name: 'notification-channels',
+      hint: 'Sent to your work account.',
+      action: 'checkbox-group-demo',
+    },
+  });
+  await chooseValues(page, ['Email']);
+  await expect(canvas(page).locator('input[type="checkbox"]')).toHaveCount(4);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('checkbox-group', {
+        label: 'Notification Channels',
+        name: 'notification-channels',
+        value: ['email'],
+        hint: 'Sent to your work account.',
+        action: 'checkbox-group-demo',
+        choices: choiceValues(channelChoices),
+      }),
+    ),
+  );
+});
+
+test('builds CheckboxGroup › Horizontal and Compact', async ({ page }) => {
+  const platforms: readonly ChoiceSpec[] = [
+    { value: 'macos', label: 'macOS' },
+    { value: 'windows', label: 'Windows' },
+    { value: 'linux', label: 'Linux' },
+  ];
+  await dragComponent(page, 'CheckboxGroup', () => emptySpot(page));
+  await configureChoices(page, /^CheckboxGroup/, platforms);
+  await select(page, /^CheckboxGroup/);
+  // checkboxGroupPlatforms starts empty, so the group shows its error.
+  await applySpec(page, {
+    choices: { size: 'compact', orientation: 'horizontal' },
+    text: {
+      label: 'Platforms',
+      name: 'platforms',
+      error: 'Choose a platform.',
+      action: 'checkbox-group-demo',
+    },
+  });
+  // Nothing checked: an unset value is the demo's empty list.
+  await expect(
+    page.locator('[data-editor-kind="value-choices"] input:checked'),
+  ).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('checkbox-group', {
+        label: 'Platforms',
+        name: 'platforms',
+        size: 'compact',
+        orientation: 'horizontal',
+        error: 'Choose a platform.',
+        action: 'checkbox-group-demo',
+        choices: choiceValues(platforms),
+      }),
+    ),
+  );
+});
+
+test('builds RadioGroup › Vertical', async ({ page }) => {
+  const densities: readonly ChoiceSpec[] = [
+    { value: 'compact', label: 'Compact' },
+    { value: 'balanced', label: 'Balanced' },
+    { value: 'roomy', label: 'Roomy', hint: 'Larger rows for touch screens.' },
+    { value: 'custom', label: 'Custom', disabled: true },
+  ];
+  await dragComponent(page, 'RadioGroup', () => emptySpot(page));
+  await configureChoices(page, /^RadioGroup/, densities);
+  await select(page, /^RadioGroup/);
+  // radioDensity starts as 'balanced'.
+  await applySpec(page, {
+    text: {
+      label: 'Layout Density',
+      name: 'layout-density',
+      hint: 'Applies to every list.',
+      action: 'radio-group-demo',
+    },
+  });
+  await choose(page, 'value', 'Balanced');
+  await expect(canvas(page).locator('input[type="radio"]')).toHaveCount(4);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('radio-group', {
+        label: 'Layout Density',
+        name: 'layout-density',
+        value: 'balanced',
+        hint: 'Applies to every list.',
+        action: 'radio-group-demo',
+        choices: choiceValues(densities),
+      }),
+    ),
+  );
+});
+
+test('builds RadioGroup › Horizontal and Compact', async ({ page }) => {
+  const channels: readonly ChoiceSpec[] = [
+    { value: 'stable', label: 'Stable' },
+    { value: 'beta', label: 'Beta' },
+    { value: 'nightly', label: 'Nightly' },
+  ];
+  await dragComponent(page, 'RadioGroup', () => emptySpot(page));
+  await configureChoices(page, /^RadioGroup/, channels);
+  await select(page, /^RadioGroup/);
+  await applySpec(page, {
+    choices: { size: 'compact', orientation: 'horizontal' },
+    flags: ['required'],
+    text: {
+      label: 'Release Channel',
+      name: 'release-channel',
+      error: 'Choose a channel.',
+      action: 'radio-group-demo',
+    },
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      node('radio-group', {
+        label: 'Release Channel',
+        name: 'release-channel',
+        size: 'compact',
+        orientation: 'horizontal',
+        required: true,
+        error: 'Choose a channel.',
+        action: 'radio-group-demo',
+        choices: choiceValues(channels),
+      }),
+    ),
+  );
+});
+
+test('builds SegmentedControl › Toolbar', async ({ page }) => {
+  const views: readonly ChoiceSpec[] = [
+    { value: 'list', label: 'List View', glyph: 'list' },
+    { value: 'columns', label: 'Columns View', glyph: 'columns-3' },
+    { value: 'settings', label: 'Settings View', glyph: 'settings' },
+  ];
+  // The group sits in a plain Toolbar's leading zone (KF-0W87ST).
+  await dragComponent(page, 'Toolbar', () => emptySpot(page));
+  await dragComponent(page, 'ToolbarControlGroup', () =>
+    zoneSpot(page, 'Leading'),
+  );
+  await select(page, /^Toolbar(?!Text|Control|Button)/);
+  await setText(page, 'label', 'Toolbar');
+  // The group's seeded ToolbarButton gives way to the control.
+  await select(page, /^ToolbarButton/);
+  await page.locator('[data-action="editor-delete"]').click();
+  await select(page, /^ToolbarControlGroup/);
+  await addChild(page, 'SegmentedControl');
+  await configureChoices(page, /^SegmentedControl/, views, 'content');
+  await select(page, /^SegmentedControl/);
+  // toolbarChoice starts as 'list'.
+  await applySpec(page, {
+    choices: { appearance: 'toolbar', shape: 'pill', size: 'small' },
+    text: {
+      id: 'standalone-toolbar-view',
+      label: 'Toolbar View Mode',
+      action: 'select-segment-demo',
+    },
+  });
+  await choose(page, 'value', 'List View');
+  await expect(
+    canvas(page).locator('.kui-segmented-control button svg'),
+  ).toHaveCount(3);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'toolbar',
+        { label: 'Toolbar' },
+        {
+          leading: [
+            node('toolbar-control-group', undefined, {
+              children: [
+                node(
+                  'segmented-control',
+                  {
+                    id: 'standalone-toolbar-view',
+                    label: 'Toolbar View Mode',
+                    value: 'list',
+                    action: 'select-segment-demo',
+                    appearance: 'toolbar',
+                    shape: 'pill',
+                    size: 'small',
+                    choices: choiceValues(views),
+                  },
+                  choiceZones(views, 'content'),
+                ),
+              ],
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds SegmentedControl › Placeholder', async ({ page }) => {
+  const views: readonly ChoiceSpec[] = [
+    { value: 'list', label: 'List View' },
+    { value: 'columns', label: 'Columns View' },
+    { value: 'settings', label: 'Settings View' },
+  ];
+  await dragComponent(page, 'SegmentedControl', () => emptySpot(page));
+  await configureChoices(page, /^SegmentedControl/, views);
+  await select(page, /^SegmentedControl/);
+  await applySpec(page, {
+    flags: ['placeholder'],
+    text: { id: 'segmented-placeholder', label: 'Loading View Mode' },
+  });
+  await chooseEmptyValue(page);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('segmented-control', {
+        id: 'segmented-placeholder',
+        label: 'Loading View Mode',
+        value: '',
+        choices: choiceValues(views),
+        placeholder: true,
+      }),
+    ),
+  );
+});
+
+test('builds SegmentedControl › Disabled', async ({ page }) => {
+  const ranges: readonly ChoiceSpec[] = [
+    { value: 'day', label: 'Day' },
+    { value: 'week', label: 'Week' },
+    { value: 'month', label: 'Month' },
+  ];
+  await dragComponent(page, 'SegmentedControl', () => emptySpot(page));
+  await configureChoices(page, /^SegmentedControl/, ranges);
+  await select(page, /^SegmentedControl/);
+  await applySpec(page, {
+    flags: ['disabled'],
+    text: { id: 'segmented-disabled', label: 'Report Range' },
+  });
+  await choose(page, 'value', 'Week');
+  expect(await exported(page)).toEqual(
+    pane(
+      node('segmented-control', {
+        id: 'segmented-disabled',
+        label: 'Report Range',
+        value: 'week',
+        choices: choiceValues(ranges),
+        disabled: true,
+      }),
+    ),
+  );
+});
+
+const colorChoices: readonly ChoiceSpec[] = [
+  { value: 'transparent', label: 'Transparent', swatch: 'transparent' },
+  ...(
+    [
+      ['blue', '#3b82f6'],
+      ['green', '#22c55e'],
+      ['orange', '#f97316'],
+      ['red', '#ef4444'],
+      ['purple', '#a855f7'],
+      ['pink', '#ec4899'],
+      ['teal', '#14b8a6'],
+      ['gray', '#6b7280'],
+    ] as const
+  ).map(([value, hex]) => ({
+    value,
+    label: value[0]!.toUpperCase() + value.slice(1),
+    swatch: `fillColor("${hex}")`,
+  })),
+];
+
+/** A ChoiceChips group: its choices, then `spec`'s props. */
+async function choiceChips(
+  page: Page,
+  choices: readonly ChoiceSpec[],
+  spec: FieldSpec,
+) {
+  await dragComponent(page, 'ChoiceChips', () => emptySpot(page));
+  await configureChoices(page, /^ChoiceChips/, choices);
+  await select(page, /^ChoiceChips/);
+  await applySpec(page, spec);
+  await expect(canvas(page).locator('.kui-choice-chips')).toHaveCount(1);
+}
+
+test('builds ChoiceChips › Color Palette', async ({ page }) => {
+  test.slow();
+  await choiceChips(page, colorChoices, {
+    text: {
+      id: 'choice-chips-color',
+      name: 'command-color',
+      label: 'Command Color',
+      action: 'choice-chips-demo',
+    },
+  });
+  // choiceChipsColor starts as 'blue'.
+  await choose(page, 'value', 'Blue');
+  expect(await exported(page)).toEqual(
+    pane(
+      node('choice-chips', {
+        id: 'choice-chips-color',
+        name: 'command-color',
+        label: 'Command Color',
+        value: 'blue',
+        action: 'choice-chips-demo',
+        choices: choiceValues(colorChoices),
+      }),
+    ),
+  );
+});
+
+test('builds ChoiceChips › Compact with Icons', async ({ page }) => {
+  const views: readonly ChoiceSpec[] = [
+    { value: 'board', label: 'Board', glyph: 'columns-3' },
+    { value: 'list', label: 'List', glyph: 'list' },
+    {
+      value: 'calendar',
+      label: 'Calendar',
+      glyph: 'calendar',
+      disabled: true,
+      title: 'Calendar view needs a due-date field',
+    },
+  ];
+  await choiceChips(page, views, {
+    choices: { size: 'compact' },
+    text: {
+      id: 'choice-chips-view',
+      name: 'board-view',
+      label: 'Board View',
+      action: 'choice-chips-demo',
+    },
+  });
+  // choiceChipsView starts as 'board'.
+  await choose(page, 'value', 'Board');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'choice-chips',
+        {
+          id: 'choice-chips-view',
+          name: 'board-view',
+          label: 'Board View',
+          size: 'compact',
+          value: 'board',
+          action: 'choice-chips-demo',
+          choices: choiceValues(views),
+        },
+        choiceZones(views),
+      ),
+    ),
+  );
+});
+
+test('builds ChoiceChips › Icon Picker', async ({ page }) => {
+  // Twenty-two choices, each with an icon placed through its form.
+  test.setTimeout(240_000);
+  const icons: readonly ChoiceSpec[] = (
+    [
+      ['star', 'Star'],
+      ['heart', 'Heart'],
+      ['bell', 'Bell'],
+      ['bookmark', 'Bookmark'],
+      ['camera', 'Camera'],
+      ['cloud', 'Cloud'],
+      ['code', 'Code'],
+      ['coffee', 'Coffee'],
+      ['flag', 'Flag'],
+      ['folder', 'Folder'],
+      ['gift', 'Gift'],
+      ['globe', 'Globe'],
+      ['house', 'House'],
+      ['key', 'Key'],
+      ['lightbulb', 'Light Bulb'],
+      ['mail', 'Mail'],
+      ['map', 'Map'],
+      ['music', 'Music'],
+      ['rocket', 'Rocket'],
+      ['settings', 'Settings'],
+      ['tag', 'Tag'],
+      ['zap', 'Lightning'],
+    ] as const
+  ).map(([value, label]) => ({ value, label, glyph: value }));
+  await choiceChips(page, icons, {
+    choices: { presentation: 'icons' },
+    text: {
+      id: 'choice-chips-icon',
+      name: 'command-icon',
+      label: 'Command Icon',
+      action: 'choice-chips-demo',
+    },
+  });
+  await setCss(page, 'maxHeight', 'rem(7)');
+  // choiceChipsIcon starts as 'star'.
+  await choose(page, 'value', 'Star');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'choice-chips',
+        {
+          id: 'choice-chips-icon',
+          name: 'command-icon',
+          label: 'Command Icon',
+          presentation: 'icons',
+          maxHeight: { $css: 'rem(7)' },
+          value: 'star',
+          action: 'choice-chips-demo',
+          choices: choiceValues(icons),
+        },
+        choiceZones(icons),
+      ),
+    ),
+  );
+});
+
+test('builds ChoiceChips › Section Strip', async ({ page }) => {
+  test.slow();
+  const sections: readonly ChoiceSpec[] = [
+    'All',
+    'Business',
+    'Money',
+    'Technology',
+    'Science',
+    'Health',
+    'Sports',
+    'Culture',
+    'Travel',
+    'Transport',
+  ].map((label) => ({ value: label.toLowerCase(), label }));
+  await choiceChips(page, sections, {
+    choices: { overflow: 'scroll' },
+    text: {
+      id: 'choice-chips-section',
+      name: 'feed-section',
+      label: 'Feed Section',
+      action: 'choice-chips-demo',
+    },
+  });
+  // choiceChipsSection starts as 'all'.
+  await choose(page, 'value', 'All');
+  expect(await exported(page)).toEqual(
+    pane(
+      node('choice-chips', {
+        id: 'choice-chips-section',
+        name: 'feed-section',
+        label: 'Feed Section',
+        overflow: 'scroll',
+        value: 'all',
+        action: 'choice-chips-demo',
+        choices: choiceValues(sections),
+      }),
+    ),
+  );
+});
+
+test('builds ChoiceChips › Toggle Selection', async ({ page }) => {
+  const labels: readonly ChoiceSpec[] = (
+    [
+      ['bug', 'Bug', '#ef4444'],
+      ['feature', 'Feature', '#3b82f6'],
+      ['docs', 'Docs', '#22c55e'],
+      ['design', 'Design', '#a855f7'],
+      ['chore', 'Chore', '#6b7280'],
+    ] as const
+  ).map(([value, label, hex]) => ({
+    value,
+    label,
+    swatch: `fillColor("${hex}")`,
+  }));
+  await choiceChips(page, labels, {
+    choices: { multiple: 'toggle' },
+    text: {
+      id: 'choice-chips-labels',
+      name: 'labels',
+      label: 'Labels',
+      action: 'choice-chips-demo',
+    },
+  });
+  // choiceChipsLabels starts as ['bug', 'docs'].
+  await chooseValues(page, ['Bug', 'Docs']);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('choice-chips', {
+        id: 'choice-chips-labels',
+        name: 'labels',
+        label: 'Labels',
+        multiple: 'toggle',
+        value: ['bug', 'docs'],
+        action: 'choice-chips-demo',
+        choices: choiceValues(labels),
+      }),
+    ),
+  );
+});
+
+test('builds ChoiceChips › Multi-Select Listbox', async ({ page }) => {
+  const workspaces: readonly ChoiceSpec[] = [
+    { value: 'atlas', label: 'Atlas' },
+    { value: 'borealis', label: 'Borealis' },
+    { value: 'cirrus', label: 'Cirrus' },
+    { value: 'delta', label: 'Delta', disabled: true, title: 'Archived' },
+    { value: 'ember', label: 'Ember' },
+    { value: 'fjord', label: 'Fjord' },
+  ];
+  await choiceChips(page, workspaces, {
+    choices: { multiple: 'true' },
+    text: {
+      id: 'choice-chips-workspaces',
+      name: 'workspaces',
+      label: 'Workspaces',
+      action: 'choice-chips-demo',
+    },
+  });
+  // choiceChipsWorkspaces starts as ['atlas'].
+  await chooseValues(page, ['Atlas']);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('choice-chips', {
+        id: 'choice-chips-workspaces',
+        name: 'workspaces',
+        label: 'Workspaces',
+        multiple: true,
+        value: ['atlas'],
+        action: 'choice-chips-demo',
+        choices: choiceValues(workspaces),
+      }),
+    ),
+  );
+});
+
 test('builds ListItem › Divided List', async ({ page }) => {
   await dragComponent(page, 'List', () => emptySpot(page));
   await dragComponent(page, 'ListItem', () => emptySpot(page));

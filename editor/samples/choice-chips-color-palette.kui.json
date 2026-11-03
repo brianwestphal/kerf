@@ -1,0 +1,92 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ChoiceChipsColorPalette",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:choice-chips",
+          "props": {
+            "name": "command-color",
+            "choices": [
+              {
+                "value": "transparent",
+                "label": "Transparent",
+                "swatch": "transparent"
+              },
+              {
+                "value": "blue",
+                "label": "Blue",
+                "swatch": {
+                  "$css": "fillColor(\"#3b82f6\")"
+                }
+              },
+              {
+                "value": "green",
+                "label": "Green",
+                "swatch": {
+                  "$css": "fillColor(\"#22c55e\")"
+                }
+              },
+              {
+                "value": "orange",
+                "label": "Orange",
+                "swatch": {
+                  "$css": "fillColor(\"#f97316\")"
+                }
+              },
+              {
+                "value": "red",
+                "label": "Red",
+                "swatch": {
+                  "$css": "fillColor(\"#ef4444\")"
+                }
+              },
+              {
+                "value": "purple",
+                "label": "Purple",
+                "swatch": {
+                  "$css": "fillColor(\"#a855f7\")"
+                }
+              },
+              {
+                "value": "pink",
+                "label": "Pink",
+                "swatch": {
+                  "$css": "fillColor(\"#ec4899\")"
+                }
+              },
+              {
+                "value": "teal",
+                "label": "Teal",
+                "swatch": {
+                  "$css": "fillColor(\"#14b8a6\")"
+                }
+              },
+              {
+                "value": "gray",
+                "label": "Gray",
+                "swatch": {
+                  "$css": "fillColor(\"#6b7280\")"
+                }
+              }
+            ],
+            "label": "Command Color",
+            "id": "choice-chips-color",
+            "action": "choice-chips-demo",
+            "value": "blue"
+          }
+        }
+      ]
+    }
+  }
+}

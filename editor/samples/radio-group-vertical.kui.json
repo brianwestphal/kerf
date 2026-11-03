@@ -1,0 +1,49 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RadioGroupVertical",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:radio-group",
+          "props": {
+            "name": "layout-density",
+            "choices": [
+              {
+                "value": "compact",
+                "label": "Compact"
+              },
+              {
+                "value": "balanced",
+                "label": "Balanced"
+              },
+              {
+                "value": "roomy",
+                "label": "Roomy",
+                "hint": "Larger rows for touch screens."
+              },
+              {
+                "value": "custom",
+                "label": "Custom",
+                "disabled": true
+              }
+            ],
+            "label": "Layout Density",
+            "hint": "Applies to every list.",
+            "action": "radio-group-demo",
+            "value": "balanced"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SegmentedControlPlaceholder",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:segmented-control",
+          "props": {
+            "id": "segmented-placeholder",
+            "label": "Loading View Mode",
+            "value": "",
+            "choices": [
+              {
+                "value": "list",
+                "label": "List View"
+              },
+              {
+                "value": "columns",
+                "label": "Columns View"
+              },
+              {
+                "value": "settings",
+                "label": "Settings View"
+              }
+            ],
+            "placeholder": true
+          }
+        }
+      ]
+    }
+  }
+}

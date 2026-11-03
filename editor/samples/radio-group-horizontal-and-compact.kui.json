@@ -1,0 +1,45 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RadioGroupHorizontalAndCompact",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:radio-group",
+          "props": {
+            "name": "release-channel",
+            "choices": [
+              {
+                "value": "stable",
+                "label": "Stable"
+              },
+              {
+                "value": "beta",
+                "label": "Beta"
+              },
+              {
+                "value": "nightly",
+                "label": "Nightly"
+              }
+            ],
+            "label": "Release Channel",
+            "size": "compact",
+            "orientation": "horizontal",
+            "required": true,
+            "error": "Choose a channel.",
+            "action": "radio-group-demo"
+          }
+        }
+      ]
+    }
+  }
+}

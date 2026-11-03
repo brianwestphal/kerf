@@ -1,0 +1,42 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SegmentedControlDisabled",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:segmented-control",
+          "props": {
+            "id": "segmented-disabled",
+            "label": "Report Range",
+            "value": "week",
+            "choices": [
+              {
+                "value": "day",
+                "label": "Day"
+              },
+              {
+                "value": "week",
+                "label": "Week"
+              },
+              {
+                "value": "month",
+                "label": "Month"
+              }
+            ],
+            "disabled": true
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ChoiceChipsToggleSelection",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:choice-chips",
+          "props": {
+            "name": "labels",
+            "choices": [
+              {
+                "value": "bug",
+                "label": "Bug",
+                "swatch": {
+                  "$css": "fillColor(\"#ef4444\")"
+                }
+              },
+              {
+                "value": "feature",
+                "label": "Feature",
+                "swatch": {
+                  "$css": "fillColor(\"#3b82f6\")"
+                }
+              },
+              {
+                "value": "docs",
+                "label": "Docs",
+                "swatch": {
+                  "$css": "fillColor(\"#22c55e\")"
+                }
+              },
+              {
+                "value": "design",
+                "label": "Design",
+                "swatch": {
+                  "$css": "fillColor(\"#a855f7\")"
+                }
+              },
+              {
+                "value": "chore",
+                "label": "Chore",
+                "swatch": {
+                  "$css": "fillColor(\"#6b7280\")"
+                }
+              }
+            ],
+            "label": "Labels",
+            "multiple": "toggle",
+            "id": "choice-chips-labels",
+            "action": "choice-chips-demo",
+            "value": [
+              "bug",
+              "docs"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

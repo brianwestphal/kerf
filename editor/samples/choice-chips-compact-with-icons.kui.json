@@ -1,0 +1,84 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ChoiceChipsCompactWithIcons",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:choice-chips",
+          "props": {
+            "name": "board-view",
+            "choices": [
+              {
+                "value": "board",
+                "label": "Board"
+              },
+              {
+                "value": "list",
+                "label": "List"
+              },
+              {
+                "value": "calendar",
+                "label": "Calendar",
+                "title": "Calendar view needs a due-date field",
+                "disabled": true
+              }
+            ],
+            "label": "Board View",
+            "size": "compact",
+            "id": "choice-chips-view",
+            "action": "choice-chips-demo",
+            "value": "board"
+          },
+          "zones": {
+            "choices.0.icon": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "columns-3"
+                  },
+                  "name": "columns-3"
+                }
+              }
+            ],
+            "choices.1.icon": [
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "list"
+                  },
+                  "name": "list"
+                }
+              }
+            ],
+            "choices.2.icon": [
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "calendar"
+                  },
+                  "name": "calendar"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

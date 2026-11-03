@@ -1,0 +1,389 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ChoiceChipsIconPicker",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:choice-chips",
+          "props": {
+            "name": "command-icon",
+            "choices": [
+              {
+                "value": "star",
+                "label": "Star"
+              },
+              {
+                "value": "heart",
+                "label": "Heart"
+              },
+              {
+                "value": "bell",
+                "label": "Bell"
+              },
+              {
+                "value": "bookmark",
+                "label": "Bookmark"
+              },
+              {
+                "value": "camera",
+                "label": "Camera"
+              },
+              {
+                "value": "cloud",
+                "label": "Cloud"
+              },
+              {
+                "value": "code",
+                "label": "Code"
+              },
+              {
+                "value": "coffee",
+                "label": "Coffee"
+              },
+              {
+                "value": "flag",
+                "label": "Flag"
+              },
+              {
+                "value": "folder",
+                "label": "Folder"
+              },
+              {
+                "value": "gift",
+                "label": "Gift"
+              },
+              {
+                "value": "globe",
+                "label": "Globe"
+              },
+              {
+                "value": "house",
+                "label": "House"
+              },
+              {
+                "value": "key",
+                "label": "Key"
+              },
+              {
+                "value": "lightbulb",
+                "label": "Light Bulb"
+              },
+              {
+                "value": "mail",
+                "label": "Mail"
+              },
+              {
+                "value": "map",
+                "label": "Map"
+              },
+              {
+                "value": "music",
+                "label": "Music"
+              },
+              {
+                "value": "rocket",
+                "label": "Rocket"
+              },
+              {
+                "value": "settings",
+                "label": "Settings"
+              },
+              {
+                "value": "tag",
+                "label": "Tag"
+              },
+              {
+                "value": "zap",
+                "label": "Lightning"
+              }
+            ],
+            "label": "Command Icon",
+            "presentation": "icons",
+            "id": "choice-chips-icon",
+            "action": "choice-chips-demo",
+            "maxHeight": {
+              "$css": "rem(7)"
+            },
+            "value": "star"
+          },
+          "zones": {
+            "choices.0.icon": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "star"
+                  },
+                  "name": "star"
+                }
+              }
+            ],
+            "choices.1.icon": [
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "heart"
+                  },
+                  "name": "heart"
+                }
+              }
+            ],
+            "choices.2.icon": [
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "bell"
+                  },
+                  "name": "bell"
+                }
+              }
+            ],
+            "choices.3.icon": [
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "bookmark"
+                  },
+                  "name": "bookmark"
+                }
+              }
+            ],
+            "choices.4.icon": [
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "camera"
+                  },
+                  "name": "camera"
+                }
+              }
+            ],
+            "choices.5.icon": [
+              {
+                "id": "00000000000000000000000008",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "cloud"
+                  },
+                  "name": "cloud"
+                }
+              }
+            ],
+            "choices.6.icon": [
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "code"
+                  },
+                  "name": "code"
+                }
+              }
+            ],
+            "choices.7.icon": [
+              {
+                "id": "00000000000000000000000010",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "coffee"
+                  },
+                  "name": "coffee"
+                }
+              }
+            ],
+            "choices.8.icon": [
+              {
+                "id": "00000000000000000000000011",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "flag"
+                  },
+                  "name": "flag"
+                }
+              }
+            ],
+            "choices.9.icon": [
+              {
+                "id": "00000000000000000000000012",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "folder"
+                  },
+                  "name": "folder"
+                }
+              }
+            ],
+            "choices.10.icon": [
+              {
+                "id": "00000000000000000000000013",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "gift"
+                  },
+                  "name": "gift"
+                }
+              }
+            ],
+            "choices.11.icon": [
+              {
+                "id": "00000000000000000000000014",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "globe"
+                  },
+                  "name": "globe"
+                }
+              }
+            ],
+            "choices.12.icon": [
+              {
+                "id": "00000000000000000000000015",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "house"
+                  },
+                  "name": "house"
+                }
+              }
+            ],
+            "choices.13.icon": [
+              {
+                "id": "00000000000000000000000016",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "key"
+                  },
+                  "name": "key"
+                }
+              }
+            ],
+            "choices.14.icon": [
+              {
+                "id": "00000000000000000000000017",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "lightbulb"
+                  },
+                  "name": "lightbulb"
+                }
+              }
+            ],
+            "choices.15.icon": [
+              {
+                "id": "00000000000000000000000018",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "mail"
+                  },
+                  "name": "mail"
+                }
+              }
+            ],
+            "choices.16.icon": [
+              {
+                "id": "00000000000000000000000019",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "map"
+                  },
+                  "name": "map"
+                }
+              }
+            ],
+            "choices.17.icon": [
+              {
+                "id": "00000000000000000000000020",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "music"
+                  },
+                  "name": "music"
+                }
+              }
+            ],
+            "choices.18.icon": [
+              {
+                "id": "00000000000000000000000021",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "rocket"
+                  },
+                  "name": "rocket"
+                }
+              }
+            ],
+            "choices.19.icon": [
+              {
+                "id": "00000000000000000000000022",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "settings"
+                  },
+                  "name": "settings"
+                }
+              }
+            ],
+            "choices.20.icon": [
+              {
+                "id": "00000000000000000000000023",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "tag"
+                  },
+                  "name": "tag"
+                }
+              }
+            ],
+            "choices.21.icon": [
+              {
+                "id": "00000000000000000000000024",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "zap"
+                  },
+                  "name": "zap"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

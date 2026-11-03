@@ -1,0 +1,60 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ChoiceChipsMultiSelectListbox",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:choice-chips",
+          "props": {
+            "name": "workspaces",
+            "choices": [
+              {
+                "value": "atlas",
+                "label": "Atlas"
+              },
+              {
+                "value": "borealis",
+                "label": "Borealis"
+              },
+              {
+                "value": "cirrus",
+                "label": "Cirrus"
+              },
+              {
+                "value": "delta",
+                "label": "Delta",
+                "title": "Archived",
+                "disabled": true
+              },
+              {
+                "value": "ember",
+                "label": "Ember"
+              },
+              {
+                "value": "fjord",
+                "label": "Fjord"
+              }
+            ],
+            "label": "Workspaces",
+            "multiple": true,
+            "id": "choice-chips-workspaces",
+            "action": "choice-chips-demo",
+            "value": [
+              "atlas"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

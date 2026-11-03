@@ -1,0 +1,51 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "CheckboxGroupVertical",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:checkbox-group",
+          "props": {
+            "name": "notification-channels",
+            "choices": [
+              {
+                "value": "email",
+                "label": "Email"
+              },
+              {
+                "value": "push",
+                "label": "Push notifications",
+                "hint": "On devices where you are signed in."
+              },
+              {
+                "value": "digest",
+                "label": "Weekly digest"
+              },
+              {
+                "value": "sms",
+                "label": "Text messages",
+                "disabled": true
+              }
+            ],
+            "label": "Notification Channels",
+            "hint": "Sent to your work account.",
+            "action": "checkbox-group-demo",
+            "value": [
+              "email"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

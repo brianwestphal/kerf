@@ -1,0 +1,70 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "CheckboxMixedState",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:checkbox",
+                "props": {
+                  "label": "All tasks",
+                  "indeterminate": true,
+                  "name": "tasks-all",
+                  "action": "checkbox-demo"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:checkbox",
+                "props": {
+                  "label": "Design review",
+                  "checked": true,
+                  "name": "tasks",
+                  "value": "design",
+                  "action": "checkbox-demo"
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:checkbox",
+                "props": {
+                  "label": "Build release",
+                  "name": "tasks",
+                  "value": "build",
+                  "action": "checkbox-demo"
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:checkbox",
+                "props": {
+                  "label": "Ship to customers",
+                  "name": "tasks",
+                  "value": "ship",
+                  "action": "checkbox-demo"
+                }
+              }
+            ]
+          },
+          "props": {
+            "gap": "xs"
+          }
+        }
+      ]
+    }
+  }
+}
