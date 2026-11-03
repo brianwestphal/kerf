@@ -1,0 +1,40 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ValuePreviewCustomBounds",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sunken-panel",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:value-preview",
+                "props": {
+                  "label": "Long Change",
+                  "value": "A title with a deliberate line break\nSecond line keeps its indentation and a long token:\n    recorded-source-recorded-source-recorded-source-recorded-source-recorded-source-recorded-source-recorded-source-recorded-source-recorded-source-recorded-source-recorded-source-recorded-source-recorded-source-recorded-source-recorded-source-recorded-source-recorded-source-recorded-source-\nA final line remains available by scrolling.",
+                  "minHeight": {
+                    "$css": "px(64)"
+                  },
+                  "maxHeight": {
+                    "$css": "px(160)"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

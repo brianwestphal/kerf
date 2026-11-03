@@ -1,0 +1,70 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ValueTablePlaceholder",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:value-table",
+          "props": {
+            "label": "Loading Metadata"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:value-table#ValueTableRow",
+                "props": {
+                  "label": "Package",
+                  "value": "",
+                  "placeholder": true
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:value-table#ValueTableRow",
+                "props": {
+                  "label": "Rendering",
+                  "value": "",
+                  "placeholder": true
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "wrench"
+                        },
+                        "name": "wrench"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:value-table#ValueTableRow",
+                "props": {
+                  "label": "Styles",
+                  "value": "",
+                  "placeholder": true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

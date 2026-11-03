@@ -1710,6 +1710,469 @@ test('builds Skeleton › In Composition', async ({ page }) => {
   );
 });
 
+/** A ValueTableRow FieldSpec plus the icon its `icon` zone holds. */
+type RowSpec = FieldSpec & { readonly glyph?: string };
+
+/**
+ * Configures the ValueTable already placed (set up by `table`) and fills
+ * it with one ValueTableRow per spec.
+ */
+async function valueTable(
+  page: Page,
+  table: FieldSpec,
+  rows: readonly RowSpec[],
+  css: Readonly<Record<string, string>> = {},
+) {
+  await select(page, /^ValueTable(?![A-Z])/);
+  await applySpec(page, table);
+  for (const [name, value] of Object.entries(css))
+    await setCss(page, name, value);
+  // The table arrived holding a placeholder Text, which the rows replace.
+  await addInto(page, /^ValueTable(?![A-Z])/, 'ValueTableRow', 0, 0);
+  for (let row = 1; row < rows.length; row += 1)
+    await addInto(page, /^ValueTable(?![A-Z])/, 'ValueTableRow');
+  for (const [index, row] of rows.entries()) {
+    await select(page, /^ValueTableRow/, index);
+    await applySpec(page, row);
+    if (row.glyph) await addIcon(page, 'icon', row.glyph);
+  }
+  await expect(
+    canvas(page).locator('.kui-value-table__row[data-kerf-node]'),
+  ).toHaveCount(rows.length);
+}
+
+/** The ValueTableRow nodes `rows` build, given each row's props. */
+const valueRows = (
+  rows: readonly RowSpec[],
+  props: readonly Record<string, unknown>[],
+) =>
+  rows.map((row, index) =>
+    node(
+      'value-table#ValueTableRow',
+      props[index]!,
+      row.glyph ? { icon: [icon(row.glyph)] } : undefined,
+    ),
+  );
+
+/** A row's spec and props from its label, value, icon, and placeholder. */
+function valueRow(
+  label: string,
+  value: string,
+  glyph?: string,
+  placeholder = false,
+): [RowSpec, Record<string, unknown>] {
+  return [
+    {
+      text: { label, value },
+      flags: placeholder ? ['placeholder'] : [],
+      ...(glyph ? { glyph } : {}),
+    },
+    { label, value, ...(placeholder ? { placeholder: true } : {}) },
+  ];
+}
+
+test('builds ValueTable › Populated', async ({ page }) => {
+  const rows = [
+    valueRow('Package', '@kerfjs/ui'),
+    valueRow('Rendering', 'Kerf SafeHtml', 'wrench'),
+    valueRow('Styles', 'Explicit CSS subpaths'),
+  ];
+  await dragComponent(page, 'ValueTable', () => emptySpot(page));
+  await valueTable(
+    page,
+    { text: { label: 'Package Metadata' } },
+    rows.map(([spec]) => spec),
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'value-table',
+        { label: 'Package Metadata' },
+        {
+          children: valueRows(
+            rows.map(([spec]) => spec),
+            rows.map(([, props]) => props),
+          ),
+        },
+      ),
+    ),
+  );
+});
+
+test('builds ValueTable › Compact Metadata', async ({ page }) => {
+  const rows = [valueRow('Host', 'localhost'), valueRow('Port', '5432')];
+  await dragComponent(page, 'ValueTable', () => emptySpot(page));
+  await valueTable(
+    page,
+    { choices: { density: 'compact' }, text: { label: 'Connection Metadata' } },
+    rows.map(([spec]) => spec),
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'value-table',
+        { label: 'Connection Metadata', density: 'compact' },
+        {
+          children: valueRows(
+            rows.map(([spec]) => spec),
+            rows.map(([, props]) => props),
+          ),
+        },
+      ),
+    ),
+  );
+});
+
+test('builds ValueTable › Sunken Pane', async ({ page }) => {
+  const rows = [
+    valueRow('Owner', 'Workspace team'),
+    valueRow('Review State', 'Ready'),
+    valueRow('Source', 'Procurement brief'),
+  ];
+  await dragComponent(page, 'Pane', () => emptySpot(page));
+  await select(page, /^Pane/, 1);
+  await applySpec(page, {
+    choices: { appearance: 'sunken' },
+    flags: ['deepInset'],
+  });
+  await dragComponent(page, 'ValueTable', () => emptySpot(page));
+  await valueTable(
+    page,
+    { text: { label: 'Assumptions' } },
+    rows.map(([spec]) => spec),
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'pane',
+        { appearance: 'sunken', deepInset: true },
+        {
+          content: [
+            node(
+              'value-table',
+              { label: 'Assumptions' },
+              {
+                children: valueRows(
+                  rows.map(([spec]) => spec),
+                  rows.map(([, props]) => props),
+                ),
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds ValueTable › Label Column and Stacking', async ({ page }) => {
+  const rows = [
+    valueRow('Server', 'hotsheet.example.com:4174', 'server'),
+    valueRow('Store', '~/Documents/kerf.hs2'),
+    valueRow('Status', 'Connected'),
+  ];
+  await dragComponent(page, 'ValueTable', () => emptySpot(page));
+  await valueTable(
+    page,
+    {
+      choices: { stackBelow: 'compact' },
+      text: { label: 'Connection Details' },
+    },
+    rows.map(([spec]) => spec),
+    { labelWidth: 'px(160)' },
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'value-table',
+        {
+          label: 'Connection Details',
+          labelWidth: { $css: 'px(160)' },
+          stackBelow: 'compact',
+        },
+        {
+          children: valueRows(
+            rows.map(([spec]) => spec),
+            rows.map(([, props]) => props),
+          ),
+        },
+      ),
+    ),
+  );
+});
+
+// KF-3Y2GS2: a placeholder row's required value is "", its skeleton slot.
+test('builds ValueTable › Placeholder', async ({ page }) => {
+  const rows = [
+    valueRow('Package', '', undefined, true),
+    valueRow('Rendering', '', 'wrench', true),
+    valueRow('Styles', '', undefined, true),
+  ];
+  await dragComponent(page, 'ValueTable', () => emptySpot(page));
+  await valueTable(
+    page,
+    { text: { label: 'Loading Metadata' } },
+    rows.map(([spec]) => spec),
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'value-table',
+        { label: 'Loading Metadata' },
+        {
+          children: valueRows(
+            rows.map(([spec]) => spec),
+            rows.map(([, props]) => props),
+          ),
+        },
+      ),
+    ),
+  );
+});
+
+/**
+ * Types `value` into a multi-line text prop: Enter starts each new line,
+ * and leaving the field (Tab) commits it (KF-8FCJ02).
+ */
+async function setLines(page: Page, name: string, value: string) {
+  const field = page
+    .locator(`[data-editor-prop="${name}"]`)
+    .first()
+    .locator('textarea');
+  await field.click();
+  await page.keyboard.press('ControlOrMeta+a');
+  if (value) await page.keyboard.type(value);
+  else await page.keyboard.press('Backspace');
+  await page.keyboard.press('Tab');
+  await expect(field).toHaveValue(value);
+}
+
+/** The ValuePreview demos' long value: line breaks and a long token. */
+const LONG_VALUE = [
+  'A title with a deliberate line break',
+  'Second line keeps its indentation and a long token:',
+  `    ${'recorded-source-'.repeat(18)}`,
+  'A final line remains available by scrolling.',
+].join('\n');
+
+/** Adds a SunkenPanel holding a ValuePreview to `parent`, set up by `spec`. */
+async function preview(
+  page: Page,
+  label: string,
+  value: string,
+  css: Readonly<Record<string, string>> = {},
+) {
+  await addInto(page, /^Pane/, 'SunkenPanel');
+  await addChild(page, 'ValuePreview');
+  await setText(page, 'label', label);
+  await setLines(page, 'value', value);
+  for (const [name, builder] of Object.entries(css))
+    await setCss(page, name, builder);
+}
+
+const previewNode = (props: Record<string, unknown>) =>
+  node('sunken-panel', undefined, {
+    children: [node('value-preview', props)],
+  });
+
+test('builds ValuePreview › Two Read-Only Versions', async ({ page }) => {
+  await preview(page, 'Their Latest Version', LONG_VALUE);
+  await preview(page, 'Your Version', 'A local edit\nwith a second line.');
+  await expect(
+    canvas(page).locator('.kui-value-preview[data-kerf-node]').first(),
+  ).toContainText('Second line keeps its indentation');
+  expect(await exported(page)).toEqual(
+    pane(
+      previewNode({ label: 'Their Latest Version', value: LONG_VALUE }),
+      previewNode({
+        label: 'Your Version',
+        value: 'A local edit\nwith a second line.',
+      }),
+    ),
+  );
+});
+
+test('builds ValuePreview › Custom Bounds', async ({ page }) => {
+  await preview(page, 'Long Change', LONG_VALUE, {
+    minHeight: 'px(64)',
+    maxHeight: 'px(160)',
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      previewNode({
+        label: 'Long Change',
+        value: LONG_VALUE,
+        minHeight: { $css: 'px(64)' },
+        maxHeight: { $css: 'px(160)' },
+      }),
+    ),
+  );
+});
+
+test('builds ValuePreview › Empty Value', async ({ page }) => {
+  await preview(page, 'Empty Version', '');
+  expect(await exported(page)).toEqual(
+    pane(previewNode({ label: 'Empty Version', value: '' })),
+  );
+});
+
+/** The ColumnExplorer demos' nodes (Music loads on demand). */
+const EXPLORER_NODES = [
+  {
+    id: 'src',
+    label: 'src',
+    children: [
+      {
+        id: 'components',
+        label: 'components',
+        children: [
+          { id: 'button-tsx', label: 'button.tsx' },
+          { id: 'list-item-tsx', label: 'list-item.tsx' },
+          {
+            id: 'legacy-tsx',
+            label: 'legacy.tsx',
+            description: 'Read-only',
+            disabled: true,
+          },
+        ],
+      },
+      { id: 'notes-md', label: 'notes.md' },
+    ],
+  },
+  { id: 'music', label: 'Music', hasChildren: true },
+  { id: 'readme-md', label: 'README.md' },
+];
+
+const EXPLORER_ICONS: readonly (readonly [readonly number[], string])[] = [
+  [[0], 'folder'],
+  [[0, 0], 'folder'],
+  [[0, 0, 0], 'file-code'],
+  [[0, 0, 1], 'file-code'],
+  [[0, 0, 2], 'file-code'],
+  [[0, 1], 'file'],
+  [[1], 'music'],
+  [[2], 'file'],
+];
+
+/** Places a ColumnExplorer with the demo's nodes, icons, and `path`. */
+async function explorer(page: Page, spec: FieldSpec, path: readonly string[]) {
+  await dragComponent(page, 'ColumnExplorer', () => emptySpot(page));
+  await select(page, /^ColumnExplorer/);
+  await applySpec(page, spec);
+  await editAsJson(page, 'nodes', EXPLORER_NODES);
+  await setTags(page, 'path', path);
+  for (const [at, glyph] of EXPLORER_ICONS) {
+    await treeNodeZone(page, at, 'icon', /^ColumnExplorer/);
+    await area(page, 'Properties');
+    await pickIcon(page, page.locator('[data-editor-icon-place]'), glyph);
+  }
+}
+
+/** The icon zones the ColumnExplorer demos' nodes fill. */
+const explorerZones = () =>
+  Object.fromEntries(
+    EXPLORER_ICONS.map(([at, glyph]) => [treeZone(at, 'icon'), [icon(glyph)]]),
+  );
+
+// The path is the first render's; choosing rows is the app's wiring.
+test('builds ColumnExplorer › Files', async ({ page }) => {
+  test.slow();
+  await explorer(
+    page,
+    {
+      text: {
+        id: 'files',
+        label: 'Files',
+        action: 'column-explorer-demo-choose',
+      },
+    },
+    ['src', 'components', 'button-tsx'],
+  );
+  await select(page, /^ColumnExplorer/);
+  await setCss(page, 'minColumnWidth', 'px(200)');
+  // The preview of button.tsx: a compact ValueTable of its details.
+  await addChild(page, 'ValueTable', 'preview');
+  await valueTable(
+    page,
+    { choices: { density: 'compact' }, text: { label: 'File details' } },
+    [
+      { text: { label: 'Name', value: 'button.tsx' } },
+      { text: { label: 'Size', value: '4 KB' } },
+    ],
+  );
+  await expect(
+    canvas(page).locator('[data-item-id="button-tsx"]'),
+  ).toBeVisible();
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'column-explorer',
+        {
+          id: 'files',
+          label: 'Files',
+          nodes: EXPLORER_NODES,
+          path: ['src', 'components', 'button-tsx'],
+          action: 'column-explorer-demo-choose',
+          minColumnWidth: { $css: 'px(200)' },
+        },
+        {
+          ...explorerZones(),
+          preview: [
+            node(
+              'value-table',
+              { label: 'File details', density: 'compact' },
+              {
+                children: [
+                  node('value-table#ValueTableRow', {
+                    label: 'Name',
+                    value: 'button.tsx',
+                  }),
+                  node('value-table#ValueTableRow', {
+                    label: 'Size',
+                    value: '4 KB',
+                  }),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds ColumnExplorer › Paged on a Phone', async ({ page }) => {
+  test.slow();
+  await explorer(
+    page,
+    {
+      choices: { layout: 'paged' },
+      text: {
+        id: 'phone',
+        label: 'Files on a phone',
+        action: 'column-explorer-demo-choose',
+      },
+    },
+    ['src'],
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'column-explorer',
+        {
+          id: 'phone',
+          label: 'Files on a phone',
+          nodes: EXPLORER_NODES,
+          path: ['src'],
+          action: 'column-explorer-demo-choose',
+          layout: 'paged',
+        },
+        explorerZones(),
+      ),
+    ),
+  );
+});
+
 test('builds ProgressRing › Tones and Indeterminate', async ({ page }) => {
   await stacked(
     page,
@@ -5956,8 +6419,13 @@ const treeZone = (at: readonly number[], zone: string) =>
  * Opens the selected TreeList's nodes form down to the node at `at`, then
  * follows its `zone` row, which closes the form for the zone's content.
  */
-async function treeNodeZone(page: Page, at: readonly number[], zone: string) {
-  await select(page, /^TreeList/);
+async function treeNodeZone(
+  page: Page,
+  at: readonly number[],
+  zone: string,
+  owner = /^TreeList/,
+) {
+  await select(page, owner);
   const open = (path: readonly (number | string)[]) =>
     page
       .locator(

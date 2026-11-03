@@ -1,0 +1,204 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ColumnExplorerFiles",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:column-explorer",
+          "props": {
+            "id": "files",
+            "label": "Files",
+            "nodes": [
+              {
+                "id": "src",
+                "label": "src",
+                "children": [
+                  {
+                    "id": "components",
+                    "label": "components",
+                    "children": [
+                      {
+                        "id": "button-tsx",
+                        "label": "button.tsx"
+                      },
+                      {
+                        "id": "list-item-tsx",
+                        "label": "list-item.tsx"
+                      },
+                      {
+                        "id": "legacy-tsx",
+                        "label": "legacy.tsx",
+                        "description": "Read-only",
+                        "disabled": true
+                      }
+                    ]
+                  },
+                  {
+                    "id": "notes-md",
+                    "label": "notes.md"
+                  }
+                ]
+              },
+              {
+                "id": "music",
+                "label": "Music",
+                "hasChildren": true
+              },
+              {
+                "id": "readme-md",
+                "label": "README.md"
+              }
+            ],
+            "path": [
+              "src",
+              "components",
+              "button-tsx"
+            ],
+            "action": "column-explorer-demo-choose",
+            "minColumnWidth": {
+              "$css": "px(200)"
+            }
+          },
+          "zones": {
+            "nodes.0.icon": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "folder"
+                  },
+                  "name": "folder"
+                }
+              }
+            ],
+            "nodes.0.children.0.icon": [
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "folder"
+                  },
+                  "name": "folder"
+                }
+              }
+            ],
+            "nodes.0.children.0.children.0.icon": [
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "file-code"
+                  },
+                  "name": "file-code"
+                }
+              }
+            ],
+            "nodes.0.children.0.children.1.icon": [
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "file-code"
+                  },
+                  "name": "file-code"
+                }
+              }
+            ],
+            "nodes.0.children.0.children.2.icon": [
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "file-code"
+                  },
+                  "name": "file-code"
+                }
+              }
+            ],
+            "nodes.0.children.1.icon": [
+              {
+                "id": "00000000000000000000000008",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "file"
+                  },
+                  "name": "file"
+                }
+              }
+            ],
+            "nodes.1.icon": [
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "music"
+                  },
+                  "name": "music"
+                }
+              }
+            ],
+            "nodes.2.icon": [
+              {
+                "id": "00000000000000000000000010",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "file"
+                  },
+                  "name": "file"
+                }
+              }
+            ],
+            "preview": [
+              {
+                "id": "00000000000000000000000011",
+                "type": "@kerfjs/ui:value-table",
+                "props": {
+                  "label": "File details",
+                  "density": "compact"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000012",
+                      "type": "@kerfjs/ui:value-table#ValueTableRow",
+                      "props": {
+                        "label": "Name",
+                        "value": "button.tsx"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000013",
+                      "type": "@kerfjs/ui:value-table#ValueTableRow",
+                      "props": {
+                        "label": "Size",
+                        "value": "4 KB"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
