@@ -1,0 +1,104 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SelectViewTitle",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "gap": "none",
+            "rootAttributes": {
+              "data-demo-section": "select-view-title"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar",
+                "zones": {
+                  "leading": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:select",
+                            "props": {
+                              "name": "view-title-demo",
+                              "choices": [
+                                {
+                                  "value": "queue",
+                                  "label": "Queue"
+                                },
+                                {
+                                  "value": "active",
+                                  "label": "Active"
+                                },
+                                {
+                                  "value": "archive",
+                                  "label": "Archive"
+                                }
+                              ],
+                              "value": "queue",
+                              "presentation": "title",
+                              "focusRingInset": true,
+                              "ariaLabel": "Ticket View"
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "appearance": "borderless",
+                        "single": true
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "gap": "none"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Review Incoming Tickets",
+                        "action": "select-demo-ticket"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Check Assigned Work",
+                        "action": "select-demo-ticket"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -524,7 +524,10 @@ export function SelectDemo() {
         note="The 36px title trigger starts flush, keeps its caret beside the name, and draws focus inside clipped panels."
         viewport={{ width: 'compact' }}
       >
-        <div data-demo-section="select-view-title">
+        <List
+          gap="none"
+          rootAttributes={{ 'data-demo-section': 'select-view-title' }}
+        >
           <Toolbar
             leading={
               <ToolbarControlGroup appearance="borderless" single>
@@ -550,7 +553,7 @@ export function SelectDemo() {
             />
             <ListItem label="Check Assigned Work" action="select-demo-ticket" />
           </List>
-        </div>
+        </List>
       </CatalogExample>
       <CatalogExample
         label="Inline Status Badge"

@@ -4548,6 +4548,99 @@ test('builds Select › Navigation Label', async ({ page }) => {
   );
 });
 
+test('builds Select › View Title', async ({ page }) => {
+  // selectViewTitle starts as 'queue'. A List with no gap holds the toolbar
+  // and its rows (KF-RV23XY).
+  const views: readonly ChoiceSpec[] = [
+    { value: 'queue', label: 'Queue' },
+    { value: 'active', label: 'Active' },
+    { value: 'archive', label: 'Archive' },
+  ];
+  const rows = ['Review Incoming Tickets', 'Check Assigned Work'];
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List/);
+  await choose(page, 'gap', 'none');
+  await dataAttribute(page, 'data-demo-section', 'select-view-title');
+  await dragComponent(page, 'Toolbar', () => emptySpot(page));
+  await dragComponent(page, 'ToolbarControlGroup', () =>
+    zoneSpot(page, 'Leading'),
+  );
+  await select(page, /^Toolbar(?!Text|Control|Button)/);
+  await unset(page, 'label');
+  await select(page, /^ToolbarControlGroup/);
+  await choose(page, 'appearance', 'borderless');
+  await turnOn(page, 'single');
+  await select(page, /^ToolbarButton/);
+  await page.locator('[data-action="editor-delete"]').click();
+  await select(page, /^ToolbarControlGroup/);
+  await addChild(page, 'Select');
+  await configureSelect(page, {
+    choices: views,
+    props: {
+      choices: { presentation: 'title' },
+      flags: ['focusRingInset'],
+      text: { name: 'view-title-demo', ariaLabel: 'Ticket View' },
+      unsets: ['label'],
+    },
+    pick: 'Queue',
+  });
+  await select(page, /^List/);
+  await addChild(page, 'List');
+  await choose(page, 'gap', 'none');
+  for (const label of rows) {
+    await select(page, /^List(?![A-Z])/, 1);
+    await addChild(page, 'ListItem');
+    await applySpec(page, { text: { label, action: 'select-demo-ticket' } });
+  }
+  await expect(canvas(page).locator('.kui-list-item')).toHaveCount(2);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        {
+          gap: 'none',
+          rootAttributes: { 'data-demo-section': 'select-view-title' },
+        },
+        {
+          children: [
+            node('toolbar', undefined, {
+              leading: [
+                node(
+                  'toolbar-control-group',
+                  { appearance: 'borderless', single: true },
+                  {
+                    children: [
+                      selectNode(
+                        {
+                          name: 'view-title-demo',
+                          value: 'queue',
+                          ariaLabel: 'Ticket View',
+                          presentation: 'title',
+                          focusRingInset: true,
+                        },
+                        { choices: views },
+                      ),
+                    ],
+                  },
+                ),
+              ],
+            }),
+            node(
+              'list',
+              { gap: 'none' },
+              {
+                children: rows.map((label) =>
+                  node('list-item', { label, action: 'select-demo-ticket' }),
+                ),
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
 test('builds Select › Inline Status Badge', async ({ page }) => {
   // The demo's renderSelected draws a success Badge; the app supplies it.
   const spec: SelectSpec = {
