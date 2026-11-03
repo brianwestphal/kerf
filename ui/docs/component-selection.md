@@ -822,10 +822,10 @@ never covers its trigger and a second press on the trigger closes it. The app
 supplies pointer coordinates and command policy; it does not need to calculate
 menu offsets. For other anchored content, use `AnchoredSurface` for help or
 popup content, a native `title` for a plain-text hint, or `kerfjs/overlay`'s
-`positionAnchored()` when only placement is needed. An application using the
-Web Awesome integration may use `wa-tooltip` for a rich hover tooltip until
-Kerf ships a styled one; `wa-popover` and `wa-popup` are `Discouraged`. These
-are distinct interaction contracts: a command menu still uses `PopupMenu`.
+`positionAnchored()` when only placement is needed. A rich hover tooltip is
+`tooltip()` from `kerfjs/overlay` with `@kerfjs/ui/overlay-tooltip.css`;
+`wa-tooltip`, `wa-popover`, and `wa-popup` are `Discouraged`. These are
+distinct interaction contracts: a command menu still uses `PopupMenu`.
 
 ## Configuring recurring list rows
 
@@ -1117,7 +1117,8 @@ A multiple group takes no `required`. Prefer a multiple `Select` when the
 option list is long or space is tight.
 
 On dark inverse chrome, such as a media viewer, put the chips inside a dark
-appearance scope (`.wa-dark`, or any `color-scheme: dark` ancestor) rather
+appearance scope (a container's `scheme="dark"`, `.kui-dark`, or any
+`color-scheme: dark` ancestor) rather
 than restyling them: every chip color is a theme token that follows the scope.
 
 ```tsx

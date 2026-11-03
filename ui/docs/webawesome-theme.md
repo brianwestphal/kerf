@@ -342,18 +342,17 @@ component's behavior inspectable without opening every state at once.
 
 ## Badge and tag guidance
 
-Use Web Awesome's stable `wa-badge` and `wa-tag` directly instead of adding
-generic Kerf wrappers around them. Their variants and appearances already read
-the semantic palette above, and importing their component modules remains
-independent and tree-shakeable.
+New UI uses Kerf's `Badge` for compact status, count, or activity labels and
+`Chip` for categories, filters, and removable selections
+([component selection](./component-selection.md)). An existing Web Awesome
+application may keep its `wa-badge` and `wa-tag`; this theme styles them to
+match:
 
-- Use `wa-badge pill appearance="filled"` for compact status, count, or activity
-  labels. Hot Sheet 2's quiet, contrast-safe pill-shaped ticket status treatment
-  is the reference shape.
-- Use the default, non-pill `wa-tag` for categories, filters, and removable
-  selections. Its medium-radius rounded rectangle keeps tags distinct from
-  status badges. Handle the bubbling `wa-remove` event in the feature that owns
-  the underlying selection.
+- `wa-badge pill appearance="filled"` takes Hot Sheet 2's quiet,
+  contrast-safe pill-shaped ticket status treatment.
+- The default, non-pill `wa-tag` keeps its medium-radius rounded rectangle, so
+  tags stay distinct from status badges. Handle the bubbling `wa-remove` event
+  in the feature that owns the underlying selection.
 - Keep domain components when they add domain behavior. Hot Sheet 2's
   `StatusBadge` owns the ticket-status-to-label/icon mapping, while its
   `TagChip` is already a small domain adapter around `wa-tag`. Those are useful
@@ -454,7 +453,10 @@ a literal pair that measures below 4.5:1, as review finding
 measure a `var()` or `color-mix()` value, so choosing a readable one is still
 yours.
 
-Use `.wa-light`, `.wa-dark`, and `.wa-invert` for explicit appearance scopes.
+Use Kerf's `.kui-light`, `.kui-dark`, and `.kui-invert` (or a component's
+`scheme` prop) for explicit appearance scopes. The bridge re-derives Web
+Awesome elements inside them, and it still honors Web Awesome's own `.wa-light`,
+`.wa-dark`, and `.wa-invert` for existing Web Awesome applications.
 Component-specific custom properties and documented `::part()` selectors from
 Web Awesome remain available when a semantic theme token is not sufficiently
 specific. Prefer those public hooks over shadow-tree implementation details.

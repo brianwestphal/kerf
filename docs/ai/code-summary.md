@@ -1327,7 +1327,9 @@ Scoped tint (KF-RYZ0HJ, a region re-derived from an app color):
 `ui/src/shared/styles/surface-tint.ts` defines `SurfaceTint` (`{ color, scheme }`,
 re-exported from the Pane module and the barrel) and `surfaceTintAttributes()`,
 which `Pane`, `NavStack`, `TabNavigator`, and each tab scene render as
-`data-kui-tint="<scheme>"`, a `wa-<scheme>` class, and `--_kui-tint-color`.
+`data-kui-tint="<scheme>"`, `data-kui-scheme` plus a `kui-<scheme>` scope class
+(KF-E44H0A; a `scheme` prop renders the scope without a tint), and
+`--_kui-tint-color`.
 `ui/src/foundation.css` declares the palette on `:root, [data-kui-tint]` (so
 derived tokens re-resolve in the scope) and, behind `@supports` relative color
 syntax and `not (prefers-contrast: more)`, overrides the base Web Awesome

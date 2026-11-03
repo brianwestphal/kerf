@@ -310,7 +310,7 @@ Set `multiple` with a `readonly Value[]` `value` when any number may be on
 a Tab stop that Space toggles, and every checked value submits under `name`;
 read the checked boxes by name in the change handler. A multiple group takes no
 `required`. On dark inverse chrome, place the chips in a dark appearance scope
-(`.wa-dark`) instead of restyling them. The component handles forced-colors
+(a container's `scheme="dark"`, or `.kui-dark`) instead of restyling them. The component handles forced-colors
 selection text, icon, and focus contrast across its radio, checkbox, and
 listbox modes; applications should not override those state selectors.
 
@@ -536,9 +536,10 @@ declaration boundary for all 73 catalog-supported `wa-*` elements. The CSS-only
 entry includes Web Awesome's base stylesheet and the Hot Sheet 2-aligned Kerf
 theme but registers no custom elements. Continue importing only the individual
 Web Awesome component modules the app renders, and override public `--wa-*`
-values afterward when needed. Use `wa-badge appearance="filled"` for compact
-semantic labels: the theme pairs each variant's quiet fill with normal text for
-WCAG-AA contrast, with `--kui-wa-badge-filled-background` and
+values afterward when needed. New UI uses Kerf's `Badge` for compact semantic
+labels; when an existing Web Awesome app keeps `wa-badge appearance="filled"`,
+the theme pairs each variant's quiet fill with normal text for WCAG-AA
+contrast, with `--kui-wa-badge-filled-background` and
 `--kui-wa-badge-filled-foreground` as the documented override pair. A
 `wa-dialog` with another dismissal affordance
 can add `class="hide-actions"`; the theme hides the directly exported

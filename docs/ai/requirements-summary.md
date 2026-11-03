@@ -590,7 +590,7 @@ edges keep system colors while unselected/disabled pills keep UA adjustment.
 With `multiple` (array `value`, typed by a discriminated union) the same pills
 are native checkboxes in a `role="group"`: each a Tab stop that Space toggles,
 every checked value submitted under `name`, no `required`; the token palette
-follows a dark appearance scope (`.wa-dark`) for inverse chrome.
+follows a dark appearance scope (`scheme="dark"` / `.kui-dark`) for inverse chrome.
 
 MessageComposer (shipped, `ui/docs/message-composer.md`) is the chat or prompt composer: a
 raised frame (standard border, large radius, `shadow-l`) whose border turns

@@ -1007,8 +1007,8 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   `wireChoiceChips` keeps the checked chip in view and `wireScrollDividers`
   fades the edges with chips past them. Use a `TabBar` instead only when the
   choice switches tabpanels. On dark
-  inverse chrome, place the chips in a dark appearance scope (`.wa-dark`)
-  instead of restyling them.
+  inverse chrome, place the chips in a dark appearance scope (a container's
+  `scheme="dark"`, or `.kui-dark`) instead of restyling them.
 
 - **Open a scrolling view with `BackdropImage`.** Place it first in a Pane or
   NavStack view's scrolling content: `parallax` (`subtle` or a 0 to 1 factor)

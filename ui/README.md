@@ -679,8 +679,11 @@ Tooltip and Popover surfaces omit pointer arrows by default. Override
 popover's public `--arrow-size`, when an arrow communicates useful context.
 
 Configure semantic values globally at the application root, or scope variables
-to a self-owned subtree. Use Web Awesome's `.wa-light`, `.wa-dark`, and `.wa-invert`
-classes for explicit appearance boundaries:
+to a self-owned subtree. For explicit appearance boundaries, use Kerf's
+`scheme="light"` / `scheme="dark"` prop on a `Pane`, `ContentItem`, `NavStack`, or
+`TabNavigator`, or the `.kui-light`, `.kui-dark`, and `.kui-invert` scope classes on
+any element; they need no Web Awesome CSS. Semantic values themselves are
+overridden at the root:
 
 ```css
 :root {
@@ -772,8 +775,8 @@ or annotation intents. `value` is then a `readonly Value[]`, the pills are
 native checkboxes in a `role="group"` (each a Tab stop that Space toggles), and
 every checked value submits under `name`. Read the checked boxes by name in the
 change handler. A multiple group takes no `required`. On dark inverse chrome,
-place the chips in a dark appearance scope (`.wa-dark`) instead of restyling
-them.
+place the chips in a dark appearance scope (a container's `scheme="dark"`,
+or `.kui-dark`) instead of restyling them.
 
 `MessageComposer` is the chat or prompt composer: a raised frame (the standard
 border, large radius, and `shadow-l`) whose border turns brand while focus is

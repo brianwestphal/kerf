@@ -545,8 +545,8 @@ and Shift+Space extends to it; Cmd/Ctrl+A selects every enabled chip. A
 click selects one chip, Cmd/Ctrl-click toggles one, and Shift-click extends.
 Hidden inputs submit each selected value under `name`. The focus ring follows
 `:focus-visible` on the option. Every chip color is a theme token resolved through
-`light-dark()`, so inside a dark appearance scope (`.wa-dark`, `.wa-invert`,
-or any `color-scheme: dark` ancestor) the pills, labels, checked tint, and
+`light-dark()`, so inside a dark appearance scope (`scheme="dark"`, `.kui-dark`,
+`.kui-invert`, or any `color-scheme: dark` ancestor) the pills, labels, checked tint, and
 focus ring read on inverse chrome without overrides.
 
 With `overflow="scroll"`, any of these groups keeps its chips on one row that
