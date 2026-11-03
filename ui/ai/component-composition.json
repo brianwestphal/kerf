@@ -1933,7 +1933,8 @@
         "entries": [
           "@kerfjs/ui:toolbar",
           "@kerfjs/ui:floating-toolbar",
-          "@kerfjs/ui:tab-bar"
+          "@kerfjs/ui:tab-bar",
+          "@kerfjs/ui:message-composer"
         ]
       },
       "contexts": ["toolbar-zone"],

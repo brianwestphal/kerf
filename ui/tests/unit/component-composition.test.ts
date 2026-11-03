@@ -382,6 +382,8 @@ describe('component composition catalog contract', () => {
         '@kerfjs/ui:toolbar',
         '@kerfjs/ui:floating-toolbar',
         '@kerfjs/ui:tab-bar',
+        // KF-K1HFS2: a MessageComposer's action row is a Toolbar.
+        '@kerfjs/ui:message-composer',
       ],
     });
     expect(

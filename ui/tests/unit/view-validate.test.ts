@@ -1009,6 +1009,18 @@ describe('validateView: composition (KUI-L201–L204)', () => {
     expect(
       codes(doc(node('toolbar', { zones: { trailing: [group] } }))),
     ).toEqual([]);
+    // KF-K1HFS2: a MessageComposer's action row is a Toolbar.
+    const send = node('button', { props: { children: 'Send' } });
+    expect(
+      codes(
+        doc(
+          node('message-composer', {
+            props: { label: 'Prompt', name: 'prompt' },
+            zones: { leading: [group], trailing: [send] },
+          }),
+        ),
+      ),
+    ).toEqual([]);
     // A second export answers to its own parent contract.
     const link = node('toolbar-control-group#ToolbarActionLink', {
       props: { label: 'Docs', href: '/docs' },

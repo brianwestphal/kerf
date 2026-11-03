@@ -443,7 +443,7 @@ target with no legal drop, the caption turns into the reason (KF-6RYJ64:
 refused drops): the first problem placing the dragged component inside
 it would add, about the dragged node when there is one, with component
 keys written as names ("ToolbarControlGroup goes in Toolbar or
-FloatingToolbar or TabBar"), else "cannot go here". Near a
+FloatingToolbar or TabBar or MessageComposer"), else "cannot go here". Near a
 target's edge, before or after comes first and inside is the fallback, so a
 container that nothing can sit beside (the root) still takes a drop. Inside
 fills the node's main zone first, the one its `children` render into (a
