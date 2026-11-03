@@ -4,6 +4,7 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Text } from '@kerfjs/ui/text';
+import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { Bell, Columns3, Folder, List, Settings } from 'lucide';
 
@@ -20,34 +21,39 @@ export function SegmentedControlDemo() {
         note="Pill controls share a toolbar group’s chrome."
         align="inline-control"
       >
-        <ToolbarControlGroup>
-          <SegmentedControl
-            id="standalone-toolbar-view"
-            label="Toolbar View Mode"
-            value={toolbarChoice.value}
-            action="select-segment-demo"
-            appearance="toolbar"
-            shape="pill"
-            size="small"
-            choices={[
-              {
-                value: 'list',
-                label: 'List View',
-                content: <LucideIcon icon={List} name="list" />,
-              },
-              {
-                value: 'columns',
-                label: 'Columns View',
-                content: <LucideIcon icon={Columns3} name="columns-3" />,
-              },
-              {
-                value: 'settings',
-                label: 'Settings View',
-                content: <LucideIcon icon={Settings} name="settings" />,
-              },
-            ]}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Toolbar"
+          leading={
+            <ToolbarControlGroup>
+              <SegmentedControl
+                id="standalone-toolbar-view"
+                label="Toolbar View Mode"
+                value={toolbarChoice.value}
+                action="select-segment-demo"
+                appearance="toolbar"
+                shape="pill"
+                size="small"
+                choices={[
+                  {
+                    value: 'list',
+                    label: 'List View',
+                    content: <LucideIcon icon={List} name="list" />,
+                  },
+                  {
+                    value: 'columns',
+                    label: 'Columns View',
+                    content: <LucideIcon icon={Columns3} name="columns-3" />,
+                  },
+                  {
+                    value: 'settings',
+                    label: 'Settings View',
+                    content: <LucideIcon icon={Settings} name="settings" />,
+                  },
+                ]}
+              />
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample
         label="Rounded Rectangle"
