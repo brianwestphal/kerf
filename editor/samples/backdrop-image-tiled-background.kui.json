@@ -1,0 +1,54 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "BackdropImageTiledBackground",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "label": "Collection"
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:backdrop-image",
+          "props": {
+            "src": {
+              "$param": "tileUrl"
+            },
+            "alt": "",
+            "repeat": "repeat",
+            "height": {
+              "$css": "rem(10)"
+            },
+            "fadeTo": {
+              "$css": "uiColor('surface')"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list-inset-text",
+                "props": {
+                  "children": "Patterned collection header."
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "tileUrl": {
+      "type": {
+        "kind": "string"
+      },
+      "default": "BackdropImage"
+    }
+  }
+}

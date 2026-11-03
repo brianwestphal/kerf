@@ -16867,6 +16867,394 @@ test('builds Chip › Action Chips in a Value Table', async ({ page }) => {
   );
 });
 
+/**
+ * KF-B516FB: a BackdropImage in the root Pane labeled `label`; its artwork
+ * is the app's generated URL, a param named `param`.
+ */
+async function backdrop(page: Page, label: string, param: string) {
+  await rootPane(page, { text: { label } }, {});
+  await select(page, /^Pane/);
+  await addChild(page, 'BackdropImage', 'content');
+  await area(page, 'Properties');
+  await promote(page, 'Src');
+  await nameParam(page, 'nodeSrc', param);
+}
+
+test('builds BackdropImage › Scrim Under a Title', async ({ page }) => {
+  test.slow();
+  await backdrop(page, 'Place', 'skylineUrl');
+  await select(page, /^BackdropImage/);
+  await applySpec(page, {
+    choices: { position: 'bottom', scrim: 'bottom' },
+    text: { alt: 'Ridges at dusk under a low sun' },
+  });
+  // The demo's remify(240).
+  await setCss(page, 'height', 'rem(15)');
+  await addInto(page, /^BackdropImage/, 'ListInsetText');
+  await area(page, 'Properties');
+  await setText(
+    page,
+    'children',
+    'A ridge walk above the harbor, best at dusk.',
+  );
+  // The overlay comes last: Add a child keeps the zone it last used.
+  await select(page, /^BackdropImage/);
+  await addChild(page, 'Toolbar', 'overlay');
+  await area(page, 'Properties');
+  await setText(page, 'label', 'Place');
+  await zoneText(page, 'leading', {
+    choices: { size: 'xlarge', headingLevel: '2' },
+    text: { text: 'Coastal Ridge' },
+  });
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    rootPaneNode(
+      { label: 'Place' },
+      {
+        content: [
+          node(
+            'backdrop-image',
+            {
+              src: { $param: 'skylineUrl' },
+              alt: 'Ridges at dusk under a low sun',
+              position: 'bottom',
+              height: { $css: 'rem(15)' },
+              scrim: 'bottom',
+            },
+            {
+              children: [
+                node('list-inset-text', {
+                  children: 'A ridge walk above the harbor, best at dusk.',
+                }),
+              ],
+              overlay: [
+                node(
+                  'toolbar',
+                  { label: 'Place' },
+                  {
+                    leading: [
+                      node('toolbar-text', {
+                        text: 'Coastal Ridge',
+                        size: 'xlarge',
+                        headingLevel: 2,
+                      }),
+                    ],
+                  },
+                ),
+              ],
+            },
+          ),
+        ],
+      },
+    ),
+  );
+});
+
+test('builds BackdropImage › Tiled Background', async ({ page }) => {
+  await backdrop(page, 'Collection', 'tileUrl');
+  await select(page, /^BackdropImage/);
+  await applySpec(page, { choices: { repeat: 'repeat' }, text: { alt: '' } });
+  // The demo's remify(160).
+  await setCss(page, 'height', 'rem(10)');
+  await setCss(page, 'fadeTo', "uiColor('surface')");
+  await addInto(page, /^BackdropImage/, 'ListInsetText');
+  await area(page, 'Properties');
+  await setText(page, 'children', 'Patterned collection header.');
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    rootPaneNode(
+      { label: 'Collection' },
+      {
+        content: [
+          node(
+            'backdrop-image',
+            {
+              src: { $param: 'tileUrl' },
+              alt: '',
+              repeat: 'repeat',
+              height: { $css: 'rem(10)' },
+              fadeTo: { $css: "uiColor('surface')" },
+            },
+            {
+              children: [
+                node('list-inset-text', {
+                  children: 'Patterned collection header.',
+                }),
+              ],
+            },
+          ),
+        ],
+      },
+    ),
+  );
+});
+
+const TRACKS = [
+  ['Low Tide', '3:42'],
+  ['Harbor Lights', '4:05'],
+  ['Northbound', '3:18'],
+  ['Glass Coast', '5:01'],
+  ['Undertow', '3:56'],
+  ['Night Ferry', '4:27'],
+  ['Salt Air', '2:59'],
+  ['Last Call', '4:12'],
+  ['Lantern', '3:33'],
+  ['Morning Swell', '4:48'],
+] as const;
+
+/** The BackdropImage demo's `TrackList`, added to the BackdropImage. */
+async function trackList(page: Page) {
+  await addInto(page, /^BackdropImage/, 'List');
+  await addChild(page, 'ListHeader');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    text: { label: 'Top Songs', count: '10', countLabel: '10 songs' },
+  });
+  for (const [index, [label, length]] of TRACKS.entries()) {
+    await addInto(page, /^List(?![A-Z])/, 'ListItem');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      text: {
+        action: 'log-backdrop-track',
+        itemId: `track-${index + 1}`,
+        label,
+      },
+    });
+    await page.locator('[data-editor-content-add="trailing"]').click();
+    await addChild(page, 'Text');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { variant: 'span', tone: 'quiet' },
+      text: { children: length },
+    });
+  }
+}
+
+const trackListNode = () =>
+  node('list', undefined, {
+    children: [
+      node('list-header', {
+        label: 'Top Songs',
+        count: 10,
+        countLabel: '10 songs',
+      }),
+      ...TRACKS.map(([label, length], index) =>
+        node(
+          'list-item',
+          {
+            action: 'log-backdrop-track',
+            itemId: `track-${index + 1}`,
+            label,
+          },
+          {
+            trailing: [
+              node('text', {
+                children: length,
+                variant: 'span',
+                tone: 'quiet',
+              }),
+            ],
+          },
+        ),
+      ),
+    ],
+  });
+
+/** The BackdropImage overlay's title Toolbar. */
+async function titleOverlay(page: Page, label: string, text: string) {
+  await select(page, /^BackdropImage/);
+  await addChild(page, 'Toolbar', 'overlay');
+  await area(page, 'Properties');
+  await setText(page, 'label', label);
+  await zoneText(
+    page,
+    'leading',
+    { choices: { size: 'xlarge', headingLevel: '2' }, text: { text } },
+    -1,
+  );
+}
+
+const titleOverlayNode = (label: string, text: string) =>
+  node(
+    'toolbar',
+    { label },
+    {
+      leading: [
+        node('toolbar-text', { text, size: 'xlarge', headingLevel: 2 }),
+      ],
+    },
+  );
+
+test('builds BackdropImage › Parallax Hero With Progressive Blur', async ({
+  page,
+}) => {
+  test.setTimeout(test.info().timeout * 8);
+  await rootPane(
+    page,
+    { text: { label: 'Artist' }, data: [['data-backdrop-demo', 'hero']] },
+    {},
+  );
+  await select(page, /^Pane/);
+  await addChild(page, 'BackdropImage', 'content');
+  await area(page, 'Properties');
+  await promote(page, 'Src');
+  await nameParam(page, 'nodeSrc', 'skylineUrl');
+  // The blurred copy is generated by the app too.
+  await promote(page, 'Blur');
+  await nameParam(page, 'nodeBlur', 'skylineBlur');
+  await applySpec(page, { choices: { parallax: 'subtle' }, text: { alt: '' } });
+  await setCss(page, 'fadeTo', "uiColor('surface')");
+  await trackList(page);
+  // The overlay comes last: Add a child keeps the zone it last used.
+  await titleOverlay(page, 'Artist', 'Night Harbor');
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    rootPaneNode(
+      { label: 'Artist', rootAttributes: { 'data-backdrop-demo': 'hero' } },
+      {
+        content: [
+          node(
+            'backdrop-image',
+            {
+              src: { $param: 'skylineUrl' },
+              blur: { $param: 'skylineBlur' },
+              alt: '',
+              parallax: 'subtle',
+              fadeTo: { $css: "uiColor('surface')" },
+            },
+            {
+              children: [trackListNode()],
+              overlay: [titleOverlayNode('Artist', 'Night Harbor')],
+            },
+          ),
+        ],
+      },
+    ),
+  );
+});
+
+test('builds BackdropImage › Clear Header', async ({ page }) => {
+  test.setTimeout(test.info().timeout * 8);
+  await rootPane(
+    page,
+    {
+      choices: { headerPresentation: 'clear', scrollEdge: 'material' },
+      text: { label: 'Album' },
+      data: [['data-backdrop-demo', 'clear-header']],
+    },
+    {},
+  );
+  await select(page, /^Pane/);
+  await addChild(page, 'BackdropImage', 'content');
+  await area(page, 'Properties');
+  await promote(page, 'Src');
+  await nameParam(page, 'nodeSrc', 'skylineUrl');
+  await applySpec(page, {
+    choices: { parallax: 'subtle' },
+    flags: ['underChrome'],
+    text: { alt: '' },
+  });
+  await setCss(page, 'fadeTo', "uiColor('surface')");
+  await trackList(page);
+  await titleOverlay(page, 'Album', 'Night Harbor');
+  // The Pane's header, last for the same reason.
+  await select(page, /^Pane/);
+  await addChild(page, 'Toolbar', 'header');
+  await area(page, 'Properties');
+  await setText(page, 'label', 'Album Header');
+  const glass = (label: string, single: boolean): FieldSpec => ({
+    choices: { content: 'icon', material: 'glass' },
+    flags: single ? ['single'] : [],
+    text: { label },
+  });
+  const header = 1;
+  await buttonGroup(
+    page,
+    'leading',
+    glass('Navigation', true),
+    [
+      [
+        { text: { ariaLabel: 'Back', action: 'log-backdrop-track' } },
+        'chevron-left',
+      ],
+    ],
+    { nth: header },
+  );
+  await buttonGroup(
+    page,
+    'trailing',
+    glass('Album Actions', false),
+    [
+      [{ text: { ariaLabel: 'Share', action: 'log-backdrop-track' } }, 'share'],
+      [
+        { text: { ariaLabel: 'More', action: 'log-backdrop-track' } },
+        'ellipsis',
+      ],
+    ],
+    { nth: header },
+  );
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  const action = (ariaLabel: string, glyph: string) =>
+    [{ ariaLabel, action: 'log-backdrop-track' }, glyph] as const;
+  expect(await exported(page)).toEqual(
+    rootPaneNode(
+      {
+        label: 'Album',
+        headerPresentation: 'clear',
+        scrollEdge: 'material',
+        rootAttributes: { 'data-backdrop-demo': 'clear-header' },
+      },
+      {
+        header: [
+          node(
+            'toolbar',
+            { label: 'Album Header' },
+            {
+              leading: [
+                buttonGroupNode(
+                  {
+                    label: 'Navigation',
+                    content: 'icon',
+                    material: 'glass',
+                    single: true,
+                  },
+                  [action('Back', 'chevron-left')],
+                ),
+              ],
+              trailing: [
+                buttonGroupNode(
+                  {
+                    label: 'Album Actions',
+                    content: 'icon',
+                    material: 'glass',
+                  },
+                  [action('Share', 'share'), action('More', 'ellipsis')],
+                ),
+              ],
+            },
+          ),
+        ],
+        content: [
+          node(
+            'backdrop-image',
+            {
+              src: { $param: 'skylineUrl' },
+              alt: '',
+              parallax: 'subtle',
+              underChrome: true,
+              fadeTo: { $css: "uiColor('surface')" },
+            },
+            {
+              children: [trackListNode()],
+              overlay: [titleOverlayNode('Album', 'Night Harbor')],
+            },
+          ),
+        ],
+      },
+    ),
+  );
+});
+
 test('builds Text › Strong Emphasis', async ({ page }) => {
   await rootTexts(page, [
     {

@@ -1,0 +1,316 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "BackdropImageParallaxHeroWithProgressiveBlur",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "label": "Artist",
+      "rootAttributes": {
+        "data-backdrop-demo": "hero"
+      }
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:backdrop-image",
+          "props": {
+            "src": {
+              "$param": "skylineUrl"
+            },
+            "alt": "",
+            "blur": {
+              "$param": "skylineBlur"
+            },
+            "parallax": "subtle",
+            "fadeTo": {
+              "$css": "uiColor('surface')"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:list-header",
+                      "props": {
+                        "label": "Top Songs",
+                        "count": 10,
+                        "countLabel": "10 songs"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Low Tide",
+                        "action": "log-backdrop-track",
+                        "itemId": "track-1"
+                      },
+                      "zones": {
+                        "trailing": [
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "3:42",
+                              "variant": "span",
+                              "tone": "quiet"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Harbor Lights",
+                        "action": "log-backdrop-track",
+                        "itemId": "track-2"
+                      },
+                      "zones": {
+                        "trailing": [
+                          {
+                            "id": "00000000000000000000000008",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "4:05",
+                              "variant": "span",
+                              "tone": "quiet"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000009",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Northbound",
+                        "action": "log-backdrop-track",
+                        "itemId": "track-3"
+                      },
+                      "zones": {
+                        "trailing": [
+                          {
+                            "id": "00000000000000000000000010",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "3:18",
+                              "variant": "span",
+                              "tone": "quiet"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Glass Coast",
+                        "action": "log-backdrop-track",
+                        "itemId": "track-4"
+                      },
+                      "zones": {
+                        "trailing": [
+                          {
+                            "id": "00000000000000000000000012",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "5:01",
+                              "variant": "span",
+                              "tone": "quiet"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000013",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Undertow",
+                        "action": "log-backdrop-track",
+                        "itemId": "track-5"
+                      },
+                      "zones": {
+                        "trailing": [
+                          {
+                            "id": "00000000000000000000000014",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "3:56",
+                              "variant": "span",
+                              "tone": "quiet"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000015",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Night Ferry",
+                        "action": "log-backdrop-track",
+                        "itemId": "track-6"
+                      },
+                      "zones": {
+                        "trailing": [
+                          {
+                            "id": "00000000000000000000000016",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "4:27",
+                              "variant": "span",
+                              "tone": "quiet"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000017",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Salt Air",
+                        "action": "log-backdrop-track",
+                        "itemId": "track-7"
+                      },
+                      "zones": {
+                        "trailing": [
+                          {
+                            "id": "00000000000000000000000018",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "2:59",
+                              "variant": "span",
+                              "tone": "quiet"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000019",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Last Call",
+                        "action": "log-backdrop-track",
+                        "itemId": "track-8"
+                      },
+                      "zones": {
+                        "trailing": [
+                          {
+                            "id": "00000000000000000000000020",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "4:12",
+                              "variant": "span",
+                              "tone": "quiet"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000021",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Lantern",
+                        "action": "log-backdrop-track",
+                        "itemId": "track-9"
+                      },
+                      "zones": {
+                        "trailing": [
+                          {
+                            "id": "00000000000000000000000022",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "3:33",
+                              "variant": "span",
+                              "tone": "quiet"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000023",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Morning Swell",
+                        "action": "log-backdrop-track",
+                        "itemId": "track-10"
+                      },
+                      "zones": {
+                        "trailing": [
+                          {
+                            "id": "00000000000000000000000024",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "4:48",
+                              "variant": "span",
+                              "tone": "quiet"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "overlay": [
+              {
+                "id": "00000000000000000000000025",
+                "type": "@kerfjs/ui:toolbar",
+                "props": {
+                  "label": "Artist"
+                },
+                "zones": {
+                  "leading": [
+                    {
+                      "id": "00000000000000000000000026",
+                      "type": "@kerfjs/ui:toolbar-text",
+                      "props": {
+                        "text": "Night Harbor",
+                        "size": "xlarge",
+                        "headingLevel": 2
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "skylineUrl": {
+      "type": {
+        "kind": "string"
+      },
+      "default": "BackdropImage"
+    },
+    "skylineBlur": {
+      "type": {
+        "kind": "prop",
+        "component": "@kerfjs/ui:backdrop-image",
+        "prop": "blur"
+      }
+    }
+  }
+}
