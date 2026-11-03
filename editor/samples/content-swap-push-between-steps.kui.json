@@ -1,0 +1,111 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ContentSwapPushBetweenSteps",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:content-swap",
+          "props": {
+            "active": "a",
+            "direction": "backward",
+            "label": "Connect a Project"
+          },
+          "zones": {
+            "a": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "gap": "xs",
+                  "controlInsets": "tb"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:list-inset-text",
+                      "props": {
+                        "children": "Step 1 of 2 · Choose the folder that holds the project."
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:row",
+                      "props": {
+                        "hAlign": "right",
+                        "controlInsets": "rl"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:button",
+                            "props": {
+                              "children": "Next",
+                              "action": "content-swap-next"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "b": [
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "gap": "xs",
+                  "controlInsets": "tb"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:list-inset-text",
+                      "props": {
+                        "children": "Step 2 of 2 · Confirm the connection settings."
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000009",
+                      "type": "@kerfjs/ui:row",
+                      "props": {
+                        "hAlign": "right",
+                        "controlInsets": "rl"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000010",
+                            "type": "@kerfjs/ui:button",
+                            "props": {
+                              "children": "Back",
+                              "action": "content-swap-back"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

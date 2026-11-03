@@ -13867,6 +13867,157 @@ test('builds ContentItem › Pill Shape', async ({ page }) => {
   );
 });
 
+/** Adds a Row (set up by `row`) holding a Button to ContentSwap side `zone`. */
+async function swapButtonRow(
+  page: Page,
+  owner: RegExp,
+  ownerIndex: number,
+  zone: string,
+  row: FieldSpec,
+  button: FieldSpec,
+) {
+  await select(page, owner, ownerIndex);
+  await addChild(page, 'Row', zone);
+  await area(page, 'Properties');
+  await applySpec(page, row);
+  await addChild(page, 'Button');
+  await area(page, 'Properties');
+  await applySpec(page, button);
+}
+
+/** Deletes a ContentSwap's seeded side Texts ("A" and "B"). */
+async function dropSwapSeeds(page: Page) {
+  for (let side = 0; side < 2; side += 1) {
+    await select(page, /^Text(?![A-Z])/);
+    await deleteSelected(page);
+  }
+}
+
+// contentSwapStep starts on 'a', so the first render pushes backward.
+test('builds ContentSwap › Push Between Steps', async ({ page }) => {
+  const steps = [
+    [
+      'a',
+      'Step 1 of 2 · Choose the folder that holds the project.',
+      'Next',
+      'content-swap-next',
+    ],
+    [
+      'b',
+      'Step 2 of 2 · Confirm the connection settings.',
+      'Back',
+      'content-swap-back',
+    ],
+  ] as const;
+  await dragComponent(page, 'ContentSwap', () => emptySpot(page));
+  await select(page, /^ContentSwap/);
+  await applySpec(page, {
+    choices: { active: 'a', direction: 'backward' },
+    text: { label: 'Connect a Project' },
+  });
+  for (const [index, [zone, copy, label, action]] of steps.entries()) {
+    await select(page, /^ContentSwap/);
+    await addChild(page, 'List', zone);
+    await area(page, 'Properties');
+    await applySpec(page, { choices: { gap: 'xs', controlInsets: 'tb' } });
+    await addChild(page, 'ListInsetText');
+    await area(page, 'Properties');
+    await setText(page, 'children', copy);
+    await swapButtonRow(
+      page,
+      /^List(?![A-Z])/,
+      index,
+      'children',
+      { choices: { hAlign: 'right', controlInsets: 'rl' } },
+      { text: { children: label, action } },
+    );
+  }
+  await dropSwapSeeds(page);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'content-swap',
+        { label: 'Connect a Project', active: 'a', direction: 'backward' },
+        Object.fromEntries(
+          steps.map(([zone, copy, label, action]) => [
+            zone,
+            [
+              node(
+                'list',
+                { gap: 'xs', controlInsets: 'tb' },
+                {
+                  children: [
+                    node('list-inset-text', { children: copy }),
+                    node(
+                      'row',
+                      { hAlign: 'right', controlInsets: 'rl' },
+                      {
+                        children: [node('button', { children: label, action })],
+                      },
+                    ),
+                  ],
+                },
+              ),
+            ],
+          ]),
+        ),
+      ),
+    ),
+  );
+});
+
+// contentSwapFaded starts on 'a'.
+test('builds ContentSwap › Crossfade', async ({ page }) => {
+  await dragComponent(page, 'ContentSwap', () => emptySpot(page));
+  await select(page, /^ContentSwap/);
+  await applySpec(page, { choices: { transition: 'crossfade', active: 'a' } });
+  await swapButtonRow(
+    page,
+    /^ContentSwap/,
+    0,
+    'a',
+    { choices: { controlInsets: 'trbl' } },
+    {
+      text: { children: 'Show Details', action: 'content-swap-fade' },
+    },
+  );
+  await swapButtonRow(
+    page,
+    /^ContentSwap/,
+    0,
+    'b',
+    { choices: { controlInsets: 'trbl' } },
+    {
+      choices: { tone: 'brand' },
+      text: { children: 'Hide Details', action: 'content-swap-fade' },
+    },
+  );
+  const side = (button: Record<string, unknown>) => [
+    node(
+      'row',
+      { controlInsets: 'trbl' },
+      { children: [node('button', button)] },
+    ),
+  ];
+  await dropSwapSeeds(page);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'content-swap',
+        { transition: 'crossfade', active: 'a' },
+        {
+          a: side({ children: 'Show Details', action: 'content-swap-fade' }),
+          b: side({
+            children: 'Hide Details',
+            action: 'content-swap-fade',
+            tone: 'brand',
+          }),
+        },
+      ),
+    ),
+  );
+});
+
 /** A ToolbarText node as the exported document spells it. */
 const toolbarTextNode = (text: string, size?: string) =>
   node('toolbar-text', { text, ...(size ? { size } : {}) });
