@@ -561,6 +561,37 @@ export function fieldZoneKeys(
   return [...keys];
 }
 
+/**
+ * Whether `key` (`compactStack.list.toolbar.trailing`) names a content field
+ * inside one of the node's object props by its type alone, so the field's
+ * form can add a node to it before any of the objects around it are set
+ * (KF-KAVBDD: `fieldZoneKeys` lists only fields inside set values). A list
+ * item step counts only for an item that exists; a bound prop has no fields.
+ */
+export function isFieldZoneKey(
+  node: ViewNode,
+  props: readonly InspectorProp[],
+  definitions: Definitions,
+  key: string,
+): boolean {
+  const [name, ...steps] = key.split('.');
+  const prop = props.find((item) => item.name === name);
+  if (!prop || prop.slot || prop.zone || !steps.length) return false;
+  const value = node.props?.[name!] as ViewValue | undefined;
+  if (isBindingValue(value)) return false;
+  const path = steps.map((step) => (/^\d+$/.test(step) ? Number(step) : step));
+  const itemsExist = path.every(
+    (step, index) =>
+      typeof step !== 'number' ||
+      valueAt(value, path.slice(0, index + 1)) !== undefined,
+  );
+  return (
+    itemsExist &&
+    shape(typeAt(prop.type as ViewType, definitions, path, value), definitions)
+      ?.kind === 'content'
+  );
+}
+
 /** A binding (`$param`, `$bind`, …) rather than a literal value. */
 const isBindingValue = (value: ViewValue | undefined) =>
   Object.keys(fieldsOf(value) ?? {}).some((key) => key.startsWith('$'));

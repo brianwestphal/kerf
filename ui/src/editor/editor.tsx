@@ -231,6 +231,7 @@ import {
   fieldSummary,
   fieldZoneKeys,
   isAppSupplied,
+  isFieldZoneKey,
   listItemLabel,
   listMembers,
   memberFor,
@@ -2241,7 +2242,7 @@ export function createEditor(options: EditorOptions) {
    */
   const suggestionFor = (node: ViewNode, zone: string) => {
     const keys = addableIn(
-      zonesOf(node).find((option) => option.key === zone),
+      zonesOf(node, zone).find((option) => option.key === zone),
     ).map((choice) => choice.value);
     return suggestedComponents(zone, keys)[0];
   };
@@ -2801,7 +2802,14 @@ export function createEditor(options: EditorOptions) {
   };
 
   /** The zones a node offers for adding a child. */
-  const zonesOf = (node: ViewDocument['root']) => {
+  const zonesOf = (
+    node: ViewDocument['root'],
+    /**
+     * A content field the person asked to add to ("Add to trailing"), a
+     * zone even before the objects around it are set (KF-KAVBDD).
+     */
+    wanted?: string,
+  ) => {
     const props = propsByKey.get(node.type)?.props ?? [];
     const zones = legalZones(
       node,
@@ -2814,7 +2822,13 @@ export function createEditor(options: EditorOptions) {
     const fields = fieldZoneKeys(node, props, definitionsOf(node.type))
       .filter((key) => !zones.some((zone) => zone.key === key))
       .map((key): ZoneOption => ({ key }));
-    return [...zones, ...fields];
+    const asked: ZoneOption[] =
+      wanted &&
+      ![...zones, ...fields].some((zone) => zone.key === wanted) &&
+      isFieldZoneKey(node, props, definitionsOf(node.type), wanted)
+        ? [{ key: wanted }]
+        : [];
+    return [...zones, ...fields, ...asked];
   };
 
   /** Each placeable component's palette category, in palette order. */
@@ -3068,7 +3082,7 @@ export function createEditor(options: EditorOptions) {
         // A literal promotes; a bound prop is already a param.
         !isBinding(props[prop.name]),
     );
-    const zones = zonesOf(node);
+    const zones = zonesOf(node, addZone.value);
     const zone =
       zones.find(
         (option) => option.key === addZone.value && !option.disabledReason,

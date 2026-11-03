@@ -7,7 +7,10 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import propsJson from '../../../ai/component-props.json';
 import { findNode } from '../../../src/editor/model/document.js';
-import { fieldZoneKeys } from '../../../src/editor/model/fields.js';
+import {
+  fieldZoneKeys,
+  isFieldZoneKey,
+} from '../../../src/editor/model/fields.js';
 import { zoneLabel } from '../../../src/editor/model/outline.js';
 import { createEditor } from './kerf-catalog.js';
 
@@ -62,6 +65,35 @@ describe('field zone keys', () => {
         definitions,
       ),
     ).toEqual(expect.arrayContaining(['views.0.content', 'views.1.content']));
+  });
+
+  // KF-KAVBDD: a field's form adds to it before the objects around it exist.
+  it('names a content field by its type, with the objects around it unset', () => {
+    const split = {
+      id: 's',
+      type: '@kerfjs/ui:split-view',
+      props: {},
+    } as never;
+    const is = (key: string) =>
+      isFieldZoneKey(split, propsOf('SplitView'), definitions, key);
+    expect(is('compactStack.list.toolbar.trailing')).toBe(true);
+    expect(is('compactStack.detail.bottomToolbar.leading')).toBe(true);
+    expect(is('compactStack.backIcon')).toBe(true);
+    // Not content, not a field, a prop rather than a field, or no prop.
+    expect(is('compactStack.list.toolbar')).toBe(false);
+    expect(is('compactStack.list.toolbar.label')).toBe(false);
+    expect(is('compactStack.list.nothing')).toBe(false);
+    expect(is('list')).toBe(false);
+    expect(is('nothing.content')).toBe(false);
+    // A list item counts only once it exists.
+    const stack = (views: unknown) =>
+      ({ id: 'n', type: '@kerfjs/ui:nav-stack', props: { views } }) as never;
+    const inStack = (views: unknown, key: string) =>
+      isFieldZoneKey(stack(views), propsOf('NavStack'), definitions, key);
+    expect(inStack([{ key: 'a' }], 'views.0.content')).toBe(true);
+    expect(inStack([{ key: 'a' }], 'views.1.content')).toBe(false);
+    // A bound prop has no fields.
+    expect(inStack({ $param: 'views' }, 'views.0.content')).toBe(false);
   });
 
   it('reads a field zone’s path with arrows', () => {
