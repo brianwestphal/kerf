@@ -82,6 +82,13 @@ export interface ButtonOptions {
    * flips it in its `action` handler. A link (`href`) cannot be a toggle.
    */
   pressed?: boolean;
+  /**
+   * Make it a disclosure control: `aria-expanded` reports whether the
+   * content it shows or hides is open (KF-DE348P). The application owns the
+   * state and flips it in its `action` handler; pair it with a
+   * `DisclosureArrow` icon. A link (`href`) cannot take it.
+   */
+  expanded?: boolean;
   /** Mark the current step in a sequence with `aria-current="step"`. */
   currentStep?: boolean;
   /**
@@ -161,6 +168,7 @@ export function Button({
   shape = 'rounded',
   fill = false,
   pressed,
+  expanded,
   currentStep = false,
   icon,
   loading = false,
@@ -253,6 +261,10 @@ export function Button({
   if (href !== undefined) {
     if (pressed !== undefined)
       throw new TypeError('A link Button cannot be a toggle (pressed).');
+    if (expanded !== undefined)
+      throw new TypeError(
+        'A link Button cannot be a disclosure control (expanded).',
+      );
     if (popoverTarget !== undefined)
       throw new TypeError(
         'A link Button cannot open a popover (popoverTarget).',
@@ -278,6 +290,7 @@ export function Button({
       form={form}
       disabled={disabled}
       aria-pressed={pressed === undefined ? undefined : String(pressed)}
+      aria-expanded={expanded === undefined ? undefined : String(expanded)}
       popoverTarget={popoverTarget}
       popoverTargetAction={popoverTargetAction}
     >

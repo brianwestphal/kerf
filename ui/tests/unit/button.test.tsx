@@ -299,6 +299,27 @@ describe('Button', () => {
     ).toThrow(/link Button cannot open a popover/);
   });
 
+  // KF-DE348P: a disclosure control reports whether its content is open.
+  it('is a disclosure control with expanded, reporting aria-expanded only when set', () => {
+    expect(
+      render(<Button action="go">Go</Button>).hasAttribute('aria-expanded'),
+    ).toBe(false);
+    const open = render(
+      <Button expanded emphasis="plain" action="toggle-details">
+        Details
+      </Button>,
+    );
+    expect(open.getAttribute('aria-expanded')).toBe('true');
+    expect(
+      render(<Button expanded={false}>Details</Button>).getAttribute(
+        'aria-expanded',
+      ),
+    ).toBe('false');
+    expect(() =>
+      Button({ children: 'Docs', href: '/docs', expanded: false }),
+    ).toThrow(/link Button cannot be a disclosure control/);
+  });
+
   it('refuses to make a link a toggle', () => {
     expect(() =>
       Button({ children: 'Docs', href: '/docs', pressed: true }),

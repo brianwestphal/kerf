@@ -7406,6 +7406,13 @@ interface ButtonOptions {
      * flips it in its `action` handler. A link (`href`) cannot be a toggle.
      */
     pressed?: boolean;
+    /**
+     * Make it a disclosure control: `aria-expanded` reports whether the
+     * content it shows or hides is open (KF-DE348P). The application owns the
+     * state and flips it in its `action` handler; pair it with a
+     * `DisclosureArrow` icon. A link (`href`) cannot take it.
+     */
+    expanded?: boolean;
     /** Mark the current step in a sequence with `aria-current="step"`. */
     currentStep?: boolean;
     /**
@@ -7476,7 +7483,7 @@ interface ButtonOptions {
  * Button for a dialog footer, a form, or a standalone action beside other
  * content.
  */
-declare function Button({ children, tone, emphasis, size, shape, fill, pressed, currentStep, icon, loading, disabled, type, name, value, form, href, target, action, popoverTarget, popoverTargetAction, ariaHasPopup, focusRingInset, badge, badgeLabel, badgeTone, ariaLabel, title, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
+declare function Button({ children, tone, emphasis, size, shape, fill, pressed, expanded, currentStep, icon, loading, disabled, type, name, value, form, href, target, action, popoverTarget, popoverTargetAction, ariaHasPopup, focusRingInset, badge, badgeLabel, badgeTone, ariaLabel, title, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
 
 export { Button, type ButtonContent, type ButtonEmphasis, type ButtonLabel, type ButtonOptions, type ButtonProps, type ButtonRootAttributes, type ButtonShape, type ButtonSize, type ButtonTone, type ButtonType };
 ```

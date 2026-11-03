@@ -618,6 +618,19 @@
           "control": "select"
         },
         {
+          "name": "expanded",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Make it a disclosure control: `aria-expanded` reports whether the\ncontent it shows or hides is open (KF-DE348P). The application owns the\nstate and flips it in its `action` handler; pair it with a\n`DisclosureArrow` icon. A link (`href`) cannot take it.",
+          "group": "State",
+          "order": 2,
+          "control": "select"
+        },
+        {
           "name": "currentStep",
           "type": {
             "kind": "boolean",
@@ -637,7 +650,7 @@
           "required": false,
           "description": "Busy: a spinner replaces the label (which still names it) and the button\nreports `aria-busy`. Presses still reach it; the application decides\nwhat a press does while it is busy.",
           "group": "State",
-          "order": 2
+          "order": 3
         },
         {
           "name": "disabled",
@@ -648,7 +661,7 @@
           },
           "required": false,
           "group": "State",
-          "order": 3
+          "order": 4
         },
         {
           "name": "type",

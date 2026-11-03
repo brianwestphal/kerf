@@ -15284,6 +15284,84 @@ async function disclosureInto(
   await deleteSelected(page);
 }
 
+/**
+ * KF-DE348P: a plain Button that owns a DisclosureArrow icon and reports
+ * its state with `expanded`. Each demo's open state starts false.
+ */
+async function disclosureButton(
+  page: Page,
+  label: string,
+  action: string,
+  arrow: FieldSpec = {},
+) {
+  await dragComponent(page, 'Button', () => emptySpot(page));
+  await select(page, /^Button/);
+  await applySpec(page, {
+    choices: { emphasis: 'plain', expanded: 'Off' },
+    text: { children: label, action },
+  });
+  await addChild(page, 'DisclosureArrow', 'icon');
+  await area(page, 'Properties');
+  await applySpec(page, arrow);
+}
+
+/** The Button `disclosureButton` builds, its arrow given `arrow` props. */
+const disclosureButtonNode = (
+  label: string,
+  action: string,
+  arrow: Record<string, unknown> = {},
+  arrowZones?: Record<string, unknown[]>,
+) =>
+  node(
+    'button',
+    { children: label, emphasis: 'plain', expanded: false, action },
+    {
+      icon: [node('disclosure-arrow', { open: false, ...arrow }, arrowZones)],
+    },
+  );
+
+test('builds DisclosureArrow › Default', async ({ page }) => {
+  await disclosureButton(page, 'Details', 'toggle-disclosure');
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(disclosureButtonNode('Details', 'toggle-disclosure')),
+  );
+});
+
+test('builds DisclosureArrow › Replacement Icon', async ({ page }) => {
+  await disclosureButton(page, 'Preview', 'toggle-custom-disclosure', {
+    choices: { openDirection: 'up', closedDirection: 'left' },
+  });
+  await addChild(page, 'LucideIcon', 'icon');
+  await area(page, 'Properties');
+  await pickIcon(page, page.locator('[data-editor-icon-place]'), 'arrow-right');
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      disclosureButtonNode(
+        'Preview',
+        'toggle-custom-disclosure',
+        { openDirection: 'up', closedDirection: 'left' },
+        { icon: [icon('arrow-right')] },
+      ),
+    ),
+  );
+});
+
+test('builds DisclosureArrow › Sized', async ({ page }) => {
+  await disclosureButton(page, 'Activity', 'toggle-sized-disclosure');
+  // The demo's remify(24) is rem(1.5); this prop's builders take rem().
+  await setCss(page, 'size', 'rem(1.5)');
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      disclosureButtonNode('Activity', 'toggle-sized-disclosure', {
+        size: { $css: 'rem(1.5)' },
+      }),
+    ),
+  );
+});
+
 test('builds Disclosure › Embedded in a Content Item', async ({ page }) => {
   const note =
     'Move the export button into the toolbar so it sits beside Share.';

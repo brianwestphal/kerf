@@ -1,8 +1,8 @@
+import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { remify } from '@kerfjs/ui/css-values';
 import { DisclosureArrow } from '@kerfjs/ui/disclosure-arrow';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { Text } from '@kerfjs/ui/text';
 import { ArrowRight } from 'lucide';
 
 import {
@@ -11,8 +11,8 @@ import {
   sizedDisclosureOpen,
 } from './state.js';
 
-// Raw buttons: DisclosureArrow is the specimen, shown inside an owning
-// native control that reports aria-expanded, which Button cannot express.
+// KF-DE348P: DisclosureArrow is the specimen, the icon of the Button that
+// owns it and reports its state with `expanded` (aria-expanded).
 export function DisclosureArrowDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'disclosure-arrow' }}>
@@ -21,33 +21,35 @@ export function DisclosureArrowDemo() {
         note="Closed points right, open points down. Toggle to animate."
         align="inline-control"
       >
-        <button
-          type="button"
-          data-action="toggle-disclosure"
-          aria-expanded={String(disclosureOpen.value)}
+        <Button
+          emphasis="plain"
+          action="toggle-disclosure"
+          expanded={disclosureOpen.value}
+          icon={<DisclosureArrow open={disclosureOpen.value} />}
         >
-          <DisclosureArrow open={disclosureOpen.value} />
-          <Text variant="span">Details</Text>
-        </button>
+          Details
+        </Button>
       </CatalogExample>
       <CatalogExample
         label="Replacement Icon"
         note="A replacement glyph, closed left and open up."
         align="inline-control"
       >
-        <button
-          type="button"
-          data-action="toggle-custom-disclosure"
-          aria-expanded={String(customDisclosureOpen.value)}
+        <Button
+          emphasis="plain"
+          action="toggle-custom-disclosure"
+          expanded={customDisclosureOpen.value}
+          icon={
+            <DisclosureArrow
+              open={customDisclosureOpen.value}
+              openDirection="up"
+              closedDirection="left"
+              icon={<LucideIcon icon={ArrowRight} name="arrow-right" />}
+            />
+          }
         >
-          <DisclosureArrow
-            open={customDisclosureOpen.value}
-            openDirection="up"
-            closedDirection="left"
-            icon={<LucideIcon icon={ArrowRight} name="arrow-right" />}
-          />
-          <Text variant="span">Preview</Text>
-        </button>
+          Preview
+        </Button>
       </CatalogExample>
       <CatalogExample
         label="Sized"
@@ -59,14 +61,19 @@ export function DisclosureArrowDemo() {
         }
         align="inline-control"
       >
-        <button
-          type="button"
-          data-action="toggle-sized-disclosure"
-          aria-expanded={String(sizedDisclosureOpen.value)}
+        <Button
+          emphasis="plain"
+          action="toggle-sized-disclosure"
+          expanded={sizedDisclosureOpen.value}
+          icon={
+            <DisclosureArrow
+              open={sizedDisclosureOpen.value}
+              size={remify(24)}
+            />
+          }
         >
-          <DisclosureArrow open={sizedDisclosureOpen.value} size={remify(24)} />
-          <Text variant="span">Activity</Text>
-        </button>
+          Activity
+        </Button>
       </CatalogExample>
     </CatalogExampleStack>
   );

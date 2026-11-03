@@ -38,13 +38,18 @@
           "order": 1,
           "control": "select"
         },
+        "expanded": {
+          "group": "State",
+          "order": 2,
+          "control": "select"
+        },
         "loading": {
           "group": "State",
-          "order": 2
+          "order": 3
         },
         "disabled": {
           "group": "State",
-          "order": 3
+          "order": 4
         },
         "type": {
           "group": "Form",
