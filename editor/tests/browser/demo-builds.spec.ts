@@ -1116,6 +1116,7 @@ test('builds TabNavigator › Persistent Tab Scenes', async ({ page }) => {
   ).toContainText('Each destination stays mounted when inactive.');
   await select(page, /^TabNavigator/);
   await page.screenshot({
+    animations: 'disabled',
     path: test.info().outputPath('kf-jn4pf5-tab-navigator-1440.png'),
   });
   const tab = (id: string, label: string, props: Record<string, unknown>) => ({
@@ -1267,6 +1268,7 @@ test('builds TabNavigator › NavStack Inside a Tab', async ({ page }) => {
   );
   await expect(navigator.getByRole('tab')).toHaveCount(2);
   await page.screenshot({
+    animations: 'disabled',
     path: test.info().outputPath('kf-jn4pf5-tab-navigator-nested-1440.png'),
   });
   expect(await exported(page)).toEqual(
@@ -1436,6 +1438,7 @@ test('builds NavStack › Interactive Push and Pop', async ({ page }) => {
   await expect(stack.locator('.kui-list-item')).toHaveCount(2);
   await expect(stack).toContainText('2 saved projects');
   await page.screenshot({
+    animations: 'disabled',
     path: test.info().outputPath('kf-jn4pf5-nav-stack-1440.png'),
   });
   const toolbarTextNode = (text: string) =>
@@ -1604,6 +1607,7 @@ test('builds NavStack › Configured Toolbar', async ({ page }) => {
     3,
   );
   await page.screenshot({
+    animations: 'disabled',
     path: test.info().outputPath('kf-jn4pf5-nav-stack-configured-1440.png'),
   });
   const button = (
@@ -1673,8 +1677,9 @@ test('builds NavStack › Configured Toolbar', async ({ page }) => {
 });
 
 test('builds NavStack › Overlay Chrome', async ({ page }) => {
-  // A whole screen built step by step runs long in Firefox.
-  test.slow();
+  // Eighteen inbox rows built one by one outrun a slow test's budget in
+  // WebKit on CI.
+  test.setTimeout(240_000);
   await dragComponent(page, 'NavStack', () => emptySpot(page));
   await select(page, /^NavStack/);
   // Below the root it needs a height of its own (KF-6MGYSG).
@@ -1748,6 +1753,7 @@ test('builds NavStack › Overlay Chrome', async ({ page }) => {
   await expect(navStack.locator('.kui-list-item')).toHaveCount(18);
   await expect(navStack).toContainText('Updated Just Now');
   await page.screenshot({
+    animations: 'disabled',
     path: test.info().outputPath('kf-jn4pf5-nav-stack-overlay-1440.png'),
   });
   const button = (ariaLabel: string, glyph: string) =>
@@ -1795,8 +1801,9 @@ test('builds NavStack › Overlay Chrome', async ({ page }) => {
 });
 
 test('builds NavStack › Compact Chrome', async ({ page }) => {
-  // A whole screen built step by step runs long in Firefox.
-  test.slow();
+  // Eighteen inbox rows built one by one outrun a slow test's budget in
+  // WebKit on CI.
+  test.setTimeout(240_000);
   await dragComponent(page, 'NavStack', () => emptySpot(page));
   await select(page, /^NavStack/);
   // Below the root it needs a height of its own (KF-6MGYSG).
@@ -1897,6 +1904,7 @@ test('builds NavStack › Compact Chrome', async ({ page }) => {
   await expect(navStack.locator('.kui-list-item')).toHaveCount(18);
   await expect(navStack).toContainText('18 messages, updated just now');
   await page.screenshot({
+    animations: 'disabled',
     path: test.info().outputPath('kf-jn4pf5-nav-stack-compact-1440.png'),
   });
   const text = (children: string) =>
@@ -2304,6 +2312,7 @@ test('builds Workbench › Full Desktop Workspace', async ({ page }) => {
     'Inspector',
   ]);
   await page.screenshot({
+    animations: 'disabled',
     path: test.info().outputPath('kf-jn4pf5-workbench-full-1440.png'),
   });
   const [navigator, inspector, drawer, editor] = regions.map(
@@ -2502,6 +2511,7 @@ test('builds Workbench › Responsive Overlay Drawer', async ({ page }) => {
     'Build Output',
   ]);
   await page.screenshot({
+    animations: 'disabled',
     path: test.info().outputPath('kf-jn4pf5-workbench-drawer-1440.png'),
   });
   const [drawer, editor] = regions.map(([title, detail]) =>
@@ -2700,6 +2710,7 @@ test('builds Workbench › Controlled Collapsed Panels', async ({ page }) => {
     shell.getByRole('button', { name: 'Search Files' }),
   ).toBeVisible();
   await page.screenshot({
+    animations: 'disabled',
     path: test.info().outputPath('kf-jn4pf5-workbench-collapsed-1440.png'),
   });
   const [navigator, inspector, drawer, editor] = regions.map(
@@ -2954,6 +2965,7 @@ test('builds Workbench › Resizable Panels', async ({ page }) => {
     shell.getByRole('button', { name: 'Create Item' }),
   ).toBeVisible();
   await page.screenshot({
+    animations: 'disabled',
     path: test.info().outputPath('kf-jn4pf5-workbench-resizable-1440.png'),
   });
   const [navigator, selection, output, editor] = regions.map(
@@ -3188,6 +3200,7 @@ test('builds Workbench › Navigating Ticket Rail', async ({ page }) => {
   );
   await expect(shell.locator('strong')).toHaveText(['Workspace', ...tickets]);
   await page.screenshot({
+    animations: 'disabled',
     path: test.info().outputPath('kf-jn4pf5-workbench-navigation-1440.png'),
   });
   const ticket = (id: string) => {
@@ -3306,6 +3319,7 @@ test('builds SplitView › Roomy List-Detail Split', async ({ page }) => {
   await expect(split.locator('.kui-list-item')).toHaveCount(3);
   await expect(split.locator('strong')).toHaveText(first.subject);
   await page.screenshot({
+    animations: 'disabled',
     path: test.info().outputPath('kf-jn4pf5-split-view-roomy-1440.png'),
   });
   expect(await exported(page)).toEqual(
@@ -3425,6 +3439,7 @@ test('builds SplitView › Resizable, Collapsible List', async ({ page }) => {
   await expect(split.locator('.kui-list-item')).toHaveCount(3);
   await expect(split.locator('strong')).toHaveText(first.subject);
   await page.screenshot({
+    animations: 'disabled',
     path: test.info().outputPath('kf-jn4pf5-split-view-resizable-1440.png'),
   });
   const button = (ariaLabel: string, glyph: string) =>
@@ -3590,6 +3605,7 @@ test('builds TabNavigator › Translucent Tab Bar', async ({ page }) => {
     navigator.locator('.kui-list-item[data-kerf-node]').first(),
   ).toContainText('Message 1');
   await page.screenshot({
+    animations: 'disabled',
     path: test.info().outputPath('kf-jn4pf5-tab-navigator-overlay-1440.png'),
   });
   expect(await exported(page)).toEqual(
