@@ -2131,6 +2131,69 @@ test('builds Badge › Icon and Title', async ({ page }) => {
   );
 });
 
+test('builds Badge › Status', async ({ page }) => {
+  await dragComponent(page, 'Badge', () => emptySpot(page));
+  await select(page, /^Badge/);
+  await setText(page, 'children', 'Ready');
+  await choose(page, 'tone', 'success');
+  await expect(canvas(page).locator('.kui-badge[data-kerf-node]')).toHaveText(
+    'Ready',
+  );
+  expect(await exported(page)).toEqual(
+    pane(node('badge', { children: 'Ready', tone: 'success' })),
+  );
+});
+
+test('builds Badge › Long Text', async ({ page }) => {
+  await dragComponent(page, 'Badge', () => emptySpot(page));
+  await select(page, /^Badge/);
+  await setText(page, 'children', 'customer-escalation-priority-review');
+  await choose(page, 'tone', 'info');
+  // A builder call caps the width; the badge truncates with an ellipsis.
+  const maxWidth = page
+    .locator('[data-editor-prop="maxWidth"]')
+    .getByRole('textbox');
+  await maxWidth.fill('px(120)');
+  await maxWidth.press('Enter');
+  await page.locator('[data-action="editor-add-data-attribute"]').click();
+  const attribute = (part: string) =>
+    page.locator(
+      `[data-editor-attribute="0"][data-editor-attribute-part="${part}"]`,
+    );
+  for (const [part, text] of [
+    ['name', 'data-demo-badge'],
+    ['value', 'truncate'],
+  ] as const) {
+    await attribute(part).locator('input').fill(text);
+    await attribute(part).locator('input').press('Enter');
+  }
+  const badge = canvas(page).locator('.kui-badge[data-kerf-node]');
+  await expect(badge).toHaveAttribute('data-demo-badge', 'truncate');
+  expect((await badge.boundingBox())!.width).toBeLessThanOrEqual(121);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('badge', {
+        children: 'customer-escalation-priority-review',
+        tone: 'info',
+        maxWidth: { $css: 'px(120)' },
+        rootAttributes: { 'data-demo-badge': 'truncate' },
+      }),
+    ),
+  );
+});
+
+test('builds Badge › Neutral Metadata', async ({ page }) => {
+  await dragComponent(page, 'Badge', () => emptySpot(page));
+  await select(page, /^Badge/);
+  await setText(page, 'children', 'Draft');
+  await expect(canvas(page).locator('.kui-badge[data-kerf-node]')).toHaveText(
+    'Draft',
+  );
+  expect(await exported(page)).toEqual(
+    pane(node('badge', { children: 'Draft' })),
+  );
+});
+
 // KF-BGKYYH: one card of the feed (the demo repeats it for each story),
 // with its effects built in the effects list editor, one switched by Kind.
 test('builds ScrollEffect › Reveal and Fade in a Feed', async ({ page }) => {

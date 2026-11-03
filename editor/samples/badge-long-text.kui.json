@@ -1,0 +1,32 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "BadgeLongText",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:badge",
+          "props": {
+            "children": "customer-escalation-priority-review",
+            "tone": "info",
+            "maxWidth": {
+              "$css": "px(120)"
+            },
+            "rootAttributes": {
+              "data-demo-badge": "truncate"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
