@@ -6,7 +6,10 @@ export default defineConfig({
   // parallel across workers (the demo-builds file alone holds hundreds);
   // CI runs one engine per job.
   fullyParallel: true,
-  workers: process.env.CI ? 4 : 2,
+  // CI runners are slower than a developer machine; a build's step-by-step
+  // drive needs twice the default there (test.slow() still triples it).
+  workers: process.env.CI ? 3 : 2,
+  timeout: process.env.CI ? 60_000 : 30_000,
   reporter: [['list']],
   use: {
     baseURL: 'http://127.0.0.1:42917',
