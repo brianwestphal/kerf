@@ -1,0 +1,71 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "CornerStatusEmbedded",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:corner-status",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:state-banner",
+                "props": {
+                  "title": "Loading…",
+                  "tone": "neutral",
+                  "urgency": "status"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:loading-spinner",
+                      "props": {
+                        "label": "Loading project…",
+                        "size": 16.8
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:state-banner",
+                "props": {
+                  "title": "Syncing 2 Providers",
+                  "tone": "info",
+                  "urgency": "status"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:loading-spinner",
+                      "props": {
+                        "label": "Syncing providers…",
+                        "size": 16.8
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "props": {
+            "presentation": "embedded"
+          }
+        }
+      ]
+    }
+  }
+}

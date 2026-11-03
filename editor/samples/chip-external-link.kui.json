@@ -1,0 +1,43 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ChipExternalLink",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:chip",
+          "props": {
+            "children": "Kerf Source",
+            "tone": "info",
+            "external": true,
+            "href": "https://github.com/brianwestphal/kerf",
+            "itemId": "kerf-source"
+          },
+          "zones": {
+            "icon": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "external-link"
+                  },
+                  "name": "external-link"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

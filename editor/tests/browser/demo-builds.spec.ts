@@ -14770,6 +14770,138 @@ test('builds ProgressRing › Sizes', async ({ page }) => {
   );
 });
 
+test('builds Chip › External Link', async ({ page }) => {
+  await dragComponent(page, 'Chip', () => emptySpot(page));
+  await select(page, /^Chip(?![A-Z])/);
+  await applySpec(page, {
+    choices: { tone: 'info' },
+    flags: ['external'],
+    text: {
+      children: 'Kerf Source',
+      href: 'https://github.com/brianwestphal/kerf',
+      itemId: 'kerf-source',
+    },
+  });
+  await addIcon(page, 'icon', 'external-link');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'chip',
+        {
+          children: 'Kerf Source',
+          tone: 'info',
+          href: 'https://github.com/brianwestphal/kerf',
+          external: true,
+          itemId: 'kerf-source',
+        },
+        { icon: [icon('external-link')] },
+      ),
+    ),
+  );
+});
+
+test('builds Chip › Plain Label', async ({ page }) => {
+  await dragComponent(page, 'Chip', () => emptySpot(page));
+  await select(page, /^Chip(?![A-Z])/);
+  await applySpec(page, {
+    choices: { appearance: 'solid' },
+    text: { children: 'Backlog' },
+  });
+  expect(await exported(page)).toEqual(
+    pane(node('chip', { children: 'Backlog', appearance: 'solid' })),
+  );
+});
+
+test('builds Chip › Icon and Truncated Label', async ({ page }) => {
+  const label = 'Acme International Procurement and Manufacturing Limited';
+  await dragComponent(page, 'Row', () => emptySpot(page));
+  await select(page, /^Row/);
+  await applySpec(page, {
+    choices: { gap: 'xs' },
+    data: [['data-demo-chip-offer', '']],
+  });
+  await addChild(page, 'Chip');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { tone: 'success' },
+    flags: ['truncate'],
+    text: { children: label },
+  });
+  await addIcon(page, 'icon', 'trophy');
+  await textInto(page, /^Row/, '$129 / unit', 0, {
+    choices: { variant: 'span', wrap: 'nowrap' },
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'row',
+        { gap: 'xs', rootAttributes: { 'data-demo-chip-offer': '' } },
+        {
+          children: [
+            node(
+              'chip',
+              { children: label, tone: 'success', truncate: true },
+              { icon: [icon('trophy')] },
+            ),
+            textNode('$129 / unit', { variant: 'span', wrap: 'nowrap' }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds CornerStatus › Embedded', async ({ page }) => {
+  const banners = [
+    ['neutral', 'Loading…', 'Loading project…'],
+    ['info', 'Syncing 2 Providers', 'Syncing providers…'],
+  ] as const;
+  await dragComponent(page, 'CornerStatus', () => emptySpot(page));
+  await select(page, /^CornerStatus/);
+  await choose(page, 'presentation', 'embedded');
+  for (const [index, [tone, title, spinner]] of banners.entries()) {
+    // The first banner turns the seeded text into a Text, which goes.
+    await addInto(
+      page,
+      /^CornerStatus/,
+      'StateBanner',
+      0,
+      index === 0 ? 0 : undefined,
+    );
+    await select(page, /^StateBanner/, index);
+    await applySpec(page, {
+      choices: { tone, urgency: 'status' },
+      text: { title },
+    });
+    await select(page, /^StateBanner/, index);
+    await addChild(page, 'LoadingSpinner', 'icon');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      text: { label: spinner },
+      unions: { size: ['Number…', '16.8'] },
+    });
+  }
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'corner-status',
+        { presentation: 'embedded' },
+        {
+          children: banners.map(([tone, title, spinner]) =>
+            node(
+              'state-banner',
+              { tone, urgency: 'status', title },
+              {
+                icon: [node('loading-spinner', { label: spinner, size: 16.8 })],
+              },
+            ),
+          ),
+        },
+      ),
+    ),
+  );
+});
+
 /** A ToolbarText node as the exported document spells it. */
 const toolbarTextNode = (text: string, size?: string) =>
   node('toolbar-text', { text, ...(size ? { size } : {}) });
