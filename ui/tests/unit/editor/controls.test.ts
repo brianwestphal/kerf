@@ -16,6 +16,7 @@ import {
   PLACEHOLDER_ICON,
   seedNode,
   seedProps,
+  sizeAxisType,
   sizeKeywords,
   valueFromControl,
 } from '../../../src/editor/model/controls.js';
@@ -190,7 +191,19 @@ describe('size controls (KF-Q5AXNP)', () => {
   it('lists the keywords of a size union in scale order, with Custom', () => {
     expect(sizeOf('list', 'gap')).toEqual({
       kind: 'size',
-      choices: ['', 'none', '2xs', 'xs', 's', 'm', 'l', 'xl', 'true', 'custom'],
+      choices: [
+        '',
+        'none',
+        '2xs',
+        'xs',
+        's',
+        'm',
+        'l',
+        'xl',
+        'true',
+        'custom',
+        'axes',
+      ],
       raw: '',
     });
     expect(sizeOf('row', 'flex').choices).toEqual([
@@ -217,12 +230,35 @@ describe('size controls (KF-Q5AXNP)', () => {
       raw: 'custom',
       css: 'px(8)',
     });
+    // KF-VA14AP: a `{ column, row }` gap is Columns and rows, whose axes
+    // take the gap's keywords and builder but not `true`.
+    const axes = sizeOf('list', 'gap', {
+      column: { $css: 'px(4)' },
+      row: { $css: 'px(8)' },
+    });
+    expect(axes).toMatchObject({ kind: 'size', raw: 'axes' });
+    expect(sizeKeywords(axes.member!)).toEqual([
+      'none',
+      '2xs',
+      'xs',
+      's',
+      'm',
+      'l',
+      'xl',
+    ]);
     expect(
-      sizeOf('list', 'gap', {
-        column: { $css: 'px(4)' },
-        row: { $css: 'px(8)' },
-      }).kind,
-    ).toBe('list');
+      controlFor(
+        { name: 'column', type: axes.member!, required: true } as never,
+        'none',
+      ),
+    ).toMatchObject({ kind: 'size', raw: 'none' });
+    expect(
+      sizeOf('list', 'gap', { column: { $param: 'gap' }, row: 'm' }).raw,
+    ).toBe('axes');
+    // A size union without a `{ column, row }` member offers no axes.
+    expect(sizeOf('row', 'flex').choices).not.toContain('axes');
+    expect(sizeAxisType(prop('row', 'flex').type as never)).toBeUndefined();
+    expect(sizeAxisType(prop('button', 'tone').type as never)).toBeUndefined();
     expect(sizeOf('list', 'gap', { $param: 'gap' }).kind).toBe('readonly');
     expect(sizeOf('list', 'gap', 'huge').kind).toBe('readonly');
   });
@@ -263,6 +299,29 @@ describe('size controls (KF-Q5AXNP)', () => {
     expect(valueFromControl('size', 'true')).toEqual({ value: true });
     expect(valueFromControl('size', '')).toEqual({ value: undefined });
     expect(valueFromControl('size', 'custom')).toEqual({ value: undefined });
+  });
+
+  it('starts Columns and rows from the gap it splits (KF-VA14AP)', () => {
+    const gap = (current?: unknown, fallback?: unknown) =>
+      valueFromControl('size', 'axes', undefined, {
+        type: prop('row', 'gap').type as never,
+        definitions: definitions('row'),
+        current: current as never,
+        fallback: fallback as never,
+      });
+    expect(gap('l')).toEqual({ value: { column: 'l', row: 'l' } });
+    expect(gap({ $css: 'px(6)' })).toEqual({
+      value: { column: { $css: 'px(6)' }, row: { $css: 'px(6)' } },
+    });
+    // `true` and an unset gap start from the default, else `m`.
+    expect(gap(undefined, 'xs')).toEqual({
+      value: { column: 'xs', row: 'xs' },
+    });
+    expect(gap(true)).toEqual({ value: { column: 'm', row: 'm' } });
+    // Choosing it again keeps the axes already set.
+    expect(gap({ column: 'none', row: 'l' })).toEqual({
+      value: { column: 'none', row: 'l' },
+    });
   });
 });
 

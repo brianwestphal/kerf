@@ -242,8 +242,13 @@ function describeNonNull(ctx, type, members, text, depth) {
   if (members.length === 0) return { kind: 'never', text };
   const named = type.aliasSymbol?.getName();
   if (named && CONTENT_ALIASES.has(named)) return contentOf(members, text);
+  // A css-values alias that also takes token names (`UiGapValue` is
+  // `UiSpaceName | CssLength`) keeps its tokens as literals beside the
+  // builder, as it reads once `| undefined` drops the alias, so a nested
+  // `{ column: 'm' }` validates (KF-VA14AP).
   if (named && CSS_VALUE_ALIAS.test(named)) {
-    return { kind: 'css-value', grammar: named, text };
+    if (!members.some((member) => typeof literalOf(member) === 'string'))
+      return { kind: 'css-value', grammar: named, text };
   }
   if (isContentUnion(ctx.checker, members)) return contentOf(members, text);
   if (members.length === 1) return describeSingle(ctx, members[0], depth);

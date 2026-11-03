@@ -418,7 +418,13 @@ Spacer or Skeleton `width`/`height`, a dialog `height` of `"viewport"`),
 gets a Select of its keywords, with spacing tokens in scale order (`none`,
 `2xs` … `xl`), `true` when the union takes a boolean, and **Custom…**, which
 shows that builder field beneath it (KF-Q5AXNP: first-class size editing). A
-`{ column, row }` gap edits as JSON. A text-accepting content prop
+gap that also takes `{ column, row }` adds **Columns and rows…**
+(KF-VA14AP: per-axis gaps), which splits the current gap into both axes
+(a keyword or builder call, else the prop's default, else `m`) and edits
+each axis in its own size Select of the same keywords and Custom…; Custom…
+on an axis keeps its value until the builder field sets one. Each axis is
+a `UiGapValue` (a spacing token or a `CssLength` builder call), which
+`validateView` accepts. A text-accepting content prop
 (a Button's label) holds either text or nodes in its zone, never both: **Use
 as nodes** moves the text into a `#text` node so components can sit beside
 it, adding a child to that zone does the same first, and **Use as text**

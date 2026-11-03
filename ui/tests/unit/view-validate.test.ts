@@ -395,6 +395,13 @@ describe('validateView: types, props, and values', () => {
     expect(select({ label: { $icon: 'bell' } })).toEqual(['KUI-V004']);
   });
 
+  it('accepts space tokens and builders in a per-axis gap (KF-VA14AP)', () => {
+    const row = (gap: unknown) => codes(doc(node('row', { props: { gap } })));
+    expect(row({ column: 'none', row: 'm' })).toEqual([]);
+    expect(row({ column: { $css: 'px(4)' }, row: 'l' })).toEqual([]);
+    expect(row({ column: 'huge', row: 'm' })).toEqual(['KUI-V004']);
+  });
+
   it('KUI-V004: union props types must match one variant', () => {
     // Button is labeled (children) or icon-only (icon + ariaLabel).
     expect(

@@ -4586,8 +4586,8 @@
                   {
                     "name": "column",
                     "type": {
-                      "kind": "css-value",
-                      "grammar": "UiGapValue",
+                      "kind": "ref",
+                      "ref": "UiGapValue",
                       "text": "UiGapValue"
                     },
                     "required": true
@@ -4595,8 +4595,8 @@
                   {
                     "name": "row",
                     "type": {
-                      "kind": "css-value",
-                      "grammar": "UiGapValue",
+                      "kind": "ref",
+                      "ref": "UiGapValue",
                       "text": "UiGapValue"
                     },
                     "required": true
@@ -4916,8 +4916,8 @@
                   {
                     "name": "column",
                     "type": {
-                      "kind": "css-value",
-                      "grammar": "UiGapValue",
+                      "kind": "ref",
+                      "ref": "UiGapValue",
                       "text": "UiGapValue"
                     },
                     "required": true
@@ -4925,8 +4925,8 @@
                   {
                     "name": "row",
                     "type": {
-                      "kind": "css-value",
-                      "grammar": "UiGapValue",
+                      "kind": "ref",
+                      "ref": "UiGapValue",
                       "text": "UiGapValue"
                     },
                     "required": true
@@ -9652,8 +9652,8 @@
                   {
                     "name": "column",
                     "type": {
-                      "kind": "css-value",
-                      "grammar": "UiGapValue",
+                      "kind": "ref",
+                      "ref": "UiGapValue",
                       "text": "UiGapValue"
                     },
                     "required": true
@@ -9661,8 +9661,8 @@
                   {
                     "name": "row",
                     "type": {
-                      "kind": "css-value",
-                      "grammar": "UiGapValue",
+                      "kind": "ref",
+                      "ref": "UiGapValue",
                       "text": "UiGapValue"
                     },
                     "required": true
@@ -24758,8 +24758,8 @@
                   {
                     "name": "column",
                     "type": {
-                      "kind": "css-value",
-                      "grammar": "UiGapValue",
+                      "kind": "ref",
+                      "ref": "UiGapValue",
                       "text": "UiGapValue"
                     },
                     "required": true
@@ -24767,8 +24767,8 @@
                   {
                     "name": "row",
                     "type": {
-                      "kind": "css-value",
-                      "grammar": "UiGapValue",
+                      "kind": "ref",
+                      "ref": "UiGapValue",
                       "text": "UiGapValue"
                     },
                     "required": true
@@ -27842,6 +27842,20 @@
         }
       ],
       "text": "TreeListNode"
+    },
+    "UiGapValue": {
+      "kind": "union",
+      "members": [
+        { "kind": "css-value", "grammar": "CssLength", "text": "CssLength" },
+        { "kind": "literal", "value": "xs", "text": "\"xs\"" },
+        { "kind": "literal", "value": "s", "text": "\"s\"" },
+        { "kind": "literal", "value": "m", "text": "\"m\"" },
+        { "kind": "literal", "value": "l", "text": "\"l\"" },
+        { "kind": "literal", "value": "xl", "text": "\"xl\"" },
+        { "kind": "literal", "value": "none", "text": "\"none\"" },
+        { "kind": "literal", "value": "2xs", "text": "\"2xs\"" }
+      ],
+      "text": "UiGapValue"
     },
     "WorkbenchMainBottomToolbar": {
       "kind": "object",

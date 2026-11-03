@@ -144,6 +144,7 @@ import {
   slotAt,
 } from './model/control-flow.js';
 import {
+  AXES_SIZE,
   choiceOptions,
   controlFor,
   type ControlKind,
@@ -156,6 +157,7 @@ import {
   reshapeValue,
   type SeedCatalog,
   seedNode,
+  SIZE_AXES,
   typeLabel,
   valueChoices,
   valueFromControl,
@@ -1424,9 +1426,11 @@ export function createEditor(options: EditorOptions) {
     switch (control.kind) {
       case 'size': {
         // A keyword Select, and the builder field while the value is custom.
+        // A field's size (a gap's axis) keeps its value until the builder
+        // field sets one, so Custom… shows over it (KF-VA14AP).
         const custom =
           control.raw === CUSTOM_SIZE ||
-          (control.raw === '' &&
+          ((control.raw === '' || place.path.length > 0) &&
             customSize.value === `${selectedNodeId()} ${key}`);
         return (
           <>
@@ -1443,11 +1447,28 @@ export function createEditor(options: EditorOptions) {
                       : 'Not set'
                     : choice === CUSTOM_SIZE
                       ? 'Custom…'
-                      : choice,
+                      : choice === AXES_SIZE
+                        ? 'Columns and rows…'
+                        : choice,
               }))}
               rootAttributes={marker('size')}
             />
             {custom ? builderField(control.css ?? '') : undefined}
+            {/* KF-VA14AP: a `{ column, row }` gap, one size Select per axis. */}
+            {control.raw === AXES_SIZE
+              ? SIZE_AXES.map((axis) =>
+                  propControl(
+                    {
+                      name: axis,
+                      type: control.member as InspectorProp['type'],
+                      required: true,
+                    } as typeof prop,
+                    (value as Record<string, ViewValue>)[axis] as typeof value,
+                    type,
+                    { prop: place.prop, path: [...place.path, axis] },
+                  ),
+                )
+              : undefined}
           </>
         );
       }
@@ -3999,6 +4020,8 @@ export function createEditor(options: EditorOptions) {
       current: node.props?.[name] as ViewValue | undefined,
       // An optional boolean reads false when absent, unless it defaults on.
       unset: prop.required ? undefined : prop.default === true,
+      // Columns and rows starts a gap's axes at its default (KF-VA14AP).
+      fallback: prop.default as ViewValue | undefined,
     });
     if ('error' in result) {
       fieldErrors.value = { ...fieldErrors.value, [name]: result.error };
@@ -4067,6 +4090,9 @@ export function createEditor(options: EditorOptions) {
     const key = placeKey(place);
     if (kind === 'size')
       customSize.value = raw === CUSTOM_SIZE ? `${id} ${key}` : '';
+    // Custom… on a field's size only shows the builder field; clearing a
+    // required field (a gap's axis) would break the value (KF-VA14AP).
+    if (kind === 'size' && raw === CUSTOM_SIZE) return;
     const { definitions, type, declared, items, value } = fieldContext(
       findNode(doc.value, id)!.node,
       place,

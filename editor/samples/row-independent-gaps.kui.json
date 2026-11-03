@@ -1,0 +1,145 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RowIndependentGaps",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sunken-panel",
+          "props": {
+            "ariaLabel": "Layout Example"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:row",
+                "props": {
+                  "vAlign": "top",
+                  "wrap": true,
+                  "gap": {
+                    "column": "none",
+                    "row": "m"
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:badge",
+                      "props": {
+                        "children": "One",
+                        "appearance": "outline",
+                        "shape": "rounded",
+                        "size": "default"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:badge",
+                      "props": {
+                        "children": "Two",
+                        "appearance": "outline",
+                        "shape": "rounded",
+                        "size": "default"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:badge",
+                      "props": {
+                        "children": "Three",
+                        "appearance": "outline",
+                        "shape": "rounded",
+                        "size": "default"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:badge",
+                      "props": {
+                        "children": "Four",
+                        "appearance": "outline",
+                        "shape": "rounded",
+                        "size": "default"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:badge",
+                      "props": {
+                        "children": "Five",
+                        "appearance": "outline",
+                        "shape": "rounded",
+                        "size": "default"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000009",
+                      "type": "@kerfjs/ui:badge",
+                      "props": {
+                        "children": "Six",
+                        "appearance": "outline",
+                        "shape": "rounded",
+                        "size": "default"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000010",
+                      "type": "@kerfjs/ui:badge",
+                      "props": {
+                        "children": "Seven",
+                        "appearance": "outline",
+                        "shape": "rounded",
+                        "size": "default"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:badge",
+                      "props": {
+                        "children": "Eight",
+                        "appearance": "outline",
+                        "shape": "rounded",
+                        "size": "default"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000012",
+                      "type": "@kerfjs/ui:badge",
+                      "props": {
+                        "children": "Nine",
+                        "appearance": "outline",
+                        "shape": "rounded",
+                        "size": "default"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000013",
+                      "type": "@kerfjs/ui:badge",
+                      "props": {
+                        "children": "Ten",
+                        "appearance": "outline",
+                        "shape": "rounded",
+                        "size": "default"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

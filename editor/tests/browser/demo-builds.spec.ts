@@ -13218,6 +13218,95 @@ test('builds Row › Side-Selectable Insets', async ({ page }) => {
   );
 });
 
+/**
+ * Splits the selected Row's gap into per-axis values (KF-VA14AP): Columns
+ * and rows, then a size Select for each axis.
+ */
+async function axisGap(page: Page, column: string, row: string) {
+  await choose(page, 'gap', 'Columns and rows…');
+  await chooseField(page, 'gap', ['column'], column);
+  await chooseField(page, 'gap', ['row'], row);
+}
+
+test('builds Row › Independent Gaps', async ({ page }) => {
+  const labels = [
+    'One',
+    'Two',
+    'Three',
+    'Four',
+    'Five',
+    'Six',
+    'Seven',
+    'Eight',
+    'Nine',
+    'Ten',
+  ];
+  await shellRow(page, { choices: { vAlign: 'top' }, flags: ['wrap'] });
+  await axisGap(page, 'none', 'm');
+  // A wide DemoChip is a default-size Badge.
+  await demoChip(page, /^Row/, labels[0]!, 0, true);
+  await select(page, /^Badge/);
+  for (let copy = 1; copy < labels.length; copy += 1)
+    await page.keyboard.press('ControlOrMeta+d');
+  for (const [index, label] of labels.entries()) {
+    await select(page, /^Badge/, index);
+    await setText(page, 'children', label);
+  }
+  await expect(canvas(page).locator('.kui-badge[data-kerf-node]')).toHaveText(
+    labels,
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      frameShellNode(
+        node(
+          'row',
+          { vAlign: 'top', wrap: true, gap: { column: 'none', row: 'm' } },
+          { children: labels.map((label) => demoChipNode(label, true)) },
+        ),
+      ),
+    ),
+  );
+});
+
+test('builds Row › Nested Row Insets', async ({ page }) => {
+  await shellRow(page, { choices: { textInsets: 'l', vAlign: 'middle' } });
+  await axisGap(page, 'none', 'm');
+  await demoChip(page, /^Row/, 'Outer');
+  await addInto(page, /^Row/, 'Row');
+  await applySpec(page, { choices: { controlInsets: 'b', vAlign: 'middle' } });
+  await demoChip(page, /^Row/, 'Nested one', 1);
+  await demoChip(page, /^Row/, 'Nested two', 1, true);
+  expect(await exported(page)).toEqual(
+    pane(
+      frameShellNode(
+        node(
+          'row',
+          {
+            textInsets: 'l',
+            vAlign: 'middle',
+            gap: { column: 'none', row: 'm' },
+          },
+          {
+            children: [
+              demoChipNode('Outer'),
+              node(
+                'row',
+                { controlInsets: 'b', vAlign: 'middle' },
+                {
+                  children: [
+                    demoChipNode('Nested one'),
+                    demoChipNode('Nested two', true),
+                  ],
+                },
+              ),
+            ],
+          },
+        ),
+      ),
+    ),
+  );
+});
+
 test('builds Disclosure › Plain Disclosure', async ({ page }) => {
   const copy =
     'Proxy, request timeout, and retry limits apply to every connection this workspace makes.';

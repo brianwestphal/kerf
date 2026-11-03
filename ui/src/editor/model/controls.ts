@@ -63,7 +63,10 @@ export interface Control {
    * open member) and label; `raw` is the current option, '' while unset.
    */
   readonly options?: readonly ChoiceOption[];
-  /** choice: the open member the value holds, edited by its own control. */
+  /**
+   * choice: the open member the value holds, edited by its own control;
+   * size: while Columns and rows is chosen, the type each axis takes.
+   */
   readonly member?: ViewType;
 }
 
@@ -215,6 +218,15 @@ function openOptionFor(
 /** The size choice that edits a css-values builder call instead. */
 export const CUSTOM_SIZE = 'custom';
 
+/**
+ * The size choice that gives each axis its own value (KF-VA14AP): a gap's
+ * `{ column, row }` member, edited as two size Selects.
+ */
+export const AXES_SIZE = 'axes';
+
+/** The axes of a per-axis size value, in the order the Inspector lists them. */
+export const SIZE_AXES = ['column', 'row'] as const;
+
 /** The spacing scale, in order, so a size Select lists tokens smallest first. */
 const SCALE = ['none', '2xs', 'xs', 's', 'm', 'l', 'xl'];
 
@@ -230,7 +242,8 @@ interface UnionMember {
  * with keywords, such as a gap (`true`, `"m"`, or `px(8)`), a flex
  * (`"auto"` or `flex(1)`), or a height (`"viewport"`). `true` stands for a
  * boolean member. Undefined for any other type. A `{ column, row }` object
- * member does not rule a union out; such a value edits as JSON.
+ * member does not rule a union out; it adds Columns and rows
+ * (`sizeAxisType`).
  */
 export function sizeKeywords(
   type: ViewType,
@@ -275,6 +288,60 @@ export function sizeKeywords(
   };
   return unique.sort((a, b) => rank(a) - rank(b));
 }
+
+/**
+ * The type each axis of a size union's `{ column, row }` member takes
+ * (KF-VA14AP): the union's keywords and builder, less its boolean and the
+ * object itself (a gap's `UiGapValue`). Undefined when the union has no
+ * such member.
+ */
+export function sizeAxisType(
+  type: ViewType,
+  definitions: Definitions = {},
+): ViewType | undefined {
+  const root = resolveType(type, definitions) as
+    (UnionMember & { members?: readonly ViewType[] }) | undefined;
+  if (root?.kind !== 'union' || !sizeKeywords(type, definitions)) return;
+  const members: ViewType[] = [];
+  let axes = false;
+  const visit = (member: ViewType): void => {
+    const node = resolveType(member, definitions) as
+      | (UnionMember & {
+          members?: readonly ViewType[];
+          props?: readonly { readonly name: string }[];
+        })
+      | undefined;
+    switch (node?.kind) {
+      case 'union':
+        node.members!.forEach(visit);
+        return;
+      case 'object': {
+        const names = (node.props ?? []).map((field) => field.name).sort();
+        if (names.join() === [...SIZE_AXES].sort().join()) axes = true;
+        return;
+      }
+      case 'boolean':
+        return;
+      case 'literal':
+        if (typeof node.value === 'boolean') return;
+        members.push(member);
+        return;
+      default:
+        members.push(member);
+    }
+  };
+  root.members!.forEach(visit);
+  return axes
+    ? ({ kind: 'union', members, text: 'axis size' } as ViewType)
+    : undefined;
+}
+
+/** Whether `value` is a per-axis size (`{ column, row }`). */
+const isAxesValue = (value: ViewValue | undefined) =>
+  value !== null &&
+  typeof value === 'object' &&
+  !Array.isArray(value) &&
+  Object.keys(value).sort().join() === [...SIZE_AXES].sort().join();
 
 const isDynamic = (value: ViewValue | undefined) =>
   value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -364,8 +431,17 @@ export function controlFor(
   }
   const keywords = sizeKeywords(prop.type as ViewType, definitions);
   if (keywords) {
-    const choices = ['', ...keywords, CUSTOM_SIZE];
+    const axes = sizeAxisType(prop.type as ViewType, definitions);
+    const choices = [
+      '',
+      ...keywords,
+      CUSTOM_SIZE,
+      ...(axes ? [AXES_SIZE] : []),
+    ];
     if (value === undefined) return { kind: 'size', choices, raw: '' };
+    // A `{ column, row }` gap edits each axis in its own size Select.
+    if (axes && isAxesValue(value) && !isBinding(value))
+      return { kind: 'size', choices, raw: AXES_SIZE, member: axes };
     if (
       value === true ||
       (typeof value === 'string' && keywords.includes(value))
@@ -375,7 +451,7 @@ export function controlFor(
       const css = String((value as { $css: string }).$css);
       return { kind: 'size', choices, raw: CUSTOM_SIZE, css };
     }
-    // A `{ column, row }` gap edits as JSON; a binding stays read-only.
+    // Any other object edits as JSON; a binding stays read-only.
     return isDynamic(value) && !isBinding(value)
       ? { kind: 'list', raw: JSON.stringify(value, null, 2) }
       : { kind: 'readonly', raw: '' };
@@ -459,6 +535,8 @@ export function valueFromControl(
      * clears the prop rather than spelling the default (KF-K03GBN).
      */
     readonly unset?: boolean;
+    /** size: the prop's default, which Columns and rows starts from. */
+    readonly fallback?: ViewValue;
   },
 ): { readonly value: ViewValue | undefined } | { readonly error: string } {
   switch (kind) {
@@ -537,11 +615,28 @@ export function valueFromControl(
       return {
         value: raw === type?.unset ? undefined : raw === true,
       };
-    case 'size':
+    case 'size': {
+      // Columns and rows starts both axes at the value it splits: a keyword
+      // or builder call, else the prop's default, else `m` (KF-VA14AP).
+      if (raw === AXES_SIZE) {
+        if (isAxesValue(type?.current)) return { value: type!.current };
+        const start = [type?.current, type?.fallback].find(
+          (item) =>
+            (typeof item === 'string' && item !== '') ||
+            (isDynamic(item) && '$css' in (item as object)),
+        );
+        const axis = (start ?? 'm') as ViewValue;
+        return {
+          value: Object.fromEntries(
+            SIZE_AXES.map((name) => [name, axis]),
+          ) as ViewValue,
+        };
+      }
       // Custom picks the builder field, which sets the value itself.
       return raw === 'true'
         ? { value: true }
         : { value: raw === '' || raw === CUSTOM_SIZE ? undefined : raw };
+    }
     case 'number': {
       const text = String(raw).trim();
       if (text === '') return { value: undefined };

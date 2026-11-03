@@ -433,6 +433,50 @@ test('edits a List gap from its size keywords and a builder call', async ({
   });
 });
 
+test('splits a List gap into columns and rows, one with a builder call', async ({
+  page,
+}, info) => {
+  // KF-VA14AP: a gap's `{ column, row }` member, a size Select per axis.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const FOLDERS = '01JB8Z1M6Q8E1X9V4S7K2R3T5E';
+  await page
+    .locator(`[data-action="editor-select-node"][data-item-id="${FOLDERS}"]`)
+    .click();
+  const list = page.locator(
+    `[data-editor-canvas] [data-kerf-node="${FOLDERS}"]`,
+  );
+  const axis = (name: string, kind = 'size') =>
+    page.locator(
+      `[data-editor-field='${JSON.stringify({ prop: 'gap', path: [name] })}'][data-editor-kind="${kind}"]`,
+    );
+  await page
+    .locator('[data-editor-prop="gap"][data-editor-kind="size"]')
+    .click();
+  await page.getByRole('option', { name: 'Columns and rows…' }).click();
+  await axis('column').click();
+  await axis('column')
+    .getByRole('option', { name: 'none', exact: true })
+    .click();
+  // Custom… keeps the axis's value until the builder field sets one.
+  await axis('row').click();
+  await axis('row').getByRole('option', { name: 'Custom…' }).click();
+  await expect(axis('row', 'css')).toBeVisible();
+  await expect(page.getByText(/is not a valid UiGap/)).toHaveCount(0);
+  const builder = axis('row', 'css').getByRole('textbox');
+  await builder.fill('px(12)');
+  await builder.press('Enter');
+  await expect(list).toHaveAttribute(
+    'style',
+    /--_kui-list-column-gap:[^;]*space-none[^;]*;--_kui-list-row-gap:12px/,
+  );
+  await expect(page.getByText(/nodes · valid/)).toBeVisible();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-va14ap-list-gap-axes-1440.png'),
+    animations: 'disabled',
+  });
+});
+
 test('binds a repeated row’s label to a document param', async ({
   page,
 }, info) => {
