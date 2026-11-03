@@ -12,7 +12,7 @@
      compact, 22px + 16px comfortable. */
   --_kui-dialog-surface-radius: calc(
     var(--kui-layout-pill-radius, calc(1px + remify(21px))) +
-      var(--kui-wa-surface-inset, remify(8px))
+      var(--kui-surface-inset, remify(8px))
   );
   box-sizing: border-box;
   width: min(
@@ -48,7 +48,7 @@
 }
 .kui-dialog-surface::backdrop {
   background-color: var(
-    --wa-color-overlay-modal,
+    --kui-color-overlay-modal,
     light-dark(rgb(29 29 31 / 0.34), rgb(0 0 0 / 0.6))
   );
 }
@@ -82,7 +82,7 @@
 .kui-dialog-surface[data-body-inset="comfortable"] {
   --_kui-dialog-surface-radius: calc(
     var(--kui-layout-pill-radius, calc(1px + remify(21px))) +
-      var(--kui-wa-container-inset, remify(16px))
+      var(--kui-container-inset, remify(16px))
   );
 }
 .kui-dialog-surface[data-size="small"] {
@@ -147,7 +147,7 @@
   display: flex;
   flex: 0 0 auto;
   flex-wrap: nowrap;
-  padding: var(--kui-wa-surface-inset, remify(8px));
+  padding: var(--kui-surface-inset, remify(8px));
 }
 .kui-dialog-surface__title {
   min-width: 0;
@@ -218,7 +218,7 @@ h2.kui-dialog-surface__title {
   display: block;
   min-height: 0;
   flex: 1 1 auto;
-  padding: var(--kui-wa-surface-inset, remify(8px));
+  padding: var(--kui-surface-inset, remify(8px));
   overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -228,7 +228,7 @@ h2.kui-dialog-surface__title {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: var(--kui-layout-item-gap, remify(8px));
-  padding: var(--kui-wa-container-inset, remify(16px));
+  padding: var(--kui-container-inset, remify(16px));
 }
 
 /* One child owns the body: it gets the body's whole height and its own
@@ -244,12 +244,12 @@ h2.kui-dialog-surface__title {
 }
 .kui-dialog-surface[data-body-inset="compact"] > .kui-dialog-surface__body,
 .kui-dialog-surface[data-footer-inset="compact"] > .kui-dialog-surface__footer {
-  padding: var(--kui-wa-surface-inset, remify(8px));
+  padding: var(--kui-surface-inset, remify(8px));
 }
 .kui-dialog-surface[data-body-inset="comfortable"] > .kui-dialog-surface__body,
 .kui-dialog-surface[data-footer-inset="comfortable"]
   > .kui-dialog-surface__footer {
-  padding: var(--kui-wa-container-inset, remify(16px));
+  padding: var(--kui-container-inset, remify(16px));
 }
 /* Fixed rows above one filling row: the leading children keep their natural
    height and the last child takes the rest and owns its scrolling. */
@@ -280,7 +280,7 @@ h2.kui-dialog-surface__title {
     0px,
     var(
       --_kui-dialog-surface-footer-offset,
-      var(--kui-wa-container-inset, remify(16px))
+      var(--kui-container-inset, remify(16px))
     )
   );
 }
@@ -307,14 +307,14 @@ h2.kui-dialog-surface__title {
 .kui-dialog-surface[data-footer-presentation="floating"][data-body-inset="compact"]
   > .kui-dialog-surface__body {
   padding-block-end: calc(
-    var(--kui-wa-surface-inset, remify(8px)) +
+    var(--kui-surface-inset, remify(8px)) +
       var(--_kui-dialog-surface-footer-clearance)
   );
 }
 .kui-dialog-surface[data-footer-presentation="floating"][data-body-inset="comfortable"]
   > .kui-dialog-surface__body {
   padding-block-end: calc(
-    var(--kui-wa-container-inset, remify(16px)) +
+    var(--kui-container-inset, remify(16px)) +
       var(--_kui-dialog-surface-footer-clearance)
   );
 }
@@ -384,14 +384,14 @@ h2.kui-dialog-surface__title {
 .kui-dialog-surface[data-header-presentation="floating"][data-body-inset="compact"]
   > .kui-dialog-surface__body {
   padding-block-start: calc(
-    var(--kui-wa-surface-inset, remify(8px)) +
+    var(--kui-surface-inset, remify(8px)) +
       var(--_kui-dialog-surface-header-clearance)
   );
 }
 .kui-dialog-surface[data-header-presentation="floating"][data-body-inset="comfortable"]
   > .kui-dialog-surface__body {
   padding-block-start: calc(
-    var(--kui-wa-container-inset, remify(16px)) +
+    var(--kui-container-inset, remify(16px)) +
       var(--_kui-dialog-surface-header-clearance)
   );
 }
@@ -664,7 +664,7 @@ h2.kui-dialog-surface__title {
      8px surface inset (22px + 8px). */
   border-radius: calc(
     var(--kui-layout-pill-radius, calc(1px + remify(21px))) +
-      var(--kui-wa-surface-inset, remify(8px))
+      var(--kui-surface-inset, remify(8px))
   );
   --kui-color-surface-current: var(--kui-color-surface-raised);
   --kui-color-surface-current-region: transparent;
@@ -707,7 +707,7 @@ h2.kui-dialog-surface__title {
 }
 .kui-popover-dialog-surface::backdrop {
   background: var(
-    --wa-color-overlay-modal,
+    --kui-color-overlay-modal,
     light-dark(rgb(29 29 31 / 0.34), rgb(0 0 0 / 0.6))
   );
 }

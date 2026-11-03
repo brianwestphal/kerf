@@ -28,7 +28,7 @@ body {
 }
 
 :where(strong, b) {
-  font-weight: var(--wa-font-weight-bold, 600);
+  font-weight: var(--kui-font-weight-bold, 600);
 }
 
 /* Opt-in viewport lock for a full-viewport application shell: the dynamic

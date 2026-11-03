@@ -23,6 +23,20 @@
   --kui-font-xl: var(--wa-font-size-xl, 25px);
   --kui-font-2xl: var(--wa-font-size-2xl, 32px);
   --kui-font-weight-semibold: var(--wa-font-weight-semibold, 500);
+  --kui-font-3xl: var(--wa-font-size-3xl, 41px);
+  --kui-font-weight-bold: var(--wa-font-weight-bold, 600);
+  --kui-font-family-heading: var(
+    --wa-font-family-heading,
+    var(--kui-font-sans)
+  );
+  --kui-font-weight-heading: var(--wa-font-weight-heading, 600);
+  --kui-line-height-condensed: var(--wa-line-height-condensed, 1.2);
+  /* The modal scrim behind a dialog, sheet, or popover surface. */
+  --kui-color-overlay-modal: var(
+    --wa-color-overlay-modal,
+    light-dark(rgb(29 29 31 / 0.34), rgb(0 0 0 / 0.6))
+  );
+  --kui-transition-slow: var(--wa-transition-slow, 300ms);
   /* Official spacing scale (see docs/layout.md "Spacing scale"). Five canonical
      steps, each expressing one relationship — pick by how connected the elements
      are, not by eye:
@@ -53,6 +67,11 @@
   --kui-layout-inline-margin: var(--kui-space-xs);
   --kui-layout-item-border-width: 1px;
   --kui-layout-item-padding: var(--kui-space-xs);
+  /* Surface geometry tiers: the 8px inset of a popup or dialog body and the
+     16px inset of a container such as a dialog footer. Web Awesome's bridge
+     aliases its --kui-wa-surface-inset / --kui-wa-container-inset to these. */
+  --kui-surface-inset: var(--kui-layout-item-padding, remify(8px));
+  --kui-container-inset: var(--kui-space-m, remify(16px));
   --kui-layout-item-gap: var(--kui-space-xs);
   --kui-layout-content-gap: var(--kui-space-l);
   --kui-layout-control-gap: var(--kui-space-xs);
@@ -110,7 +129,7 @@
      the palette block, so a tint inherits the root's brand rather than
      re-deriving from itself. */
   --_kui-tint-brand-source: var(--kui-color-brand-on-quiet);
-  --_kui-popup-caret-transition: rotate var(--wa-transition-slow, 0.3s)
+  --_kui-popup-caret-transition: rotate var(--kui-transition-slow, 0.3s)
     var(--wa-transition-easing, ease);
 }
 

@@ -204,6 +204,10 @@ tiers:
   the 8px surface inset, while its footer uses the 16px container inset so
   content stays compact and the action group has a clearer boundary. These two
   parts do not inherit the dialog's shared `--spacing` value.
+- The surface and container tiers follow Kerf's own `--kui-surface-inset`
+  (8px) and `--kui-container-inset` (16px) foundation tokens, which Kerf's
+  dialogs, popups, and sheets read. Set a `--kui-wa-*` tier to change only the
+  Web Awesome elements; set the `--kui-*` token to change Kerf's surfaces too.
 
 ## Contextual transparency
 

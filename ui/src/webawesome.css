@@ -253,9 +253,9 @@
        8px inside controls/surfaces, 8px around bordered surfaces, and 16px
        inside the remaining content containers. */
     --kui-wa-control-inset: var(--kui-layout-item-padding, remify(8px));
-    --kui-wa-surface-inset: var(--kui-layout-item-padding, remify(8px));
+    --kui-wa-surface-inset: var(--kui-surface-inset, remify(8px));
     --kui-wa-surface-margin: var(--kui-layout-inline-margin, remify(8px));
-    --kui-wa-container-inset: var(--kui-space-m, remify(16px));
+    --kui-wa-container-inset: var(--kui-container-inset, remify(16px));
     --kui-disclosure-icon-scale: 0.5;
     /* Elevation follows the scheme like --wa-color-shadow does: the light
        alphas stay Hot Sheet 2's soft values, while dark raises them so a

@@ -17,7 +17,7 @@ div.kerf-overlay[data-presentation="bottom-sheet"] {
   align-items: flex-end;
   justify-content: center;
   background: var(
-    --wa-color-overlay-modal,
+    --kui-color-overlay-modal,
     light-dark(rgb(29 29 31 / 0.34), rgb(0 0 0 / 0.6))
   );
   inset: 0;
@@ -25,7 +25,7 @@ div.kerf-overlay[data-presentation="bottom-sheet"] {
 
 dialog.kerf-overlay[data-presentation="bottom-sheet"]::backdrop {
   background: var(
-    --wa-color-overlay-modal,
+    --kui-color-overlay-modal,
     light-dark(rgb(29 29 31 / 0.34), rgb(0 0 0 / 0.6))
   );
 }
@@ -58,11 +58,11 @@ dialog.kerf-overlay[data-presentation="bottom-sheet"] {
      DialogSurface. */
   border-radius: calc(
       var(--kui-layout-pill-radius, calc(1px + remify(21px))) +
-        var(--kui-wa-surface-inset, remify(8px))
+        var(--kui-surface-inset, remify(8px))
     )
     calc(
       var(--kui-layout-pill-radius, calc(1px + remify(21px))) +
-        var(--kui-wa-surface-inset, remify(8px))
+        var(--kui-surface-inset, remify(8px))
     )
     0 0;
   color: var(--kui-color-text);
@@ -146,7 +146,7 @@ dialog.kerf-overlay.kui-overlay-sheet-resizable[data-presentation="bottom-sheet"
     > *,
   :root:not([data-kui-effects="static"])
     dialog.kerf-overlay[data-presentation="bottom-sheet"] {
-    animation: kui-overlay-sheet-slide var(--wa-transition-slow, 300ms)
+    animation: kui-overlay-sheet-slide var(--kui-transition-slow, 300ms)
       cubic-bezier(0.32, 0.72, 0, 1);
   }
 }
@@ -184,7 +184,7 @@ dialog.kerf-overlay[data-presentation="bottom-sheet"].kui-overlay-sheet-exit {
 @media (prefers-reduced-motion: no-preference) {
   :root:not([data-kui-effects="static"])
     div.kerf-overlay[data-presentation="bottom-sheet"].kui-overlay-sheet-exit {
-    animation: kui-overlay-sheet-backdrop-out var(--wa-transition-slow, 300ms)
+    animation: kui-overlay-sheet-backdrop-out var(--kui-transition-slow, 300ms)
       ease both;
   }
 
@@ -193,7 +193,7 @@ dialog.kerf-overlay[data-presentation="bottom-sheet"].kui-overlay-sheet-exit {
     > *,
   :root:not([data-kui-effects="static"])
     dialog.kerf-overlay[data-presentation="bottom-sheet"].kui-overlay-sheet-exit {
-    animation: kui-overlay-sheet-slide-out var(--wa-transition-slow, 300ms)
+    animation: kui-overlay-sheet-slide-out var(--kui-transition-slow, 300ms)
       cubic-bezier(0.32, 0.72, 0, 1) both;
   }
 }

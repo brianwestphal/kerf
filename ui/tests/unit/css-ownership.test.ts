@@ -110,6 +110,34 @@ describe('CSS ownership gate', { timeout: loadScaledTimeout(30_000) }, () => {
     expect(offenders).toEqual([]);
   });
 
+  // KF-0DZ2V9: the Web Awesome token bridge runs one way. foundation.css
+  // turns `--wa-*` theme values into `--kui-*` tokens and webawesome.css
+  // aliases its `--kui-wa-*` tiers; every other Kerf stylesheet reads only
+  // `--kui-*` tokens, so a Kerf-only app never depends on a Web Awesome name.
+  it('keeps Web Awesome tokens out of Kerf stylesheets', async () => {
+    const src = resolve(uiRoot, 'src');
+    const bridge = new Set(['foundation.css', 'webawesome.css']);
+    const files = (await readdir(src, { recursive: true }))
+      .filter(
+        (file) =>
+          file.endsWith('.css') &&
+          !file.startsWith('integrations') &&
+          !bridge.has(file),
+      )
+      .map((file) => resolve(src, file));
+    const offenders: string[] = [];
+    for (const file of files) {
+      postcss
+        .parse(await readFile(file, 'utf8'), { from: file })
+        .walkDecls((decl) => {
+          if (/var\(\s*--(?:kui-)?wa-/.test(decl.value))
+            offenders.push(`${basename(file)}: ${decl.prop}: ${decl.value}`);
+        });
+    }
+    expect(files.length).toBeGreaterThan(50);
+    expect(offenders).toEqual([]);
+  });
+
   it('keeps application styles out of package component internals', async () => {
     const script = resolve(
       import.meta.dirname,

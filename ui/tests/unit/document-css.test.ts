@@ -43,7 +43,7 @@ describe('opt-in document baseline', () => {
       '-moz-text-size-adjust': 'none',
     });
     expect(declarations(':where(strong, b)')).toEqual({
-      'font-weight': 'var(--wa-font-weight-bold, 600)',
+      'font-weight': 'var(--kui-font-weight-bold, 600)',
     });
     expect(declarations(':where(a)')).toEqual({
       color: 'var(--kui-color-text-link)',

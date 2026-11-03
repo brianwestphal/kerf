@@ -224,14 +224,14 @@ describe('scroll clearance context', () => {
         `${floating}[data-body-inset="compact"] > .kui-dialog-surface__body`,
       ),
     ).toEqual([
-      'padding-block-start:calc( var(--kui-wa-surface-inset, remify(8px)) + var(--_kui-dialog-surface-header-clearance) )',
+      'padding-block-start:calc( var(--kui-surface-inset, remify(8px)) + var(--_kui-dialog-surface-header-clearance) )',
     ]);
     expect(
       rule(
         `${floating}[data-body-inset="comfortable"] > .kui-dialog-surface__body`,
       ),
     ).toEqual([
-      'padding-block-start:calc( var(--kui-wa-container-inset, remify(16px)) + var(--_kui-dialog-surface-header-clearance) )',
+      'padding-block-start:calc( var(--kui-container-inset, remify(16px)) + var(--_kui-dialog-surface-header-clearance) )',
     ]);
     const published = all.filter(
       (decl) =>
