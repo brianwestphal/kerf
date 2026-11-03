@@ -932,3 +932,27 @@ describe('Inspector control identity', () => {
     expect(compared).toBeGreaterThan(3);
   });
 });
+
+// KF-1HEZZZ: a param-bound prop names its param, and renaming it there
+// renames the param and every use of it.
+describe('renaming a param', () => {
+  const TITLE_TEXT = '01JB8Z1M6Q8E1X9V4S7K2R3T5C';
+
+  it('renames from the bound prop and refuses a taken or invalid name', () => {
+    const { root, editor, node } = open(TITLE_TEXT);
+    const param = () => field(root, '[data-editor-param]');
+    expect(param().dataset.editorParam).toBe('title');
+    type(param(), 'heading');
+    expect(node()?.props?.text).toEqual({ $param: 'heading' });
+    expect(editor.document.value.params).toHaveProperty('heading');
+    expect(editor.document.value.params).not.toHaveProperty('title');
+    expect(param().dataset.editorParam).toBe('heading');
+    type(param(), 'showEmpty');
+    expect(node()?.props?.text).toEqual({ $param: 'heading' });
+    expect(param().textContent).toContain(
+      'There is already a param named showEmpty.',
+    );
+    click(root, 'editor-undo');
+    expect(node()?.props?.text).toEqual({ $param: 'title' });
+  });
+});

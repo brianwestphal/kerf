@@ -549,6 +549,20 @@ async function promote(page: Page, label: string) {
   await page.getByRole('button', { name: 'Promote', exact: true }).click();
 }
 
+/**
+ * Renames the selected node's param `from` to `to` from its bound prop's
+ * row (KF-1HEZZZ), which renames every use of it too.
+ */
+async function nameParam(page: Page, from: string, to: string) {
+  await area(page, 'Properties');
+  const field = page.locator(`[data-editor-param="${from}"] input`);
+  await field.click();
+  await page.keyboard.press('ControlOrMeta+a');
+  await page.keyboard.type(to);
+  await page.keyboard.press('Enter');
+  await expect(page.locator(`[data-editor-param="${to}"]`)).toHaveCount(1);
+}
+
 /** Binds prop `label` of the selected node to source `source`. */
 async function bind(page: Page, label: string, source: string) {
   for (const [part, option] of [
@@ -584,11 +598,12 @@ test('builds Button › Toggle', async ({ page }) => {
   // The app owns the toggle's state: one param drives all four.
   await select(page, /^Button(?![A-Z])/, 0);
   await promote(page, 'Pressed');
+  await nameParam(page, 'nodePressed', 'conversationOpen');
   for (const index of [1, 2, 3]) {
     await select(page, /^Button(?![A-Z])/, index);
-    await bind(page, 'Pressed', 'Param nodePressed');
+    await bind(page, 'Pressed', 'Param conversationOpen');
   }
-  const pressed = { $param: 'nodePressed' };
+  const pressed = { $param: 'conversationOpen' };
   expect(await exported(page)).toEqual(
     pane(
       buttonRowNode([
@@ -806,8 +821,15 @@ test('builds SplitButton › Full-Width Primary Action', async ({ page }) => {
   await addIcon(page, 'icon', 'play');
   // The app owns the running and menu state, so it supplies these four.
   await select(page, /^SplitButton/);
-  for (const prop of ['Label', 'Tone', 'Busy', 'Options expanded'])
+  for (const [prop, from, to] of [
+    ['Label', 'nodeLabel', 'driveLabel'],
+    ['Tone', 'nodeTone', 'driveTone'],
+    ['Busy', 'nodeBusy', 'running'],
+    ['Options expanded', 'nodeOptionsExpanded', 'optionsOpen'],
+  ] as const) {
     await promote(page, prop);
+    await nameParam(page, from, to);
+  }
   expect(await exported(page)).toEqual(
     pane(
       node(
@@ -818,13 +840,13 @@ test('builds SplitButton › Full-Width Primary Action', async ({ page }) => {
             node(
               'split-button',
               {
-                label: { $param: 'nodeLabel' },
+                label: { $param: 'driveLabel' },
                 action: 'toggle-split-button-demo',
                 optionsLabel: 'Choose Drive Provider, Model, and Effort',
                 optionsAction: 'toggle-split-button-options-demo',
-                optionsExpanded: { $param: 'nodeOptionsExpanded' },
-                tone: { $param: 'nodeTone' },
-                busy: { $param: 'nodeBusy' },
+                optionsExpanded: { $param: 'optionsOpen' },
+                tone: { $param: 'driveTone' },
+                busy: { $param: 'running' },
                 fill: true,
               },
               { icon: [icon('play')] },
@@ -4218,6 +4240,7 @@ test('builds SearchField › Grammar Assisted Search', async ({ page }) => {
     text: { id: 'grammar-search', label: 'Search with Filters' },
   });
   await page.locator('[data-editor-promote-prop="model"]').click();
+  await nameParam(page, 'nodeModel', 'grammarSearchModel');
   for (const [label, action] of [
     ['Add Release Tag', 'commit-grammar-release'],
     ['Load Saved Search', 'replace-grammar-search'],
@@ -4253,7 +4276,7 @@ test('builds SearchField › Grammar Assisted Search', async ({ page }) => {
             node('search-field', {
               id: 'grammar-search',
               label: 'Search with Filters',
-              model: { $param: 'nodeModel' },
+              model: { $param: 'grammarSearchModel' },
             }),
             button('Add Release Tag', 'commit-grammar-release'),
             button('Load Saved Search', 'replace-grammar-search'),
@@ -11470,6 +11493,7 @@ test('builds ToolbarControlGroup › Avatar Profile', async ({ page }) => {
   );
   await select(page, /^ToolbarControlGroup/);
   await promote(page, 'Avatar image');
+  await nameParam(page, 'nodeAvatarImage', 'profileImageUrl');
   await addInto(page, /^ToolbarControlGroup/, 'ToolbarButton');
   await applySpec(page, {
     text: { ariaLabel: 'Open Brian Profile' },
@@ -11485,7 +11509,7 @@ test('builds ToolbarControlGroup › Avatar Profile', async ({ page }) => {
           selectedTone: 'neutral',
           scrim: true,
           single: true,
-          avatarImage: { $param: 'nodeAvatarImage' },
+          avatarImage: { $param: 'profileImageUrl' },
         },
         [
           node('toolbar-control-group#ToolbarButton', {
@@ -11506,6 +11530,7 @@ test('builds ToolbarControlGroup › Avatar Selection', async ({ page }) => {
   await demoGroup(page, 'Avatar Selection', avatarGroup('Profile View'), []);
   await select(page, /^ToolbarControlGroup/);
   await promote(page, 'Avatar image');
+  await nameParam(page, 'nodeAvatarImage', 'profileImageUrl');
   for (const [ariaLabel, value, pressed] of profiles) {
     await addInto(page, /^ToolbarControlGroup/, 'ToolbarButton');
     await applySpec(page, {
@@ -11523,7 +11548,7 @@ test('builds ToolbarControlGroup › Avatar Selection', async ({ page }) => {
           label: 'Profile View',
           content: 'avatar',
           selectedTone: 'neutral',
-          avatarImage: { $param: 'nodeAvatarImage' },
+          avatarImage: { $param: 'profileImageUrl' },
         },
         profiles.map(([ariaLabel, value, pressed]) =>
           node('toolbar-control-group#ToolbarButton', {
@@ -11586,6 +11611,7 @@ test('builds ToolbarControlGroup › Glass Material', async ({ page }) => {
   await addChild(page, 'BackdropImage', 'content');
   await area(page, 'Properties');
   await promote(page, 'Src');
+  await nameParam(page, 'nodeSrc', 'skylineUrl');
   await select(page, /^BackdropImage/);
   await turnOn(page, 'underChrome');
   await setText(page, 'alt', '');
@@ -11658,7 +11684,7 @@ test('builds ToolbarControlGroup › Glass Material', async ({ page }) => {
             node(
               'backdrop-image',
               {
-                src: { $param: 'nodeSrc' },
+                src: { $param: 'skylineUrl' },
                 alt: '',
                 height: { $css: 'rem(12.5)' },
                 fadeTo: { $css: "uiColor('surface')" },

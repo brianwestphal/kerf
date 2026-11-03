@@ -567,6 +567,47 @@ export function promoteToParam(
   return { document: { ...next, params } };
 }
 
+/**
+ * Renames document param `from` to `to` (KF-1HEZZZ): the params entry keeps
+ * its place and every `$param` reference to it follows, so a promoted prop's
+ * generated `node<Prop>` name can become one the author chooses.
+ */
+export function renameParam(
+  document: ViewDocument,
+  from: string,
+  to: string,
+): { document: ViewDocument } | { error: string } {
+  const params = document.params ?? {};
+  if (!(from in params)) return { error: `No param ${from}.` };
+  if (to === from) return { document };
+  if (!CAMEL.test(to))
+    return { error: 'A param name is a camelCase identifier.' };
+  if (to in params) return { error: `There is already a param named ${to}.` };
+  const follow = (value: unknown): unknown => {
+    if (Array.isArray(value)) return value.map(follow);
+    if (value === null || typeof value !== 'object') return value;
+    const record = value as Record<string, unknown>;
+    if (record.$param === from) return { ...record, $param: to };
+    return Object.fromEntries(
+      Object.entries(record).map(([key, item]) => [key, follow(item)]),
+    );
+  };
+  const renamed = Object.fromEntries(
+    Object.entries(params).map(([name, param]) => [
+      name === from ? to : name,
+      param,
+    ]),
+  );
+  return {
+    document: Object.fromEntries(
+      Object.entries(document).map(([key, value]) => [
+        key,
+        key === 'params' ? renamed : follow(value),
+      ]),
+    ) as unknown as ViewDocument,
+  };
+}
+
 interface Zone {
   readonly id: string;
   readonly jsx?: { readonly prop?: string };

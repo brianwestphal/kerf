@@ -207,6 +207,7 @@ import {
   promoteToParam,
   removeNode,
   renameNode,
+  renameParam,
   replaceRoot,
   setProp,
   suggestedComponents,
@@ -3295,6 +3296,24 @@ export function createEditor(options: EditorOptions) {
             const control =
               contentControl(node, prop) ?? propControl(prop, value, node.type);
             if (control) return [{ kind: 'edit' as const, row: control }];
+            // KF-1HEZZZ: a prop bound to a param names that param, and
+            // renaming it here renames the param and every use of it.
+            const param = (value as { $param?: unknown } | undefined)?.$param;
+            if (typeof param === 'string')
+              return [
+                {
+                  kind: 'edit' as const,
+                  row: (
+                    <TextField
+                      label={`${propLabel(prop.name)} param`}
+                      value={param}
+                      hint="Renaming the param updates every prop that uses it."
+                      error={fieldErrors.value[`#param:${param}`]}
+                      rootAttributes={{ 'data-editor-param': param }}
+                    />
+                  ),
+                },
+              ];
             // propControl leaves only a read-only prop without a control.
             return [
               {
@@ -4664,6 +4683,22 @@ export function createEditor(options: EditorOptions) {
             controlValue(field) as string,
           );
           if ('error' in result) fieldErrors.value = { '#name': result.error };
+          else commit(result.document);
+        },
+      ),
+      delegate<HTMLElement>(
+        root,
+        'change',
+        '[data-editor-param]',
+        (_event, field) => {
+          const from = field.dataset.editorParam!;
+          const result = renameParam(
+            doc.value,
+            from,
+            String(controlValue(field)).trim(),
+          );
+          if ('error' in result)
+            fieldErrors.value = { [`#param:${from}`]: result.error };
           else commit(result.document);
         },
       ),

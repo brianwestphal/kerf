@@ -24,7 +24,7 @@
                   "id": "grammar-search",
                   "label": "Search with Filters",
                   "model": {
-                    "$param": "nodeModel"
+                    "$param": "grammarSearchModel"
                   }
                 }
               },
@@ -71,7 +71,7 @@
     }
   },
   "params": {
-    "nodeModel": {
+    "grammarSearchModel": {
       "type": {
         "kind": "prop",
         "component": "@kerfjs/ui:search-field",

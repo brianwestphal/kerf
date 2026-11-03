@@ -135,7 +135,7 @@
                 "type": "@kerfjs/ui:backdrop-image",
                 "props": {
                   "src": {
-                    "$param": "nodeSrc"
+                    "$param": "skylineUrl"
                   },
                   "alt": "",
                   "underChrome": true,
@@ -186,7 +186,7 @@
     }
   },
   "params": {
-    "nodeSrc": {
+    "skylineUrl": {
       "type": {
         "kind": "string"
       },

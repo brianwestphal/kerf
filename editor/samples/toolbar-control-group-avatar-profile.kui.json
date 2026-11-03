@@ -42,7 +42,7 @@
                   "single": true,
                   "label": "Profile",
                   "avatarImage": {
-                    "$param": "nodeAvatarImage"
+                    "$param": "profileImageUrl"
                   }
                 }
               }
@@ -53,7 +53,7 @@
     }
   },
   "params": {
-    "nodeAvatarImage": {
+    "profileImageUrl": {
       "type": {
         "kind": "string"
       }

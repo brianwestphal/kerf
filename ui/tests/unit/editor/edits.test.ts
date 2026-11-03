@@ -20,6 +20,7 @@ import {
   promoteToParam,
   removeNode,
   renameNode,
+  renameParam,
   replaceRoot,
   setProp,
   suggestedComponents,
@@ -208,6 +209,49 @@ describe('names and props', () => {
     expect(
       promoteToParam(inbox, 'missing', 'tone', 'x', { kind: 'string' }),
     ).toEqual({ error: 'No node missing.' });
+  });
+
+  // KF-1HEZZZ: a param's name can change after promotion.
+  it('renames a param in place and every $param reference to it', () => {
+    const rename = (from: string, to: string) => {
+      const result = renameParam(inbox, from, to);
+      if (!('document' in result)) throw new Error(result.error);
+      return result.document;
+    };
+    const titled = rename('title', 'heading');
+    expect(Object.keys(titled.params!)).toEqual(
+      Object.keys(inbox.params!).map((name) =>
+        name === 'title' ? 'heading' : name,
+      ),
+    );
+    expect(titled.params!.heading).toEqual(inbox.params!.title);
+    expect(JSON.stringify(titled)).not.toContain('"$param":"title"');
+    expect(JSON.stringify(titled)).toContain('"$param":"heading"');
+    // $each sources, $if conditions and composed inputs follow too.
+    for (const [from, to] of [
+      ['items', 'rows'],
+      ['showEmpty', 'emptyShown'],
+      ['selectedId', 'chosenId'],
+    ] as const) {
+      const text = JSON.stringify(rename(from, to));
+      expect(text).toContain(`"$param":"${to}"`);
+      expect(text).not.toContain(`"$param":"${from}"`);
+    }
+    // The rest of the document is untouched.
+    expect(rename('title', 'title')).toBe(inbox);
+    expect(rename('title', 'heading').root.id).toBe(inbox.root.id);
+    expect(renameParam(inbox, 'title', 'showEmpty')).toEqual({
+      error: 'There is already a param named showEmpty.',
+    });
+    expect(renameParam(inbox, 'title', 'Bad Name')).toEqual({
+      error: 'A param name is a camelCase identifier.',
+    });
+    expect(renameParam(inbox, 'missing', 'x')).toEqual({
+      error: 'No param missing.',
+    });
+    expect(renameParam({ ...inbox, params: undefined }, 'title', 'x')).toEqual({
+      error: 'No param title.',
+    });
   });
 
   it('maps prop types to param types', () => {

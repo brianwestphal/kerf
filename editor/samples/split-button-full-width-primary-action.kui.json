@@ -22,20 +22,20 @@
                 "type": "@kerfjs/ui:split-button",
                 "props": {
                   "label": {
-                    "$param": "nodeLabel"
+                    "$param": "driveLabel"
                   },
                   "action": "toggle-split-button-demo",
                   "optionsLabel": "Choose Drive Provider, Model, and Effort",
                   "optionsAction": "toggle-split-button-options-demo",
                   "tone": {
-                    "$param": "nodeTone"
+                    "$param": "driveTone"
                   },
                   "fill": true,
                   "busy": {
-                    "$param": "nodeBusy"
+                    "$param": "running"
                   },
                   "optionsExpanded": {
-                    "$param": "nodeOptionsExpanded"
+                    "$param": "optionsOpen"
                   }
                 },
                 "zones": {
@@ -63,13 +63,13 @@
     }
   },
   "params": {
-    "nodeLabel": {
+    "driveLabel": {
       "type": {
         "kind": "string"
       },
       "default": "Drive with Codex"
     },
-    "nodeTone": {
+    "driveTone": {
       "type": {
         "kind": "enum",
         "values": [
@@ -82,12 +82,12 @@
       },
       "default": "success"
     },
-    "nodeBusy": {
+    "running": {
       "type": {
         "kind": "boolean"
       }
     },
-    "nodeOptionsExpanded": {
+    "optionsOpen": {
       "type": {
         "kind": "boolean"
       }

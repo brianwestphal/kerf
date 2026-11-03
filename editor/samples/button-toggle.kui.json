@@ -25,7 +25,7 @@
                   "ariaLabel": "Show Conversation",
                   "action": "toggle-button-demo",
                   "pressed": {
-                    "$param": "nodePressed"
+                    "$param": "conversationOpen"
                   }
                 },
                 "zones": {
@@ -51,7 +51,7 @@
                   "emphasis": "secondary",
                   "action": "toggle-button-demo",
                   "pressed": {
-                    "$param": "nodePressed"
+                    "$param": "conversationOpen"
                   }
                 },
                 "zones": {
@@ -77,7 +77,7 @@
                   "tone": "brand",
                   "action": "toggle-button-demo",
                   "pressed": {
-                    "$param": "nodePressed"
+                    "$param": "conversationOpen"
                   }
                 }
               },
@@ -89,7 +89,7 @@
                   "tone": "success",
                   "action": "toggle-button-demo",
                   "pressed": {
-                    "$param": "nodePressed"
+                    "$param": "conversationOpen"
                   }
                 }
               }
@@ -103,7 +103,7 @@
     }
   },
   "params": {
-    "nodePressed": {
+    "conversationOpen": {
       "type": {
         "kind": "boolean"
       }
