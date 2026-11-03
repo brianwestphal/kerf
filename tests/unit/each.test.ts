@@ -111,7 +111,7 @@ describe('each — basics (no mount context)', () => {
       message = (error as Error).message;
     }
     expect(message).toMatch(/first at index 0, again at index 1/);
-    expect(message).toMatch(/earlier push\(\), insert\(\), or update\(\)/);
+    expect(message).toMatch(/earlier push\/insert\/update, not this render/);
     dispose();
     root.remove();
   });

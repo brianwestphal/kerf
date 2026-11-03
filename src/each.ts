@@ -698,8 +698,7 @@ function eachSnapshotById<T extends object>(
           // granular path, which skips this O(N) check, so the duplicate may
           // predate this render; say where to look instead of blaming it.
           (source !== undefined
-            ? ' This list is an arraySignal: the duplicate was most likely added by an earlier push(), insert(), or update() ' +
-              'that rendered without this check, so the render that throws here may not be the one that introduced it.'
+            ? ' (arraySignal: likely added by an earlier push/insert/update, not this render.)'
             : ''),
       );
     }

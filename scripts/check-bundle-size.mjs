@@ -81,7 +81,11 @@ const BUDGETS = [
     // KF-G7N4PK (+0.17 KB): seed the custom-element rendered-attribute record
     // when kerf creates an element, so its first sync keeps reflected defaults.
     // KF-GS850A (+0.17 KB): keyed each() rows survive a new item object.
-    budgetKb: 15.3,
+    // KF-FMGEJ6 + KF-7HMTZQ (+0.03 KB, 15.27 → 15.30): form properties are
+    // written before their attributes (WebKit's change baseline), and each()'s
+    // duplicate-reference error says an arraySignal duplicate likely came
+    // from an earlier push/insert/update.
+    budgetKb: 15.35,
     description: 'realistic app import — the number the docs advertise',
     entry: `
       import { signal, computed, effect, batch, mount, each, delegate } from '${DIST}/index.js';
@@ -354,7 +358,8 @@ const BUDGETS = [
     // Same figure as `main` (see its KF-HK7WE8, KF-K8S4RX, and KF-HA8R27 notes).
     // Same figure as `main` (see its KF-G7N4PK note).
     // KF-GS850A: same measured growth as `main`, with the dev-code guard intact.
-    budgetKb: 15.3,
+    // KF-FMGEJ6 + KF-7HMTZQ: same as `main`.
+    budgetKb: 15.35,
     description:
       'same as `main`, and asserts zero dev-diagnostic code leaked in',
     forbid: [
