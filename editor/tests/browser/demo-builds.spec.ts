@@ -7320,6 +7320,10 @@ test('builds List › Divider Between Regions', async ({ page }) => {
   );
 });
 
+// KF-FKRVR5: List › List View Transitions is not built, by design. Its rows
+// are the app's `each()` output, each a raw keyed wrapper whose app CSS
+// names its view transition; that animation is what the example shows, and
+// a view document holds only components.
 // KF-9JACQY: the sections are plain Lists in the scrolling List's major gap,
 // and the Tools toggle names its List region through `controls`.
 test('builds List › Scrollable Application List', async ({ page }) => {
