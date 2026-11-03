@@ -87,7 +87,33 @@ async function paintAt(page: Page, position: 'start' | 'middle' | 'end') {
     },
     { bars: BARS, position },
   );
-  await page.waitForTimeout(600);
+  // KF-94RB3P: wait for the scroll handlers to run (two frames), then for
+  // every material fade to finish, instead of a fixed wait that a loaded CI
+  // runner can outlast mid-transition.
+  await page.evaluate(
+    () =>
+      new Promise<void>((done) =>
+        window.requestAnimationFrame(() =>
+          window.requestAnimationFrame(() => done()),
+        ),
+      ),
+  );
+  await expect
+    .poll(
+      () =>
+        page.evaluate(
+          () =>
+            document
+              .getAnimations()
+              .filter(
+                (animation) =>
+                  animation instanceof CSSTransition &&
+                  animation.playState === 'running',
+              ).length,
+        ),
+      { timeout: 10_000 },
+    )
+    .toBe(0);
   return page.evaluate((bars) => {
     const read = (selector: string) => {
       const bar = document.querySelector<HTMLElement>(selector)!;
