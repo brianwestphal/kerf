@@ -397,9 +397,12 @@ icon-only `Select` reads the control slot a `ToolbarControlGroup` provides
 (`--_kui-toolbar-control-group-slot-*`). A parent may still style its own
 elements keyed on a child's state, naming the child by class inside `:has()`
 (`:has(> .kui-select[open])`, or `TabBar` insetting a segmented strip that
-holds compact tabs), and it keeps styling raw native and raw Web
-Awesome children no kerf component owns, excluding kerf children by class
-(`wa-dropdown:not(.kui-popup-menu)`). `npm run check:css-ownership` enforces
+holds compact tabs), and it keeps styling raw native children no kerf
+component owns. No kerf component renders a Web Awesome element, so a
+component stylesheet names one only inside a `:not()` exclusion; rules for raw
+Web Awesome children in a kerf container (`.kui-toolbar-control-group >
+wa-button`) live in the optional `webawesome.css` bridge, the one stylesheet
+that may name kerf classes beside a Web Awesome element. `npm run check:css-ownership` enforces
 this in every component stylesheet (a same-basename `.css` and `.tsx` pair
 under `src/components/<family>/<component>/`), deriving the component names,
 the Web Awesome tags each component renders, and its composed children from the
@@ -411,9 +414,7 @@ colocated component source:
 - **Owned Web Awesome tags.** Kerf components are named by class, never by a
   `wa-*` tag they render. A tag another component renders — as the
   subject, or as an ancestor whose internals the rule reaches — must be scoped
-  to that component by its class or excluded with `:not()`. A direct child
-  that cannot be the owner's internal
-  (`.kui-toolbar-control-group > wa-button`) needs no exclusion.
+  to that component by its class or excluded with `:not()`.
 - **Variables.** A stylesheet writes only its own `--_kui-<self>-*` private
   variables, and never overrides a public `--kui-<other>-*` token that another
   component reads. Shared foundation tokens (`--kui-layout-*`,

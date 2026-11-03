@@ -175,9 +175,9 @@ primitives.
 Inside the package, a child styles itself in a parent's context from its own
 stylesheet (`.kui-parent[…] > .kui-child …` lives in `child.css`). A parent may
 key its own styles on a child's state (`:has(> .kui-select[open])`) and style
-raw native or raw Web Awesome children, excluding kerf children by class
-(`wa-dropdown:not(.kui-popup-menu)`). Name kerf components by class, never by
-a `wa-*` tag they render; write only your own `--_kui-<self>-*` variables and
+raw native children; rules for raw Web Awesome children in a Kerf container
+live in the optional `webawesome.css` bridge, since no Kerf component renders
+one. Name kerf components by class, never by a `wa-*` tag; write only your own `--_kui-<self>-*` variables and
 name the context you provide after yourself; never put a hook class on a
 composed child's root to restyle it. `npm run check:css-ownership` enforces
 all of this (see `docs/component-contract.md`); fix a finding rather than

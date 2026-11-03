@@ -212,7 +212,7 @@ export function loadUiContract(context) {
     const sourceExports = new Map();
     const helperSourceFiles = new Map();
     // Source files of declared components: a wrapper's own source may render
-    // the element it wraps (Kerf's PopupMenu renders `wa-dropdown`).
+    // the element it wraps (an application wrapper around a `wa-dropdown`).
     const componentSources = new Set();
     // Every cataloged entry whose public classes may be a component's rendered
     // anatomy: the base catalog's (exports from the selection catalog) and each

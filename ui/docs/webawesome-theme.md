@@ -11,8 +11,12 @@ Awesome theme variable (`--kui-font-m: var(--wa-font-size-m, 16px)`), so an
 app's Web Awesome theme also restyles Kerf, but every such read falls back to
 the value this theme gives it. A Kerf-only application therefore renders
 exactly like the catalog. Kerf component stylesheets read only `--kui-*`
-tokens; the few rules that place a raw `wa-*` child inside a Kerf container
-match nothing when Web Awesome is absent. The consumer-bundle tests and the
+tokens and name no Web Awesome element except inside a `:not()` exclusion.
+The rules that place a raw `wa-button` or `wa-dropdown` inside a Kerf
+container (a ToolbarControlGroup's metrics and states, a Toolbar's trailing
+band, a popup surface's menu inset, and the clipping release a Workbench
+panel or ResizableRegion gives an open raw dropdown) ship only in this
+bridge, so a Kerf-only bundle carries none of them. The consumer-bundle tests and the
 `webawesome-optional` browser spec enforce all of this.
 
 **Supported versions.** `@kerfjs/ui` supports every Web Awesome 3.x release

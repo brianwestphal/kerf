@@ -30,6 +30,11 @@ export {
   withoutRelationalArguments,
 };
 
+/** The optional Web Awesome bridge stylesheet. */
+const WEB_AWESOME_BRIDGE = 'webawesome.css';
+/** A Web Awesome element name inside a compound selector. */
+const WEB_AWESOME_TAG = /(^|[^-\w])wa-[a-z]/;
+
 /** Stylesheets whose class roots do not follow `kui-<basename>`. */
 export const packageClassRoots = new Map([
   ['document.css', ['kui-app-root']],
@@ -411,7 +416,16 @@ export function checkPackageStylesheet(model, filename, source) {
         }),
       ),
     ];
-    if (foreign.length > 0)
+    // The optional Web Awesome bridge (`webawesome.css`) is the one place
+    // that styles raw Web Awesome children in Kerf context: a rule there may
+    // name Kerf classes when each of its selectors names a Web Awesome
+    // element, as the styled child or as the state the Kerf element keys on.
+    const bridgeRule =
+      filename === WEB_AWESOME_BRIDGE &&
+      parsed.every((parts) =>
+        parts.some(({ compound }) => WEB_AWESOME_TAG.test(compound)),
+      );
+    if (foreign.length > 0 && !bridgeRule)
       report(
         rule,
         'foreign-class',

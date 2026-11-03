@@ -75,7 +75,7 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 - Parents: any.
 - Contexts: `application-ui`.
 - Children: unrestricted.
-- Built from: [LucideIcon](./lucide-icon.md), [Dropdown](./wa-dropdown.md), [Dropdown Item](./wa-dropdown-item.md).
+- Built from: [LucideIcon](./lucide-icon.md).
 
 ## State and wiring
 
@@ -117,6 +117,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [LucideIcon](./lucide-icon.md), [Dropdown](./wa-dropdown.md), [Dropdown Item](./wa-dropdown-item.md).
+- Components: [LucideIcon](./lucide-icon.md).
 - Docs: [`docs/surface-scaffold.md`](../../docs/surface-scaffold.md), [`docs/component-selection.md#problem-to-component-matrix`](../../docs/component-selection.md#problem-to-component-matrix).
 - UX catalog route: `?component=surface-scaffold`.

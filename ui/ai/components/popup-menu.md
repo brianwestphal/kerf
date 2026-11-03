@@ -55,7 +55,7 @@ Exact prop names and types: [`@kerfjs/ui/popup-menu`](../public-api-signatures-v
 - Parents: any.
 - Contexts: `application-ui`.
 - Children: unrestricted.
-- Built from: [LucideIcon](./lucide-icon.md), [Tooltip](./wa-tooltip.md).
+- Built from: [LucideIcon](./lucide-icon.md).
 
 ## State and wiring
 
@@ -172,6 +172,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [LucideIcon](./lucide-icon.md), [Tooltip](./wa-tooltip.md), [Select](./select.md), [Dropdown](./wa-dropdown.md).
+- Components: [LucideIcon](./lucide-icon.md), [Select](./select.md), [Dropdown](./wa-dropdown.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#popup-menu-migration`](../../docs/component-selection.md#popup-menu-migration).
 - UX catalog route: `?component=popup-menu`.

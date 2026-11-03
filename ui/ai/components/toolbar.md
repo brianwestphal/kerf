@@ -49,7 +49,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar`](../public-api-signatures-v1.m
 - Parents: any.
 - Contexts: `application-chrome`, `page-header`, `panel-header`, `dialog-header`.
 - Children: unrestricted.
-- Built from: [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md), [PopupMenu](./popup-menu.md).
+- Built from: [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md), [PopupMenu](./popup-menu.md).
 
 Zones (a zone is bound to JSX only through its listed prop; never assume the zone id is a prop):
 
@@ -98,6 +98,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md), [Button](./wa-button.md), [PopupMenu](./popup-menu.md).
+- Components: [ToolbarText](./toolbar-text.md), [ToolbarControlGroup](./toolbar-control-group.md), [PopupMenu](./popup-menu.md).
 - Docs: [`docs/component-selection.md`](../../docs/component-selection.md), [`docs/component-selection.md#ambiguous-choices`](../../docs/component-selection.md#ambiguous-choices).
 - UX catalog route: `?component=toolbar`.

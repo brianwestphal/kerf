@@ -217,7 +217,6 @@ export const generatedKerfCatalog = [
     "uses": [
       "toolbar-text",
       "toolbar-control-group",
-      "wa-button",
       "popup-menu"
     ],
     "demoSource": "ui/ux-demo/demos/toolbar.tsx",
@@ -249,9 +248,7 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Configure recurring dialog and popup geometry without consumer ::part() overrides.",
     "uses": [
-      "lucide-icon",
-      "wa-dropdown",
-      "wa-dropdown-item"
+      "lucide-icon"
     ],
     "demoSource": "ui/ux-demo/demos/surface-scaffold.tsx",
     "componentSource": "ui/src/components/surfaces/surface-scaffold/surface-scaffold.tsx",
@@ -684,8 +681,7 @@ export const generatedKerfCatalog = [
     "uses": [
       "tabs",
       "toolbar-control-group",
-      "button",
-      "wa-button"
+      "button"
     ],
     "demoSource": "ui/ux-demo/demos/tab-bar.tsx",
     "componentSource": "ui/src/components/navigation/tab-bar/tab-bar.tsx",
@@ -961,8 +957,7 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, drawn by Kerf as a native menu in the top layer.",
     "uses": [
-      "lucide-icon",
-      "wa-tooltip"
+      "lucide-icon"
     ],
     "demoSource": "ui/ux-demo/demos/popup-menu.tsx",
     "componentSource": "ui/src/components/actions/popup-menu/popup-menu.tsx",
@@ -1258,9 +1253,8 @@ export const generatedKerfCatalog = [
       "row",
       "select",
       "state-banner",
-      "wa-input",
-      "wa-textarea",
-      "wa-button",
+      "text-field",
+      "button",
       "layout"
     ],
     "demoSource": "ui/ux-demo/recipes/composer-form.tsx",

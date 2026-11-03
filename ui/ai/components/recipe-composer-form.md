@@ -28,7 +28,7 @@ No props: this entry has no JavaScript API.
 - Parents: used at the root of a screen or reference, not nested.
 - Contexts: `application-reference`.
 - Children: unrestricted.
-- Built from: [Toolbar](./toolbar.md), [ToolbarText](./toolbar-text.md), [List](./list.md), [ListInsetText](./list-inset-text.md), [Text](./text.md), [Row](./row.md), [Select](./select.md), [StateBanner](./state-banner.md), [Input](./wa-input.md), [Textarea](./wa-textarea.md), [Button](./wa-button.md), [Application Layout](./layout.md).
+- Built from: [Toolbar](./toolbar.md), [ToolbarText](./toolbar-text.md), [List](./list.md), [ListInsetText](./list-inset-text.md), [Text](./text.md), [Row](./row.md), [Select](./select.md), [StateBanner](./state-banner.md), [TextField](./text-field.md), [Button](./button.md), [Application Layout](./layout.md).
 
 ## State and wiring
 
@@ -52,6 +52,6 @@ Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-
 
 ## Related
 
-- Components: [Toolbar](./toolbar.md), [ToolbarText](./toolbar-text.md), [List](./list.md), [ListInsetText](./list-inset-text.md), [Text](./text.md), [Row](./row.md), [Select](./select.md), [StateBanner](./state-banner.md), [Input](./wa-input.md), [Textarea](./wa-textarea.md), [Button](./wa-button.md), [Application Layout](./layout.md).
+- Components: [Toolbar](./toolbar.md), [ToolbarText](./toolbar-text.md), [List](./list.md), [ListInsetText](./list-inset-text.md), [Text](./text.md), [Row](./row.md), [Select](./select.md), [StateBanner](./state-banner.md), [TextField](./text-field.md), [Button](./button.md), [Application Layout](./layout.md).
 - Docs: [`docs/recipes.md#composer-form`](../../docs/recipes.md#composer-form).
 - UX catalog route: `?component=recipe-composer-form`.

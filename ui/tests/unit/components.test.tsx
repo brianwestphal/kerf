@@ -3749,20 +3749,15 @@ describe('production UI primitives', () => {
   });
 
   it('releases both clipping ancestors for an open dropdown without changing props', () => {
-    const region = readFileSync(
-      resolve(
-        import.meta.dirname,
-        '../../src/components/layout/resizable-region/resizable-region.css',
-      ),
+    // KF-Z2K3RR: only a raw Web Awesome dropdown needs the release (a
+    // PopupMenu opens in the top layer), so the rules live in the optional
+    // bridge rather than in the components' own stylesheets.
+    const bridge = readFileSync(
+      resolve(import.meta.dirname, '../../src/webawesome.css'),
       'utf8',
     ).replace(/\s+/g, ' ');
-    const workbench = readFileSync(
-      resolve(
-        import.meta.dirname,
-        '../../src/components/layout/workbench/workbench.css',
-      ),
-      'utf8',
-    ).replace(/\s+/g, ' ');
+    const region = bridge;
+    const workbench = bridge;
     expect(region).toContain(
       '.kui-resizable-region:has(wa-dropdown[open]) { z-index: var(--kui-resizable-region-popup-z, 5); overflow: visible;',
     );

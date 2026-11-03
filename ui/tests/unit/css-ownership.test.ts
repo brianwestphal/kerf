@@ -71,6 +71,45 @@ describe('CSS ownership gate', { timeout: loadScaledTimeout(30_000) }, () => {
     expect(checkPackageStylesheet(model, filename, css)).toEqual([]);
   });
 
+  // KF-Z2K3RR: no Kerf component renders a Web Awesome element, so a
+  // component stylesheet names one only to exclude a state (`:not(:has(
+  // wa-dropdown[open]))`); rules for raw Web Awesome children belong in the
+  // optional webawesome.css bridge.
+  it('keeps raw Web Awesome selectors out of component stylesheets', async () => {
+    const components = resolve(uiRoot, 'src/components');
+    const files = (await readdir(components, { recursive: true }))
+      .filter((file) => file.endsWith('.css'))
+      .map((file) => resolve(components, file));
+    const withoutNot = (selector: string) => {
+      let out = '';
+      for (let index = 0; index < selector.length;) {
+        if (!selector.startsWith(':not(', index)) {
+          out += selector[index++];
+          continue;
+        }
+        index += ':not'.length;
+        let depth = 0;
+        do {
+          if (selector[index] === '(') depth += 1;
+          if (selector[index] === ')') depth -= 1;
+          index += 1;
+        } while (depth > 0);
+      }
+      return out;
+    };
+    const offenders: string[] = [];
+    for (const file of files) {
+      postcss
+        .parse(await readFile(file, 'utf8'), { from: file })
+        .walkRules((rule) => {
+          if (/(^|[^-\w])wa-[a-z]/.test(withoutNot(rule.selector)))
+            offenders.push(`${basename(file)}: ${rule.selector}`);
+        });
+    }
+    expect(files.length).toBeGreaterThan(50);
+    expect(offenders).toEqual([]);
+  });
+
   it('keeps application styles out of package component internals', async () => {
     const script = resolve(
       import.meta.dirname,
@@ -333,6 +372,12 @@ export function NavStack() {
       'foreign-class',
     ],
     [
+      'a Kerf element from the Web Awesome bridge with no Web Awesome element in the rule',
+      'webawesome.css',
+      '.kui-toolbar-control-group { margin: 0; }',
+      'foreign-class',
+    ],
+    [
       "another component's private variable",
       'toolbar-control-group.css',
       '.kui-toolbar-control-group { --_kui-select-slot-height: 40px; }',
@@ -427,6 +472,11 @@ export function NavStack() {
       'its own element inside a composed child',
       'nav-stack.css',
       '.kui-nav-stack__chrome { background: white; }',
+    ],
+    [
+      'raw Web Awesome children in Kerf context from the bridge',
+      'webawesome.css',
+      '.kui-toolbar-control-group > wa-button { flex: none; } .kui-resizable-region:has(wa-dropdown[open]) { overflow: visible; }',
     ],
     [
       'Web Awesome tags in a non-component theme stylesheet',

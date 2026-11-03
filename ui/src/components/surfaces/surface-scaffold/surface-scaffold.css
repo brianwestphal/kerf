@@ -752,17 +752,3 @@ h2.kui-dialog-surface__title {
 .kui-popup-surface {
   display: inline-flex;
 }
-/* The surface insets the menu of a raw wa-dropdown it wraps. A PopupMenu
-   applies the surface's inset to itself (popup-menu.css). */
-.kui-popup-surface[data-inset="standard"]
-  > wa-dropdown:not(.kui-popup-menu)::part(menu) {
-  padding: var(--kui-wa-surface-inset, remify(8px));
-}
-.kui-popup-surface[data-inset="compact"]
-  > wa-dropdown:not(.kui-popup-menu)::part(menu) {
-  padding: remify(4px);
-}
-.kui-popup-surface[data-inset="list-zero"]
-  > wa-dropdown:not(.kui-popup-menu)::part(menu) {
-  padding: 0;
-}

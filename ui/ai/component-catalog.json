@@ -1888,7 +1888,6 @@
       "uses": [
         "toolbar-text",
         "toolbar-control-group",
-        "wa-button",
         "popup-menu"
       ],
       "purpose": "Leading, centered, and trailing toolbar composition.",
@@ -2273,9 +2272,7 @@
       "source": "kerf",
       "description": "A native modal dialog (DialogSurface) with Kerf's header, body, and footer chrome, typed preferred widths, viewport bounds, and presentations, plus a non-modal popover dialog and popup inset composition.",
       "uses": [
-        "lucide-icon",
-        "wa-dropdown",
-        "wa-dropdown-item"
+        "lucide-icon"
       ],
       "purpose": "Configure recurring dialog and popup geometry without consumer ::part() overrides.",
       "publicExports": [
@@ -6020,8 +6017,7 @@
       "uses": [
         "tabs",
         "toolbar-control-group",
-        "button",
-        "wa-button"
+        "button"
       ],
       "purpose": "Controlled tab strips whose tabs shrink and scroll while fixed leading, trailing, and far-edge end actions remain visible.",
       "publicExports": [
@@ -8321,8 +8317,7 @@
       "source": "kerf",
       "description": "A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, drawn by Kerf as a native menu in the top layer.",
       "uses": [
-        "lucide-icon",
-        "wa-tooltip"
+        "lucide-icon"
       ],
       "purpose": "A typed action menu with nested choices, selected state, and optional pointer-anchored context opening, drawn by Kerf as a native menu in the top layer.",
       "publicExports": [
@@ -13357,9 +13352,8 @@
         "row",
         "select",
         "state-banner",
-        "wa-input",
-        "wa-textarea",
-        "wa-button",
+        "text-field",
+        "button",
         "layout"
       ],
       "useWhen": [

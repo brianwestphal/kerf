@@ -664,6 +664,8 @@ sizes through a private property.
 
 Web Awesome is an optional integration with no default role in guidance: `ui/docs/component-selection.md#web-awesome-integration` maps every overlapping `wa-*` element to its Kerf choice, `ui/docs/webawesome-migration.md` is the application migration guide, the catalog marks the 36 replaced elements `recommendation: "avoid"` with `prefer-kerf` alternatives, and `ui/ai/application-ui-profile.defaults.json` avoids each one (`KUI-L301`).
 
+The optional `ui/src/webawesome.css` bridge also owns every rule for a raw `wa-button` / `wa-dropdown` placed in a Kerf container (ToolbarControlGroup, Toolbar trailing zone, popup surface, Workbench panel, ResizableRegion): component stylesheets name a Web Awesome element only inside a `:not()` exclusion (`css-ownership.test.ts` pins it), and `css-ownership.mjs` lets the bridge name Kerf classes only in rules that also name a Web Awesome element.
+
 The optional `ui/src/webawesome.css` bridge gives filled badges a contrast-safe
 quiet-fill/normal-text pair with two public override tokens, and maps Dialog
 body padding to the 8px surface tier and footer padding to the 16px container

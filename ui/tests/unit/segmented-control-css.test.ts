@@ -131,10 +131,9 @@ describe('SegmentedControl corner geometry', () => {
   });
 
   it('lets nested dropdown shadow bases own intrinsic label, icon, and caret width', async () => {
-    const file = resolve(
-      import.meta.dirname,
-      '../../src/components/actions/toolbar-control-group/toolbar-control-group.css',
-    );
+    // KF-Z2K3RR: raw Web Awesome children in a group are styled by the
+    // optional bridge, not by the group's own stylesheet.
+    const file = resolve(import.meta.dirname, '../../src/webawesome.css');
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const rule = root.nodes.find(
       (node) =>
@@ -187,7 +186,7 @@ describe('SegmentedControl corner geometry', () => {
     expect(fixedHostWidth).toBeUndefined();
 
     // A mixed group's raw wa-buttons keep a normal text line height in the
-    // group's stylesheet; a composed PopupMenu's trigger gets the same value
+    // Web Awesome bridge; a composed PopupMenu's trigger gets the same value
     // from popup-menu.css, since the group never styles another component.
     const popupFile = resolve(
       import.meta.dirname,
@@ -197,10 +196,7 @@ describe('SegmentedControl corner geometry', () => {
       from: popupFile,
     });
     for (const [sheet, selector] of [
-      [
-        root,
-        '.kui-toolbar-control-group[data-content="mixed"] wa-button:not(:where(.kui-popup-menu > *))',
-      ],
+      [root, '.kui-toolbar-control-group[data-content="mixed"] wa-button'],
       [
         popupRoot,
         '.kui-toolbar-control-group[data-content="mixed"] > .kui-popup-menu > .kui-popup-menu__trigger',

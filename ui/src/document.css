@@ -100,8 +100,3 @@ body > .kui-app-root[data-viewport="locked"] {
 ) {
   cursor: text;
 }
-
-/* Web Awesome keeps a pointer on a disabled button's base part. */
-:where(wa-button[disabled])::part(base) {
-  cursor: not-allowed;
-}
