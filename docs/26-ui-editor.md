@@ -258,6 +258,14 @@ LucideIcon's `name`, while that name still follows the icon: unset, the
 old icon's name, or the seeded default.
 The node's own name field reads "Ref name".
 
+A component's own class list (`className`, or `class`) is a **Classes** text
+field in a trailing **Advanced** section (KF-X8X8VX: editable classes), after
+its curated groups and Other; `component-props.json` marks it
+`control: "classes"`. It is a visual edit: the class list renders on the
+component's root and never changes the view's contract. Other styling hooks
+(`headerClassName` and the like), `slot`, `rootAttributes`, and
+`triggerAttributes` stay hidden.
+
 A component's `rootAttributes` (its `data-*` channel, §4.5) edits in the
 Inspector's **Data attributes** section (KF-65FTKX: data attributes), not as
 JSON: one Name and one Value field per attribute, side by side where the rail

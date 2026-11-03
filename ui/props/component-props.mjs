@@ -874,16 +874,19 @@ export function applyCrossReferences(
   }
 }
 
-// Plumbing props an inspector never shows by default: styling hooks, slot
-// placement, and attribute bags the editor owns (the node marker). The
+// Plumbing props an inspector never shows by default: inner styling hooks,
+// slot placement, and attribute bags the editor owns (the node marker). The
 // overlay can still give any of them a visible control.
-const HIDDEN_PROP =
-  /^(class|className|\w+ClassName|slot|rootAttributes|triggerAttributes)$/;
+const HIDDEN_PROP = /^(\w+ClassName|slot|rootAttributes|triggerAttributes)$/;
+// A component's own class list is an advanced field, not a main prop
+// (KF-X8X8VX: an author sets `className`, such as an appearance scope).
+const CLASSES_PROP = /^(class|className)$/;
 
 /** Generated inspector defaults, applied before the curated overlay. */
 export function applyControlDefaults(component) {
   for (const prop of component.props) {
     if (HIDDEN_PROP.test(prop.name)) prop.control = 'hidden';
+    else if (CLASSES_PROP.test(prop.name)) prop.control = 'classes';
   }
 }
 

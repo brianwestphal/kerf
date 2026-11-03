@@ -477,6 +477,35 @@ test('splits a List gap into columns and rows, one with a builder call', async (
   });
 });
 
+test('sets a component’s classes from the Inspector’s Advanced section', async ({
+  page,
+}, info) => {
+  // KF-X8X8VX: `className` is an advanced Classes field, not hidden.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const FOLDERS = '01JB8Z1M6Q8E1X9V4S7K2R3T5E';
+  await page
+    .locator(`[data-action="editor-select-node"][data-item-id="${FOLDERS}"]`)
+    .click();
+  const list = page.locator(
+    `[data-editor-canvas] [data-kerf-node="${FOLDERS}"]`,
+  );
+  const classes = page.locator('[data-editor-prop="className"]');
+  await expect(page.getByText('Advanced', { exact: true })).toBeVisible();
+  await expect(classes).toContainText('Classes');
+  const input = classes.getByRole('textbox');
+  await input.fill('kui-dark');
+  await input.press('Enter');
+  await expect(list).toHaveClass(/\bkui-dark\b/);
+  await expect(list).toHaveClass(/\bkui-list\b/);
+  await expect(page.getByText(/nodes · valid/)).toBeVisible();
+  await classes.scrollIntoViewIfNeeded();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-x8x8vx-classes-1440.png'),
+    animations: 'disabled',
+  });
+});
+
 test('binds a repeated row’s label to a document param', async ({
   page,
 }, info) => {

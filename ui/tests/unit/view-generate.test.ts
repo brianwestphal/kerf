@@ -126,6 +126,16 @@ describe('the contract digest ignores layout and tracks the interface', () => {
   };
   const base = digest(() => undefined);
 
+  it('emits an authored className without a contract change (KF-X8X8VX)', () => {
+    const document = inbox();
+    document.root.zones.header[0].zones.trailing[0].props.className =
+      'kui-dark';
+    const before = generate(inbox());
+    const after = generate(document);
+    expect(after.code).toContain('kui-dark');
+    expect(after.digest).toBe(before.digest);
+  });
+
   it('is unchanged by reorders, literals, text, and moving a named node', () => {
     expect(digest((doc) => doc.root.zones.content.reverse())).toBe(base);
     expect(

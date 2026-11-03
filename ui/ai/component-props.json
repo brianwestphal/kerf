@@ -219,7 +219,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -473,7 +473,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -798,7 +798,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -954,7 +954,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -1104,7 +1104,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -1335,7 +1335,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -1596,7 +1596,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -1949,7 +1949,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -2066,7 +2066,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -2189,7 +2189,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -2349,7 +2349,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -2446,7 +2446,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -2602,7 +2602,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -2688,7 +2688,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -2797,7 +2797,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -2959,7 +2959,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -3430,7 +3430,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -3507,7 +3507,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -3628,7 +3628,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -3704,7 +3704,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -3782,7 +3782,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -3997,7 +3997,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -4129,7 +4129,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -4230,7 +4230,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -4331,7 +4331,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -4401,7 +4401,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -4487,7 +4487,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -4709,7 +4709,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -5253,7 +5253,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "id",
@@ -5510,7 +5510,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -6022,7 +6022,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -6592,7 +6592,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -6668,7 +6668,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -6871,7 +6871,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "pressed",
@@ -7219,7 +7219,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -7591,7 +7591,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "color",
@@ -7697,7 +7697,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "color",
@@ -7896,7 +7896,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -8100,7 +8100,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -8468,7 +8468,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "headerClassName",
@@ -9078,7 +9078,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -9181,7 +9181,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -9319,7 +9319,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -9785,7 +9785,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "ariaLabel",
@@ -10008,7 +10008,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "editorAttributes",
@@ -10367,7 +10367,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "placeholder",
@@ -10450,7 +10450,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "placeholderText",
@@ -10881,7 +10881,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -11032,7 +11032,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -11194,7 +11194,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -11313,7 +11313,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -11498,7 +11498,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -11721,7 +11721,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -11905,7 +11905,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -12139,7 +12139,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -12343,7 +12343,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -12778,7 +12778,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -12944,7 +12944,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -12993,7 +12993,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -13114,7 +13114,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -13203,7 +13203,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "activation",
@@ -13428,7 +13428,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -13624,7 +13624,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "placeholder",
@@ -13877,7 +13877,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -14115,13 +14115,13 @@
           "name": "class",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "wrap",
@@ -14251,13 +14251,13 @@
           "name": "class",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         }
       ],
       "nativeAttributes": [
@@ -14642,7 +14642,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -14850,7 +14850,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -14903,7 +14903,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "expanded",
@@ -15323,7 +15323,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -15460,7 +15460,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -15572,7 +15572,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "id",
@@ -15801,7 +15801,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "rootAttributes",
@@ -15877,7 +15877,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -15961,7 +15961,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "children",
@@ -16036,7 +16036,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "placeholder",
@@ -23803,7 +23803,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",
@@ -24102,7 +24102,7 @@
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "control": "hidden"
+          "control": "classes"
         },
         {
           "name": "slot",

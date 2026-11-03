@@ -135,6 +135,15 @@ describe('interpretView: the contract check', () => {
     expect(String(interpret(cases[1]!, document))).toContain('data-kerf-node');
   });
 
+  it('passes an authored className through as a visual edit (KF-X8X8VX)', () => {
+    const document = inbox();
+    document.root.zones.header[0].zones.trailing[0].props.className =
+      'kui-dark';
+    expect(String(interpret(cases[1]!, document))).toMatch(
+      /<button[^>]*class="[^"]*\bkui-dark\b/,
+    );
+  });
+
   it('refuses an invalid document and a missing component', () => {
     expect(() => interpret(cases[0]!, { ...inbox(), name: 'x' })).toThrow(
       /invalid/,

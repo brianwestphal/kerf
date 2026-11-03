@@ -329,13 +329,17 @@ describe('inspector control defaults', () => {
         .filter((item) => item.control === 'hidden')
         .map((item) => item.name),
     ).toEqual([
-      'className',
       'headerClassName',
       'slot',
       'rootAttributes',
       'triggerAttributes',
-      'class',
     ]);
+    // KF-X8X8VX: a component's own class list is an advanced Classes field.
+    expect(
+      component.props
+        .filter((item) => item.control === 'classes')
+        .map((item) => item.name),
+    ).toEqual(['className', 'class']);
     applyOverlay(
       component,
       {
@@ -501,7 +505,7 @@ describe('ai/component-props.json (generated from the built package)', async () 
       group: 'Chrome',
       control: 'segmented',
     });
-    expect(prop(pane, 'className').control).toBe('hidden');
+    expect(prop(pane, 'className').control).toBe('classes');
     // rootAttributes keeps its `data-*` index signature beside the protected markers.
     expect(prop(pane, 'rootAttributes').type.index).toMatchObject({
       keyPrefix: 'data-',

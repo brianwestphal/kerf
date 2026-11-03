@@ -50,12 +50,15 @@ export function formatValue(value: ViewValue): string {
 
 const OTHER = 'Other';
 
+/** The trailing section for a component's class list (KF-X8X8VX). */
+const ADVANCED = 'Advanced';
+
 /**
- * Sections in the component's curated group order (then "Other"), props in
- * curated order then by name. Hidden plumbing props and zones are left out:
- * zones appear in the outline instead.
+ * A component's visible props in its curated group order, then "Other",
+ * then "Advanced" (its class list), props in curated order then by name.
+ * Hidden plumbing props and zones are left out: zones appear in the
+ * outline instead.
  */
-/** A component's visible props grouped by curated group (then "Other"), in curated order. */
 export function groupedProps(
   component: InspectorComponent,
 ): { readonly title: string; readonly props: readonly InspectorProp[] }[] {
@@ -66,12 +69,18 @@ export function groupedProps(
   const order = [...(component.groups ?? [])];
   const byGroup = new Map<string, InspectorProp[]>();
   for (const prop of visible) {
-    const group = prop.group && order.includes(prop.group) ? prop.group : OTHER;
+    const group =
+      prop.control === 'classes'
+        ? ADVANCED
+        : prop.group && order.includes(prop.group)
+          ? prop.group
+          : OTHER;
     byGroup.set(group, [...(byGroup.get(group) ?? []), prop]);
   }
   const titles = [
     ...order.filter((title) => byGroup.has(title)),
     ...(byGroup.has(OTHER) ? [OTHER] : []),
+    ...(byGroup.has(ADVANCED) ? [ADVANCED] : []),
   ];
   return titles.map((title) => ({
     title,

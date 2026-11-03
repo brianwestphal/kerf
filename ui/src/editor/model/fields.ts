@@ -216,6 +216,8 @@ const SPELLED: Readonly<Record<string, string>> = {
  * "Horizontal align", and `ariaLabel` "ARIA label".
  */
 export function propLabel(name: string): string {
+  // A component's class list reads as what it holds (KF-X8X8VX).
+  if (name === 'className' || name === 'class') return 'Classes';
   const words = name
     .replace(/[-_]+/g, ' ')
     .replace(/([a-z0-9])([A-Z])/g, '$1 $2')

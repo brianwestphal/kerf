@@ -193,7 +193,12 @@ describe('inspector', () => {
       'State',
       'Form',
       'Other',
+      // KF-X8X8VX: the class list, last.
+      'Advanced',
     ]);
+    expect(
+      sections.find((section) => section.title === 'Advanced')!.rows,
+    ).toEqual([{ name: 'className', value: '—', set: false }]);
     const appearance = sections.find(
       (section) => section.title === 'Appearance',
     )!;
@@ -208,7 +213,6 @@ describe('inspector', () => {
     const all = sections.flatMap((section) =>
       section.rows.map((row) => row.name),
     );
-    expect(all).not.toContain('className');
     expect(all).not.toContain('rootAttributes');
     expect(
       sections
