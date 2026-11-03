@@ -5634,12 +5634,19 @@ type TextTruncate = 'end' | 'middle' | 'start';
  */
 type TextTruncateKeep = number | 'segment';
 type TextContent = KerfUiContent | string | number | readonly TextContent[];
-type TextCommonProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className' | 'id'> & {
+type TextCommonProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className' | 'id' | 'lang'> & {
     /**
      * The element's id, for a link or `aria-*` reference to target (a
      * `ListItemLink href="#…"` destination, for example).
      */
     id?: string;
+    /** The text's language (`lang`), when it differs from the page's (KF-AC7AFR). */
+    lang?: string;
+    /**
+     * An accessible name for the element (`aria-label`), such as a named
+     * example paragraph (KF-AC7AFR). Visible text names most Text already.
+     */
+    ariaLabel?: string;
     /** Native heading, paragraph, or inline span element to render. Defaults to `p`. */
     variant?: TextVariant;
     /** Semantic foreground treatment. Defaults to the inherited foreground. */
@@ -5711,7 +5718,7 @@ type TextProps = TextCommonProps & ({
  * content-item padding; `span` adds no box geometry.
  * All ordinary native heading/paragraph attributes pass through to the element.
  */
-declare function Text({ variant: Variant, tone, weight, color, size, font, border, flush, controlMargins, lineHeight, align, live, rootAttributes, wrap, maxLines, truncate, truncateKeep, children, class: classValue, className, style, ...attributes }: TextProps): kerfjs.SafeHtml;
+declare function Text({ variant: Variant, tone, weight, color, size, font, border, flush, controlMargins, lineHeight, align, live, ariaLabel, rootAttributes, wrap, maxLines, truncate, truncateKeep, children, class: classValue, className, style, ...attributes }: TextProps): kerfjs.SafeHtml;
 
 export { FieldLabel, type FieldLabelProps, Sides, Text, type TextAlign, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextTruncate, type TextTruncateKeep, type TextVariant, type TextWeight, type TextWrap };
 ```

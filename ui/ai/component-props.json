@@ -13930,6 +13930,18 @@
           "description": "The element's id, for a link or `aria-*` reference to target (a\n`ListItemLink href=\"#…\"` destination, for example)."
         },
         {
+          "name": "lang",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "The text's language (`lang`), when it differs from the page's (KF-AC7AFR)."
+        },
+        {
+          "name": "ariaLabel",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "An accessible name for the element (`aria-label`), such as a named\nexample paragraph (KF-AC7AFR). Visible text names most Text already."
+        },
+        {
           "name": "variant",
           "type": {
             "kind": "enum",
@@ -14208,7 +14220,6 @@
         "title",
         "role",
         "style",
-        "lang",
         "dir",
         "draggable",
         "contentEditable",
@@ -14281,8 +14292,8 @@
         "id",
         "title",
         "role",
-        "style",
         "lang",
+        "style",
         "dir",
         "draggable",
         "contentEditable",

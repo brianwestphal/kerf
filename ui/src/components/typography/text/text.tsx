@@ -47,13 +47,20 @@ export type TextContent =
 
 type TextCommonProps = Omit<
   KerfBaseAttrs,
-  'children' | 'class' | 'className' | 'id'
+  'children' | 'class' | 'className' | 'id' | 'lang'
 > & {
   /**
    * The element's id, for a link or `aria-*` reference to target (a
    * `ListItemLink href="#…"` destination, for example).
    */
   id?: string;
+  /** The text's language (`lang`), when it differs from the page's (KF-AC7AFR). */
+  lang?: string;
+  /**
+   * An accessible name for the element (`aria-label`), such as a named
+   * example paragraph (KF-AC7AFR). Visible text names most Text already.
+   */
+  ariaLabel?: string;
   /** Native heading, paragraph, or inline span element to render. Defaults to `p`. */
   variant?: TextVariant;
   /** Semantic foreground treatment. Defaults to the inherited foreground. */
@@ -180,6 +187,7 @@ export function Text({
   lineHeight = 'default',
   align = 'start',
   live,
+  ariaLabel,
   rootAttributes = {},
   wrap = 'normal',
   maxLines,
@@ -238,6 +246,7 @@ export function Text({
       {...filterDataAttributes(rootAttributes, textProtectedAttributes)}
       {...attributes}
       aria-live={live ?? attributes['aria-live']}
+      aria-label={ariaLabel ?? attributes['aria-label']}
       class={classes}
       data-component="text"
       data-tone={tone}

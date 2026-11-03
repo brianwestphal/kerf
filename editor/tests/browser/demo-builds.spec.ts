@@ -16208,6 +16208,46 @@ async function rootTexts(page: Page, texts: readonly RootText[]) {
   }
 }
 
+// KF-AC7AFR: the paragraph's `lang` and `ariaLabel` are declared Text props;
+// its native `data-demo-copy` attribute is a root data attribute here.
+test('builds Text › Semantic Variants', async ({ page }) => {
+  test.slow();
+  const headings = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const;
+  const paragraph =
+    'Paragraph text keeps native semantics and accepts ordinary global, data, and ARIA attributes.';
+  await rootTexts(page, [
+    ...headings.map((variant) => ({
+      text: `Heading level ${variant.slice(1)}`,
+      spec: { choices: { variant } },
+    })),
+    {
+      text: paragraph,
+      spec: {
+        text: {
+          id: 'text-demo-paragraph',
+          lang: 'en',
+          ariaLabel: 'Example Paragraph',
+        },
+        data: [['data-demo-copy', 'paragraph']],
+      },
+    },
+  ]);
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      ...headings.map((variant) =>
+        textNode(`Heading level ${variant.slice(1)}`, { variant }),
+      ),
+      textNode(paragraph, {
+        id: 'text-demo-paragraph',
+        lang: 'en',
+        ariaLabel: 'Example Paragraph',
+        rootAttributes: { 'data-demo-copy': 'paragraph' },
+      }),
+    ),
+  );
+});
+
 test('builds Text › Strong Emphasis', async ({ page }) => {
   await rootTexts(page, [
     {

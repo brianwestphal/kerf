@@ -288,3 +288,22 @@ describe('Text id', () => {
     expect(String(Text({ children: 'No id' }))).not.toContain(' id=');
   });
 });
+
+// KF-AC7AFR: `lang` and `ariaLabel` are declared props, so the editor can
+// set them on a Text.
+describe('Text lang and ariaLabel', () => {
+  it('renders the language and accessible name on the element', () => {
+    const html = String(
+      Text({
+        lang: 'en',
+        ariaLabel: 'Example Paragraph',
+        children: 'Paragraph text',
+      }),
+    );
+    expect(html).toContain('lang="en"');
+    expect(html).toContain('aria-label="Example Paragraph"');
+    const plain = String(Text({ children: 'No name' }));
+    expect(plain).not.toContain('aria-label');
+    expect(plain).not.toContain(' lang=');
+  });
+});

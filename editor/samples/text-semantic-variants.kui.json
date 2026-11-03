@@ -1,0 +1,79 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TextSemanticVariants",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Heading level 1",
+            "variant": "h1"
+          }
+        },
+        {
+          "id": "00000000000000000000000003",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Heading level 2",
+            "variant": "h2"
+          }
+        },
+        {
+          "id": "00000000000000000000000004",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Heading level 3",
+            "variant": "h3"
+          }
+        },
+        {
+          "id": "00000000000000000000000005",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Heading level 4",
+            "variant": "h4"
+          }
+        },
+        {
+          "id": "00000000000000000000000006",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Heading level 5",
+            "variant": "h5"
+          }
+        },
+        {
+          "id": "00000000000000000000000007",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Heading level 6",
+            "variant": "h6"
+          }
+        },
+        {
+          "id": "00000000000000000000000008",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Paragraph text keeps native semantics and accepts ordinary global, data, and ARIA attributes.",
+            "id": "text-demo-paragraph",
+            "lang": "en",
+            "ariaLabel": "Example Paragraph",
+            "rootAttributes": {
+              "data-demo-copy": "paragraph"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
