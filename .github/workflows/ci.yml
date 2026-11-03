@@ -184,16 +184,18 @@ jobs:
       - run: npm ci
       - run: npm run check
 
-  # KF-PW9DA7: the editor's Playwright flows, one engine and half the tests
-  # per job, fully parallel. The demo builds made one serial job run about
-  # two hours, long enough that every push cancelled it before it reported.
+  # KF-PW9DA7: the editor's Playwright flows, one engine and a quarter of the
+  # tests per job, fully parallel. The demo builds made one serial job run
+  # about two hours, long enough that every push cancelled it before it
+  # reported; shards split by test count, so the long demo-builds file needs
+  # four of them to spread over two jobs.
   editor-browser:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         browser: [chromium, firefox, webkit]
-        shard: [1, 2]
+        shard: [1, 2, 3, 4]
     defaults:
       run:
         working-directory: editor
@@ -221,7 +223,7 @@ jobs:
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: Run editor browser tests
         id: editor_browser
-        run: npm run test:e2e -- --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/2
+        run: npm run test:e2e -- --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/4
       - name: Upload failed editor browser evidence
         if: ${{ !cancelled() && steps.editor_browser.outcome == 'failure' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
