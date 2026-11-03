@@ -248,6 +248,7 @@ import {
   switchLiveUpdates,
   tabBarActive,
   tabBarTabs,
+  textFieldPasswordShown,
   ticketLabelFilter,
   ticketLabels,
   toolbarAvatarChoice,
@@ -285,6 +286,7 @@ import {
   resetTagFieldDemo,
   setTagFieldDemoTags,
 } from './demos/tag-field.js';
+import { REVEAL_TEXT_FIELD_DEMO_ACTION } from './demos/text-field.js';
 import { SHOW_TOAST_DEMO_ACTION, showToastDemo } from './demos/toast.js';
 import { wireTooltipDemo } from './demos/tooltip.js';
 import { resetTreeListDemo, wireTreeListDemo } from './demos/tree-list.js';
@@ -1364,6 +1366,9 @@ const stopActions = delegateActions(app, 'click', {
   },
   'log-more': () => {
     actionLog.value = 'More actions requested';
+  },
+  [REVEAL_TEXT_FIELD_DEMO_ACTION]: () => {
+    textFieldPasswordShown.value = !textFieldPasswordShown.value;
   },
   'log-card-primary': () => {
     actionLog.value = 'Quotation opened';

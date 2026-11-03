@@ -171,6 +171,8 @@ export const badgePlayground = signal<BadgePlaygroundState>({
   size: 'default',
 });
 export const checkboxTasks = signal<readonly string[]>(['design']);
+/** TextField › End Toggle: whether the password shows (KF-3Y2GS2). */
+export const textFieldPasswordShown = signal(false);
 export const checkboxGroupChannels = signal<
   readonly ('email' | 'push' | 'digest' | 'sms')[]
 >(['email']);

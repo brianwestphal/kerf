@@ -595,7 +595,12 @@ applies. Numeric `min`, `max`, and `step` props do not pass to date inputs.
 after the input. It is hidden while the field is empty, is a normal Tab stop,
 and with `wireTextFields(root)` empties the field, dispatches bubbling `input`
 and `change` events as typing would, and returns focus to the field. A
-disabled or read-only field's clear button is disabled. `showCount` (with
+disabled or read-only field's clear button is disabled. `toggle` adds an
+icon toggle `<button>` after the input (after the clear button), named by its
+`label`, reporting `aria-pressed`, and running its delegated `action`; the
+application flips `pressed` (a password's Show, an editor's Not set). It is a
+normal Tab stop and is disabled with a disabled or read-only field.
+`showCount` (with
 `maxLength`) shows a live `count / maxLength` beside the hint that
 `wireTextFields` keeps current. Compact text grows to 16px on coarse-pointer
 touch screens so focusing a field never zooms the page in iOS.

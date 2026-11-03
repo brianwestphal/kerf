@@ -14273,7 +14273,7 @@
       "source": "kerf",
       "import": "@kerfjs/ui/text-field",
       "export": "TextField",
-      "description": "A text input with its label above, an optional leading icon and clear\nbutton, and supporting or error text below, at the 44px control height or\ncompact. `multiline` makes it a textarea that can grow with its content.\nThe whole field is one `<label>`, so clicking anywhere on it focuses the\ninput; the input is named by `label` (or `ariaLabel`) directly.",
+      "description": "A text input with its label above, an optional leading icon, clear\nbutton, and end toggle, and supporting or error text below, at the 44px control height or\ncompact. `multiline` makes it a textarea that can grow with its content.\nThe whole field is one `<label>`, so clicking anywhere on it focuses the\ninput; the input is named by `label` (or `ariaLabel`) directly.",
       "props": [
         {
           "name": "label",
@@ -14371,6 +14371,17 @@
           "required": false,
           "default": "Clear",
           "description": "The clear button's accessible name (default `Clear`)."
+        },
+        {
+          "name": "toggle",
+          "type": {
+            "kind": "ref",
+            "ref": "TextFieldToggle",
+            "text": "TextFieldToggle",
+            "nullable": true
+          },
+          "required": false,
+          "description": "An icon toggle button inside the end of the field (single-line only)."
         },
         {
           "name": "maxLength",
@@ -27666,6 +27677,40 @@
         }
       ],
       "text": "TabNavigatorTab<Id>"
+    },
+    "TextFieldToggle": {
+      "kind": "object",
+      "props": [
+        {
+          "name": "label",
+          "type": { "kind": "string", "text": "string" },
+          "required": true,
+          "description": "The button's accessible name."
+        },
+        {
+          "name": "icon",
+          "type": {
+            "kind": "content",
+            "text": "KerfUiContent",
+            "nullable": true
+          },
+          "required": true,
+          "description": "Its icon, such as a `LucideIcon`."
+        },
+        {
+          "name": "pressed",
+          "type": { "kind": "boolean", "text": "boolean" },
+          "required": true,
+          "description": "Whether the toggle is on (`aria-pressed`)."
+        },
+        {
+          "name": "action",
+          "type": { "kind": "string", "text": "string" },
+          "required": true,
+          "description": "Delegated `data-action` the application handles."
+        }
+      ],
+      "text": "TextFieldToggle"
     },
     "TreeListNode": {
       "kind": "object",

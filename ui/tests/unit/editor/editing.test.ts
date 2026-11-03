@@ -777,8 +777,45 @@ describe('the outline tree', () => {
 // turned one prop's input into another's (in WebKit the next clear then
 // fired no change event).
 describe('Inspector control identity', () => {
+  // KF-3Y2GS2: Not set is a toggle; an emptied field is the empty string.
+  it('unsets an optional text prop from its toggle, and empties to ""', () => {
+    const toggle = (root: HTMLElement, name: string) =>
+      root.querySelector<HTMLButtonElement>(
+        `[data-editor-prop="${name}"] .kui-text-field__toggle`,
+      );
+    // A required prop (a Text's children) has no toggle; emptied, it is "".
+    const text = open('01JB8Z1M6Q8E1X9V4S7K2R3T5G');
+    expect(toggle(text.root, 'children')).toBeNull();
+    type(field(text.root, '[data-editor-prop="children"]'), '');
+    expect(text.node()!.props?.children).toBe('');
+    cleanup?.();
+    document.body.replaceChildren();
+    // An optional one (a Button's title) starts Not set (pressed).
+    const { root, node } = open();
+    expect(node()!.props?.title).toBeUndefined();
+    expect(toggle(root, 'title')!.getAttribute('aria-pressed')).toBe('true');
+    const input = () =>
+      field(root, '[data-editor-prop="title"]').querySelector('input')!;
+    // Unset reads Not set; the empty string reads blank.
+    expect(input().placeholder).toBe('Not set');
+    type(field(root, '[data-editor-prop="title"]'), 'Send now');
+    expect(node()!.props?.title).toBe('Send now');
+    expect(toggle(root, 'title')!.getAttribute('aria-pressed')).toBe('false');
+    // Emptied, it holds "", still set.
+    type(field(root, '[data-editor-prop="title"]'), '');
+    expect(node()!.props?.title).toBe('');
+    expect(toggle(root, 'title')!.getAttribute('aria-pressed')).toBe('false');
+    expect(input().placeholder).toBe('');
+    // The toggle unsets it, and un-pressed sets it back to "".
+    toggle(root, 'title')!.click();
+    expect(node()!.props && 'title' in node()!.props!).toBe(false);
+    expect(toggle(root, 'title')!.getAttribute('aria-pressed')).toBe('true');
+    toggle(root, 'title')!.click();
+    expect(node()!.props?.title).toBe('');
+  });
+
   it('keeps each control’s input when a problem appears above them', () => {
-    const { root } = open();
+    const { root, editor } = open();
     const inputs = () =>
       new Map(
         [
@@ -793,7 +830,14 @@ describe('Inspector control identity', () => {
     const before = inputs();
     expect(before.has('children')).toBe(true);
     expect(root.querySelector('[data-editor-node-problem]')).toBeNull();
-    type(field(root, '[data-editor-prop="children"]'), '');
+    // The required label goes missing (KF-3Y2GS2: an emptied field is "",
+    // so the problem comes from the document rather than the field).
+    const missing = JSON.parse(
+      JSON.stringify(editor.document.value),
+    ) as typeof editor.document.value;
+    delete (findNode(missing, COMPOSE)!.node.props as Record<string, unknown>)
+      .children;
+    editor.document.value = missing;
     expect(root.querySelector('[data-editor-node-problem]')).not.toBeNull();
     const after = inputs();
     let compared = 0;

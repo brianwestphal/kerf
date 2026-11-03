@@ -65,7 +65,18 @@ export async function select(page: Page, name: RegExp | string, nth = 0) {
 const prop = (page: Page, name: string) =>
   page.locator(`[data-editor-prop="${name}"]`).first();
 
-/** Types `value` into a text prop and commits it with Enter (empty clears). */
+/**
+ * Unsets optional text prop `name` with its Not set toggle (KF-3Y2GS2): an
+ * emptied field is the empty string, not an unset prop.
+ */
+export async function unset(page: Page, name: string) {
+  const toggle = prop(page, name).locator('.kui-text-field__toggle');
+  if ((await toggle.getAttribute('aria-pressed')) !== 'true')
+    await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+}
+
+/** Types `value` into a text prop and commits it with Enter (empty is ""). */
 export async function setText(page: Page, name: string, value: string) {
   await prop(page, name).locator('input, textarea').first().click();
   await page.keyboard.press('ControlOrMeta+a');

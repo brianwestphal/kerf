@@ -28,6 +28,7 @@ import {
   sized,
   turnFieldOn,
   turnOn,
+  unset,
   zoneSpot,
 } from './build.js';
 
@@ -182,7 +183,7 @@ test('builds Button › Compact and Icons', async ({ page }) => {
   await setText(page, 'children', 'Download');
   await choose(page, 'size', 'Not set');
   await choose(page, 'emphasis', 'secondary');
-  await setText(page, 'action', '');
+  await unset(page, 'action');
   await setText(page, 'href', '#button');
   await select(page, /^LucideIcon/, 1);
   await page.locator('[data-editor-icon-place]').first().click();
@@ -252,7 +253,7 @@ test('builds TextField › Labels and Hints', async ({ page }) => {
   await turnOn(page, 'clearable');
   await select(page, /^TextField/, 1);
   await setText(page, 'ariaLabel', 'Search Components');
-  await setText(page, 'label', '');
+  await unset(page, 'label');
   await setText(page, 'placeholder', 'Search components');
   await choose(page, 'type', 'search');
   await turnOn(page, 'clearable');
@@ -910,8 +911,43 @@ test('builds Skeleton › Primitive', async ({ page }) => {
   );
 });
 
-// Skeleton › In Composition waits on KF-3Y2GS2: its placeholder rows need a
-// required value of "", which the editor can't write yet.
+// KF-3Y2GS2: a placeholder row's required value is "", its skeleton slot.
+test('builds Skeleton › In Composition', async ({ page }) => {
+  await dragComponent(page, 'ValueTable', () => emptySpot(page));
+  await select(page, /^ValueTable(?![A-Z])/);
+  await setText(page, 'label', 'Placeholder Rows');
+  // Two rows, as the demo has, from Children › Add a child.
+  for (let row = 0; row < 2; row += 1) {
+    await select(page, /^ValueTable(?![A-Z])/);
+    await addChild(page, 'ValueTableRow');
+  }
+  // The table arrived holding a placeholder Text.
+  await select(page, /^Text/);
+  await page.locator('[data-action="editor-delete"]').click();
+  for (const [index, label] of ['Status', 'Owner'].entries()) {
+    await select(page, /^ValueTableRow/, index);
+    await setText(page, 'label', label);
+    await setText(page, 'value', '');
+    await turnOn(page, 'placeholder');
+  }
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'value-table',
+        { label: 'Placeholder Rows' },
+        {
+          children: ['Status', 'Owner'].map((label) =>
+            node('value-table#ValueTableRow', {
+              label,
+              value: '',
+              placeholder: true,
+            }),
+          ),
+        },
+      ),
+    ),
+  );
+});
 
 test('builds ProgressRing › Tones and Indeterminate', async ({ page }) => {
   await stacked(
@@ -1018,7 +1054,7 @@ test('builds Select › Rendering Balance', async ({ page }) => {
   await select(page, /^Select/);
   await setText(page, 'name', 'rendering-balance');
   await setText(page, 'ariaLabel', 'Rendering Balance');
-  await setText(page, 'label', '');
+  await unset(page, 'label');
   const choices = [
     ['quiet', 'Quiet', 'bell', 'Attention'],
     ['balanced', 'Balanced', 'sliders-horizontal', 'Attention'],
@@ -1103,7 +1139,7 @@ test('builds Toolbar › Compact Density', async ({ page }) => {
   // The seeded ToolbarButton becomes the first icon action, then a copy.
   await select(page, /^ToolbarButton/);
   await setText(page, 'ariaLabel', 'Refresh Activity');
-  await setText(page, 'children', '');
+  await unset(page, 'children');
   await addIcon(page, 'icon', 'refresh-cw');
   await select(page, /^ToolbarButton/);
   await page.keyboard.press('ControlOrMeta+d');
@@ -1342,7 +1378,7 @@ test('builds PopupMenu › Icon Trigger in a Toolbar Group', async ({ page }) =>
   await select(page, /^PopupMenu/);
   await setText(page, 'label', 'Sort Tickets');
   // An icon-only trigger: a label, no seeded text.
-  await setText(page, 'text', '');
+  await unset(page, 'text');
   await page.locator('[data-editor-content-add="icon"]').click();
   await page.locator('[data-editor-icon-place]').first().click();
   await page.keyboard.type('arrow down a z');
@@ -1644,7 +1680,8 @@ test('builds ProgressBar › Indeterminate', async ({ page }) => {
   await select(page, /^ProgressBar/);
   await setText(page, 'id', 'progress-bar-demo-migration');
   await setText(page, 'label', 'Migrating Database');
-  // Without a value the bar sweeps a band across its track.
+  // Without a value the bar sweeps a band across its track. A number field
+  // emptied is unset.
   await setText(page, 'value', '');
   const bar = canvas(page).locator('progress');
   await expect(bar).toHaveCount(1);
@@ -1679,8 +1716,8 @@ test('builds ProgressBar › Tones and Compact Size', async ({ page }) => {
   await setText(page, 'value', '0.93');
   await choose(page, 'tone', 'warning');
   await select(page, /^ProgressBar/, 2);
-  await setText(page, 'id', '');
-  await setText(page, 'label', '');
+  await unset(page, 'id');
+  await unset(page, 'label');
   await setText(page, 'ariaLabel', 'Sync Progress');
   await setText(page, 'value', '0.4');
   await choose(page, 'tone', 'Default (brand)');
@@ -2335,7 +2372,7 @@ test('builds NavStack › Configured Toolbar', async ({ page }) => {
   const command = async (nth: number, ariaLabel: string, glyph: string) => {
     await select(page, /^ToolbarButton/, nth);
     await setText(page, 'ariaLabel', ariaLabel);
-    await setText(page, 'children', '');
+    await unset(page, 'children');
     await setText(page, 'action', 'nav-stack-demo-command');
     await addIcon(page, 'icon', glyph);
   };
@@ -2498,7 +2535,7 @@ test('builds NavStack › Overlay Chrome', async ({ page }) => {
   const command = async (nth: number, ariaLabel: string, glyph: string) => {
     await select(page, /^ToolbarButton/, nth);
     await setText(page, 'ariaLabel', ariaLabel);
-    await setText(page, 'children', '');
+    await unset(page, 'children');
     await setText(page, 'action', 'nav-stack-demo-command');
     await addIcon(page, 'icon', glyph);
   };
@@ -2659,7 +2696,7 @@ test('builds NavStack › Compact Chrome', async ({ page }) => {
   await turnOn(page, 'single');
   await select(page, /^ToolbarButton/);
   await setText(page, 'ariaLabel', 'Show Filters');
-  await setText(page, 'children', '');
+  await unset(page, 'children');
   await setText(page, 'action', 'toggle-compact-chrome-demo');
   await addIcon(page, 'icon', 'funnel');
   // Off, not unset: a toggle whose filters are closed (KF-K9VBB4).
@@ -2844,7 +2881,7 @@ test('builds Badge › Dot', async ({ page }) => {
   await choose(page, 'tone', 'danger');
   await choose(page, 'size', 'dot');
   // A dot carries no text: clear the seeded placeholder.
-  await setText(page, 'children', '');
+  await unset(page, 'children');
   await setText(page, 'label', 'New activity');
   await expect(canvas(page).locator('.kui-badge[data-kerf-node]')).toHaveCount(
     1,
@@ -3433,7 +3470,7 @@ async function iconGroup(
   if (relocate) await turnOn(page, 'relocateOnCollapse');
   await select(page, /^ToolbarButton/, nth);
   await setText(page, 'ariaLabel', label);
-  await setText(page, 'children', '');
+  await unset(page, 'children');
   await setText(page, 'action', 'workbench-demo-command');
   await dataAttribute(page, 'data-demo-command', glyph);
   await addIcon(page, 'icon', glyph);
@@ -4270,7 +4307,7 @@ test('builds SplitView › Interactive Compact Drill-Down', async ({ page }) => 
       });
     await select(page, /^ToolbarButton/, nth);
     await setText(page, 'ariaLabel', label);
-    await setText(page, 'children', '');
+    await unset(page, 'children');
     await setText(page, 'action', 'split-view-demo-command');
     await addIcon(page, 'icon', glyph);
   };
@@ -4405,7 +4442,7 @@ test('builds SplitView › Resizable, Collapsible List', async ({ page }) => {
   const command = async (nth: number, ariaLabel: string, glyph: string) => {
     await select(page, /^ToolbarButton/, nth);
     await setText(page, 'ariaLabel', ariaLabel);
-    await setText(page, 'children', '');
+    await unset(page, 'children');
     await setText(page, 'action', 'toggle-split-view-list');
     await addIcon(page, 'icon', glyph);
   };

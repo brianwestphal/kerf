@@ -32,6 +32,7 @@ import { delegateActions } from 'kerfjs/actions';
 import {
   ArrowDown,
   ArrowUp,
+  Ban,
   ChevronRight,
   CopyPlus,
   FileCode,
@@ -337,6 +338,11 @@ const emptyZoneTarget = (id: string) =>
     : undefined;
 /** Adds a node to a content prop's zone from its Properties row (KF-5T3TE4). */
 const CONTENT_ADD_ACTION = 'editor-content-add';
+/**
+ * KF-3Y2GS2: an optional text prop's Not set toggle. Pressed while the prop
+ * is unset; an empty field is the empty string.
+ */
+const UNSET_ACTION = 'editor-toggle-unset';
 const EXAMPLE_ACTION = 'editor-fill-example';
 // KF-Z9S029: object forms in a pushed Inspector view or a dialog.
 const FIELD_OPEN_ACTION = 'editor-open-field';
@@ -1538,7 +1544,13 @@ export function createEditor(options: EditorOptions) {
           </>
         );
       }
-      default:
+      default: {
+        // KF-3Y2GS2: an optional text prop's Not set toggle. A list's text
+        // item is never unset in place (KF-CY1D5W).
+        const unsettable =
+          control.kind === 'text' &&
+          !prop.required &&
+          typeof place.path.at(-1) !== 'number';
         return (
           <TextField
             label={propLabel(prop.name)}
@@ -1554,12 +1566,26 @@ export function createEditor(options: EditorOptions) {
                 ? cssPlaceholder(prop.cssValue?.helpers, grammar)
                 : prop.default !== undefined
                   ? String(prop.default)
-                  : undefined
+                  : unsettable && value === undefined
+                    ? // The toggle's state in words, as the Selects say it.
+                      'Not set'
+                    : undefined
             }
             error={error}
+            toggle={
+              unsettable
+                ? {
+                    label: 'Not set',
+                    icon: <LucideIcon icon={Ban} name="ban" />,
+                    pressed: value === undefined,
+                    action: UNSET_ACTION,
+                  }
+                : undefined
+            }
             rootAttributes={marker(control.kind)}
           />
         );
+      }
     }
   };
 
@@ -4738,6 +4764,24 @@ export function createEditor(options: EditorOptions) {
         },
         [DUPLICATE_ACTION]: () => duplicate(),
         [ADD_ACTION]: () => addChild(),
+        [UNSET_ACTION]: (_event, target) => {
+          const field = target.closest<HTMLElement>(
+            '[data-editor-prop], [data-editor-field]',
+          )!;
+          // Pressed means Not set: un-pressing sets it, to the empty string.
+          const next =
+            target.getAttribute('aria-pressed') === 'true' ? '' : undefined;
+          if (field.dataset.editorField) {
+            writeField(
+              JSON.parse(field.dataset.editorField) as FieldPlace,
+              next,
+            );
+            return;
+          }
+          const id = selectedNodeId();
+          if (id)
+            commit(setProp(doc.value, id, field.dataset.editorProp!, next));
+        },
         [CONTENT_ADD_ACTION]: (_event, target) => {
           leaveFieldEditor(target);
           const zone = target.dataset.editorContentAdd!;

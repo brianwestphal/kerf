@@ -134,6 +134,42 @@
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
 }
+/* The end toggle (a password's Show, an editor's Not set): the clear
+   button's geometry, and a quiet fill while pressed. */
+.kui-text-field__toggle {
+  display: inline-flex;
+  width: remify(28px);
+  height: remify(28px);
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin-inline-end: remify(-4px);
+  color: var(--kui-color-neutral-on-quiet);
+  border: none;
+  border-radius: var(--kui-radius-circle, 50%);
+  background: transparent;
+  cursor: pointer;
+}
+.kui-text-field__toggle > [data-lucide] {
+  width: remify(16px);
+  height: remify(16px);
+}
+.kui-text-field__toggle:hover {
+  color: var(--kui-color-text);
+}
+.kui-text-field__toggle[aria-pressed="true"] {
+  color: var(--kui-color-text);
+  background-color: var(--kui-color-neutral-fill-quiet);
+}
+.kui-text-field__toggle:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+.kui-text-field__toggle:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
 /* Only a field with a value offers to clear it. */
 .kui-text-field__input:placeholder-shown ~ .kui-text-field__clear {
   display: none;

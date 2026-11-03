@@ -2,9 +2,15 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { TextField } from '@kerfjs/ui/text-field';
-import { Search } from 'lucide';
+import { Eye, EyeOff, Search } from 'lucide';
+
+import { textFieldPasswordShown } from './state.js';
+
+/** The End Toggle example's action (KF-3Y2GS2). */
+export const REVEAL_TEXT_FIELD_DEMO_ACTION = 'text-field-demo-reveal';
 
 export function TextFieldDemo() {
+  const shown = textFieldPasswordShown.value;
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'text-field' }}>
       <CatalogExample
@@ -27,6 +33,28 @@ export function TextFieldDemo() {
             clearable
           />
         </List>
+      </CatalogExample>
+      <CatalogExample
+        label="End Toggle"
+        note="toggle puts an icon toggle button at the field's end, reporting aria-pressed; the application flips pressed in its action. Here it shows the password."
+        align="inline-control"
+      >
+        <TextField
+          label="Password"
+          type={shown ? 'text' : 'password'}
+          value="correct horse battery"
+          autocomplete="off"
+          toggle={{
+            label: 'Show Password',
+            icon: shown ? (
+              <LucideIcon icon={EyeOff} name="eye-off" />
+            ) : (
+              <LucideIcon icon={Eye} name="eye" />
+            ),
+            pressed: shown,
+            action: REVEAL_TEXT_FIELD_DEMO_ACTION,
+          }}
+        />
       </CatalogExample>
       <CatalogExample
         label="Validation"

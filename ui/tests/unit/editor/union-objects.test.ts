@@ -126,6 +126,23 @@ describe('a Workbench panel in the Inspector (KF-907BXY)', () => {
       'Folders',
     );
     expect(rail()).toMatchObject({ label: 'Folders' });
+    // KF-3Y2GS2: an optional field's Not set toggle unsets it in place, and
+    // un-pressed sets it back to the empty string.
+    const labelToggle = () =>
+      field(
+        root,
+        `[data-editor-field='{"prop":"leftRail","path":["label"]}'] .kui-text-field__toggle`,
+      );
+    expect(labelToggle().getAttribute('aria-pressed')).toBe('false');
+    labelToggle().click();
+    expect(rail()).not.toHaveProperty('label');
+    expect(labelToggle().getAttribute('aria-pressed')).toBe('true');
+    labelToggle().click();
+    expect(rail()).toMatchObject({ label: '' });
+    type(
+      field(root, `[data-editor-field='{"prop":"leftRail","path":["label"]}']`),
+      'Folders',
+    );
     // The form edits the static panel; a navigation panel's fields are not in it.
     expect(
       root.querySelector(
@@ -149,6 +166,12 @@ describe('a Workbench panel in the Inspector (KF-907BXY)', () => {
       label: 'Folders',
       toolbar: { label: 'Folder tools' },
     });
+    // A required field has no Not set toggle.
+    expect(
+      root.querySelector(
+        `[data-editor-field='{"prop":"leftRail","path":["toolbar","label"]}'] .kui-text-field__toggle`,
+      ),
+    ).toBeNull();
     // Its content zones lead to Children › Add a child, at that zone.
     field(root, '[data-editor-content-add="leftRail.toolbar.title"]').click();
     expect(field(root, '[data-editor-add="zone"]').getAttribute('value')).toBe(

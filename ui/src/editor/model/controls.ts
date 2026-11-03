@@ -563,6 +563,9 @@ export function valueFromControl(
     }
     default: {
       const text = String(raw);
+      // KF-3Y2GS2: an emptied text field is the empty string; an optional
+      // prop's Not set toggle, not an empty field, unsets it.
+      if (kind === 'text') return { value: text };
       if (text === '') return { value: undefined };
       // A boolean's Not set / Off / On select (KF-K9VBB4) writes a boolean.
       return {

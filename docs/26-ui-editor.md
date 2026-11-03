@@ -23,7 +23,9 @@
   unpressed toggle; KF-38KD5N: spelling checks off), a text field
   for strings, text-accepting content, numbers, and `$css` builder calls, and
   a JSON field for list and object literals such as a Combobox's
-  `suggestions`), renames nodes, promotes a literal prop to a document param, adds a child of
+  `suggestions`; an emptied text field holds the empty string, and an
+  optional text prop's Not set toggle at the field's end unsets it, so `""`
+  and unset are both expressible, KF-3Y2GS2), renames nodes, promotes a literal prop to a document param, adds a child of
   a chosen component to one of the node's legal zones, moves a node within its
   zone, deletes it, and undoes or redoes any of these.
 

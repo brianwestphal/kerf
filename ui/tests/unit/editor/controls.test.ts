@@ -306,6 +306,9 @@ describe('valueFromControl', () => {
       error: 'Enter a number.',
     });
     expect(valueFromControl('text', 'Hi')).toEqual({ value: 'Hi' });
+    // KF-3Y2GS2: an emptied text field is the empty string; the Not set
+    // toggle, not an empty field, unsets an optional prop.
+    expect(valueFromControl('text', '')).toEqual({ value: '' });
     expect(valueFromControl('select', '')).toEqual({ value: undefined });
     expect(valueFromControl('css', ' px(8) ')).toEqual({
       value: { $css: 'px(8)' },

@@ -1,7 +1,9 @@
+import { Ban } from 'lucide';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { TextField } from '../../src/components/forms/text-field/text-field.js';
 import { wireTextFields } from '../../src/components/forms/text-field/wiring/wire-text-fields.js';
+import { LucideIcon } from '../../src/components/media/lucide-icon/lucide-icon.js';
 
 const render = (markup: unknown) => {
   const host = document.createElement('div');
@@ -263,6 +265,34 @@ describe('TextField', () => {
       maxLength: 40,
       id: 'search',
     });
+  });
+
+  // KF-3Y2GS2: an icon toggle at the end of the field.
+  it('renders an end toggle with its pressed state and action', () => {
+    const toggle = (pressed: boolean, more = {}) =>
+      render(
+        TextField({
+          label: 'Value',
+          toggle: {
+            label: 'Not set',
+            icon: LucideIcon({ icon: Ban, name: 'ban' }),
+            pressed,
+            action: 'toggle-unset',
+          },
+          ...more,
+        }),
+      ).querySelector<HTMLButtonElement>('button.kui-text-field__toggle')!;
+    const off = toggle(false);
+    expect(off.type).toBe('button');
+    expect(off.getAttribute('aria-label')).toBe('Not set');
+    expect(off.getAttribute('aria-pressed')).toBe('false');
+    expect(off.dataset.action).toBe('toggle-unset');
+    expect(off.querySelector('[data-lucide="ban"]')).not.toBeNull();
+    expect(off.disabled).toBe(false);
+    expect(toggle(true).getAttribute('aria-pressed')).toBe('true');
+    expect(toggle(false, { disabled: true }).disabled).toBe(true);
+    // Single-line only.
+    expect(toggle(false, { multiline: true })).toBeNull();
   });
 
   it('renders a clear button whose field always has a placeholder', () => {

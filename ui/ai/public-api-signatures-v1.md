@@ -6839,6 +6839,21 @@ type TextFieldName = {
     ariaLabel: string;
 };
 type TextFieldProps = TextFieldName & TextFieldOptions;
+/**
+ * An icon toggle button inside the end of a single-line field (KF-3Y2GS2):
+ * a password's Show, or an editor's Not set. The application flips
+ * `pressed` in its `action` handler.
+ */
+interface TextFieldToggle {
+    /** The button's accessible name. */
+    label: string;
+    /** Its icon, such as a `LucideIcon`. */
+    icon: KerfUiContent;
+    /** Whether the toggle is on (`aria-pressed`). */
+    pressed: boolean;
+    /** Delegated `data-action` the application handles. */
+    action: string;
+}
 interface TextFieldOptions {
     /** The controlled value. */
     value?: string;
@@ -6861,6 +6876,8 @@ interface TextFieldOptions {
     clearable?: boolean;
     /** The clear button's accessible name (default `Clear`). */
     clearLabel?: string;
+    /** An icon toggle button inside the end of the field (single-line only). */
+    toggle?: TextFieldToggle;
     /** The most characters the field accepts (native `maxlength`). */
     maxLength?: number;
     /**
@@ -6908,15 +6925,15 @@ interface TextFieldOptions {
     slot?: string;
 }
 /**
- * A text input with its label above, an optional leading icon and clear
- * button, and supporting or error text below, at the 44px control height or
+ * A text input with its label above, an optional leading icon, clear
+ * button, and end toggle, and supporting or error text below, at the 44px control height or
  * compact. `multiline` makes it a textarea that can grow with its content.
  * The whole field is one `<label>`, so clicking anywhere on it focuses the
  * input; the input is named by `label` (or `ariaLabel`) directly.
  */
-declare function TextField({ label, ariaLabel, value, name, placeholder, hint, error, size, icon, clearable, clearLabel, maxLength, showCount, type, min, max, step, multiline, rows, maxRows, disabled, readOnly, required, autofocus, autocomplete, autocapitalize, autocorrect, inputMode, spellcheck, id, className, rootAttributes, slot, }: TextFieldProps): kerfjs.SafeHtml;
+declare function TextField({ label, ariaLabel, value, name, placeholder, hint, error, size, icon, clearable, clearLabel, toggle, maxLength, showCount, type, min, max, step, multiline, rows, maxRows, disabled, readOnly, required, autofocus, autocomplete, autocapitalize, autocorrect, inputMode, spellcheck, id, className, rootAttributes, slot, }: TextFieldProps): kerfjs.SafeHtml;
 
-export { TextField, type TextFieldInputMode, type TextFieldName, type TextFieldOptions, type TextFieldProps, type TextFieldRootAttributes, type TextFieldSize, type TextFieldType };
+export { TextField, type TextFieldInputMode, type TextFieldName, type TextFieldOptions, type TextFieldProps, type TextFieldRootAttributes, type TextFieldSize, type TextFieldToggle, type TextFieldType };
 ```
 
 ## `@kerfjs/ui/checkbox`
