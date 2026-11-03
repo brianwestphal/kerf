@@ -1,0 +1,89 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "DisclosureAccordion",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "gap": "xs"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:disclosure",
+                "props": {
+                  "title": "When am I billed?",
+                  "appearance": "framed",
+                  "name": "disclosure-demo-faq"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "On the first of each month, for the seats active the day before."
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:disclosure",
+                "props": {
+                  "title": "Can I change the number of seats?",
+                  "appearance": "framed",
+                  "name": "disclosure-demo-faq"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "Yes. Added seats are prorated; removed seats end with the period."
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:disclosure",
+                "props": {
+                  "title": "How do I export my data?",
+                  "appearance": "framed",
+                  "name": "disclosure-demo-faq"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "Settings › Data › Export creates an archive of every project."
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

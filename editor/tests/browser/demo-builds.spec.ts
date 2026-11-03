@@ -12998,6 +12998,373 @@ test('builds Pane › Sunken Auto Chrome', async ({ page }) => {
   );
 });
 
+/**
+ * Adds a DemoChip to the `nth` `parent`: an outlined, rounded Badge, compact
+ * unless the chip is `wide` or `tall` (then the default Badge size).
+ */
+async function demoChip(
+  page: Page,
+  parent: RegExp,
+  label: string,
+  nth = 0,
+  big = false,
+) {
+  await addInto(page, parent, 'Badge', nth);
+  await applySpec(page, {
+    choices: {
+      appearance: 'outline',
+      shape: 'rounded',
+      size: big ? 'default' : 'compact',
+    },
+    text: { children: label },
+  });
+}
+
+const demoChipNode = (children: string, big = false) =>
+  node('badge', {
+    children,
+    appearance: 'outline',
+    shape: 'rounded',
+    size: big ? 'default' : 'compact',
+  });
+
+/**
+ * A DemoFrameShell holding a `container` (Row or List, set up by `spec`)
+ * of DemoChips with a Spacer (set up by `spacer`) between them.
+ */
+async function spacedChips(
+  page: Page,
+  container: 'Row' | 'List',
+  spec: FieldSpec,
+  [before, after]: readonly [string, string],
+  spacer: FieldSpec,
+) {
+  await frameShell(page);
+  await dragComponent(page, container, () => emptySpot(page));
+  const owner = container === 'Row' ? /^Row/ : /^List(?![A-Z])/;
+  await select(page, owner);
+  await applySpec(page, spec);
+  await demoChip(page, owner, before);
+  await addInto(page, owner, 'Spacer');
+  await applySpec(page, spacer);
+  await demoChip(page, owner, after);
+}
+
+const spacedChipsNode = (
+  container: string,
+  props: Record<string, unknown>,
+  [before, after]: readonly [string, string],
+  spacer: Record<string, unknown>,
+) =>
+  frameShellNode(
+    node(container, props, {
+      children: [
+        demoChipNode(before),
+        node('spacer', spacer),
+        demoChipNode(after),
+      ],
+    }),
+  );
+
+test('builds Spacer › Named Dimensions', async ({ page }) => {
+  await spacedChips(
+    page,
+    'Row',
+    { choices: { vAlign: 'middle', gap: 'none' } },
+    ['Before', 'After'],
+    { choices: { width: 'm', height: 'l' } },
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      spacedChipsNode(
+        'row',
+        { vAlign: 'middle', gap: 'none' },
+        ['Before', 'After'],
+        {
+          width: 'm',
+          height: 'l',
+        },
+      ),
+    ),
+  );
+});
+
+test('builds Spacer › Flexible Space', async ({ page }) => {
+  await spacedChips(
+    page,
+    'Row',
+    { choices: { vAlign: 'middle', gap: 'none' } },
+    ['Leading', 'Trailing'],
+    { flags: ['flex'] },
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      spacedChipsNode(
+        'row',
+        { vAlign: 'middle', gap: 'none' },
+        ['Leading', 'Trailing'],
+        { flex: true },
+      ),
+    ),
+  );
+});
+
+test('builds Spacer › Vertical Space', async ({ page }) => {
+  await spacedChips(
+    page,
+    'List',
+    { choices: { gap: 'none' } },
+    ['Above', 'Below'],
+    { choices: { height: 'm' } },
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      spacedChipsNode('list', { gap: 'none' }, ['Above', 'Below'], {
+        height: 'm',
+      }),
+    ),
+  );
+});
+
+/** The Row demos' three chips: `prefix` one/two/three, the second tall. */
+async function rowChips(page: Page, owner: RegExp, prefix = '', nth = 0) {
+  const names = prefix
+    ? [`${prefix} one`, `${prefix} two`, `${prefix} three`]
+    : ['One', 'Two', 'Three'];
+  for (const [index, name] of names.entries())
+    await demoChip(page, owner, name, nth, index === 1);
+}
+
+const rowChipNodes = (prefix = '') =>
+  (prefix
+    ? [`${prefix} one`, `${prefix} two`, `${prefix} three`]
+    : ['One', 'Two', 'Three']
+  ).map((name, index) => demoChipNode(name, index === 1));
+
+/** A DemoFrameShell holding one Row set up by `spec`. */
+async function shellRow(page: Page, spec: FieldSpec) {
+  await frameShell(page);
+  await dragComponent(page, 'Row', () => emptySpot(page));
+  await select(page, /^Row/);
+  await applySpec(page, spec);
+}
+
+test('builds Row › Default Row', async ({ page }) => {
+  await shellRow(page, {});
+  await rowChips(page, /^Row/);
+  expect(await exported(page)).toEqual(
+    pane(frameShellNode(node('row', undefined, { children: rowChipNodes() }))),
+  );
+});
+
+test('builds Row › Flex Participation', async ({ page }) => {
+  await frameShell(page);
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List(?![A-Z])/);
+  await applySpec(page, { choices: { gap: 'xs', flex: 'true' } });
+  for (const [index, [prefix, flex]] of (
+    [
+      ['Growing', 'true'],
+      ['Fixed', 'none'],
+    ] as const
+  ).entries()) {
+    await addInto(page, /^List(?![A-Z])/, 'Row');
+    await applySpec(page, {
+      choices: { flex, vAlign: 'middle' },
+      flags: ['wrap'],
+    });
+    await rowChips(page, /^Row/, prefix, index);
+  }
+  expect(await exported(page)).toEqual(
+    pane(
+      frameShellNode(
+        node(
+          'list',
+          { gap: 'xs', flex: true },
+          {
+            children: [
+              node(
+                'row',
+                { flex: true, vAlign: 'middle', wrap: true },
+                { children: rowChipNodes('Growing') },
+              ),
+              node(
+                'row',
+                { flex: 'none', vAlign: 'middle', wrap: true },
+                { children: rowChipNodes('Fixed') },
+              ),
+            ],
+          },
+        ),
+      ),
+    ),
+  );
+});
+
+test('builds Row › Side-Selectable Insets', async ({ page }) => {
+  await shellRow(page, {
+    choices: { textInsets: 'tbl', controlInsets: 'r', vAlign: 'middle' },
+  });
+  await rowChips(page, /^Row/);
+  expect(await exported(page)).toEqual(
+    pane(
+      frameShellNode(
+        node(
+          'row',
+          { textInsets: 'tbl', controlInsets: 'r', vAlign: 'middle' },
+          { children: rowChipNodes() },
+        ),
+      ),
+    ),
+  );
+});
+
+test('builds Disclosure › Plain Disclosure', async ({ page }) => {
+  const copy =
+    'Proxy, request timeout, and retry limits apply to every connection this workspace makes.';
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await disclosureInto(page, /^List(?![A-Z])/, {
+    text: { title: 'Advanced Settings', detail: '3 options' },
+  });
+  await textInto(page, /^Disclosure/, copy);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('list', undefined, {
+        children: [
+          node(
+            'disclosure',
+            { title: 'Advanced Settings', detail: '3 options' },
+            { children: [textNode(copy)] },
+          ),
+        ],
+      }),
+    ),
+  );
+});
+
+/**
+ * Adds a Disclosure (set up by `spec`) to the `nth` `parent`, and removes
+ * the bare text it is seeded with (a text node with no Properties).
+ */
+async function disclosureInto(
+  page: Page,
+  parent: RegExp,
+  spec: FieldSpec,
+  nth = 0,
+) {
+  await addInto(page, parent, 'Disclosure', nth);
+  await applySpec(page, spec);
+  await addChild(page, 'Text');
+  await area(page, 'Outline');
+  await outlineRow(page, /^Text “Disclosure”/).click();
+  await deleteSelected(page);
+  // The added Text stays, its copy set by the caller (textInto adds one
+  // more), so remove it too: the caller adds the copy it wants.
+  await select(page, /^Text(?![A-Z])/, -1);
+  await deleteSelected(page);
+}
+
+test('builds Disclosure › Framed and Sunken', async ({ page }) => {
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List(?![A-Z])/);
+  await choose(page, 'gap', 'xs');
+  await disclosureInto(page, /^List(?![A-Z])/, {
+    choices: { appearance: 'framed' },
+    flags: ['open'],
+    text: { title: 'Release Notes' },
+  });
+  await textInto(
+    page,
+    /^Disclosure/,
+    'Faster sync, a new export format, and four fixes.',
+  );
+  await disclosureInto(page, /^List(?![A-Z])/, {
+    choices: { appearance: 'sunken' },
+    text: { title: 'Build Log', detail: '412 lines' },
+  });
+  await textInto(page, /^Disclosure/, 'npm run build — completed in 18.4s', 1, {
+    choices: { font: 'monospace' },
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'xs' },
+        {
+          children: [
+            node(
+              'disclosure',
+              { title: 'Release Notes', appearance: 'framed', open: true },
+              {
+                children: [
+                  textNode('Faster sync, a new export format, and four fixes.'),
+                ],
+              },
+            ),
+            node(
+              'disclosure',
+              { title: 'Build Log', detail: '412 lines', appearance: 'sunken' },
+              {
+                children: [
+                  textNode('npm run build — completed in 18.4s', {
+                    font: 'monospace',
+                  }),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+// The demo keys each FAQ row with data-key, a reserved name a view document
+// does not carry (KUI-V015); the rows render the same without it.
+test('builds Disclosure › Accordion', async ({ page }) => {
+  const faq = [
+    [
+      'When am I billed?',
+      'On the first of each month, for the seats active the day before.',
+    ],
+    [
+      'Can I change the number of seats?',
+      'Yes. Added seats are prorated; removed seats end with the period.',
+    ],
+    [
+      'How do I export my data?',
+      'Settings › Data › Export creates an archive of every project.',
+    ],
+  ] as const;
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List(?![A-Z])/);
+  await choose(page, 'gap', 'xs');
+  for (const [index, [title, answer]] of faq.entries()) {
+    await disclosureInto(page, /^List(?![A-Z])/, {
+      choices: { appearance: 'framed' },
+      text: { title, name: 'disclosure-demo-faq' },
+    });
+    await textInto(page, /^Disclosure/, answer, index);
+  }
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'xs' },
+        {
+          children: faq.map(([title, answer]) =>
+            node(
+              'disclosure',
+              { title, name: 'disclosure-demo-faq', appearance: 'framed' },
+              { children: [textNode(answer)] },
+            ),
+          ),
+        },
+      ),
+    ),
+  );
+});
+
 /** A ToolbarText node as the exported document spells it. */
 const toolbarTextNode = (text: string, size?: string) =>
   node('toolbar-text', { text, ...(size ? { size } : {}) });

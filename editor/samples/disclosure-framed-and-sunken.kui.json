@@ -1,0 +1,70 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "DisclosureFramedAndSunken",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "gap": "xs"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:disclosure",
+                "props": {
+                  "title": "Release Notes",
+                  "appearance": "framed",
+                  "open": true
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "Faster sync, a new export format, and four fixes."
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:disclosure",
+                "props": {
+                  "title": "Build Log",
+                  "appearance": "sunken",
+                  "detail": "412 lines"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "npm run build — completed in 18.4s",
+                        "font": "monospace"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

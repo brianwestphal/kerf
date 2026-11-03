@@ -1,0 +1,127 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "RowFlexParticipation",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sunken-panel",
+          "props": {
+            "ariaLabel": "Layout Example"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "gap": "xs",
+                  "flex": true
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:row",
+                      "props": {
+                        "flex": true,
+                        "vAlign": "middle",
+                        "wrap": true
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:badge",
+                            "props": {
+                              "children": "Growing one",
+                              "appearance": "outline",
+                              "shape": "rounded",
+                              "size": "compact"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:badge",
+                            "props": {
+                              "children": "Growing two",
+                              "appearance": "outline",
+                              "shape": "rounded",
+                              "size": "default"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000007",
+                            "type": "@kerfjs/ui:badge",
+                            "props": {
+                              "children": "Growing three",
+                              "appearance": "outline",
+                              "shape": "rounded",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:row",
+                      "props": {
+                        "flex": "none",
+                        "vAlign": "middle",
+                        "wrap": true
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000009",
+                            "type": "@kerfjs/ui:badge",
+                            "props": {
+                              "children": "Fixed one",
+                              "appearance": "outline",
+                              "shape": "rounded",
+                              "size": "compact"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000010",
+                            "type": "@kerfjs/ui:badge",
+                            "props": {
+                              "children": "Fixed two",
+                              "appearance": "outline",
+                              "shape": "rounded",
+                              "size": "default"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000011",
+                            "type": "@kerfjs/ui:badge",
+                            "props": {
+                              "children": "Fixed three",
+                              "appearance": "outline",
+                              "shape": "rounded",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
