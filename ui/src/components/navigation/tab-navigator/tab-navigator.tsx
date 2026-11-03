@@ -15,6 +15,7 @@ import {
   joinStyles,
   type SurfaceTint,
   surfaceTintAttributes,
+  type SurfaceTintScheme,
 } from '../../../shared/styles/surface-tint.js';
 import { Badge } from '../../feedback/badge/badge.js';
 import type { PaneAppearance } from '../../layout/pane/pane.js';
@@ -39,6 +40,13 @@ interface TabNavigatorTabBase<Id extends string> {
    * in the declared scheme, with lightness clamped to keep text at WCAG AA.
    */
   tint?: SurfaceTint;
+  /**
+   * Scope this surface and its subtree to the light or dark palette, whatever
+   * the page's scheme (a light card on a dark page). A `tint` already sets
+   * its scheme; pass `scheme` alone for the plain palette, or with a tint
+   * only when they agree.
+   */
+  scheme?: SurfaceTintScheme;
   /** Add 8px to every side of a plain scene's scrolling content. */
   deepInset?: boolean;
   /** Opt into keyboard (`0`) or programmatic (`-1`) focus on this scene. */
@@ -159,6 +167,13 @@ export interface TabNavigatorProps<Id extends string = string> {
    * in the declared scheme, with lightness clamped to keep text at WCAG AA.
    */
   tint?: SurfaceTint;
+  /**
+   * Scope this surface and its subtree to the light or dark palette, whatever
+   * the page's scheme (a light card on a dark page). A `tint` already sets
+   * its scheme; pass `scheme` alone for the plain palette, or with a tint
+   * only when they agree.
+   */
+  scheme?: SurfaceTintScheme;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -207,11 +222,12 @@ export function TabNavigator<Id extends string>({
   scrollEdgeDistance,
   background,
   tint,
+  scheme,
   className = '',
   slot,
   rootAttributes = {},
 }: TabNavigatorProps<Id>) {
-  const tinted = surfaceTintAttributes(tint);
+  const tinted = surfaceTintAttributes(tint, scheme);
   if (
     tabs.some(
       (tab) => tab.appearance === 'sunken' && tab.background === undefined,
@@ -245,6 +261,7 @@ export function TabNavigator<Id extends string>({
       data-background={background === undefined ? undefined : ''}
       data-kui-tint={tinted['data-kui-tint']}
       data-kui-tint-accent={tinted['data-kui-tint-accent']}
+      data-kui-scheme={tinted['data-kui-scheme']}
       style={joinStyles(
         background === undefined
           ? undefined
@@ -256,7 +273,7 @@ export function TabNavigator<Id extends string>({
       <div class="kui-tab-scaffold__scenes">
         {tabs.map((tab) => (
           <div
-            class={`kui-tab-scaffold__scene ${surfaceTintAttributes(tab.tint).className}`.trim()}
+            class={`kui-tab-scaffold__scene ${surfaceTintAttributes(tab.tint, tab.scheme).className}`.trim()}
             data-tab-scaffold-scene={tab.id}
             data-active={String(tab.id === active)}
             data-appearance={
@@ -265,15 +282,22 @@ export function TabNavigator<Id extends string>({
                 : undefined
             }
             data-background={tab.background === undefined ? undefined : ''}
-            data-kui-tint={surfaceTintAttributes(tab.tint)['data-kui-tint']}
+            data-kui-tint={
+              surfaceTintAttributes(tab.tint, tab.scheme)['data-kui-tint']
+            }
             data-kui-tint-accent={
-              surfaceTintAttributes(tab.tint)['data-kui-tint-accent']
+              surfaceTintAttributes(tab.tint, tab.scheme)[
+                'data-kui-tint-accent'
+              ]
+            }
+            data-kui-scheme={
+              surfaceTintAttributes(tab.tint, tab.scheme)['data-kui-scheme']
             }
             style={joinStyles(
               tab.background === undefined
                 ? undefined
                 : `--_kui-tab-scaffold-scene-background:${tab.background}`,
-              surfaceTintAttributes(tab.tint).style,
+              surfaceTintAttributes(tab.tint, tab.scheme).style,
             )}
             data-deep-inset={tab.deepInset ? 'true' : undefined}
             data-outlined={

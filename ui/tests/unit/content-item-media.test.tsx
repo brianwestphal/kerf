@@ -69,7 +69,7 @@ describe('ContentItem image state wiring', () => {
     lead.dispatchEvent(new Event('error'));
     expect(item.dataset.mediaState).toBe('error');
     expect(item.hasAttribute('data-kui-tint')).toBe(false);
-    expect(item.classList.contains('wa-dark')).toBe(false);
+    expect(item.classList.contains('kui-dark')).toBe(false);
     expect(soft.dataset.imageError).toBe('true');
     complete = false;
     lead.setAttribute('src', '/replacement.jpg');
@@ -87,6 +87,33 @@ describe('ContentItem image state wiring', () => {
     width = 0;
     lead.dispatchEvent(new Event('error'));
     expect(item.dataset.mediaState).toBe('ready');
+  });
+
+  // KF-E44H0A: an app's own scheme outlives a media tint that fails.
+  it('keeps a card scheme the app set when its media fails', () => {
+    const root = document.createElement('div');
+    root.innerHTML = String(
+      ContentItem({
+        media: { src: '/lead.jpg', alt: 'Lead' },
+        tint: { color: fillColor('#283a54'), scheme: 'dark' },
+        scheme: 'dark',
+        children: 'Story',
+      }),
+    );
+    const item = root.firstElementChild as HTMLElement;
+    expect(item.dataset.scheme).toBe('dark');
+    const stop = wireContentItemMedia(item);
+    expect(item.dataset.mediaState).toBe('error');
+    expect(item.hasAttribute('data-kui-tint')).toBe(false);
+    expect(item.getAttribute('data-kui-scheme')).toBe('dark');
+    expect(item.classList.contains('kui-dark')).toBe(true);
+    stop();
+    // Without an app scheme, a failed tint takes its scope with it.
+    const tinted = card();
+    const stopTinted = wireContentItemMedia(tinted);
+    expect(tinted.hasAttribute('data-kui-scheme')).toBe(false);
+    expect(tinted.classList.contains('kui-dark')).toBe(false);
+    stopTinted();
   });
 
   it('handles an untinted media card used as the wiring root', () => {
@@ -118,13 +145,13 @@ describe('ContentItem image state wiring', () => {
       item.dataset.mediaState = 'pending';
       item.setAttribute('data-kui-tint', 'dark');
       item.setAttribute('data-kui-tint-accent', '');
-      item.classList.add('wa-dark');
+      item.classList.add('kui-dark');
       item.setAttribute(attribute, 'changed');
       await settle();
       expect(item.dataset.mediaState).toBe('error');
       expect(item.hasAttribute('data-kui-tint')).toBe(false);
       expect(item.hasAttribute('data-kui-tint-accent')).toBe(false);
-      expect(item.classList.contains('wa-dark')).toBe(false);
+      expect(item.classList.contains('kui-dark')).toBe(false);
     }
 
     width = 160;
@@ -133,12 +160,12 @@ describe('ContentItem image state wiring', () => {
     item.dataset.mediaState = 'pending';
     item.removeAttribute('data-kui-tint');
     item.removeAttribute('data-kui-tint-accent');
-    item.classList.remove('wa-dark');
+    item.classList.remove('kui-dark');
     await settle();
     expect(item.dataset.mediaState).toBe('ready');
     expect(item.getAttribute('data-kui-tint')).toBe('dark');
     expect(item.hasAttribute('data-kui-tint-accent')).toBe(true);
-    expect(item.classList.contains('wa-dark')).toBe(true);
+    expect(item.classList.contains('kui-dark')).toBe(true);
 
     width = 0;
     lead.dispatchEvent(new Event('error'));

@@ -5,6 +5,7 @@ import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
 import {
   type SurfaceTint,
   surfaceTintAttributes,
+  type SurfaceTintScheme,
 } from '../../../shared/styles/surface-tint.js';
 import {
   BackdropImage,
@@ -183,6 +184,13 @@ interface ContentItemBaseProps {
   media?: ContentItemMedia;
   /** App-sampled image color, scoped to this card once its image loads. */
   tint?: SurfaceTint;
+  /**
+   * Scope this surface and its subtree to the light or dark palette, whatever
+   * the page's scheme (a light card on a dark page). A `tint` already sets
+   * its scheme; pass `scheme` alone for the plain palette, or with a tint
+   * only when they agree.
+   */
+  scheme?: SurfaceTintScheme;
   /** Item content; a plain string is allowed for bare copy. */
   children?: KerfUiContent | string;
   /**
@@ -269,6 +277,7 @@ export function ContentItem({
   appearance = 'transparent',
   media,
   tint,
+  scheme,
   children,
   frame = 'none',
   flush = false,
@@ -316,7 +325,7 @@ export function ContentItem({
       'ContentItem media.blur and blurredSrc cannot be combined.',
     );
   if (media) mediaParallax(media.parallax ?? 'subtle');
-  const tinted = surfaceTintAttributes(media ? tint : undefined);
+  const tinted = surfaceTintAttributes(media ? tint : undefined, scheme);
   const fadeStyle =
     media?.fadeTo === undefined
       ? undefined
@@ -364,6 +373,8 @@ export function ContentItem({
       data-media-fade={media?.fadeTo === undefined ? undefined : 'true'}
       data-kui-tint={tinted['data-kui-tint']}
       data-kui-tint-accent={tinted['data-kui-tint-accent']}
+      data-kui-scheme={tinted['data-kui-scheme']}
+      data-scheme={scheme}
       role={role}
       aria-label={ariaLabel}
       aria-selected={

@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.69.0
+kerf-ui-skill-version: 1.70.0
 ---
 
 # Building with @kerfjs/ui
@@ -135,7 +135,7 @@ color, set `tint={{ color, scheme }}` on the same components (and
 `TabNavigatorTab`, `PaneConfig`) instead: you declare whether the color is a
 `'light'` or `'dark'` surface, and the scope re-derives surface, text, quiet
 text, link, fills, and chrome material from it with lightness clamped to keep
-text at WCAG AA. Add `accent` to re-derive the brand ramp (loud fills, links, focus ring) from the artwork's vivid color with the same AA clamps. Never restyle tokens by hand inside a tinted region.
+text at WCAG AA. Add `accent` to re-derive the brand ramp (loud fills, links, focus ring) from the artwork's vivid color with the same AA clamps. Never restyle tokens by hand inside a tinted region. For the plain palette in a fixed scheme without a color, set `scheme="light"` or `scheme="dark"` on the same components (a tint already implies its scheme; both must agree), or put Kerf's `kui-light` / `kui-dark` / `kui-invert` scope class on any element. They work without Web Awesome; do not use `wa-light` / `wa-dark` for a Kerf scope.
 
 For many image-led `ContentItem` cards in one feed, opt into
 `media.deferOffscreen` to skip offscreen hero painting while retaining the

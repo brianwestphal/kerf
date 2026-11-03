@@ -1044,3 +1044,44 @@ for (const [pageScheme, theme] of [
     expect(found).toEqual([]);
   });
 }
+
+// KF-E44H0A: Kerf's own scheme scopes switch the palette in a Kerf-only page,
+// and with the Web Awesome bridge loaded its tokens re-derive in them too.
+for (const webAwesome of [false, true]) {
+  test(`.kui-dark, .kui-invert, and [data-kui-scheme] scope the palette (${webAwesome ? 'with' : 'without'} Web Awesome)`, async ({
+    page,
+  }) => {
+    await mountToneText(page, webAwesome, 'light');
+    const colors = await page.evaluate(() => {
+      const probe = (attributes: string) => {
+        const host = document.createElement('div');
+        host.innerHTML = `<div ${attributes}><p style="color: var(--kui-color-text)">Text</p><div data-wa style="background: var(--wa-color-surface-default, rgb(1, 2, 3))"></div></div>`;
+        document.body.append(host);
+        const text = window.getComputedStyle(host.querySelector('p')!).color;
+        const surface = window.getComputedStyle(
+          host.querySelector('[data-wa]')!,
+        ).backgroundColor;
+        host.remove();
+        return { text, surface };
+      };
+      return {
+        page: probe(''),
+        reference: probe('style="color-scheme: dark"'),
+        dark: probe('class="kui-dark"'),
+        invert: probe('class="kui-invert"'),
+        attribute: probe('data-kui-scheme="dark"'),
+        backToLight: probe('class="kui-dark"><div class="kui-invert"'),
+      };
+    });
+    expect(colors.reference.text).not.toBe(colors.page.text);
+    expect(colors.dark.text).toBe(colors.reference.text);
+    expect(colors.invert.text).toBe(colors.reference.text);
+    expect(colors.attribute.text).toBe(colors.reference.text);
+    expect(colors.backToLight.text).toBe(colors.page.text);
+    if (webAwesome) {
+      // The bridge's Web Awesome surface follows the Kerf scope.
+      expect(colors.dark.surface).toBe('rgb(28, 28, 30)');
+      expect(colors.page.surface).toBe('rgb(255, 255, 255)');
+    }
+  });
+}

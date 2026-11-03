@@ -210,7 +210,7 @@ test('broken and replaced images switch between ordinary and tinted card surface
       element.setAttribute('data-media-state', 'pending');
       element.setAttribute('data-kui-tint', 'dark');
       element.setAttribute('data-kui-tint-accent', '');
-      element.classList.add('wa-dark');
+      element.classList.add('kui-dark');
       element.setAttribute(name, 'changed');
     }, attribute);
     await expect(card).toHaveAttribute('data-media-state', 'error');
@@ -243,7 +243,7 @@ test('broken and replaced images switch between ordinary and tinted card surface
     element.setAttribute('data-media-state', 'pending');
     element.removeAttribute('data-kui-tint');
     element.removeAttribute('data-kui-tint-accent');
-    element.classList.remove('wa-dark');
+    element.classList.remove('kui-dark');
   });
   await expect(card).toHaveAttribute('data-media-state', 'ready');
   await expect(card).toHaveAttribute('data-kui-tint', 'dark');

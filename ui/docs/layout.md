@@ -187,12 +187,21 @@ seed sweep across hue and lightness holds every text token at 4.5:1 or better
 over the surface, raised surface, and quiet fills, with and without the Web
 Awesome theme (`tests/browser/tone-contrast.spec.ts`).
 
-The scope also takes the declared `color-scheme` and the Web Awesome
-`wa-light` / `wa-dark` class, so Web Awesome components inside it re-derive
-their own fills. Without relative color syntax, and under
+The scope also takes the declared `color-scheme` and Kerf's
+`data-kui-scheme` / `kui-light` / `kui-dark` scheme scope, so Web Awesome
+components inside it re-derive their own fills when the Web Awesome bridge is
+loaded. Without relative color syntax, and under
 `prefers-contrast: more`, the scope keeps the plain palette in its declared
 scheme. `tint` and `background` combine: `background` paints the pane, and
 `tint` still re-derives the tokens for its content.
+
+For the plain palette in a fixed scheme, without a tint color (a dark
+player bar on a light page, a light card on a dark one), set `scheme="dark"`
+or `scheme="light"` on the same components instead. It renders the same
+`data-kui-scheme` scope; a `tint` already implies its scheme, so pass both
+only when they agree. Outside a component, put `kui-light`, `kui-dark`, or
+`kui-invert` (the opposite of the surrounding scheme) on any element. These
+are Kerf's own scopes and need no Web Awesome CSS.
 
 Add `accent` (usually the artwork's most vivid color) to re-derive the brand
 ramp too: `tint={{ color, scheme, accent }}`. Loud fills (primary buttons, the

@@ -23,26 +23,45 @@ export interface SurfaceTint {
   accent?: CssColor;
 }
 
-/** The root attributes a tinted surface renders. */
-export function surfaceTintAttributes(tint: SurfaceTint | undefined): {
+/**
+ * The root attributes a tinted or scheme-scoped surface renders. A `tint`
+ * implies its own scheme; `scheme` alone scopes the light or dark palette
+ * without a tint color. KF-E44H0A: Kerf owns the scope (`data-kui-scheme`
+ * and the `kui-<scheme>` class foundation.css styles), so it works without
+ * the Web Awesome bridge.
+ */
+export function surfaceTintAttributes(
+  tint: SurfaceTint | undefined,
+  scheme?: SurfaceTintScheme,
+): {
   'data-kui-tint': SurfaceTintScheme | undefined;
   'data-kui-tint-accent': '' | undefined;
-  /** The Web Awesome scheme class, so its theme re-derives in the scope. */
+  'data-kui-scheme': SurfaceTintScheme | undefined;
+  /** The `kui-<scheme>` scope class, or empty. */
   className: string;
   /** The inline declaration carrying the color, or `undefined`. */
   style: string | undefined;
 } {
+  if (tint !== undefined && scheme !== undefined && tint.scheme !== scheme)
+    throw new Error(
+      `A surface's scheme ("${scheme}") disagrees with its tint's scheme ("${tint.scheme}"); a tint already sets the scheme, so pass one or the other.`,
+    );
+  const resolved = tint?.scheme ?? scheme;
+  const scope = {
+    'data-kui-scheme': resolved,
+    className: resolved === undefined ? '' : `kui-${resolved}`,
+  };
   if (tint === undefined)
     return {
       'data-kui-tint': undefined,
       'data-kui-tint-accent': undefined,
-      className: '',
+      ...scope,
       style: undefined,
     };
   return {
     'data-kui-tint': tint.scheme,
     'data-kui-tint-accent': tint.accent === undefined ? undefined : '',
-    className: `wa-${tint.scheme}`,
+    ...scope,
     style:
       tint.accent === undefined
         ? `--_kui-tint-color:${tint.color}`

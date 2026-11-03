@@ -30,6 +30,16 @@ export {
   withoutRelationalArguments,
 };
 
+/**
+ * Kerf's appearance scopes (foundation.css): global classes an app or a
+ * component puts on any element, like the `data-kui-tint` attribute, rather
+ * than one component's class. Any stylesheet may key on them.
+ */
+const SCOPE_CLASSES = new Set(['kui-light', 'kui-dark', 'kui-invert']);
+/** The kui classes in a selector that name a component, not a scope. */
+const componentClasses = (selector) =>
+  kuiClasses(selector).filter((name) => !SCOPE_CLASSES.has(name));
+
 /** The optional Web Awesome bridge stylesheet. */
 const WEB_AWESOME_BRIDGE = 'webawesome.css';
 /** A Web Awesome element name inside a compound selector. */
@@ -393,19 +403,19 @@ export function checkPackageStylesheet(model, filename, source) {
           );
           const ownerIndex = compounds.findLastIndex(
             (compound) =>
-              kuiClasses(compound).length > 0 ||
+              componentClasses(compound).length > 0 ||
               dataComponents(compound).length > 0,
           );
           const ownerCompound = ownerIndex === -1 ? '' : compounds[ownerIndex];
           const ownerRefs = [
-            ...kuiClasses(ownerCompound).map((name) => owns(name)),
+            ...componentClasses(ownerCompound).map((name) => owns(name)),
             ...dataComponents(ownerCompound).map((value) => ownsData(value)),
           ];
           const contextual = ownerRefs.length > 0 && ownerRefs.every(Boolean);
           const checked = contextual ? [ownerCompound] : compounds;
           return [
             ...checked
-              .flatMap(kuiClasses)
+              .flatMap(componentClasses)
               .filter((name) => !owns(name))
               .map((name) => `.${name}`),
             ...checked

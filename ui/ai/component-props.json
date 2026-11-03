@@ -2881,6 +2881,17 @@
           "description": "App-sampled image color, scoped to this card once its image loads."
         },
         {
+          "name": "scheme",
+          "type": {
+            "kind": "enum",
+            "values": ["light", "dark"],
+            "text": "SurfaceTintScheme | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Scope this surface and its subtree to the light or dark palette, whatever\nthe page's scheme (a light card on a dark page). A `tint` already sets\nits scheme; pass `scheme` alone for the plain palette, or with a tint\nonly when they agree."
+        },
+        {
           "name": "children",
           "type": {
             "kind": "content",
@@ -8127,6 +8138,17 @@
           "description": "A scoped tint (`{ color, scheme }`) for the stack, its chrome, bottom toolbar, and views: its surfaces and every\ndescendant re-derive their surface and text tokens from the app's color\nin the declared scheme, with lightness clamped to keep text at WCAG AA."
         },
         {
+          "name": "scheme",
+          "type": {
+            "kind": "enum",
+            "values": ["light", "dark"],
+            "text": "SurfaceTintScheme | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Scope this surface and its subtree to the light or dark palette, whatever\nthe page's scheme (a light card on a dark page). A `tint` already sets\nits scheme; pass `scheme` alone for the plain palette, or with a tint\nonly when they agree."
+        },
+        {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
@@ -8350,6 +8372,17 @@
           },
           "required": false,
           "description": "A scoped tint: `{ color, scheme }`, the app's color and the scheme it\nbelongs to. The pane paints the tinted surface (unless `background` is\nset) and its whole subtree, chrome material and quiet fills included,\nre-derives its surface and text tokens from the color with lightness\nclamped to keep text at WCAG AA. Without relative color syntax, or under\n`prefers-contrast: more`, the scope keeps the plain palette in the\ndeclared scheme."
+        },
+        {
+          "name": "scheme",
+          "type": {
+            "kind": "enum",
+            "values": ["light", "dark"],
+            "text": "SurfaceTintScheme | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Scope this surface and its subtree to the light or dark palette, whatever\nthe page's scheme (a light card on a dark page). A `tint` already sets\nits scheme; pass `scheme` alone for the plain palette, or with a tint\nonly when they agree."
         },
         {
           "name": "scrollClearance",
@@ -13453,6 +13486,17 @@
           },
           "required": false,
           "description": "A scoped tint (`{ color, scheme }`) for the navigator, its bar, and every scene: its surfaces and every\ndescendant re-derive their surface and text tokens from the app's color\nin the declared scheme, with lightness clamped to keep text at WCAG AA."
+        },
+        {
+          "name": "scheme",
+          "type": {
+            "kind": "enum",
+            "values": ["light", "dark"],
+            "text": "SurfaceTintScheme | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Scope this surface and its subtree to the light or dark palette, whatever\nthe page's scheme (a light card on a dark page). A `tint` already sets\nits scheme; pass `scheme` alone for the plain palette, or with a tint\nonly when they agree."
         },
         {
           "name": "className",
@@ -27587,6 +27631,17 @@
               "description": "A scoped tint (`{ color, scheme }`) for this scene: its surfaces and every\ndescendant re-derive their surface and text tokens from the app's color\nin the declared scheme, with lightness clamped to keep text at WCAG AA."
             },
             {
+              "name": "scheme",
+              "type": {
+                "kind": "enum",
+                "values": ["light", "dark"],
+                "text": "SurfaceTintScheme | undefined",
+                "nullable": true
+              },
+              "required": false,
+              "description": "Scope this surface and its subtree to the light or dark palette, whatever\nthe page's scheme (a light card on a dark page). A `tint` already sets\nits scheme; pass `scheme` alone for the plain palette, or with a tint\nonly when they agree."
+            },
+            {
               "name": "deepInset",
               "type": {
                 "kind": "boolean",
@@ -27705,6 +27760,17 @@
               },
               "required": false,
               "description": "A scoped tint (`{ color, scheme }`) for this scene: its surfaces and every\ndescendant re-derive their surface and text tokens from the app's color\nin the declared scheme, with lightness clamped to keep text at WCAG AA."
+            },
+            {
+              "name": "scheme",
+              "type": {
+                "kind": "enum",
+                "values": ["light", "dark"],
+                "text": "SurfaceTintScheme | undefined",
+                "nullable": true
+              },
+              "required": false,
+              "description": "Scope this surface and its subtree to the light or dark palette, whatever\nthe page's scheme (a light card on a dark page). A `tint` already sets\nits scheme; pass `scheme` alone for the plain palette, or with a tint\nonly when they agree."
             },
             {
               "name": "deepInset",
@@ -28370,6 +28436,17 @@
                 },
                 "required": false,
                 "description": "Accessible label for the icon-only back control (default \"Back\")."
+              },
+              {
+                "name": "scheme",
+                "type": {
+                  "kind": "enum",
+                  "values": ["light", "dark"],
+                  "text": "SurfaceTintScheme | undefined",
+                  "nullable": true
+                },
+                "required": false,
+                "description": "Scope this surface and its subtree to the light or dark palette, whatever\nthe page's scheme (a light card on a dark page). A `tint` already sets\nits scheme; pass `scheme` alone for the plain palette, or with a tint\nonly when they agree."
               },
               {
                 "name": "rootAttributes",

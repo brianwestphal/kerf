@@ -26,17 +26,38 @@ const foundation = postcss.parse(
 );
 
 describe('surface tint', () => {
-  it('renders the scheme, the Web Awesome scheme class, and the color', () => {
+  it('renders the scheme, the Kerf scheme class, and the color', () => {
     expect(surfaceTintAttributes(undefined)).toEqual({
       'data-kui-tint': undefined,
+      'data-kui-scheme': undefined,
       className: '',
       style: undefined,
     });
+    // KF-E44H0A: a scheme alone scopes the palette with Kerf's own class.
+    expect(surfaceTintAttributes(undefined, 'dark')).toEqual({
+      'data-kui-tint': undefined,
+      'data-kui-scheme': 'dark',
+      className: 'kui-dark',
+      style: undefined,
+    });
+    expect(
+      surfaceTintAttributes(
+        { color: fillColor('#2962ff'), scheme: 'dark' },
+        'dark',
+      ).className,
+    ).toBe('kui-dark');
+    expect(() =>
+      surfaceTintAttributes(
+        { color: fillColor('#2962ff'), scheme: 'dark' },
+        'light',
+      ),
+    ).toThrow(/disagrees with its tint/);
     expect(
       surfaceTintAttributes({ color: fillColor('#2962ff'), scheme: 'dark' }),
     ).toEqual({
       'data-kui-tint': 'dark',
-      className: 'wa-dark',
+      'data-kui-scheme': 'dark',
+      className: 'kui-dark',
       style: '--_kui-tint-color:#2962ff',
     });
     expect(
@@ -48,7 +69,8 @@ describe('surface tint', () => {
     ).toEqual({
       'data-kui-tint': 'dark',
       'data-kui-tint-accent': '',
-      className: 'wa-dark',
+      'data-kui-scheme': 'dark',
+      className: 'kui-dark',
       style: '--_kui-tint-color:#1b2438;--_kui-tint-accent:#ff4081',
     });
     expect(joinStyles(undefined, undefined)).toBeUndefined();
@@ -64,7 +86,7 @@ describe('surface tint', () => {
         children: <span>Tracks</span>,
       }),
     );
-    expect(html).toContain('class="kui-pane wa-dark album"');
+    expect(html).toContain('class="kui-pane kui-dark album"');
     expect(html).toContain('data-kui-tint="dark"');
     expect(html).toContain(
       'style="--_kui-pane-background:#111;--_kui-tint-color:#2962ff"',
@@ -91,7 +113,7 @@ describe('surface tint', () => {
         views: [{ key: 'home', content: <span>Home</span> }],
       }),
     );
-    expect(stack).toContain('class="kui-nav-stack wa-light"');
+    expect(stack).toContain('class="kui-nav-stack kui-light"');
     expect(stack).toContain('data-kui-tint="light"');
     const tabs = String(
       TabNavigator({
@@ -109,9 +131,46 @@ describe('surface tint', () => {
         ],
       }),
     );
-    expect(tabs).toContain('class="kui-tab-scaffold wa-dark"');
-    expect(tabs).toContain('class="kui-tab-scaffold__scene wa-light"');
+    expect(tabs).toContain('class="kui-tab-scaffold kui-dark"');
+    expect(tabs).toContain('class="kui-tab-scaffold__scene kui-light"');
     expect(tabs).toContain('style="--_kui-tint-color:#ff4081"');
+  });
+
+  it('scopes a surface to a scheme without a tint (KF-E44H0A)', () => {
+    const pane = String(Pane({ scheme: 'dark', children: <span>Night</span> }));
+    expect(pane).toContain('class="kui-pane kui-dark"');
+    expect(pane).toContain('data-kui-scheme="dark"');
+    expect(pane).not.toContain('data-kui-tint');
+    const stack = String(
+      NavStack({
+        id: 'stack',
+        label: 'Stack',
+        scheme: 'light',
+        views: [{ key: 'home', content: <span>Home</span> }],
+      }),
+    );
+    expect(stack).toContain('class="kui-nav-stack kui-light"');
+    const tabs = String(
+      TabNavigator({
+        id: 'tabs',
+        label: 'Sections',
+        active: 'a',
+        scheme: 'dark',
+        tabs: [
+          { id: 'a', label: 'A', content: <span>A</span>, scheme: 'light' },
+        ],
+      }),
+    );
+    expect(tabs).toContain('class="kui-tab-scaffold kui-dark"');
+    expect(tabs).toContain('class="kui-tab-scaffold__scene kui-light"');
+    expect(tabs).toContain('data-kui-scheme="light"');
+    expect(() =>
+      Pane({
+        scheme: 'light',
+        tint: { color: fillColor('#111'), scheme: 'dark' },
+        children: <span>x</span>,
+      }),
+    ).toThrow(/disagrees with its tint/);
   });
 
   it('re-declares the palette in the tint scope, gated on relative color syntax and contrast', () => {

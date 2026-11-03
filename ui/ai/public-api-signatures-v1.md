@@ -1321,7 +1321,7 @@ import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { CssColor } from './css-values.js';
 import { S as SemanticTone } from './semantic-tone-CdW013KF.js';
-import { S as SurfaceTint } from './surface-tint-DQgYCaP9.js';
+import { S as SurfaceTint, a as SurfaceTintScheme } from './surface-tint-DQgYCaP9.js';
 import { BackdropImagePosition, BackdropImageParallax, BackdropImageBlur, BackdropImageScrim } from './backdrop-image.js';
 import './extension-attributes-IJ4decoa.js';
 
@@ -1413,6 +1413,13 @@ interface ContentItemBaseProps {
     media?: ContentItemMedia;
     /** App-sampled image color, scoped to this card once its image loads. */
     tint?: SurfaceTint;
+    /**
+     * Scope this surface and its subtree to the light or dark palette, whatever
+     * the page's scheme (a light card on a dark page). A `tint` already sets
+     * its scheme; pass `scheme` alone for the plain palette, or with a tint
+     * only when they agree.
+     */
+    scheme?: SurfaceTintScheme;
     /** Item content; a plain string is allowed for bare copy. */
     children?: KerfUiContent | string;
     /**
@@ -1489,7 +1496,7 @@ type ContentItemProps = ContentItemBaseProps & ({
  * border (transparent unless `framed`), 8px padding, and a rounded or pill
  * radius. It owns that whole geometry, so wrappers must not add more.
  */
-declare function ContentItem({ appearance, media, tint, children, frame, flush, shape, bubble, title, ariaLabel, focusTarget, outlined, tabIndex, gridRow, interactive, action, itemId, selectionMode, selected, disabled, className, rootAttributes, slot, }: ContentItemProps): kerfjs.SafeHtml;
+declare function ContentItem({ appearance, media, tint, scheme, children, frame, flush, shape, bubble, title, ariaLabel, focusTarget, outlined, tabIndex, gridRow, interactive, action, itemId, selectionMode, selected, disabled, className, rootAttributes, slot, }: ContentItemProps): kerfjs.SafeHtml;
 
 export { ContentItem, type ContentItemAppearance, type ContentItemBubble, type ContentItemFrame, type ContentItemMedia, type ContentItemProps, type ContentItemSelectionMode, type ContentItemShape, SemanticTone };
 ```
@@ -1919,7 +1926,7 @@ export { wireListFocusScroll };
 ## `@kerfjs/ui/nav-stack`
 
 ```ts
-export { c as NavStack, d as NavStackBottomToolbarPresentation, e as NavStackChromePresentation, N as NavStackProps, f as NavStackToolbarConfig, a as NavStackView, g as NavStackViewBottomToolbar, h as NavStackViewToolbar } from './nav-stack-ByJ1GcDc.js';
+export { c as NavStack, d as NavStackBottomToolbarPresentation, e as NavStackChromePresentation, N as NavStackProps, f as NavStackToolbarConfig, a as NavStackView, g as NavStackViewBottomToolbar, h as NavStackViewToolbar } from './nav-stack-DwxpXxqJ.js';
 import 'kerfjs';
 import './semantic-content-BbzjvSu9.js';
 import './extension-attributes-IJ4decoa.js';
@@ -1966,7 +1973,7 @@ export { type WireNavStackOptions, wireNavStack };
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
-import { N as NavStackProps, a as NavStackView } from './nav-stack-ByJ1GcDc.js';
+import { N as NavStackProps, a as NavStackView } from './nav-stack-DwxpXxqJ.js';
 import { ResizableRegionProps } from './resizable-region.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
@@ -2078,8 +2085,7 @@ import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { S as ScrollClearance } from './scroll-clearance-BikHljTc.js';
 import { CssColor } from './css-values.js';
-import { S as SurfaceTint } from './surface-tint-DQgYCaP9.js';
-export { a as SurfaceTintScheme } from './surface-tint-DQgYCaP9.js';
+import { S as SurfaceTint, a as SurfaceTintScheme } from './surface-tint-DQgYCaP9.js';
 
 /**
  * What clear (fully transparent) chrome fades in as content scrolls beneath
@@ -2263,6 +2269,13 @@ interface PaneProps {
      */
     tint?: SurfaceTint;
     /**
+     * Scope this surface and its subtree to the light or dark palette, whatever
+     * the page's scheme (a light card on a dark page). A `tint` already sets
+     * its scheme; pass `scheme` alone for the plain palette, or with a tint
+     * only when they agree.
+     */
+    scheme?: SurfaceTintScheme;
+    /**
      * Clear chrome that lies over the scrolling content's block-start and/or
      * block-end edge, such as a `DialogSurface` floating footer over a filling
      * Pane. The content scroller adds the inherited
@@ -2319,9 +2332,9 @@ type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separator
  * each logical edge, so the same component works as a sidebar, main area,
  * inspector, or dialog column.
  */
-declare function Pane({ header, children, footer, fill, chromePlacement, chromeDividers, compactChrome, compactChromeOpen, headerPresentation, scrollEdge, scrollEdgeDistance, appearance, background, tint, deepInset, scrollClearance, tabIndex, outlined, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
+declare function Pane({ header, children, footer, fill, chromePlacement, chromeDividers, compactChrome, compactChromeOpen, headerPresentation, scrollEdge, scrollEdgeDistance, appearance, background, tint, scheme, deepInset, scrollClearance, tabIndex, outlined, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
 
-export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlacement, type PaneCompactChrome, type PaneCompactChromePolicy, type PaneConfig, type PaneContentElement, type PaneElement, type PaneHeaderPresentation, type PaneProps, type PaneSeparatorSide, ScrollClearance, type ScrollEdge, SurfaceTint };
+export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlacement, type PaneCompactChrome, type PaneCompactChromePolicy, type PaneConfig, type PaneContentElement, type PaneElement, type PaneHeaderPresentation, type PaneProps, type PaneSeparatorSide, ScrollClearance, type ScrollEdge, SurfaceTint, SurfaceTintScheme };
 ```
 
 ## `@kerfjs/ui/workbench`
@@ -2330,7 +2343,7 @@ export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlac
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
-import { b as NavPane, N as NavStackProps } from './nav-stack-ByJ1GcDc.js';
+import { b as NavPane, N as NavStackProps } from './nav-stack-DwxpXxqJ.js';
 import { ListConfig } from './list.js';
 import { PaneConfig } from './pane.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
@@ -2968,7 +2981,7 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { PaneAppearance, ScrollEdge } from './pane.js';
 import { CssColor } from './css-values.js';
-import { S as SurfaceTint } from './surface-tint-DQgYCaP9.js';
+import { S as SurfaceTint, a as SurfaceTintScheme } from './surface-tint-DQgYCaP9.js';
 import './scroll-clearance-BikHljTc.js';
 
 interface TabNavigatorTabBase<Id extends string> {
@@ -2991,6 +3004,13 @@ interface TabNavigatorTabBase<Id extends string> {
      * in the declared scheme, with lightness clamped to keep text at WCAG AA.
      */
     tint?: SurfaceTint;
+    /**
+     * Scope this surface and its subtree to the light or dark palette, whatever
+     * the page's scheme (a light card on a dark page). A `tint` already sets
+     * its scheme; pass `scheme` alone for the plain palette, or with a tint
+     * only when they agree.
+     */
+    scheme?: SurfaceTintScheme;
     /** Add 8px to every side of a plain scene's scrolling content. */
     deepInset?: boolean;
     /** Opt into keyboard (`0`) or programmatic (`-1`) focus on this scene. */
@@ -3104,6 +3124,13 @@ interface TabNavigatorProps<Id extends string = string> {
      * in the declared scheme, with lightness clamped to keep text at WCAG AA.
      */
     tint?: SurfaceTint;
+    /**
+     * Scope this surface and its subtree to the light or dark palette, whatever
+     * the page's scheme (a light card on a dark page). A `tint` already sets
+     * its scheme; pass `scheme` alone for the plain palette, or with a tint
+     * only when they agree.
+     */
+    scheme?: SurfaceTintScheme;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -3119,7 +3146,7 @@ interface TabNavigatorProps<Id extends string = string> {
  * On larger classes, promote the tabs to a `Workbench` rail or sidebar instead of
  * a bottom bar. See `docs/23-app-layouts.md` §3.4.
  */
-declare function TabNavigator<Id extends string>({ id, label, tabs, active, separator, chromeDividers, barPresentation, scrollEdge, scrollEdgeDistance, background, tint, className, slot, rootAttributes, }: TabNavigatorProps<Id>): SafeHtml;
+declare function TabNavigator<Id extends string>({ id, label, tabs, active, separator, chromeDividers, barPresentation, scrollEdge, scrollEdgeDistance, background, tint, scheme, className, slot, rootAttributes, }: TabNavigatorProps<Id>): SafeHtml;
 
 export { TabNavigator, type TabNavigatorBarPresentation, type TabNavigatorProps, type TabNavigatorTab };
 ```
@@ -3307,7 +3334,7 @@ import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './workbench.js';
-import './nav-stack-ByJ1GcDc.js';
+import './nav-stack-DwxpXxqJ.js';
 import './list.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './panel-toolbar-vg6Ir5Dy.js';
@@ -3463,7 +3490,7 @@ import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './workbench.js';
-import './nav-stack-ByJ1GcDc.js';
+import './nav-stack-DwxpXxqJ.js';
 import './list.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './panel-toolbar-vg6Ir5Dy.js';
@@ -3519,7 +3546,7 @@ import './scroll-clearance-BikHljTc.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './workbench.js';
-import './nav-stack-ByJ1GcDc.js';
+import './nav-stack-DwxpXxqJ.js';
 import './list.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './panel-toolbar-vg6Ir5Dy.js';
@@ -5367,7 +5394,7 @@ import { SplitViewListWidth } from './split-view.js';
 import { DialogSurfaceSize, DialogSurfaceHeight, DialogSurfaceMaxHeight, DialogSurfaceRootAttributes } from './surface-scaffold.js';
 export { DialogCloseSource, DialogRequestCloseDetail, closeDialog, openDialog } from './surface-scaffold.js';
 import './extension-attributes-IJ4decoa.js';
-import './nav-stack-ByJ1GcDc.js';
+import './nav-stack-DwxpXxqJ.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './surface-tint-DQgYCaP9.js';
@@ -5496,7 +5523,7 @@ import { WorkbenchMainBottomToolbar, WorkbenchPanel } from './workbench.js';
 import { DialogSurfaceSize, DialogSurfaceHeight, DialogSurfaceMaxHeight, DialogSurfaceRootAttributes } from './surface-scaffold.js';
 export { DialogCloseSource, DialogRequestCloseDetail, closeDialog, openDialog } from './surface-scaffold.js';
 import './extension-attributes-IJ4decoa.js';
-import './nav-stack-ByJ1GcDc.js';
+import './nav-stack-DwxpXxqJ.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
 import './surface-tint-DQgYCaP9.js';

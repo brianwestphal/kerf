@@ -16,6 +16,7 @@ import {
   joinStyles,
   type SurfaceTint,
   surfaceTintAttributes,
+  type SurfaceTintScheme,
 } from '../../../shared/styles/surface-tint.js';
 import { Toolbar, type ToolbarConfig } from '../../actions/toolbar/toolbar.js';
 import { ToolbarControlGroup } from '../../actions/toolbar-control-group/toolbar-control-group.js';
@@ -196,6 +197,13 @@ export interface NavStackProps {
    * in the declared scheme, with lightness clamped to keep text at WCAG AA.
    */
   tint?: SurfaceTint;
+  /**
+   * Scope this surface and its subtree to the light or dark palette, whatever
+   * the page's scheme (a light card on a dark page). A `tint` already sets
+   * its scheme; pass `scheme` alone for the plain palette, or with a tint
+   * only when they agree.
+   */
+  scheme?: SurfaceTintScheme;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -277,11 +285,12 @@ export function NavStack({
   scrollEdgeDistance,
   background,
   tint,
+  scheme,
   className = '',
   slot,
   rootAttributes = {},
 }: NavStackProps) {
-  const tinted = surfaceTintAttributes(tint);
+  const tinted = surfaceTintAttributes(tint, scheme);
   const topIndex = views.length - 1;
   const top = views[topIndex];
   const topToolbar = top?.toolbar;
@@ -340,6 +349,7 @@ export function NavStack({
       data-background={background === undefined ? undefined : ''}
       data-kui-tint={tinted['data-kui-tint']}
       data-kui-tint-accent={tinted['data-kui-tint-accent']}
+      data-kui-scheme={tinted['data-kui-scheme']}
       style={joinStyles(
         background === undefined
           ? undefined

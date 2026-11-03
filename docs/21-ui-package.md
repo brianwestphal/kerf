@@ -192,6 +192,17 @@ re-resolves every such token with its `--wa-*` inputs reset and compares it with
 the themed catalog in both schemes. The existing `webawesome` subpaths were kept
 rather than moved under `integrations/`, since they were already opt-in.
 
+Appearance scopes are Kerf's own (KF-E44H0A: Kerf-owned scheme scope).
+`foundation.css` styles `.kui-light`, `.kui-dark`, `.kui-invert` (the opposite
+of the surrounding scheme), and `[data-kui-scheme]`, which set `color-scheme`
+for a subtree so every `light-dark()` token follows it. `Pane`,
+`ContentItem`, `NavStack`, `TabNavigator`, and each `TabNavigatorTab` take a
+`scheme: 'light' | 'dark'` prop that renders that scope without a tint color;
+a `tint` implies its own scheme, and a disagreeing pair throws. Components no
+longer emit the Web Awesome `wa-<scheme>` class; the bridge adds the Kerf
+scopes to its own scope lists so Web Awesome elements re-derive inside them,
+and it still honors `.wa-*` scopes an application already uses.
+
 Stage 3 (KF-F52B04: guidance treats Web Awesome as an integration) makes Kerf
 components and native elements the only default answer. The catalog tags the
 36 Web Awesome elements a Kerf component replaces `Discouraged` (recommendation

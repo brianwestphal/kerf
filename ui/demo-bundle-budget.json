@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 449400,
+  "totalJavaScriptGzip": 449600,
   "measuredLargestJavaScriptGzip": 164547,
-  "measuredTotalJavaScriptGzip": 449322,
+  "measuredTotalJavaScriptGzip": 449539,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6627,6 +6627,22 @@
         "measuredTotalJavaScriptGzip": 449322,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 449400
+      }
+    },
+    {
+      "at": "2026-11-03T22:06:11.727Z",
+      "reason": "KF-E44H0A: scheme prop and Kerf-owned scheme scope on Pane, ContentItem, NavStack and TabNavigator",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 449322,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 449400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 449539,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 449600
       }
     }
   ]

@@ -16,11 +16,20 @@
   .wa-light .wa-theme-default,
   .wa-dark .wa-theme-default.wa-invert,
   .wa-dark .wa-theme-default .wa-invert,
+  .kui-light,
+  [data-kui-scheme="light"],
+  .kui-dark .kui-invert,
+  [data-kui-scheme="dark"] .kui-invert,
   .wa-dark,
   .wa-invert,
   .wa-dark .wa-theme-default,
   .wa-light .wa-theme-default.wa-invert,
-  .wa-light .wa-theme-default .wa-invert {
+  .wa-light .wa-theme-default .wa-invert,
+  .kui-dark,
+  [data-kui-scheme="dark"],
+  .kui-invert,
+  .kui-light .kui-invert,
+  [data-kui-scheme="light"] .kui-invert {
     color: var(--wa-color-text-normal);
 
     /* Hot Sheet 2's macOS system palette, with a compatible dark appearance. */
@@ -275,7 +284,11 @@
   .wa-dark .wa-invert,
   .wa-light .wa-theme-default,
   .wa-dark .wa-theme-default.wa-invert,
-  .wa-dark .wa-theme-default .wa-invert {
+  .wa-dark .wa-theme-default .wa-invert,
+  .kui-light,
+  [data-kui-scheme="light"],
+  .kui-dark .kui-invert,
+  [data-kui-scheme="dark"] .kui-invert {
     color-scheme: light;
   }
 
@@ -283,7 +296,12 @@
   .wa-invert,
   .wa-dark .wa-theme-default,
   .wa-light .wa-theme-default.wa-invert,
-  .wa-light .wa-theme-default .wa-invert {
+  .wa-light .wa-theme-default .wa-invert,
+  .kui-dark,
+  [data-kui-scheme="dark"],
+  .kui-invert,
+  .kui-light .kui-invert,
+  [data-kui-scheme="light"] .kui-invert {
     color-scheme: dark;
   }
 
@@ -715,7 +733,11 @@
     .wa-theme-default,
     .wa-light,
     .wa-dark,
-    .wa-invert {
+    .wa-invert,
+    .kui-light,
+    .kui-dark,
+    .kui-invert,
+    [data-kui-scheme] {
       --wa-color-surface-border: currentColor;
       --wa-color-neutral-border-normal: currentColor;
       --wa-focus-ring: 3px solid currentColor;

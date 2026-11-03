@@ -598,6 +598,35 @@
   --kui-safe-area-inline-end: env(safe-area-inset-left, 0px);
 }
 
+/* Scheme scope. `.kui-light` / `.kui-dark` (or `[data-kui-scheme]`, which a
+   Pane, ContentItem, NavStack, or TabNavigator `scheme` or `tint` renders)
+   fix the palette's scheme for a subtree: every --kui-color-* token resolves
+   through light-dark() where it is used, so setting color-scheme is enough.
+   `.kui-invert` takes the opposite of the scope it sits in (dark on the page
+   or in a light scope, light in a dark one). These are Kerf's own scopes, so
+   they work without Web Awesome; its bridge re-derives its theme in them. */
+.kui-light,
+[data-kui-scheme="light"],
+.kui-dark .kui-invert,
+[data-kui-scheme="dark"] .kui-invert {
+  color-scheme: light;
+}
+
+.kui-dark,
+[data-kui-scheme="dark"],
+.kui-invert,
+.kui-light .kui-invert,
+[data-kui-scheme="light"] .kui-invert {
+  color-scheme: dark;
+}
+
+.kui-light,
+.kui-dark,
+.kui-invert,
+[data-kui-scheme] {
+  color: var(--kui-color-text);
+}
+
 /* Scoped tint. A Pane, NavStack, or TabNavigator `tint` ({ color, scheme })
    marks its root `data-kui-tint="<scheme>"` with the color in
    `--_kui-tint-color`. The app declares the scheme (there is no automatic

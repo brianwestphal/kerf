@@ -11,8 +11,10 @@ export function wireContentItemMedia(root: HTMLElement): () => void {
     if (enabled) {
       if (card.dataset.kuiTint !== scheme)
         card.setAttribute('data-kui-tint', scheme);
-      if (!card.classList.contains(`wa-${scheme}`))
-        card.classList.add(`wa-${scheme}`);
+      if (card.dataset.kuiScheme !== scheme)
+        card.setAttribute('data-kui-scheme', scheme);
+      if (!card.classList.contains(`kui-${scheme}`))
+        card.classList.add(`kui-${scheme}`);
       if (
         media?.hasAttribute('data-tint-accent') &&
         !card.hasAttribute('data-kui-tint-accent')
@@ -24,11 +26,17 @@ export function wireContentItemMedia(root: HTMLElement): () => void {
         card.removeAttribute('data-kui-tint');
       if (card.hasAttribute('data-kui-tint-accent'))
         card.removeAttribute('data-kui-tint-accent');
-      if (
-        card.classList.contains('wa-light') ||
-        card.classList.contains('wa-dark')
-      )
-        card.classList.remove('wa-light', 'wa-dark');
+      // A `scheme` the app set on the card (`data-scheme`) outlives its
+      // media tint; only a scope the tint brought is removed.
+      if (card.dataset.scheme === undefined) {
+        if (card.hasAttribute('data-kui-scheme'))
+          card.removeAttribute('data-kui-scheme');
+        if (
+          card.classList.contains('kui-light') ||
+          card.classList.contains('kui-dark')
+        )
+          card.classList.remove('kui-light', 'kui-dark');
+      }
     }
   };
   const sync = (card: HTMLElement) => {

@@ -11,6 +11,7 @@ import {
   joinStyles,
   type SurfaceTint,
   surfaceTintAttributes,
+  type SurfaceTintScheme,
 } from '../../../shared/styles/surface-tint.js';
 
 /**
@@ -234,6 +235,13 @@ export interface PaneProps {
    */
   tint?: SurfaceTint;
   /**
+   * Scope this surface and its subtree to the light or dark palette, whatever
+   * the page's scheme (a light card on a dark page). A `tint` already sets
+   * its scheme; pass `scheme` alone for the plain palette, or with a tint
+   * only when they agree.
+   */
+  scheme?: SurfaceTintScheme;
+  /**
    * Clear chrome that lies over the scrolling content's block-start and/or
    * block-end edge, such as a `DialogSurface` floating footer over a filling
    * Pane. The content scroller adds the inherited
@@ -343,6 +351,7 @@ export function Pane({
   appearance = 'default',
   background,
   tint,
+  scheme,
   deepInset = false,
   scrollClearance,
   tabIndex,
@@ -375,7 +384,7 @@ export function Pane({
     chromeDividers ?? (appearance === 'sunken' ? 'always' : 'scroll');
   if (appearance === 'sunken' && background === undefined)
     ensureSunkenTexture();
-  const tinted = surfaceTintAttributes(tint);
+  const tinted = surfaceTintAttributes(tint, scheme);
   const clearHeader = headerPresentation === 'clear' && header !== undefined;
   const body = (
     <>
@@ -406,6 +415,7 @@ export function Pane({
     'data-background': background === undefined ? undefined : '',
     'data-kui-tint': tinted['data-kui-tint'],
     'data-kui-tint-accent': tinted['data-kui-tint-accent'],
+    'data-kui-scheme': tinted['data-kui-scheme'],
     style: joinStyles(
       background === undefined
         ? undefined
