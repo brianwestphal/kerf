@@ -1,0 +1,67 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "AnchoredSurfaceDarkToneForMediaChrome",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Media Controls"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaHasPopup": "dialog",
+                        "ariaLabel": "Volume",
+                        "rootAttributes": {
+                          "data-anchored-surface-trigger": "media"
+                        }
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "volume-2"
+                              },
+                              "name": "volume-2"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "tone": "dark",
+                  "single": true,
+                  "label": "Playback"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

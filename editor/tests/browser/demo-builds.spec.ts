@@ -17255,6 +17255,94 @@ test('builds BackdropImage › Clear Header', async ({ page }) => {
   );
 });
 
+/** A Button reading `text` that carries an AnchoredSurface trigger hook. */
+async function surfaceTrigger(page: Page, text: string, trigger: string) {
+  await dragComponent(page, 'Button', () => emptySpot(page));
+  await select(page, /^Button/);
+  await applySpec(page, {
+    text: { children: text },
+    data: [['data-anchored-surface-trigger', trigger]],
+  });
+}
+
+const surfaceTriggerNode = (text: string, trigger: string) =>
+  node('button', {
+    children: text,
+    rootAttributes: { 'data-anchored-surface-trigger': trigger },
+  });
+
+// KF-B516FB: the surfaces open from wiring; the view holds their triggers.
+test('builds AnchoredSurface › Interactive Help', async ({ page }) => {
+  await surfaceTrigger(page, 'Explain This Field', 'element');
+  expect(await exported(page)).toEqual(
+    pane(surfaceTriggerNode('Explain This Field', 'element')),
+  );
+});
+
+test('builds AnchoredSurface › Pointer Placement', async ({ page }) => {
+  await surfaceTrigger(page, 'Open at Pointer', 'pointer');
+  expect(await exported(page)).toEqual(
+    pane(surfaceTriggerNode('Open at Pointer', 'pointer')),
+  );
+});
+
+// mediaMuted starts false, so the volume icon is volume-2.
+test('builds AnchoredSurface › Dark Tone for Media Chrome', async ({
+  page,
+}) => {
+  await toolbar(page, 'Media Controls');
+  await zoneGroup(
+    page,
+    'leading',
+    {
+      choices: { tone: 'dark' },
+      flags: ['single'],
+      text: { label: 'Playback' },
+    },
+    { keepButton: true },
+  );
+  await select(page, /^ToolbarButton/);
+  await applySpec(page, {
+    choices: { ariaHasPopup: 'dialog' },
+    text: { ariaLabel: 'Volume' },
+    data: [['data-anchored-surface-trigger', 'media']],
+    unsets: ['children'],
+  });
+  await addIcon(page, 'icon', 'volume-2');
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'toolbar',
+        { label: 'Media Controls' },
+        {
+          leading: [
+            node(
+              'toolbar-control-group',
+              { label: 'Playback', tone: 'dark', single: true },
+              {
+                children: [
+                  node(
+                    'toolbar-control-group#ToolbarButton',
+                    {
+                      ariaLabel: 'Volume',
+                      ariaHasPopup: 'dialog',
+                      rootAttributes: {
+                        'data-anchored-surface-trigger': 'media',
+                      },
+                    },
+                    { icon: [icon('volume-2')] },
+                  ),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
 test('builds Text › Strong Emphasis', async ({ page }) => {
   await rootTexts(page, [
     {

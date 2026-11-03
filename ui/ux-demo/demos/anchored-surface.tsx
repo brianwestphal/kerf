@@ -3,6 +3,7 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { DialogSurface } from '@kerfjs/ui/surface-scaffold';
 import { Text } from '@kerfjs/ui/text';
+import { Toolbar } from '@kerfjs/ui/toolbar';
 import {
   ToolbarButton,
   ToolbarControlGroup,
@@ -40,19 +41,24 @@ export function AnchoredSurfaceDemo() {
         note="Press the volume control. The popup takes the dark control group's inverse tone, so it matches its anchor in both color schemes, and its content inherits the inverse text, border, and focus colors."
         align="inline-control"
       >
-        <ToolbarControlGroup label="Playback" tone="dark" single>
-          <ToolbarButton
-            ariaLabel="Volume"
-            ariaHasPopup="dialog"
-            rootAttributes={{ 'data-anchored-surface-trigger': 'media' }}
-            icon={
-              <LucideIcon
-                icon={muted ? VolumeX : Volume2}
-                name={muted ? 'volume-x' : 'volume-2'}
+        <Toolbar
+          label="Media Controls"
+          leading={
+            <ToolbarControlGroup label="Playback" tone="dark" single>
+              <ToolbarButton
+                ariaLabel="Volume"
+                ariaHasPopup="dialog"
+                rootAttributes={{ 'data-anchored-surface-trigger': 'media' }}
+                icon={
+                  <LucideIcon
+                    icon={muted ? VolumeX : Volume2}
+                    name={muted ? 'volume-x' : 'volume-2'}
+                  />
+                }
               />
-            }
-          />
-        </ToolbarControlGroup>
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample label="Help Inside a Modal" align="inline-control">
         <Button rootAttributes={{ 'data-anchored-surface-open-modal': '' }}>
