@@ -315,9 +315,9 @@ export function ChoiceChipsDemo() {
       </CatalogExample>
       <CatalogExample
         label="On Dark Chrome"
-        note="Inside a .wa-dark appearance scope the chips resolve every color from the dark palette, so they read on inverse chrome such as a media viewer."
+        note="Inside a dark scheme scope (a container with a dark scheme) the chips resolve every color from the dark palette, so they read on inverse chrome such as a media viewer."
       >
-        <ContentItem appearance="surface" className="wa-dark">
+        <ContentItem appearance="surface" scheme="dark">
           <ChoiceChips
             id="choice-chips-intents"
             name="intents"

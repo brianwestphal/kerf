@@ -22,9 +22,9 @@ export function ListInsetControlDemo() {
         note={
           <>
             A control that owns its border and padding but no outer margin (an
-            input, a <code>wa-*</code> control) sits flush against the region
-            edge. <code>ListInsetControl</code> gives it the 8px content inset
-            and stretches it across the row.
+            input, or a custom element that owns its border) sits flush against
+            the region edge. <code>ListInsetControl</code> gives it the 8px
+            content inset and stretches it across the row.
           </>
         }
         align="none"
