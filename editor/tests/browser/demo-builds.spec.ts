@@ -78,6 +78,89 @@ test('builds Button › Tones', async ({ page }) => {
   );
 });
 
+/** A wrapping Row of three log-more Buttons, as `[label, tone, emphasis]`. */
+async function buttonRow(
+  page: Page,
+  buttons: readonly (readonly [string, string, string | undefined])[],
+) {
+  await dragComponent(page, 'Row', () => emptySpot(page));
+  await dragComponent(page, 'Button', () => emptySpot(page));
+  await select(page, /^Button/);
+  for (let copy = 1; copy < buttons.length; copy += 1)
+    await page.keyboard.press('ControlOrMeta+d');
+  await select(page, /^Row/);
+  await turnOn(page, 'wrap');
+  for (const [index, [label, tone, emphasis]] of buttons.entries()) {
+    await select(page, /^Button/, index);
+    await setText(page, 'children', label);
+    await choose(page, 'tone', tone);
+    if (emphasis) await choose(page, 'emphasis', emphasis);
+    await setText(page, 'action', 'log-more');
+  }
+  await expect(canvas(page).locator('.kui-button')).toHaveText(
+    buttons.map(([label]) => label),
+  );
+}
+
+/** The Buttons `buttonRow` builds, as the exported document spells them. */
+const buttonNodes = (
+  buttons: readonly (readonly [string, string, string | undefined])[],
+) =>
+  buttons.map(([children, tone, emphasis]) =>
+    node('button', {
+      children,
+      tone,
+      ...(emphasis ? { emphasis } : {}),
+      action: 'log-more',
+    }),
+  );
+
+test('builds Button › Emphasis', async ({ page }) => {
+  const buttons = [
+    ['Primary', 'brand', 'primary'],
+    ['Secondary', 'brand', 'secondary'],
+    ['Plain', 'brand', 'plain'],
+  ] as const;
+  await buttonRow(page, buttons);
+  expect(await exported(page)).toEqual(
+    pane(node('row', { wrap: true }, { children: buttonNodes(buttons) })),
+  );
+});
+
+test('builds Button › Success Emphasis', async ({ page }) => {
+  const buttons = [
+    ['Price Check', 'success', undefined],
+    ['Review Prices', 'success', 'secondary'],
+    ['View Results', 'success', 'plain'],
+  ] as const;
+  await buttonRow(page, buttons);
+  await select(page, /^Row/);
+  await page.locator('[data-action="editor-add-data-attribute"]').click();
+  const attribute = (part: string) =>
+    page.locator(
+      `[data-editor-attribute="0"][data-editor-attribute-part="${part}"]`,
+    );
+  for (const [part, text] of [
+    ['name', 'data-demo-section'],
+    ['value', 'success-emphasis'],
+  ] as const) {
+    await attribute(part).locator('input').fill(text);
+    await attribute(part).locator('input').press('Enter');
+  }
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'row',
+        {
+          wrap: true,
+          rootAttributes: { 'data-demo-section': 'success-emphasis' },
+        },
+        { children: buttonNodes(buttons) },
+      ),
+    ),
+  );
+});
+
 test('builds Button › Compact and Icons', async ({ page }) => {
   await dragComponent(page, 'Row', () => emptySpot(page));
   await dragComponent(page, 'Button', () => emptySpot(page));
@@ -866,6 +949,26 @@ test('builds Switch › Compact', async ({ page }) => {
           children: [toggle('Show avatars', true), toggle('Show timestamps')],
         },
       ),
+    ),
+  );
+});
+
+test('builds ProgressBar › Indeterminate', async ({ page }) => {
+  await dragComponent(page, 'ProgressBar', () => emptySpot(page));
+  await select(page, /^ProgressBar/);
+  await setText(page, 'id', 'progress-bar-demo-migration');
+  await setText(page, 'label', 'Migrating Database');
+  // Without a value the bar sweeps a band across its track.
+  await setText(page, 'value', '');
+  const bar = canvas(page).locator('progress');
+  await expect(bar).toHaveCount(1);
+  await expect(bar).not.toHaveAttribute('value');
+  expect(await exported(page)).toEqual(
+    pane(
+      node('progress-bar', {
+        id: 'progress-bar-demo-migration',
+        label: 'Migrating Database',
+      }),
     ),
   );
 });
