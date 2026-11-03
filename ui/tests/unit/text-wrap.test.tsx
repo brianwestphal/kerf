@@ -249,3 +249,26 @@ describe('Text weight (KF-6A9GJ2)', () => {
     );
   });
 });
+
+// KF-7V2VGS: a readout is a live region, and its test hooks are root data.
+describe('Text live region and root attributes', () => {
+  it('announces changes and carries data hooks without replacing its own', () => {
+    const html = String(
+      Text({
+        variant: 'span',
+        live: 'polite',
+        rootAttributes: {
+          'data-demo-readout': '',
+          'data-tone': 'danger',
+        },
+        children: '2 filters',
+      }),
+    );
+    expect(html).toContain('aria-live="polite"');
+    expect(html).toContain('data-demo-readout=""');
+    // Text's own markers stay protected.
+    expect(html).toContain('data-tone="default"');
+    expect(html).not.toContain('data-tone="danger"');
+    expect(String(Text({ children: 'Quiet' }))).not.toContain('aria-live');
+  });
+});

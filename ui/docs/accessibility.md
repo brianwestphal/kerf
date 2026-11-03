@@ -559,6 +559,14 @@ pads its clip so a chip's focus ring is never cut off. With
 chips are signaled visually; the chips stay in the accessibility tree and in
 keyboard order either way.
 
+## Text live readouts
+
+A Text that reports a result as the user works, such as a filter count or a
+search readout beside the field, sets `live="polite"` (or `"assertive"` for an
+urgent change) so screen readers announce the update without moving focus.
+Its test hooks and row keys go in `rootAttributes` (`data-*` only); Text's own
+markers stay protected.
+
 ## TextField
 
 `TextField` renders a native `<input>` (or, with `multiline`, a `<textarea>`)

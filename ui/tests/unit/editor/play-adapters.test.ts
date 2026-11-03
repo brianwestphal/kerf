@@ -738,9 +738,10 @@ describe('play-time values (pure)', () => {
     // A rootAttributes component, beside its own attributes.
     expect(mark(41).rootAttributes).toEqual({ 'data-x': '1', ...row });
     expect(mark(42).rootAttributes).toEqual(row);
-    // A native component and a Web Awesome element, as a prop; through `$if`.
-    expect(mark(43)['data-kerf-row']).toEqual(row['data-kerf-row']);
-    expect(mark(44)['data-kerf-row']).toEqual(row['data-kerf-row']);
+    // Text takes rootAttributes too (KF-7V2VGS), through `$if`.
+    expect(mark(43).rootAttributes).toEqual(row);
+    expect(mark(44).rootAttributes).toEqual(row);
+    // A Web Awesome element, as a prop.
     expect(mark(50)['data-kerf-row']).toEqual(row['data-kerf-row']);
     // An expression rootAttributes, a #text, and an unknown type stay as is.
     expect(mark(45).rootAttributes).toEqual({ $param: 'attrs' });

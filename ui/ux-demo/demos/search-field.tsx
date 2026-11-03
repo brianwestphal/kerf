@@ -140,8 +140,8 @@ export function SearchFieldDemo() {
             variant="span"
             tone="quiet"
             size="compact"
-            aria-live="polite"
-            data-demo-search-field-readout
+            live="polite"
+            rootAttributes={{ 'data-demo-search-field-readout': '' }}
           >
             {searchFieldTokens.value.length} filters ·{' '}
             {searchFieldQuery.value || 'No free text'}
@@ -177,9 +177,9 @@ export function SearchFieldDemo() {
             variant="span"
             tone="quiet"
             size="compact"
-            data-demo-grammar-result
+            rootAttributes={{ 'data-demo-grammar-result': '' }}
           >
-            <span>{grammarSearchModel.result}</span>
+            {grammarSearchModel.result.value ?? ''}
           </Text>
         </List>
       </CatalogExample>
@@ -257,30 +257,28 @@ export function SearchFieldDemo() {
             expandLabel="Open filter"
             editorAttributes={{ 'data-demo-adoption-search': 'true' }}
           />
-          <div
-            data-search-field-keep-open
-            role="group"
-            aria-label="Filter Suggestions"
+          <Row
+            wrap
+            ariaLabel="Filter Suggestions"
+            rootAttributes={{ 'data-search-field-keep-open': '' }}
           >
-            <Row wrap>
-              {ADOPTION_SUGGESTIONS.map((suggestion) => (
-                <Button
-                  size="compact"
-                  emphasis="secondary"
-                  action="add-adoption-token"
-                  rootAttributes={{ 'data-token-value': suggestion.value }}
-                >
-                  {suggestion.label}
-                </Button>
-              ))}
-            </Row>
-          </div>
+            {ADOPTION_SUGGESTIONS.map((suggestion) => (
+              <Button
+                size="compact"
+                emphasis="secondary"
+                action="add-adoption-token"
+                rootAttributes={{ 'data-token-value': suggestion.value }}
+              >
+                {suggestion.label}
+              </Button>
+            ))}
+          </Row>
           <Text
             variant="span"
             tone="quiet"
             size="compact"
-            aria-live="polite"
-            data-demo-adoption-readout
+            live="polite"
+            rootAttributes={{ 'data-demo-adoption-readout': '' }}
           >
             {adoptionReadout.value}
           </Text>

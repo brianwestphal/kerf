@@ -1,6 +1,10 @@
 import type { KerfBaseAttrs } from 'kerfjs/jsx-runtime';
 
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
+import {
+  filterDataAttributes,
+  type RootDataAttributes,
+} from '../../../shared/dom/extension-attributes.js';
 import type { Sides } from '../../../shared/layout/sides.js';
 import type { CssForegroundColor } from '../../../shared/styles/css-values.js';
 
@@ -70,6 +74,13 @@ type TextCommonProps = Omit<
   lineHeight?: TextLineHeight;
   /** Inline alignment of the lines (default `start`), for centered status copy. */
   align?: TextAlign;
+  /**
+   * Announce changes to this text as a live region (`aria-live`), for a
+   * status or result readout that updates without moving focus.
+   */
+  live?: 'polite' | 'assertive';
+  /** Application `data-*` metadata (test hooks, row keys); Text's own stay protected. */
+  rootAttributes?: RootDataAttributes;
   children: TextContent;
   class?: string;
   className?: string;
@@ -111,6 +122,22 @@ export type TextProps = TextCommonProps &
       }
   );
 
+/** Attributes Text writes itself, which `rootAttributes` cannot replace. */
+const textProtectedAttributes = new Set([
+  'data-component',
+  'data-tone',
+  'data-size',
+  'data-font',
+  'data-border',
+  'data-control-margins',
+  'data-flush',
+  'data-line-height',
+  'data-align',
+  'data-wrap',
+  'data-max-lines',
+  'data-truncate',
+]);
+
 /** Characters a middle truncation keeps when the text has no path separator. */
 const MIDDLE_FALLBACK_KEEP = 10;
 
@@ -147,6 +174,8 @@ export function Text({
   controlMargins = '',
   lineHeight = 'default',
   align = 'start',
+  live,
+  rootAttributes = {},
   wrap = 'normal',
   maxLines,
   truncate,
@@ -201,7 +230,9 @@ export function Text({
   const classes = ['kui-text', classValue, className].filter(Boolean).join(' ');
   return (
     <Variant
+      {...filterDataAttributes(rootAttributes, textProtectedAttributes)}
       {...attributes}
+      aria-live={live ?? attributes['aria-live']}
       class={classes}
       data-component="text"
       data-tone={tone}

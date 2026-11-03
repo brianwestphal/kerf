@@ -9804,6 +9804,12 @@
           "control": "hidden"
         },
         {
+          "name": "ariaLabel",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Name the row as a group (`role=\"group\"` with this `aria-label`), for a\nset of related controls such as filter suggestions."
+        },
+        {
           "name": "rootAttributes",
           "type": {
             "kind": "ref",
@@ -14078,6 +14084,28 @@
           "control": "segmented"
         },
         {
+          "name": "live",
+          "type": {
+            "kind": "enum",
+            "values": ["polite", "assertive"],
+            "text": "\"polite\" | \"assertive\" | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Announce changes to this text as a live region (`aria-live`), for a\nstatus or result readout that updates without moving focus."
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata (test hooks, row keys); Text's own stay protected.",
+          "control": "hidden"
+        },
+        {
           "name": "children",
           "type": {
             "kind": "content",
@@ -14212,7 +14240,7 @@
         },
         { "required": ["children", "wrap"], "forbidden": ["maxLines"] }
       ],
-      "dataChannel": "native",
+      "dataChannel": "rootAttributes",
       "groups": ["Content", "Appearance", "Wrapping"]
     },
     {

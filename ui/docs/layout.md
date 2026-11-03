@@ -896,6 +896,11 @@ for the CSS initial value, pass `true` for `1 1 auto`, select the finite
 shorthand. A `CssLength` is not a flex shorthand, and arbitrary strings are
 rejected by the type contract.
 
+A Row of related controls that is not a toolbar, such as the filter
+suggestions beside a search field, can name itself as a group with
+`ariaLabel`: it renders `role="group"` with that `aria-label`, so assistive
+technology announces the set by name.
+
 ### Filling a fixed-height parent
 
 `flex` sizes a Row, List, or Grid inside a flex layout. When one of them is the

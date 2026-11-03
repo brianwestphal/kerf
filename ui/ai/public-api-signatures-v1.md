@@ -5593,6 +5593,7 @@ export { WorkbenchDialog, type WorkbenchDialogProps, type WorkbenchDialogRootAtt
 import * as kerfjs from 'kerfjs';
 import { KerfBaseAttrs } from 'kerfjs/jsx-runtime';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { S as Sides } from './sides-BPSWde0A.js';
 import { CssForegroundColor } from './css-values.js';
 
@@ -5658,6 +5659,13 @@ type TextCommonProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> &
     lineHeight?: TextLineHeight;
     /** Inline alignment of the lines (default `start`), for centered status copy. */
     align?: TextAlign;
+    /**
+     * Announce changes to this text as a live region (`aria-live`), for a
+     * status or result readout that updates without moving focus.
+     */
+    live?: 'polite' | 'assertive';
+    /** Application `data-*` metadata (test hooks, row keys); Text's own stay protected. */
+    rootAttributes?: RootDataAttributes;
     children: TextContent;
     class?: string;
     className?: string;
@@ -5697,7 +5705,7 @@ type TextProps = TextCommonProps & ({
  * content-item padding; `span` adds no box geometry.
  * All ordinary native heading/paragraph attributes pass through to the element.
  */
-declare function Text({ variant: Variant, tone, weight, color, size, font, border, flush, controlMargins, lineHeight, align, wrap, maxLines, truncate, truncateKeep, children, class: classValue, className, style, ...attributes }: TextProps): kerfjs.SafeHtml;
+declare function Text({ variant: Variant, tone, weight, color, size, font, border, flush, controlMargins, lineHeight, align, live, rootAttributes, wrap, maxLines, truncate, truncateKeep, children, class: classValue, className, style, ...attributes }: TextProps): kerfjs.SafeHtml;
 
 export { FieldLabel, type FieldLabelProps, Sides, Text, type TextAlign, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextTruncate, type TextTruncateKeep, type TextVariant, type TextWeight, type TextWrap };
 ```
@@ -6064,6 +6072,11 @@ interface RowProps {
     controlInsets?: Sides;
     className?: string;
     /**
+     * Name the row as a group (`role="group"` with this `aria-label`), for a
+     * set of related controls such as filter suggestions.
+     */
+    ariaLabel?: string;
+    /**
      * Safe `data-*`, `aria-*`, and structural `role` metadata (a named
      * `region`, a `group`); Row-owned structural attributes remain protected.
      */
@@ -6072,7 +6085,7 @@ interface RowProps {
     slot?: string;
 }
 /** A horizontal flex row with explicit physical-axis alignment and spacing. */
-declare function Row({ children, hAlign, vAlign, gap, flex, fill, wrap, textInsets, controlInsets, className, rootAttributes, slot, }: RowProps): kerfjs.SafeHtml;
+declare function Row({ children, hAlign, vAlign, gap, flex, fill, wrap, textInsets, controlInsets, className, ariaLabel, rootAttributes, slot, }: RowProps): kerfjs.SafeHtml;
 
 export { CssFlex, CssFlexKeyword, HorizontalAlignment, Row, type RowProps, Sides, UiGap, VerticalAlignment };
 ```

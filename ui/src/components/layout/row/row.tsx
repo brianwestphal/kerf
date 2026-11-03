@@ -64,6 +64,11 @@ export interface RowProps {
   controlInsets?: Sides;
   className?: string;
   /**
+   * Name the row as a group (`role="group"` with this `aria-label`), for a
+   * set of related controls such as filter suggestions.
+   */
+  ariaLabel?: string;
+  /**
    * Safe `data-*`, `aria-*`, and structural `role` metadata (a named
    * `region`, a `group`); Row-owned structural attributes remain protected.
    */
@@ -84,6 +89,7 @@ export function Row({
   textInsets = '',
   controlInsets = '',
   className = '',
+  ariaLabel,
   rootAttributes = {},
   slot,
 }: RowProps) {
@@ -103,6 +109,7 @@ export function Row({
   return (
     <div
       {...safeRootAttributes}
+      {...(ariaLabel ? { role: 'group', 'aria-label': ariaLabel } : {})}
       class={`kui-row ${className}`.trim()}
       data-component="row"
       data-h-align={horizontalAlignment(hAlign)}
