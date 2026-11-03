@@ -38,6 +38,7 @@ export type ControlKind =
   | 'icon'
   | 'choice'
   | 'value-choice'
+  | 'value-choices'
   | 'readonly';
 
 type Definitions = Readonly<Record<string, ViewType>>;
@@ -942,6 +943,37 @@ export function valueChoices(
       : [];
   });
   return offered.length === choices.length ? offered : undefined;
+}
+
+/** How a node's `value` picks from its choices (KF-8MEWP2). */
+export interface ValuePicker {
+  /** Several choices at once: the value is an array. */
+  readonly multiple: boolean;
+  /** An empty `""` is offered: a required string value, such as "loading". */
+  readonly empty: boolean;
+}
+
+/**
+ * How `value`, typed `type` (`required` or not), picks from a node's
+ * choices: an array type, or a union with an array member while the node's
+ * `multiple` is on (ChoiceChips), picks several; a required string can
+ * also be `""`, which "Not set" cannot stand in for.
+ */
+export function valuePicker(
+  type: {
+    readonly kind: string;
+    readonly members?: readonly { readonly kind: string }[];
+  },
+  required: boolean,
+  props: Readonly<Record<string, ViewValue>> | undefined,
+): ValuePicker {
+  const multiple =
+    type.kind === 'array' ||
+    (type.kind === 'union' &&
+      (type.members ?? []).some((member) => member.kind === 'array') &&
+      props?.multiple !== undefined &&
+      props.multiple !== false);
+  return { multiple, empty: required && type.kind === 'string' };
 }
 
 /**

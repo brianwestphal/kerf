@@ -12,6 +12,7 @@ import {
   followChoiceRename,
   valueChoices,
   valueFromControl,
+  valuePicker,
 } from '../../../src/editor/model/controls.js';
 import { findNode } from '../../../src/editor/model/document.js';
 import { setProp } from '../../../src/editor/model/edits.js';
@@ -303,6 +304,103 @@ describe('a value picked from its choices (KF-9AWGPS)', () => {
     expect(value().textContent).toContain('not one of the choices; pick one');
     choose(value(), '');
     expect(props()).not.toHaveProperty('value');
+  });
+
+  // KF-8MEWP2: an array value picks several choices, and a required
+  // string value can be empty.
+  it('decides how a value picks: one, several, or also empty', () => {
+    const string = { kind: 'string' };
+    const array = { kind: 'array' };
+    const union = { kind: 'union', members: [string, array] };
+    expect(valuePicker(string, false, {})).toEqual({
+      multiple: false,
+      empty: false,
+    });
+    expect(valuePicker(string, true, {})).toEqual({
+      multiple: false,
+      empty: true,
+    });
+    expect(valuePicker(array, false, undefined).multiple).toBe(true);
+    // A union picks several only while the node's `multiple` is on.
+    expect(valuePicker(union, false, {}).multiple).toBe(false);
+    expect(valuePicker(union, false, { multiple: false }).multiple).toBe(false);
+    expect(valuePicker(union, false, { multiple: 'toggle' }).multiple).toBe(
+      true,
+    );
+    expect(valuePicker(union, false, { multiple: true }).multiple).toBe(true);
+  });
+
+  it('picks several values of a CheckboxGroup, in choice order', () => {
+    const { root, props } = added('@kerfjs/ui:checkbox-group');
+    const value = () =>
+      field(
+        root,
+        '[data-editor-prop="value"][data-editor-kind="value-choices"]',
+      );
+    const boxes = () => [
+      ...value().querySelectorAll<HTMLInputElement>('input[type="checkbox"]'),
+    ];
+    expect(boxes()).toHaveLength(3);
+    const toggle = (index: number) => {
+      boxes()[index]!.click();
+    };
+    toggle(2);
+    toggle(0);
+    expect(props().value).toEqual(['choice-1', 'choice-3']);
+    toggle(0);
+    toggle(2);
+    // None checked is an empty list, not an unset prop.
+    expect(props().value).toEqual([]);
+  });
+
+  it('turns a ChoiceChips value into a list once multiple is on', () => {
+    const { root, props, editor, id } = added('@kerfjs/ui:choice-chips');
+    expect(
+      root.querySelector(
+        '[data-editor-kind="value-choice"][data-editor-prop="value"]',
+      ),
+    ).not.toBeNull();
+    editor.document.value = setProp(
+      editor.document.value,
+      id,
+      'value',
+      'choice-2',
+    );
+    editor.document.value = setProp(
+      editor.document.value,
+      id,
+      'multiple',
+      'toggle',
+    );
+    const value = field(
+      root,
+      '[data-editor-prop="value"][data-editor-kind="value-choices"]',
+    );
+    // The single value picked earlier stays picked.
+    const checked = [
+      ...value.querySelectorAll<HTMLInputElement>('input:checked'),
+    ].map((input) => input.value);
+    expect(checked).toEqual(['"choice-2"']);
+    value.querySelectorAll<HTMLInputElement>('input')[0]!.click();
+    expect(props().value).toEqual(['choice-1', 'choice-2']);
+  });
+
+  it('lets a required SegmentedControl value be empty', () => {
+    const { root, props } = added('@kerfjs/ui:segmented-control');
+    const value = () =>
+      field(
+        root,
+        '[data-editor-prop="value"][data-editor-kind="value-choice"]',
+      );
+    const options = () =>
+      [...value().querySelectorAll<HTMLElement>('[role="option"]')].map(
+        (option) => option.textContent,
+      );
+    expect(options()).toContain('Empty ("")');
+    choose(value(), '""');
+    expect(props().value).toBe('');
+    // An empty value reads as picked, not as a value outside the choices.
+    expect(value().textContent).not.toContain('not one of the choices');
   });
 
   // KF-ZAQQFK: a field form’s open member (a tab's count badge) commits

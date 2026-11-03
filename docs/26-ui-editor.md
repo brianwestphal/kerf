@@ -238,6 +238,13 @@ a value that names no choice appears as "(not one of the choices)" with a
 hint. A typed choice reads "<Prop> type" for the kind and "<Prop>" for the
 member's own control.
 
+An array `value` picks several choices instead (KF-8MEWP2: multi-value
+picker): a CheckboxGroup's value, or a ChoiceChips value once `multiple` is
+on, is a checkbox per choice, committed in choice order, and none checked is
+`[]`. A single value picked before `multiple` turned on stays checked. A
+required string `value` also offers `Empty ("")`, the "nothing chosen yet"
+state a loading SegmentedControl shows, which Not set cannot stand in for.
+
 Inspector rows, and an item form's fields, follow their prop or field
 order, whatever control each takes (KF-DQFXWG: LucideIcon inspector;
 KF-3J47BY: item forms): an icon or Configure row sits where its prop does

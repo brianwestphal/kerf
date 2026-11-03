@@ -158,6 +158,7 @@ import {
   typeLabel,
   valueChoices,
   valueFromControl,
+  valuePicker,
 } from './model/controls.js';
 import {
   DATA_ATTRIBUTES_PROP,
@@ -749,7 +750,10 @@ function controlValue(field: HTMLElement): string | boolean {
   if (field.localName === 'kui-select')
     return (field as HTMLElement & { value: string }).value;
   // A CheckboxGroup's checked values, in its choices' order (KF-A9ZHGW).
-  if (field.dataset.editorKind === 'enum-set')
+  if (
+    field.dataset.editorKind === 'enum-set' ||
+    field.dataset.editorKind === 'value-choices'
+  )
     return JSON.stringify(
       [
         ...field.querySelectorAll<HTMLInputElement>(
@@ -1315,11 +1319,42 @@ export function createEditor(options: EditorOptions) {
     const error =
       fieldErrors.value[key] ??
       (place.path.length ? undefined : fieldProblems.value.get(place.prop));
-    // KF-9AWGPS: a value beside literal choices picks one of them.
-    const offered =
-      prop.name === 'value' && !place.path.length && !Array.isArray(value)
-        ? valueChoices(findNode(doc.value, selectedNodeId()!)!.node.props)
+    // KF-9AWGPS: a value beside literal choices picks one of them, or
+    // several when the value is an array (KF-8MEWP2).
+    const owner =
+      prop.name === 'value' && !place.path.length
+        ? findNode(doc.value, selectedNodeId()!)!.node.props
         : undefined;
+    const picker = owner
+      ? valuePicker(prop.type as never, prop.required, owner)
+      : undefined;
+    const offered =
+      owner && (picker!.multiple || !Array.isArray(value))
+        ? valueChoices(owner)
+        : undefined;
+    if (offered && picker!.multiple && !isBinding(value as never)) {
+      // A single value picked before `multiple` was on stays picked.
+      const picked = (
+        value === undefined ? [] : Array.isArray(value) ? value : [value]
+      ).map((item) => JSON.stringify(item));
+      return (
+        <CheckboxGroup
+          label={propLabel(prop.name)}
+          name={`prop-${key}`}
+          choices={offered.map((choice) => ({
+            value: JSON.stringify(choice.value),
+            label: choice.label,
+          }))}
+          value={picked}
+          hint="Check every choice the value holds; none is an empty list."
+          rootAttributes={{
+            'data-editor-prop': place.prop,
+            'data-editor-kind': 'value-choices',
+            'data-key': controlKey(place),
+          }}
+        />
+      );
+    }
     if (offered && (value === undefined || !isBinding(value)))
       return (
         <Select
@@ -1332,7 +1367,12 @@ export function createEditor(options: EditorOptions) {
               value: JSON.stringify(choice.value),
               label: choice.label,
             })),
+            // A required string with nothing chosen yet (KF-8MEWP2).
+            ...(picker!.empty && !offered.some((choice) => choice.value === '')
+              ? [{ value: '""', label: 'Empty ("")' }]
+              : []),
             ...(value === undefined ||
+            value === '' ||
             offered.some((choice) => choice.value === value)
               ? []
               : [
@@ -1344,6 +1384,7 @@ export function createEditor(options: EditorOptions) {
           ]}
           hint={
             value === undefined ||
+            (picker!.empty && value === '') ||
             offered.some((choice) => choice.value === value)
               ? undefined
               : 'This value is not one of the choices; pick one.'
@@ -3926,6 +3967,15 @@ export function createEditor(options: EditorOptions) {
       .get(node.type)!
       .props.find((item) => item.name === name)!;
     // A value picked from the choices keeps its type (KF-9AWGPS).
+    // Several picked values, in choice order; none is [] (KF-8MEWP2).
+    if (kind === 'value-choices') {
+      const picked = (JSON.parse(String(raw)) as string[]).map(
+        (item) => JSON.parse(item) as ViewValue,
+      );
+      if (JSON.stringify(node.props?.[name]) !== JSON.stringify(picked))
+        commit(setProp(doc.value, id, name, picked));
+      return;
+    }
     if (kind === 'value-choice') {
       const picked = raw ? (JSON.parse(String(raw)) as ViewValue) : undefined;
       if (JSON.stringify(node.props?.[name]) !== JSON.stringify(picked))
