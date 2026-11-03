@@ -113,7 +113,10 @@ export default defineConfig({
     env: { KERF_DEV_INVARIANTS: 'throw' },
     // kerf no longer infers dev mode — install the diagnostics so the remapped
     // suite sees the same behavior it does against src.
-    setupFiles: ['./tests/setup-dev-hooks.ts'],
+    setupFiles: [
+      './tests/setup-git-environment.ts',
+      './tests/setup-dev-hooks.ts',
+    ],
     environment: 'happy-dom',
     globals: false,
     include: ['tests/unit/**/*.test.ts', 'tests/integration/**/*.test.ts'],

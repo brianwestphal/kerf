@@ -27,7 +27,11 @@ export default defineConfig({
     // kerf no longer infers dev mode; the diagnostics install via `kerfjs/dev`.
     // kerf's own suites are development by definition, so install globally —
     // every existing warning/invariant assertion keeps its previous behavior.
-    setupFiles: ['./tests/setup-dev-hooks.ts'],
+    // KF-9XZ6XQ: strip Git hook variables before any test spawns git.
+    setupFiles: [
+      './tests/setup-git-environment.ts',
+      './tests/setup-dev-hooks.ts',
+    ],
     environment: 'happy-dom',
     globals: false,
     include: [

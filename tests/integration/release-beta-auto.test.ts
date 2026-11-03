@@ -13,27 +13,11 @@ import { env as processEnvironment } from 'node:process';
 
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { isolatedGitEnvironment } from '../helpers/git-environment.js';
 import { loadScaledTimeout } from '../helpers/load-scaled-timeout.js';
 
 const repoRoot = resolve(import.meta.dirname, '../..');
 const temporaryRoots: string[] = [];
-
-const repositoryLocalGitEnvironment = [
-  'GIT_ALTERNATE_OBJECT_DIRECTORIES',
-  'GIT_COMMON_DIR',
-  'GIT_DIR',
-  'GIT_GRAFT_FILE',
-  'GIT_IMPLICIT_WORK_TREE',
-  'GIT_INDEX_FILE',
-  'GIT_INTERNAL_SUPER_PREFIX',
-  'GIT_NAMESPACE',
-  'GIT_NO_REPLACE_OBJECTS',
-  'GIT_OBJECT_DIRECTORY',
-  'GIT_PREFIX',
-  'GIT_REPLACE_REF_BASE',
-  'GIT_SHALLOW_FILE',
-  'GIT_WORK_TREE',
-] as const;
 
 type GitEnvironment = Record<string, string | undefined>;
 
@@ -59,8 +43,7 @@ function nestedRepositoryEnvironment(
   inherited: GitEnvironment = processEnvironment,
 ): GitEnvironment {
   const env: GitEnvironment = { ...inherited, ...fixtureGitEnvironment };
-  for (const name of repositoryLocalGitEnvironment) delete env[name];
-  return env;
+  return isolatedGitEnvironment(env);
 }
 
 function git(
