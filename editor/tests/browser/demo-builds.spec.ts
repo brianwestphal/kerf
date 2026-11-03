@@ -2582,6 +2582,1133 @@ test('builds ChoiceChips › Multi-Select Listbox', async ({ page }) => {
   );
 });
 
+/**
+ * Replaces list prop `prop` of the selected node with `value` through its
+ * Configure dialog's Edit as JSON, as a person pastes a list in.
+ */
+async function editAsJson(page: Page, prop: string, value: unknown) {
+  await page
+    .locator(`[data-editor-open='${JSON.stringify({ prop, path: [] })}']`)
+    // A row of a form the stack has left stays in the page, hidden.
+    .filter({ visible: true })
+    .first()
+    .click();
+  // A set list opens its form in a dialog; an unset one opens it in place
+  // of the Inspector's Properties.
+  const dialog = page.locator('dialog[open]');
+  // The form remembers JSON mode once a list was edited that way.
+  const toJson = page
+    .getByRole('button', { name: 'Edit as JSON' })
+    .filter({ visible: true });
+  const json = page.locator('textarea:visible').first();
+  await expect(toJson.first().or(json).first()).toBeVisible();
+  if (await toJson.count()) await toJson.first().click();
+  await json.fill(JSON.stringify(value, null, 2));
+  await json.press('ControlOrMeta+Enter');
+  if (await dialog.count()) {
+    await dialog.getByRole('button', { name: 'Done' }).click();
+    await expect(dialog).toHaveCount(0);
+  } else await back(page);
+}
+
+/** Replaces a tags prop's tags: Backspace removes, Enter adds. */
+async function setTags(page: Page, prop: string, tags: readonly string[]) {
+  const control = page.locator(`[data-editor-prop="${prop}"]`).first();
+  await control.getByRole('button', { name: /^Clear / }).click();
+  await control.getByRole('searchbox').click();
+  for (const tag of tags) {
+    await page.keyboard.type(tag);
+    await page.keyboard.press('Enter');
+  }
+  await expect(control.getByRole('button', { name: /^Remove / })).toHaveCount(
+    tags.length,
+  );
+}
+
+// Live demo state is a static snapshot of each demo's first render.
+test('builds Slider › Labeled with a Readout', async ({ page }) => {
+  await dragComponent(page, 'Slider', () => emptySpot(page));
+  await select(page, /^Slider/);
+  // The volume starts at 30.
+  await applySpec(page, {
+    flags: ['showValue'],
+    text: {
+      id: 'slider-demo-volume',
+      label: 'Volume',
+      value: '30',
+      unit: '%',
+      hint: 'Applies to every output device.',
+      action: 'set-slider-demo',
+    },
+  });
+  await expect(canvas(page).locator('input[type="range"]')).toHaveValue('30');
+  expect(await exported(page)).toEqual(
+    pane(
+      node('slider', {
+        id: 'slider-demo-volume',
+        label: 'Volume',
+        value: 30,
+        showValue: true,
+        unit: '%',
+        hint: 'Applies to every output device.',
+        action: 'set-slider-demo',
+      }),
+    ),
+  );
+});
+
+test('builds Slider › Stepped with Ticks', async ({ page }) => {
+  const ticks = [50, 100, 150, 200].map((value) => ({
+    value,
+    label: `${value}%`,
+  }));
+  await dragComponent(page, 'Slider', () => emptySpot(page));
+  await select(page, /^Slider/);
+  // The zoom starts at 100.
+  await applySpec(page, {
+    flags: ['showValue'],
+    text: {
+      id: 'slider-demo-zoom',
+      label: 'Zoom',
+      min: '50',
+      max: '200',
+      step: '25',
+      value: '100',
+      unit: '%',
+      action: 'set-slider-demo',
+    },
+  });
+  await editAsJson(page, 'ticks', ticks);
+  await expect(canvas(page).locator('.kui-slider__tick')).toHaveCount(4);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('slider', {
+        id: 'slider-demo-zoom',
+        label: 'Zoom',
+        value: 100,
+        min: 50,
+        max: 200,
+        step: 25,
+        showValue: true,
+        unit: '%',
+        ticks,
+        action: 'set-slider-demo',
+      }),
+    ),
+  );
+});
+
+test('builds Slider › Compact and Disabled', async ({ page }) => {
+  // The opacity starts at 80.
+  await stacked(
+    page,
+    'List',
+    'Slider',
+    [
+      {
+        flags: ['showValue'],
+        choices: { size: 'compact' },
+        text: {
+          id: 'slider-demo-opacity',
+          label: 'Layer Opacity',
+          value: '80',
+          unit: '%',
+          action: 'set-slider-demo',
+        },
+      },
+      {
+        flags: ['disabled'],
+        text: {
+          id: 'slider-demo-locked',
+          label: 'Locked Setting',
+          value: '40',
+        },
+      },
+    ],
+    () => choose(page, 'gap', 'xs'),
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'xs' },
+        {
+          children: [
+            node('slider', {
+              id: 'slider-demo-opacity',
+              label: 'Layer Opacity',
+              value: 80,
+              showValue: true,
+              unit: '%',
+              size: 'compact',
+              action: 'set-slider-demo',
+            }),
+            node('slider', {
+              id: 'slider-demo-locked',
+              label: 'Locked Setting',
+              value: 40,
+              disabled: true,
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds Slider › Vertical', async ({ page }) => {
+  await dragComponent(page, 'Slider', () => emptySpot(page));
+  await select(page, /^Slider/);
+  // The level starts at 60.
+  await applySpec(page, {
+    flags: ['showValue'],
+    choices: { size: 'compact', orientation: 'vertical' },
+    text: {
+      id: 'slider-demo-level',
+      label: 'Level',
+      value: '60',
+      unit: '%',
+      action: 'set-slider-demo',
+    },
+  });
+  await setCss(page, 'length', 'remify(120)');
+  expect(await exported(page)).toEqual(
+    pane(
+      node('slider', {
+        id: 'slider-demo-level',
+        label: 'Level',
+        value: 60,
+        showValue: true,
+        unit: '%',
+        size: 'compact',
+        orientation: 'vertical',
+        length: { $css: 'remify(120)' },
+        action: 'set-slider-demo',
+      }),
+    ),
+  );
+});
+
+test('builds TagField › Labels', async ({ page }) => {
+  await dragComponent(page, 'TagField', () => emptySpot(page));
+  await select(page, /^TagField/);
+  // The labels start as bug and docs, with no error shown.
+  await applySpec(page, {
+    text: {
+      id: 'tag-field-demo-labels',
+      label: 'Labels',
+      name: 'labels',
+      hint: 'Press Enter or a comma to add a label.',
+    },
+  });
+  await setTags(page, 'tags', ['bug', 'docs']);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('tag-field', {
+        id: 'tag-field-demo-labels',
+        label: 'Labels',
+        name: 'labels',
+        tags: ['bug', 'docs'],
+        hint: 'Press Enter or a comma to add a label.',
+      }),
+    ),
+  );
+});
+
+test('builds TagField › Validated with a Limit', async ({ page }) => {
+  await stacked(
+    page,
+    'List',
+    'TagField',
+    [
+      {
+        flags: ['required'],
+        text: {
+          id: 'tag-field-demo-recipients',
+          label: 'Recipients',
+          name: 'recipients',
+          max: '3',
+          placeholder: 'Add an email address…',
+          hint: 'Up to three addresses.',
+        },
+      },
+      {
+        flags: ['disabled'],
+        text: { id: 'tag-field-demo-locked', label: 'Locked Labels' },
+      },
+    ],
+    () => choose(page, 'gap', 'xs'),
+  );
+  // The recipients start as mara@example.com.
+  await select(page, /^TagField/, 0);
+  await setTags(page, 'tags', ['mara@example.com']);
+  await select(page, /^TagField/, 1);
+  await setTags(page, 'tags', ['release', 'frozen']);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'xs' },
+        {
+          children: [
+            node('tag-field', {
+              id: 'tag-field-demo-recipients',
+              label: 'Recipients',
+              name: 'recipients',
+              tags: ['mara@example.com'],
+              max: 3,
+              placeholder: 'Add an email address…',
+              hint: 'Up to three addresses.',
+              required: true,
+            }),
+            node('tag-field', {
+              id: 'tag-field-demo-locked',
+              label: 'Locked Labels',
+              tags: ['release', 'frozen'],
+              disabled: true,
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds Combobox › Add or Create a Tag', async ({ page }) => {
+  // comboboxTags starts as ['bug']: one chip, and bug left out of the
+  // suggestions.
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await dragComponent(page, 'Row', () => emptySpot(page));
+  await select(page, /^List/);
+  await choose(page, 'gap', 'xs');
+  await select(page, /^Row/);
+  await turnOn(page, 'wrap');
+  await choose(page, 'controlInsets', 'rl');
+  await dragComponent(page, 'Chip', () => emptySpot(page));
+  await select(page, /^Chip/);
+  await setText(page, 'children', 'bug');
+  await select(page, /^List/);
+  await addChild(page, 'ListInsetControl');
+  await choose(page, 'sides', 'rl');
+  await addChild(page, 'Combobox');
+  // Adding a child turned the inset's seeded text into a Text node.
+  await select(page, /^Text(?![A-Z])/);
+  await area(page, 'Flow');
+  await page.getByRole('button', { name: 'Delete', exact: true }).click();
+  await select(page, /^Combobox/);
+  await applySpec(page, {
+    text: {
+      id: 'demo-tag-combobox',
+      label: 'Tag Name',
+      placeholder: 'Search or create a tag',
+      hint: 'Press Enter to add',
+    },
+  });
+  const suggestions = ['design', 'docs', 'performance', 'regression'];
+  await editAsJson(page, 'suggestions', suggestions);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'xs' },
+        {
+          children: [
+            node(
+              'row',
+              { wrap: true, controlInsets: 'rl' },
+              { children: [node('chip', { children: 'bug' })] },
+            ),
+            node(
+              'list-inset-control',
+              { sides: 'rl' },
+              {
+                children: [
+                  node('combobox', {
+                    id: 'demo-tag-combobox',
+                    label: 'Tag Name',
+                    placeholder: 'Search or create a tag',
+                    hint: 'Press Enter to add',
+                    suggestions,
+                  }),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds ColorField › Color Fields', async ({ page }) => {
+  // The fill starts as #0a84ff (rgb) and the border as #1c1c1e80 (hsl).
+  await stacked(
+    page,
+    'List',
+    'ColorField',
+    [
+      {
+        choices: { mode: 'rgb' },
+        text: {
+          id: 'color-field-demo-fill',
+          label: 'Fill',
+          name: 'fill',
+          value: '#0a84ff',
+          hint: 'Applies to the selected shapes.',
+        },
+      },
+      {
+        choices: { mode: 'hsl', size: 'compact' },
+        text: {
+          id: 'color-field-demo-border',
+          label: 'Border',
+          name: 'border',
+          value: '#1c1c1e80',
+        },
+      },
+      {
+        flags: ['disabled'],
+        text: {
+          id: 'color-field-demo-locked',
+          label: 'Theme Accent',
+          value: '#bf5af2',
+          error: 'The theme locks this color.',
+        },
+      },
+    ],
+    () => choose(page, 'gap', 'm'),
+  );
+  // Alpha is on by default; the locked field turns it off.
+  await select(page, /^ColorField/, 2);
+  await turnOff(page, 'alpha');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'm' },
+        {
+          children: [
+            node('color-field', {
+              id: 'color-field-demo-fill',
+              label: 'Fill',
+              name: 'fill',
+              value: '#0a84ff',
+              mode: 'rgb',
+              hint: 'Applies to the selected shapes.',
+            }),
+            node('color-field', {
+              id: 'color-field-demo-border',
+              label: 'Border',
+              name: 'border',
+              value: '#1c1c1e80',
+              mode: 'hsl',
+              size: 'compact',
+            }),
+            node('color-field', {
+              id: 'color-field-demo-locked',
+              label: 'Theme Accent',
+              value: '#bf5af2',
+              alpha: false,
+              disabled: true,
+              error: 'The theme locks this color.',
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+/** A ColorSwatch as the demos spell it: the color's hex, upper-cased. */
+const swatch = (value: string) => ({
+  value,
+  label: value.toUpperCase(),
+  color: { $css: `fillColor("${value}")` },
+});
+
+test('builds ColorPicker › Full Picker', async ({ page }) => {
+  const presets = [
+    '#ff3b30',
+    '#ff9500',
+    '#ffcc00',
+    '#34c759',
+    '#00c7be',
+    '#0a84ff',
+    '#5e5ce6',
+    '#bf5af2',
+    '#ff375f',
+    '#8e8e93',
+  ].map(swatch);
+  // The picker starts at #d8d8d8 (rgb) with two user colors.
+  const samples = [
+    { title: 'User Colors', swatches: ['#1e3a8a', '#f59e0b'].map(swatch) },
+  ];
+  await dragComponent(page, 'ColorPicker', () => emptySpot(page));
+  await select(page, /^ColorPicker/);
+  await applySpec(page, {
+    choices: { mode: 'rgb' },
+    text: {
+      id: 'color-picker-demo',
+      label: 'Fill Color',
+      value: '#d8d8d8',
+      name: 'fill',
+      addSampleAction: 'add-color-sample-demo',
+    },
+  });
+  await editAsJson(page, 'presets', presets);
+  await editAsJson(page, 'samples', samples);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('color-picker', {
+        id: 'color-picker-demo',
+        label: 'Fill Color',
+        value: '#d8d8d8',
+        mode: 'rgb',
+        name: 'fill',
+        presets,
+        samples,
+        addSampleAction: 'add-color-sample-demo',
+      }),
+    ),
+  );
+});
+
+test('builds ColorPicker › Without Opacity', async ({ page }) => {
+  await dragComponent(page, 'ColorPicker', () => emptySpot(page));
+  await select(page, /^ColorPicker/);
+  await applySpec(page, {
+    choices: { mode: 'hsb' },
+    text: {
+      id: 'color-picker-demo-opaque',
+      label: 'Text Color',
+      value: '#0a84ff',
+    },
+  });
+  // Opacity and the eyedropper are on by default.
+  await turnOff(page, 'alpha');
+  await turnOff(page, 'eyedropper');
+  expect(await exported(page)).toEqual(
+    pane(
+      node('color-picker', {
+        id: 'color-picker-demo-opaque',
+        label: 'Text Color',
+        value: '#0a84ff',
+        mode: 'hsb',
+        alpha: false,
+        eyedropper: false,
+      }),
+    ),
+  );
+});
+
+const PALETTE = [
+  { value: 'none', label: 'No Color', color: 'transparent' },
+  ...(
+    [
+      ['#ff3b30', 'Red'],
+      ['#ff9500', 'Orange'],
+      ['#ffcc00', 'Yellow'],
+      ['#34c759', 'Green'],
+      ['#00c7be', 'Teal'],
+      ['#0a84ff', 'Blue'],
+      ['#5e5ce6', 'Indigo'],
+      ['#bf5af2', 'Purple'],
+      ['#ff375f', 'Pink'],
+      ['#8e8e93', 'Gray'],
+    ] as const
+  ).map(([value, label]) => ({
+    value,
+    label,
+    color: { $css: `fillColor("${value}")` },
+  })),
+];
+
+/** Sets up the `nth` ColorSwatches: its swatches, props, then value. */
+async function colorSwatches(
+  page: Page,
+  nth: number,
+  swatches: readonly unknown[],
+  spec: FieldSpec,
+  pick: string,
+) {
+  await select(page, /^ColorSwatches/, nth);
+  await editAsJson(page, 'swatches', swatches);
+  await applySpec(page, spec);
+  // The value is typed: the value picker reads `choices`, not `swatches`
+  // (KF-H1X3S7).
+  await setText(page, 'value', pick);
+}
+
+test('builds ColorSwatches › Fixed Palette', async ({ page }) => {
+  // The command color starts as #0a84ff.
+  await dragComponent(page, 'ColorSwatches', () => emptySpot(page));
+  await colorSwatches(
+    page,
+    0,
+    PALETTE.slice(1),
+    {
+      text: {
+        name: 'command-color',
+        label: 'Command Color',
+        action: 'pick-swatch-demo',
+      },
+    },
+    '#0a84ff',
+  );
+  await expect(canvas(page).locator('input[type="radio"]')).toHaveCount(10);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('color-swatches', {
+        name: 'command-color',
+        label: 'Command Color',
+        swatches: PALETTE.slice(1),
+        value: '#0a84ff',
+        action: 'pick-swatch-demo',
+      }),
+    ),
+  );
+});
+
+test('builds ColorSwatches › No Color, Compact, and Disabled', async ({
+  page,
+}) => {
+  // The label color starts as none.
+  await stacked(page, 'List', 'ColorSwatches', [{}, {}], () =>
+    choose(page, 'gap', 'm'),
+  );
+  await colorSwatches(
+    page,
+    0,
+    PALETTE,
+    {
+      choices: { size: 'compact' },
+      text: {
+        name: 'label-color',
+        label: 'Label Color',
+        action: 'pick-swatch-demo',
+      },
+    },
+    'none',
+  );
+  await colorSwatches(
+    page,
+    1,
+    PALETTE.slice(1, 6),
+    {
+      choices: { size: 'compact' },
+      flags: ['disabled'],
+      text: { name: 'locked-color', label: 'Locked Color' },
+    },
+    '#34c759',
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'm' },
+        {
+          children: [
+            node('color-swatches', {
+              name: 'label-color',
+              label: 'Label Color',
+              swatches: PALETTE,
+              value: 'none',
+              size: 'compact',
+              action: 'pick-swatch-demo',
+            }),
+            node('color-swatches', {
+              name: 'locked-color',
+              label: 'Locked Color',
+              swatches: PALETTE.slice(1, 6),
+              value: '#34c759',
+              size: 'compact',
+              disabled: true,
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds FilePicker › Browse Trigger and Drop Zone', async ({ page }) => {
+  // filePickerFiles starts empty, so no file list shows.
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await dragComponent(page, 'Row', () => emptySpot(page));
+  await select(page, /^List/);
+  await choose(page, 'gap', 'xs');
+  await dataAttribute(page, 'data-demo-attachments-panel', '');
+  await select(page, /^Row/);
+  await applySpec(page, {
+    choices: {
+      hAlign: 'space-between',
+      vAlign: 'middle',
+      textInsets: 'l',
+      controlInsets: 'r',
+    },
+  });
+  await dragComponent(page, 'Text', () => emptySpot(page));
+  await select(page, /^Text(?![A-Z])/);
+  await applySpec(page, {
+    choices: { variant: 'h3', size: 'compact' },
+    flags: ['flush'],
+    text: { children: 'Attachments' },
+  });
+  await select(page, /^Row/);
+  await addChild(page, 'FilePicker');
+  await applySpec(page, {
+    flags: ['multiple'],
+    text: {
+      label: 'Add',
+      accessibleLabel: 'Browse attachments',
+      pickerId: 'demo-attachments',
+    },
+  });
+  await addIcon(page, 'icon', 'plus');
+  await select(page, /^List/);
+  await addChild(page, 'FileDropZone');
+  await applySpec(page, {
+    flags: ['multiple'],
+    text: {
+      title: 'Drop attachments here or browse',
+      detail: 'Images and PDFs, up to 10 MB each',
+      accessibleLabel: 'Add attachments by dropping or choosing files',
+      accept: 'image/*,.pdf',
+      pickerId: 'demo-drop',
+      dropScope: '[data-demo-attachments-panel]',
+    },
+  });
+  await addIcon(page, 'icon', 'upload');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'xs', rootAttributes: { 'data-demo-attachments-panel': '' } },
+        {
+          children: [
+            node(
+              'row',
+              {
+                hAlign: 'space-between',
+                vAlign: 'middle',
+                textInsets: 'l',
+                controlInsets: 'r',
+              },
+              {
+                children: [
+                  node('text', {
+                    children: 'Attachments',
+                    variant: 'h3',
+                    size: 'compact',
+                    flush: true,
+                  }),
+                  node(
+                    'file-picker',
+                    {
+                      label: 'Add',
+                      accessibleLabel: 'Browse attachments',
+                      multiple: true,
+                      pickerId: 'demo-attachments',
+                    },
+                    { icon: [icon('plus')] },
+                  ),
+                ],
+              },
+            ),
+            node(
+              'file-picker#FileDropZone',
+              {
+                title: 'Drop attachments here or browse',
+                detail: 'Images and PDFs, up to 10 MB each',
+                accessibleLabel:
+                  'Add attachments by dropping or choosing files',
+                accept: 'image/*,.pdf',
+                multiple: true,
+                pickerId: 'demo-drop',
+                dropScope: '[data-demo-attachments-panel]',
+              },
+              { icon: [icon('upload')] },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds FilePicker › Button Look', async ({ page }) => {
+  await dragComponent(page, 'Row', () => emptySpot(page));
+  await dragComponent(page, 'FilePicker', () => emptySpot(page));
+  await select(page, /^Row/);
+  await applySpec(page, {
+    choices: { gap: 'xs', vAlign: 'middle', controlInsets: 'trbl' },
+    data: [['data-demo-file-buttons', '']],
+  });
+  await select(page, /^FilePicker/);
+  await applySpec(page, {
+    choices: { tone: 'brand' },
+    text: {
+      label: 'Import',
+      accessibleLabel: 'Import a document',
+      pickerId: 'demo-import',
+    },
+  });
+  await addIcon(page, 'icon', 'folder-open');
+  await select(page, /^Row/);
+  await addChild(page, 'FilePicker');
+  await applySpec(page, {
+    choices: { emphasis: 'plain', size: 'compact' },
+    text: { label: 'Open', pickerId: 'demo-open' },
+  });
+  await addIcon(page, 'icon', 'folder-open');
+  await select(page, /^Row/);
+  await addChild(page, 'Button');
+  await applySpec(page, {
+    choices: { emphasis: 'plain', size: 'compact' },
+    text: { children: 'Save' },
+  });
+  await addIcon(page, 'icon', 'save');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'row',
+        {
+          gap: 'xs',
+          vAlign: 'middle',
+          controlInsets: 'trbl',
+          rootAttributes: { 'data-demo-file-buttons': '' },
+        },
+        {
+          children: [
+            node(
+              'file-picker',
+              {
+                label: 'Import',
+                accessibleLabel: 'Import a document',
+                tone: 'brand',
+                pickerId: 'demo-import',
+              },
+              { icon: [icon('folder-open')] },
+            ),
+            node(
+              'file-picker',
+              {
+                label: 'Open',
+                emphasis: 'plain',
+                size: 'compact',
+                pickerId: 'demo-open',
+              },
+              { icon: [icon('folder-open')] },
+            ),
+            node(
+              'button',
+              { children: 'Save', emphasis: 'plain', size: 'compact' },
+              { icon: [icon('save')] },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds FilePicker › Disabled', async ({ page }) => {
+  await dragComponent(page, 'FileDropZone', () => emptySpot(page));
+  await select(page, /^FileDropZone/);
+  await applySpec(page, {
+    flags: ['disabled'],
+    text: { title: 'Uploads are paused' },
+  });
+  await addIcon(page, 'icon', 'upload');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'file-picker#FileDropZone',
+        { title: 'Uploads are paused', disabled: true },
+        { icon: [icon('upload')] },
+      ),
+    ),
+  );
+});
+
+/** The brand send Button of the composer examples, in its trailing zone. */
+async function composerSend(page: Page, label: string, id: string) {
+  // The seeded trailing Text gives way to the Button.
+  await select(page, /^Text(?![A-Z])/);
+  await area(page, 'Flow');
+  await page.getByRole('button', { name: 'Delete', exact: true }).click();
+  await select(page, /^MessageComposer/);
+  await addChild(page, 'Button', 'trailing');
+  await applySpec(page, {
+    choices: { tone: 'brand' },
+    text: { children: label, action: 'send-composer-demo' },
+    data: [['data-message-composer-id', id]],
+  });
+}
+
+const composerSendNode = (label: string, id: string) =>
+  node('button', {
+    children: label,
+    tone: 'brand',
+    action: 'send-composer-demo',
+    rootAttributes: { 'data-message-composer-id': id },
+  });
+
+test('builds MessageComposer › Chat Composer', async ({ page }) => {
+  const id = 'message-composer-demo-chat';
+  await dragComponent(page, 'MessageComposer', () => emptySpot(page));
+  await select(page, /^MessageComposer/);
+  await applySpec(page, {
+    flags: ['submitOnEnter'],
+    text: {
+      id,
+      name: id,
+      label: 'Message',
+      placeholder: 'Ask about this build',
+      hint: 'Answers use the latest nightly build.',
+    },
+  });
+  await composerSend(page, 'Send', id);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'message-composer',
+        {
+          submitOnEnter: true,
+          id,
+          name: id,
+          label: 'Message',
+          placeholder: 'Ask about this build',
+          hint: 'Answers use the latest nightly build.',
+        },
+        { trailing: [composerSendNode('Send', id)] },
+      ),
+    ),
+  );
+});
+
+test('builds MessageComposer › Prompt with Leading Controls', async ({
+  page,
+}) => {
+  const id = 'message-composer-demo-prompt';
+  await dragComponent(page, 'MessageComposer', () => emptySpot(page));
+  await select(page, /^MessageComposer/);
+  await applySpec(page, {
+    text: {
+      id,
+      name: id,
+      label: 'Prompt',
+      placeholder: 'Describe the change you want',
+      minRows: '3',
+      maxRows: '12',
+    },
+  });
+  await composerSend(page, 'Generate', id);
+  await select(page, /^MessageComposer/);
+  await addChild(page, 'ToolbarControlGroup', 'leading');
+  await choose(page, 'appearance', 'borderless');
+  await turnOn(page, 'single');
+  await select(page, /^ToolbarButton/);
+  await setText(page, 'ariaLabel', 'Attach File');
+  await unset(page, 'children');
+  await setText(page, 'action', 'attach-composer-demo');
+  await addIcon(page, 'icon', 'paperclip');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'message-composer',
+        {
+          id,
+          name: id,
+          label: 'Prompt',
+          placeholder: 'Describe the change you want',
+          minRows: 3,
+          maxRows: 12,
+        },
+        {
+          trailing: [composerSendNode('Generate', id)],
+          leading: [
+            node(
+              'toolbar-control-group',
+              { appearance: 'borderless', single: true },
+              {
+                children: [
+                  node(
+                    'toolbar-control-group#ToolbarButton',
+                    {
+                      ariaLabel: 'Attach File',
+                      action: 'attach-composer-demo',
+                    },
+                    { icon: [icon('paperclip')] },
+                  ),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds SearchField › Saved-View Form Fields', async ({ page }) => {
+  const tokens = [{ value: 'tag:client', label: 'tag:client', offset: 0 }];
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await dragComponent(page, 'TextField', () => emptySpot(page));
+  await select(page, /^List/);
+  await choose(page, 'gap', 'm');
+  await dataAttribute(page, 'data-demo-token-form', '');
+  await select(page, /^TextField/);
+  await applySpec(page, {
+    flags: ['required'],
+    text: {
+      label: 'View Name',
+      hint: 'Name this saved view.',
+      value: 'Open procurement',
+    },
+  });
+  await select(page, /^List/);
+  await addChild(page, 'SearchField');
+  await applySpec(page, {
+    choices: { presentation: 'form-field' },
+    flags: ['required'],
+    text: {
+      id: 'saved-view-query',
+      label: 'Search Query',
+      hint: 'Add filters to narrow the view.',
+      query: 'status:open',
+    },
+  });
+  await editAsJson(page, 'tokens', tokens);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'm', rootAttributes: { 'data-demo-token-form': '' } },
+        {
+          children: [
+            node('text-field', {
+              label: 'View Name',
+              hint: 'Name this saved view.',
+              required: true,
+              value: 'Open procurement',
+            }),
+            node('search-field', {
+              id: 'saved-view-query',
+              label: 'Search Query',
+              presentation: 'form-field',
+              hint: 'Add filters to narrow the view.',
+              required: true,
+              query: 'status:open',
+              tokens,
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds SearchField › Collapsible', async ({ page }) => {
+  // collapsibleSearchOpen starts closed, which an unset `expanded` is.
+  await dragComponent(page, 'SearchField', () => emptySpot(page));
+  await select(page, /^SearchField/);
+  await applySpec(page, {
+    flags: ['collapsible'],
+    text: {
+      id: 'collapsible-search',
+      label: 'Find Records',
+      placeholder: 'Find records',
+      expandLabel: 'Open find',
+    },
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      node('search-field', {
+        id: 'collapsible-search',
+        label: 'Find Records',
+        collapsible: true,
+        placeholder: 'Find records',
+        expandLabel: 'Open find',
+      }),
+    ),
+  );
+});
+
+test('builds SearchField › Disabled', async ({ page }) => {
+  const tokens = [
+    { value: 'tag:design-system', label: 'tag:design-system', offset: 7 },
+  ];
+  await dragComponent(page, 'SearchField', () => emptySpot(page));
+  await select(page, /^SearchField/);
+  await applySpec(page, {
+    flags: ['disabled'],
+    text: { id: 'disabled-search', label: 'Saved Search', query: 'release' },
+  });
+  await editAsJson(page, 'tokens', tokens);
+  await addIcon(page, 'clearIcon', 'circle-x');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'search-field',
+        {
+          id: 'disabled-search',
+          label: 'Saved Search',
+          query: 'release',
+          tokens,
+          disabled: true,
+        },
+        { clearIcon: [icon('circle-x')] },
+      ),
+    ),
+  );
+});
+
+test('builds TextField › End Toggle', async ({ page }) => {
+  // The password starts hidden: type password, the eye icon, not pressed.
+  await dragComponent(page, 'TextField', () => emptySpot(page));
+  await select(page, /^TextField/);
+  await applySpec(page, {
+    choices: { type: 'password' },
+    text: {
+      label: 'Password',
+      value: 'correct horse battery',
+      autocomplete: 'off',
+    },
+  });
+  await openField(page, 'toggle', []);
+  await setField(page, 'toggle', ['label'], 'Show Password');
+  await setField(page, 'toggle', ['action'], 'text-field-demo-reveal');
+  // A toggle's `pressed` is required: on, then off, writes false.
+  await turnFieldOn(page, 'toggle', ['pressed']);
+  await turnFieldOn(page, 'toggle', ['pressed']);
+  await page.locator('[data-editor-content-add="toggle.icon"]').click();
+  await area(page, 'Properties');
+  await pickIcon(page, page.locator('[data-editor-icon-place]'), 'eye');
+  await expect(
+    canvas(page).locator('.kui-text-field__toggle[aria-pressed="false"]'),
+  ).toBeVisible();
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'text-field',
+        {
+          label: 'Password',
+          type: 'password',
+          value: 'correct horse battery',
+          autocomplete: 'off',
+          toggle: {
+            label: 'Show Password',
+            pressed: false,
+            action: 'text-field-demo-reveal',
+          },
+        },
+        { 'toggle.icon': [icon('eye')] },
+      ),
+    ),
+  );
+});
+
 test('builds ListItem › Divided List', async ({ page }) => {
   await dragComponent(page, 'List', () => emptySpot(page));
   await dragComponent(page, 'ListItem', () => emptySpot(page));

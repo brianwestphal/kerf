@@ -1,0 +1,123 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ColorPickerFullPicker",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:color-picker",
+          "props": {
+            "id": "color-picker-demo",
+            "label": "Fill Color",
+            "value": "#d8d8d8",
+            "mode": "rgb",
+            "name": "fill",
+            "addSampleAction": "add-color-sample-demo",
+            "presets": [
+              {
+                "value": "#ff3b30",
+                "label": "#FF3B30",
+                "color": {
+                  "$css": "fillColor(\"#ff3b30\")"
+                }
+              },
+              {
+                "value": "#ff9500",
+                "label": "#FF9500",
+                "color": {
+                  "$css": "fillColor(\"#ff9500\")"
+                }
+              },
+              {
+                "value": "#ffcc00",
+                "label": "#FFCC00",
+                "color": {
+                  "$css": "fillColor(\"#ffcc00\")"
+                }
+              },
+              {
+                "value": "#34c759",
+                "label": "#34C759",
+                "color": {
+                  "$css": "fillColor(\"#34c759\")"
+                }
+              },
+              {
+                "value": "#00c7be",
+                "label": "#00C7BE",
+                "color": {
+                  "$css": "fillColor(\"#00c7be\")"
+                }
+              },
+              {
+                "value": "#0a84ff",
+                "label": "#0A84FF",
+                "color": {
+                  "$css": "fillColor(\"#0a84ff\")"
+                }
+              },
+              {
+                "value": "#5e5ce6",
+                "label": "#5E5CE6",
+                "color": {
+                  "$css": "fillColor(\"#5e5ce6\")"
+                }
+              },
+              {
+                "value": "#bf5af2",
+                "label": "#BF5AF2",
+                "color": {
+                  "$css": "fillColor(\"#bf5af2\")"
+                }
+              },
+              {
+                "value": "#ff375f",
+                "label": "#FF375F",
+                "color": {
+                  "$css": "fillColor(\"#ff375f\")"
+                }
+              },
+              {
+                "value": "#8e8e93",
+                "label": "#8E8E93",
+                "color": {
+                  "$css": "fillColor(\"#8e8e93\")"
+                }
+              }
+            ],
+            "samples": [
+              {
+                "title": "User Colors",
+                "swatches": [
+                  {
+                    "value": "#1e3a8a",
+                    "label": "#1E3A8A",
+                    "color": {
+                      "$css": "fillColor(\"#1e3a8a\")"
+                    }
+                  },
+                  {
+                    "value": "#f59e0b",
+                    "label": "#F59E0B",
+                    "color": {
+                      "$css": "fillColor(\"#f59e0b\")"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

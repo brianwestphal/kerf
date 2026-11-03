@@ -1,0 +1,82 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "MessageComposerPromptWithLeadingControls",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:message-composer",
+          "props": {
+            "label": "Prompt",
+            "name": "message-composer-demo-prompt",
+            "id": "message-composer-demo-prompt",
+            "placeholder": "Describe the change you want",
+            "minRows": 3,
+            "maxRows": 12
+          },
+          "zones": {
+            "trailing": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Generate",
+                  "tone": "brand",
+                  "action": "send-composer-demo",
+                  "rootAttributes": {
+                    "data-message-composer-id": "message-composer-demo-prompt"
+                  }
+                }
+              }
+            ],
+            "leading": [
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Attach File",
+                        "action": "attach-composer-demo"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "paperclip"
+                              },
+                              "name": "paperclip"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "appearance": "borderless",
+                  "single": true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

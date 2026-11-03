@@ -1,0 +1,35 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SliderVertical",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:slider",
+          "props": {
+            "id": "slider-demo-level",
+            "label": "Level",
+            "size": "compact",
+            "orientation": "vertical",
+            "showValue": true,
+            "value": 60,
+            "unit": "%",
+            "action": "set-slider-demo",
+            "length": {
+              "$css": "remify(120)"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SliderSteppedWithTicks",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:slider",
+          "props": {
+            "id": "slider-demo-zoom",
+            "label": "Zoom",
+            "showValue": true,
+            "min": 50,
+            "max": 200,
+            "step": 25,
+            "value": 100,
+            "unit": "%",
+            "action": "set-slider-demo",
+            "ticks": [
+              {
+                "value": 50,
+                "label": "50%"
+              },
+              {
+                "value": 100,
+                "label": "100%"
+              },
+              {
+                "value": 150,
+                "label": "150%"
+              },
+              {
+                "value": 200,
+                "label": "200%"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

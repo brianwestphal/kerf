@@ -1,0 +1,30 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ColorPickerWithoutOpacity",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:color-picker",
+          "props": {
+            "id": "color-picker-demo-opaque",
+            "label": "Text Color",
+            "value": "#0a84ff",
+            "mode": "hsb",
+            "alpha": false,
+            "eyedropper": false
+          }
+        }
+      ]
+    }
+  }
+}

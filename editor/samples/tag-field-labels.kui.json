@@ -1,0 +1,32 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TagFieldLabels",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:tag-field",
+          "props": {
+            "id": "tag-field-demo-labels",
+            "label": "Labels",
+            "name": "labels",
+            "hint": "Press Enter or a comma to add a label.",
+            "tags": [
+              "bug",
+              "docs"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

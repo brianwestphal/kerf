@@ -1,0 +1,65 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ColorFieldColorFields",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:color-field",
+                "props": {
+                  "id": "color-field-demo-fill",
+                  "value": "#0a84ff",
+                  "label": "Fill",
+                  "mode": "rgb",
+                  "name": "fill",
+                  "hint": "Applies to the selected shapes."
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:color-field",
+                "props": {
+                  "id": "color-field-demo-border",
+                  "value": "#1c1c1e80",
+                  "label": "Border",
+                  "mode": "hsl",
+                  "size": "compact",
+                  "name": "border"
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:color-field",
+                "props": {
+                  "id": "color-field-demo-locked",
+                  "value": "#bf5af2",
+                  "label": "Theme Accent",
+                  "disabled": true,
+                  "error": "The theme locks this color.",
+                  "alpha": false
+                }
+              }
+            ]
+          },
+          "props": {
+            "gap": "m"
+          }
+        }
+      ]
+    }
+  }
+}

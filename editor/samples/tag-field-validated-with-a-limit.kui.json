@@ -1,0 +1,58 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TagFieldValidatedWithALimit",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:tag-field",
+                "props": {
+                  "id": "tag-field-demo-recipients",
+                  "label": "Recipients",
+                  "required": true,
+                  "name": "recipients",
+                  "max": 3,
+                  "placeholder": "Add an email address…",
+                  "hint": "Up to three addresses.",
+                  "tags": [
+                    "mara@example.com"
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:tag-field",
+                "props": {
+                  "id": "tag-field-demo-locked",
+                  "label": "Locked Labels",
+                  "disabled": true,
+                  "tags": [
+                    "release",
+                    "frozen"
+                  ]
+                }
+              }
+            ]
+          },
+          "props": {
+            "gap": "xs"
+          }
+        }
+      ]
+    }
+  }
+}

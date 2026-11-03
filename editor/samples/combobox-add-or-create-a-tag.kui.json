@@ -1,0 +1,75 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ComboboxAddOrCreateATag",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:row",
+                "props": {
+                  "wrap": true,
+                  "controlInsets": "rl"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:chip",
+                      "props": {
+                        "children": "bug"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:list-inset-control",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:combobox",
+                      "props": {
+                        "id": "demo-tag-combobox",
+                        "label": "Tag Name",
+                        "suggestions": [
+                          "design",
+                          "docs",
+                          "performance",
+                          "regression"
+                        ],
+                        "placeholder": "Search or create a tag",
+                        "hint": "Press Enter to add"
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "sides": "rl"
+                }
+              }
+            ]
+          },
+          "props": {
+            "gap": "xs"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "FilePickerBrowseTriggerAndDropZone",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:row",
+                "props": {
+                  "hAlign": "space-between",
+                  "vAlign": "middle",
+                  "textInsets": "l",
+                  "controlInsets": "r"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "Attachments",
+                        "variant": "h3",
+                        "size": "compact",
+                        "flush": true
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:file-picker",
+                      "props": {
+                        "label": "Add",
+                        "multiple": true,
+                        "accessibleLabel": "Browse attachments",
+                        "pickerId": "demo-attachments"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "plus"
+                              },
+                              "name": "plus"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:file-picker#FileDropZone",
+                "props": {
+                  "title": "Drop attachments here or browse",
+                  "multiple": true,
+                  "detail": "Images and PDFs, up to 10 MB each",
+                  "accessibleLabel": "Add attachments by dropping or choosing files",
+                  "accept": "image/*,.pdf",
+                  "pickerId": "demo-drop",
+                  "dropScope": "[data-demo-attachments-panel]"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "upload"
+                        },
+                        "name": "upload"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "props": {
+            "gap": "xs",
+            "rootAttributes": {
+              "data-demo-attachments-panel": ""
+            }
+          }
+        }
+      ]
+    }
+  }
+}
