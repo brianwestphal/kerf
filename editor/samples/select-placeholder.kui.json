@@ -1,0 +1,31 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SelectPlaceholder",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:select",
+          "props": {
+            "name": "select-placeholder",
+            "choices": [],
+            "value": "",
+            "label": "Rendering Balance",
+            "placeholder": true,
+            "ariaLabel": "Rendering Balance",
+            "hint": "Loading selection options."
+          }
+        }
+      ]
+    }
+  }
+}

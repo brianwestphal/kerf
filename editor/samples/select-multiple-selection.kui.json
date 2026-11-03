@@ -1,0 +1,54 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SelectMultipleSelection",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:select",
+          "props": {
+            "name": "ticket-labels",
+            "choices": [
+              {
+                "value": "bug",
+                "label": "Bug"
+              },
+              {
+                "value": "feature",
+                "label": "Feature"
+              },
+              {
+                "value": "docs",
+                "label": "Docs"
+              },
+              {
+                "value": "design",
+                "label": "Design"
+              },
+              {
+                "value": "performance",
+                "label": "Performance"
+              }
+            ],
+            "value": [
+              "bug",
+              "docs"
+            ],
+            "label": "Labels",
+            "multiple": true,
+            "placeholderText": "No labels"
+          }
+        }
+      ]
+    }
+  }
+}

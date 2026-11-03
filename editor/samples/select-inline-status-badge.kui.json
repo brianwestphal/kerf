@@ -1,0 +1,67 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SelectInlineStatusBadge",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:select",
+          "props": {
+            "name": "inline-status",
+            "choices": [
+              {
+                "value": "quiet",
+                "label": "Quiet",
+                "icon": {
+                  "$icon": "bell"
+                },
+                "iconName": "bell"
+              },
+              {
+                "value": "balanced",
+                "label": "Balanced",
+                "icon": {
+                  "$icon": "sliders-horizontal"
+                },
+                "iconName": "sliders-horizontal"
+              },
+              {
+                "value": "explicit",
+                "label": "Explicit",
+                "icon": {
+                  "$icon": "wrench"
+                },
+                "iconName": "wrench"
+              }
+            ],
+            "value": "balanced",
+            "presentation": "inline",
+            "ariaLabel": "Status",
+            "renderSelected": {
+              "$param": "nodeRenderSelected"
+            },
+            "caret": false
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "nodeRenderSelected": {
+      "type": {
+        "kind": "prop",
+        "component": "@kerfjs/ui:select",
+        "prop": "renderSelected"
+      }
+    }
+  }
+}

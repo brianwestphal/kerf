@@ -1,0 +1,41 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SelectAccessibleNameWithoutAVisibleLabel",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:select",
+          "props": {
+            "name": "plain-rendering-balance",
+            "choices": [
+              {
+                "value": "quiet",
+                "label": "Quiet"
+              },
+              {
+                "value": "balanced",
+                "label": "Balanced"
+              },
+              {
+                "value": "explicit",
+                "label": "Explicit"
+              }
+            ],
+            "value": "balanced",
+            "ariaLabel": "Plain Rendering Balance"
+          }
+        }
+      ]
+    }
+  }
+}

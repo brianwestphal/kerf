@@ -1,0 +1,51 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SelectCompactSelectedText",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:select",
+          "props": {
+            "name": "compact-workspace",
+            "choices": [
+              {
+                "value": "long",
+                "label": "A Very Long Workspace Name"
+              }
+            ],
+            "value": "long",
+            "presentation": "toolbar-borderless",
+            "size": "compact",
+            "triggerWidth": "fit-content",
+            "ariaLabel": "Workspace",
+            "renderSelected": {
+              "$param": "nodeRenderSelected"
+            },
+            "maxTriggerWidth": {
+              "$css": "remify(160)"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "nodeRenderSelected": {
+      "type": {
+        "kind": "prop",
+        "component": "@kerfjs/ui:select",
+        "prop": "renderSelected"
+      }
+    }
+  }
+}

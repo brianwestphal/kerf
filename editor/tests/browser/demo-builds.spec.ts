@@ -27,6 +27,7 @@ import {
   setText,
   sized,
   turnFieldOn,
+  turnOff,
   turnOn,
   unset,
   zoneSpot,
@@ -1781,6 +1782,10 @@ type ChoiceSpec = {
   readonly swatch?: string;
   /** An icon placed in the choice's node zone (`icon` or `content`). */
   readonly glyph?: string;
+  /** Icon data picked in the form (a Select choice's `icon`). */
+  readonly iconData?: string;
+  readonly group?: string;
+  readonly disabledReason?: string;
 };
 
 /**
@@ -1799,6 +1804,10 @@ async function configureChoices(
   const dialog = page.locator('dialog[open]');
   for (let added = 3; added < choices.length; added += 1)
     await dialog.getByRole('button', { name: 'Add', exact: true }).click();
+  for (let extra = 3; extra > choices.length; extra -= 1)
+    await dialog
+      .getByRole('button', { name: `Remove Choice ${extra}`, exact: true })
+      .click();
   for (const [index, choice] of choices.entries()) {
     await dialog.getByText(`Choice ${index + 1}`, { exact: true }).click();
     await setField(page, 'choices', [index, 'value'], choice.value);
@@ -1807,8 +1816,23 @@ async function configureChoices(
       await setField(page, 'choices', [index, 'hint'], choice.hint);
     if (choice.title)
       await setField(page, 'choices', [index, 'title'], choice.title);
+    if (choice.group)
+      await setField(page, 'choices', [index, 'group'], choice.group);
     if (choice.disabled)
       await turnFieldOn(page, 'choices', [index, 'disabled']);
+    if (choice.disabledReason)
+      await setField(
+        page,
+        'choices',
+        [index, 'disabledReason'],
+        choice.disabledReason,
+      );
+    if (choice.iconData)
+      await pickIcon(
+        page,
+        dialog.locator('[data-editor-icon-place]'),
+        choice.iconData,
+      );
     if (choice.swatch === 'transparent')
       await chooseField(page, 'choices', [index, 'swatch'], 'transparent');
     else if (choice.swatch) {
@@ -1842,8 +1866,9 @@ async function configureChoices(
 
 /** The `choices` value a list of ChoiceSpecs exports (icons are zones). */
 const choiceValues = (choices: readonly ChoiceSpec[]) =>
-  choices.map(({ glyph: _glyph, swatch, ...rest }) => ({
+  choices.map(({ glyph: _glyph, swatch, iconData, ...rest }) => ({
     ...rest,
+    ...(iconData ? { icon: { $icon: iconData }, iconName: iconData } : {}),
     ...(swatch === 'transparent'
       ? { swatch }
       : swatch
@@ -2667,6 +2692,797 @@ test('builds Select › Rendering Balance', async ({ page }) => {
 });
 
 // KF-5ZEYKP, KF-7BB55F: a toolbar's native group buttons are ToolbarButtons.
+const labelChoices: readonly ChoiceSpec[] = [
+  'Bug',
+  'Feature',
+  'Docs',
+  'Design',
+  'Performance',
+].map((label) => ({ value: label.toLowerCase(), label }));
+
+const balanceChoices: readonly ChoiceSpec[] = [
+  { value: 'quiet', label: 'Quiet' },
+  { value: 'balanced', label: 'Balanced' },
+  { value: 'explicit', label: 'Explicit' },
+];
+
+/** The toolbar Selects' choices, each with its icon. */
+const toolbarChoices: readonly ChoiceSpec[] = [
+  { value: 'quiet', label: 'Quiet', iconData: 'bell' },
+  { value: 'balanced', label: 'Balanced', iconData: 'sliders-horizontal' },
+  { value: 'explicit', label: 'Explicit', iconData: 'wrench' },
+];
+
+/** How a Select is set up: its choices, props, value, and extras. */
+type SelectSpec = {
+  readonly choices: readonly ChoiceSpec[];
+  readonly props: FieldSpec;
+  /** The picked choice's label, or labels when `multiple`. */
+  readonly pick?: string | readonly string[];
+  readonly triggerIcon?: string;
+  /** The app supplies `renderSelected`, promoted to a param. */
+  readonly renderSelected?: boolean;
+};
+
+/** Sets up the selected Select (the `nth` one) as `spec` says. */
+async function configureSelect(page: Page, spec: SelectSpec, nth = 0) {
+  await configureChoices(page, /^Select/, spec.choices);
+  await select(page, /^Select/, nth);
+  await applySpec(page, spec.props);
+  if (Array.isArray(spec.pick)) await chooseValues(page, spec.pick);
+  else if (typeof spec.pick === 'string')
+    await choose(page, 'value', spec.pick);
+  if (spec.renderSelected)
+    await page.locator('[data-editor-promote-prop="renderSelected"]').click();
+  if (spec.triggerIcon) {
+    await page.locator('[data-editor-content-add="triggerIcon"]').click();
+    await area(page, 'Properties');
+    await pickIcon(
+      page,
+      page.locator('[data-editor-icon-place]'),
+      spec.triggerIcon,
+    );
+  }
+}
+
+/** A lone Select on the page, set up as `spec` says. */
+async function selectAlone(page: Page, spec: SelectSpec) {
+  await dragComponent(page, 'Select', () => emptySpot(page));
+  await configureSelect(page, spec);
+  // A placeholder Select renders a static box, not the interactive control.
+  await expect(
+    canvas(page).locator('[data-component="select"][data-kerf-node]'),
+  ).toHaveCount(1);
+}
+
+/** The Select node `spec` builds, with `props` as exported. */
+const selectNode = (
+  props: Record<string, unknown>,
+  spec: Pick<SelectSpec, 'choices' | 'triggerIcon' | 'renderSelected'>,
+) =>
+  node(
+    'select',
+    {
+      ...props,
+      choices: choiceValues(spec.choices),
+      ...(spec.renderSelected
+        ? { renderSelected: { $param: 'nodeRenderSelected' } }
+        : {}),
+    },
+    spec.triggerIcon ? { triggerIcon: [icon(spec.triggerIcon)] } : undefined,
+  );
+
+/**
+ * A Toolbar labeled `label` holding one ToolbarControlGroup (set up by
+ * `group`) in `zone`, its seeded ToolbarButton removed unless `keepButton`;
+ * the group is selected afterwards.
+ */
+async function toolbarGroup(
+  page: Page,
+  label: string,
+  group: FieldSpec,
+  { zone = 'Leading', keepButton = false } = {},
+) {
+  await dragComponent(page, 'Toolbar', () => emptySpot(page));
+  await dragComponent(page, 'ToolbarControlGroup', () => zoneSpot(page, zone));
+  await select(page, /^Toolbar(?!Text|Control|Button)/);
+  await setText(page, 'label', label);
+  await select(page, /^ToolbarControlGroup/);
+  await applySpec(page, group);
+  if (!keepButton) {
+    await select(page, /^ToolbarButton/);
+    await page.locator('[data-action="editor-delete"]').click();
+    await select(page, /^ToolbarControlGroup/);
+  }
+}
+
+/** The Toolbar `toolbarGroup` builds, holding `children` in its group. */
+const toolbarGroupNode = (
+  label: string,
+  group: Record<string, unknown>,
+  children: unknown[],
+  zone = 'leading',
+) =>
+  node(
+    'toolbar',
+    { label },
+    {
+      [zone]: [node('toolbar-control-group', group, { children })],
+    },
+  );
+
+/** A group holding one Select, as most toolbar Select examples use. */
+async function toolbarSelect(
+  page: Page,
+  label: string,
+  group: FieldSpec,
+  spec: SelectSpec,
+  zone = 'Leading',
+) {
+  await toolbarGroup(page, label, group, { zone });
+  await addChild(page, 'Select');
+  await configureSelect(page, spec);
+  await expect(canvas(page).locator('kui-select')).toHaveCount(1);
+}
+
+// Live demo state is a static snapshot of the demo's first render, as in
+// Select › Rendering Balance: selectedChoice starts as 'balanced', and
+// ticketLabels / ticketLabelFilter as ['bug', 'docs'].
+test('builds Select › Multiple Selection', async ({ page }) => {
+  const spec: SelectSpec = {
+    choices: labelChoices,
+    props: {
+      flags: ['multiple'],
+      text: {
+        name: 'ticket-labels',
+        label: 'Labels',
+        placeholderText: 'No labels',
+      },
+    },
+    pick: ['Bug', 'Docs'],
+  };
+  await selectAlone(page, spec);
+  expect(await exported(page)).toEqual(
+    pane(
+      selectNode(
+        {
+          name: 'ticket-labels',
+          multiple: true,
+          value: ['bug', 'docs'],
+          label: 'Labels',
+          placeholderText: 'No labels',
+        },
+        spec,
+      ),
+    ),
+  );
+});
+
+test('builds Select › Multiple Selection Actions', async ({ page }) => {
+  const spec: SelectSpec = {
+    choices: [
+      { value: 'files', label: 'Files' },
+      { value: 'windows', label: 'Windows' },
+      {
+        value: 'browsers',
+        label: 'Web Browsers',
+        disabled: true,
+        disabledReason: 'Not yet supported',
+      },
+      { value: 'tabs', label: 'Tabs' },
+    ],
+    props: {
+      flags: ['multiple'],
+      text: {
+        name: 'item-types',
+        label: 'Item Types',
+        placeholderText: 'No types',
+        selectAllLabel: 'Select all',
+        clearLabel: 'Clear',
+      },
+    },
+    // itemTypes starts as ['files'].
+    pick: ['Files'],
+  };
+  await selectAlone(page, spec);
+  expect(await exported(page)).toEqual(
+    pane(
+      selectNode(
+        {
+          name: 'item-types',
+          multiple: true,
+          value: ['files'],
+          label: 'Item Types',
+          placeholderText: 'No types',
+          selectAllLabel: 'Select all',
+          clearLabel: 'Clear',
+        },
+        spec,
+      ),
+    ),
+  );
+});
+
+/** The icon-only label filter both toolbar filter examples use. */
+const labelFilter = (name: string, inGroup: boolean): SelectSpec => ({
+  choices: labelChoices,
+  props: {
+    flags: ['multiple'],
+    choices: {
+      presentation: 'toolbar-borderless',
+      selectedPresentation: 'icon-only',
+      ...(inGroup ? { focusRingOwner: 'group' } : {}),
+    },
+    text: { name, ariaLabel: 'Filter by Label' },
+    unsets: ['label'],
+  },
+  pick: ['Bug', 'Docs'],
+  triggerIcon: 'funnel',
+});
+
+const labelFilterNode = (name: string, inGroup: boolean) =>
+  selectNode(
+    {
+      name,
+      multiple: true,
+      value: ['bug', 'docs'],
+      ariaLabel: 'Filter by Label',
+      presentation: 'toolbar-borderless',
+      selectedPresentation: 'icon-only',
+      ...(inGroup ? { focusRingOwner: 'group' } : {}),
+    },
+    labelFilter(name, inGroup),
+  );
+
+/** An icon-only toolbar group: its label, then extra group props. */
+const iconOnlyGroup = (label: string, rest: FieldSpec = {}): FieldSpec => ({
+  ...rest,
+  choices: { content: 'icon', focusRing: 'outline', ...rest.choices },
+  flags: ['single', ...(rest.flags ?? [])],
+  text: { label },
+});
+
+const iconOnlyGroupProps = (label: string, rest = {}) => ({
+  label,
+  content: 'icon',
+  focusRing: 'outline',
+  single: true,
+  ...rest,
+});
+
+test('builds Select › Toolbar Filter', async ({ page }) => {
+  await toolbarSelect(
+    page,
+    'Toolbar Filter',
+    iconOnlyGroup('Label Filter'),
+    labelFilter('ticket-label-filter', true),
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      toolbarGroupNode('Toolbar Filter', iconOnlyGroupProps('Label Filter'), [
+        labelFilterNode('ticket-label-filter', true),
+      ]),
+    ),
+  );
+});
+
+test('builds Select › Toolbar Filter Beside Actions', async ({ page }) => {
+  await toolbarGroup(
+    page,
+    'Toolbar Filter Beside Actions',
+    { text: { label: 'Ticket View' } },
+    { keepButton: true },
+  );
+  // The pin button: the group's seeded ToolbarButton.
+  await select(page, /^ToolbarButton/);
+  await setText(page, 'ariaLabel', 'Pin View');
+  await unset(page, 'children');
+  await setText(page, 'action', 'log-pin');
+  await addIcon(page, 'icon', 'pin');
+  await select(page, /^ToolbarControlGroup/);
+  await addChild(page, 'Select');
+  await configureSelect(
+    page,
+    labelFilter('toolbar-ticket-label-filter', false),
+  );
+  await select(page, /^ToolbarControlGroup/);
+  await addChild(page, 'PopupMenu');
+  await setText(page, 'label', 'More Actions');
+  await unset(page, 'text');
+  await addIcon(page, 'icon', 'ellipsis');
+  await select(page, /^PopupMenu/);
+  await page.getByRole('button', { name: 'Configure items' }).click();
+  const dialog = page.locator('dialog[open]');
+  for (const extra of [3, 2])
+    await dialog.getByRole('button', { name: `Remove Item ${extra}` }).click();
+  await dialog.getByText('Item 1', { exact: true }).click();
+  await setField(page, 'items', [0, 'label'], 'Archive');
+  await setField(page, 'items', [0, 'action'], 'log-more');
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  expect(await exported(page)).toEqual(
+    pane(
+      toolbarGroupNode(
+        'Toolbar Filter Beside Actions',
+        { label: 'Ticket View' },
+        [
+          node(
+            'toolbar-control-group#ToolbarButton',
+            { ariaLabel: 'Pin View', action: 'log-pin' },
+            { icon: [icon('pin')] },
+          ),
+          labelFilterNode('toolbar-ticket-label-filter', false),
+          node(
+            'popup-menu',
+            {
+              label: 'More Actions',
+              items: [{ label: 'Archive', action: 'log-more' }],
+            },
+            { icon: [icon('ellipsis')] },
+          ),
+        ],
+      ),
+    ),
+  );
+});
+
+test('builds Select › Accessible Name Without a Visible Label', async ({
+  page,
+}) => {
+  const spec: SelectSpec = {
+    choices: balanceChoices,
+    props: {
+      text: {
+        name: 'plain-rendering-balance',
+        ariaLabel: 'Plain Rendering Balance',
+      },
+      unsets: ['label'],
+    },
+    pick: 'Balanced',
+  };
+  await selectAlone(page, spec);
+  expect(await exported(page)).toEqual(
+    pane(
+      selectNode(
+        {
+          name: 'plain-rendering-balance',
+          value: 'balanced',
+          ariaLabel: 'Plain Rendering Balance',
+        },
+        spec,
+      ),
+    ),
+  );
+});
+
+test('builds Select › Visible Label', async ({ page }) => {
+  const spec: SelectSpec = {
+    choices: balanceChoices,
+    props: {
+      choices: { triggerWidth: 'fill' },
+      text: {
+        name: 'labeled-rendering-balance',
+        label: 'Rendering Preference',
+        hint: 'Controls how much rendering detail is shown.',
+      },
+    },
+    pick: 'Balanced',
+  };
+  await selectAlone(page, spec);
+  expect(await exported(page)).toEqual(
+    pane(
+      selectNode(
+        {
+          name: 'labeled-rendering-balance',
+          value: 'balanced',
+          label: 'Rendering Preference',
+          triggerWidth: 'fill',
+          hint: 'Controls how much rendering detail is shown.',
+        },
+        spec,
+      ),
+    ),
+  );
+});
+
+test('builds Select › Compact Selected Text', async ({ page }) => {
+  // The demo's renderSelected wraps the label in a no-wrap Text; the app
+  // supplies it, so it is a param. The selected-text tokens belong to the
+  // catalog stage, not the view.
+  const spec: SelectSpec = {
+    choices: [{ value: 'long', label: 'A Very Long Workspace Name' }],
+    props: {
+      choices: {
+        presentation: 'toolbar-borderless',
+        size: 'compact',
+        triggerWidth: 'fit-content',
+      },
+      text: { name: 'compact-workspace', ariaLabel: 'Workspace' },
+      unsets: ['label'],
+    },
+    pick: 'A Very Long Workspace Name',
+    renderSelected: true,
+  };
+  await selectAlone(page, spec);
+  await setCss(page, 'maxTriggerWidth', 'remify(160)');
+  expect(await exported(page)).toEqual(
+    pane(
+      selectNode(
+        {
+          name: 'compact-workspace',
+          value: 'long',
+          ariaLabel: 'Workspace',
+          presentation: 'toolbar-borderless',
+          size: 'compact',
+          triggerWidth: 'fit-content',
+          maxTriggerWidth: { $css: 'remify(160)' },
+        },
+        spec,
+      ),
+    ),
+  );
+});
+
+/** An icon-only toolbar Select of the toolbar choices. */
+const toolbarIconSelect = (
+  name: string,
+  ariaLabel: string,
+  rest: FieldSpec = {},
+  extra: Partial<SelectSpec> = {},
+): SelectSpec => ({
+  choices: toolbarChoices,
+  props: {
+    ...rest,
+    choices: {
+      presentation: 'toolbar-borderless',
+      selectedPresentation: 'icon-only',
+      focusRingOwner: 'group',
+      ...rest.choices,
+    },
+    text: { name, ariaLabel },
+    unsets: ['label'],
+  },
+  pick: 'Balanced',
+  ...extra,
+});
+
+const toolbarIconSelectNode = (
+  name: string,
+  ariaLabel: string,
+  rest: Record<string, unknown> = {},
+  extra: Partial<SelectSpec> = {},
+) =>
+  selectNode(
+    {
+      name,
+      value: 'balanced',
+      ariaLabel,
+      presentation: 'toolbar-borderless',
+      selectedPresentation: 'icon-only',
+      focusRingOwner: 'group',
+      ...rest,
+    },
+    { choices: toolbarChoices, ...extra },
+  );
+
+test('builds Select › Toolbar Icon', async ({ page }) => {
+  await toolbarSelect(
+    page,
+    'Toolbar Icon',
+    iconOnlyGroup('Rendering Mode'),
+    toolbarIconSelect(
+      'toolbar-default-rendering-balance',
+      'Default Toolbar Rendering Balance',
+    ),
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      toolbarGroupNode('Toolbar Icon', iconOnlyGroupProps('Rendering Mode'), [
+        toolbarIconSelectNode(
+          'toolbar-default-rendering-balance',
+          'Default Toolbar Rendering Balance',
+        ),
+      ]),
+    ),
+  );
+});
+
+test('builds Select › Round Toolbar Icon', async ({ page }) => {
+  await toolbarSelect(
+    page,
+    'Round Toolbar Icon',
+    iconOnlyGroup('Workspace Sort', { choices: { shape: 'pill' } }),
+    toolbarIconSelect('toolbar-round-rendering-balance', 'Workspace Sort'),
+  );
+  await turnOff(page, 'caret');
+  expect(await exported(page)).toEqual(
+    pane(
+      toolbarGroupNode(
+        'Round Toolbar Icon',
+        iconOnlyGroupProps('Workspace Sort', { shape: 'pill' }),
+        [
+          toolbarIconSelectNode(
+            'toolbar-round-rendering-balance',
+            'Workspace Sort',
+            { caret: false },
+          ),
+        ],
+      ),
+    ),
+  );
+});
+
+test('builds Select › Round Toolbar Custom Icon', async ({ page }) => {
+  // The demo's renderSelected draws the choice's icon; the app supplies it.
+  await toolbarSelect(
+    page,
+    'Round Toolbar Custom Icon',
+    iconOnlyGroup('Custom Workspace Sort', { choices: { shape: 'pill' } }),
+    toolbarIconSelect(
+      'toolbar-round-custom-rendering-balance',
+      'Custom Workspace Sort',
+      {},
+      { renderSelected: true },
+    ),
+  );
+  await turnOff(page, 'caret');
+  expect(await exported(page)).toEqual(
+    pane(
+      toolbarGroupNode(
+        'Round Toolbar Custom Icon',
+        iconOnlyGroupProps('Custom Workspace Sort', { shape: 'pill' }),
+        [
+          toolbarIconSelectNode(
+            'toolbar-round-custom-rendering-balance',
+            'Custom Workspace Sort',
+            { caret: false },
+            { renderSelected: true },
+          ),
+        ],
+      ),
+    ),
+  );
+});
+
+test('builds Select › Popup Note', async ({ page }) => {
+  // The note starts shown and the device as 'phone'.
+  const devices: readonly ChoiceSpec[] = [
+    { value: 'phone', label: 'Phone', group: 'Handheld' },
+    { value: 'tablet', label: 'Tablet', group: 'Handheld' },
+    { value: 'laptop', label: 'Laptop', group: 'Desktop' },
+  ];
+  const note = 'Touch input and the on-screen keyboard aren’t emulated.';
+  await toolbarSelect(
+    page,
+    'Preview Device',
+    { flags: ['single'], text: { label: 'Preview Device' } },
+    {
+      choices: devices,
+      props: {
+        choices: {
+          presentation: 'toolbar-borderless',
+          focusRingOwner: 'group',
+        },
+        text: {
+          name: 'popup-note-device',
+          ariaLabel: 'Preview Device',
+          popupNote: note,
+        },
+        unsets: ['label'],
+      },
+      pick: 'Phone',
+    },
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      toolbarGroupNode(
+        'Preview Device',
+        { label: 'Preview Device', single: true },
+        [
+          selectNode(
+            {
+              name: 'popup-note-device',
+              value: 'phone',
+              ariaLabel: 'Preview Device',
+              presentation: 'toolbar-borderless',
+              focusRingOwner: 'group',
+              popupNote: note,
+            },
+            { choices: devices },
+          ),
+        ],
+      ),
+    ),
+  );
+});
+
+test('builds Select › Compact Toolbar Icon', async ({ page }) => {
+  await toolbarSelect(
+    page,
+    'Compact Toolbar Icon',
+    iconOnlyGroup('Rendering Mode', { choices: { size: 'compact' } }),
+    toolbarIconSelect(
+      'toolbar-rendering-balance',
+      'Toolbar Rendering Balance',
+      {
+        choices: { size: 'compact' },
+      },
+    ),
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      toolbarGroupNode(
+        'Compact Toolbar Icon',
+        iconOnlyGroupProps('Rendering Mode', { size: 'compact' }),
+        [
+          toolbarIconSelectNode(
+            'toolbar-rendering-balance',
+            'Toolbar Rendering Balance',
+            { size: 'compact' },
+          ),
+        ],
+      ),
+    ),
+  );
+});
+
+test('builds Select › Long Options Within Viewport', async ({ page }) => {
+  const long =
+    'Attention Needed for Project Configuration and Deployment Settings';
+  const choices: readonly ChoiceSpec[] = [
+    { value: 'quiet', label: 'Quiet', iconData: 'bell' },
+    { value: 'balanced', label: long, iconData: 'sliders-horizontal' },
+    { value: 'explicit', label: 'Explicit', iconData: 'wrench' },
+  ];
+  // The group sits at the toolbar's trailing edge (KF-6NBJKY).
+  await toolbarSelect(
+    page,
+    'Long Options Within Viewport',
+    {
+      choices: { size: 'compact', content: 'icon' },
+      flags: ['single'],
+      text: { label: 'Project Attention' },
+    },
+    {
+      ...toolbarIconSelect('viewport-attention', 'Project Attention', {
+        choices: { size: 'compact' },
+      }),
+      choices,
+      pick: long,
+    },
+    'Trailing',
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      toolbarGroupNode(
+        'Long Options Within Viewport',
+        {
+          label: 'Project Attention',
+          size: 'compact',
+          content: 'icon',
+          single: true,
+        },
+        [
+          selectNode(
+            {
+              name: 'viewport-attention',
+              value: 'balanced',
+              ariaLabel: 'Project Attention',
+              presentation: 'toolbar-borderless',
+              size: 'compact',
+              selectedPresentation: 'icon-only',
+              focusRingOwner: 'group',
+            },
+            { choices },
+          ),
+        ],
+        'trailing',
+      ),
+    ),
+  );
+});
+
+test('builds Select › Navigation Label', async ({ page }) => {
+  const spec: SelectSpec = {
+    choices: ['Quiet', 'Balanced', 'Explicit'].map((word) => ({
+      value: word.toLowerCase(),
+      label: `${word} Navigation Workspace`,
+    })),
+    props: {
+      choices: {
+        presentation: 'navigation',
+        triggerWidth: 'max-content',
+        size: 'compact',
+      },
+      text: {
+        name: 'navigation-rendering-balance',
+        ariaLabel: 'Navigation Rendering Balance',
+        labelMaxWidth: '120',
+      },
+      unsets: ['label'],
+    },
+    pick: 'Balanced Navigation Workspace',
+  };
+  await selectAlone(page, spec);
+  expect(await exported(page)).toEqual(
+    pane(
+      selectNode(
+        {
+          name: 'navigation-rendering-balance',
+          value: 'balanced',
+          ariaLabel: 'Navigation Rendering Balance',
+          presentation: 'navigation',
+          triggerWidth: 'max-content',
+          size: 'compact',
+          labelMaxWidth: 120,
+        },
+        spec,
+      ),
+    ),
+  );
+});
+
+test('builds Select › Inline Status Badge', async ({ page }) => {
+  // The demo's renderSelected draws a success Badge; the app supplies it.
+  const spec: SelectSpec = {
+    choices: toolbarChoices,
+    props: {
+      choices: { presentation: 'inline' },
+      text: { name: 'inline-status', ariaLabel: 'Status' },
+      unsets: ['label'],
+    },
+    pick: 'Balanced',
+    renderSelected: true,
+  };
+  await selectAlone(page, spec);
+  await turnOff(page, 'caret');
+  expect(await exported(page)).toEqual(
+    pane(
+      selectNode(
+        {
+          name: 'inline-status',
+          value: 'balanced',
+          ariaLabel: 'Status',
+          presentation: 'inline',
+          caret: false,
+        },
+        spec,
+      ),
+    ),
+  );
+});
+
+test('builds Select › Placeholder', async ({ page }) => {
+  const spec: SelectSpec = {
+    choices: [],
+    props: {
+      flags: ['placeholder'],
+      text: {
+        name: 'select-placeholder',
+        label: 'Rendering Balance',
+        ariaLabel: 'Rendering Balance',
+        hint: 'Loading selection options.',
+      },
+      unions: { value: ['Text…', ''] },
+    },
+  };
+  await selectAlone(page, spec);
+  expect(await exported(page)).toEqual(
+    pane(
+      selectNode(
+        {
+          name: 'select-placeholder',
+          value: '',
+          label: 'Rendering Balance',
+          ariaLabel: 'Rendering Balance',
+          hint: 'Loading selection options.',
+          placeholder: true,
+        },
+        spec,
+      ),
+    ),
+  );
+});
+
 test('builds Toolbar › Compact Density', async ({ page }) => {
   await dragComponent(page, 'Toolbar', () => emptySpot(page));
   await dragComponent(page, 'ToolbarText', () => zoneSpot(page, 'Leading'));

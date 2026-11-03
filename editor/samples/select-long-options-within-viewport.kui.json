@@ -1,0 +1,82 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SelectLongOptionsWithinViewport",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "zones": {
+            "trailing": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:select",
+                      "props": {
+                        "name": "viewport-attention",
+                        "choices": [
+                          {
+                            "value": "quiet",
+                            "label": "Quiet",
+                            "icon": {
+                              "$icon": "bell"
+                            },
+                            "iconName": "bell"
+                          },
+                          {
+                            "value": "balanced",
+                            "label": "Attention Needed for Project Configuration and Deployment Settings",
+                            "icon": {
+                              "$icon": "sliders-horizontal"
+                            },
+                            "iconName": "sliders-horizontal"
+                          },
+                          {
+                            "value": "explicit",
+                            "label": "Explicit",
+                            "icon": {
+                              "$icon": "wrench"
+                            },
+                            "iconName": "wrench"
+                          }
+                        ],
+                        "value": "balanced",
+                        "presentation": "toolbar-borderless",
+                        "selectedPresentation": "icon-only",
+                        "focusRingOwner": "group",
+                        "size": "compact",
+                        "ariaLabel": "Project Attention"
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "size": "compact",
+                  "content": "icon",
+                  "single": true,
+                  "label": "Project Attention"
+                }
+              }
+            ]
+          },
+          "props": {
+            "label": "Long Options Within Viewport"
+          }
+        }
+      ]
+    }
+  }
+}

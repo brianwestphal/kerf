@@ -1,0 +1,53 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SelectMultipleSelectionActions",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:select",
+          "props": {
+            "name": "item-types",
+            "choices": [
+              {
+                "value": "files",
+                "label": "Files"
+              },
+              {
+                "value": "windows",
+                "label": "Windows"
+              },
+              {
+                "value": "browsers",
+                "label": "Web Browsers",
+                "disabled": true,
+                "disabledReason": "Not yet supported"
+              },
+              {
+                "value": "tabs",
+                "label": "Tabs"
+              }
+            ],
+            "value": [
+              "files"
+            ],
+            "label": "Item Types",
+            "multiple": true,
+            "placeholderText": "No types",
+            "selectAllLabel": "Select all",
+            "clearLabel": "Clear"
+          }
+        }
+      ]
+    }
+  }
+}

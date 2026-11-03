@@ -1,0 +1,70 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SelectPopupNote",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:select",
+                      "props": {
+                        "name": "popup-note-device",
+                        "choices": [
+                          {
+                            "value": "phone",
+                            "label": "Phone",
+                            "group": "Handheld"
+                          },
+                          {
+                            "value": "tablet",
+                            "label": "Tablet",
+                            "group": "Handheld"
+                          },
+                          {
+                            "value": "laptop",
+                            "label": "Laptop",
+                            "group": "Desktop"
+                          }
+                        ],
+                        "value": "phone",
+                        "presentation": "toolbar-borderless",
+                        "focusRingOwner": "group",
+                        "ariaLabel": "Preview Device",
+                        "popupNote": "Touch input and the on-screen keyboard aren’t emulated."
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "single": true,
+                  "label": "Preview Device"
+                }
+              }
+            ]
+          },
+          "props": {
+            "label": "Preview Device"
+          }
+        }
+      ]
+    }
+  }
+}

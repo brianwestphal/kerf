@@ -1,0 +1,45 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SelectNavigationLabel",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:select",
+          "props": {
+            "name": "navigation-rendering-balance",
+            "choices": [
+              {
+                "value": "quiet",
+                "label": "Quiet Navigation Workspace"
+              },
+              {
+                "value": "balanced",
+                "label": "Balanced Navigation Workspace"
+              },
+              {
+                "value": "explicit",
+                "label": "Explicit Navigation Workspace"
+              }
+            ],
+            "value": "balanced",
+            "presentation": "navigation",
+            "triggerWidth": "max-content",
+            "size": "compact",
+            "ariaLabel": "Navigation Rendering Balance",
+            "labelMaxWidth": 120
+          }
+        }
+      ]
+    }
+  }
+}
