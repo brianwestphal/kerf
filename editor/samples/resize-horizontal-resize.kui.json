@@ -1,0 +1,91 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ResizeHorizontalResize",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:resize",
+          "props": {
+            "id": "catalog-panel",
+            "label": "Catalog Panel",
+            "size": 276,
+            "min": 180,
+            "max": 420
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:pane",
+                "zones": {
+                  "content": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:content-item",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:list",
+                            "props": {
+                              "gap": "2xs"
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000006",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Catalog Panel",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000007",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Navigation or inspector content, 180⁠–⁠420 px wide.",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "handleIcon": [
+              {
+                "id": "00000000000000000000000008",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "grip-vertical"
+                  },
+                  "name": "custom-resize-handle"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

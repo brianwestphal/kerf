@@ -13911,6 +13911,589 @@ test('builds CollapsiblePanel › Toolbar Relocation', async ({ page }) => {
   );
 });
 
+test('builds Layout › Pane with Child-Owned Content Geometry', async ({
+  page,
+}) => {
+  test.slow();
+  await nestedPane(page, { choices: { contentElement: 'section' } });
+  await addInto(page, /^Pane/, 'ContentItem', 1);
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { appearance: 'surface', frame: 'framed' },
+  });
+  await addChild(page, 'Text');
+  await select(page, /^Text(?![A-Z])/, 0);
+  await applySpec(page, {
+    choices: { weight: 'strong' },
+    text: { children: 'One owner per item' },
+  });
+  await addInto(page, /^ContentItem/, 'Text');
+  await area(page, 'Properties');
+  await setText(
+    page,
+    'children',
+    'Each content child owns its margin, border, background, padding, and radius.',
+  );
+  await addInto(page, /^Pane/, 'Row', 1);
+  await area(page, 'Properties');
+  await choose(page, 'controlInsets', 'l');
+  for (const [text, spec] of [
+    [
+      'Primary Action',
+      { choices: { tone: 'brand' }, text: { action: 'log-add' } },
+    ],
+    ['Secondary Action', { text: { action: 'log-more' } }],
+  ] as const) {
+    await addInto(page, /^Row/, 'Button');
+    await area(page, 'Properties');
+    await applySpec(page, { ...spec, text: { ...spec.text, children: text } });
+  }
+  await addInto(page, /^Pane/, 'Text', 1);
+  await area(page, 'Properties');
+  await setText(page, 'children', '24px major rhythm · 8px internal rhythm');
+  // The header comes last: Add a child keeps the zone it last used.
+  await select(page, /^Pane/, 1);
+  await addChild(page, 'Toolbar', 'header');
+  await area(page, 'Properties');
+  await setText(page, 'label', 'Semantic Layout');
+  await zoneText(page, 'leading', {
+    choices: { size: 'xlarge' },
+    text: { text: 'Semantic Layout', id: 'layout-title' },
+  });
+  await zoneGroup(
+    page,
+    'trailing',
+    { choices: { appearance: 'borderless' }, flags: ['single'] },
+    { keepButton: true },
+  );
+  await select(page, /^ToolbarButton/);
+  await applySpec(page, { text: { children: 'New Item', action: 'log-add' } });
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'pane',
+        { contentElement: 'section' },
+        {
+          header: [
+            node(
+              'toolbar',
+              { label: 'Semantic Layout' },
+              {
+                leading: [
+                  node('toolbar-text', {
+                    text: 'Semantic Layout',
+                    size: 'xlarge',
+                    id: 'layout-title',
+                  }),
+                ],
+                trailing: [
+                  node(
+                    'toolbar-control-group',
+                    { appearance: 'borderless', single: true },
+                    {
+                      children: [
+                        node('toolbar-control-group#ToolbarButton', {
+                          children: 'New Item',
+                          action: 'log-add',
+                        }),
+                      ],
+                    },
+                  ),
+                ],
+              },
+            ),
+          ],
+          content: [
+            node(
+              'content-item',
+              { appearance: 'surface', frame: 'framed' },
+              {
+                children: [
+                  node('text', {
+                    children: 'One owner per item',
+                    weight: 'strong',
+                  }),
+                  node('text', {
+                    children:
+                      'Each content child owns its margin, border, background, padding, and radius.',
+                  }),
+                ],
+              },
+            ),
+            node(
+              'row',
+              { controlInsets: 'l' },
+              {
+                children: [
+                  node('button', {
+                    children: 'Primary Action',
+                    tone: 'brand',
+                    action: 'log-add',
+                  }),
+                  node('button', {
+                    children: 'Secondary Action',
+                    action: 'log-more',
+                  }),
+                ],
+              },
+            ),
+            node('text', {
+              children: '24px major rhythm · 8px internal rhythm',
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+/** Places a ResizableRegion set up by `spec`, with its numeric sizes. */
+async function region(
+  page: Page,
+  spec: FieldSpec,
+  sizes: Readonly<Record<'size' | 'min' | 'max', string>>,
+) {
+  await dragComponent(page, 'ResizableRegion', () => emptySpot(page));
+  await select(page, /^ResizableRegion/);
+  await applySpec(page, spec);
+  for (const [name, value] of Object.entries(sizes))
+    await setText(page, name, value);
+}
+
+const CATALOG_PANEL = [
+  'Catalog Panel',
+  'Navigation or inspector content, 180⁠–⁠420 px wide.',
+] as const;
+
+test('builds Resize › Horizontal Resize', async ({ page }) => {
+  // regionSize starts at 276.
+  await region(
+    page,
+    { text: { id: 'catalog-panel', label: 'Catalog Panel' } },
+    { size: '276', min: '180', max: '420' },
+  );
+  // Its seeded text became a Text, which goes.
+  await addInto(page, /^ResizableRegion/, 'Pane', 0, 0);
+  await contentItemInto(page, /^Pane/, 1, ...CATALOG_PANEL);
+  // The handle icon comes last: Add a child keeps the zone it last used.
+  await select(page, /^ResizableRegion/);
+  await addIcon(page, 'handleIcon', 'grip-vertical');
+  await select(page, /^LucideIcon/);
+  await setText(page, 'name', 'custom-resize-handle');
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'resize',
+        {
+          id: 'catalog-panel',
+          label: 'Catalog Panel',
+          size: 276,
+          min: 180,
+          max: 420,
+        },
+        {
+          children: [
+            node('pane', undefined, {
+              content: [demoContentItem(...CATALOG_PANEL)],
+            }),
+          ],
+          handleIcon: [icon('grip-vertical', { name: 'custom-resize-handle' })],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds Resize › Popup from a Clipped Drawer', async ({ page }) => {
+  const items = [
+    { label: 'New Terminal', action: 'create-terminal' },
+    { label: 'New Task', action: 'create-task' },
+  ];
+  await region(
+    page,
+    {
+      choices: { axis: 'vertical', edge: 'start' },
+      text: { id: 'catalog-menu-drawer', label: 'Menu Drawer' },
+    },
+    { size: '120', min: '120', max: '240' },
+  );
+  // Its seeded text became a Text, which goes.
+  await addInto(page, /^ResizableRegion/, 'PopupMenu', 0, 0);
+  await select(page, /^PopupMenu/);
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { placement: 'top-start' },
+    text: { text: 'Create Item' },
+    unsets: ['label'],
+  });
+  await editAsJson(page, 'items', items);
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'resize',
+        {
+          id: 'catalog-menu-drawer',
+          label: 'Menu Drawer',
+          axis: 'vertical',
+          edge: 'start',
+          size: 120,
+          min: 120,
+          max: 240,
+        },
+        {
+          children: [
+            node('popup-menu', {
+              text: 'Create Item',
+              placement: 'top-start',
+              items,
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds Resize › Collapsed Region Restore', async ({ page }) => {
+  await region(
+    page,
+    {
+      choices: { restorePosition: 'top-end' },
+      text: { id: 'catalog-collapsed-panel', label: 'Collapsed Panel' },
+    },
+    { size: '240', min: '180', max: '420' },
+  );
+  // Its seeded text became a Text, which goes.
+  await addInto(page, /^ResizableRegion/, 'Pane', 0, 0);
+  // The restore control comes last: Add a child keeps the zone it last used.
+  await select(page, /^ResizableRegion/);
+  await page.locator('[data-editor-content-add="restoreControl"]').click();
+  await addChild(page, 'FloatingToolbar');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { placement: 'inline' },
+    text: { label: 'Restore Collapsed Panel' },
+  });
+  // Its seeded text became a Text, which goes.
+  await select(page, /^Text(?![A-Z])/, -1);
+  await deleteSelected(page);
+  await select(page, /^FloatingToolbar/);
+  await addChild(page, 'ToolbarControlGroup');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    flags: ['single'],
+    text: { label: 'Restore Panel' },
+  });
+  await select(page, /^ToolbarButton/);
+  await applySpec(page, {
+    text: { ariaLabel: 'Restore Panel' },
+    unsets: ['children'],
+  });
+  await addIcon(page, 'icon', 'panel-left-open');
+  await select(page, /^ResizableRegion/);
+  await turnOn(page, 'collapsed');
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'resize',
+        {
+          id: 'catalog-collapsed-panel',
+          label: 'Collapsed Panel',
+          size: 240,
+          min: 180,
+          max: 420,
+          collapsed: true,
+          restorePosition: 'top-end',
+        },
+        {
+          children: [node('pane')],
+          restoreControl: [
+            node(
+              'floating-toolbar',
+              { label: 'Restore Collapsed Panel', placement: 'inline' },
+              {
+                children: [
+                  buttonGroupNode({ label: 'Restore Panel', single: true }, [
+                    [{ ariaLabel: 'Restore Panel' }, 'panel-left-open'],
+                  ]),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+/** A demo `itemCopy` List: a strong title over a quiet compact detail. */
+const itemCopyNode = (title: string, detail: string) =>
+  (demoContentItem(title, detail).zones as { children: unknown[] }).children[0];
+
+/** Adds an `itemCopy` List to the selected container. */
+async function itemCopy(page: Page, title: string, detail: string) {
+  await addChild(page, 'List');
+  await area(page, 'Properties');
+  await choose(page, 'gap', '2xs');
+  await addChild(page, 'Text');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { variant: 'span', weight: 'strong' },
+    text: { children: title },
+  });
+  // Focus is still in the Inspector, so the Duplicate button copies it.
+  await page.getByRole('button', { name: 'Duplicate', exact: true }).click();
+  await applySpec(page, {
+    choices: { weight: 'Default (regular)', tone: 'quiet', size: 'compact' },
+    text: { children: detail },
+  });
+}
+
+/** Places a List of selectable ContentItems named `ariaLabel`. */
+async function selectableList(page: Page, ariaLabel: string) {
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List/);
+  await applySpec(page, {
+    choices: { selectionMode: 'multiple' },
+    text: { ariaLabel },
+  });
+}
+
+/** Adds an interactive, multiply selectable ContentItem to the outer List. */
+async function selectableItem(page: Page, text: FieldSpec['text'], data = {}) {
+  await addInto(page, /^List(?!Item)/, 'ContentItem', 0);
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { selectionMode: 'multiple' },
+    flags: ['interactive'],
+    text,
+    data: Object.entries(data),
+  });
+}
+
+const RICH_CARDS = [
+  ['demand-a', 'Demand Line A'],
+  ['demand-b', 'Demand Line B'],
+] as const;
+
+// KF-XVVEX5: contentCardSelections starts empty, so no card is selected.
+test('builds ContentItem › Selectable Rich Cards', async ({ page }) => {
+  test.slow();
+  const items = [{ label: 'Show Details', action: 'log-more' }];
+  await selectableList(page, 'Demand Lines');
+  for (const [index, [id, label]] of RICH_CARDS.entries()) {
+    await selectableItem(
+      page,
+      { action: 'select-rich-card', itemId: id, ariaLabel: label },
+      { 'data-demo-item': id },
+    );
+    await addChild(page, 'Row');
+    await area(page, 'Properties');
+    await applySpec(page, { choices: { vAlign: 'middle' }, flags: ['wrap'] });
+    await itemCopy(page, label, 'Review the quote and choose a decision.');
+    await addInto(page, /^Row/, 'Button', index);
+    await area(page, 'Properties');
+    await applySpec(page, {
+      text: { children: 'Open Quote', action: 'log-card-primary' },
+    });
+    await addInto(page, /^Row/, 'PopupMenu', index);
+    await area(page, 'Properties');
+    await applySpec(page, {
+      text: { text: 'More Actions' },
+      unsets: ['label'],
+    });
+    await editAsJson(page, 'items', items);
+    await addInto(page, /^Row/, 'Button', index);
+    await area(page, 'Properties');
+    await applySpec(page, {
+      text: { children: 'Approve', action: 'log-decision' },
+      data: [['data-decision', 'approve']],
+    });
+  }
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { selectionMode: 'multiple', ariaLabel: 'Demand Lines' },
+        {
+          children: RICH_CARDS.map(([id, label]) =>
+            node(
+              'content-item',
+              {
+                interactive: true,
+                action: 'select-rich-card',
+                itemId: id,
+                selectionMode: 'multiple',
+                ariaLabel: label,
+                rootAttributes: { 'data-demo-item': id },
+              },
+              {
+                children: [
+                  node(
+                    'row',
+                    { vAlign: 'middle', wrap: true },
+                    {
+                      children: [
+                        itemCopyNode(
+                          label,
+                          'Review the quote and choose a decision.',
+                        ),
+                        node('button', {
+                          children: 'Open Quote',
+                          action: 'log-card-primary',
+                        }),
+                        node('popup-menu', { text: 'More Actions', items }),
+                        node('button', {
+                          children: 'Approve',
+                          action: 'log-decision',
+                          rootAttributes: { 'data-decision': 'approve' },
+                        }),
+                      ],
+                    },
+                  ),
+                ],
+              },
+            ),
+          ),
+        },
+      ),
+    ),
+  );
+});
+
+const CONVERSATION = [
+  ['message-1', 'Why did the nightly build fail?'],
+  ['message-2', 'The bundle budget check failed.'],
+  ['message-3', 'Rebaseline the budget with a reason.'],
+] as const;
+
+// KF-XVVEX5: conversationSelections starts empty, so no message is selected.
+test('builds ContentItem › Mixed Selectable and Non-Selectable Rows', async ({
+  page,
+}) => {
+  test.slow();
+  const message = async ([id, text]: (typeof CONVERSATION)[number]) => {
+    await selectableItem(page, {
+      action: 'select-conversation-message',
+      itemId: id,
+      ariaLabel: text,
+    });
+    await addChild(page, 'Text');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { variant: 'span' },
+      text: { children: text },
+    });
+  };
+  await selectableList(page, 'Conversation');
+  await message(CONVERSATION[0]);
+  await message(CONVERSATION[1]);
+  await addInto(page, /^List(?!Item)/, 'ContentItem', 0);
+  await area(page, 'Properties');
+  await turnOn(page, 'gridRow');
+  await addChild(page, 'Text');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { variant: 'span', tone: 'quiet', size: 'compact' },
+    text: { children: '3 messages skipped' },
+  });
+  await addInto(page, /^List(?!Item)/, 'ContentItem', 0);
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { appearance: 'surface', frame: 'framed' },
+    flags: ['gridRow'],
+  });
+  await addChild(page, 'Row');
+  await area(page, 'Properties');
+  await choose(page, 'vAlign', 'middle');
+  await addChild(page, 'Text');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { variant: 'span' },
+    text: { children: 'Ran 4 checks' },
+  });
+  await addInto(page, /^Row/, 'Button');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { size: 'compact', emphasis: 'secondary' },
+    text: { children: 'Show Activity', action: 'log-more' },
+  });
+  await message(CONVERSATION[2]);
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  const messageNode = ([id, text]: (typeof CONVERSATION)[number]) =>
+    node(
+      'content-item',
+      {
+        interactive: true,
+        action: 'select-conversation-message',
+        itemId: id,
+        selectionMode: 'multiple',
+        ariaLabel: text,
+      },
+      { children: [node('text', { children: text, variant: 'span' })] },
+    );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { selectionMode: 'multiple', ariaLabel: 'Conversation' },
+        {
+          children: [
+            messageNode(CONVERSATION[0]),
+            messageNode(CONVERSATION[1]),
+            node(
+              'content-item',
+              { gridRow: true },
+              {
+                children: [
+                  node('text', {
+                    children: '3 messages skipped',
+                    variant: 'span',
+                    tone: 'quiet',
+                    size: 'compact',
+                  }),
+                ],
+              },
+            ),
+            node(
+              'content-item',
+              { gridRow: true, appearance: 'surface', frame: 'framed' },
+              {
+                children: [
+                  node(
+                    'row',
+                    { vAlign: 'middle' },
+                    {
+                      children: [
+                        node('text', {
+                          children: 'Ran 4 checks',
+                          variant: 'span',
+                        }),
+                        node('button', {
+                          children: 'Show Activity',
+                          size: 'compact',
+                          emphasis: 'secondary',
+                          action: 'log-more',
+                        }),
+                      ],
+                    },
+                  ),
+                ],
+              },
+            ),
+            messageNode(CONVERSATION[2]),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
 test('builds Pane › Focusable Pane and Persistent Outline', async ({
   page,
 }) => {
@@ -14541,6 +15124,75 @@ async function disclosureInto(
   await select(page, /^Text(?![A-Z])/, -1);
   await deleteSelected(page);
 }
+
+test('builds Disclosure › Embedded in a Content Item', async ({ page }) => {
+  const note =
+    'Move the export button into the toolbar so it sits beside Share.';
+  const feedback =
+    'Group Export and Share in one control group, and keep Delete in the overflow menu.';
+  await rootPane(page, { text: { label: 'Note' } }, {});
+  await addInto(page, /^Pane/, 'ContentItem');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { frame: 'framed' },
+    data: [['data-demo-item', 'embedded-disclosure']],
+  });
+  await addChild(page, 'List');
+  await area(page, 'Properties');
+  await choose(page, 'gap', 'xs');
+  await textInto(page, /^List(?![A-Z])/, note, 0, { flags: ['flush'] });
+  await disclosureInto(page, /^List(?![A-Z])/, {
+    choices: { appearance: 'embedded' },
+    text: { title: 'AI Feedback', detail: '2 suggestions' },
+  });
+  await textInto(page, /^Disclosure/, feedback, 0, {
+    choices: { tone: 'quiet' },
+    flags: ['flush'],
+  });
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    rootPaneNode(
+      { label: 'Note' },
+      {
+        content: [
+          node(
+            'content-item',
+            {
+              frame: 'framed',
+              rootAttributes: { 'data-demo-item': 'embedded-disclosure' },
+            },
+            {
+              children: [
+                node(
+                  'list',
+                  { gap: 'xs' },
+                  {
+                    children: [
+                      textNode(note, { flush: true }),
+                      node(
+                        'disclosure',
+                        {
+                          title: 'AI Feedback',
+                          detail: '2 suggestions',
+                          appearance: 'embedded',
+                        },
+                        {
+                          children: [
+                            textNode(feedback, { flush: true, tone: 'quiet' }),
+                          ],
+                        },
+                      ),
+                    ],
+                  },
+                ),
+              ],
+            },
+          ),
+        ],
+      },
+    ),
+  );
+});
 
 test('builds Disclosure › Framed and Sunken', async ({ page }) => {
   await dragComponent(page, 'List', () => emptySpot(page));

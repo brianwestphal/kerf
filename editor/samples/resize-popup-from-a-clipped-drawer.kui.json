@@ -1,0 +1,53 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ResizePopupFromAClippedDrawer",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:resize",
+          "props": {
+            "id": "catalog-menu-drawer",
+            "label": "Menu Drawer",
+            "size": 120,
+            "min": 120,
+            "max": 240,
+            "axis": "vertical",
+            "edge": "start"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:popup-menu",
+                "props": {
+                  "items": [
+                    {
+                      "label": "New Terminal",
+                      "action": "create-terminal"
+                    },
+                    {
+                      "label": "New Task",
+                      "action": "create-task"
+                    }
+                  ],
+                  "text": "Create Item",
+                  "placement": "top-start"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "DisclosureEmbeddedInAContentItem",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "label": "Note"
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:content-item",
+          "props": {
+            "frame": "framed",
+            "rootAttributes": {
+              "data-demo-item": "embedded-disclosure"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "gap": "xs"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "Move the export button into the toolbar so it sits beside Share.",
+                        "flush": true
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:disclosure",
+                      "props": {
+                        "title": "AI Feedback",
+                        "appearance": "embedded",
+                        "detail": "2 suggestions"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Group Export and Share in one control group, and keep Delete in the overflow menu.",
+                              "tone": "quiet",
+                              "flush": true
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

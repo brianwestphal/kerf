@@ -1,0 +1,135 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "LayoutPaneWithChildOwnedContentGeometry",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:pane",
+          "props": {
+            "contentElement": "section"
+          },
+          "zones": {
+            "content": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "appearance": "surface",
+                  "frame": "framed"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "One owner per item",
+                        "weight": "strong"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "Each content child owns its margin, border, background, padding, and radius."
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:row",
+                "props": {
+                  "controlInsets": "l"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:button",
+                      "props": {
+                        "children": "Primary Action",
+                        "tone": "brand",
+                        "action": "log-add"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:button",
+                      "props": {
+                        "children": "Secondary Action",
+                        "action": "log-more"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "24px major rhythm · 8px internal rhythm"
+                }
+              }
+            ],
+            "header": [
+              {
+                "id": "00000000000000000000000010",
+                "type": "@kerfjs/ui:toolbar",
+                "props": {
+                  "label": "Semantic Layout"
+                },
+                "zones": {
+                  "leading": [
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:toolbar-text",
+                      "props": {
+                        "text": "Semantic Layout",
+                        "size": "xlarge",
+                        "id": "layout-title"
+                      }
+                    }
+                  ],
+                  "trailing": [
+                    {
+                      "id": "00000000000000000000000012",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000013",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "children": "New Item",
+                              "action": "log-add"
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "appearance": "borderless",
+                        "single": true
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

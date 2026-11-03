@@ -1,0 +1,86 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ResizeCollapsedRegionRestore",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:resize",
+          "props": {
+            "id": "catalog-collapsed-panel",
+            "label": "Collapsed Panel",
+            "size": 240,
+            "min": 180,
+            "max": 420,
+            "restorePosition": "top-end",
+            "collapsed": true
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:pane"
+              }
+            ],
+            "restoreControl": [
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:floating-toolbar",
+                "props": {
+                  "label": "Restore Collapsed Panel",
+                  "placement": "inline"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:toolbar-control-group",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                            "props": {
+                              "ariaLabel": "Restore Panel"
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000007",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "panel-left-open"
+                                    },
+                                    "name": "panel-left-open"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "single": true,
+                        "label": "Restore Panel"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

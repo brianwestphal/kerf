@@ -1,0 +1,162 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ContentItemMixedSelectableAndNonSelectableRows",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "selectionMode": "multiple",
+            "ariaLabel": "Conversation"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "selectionMode": "multiple",
+                  "interactive": true,
+                  "action": "select-conversation-message",
+                  "itemId": "message-1",
+                  "ariaLabel": "Why did the nightly build fail?"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "Why did the nightly build fail?",
+                        "variant": "span"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "selectionMode": "multiple",
+                  "interactive": true,
+                  "action": "select-conversation-message",
+                  "itemId": "message-2",
+                  "ariaLabel": "The bundle budget check failed."
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "The bundle budget check failed.",
+                        "variant": "span"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "gridRow": true
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "3 messages skipped",
+                        "variant": "span",
+                        "tone": "quiet",
+                        "size": "compact"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "appearance": "surface",
+                  "frame": "framed",
+                  "gridRow": true
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000010",
+                      "type": "@kerfjs/ui:row",
+                      "props": {
+                        "vAlign": "middle"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000011",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Ran 4 checks",
+                              "variant": "span"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000012",
+                            "type": "@kerfjs/ui:button",
+                            "props": {
+                              "children": "Show Activity",
+                              "size": "compact",
+                              "emphasis": "secondary",
+                              "action": "log-more"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000013",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "selectionMode": "multiple",
+                  "interactive": true,
+                  "action": "select-conversation-message",
+                  "itemId": "message-3",
+                  "ariaLabel": "Rebaseline the budget with a reason."
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000014",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "Rebaseline the budget with a reason.",
+                        "variant": "span"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

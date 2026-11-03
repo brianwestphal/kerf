@@ -1,0 +1,214 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ContentItemSelectableRichCards",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "selectionMode": "multiple",
+            "ariaLabel": "Demand Lines"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "selectionMode": "multiple",
+                  "interactive": true,
+                  "action": "select-rich-card",
+                  "itemId": "demand-a",
+                  "ariaLabel": "Demand Line A",
+                  "rootAttributes": {
+                    "data-demo-item": "demand-a"
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:row",
+                      "props": {
+                        "vAlign": "middle",
+                        "wrap": true
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:list",
+                            "props": {
+                              "gap": "2xs"
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000006",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Demand Line A",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000007",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Review the quote and choose a decision.",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000008",
+                            "type": "@kerfjs/ui:button",
+                            "props": {
+                              "children": "Open Quote",
+                              "action": "log-card-primary"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000009",
+                            "type": "@kerfjs/ui:popup-menu",
+                            "props": {
+                              "items": [
+                                {
+                                  "label": "Show Details",
+                                  "action": "log-more"
+                                }
+                              ],
+                              "text": "More Actions"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000010",
+                            "type": "@kerfjs/ui:button",
+                            "props": {
+                              "children": "Approve",
+                              "action": "log-decision",
+                              "rootAttributes": {
+                                "data-decision": "approve"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000011",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "selectionMode": "multiple",
+                  "interactive": true,
+                  "action": "select-rich-card",
+                  "itemId": "demand-b",
+                  "ariaLabel": "Demand Line B",
+                  "rootAttributes": {
+                    "data-demo-item": "demand-b"
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000012",
+                      "type": "@kerfjs/ui:row",
+                      "props": {
+                        "vAlign": "middle",
+                        "wrap": true
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000013",
+                            "type": "@kerfjs/ui:list",
+                            "props": {
+                              "gap": "2xs"
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000014",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Demand Line B",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000015",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Review the quote and choose a decision.",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000016",
+                            "type": "@kerfjs/ui:button",
+                            "props": {
+                              "children": "Open Quote",
+                              "action": "log-card-primary"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000017",
+                            "type": "@kerfjs/ui:popup-menu",
+                            "props": {
+                              "items": [
+                                {
+                                  "label": "Show Details",
+                                  "action": "log-more"
+                                }
+                              ],
+                              "text": "More Actions"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000018",
+                            "type": "@kerfjs/ui:button",
+                            "props": {
+                              "children": "Approve",
+                              "action": "log-decision",
+                              "rootAttributes": {
+                                "data-decision": "approve"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
