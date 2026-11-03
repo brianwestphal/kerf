@@ -113,3 +113,60 @@ describe('fine-grained bound attributes sync form properties', () => {
     dispose();
   });
 });
+
+/**
+ * KF-FMGEJ6: the live `value` property is written BEFORE the attribute, so
+ * WebKit's change-event baseline follows a re-pointed input. happy-dom can't
+ * model that baseline; this pins the order at every writer (the end-to-end
+ * check is in `tests/browser/form-state-sync.spec.ts`).
+ */
+describe('form properties are written before their attributes (KF-FMGEJ6)', () => {
+  /** Records `value` property and attribute writes on `input`, in order. */
+  function recordWrites(input: HTMLInputElement): string[] {
+    const writes: string[] = [];
+    const proto = Object.getPrototypeOf(input) as object;
+    const descriptor = Object.getOwnPropertyDescriptor(proto, 'value')!;
+    Object.defineProperty(input, 'value', {
+      configurable: true,
+      get() {
+        return descriptor.get!.call(this);
+      },
+      set(next: string) {
+        writes.push(`prop:${next}`);
+        descriptor.set!.call(this, next);
+      },
+    });
+    const setAttribute = input.setAttribute.bind(input);
+    input.setAttribute = (name: string, next: string) => {
+      if (name === 'value') writes.push(`attr:${next}`);
+      setAttribute(name, next);
+    };
+    const removeAttribute = input.removeAttribute.bind(input);
+    input.removeAttribute = (name: string) => {
+      if (name === 'value') writes.push('remove');
+      removeAttribute(name);
+    };
+    return writes;
+  }
+
+  it('the morph writes the property, then the attribute', () => {
+    root().innerHTML = '<input type="text" value="First">';
+    const input = root().querySelector('input') as HTMLInputElement;
+    const writes = recordWrites(input);
+    morph(root(), '<input type="text" value="Second">');
+    morph(root(), '<input type="text">');
+    expect(writes).toEqual(['prop:Second', 'attr:Second', 'prop:', 'remove']);
+  });
+
+  it('a bound value writes the property, then the attribute', () => {
+    const text = signal<string | null>('First');
+    mount(root(), () =>
+      jsx('div', { children: jsx('input', { value: text }) }),
+    );
+    const input = root().querySelector('input') as HTMLInputElement;
+    const writes = recordWrites(input);
+    text.value = 'Second';
+    text.value = null;
+    expect(writes).toEqual(['prop:Second', 'attr:Second', 'prop:', 'remove']);
+  });
+});

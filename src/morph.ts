@@ -620,13 +620,15 @@ function morphAttributes(fromEl: Element, toEl: Element): void {
         fromEl.setAttributeNS(ns, attr.name, value);
       }
     } else if (fromEl.getAttribute(name) !== value) {
-      fromEl.setAttribute(name, value);
       // KF-335: a mutated checked/value/selected attribute must carry the live
       // property with it — after user interaction the dirty flag detaches the
       // property from the attribute, so an attribute-only write leaves the
       // visible state stale. Sync happens ONLY on actual attribute mutation,
       // so uncontrolled elements (JSX never mentions the attr) stay untouched.
+      // The property goes first (KF-FMGEJ6: WebKit's change baseline; see
+      // `syncFormProp`).
       syncFormProp(fromEl, name, value, true);
+      fromEl.setAttribute(name, value);
     }
   }
   // Remove attributes that are no longer present on toEl.
@@ -642,10 +644,10 @@ function morphAttributes(fromEl: Element, toEl: Element): void {
       !isUserAgentOwnedAttr(fromTag, name) &&
       (!rendered || rendered.includes(name))
     ) {
-      fromEl.removeAttribute(name);
       // KF-335: removed checked/value/selected attr → property follows (see
-      // the set-side comment above).
+      // the set-side comment above), written first.
       syncFormProp(fromEl, name, '', false);
+      fromEl.removeAttribute(name);
     }
   }
   if (fromTag.includes('-')) host[RENDERED_ATTRS] = toEl.getAttributeNames();

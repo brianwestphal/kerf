@@ -18,7 +18,7 @@
  * These need real engines: happy-dom does not model dirty flags truthfully.
  */
 
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/tests/browser/fixtures/index.html');
@@ -248,4 +248,81 @@ test('fine-grained bound checked={sig} syncs the property too', async ({
   });
   expect(result.attr).toBe(true);
   expect(result.prop).toBe(true);
+});
+
+/**
+ * KF-FMGEJ6: WebKit keeps a clean input's change-event baseline at the value
+ * it was parsed with when only its `value` attribute changes. Kerf writes the
+ * property first, so a user re-typing the input's earlier value still fires
+ * `change` (the Kerf UI editor's Inspector lost such a commit).
+ */
+async function retypeFirstValue(page: Page, setup: string) {
+  await page.evaluate((setup) => {
+    const w = window as any;
+    w.changes = [];
+    document.addEventListener(
+      'change',
+      (event) => w.changes.push((event.target as HTMLInputElement).value),
+      true,
+    );
+    new Function(setup)();
+  }, setup);
+  const input = page.locator('#root input[data-probe]');
+  await expect(input).toHaveValue('Second');
+  await input.click();
+  await page.keyboard.press('ControlOrMeta+a');
+  await page.keyboard.type('First');
+  await page.keyboard.press('Enter');
+  return page.evaluate(() => (window as any).changes as string[]);
+}
+
+test('a morphed value attribute does not swallow a re-typed earlier value (KF-FMGEJ6)', async ({
+  page,
+}) => {
+  const changes = await retypeFirstValue(
+    page,
+    `const { mount, signal } = window.kerf;
+     const { jsx } = window.jsxRuntime;
+     const text = signal('First');
+     mount(document.getElementById('root'), () =>
+       jsx('div', { children: jsx('input', { type: 'text', 'data-probe': '', value: text.value }) }));
+     text.value = 'Second';`,
+  );
+  expect(changes).toEqual(['First']);
+});
+
+test('a bound value attribute does not swallow a re-typed earlier value (KF-FMGEJ6)', async ({
+  page,
+}) => {
+  const changes = await retypeFirstValue(
+    page,
+    `const { mount, signal } = window.kerf;
+     const { jsx } = window.jsxRuntime;
+     const text = signal('First');
+     mount(document.getElementById('root'), () =>
+       jsx('div', { children: jsx('input', { type: 'text', 'data-probe': '', value: text }) }));
+     text.value = 'Second';`,
+  );
+  expect(changes).toEqual(['First']);
+});
+
+test('a keyed row’s value attribute does not swallow a re-typed earlier value (KF-FMGEJ6)', async ({
+  page,
+}) => {
+  // The granular attribute-only fast path (an arraySignal update).
+  await page.evaluate(async () => {
+    (window as any).arraySignalModule = await import('kerfjs/array-signal');
+  });
+  const changes = await retypeFirstValue(
+    page,
+    `const { mount, each } = window.kerf;
+     const { jsx } = window.jsxRuntime;
+     const { arraySignal } = window.arraySignalModule;
+     const rows = arraySignal([{ id: 1, text: 'First' }]);
+     mount(document.getElementById('root'), () =>
+       jsx('ul', { children: each(rows, (row) =>
+         jsx('li', { 'data-key': row.id, children: jsx('input', { type: 'text', 'data-probe': '', value: row.text }) })) }));
+     rows.update(0, (row) => ({ ...row, text: 'Second' }));`,
+  );
+  expect(changes).toEqual(['First']);
 });

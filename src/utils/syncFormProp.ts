@@ -20,6 +20,15 @@
  * The focused-element exception: a focused text-entry control's `value` is the
  * user's in-progress edit — the morph's preservation rule owns it, so `value`
  * sync is skipped for `document.activeElement`.
+ *
+ * Callers write the property BEFORE the attribute (KF-FMGEJ6). WebKit keeps a
+ * clean input's change-event baseline at the value it was parsed with when only
+ * its `value` attribute changes, and an attribute-first write leaves the
+ * property already equal, so the property setter is a no-op there too. An input
+ * parsed as `value="A"` and re-pointed to `B` then fires no `change` when the
+ * user types `A` back. Writing the property first really changes the value,
+ * which resets the baseline; the attribute then sets only the default. The end
+ * state is the same in every engine.
  */
 export function syncFormProp(
   el: Element,

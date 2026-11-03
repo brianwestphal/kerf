@@ -492,22 +492,24 @@ function setBoundAttr(el: Element, name: string, value: unknown): void {
   // KF-335: every attribute write below also syncs the matching form-state
   // property (checked/value/selected) — after user interaction the dirty flag
   // detaches the property from the attribute, so an attribute-only write
-  // leaves the visible state stale. `syncFormProp` no-ops for other names.
+  // leaves the visible state stale. `syncFormProp` no-ops for other names,
+  // and runs before the attribute write (KF-FMGEJ6: WebKit's change
+  // baseline; see `syncFormProp`).
   if (value == null || value === false) {
-    el.removeAttribute(name);
     syncFormProp(el, name, '', false);
+    el.removeAttribute(name);
     return;
   }
   if (value === true) {
-    el.setAttribute(name, '');
     syncFormProp(el, name, '', true);
+    el.setAttribute(name, '');
     return;
   }
   // SafeHtml (raw()) is the documented opt-out — bypasses URL screening and is
   // written verbatim, matching renderAttr's SafeHtml branch.
   if (isSafeHtmlValue(value)) {
-    el.setAttribute(name, value.__html);
     syncFormProp(el, name, value.__html, true);
+    el.setAttribute(name, value.__html);
     return;
   }
   const str = String(value);
@@ -517,8 +519,8 @@ function setBoundAttr(el: Element, name: string, value: unknown): void {
     el.removeAttribute(name);
     return;
   }
-  el.setAttribute(name, str);
   syncFormProp(el, name, str, true);
+  el.setAttribute(name, str);
 }
 
 // Cross-bundle SafeHtml brand check (mirrors jsx-runtime's `isSafeHtml`).

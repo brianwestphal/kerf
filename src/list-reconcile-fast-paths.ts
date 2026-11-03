@@ -102,20 +102,21 @@ export function tryAttributeOnlyFastPath(
     const oldValue = oldTag.attrs.get(name);
     if (oldValue === rawValue) continue;
     const value = unescapeAttrValue(rawValue);
-    liveNode.setAttribute(name, value);
     // KF-390: this is the third attribute writer in the codebase, and it has
     // to honor the same rule as the morph's writer and the binding writer — a
     // mutated checked/value/selected attribute must carry the live property
     // with it, because the browser detaches the two once the control is dirty
     // (KF-335). Without this, whether a controlled row obeyed the app depended
-    // on which internal route the diff happened to take.
+    // on which internal route the diff happened to take. The property goes
+    // first (KF-FMGEJ6: WebKit's change baseline; see `syncFormProp`).
     syncFormProp(liveNode, name, value, true);
+    liveNode.setAttribute(name, value);
   }
   for (const name of oldTag.attrs.keys()) {
     if (newTag.attrs.has(name)) continue;
     if (isUserAgentOwnedAttr(liveTagUpper, name)) continue;
-    liveNode.removeAttribute(name);
     syncFormProp(liveNode, name, '', false);
+    liveNode.removeAttribute(name);
   }
   // This path does not maintain the morph's record of what the template owns
   // (see `RENDERED_ATTRS`); drop it so the next morph of this element falls

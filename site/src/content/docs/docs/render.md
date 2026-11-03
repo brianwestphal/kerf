@@ -301,6 +301,7 @@ kerf closes this gap with one rule: **whenever the diff (or a fine-grained signa
 - **Controlled usage works after user interaction.** `checked={done.value}` re-checks a box the user unchecked; `value={v.value}` updates a non-focused input the user typed into; `selected` flips a `<select>` back. A controlled `<textarea>{text.value}</textarea>` follows template-text changes the same way.
 - **Uncontrolled usage is untouched.** JSX that never mentions the attribute never mutates it, so the user's state survives unrelated re-renders — the same philosophy as the user-agent-owned `open` attribute on `<details>`/`<dialog>`.
 - **The focused element still wins.** A focused text input or textarea keeps the user's in-progress edit (the preservation rules above take precedence over `value` sync).
+- **The property is written before the attribute.** WebKit keeps a clean input's `change` baseline at the value it was parsed with when only the `value` attribute changes, so an input re-pointed from `A` to `B` would fire no `change` when the user types `A` back. Writing the property first moves that baseline; the end state is the same in every engine.
 
 ### `[contenteditable]`
 
