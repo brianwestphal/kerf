@@ -2277,6 +2277,33 @@ type ChoiceSpec = {
 };
 
 /**
+ * Clicks a prop's Configure button and waits for what it opens: a form
+ * pushed onto the Inspector (a new Back button) or a dialog. KF-52Q3AP: in
+ * WebKit a click that lands while the Inspector re-renders from the previous
+ * commit can be dropped, so a button that opened nothing is clicked again.
+ */
+async function openConfigure(
+  page: Page,
+  name: string,
+  scope: Pick<Page, 'getByRole'> = page,
+) {
+  const button = scope.getByRole('button', { name });
+  const backs = page
+    .getByRole('button', { name: 'Back', exact: true })
+    .filter({ visible: true });
+  const dialogs = page.locator('dialog[open]');
+  const before = { backs: await backs.count(), dialogs: await dialogs.count() };
+  const opened = async () =>
+    (await backs.count()) > before.backs ||
+    (await dialogs.count()) > before.dialogs;
+  await button.click();
+  await expect(async () => {
+    if (!(await opened()) && (await button.isVisible())) await button.click();
+    expect(await opened()).toBe(true);
+  }).toPass({ intervals: [500, 1_000, 2_000], timeout: 30_000 });
+}
+
+/**
  * Fills the selected `owner`'s `choices` from Configure choices (adding rows
  * past the three seeded ones), then places each choice's icon in its `zone`
  * through the form's content row.
@@ -2288,7 +2315,7 @@ async function configureChoices(
   zone = 'icon',
 ) {
   await select(page, owner);
-  await page.getByRole('button', { name: 'Configure choices' }).click();
+  await openConfigure(page, 'Configure choices');
   const dialog = page.locator('dialog[open]');
   for (let added = 3; added < choices.length; added += 1)
     await dialog.getByRole('button', { name: 'Add', exact: true }).click();
@@ -2337,7 +2364,7 @@ async function configureChoices(
   for (const [index, choice] of choices.entries()) {
     if (!choice.glyph) continue;
     await select(page, owner);
-    await page.getByRole('button', { name: 'Configure choices' }).click();
+    await openConfigure(page, 'Configure choices');
     await dialog.getByText(choice.label, { exact: true }).click();
     // The content row closes the form.
     await page
@@ -5073,7 +5100,7 @@ test('builds Select › Rendering Balance', async ({ page }) => {
     ['balanced', 'Balanced', 'sliders-horizontal', 'Attention'],
     ['explicit', 'Explicit', 'wrench', 'Control'],
   ] as const;
-  await page.getByRole('button', { name: 'Configure choices' }).click();
+  await openConfigure(page, 'Configure choices');
   const dialog = page.locator('dialog[open]');
   for (const [index, [value, label, glyph, group]] of choices.entries()) {
     await dialog.getByText(`Choice ${index + 1}`, { exact: true }).click();
@@ -5432,7 +5459,7 @@ test('builds Select › Toolbar Filter Beside Actions', async ({ page }) => {
   await unset(page, 'text');
   await addIcon(page, 'icon', 'ellipsis');
   await select(page, /^PopupMenu/);
-  await page.getByRole('button', { name: 'Configure items' }).click();
+  await openConfigure(page, 'Configure items');
   const dialog = page.locator('dialog[open]');
   for (const extra of [3, 2])
     await dialog.getByRole('button', { name: `Remove Item ${extra}` }).click();
@@ -6613,7 +6640,7 @@ async function trailingButton(page: Page, index: number, glyph: string) {
   await select(page, /^ListActionRow/, index);
   await addIcon(page, 'trailingActionIcon', glyph);
   await select(page, /^ListActionRow/, index);
-  await page.getByRole('button', { name: 'Configure trailing menu' }).click();
+  await openConfigure(page, 'Configure trailing menu');
   await page
     .locator('[data-action="editor-reset-field"]')
     .filter({ visible: true })
@@ -6633,7 +6660,7 @@ async function actionRows(
     await select(page, /^ListActionRow/, index);
     if (row.tile) {
       await choose(page, 'iconTile', 'Custom…');
-      await page.getByRole('button', { name: 'Configure icon tile' }).click();
+      await openConfigure(page, 'Configure icon tile');
       await setField(page, 'iconTile', ['color'], row.tile.color);
       if (row.tile.foreground)
         await setField(page, 'iconTile', ['foreground'], row.tile.foreground);
@@ -7614,7 +7641,7 @@ test('builds SegmentedControl › Rounded Rectangle', async ({ page }) => {
   const dialog = page.locator('dialog[open]');
   for (const [index, [value, label, glyph]] of choices.entries()) {
     await select(page, /^SegmentedControl/);
-    await page.getByRole('button', { name: 'Configure choices' }).click();
+    await openConfigure(page, 'Configure choices');
     await dialog.getByText(`Choice ${index + 1}`, { exact: true }).click();
     await setField(page, 'choices', [index, 'value'], value);
     await setField(page, 'choices', [index, 'label'], label);
@@ -7651,7 +7678,7 @@ test('builds SegmentedControl › Rounded Rectangle', async ({ page }) => {
   );
   // Back in a filled choice's form, its content row counts its nodes.
   await select(page, /^SegmentedControl/);
-  await page.getByRole('button', { name: 'Configure choices' }).click();
+  await openConfigure(page, 'Configure choices');
   await dialog.getByText('Activity', { exact: true }).click();
   await expect(
     page.locator('[data-editor-content-node="choices.1.content"]'),
@@ -7709,7 +7736,7 @@ test('builds PopupMenu › Icon Trigger in a Toolbar Group', async ({ page }) =>
   await expect(page.locator('[data-editor-icon]')).toHaveCount(2);
   await page.locator('[data-editor-icon="arrow-down-a-z"]').click();
   await select(page, /^PopupMenu/);
-  await page.getByRole('button', { name: 'Configure items' }).click();
+  await openConfigure(page, 'Configure items');
   const dialog = page.locator('dialog[open]');
   await dialog.getByRole('button', { name: 'Remove Item 3' }).click();
   const items = [
@@ -7775,7 +7802,7 @@ test('builds SegmentedControl › Pill', async ({ page }) => {
     ['comfortable', 'Comfortable'],
     ['roomy', 'Roomy'],
   ] as const;
-  await page.getByRole('button', { name: 'Configure choices' }).click();
+  await openConfigure(page, 'Configure choices');
   const dialog = page.locator('dialog[open]');
   for (const [index, [value, label]] of choices.entries()) {
     await dialog.getByText(`Choice ${index + 1}`, { exact: true }).click();
@@ -8194,7 +8221,7 @@ test('builds TabNavigator › Persistent Tab Scenes', async ({ page }) => {
     dialog.locator('[data-action="editor-open-field"]').nth(index).click();
   const back = () => dialog.getByRole('button', { name: 'Back' }).click();
   // Settings carries a text-free dot, the tab list's other member.
-  await page.getByRole('button', { name: 'Configure tabs' }).click();
+  await openConfigure(page, 'Configure tabs');
   await dialog.getByRole('button', { name: 'Remove Tab 3' }).click();
   await dialog.getByRole('button', { name: /Add/ }).last().click();
   await page.getByRole('menuitem', { name: 'Dot badge' }).click();
@@ -8227,7 +8254,7 @@ test('builds TabNavigator › Persistent Tab Scenes', async ({ page }) => {
   const glyphs = ['folder-kanban', 'search', 'settings'];
   for (const [index, glyph] of glyphs.entries()) {
     await select(page, /^TabNavigator/);
-    await page.getByRole('button', { name: 'Configure tabs' }).click();
+    await openConfigure(page, 'Configure tabs');
     await item(index);
     // The tab's Icon row adds a LucideIcon and selects it.
     await dialog.getByText('Icon', { exact: true }).click();
@@ -8330,7 +8357,7 @@ test('builds TabNavigator › NavStack Inside a Tab', async ({ page }) => {
   const item = (index: number) =>
     dialog.locator('[data-action="editor-open-field"]').nth(index).click();
   const back = () => dialog.getByRole('button', { name: 'Back' }).click();
-  await page.getByRole('button', { name: 'Configure tabs' }).click();
+  await openConfigure(page, 'Configure tabs');
   await dialog.getByRole('button', { name: 'Remove Tab 3' }).click();
   for (const [index, id] of ['projects', 'search'].entries()) {
     await item(index);
@@ -8348,7 +8375,7 @@ test('builds TabNavigator › NavStack Inside a Tab', async ({ page }) => {
   const glyphs = ['folder-kanban', 'search'];
   for (const [index, glyph] of glyphs.entries()) {
     await select(page, /^TabNavigator/);
-    await page.getByRole('button', { name: 'Configure tabs' }).click();
+    await openConfigure(page, 'Configure tabs');
     await item(index);
     await dialog.getByText('Icon', { exact: true }).click();
     await pickIcon(page, page.locator('[data-editor-icon-place]'), glyph);
@@ -8363,7 +8390,7 @@ test('builds TabNavigator › NavStack Inside a Tab', async ({ page }) => {
   await select(page, /^NavStack/);
   await setText(page, 'id', 'catalog-tab-scaffold-project-stack');
   await setText(page, 'label', 'Projects Navigation');
-  await page.getByRole('button', { name: 'Configure views' }).click();
+  await openConfigure(page, 'Configure views');
   await dialog.getByRole('button', { name: 'Remove View 3' }).click();
   await dialog.getByRole('button', { name: 'Remove View 2' }).click();
   await item(0);
@@ -8498,13 +8525,13 @@ test('builds NavStack › Interactive Push and Pop', async ({ page }) => {
   const back = () => dialog.getByRole('button', { name: 'Back' }).click();
   const configure = async (...rows: string[]) => {
     await select(page, /^NavStack/);
-    await page.getByRole('button', { name: 'Configure views' }).click();
+    await openConfigure(page, 'Configure views');
     await dialog.locator('[data-action="editor-open-field"]').first().click();
     for (const row of rows)
       await dialog.getByText(row, { exact: true }).click();
   };
   // The demo's stack starts from one view: the library.
-  await page.getByRole('button', { name: 'Configure views' }).click();
+  await openConfigure(page, 'Configure views');
   await dialog.getByRole('button', { name: 'Remove View 3' }).click();
   await dialog.getByRole('button', { name: 'Remove View 2' }).click();
   await dialog.locator('[data-action="editor-open-field"]').first().click();
@@ -8663,7 +8690,7 @@ test('builds NavStack › Configured Toolbar', async ({ page }) => {
   const dialog = page.locator('dialog[open]');
   const back = () => dialog.getByRole('button', { name: 'Back' }).click();
   // toolbarConfig: a level-2 title with a bottom divider.
-  await page.getByRole('button', { name: 'Configure toolbar config' }).click();
+  await openConfigure(page, 'Configure toolbar config');
   await chooseField(page, 'toolbarConfig', ['headingLevel'], '2');
   await chooseField(page, 'toolbarConfig', ['dividerSides'], 'b');
   // A form this small opens in the Inspector; its back button returns.
@@ -8671,7 +8698,7 @@ test('builds NavStack › Configured Toolbar', async ({ page }) => {
     .locator('#editor-inspector-stack')
     .getByRole('button', { name: 'Back' })
     .click();
-  await page.getByRole('button', { name: 'Configure views' }).click();
+  await openConfigure(page, 'Configure views');
   await dialog.getByRole('button', { name: 'Remove View 3' }).click();
   await dialog.getByRole('button', { name: 'Remove View 2' }).click();
   await dialog.locator('[data-action="editor-open-field"]').first().click();
@@ -8684,7 +8711,7 @@ test('builds NavStack › Configured Toolbar', async ({ page }) => {
   // group is selected, holding one seeded ToolbarButton.
   const group = async (zone: string, label: string) => {
     await select(page, /^NavStack/);
-    await page.getByRole('button', { name: 'Configure views' }).click();
+    await openConfigure(page, 'Configure views');
     await dialog.locator('[data-action="editor-open-field"]').first().click();
     await dialog.getByText('Toolbar', { exact: true }).click();
     await dialog.getByText(zone, { exact: true }).click();
@@ -8843,14 +8870,12 @@ test('builds NavStack › Overlay Chrome', async ({ page }) => {
   const dialog = page.locator('dialog[open]');
   const stack = page.locator('#editor-inspector-stack');
   // The stack's own bottom toolbar, laid over its views.
-  await page.getByRole('button', { name: 'Configure bottom toolbar' }).click();
+  await openConfigure(page, 'Configure bottom toolbar');
   await setField(page, 'bottomToolbar', ['label'], 'Inbox Actions');
   await stack.getByRole('button', { name: 'Back' }).click();
   const bottomZone = async (zone: string, component: string) => {
     await select(page, /^NavStack/);
-    await page
-      .getByRole('button', { name: 'Configure bottom toolbar' })
-      .click();
+    await openConfigure(page, 'Configure bottom toolbar');
     await stack.getByText(zone, { exact: true }).click();
     // The new node is selected.
     await addChild(page, component);
@@ -8878,7 +8903,7 @@ test('builds NavStack › Overlay Chrome', async ({ page }) => {
   await command(1, 'New Message', 'square-pen');
   // One inbox view.
   await select(page, /^NavStack/);
-  await page.getByRole('button', { name: 'Configure views' }).click();
+  await openConfigure(page, 'Configure views');
   await dialog.getByRole('button', { name: 'Remove View 3' }).click();
   await dialog.getByRole('button', { name: 'Remove View 2' }).click();
   await dialog.locator('[data-action="editor-open-field"]').first().click();
@@ -8966,7 +8991,7 @@ test('builds NavStack › Compact Chrome', async ({ page }) => {
   const back = () => dialog.getByRole('button', { name: 'Back' }).click();
   const configure = async (...rows: string[]) => {
     await select(page, /^NavStack/);
-    await page.getByRole('button', { name: 'Configure views' }).click();
+    await openConfigure(page, 'Configure views');
     await dialog.locator('[data-action="editor-open-field"]').first().click();
     for (const row of rows)
       await dialog.getByText(row, { exact: true }).click();
@@ -8974,7 +8999,7 @@ test('builds NavStack › Compact Chrome', async ({ page }) => {
   // One view, the message list, whose Pane declares its compact chrome: the
   // filter header lies over the list until opened, the status footer
   // scrolls with it.
-  await page.getByRole('button', { name: 'Configure views' }).click();
+  await openConfigure(page, 'Configure views');
   await dialog.getByRole('button', { name: 'Remove View 3' }).click();
   await dialog.getByRole('button', { name: 'Remove View 2' }).click();
   await dialog.locator('[data-action="editor-open-field"]').first().click();
@@ -9360,7 +9385,7 @@ test('builds ScrollEffect › Reveal and Fade in a Feed', async ({ page }) => {
   const item = (index: number) =>
     dialog.locator('[data-action="editor-open-field"]').nth(index).click();
   const back = () => dialog.getByRole('button', { name: 'Back' }).click();
-  await page.getByRole('button', { name: 'Configure effects' }).click();
+  await openConfigure(page, 'Configure effects');
   // Remove the seeded parallax (one, KF-T3PYVC), then add a reveal twice and
   // a fade.
   const remove = dialog.getByRole('button', { name: /^Remove / });
@@ -9587,7 +9612,7 @@ async function panel(
 /** Opens a Workbench prop's form from its row (`Configure left rail`). */
 async function configure(page: Page, prop: string) {
   const words = prop.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`);
-  await page.getByRole('button', { name: `Configure ${words}` }).click();
+  await openConfigure(page, `Configure ${words}`);
 }
 
 /**
@@ -11528,9 +11553,6 @@ test('builds ToolbarControlGroup › Wrapping Zone Sizing', async ({ page }) => 
   await addInto(page, /^ToolbarControlGroup/, 'SegmentedControl', -1);
   await configureChoices(page, /^SegmentedControl/, views);
   await select(page, /^SegmentedControl/);
-  // KF-FMGEJ6: WebKit drops the label commit when it repeats the group's
-  // "Rail View", so commit another value first.
-  await setText(page, 'label', 'Rail');
   await applySpec(page, {
     choices: { appearance: 'toolbar' },
     text: {
@@ -13506,7 +13528,7 @@ async function demoStack(page: Page, nth: number, id: string, title: string) {
   await select(page, /^NavStack/, nth);
   await setText(page, 'id', id);
   await setText(page, 'label', title);
-  await page.getByRole('button', { name: 'Configure views' }).click();
+  await openConfigure(page, 'Configure views');
   await dialog.getByRole('button', { name: 'Remove View 3' }).click();
   await dialog.getByRole('button', { name: 'Remove View 2' }).click();
   await dialog.locator('[data-action="editor-open-field"]').first().click();
@@ -13788,9 +13810,9 @@ async function ownToolbar(
 ) {
   const dialog = page.locator('dialog[open]');
   await select(page, owner, nth);
-  await page.getByRole('button', { name: 'Configure toolbar' }).click();
+  await openConfigure(page, 'Configure toolbar');
   await setField(page, 'toolbar', ['label'], label);
-  await dialog.getByRole('button', { name: 'Configure toggle' }).click();
+  await openConfigure(page, 'Configure toggle', dialog);
   await setField(page, 'toolbar', ['toggle', 'action'], toggle.action);
   await setField(page, 'toolbar', ['toggle', 'name'], toggle.name);
   await dialog.getByRole('button', { name: 'Back' }).click();
@@ -13961,7 +13983,7 @@ async function navigatorToolbar(page: Page, owner: RegExp, nth: number) {
   });
   for (const [zone, label, glyph, relocate] of NAVIGATOR_COMMANDS) {
     await select(page, owner, nth);
-    await page.getByRole('button', { name: 'Configure toolbar' }).click();
+    await openConfigure(page, 'Configure toolbar');
     await dialog.getByRole('button', { name: `Add to ${zone}` }).click();
     await addChild(page, 'ToolbarControlGroup');
     await area(page, 'Properties');
@@ -14053,7 +14075,7 @@ test('builds CollapsiblePanel › Toolbar Relocation', async ({ page }) => {
     text: { text: 'Pinned Files' },
   });
   await select(page, rail);
-  await page.getByRole('button', { name: 'Configure header list' }).click();
+  await openConfigure(page, 'Configure header list');
   await chooseField(page, 'headerList', ['textInsets'], 'trbl');
   await page
     .locator('dialog[open]')
@@ -15036,7 +15058,7 @@ test('builds Pane › Tinted Surface', async ({ page }) => {
     { header, items: songs },
   );
   await select(page, /^Pane/);
-  await page.getByRole('button', { name: 'Configure tint' }).click();
+  await openConfigure(page, 'Configure tint');
   await setField(page, 'tint', ['color'], "fillColor('#5b2a86')");
   await chooseField(page, 'tint', ['scheme'], 'dark');
   await back(page);
@@ -17633,7 +17655,7 @@ test('builds ScrollEffect › Playground', async ({ page }) => {
   await area(page, 'Properties');
   await applySpec(page, { data: [['data-scroll-effect-target', '']] });
   const dialog = page.locator('dialog[open]');
-  await page.getByRole('button', { name: 'Configure effects' }).click();
+  await openConfigure(page, 'Configure effects');
   await dialog.getByRole('button', { name: /^Remove / }).click();
   for (const preset of ['Reveal', 'Fade']) {
     await dialog.getByRole('button', { name: /Add/ }).last().click();
@@ -19065,7 +19087,7 @@ test('builds Workbench › Resizable Panels', async ({ page }) => {
   await area(page, 'Properties');
   await setText(page, 'text', 'Create Item');
   await choose(page, 'placement', 'top-start');
-  await page.getByRole('button', { name: 'Configure items' }).click();
+  await openConfigure(page, 'Configure items');
   const dialog = page.locator('dialog[open]');
   await dialog.getByRole('button', { name: 'Remove Item 3' }).click();
   const items = [
@@ -19480,7 +19502,7 @@ test('builds SplitView › Roomy List-Detail Split', async ({ page }) => {
   await setText(page, 'detailTitle', 'Project update');
   // A 240px list column, capped at 40% of the split.
   await choose(page, 'listWidth', 'Custom…');
-  await page.getByRole('button', { name: 'Configure list width' }).click();
+  await openConfigure(page, 'Configure list width');
   await setField(page, 'listWidth', ['size'], '240');
   await setField(page, 'listWidth', ['maxFraction'], '0.4');
   await page
@@ -19729,7 +19751,7 @@ test('builds SplitView › Resizable, Collapsible List', async ({ page }) => {
   // The list's ResizableRegion: 280px between 220 and 420, a hidden
   // separator, and a fade-slide collapse restored from the bottom corner.
   const dialog = page.locator('dialog[open]');
-  await page.getByRole('button', { name: 'Configure resizable' }).click();
+  await openConfigure(page, 'Configure resizable');
   await setField(page, 'resizable', ['size'], '280');
   await setField(page, 'resizable', ['min'], '220');
   await setField(page, 'resizable', ['max'], '420');
@@ -19772,7 +19794,7 @@ test('builds SplitView › Resizable, Collapsible List', async ({ page }) => {
   // The restore control: a FloatingToolbar docked in the corner, holding
   // the button that shows the threads again.
   await select(page, /^SplitView/);
-  await page.getByRole('button', { name: 'Configure resizable' }).click();
+  await openConfigure(page, 'Configure resizable');
   await dialog.getByRole('button', { name: 'Add to restore control' }).click();
   await addChild(page, 'FloatingToolbar');
   await area(page, 'Properties');
@@ -19902,7 +19924,7 @@ test('builds TabNavigator › Translucent Tab Bar', async ({ page }) => {
     ['inbox', 'Inbox', 'Message', 'inbox'],
     ['sent', 'Sent', 'Sent message', 'send'],
   ] as const;
-  await page.getByRole('button', { name: 'Configure tabs' }).click();
+  await openConfigure(page, 'Configure tabs');
   await dialog.getByRole('button', { name: 'Remove Tab 3' }).click();
   for (const [index, [id, label, , glyph]] of sections.entries()) {
     await item(index);
@@ -19912,7 +19934,7 @@ test('builds TabNavigator › Translucent Tab Bar', async ({ page }) => {
     await dialog.getByText('Icon', { exact: true }).click();
     await pickIcon(page, page.locator('[data-editor-icon-place]'), glyph);
     await select(page, /^TabNavigator/);
-    await page.getByRole('button', { name: 'Configure tabs' }).click();
+    await openConfigure(page, 'Configure tabs');
   }
   await dialog.getByRole('button', { name: 'Done' }).click();
   await setText(page, 'active', 'inbox');
