@@ -93,9 +93,10 @@ export function createEditorCatalog(
   const componentNames = new Map(
     propsComponents.map((component) => {
       const entry = entries.find((item) => item.id === component.id);
-      const name = component.key.includes('#')
-        ? component.export!
-        : (entry?.name ?? component.export ?? component.id);
+      // KF-9DA687: a component is named by its export, as an author writes
+      // it; a catalog entry's title can describe a family ("Surface
+      // Scaffolds" holds DialogSurface).
+      const name = component.export ?? entry?.name ?? component.id;
       return [component.key, name];
     }),
   );

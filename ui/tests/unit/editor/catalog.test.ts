@@ -72,6 +72,23 @@ describe('createEditorCatalog', () => {
     );
   });
 
+  // KF-9DA687: the palette and outline name a component by its export, not
+  // its catalog entry's family title.
+  it('names every Kerf UI component by its export', () => {
+    expect(
+      defaultCatalog.componentNames.get('@kerfjs/ui:surface-scaffold'),
+    ).toBe('DialogSurface');
+    expect(defaultCatalog.componentNames.get('@kerfjs/ui:file-picker')).toBe(
+      'FilePickerTrigger',
+    );
+    for (const [key, component] of defaultCatalog.propsByKey)
+      if (component.export)
+        expect({ key, name: defaultCatalog.componentNames.get(key) }).toEqual({
+          key,
+          name: component.export,
+        });
+  });
+
   it('works without a selection catalog', () => {
     const bare = createEditorCatalog({
       props: [widgetsProps],

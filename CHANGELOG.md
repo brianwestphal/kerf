@@ -269,6 +269,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **The Kerf UI editor names components as authors write them.** The palette, Add a child list, outline and Inspector named an entry's primary component after its catalog title, so `DialogSurface` read "Surface Scaffolds" and `FilePickerTrigger` read "FilePicker". Every component now shows its export name (`KF-9DA687`).
 - **A TabBarItem can be made non-closable in the Kerf UI editor.** `closable` defaults to `true` but did not say so, so `component-props.json` recorded no default and the editor's switch could not write `false`. Its JSDoc now states the default (`KF-X2E1B1`).
 - **Multi-line text props hold line breaks in the Kerf UI editor.** The props overlay's `textarea` control (EmptyState and StateBanner `detail`, Text `children`) was ignored, so every string prop was a single-line field that Enter committed. Those props now edit in a multi-line field that commits on change, and ValuePreview `value` is one of them. TextField's end `toggle` now also works on a multi-line field, pinned to its top end, so an optional multi-line prop keeps its Not set toggle (`KF-8FCJ02`).
 - **A ListActionRow can be an unpressed toggle in the Kerf UI editor.** Its `pressed` edited as a switch, which clears the prop when off, so the editor could not write `pressed: false` (`aria-pressed="false"`). It now has the same Not set / Off / On Select as `Button`, `ListItem`, and `ToolbarButton` (`KF-3T47XJ`).

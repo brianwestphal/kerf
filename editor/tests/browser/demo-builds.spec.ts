@@ -3736,7 +3736,7 @@ test('builds FilePicker › Browse Trigger and Drop Zone', async ({ page }) => {
     text: { children: 'Attachments' },
   });
   await select(page, /^Row/);
-  await addChild(page, 'FilePicker');
+  await addChild(page, 'FilePickerTrigger');
   await applySpec(page, {
     flags: ['multiple'],
     text: {
@@ -3819,7 +3819,7 @@ test('builds FilePicker › Browse Trigger and Drop Zone', async ({ page }) => {
 
 test('builds FilePicker › Button Look', async ({ page }) => {
   await dragComponent(page, 'Row', () => emptySpot(page));
-  await dragComponent(page, 'FilePicker', () => emptySpot(page));
+  await dragComponent(page, 'FilePickerTrigger', () => emptySpot(page));
   await select(page, /^Row/);
   await applySpec(page, {
     choices: { gap: 'xs', vAlign: 'middle', controlInsets: 'trbl' },
@@ -3836,7 +3836,7 @@ test('builds FilePicker › Button Look', async ({ page }) => {
   });
   await addIcon(page, 'icon', 'folder-open');
   await select(page, /^Row/);
-  await addChild(page, 'FilePicker');
+  await addChild(page, 'FilePickerTrigger');
   await applySpec(page, {
     choices: { emphasis: 'plain', size: 'compact' },
     text: { label: 'Open', pickerId: 'demo-open' },
