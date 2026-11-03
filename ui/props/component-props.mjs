@@ -606,9 +606,15 @@ function mergeMemberProps(memberProps, memberCount) {
     const literals = usable.map((item) =>
       item.kind === 'literal' ? item.value : undefined,
     );
+    // `boolean` beside `true` / `false` (Badge's `ariaHidden?: boolean` plus
+    // the `false` / `true` of its labeled and hidden variants) is still one
+    // boolean, so the editor offers a switch rather than a two-item select.
     if (
       usable.length > 1 &&
-      literals.every((value) => typeof value === 'boolean')
+      usable.every(
+        (item, index) =>
+          item.kind === 'boolean' || typeof literals[index] === 'boolean',
+      )
     ) {
       type = { kind: 'boolean', text: 'boolean' };
     } else if (

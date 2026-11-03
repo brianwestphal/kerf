@@ -453,6 +453,14 @@ describe('ai/component-props.json (generated from the built package)', async () 
     ]);
   });
 
+  it("Badge: a `boolean` beside its variants' `false` / `true` is one boolean (KF-AYX1G2)", () => {
+    const badge = component('@kerfjs/ui:badge');
+    expect(prop(badge, 'ariaHidden')).toMatchObject({
+      required: false,
+      type: { kind: 'boolean' },
+    });
+  });
+
   it('ListHeader: the toggle discriminant and toggle-only props', () => {
     const header = component('@kerfjs/ui:list-header');
     expect(header.discriminant).toEqual(['toggle']);

@@ -10544,9 +10544,8 @@ test('builds ToolbarControlGroup › Corner Count', async ({ page }) => {
       appearance: 'solid',
       size: 'compact',
       placement: 'corner',
-      // A boolean | false | true union: a Select, not a switch.
-      ariaHidden: 'true',
     },
+    flags: ['ariaHidden'],
     text: { children: '3' },
   });
   await expect(

@@ -37,7 +37,12 @@ describe('typed choices', () => {
         (option) => option.label,
       );
     expect(labels('Badge', 'size')).toEqual(['compact', 'default', 'dot']);
-    expect(labels('Badge', 'ariaHidden')).toEqual(['true', 'false']);
+    // KF-AYX1G2: `boolean` beside its variants' `true` / `false` is a plain
+    // boolean (a switch), not a choice.
+    expect(typeOf('Badge', 'ariaHidden').kind).toBe('boolean');
+    expect(choiceOptions(typeOf('Badge', 'ariaHidden'), definitions)).toBe(
+      undefined,
+    );
     expect(labels('LucideIcon', 'size')).toEqual([
       'xs',
       's',

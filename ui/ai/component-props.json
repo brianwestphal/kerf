@@ -342,24 +342,7 @@
         },
         {
           "name": "ariaHidden",
-          "type": {
-            "kind": "union",
-            "members": [
-              {
-                "kind": "boolean",
-                "text": "boolean | undefined",
-                "nullable": true
-              },
-              {
-                "kind": "literal",
-                "value": false,
-                "text": "false",
-                "nullable": true
-              },
-              { "kind": "literal", "value": true, "text": "true" }
-            ],
-            "text": "boolean | undefined | false | true"
-          },
+          "type": { "kind": "boolean", "text": "boolean" },
           "required": false,
           "description": "Hide a repeated visual badge from assistive technology."
         },
