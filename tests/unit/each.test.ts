@@ -10,7 +10,9 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { arraySignal } from '../../src/array-signal.js';
 import { each, mount, raw, signal } from '../../src/index.js';
+import { jsx } from '../../src/jsx-runtime.js';
 
 describe('each — basics (no mount context)', () => {
   it('renders each item in order', () => {
@@ -68,6 +70,50 @@ describe('each — basics (no mount context)', () => {
     expect(() => each([obj, obj], (it) => `<li>${it.id}</li>`)).toThrow(
       /same object reference appears at multiple indices.*again at index 1/s,
     );
+  });
+
+  it('names the first index of a duplicate, and gives a plain array no arraySignal hint', () => {
+    const obj = { id: 7 };
+    let message = '';
+    try {
+      each([{ id: 1 }, obj, obj], (it) => `<li>${it.id}</li>`).toString();
+    } catch (error) {
+      message = (error as Error).message;
+    }
+    expect(message).toMatch(/first at index 1, again at index 2/);
+    expect(message).not.toMatch(/arraySignal/);
+  });
+
+  it('points an arraySignal duplicate at the earlier mutation, not the render that throws (KF-7HMTZQ)', () => {
+    const shared = { id: 1 };
+    const rows = arraySignal([shared]);
+    const flag = signal(false);
+    const root = document.createElement('div');
+    document.body.append(root);
+    const dispose = mount(root, () =>
+      jsx('div', {
+        children: [
+          jsx('p', { children: flag.value ? 'on' : 'off' }),
+          jsx('ul', {
+            children: each(rows, (r) =>
+              jsx('li', { 'data-key': r.id, children: r.id }),
+            ),
+          }),
+        ],
+      }),
+    );
+    // Accepted: the granular insert path skips the O(N) duplicate check.
+    rows.push(shared);
+    let message = '';
+    try {
+      flag.value = true; // an unrelated render routes through the snapshot
+    } catch (error) {
+      message = (error as Error).message;
+    }
+    expect(message).toMatch(/first at index 0, again at index 1/);
+    expect(message).toMatch(/earlier push\(\), insert\(\), or update\(\)/);
+    dispose();
+    root.remove();
   });
 
   it('throws when a duplicate reference appears mid-list', () => {

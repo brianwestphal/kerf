@@ -684,18 +684,26 @@ function eachSnapshotById<T extends object>(
     html: string;
     bindings: Binding[];
   }>(items.length);
-  const seen = new Set<object>();
+  const seen = new Map<object, number>();
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     assertObjectItem(item, i);
-    if (seen.has(item)) {
+    const first = seen.get(item);
+    if (first !== undefined) {
       throw new Error(
-        `each(): the same object reference appears at multiple indices in items (first seen earlier, again at index ${i}). ` +
+        `each(): the same object reference appears at multiple indices in items (first at index ${first}, again at index ${i}). ` +
           'The per-item HTML cache is keyed on object identity, so duplicate references break the keyed reconciler and can leak DOM nodes on re-render. ' +
-          'Use a fresh object per row (e.g. items.map(o => ({ ...o })) before passing to each()).',
+          'Use a fresh object per row (e.g. items.map(o => ({ ...o })) before passing to each()).' +
+          // KF-7HMTZQ: an arraySignal's push/insert/update renders through the
+          // granular path, which skips this O(N) check, so the duplicate may
+          // predate this render; say where to look instead of blaming it.
+          (source !== undefined
+            ? ' This list is an arraySignal: the duplicate was most likely added by an earlier push(), insert(), or update() ' +
+              'that rendered without this check, so the render that throws here may not be the one that introduced it.'
+            : ''),
       );
     }
-    seen.add(item);
+    seen.set(item, i);
     const k = cacheKey ? cacheKey(item, i) : undefined;
     const version = itemVersion(item);
     let html: string;
