@@ -9,12 +9,11 @@ describe('Row ariaLabel', () => {
       Row({
         ariaLabel: 'Filter Suggestions',
         rootAttributes: { 'data-search-field-keep-open': '' },
-        children: 'x',
       }),
     );
     expect(labeled).toContain('role="group"');
     expect(labeled).toContain('aria-label="Filter Suggestions"');
     expect(labeled).toContain('data-search-field-keep-open=""');
-    expect(String(Row({ children: 'x' }))).not.toContain('role=');
+    expect(String(Row({}))).not.toContain('role=');
   });
 });
