@@ -155,6 +155,14 @@ describe('component-props helpers', () => {
       'neutral',
     );
     expect(parseDocumentedDefault('Anything', "'tag'")).toBe('tag');
+    // KF-YNEMFD: a boolean's default, unquoted.
+    expect(parseDocumentedDefault('Offer opacity (default true).')).toBe(
+      'true',
+    );
+    expect(parseDocumentedDefault('Show it. Defaults to true.')).toBe('true');
+    expect(parseDocumentedDefault('Wrap it. Default false.')).toBe('false');
+    expect(parseDocumentedDefault('Add space (default: false).')).toBe('false');
+    expect(parseDocumentedDefault('A true default style.')).toBeUndefined();
     expect(parseDocumentedDefault('No default here.')).toBeUndefined();
     expect(parseDocumentedDefault(undefined)).toBeUndefined();
   });

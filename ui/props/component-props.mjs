@@ -464,6 +464,9 @@ export function parseDocumentedDefault(text, tagValue) {
     /\(default:?\s+`([^`]+)`/i,
     /\bdefaults? (?:to|is) `([^`]+)`/i,
     /`([^`]+)`\s+\((?:the )?default\)/i,
+    // A boolean's default often goes unquoted: "(default true)", "Defaults
+    // to true.", "Default false." (KF-YNEMFD).
+    /\bdefaults?(?:\s+(?:to|is))?:?\s+(true|false)\b/i,
   ];
   for (const pattern of patterns) {
     const match = pattern.exec(text);

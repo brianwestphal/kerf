@@ -117,6 +117,7 @@
             "nullable": true
           },
           "required": false,
+          "default": true,
           "description": "Bleed to a Pane's inline content edges. Set false when embedded in a card. Defaults to true."
         },
         {
@@ -2146,6 +2147,7 @@
             "nullable": true
           },
           "required": false,
+          "default": true,
           "description": "Offer opacity in the picker (default true)."
         },
         {
@@ -2289,6 +2291,7 @@
             "nullable": true
           },
           "required": false,
+          "default": true,
           "description": "Offer opacity: an alpha slider and field (default true)."
         },
         {
@@ -2311,6 +2314,7 @@
             "nullable": true
           },
           "required": false,
+          "default": true,
           "description": "Offer a button that samples a color from the screen, where the browser\nprovides the EyeDropper API (default true; hidden elsewhere)."
         },
         {
@@ -4659,6 +4663,7 @@
             "nullable": true
           },
           "required": false,
+          "default": false,
           "description": "Fill the height of a parent with a definite height, such as an app root or\na fixed-height frame, when this grid is that parent's layout root. Inside a\nflex layout use `flex` instead. Defaults to false."
         },
         {
@@ -4851,6 +4856,7 @@
           },
           "required": false,
           "description": "Keep empty tracks instead of stretching a sparse row. Defaults to false.",
+          "default": false,
           "variantOnly": true
         }
       ],
@@ -4990,6 +4996,7 @@
             "nullable": true
           },
           "required": false,
+          "default": false,
           "description": "Fill the height of a parent with a definite height, such as an app root or\na fixed-height frame, when this list is that parent's layout root. Inside a\nflex layout use `flex` instead. Defaults to false.",
           "group": "Layout",
           "order": 2
@@ -6127,6 +6134,7 @@
             "nullable": true
           },
           "required": false,
+          "default": false,
           "description": "Wrap a long label onto further lines instead of truncating it to one\nellipsized line. Default false. Use it where the whole label must stay\nreadable in a narrow column, such as a specimen or form-section heading."
         },
         {
@@ -8181,6 +8189,7 @@
             "nullable": true
           },
           "required": false,
+          "default": false,
           "description": "Fill the height of a parent with a definite height, such as an app root\n(`.kui-app-root`), a `SizedRegion`, or a grid cell, or take the rest of a\nflex column. The header and footer stay pinned and the content scrolls\nbetween them, as in a NavStack view or Workbench region (which fill their\nPane without this prop). Defaults to false: the pane takes its content's\nheight.",
           "group": "Layout",
           "order": 1
@@ -8349,6 +8358,7 @@
             "nullable": true
           },
           "required": false,
+          "default": false,
           "description": "Add 8px to every side of scrolling content (default: false).",
           "group": "Surface",
           "order": 4
@@ -8877,6 +8887,7 @@
             "nullable": true
           },
           "required": false,
+          "default": true,
           "description": "Show the disclosure caret after the trigger content. Defaults to true.",
           "variantOnly": true
         },
@@ -9717,6 +9728,7 @@
             "nullable": true
           },
           "required": false,
+          "default": false,
           "description": "Fill the height of a parent with a definite height, such as an app root or\na fixed-height frame, when this row is that parent's layout root. Inside a\nflex layout use `flex` instead. Defaults to false."
         },
         {
@@ -10580,7 +10592,8 @@
             "nullable": true
           },
           "required": false,
-          "description": "Show the disclosure caret (default); omit it for a compact icon-only trigger.",
+          "default": true,
+          "description": "Show the disclosure caret (default `true`); set it `false` for a compact icon-only trigger.",
           "group": "Appearance",
           "order": 4
         },
@@ -15556,6 +15569,7 @@
             "nullable": true
           },
           "required": false,
+          "default": true,
           "description": "Show a trailing ellipsis (…) where the text is truncated — on the single line\n(default), or at the `maxLines` boundary when wrapping. Set false to hard-clip\ninstead. Default true.",
           "group": "Appearance",
           "order": 3
@@ -15568,6 +15582,7 @@
             "nullable": true
           },
           "required": false,
+          "default": false,
           "description": "Grow to fill the free space of the flex row it sits in (a Toolbar zone),\ntruncating at the space left by its siblings instead of taking only its\ntext's width. Default false."
         },
         {
@@ -25738,6 +25753,7 @@
             "nullable": true
           },
           "required": false,
+          "default": false,
           "description": "Add 8px to every side of scrolling content (default: false)."
         },
         {

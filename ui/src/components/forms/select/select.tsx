@@ -108,7 +108,7 @@ interface SelectBaseProps<Value extends string = string> {
   maxTriggerWidth?: CssLength;
   /** The narrowest the closed trigger gets. */
   minTriggerWidth?: CssLength;
-  /** Show the disclosure caret (default); omit it for a compact icon-only trigger. */
+  /** Show the disclosure caret (default `true`); set it `false` for a compact icon-only trigger. */
   caret?: boolean;
   /** Let an enclosing ToolbarControlGroup paint the composed focus ring. */
   focusRingOwner?: SelectFocusRingOwner;
