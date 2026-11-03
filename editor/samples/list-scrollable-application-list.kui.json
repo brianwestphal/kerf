@@ -1,0 +1,368 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListScrollableApplicationList",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "zones": {
+      "header": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Sidebar Toolbar"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Workspace",
+                  "size": "small"
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Add Workspace",
+                        "action": "log-add"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "plus"
+                              },
+                              "name": "plus"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "appearance": "borderless",
+                  "single": true
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "footer": [
+        {
+          "id": "00000000000000000000000007",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Sidebar Footer"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000008",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Ready",
+                  "size": "small"
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000010",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Sidebar Settings",
+                        "action": "log-settings"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000011",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "settings"
+                              },
+                              "name": "settings"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "appearance": "borderless",
+                  "single": true
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "content": [
+        {
+          "id": "00000000000000000000000012",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "gap": {
+              "column": "none",
+              "row": "l"
+            },
+            "flex": {
+              "$css": "flex(1)"
+            },
+            "scrollable": true
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000013",
+                "type": "@kerfjs/ui:list",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000014",
+                      "type": "@kerfjs/ui:list-header",
+                      "props": {
+                        "label": "Workspace",
+                        "count": 3,
+                        "countLabel": "3 workspaces",
+                        "action": "log-add",
+                        "actionLabel": "Add workspace"
+                      },
+                      "zones": {
+                        "actionIcon": [
+                          {
+                            "id": "00000000000000000000000015",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "plus"
+                              },
+                              "name": "plus"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000016",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Inbox",
+                        "action": "log-inbox",
+                        "selected": true,
+                        "itemId": "inbox"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000017",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "inbox"
+                              },
+                              "name": "inbox"
+                            }
+                          }
+                        ],
+                        "trailing": [
+                          {
+                            "id": "00000000000000000000000018",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "12",
+                              "variant": "span"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000019",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Projects",
+                        "action": "log-projects",
+                        "itemId": "projects"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000020",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "folder"
+                              },
+                              "name": "folder"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000021",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Drafts Without a Visible Icon",
+                        "action": "log-drafts",
+                        "itemId": "drafts"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000022",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "gap": "xs"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000023",
+                      "type": "@kerfjs/ui:list-header",
+                      "props": {
+                        "label": "Tools",
+                        "toggle": true,
+                        "expanded": true,
+                        "action": "toggle-menu-tools",
+                        "controls": "menu-tools-content"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000024",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "id": "menu-tools-content"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000025",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "A multiline item demonstrates content that wraps without clipping",
+                              "action": "log-settings",
+                              "multiline": true
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000026",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "wrench"
+                                    },
+                                    "name": "wrench"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000027",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Unavailable",
+                              "action": "disabled",
+                              "disabled": true
+                            },
+                            "zones": {
+                              "icon": [
+                                {
+                                  "id": "00000000000000000000000028",
+                                  "type": "@kerfjs/ui:lucide-icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "circle-question-mark"
+                                    },
+                                    "name": "circle-question-mark"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000029",
+                            "type": "@kerfjs/ui:content-item",
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000030",
+                                  "type": "@kerfjs/ui:list",
+                                  "props": {
+                                    "gap": "2xs"
+                                  },
+                                  "zones": {
+                                    "children": [
+                                      {
+                                        "id": "00000000000000000000000031",
+                                        "type": "@kerfjs/ui:text",
+                                        "props": {
+                                          "children": "Shared Item Geometry",
+                                          "variant": "span",
+                                          "weight": "strong"
+                                        }
+                                      },
+                                      {
+                                        "id": "00000000000000000000000032",
+                                        "type": "@kerfjs/ui:text",
+                                        "props": {
+                                          "children": "The child owns its margin, border, and padding.",
+                                          "variant": "span",
+                                          "tone": "quiet",
+                                          "size": "compact"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            },
+                            "props": {
+                              "rootAttributes": {
+                                "data-content-item": ""
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

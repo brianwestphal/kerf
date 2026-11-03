@@ -80,6 +80,11 @@ interface ListHeaderBaseProps {
   placeholder?: boolean;
   rootAttributes?: ListHeaderRootAttributes;
   triggerAttributes?: ListHeaderTriggerAttributes;
+  /**
+   * The id of the region the header's toggle or action shows or hides,
+   * reported as `aria-controls` on its trigger.
+   */
+  controls?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
 }
@@ -167,16 +172,20 @@ export function ListHeader({
   placeholder = false,
   rootAttributes = {},
   triggerAttributes = {},
+  controls,
   slot,
 }: ListHeaderProps) {
   const extensionRootAttributes = filterDataAttributes(
     rootAttributes,
     PROTECTED_ROOT_DATA_ATTRIBUTES,
   );
-  const extensionTriggerAttributes = filterControlAttributes(
-    triggerAttributes,
-    PROTECTED_TRIGGER_DATA_ATTRIBUTES,
-  );
+  const extensionTriggerAttributes = {
+    ...filterControlAttributes(
+      triggerAttributes,
+      PROTECTED_TRIGGER_DATA_ATTRIBUTES,
+    ),
+    ...(controls === undefined ? {} : { 'aria-controls': controls }),
+  };
   const normalizedCount =
     typeof count === 'number' && Number.isSafeInteger(count) && count >= 0
       ? count

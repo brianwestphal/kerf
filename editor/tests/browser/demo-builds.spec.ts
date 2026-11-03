@@ -7320,6 +7320,212 @@ test('builds List › Divider Between Regions', async ({ page }) => {
   );
 });
 
+// KF-9JACQY: the sections are plain Lists in the scrolling List's major gap,
+// and the Tools toggle names its List region through `controls`.
+test('builds List › Scrollable Application List', async ({ page }) => {
+  test.setTimeout(test.info().timeout * 4);
+  const header = { label: 'Sidebar Toolbar', text: 'Workspace', size: 'small' };
+  const footer = { label: 'Sidebar Footer', text: 'Ready', size: 'small' };
+  const add = { ariaLabel: 'Add Workspace', action: 'log-add' };
+  const settings = { ariaLabel: 'Sidebar Settings', action: 'log-settings' };
+  const group = { appearance: 'borderless', single: true };
+  await rootPane(page, {}, { header, footer });
+  await buttonGroup(
+    page,
+    'trailing',
+    { choices: { appearance: 'borderless' }, flags: ['single'] },
+    [[{ text: add }, 'plus']],
+  );
+  await buttonGroup(
+    page,
+    'trailing',
+    { choices: { appearance: 'borderless' }, flags: ['single'] },
+    [[{ text: settings }, 'settings']],
+    { nth: 1 },
+  );
+  await select(page, /^Pane/);
+  await addChild(page, 'List', 'content');
+  await area(page, 'Properties');
+  await axisGap(page, 'none', 'l');
+  await setCss(page, 'flex', 'flex(1)');
+  await turnOn(page, 'scrollable');
+  const LIST = /^List(?![A-Z])/;
+  await addInto(page, LIST, 'List', 0);
+  await addChild(page, 'ListHeader');
+  await area(page, 'Properties');
+  const workspace = {
+    label: 'Workspace',
+    count: '3',
+    countLabel: '3 workspaces',
+    action: 'log-add',
+    actionLabel: 'Add workspace',
+  };
+  await applySpec(page, { text: workspace });
+  await addIcon(page, 'actionIcon', 'plus');
+  const rows: ItemSpec[] = [
+    {
+      flags: ['selected'],
+      text: { action: 'log-inbox', itemId: 'inbox', label: 'Inbox' },
+      glyph: 'inbox',
+      trailing: '12',
+    },
+    {
+      text: { action: 'log-projects', itemId: 'projects', label: 'Projects' },
+      glyph: 'folder',
+    },
+    {
+      text: {
+        action: 'log-drafts',
+        itemId: 'drafts',
+        label: 'Drafts Without a Visible Icon',
+      },
+    },
+  ];
+  for (const row of rows) {
+    await addInto(page, LIST, 'ListItem', 1);
+    await applySpec(page, row);
+  }
+  await addInto(page, LIST, 'List', 0);
+  await choose(page, 'gap', 'xs');
+  await addChild(page, 'ListHeader');
+  await area(page, 'Properties');
+  const tools = {
+    label: 'Tools',
+    action: 'toggle-menu-tools',
+    controls: 'menu-tools-content',
+  };
+  await applySpec(page, { flags: ['toggle', 'expanded'], text: tools });
+  await addInto(page, LIST, 'List', 2);
+  await setText(page, 'id', 'menu-tools-content');
+  const toolRows: ItemSpec[] = [
+    {
+      flags: ['multiline'],
+      text: {
+        action: 'log-settings',
+        label:
+          'A multiline item demonstrates content that wraps without clipping',
+      },
+      glyph: 'wrench',
+    },
+    {
+      flags: ['disabled'],
+      text: { action: 'disabled', label: 'Unavailable' },
+      glyph: 'circle-question-mark',
+    },
+  ];
+  for (const row of toolRows) {
+    await addInto(page, LIST, 'ListItem', 3);
+    await applySpec(page, row);
+  }
+  for (const [index, row] of [...rows, ...toolRows].entries())
+    await itemContent(page, /^ListItem(?![A-Z])/, index, row);
+  await contentItemInto(
+    page,
+    LIST,
+    3,
+    'Shared Item Geometry',
+    'The child owns its margin, border, and padding.',
+  );
+  await select(page, /^ContentItem/);
+  await dataAttribute(page, 'data-content-item', '');
+  const toggle = canvas(page).getByRole('button', { name: 'Tools' });
+  await expect(toggle).toHaveAttribute('aria-controls', 'menu-tools-content');
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  const chrome = (
+    spec: { label: string; text: string; size: string },
+    button: Record<string, unknown>,
+    glyph: string,
+  ) =>
+    node(
+      'toolbar',
+      { label: spec.label },
+      {
+        leading: [node('toolbar-text', { text: spec.text, size: spec.size })],
+        trailing: [buttonGroupNode(group, [[button, glyph]])],
+      },
+    );
+  const demo = demoContentItem(
+    'Shared Item Geometry',
+    'The child owns its margin, border, and padding.',
+  ) as { props?: Record<string, unknown> };
+  expect(await exported(page)).toEqual(
+    rootPaneNode(undefined, {
+      header: [chrome(header, add, 'plus')],
+      footer: [chrome(footer, settings, 'settings')],
+      content: [
+        node(
+          'list',
+          {
+            gap: { column: 'none', row: 'l' },
+            flex: { $css: 'flex(1)' },
+            scrollable: true,
+          },
+          {
+            children: [
+              node('list', undefined, {
+                children: [
+                  node(
+                    'list-header',
+                    { ...workspace, count: 3 },
+                    { actionIcon: [icon('plus')] },
+                  ),
+                  ...rows.map((row) =>
+                    itemNode(
+                      {
+                        ...row.text,
+                        ...(row.flags?.includes('selected')
+                          ? { selected: true }
+                          : {}),
+                      },
+                      row,
+                    ),
+                  ),
+                ],
+              }),
+              node(
+                'list',
+                { gap: 'xs' },
+                {
+                  children: [
+                    node('list-header', {
+                      ...tools,
+                      toggle: true,
+                      expanded: true,
+                    }),
+                    node(
+                      'list',
+                      { id: 'menu-tools-content' },
+                      {
+                        children: [
+                          ...toolRows.map((row) =>
+                            itemNode(
+                              {
+                                ...row.text,
+                                [row.flags![0]!]: true,
+                              },
+                              row,
+                            ),
+                          ),
+                          {
+                            ...demo,
+                            props: {
+                              rootAttributes: { 'data-content-item': '' },
+                            },
+                          },
+                        ],
+                      },
+                    ),
+                  ],
+                },
+              ),
+            ],
+          },
+        ),
+      ],
+    }),
+  );
+});
+
 test('builds ListHeader › Label Sizes', async ({ page }) => {
   const sizes = [
     ['Extra Small', 'xs'],
@@ -13200,7 +13406,7 @@ const chromeNode = ({ label, text, size, description }: ChromeSpec) =>
 
 /** The root Pane `rootPane` builds, given its exported props. */
 const rootPaneNode = (
-  props: Record<string, unknown>,
+  props: Record<string, unknown> | undefined,
   {
     header,
     footer,

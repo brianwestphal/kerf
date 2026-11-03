@@ -165,6 +165,11 @@ export interface ListProps {
    */
   id?: string;
   /**
+   * Hide the list (`hidden`), as the region a `ListHeader` toggle with
+   * `controls` collapses.
+   */
+  hidden?: boolean;
+  /**
    * Safe `data-*`, `aria-*`, and structural `role` metadata (a named drop
    * `region`, `aria-busy`); List-owned structural attributes remain
    * protected, and a multi-select List owns its grid role and name.
@@ -209,6 +214,7 @@ export function List({
   controlInsets = '',
   className = '',
   id,
+  hidden = false,
   rootAttributes = {},
   slot,
 }: ListProps) {
@@ -252,6 +258,7 @@ export function List({
       {...safeRootAttributes}
       {...gridAttributes}
       id={id}
+      hidden={hidden || undefined}
       class={`kui-list ${className}`.trim()}
       data-component="list"
       data-gap={String(Boolean(gap))}

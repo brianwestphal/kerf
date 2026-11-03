@@ -47,6 +47,12 @@
     inset 1px 0 var(--_kui-list-divider-left);
 }
 
+/* `hidden` collapses a disclosed group: the base rule's flex display would
+   otherwise outrank the user-agent [hidden] style. */
+.kui-list[hidden] {
+  display: none;
+}
+
 .kui-list[data-control-insets*="t"] {
   --_kui-list-inset-top: var(--kui-layout-inline-margin, remify(8px));
 }

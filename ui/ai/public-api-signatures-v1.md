@@ -826,6 +826,11 @@ interface ListHeaderBaseProps {
     placeholder?: boolean;
     rootAttributes?: ListHeaderRootAttributes;
     triggerAttributes?: ListHeaderTriggerAttributes;
+    /**
+     * The id of the region the header's toggle or action shows or hides,
+     * reported as `aria-controls` on its trigger.
+     */
+    controls?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
@@ -883,7 +888,7 @@ type ListHeaderIndicatorProps = {
     status?: string | SafeHtml | undefined;
 };
 type ListHeaderProps = ListHeaderBaseProps & ListHeaderIndicatorProps & ListHeaderModeProps;
-declare function ListHeader({ label, size, headingLevel, count, countLabel, badge, status, density, divider, inline, width, wrap, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, slot, }: ListHeaderProps): SafeHtml;
+declare function ListHeader({ label, size, headingLevel, count, countLabel, badge, status, density, divider, inline, width, wrap, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, controls, slot, }: ListHeaderProps): SafeHtml;
 
 export { ListHeader, type ListHeaderProps };
 ```
@@ -1021,6 +1026,11 @@ interface ListProps {
      */
     id?: string;
     /**
+     * Hide the list (`hidden`), as the region a `ListHeader` toggle with
+     * `controls` collapses.
+     */
+    hidden?: boolean;
+    /**
      * Safe `data-*`, `aria-*`, and structural `role` metadata (a named drop
      * `region`, `aria-busy`); List-owned structural attributes remain
      * protected, and a multi-select List owns its grid role and name.
@@ -1037,7 +1047,7 @@ interface ListProps {
  */
 type ListConfig = Pick<ListProps, 'gap' | 'hAlign' | 'vAlign' | 'dividerSides' | 'textInsets' | 'controlInsets'>;
 /** A stretch-aligned vertical stack with optional gap, flex, fill, scroll, and dividers. */
-declare function List({ children, selectionMode, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, scrollClearance, frame, maxHeight, minHeight, surface, inset, contentWidth, contentAlign, dividerSides, textInsets, controlInsets, className, id, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
+declare function List({ children, selectionMode, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, scrollClearance, frame, maxHeight, minHeight, surface, inset, contentWidth, contentAlign, dividerSides, textInsets, controlInsets, className, id, hidden, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
 
 export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, List, type ListConfig, type ListContentWidth, type ListInset, type ListProps, type ListSurface, ListVerticalAlignment, ScrollClearance, Sides, UiGap };
 ```

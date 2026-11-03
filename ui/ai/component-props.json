@@ -5276,6 +5276,16 @@
           "description": "The list's id, so app code can address it: name it as a\n`wireScrollDividers` scroller (with a `Toolbar` above it as its chrome),\nor find it in tests."
         },
         {
+          "name": "hidden",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Hide the list (`hidden`), as the region a `ListHeader` toggle with\n`controls` collapses."
+        },
+        {
           "name": "rootAttributes",
           "type": {
             "kind": "ref",
@@ -6357,6 +6367,12 @@
           },
           "required": false,
           "control": "hidden"
+        },
+        {
+          "name": "controls",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "The id of the region the header's toggle or action shows or hides,\nreported as `aria-controls` on its trigger."
         },
         {
           "name": "slot",

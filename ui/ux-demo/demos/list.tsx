@@ -120,68 +120,62 @@ export function ListDemo() {
           }
         >
           <List gap={{ column: 'none', row: 'l' }} flex={flex(1)} scrollable>
-            <section>
-              <List>
-                {workspaceHeading !== undefined ? (
-                  <ListHeader
-                    label={workspaceHeading}
-                    count={3}
-                    countLabel="3 workspaces"
-                    action="log-add"
-                    actionLabel="Add workspace"
-                    actionIcon={<LucideIcon icon={Plus} name="plus" />}
-                  />
-                ) : null}
-                <ListItem
-                  action="log-inbox"
-                  itemId="inbox"
-                  label="Inbox"
-                  icon={<LucideIcon icon={Inbox} name="inbox" />}
-                  trailing={<Text variant="span">12</Text>}
-                  selected
-                />
-                {workspaceRows.map((row) => (
-                  <ListItem {...row} />
-                ))}
-              </List>
-            </section>
-            <section>
-              <List gap="xs">
+            <List>
+              {workspaceHeading !== undefined ? (
                 <ListHeader
-                  label="Tools"
-                  toggle
-                  expanded={menuToolsOpen.value}
-                  action="toggle-menu-tools"
-                  triggerAttributes={{
-                    'aria-controls': 'menu-tools-content',
-                  }}
+                  label={workspaceHeading}
+                  count={3}
+                  countLabel="3 workspaces"
+                  action="log-add"
+                  actionLabel="Add workspace"
+                  actionIcon={<LucideIcon icon={Plus} name="plus" />}
                 />
-                <div id="menu-tools-content" hidden={!menuToolsOpen.value}>
-                  <ListItem
-                    action="log-settings"
-                    label="A multiline item demonstrates content that wraps without clipping"
-                    icon={<LucideIcon icon={Wrench} name="wrench" />}
-                    multiline
-                  />
-                  <ListItem
-                    action="disabled"
-                    label="Unavailable"
-                    icon={
-                      <LucideIcon
-                        icon={CircleQuestionMark}
-                        name="circle-question-mark"
-                      />
-                    }
-                    disabled
-                  />
-                  <DemoContentItem
-                    title="Shared Item Geometry"
-                    detail="The child owns its margin, border, and padding."
-                    rootAttributes={{ 'data-content-item': '' }}
-                  />
-                </div>
+              ) : null}
+              <ListItem
+                action="log-inbox"
+                itemId="inbox"
+                label="Inbox"
+                icon={<LucideIcon icon={Inbox} name="inbox" />}
+                trailing={<Text variant="span">12</Text>}
+                selected
+              />
+              {workspaceRows.map((row) => (
+                <ListItem {...row} />
+              ))}
+            </List>
+            <List gap="xs">
+              <ListHeader
+                label="Tools"
+                toggle
+                expanded={menuToolsOpen.value}
+                action="toggle-menu-tools"
+                controls="menu-tools-content"
+              />
+              <List id="menu-tools-content" hidden={!menuToolsOpen.value}>
+                <ListItem
+                  action="log-settings"
+                  label="A multiline item demonstrates content that wraps without clipping"
+                  icon={<LucideIcon icon={Wrench} name="wrench" />}
+                  multiline
+                />
+                <ListItem
+                  action="disabled"
+                  label="Unavailable"
+                  icon={
+                    <LucideIcon
+                      icon={CircleQuestionMark}
+                      name="circle-question-mark"
+                    />
+                  }
+                  disabled
+                />
+                <DemoContentItem
+                  title="Shared Item Geometry"
+                  detail="The child owns its margin, border, and padding."
+                  rootAttributes={{ 'data-content-item': '' }}
+                />
               </List>
-            </section>
+            </List>
           </List>
         </Pane>
       </CatalogExample>

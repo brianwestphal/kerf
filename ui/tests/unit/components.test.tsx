@@ -1875,6 +1875,23 @@ describe('production UI primitives', () => {
     expect(toggle).toContain('aria-expanded="false"');
     expect(toggle).toContain('data-command-group="tools"');
     expect(toggle).toContain('aria-controls="tools-panel"');
+    // KF-9JACQY: `controls` names the region, and a List can be that
+    // hidden region.
+    const controlled = asHtml(
+      ListHeader({
+        label: 'Tools',
+        action: 'toggle',
+        expanded: false,
+        toggle: true,
+        controls: 'tools-panel',
+      }),
+    );
+    expect(controlled).toContain('aria-controls="tools-panel"');
+    const region = asHtml(
+      List({ id: 'tools-panel', hidden: true, children: <>Tools</> }),
+    );
+    expect(region).toMatch(/^<div[^>]* id="tools-panel" hidden/);
+    expect(asHtml(List({ children: <>Shown</> }))).not.toContain(' hidden');
     expect(toggle).not.toContain('data-action="ignored"');
     expect(toggle).not.toContain('aria-expanded="true"');
     expect(toggle).toContain(

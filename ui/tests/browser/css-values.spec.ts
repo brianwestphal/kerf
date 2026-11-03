@@ -31,7 +31,7 @@ test('applies property-specific CSS values in a real browser', async ({
   });
   expect(visibleDividerShadows).toEqual([]);
 
-  const tools = content.locator('section').nth(1).locator(':scope > .kui-list');
+  const tools = content.locator(':scope > .kui-list').nth(1);
   await expect(tools).toHaveCSS('gap', '8px');
   await expect(tools).toHaveAttribute(
     'style',
