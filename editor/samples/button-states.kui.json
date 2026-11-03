@@ -1,0 +1,75 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ButtonStates",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:row",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Saving",
+                  "tone": "brand",
+                  "loading": true,
+                  "action": "log-more"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Checking Prices",
+                  "tone": "success",
+                  "loading": true,
+                  "action": "log-more"
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Pricing Unavailable",
+                  "tone": "success",
+                  "disabled": true
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Unavailable",
+                  "disabled": true
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Unavailable",
+                  "emphasis": "secondary",
+                  "disabled": true
+                }
+              }
+            ]
+          },
+          "props": {
+            "wrap": true
+          }
+        }
+      ]
+    }
+  }
+}

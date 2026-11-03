@@ -1,0 +1,67 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ButtonCurrentStep",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:row",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Configure",
+                  "currentStep": true,
+                  "action": "log-more"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Review",
+                  "action": "log-more"
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Current Guide",
+                  "currentStep": true,
+                  "href": "#button"
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Locked Step",
+                  "currentStep": true,
+                  "disabled": true
+                }
+              }
+            ]
+          },
+          "props": {
+            "wrap": true,
+            "rootAttributes": {
+              "data-demo-section": "current-step"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

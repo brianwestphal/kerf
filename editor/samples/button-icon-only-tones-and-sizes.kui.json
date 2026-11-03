@@ -1,0 +1,177 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ButtonIconOnlyTonesAndSizes",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:row",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "ariaLabel": "Refresh",
+                  "action": "log-refresh"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "refresh-cw"
+                        },
+                        "name": "refresh-cw"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "emphasis": "plain",
+                  "ariaLabel": "Refresh (Plain)",
+                  "action": "log-refresh"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "refresh-cw"
+                        },
+                        "name": "refresh-cw"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "tone": "danger",
+                  "emphasis": "secondary",
+                  "ariaLabel": "Delete",
+                  "action": "log-delete",
+                  "title": "Delete the Selected Draft"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "trash"
+                        },
+                        "name": "trash"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "ariaLabel": "Messages",
+                  "action": "log-more",
+                  "badgeLabel": "4 unread",
+                  "badge": 4,
+                  "rootAttributes": {
+                    "data-demo-badge": "count"
+                  }
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000010",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "message-square"
+                        },
+                        "name": "message-square"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000011",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "badge": true,
+                  "badgeTone": "info",
+                  "ariaLabel": "Downloads",
+                  "action": "log-more",
+                  "badgeLabel": "new download",
+                  "rootAttributes": {
+                    "data-demo-badge": "dot"
+                  }
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000012",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "download"
+                        },
+                        "name": "download"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000013",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "size": "compact",
+                  "ariaLabel": "Refresh (Compact)",
+                  "action": "log-refresh"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000014",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "refresh-cw"
+                        },
+                        "name": "refresh-cw"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "props": {
+            "wrap": true
+          }
+        }
+      ]
+    }
+  }
+}

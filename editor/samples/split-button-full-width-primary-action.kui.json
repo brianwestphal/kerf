@@ -1,0 +1,96 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SplitButtonFullWidthPrimaryAction",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list-inset-control",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:split-button",
+                "props": {
+                  "label": {
+                    "$param": "nodeLabel"
+                  },
+                  "action": "toggle-split-button-demo",
+                  "optionsLabel": "Choose Drive Provider, Model, and Effort",
+                  "optionsAction": "toggle-split-button-options-demo",
+                  "tone": {
+                    "$param": "nodeTone"
+                  },
+                  "fill": true,
+                  "busy": {
+                    "$param": "nodeBusy"
+                  },
+                  "optionsExpanded": {
+                    "$param": "nodeOptionsExpanded"
+                  }
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "play"
+                        },
+                        "name": "play"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "props": {
+            "sides": "rl"
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "nodeLabel": {
+      "type": {
+        "kind": "string"
+      },
+      "default": "Drive with Codex"
+    },
+    "nodeTone": {
+      "type": {
+        "kind": "enum",
+        "values": [
+          "brand",
+          "neutral",
+          "success",
+          "warning",
+          "danger"
+        ]
+      },
+      "default": "success"
+    },
+    "nodeBusy": {
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    "nodeOptionsExpanded": {
+      "type": {
+        "kind": "boolean"
+      }
+    }
+  }
+}

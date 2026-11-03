@@ -1,0 +1,67 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SplitButtonInsideAClippingContainer",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:row",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:split-button",
+                "props": {
+                  "label": "Sync",
+                  "action": "log-split-button-pill",
+                  "optionsLabel": "Sync Options",
+                  "optionsAction": "log-split-button-pill-options",
+                  "focusRingInset": true
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:split-button",
+                "props": {
+                  "label": "Archive",
+                  "action": "log-split-button-pill",
+                  "optionsLabel": "Archive Options",
+                  "optionsAction": "log-split-button-pill-options",
+                  "tone": "neutral",
+                  "focusRingInset": true
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:split-button",
+                "props": {
+                  "label": "Purge",
+                  "action": "log-split-button-pill",
+                  "optionsLabel": "Purge Options",
+                  "optionsAction": "log-split-button-pill-options",
+                  "tone": "danger",
+                  "focusRingInset": true
+                }
+              }
+            ]
+          },
+          "props": {
+            "wrap": true,
+            "rootAttributes": {
+              "data-demo-section": "focus-ring-inset"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

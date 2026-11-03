@@ -1,0 +1,76 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SplitButtonTonesAndStates",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:row",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:split-button",
+                "props": {
+                  "label": "Deploy",
+                  "action": "log-deploy",
+                  "optionsLabel": "Deploy Options",
+                  "optionsAction": "log-deploy-options"
+                },
+                "zones": {
+                  "icon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "rocket"
+                        },
+                        "name": "rocket"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:split-button",
+                "props": {
+                  "label": "Delete",
+                  "action": "log-delete",
+                  "optionsLabel": "Delete Options",
+                  "optionsAction": "log-delete-options",
+                  "tone": "danger"
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:split-button",
+                "props": {
+                  "label": "Publish",
+                  "action": "log-publish",
+                  "optionsLabel": "Publish Options",
+                  "optionsAction": "log-publish-options",
+                  "disabled": true,
+                  "title": "Nothing to publish"
+                }
+              }
+            ]
+          },
+          "props": {
+            "wrap": true
+          }
+        }
+      ]
+    }
+  }
+}
