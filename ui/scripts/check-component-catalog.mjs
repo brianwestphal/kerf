@@ -103,7 +103,9 @@ async function readTypeScriptImplementation(sourcePath) {
         sourcePath: implementationPath,
         source: await readFile(implementationPath, 'utf8'),
       };
-    } catch {}
+    } catch {
+      // Not at this location; try the next candidate.
+    }
   }
   throw new Error(`Public source facade ${sourcePath} has no implementation`);
 }

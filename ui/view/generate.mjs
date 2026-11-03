@@ -8,7 +8,6 @@ import {
   contractOf,
   propertyName,
   serializeContract,
-  typeText,
   viewDigest,
 } from './contract.mjs';
 import {
@@ -207,8 +206,6 @@ function createImports() {
 }
 
 function createEmitter(document, catalog, imports, importFrom) {
-  const component = (type) => catalog.components.get(type)?.component;
-
   const value = (input, scope) => {
     // A field zone's children, in the content field it fills (KF-PD6QC5).
     if (input instanceof ZoneFill) return children(input.children, scope);

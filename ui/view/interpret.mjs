@@ -63,7 +63,7 @@ function readPath(root, path) {
  * Throws on an invalid document or a component missing from `components`.
  */
 export function interpretView(document, options) {
-  const { catalog, components, inputs = {}, slots = {}, resolveView } = options;
+  const { catalog, inputs = {}, slots = {}, resolveView } = options;
   const contract = contractOf(document, catalog, { resolveView });
   const actual = contractDigest(contract);
   if (options.contract !== actual) {

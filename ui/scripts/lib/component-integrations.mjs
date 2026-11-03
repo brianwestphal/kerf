@@ -27,8 +27,6 @@ export function deriveComponentIntegrations(catalog) {
     });
 }
 
-const hasOwn = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
-
 export function validateComponentIntegrations(integrations, surfaces) {
   const failures = [];
   const fail = (surface, expected, actual) =>

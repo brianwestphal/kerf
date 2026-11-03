@@ -2447,7 +2447,7 @@ function staticColorPicker(markup) {
   const source = String(markup);
   const value = (name) =>
     Number(new RegExp(`--_kui-color-picker-${name}:([\\d.]+)`).exec(source)[1]);
-  const [h, s, v, a] = ['h', 's', 'v', 'a'].map(value);
+  const [h, , , a] = ['h', 's', 'v', 'a'].map(value);
   const color = /--_kui-color-picker-color:(#[0-9a-f]+)/.exec(source)[1];
   const hue = `hsl(${h} 100% 50%)`;
   // Checker squares as plain rects: the capture does not resolve a pattern's

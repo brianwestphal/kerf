@@ -60,7 +60,7 @@ const hasStableRecipeMarker = (source, id) =>
 for (const entry of recipes) {
   const stem = entry.id.replace(/^recipe-/, '');
   const sourcePath = resolve(root, `ux-demo/recipes/${stem}.tsx`);
-  let source = '';
+  let source;
   try {
     source = await readFile(sourcePath, 'utf8');
   } catch {

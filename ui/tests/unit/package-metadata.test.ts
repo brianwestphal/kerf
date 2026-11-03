@@ -53,6 +53,32 @@ describe('package metadata', () => {
     expect(packageJson.files).toContain('traversal-exclusions.mjs');
   });
 
+  it('KF-YFAB04 lints every shipped JavaScript entry', () => {
+    const packageJson = JSON.parse(
+      readFileSync(resolve(import.meta.dirname, '../../package.json'), 'utf8'),
+    ) as { files: string[]; scripts: Record<string, string> };
+    const targets = packageJson.scripts['lint:eslint']
+      .split(/\s+/)
+      .slice(1)
+      .filter((part) => !part.startsWith('-') && part !== '0');
+    const covered = (entry: string): boolean =>
+      targets.some(
+        (target) =>
+          entry === target ||
+          entry.startsWith(`${target}/`) ||
+          target.startsWith(`${entry}/`),
+      );
+    // dist is build output; .d.mts and prose files are not JavaScript.
+    const shipped = packageJson.files.filter(
+      (entry) =>
+        entry !== 'dist' &&
+        !entry.endsWith('.d.mts') &&
+        !/\.(md|txt)$/.test(entry) &&
+        entry !== 'LICENSE',
+    );
+    expect(shipped.filter((entry) => !covered(entry))).toEqual([]);
+  });
+
   it('points the homepage at the published component-package documentation', () => {
     const packageJson = JSON.parse(
       readFileSync(resolve(import.meta.dirname, '../../package.json'), 'utf8'),

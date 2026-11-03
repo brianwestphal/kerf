@@ -3,8 +3,48 @@ import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 
+/**
+ * KF-YFAB04: the shipped Node tools (analyzer, doctor, evaluator, view CLI,
+ * props pipeline, build and check scripts, root CLIs) are linted too.
+ */
+const NODE_GLOBALS = Object.fromEntries(
+  [
+    'process',
+    'console',
+    'URL',
+    'URLSearchParams',
+    'Buffer',
+    'setTimeout',
+    'clearTimeout',
+    'setInterval',
+    'clearInterval',
+    'setImmediate',
+    'structuredClone',
+    'TextEncoder',
+    'TextDecoder',
+    'fetch',
+    'AbortController',
+    'AbortSignal',
+    'performance',
+    'queueMicrotask',
+  ].map((name) => [name, 'readonly']),
+);
+
 export default [
   js.configs.recommended,
+  {
+    files: [
+      'analyzer/**/*.mjs',
+      'doctor/**/*.mjs',
+      'evaluator/**/*.mjs',
+      'view/**/*.mjs',
+      'props/**/*.mjs',
+      'scripts/**/*.mjs',
+      'ai/**/*.mjs',
+      '*.mjs',
+    ],
+    languageOptions: { globals: NODE_GLOBALS },
+  },
   {
     files: ['scripts/sketch/**/*.mjs'],
     languageOptions: {
