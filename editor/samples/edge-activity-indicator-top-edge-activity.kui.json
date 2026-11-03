@@ -1,0 +1,66 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "EdgeActivityIndicatorTopEdgeActivity",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Top-Edge Activity"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "children": "Start Activity",
+                        "pressed": false,
+                        "action": "toggle-edge-activity-demo"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "children": "Status Pill",
+                        "pressed": true,
+                        "action": "toggle-edge-activity-message-demo"
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "label": "Edge Activity"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "00000000000000000000000006",
+          "type": "@kerfjs/ui:edge-activity-indicator",
+          "props": {
+            "busy": false,
+            "message": "Syncing 3 providers…"
+          }
+        }
+      ]
+    }
+  }
+}

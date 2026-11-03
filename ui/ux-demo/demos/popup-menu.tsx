@@ -238,14 +238,19 @@ export function PopupMenuDemo() {
           action="log-more"
           rootAttributes={{ 'data-popup-menu-context-target': '' }}
         />
-        <ToolbarControlGroup single>
-          <ToolbarButton
-            ariaLabel="Demand Actions"
-            action="open-demand-actions"
-            title="Demand Actions"
-            icon={<LucideIcon icon={Ellipsis} name="actions" />}
-          />
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Context Menu"
+          leading={
+            <ToolbarControlGroup single>
+              <ToolbarButton
+                ariaLabel="Demand Actions"
+                action="open-demand-actions"
+                title="Demand Actions"
+                icon={<LucideIcon icon={Ellipsis} name="actions" />}
+              />
+            </ToolbarControlGroup>
+          }
+        />
         <PopupMenu
           context
           label="Demand Actions"

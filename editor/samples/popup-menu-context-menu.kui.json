@@ -1,0 +1,109 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "PopupMenuContextMenu",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list-item",
+          "props": {
+            "label": "Demand draft",
+            "action": "log-more",
+            "rootAttributes": {
+              "data-popup-menu-context-target": ""
+            }
+          }
+        },
+        {
+          "id": "00000000000000000000000003",
+          "type": "@kerfjs/ui:toolbar",
+          "props": {
+            "label": "Context Menu"
+          },
+          "zones": {
+            "leading": [
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Demand Actions",
+                        "action": "open-demand-actions",
+                        "title": "Demand Actions"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "ellipsis"
+                              },
+                              "name": "actions"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "single": true
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "00000000000000000000000007",
+          "type": "@kerfjs/ui:popup-menu",
+          "props": {
+            "items": [
+              {
+                "label": "Open",
+                "action": "log-context-open"
+              },
+              {
+                "label": "More Actions",
+                "submenu": [
+                  {
+                    "label": "Copy Reference",
+                    "action": "log-more"
+                  }
+                ]
+              },
+              {
+                "label": "Archive",
+                "action": "log-more",
+                "tone": "danger"
+              }
+            ],
+            "context": true,
+            "label": "Demand Actions",
+            "rootAttributes": {
+              "data-popup-context-menu": ""
+            },
+            "anchor": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        }
+      ]
+    }
+  }
+}

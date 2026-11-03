@@ -1,5 +1,6 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { EdgeActivityIndicator } from '@kerfjs/ui/edge-activity-indicator';
+import { Toolbar } from '@kerfjs/ui/toolbar';
 import {
   ToolbarButton,
   ToolbarControlGroup,
@@ -17,20 +18,25 @@ export function EdgeActivityIndicatorDemo() {
         note="The strip pins to the top of the page and allocates no layout. Start the activity to see the wave and the optional status pill; it stops when you leave this demo."
         align="inline-control"
       >
-        <ToolbarControlGroup label="Edge Activity">
-          <ToolbarButton
-            pressed={edgeActivityBusy.value}
-            action="toggle-edge-activity-demo"
-          >
-            {edgeActivityBusy.value ? 'Stop Activity' : 'Start Activity'}
-          </ToolbarButton>
-          <ToolbarButton
-            pressed={edgeActivityMessage.value}
-            action="toggle-edge-activity-message-demo"
-          >
-            Status Pill
-          </ToolbarButton>
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Top-Edge Activity"
+          leading={
+            <ToolbarControlGroup label="Edge Activity">
+              <ToolbarButton
+                pressed={edgeActivityBusy.value}
+                action="toggle-edge-activity-demo"
+              >
+                {edgeActivityBusy.value ? 'Stop Activity' : 'Start Activity'}
+              </ToolbarButton>
+              <ToolbarButton
+                pressed={edgeActivityMessage.value}
+                action="toggle-edge-activity-message-demo"
+              >
+                Status Pill
+              </ToolbarButton>
+            </ToolbarControlGroup>
+          }
+        />
         <EdgeActivityIndicator
           busy={edgeActivityBusy.value}
           message={

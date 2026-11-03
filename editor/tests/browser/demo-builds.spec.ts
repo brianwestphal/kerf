@@ -12023,6 +12023,92 @@ test('builds PopupMenu › Nested Decisions', async ({ page }) => {
   );
 });
 
+// KF-921WVX: the adjacent action group sits in a plain Toolbar. The
+// context menu's anchor is a first-render snapshot of popupContextAnchor.
+test('builds PopupMenu › Context Menu', async ({ page }) => {
+  const items = [
+    { label: 'Open', action: 'log-context-open' },
+    {
+      label: 'More Actions',
+      submenu: [{ label: 'Copy Reference', action: 'log-more' }],
+    },
+    { label: 'Archive', action: 'log-more', tone: 'danger' },
+  ];
+  await dragComponent(page, 'ListItem', () => emptySpot(page));
+  await select(page, /^ListItem/);
+  await applySpec(page, {
+    text: { label: 'Demand draft', action: 'log-more' },
+    data: [['data-popup-menu-context-target', '']],
+  });
+  await addInto(page, /^Pane/, 'Toolbar');
+  await setText(page, 'label', 'Context Menu');
+  await zoneGroup(page, 'leading', { flags: ['single'] }, { keepButton: true });
+  await select(page, /^ToolbarButton/);
+  await applySpec(page, {
+    text: {
+      ariaLabel: 'Demand Actions',
+      action: 'open-demand-actions',
+      title: 'Demand Actions',
+    },
+    unsets: ['children'],
+  });
+  await addIcon(page, 'icon', 'ellipsis');
+  await select(page, /^LucideIcon/);
+  await setText(page, 'name', 'actions');
+  await addInto(page, /^Pane/, 'PopupMenu');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    flags: ['context'],
+    text: { label: 'Demand Actions' },
+    data: [['data-popup-context-menu', '']],
+    unsets: ['text'],
+  });
+  await editAsJson(page, 'items', items);
+  await editAsJson(page, 'anchor', { x: 0, y: 0 });
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('list-item', {
+        label: 'Demand draft',
+        action: 'log-more',
+        rootAttributes: { 'data-popup-menu-context-target': '' },
+      }),
+      node(
+        'toolbar',
+        { label: 'Context Menu' },
+        {
+          leading: [
+            node(
+              'toolbar-control-group',
+              { single: true },
+              {
+                children: [
+                  node(
+                    'toolbar-control-group#ToolbarButton',
+                    {
+                      ariaLabel: 'Demand Actions',
+                      action: 'open-demand-actions',
+                      title: 'Demand Actions',
+                    },
+                    { icon: [icon('ellipsis', { name: 'actions' })] },
+                  ),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+      node('popup-menu', {
+        context: true,
+        label: 'Demand Actions',
+        anchor: { x: 0, y: 0 },
+        rootAttributes: { 'data-popup-context-menu': '' },
+        items,
+      }),
+    ),
+  );
+});
+
 test('builds PopupMenu › Standalone in a Popup Surface', async ({ page }) => {
   const items = [
     { label: 'Inbox', action: 'log-more' },
@@ -15284,6 +15370,85 @@ test('builds Chip › Icon and Truncated Label', async ({ page }) => {
   );
 });
 
+// KF-921WVX: the toggle's group sits in a plain Toolbar.
+test('builds CornerStatus › Overlay', async ({ page }) => {
+  await toolbar(page, 'Overlay');
+  await zoneGroup(page, 'leading', { flags: ['single'] }, { keepButton: true });
+  await select(page, /^ToolbarButton/);
+  await applySpec(page, {
+    text: {
+      children: 'Toggle Loading Status',
+      popoverTarget: 'catalog-corner-status',
+    },
+  });
+  await addInto(page, /^Pane/, 'CornerStatus');
+  await area(page, 'Properties');
+  await setText(page, 'id', 'catalog-corner-status');
+  // The banner turns the seeded text into a Text, which goes.
+  await addInto(page, /^CornerStatus/, 'StateBanner', 0, 0);
+  await select(page, /^StateBanner/);
+  await applySpec(page, {
+    choices: { tone: 'neutral', urgency: 'status' },
+    text: { title: 'Updating Tickets… 3 of 12' },
+  });
+  await select(page, /^StateBanner/);
+  await addChild(page, 'LoadingSpinner', 'icon');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    text: { label: 'Updating tickets…' },
+    unions: { size: ['Number…', '16.8'] },
+  });
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'toolbar',
+        { label: 'Overlay' },
+        {
+          leading: [
+            node(
+              'toolbar-control-group',
+              { single: true },
+              {
+                children: [
+                  node('toolbar-control-group#ToolbarButton', {
+                    children: 'Toggle Loading Status',
+                    popoverTarget: 'catalog-corner-status',
+                  }),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+      node(
+        'corner-status',
+        { id: 'catalog-corner-status' },
+        {
+          children: [
+            node(
+              'state-banner',
+              {
+                tone: 'neutral',
+                urgency: 'status',
+                title: 'Updating Tickets… 3 of 12',
+              },
+              {
+                icon: [
+                  node('loading-spinner', {
+                    label: 'Updating tickets…',
+                    size: 16.8,
+                  }),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
 test('builds CornerStatus › Embedded', async ({ page }) => {
   const banners = [
     ['neutral', 'Loading…', 'Loading project…'],
@@ -15331,6 +15496,71 @@ test('builds CornerStatus › Embedded', async ({ page }) => {
           ),
         },
       ),
+    ),
+  );
+});
+
+// KF-921WVX: the toggles' group sits in a plain Toolbar. Live state is a
+// first-render snapshot: edgeActivityBusy starts off, edgeActivityMessage on.
+test('builds EdgeActivityIndicator › Top-Edge Activity', async ({ page }) => {
+  await toolbar(page, 'Top-Edge Activity');
+  await zoneGroup(
+    page,
+    'leading',
+    { text: { label: 'Edge Activity' } },
+    { keepButton: true },
+  );
+  await select(page, /^ToolbarButton/);
+  await applySpec(page, {
+    choices: { pressed: 'Off' },
+    text: { children: 'Start Activity', action: 'toggle-edge-activity-demo' },
+  });
+  await select(page, /^ToolbarControlGroup/);
+  await addChild(page, 'ToolbarButton');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { pressed: 'On' },
+    text: {
+      children: 'Status Pill',
+      action: 'toggle-edge-activity-message-demo',
+    },
+  });
+  await addInto(page, /^Pane/, 'EdgeActivityIndicator');
+  await area(page, 'Properties');
+  await setText(page, 'message', 'Syncing 3 providers…');
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'toolbar',
+        { label: 'Top-Edge Activity' },
+        {
+          leading: [
+            node(
+              'toolbar-control-group',
+              { label: 'Edge Activity' },
+              {
+                children: [
+                  node('toolbar-control-group#ToolbarButton', {
+                    children: 'Start Activity',
+                    action: 'toggle-edge-activity-demo',
+                    pressed: false,
+                  }),
+                  node('toolbar-control-group#ToolbarButton', {
+                    children: 'Status Pill',
+                    action: 'toggle-edge-activity-message-demo',
+                    pressed: true,
+                  }),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+      node('edge-activity-indicator', {
+        busy: false,
+        message: 'Syncing 3 providers…',
+      }),
     ),
   );
 });

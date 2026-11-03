@@ -2,6 +2,7 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { CornerStatus } from '@kerfjs/ui/corner-status';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { StateBanner } from '@kerfjs/ui/state-banner';
+import { Toolbar } from '@kerfjs/ui/toolbar';
 import {
   ToolbarButton,
   ToolbarControlGroup,
@@ -15,11 +16,16 @@ export function CornerStatusDemo() {
         note="A manual popover in the top layer: no close button, light dismiss, or Escape. Apps open it with wireCornerStatus; this toggle opens it directly."
         align="inline-control"
       >
-        <ToolbarControlGroup single>
-          <ToolbarButton popoverTarget="catalog-corner-status">
-            Toggle Loading Status
-          </ToolbarButton>
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Overlay"
+          leading={
+            <ToolbarControlGroup single>
+              <ToolbarButton popoverTarget="catalog-corner-status">
+                Toggle Loading Status
+              </ToolbarButton>
+            </ToolbarControlGroup>
+          }
+        />
         <CornerStatus id="catalog-corner-status">
           <StateBanner
             tone="neutral"
