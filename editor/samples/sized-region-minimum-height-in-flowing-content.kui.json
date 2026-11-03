@@ -1,0 +1,103 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SizedRegionMinimumHeightInFlowingContent",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sized-region",
+          "props": {
+            "minHeight": {
+              "$css": "rem(20)"
+            },
+            "rootAttributes": {
+              "data-sized-region-demo": "min"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:nav-stack",
+                "props": {
+                  "id": "sized-region-min",
+                  "label": "Notes",
+                  "views": [
+                    {
+                      "key": "root",
+                      "toolbar": {
+                        "title": "Notes"
+                      },
+                      "pane": {
+                        "appearance": "sunken"
+                      }
+                    }
+                  ]
+                },
+                "zones": {
+                  "views.0.content": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:list",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:content-item",
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000006",
+                                  "type": "@kerfjs/ui:list",
+                                  "props": {
+                                    "gap": "2xs"
+                                  },
+                                  "zones": {
+                                    "children": [
+                                      {
+                                        "id": "00000000000000000000000007",
+                                        "type": "@kerfjs/ui:text",
+                                        "props": {
+                                          "children": "Fills the Region",
+                                          "variant": "span",
+                                          "weight": "strong"
+                                        }
+                                      },
+                                      {
+                                        "id": "00000000000000000000000008",
+                                        "type": "@kerfjs/ui:text",
+                                        "props": {
+                                          "children": "The stack's scenes take the height the SizedRegion gives them.",
+                                          "variant": "span",
+                                          "tone": "quiet",
+                                          "size": "compact"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

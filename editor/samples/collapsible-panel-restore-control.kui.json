@@ -1,0 +1,194 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "CollapsiblePanelRestoreControl",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:pane",
+          "zones": {
+            "content": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "App-Owned Collapsed Flag",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Hide the console from its own toolbar; restore it from the corner control.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "header": [
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:toolbar",
+                "props": {
+                  "label": "Editor"
+                },
+                "zones": {
+                  "leading": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:toolbar-text",
+                      "props": {
+                        "text": "Editor",
+                        "size": "xlarge"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "00000000000000000000000009",
+          "type": "@kerfjs/ui:collapsible-panel",
+          "props": {
+            "id": "catalog-panel-restore",
+            "side": "bottom",
+            "label": "Console",
+            "size": 140,
+            "toolbar": {
+              "label": "Console",
+              "toggle": {
+                "action": "toggle-catalog-panel-restore",
+                "name": "Console"
+              }
+            },
+            "collapsed": true
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000010",
+                "type": "@kerfjs/ui:content-item",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000012",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Build Finished",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000013",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "The drawer stays mounted while it is collapsed.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "toolbar.title": [
+              {
+                "id": "00000000000000000000000014",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Console"
+                }
+              }
+            ],
+            "restoreControl": [
+              {
+                "id": "00000000000000000000000015",
+                "type": "@kerfjs/ui:floating-toolbar",
+                "props": {
+                  "label": "Console"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000016",
+                      "type": "@kerfjs/ui:collapsible-panel#CollapsiblePanelRelocated",
+                      "props": {
+                        "panelId": "catalog-panel-restore",
+                        "side": "bottom",
+                        "collapsed": true,
+                        "toolbar": {
+                          "label": "Console",
+                          "toggle": {
+                            "action": "toggle-catalog-panel-restore",
+                            "name": "Console"
+                          }
+                        }
+                      },
+                      "zones": {
+                        "toolbar.title": [
+                          {
+                            "id": "00000000000000000000000017",
+                            "type": "@kerfjs/ui:toolbar-text",
+                            "props": {
+                              "text": "Console"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

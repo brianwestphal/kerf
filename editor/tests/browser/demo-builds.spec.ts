@@ -13240,6 +13240,677 @@ test('builds Pane › Pane Structure and Separators', async ({ page }) => {
   );
 });
 
+/**
+ * Sets up the `nth` NavStack as the SizedRegion demo's `stack()`: one
+ * sunken view titled `title`, holding a List with one DemoContentItem.
+ */
+async function demoStack(page: Page, nth: number, id: string, title: string) {
+  const dialog = page.locator('dialog[open]');
+  const back = () => dialog.getByRole('button', { name: 'Back' }).click();
+  await select(page, /^NavStack/, nth);
+  await setText(page, 'id', id);
+  await setText(page, 'label', title);
+  await page.getByRole('button', { name: 'Configure views' }).click();
+  await dialog.getByRole('button', { name: 'Remove View 3' }).click();
+  await dialog.getByRole('button', { name: 'Remove View 2' }).click();
+  await dialog.locator('[data-action="editor-open-field"]').first().click();
+  await setField(page, 'views', [0, 'key'], 'root');
+  await dialog.getByText('Toolbar', { exact: true }).click();
+  await setField(page, 'views', [0, 'toolbar', 'title'], title);
+  await back();
+  await dialog.getByText('Pane', { exact: true }).click();
+  await chooseField(page, 'views', [0, 'pane', 'appearance'], 'sunken');
+  await back();
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  await select(page, /^NavStack/, nth);
+  await dragComponent(page, 'List', () =>
+    canvas(page).locator('[data-editor-empty]', {
+      hasText: 'view1Content slot — drop here',
+    }),
+  );
+}
+
+/** The NavStack `demoStack` builds. */
+const demoStackNode = (id: string, title: string) =>
+  node(
+    'nav-stack',
+    {
+      id,
+      label: title,
+      views: [
+        {
+          key: 'root',
+          toolbar: { title },
+          pane: { appearance: 'sunken' },
+        },
+      ],
+    },
+    {
+      'views.0.content': [
+        node('list', undefined, {
+          children: [demoContentItem(...FILLS)],
+        }),
+      ],
+    },
+  );
+
+const FILLS = [
+  'Fills the Region',
+  "The stack's scenes take the height the SizedRegion gives them.",
+] as const;
+
+test('builds SizedRegion › Fill Beside Other Content', async ({ page }) => {
+  test.slow();
+  await rootPane(page, { text: { label: 'Project' } }, {});
+  await contentItemInto(
+    page,
+    /^Pane/,
+    0,
+    'Project Atlas',
+    'Summary content sits above the nested layout.',
+  );
+  await addInto(page, /^Pane/, 'NavStack');
+  await select(page, /^NavStack/);
+  await embedIn(page, 'SizedRegion');
+  // The stack fills its slots while the region still has a height.
+  await demoStack(page, 0, 'sized-region-fill', 'Activity');
+  await contentItemInto(page, /^List(?!Item)/, 1, ...FILLS);
+  await select(page, /^SizedRegion/);
+  await setText(page, 'minHeight', '');
+  await dataAttribute(page, 'data-sized-region-demo', 'fill');
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    rootPaneNode(
+      { label: 'Project' },
+      {
+        content: [
+          demoContentItem(
+            'Project Atlas',
+            'Summary content sits above the nested layout.',
+          ),
+          node(
+            'sized-region',
+            { rootAttributes: { 'data-sized-region-demo': 'fill' } },
+            { children: [demoStackNode('sized-region-fill', 'Activity')] },
+          ),
+        ],
+      },
+    ),
+  );
+});
+
+test('builds SizedRegion › Minimum Height in Flowing Content', async ({
+  page,
+}) => {
+  test.slow();
+  await dragComponent(page, 'NavStack', () => emptySpot(page));
+  await select(page, /^NavStack/);
+  // Embedding starts the SizedRegion at the demo's rem(20) minimum.
+  await embedIn(page, 'SizedRegion');
+  await select(page, /^SizedRegion/);
+  await dataAttribute(page, 'data-sized-region-demo', 'min');
+  await demoStack(page, 0, 'sized-region-min', 'Notes');
+  await contentItemInto(page, /^List(?!Item)/, 0, ...FILLS);
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'sized-region',
+        {
+          minHeight: { $css: 'rem(20)' },
+          rootAttributes: { 'data-sized-region-demo': 'min' },
+        },
+        { children: [demoStackNode('sized-region-min', 'Notes')] },
+      ),
+    ),
+  );
+});
+
+test('builds SizedRegion › Bounded Fill', async ({ page }) => {
+  test.slow();
+  await rootPane(page, { text: { label: 'Inbox' } }, {});
+  await addInto(page, /^Pane/, 'NavStack');
+  await select(page, /^NavStack/);
+  await embedIn(page, 'SizedRegion');
+  // The stack fills its slots while the region still has a height.
+  await demoStack(page, 0, 'sized-region-max', 'Messages');
+  await contentItemInto(page, /^List(?!Item)/, 0, ...FILLS);
+  await select(page, /^SizedRegion/);
+  await setText(page, 'minHeight', '');
+  await setCss(page, 'maxHeight', 'rem(18)');
+  await dataAttribute(page, 'data-sized-region-demo', 'max');
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    rootPaneNode(
+      { label: 'Inbox' },
+      {
+        content: [
+          node(
+            'sized-region',
+            {
+              maxHeight: { $css: 'rem(18)' },
+              rootAttributes: { 'data-sized-region-demo': 'max' },
+            },
+            { children: [demoStackNode('sized-region-max', 'Messages')] },
+          ),
+        ],
+      },
+    ),
+  );
+});
+
+/**
+ * Places a CollapsiblePanel set up by `spec` (its `size` a number), holding
+ * one DemoContentItem titled `title`.
+ */
+async function demoPanel(
+  page: Page,
+  spec: FieldSpec,
+  size: string,
+  [title, detail]: readonly [string, string],
+) {
+  await dragComponent(page, 'CollapsiblePanel', () => emptySpot(page));
+  await select(page, /^CollapsiblePanel/);
+  await applySpec(page, spec);
+  await setText(page, 'size', size);
+  await contentItemInto(page, /^CollapsiblePanel/, 0, title, detail);
+}
+
+const LEFT_RAIL = [
+  'Navigator',
+  'Collapse from panel chrome; restore from adjacent chrome.',
+] as const;
+const RIGHT_RAIL = [
+  'Inspector',
+  'The application owns size and collapsed state.',
+] as const;
+const BOTTOM_DRAWER = [
+  'Build Output',
+  'Use Workbench when several panels form one shell.',
+] as const;
+
+test('builds CollapsiblePanel › Left Rail', async ({ page }) => {
+  await demoPanel(
+    page,
+    {
+      choices: { side: 'left', tabIndex: '0' },
+      flags: ['outlined'],
+      text: { id: 'catalog-panel-left', label: 'Project Navigator' },
+    },
+    '280',
+    LEFT_RAIL,
+  );
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'collapsible-panel',
+        {
+          id: 'catalog-panel-left',
+          side: 'left',
+          size: 280,
+          label: 'Project Navigator',
+          tabIndex: 0,
+          outlined: true,
+        },
+        { children: [demoContentItem(...LEFT_RAIL)] },
+      ),
+    ),
+  );
+});
+
+test('builds CollapsiblePanel › Right Rail', async ({ page }) => {
+  await demoPanel(
+    page,
+    {
+      choices: { side: 'right' },
+      text: { id: 'catalog-panel-right', label: 'Selection Inspector' },
+    },
+    '280',
+    RIGHT_RAIL,
+  );
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'collapsible-panel',
+        {
+          id: 'catalog-panel-right',
+          side: 'right',
+          size: 280,
+          label: 'Selection Inspector',
+        },
+        { children: [demoContentItem(...RIGHT_RAIL)] },
+      ),
+    ),
+  );
+});
+
+test('builds CollapsiblePanel › Bottom Drawer', async ({ page }) => {
+  await demoPanel(
+    page,
+    {
+      choices: { side: 'bottom' },
+      text: { id: 'catalog-panel-bottom', label: 'Build Output' },
+    },
+    '180',
+    BOTTOM_DRAWER,
+  );
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'collapsible-panel',
+        {
+          id: 'catalog-panel-bottom',
+          side: 'bottom',
+          size: 180,
+          label: 'Build Output',
+        },
+        { children: [demoContentItem(...BOTTOM_DRAWER)] },
+      ),
+    ),
+  );
+});
+
+/** A CollapsiblePanel `toolbar` with a title and a toggle, as configured. */
+type PanelToolbarSpec = {
+  readonly label: string;
+  readonly title?: string;
+  readonly toggle: { readonly action: string; readonly name: string };
+};
+
+/**
+ * Configures the selected panel's (or relocated control's) `toolbar`: its
+ * label, toggle, and a ToolbarText title.
+ */
+async function ownToolbar(
+  page: Page,
+  owner: RegExp,
+  nth: number,
+  { label, title, toggle }: PanelToolbarSpec,
+) {
+  const dialog = page.locator('dialog[open]');
+  await select(page, owner, nth);
+  await page.getByRole('button', { name: 'Configure toolbar' }).click();
+  await setField(page, 'toolbar', ['label'], label);
+  await dialog.getByRole('button', { name: 'Configure toggle' }).click();
+  await setField(page, 'toolbar', ['toggle', 'action'], toggle.action);
+  await setField(page, 'toolbar', ['toggle', 'name'], toggle.name);
+  await dialog.getByRole('button', { name: 'Back' }).click();
+  if (!title) {
+    await dialog.getByRole('button', { name: 'Done' }).click();
+    return;
+  }
+  await dialog.getByRole('button', { name: 'Add to title' }).click();
+  await addChild(page, 'ToolbarText');
+  await area(page, 'Properties');
+  await setText(page, 'text', title);
+}
+
+/** The `toolbar` value and title zone `panelToolbar` builds. */
+const panelToolbarProps = ({ label, toggle }: PanelToolbarSpec) => ({
+  toolbar: { label, toggle },
+});
+const panelTitleZone = (title: string) => ({
+  'toolbar.title': [node('toolbar-text', { text: title })],
+});
+
+const CONSOLE_TOOLBAR: PanelToolbarSpec = {
+  label: 'Console',
+  title: 'Console',
+  toggle: { action: 'toggle-catalog-panel-restore', name: 'Console' },
+};
+
+test('builds CollapsiblePanel › Restore Control', async ({ page }) => {
+  test.slow();
+  // restoreDrawerCollapsed starts true: the drawer and its restore control
+  // are collapsed at first render.
+  await nestedPane(page, {});
+  await contentItemInto(
+    page,
+    /^Pane/,
+    1,
+    'App-Owned Collapsed Flag',
+    'Hide the console from its own toolbar; restore it from the corner control.',
+  );
+  await addInto(page, /^Pane/, 'CollapsiblePanel', 0);
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { side: 'bottom' },
+    text: { id: 'catalog-panel-restore', label: 'Console' },
+  });
+  await setText(page, 'size', '140');
+  await contentItemInto(
+    page,
+    /^CollapsiblePanel(?!Relocated)/,
+    0,
+    'Build Finished',
+    'The drawer stays mounted while it is collapsed.',
+  );
+  await ownToolbar(page, /^CollapsiblePanel(?!Relocated)/, 0, CONSOLE_TOOLBAR);
+  // The restore control: a FloatingToolbar holding the relocated toggle.
+  await select(page, /^CollapsiblePanel(?!Relocated)/);
+  await page.locator('[data-editor-content-add="restoreControl"]').click();
+  await addChild(page, 'FloatingToolbar');
+  await area(page, 'Properties');
+  await setText(page, 'label', 'Console');
+  // Its seeded text became a Text, which goes.
+  await select(page, /^Text(?![A-Z])/, -1);
+  await deleteSelected(page);
+  await select(page, /^FloatingToolbar/);
+  await addChild(page, 'CollapsiblePanelRelocated');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { side: 'bottom' },
+    flags: ['collapsed'],
+    text: { panelId: 'catalog-panel-restore' },
+  });
+  await ownToolbar(page, /^CollapsiblePanelRelocated/, 0, CONSOLE_TOOLBAR);
+  await select(page, /^CollapsiblePanel(?!Relocated)/);
+  await turnOn(page, 'collapsed');
+  // The editor's header comes last: Add a child keeps the zone it last used.
+  await select(page, /^Pane/, 1);
+  await addChild(page, 'Toolbar', 'header');
+  await area(page, 'Properties');
+  await setText(page, 'label', 'Editor');
+  await addChild(page, 'ToolbarText', 'leading');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { size: 'xlarge' },
+    text: { text: 'Editor' },
+  });
+  await page.screenshot({
+    animations: 'disabled',
+    path: test.info().outputPath('kf-xvvex5-collapsible-restore-1440.png'),
+  });
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('pane', undefined, {
+        header: [
+          node(
+            'toolbar',
+            { label: 'Editor' },
+            { leading: [toolbarTextNode('Editor', 'xlarge')] },
+          ),
+        ],
+        content: [
+          demoContentItem(
+            'App-Owned Collapsed Flag',
+            'Hide the console from its own toolbar; restore it from the corner control.',
+          ),
+        ],
+      }),
+      node(
+        'collapsible-panel',
+        {
+          id: 'catalog-panel-restore',
+          side: 'bottom',
+          size: 140,
+          label: 'Console',
+          collapsed: true,
+          ...panelToolbarProps(CONSOLE_TOOLBAR),
+        },
+        {
+          children: [
+            demoContentItem(
+              'Build Finished',
+              'The drawer stays mounted while it is collapsed.',
+            ),
+          ],
+          ...panelTitleZone('Console'),
+          restoreControl: [
+            node(
+              'floating-toolbar',
+              { label: 'Console' },
+              {
+                children: [
+                  node(
+                    'collapsible-panel#CollapsiblePanelRelocated',
+                    {
+                      panelId: 'catalog-panel-restore',
+                      side: 'bottom',
+                      collapsed: true,
+                      ...panelToolbarProps(CONSOLE_TOOLBAR),
+                    },
+                    panelTitleZone('Console'),
+                  ),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+/** The relocation example's navigator icon commands: label, glyph, relocate. */
+const NAVIGATOR_COMMANDS = [
+  ['leading', 'New File', 'file-plus', false],
+  ['trailing', 'Search Files', 'search', true],
+] as const;
+
+/**
+ * Configures the `nth` panel or relocated control's `toolbar` as the
+ * navigator's: a label, the toggle, and a borderless icon command group in
+ * its leading and trailing zones.
+ */
+async function navigatorToolbar(page: Page, owner: RegExp, nth: number) {
+  const dialog = page.locator('dialog[open]');
+  await ownToolbar(page, owner, nth, {
+    label: 'Navigator',
+    toggle: { action: 'toggle-catalog-panel-relocation', name: 'Navigator' },
+  });
+  for (const [zone, label, glyph, relocate] of NAVIGATOR_COMMANDS) {
+    await select(page, owner, nth);
+    await page.getByRole('button', { name: 'Configure toolbar' }).click();
+    await dialog.getByRole('button', { name: `Add to ${zone}` }).click();
+    await addChild(page, 'ToolbarControlGroup');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { appearance: 'borderless' },
+      flags: relocate ? ['single', 'relocateOnCollapse'] : ['single'],
+      text: { label },
+    });
+    await select(page, /^ToolbarButton/, -1);
+    await applySpec(page, {
+      text: { ariaLabel: label, action: 'collapsible-panel-demo-command' },
+      unsets: ['children'],
+    });
+    await addIcon(page, 'icon', glyph);
+  }
+}
+
+/** The navigator `toolbar` value and zones `navigatorToolbar` builds. */
+const navigatorToolbarProps = {
+  toolbar: {
+    label: 'Navigator',
+    toggle: { action: 'toggle-catalog-panel-relocation', name: 'Navigator' },
+  },
+};
+const navigatorToolbarZones = Object.fromEntries(
+  NAVIGATOR_COMMANDS.map(([zone, label, glyph, relocate]) => [
+    `toolbar.${zone}`,
+    [
+      buttonGroupNode(
+        {
+          label,
+          appearance: 'borderless',
+          single: true,
+          ...(relocate ? { relocateOnCollapse: true } : {}),
+        },
+        [
+          [
+            { ariaLabel: label, action: 'collapsible-panel-demo-command' },
+            glyph,
+          ],
+        ],
+      ),
+    ],
+  ]),
+);
+
+test('builds CollapsiblePanel › Toolbar Relocation', async ({ page }) => {
+  test.setTimeout(test.info().timeout * 6);
+  // relocationRailCollapsed starts true: the rail and its relocated
+  // controls are collapsed at first render.
+  const rail = /^CollapsiblePanel(?!Relocated)/;
+  await dragComponent(page, 'Row', () => emptySpot(page));
+  await select(page, /^Row/);
+  await applySpec(page, { choices: { gap: 'none' }, flags: ['fill'] });
+  await addChild(page, 'CollapsiblePanel');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { side: 'left', tabIndex: '0' },
+    flags: ['outlined'],
+    text: { id: 'catalog-panel-relocation', label: 'Navigator' },
+  });
+  await setText(page, 'size', '220');
+  await contentItemInto(
+    page,
+    rail,
+    0,
+    'Files',
+    'Panel-only New file waits here while closed.',
+  );
+  await navigatorToolbar(page, rail, 0);
+  // The editor beside it: a flex List holding a Pane.
+  await addInto(page, /^Row/, 'List');
+  await choose(page, 'flex', 'true');
+  await addChild(page, 'Pane');
+  await contentItemInto(
+    page,
+    /^Pane/,
+    1,
+    'App-Owned Collapsed Flag',
+    'Show the navigator from the editor toolbar; hide it from its own toolbar.',
+  );
+  // The rail's pinned header and its list insets.
+  await select(page, rail);
+  await page.locator('[data-editor-content-add="header"]').click();
+  await addChild(page, 'ToolbarText');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { size: 'small' },
+    text: { text: 'Pinned Files' },
+  });
+  await select(page, rail);
+  await page.getByRole('button', { name: 'Configure header list' }).click();
+  await chooseField(page, 'headerList', ['textInsets'], 'trbl');
+  await page
+    .locator('dialog[open]')
+    .getByRole('button', { name: 'Done' })
+    .or(
+      page
+        .locator('#editor-inspector-stack')
+        .getByRole('button', { name: 'Back' }),
+    )
+    .first()
+    .click();
+  // The editor's header comes last: Add a child keeps the zone it last used.
+  await select(page, /^Pane/, 1);
+  await addChild(page, 'Toolbar', 'header');
+  await area(page, 'Properties');
+  await setText(page, 'label', 'Editor');
+  await addChild(page, 'CollapsiblePanelRelocated', 'leading');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { side: 'left' },
+    flags: ['collapsed'],
+    text: { panelId: 'catalog-panel-relocation' },
+  });
+  await navigatorToolbar(page, /^CollapsiblePanelRelocated/, 0);
+  await select(page, TOOLBAR, -1);
+  await addChild(page, 'ToolbarText', 'leading');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { size: 'xlarge' },
+    text: { text: 'Editor' },
+  });
+  await select(page, rail);
+  await turnOn(page, 'collapsed');
+  await page.screenshot({
+    animations: 'disabled',
+    path: test.info().outputPath('kf-xvvex5-collapsible-relocation-1440.png'),
+  });
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'row',
+        { fill: true, gap: 'none' },
+        {
+          children: [
+            node(
+              'collapsible-panel',
+              {
+                id: 'catalog-panel-relocation',
+                side: 'left',
+                size: 220,
+                label: 'Navigator',
+                tabIndex: 0,
+                outlined: true,
+                collapsed: true,
+                headerList: { textInsets: 'trbl' },
+                ...navigatorToolbarProps,
+              },
+              {
+                children: [
+                  demoContentItem(
+                    'Files',
+                    'Panel-only New file waits here while closed.',
+                  ),
+                ],
+                header: [toolbarTextNode('Pinned Files', 'small')],
+                ...navigatorToolbarZones,
+              },
+            ),
+            node(
+              'list',
+              { flex: true },
+              {
+                children: [
+                  node('pane', undefined, {
+                    header: [
+                      node(
+                        'toolbar',
+                        { label: 'Editor' },
+                        {
+                          leading: [
+                            node(
+                              'collapsible-panel#CollapsiblePanelRelocated',
+                              {
+                                panelId: 'catalog-panel-relocation',
+                                side: 'left',
+                                collapsed: true,
+                                ...navigatorToolbarProps,
+                              },
+                              navigatorToolbarZones,
+                            ),
+                            toolbarTextNode('Editor', 'xlarge'),
+                          ],
+                        },
+                      ),
+                    ],
+                    content: [
+                      demoContentItem(
+                        'App-Owned Collapsed Flag',
+                        'Show the navigator from the editor toolbar; hide it from its own toolbar.',
+                      ),
+                    ],
+                  }),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
 test('builds Pane › Focusable Pane and Persistent Outline', async ({
   page,
 }) => {
