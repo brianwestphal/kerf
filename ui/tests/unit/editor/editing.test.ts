@@ -76,6 +76,57 @@ describe('editing the selected node', () => {
     );
   });
 
+  // KF-8FCJ02: a prop the overlay marks textarea edits line breaks.
+  it('edits a textarea prop in a multi-line field that keeps line breaks', () => {
+    const PREVIEW = '01JB8Z1M6Q8E1X9V4S7K2R3TV1';
+    const EMPTY = '01JB8Z1M6Q8E1X9V4S7K2R3TV2';
+    const root = document.createElement('div');
+    document.body.append(root);
+    const editor = createEditor({
+      document: {
+        schema: 'kerf-ui-document/v1',
+        name: 'Previews',
+        catalogs: ['@kerfjs/ui'],
+        root: {
+          id: '01JB8Z1M6Q8E1X9V4S7K2R3TV0',
+          type: '@kerfjs/ui:pane',
+          zones: {
+            content: [
+              {
+                id: PREVIEW,
+                type: '@kerfjs/ui:value-preview',
+                props: { label: 'Version', value: 'One line' },
+              },
+              {
+                id: EMPTY,
+                type: '@kerfjs/ui:empty-state',
+                props: { title: 'Nothing yet' },
+              },
+            ],
+          },
+        },
+      },
+    });
+    mount(root, editor.render);
+    cleanup = editor.wire(root);
+    const props = (id: string) =>
+      findNode(editor.document.value, id)?.node.props;
+    editor.selection.value = { kind: 'node', id: PREVIEW };
+    const value = field(root, '[data-editor-prop="value"]');
+    expect(value.querySelector('textarea')).not.toBeNull();
+    type(value, 'First line\nSecond line');
+    expect(props(PREVIEW)?.value).toBe('First line\nSecond line');
+    // An optional one keeps its Not set toggle, at the field's top end.
+    editor.selection.value = { kind: 'node', id: EMPTY };
+    const detail = field(root, '[data-editor-prop="detail"]');
+    expect(detail.querySelector('textarea')).not.toBeNull();
+    expect(
+      detail.querySelector('.kui-text-field__toggle[aria-pressed="true"]'),
+    ).not.toBeNull();
+    type(detail, 'Add a project\nto begin.');
+    expect(props(EMPTY)?.detail).toBe('Add a project\nto begin.');
+  });
+
   it('leaves an unchanged value alone, without a history entry', () => {
     const { root, editor } = open();
     const before = editor.document.value;

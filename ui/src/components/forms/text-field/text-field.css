@@ -166,6 +166,14 @@
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
 }
+/* A multi-line field's box has no padding and stretches its children, so
+   the toggle pins itself to the top end, centered on the first line. */
+.kui-text-field[data-multiline]
+  > .kui-text-field__box
+  > .kui-text-field__toggle {
+  align-self: flex-start;
+  margin: remify(4px) remify(4px) 0 0;
+}
 .kui-text-field__toggle:disabled {
   cursor: default;
   opacity: 0.5;

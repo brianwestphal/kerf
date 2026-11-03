@@ -14428,7 +14428,7 @@
             "nullable": true
           },
           "required": false,
-          "description": "An icon toggle button inside the end of the field (single-line only)."
+          "description": "An icon toggle button inside the end of the field (top end when multi-line)."
         },
         {
           "name": "maxLength",
@@ -15858,7 +15858,8 @@
           "name": "value",
           "type": { "kind": "string", "text": "string" },
           "required": true,
-          "description": "Literal plain-text value, including newlines and long unbroken text."
+          "description": "Literal plain-text value, including newlines and long unbroken text.",
+          "control": "textarea"
         },
         {
           "name": "minHeight",

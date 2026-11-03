@@ -37,8 +37,9 @@ export type TextFieldName =
 export type TextFieldProps = TextFieldName & TextFieldOptions;
 
 /**
- * An icon toggle button inside the end of a single-line field (KF-3Y2GS2):
- * a password's Show, or an editor's Not set. The application flips
+ * An icon toggle button inside the end of the field (KF-3Y2GS2): a
+ * password's Show, or an editor's Not set. A multi-line field pins it to its
+ * top end (KF-8FCJ02). The application flips
  * `pressed` in its `action` handler.
  */
 export interface TextFieldToggle {
@@ -74,7 +75,7 @@ export interface TextFieldOptions {
   clearable?: boolean;
   /** The clear button's accessible name (default `Clear`). */
   clearLabel?: string;
-  /** An icon toggle button inside the end of the field (single-line only). */
+  /** An icon toggle button inside the end of the field (top end when multi-line). */
   toggle?: TextFieldToggle;
   /** The most characters the field accepts (native `maxlength`). */
   maxLength?: number;
@@ -264,7 +265,7 @@ export function TextField({
             <LucideIcon icon={CircleX} name="circle-x" />
           </button>
         ) : null}
-        {toggle && !multiline ? (
+        {toggle ? (
           <button
             type="button"
             class="kui-text-field__toggle"

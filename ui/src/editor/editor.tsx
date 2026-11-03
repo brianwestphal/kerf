@@ -1593,11 +1593,17 @@ export function createEditor(options: EditorOptions) {
           control.kind === 'text' &&
           !prop.required &&
           typeof place.path.at(-1) !== 'number';
+        // KF-8FCJ02: a prop the overlay marks `textarea` holds line breaks;
+        // Enter types one, and the field commits on change (blur).
+        const multiline =
+          control.kind === 'text' && prop.control === 'textarea';
         return (
           <TextField
             label={propLabel(prop.name)}
             value={String(control.raw)}
             type={control.kind === 'number' ? 'number' : 'text'}
+            multiline={multiline}
+            rows={multiline ? 3 : undefined}
             hint={
               control.kind === 'css'
                 ? cssHint(prop.cssValue?.helpers, grammar)

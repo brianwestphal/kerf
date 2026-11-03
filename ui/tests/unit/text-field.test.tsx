@@ -291,8 +291,10 @@ describe('TextField', () => {
     expect(off.disabled).toBe(false);
     expect(toggle(true).getAttribute('aria-pressed')).toBe('true');
     expect(toggle(false, { disabled: true }).disabled).toBe(true);
-    // Single-line only.
-    expect(toggle(false, { multiline: true })).toBeNull();
+    // KF-8FCJ02: a multi-line field keeps it, after its textarea.
+    const multi = toggle(true, { multiline: true });
+    expect(multi.getAttribute('aria-pressed')).toBe('true');
+    expect(multi.previousElementSibling?.tagName).toBe('TEXTAREA');
   });
 
   it('renders a clear button whose field always has a placeholder', () => {

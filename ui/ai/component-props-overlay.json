@@ -752,6 +752,13 @@
         }
       }
     },
+    "@kerfjs/ui:value-preview": {
+      "props": {
+        "value": {
+          "control": "textarea"
+        }
+      }
+    },
     "@kerfjs/ui:toolbar": {
       "groups": ["Content", "Layout", "Responsive"],
       "props": {
