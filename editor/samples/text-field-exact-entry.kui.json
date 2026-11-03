@@ -1,0 +1,62 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TextFieldExactEntry",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:text-field",
+                "props": {
+                  "label": "Confirmation Phrase",
+                  "autocapitalize": "off",
+                  "autocorrect": "off",
+                  "spellcheck": false,
+                  "placeholder": "Type the phrase exactly"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:text-field",
+                "props": {
+                  "label": "Card Number",
+                  "inputMode": "numeric",
+                  "autocorrect": "off",
+                  "spellcheck": false
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:text-field",
+                "props": {
+                  "label": "Place Names",
+                  "autocapitalize": "words",
+                  "autocorrect": "off",
+                  "spellcheck": false,
+                  "multiline": true,
+                  "rows": 2
+                }
+              }
+            ]
+          },
+          "props": {
+            "gap": "xs"
+          }
+        }
+      ]
+    }
+  }
+}

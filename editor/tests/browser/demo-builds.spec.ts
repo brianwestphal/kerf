@@ -371,6 +371,49 @@ test('builds TextField › Validation', async ({ page }) => {
   );
 });
 
+// KF-38KD5N: spellcheck's Off writes an explicit false.
+test('builds TextField › Exact Entry', async ({ page }) => {
+  const exact = { autocorrect: 'off', spellcheck: 'Off' };
+  await textFields(page, [
+    {
+      choices: { autocapitalize: 'off', ...exact },
+      text: {
+        label: 'Confirmation Phrase',
+        placeholder: 'Type the phrase exactly',
+      },
+    },
+    {
+      choices: { inputMode: 'numeric', ...exact },
+      text: { label: 'Card Number' },
+    },
+    {
+      choices: { autocapitalize: 'words', ...exact },
+      flags: ['multiline'],
+      text: { rows: '2', label: 'Place Names' },
+    },
+  ]);
+  await expect(canvas(page).locator('[spellcheck="false"]')).toHaveCount(3);
+  const spelling = { autocorrect: 'off', spellcheck: false };
+  expect(await exported(page)).toEqual(
+    textFieldList([
+      {
+        autocapitalize: 'off',
+        ...spelling,
+        label: 'Confirmation Phrase',
+        placeholder: 'Type the phrase exactly',
+      },
+      { inputMode: 'numeric', ...spelling, label: 'Card Number' },
+      {
+        autocapitalize: 'words',
+        ...spelling,
+        multiline: true,
+        rows: 2,
+        label: 'Place Names',
+      },
+    ]),
+  );
+});
+
 test('builds TextField › Compact', async ({ page }) => {
   await textFields(page, [
     { choices: { size: 'compact' }, text: { label: 'Quantity', value: '12' } },

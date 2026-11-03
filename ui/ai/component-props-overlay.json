@@ -713,6 +713,11 @@
           "group": "Input",
           "order": 7
         },
+        "spellcheck": {
+          "group": "Input",
+          "order": 8,
+          "control": "select"
+        },
         "error": {
           "group": "Validation",
           "order": 1

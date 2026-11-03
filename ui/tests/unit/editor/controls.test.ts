@@ -99,6 +99,16 @@ describe('controlFor', () => {
         raw: 'false',
       });
     expect(controlFor(prop('button', 'pressed'), undefined).raw).toBe('');
+    // KF-38KD5N: a TextField's `spellcheck` is on in browsers when unset, so
+    // turning it off needs an explicit false too.
+    expect(controlFor(prop('text-field', 'spellcheck'), false)).toEqual({
+      kind: 'select',
+      choices: ['', 'false', 'true'],
+      raw: 'false',
+    });
+    expect(controlFor(prop('text-field', 'spellcheck'), undefined).raw).toBe(
+      '',
+    );
     expect(controlFor(prop('list-header', 'count'), 3)).toEqual({
       kind: 'number',
       raw: '3',

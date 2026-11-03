@@ -14584,7 +14584,10 @@
             "nullable": true
           },
           "required": false,
-          "description": "Native spelling check; serialized as the enumerated HTML value."
+          "description": "Native spelling check; serialized as the enumerated HTML value.",
+          "group": "Input",
+          "order": 8,
+          "control": "select"
         },
         {
           "name": "id",

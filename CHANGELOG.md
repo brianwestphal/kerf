@@ -266,6 +266,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **A TextField's spell checking can be turned off in the Kerf UI editor.** Browsers check spelling when `spellcheck` is unset, and the Inspector's switch cleared the prop when turned off, so `spellcheck: false` couldn't be written. It now edits as a Not set / Off / On select, as a toggle's `pressed` does (`KF-38KD5N`).
 - **"Add to …" in a nested form adds to that field in the Kerf UI editor.** A content field inside an object prop that was not yet set, such as a SplitView's Compact stack › List › Toolbar › Trailing, wasn't treated as a zone of the node. So **Add to trailing** said "Every zone of this component is full" or put the child in another zone (`compactStack.backIcon`), which left the document invalid. The field's form now adds to the field itself (`KF-KAVBDD`).
 - **An empty Toolbar's zones stay apart on the Kerf UI editor canvas.** In a narrow column, such as a SplitView's list, the Leading, Center, and Trailing placeholders each kept a 160px minimum and drew over one another, so a drop aimed at Leading landed in Center. A placeholder now never grows past its zone, so each zone is its own drop target (`KF-K3EKKF`).
 - **Embed in no longer writes an empty `props` object in the Kerf UI editor.** A container with no props of its own, embedded through Flow › Embed in (a List or a ContentItem from Other…), exported as `"props": {}`; it now has no `props` key, as when it is dropped from the palette (`KF-QX497W`).
