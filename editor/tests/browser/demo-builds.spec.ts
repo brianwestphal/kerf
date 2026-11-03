@@ -3355,8 +3355,177 @@ test('builds SplitView › Roomy List-Detail Split', async ({ page }) => {
   );
 });
 
-// SplitView › Interactive Compact Drill-Down waits on KF-YCM09F: its empty
-// detail is a raw <div />.
+test('builds SplitView › Interactive Compact Drill-Down', async ({ page }) => {
+  // A whole screen built step by step runs long in Firefox.
+  test.slow();
+  await dragComponent(page, 'SplitView', () => emptySpot(page));
+  await select(page, /^SplitView/);
+  // Below the root it needs a height of its own (KF-6MGYSG).
+  await embedIn(page, 'SizedRegion');
+  await select(page, /^SplitView/);
+  await setText(page, 'id', 'catalog-split-view-compact');
+  await setText(page, 'label', 'Compact Messages');
+  await turnOn(page, 'compact');
+  await setText(page, 'listTitle', 'Inbox');
+  await setText(page, 'backLabel', 'Back to Inbox');
+  // compactStack: a level-2 title with a bottom divider.
+  await configure(page, 'compactStack');
+  await openField(page, 'compactStack', ['toolbarConfig']);
+  await chooseField(
+    page,
+    'compactStack',
+    ['toolbarConfig', 'headingLevel'],
+    '2',
+  );
+  await chooseField(
+    page,
+    'compactStack',
+    ['toolbarConfig', 'dividerSides'],
+    'b',
+  );
+  await backOut(page);
+  /** Adds the demo's `iconGroup` to compactStack content field `zone`. */
+  const group = async (zone: string, label: string, glyph: string) => {
+    await select(page, /^SplitView/);
+    await configure(page, 'compactStack');
+    const steps = zone.split('.');
+    for (let depth = 1; depth < steps.length; depth += 1)
+      await openField(page, 'compactStack', steps.slice(0, depth));
+    await page
+      .locator(`[data-editor-content-add="compactStack.${zone}"]`)
+      .click();
+    await addChild(page, 'ToolbarControlGroup');
+    await area(page, 'Properties');
+    await setText(page, 'label', label);
+    await choose(page, 'appearance', 'borderless');
+    await turnOn(page, 'single');
+    // The new group, selected, holds one seeded ToolbarButton: the first
+    // ToolbarButton row after the group's row in the outline.
+    await area(page, 'Outline');
+    await expect(
+      page.locator('[data-action="editor-select-node"][aria-selected="true"]'),
+    ).toHaveText(/^ToolbarControlGroup/);
+    const nth = await page
+      .locator('[data-action="editor-select-node"]')
+      .evaluateAll((rows) => {
+        const at = rows.findIndex(
+          (row) => row.getAttribute('aria-selected') === 'true',
+        );
+        return rows
+          .slice(0, at)
+          .filter((row) => /^ToolbarButton/.test(row.textContent!.trim()))
+          .length;
+      });
+    await select(page, /^ToolbarButton/, nth);
+    await setText(page, 'ariaLabel', label);
+    await setText(page, 'children', '');
+    await setText(page, 'action', 'split-view-demo-command');
+    await addIcon(page, 'icon', glyph);
+  };
+  await group('list.toolbar.trailing', 'Compose', 'square-pen');
+  await group('detail.toolbar.trailing', 'Reply', 'reply');
+  await group('detail.bottomToolbar.trailing', 'Archive', 'archive');
+  // The detail's bottom toolbar: its label and a small status line.
+  await select(page, /^SplitView/);
+  await configure(page, 'compactStack');
+  await openField(page, 'compactStack', ['detail']);
+  await openField(page, 'compactStack', ['detail', 'bottomToolbar']);
+  await setField(
+    page,
+    'compactStack',
+    ['detail', 'bottomToolbar', 'label'],
+    'Message Actions',
+  );
+  await toolbarText(
+    page,
+    'compactStack.detail.bottomToolbar.leading',
+    'Received today',
+    'small',
+  );
+  // The list pane's seeded Text becomes the message list; the detail's
+  // seeded Text is deleted, so no message is open (KF-YCM09F).
+  await select(page, /^Text/);
+  await embedInOther(page, 'List');
+  await addChild(page, 'ListHeader', 'children');
+  await area(page, 'Properties');
+  await setText(page, 'label', 'Inbox');
+  await setText(page, 'count', String(MESSAGES.length));
+  await setText(page, 'countLabel', `${MESSAGES.length} messages`);
+  await messageRows(page, 'open-split-view-message', false);
+  await select(page, /^Text/);
+  await page.locator('[data-action="editor-delete"]').click();
+  await select(page, /^Text/);
+  await page.locator('[data-action="editor-delete"]').click();
+  await select(page, /^SplitView/);
+  const split = canvas(page).locator('.kui-split-view[data-kerf-node]');
+  await expect(split.locator('.kui-list-item')).toHaveCount(3);
+  await page.screenshot({
+    animations: 'disabled',
+    path: test.info().outputPath('kf-jn4pf5-split-view-compact-1440.png'),
+  });
+  const groupNode = (label: string, glyph: string) =>
+    node(
+      'toolbar-control-group',
+      { label, appearance: 'borderless', single: true },
+      {
+        children: [
+          node(
+            'toolbar-control-group#ToolbarButton',
+            { ariaLabel: label, action: 'split-view-demo-command' },
+            { icon: [icon(glyph)] },
+          ),
+        ],
+      },
+    );
+  expect(await exported(page)).toEqual(
+    pane(
+      sized(
+        node(
+          'split-view',
+          {
+            id: 'catalog-split-view-compact',
+            label: 'Compact Messages',
+            compact: true,
+            listTitle: 'Inbox',
+            backLabel: 'Back to Inbox',
+            compactStack: {
+              toolbarConfig: { headingLevel: 2, dividerSides: 'b' },
+              detail: { bottomToolbar: { label: 'Message Actions' } },
+            },
+          },
+          {
+            'compactStack.list.toolbar.trailing': [
+              groupNode('Compose', 'square-pen'),
+            ],
+            'compactStack.detail.toolbar.trailing': [
+              groupNode('Reply', 'reply'),
+            ],
+            'compactStack.detail.bottomToolbar.leading': [
+              toolbarTextNode('Received today', 'small'),
+            ],
+            'compactStack.detail.bottomToolbar.trailing': [
+              groupNode('Archive', 'archive'),
+            ],
+            list: [
+              node('list', undefined, {
+                children: [
+                  node('list-header', {
+                    label: 'Inbox',
+                    count: MESSAGES.length,
+                    countLabel: `${MESSAGES.length} messages`,
+                  }),
+                  ...messageItems('open-split-view-message', false),
+                ],
+              }),
+            ],
+            detail: [],
+          },
+        ),
+      ),
+    ),
+  );
+});
+
 test('builds SplitView › Resizable, Collapsible List', async ({ page }) => {
   // A whole screen built step by step runs long in Firefox.
   test.slow();
@@ -3676,7 +3845,7 @@ const MESSAGES = [
  * Adds the three message rows to the document's first List, the first one
  * selected, each opening `action` (the split-view demo's `messageList`).
  */
-async function messageRows(page: Page, action: string) {
+async function messageRows(page: Page, action: string, selected = true) {
   await select(page, /^List(?!Item|Header)/);
   await addChild(page, 'ListItem');
   await area(page, 'Properties');
@@ -3707,13 +3876,14 @@ async function messageRows(page: Page, action: string) {
       `${message.sender} · ${message.preview}`,
     );
   }
+  if (!selected) return;
   // The first message is the one in view.
   await select(page, /^ListItem/);
   await turnOn(page, 'selected');
 }
 
 /** The rows `messageRows` builds, as the exported document spells them. */
-const messageItems = (action: string) =>
+const messageItems = (action: string, selected = true) =>
   MESSAGES.map((message, index) =>
     node(
       'list-item',
@@ -3722,7 +3892,7 @@ const messageItems = (action: string) =>
         itemId: message.id,
         label: message.subject,
         description: `${message.sender} · ${message.preview}`,
-        ...(index === 0 ? { selected: true } : {}),
+        ...(selected && index === 0 ? { selected: true } : {}),
         multiline: true,
       },
       {
