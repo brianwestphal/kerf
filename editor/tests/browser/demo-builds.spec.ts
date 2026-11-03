@@ -299,33 +299,56 @@ type FieldSpec = {
   /** A `string | number` prop: its kind (`Text…`/`Number…`), then its value. */
   readonly unions?: Readonly<Record<string, readonly [string, string]>>;
 };
-async function textFields(page: Page, fields: readonly FieldSpec[]) {
-  await dragComponent(page, 'List', () => emptySpot(page));
-  await dragComponent(page, 'TextField', () => emptySpot(page));
-  await select(page, /^List/);
-  await choose(page, 'gap', 'xs');
-  await select(page, /^TextField/);
-  for (let copy = 1; copy < fields.length; copy += 1)
-    await page.keyboard.press('ControlOrMeta+d');
-  for (const [index, field] of fields.entries()) {
-    await select(page, /^TextField/, index);
-    // Choices first: a type or multiline can change which props show.
-    for (const [name, option] of Object.entries(field.choices ?? {}))
-      await choose(page, name, option);
-    for (const name of field.flags ?? []) await turnOn(page, name);
-    for (const [name, value] of Object.entries(field.text ?? {}))
-      await setText(page, name, value);
-    for (const [name, [kind, value]] of Object.entries(field.unions ?? {})) {
-      await choose(page, name, kind);
-      const input = page
-        .locator(
-          `[data-editor-prop="${name}"]:not([data-editor-kind="choice"]) input`,
-        )
-        .first();
-      await input.fill(value);
-      await input.press('Enter');
-    }
+/** Applies a FieldSpec to the selected node. */
+async function applySpec(page: Page, field: FieldSpec) {
+  // Choices first: a type or multiline can change which props show.
+  for (const [name, option] of Object.entries(field.choices ?? {}))
+    await choose(page, name, option);
+  for (const name of field.flags ?? []) await turnOn(page, name);
+  for (const [name, value] of Object.entries(field.text ?? {}))
+    await setText(page, name, value);
+  for (const [name, [kind, value]] of Object.entries(field.unions ?? {})) {
+    await choose(page, name, kind);
+    const input = page
+      .locator(
+        `[data-editor-prop="${name}"]:not([data-editor-kind="choice"]) input`,
+      )
+      .first();
+    await input.fill(value);
+    await input.press('Enter');
   }
+}
+
+/**
+ * Places `container` (configured by `setup`) holding one `component` per
+ * entry of `items`, each configured by its spec.
+ */
+async function stacked(
+  page: Page,
+  container: string,
+  component: string,
+  items: readonly FieldSpec[],
+  setup: () => Promise<void> = async () => {},
+) {
+  await dragComponent(page, container, () => emptySpot(page));
+  await dragComponent(page, component, () => emptySpot(page));
+  await select(page, new RegExp(`^${container}`));
+  await setup();
+  const own = new RegExp(`^${component}(?![A-Z])`);
+  await select(page, own);
+  for (let copy = 1; copy < items.length; copy += 1)
+    await page.keyboard.press('ControlOrMeta+d');
+  for (const [index, item] of items.entries()) {
+    await select(page, own, index);
+    await applySpec(page, item);
+  }
+}
+
+/** A List (gap xs) of TextFields, one per entry of `fields`. */
+async function textFields(page: Page, fields: readonly FieldSpec[]) {
+  await stacked(page, 'List', 'TextField', fields, () =>
+    choose(page, 'gap', 'xs'),
+  );
   await expect(canvas(page).locator('.kui-text-field')).toHaveCount(
     fields.length,
   );
@@ -546,6 +569,265 @@ test('builds TextField › Numeric Constraints', async ({ page }) => {
       { type: 'number', label: 'Exchange Rate', value: '1.2345', step: 'any' },
       { type: 'number', label: 'AI Budget', value: '10', min: 0, step: 1 },
     ]),
+  );
+});
+
+const xsList = (component: string, props: readonly Record<string, unknown>[]) =>
+  pane(
+    node(
+      'list',
+      { gap: 'xs' },
+      { children: props.map((each) => node(component, each)) },
+    ),
+  );
+
+test('builds Checkbox › States', async ({ page }) => {
+  await stacked(
+    page,
+    'List',
+    'Checkbox',
+    [
+      {
+        flags: ['checked'],
+        text: { label: 'Include in release', action: 'checkbox-demo' },
+      },
+      {
+        text: {
+          label: 'Email summaries',
+          hint: 'Sent every Monday morning.',
+          action: 'checkbox-demo',
+        },
+      },
+      { flags: ['checked', 'disabled'], text: { label: 'Locked setting' } },
+      {
+        flags: ['required'],
+        text: {
+          label: 'I accept the release terms',
+          error: 'Accept the terms to publish.',
+          action: 'checkbox-demo',
+        },
+      },
+    ],
+    () => choose(page, 'gap', 'xs'),
+  );
+  await expect(canvas(page).locator('input[type="checkbox"]')).toHaveCount(4);
+  expect(await exported(page)).toEqual(
+    xsList('checkbox', [
+      { checked: true, label: 'Include in release', action: 'checkbox-demo' },
+      {
+        label: 'Email summaries',
+        hint: 'Sent every Monday morning.',
+        action: 'checkbox-demo',
+      },
+      { checked: true, disabled: true, label: 'Locked setting' },
+      {
+        required: true,
+        label: 'I accept the release terms',
+        error: 'Accept the terms to publish.',
+        action: 'checkbox-demo',
+      },
+    ]),
+  );
+});
+
+test('builds Checkbox › Compact', async ({ page }) => {
+  await stacked(
+    page,
+    'List',
+    'Checkbox',
+    [
+      {
+        choices: { size: 'compact' },
+        flags: ['checked'],
+        text: { label: 'Show archived', action: 'checkbox-demo' },
+      },
+      {
+        choices: { size: 'compact' },
+        text: {
+          label: 'Show drafts',
+          hint: 'Only yours.',
+          action: 'checkbox-demo',
+        },
+      },
+    ],
+    () => choose(page, 'gap', 'xs'),
+  );
+  expect(await exported(page)).toEqual(
+    xsList('checkbox', [
+      {
+        size: 'compact',
+        checked: true,
+        label: 'Show archived',
+        action: 'checkbox-demo',
+      },
+      {
+        size: 'compact',
+        label: 'Show drafts',
+        hint: 'Only yours.',
+        action: 'checkbox-demo',
+      },
+    ]),
+  );
+});
+
+test('builds LoadingSpinner › Meaningful', async ({ page }) => {
+  await dragComponent(page, 'LoadingSpinner', () => emptySpot(page));
+  await select(page, /^LoadingSpinner/);
+  await setText(page, 'label', 'Loading preview…');
+  await expect(
+    canvas(page).locator(
+      '[data-kerf-node] [aria-label="Loading preview…"], [data-kerf-node][aria-label="Loading preview…"]',
+    ),
+  ).toHaveCount(1);
+  expect(await exported(page)).toEqual(
+    pane(node('loading-spinner', { label: 'Loading preview…' })),
+  );
+});
+
+test('builds LoadingSpinner › Decorative', async ({ page }) => {
+  await dragComponent(page, 'LoadingSpinner', () => emptySpot(page));
+  await select(page, /^LoadingSpinner/);
+  expect(await exported(page)).toEqual(pane(node('loading-spinner')));
+});
+
+test('builds LoadingSpinner › Spinner Sizes', async ({ page }) => {
+  const sizes = ['xs', 's', 'm', 'l', 'xl'];
+  await stacked(
+    page,
+    'Row',
+    'LoadingSpinner',
+    [
+      ...sizes.map((size) => ({ choices: { size } })),
+      { unions: { size: ['Number…', '30'] } },
+    ],
+    async () => {
+      await choose(page, 'gap', 'm');
+      await dataAttribute(page, 'data-demo-spinner-sizes', '');
+    },
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'row',
+        { gap: 'm', rootAttributes: { 'data-demo-spinner-sizes': '' } },
+        {
+          children: [
+            ...sizes.map((size) => node('loading-spinner', { size })),
+            node('loading-spinner', { size: 30 }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds LoadingSpinner › Spinner Colors', async ({ page }) => {
+  await stacked(
+    page,
+    'Row',
+    'LoadingSpinner',
+    [
+      { choices: { size: 's' } },
+      { choices: { size: 's' } },
+      { choices: { size: 's' } },
+    ],
+    async () => {
+      await choose(page, 'gap', 'm');
+      await dataAttribute(page, 'data-demo-spinner-colors', '');
+    },
+  );
+  for (const [index, color] of [
+    [1, "uiColor('warning-on-quiet')"],
+    [2, "foregroundColor('rebeccapurple')"],
+  ] as const) {
+    await select(page, /^LoadingSpinner/, index);
+    const field = page
+      .locator('[data-editor-prop="color"]')
+      .getByRole('textbox');
+    await field.fill(color);
+    await field.press('Enter');
+  }
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'row',
+        { gap: 'm', rootAttributes: { 'data-demo-spinner-colors': '' } },
+        {
+          children: [
+            node('loading-spinner', { size: 's' }),
+            node('loading-spinner', {
+              size: 's',
+              color: { $css: "uiColor('warning-on-quiet')" },
+            }),
+            node('loading-spinner', {
+              size: 's',
+              color: { $css: "foregroundColor('rebeccapurple')" },
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds ProgressRing › Tones and Indeterminate', async ({ page }) => {
+  await stacked(
+    page,
+    'Row',
+    'ProgressRing',
+    [
+      {
+        choices: { tone: 'success' },
+        text: { label: 'Claim Time Remaining', value: '0.75' },
+      },
+      {
+        choices: { tone: 'warning' },
+        text: { label: 'Quota Used', value: '0.9' },
+      },
+      {
+        choices: { tone: 'danger' },
+        text: { label: 'Error Budget Used', value: '0.98' },
+      },
+      { text: { label: 'Connecting' } },
+    ],
+    async () => {
+      await choose(page, 'gap', 'm');
+      await choose(page, 'vAlign', 'middle');
+    },
+  );
+  // The status line after the rings.
+  await select(page, /^Row/);
+  await addChild(page, 'Text');
+  await select(page, /^Text/);
+  await setText(page, 'children', 'Connecting…');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'row',
+        { gap: 'm', vAlign: 'middle' },
+        {
+          children: [
+            node('progress-ring', {
+              tone: 'success',
+              label: 'Claim Time Remaining',
+              value: 0.75,
+            }),
+            node('progress-ring', {
+              tone: 'warning',
+              label: 'Quota Used',
+              value: 0.9,
+            }),
+            node('progress-ring', {
+              tone: 'danger',
+              label: 'Error Budget Used',
+              value: 0.98,
+            }),
+            node('progress-ring', { label: 'Connecting' }),
+            node('text', { children: 'Connecting…' }),
+          ],
+        },
+      ),
+    ),
   );
 });
 

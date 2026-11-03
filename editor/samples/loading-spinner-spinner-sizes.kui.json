@@ -1,0 +1,74 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "LoadingSpinnerSpinnerSizes",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:row",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:loading-spinner",
+                "props": {
+                  "size": "xs"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:loading-spinner",
+                "props": {
+                  "size": "s"
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:loading-spinner",
+                "props": {
+                  "size": "m"
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:loading-spinner",
+                "props": {
+                  "size": "l"
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:loading-spinner",
+                "props": {
+                  "size": "xl"
+                }
+              },
+              {
+                "id": "00000000000000000000000008",
+                "type": "@kerfjs/ui:loading-spinner",
+                "props": {
+                  "size": 30
+                }
+              }
+            ]
+          },
+          "props": {
+            "gap": "m",
+            "rootAttributes": {
+              "data-demo-spinner-sizes": ""
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ProgressRingTonesAndIndeterminate",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:row",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:progress-ring",
+                "props": {
+                  "label": "Claim Time Remaining",
+                  "tone": "success",
+                  "value": 0.75
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:progress-ring",
+                "props": {
+                  "label": "Quota Used",
+                  "tone": "warning",
+                  "value": 0.9
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:progress-ring",
+                "props": {
+                  "label": "Error Budget Used",
+                  "tone": "danger",
+                  "value": 0.98
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:progress-ring",
+                "props": {
+                  "label": "Connecting"
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "Connecting…"
+                }
+              }
+            ]
+          },
+          "props": {
+            "gap": "m",
+            "vAlign": "middle"
+          }
+        }
+      ]
+    }
+  }
+}
