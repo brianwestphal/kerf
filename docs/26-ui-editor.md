@@ -244,6 +244,10 @@ on, is a checkbox per choice, committed in choice order, and none checked is
 `[]`. A single value picked before `multiple` turned on stays checked. A
 required string `value` also offers `Empty ("")`, the "nothing chosen yet"
 state a loading SegmentedControl shows, which Not set cannot stand in for.
+Turning `multiple` on or off reshapes the value in the same undo step
+(KF-E3MN4B: value shape): one value becomes a one-entry list, and a list
+keeps its first entry. Renaming a choice's value renames it inside a list
+value too.
 
 Inspector rows, and an item form's fields, follow their prop or field
 order, whatever control each takes (KF-DQFXWG: LucideIcon inspector;

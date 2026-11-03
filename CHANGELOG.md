@@ -267,6 +267,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Turning `multiple` on or off reshapes a Select or ChoiceChips value in the Kerf UI editor.** A picked value became the wrong shape when `multiple` changed. Now one value becomes a one-entry list and a list keeps its first entry, in the same undo step. Renaming a choice's value also renames it inside a list value (`KF-E3MN4B`).
 - **A prop typed with a lone `true` or `false` no longer offers the other boolean.** `component-props.json` folded any boolean literal in a union into `boolean`, so the Kerf UI editor offered `false` for Button's `badge` (`string | number | true`) and `true` for Combobox's `createLabel` (`string | false`). A lone literal now stays a `literal` member (`KF-FY62FK`).
 - **The Kerf UI editor picks several values for an array `value`.** A CheckboxGroup's value, and a ChoiceChips value once `multiple` is on, now get a checkbox per choice instead of a single-choice Select that wrote one string of the wrong type; none checked is `[]`. A required string value (SegmentedControl) can also be set to `Empty ("")` for its no-selection state (`KF-8MEWP2`).
 - **A TextField's spell checking can be turned off in the Kerf UI editor.** Browsers check spelling when `spellcheck` is unset, and the Inspector's switch cleared the prop when turned off, so `spellcheck: false` couldn't be written. It now edits as a Not set / Off / On select, as a toggle's `pressed` does (`KF-38KD5N`).

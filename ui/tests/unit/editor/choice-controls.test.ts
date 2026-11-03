@@ -10,6 +10,7 @@ import {
   choiceOptions,
   controlFor,
   followChoiceRename,
+  reshapeValue,
   valueChoices,
   valueFromControl,
   valuePicker,
@@ -398,6 +399,53 @@ describe('a value picked from its choices (KF-9AWGPS)', () => {
     expect(props().value).toBe('');
     // An empty value reads as picked, not as a value outside the choices.
     expect(value().textContent).not.toContain('not one of the choices');
+  });
+
+  // KF-E3MN4B: `multiple` decides the value's shape.
+  it('reshapes a value for multiple and follows renames into a list', () => {
+    expect(reshapeValue(undefined, true)).toBeUndefined();
+    expect(reshapeValue('a', true)).toEqual(['a']);
+    expect(reshapeValue(['a'], true)).toEqual(['a']);
+    expect(reshapeValue(['a', 'b'], false)).toBe('a');
+    expect(reshapeValue([], false)).toBeUndefined();
+    expect(reshapeValue({ $param: 'x' }, true)).toEqual({ $param: 'x' });
+    const props = {
+      value: ['a', 'b'],
+      choices: [{ value: 'a' }, { value: 'b' }],
+    } as never;
+    expect(followChoiceRename(props, 0, 'ay')).toMatchObject({
+      value: ['ay', 'b'],
+    });
+    expect(
+      followChoiceRename(
+        { ...(props as object), value: ['b'] } as never,
+        0,
+        'ay',
+      ),
+    ).toMatchObject({ value: ['b'] });
+  });
+
+  it('turns a Select’s value into a list with multiple, and back', () => {
+    const { root, props } = added('@kerfjs/ui:select');
+    choose(
+      field(
+        root,
+        '[data-editor-prop="value"][data-editor-kind="value-choice"]',
+      ),
+      '"choice-2"',
+    );
+    const multiple = () =>
+      field(root, '[data-editor-prop="multiple"] input[type="checkbox"]');
+    multiple().click();
+    expect(props()).toMatchObject({ multiple: true, value: ['choice-2'] });
+    // One undo step undoes both.
+    field(root, '[data-action="editor-undo"]').click();
+    expect(props().value).toBe('choice-2');
+    expect(props()).not.toHaveProperty('multiple');
+    field(root, '[data-action="editor-redo"]').click();
+    expect(props().value).toEqual(['choice-2']);
+    multiple().click();
+    expect(props().value).toBe('choice-2');
   });
 
   // KF-ZAQQFK: a field form’s open member (a tab's count badge) commits

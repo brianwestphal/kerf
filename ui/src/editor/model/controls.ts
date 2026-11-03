@@ -977,9 +977,25 @@ export function valuePicker(
 }
 
 /**
+ * `value` reshaped for a node whose value picker is now `multiple` or not
+ * (KF-E3MN4B): turning `multiple` on makes a single value a one-entry list,
+ * and turning it off keeps a list's first entry (none when it is empty). A
+ * binding, or a value already the right shape, is returned as it is.
+ */
+export function reshapeValue(
+  value: ViewValue | undefined,
+  multiple: boolean,
+): ViewValue | undefined {
+  if (value === undefined || isBinding(value)) return value;
+  if (multiple) return Array.isArray(value) ? value : [value];
+  return Array.isArray(value) ? (value as readonly ViewValue[])[0] : value;
+}
+
+/**
  * `props` after choice `index`'s value changes to `next` (KF-9AWGPS): a
  * single `value` that named the old value names the new one, so renaming
- * the selected choice keeps it selected. Unchanged otherwise.
+ * the selected choice keeps it selected; in a list value, that entry is
+ * renamed (KF-E3MN4B). Unchanged otherwise.
  */
 export function followChoiceRename(
   props: Readonly<Record<string, ViewValue>>,
@@ -991,7 +1007,11 @@ export function followChoiceRename(
       index
     ] ?? {}
   ).value;
-  return old !== undefined && props.value === old && next !== undefined
-    ? { ...props, value: next }
-    : props;
+  if (old === undefined || next === undefined) return props;
+  if (Array.isArray(props.value) && props.value.includes(old))
+    return {
+      ...props,
+      value: props.value.map((item: ViewValue) => (item === old ? next : item)),
+    };
+  return props.value === old ? { ...props, value: next } : props;
 }

@@ -153,6 +153,7 @@ import {
   CUSTOM_SIZE,
   followChoiceRename,
   isBinding,
+  reshapeValue,
   type SeedCatalog,
   seedNode,
   typeLabel,
@@ -4002,7 +4003,24 @@ export function createEditor(options: EditorOptions) {
       if (fieldErrors.value[name]) fieldErrors.value = {};
       return;
     }
-    commit(setProp(doc.value, id, name, result.value));
+    let next = setProp(doc.value, id, name, result.value);
+    // KF-E3MN4B: switching `multiple` reshapes the value it picks, in the
+    // same undo step: one value becomes a list of it, a list its first.
+    const valueProp =
+      name === 'multiple'
+        ? propsByKey.get(node.type)!.props.find((item) => item.name === 'value')
+        : undefined;
+    if (valueProp) {
+      const after = findNode(next, id)!.node.props;
+      const reshaped = reshapeValue(
+        after?.value,
+        valuePicker(valueProp.type as never, valueProp.required, after)
+          .multiple,
+      );
+      if (JSON.stringify(reshaped) !== JSON.stringify(after?.value))
+        next = setProp(next, id, 'value', reshaped as ViewValue);
+    }
+    commit(next);
   };
 
   /** Writes `next` at a field editor's place in the selected node's prop. */
