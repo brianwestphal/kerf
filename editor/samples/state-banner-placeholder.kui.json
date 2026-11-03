@@ -1,0 +1,28 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "StateBannerPlaceholder",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:state-banner",
+          "props": {
+            "title": "Syncing Workspace",
+            "tone": "neutral",
+            "placeholder": true,
+            "detail": "Fetching the latest changes."
+          }
+        }
+      ]
+    }
+  }
+}

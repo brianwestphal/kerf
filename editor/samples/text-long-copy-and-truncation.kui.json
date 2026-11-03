@@ -1,0 +1,114 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TextLongCopyAndTruncation",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "DOCUMENT-2026-OCTOBER-PROCUREMENT-VERY-LONG-UNBROKEN-REFERENCE-123456789",
+            "wrap": "anywhere",
+            "rootAttributes": {
+              "data-demo-copy": "anywhere"
+            }
+          }
+        },
+        {
+          "id": "00000000000000000000000003",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "A long summary can stop after two lines while retaining a useful preview of the original message. Additional detail stays available in the full record, and the summary keeps the surrounding layout compact.",
+            "wrap": "normal",
+            "maxLines": 2,
+            "rootAttributes": {
+              "data-demo-copy": "capped"
+            }
+          }
+        },
+        {
+          "id": "00000000000000000000000004",
+          "type": "@kerfjs/ui:row",
+          "props": {
+            "gap": "xs",
+            "controlInsets": "rl"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "Acme International Procurement and Manufacturing Limited",
+                  "variant": "span",
+                  "wrap": "truncate",
+                  "rootAttributes": {
+                    "data-demo-copy": "truncate"
+                  }
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "$129 / unit",
+                  "variant": "span",
+                  "wrap": "nowrap",
+                  "rootAttributes": {
+                    "data-demo-copy": "price"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "00000000000000000000000007",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "This status stays on one line.",
+            "wrap": "nowrap",
+            "rootAttributes": {
+              "data-demo-copy": "nowrap"
+            }
+          }
+        },
+        {
+          "id": "00000000000000000000000008",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "src/components/navigation/application-tabs/internal/tab-overflow-menu.tsx",
+            "wrap": "truncate",
+            "truncate": "middle",
+            "font": "monospace",
+            "rootAttributes": {
+              "data-demo-copy": "truncate-middle"
+            }
+          }
+        },
+        {
+          "id": "00000000000000000000000009",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "feature/kf-482-procurement-approval-routing-refactor",
+            "wrap": "truncate",
+            "truncate": "start",
+            "font": "monospace",
+            "rootAttributes": {
+              "data-demo-copy": "truncate-start"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

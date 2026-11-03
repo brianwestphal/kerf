@@ -14106,6 +14106,670 @@ test('builds ContentSwap › Crossfade', async ({ page }) => {
   );
 });
 
+/** A root-level Text: its copy, a FieldSpec, and its builder-call css. */
+type RootText = {
+  readonly text: string;
+  readonly spec?: FieldSpec;
+  readonly css?: Readonly<Record<string, string>>;
+};
+
+/**
+ * Places one Text per entry at the document's root, in order. A demo's
+ * native `data-demo-copy` attribute is the Text's root data attribute.
+ */
+async function rootTexts(page: Page, texts: readonly RootText[]) {
+  for (const [index, { text, spec = {}, css = {} }] of texts.entries()) {
+    if (index === 0) {
+      await dragComponent(page, 'Text', () => emptySpot(page));
+      await select(page, /^Text(?![A-Z])/);
+    } else await addInto(page, /^Pane/, 'Text');
+    await applySpec(page, { ...spec, text: { children: text, ...spec.text } });
+    for (const [name, value] of Object.entries(css))
+      await setCss(page, name, value);
+  }
+}
+
+test('builds Text › Strong Emphasis', async ({ page }) => {
+  await rootTexts(page, [
+    {
+      text: 'Release Notes',
+      spec: { choices: { variant: 'span', weight: 'strong' } },
+    },
+    {
+      text: 'Updated a moment ago',
+      spec: { choices: { variant: 'span', tone: 'quiet', size: 'compact' } },
+    },
+  ]);
+  expect(await exported(page)).toEqual(
+    pane(
+      textNode('Release Notes', { variant: 'span', weight: 'strong' }),
+      textNode('Updated a moment ago', {
+        variant: 'span',
+        tone: 'quiet',
+        size: 'compact',
+      }),
+    ),
+  );
+});
+
+test('builds Text › Text Colors', async ({ page }) => {
+  await rootTexts(page, [
+    { text: 'Inherited foreground' },
+    {
+      text: 'Warning foreground',
+      css: { color: "uiColor('warning-on-quiet')" },
+    },
+    {
+      text: 'Application foreground',
+      css: { color: "foregroundColor('rebeccapurple')" },
+    },
+    {
+      text: 'Explicit color overrides tone',
+      spec: { choices: { tone: 'danger' } },
+      css: { color: "uiColor('text-quiet')" },
+    },
+  ]);
+  expect(await exported(page)).toEqual(
+    pane(
+      textNode('Inherited foreground'),
+      textNode('Warning foreground', {
+        color: { $css: "uiColor('warning-on-quiet')" },
+      }),
+      textNode('Application foreground', {
+        color: { $css: "foregroundColor('rebeccapurple')" },
+      }),
+      textNode('Explicit color overrides tone', {
+        tone: 'danger',
+        color: { $css: "uiColor('text-quiet')" },
+      }),
+    ),
+  );
+});
+
+test('builds Text › Group Title', async ({ page }) => {
+  const title =
+    'Attachments from the March design review with the extended team';
+  await rootTexts(page, [
+    {
+      text: title,
+      spec: {
+        choices: { variant: 'h3', size: 'medium' },
+        data: [['data-demo-copy', 'medium-heading']],
+      },
+    },
+  ]);
+  expect(await exported(page)).toEqual(
+    pane(
+      textNode(title, {
+        variant: 'h3',
+        size: 'medium',
+        rootAttributes: { 'data-demo-copy': 'medium-heading' },
+      }),
+    ),
+  );
+});
+
+test('builds Text › Flush Dialog Copy', async ({ page }) => {
+  await rootTexts(page, [
+    {
+      text: 'Compact supporting copy inside a dialog body.',
+      spec: {
+        choices: { lineHeight: 'tight' },
+        flags: ['flush'],
+        data: [['data-demo-copy', 'flush']],
+      },
+    },
+  ]);
+  expect(await exported(page)).toEqual(
+    pane(
+      textNode('Compact supporting copy inside a dialog body.', {
+        flush: true,
+        lineHeight: 'tight',
+        rootAttributes: { 'data-demo-copy': 'flush' },
+      }),
+    ),
+  );
+});
+
+test('builds Text › Centered Status Copy', async ({ page }) => {
+  const status =
+    'The terminal could not start. Check the shell path in settings, then try again.';
+  await rootTexts(page, [
+    {
+      text: status,
+      spec: {
+        choices: { align: 'center', tone: 'quiet' },
+        data: [['data-demo-copy', 'align-center']],
+      },
+    },
+    {
+      text: 'Total: 42 items',
+      spec: {
+        choices: { align: 'end' },
+        data: [['data-demo-copy', 'align-end']],
+      },
+    },
+  ]);
+  expect(await exported(page)).toEqual(
+    pane(
+      textNode(status, {
+        align: 'center',
+        tone: 'quiet',
+        rootAttributes: { 'data-demo-copy': 'align-center' },
+      }),
+      textNode('Total: 42 items', {
+        align: 'end',
+        rootAttributes: { 'data-demo-copy': 'align-end' },
+      }),
+    ),
+  );
+});
+
+test('builds Text › Long Copy and Truncation', async ({ page }) => {
+  test.slow();
+  const id =
+    'DOCUMENT-2026-OCTOBER-PROCUREMENT-VERY-LONG-UNBROKEN-REFERENCE-123456789';
+  const summary =
+    'A long summary can stop after two lines while retaining a useful preview of the original message. Additional detail stays available in the full record, and the summary keeps the surrounding layout compact.';
+  const path =
+    'src/components/navigation/application-tabs/internal/tab-overflow-menu.tsx';
+  const branch = 'feature/kf-482-procurement-approval-routing-refactor';
+  const hook = (value: string) => [['data-demo-copy', value]] as const;
+  await rootTexts(page, [
+    {
+      text: id,
+      spec: { choices: { wrap: 'anywhere' }, data: hook('anywhere') },
+    },
+    {
+      text: summary,
+      spec: {
+        choices: { wrap: 'normal' },
+        text: { maxLines: '2' },
+        data: hook('capped'),
+      },
+    },
+  ]);
+  // A truncating name yields to a fixed price in a Row.
+  await addInto(page, /^Pane/, 'Row');
+  await applySpec(page, { choices: { gap: 'xs', controlInsets: 'rl' } });
+  await textInto(
+    page,
+    /^Row/,
+    'Acme International Procurement and Manufacturing Limited',
+    0,
+    {
+      choices: { variant: 'span', wrap: 'truncate' },
+      data: hook('truncate'),
+    },
+  );
+  await textInto(page, /^Row/, '$129 / unit', 0, {
+    choices: { variant: 'span', wrap: 'nowrap' },
+    data: hook('price'),
+  });
+  for (const [text, spec] of [
+    [
+      'This status stays on one line.',
+      { choices: { wrap: 'nowrap' }, data: hook('nowrap') },
+    ],
+    [
+      path,
+      {
+        choices: { wrap: 'truncate', truncate: 'middle', font: 'monospace' },
+        data: hook('truncate-middle'),
+      },
+    ],
+    [
+      branch,
+      {
+        choices: { wrap: 'truncate', truncate: 'start', font: 'monospace' },
+        data: hook('truncate-start'),
+      },
+    ],
+  ] as const) {
+    await addInto(page, /^Pane/, 'Text');
+    await applySpec(page, { ...spec, text: { children: text } });
+  }
+  const copy = (value: string) => ({
+    rootAttributes: { 'data-demo-copy': value },
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      textNode(id, { wrap: 'anywhere', ...copy('anywhere') }),
+      textNode(summary, { wrap: 'normal', maxLines: 2, ...copy('capped') }),
+      node(
+        'row',
+        { gap: 'xs', controlInsets: 'rl' },
+        {
+          children: [
+            textNode(
+              'Acme International Procurement and Manufacturing Limited',
+              {
+                variant: 'span',
+                wrap: 'truncate',
+                ...copy('truncate'),
+              },
+            ),
+            textNode('$129 / unit', {
+              variant: 'span',
+              wrap: 'nowrap',
+              ...copy('price'),
+            }),
+          ],
+        },
+      ),
+      textNode('This status stays on one line.', {
+        wrap: 'nowrap',
+        ...copy('nowrap'),
+      }),
+      textNode(path, {
+        wrap: 'truncate',
+        truncate: 'middle',
+        font: 'monospace',
+        ...copy('truncate-middle'),
+      }),
+      textNode(branch, {
+        wrap: 'truncate',
+        truncate: 'start',
+        font: 'monospace',
+        ...copy('truncate-start'),
+      }),
+    ),
+  );
+});
+
+/** A LucideIcon's glyph, its name, and the rest of its setup. */
+type IconSpec = {
+  readonly glyph: string;
+  readonly name: string;
+  readonly spec?: FieldSpec;
+  readonly css?: Readonly<Record<string, string>>;
+};
+
+/** Sets up the selected LucideIcon: its glyph, name, props and css. */
+async function setupIcon(
+  page: Page,
+  { glyph, name, spec = {}, css = {} }: IconSpec,
+) {
+  await pickIcon(page, page.locator('[data-editor-icon-place]'), glyph);
+  await applySpec(page, { ...spec, text: { name, ...spec.text } });
+  for (const [prop, value] of Object.entries(css))
+    await setCss(page, prop, value);
+}
+
+/** One LucideIcon at the document's root. */
+async function rootIcon(page: Page, icon: IconSpec) {
+  await dragComponent(page, 'LucideIcon', () => emptySpot(page));
+  await select(page, /^LucideIcon/);
+  await setupIcon(page, icon);
+}
+
+/** A Row (gap m, data hook) of LucideIcons. */
+async function iconRow(page: Page, hook: string, icons: readonly IconSpec[]) {
+  await dragComponent(page, 'Row', () => emptySpot(page));
+  await select(page, /^Row/);
+  await applySpec(page, { choices: { gap: 'm' }, data: [[hook, '']] });
+  for (const entry of icons) {
+    await addInto(page, /^Row/, 'LucideIcon');
+    await setupIcon(page, entry);
+  }
+}
+
+/** The LucideIcon node an IconSpec builds, given its other exported props. */
+const iconNode = (
+  { glyph, name }: IconSpec,
+  props: Record<string, unknown> = {},
+) => node('lucide-icon', { icon: { $icon: glyph }, name, ...props });
+
+test('builds LucideIcon › Decorative', async ({ page }) => {
+  const bell = { glyph: 'bell', name: 'bell' };
+  await rootIcon(page, bell);
+  expect(await exported(page)).toEqual(pane(iconNode(bell)));
+});
+
+test('builds LucideIcon › Meaningful', async ({ page }) => {
+  const bell = {
+    glyph: 'bell',
+    name: 'notification',
+    spec: { text: { label: 'Notifications Ready' } },
+  };
+  await rootIcon(page, bell);
+  expect(await exported(page)).toEqual(
+    pane(iconNode(bell, { label: 'Notifications Ready' })),
+  );
+});
+
+test('builds LucideIcon › Status with Hover Text', async ({ page }) => {
+  const bell = {
+    glyph: 'bell',
+    name: 'bell-status',
+    spec: {
+      choices: { size: 'l' },
+      text: {
+        label: 'Notifications Paused',
+        title: 'Notifications resume at 9:00',
+      },
+    },
+  };
+  await rootIcon(page, bell);
+  expect(await exported(page)).toEqual(
+    pane(
+      iconNode(bell, {
+        label: 'Notifications Paused',
+        title: 'Notifications resume at 9:00',
+        size: 'l',
+      }),
+    ),
+  );
+});
+
+test('builds LucideIcon › Icon Sizes', async ({ page }) => {
+  const named = ['xs', 's', 'm', 'l', 'xl'].map((size) => ({
+    glyph: 'bell',
+    name: `bell-${size}`,
+    spec: { choices: { size } },
+  }));
+  const thirty = {
+    glyph: 'bell',
+    name: 'bell-30',
+    spec: { unions: { size: ['Number…', '30'] as const } },
+  };
+  await iconRow(page, 'data-demo-icon-sizes', [...named, thirty]);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'row',
+        { gap: 'm', rootAttributes: { 'data-demo-icon-sizes': '' } },
+        {
+          children: [
+            ...named.map((entry) =>
+              iconNode(entry, { size: entry.spec.choices.size }),
+            ),
+            iconNode(thirty, { size: 30 }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds LucideIcon › Outline and Solid', async ({ page }) => {
+  const outline = { glyph: 'star', name: 'star-outline' };
+  const solid = {
+    glyph: 'star',
+    name: 'star-solid',
+    spec: { choices: { appearance: 'solid' } },
+  };
+  await iconRow(page, 'data-demo-icon-appearance', [outline, solid]);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'row',
+        { gap: 'm', rootAttributes: { 'data-demo-icon-appearance': '' } },
+        {
+          children: [
+            iconNode(outline),
+            iconNode(solid, { appearance: 'solid' }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds LucideIcon › Icon Colors', async ({ page }) => {
+  const inherited = { glyph: 'bell', name: 'bell-inherited' };
+  const warning = {
+    glyph: 'bell',
+    name: 'bell-warning',
+    css: { color: "uiColor('warning-on-quiet')" },
+  };
+  const custom = {
+    glyph: 'star',
+    name: 'star-custom',
+    spec: { choices: { appearance: 'solid' } },
+    css: { color: "foregroundColor('rebeccapurple')" },
+  };
+  await iconRow(page, 'data-demo-icon-colors', [inherited, warning, custom]);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'row',
+        { gap: 'm', rootAttributes: { 'data-demo-icon-colors': '' } },
+        {
+          children: [
+            iconNode(inherited),
+            iconNode(warning, {
+              color: { $css: "uiColor('warning-on-quiet')" },
+            }),
+            iconNode(custom, {
+              appearance: 'solid',
+              color: { $css: "foregroundColor('rebeccapurple')" },
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+/** A root StateBanner set up by `spec`, with an icon and a pill Button. */
+async function rootBanner(
+  page: Page,
+  spec: FieldSpec,
+  glyph?: string,
+  action?: string,
+) {
+  await dragComponent(page, 'StateBanner', () => emptySpot(page));
+  await select(page, /^StateBanner/);
+  await applySpec(page, spec);
+  if (glyph) {
+    await addChild(page, 'LucideIcon', 'icon');
+    await pickIcon(page, page.locator('[data-editor-icon-place]'), glyph);
+  }
+  if (action) {
+    await select(page, /^StateBanner/);
+    await addChild(page, 'Button', 'action');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { size: 'compact', shape: 'pill' },
+      text: { children: action },
+    });
+  }
+}
+
+// The catalog viewport's banner tokens are not the view's.
+test('builds StateBanner › Scoped Override', async ({ page }) => {
+  await rootBanner(
+    page,
+    {
+      choices: { tone: 'info' },
+      text: {
+        title: 'Consumer Palette',
+        detail: 'Only this instance uses the override.',
+      },
+    },
+    'check',
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'state-banner',
+        {
+          tone: 'info',
+          title: 'Consumer Palette',
+          detail: 'Only this instance uses the override.',
+        },
+        { icon: [icon('check')] },
+      ),
+    ),
+  );
+});
+
+test('builds StateBanner › Strip', async ({ page }) => {
+  await rootBanner(
+    page,
+    {
+      choices: {
+        presentation: 'strip',
+        tone: 'warning',
+        copyLayout: 'stacked',
+      },
+      text: {
+        title: 'Notifications Paused',
+        detail: 'Desktop alerts resume when you reconnect.',
+      },
+    },
+    'circle-question-mark',
+    'Resume',
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'state-banner',
+        {
+          presentation: 'strip',
+          tone: 'warning',
+          title: 'Notifications Paused',
+          detail: 'Desktop alerts resume when you reconnect.',
+          copyLayout: 'stacked',
+        },
+        {
+          icon: [icon('circle-question-mark')],
+          action: [
+            node('button', {
+              children: 'Resume',
+              size: 'compact',
+              shape: 'pill',
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds StateBanner › Placeholder', async ({ page }) => {
+  await rootBanner(page, {
+    choices: { tone: 'neutral' },
+    flags: ['placeholder'],
+    text: {
+      title: 'Syncing Workspace',
+      detail: 'Fetching the latest changes.',
+    },
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      node('state-banner', {
+        tone: 'neutral',
+        title: 'Syncing Workspace',
+        detail: 'Fetching the latest changes.',
+        placeholder: true,
+      }),
+    ),
+  );
+});
+
+// progressDemoFiles starts at 3 of 12; Upload Next File is the app's.
+test('builds ProgressBar › Determinate', async ({ page }) => {
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List(?![A-Z])/);
+  await choose(page, 'gap', 'xs');
+  await addChild(page, 'ProgressBar');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    flags: ['showValue'],
+    text: {
+      id: 'progress-bar-demo-upload',
+      label: 'Uploading Files',
+      value: '3',
+      max: '12',
+      valueText: '3 of 12 files',
+    },
+  });
+  await addInto(page, /^List(?![A-Z])/, 'Row');
+  await addChild(page, 'Button');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    text: { children: 'Upload Next File', action: 'step-progress-demo' },
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { gap: 'xs' },
+        {
+          children: [
+            node('progress-bar', {
+              id: 'progress-bar-demo-upload',
+              label: 'Uploading Files',
+              value: 3,
+              max: 12,
+              valueText: '3 of 12 files',
+              showValue: true,
+            }),
+            node('row', undefined, {
+              children: [
+                node('button', {
+                  children: 'Upload Next File',
+                  action: 'step-progress-demo',
+                }),
+              ],
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds ProgressRing › Sizes', async ({ page }) => {
+  const sizes = ['small', 'medium', 'large'];
+  await dragComponent(page, 'Row', () => emptySpot(page));
+  await select(page, /^Row/);
+  await applySpec(page, { choices: { gap: 'm', vAlign: 'middle' } });
+  for (const size of sizes) {
+    await addInto(page, /^Row/, 'ProgressRing');
+    await applySpec(page, {
+      choices: { size },
+      text: {
+        label: `Upload Progress, ${size}`,
+        value: '3',
+        max: '12',
+        valueText: '3 of 12 files',
+      },
+    });
+  }
+  await addInto(page, /^Row/, 'Button');
+  await applySpec(page, {
+    text: { children: 'Upload Next File', action: 'step-progress-demo' },
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'row',
+        { gap: 'm', vAlign: 'middle' },
+        {
+          children: [
+            ...sizes.map((size) =>
+              node('progress-ring', {
+                label: `Upload Progress, ${size}`,
+                value: 3,
+                max: 12,
+                valueText: '3 of 12 files',
+                size,
+              }),
+            ),
+            node('button', {
+              children: 'Upload Next File',
+              action: 'step-progress-demo',
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
 /** A ToolbarText node as the exported document spells it. */
 const toolbarTextNode = (text: string, size?: string) =>
   node('toolbar-text', { text, ...(size ? { size } : {}) });

@@ -1,0 +1,57 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ProgressBarDeterminate",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "gap": "xs"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:progress-bar",
+                "props": {
+                  "label": "Uploading Files",
+                  "showValue": true,
+                  "id": "progress-bar-demo-upload",
+                  "value": 3,
+                  "max": 12,
+                  "valueText": "3 of 12 files"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:row",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:button",
+                      "props": {
+                        "children": "Upload Next File",
+                        "action": "step-progress-demo"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

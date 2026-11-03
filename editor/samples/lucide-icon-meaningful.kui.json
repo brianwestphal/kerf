@@ -1,0 +1,29 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "LucideIconMeaningful",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:lucide-icon",
+          "props": {
+            "icon": {
+              "$icon": "bell"
+            },
+            "name": "notification",
+            "label": "Notifications Ready"
+          }
+        }
+      ]
+    }
+  }
+}

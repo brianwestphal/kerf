@@ -1,0 +1,56 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TextTextColors",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Inherited foreground"
+          }
+        },
+        {
+          "id": "00000000000000000000000003",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Warning foreground",
+            "color": {
+              "$css": "uiColor('warning-on-quiet')"
+            }
+          }
+        },
+        {
+          "id": "00000000000000000000000004",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Application foreground",
+            "color": {
+              "$css": "foregroundColor('rebeccapurple')"
+            }
+          }
+        },
+        {
+          "id": "00000000000000000000000005",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Explicit color overrides tone",
+            "tone": "danger",
+            "color": {
+              "$css": "uiColor('text-quiet')"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

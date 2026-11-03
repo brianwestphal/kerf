@@ -1,0 +1,69 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "LucideIconIconColors",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:row",
+          "props": {
+            "gap": "m",
+            "rootAttributes": {
+              "data-demo-icon-colors": ""
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "bell"
+                  },
+                  "name": "bell-inherited"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "bell"
+                  },
+                  "name": "bell-warning",
+                  "color": {
+                    "$css": "uiColor('warning-on-quiet')"
+                  }
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "star"
+                  },
+                  "name": "star-custom",
+                  "appearance": "solid",
+                  "color": {
+                    "$css": "foregroundColor('rebeccapurple')"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

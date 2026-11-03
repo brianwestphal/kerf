@@ -1,0 +1,98 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "LucideIconIconSizes",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:row",
+          "props": {
+            "gap": "m",
+            "rootAttributes": {
+              "data-demo-icon-sizes": ""
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "bell"
+                  },
+                  "name": "bell-xs",
+                  "size": "xs"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "bell"
+                  },
+                  "name": "bell-s",
+                  "size": "s"
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "bell"
+                  },
+                  "name": "bell-m",
+                  "size": "m"
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "bell"
+                  },
+                  "name": "bell-l",
+                  "size": "l"
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "bell"
+                  },
+                  "name": "bell-xl",
+                  "size": "xl"
+                }
+              },
+              {
+                "id": "00000000000000000000000008",
+                "type": "@kerfjs/ui:lucide-icon",
+                "props": {
+                  "icon": {
+                    "$icon": "bell"
+                  },
+                  "name": "bell-30",
+                  "size": 30
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TextFlushDialogCopy",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Compact supporting copy inside a dialog body.",
+            "lineHeight": "tight",
+            "flush": true,
+            "rootAttributes": {
+              "data-demo-copy": "flush"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
