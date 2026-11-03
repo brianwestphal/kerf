@@ -564,7 +564,12 @@ describe('ai/component-props.json (generated from the built package)', async () 
 
   it('a second component of one entry gets an export-qualified key', () => {
     expect(component('@kerfjs/ui:text#FieldLabel').export).toBe('FieldLabel');
-    expect(component('@kerfjs/ui:text').nativeAttributes).toContain('lang');
+    expect(component('@kerfjs/ui:text').nativeAttributes).toContain('dir');
+    // KF-AC7AFR: `lang` is a declared Text prop, not a native attribute.
+    expect(component('@kerfjs/ui:text').nativeAttributes).not.toContain('lang');
+    expect(
+      component('@kerfjs/ui:text').props.map((prop) => prop.name),
+    ).toContain('lang');
   });
 
   it('Web Awesome elements come from custom-elements.json', () => {
