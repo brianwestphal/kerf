@@ -11,6 +11,7 @@ import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
 import { Select } from '@kerfjs/ui/select';
+import { TextField } from '@kerfjs/ui/text-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { Workbench } from '@kerfjs/ui/workbench';
@@ -385,7 +386,7 @@ export function PaneDemo() {
           main={<ContentItem>Welcome to the conversation</ContentItem>}
           mainFooter={
             <ContentItem>
-              <input aria-label="Message" placeholder="Write a message" />
+              <TextField ariaLabel="Message" placeholder="Write a message" />
             </ContentItem>
           }
         />

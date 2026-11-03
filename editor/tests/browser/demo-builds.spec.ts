@@ -14519,6 +14519,140 @@ test('builds ContentItem › Mixed Selectable and Non-Selectable Rows', async ({
   );
 });
 
+/**
+ * A sunken-main Workbench `id`, labeled `label`, in a SizedRegion: its
+ * seeded main Text becomes a ContentItem reading `main`.
+ */
+async function sunkenWorkbench(
+  page: Page,
+  id: string,
+  label: string,
+  main: string,
+) {
+  await dragComponent(page, 'Workbench', () => emptySpot(page));
+  await select(page, /^Workbench/);
+  // Below the root it needs a height of its own (KF-6MGYSG).
+  await embedIn(page, 'SizedRegion');
+  await select(page, /^Workbench/);
+  await setText(page, 'id', id);
+  await setText(page, 'label', label);
+  await select(page, /^Text/);
+  await deleteSelected(page);
+  await select(page, /^Workbench/);
+  await addChild(page, 'ContentItem', 'main');
+  await area(page, 'Properties');
+  await setText(page, 'children', main);
+  await select(page, /^Workbench/);
+  // A PaneConfig form is large enough to open in a dialog.
+  await configure(page, 'mainPane');
+  await chooseField(page, 'mainPane', ['appearance'], 'sunken');
+  await page
+    .locator('dialog[open]')
+    .getByRole('button', { name: 'Done' })
+    .click();
+}
+
+/** A ContentItem node reading `text`. */
+const textItemNode = (text: string) => node('content-item', { children: text });
+
+// KF-W5N3MK: Pane › Edge-to-Edge Table (Regular Content Inset and Deep
+// Inset) are not built. Their table is app-owned markup styled by app CSS
+// that reads the Pane's inset variables, which is what those examples
+// demonstrate; a view document holds only components.
+test('builds Pane › Sunken Chat Workspace', async ({ page }) => {
+  test.slow();
+  await sunkenWorkbench(
+    page,
+    'sunken-chat',
+    'Chat Workspace',
+    'Welcome to the conversation',
+  );
+  await select(page, /^Workbench/);
+  await addChild(page, 'ContentItem', 'mainFooter');
+  await addChild(page, 'TextField');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    text: { ariaLabel: 'Message', placeholder: 'Write a message' },
+    unsets: ['label'],
+  });
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      sized(
+        node(
+          'workbench',
+          {
+            id: 'sunken-chat',
+            label: 'Chat Workspace',
+            mainPane: { appearance: 'sunken' },
+          },
+          {
+            main: [textItemNode('Welcome to the conversation')],
+            mainFooter: [
+              node('content-item', undefined, {
+                children: [
+                  node('text-field', {
+                    ariaLabel: 'Message',
+                    placeholder: 'Write a message',
+                  }),
+                ],
+              }),
+            ],
+          },
+        ),
+      ),
+    ),
+  );
+});
+
+test('builds Pane › Sunken Workbench Regions Without Pane Chrome', async ({
+  page,
+}) => {
+  test.slow();
+  await sunkenWorkbench(
+    page,
+    'sunken-raw-workbench',
+    'Bare Work Regions',
+    'Main work area',
+  );
+  await select(page, /^Workbench/);
+  await choose(page, 'leftRail', 'Static panel…');
+  await configure(page, 'leftRail');
+  await setField(page, 'leftRail', ['label'], 'Navigator');
+  await openField(page, 'leftRail', ['pane']);
+  await chooseField(page, 'leftRail', ['pane', 'appearance'], 'sunken');
+  await back(page);
+  await back(page);
+  await dragComponent(page, 'ContentItem', () =>
+    canvas(page).locator('[data-editor-empty]', {
+      hasText: 'leftRailContent slot — drop here',
+    }),
+  );
+  // The rail sorts before the main area in the outline.
+  await select(page, /^ContentItem/, 0);
+  await setText(page, 'children', 'Navigator');
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      sized(
+        node(
+          'workbench',
+          {
+            id: 'sunken-raw-workbench',
+            label: 'Bare Work Regions',
+            mainPane: { appearance: 'sunken' },
+            leftRail: { label: 'Navigator', pane: { appearance: 'sunken' } },
+          },
+          {
+            main: [textItemNode('Main work area')],
+            'leftRail.content': [textItemNode('Navigator')],
+          },
+        ),
+      ),
+    ),
+  );
+});
+
 test('builds Pane › Focusable Pane and Persistent Outline', async ({
   page,
 }) => {

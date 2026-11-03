@@ -1,0 +1,68 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "PaneSunkenWorkbenchRegionsWithoutPaneChrome",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:sized-region",
+          "props": {
+            "minHeight": {
+              "$css": "rem(20)"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:workbench",
+                "props": {
+                  "id": "sunken-raw-workbench",
+                  "label": "Bare Work Regions",
+                  "mainPane": {
+                    "appearance": "sunken"
+                  },
+                  "leftRail": {
+                    "label": "Navigator",
+                    "pane": {
+                      "appearance": "sunken"
+                    }
+                  }
+                },
+                "zones": {
+                  "main": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "children": "Main work area"
+                      }
+                    }
+                  ],
+                  "leftRail.content": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "children": "Navigator"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
