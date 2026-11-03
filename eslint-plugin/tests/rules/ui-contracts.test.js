@@ -1495,6 +1495,39 @@ tester.run('ui-preferences', preferences, {
   ],
 });
 
+// KF-M2F5K4: a Web Awesome appearance-scope class does nothing without its
+// theme, so KUI-L302 points at the Kerf scope instead.
+tester.run('ui-preferences Web Awesome scope classes', preferences, {
+  valid: [
+    { code: '<div className="kui-dark card" />;', settings },
+    { code: '<div class="wa-darkish wa-light-ish" />;', settings },
+    { code: '<div className={theme} />;', settings },
+    { code: '<div title="wa-dark" />;', settings },
+  ],
+  invalid: [
+    {
+      code: '<div className="wa-dark" />;',
+      settings,
+      errors: [{ messageId: 'scope', data: { name: 'wa-dark' } }],
+    },
+    {
+      code: '<section class="panel wa-invert" />;',
+      settings,
+      errors: [{ messageId: 'scope', data: { name: 'wa-invert' } }],
+    },
+    {
+      code: "<div className={'wa-light'} />;",
+      settings,
+      errors: [{ messageId: 'scope', data: { name: 'wa-light' } }],
+    },
+    {
+      code: '<div className={`wa-theme-default ${extra}`} />;',
+      settings,
+      errors: [{ messageId: 'scope', data: { name: 'wa-theme-default' } }],
+    },
+  ],
+});
+
 // The shipped catalogs plus the shipped package-default profile: every
 // Discouraged Web Awesome element authored directly as a JSX tag reports
 // KUI-L301, while a declared wrapper's own source may render what it wraps.
