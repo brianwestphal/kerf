@@ -1,0 +1,50 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "GridTextAndControlInsets",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:grid",
+          "props": {
+            "columns": 2,
+            "textInsets": "l",
+            "controlInsets": "rl",
+            "rootAttributes": {
+              "data-demo-grid-insets": ""
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "Text aligned to the full content inset",
+                  "flush": true
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:text-field",
+                "props": {
+                  "label": "Amount",
+                  "value": "12"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

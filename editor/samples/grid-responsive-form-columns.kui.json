@@ -1,0 +1,48 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "GridResponsiveFormColumns",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:grid",
+          "props": {
+            "gap": "m",
+            "minColumnWidth": {
+              "$css": "px(376)"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:text-field",
+                "props": {
+                  "label": "Provider Name",
+                  "value": "Example provider"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:text-field",
+                "props": {
+                  "label": "API Endpoint",
+                  "value": "https://example.test"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -13365,6 +13365,175 @@ test('builds Disclosure › Accordion', async ({ page }) => {
   );
 });
 
+/** Places a Grid set up by `spec` (and `css`) at the first empty spot. */
+async function grid(
+  page: Page,
+  spec: FieldSpec,
+  css: Readonly<Record<string, string>> = {},
+) {
+  await dragComponent(page, 'Grid', () => emptySpot(page));
+  await select(page, /^Grid/);
+  await applySpec(page, spec);
+  for (const [name, value] of Object.entries(css))
+    await setCss(page, name, value);
+}
+
+/** Adds a framed surface ContentItem reading `text` to the Grid. */
+async function gridTile(page: Page, text: string) {
+  await addInto(page, /^Grid/, 'ContentItem');
+  await applySpec(page, {
+    choices: { appearance: 'surface', frame: 'framed' },
+    text: { children: text },
+  });
+}
+
+const gridTileNode = (children: string) =>
+  node('content-item', { children, appearance: 'surface', frame: 'framed' });
+
+/** Adds a TextField with `label` and `value` to the Grid. */
+async function gridField(page: Page, label: string, value: string) {
+  await addInto(page, /^Grid/, 'TextField');
+  await applySpec(page, { text: { label, value } });
+}
+
+test('builds Grid › Two Columns', async ({ page }) => {
+  await grid(page, { choices: { gap: 'm' }, text: { columns: '2' } });
+  await gridField(page, 'Quantity', '12');
+  await gridField(page, 'Unit', 'pieces');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'grid',
+        { columns: 2, gap: 'm' },
+        {
+          children: [
+            node('text-field', { label: 'Quantity', value: '12' }),
+            node('text-field', { label: 'Unit', value: 'pieces' }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds Grid › Four Columns', async ({ page }) => {
+  const labels = ['Q1', 'Q2', 'Q3', 'Q4 est.'];
+  await grid(page, { choices: { gap: 'xs' }, text: { columns: '4' } });
+  for (const label of labels) await gridTile(page, label);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'grid',
+        { columns: 4, gap: 'xs' },
+        { children: labels.map((label) => gridTileNode(label)) },
+      ),
+    ),
+  );
+});
+
+test('builds Grid › Responsive Form Columns', async ({ page }) => {
+  // The palette's Grid seeds one column; these tracks come from a width.
+  await grid(
+    page,
+    { choices: { gap: 'm' }, text: { columns: '' } },
+    { minColumnWidth: 'px(376)' },
+  );
+  await gridField(page, 'Provider Name', 'Example provider');
+  await gridField(page, 'API Endpoint', 'https://example.test');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'grid',
+        { minColumnWidth: { $css: 'px(376)' }, gap: 'm' },
+        {
+          children: [
+            node('text-field', {
+              label: 'Provider Name',
+              value: 'Example provider',
+            }),
+            node('text-field', {
+              label: 'API Endpoint',
+              value: 'https://example.test',
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds Grid › Text and Control Insets', async ({ page }) => {
+  await grid(page, {
+    choices: { textInsets: 'l', controlInsets: 'rl' },
+    text: { columns: '2' },
+    data: [['data-demo-grid-insets', '']],
+  });
+  await textInto(page, /^Grid/, 'Text aligned to the full content inset', 0, {
+    flags: ['flush'],
+  });
+  await gridField(page, 'Amount', '12');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'grid',
+        {
+          columns: 2,
+          textInsets: 'l',
+          controlInsets: 'rl',
+          rootAttributes: { 'data-demo-grid-insets': '' },
+        },
+        {
+          children: [
+            textNode('Text aligned to the full content inset', { flush: true }),
+            node('text-field', { label: 'Amount', value: '12' }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds Grid › Flex Participation', async ({ page }) => {
+  const labels = ['One', 'Two', 'Three'];
+  await frameShell(page);
+  await dragComponent(page, 'Grid', () => emptySpot(page));
+  await select(page, /^Grid/);
+  await applySpec(page, {
+    choices: { gap: 'xs', flex: 'true' },
+    text: { columns: '3' },
+  });
+  for (const label of labels) await gridTile(page, label);
+  expect(await exported(page)).toEqual(
+    pane(
+      frameShellNode(
+        node(
+          'grid',
+          { columns: 3, gap: 'xs', flex: true },
+          { children: labels.map((label) => gridTileNode(label)) },
+        ),
+      ),
+    ),
+  );
+});
+
+test('builds Grid › Sparse Document Tiles', async ({ page }) => {
+  await grid(
+    page,
+    { choices: { gap: 'm' }, flags: ['autoFill'], text: { columns: '' } },
+    { minColumnWidth: 'px(160)' },
+  );
+  await gridTile(page, 'One document');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'grid',
+        { minColumnWidth: { $css: 'px(160)' }, autoFill: true, gap: 'm' },
+        { children: [gridTileNode('One document')] },
+      ),
+    ),
+  );
+});
+
 /** A ToolbarText node as the exported document spells it. */
 const toolbarTextNode = (text: string, size?: string) =>
   node('toolbar-text', { text, ...(size ? { size } : {}) });
