@@ -439,10 +439,42 @@ const memberName = (member: ViewType): string | undefined => {
  * list (`suggestions` → "Suggestion").
  */
 /**
+ * The fields that set one of several object members apart (KF-BT1YG0):
+ * those it allows and every other member leaves out or forbids (`expanded`
+ * beside `expanded?: never`). Required fields come first, and at most two
+ * name it.
+ */
+function distinctiveFields(
+  members: readonly ViewType[],
+  definitions: Definitions,
+): (string[] | undefined)[] {
+  const allowed = members.map((member) => {
+    const fields = new Map<string, boolean>();
+    for (const field of shape(member, definitions)?.props ?? [])
+      if (shape(field.type, definitions)?.kind !== 'never')
+        fields.set(field.name, field.required ?? false);
+    return fields;
+  });
+  // A lone object beside text is named after its list, not its fields.
+  if (allowed.filter((fields) => fields.size > 0).length < 2)
+    return members.map(() => undefined);
+  return allowed.map((fields, index) => {
+    const own = [...fields]
+      .filter(([name]) =>
+        allowed.every((other, at) => at === index || !other.has(name)),
+      )
+      .sort(([, a], [, b]) => Number(b) - Number(a))
+      .map(([name]) => name);
+    return own.length ? own.slice(0, 2) : undefined;
+  });
+}
+
+/**
  * Labels for a union's object members (KF-907BXY): a text literal field
  * each carries (`kind: "divider"` → "Divider"), else its type name less the
  * words every member's name shares (`WorkbenchStaticPanel` → "Static
- * panel"), else `fallback`.
+ * panel"), else the fields only it allows (`{ pressed?: boolean }` beside
+ * `{ expanded?: boolean }` → "With pressed"), else `fallback`.
  */
 export function memberLabels(
   members: readonly ViewType[],
@@ -461,6 +493,7 @@ export function memberLabels(
     named.every((words) => words[shared] === named[0]![shared])
   )
     shared += 1;
+  const distinct = distinctiveFields(members, definitions);
   return members.map((member, index) => {
     const resolved = shape(member, definitions)!;
     if (resolved.kind === 'string') return 'Text';
@@ -470,7 +503,11 @@ export function memberLabels(
           (shape(field.type, definitions) as { value?: unknown }).value,
       )
       .find((value) => typeof value === 'string') as string | undefined;
-    const label = literal ?? names[index]?.slice(shared).join(' ') ?? fallback;
+    const fields = distinct[index]?.map((name) => camelWords(name).join(' '));
+    const label =
+      literal ??
+      names[index]?.slice(shared).join(' ') ??
+      (fields ? `With ${fields.join(' and ')}` : fallback);
     return label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
   });
 }

@@ -269,6 +269,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **The Kerf UI editor names unnamed object members by what sets them apart (KF-BT1YG0).** A union of object shapes with no type name or literal tag, such as SearchField's `trailingAction` (a disclosure with `expanded`, or a toggle with `pressed`), read "Custom 1…" and "Custom 2…" in the Inspector's type Select. Each member is now named after the fields only it allows: "With expanded…" and "With pressed…".
 - **Badge `ariaHidden` is a switch in the Kerf UI editor (KF-AYX1G2).** `component-props.json` recorded the prop as a `boolean | false | true` union because Badge's labeled and hidden variants narrow it to `false` and `true`, so the Inspector offered a two-item Select. A prop whose variant types are `boolean` and boolean literals now merges into one `boolean`.
 - **The Kerf UI editor names components as authors write them.** The palette, Add a child list, outline and Inspector named an entry's primary component after its catalog title, so `DialogSurface` read "Surface Scaffolds" and `FilePickerTrigger` read "FilePicker". Every component now shows its export name (`KF-9DA687`).
 - **A TabBarItem can be made non-closable in the Kerf UI editor.** `closable` defaults to `true` but did not say so, so `component-props.json` recorded no default and the editor's switch could not write `false`. Its JSDoc now states the default (`KF-X2E1B1`).

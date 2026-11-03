@@ -4141,7 +4141,7 @@ test('builds SearchField › Structured Ticket Search', async ({ page }) => {
     'data-demo-search-field': 'true',
   });
   // The help button: the trailing action's object member (KF-BT1YG0).
-  await choose(page, 'trailingAction', 'Custom 1…');
+  await choose(page, 'trailingAction', 'With expanded…');
   await openField(page, 'trailingAction', []);
   await setField(page, 'trailingAction', ['label'], 'Search Help');
   await setField(

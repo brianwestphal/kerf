@@ -66,10 +66,11 @@ describe('typed choices', () => {
     expect(labels('List', 'inset')).toEqual(['document']);
     // A ReadonlySet member no form fills is left out.
     expect(labels('TreeList', 'expanded')).toEqual(['List…']);
-    // Two object shapes are numbered apart.
+    // KF-BT1YG0: two unnamed object shapes are told apart by the field only
+    // each allows (`expanded` beside `expanded?: never`).
     expect(labels('SearchField', 'trailingAction')).toEqual([
-      'Custom 1…',
-      'Custom 2…',
+      'With expanded…',
+      'With pressed…',
     ]);
   });
 
