@@ -14,7 +14,7 @@ Write a chat message or prompt in a raised frame whose border turns brand while 
 
 **Not when:**
 
-- Use wa-textarea with a FieldLabel for an ordinary form field that is submitted with the rest of a form.
+- Use a multiline TextField for an ordinary form field that is submitted with the rest of a form.
 - Do not wrap it in another framed ContentItem or card; it owns its frame, padding, and shadow.
 
 **Alternatives:**

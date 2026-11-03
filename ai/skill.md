@@ -1,7 +1,7 @@
 ---
 name: kerf-app
 description: Build UIs in the kerf reactive framework and its @kerfjs/ui component package (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs` or `@kerfjs/ui`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.28.0
+kerf-skill-version: 1.29.0
 ---
 
 # Building apps with kerf
@@ -98,16 +98,18 @@ match Hot Sheet 2 and Web Awesome: override `--kui-color-*` globally or
 component properties such as `--kui-state-banner-background` at a tone or
 instance boundary, for theming only.
 
-For Web Awesome's broader free component set, import the CSS-only
-`@kerfjs/ui/webawesome.css` theme once, then import only each Web Awesome
-component module the app renders. The theme registers no component JavaScript
-and remains overridable through later or scoped `--wa-*` values.
+Scope a subtree to the light or dark palette with a component's
+`scheme="light" | "dark"` prop or Kerf's `.kui-light` / `.kui-dark` /
+`.kui-invert` classes; they need no Web Awesome CSS. Only with the optional
+Web Awesome integration: import the CSS-only `@kerfjs/ui/webawesome.css` theme
+once, then only each Web Awesome component module the app renders. The theme
+registers no component JavaScript and remains overridable through later or
+scoped `--wa-*` values.
 
-`Select` renders pure Web Awesome markup. Import
+`Select` is a form-associated Kerf custom element. Import
 `@kerfjs/ui/select/register` once in an application entry that uses it; never
 hide that registration inside another component. Web Awesome is an optional
-peer and must remain absent from bundles that use neither Select nor the Web
-Awesome theme. The package's
+peer that only the `@kerfjs/ui/webawesome.css` theme touches. The package's
 full AI contract is at `node_modules/@kerfjs/ui/ai/skill.md`.
 
 ## Public API — one import path

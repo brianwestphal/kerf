@@ -1927,7 +1927,7 @@
         "content-driven wrap that keeps a heading title whole",
         "center priority for an expanded center control",
         "trailing priority for an expanded trailing control at compact or narrow widths",
-        "trailing groups and a standalone primary wa-button wrap instead of clipping",
+        "trailing groups and a standalone primary Button wrap instead of clipping",
         "outer inset independently configurable from zone gap",
         "compact density: a 40px header (34px band, 3px block insets) for an embedded panel, filled with compact ToolbarControlGroups",
         "app bar or bottom bar claiming its screen edges (safeAreaEdges)",
@@ -2053,7 +2053,7 @@
         "Group related controls inside a toolbar with a supported visual treatment.",
         "Use ToolbarActionLink for navigation or external resources that must retain native anchor semantics inside a group.",
         "Use ToolbarButton for a group's button when it must be a component rather than markup (a view document, the Kerf UI editor, or generated code): it renders exactly the native <button type=\"button\"> the group styles, icon-only with ariaLabel, labeled, or (in an avatar group) ariaLabel alone, with action, pressed, disabled, title, and a native popover invoker (popoverTarget, popoverTargetAction, ariaHasPopup).",
-        "Fill it with plain <button> controls (the group styles > button fully); use wa-button only for a Web Awesome feature. A popup menu is a PopupMenu in a single group with nestedDropdown; it renders its own trigger, so never hand-write wa-dropdown markup. Each control stays whole: an icon sits beside its label on one row and no trigger gets a fixed width. Use overflow=wrap for independent links that should move as whole actions to another row on narrow surfaces.",
+        "Fill it with plain <button> controls (the group styles > button fully). A popup menu is a PopupMenu in a single group with nestedDropdown; it renders its own trigger, so never hand-write wa-dropdown markup. Each control stays whole: an icon sits beside its label on one row and no trigger gets a fixed width. Use overflow=wrap for independent links that should move as whole actions to another row on narrow surfaces.",
         "For an avatar control, set content=avatar and avatarImage instead of inserting an img; one button paints the group and multiple buttons paint only the pressed highlight.",
         "In a Workbench or CollapsiblePanel toolbar, mark a group relocateOnCollapse to keep it available in the work-area toolbar when the panel closes; place it directly or in an array in any toolbar zone.",
         "Use tileTone for a contained single group containing only a direct decorative SVG icon; interactive or mixed groups retain their existing control chrome.",
@@ -6780,7 +6780,7 @@
         "Write a chat message, assistant prompt, or comment reply that is sent with a trailing action, especially in a DialogSurface floating footer over a transcript."
       ],
       "avoidWhen": [
-        "Use wa-textarea with a FieldLabel for an ordinary form field that is submitted with the rest of a form.",
+        "Use a multiline TextField for an ordinary form field that is submitted with the rest of a form.",
         "Do not wrap it in another framed ContentItem or card; it owns its frame, padding, and shadow."
       ],
       "alternatives": [
@@ -8583,7 +8583,7 @@
         "A prominent primary action has a closely related set of options chosen from an attached trigger, such as Drive with a provider menu or Deploy with targets."
       ],
       "avoidWhen": [
-        "Do not use for a plain action without options; use wa-button.",
+        "Do not use for a plain action without options; use Button.",
         "Do not use inside a Toolbar for a command menu; use PopupMenu in a ToolbarControlGroup.",
         "Do not use wa-button-group to build one; its hosts do not forward aria-expanded or names to their inner buttons."
       ],

@@ -14,7 +14,7 @@ Render a prominent primary action plus an options trigger (provider, model, targ
 
 **Not when:**
 
-- Do not use for a plain action without options; use wa-button.
+- Do not use for a plain action without options; use Button.
 - Do not use inside a Toolbar for a command menu; use PopupMenu in a ToolbarControlGroup.
 - Do not use wa-button-group to build one; its hosts do not forward aria-expanded or names to their inner buttons.
 

@@ -38,7 +38,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar`](../public-api-signatures-v1.m
 - content-driven wrap that keeps a heading title whole
 - center priority for an expanded center control
 - trailing priority for an expanded trailing control at compact or narrow widths
-- trailing groups and a standalone primary wa-button wrap instead of clipping
+- trailing groups and a standalone primary Button wrap instead of clipping
 - outer inset independently configurable from zone gap
 - compact density: a 40px header (34px band, 3px block insets) for an embedded panel, filled with compact ToolbarControlGroups
 - app bar or bottom bar claiming its screen edges (safeAreaEdges)
