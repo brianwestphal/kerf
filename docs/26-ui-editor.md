@@ -823,10 +823,11 @@ never styled from outside. This matches Kerf UI's "configure, never override".
     its outer row, and its rows still carry `data-key`, so a row action in
     an inner row reports the inner row's key. Inner keys need only be
     unique within their outer row; a keyed ref (§4.4) on an inner template
-    returns the first row with that key. (KF-ZMBST3 kept that contract: to
-    reach an inner row in a later outer row, take the outer row's element
-    first and query inside it. Play mode keys its row state by the full
-    path of row keys instead, §11.4.)
+    returns the first row with that key. To reach an inner row in a later
+    outer row, take the outer row's element first and query inside it
+    (`row.querySelector('[data-key="…"]')`). Play mode keys its row state by
+    the full path of row keys instead (§11.4). KF-ZMBST3 kept this contract
+    and KF-N72BJT decided to keep it (§4.4).
   - A `#view` inside an `$each` template cannot compose a document that has
     its own top-level `$each` (`KUI-V016`): that document's generated module
     renders a keyed `each()`, and it cannot know it is rendered inside a
@@ -943,6 +944,22 @@ catalog `rootElement` (`ul` → `HTMLUListElement`), falling back to
 `<name>Refs(root)` resolves each ref by its `data-kerf-node` marker, never by
 class name or DOM position. It throws, naming the ref, when a non-row ref is
 missing. That catches a stale generated module paired with a different render.
+
+A keyed ref takes one key, the key of the row it is named in, even inside a
+nested repeat (§3.5). It returns the first row with that key anywhere under
+`root`. KF-N72BJT decided against scoping inner keyed refs by the outer key
+(`tab(groupKey, key)`):
+
+- No document or application uses a keyed ref on an inner template.
+- Adding the outer key would change every nested view's generated `.d.ts`,
+  its `kui1:` digest, and its contract diff.
+- Inner keys are unique within their outer row, so the outer row's element
+  and a `[data-key]` query reach any inner row.
+
+Passing that row element as `root` to `<name>Refs` does not scope the keyed
+refs: the non-row refs resolve eagerly and throw when the view names a node
+outside that row. Revisit if a consumer needs scoped inner refs; the change
+would be an additive scoped lookup, decided then.
 
 ### 4.5 The node marker
 
