@@ -12,6 +12,17 @@ const recipeIds = [
   'recipe-navigation-stack',
 ] as const;
 
+/**
+ * The box to capture for a recipe: its root, or for a layout-neutral root
+ * (a Kerf UI Form is `display: contents`, so it has no box) its first child.
+ */
+async function captureBox(recipe: Locator): Promise<Locator> {
+  const contents = await recipe.evaluate(
+    (root) => globalThis.getComputedStyle(root).display === 'contents',
+  );
+  return contents ? recipe.locator(':scope > *').first() : recipe;
+}
+
 async function openRecipe(page: Page, id: (typeof recipeIds)[number]) {
   await page.goto(`/?component=${id}`);
   const recipe = page.locator(`[data-recipe="${id}"]`);
@@ -89,7 +100,11 @@ test('loads every stable recipe route through an individual lazy chunk', async (
       ),
     ).toBeLessThanOrEqual(1);
     if (browserName === 'chromium')
-      await recipe.screenshot({ path: `test-results/${id}-wide-light.png` });
+      await (
+        await captureBox(recipe)
+      ).screenshot({
+        path: `test-results/${id}-wide-light.png`,
+      });
   }
 });
 
@@ -166,7 +181,11 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
         'recipe-compact-toolbar',
       ].includes(id)
     )
-      await recipe.screenshot({ path: `test-results/${id}-narrow-dark.png` });
+      await (
+        await captureBox(recipe)
+      ).screenshot({
+        path: `test-results/${id}-narrow-dark.png`,
+      });
   }
 
   await page.setViewportSize({ width: 900, height: 900 });
@@ -261,7 +280,11 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
     if (id === 'recipe-compact-toolbar')
       await expectToolbarZonesNotToOverlap(recipe);
     if (browserName === 'chromium')
-      await recipe.screenshot({ path: `test-results/${id}-zoom-200.png` });
+      await (
+        await captureBox(recipe)
+      ).screenshot({
+        path: `test-results/${id}-zoom-200.png`,
+      });
   }
 });
 
