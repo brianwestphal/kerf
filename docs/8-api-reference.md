@@ -995,16 +995,31 @@ const worker = new Worker(new URL('./compute.worker.ts', import.meta.url), {
 const pending = new Map<number, (reply: Reply) => void>();
 let nextId = 0;
 
+let failure: string | undefined;
+
 worker.onmessage = (event: MessageEvent<Reply>) => {
   pending.get(event.data.id)?.(event.data);
   pending.delete(event.data.id);
 };
+
+/** A worker that fails to load or throws rejects every pending call, and the next ones. */
+function failAll(message: string) {
+  failure = message;
+  for (const settle of pending.values()) settle({ id: -1, error: message });
+  pending.clear();
+}
+worker.onerror = (event) => {
+  event.preventDefault();
+  failAll(event.message || 'The compute worker failed to load or crashed');
+};
+worker.onmessageerror = () => failAll('A compute worker reply could not be read');
 
 /** Post one request and resolve with its reply; a worker error rejects. */
 export function call<T>(
   message: Record<string, unknown>,
   transfer: Transferable[] = [],
 ): Promise<T> {
+  if (failure !== undefined) return Promise.reject(new Error(failure));
   const id = nextId++;
   return new Promise<T>((resolve, reject) => {
     pending.set(id, (reply) =>

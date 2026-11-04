@@ -331,7 +331,8 @@ should not load both.
 
 ## 27.7 Follow-ups
 
-- KF-CP3SZV (the worker recipe's `call()` hangs forever when the worker fails
-  to load): fix the recipe either way.
+- KF-CP3SZV (the worker recipe's `call()` hung forever when the worker failed
+  to load): fixed in the recipe. A worker `error` or `messageerror` now
+  rejects every pending call and every later one.
 - On the maintainer's choice: either the recipe extension (Option 1) or the
   `kerfjs/worker` v1 implementation (Option 2), filed once decided.
