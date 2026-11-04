@@ -1,0 +1,200 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SurfaceScaffoldControlledReaderStack",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:row",
+          "props": {
+            "gap": "xs"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Open Reader",
+                  "action": "push-dialog-stack"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Swap Order",
+                  "action": "reorder-dialog-stack",
+                  "disabled": true
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "00000000000000000000000005",
+          "type": "@kerfjs/ui:surface-scaffold",
+          "props": {
+            "label": "Atlas Reader",
+            "height": "viewport",
+            "bodyInset": "none",
+            "bodyLayout": "fill",
+            "id": "catalog-reader-atlas",
+            "rootAttributes": {
+              "data-reader-id": "atlas"
+            },
+            "preferredWidth": {
+              "$css": "rem(64)"
+            },
+            "stack": {
+              "position": 1,
+              "count": 2,
+              "offset": {
+                "$css": "rem(0)"
+              },
+              "open": false,
+              "active": false
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:list",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:list-inset-text",
+                      "props": {
+                        "children": "This reader occupies the dialog body and keeps its overlay host inside the native top layer."
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Review ticket",
+                        "action": "log-more",
+                        "itemId": "atlas"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000009",
+                      "type": "@kerfjs/ui:list-inset-control",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000010",
+                            "type": "@kerfjs/ui:popup-menu",
+                            "props": {
+                              "items": [
+                                {
+                                  "label": "Copy Link"
+                                },
+                                {
+                                  "label": "View History"
+                                }
+                              ],
+                              "text": "Reader Actions"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "00000000000000000000000011",
+          "type": "@kerfjs/ui:surface-scaffold",
+          "props": {
+            "label": "Borealis Reader",
+            "height": "viewport",
+            "bodyInset": "none",
+            "bodyLayout": "fill",
+            "id": "catalog-reader-borealis",
+            "rootAttributes": {
+              "data-reader-id": "borealis"
+            },
+            "preferredWidth": {
+              "$css": "rem(64)"
+            },
+            "stack": {
+              "position": 2,
+              "count": 2,
+              "offset": {
+                "$css": "rem(0)"
+              },
+              "open": false,
+              "active": false
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000012",
+                "type": "@kerfjs/ui:list",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000013",
+                      "type": "@kerfjs/ui:list-inset-text",
+                      "props": {
+                        "children": "This reader occupies the dialog body and keeps its overlay host inside the native top layer."
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000014",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Review ticket",
+                        "action": "log-more",
+                        "itemId": "borealis"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000015",
+                      "type": "@kerfjs/ui:list-inset-control",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000016",
+                            "type": "@kerfjs/ui:popup-menu",
+                            "props": {
+                              "items": [
+                                {
+                                  "label": "Copy Link"
+                                },
+                                {
+                                  "label": "View History"
+                                }
+                              ],
+                              "text": "Reader Actions"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

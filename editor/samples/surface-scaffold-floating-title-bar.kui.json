@@ -1,0 +1,311 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SurfaceScaffoldFloatingTitleBar",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:button",
+          "props": {
+            "children": "Open Release Thread",
+            "action": "show-dialog",
+            "rootAttributes": {
+              "data-dialog-id": "catalog-thread-dialog"
+            }
+          }
+        },
+        {
+          "id": "00000000000000000000000003",
+          "type": "@kerfjs/ui:surface-scaffold",
+          "props": {
+            "label": "Release Thread",
+            "bodyInset": "none",
+            "bodyLayout": "fill",
+            "headerPresentation": "floating",
+            "footerPresentation": "floating",
+            "footerInset": "none",
+            "id": "catalog-thread-dialog",
+            "describedBy": "catalog-thread-dialog-description",
+            "viewportGutter": {
+              "$css": "rem(0.5)"
+            },
+            "height": {
+              "$css": "rem(35)"
+            },
+            "footerOffset": {
+              "$css": "rem(0.5)"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "gap": "xs",
+                  "controlInsets": "tb",
+                  "scrollClearance": "both",
+                  "scrollable": true,
+                  "rootAttributes": {
+                    "data-demo-chat-transcript": ""
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "bubble": "end",
+                        "appearance": "brand-loud"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Is the 5.2 release candidate ready to tag?",
+                              "variant": "span"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "bubble": "start",
+                        "appearance": "neutral"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000008",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Almost. The changelog still lists the floating dialog header under Unreleased.",
+                              "variant": "span"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000009",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "bubble": "end",
+                        "appearance": "brand-loud"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000010",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Move it under 5.2, then. What about the docs?",
+                              "variant": "span"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "bubble": "start",
+                        "appearance": "neutral"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000012",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "The accessibility guide gained the chrome-material contrast rule, and the catalog shows the new title bar.",
+                              "variant": "span"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000013",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "bubble": "end",
+                        "appearance": "brand-loud"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000014",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Did the browser suite pass in every engine?",
+                              "variant": "span"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000015",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "bubble": "start",
+                        "appearance": "neutral"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000016",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Chromium, Firefox, and WebKit all passed. Forced colors paints the title bar opaque with a visible edge.",
+                              "variant": "span"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000017",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "bubble": "end",
+                        "appearance": "brand-loud"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000018",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "And reduced transparency?",
+                              "variant": "span"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000019",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "bubble": "start",
+                        "appearance": "neutral"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000020",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "The title bar turns opaque, and the transcript still starts below it.",
+                              "variant": "span"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000021",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "bubble": "end",
+                        "appearance": "brand-loud"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000022",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Great. Tag it after lunch.",
+                              "variant": "span"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000023",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "bubble": "start",
+                        "appearance": "neutral"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000024",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Scheduled. I will post the release notes here once the tag is pushed.",
+                              "variant": "span"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "heading": [
+              {
+                "id": "00000000000000000000000025",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Release Thread",
+                  "size": "xlarge",
+                  "description": "Engineering · 5.2 candidate",
+                  "descriptionId": "catalog-thread-dialog-description"
+                }
+              }
+            ],
+            "footer": [
+              {
+                "id": "00000000000000000000000026",
+                "type": "@kerfjs/ui:message-composer",
+                "props": {
+                  "label": "Message",
+                  "name": "catalog-thread-message",
+                  "submitOnEnter": true,
+                  "id": "catalog-thread-message",
+                  "placeholder": "Reply to the thread"
+                },
+                "zones": {
+                  "trailing": [
+                    {
+                      "id": "00000000000000000000000027",
+                      "type": "@kerfjs/ui:button",
+                      "props": {
+                        "children": "Send",
+                        "tone": "brand",
+                        "action": "send-chat-dialog-message"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

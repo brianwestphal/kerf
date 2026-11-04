@@ -1,0 +1,84 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SurfaceScaffoldMediumDialog",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:button",
+          "props": {
+            "children": "Open Dialog",
+            "action": "show-dialog",
+            "rootAttributes": {
+              "data-dialog-id": "catalog-medium-dialog"
+            }
+          }
+        },
+        {
+          "id": "00000000000000000000000003",
+          "type": "@kerfjs/ui:surface-scaffold",
+          "props": {
+            "label": "Edit Workspace",
+            "closeEmphasis": "quiet",
+            "size": "medium",
+            "presentation": "modal",
+            "bodyInset": "none",
+            "footerInset": "comfortable",
+            "id": "catalog-medium-dialog"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:list",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:list-inset-text",
+                      "props": {
+                        "children": "Dialog content uses list-owned item geometry."
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "footer": [
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Cancel",
+                  "rootAttributes": {
+                    "data-dialog-close": ""
+                  }
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Save",
+                  "tone": "brand",
+                  "rootAttributes": {
+                    "data-dialog-close": ""
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

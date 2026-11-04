@@ -320,61 +320,54 @@ export function SurfaceScaffoldDemo() {
         note="Two native modal dialogs share one controlled reader stack. Open, push, reorder, close, and Escape keep focus and the top layer in sync."
         align="inline-control"
       >
-        <div data-dialog-stack-demo>
+        <Row gap="xs">
           <Button action="push-dialog-stack" disabled={readers.length === 2}>
             {readers.length === 0 ? 'Open Reader' : 'Push Reader'}
           </Button>
           <Button action="reorder-dialog-stack" disabled={readers.length !== 2}>
             Swap Order
           </Button>
-          {(['atlas', 'borealis'] as const).map((id) => {
-            const position = readers.indexOf(id) + 1;
-            return (
-              <DialogSurface
-                id={`catalog-reader-${id}`}
-                label={`${id === 'atlas' ? 'Atlas' : 'Borealis'} Reader`}
-                preferredWidth={remify(1024)}
-                height="viewport"
-                bodyInset="none"
-                bodyLayout="fill"
-                stack={{
-                  open: position > 0,
-                  active: position === readers.length && position > 0,
-                  position:
-                    position > 0
-                      ? position
-                      : readers.length === 0 && id === 'atlas'
-                        ? 1
-                        : 2,
-                  count: 2,
-                  offset: remify(-10 * (readers.length - position)),
-                }}
-                rootAttributes={{ 'data-reader-id': id }}
-              >
-                <List>
-                  <ListInsetText>
-                    This reader occupies the dialog body and keeps its overlay
-                    host inside the native top layer.
-                  </ListInsetText>
-                  <ListItem
-                    label="Review ticket"
-                    itemId={id}
-                    action="log-more"
+        </Row>
+        {(['atlas', 'borealis'] as const).map((id) => {
+          const position = readers.indexOf(id) + 1;
+          return (
+            <DialogSurface
+              id={`catalog-reader-${id}`}
+              label={`${id === 'atlas' ? 'Atlas' : 'Borealis'} Reader`}
+              preferredWidth={remify(1024)}
+              height="viewport"
+              bodyInset="none"
+              bodyLayout="fill"
+              stack={{
+                open: position > 0,
+                active: position === readers.length && position > 0,
+                position:
+                  position > 0
+                    ? position
+                    : readers.length === 0 && id === 'atlas'
+                      ? 1
+                      : 2,
+                count: 2,
+                offset: remify(-10 * (readers.length - position)),
+              }}
+              rootAttributes={{ 'data-reader-id': id }}
+            >
+              <List>
+                <ListInsetText>
+                  This reader occupies the dialog body and keeps its overlay
+                  host inside the native top layer.
+                </ListInsetText>
+                <ListItem label="Review ticket" itemId={id} action="log-more" />
+                <ListInsetControl>
+                  <PopupMenu
+                    text="Reader Actions"
+                    items={[{ label: 'Copy Link' }, { label: 'View History' }]}
                   />
-                  <ListInsetControl>
-                    <PopupMenu
-                      text="Reader Actions"
-                      items={[
-                        { label: 'Copy Link' },
-                        { label: 'View History' },
-                      ]}
-                    />
-                  </ListInsetControl>
-                </List>
-              </DialogSurface>
-            );
-          })}
-        </div>
+                </ListInsetControl>
+              </List>
+            </DialogSurface>
+          );
+        })}
       </CatalogExample>
       <CatalogExample
         label="Medium Dialog"
@@ -686,33 +679,48 @@ export function SurfaceScaffoldDemo() {
         note="kerfjs/overlay's confirm, prompt, form, and choice take presentation: 'bottom-sheet'. Import @kerfjs/ui/overlay-sheet.css once and the sheet gets this package's geometry: the bottom edge, square bottom corners, the safe area and keyboard as bottom padding, and a slide up."
         align="inline-control"
       >
-        <ToolbarControlGroup single>
-          <ToolbarButton action="open-overlay-sheet">
-            Discard Draft
-          </ToolbarButton>
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Core Dialog as a Bottom Sheet"
+          leading={
+            <ToolbarControlGroup single>
+              <ToolbarButton action="open-overlay-sheet">
+                Discard Draft
+              </ToolbarButton>
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample
         label="Resizable Core Sheet"
         note="Add the kui-overlay-sheet-resizable class and call wireOverlaySheets() from @kerfjs/ui/wire-overlay-sheets once for the container you open sheets in. The sheet gets a resizable DialogSurface sheet's grabber: drag it, or focus it and use the arrow keys, Page Up/Down, Home, and End."
         align="inline-control"
       >
-        <ToolbarControlGroup single>
-          <ToolbarButton action="open-up-next-sheet">
-            Show Up Next
-          </ToolbarButton>
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Resizable Core Sheet"
+          leading={
+            <ToolbarControlGroup single>
+              <ToolbarButton action="open-up-next-sheet">
+                Show Up Next
+              </ToolbarButton>
+            </ToolbarControlGroup>
+          }
+        />
       </CatalogExample>
       <CatalogExample
         label="Non-Modal Popover Dialog"
         note="A native popover: it light-dismisses on Escape or a press outside and leaves the page interactive. labelledBy and describedBy name it from its heading's title and description."
         align="inline-control"
       >
-        <ToolbarControlGroup single>
-          <ToolbarButton popoverTarget="catalog-popover-dialog">
-            Open Repository Status
-          </ToolbarButton>
-        </ToolbarControlGroup>
+        <Toolbar
+          label="Non-Modal Popover Dialog"
+          leading={
+            <ToolbarControlGroup single>
+              <ToolbarButton popoverTarget="catalog-popover-dialog">
+                Open Repository Status
+              </ToolbarButton>
+            </ToolbarControlGroup>
+          }
+        />
         <PopoverDialogSurface
           id="catalog-popover-dialog"
           labelledBy="catalog-popover-dialog-title"

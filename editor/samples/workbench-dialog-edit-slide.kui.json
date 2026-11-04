@@ -1,0 +1,249 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "WorkbenchDialogEditSlide",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:button",
+          "props": {
+            "children": "Edit Slide",
+            "action": "show-dialog",
+            "rootAttributes": {
+              "data-dialog-id": "workbench-dialog-demo"
+            }
+          }
+        },
+        {
+          "id": "00000000000000000000000003",
+          "type": "@kerfjs/ui:workbench-dialog",
+          "props": {
+            "id": "workbench-dialog-demo",
+            "label": "Edit Slide",
+            "title": "Edit Slide",
+            "description": "Slide 3 of 12",
+            "viewportGutter": {
+              "$css": "rem(0.5)"
+            },
+            "height": {
+              "$css": "rem(32.5)"
+            },
+            "preferredWidth": {
+              "$css": "rem(60)"
+            },
+            "mainBottomToolbar": {
+              "label": "Slide Actions"
+            },
+            "leftRail": {
+              "label": "Layers",
+              "size": 200,
+              "toolbar": {
+                "label": "Layers",
+                "toggle": {
+                  "action": "toggle-workbench-dialog-layers",
+                  "name": "Layers"
+                }
+              }
+            },
+            "rightRail": {
+              "label": "Inspector",
+              "size": 220,
+              "toolbar": {
+                "label": "Inspector",
+                "toggle": {
+                  "action": "toggle-workbench-dialog-inspector",
+                  "name": "Inspector"
+                }
+              }
+            }
+          },
+          "zones": {
+            "main": [
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "controlInsets": "tb"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:list-inset-text",
+                      "props": {
+                        "children": "The slide canvas goes here. Hero Image is selected."
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "mainBottomToolbar.trailing": [
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:row",
+                "props": {
+                  "hAlign": "right",
+                  "gap": "xs"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:button",
+                      "props": {
+                        "children": "Cancel",
+                        "emphasis": "secondary",
+                        "rootAttributes": {
+                          "data-dialog-close": ""
+                        }
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:button",
+                      "props": {
+                        "children": "Save Slide",
+                        "tone": "brand",
+                        "action": "log-more"
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "leftRail.toolbar.title": [
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Layers"
+                }
+              }
+            ],
+            "leftRail.content": [
+              {
+                "id": "00000000000000000000000010",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "controlInsets": "tb"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Title",
+                        "action": "select-workbench-dialog-layer",
+                        "description": "Text",
+                        "itemId": "title"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000012",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Hero Image",
+                        "action": "select-workbench-dialog-layer",
+                        "selected": true,
+                        "description": "Image",
+                        "itemId": "hero"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000013",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Caption",
+                        "action": "select-workbench-dialog-layer",
+                        "description": "Text",
+                        "itemId": "caption"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000014",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Badge",
+                        "action": "select-workbench-dialog-layer",
+                        "description": "Shape",
+                        "itemId": "badge"
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "rightRail.toolbar.title": [
+              {
+                "id": "00000000000000000000000015",
+                "type": "@kerfjs/ui:toolbar-text",
+                "props": {
+                  "text": "Inspector"
+                }
+              }
+            ],
+            "rightRail.content": [
+              {
+                "id": "00000000000000000000000016",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "controlInsets": "tb"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000017",
+                      "type": "@kerfjs/ui:value-table",
+                      "props": {
+                        "label": "Layer Details"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000018",
+                            "type": "@kerfjs/ui:value-table#ValueTableRow",
+                            "props": {
+                              "label": "Name",
+                              "value": "Hero Image"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000019",
+                            "type": "@kerfjs/ui:value-table#ValueTableRow",
+                            "props": {
+                              "label": "Kind",
+                              "value": "Image"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000020",
+                            "type": "@kerfjs/ui:value-table#ValueTableRow",
+                            "props": {
+                              "label": "Size",
+                              "value": "1280 × 720"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

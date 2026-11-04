@@ -1,0 +1,135 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SurfaceScaffoldEmbeddedPopoverDialog",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:surface-scaffold#PopoverDialogSurface",
+          "props": {
+            "label": "Repository Status Preview",
+            "presentation": "embedded",
+            "bodyLayout": "fill",
+            "preferredWidth": {
+              "$css": "rem(35)"
+            },
+            "height": {
+              "$css": "rem(17.5)"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:split-view",
+                "props": {
+                  "id": "catalog-embedded-dialog-split",
+                  "label": "Projects",
+                  "listTitle": "Projects",
+                  "detailTitle": "Atlas",
+                  "listWidth": {
+                    "size": 240,
+                    "maxFraction": 0.4
+                  }
+                },
+                "zones": {
+                  "list": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:list",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Atlas",
+                              "action": "log-more",
+                              "selected": true,
+                              "itemId": "Atlas"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Borealis",
+                              "action": "log-more",
+                              "itemId": "Borealis"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000007",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Cirrus",
+                              "action": "log-more",
+                              "itemId": "Cirrus"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000008",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Delta",
+                              "action": "log-more",
+                              "itemId": "Delta"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000009",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Ember",
+                              "action": "log-more",
+                              "itemId": "Ember"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000010",
+                            "type": "@kerfjs/ui:list-item",
+                            "props": {
+                              "label": "Fjord",
+                              "action": "log-more",
+                              "itemId": "Fjord"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "detail": [
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:list",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000012",
+                            "type": "@kerfjs/ui:list-inset-text",
+                            "props": {
+                              "children": "Atlas is active. The split fills the surface's full height, and each column scrolls on its own."
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

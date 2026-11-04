@@ -3115,8 +3115,9 @@ async function editAsJson(page: Page, prop: string, value: unknown) {
     .first()
     .click();
   // A set list opens its form in a dialog; an unset one opens it in place
-  // of the Inspector's Properties.
-  const dialog = page.locator('dialog[open]');
+  // of the Inspector's Properties. A dialog the canvas shows embedded
+  // (KF-SYGSD0) is document content, not the form's.
+  const dialog = page.locator('dialog[open]:not([data-editor-canvas] dialog)');
   // The form remembers JSON mode once a list was edited that way.
   const toJson = page
     .getByRole('button', { name: 'Edit as JSON' })
@@ -20158,3 +20159,1298 @@ function messageDetailNode() {
     ],
   });
 }
+
+// KF-JKVDKA: the dialog and sheet demos. The edit canvas shows every dialog
+// embedded (KF-SYGSD0, KF-RWJ9KD), so its body and footer are built in place;
+// each modal dialog's trigger is a `show-dialog` Button naming it.
+
+/** A Button reading `text` that opens dialog `id`, at the first empty spot. */
+async function dialogTrigger(
+  page: Page,
+  text: string,
+  id: string,
+  spec: FieldSpec = {},
+) {
+  await dragComponent(page, 'Button', () => emptySpot(page));
+  await select(page, /^Button/);
+  await applySpec(page, {
+    ...spec,
+    text: { children: text, action: 'show-dialog', ...spec.text },
+    data: [['data-dialog-id', id]],
+  });
+}
+
+const dialogTriggerNode = (
+  text: string,
+  id: string,
+  props: Record<string, unknown> = {},
+) =>
+  node('button', {
+    children: text,
+    ...props,
+    action: 'show-dialog',
+    rootAttributes: { 'data-dialog-id': id },
+  });
+
+const DIALOG = /^DialogSurface/;
+
+/**
+ * Appends a DialogSurface (the outline's `nth`) to the root Pane, set up by
+ * `spec` and its css-value props `lengths` (builder calls), and leaves it
+ * selected.
+ */
+async function dialogSurface(
+  page: Page,
+  spec: FieldSpec,
+  lengths: Readonly<Record<string, string>> = {},
+  nth = 0,
+) {
+  await addInto(page, /^Pane/, 'DialogSurface');
+  await select(page, DIALOG, nth);
+  await applySpec(page, spec);
+  for (const [name, value] of Object.entries(lengths))
+    await setCss(page, name, value);
+}
+
+/** A `$css` value as the exported document spells it. */
+const css = (value: string) => ({ $css: value });
+
+/** A Button set up by its spec; it closes its dialog when `close`. */
+type ZoneButton = FieldSpec & { readonly close?: boolean };
+
+/** Adds one Button per entry of `buttons` to zone `zone` of `owner`. */
+async function zoneButtons(
+  page: Page,
+  owner: RegExp,
+  zone: string,
+  buttons: readonly ZoneButton[],
+) {
+  for (const { close, ...spec } of buttons) {
+    await select(page, owner);
+    await addChild(page, 'Button', zone);
+    await area(page, 'Properties');
+    await applySpec(page, {
+      ...spec,
+      data: close
+        ? [['data-dialog-close', ''], ...(spec.data ?? [])]
+        : spec.data,
+    });
+  }
+}
+
+const closeButton = (children: string, props: Record<string, unknown> = {}) =>
+  node('button', {
+    children,
+    ...props,
+    rootAttributes: { 'data-dialog-close': '' },
+  });
+
+/**
+ * Replaces `owner`'s seeded body Text with a List holding one ListInsetText
+ * per entry of `texts`.
+ */
+async function insetTextList(
+  page: Page,
+  owner: RegExp,
+  texts: readonly string[],
+  nth = 0,
+) {
+  await addInto(page, owner, 'List', nth, 0);
+  for (const text of texts) {
+    await addInto(page, /^List(?![A-Z])/, 'ListInsetText', nth);
+    await setText(page, 'children', text);
+  }
+}
+
+const insetTextListNode = (texts: readonly string[]) =>
+  node('list', undefined, {
+    children: texts.map((children) => node('list-inset-text', { children })),
+  });
+
+/** The outline's Text rows so far. */
+const textRows = (page: Page) =>
+  page.locator('[data-action="editor-select-node"]', { hasText: /^Text\n/ });
+
+/**
+ * Adds a ListInsetText to the `nth` `parent` holding one span Text reading
+ * `text` with id `id` (a dialog's `describedBy` target).
+ */
+async function describedText(
+  page: Page,
+  parent: RegExp,
+  text: string,
+  id: string,
+  nth = 0,
+) {
+  await addInto(page, parent, 'ListInsetText', nth);
+  await addChild(page, 'Text');
+  // Adding a child turned the inset's seeded text into a text run.
+  await area(page, 'Outline');
+  await outlineRow(page, /^Text “/)
+    .first()
+    .click();
+  await deleteSelected(page);
+  await select(page, /^Text(?![A-Z])/, -1);
+  await applySpec(page, {
+    choices: { variant: 'span' },
+    text: { children: text, id },
+  });
+  await expect(canvas(page).locator(`span#${id}`)).toHaveText(text);
+}
+
+const describedTextNode = (text: string, id: string) =>
+  node('list-inset-text', undefined, {
+    children: [node('text', { children: text, variant: 'span', id })],
+  });
+
+/** The dialog with id `id` as the canvas shows it: embedded, with `buttons`. */
+async function expectShown(page: Page, id: string, buttons: readonly string[]) {
+  const shown = canvas(page).locator(`dialog#${id}`);
+  await expect(shown).toBeVisible();
+  await expect(shown).toHaveAttribute('data-presentation', 'embedded');
+  await expect(shown.getByRole('button')).toHaveCount(buttons.length);
+  for (const name of buttons)
+    await expect(
+      shown.getByRole('button', { name, exact: true }),
+    ).toBeVisible();
+}
+
+test('builds SurfaceScaffold › Medium Dialog', async ({ page }) => {
+  const id = 'catalog-medium-dialog';
+  const copy = 'Dialog content uses list-owned item geometry.';
+  await dialogTrigger(page, 'Open Dialog', id);
+  await dialogSurface(page, {
+    choices: {
+      closeEmphasis: 'quiet',
+      size: 'medium',
+      presentation: 'modal',
+      bodyInset: 'none',
+      footerInset: 'comfortable',
+    },
+    text: { id, label: 'Edit Workspace' },
+  });
+  await insetTextList(page, DIALOG, [copy]);
+  await zoneButtons(page, DIALOG, 'footer', [
+    { text: { children: 'Cancel' }, close: true },
+    { choices: { tone: 'brand' }, text: { children: 'Save' }, close: true },
+  ]);
+  await expectShown(page, id, ['Close', 'Cancel', 'Save']);
+  expect(await exported(page)).toEqual(
+    pane(
+      dialogTriggerNode('Open Dialog', id),
+      node(
+        'surface-scaffold',
+        {
+          id,
+          label: 'Edit Workspace',
+          closeEmphasis: 'quiet',
+          size: 'medium',
+          presentation: 'modal',
+          bodyInset: 'none',
+          footerInset: 'comfortable',
+        },
+        {
+          children: [insetTextListNode([copy])],
+          footer: [
+            closeButton('Cancel'),
+            closeButton('Save', { tone: 'brand' }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds SurfaceScaffold › Viewport-Bounded Modal', async ({ page }) => {
+  const id = 'catalog-bounded-dialog';
+  const summary =
+    'Closing this workspace stops its running tasks. Saved files remain available when you reopen it.';
+  const review =
+    'Review your changes before stopping the workspace. Unsaved terminal output will be lost.';
+  await dialogTrigger(page, 'Open Bounded Dialog', id);
+  await dialogSurface(
+    page,
+    {
+      choices: { size: 'large', maxHeight: 'viewport', bodyInset: 'none' },
+      text: {
+        id,
+        label: 'Close Workspace',
+        describedBy: `${id}-summary`,
+      },
+    },
+    { preferredWidth: 'rem(52)', viewportGutter: 'rem(0.5)' },
+  );
+  await addInto(page, DIALOG, 'List', 0, 0);
+  await describedText(page, /^List(?![A-Z])/, summary, `${id}-summary`);
+  await addInto(page, /^List(?![A-Z])/, 'ListInsetText');
+  await setText(page, 'children', review);
+  await zoneButtons(page, DIALOG, 'footer', [
+    { text: { children: 'Keep Working' }, close: true },
+    {
+      choices: { tone: 'brand' },
+      text: { children: 'Stop and Close' },
+      close: true,
+    },
+  ]);
+  await expectShown(page, id, ['Close', 'Keep Working', 'Stop and Close']);
+  await expect(canvas(page).locator(`dialog#${id}`)).toHaveAttribute(
+    'aria-describedby',
+    `${id}-summary`,
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      dialogTriggerNode('Open Bounded Dialog', id),
+      node(
+        'surface-scaffold',
+        {
+          id,
+          label: 'Close Workspace',
+          describedBy: `${id}-summary`,
+          size: 'large',
+          preferredWidth: css('rem(52)'),
+          viewportGutter: css('rem(0.5)'),
+          maxHeight: 'viewport',
+          bodyInset: 'none',
+        },
+        {
+          children: [
+            node('list', undefined, {
+              children: [
+                describedTextNode(summary, `${id}-summary`),
+                node('list-inset-text', { children: review }),
+              ],
+            }),
+          ],
+          footer: [
+            closeButton('Keep Working'),
+            closeButton('Stop and Close', { tone: 'brand' }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds SurfaceScaffold › Alert Dialog', async ({ page }) => {
+  const id = 'catalog-alert-dialog';
+  const message = 'Delete this topic? Its saved stories are removed too.';
+  await dialogTrigger(page, 'Delete Topic', id, {
+    choices: { tone: 'danger' },
+  });
+  await dialogSurface(page, {
+    choices: { size: 'small' },
+    flags: ['alert'],
+    text: { id, label: 'Delete Topic', describedBy: `${id}-message` },
+  });
+  // The ListInsetText takes the seeded body Text's place.
+  await select(page, /^Text(?![A-Z])/);
+  await deleteSelected(page);
+  await describedText(page, DIALOG, message, `${id}-message`);
+  await zoneButtons(page, DIALOG, 'footer', [
+    { text: { children: 'Cancel' }, close: true },
+    { choices: { tone: 'danger' }, text: { children: 'Delete' }, close: true },
+  ]);
+  await expectShown(page, id, ['Close', 'Cancel', 'Delete']);
+  await expect(canvas(page).locator(`dialog#${id}`)).toHaveAttribute(
+    'role',
+    'alertdialog',
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      dialogTriggerNode('Delete Topic', id, { tone: 'danger' }),
+      node(
+        'surface-scaffold',
+        {
+          id,
+          label: 'Delete Topic',
+          alert: true,
+          describedBy: `${id}-message`,
+          size: 'small',
+        },
+        {
+          children: [describedTextNode(message, `${id}-message`)],
+          footer: [
+            closeButton('Cancel'),
+            closeButton('Delete', { tone: 'danger' }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds SurfaceScaffold › Capped Modal', async ({ page }) => {
+  test.slow();
+  const id = 'catalog-capped-dialog';
+  const copy = [
+    'Saved files remain available.',
+    'Running tasks will stop.',
+    'Terminal sessions will close.',
+    'Unsaved output will be lost.',
+    'Background synchronization will stop.',
+    'Reopen the workspace to resume your work.',
+  ];
+  await dialogTrigger(page, 'Open Capped Dialog', id);
+  await dialogSurface(
+    page,
+    {
+      choices: { bodyInset: 'none' },
+      text: { id, label: 'Review Workspace Changes' },
+    },
+    {
+      preferredWidth: 'rem(30)',
+      viewportGutter: 'rem(0.5)',
+      maxHeight: 'rem(22.5)',
+    },
+  );
+  await insetTextList(page, DIALOG, copy);
+  await zoneButtons(page, DIALOG, 'footer', [
+    { text: { children: 'Cancel Review' }, close: true },
+  ]);
+  await expectShown(page, id, ['Close', 'Cancel Review']);
+  expect(await exported(page)).toEqual(
+    pane(
+      dialogTriggerNode('Open Capped Dialog', id),
+      node(
+        'surface-scaffold',
+        {
+          id,
+          label: 'Review Workspace Changes',
+          preferredWidth: css('rem(30)'),
+          viewportGutter: css('rem(0.5)'),
+          maxHeight: css('rem(22.5)'),
+          bodyInset: 'none',
+        },
+        {
+          children: [insetTextListNode(copy)],
+          footer: [closeButton('Cancel Review')],
+        },
+      ),
+    ),
+  );
+});
+
+/**
+ * Adds a ListInsetControl holding a TextField set up by `spec` to the List;
+ * the inset's seeded text gives way to the field.
+ */
+async function insetField(page: Page, spec: FieldSpec) {
+  await addInto(page, /^List(?![A-Z])/, 'ListInsetControl');
+  await area(page, 'Outline');
+  const before = await textRows(page).count();
+  await addChild(page, 'TextField');
+  await select(page, /^Text(?![A-Z])/, before);
+  await deleteSelected(page);
+  await select(page, /^TextField/, -1);
+  await applySpec(page, spec);
+}
+
+test('builds SurfaceScaffold › Resizable Bottom Sheet', async ({ page }) => {
+  test.slow();
+  const id = 'catalog-sheet-dialog';
+  await dialogTrigger(page, 'Open New Message', id);
+  await dialogSurface(
+    page,
+    {
+      choices: { presentation: 'bottom-sheet', bodyInset: 'none' },
+      flags: ['lightDismiss', 'resizable'],
+      text: { id, label: 'New Message' },
+    },
+    { minHeight: 'rem(12.5)' },
+  );
+  await addInto(page, DIALOG, 'List', 0, 0);
+  await insetField(page, { text: { label: 'To', name: 'catalog-sheet-to' } });
+  await insetField(page, {
+    text: { label: 'Subject', name: 'catalog-sheet-subject' },
+  });
+  await insetField(page, {
+    flags: ['multiline'],
+    text: { label: 'Message', name: 'catalog-sheet-message', rows: '4' },
+  });
+  await expect(
+    canvas(page).locator(`dialog#${id}`).locator('.kui-text-field'),
+  ).toHaveCount(3);
+  const field = (props: Record<string, unknown>) =>
+    node('list-inset-control', undefined, {
+      children: [node('text-field', props)],
+    });
+  expect(await exported(page)).toEqual(
+    pane(
+      dialogTriggerNode('Open New Message', id),
+      node(
+        'surface-scaffold',
+        {
+          id,
+          label: 'New Message',
+          lightDismiss: true,
+          presentation: 'bottom-sheet',
+          minHeight: css('rem(12.5)'),
+          resizable: true,
+          bodyInset: 'none',
+        },
+        {
+          children: [
+            node('list', undefined, {
+              children: [
+                field({ label: 'To', name: 'catalog-sheet-to' }),
+                field({ label: 'Subject', name: 'catalog-sheet-subject' }),
+                field({
+                  multiline: true,
+                  label: 'Message',
+                  name: 'catalog-sheet-message',
+                  rows: 4,
+                }),
+              ],
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+/** A plain Toolbar named `label` holding one single group's text button. */
+async function toolbarTrigger(page: Page, label: string, button: FieldSpec) {
+  await toolbar(page, label);
+  await zoneGroup(page, 'leading', { flags: ['single'] }, { keepButton: true });
+  await select(page, /^ToolbarButton/);
+  await applySpec(page, button);
+}
+
+const toolbarTriggerNode = (label: string, button: Record<string, unknown>) =>
+  node(
+    'toolbar',
+    { label },
+    {
+      leading: [
+        node(
+          'toolbar-control-group',
+          { single: true },
+          { children: [node('toolbar-control-group#ToolbarButton', button)] },
+        ),
+      ],
+    },
+  );
+
+// The core sheets open from `kerfjs/overlay` calls in the demo's action
+// handlers; the view holds their triggers, each group in a plain Toolbar
+// (KF-0W87ST: a bare demo specimen is wrapped in one).
+test('builds SurfaceScaffold › Core Dialog as a Bottom Sheet', async ({
+  page,
+}) => {
+  const label = 'Core Dialog as a Bottom Sheet';
+  const button = { children: 'Discard Draft', action: 'open-overlay-sheet' };
+  await toolbarTrigger(page, label, { text: button });
+  expect(await exported(page)).toEqual(pane(toolbarTriggerNode(label, button)));
+});
+
+test('builds SurfaceScaffold › Resizable Core Sheet', async ({ page }) => {
+  const label = 'Resizable Core Sheet';
+  const button = { children: 'Show Up Next', action: 'open-up-next-sheet' };
+  await toolbarTrigger(page, label, { text: button });
+  expect(await exported(page)).toEqual(pane(toolbarTriggerNode(label, button)));
+});
+
+test('builds SurfaceScaffold › Zero-Inset List Popup', async ({ page }) => {
+  const items = [{ label: 'Inbox' }, { label: 'Archive' }];
+  await dragComponent(page, 'PopupSurface', () => emptySpot(page));
+  await select(page, /^PopupSurface/);
+  await choose(page, 'inset', 'list-zero');
+  await addInto(page, /^PopupSurface/, 'PopupMenu', 0, 0);
+  await select(page, /^PopupMenu/);
+  await applySpec(page, { text: { text: 'Choose View' }, unsets: ['label'] });
+  await editAsJson(page, 'items', items);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'surface-scaffold#PopupSurface',
+        { inset: 'list-zero' },
+        { children: [node('popup-menu', { text: 'Choose View', items })] },
+      ),
+    ),
+  );
+});
+
+/** A chat message: who sent it, and its text. */
+type ChatMessage = readonly ['user' | 'assistant', string];
+
+const CHAT: readonly ChatMessage[] = [
+  ['user', 'Why did the nightly build fail?'],
+  [
+    'assistant',
+    'The bundle budget check failed: the demo bundle grew by 213 bytes after the dialog changes landed.',
+  ],
+  ['user', 'Which entry grew?'],
+  [
+    'assistant',
+    'The surface scaffold entry. Its stylesheet gained the floating footer and fill-last body rules.',
+  ],
+  ['user', 'Is that expected?'],
+  [
+    'assistant',
+    'Yes. Rebaseline the budget with a reason that names the new dialog layouts.',
+  ],
+  ['user', 'Anything else failing?'],
+  ['assistant', 'No. Every other gate passed, including the browser suite.'],
+];
+
+const THREAD: readonly ChatMessage[] = [
+  ['user', 'Is the 5.2 release candidate ready to tag?'],
+  [
+    'assistant',
+    'Almost. The changelog still lists the floating dialog header under Unreleased.',
+  ],
+  ['user', 'Move it under 5.2, then. What about the docs?'],
+  [
+    'assistant',
+    'The accessibility guide gained the chrome-material contrast rule, and the catalog shows the new title bar.',
+  ],
+  ['user', 'Did the browser suite pass in every engine?'],
+  [
+    'assistant',
+    'Chromium, Firefox, and WebKit all passed. Forced colors paints the title bar opaque with a visible edge.',
+  ],
+  ['user', 'And reduced transparency?'],
+  [
+    'assistant',
+    'The title bar turns opaque, and the transcript still starts below it.',
+  ],
+  ['user', 'Great. Tag it after lunch.'],
+  [
+    'assistant',
+    'Scheduled. I will post the release notes here once the tag is pushed.',
+  ],
+];
+
+const bubbleProps = (from: ChatMessage[0]) =>
+  from === 'user'
+    ? { bubble: 'end', appearance: 'brand-loud' }
+    : { bubble: 'start', appearance: 'neutral' };
+
+/**
+ * Adds the chat demos' floating MessageComposer (`id`, `placeholder`) to the
+ * dialog's footer, its seeded trailing Text giving way to the Send button.
+ */
+async function dialogComposer(page: Page, id: string, placeholder: string) {
+  await select(page, DIALOG);
+  await addChild(page, 'MessageComposer', 'footer');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    flags: ['submitOnEnter'],
+    text: { id, name: id, label: 'Message', placeholder },
+  });
+  await area(page, 'Outline');
+  await outlineRow(page, /^Text/).last().click();
+  await deleteSelected(page);
+  await select(page, /^MessageComposer/);
+  await addChild(page, 'Button', 'trailing');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { tone: 'brand' },
+    text: { children: 'Send', action: 'send-chat-dialog-message' },
+  });
+}
+
+const dialogComposerNode = (id: string, placeholder: string) =>
+  node(
+    'message-composer',
+    { submitOnEnter: true, id, name: id, label: 'Message', placeholder },
+    {
+      trailing: [
+        node('button', {
+          children: 'Send',
+          tone: 'brand',
+          action: 'send-chat-dialog-message',
+        }),
+      ],
+    },
+  );
+
+/**
+ * Adds the scrolling transcript List (clearing the floating chrome on
+ * `clearance`) to the dialog's body, with one bubble per message.
+ */
+async function transcript(
+  page: Page,
+  clearance: string,
+  messages: readonly ChatMessage[],
+) {
+  await select(page, DIALOG);
+  await addChild(page, 'List', 'children');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { gap: 'xs', controlInsets: 'tb', scrollClearance: clearance },
+    flags: ['scrollable'],
+    data: [['data-demo-chat-transcript', '']],
+  });
+  for (const [from, text] of messages) {
+    await addInto(page, /^List(?![A-Z])/, 'ContentItem');
+    await applySpec(page, { choices: bubbleProps(from) });
+    await addChild(page, 'Text');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { variant: 'span' },
+      text: { children: text },
+    });
+  }
+  await expect(
+    canvas(page).locator('[data-demo-chat-transcript] .kui-content-item'),
+  ).toHaveCount(messages.length);
+}
+
+const transcriptNode = (clearance: string, messages: readonly ChatMessage[]) =>
+  node(
+    'list',
+    {
+      gap: 'xs',
+      controlInsets: 'tb',
+      scrollable: true,
+      scrollClearance: clearance,
+      rootAttributes: { 'data-demo-chat-transcript': '' },
+    },
+    {
+      children: messages.map(([from, text]) =>
+        node('content-item', bubbleProps(from), {
+          children: [textNode(text, { variant: 'span' })],
+        }),
+      ),
+    },
+  );
+
+test('builds SurfaceScaffold › Chat Dialog', async ({ page }) => {
+  test.setTimeout(test.info().timeout * 4);
+  const id = 'catalog-chat-dialog';
+  const notice = 'Answers use the latest nightly build.';
+  await dialogTrigger(page, 'Open Assistant', id);
+  await dialogSurface(
+    page,
+    {
+      choices: {
+        bodyInset: 'none',
+        bodyLayout: 'fill-last',
+        footerPresentation: 'floating',
+        footerInset: 'none',
+      },
+      text: { id, label: 'Assistant' },
+    },
+    { viewportGutter: 'rem(0.5)', height: 'rem(35)', footerOffset: 'rem(0.5)' },
+  );
+  // The notice takes the seeded body Text's place.
+  await addInto(page, DIALOG, 'StateBanner', 0, 0);
+  await select(page, /^StateBanner/);
+  await applySpec(page, {
+    choices: { tone: 'neutral' },
+    text: { title: notice },
+  });
+  await dialogComposer(page, 'catalog-chat-message', 'Ask about this build');
+  await transcript(page, 'block-end', CHAT);
+  await expectShown(page, id, ['Close', 'Send']);
+  expect(await exported(page)).toEqual(
+    pane(
+      dialogTriggerNode('Open Assistant', id),
+      node(
+        'surface-scaffold',
+        {
+          id,
+          label: 'Assistant',
+          viewportGutter: css('rem(0.5)'),
+          height: css('rem(35)'),
+          bodyInset: 'none',
+          bodyLayout: 'fill-last',
+          footerPresentation: 'floating',
+          footerOffset: css('rem(0.5)'),
+          footerInset: 'none',
+        },
+        {
+          children: [
+            node('state-banner', { title: notice, tone: 'neutral' }),
+            transcriptNode('block-end', CHAT),
+          ],
+          footer: [
+            dialogComposerNode('catalog-chat-message', 'Ask about this build'),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds SurfaceScaffold › Floating Title Bar', async ({ page }) => {
+  test.setTimeout(test.info().timeout * 4);
+  const id = 'catalog-thread-dialog';
+  const description = 'Engineering · 5.2 candidate';
+  await dialogTrigger(page, 'Open Release Thread', id);
+  await dialogSurface(
+    page,
+    {
+      choices: {
+        bodyInset: 'none',
+        bodyLayout: 'fill',
+        headerPresentation: 'floating',
+        footerPresentation: 'floating',
+        footerInset: 'none',
+      },
+      text: {
+        id,
+        label: 'Release Thread',
+        describedBy: `${id}-description`,
+      },
+    },
+    { viewportGutter: 'rem(0.5)', height: 'rem(35)', footerOffset: 'rem(0.5)' },
+  );
+  // The transcript is the body's one child.
+  await select(page, /^Text(?![A-Z])/);
+  await deleteSelected(page);
+  await select(page, DIALOG);
+  await addChild(page, 'ToolbarText', 'heading');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { size: 'xlarge' },
+    text: {
+      text: 'Release Thread',
+      description,
+      descriptionId: `${id}-description`,
+    },
+  });
+  await dialogComposer(page, 'catalog-thread-message', 'Reply to the thread');
+  await transcript(page, 'both', THREAD);
+  await expectShown(page, id, ['Close', 'Send']);
+  await expect(canvas(page).locator(`#${id}-description`)).toHaveText(
+    description,
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      dialogTriggerNode('Open Release Thread', id),
+      node(
+        'surface-scaffold',
+        {
+          id,
+          label: 'Release Thread',
+          describedBy: `${id}-description`,
+          viewportGutter: css('rem(0.5)'),
+          height: css('rem(35)'),
+          bodyInset: 'none',
+          bodyLayout: 'fill',
+          headerPresentation: 'floating',
+          footerPresentation: 'floating',
+          footerOffset: css('rem(0.5)'),
+          footerInset: 'none',
+        },
+        {
+          children: [transcriptNode('both', THREAD)],
+          heading: [
+            node('toolbar-text', {
+              text: 'Release Thread',
+              size: 'xlarge',
+              description,
+              descriptionId: `${id}-description`,
+            }),
+          ],
+          footer: [
+            dialogComposerNode('catalog-thread-message', 'Reply to the thread'),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+const WORKBENCH_DIALOG = /^WorkbenchDialog/;
+
+/**
+ * Makes WorkbenchDialog rail `prop` a static panel named `label` of `size`
+ * px whose toolbar carries a ToolbarText title and a toggle running
+ * `action`, and drops a List (insets tb), the outline's `list`th, in its
+ * content slot.
+ */
+async function dialogRail(
+  page: Page,
+  prop: string,
+  label: string,
+  size: number,
+  action: string,
+  list: number,
+) {
+  await select(page, WORKBENCH_DIALOG);
+  await choose(page, prop, 'Static panel…');
+  await configure(page, prop);
+  await setField(page, prop, ['label'], label);
+  await setField(page, prop, ['size'], String(size));
+  await panelToolbar(page, prop, label, action);
+  await openField(page, prop, ['toolbar']);
+  await toolbarText(page, `${prop}.toolbar.title`, label);
+  await select(page, WORKBENCH_DIALOG);
+  await dragComponent(page, 'List', () =>
+    canvas(page).locator('[data-editor-empty]', {
+      hasText: `${prop}Content slot — drop here`,
+    }),
+  );
+  // The outline lists the rails' content before the work area's.
+  await select(page, /^List(?![A-Z])/, list);
+  await choose(page, 'controlInsets', 'tb');
+}
+
+const dialogRailProps = (label: string, size: number, action: string) => ({
+  label,
+  size,
+  toolbar: { label, toggle: { action, name: label } },
+});
+
+const LAYERS = [
+  ['title', 'Title', 'Text'],
+  ['hero', 'Hero Image', 'Image'],
+  ['caption', 'Caption', 'Text'],
+  ['badge', 'Badge', 'Shape'],
+] as const;
+
+test('builds WorkbenchDialog › Edit Slide', async ({ page }) => {
+  test.setTimeout(test.info().timeout * 4);
+  const id = 'workbench-dialog-demo';
+  const select_ = 'select-workbench-dialog-layer';
+  await dialogTrigger(page, 'Edit Slide', id);
+  await addInto(page, /^Pane/, 'WorkbenchDialog');
+  await select(page, WORKBENCH_DIALOG);
+  await applySpec(page, {
+    text: {
+      id,
+      label: 'Edit Slide',
+      title: 'Edit Slide',
+      description: 'Slide 3 of 12',
+    },
+  });
+  await setCss(page, 'viewportGutter', 'rem(0.5)');
+  await setCss(page, 'height', 'rem(32.5)');
+  await setCss(page, 'preferredWidth', 'rem(60)');
+  // The work area: a List (insets tb) holding the canvas placeholder copy.
+  await addChild(page, 'List', 'main');
+  // The seeded work-area Text gives way to the List.
+  await select(page, /^Text(?![A-Z])/);
+  await deleteSelected(page);
+  await select(page, /^List(?![A-Z])/);
+  await choose(page, 'controlInsets', 'tb');
+  await addChild(page, 'ListInsetText');
+  await area(page, 'Properties');
+  await setText(
+    page,
+    'children',
+    'The slide canvas goes here. Hero Image is selected.',
+  );
+  // The bottom toolbar's trailing Row of Cancel and Save Slide.
+  await select(page, WORKBENCH_DIALOG);
+  await configure(page, 'mainBottomToolbar');
+  await setField(page, 'mainBottomToolbar', ['label'], 'Slide Actions');
+  await page
+    .locator('[data-editor-content-add="mainBottomToolbar.trailing"]')
+    .click();
+  await addChild(page, 'Row');
+  await area(page, 'Properties');
+  await applySpec(page, { choices: { hAlign: 'right', gap: 'xs' } });
+  await zoneButtons(page, /^Row/, 'children', [
+    {
+      choices: { emphasis: 'secondary' },
+      text: { children: 'Cancel' },
+      close: true,
+    },
+    {
+      choices: { tone: 'brand' },
+      text: { children: 'Save Slide', action: 'log-more' },
+    },
+  ]);
+  await dialogRail(
+    page,
+    'leftRail',
+    'Layers',
+    200,
+    'toggle-workbench-dialog-layers',
+    0,
+  );
+  for (const [itemId, label, kind] of LAYERS) {
+    await addInto(page, /^List(?![A-Z])/, 'ListItem', 0);
+    await applySpec(page, {
+      flags: itemId === 'hero' ? ['selected'] : [],
+      text: { label, description: kind, itemId, action: select_ },
+    });
+  }
+  await dialogRail(
+    page,
+    'rightRail',
+    'Inspector',
+    220,
+    'toggle-workbench-dialog-inspector',
+    1,
+  );
+  await addInto(page, /^List(?![A-Z])/, 'ValueTable', 1);
+  await valueTable(page, { text: { label: 'Layer Details' } }, [
+    valueRow('Name', 'Hero Image')[0],
+    valueRow('Kind', 'Image')[0],
+    valueRow('Size', '1280 × 720')[0],
+  ]);
+  await select(page, WORKBENCH_DIALOG);
+  const shown = canvas(page).locator(`#${id}`);
+  await expect(shown).toBeVisible();
+  await expect(shown.locator('.kui-list-item')).toHaveCount(LAYERS.length);
+  await page.screenshot({
+    animations: 'disabled',
+    path: test.info().outputPath('kf-jkvdka-workbench-dialog-1440.png'),
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      dialogTriggerNode('Edit Slide', id),
+      node(
+        'workbench-dialog',
+        {
+          id,
+          label: 'Edit Slide',
+          title: 'Edit Slide',
+          description: 'Slide 3 of 12',
+          viewportGutter: css('rem(0.5)'),
+          height: css('rem(32.5)'),
+          preferredWidth: css('rem(60)'),
+          mainBottomToolbar: { label: 'Slide Actions' },
+          leftRail: dialogRailProps(
+            'Layers',
+            200,
+            'toggle-workbench-dialog-layers',
+          ),
+          rightRail: dialogRailProps(
+            'Inspector',
+            220,
+            'toggle-workbench-dialog-inspector',
+          ),
+        },
+        {
+          main: [
+            node(
+              'list',
+              { controlInsets: 'tb' },
+              {
+                children: [
+                  node('list-inset-text', {
+                    children:
+                      'The slide canvas goes here. Hero Image is selected.',
+                  }),
+                ],
+              },
+            ),
+          ],
+          'mainBottomToolbar.trailing': [
+            node(
+              'row',
+              { hAlign: 'right', gap: 'xs' },
+              {
+                children: [
+                  closeButton('Cancel', { emphasis: 'secondary' }),
+                  node('button', {
+                    children: 'Save Slide',
+                    tone: 'brand',
+                    action: 'log-more',
+                  }),
+                ],
+              },
+            ),
+          ],
+          'leftRail.content': [
+            node(
+              'list',
+              { controlInsets: 'tb' },
+              {
+                children: LAYERS.map(([itemId, label, kind]) =>
+                  node('list-item', {
+                    label,
+                    description: kind,
+                    itemId,
+                    action: select_,
+                    ...(itemId === 'hero' ? { selected: true } : {}),
+                  }),
+                ),
+              },
+            ),
+          ],
+          'leftRail.toolbar.title': [toolbarTextNode('Layers')],
+          'rightRail.content': [
+            node(
+              'list',
+              { controlInsets: 'tb' },
+              {
+                children: [
+                  node(
+                    'value-table',
+                    { label: 'Layer Details' },
+                    {
+                      children: [
+                        ['Name', 'Hero Image'],
+                        ['Kind', 'Image'],
+                        ['Size', '1280 × 720'],
+                      ].map(([label, value]) =>
+                        node('value-table#ValueTableRow', { label, value }),
+                      ),
+                    },
+                  ),
+                ],
+              },
+            ),
+          ],
+          'rightRail.toolbar.title': [toolbarTextNode('Inspector')],
+        },
+      ),
+    ),
+  );
+});
+
+const SPLIT_PROJECTS = [
+  'Atlas',
+  'Borealis',
+  'Cirrus',
+  'Delta',
+  'Ember',
+  'Fjord',
+] as const;
+
+/**
+ * Sets up the selected SplitView as the surface demos' project split (`id`):
+ * a 240px list column of projects, Atlas selected, beside its detail copy.
+ */
+async function projectSplit(page: Page, id: string) {
+  await select(page, /^SplitView/);
+  await applySpec(page, {
+    text: {
+      id,
+      label: 'Projects',
+      listTitle: 'Projects',
+      detailTitle: 'Atlas',
+    },
+  });
+  await choose(page, 'listWidth', 'Custom…');
+  await openConfigure(page, 'Configure list width');
+  await setField(page, 'listWidth', ['size'], '240');
+  await setField(page, 'listWidth', ['maxFraction'], '0.4');
+  await backOut(page);
+  // Each pane's seeded Text is embedded in a List that takes the content,
+  // and then deleted.
+  await select(page, /^Text(?![A-Z])/);
+  await embedInOther(page, 'List');
+  for (const name of SPLIT_PROJECTS) {
+    await addInto(page, /^List(?![A-Z])/, 'ListItem', 0);
+    await applySpec(page, {
+      flags: name === 'Atlas' ? ['selected'] : [],
+      text: { label: name, itemId: name, action: 'log-more' },
+    });
+  }
+  await select(page, /^Text(?![A-Z])/);
+  await deleteSelected(page);
+  await select(page, /^Text(?![A-Z])/);
+  await embedInOther(page, 'List');
+  await addInto(page, /^List(?![A-Z])/, 'ListInsetText', 1);
+  await setText(page, 'children', SPLIT_DETAIL);
+  await select(page, /^Text(?![A-Z])/);
+  await deleteSelected(page);
+  await expect(
+    canvas(page).locator('.kui-split-view .kui-list-item'),
+  ).toHaveCount(SPLIT_PROJECTS.length);
+}
+
+const SPLIT_DETAIL =
+  "Atlas is active. The split fills the surface's full height, and each column scrolls on its own.";
+
+const projectSplitNode = (id: string) =>
+  node(
+    'split-view',
+    {
+      id,
+      label: 'Projects',
+      listTitle: 'Projects',
+      detailTitle: 'Atlas',
+      listWidth: { size: 240, maxFraction: 0.4 },
+    },
+    {
+      list: [
+        node('list', undefined, {
+          children: SPLIT_PROJECTS.map((name) =>
+            node('list-item', {
+              label: name,
+              itemId: name,
+              action: 'log-more',
+              ...(name === 'Atlas' ? { selected: true } : {}),
+            }),
+          ),
+        }),
+      ],
+      detail: [
+        node('list', undefined, {
+          children: [node('list-inset-text', { children: SPLIT_DETAIL })],
+        }),
+      ],
+    },
+  );
+
+test('builds SurfaceScaffold › Embedded Popover Dialog', async ({ page }) => {
+  test.setTimeout(test.info().timeout * 3);
+  await dragComponent(page, 'PopoverDialogSurface', () => emptySpot(page));
+  await select(page, /^PopoverDialogSurface/);
+  await applySpec(page, {
+    choices: { presentation: 'embedded', bodyLayout: 'fill' },
+    text: { label: 'Repository Status Preview' },
+  });
+  await setCss(page, 'preferredWidth', 'rem(35)');
+  await setCss(page, 'height', 'rem(17.5)');
+  // The split takes the seeded body Text's place.
+  await addInto(page, /^PopoverDialogSurface/, 'SplitView', 0, 0);
+  await projectSplit(page, 'catalog-embedded-dialog-split');
+  await expect(
+    canvas(page).getByRole('dialog', { name: 'Repository Status Preview' }),
+  ).toBeVisible();
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'surface-scaffold#PopoverDialogSurface',
+        {
+          label: 'Repository Status Preview',
+          presentation: 'embedded',
+          preferredWidth: css('rem(35)'),
+          height: css('rem(17.5)'),
+          bodyLayout: 'fill',
+        },
+        { children: [projectSplitNode('catalog-embedded-dialog-split')] },
+      ),
+    ),
+  );
+});
+
+/**
+ * The reader stack's first render: no reader open, Atlas first and
+ * Borealis second, neither offset. The demo's two triggers sit in a Row
+ * (its raw wrapper div became one, KF-JKVDKA).
+ */
+const READERS = [
+  ['atlas', 'Atlas Reader', 1],
+  ['borealis', 'Borealis Reader', 2],
+] as const;
+const READER_COPY =
+  'This reader occupies the dialog body and keeps its overlay host inside the native top layer.';
+
+test('builds SurfaceScaffold › Controlled Reader Stack', async ({ page }) => {
+  test.setTimeout(test.info().timeout * 4);
+  await dragComponent(page, 'Row', () => emptySpot(page));
+  await select(page, /^Row/);
+  await choose(page, 'gap', 'xs');
+  await dragComponent(page, 'Button', () => emptySpot(page));
+  await select(page, /^Button/);
+  await setText(page, 'children', 'Open Reader');
+  await setText(page, 'action', 'push-dialog-stack');
+  await page.getByRole('button', { name: 'Duplicate', exact: true }).click();
+  await select(page, /^Button/, 1);
+  await setText(page, 'children', 'Swap Order');
+  await setText(page, 'action', 'reorder-dialog-stack');
+  await turnOn(page, 'disabled');
+  for (const [id, label, position] of READERS) {
+    await dialogSurface(
+      page,
+      {
+        choices: { height: 'viewport', bodyInset: 'none', bodyLayout: 'fill' },
+        text: { id: `catalog-reader-${id}`, label },
+        data: [['data-reader-id', id]],
+      },
+      { preferredWidth: 'rem(64)' },
+      position - 1,
+    );
+    const nth = position - 1;
+    await openConfigure(page, 'Configure stack');
+    await setField(page, 'stack', ['position'], String(position));
+    await setField(page, 'stack', ['count'], '2');
+    await setField(page, 'stack', ['offset'], 'rem(0)');
+    // Neither reader is open yet. An untouched switch writes nothing, so
+    // each required flag is turned on and off again (KF-VQTDYG).
+    for (const flag of ['open', 'active']) {
+      await turnFieldOn(page, 'stack', [flag]);
+      await turnFieldOn(page, 'stack', [flag]);
+    }
+    await backOut(page);
+    // The first reader's body holds no Text by now.
+    await addInto(page, DIALOG, 'List', nth, 0);
+    await addInto(page, /^List(?![A-Z])/, 'ListInsetText', nth);
+    await setText(page, 'children', READER_COPY);
+    await addInto(page, /^List(?![A-Z])/, 'ListItem', nth);
+    await applySpec(page, {
+      text: { label: 'Review ticket', itemId: id, action: 'log-more' },
+    });
+    await addInto(page, /^List(?![A-Z])/, 'ListInsetControl', nth);
+    await addChild(page, 'PopupMenu');
+    // Adding the menu turned the inset's seeded text into a Text.
+    await area(page, 'Outline');
+    await outlineRow(page, /^Text/).first().click();
+    await deleteSelected(page);
+    await select(page, /^PopupMenu/, nth);
+    await applySpec(page, {
+      text: { text: 'Reader Actions' },
+      unsets: ['label'],
+    });
+    await editAsJson(page, 'items', READER_ITEMS);
+  }
+  await expect(canvas(page).locator('dialog')).toHaveCount(2);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'row',
+        { gap: 'xs' },
+        {
+          children: [
+            node('button', {
+              children: 'Open Reader',
+              action: 'push-dialog-stack',
+            }),
+            node('button', {
+              children: 'Swap Order',
+              action: 'reorder-dialog-stack',
+              disabled: true,
+            }),
+          ],
+        },
+      ),
+      ...READERS.map(([id, label, position]) =>
+        node(
+          'surface-scaffold',
+          {
+            id: `catalog-reader-${id}`,
+            label,
+            preferredWidth: css('rem(64)'),
+            height: 'viewport',
+            bodyInset: 'none',
+            bodyLayout: 'fill',
+            stack: {
+              open: false,
+              active: false,
+              position,
+              count: 2,
+              offset: css('rem(0)'),
+            },
+            rootAttributes: { 'data-reader-id': id },
+          },
+          {
+            children: [
+              node('list', undefined, {
+                children: [
+                  node('list-inset-text', { children: READER_COPY }),
+                  node('list-item', {
+                    label: 'Review ticket',
+                    itemId: id,
+                    action: 'log-more',
+                  }),
+                  node('list-inset-control', undefined, {
+                    children: [
+                      node('popup-menu', {
+                        text: 'Reader Actions',
+                        items: READER_ITEMS,
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+          },
+        ),
+      ),
+    ),
+  );
+});
+
+const READER_ITEMS = [{ label: 'Copy Link' }, { label: 'View History' }];
