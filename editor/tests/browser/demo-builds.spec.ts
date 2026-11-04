@@ -21373,6 +21373,240 @@ test('builds WorkbenchDialog › Edit Slide', async ({ page }) => {
   );
 });
 
+// KF-WBH5P2: ListDetailDialog's column fields. A ToolbarControlGroup in
+// `list.toolbar` (or `detail.actions`) renders in the column's Toolbar, so
+// it validates there.
+const LIST_DETAIL_DIALOG = /^ListDetailDialog/;
+
+const LDD_PROJECTS = [
+  ['atlas', 'Atlas', 'Mara Chen', 'Active'],
+  ['borealis', 'Borealis', 'Sam Rivera', 'Ready'],
+  ['cirrus', 'Cirrus', 'Inez Okafor', 'Blocked'],
+  ['delta', 'Delta', 'Theo Park', 'In review'],
+  ['ember', 'Ember', 'Ana Ruiz', 'Active'],
+  ['fjord', 'Fjord', 'Lena Holm', 'Archived'],
+] as const;
+
+type LddProject = (typeof LDD_PROJECTS)[number];
+
+/**
+ * Places a List (insets tb) in the selected ListDetailDialog's `column`
+ * content slot (`list` or `detail`); it is selected afterwards.
+ */
+async function columnList(page: Page, column: 'list' | 'detail') {
+  await select(page, LIST_DETAIL_DIALOG);
+  await dragComponent(page, 'List', () =>
+    canvas(page).locator('[data-editor-empty]', {
+      hasText: `${column}Content slot — drop here`,
+    }),
+  );
+  await select(page, /^List(?![A-Z])/, column === 'list' ? 0 : 1);
+  await choose(page, 'controlInsets', 'tb');
+}
+
+/**
+ * Fills the ListDetailDialog's list column (titled Projects) with one
+ * ListItem per project running `action`, Atlas selected.
+ */
+async function projectColumn(
+  page: Page,
+  projects: readonly LddProject[],
+  action: string,
+) {
+  await columnList(page, 'list');
+  for (const [itemId, label, description] of projects) {
+    await addInto(page, /^List(?![A-Z])/, 'ListItem', 0);
+    await applySpec(page, {
+      flags: itemId === 'atlas' ? ['selected'] : [],
+      text: { label, description, itemId, action },
+    });
+  }
+}
+
+/** The list column's List `projectColumn` builds. */
+const projectColumnNode = (projects: readonly LddProject[], action: string) =>
+  node(
+    'list',
+    { controlInsets: 'tb' },
+    {
+      children: projects.map(([itemId, label, description]) =>
+        node('list-item', {
+          label,
+          description,
+          itemId,
+          action,
+          ...(itemId === 'atlas' ? { selected: true } : {}),
+        }),
+      ),
+    },
+  );
+
+/** The detail column's Project Details ValueTable for Atlas. */
+async function atlasDetails(page: Page) {
+  await columnList(page, 'detail');
+  await addInto(page, /^List(?![A-Z])/, 'ValueTable', 1);
+  await valueTable(page, { text: { label: 'Project Details' } }, [
+    valueRow('Owner', 'Mara Chen')[0],
+    valueRow('Status', 'Active')[0],
+  ]);
+}
+
+const atlasDetailsNode = () =>
+  node(
+    'value-table',
+    { label: 'Project Details' },
+    {
+      children: [
+        ['Owner', 'Mara Chen'],
+        ['Status', 'Active'],
+      ].map(([label, value]) =>
+        node('value-table#ValueTableRow', { label, value }),
+      ),
+    },
+  );
+
+/** Titles the ListDetailDialog's columns: Projects beside Atlas (Active). */
+async function columnTitles(page: Page) {
+  await select(page, LIST_DETAIL_DIALOG);
+  await configure(page, 'list');
+  await setField(page, 'list', ['title'], 'Projects');
+  await backOut(page);
+  await configure(page, 'detail');
+  await setField(page, 'detail', ['title'], 'Atlas');
+  await setField(page, 'detail', ['description'], 'Active');
+  await backOut(page);
+}
+
+const LDD_DETAIL_COPY =
+  'Each column scrolls on its own beneath its pinned chrome.';
+
+test('builds ListDetailDialog › Project Details', async ({ page }) => {
+  test.setTimeout(test.info().timeout * 4);
+  const id = 'list-detail-dialog-demo';
+  const action = 'select-list-detail-project';
+  await dialogTrigger(page, 'Open Project Details', id);
+  await addInto(page, /^Pane/, 'ListDetailDialog');
+  await select(page, LIST_DETAIL_DIALOG);
+  await applySpec(page, {
+    text: { id, label: 'Project Details', backLabel: 'Back to Projects' },
+  });
+  await setCss(page, 'viewportGutter', 'rem(0.5)');
+  await setCss(page, 'height', 'rem(30)');
+  await columnTitles(page);
+  // The list column's controls: a borderless single group holding New.
+  await configure(page, 'list');
+  await page.locator('[data-editor-content-add="list.toolbar"]').click();
+  await addChild(page, 'ToolbarControlGroup');
+  await area(page, 'Properties');
+  await choose(page, 'appearance', 'borderless');
+  await turnOn(page, 'single');
+  await select(page, /^ToolbarButton/);
+  await applySpec(page, {
+    text: { children: 'New', ariaLabel: 'New Project', action: 'log-more' },
+  });
+  await projectColumn(page, LDD_PROJECTS, action);
+  await atlasDetails(page);
+  await addInto(page, /^List(?![A-Z])/, 'ListInsetText', 1);
+  await setText(page, 'children', LDD_DETAIL_COPY);
+  // The detail column's pinned footer: a Row of Done and Open Project.
+  await select(page, LIST_DETAIL_DIALOG);
+  await configure(page, 'detail');
+  await page.locator('[data-editor-content-add="detail.footer"]').click();
+  await addChild(page, 'Row');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { hAlign: 'right', gap: 'xs', controlInsets: 'trbl' },
+  });
+  await zoneButtons(page, /^Row/, 'children', [
+    {
+      choices: { emphasis: 'secondary' },
+      text: { children: 'Done' },
+      close: true,
+    },
+    {
+      choices: { tone: 'brand' },
+      text: { children: 'Open Project', action: 'log-more' },
+    },
+  ]);
+  await select(page, LIST_DETAIL_DIALOG);
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  const shown = canvas(page).locator(`#${id}`);
+  await expect(shown).toBeVisible();
+  await expect(shown.locator('.kui-list-item')).toHaveCount(
+    LDD_PROJECTS.length,
+  );
+  await expect(
+    shown.getByRole('button', { name: 'New Project', exact: true }),
+  ).toBeVisible();
+  await page.screenshot({
+    animations: 'disabled',
+    path: test.info().outputPath('kf-wbh5p2-list-detail-dialog-1440.png'),
+  });
+  expect(await exported(page)).toEqual(
+    pane(
+      dialogTriggerNode('Open Project Details', id),
+      node(
+        'list-detail-dialog',
+        {
+          id,
+          label: 'Project Details',
+          backLabel: 'Back to Projects',
+          viewportGutter: css('rem(0.5)'),
+          height: css('rem(30)'),
+          list: { title: 'Projects' },
+          detail: { title: 'Atlas', description: 'Active' },
+        },
+        {
+          'list.toolbar': [
+            node(
+              'toolbar-control-group',
+              { appearance: 'borderless', single: true },
+              {
+                children: [
+                  node('toolbar-control-group#ToolbarButton', {
+                    children: 'New',
+                    ariaLabel: 'New Project',
+                    action: 'log-more',
+                  }),
+                ],
+              },
+            ),
+          ],
+          'list.content': [projectColumnNode(LDD_PROJECTS, action)],
+          'detail.content': [
+            node(
+              'list',
+              { controlInsets: 'tb' },
+              {
+                children: [
+                  atlasDetailsNode(),
+                  node('list-inset-text', { children: LDD_DETAIL_COPY }),
+                ],
+              },
+            ),
+          ],
+          'detail.footer': [
+            node(
+              'row',
+              { hAlign: 'right', gap: 'xs', controlInsets: 'trbl' },
+              {
+                children: [
+                  closeButton('Done', { emphasis: 'secondary' }),
+                  node('button', {
+                    children: 'Open Project',
+                    tone: 'brand',
+                    action: 'log-more',
+                  }),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
 const SPLIT_PROJECTS = [
   'Atlas',
   'Borealis',
