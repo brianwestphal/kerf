@@ -10,7 +10,9 @@ test.beforeEach(async ({ page }) => {
 
 test('an icon-only trigger names its open menu', async ({ page }) => {
   const demo = page.locator('[data-demo="popup-menu"]');
-  const sort = demo.locator('[data-component="popup-menu"]').first();
+  const sort = demo
+    .locator('[data-component="popup-menu"]:not([data-embedded])')
+    .first();
   await sort.getByRole('button', { name: 'Sort Tickets' }).click();
   const menu = sort.getByRole('menu', { name: 'Sort Tickets', exact: true });
   await expect(menu).toBeVisible();
@@ -21,7 +23,9 @@ test('a text trigger and its submenu name their open menus', async ({
 }) => {
   const demo = page.locator('[data-demo="popup-menu"]');
   const decide = demo
-    .locator('[data-component="popup-menu"][data-trigger="button"]')
+    .locator(
+      '[data-component="popup-menu"]:not([data-embedded])[data-trigger="button"]',
+    )
     .filter({ has: page.locator('[data-submenu]') });
   await decide.getByRole('button', { name: 'Decide' }).focus();
   await page.keyboard.press('Enter');

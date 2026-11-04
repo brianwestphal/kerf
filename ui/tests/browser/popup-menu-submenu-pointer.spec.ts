@@ -3,7 +3,7 @@ import { expect, type Page, test } from '@playwright/test';
 function nestedMenu(page: Page) {
   const root = page
     .locator(
-      '[data-demo="popup-menu"] [data-component="popup-menu"][data-trigger="button"]',
+      '[data-demo="popup-menu"] [data-component="popup-menu"]:not([data-embedded])[data-trigger="button"]',
     )
     .filter({ has: page.locator('[data-submenu]') });
   return {
