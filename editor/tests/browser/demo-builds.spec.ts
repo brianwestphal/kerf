@@ -14324,6 +14324,182 @@ test('builds Layout › Pane with Child-Owned Content Geometry', async ({
   );
 });
 
+const ANCHORED_REQUEST_COPY =
+  'Conversation content stays in a readable column while a request docks to the bottom of the main column.';
+const ANCHORED_REQUEST_DESCRIPTION =
+  'The assistant wants to read three files in this workspace.';
+
+/** A Button that shows or hides the popover dialog `id`. */
+const popoverButtonNode = (
+  children: string,
+  id: string,
+  action: 'show' | 'hide',
+  props: Record<string, unknown> = {},
+) =>
+  node('button', {
+    children,
+    ...props,
+    popoverTarget: id,
+    popoverTargetAction: action,
+  });
+
+// KF-121Q7E: the CatalogExample and its viewport (the frame that names the
+// `--demo-shell-main` anchor) are catalog chrome; the view is the column's
+// content and the request surface, which docks to that application anchor.
+// The edit canvas shows the surface embedded (KF-T1V86Q).
+test('builds Layout › Top-Layer Popup Anchored to the Frame', async ({
+  page,
+}) => {
+  test.setTimeout(test.info().timeout * 3);
+  const id = 'layout-anchored-request';
+  await dragComponent(page, 'Text', () => emptySpot(page));
+  await select(page, /^Text(?![A-Z])/);
+  await setText(page, 'children', ANCHORED_REQUEST_COPY);
+  await addInto(page, /^Pane/, 'Spacer');
+  await area(page, 'Properties');
+  await turnOn(page, 'flex');
+  await addInto(page, /^Pane/, 'Row');
+  await area(page, 'Properties');
+  await choose(page, 'controlInsets', 'l');
+  await addInto(page, /^Row/, 'Button');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { popoverTargetAction: 'show' },
+    text: { children: 'Show Request', popoverTarget: id },
+    data: [['data-layout-anchor-trigger', '']],
+  });
+  await addInto(page, /^Pane/, 'PopoverDialogSurface');
+  await select(page, /^PopoverDialogSurface/);
+  await applySpec(page, {
+    choices: { dismiss: 'manual' },
+    text: {
+      id,
+      labelledBy: `${id}-title`,
+      describedBy: `${id}-description`,
+      anchorName: '--demo-shell-main',
+    },
+    unsets: ['label'],
+    data: [['data-anchored-request-popup', '']],
+  });
+  await setCss(page, 'preferredWidth', 'rem(30)');
+  // The heading List takes the seeded body Text's place.
+  await addInto(page, /^PopoverDialogSurface/, 'List', 0, 1);
+  await addInto(page, /^List(?![A-Z])/, 'Toolbar');
+  await area(page, 'Properties');
+  await setText(page, 'label', 'Request Heading');
+  await zoneText(page, 'leading', {
+    choices: { size: 'xlarge' },
+    text: { text: 'Allow File Access?', id: `${id}-title` },
+  });
+  await describedText(
+    page,
+    /^List(?![A-Z])/,
+    ANCHORED_REQUEST_DESCRIPTION,
+    `${id}-description`,
+  );
+  await choose(page, 'tone', 'quiet');
+  await select(page, /^ListInsetText/);
+  await choose(page, 'sides', 'rl');
+  await addInto(page, /^PopoverDialogSurface/, 'Row');
+  await area(page, 'Properties');
+  await choose(page, 'hAlign', 'right');
+  await choose(page, 'controlInsets', 'rbl');
+  for (const [children, spec] of [
+    ['Deny', { choices: { emphasis: 'secondary' } }],
+    ['Allow', { choices: { tone: 'brand' } }],
+  ] as const) {
+    await addInto(page, /^Row/, 'Button', 1);
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { ...spec.choices, popoverTargetAction: 'hide' },
+      text: { children, popoverTarget: id },
+    });
+  }
+  const shown = canvas(page).getByRole('dialog', {
+    name: 'Allow File Access?',
+  });
+  await expect(shown).toBeVisible();
+  await expect(shown).toHaveAttribute('data-presentation', 'embedded');
+  await expect(shown.getByRole('button')).toHaveCount(2);
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node('text', { children: ANCHORED_REQUEST_COPY }),
+      node('spacer', { flex: true }),
+      node(
+        'row',
+        { controlInsets: 'l' },
+        {
+          children: [
+            popoverButtonNode('Show Request', id, 'show', {
+              rootAttributes: { 'data-layout-anchor-trigger': '' },
+            }),
+          ],
+        },
+      ),
+      node(
+        'surface-scaffold#PopoverDialogSurface',
+        {
+          id,
+          labelledBy: `${id}-title`,
+          describedBy: `${id}-description`,
+          dismiss: 'manual',
+          anchorName: '--demo-shell-main',
+          preferredWidth: css('rem(30)'),
+          rootAttributes: { 'data-anchored-request-popup': '' },
+        },
+        {
+          children: [
+            node('list', undefined, {
+              children: [
+                node(
+                  'toolbar',
+                  { label: 'Request Heading' },
+                  {
+                    leading: [
+                      node('toolbar-text', {
+                        text: 'Allow File Access?',
+                        size: 'xlarge',
+                        id: `${id}-title`,
+                      }),
+                    ],
+                  },
+                ),
+                node(
+                  'list-inset-text',
+                  { sides: 'rl' },
+                  {
+                    children: [
+                      node('text', {
+                        children: ANCHORED_REQUEST_DESCRIPTION,
+                        variant: 'span',
+                        tone: 'quiet',
+                        id: `${id}-description`,
+                      }),
+                    ],
+                  },
+                ),
+              ],
+            }),
+            node(
+              'row',
+              { hAlign: 'right', controlInsets: 'rbl' },
+              {
+                children: [
+                  popoverButtonNode('Deny', id, 'hide', {
+                    emphasis: 'secondary',
+                  }),
+                  popoverButtonNode('Allow', id, 'hide', { tone: 'brand' }),
+                ],
+              },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
 /** Places a ResizableRegion set up by `spec`, with its numeric sizes. */
 async function region(
   page: Page,

@@ -1,0 +1,157 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "LayoutTopLayerPopupAnchoredToTheFrame",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Conversation content stays in a readable column while a request docks to the bottom of the main column."
+          }
+        },
+        {
+          "id": "00000000000000000000000003",
+          "type": "@kerfjs/ui:spacer",
+          "props": {
+            "flex": true
+          }
+        },
+        {
+          "id": "00000000000000000000000004",
+          "type": "@kerfjs/ui:row",
+          "props": {
+            "controlInsets": "l"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Show Request",
+                  "popoverTargetAction": "show",
+                  "popoverTarget": "layout-anchored-request",
+                  "rootAttributes": {
+                    "data-layout-anchor-trigger": ""
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "00000000000000000000000006",
+          "type": "@kerfjs/ui:surface-scaffold#PopoverDialogSurface",
+          "props": {
+            "dismiss": "manual",
+            "id": "layout-anchored-request",
+            "labelledBy": "layout-anchored-request-title",
+            "describedBy": "layout-anchored-request-description",
+            "anchorName": "--demo-shell-main",
+            "rootAttributes": {
+              "data-anchored-request-popup": ""
+            },
+            "preferredWidth": {
+              "$css": "rem(30)"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:list",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:toolbar",
+                      "props": {
+                        "label": "Request Heading"
+                      },
+                      "zones": {
+                        "leading": [
+                          {
+                            "id": "00000000000000000000000009",
+                            "type": "@kerfjs/ui:toolbar-text",
+                            "props": {
+                              "text": "Allow File Access?",
+                              "size": "xlarge",
+                              "id": "layout-anchored-request-title"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000010",
+                      "type": "@kerfjs/ui:list-inset-text",
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000011",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "The assistant wants to read three files in this workspace.",
+                              "variant": "span",
+                              "id": "layout-anchored-request-description",
+                              "tone": "quiet"
+                            }
+                          }
+                        ]
+                      },
+                      "props": {
+                        "sides": "rl"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000012",
+                "type": "@kerfjs/ui:row",
+                "props": {
+                  "hAlign": "right",
+                  "controlInsets": "rbl"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000013",
+                      "type": "@kerfjs/ui:button",
+                      "props": {
+                        "children": "Deny",
+                        "emphasis": "secondary",
+                        "popoverTargetAction": "hide",
+                        "popoverTarget": "layout-anchored-request"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000014",
+                      "type": "@kerfjs/ui:button",
+                      "props": {
+                        "children": "Allow",
+                        "tone": "brand",
+                        "popoverTargetAction": "hide",
+                        "popoverTarget": "layout-anchored-request"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
