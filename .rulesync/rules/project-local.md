@@ -494,7 +494,7 @@ npm run release:beta # tag-only: tags v{ver}-beta.{N}, publishes with --tag beta
 
 `scripts/release.sh` and `scripts/release-beta-auto.sh` keep all four packages (`kerfjs`, `eslint-plugin-kerfjs`, `create-kerf-component`, and `@kerfjs/ui`) on one version/tag. `scripts/sync-lockstep-versions.mjs` also derives the plugin-reported version and component-scaffold/docs ranges; its `--check` mode runs in `npm run check`. In CI, `scripts/prepare-release-package.mjs` applies the tag version plus package-specific embedded metadata (AI manifests/signatures, plugin-reported version, and Kerf peer/scaffold ranges), then a tokenless job creates the final tarball. The OIDC-token job only downloads and publishes those already-packed bytes. `kerfjs` always publishes first: the three dependent workflows' publish jobs need a tokenless `wait-for-core` job (`scripts/wait-for-core-release.mjs`) that polls npm for `kerfjs@<version>` and fails fast if the core `release.yml` run fails — so after re-running a failed core release, re-run the dependents' failed jobs too.
 
-The release step formats `CHANGELOG.md` before lint, and lockstep version sync writes the ESLint plugin metadata in its formatted quote style.
+Lockstep version sync writes the ESLint plugin metadata in its formatted quote style, so the release commit passes the format check.
 
 `ui/ai/component-composition.schema.json` and
 `ui/ai/component-catalog-extension.schema.json` are also the canonical schemas
