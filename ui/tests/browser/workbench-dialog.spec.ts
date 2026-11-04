@@ -104,3 +104,40 @@ test('WorkbenchDialog opens rails as overlays on compact devices, and Escape clo
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveJSProperty('open', false);
 });
+
+// KF-RWJ9KD: an embedded composed dialog sits in flow at its height.
+test('the embedded workbench-dialog sits in flow at its height, inside its container', async ({
+  page,
+}, testInfo) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?component=workbench-dialog');
+    const dialog = page.locator('#workbench-dialog-embedded-demo');
+    await dialog.scrollIntoViewIfNeeded();
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveAttribute('data-presentation', 'embedded');
+    await expect(page.locator('dialog:modal')).toHaveCount(0);
+    const box = (await dialog.boundingBox())!;
+    const container = (await dialog.locator('xpath=..').boundingBox())!;
+    // It keeps its definite height, so the filling body has room.
+    expect(box.height).toBeGreaterThan(200);
+    expect(box.x + box.width).toBeLessThanOrEqual(
+      container.x + container.width + 1,
+    );
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth - window.innerWidth,
+      ),
+    ).toBeLessThanOrEqual(0);
+    await page.mouse.move(0, 0);
+    await page.screenshot({
+      path: testInfo.outputPath(`workbench-dialog-embedded-${width}.png`),
+      clip: {
+        x: Math.max(0, box.x - 24),
+        y: Math.max(0, box.y - 24),
+        width: Math.min(width - Math.max(0, box.x - 24), box.width + 48),
+        height: box.height + 48,
+      },
+    });
+  }
+});

@@ -80,6 +80,10 @@ Escape closes the dialog.
 - `main` (required), `mainFooter`, `mainBottomToolbar`.
 - `leftRail`, `rightRail`, `bottomDrawer`: `WorkbenchPanel`s.
 - `compact`, `closeLabel` (default `Close`), `lightDismiss`.
+- `embedded`: render in flow and always shown, keeping `height`, for a
+  catalog, a design canvas, or a document. `openDialog()` and `closeDialog()`
+  leave it alone. The Kerf UI editor shows a WorkbenchDialog this way on its
+  edit canvas.
 - Roomy sizing: `size` (default `large`), `preferredWidth`, `height` (default
   560px), `maxHeight`, `viewportGutter`, and `mainMinSize`.
 - `rootAttributes`, `className`, `slot`.

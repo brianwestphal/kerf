@@ -5940,6 +5940,16 @@
           "description": "One pane at a time: derive from `deviceClass().value.compact`. The dialog\nfills the screen and drills from the list into the detail as a\n`NavStack`; every view keeps the close control."
         },
         {
+          "name": "embedded",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Render in flow and always shown (DialogSurface `presentation=\"embedded\"`)\ninstead of as a modal, for a catalog, a design canvas, or a document. It\nkeeps its `height`; `openDialog` and `closeDialog` leave it alone."
+        },
+        {
           "name": "detailActive",
           "type": {
             "kind": "boolean",
@@ -24085,6 +24095,16 @@
           },
           "required": false,
           "description": "Fill the screen with the rails as overlays: derive from\n`deviceClass().value.compact`."
+        },
+        {
+          "name": "embedded",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Render in flow and always shown (DialogSurface `presentation=\"embedded\"`)\ninstead of as a modal, for a catalog, a design canvas, or a document. It\nkeeps its `height`; `openDialog` and `closeDialog` leave it alone."
         },
         {
           "name": "closeLabel",

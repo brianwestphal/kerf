@@ -96,5 +96,10 @@ it with `closeDialog(element)`, the close control, Escape, an element with
 functions are re-exported from this subpath. Give sibling dialogs distinct
 `rootAttributes['data-key']` values so a re-render morphs each into itself.
 
+Pass `embedded` to render it in flow and always shown instead, keeping its
+`height`, for a catalog, a design canvas, or a document; `openDialog()` and
+`closeDialog()` leave it alone. The Kerf UI editor shows a ListDetailDialog this
+way on its edit canvas.
+
 See the [list-detail dialog recipe](recipes.md#list-detail-dialog) for a
 complete, production-backed example.

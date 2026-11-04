@@ -97,6 +97,12 @@ export interface ListDetailDialogProps {
    * `NavStack`; every view keeps the close control.
    */
   compact?: boolean;
+  /**
+   * Render in flow and always shown (DialogSurface `presentation="embedded"`)
+   * instead of as a modal, for a catalog, a design canvas, or a document. It
+   * keeps its `height`; `openDialog` and `closeDialog` leave it alone.
+   */
+  embedded?: boolean;
   /** On compact devices, whether the detail is pushed over the list. */
   detailActive?: boolean;
   /** The compact back control's accessible name (default `Back`). */
@@ -151,6 +157,7 @@ export function ListDetailDialog({
   list,
   detail,
   compact = false,
+  embedded = false,
   detailActive = false,
   backLabel = 'Back',
   closeLabel = 'Close',
@@ -262,16 +269,16 @@ export function ListDetailDialog({
       lightDismiss={lightDismiss}
       closeLabel={closeLabel}
       size={size}
-      presentation={compact ? 'fullscreen' : 'modal'}
+      presentation={embedded ? 'embedded' : compact ? 'fullscreen' : 'modal'}
       preferredWidth={preferredWidth}
       height={
-        compact
+        compact && !embedded
           ? undefined
           : maxHeight === undefined
             ? (height ?? remify(560))
             : height
       }
-      maxHeight={compact ? undefined : maxHeight}
+      maxHeight={compact && !embedded ? undefined : maxHeight}
       viewportGutter={compact ? undefined : viewportGutter}
       bodyInset="none"
       bodyLayout="fill"

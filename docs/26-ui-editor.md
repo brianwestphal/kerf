@@ -349,7 +349,8 @@ below the shown one, gets no selection ring: the view sits under the shown one,
 and a ring there would mark what that view shows (KF-ZC9EXM: ring over a
 hidden node).
 
-Every DialogSurface shows **embedded** on the edit canvas (KF-SYGSD0): a
+Every DialogSurface (and every WorkbenchDialog and ListDetailDialog, through
+their `embedded` prop, KF-RWJ9KD) shows **embedded** on the edit canvas (KF-SYGSD0): a
 modal dialog renders nothing while closed, so the canvas renders each one in
 flow (`presentation: 'embedded'`), where its content can be seen, selected,
 and dropped into. Its close controls only select there. The document keeps

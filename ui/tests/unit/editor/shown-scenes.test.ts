@@ -283,6 +283,23 @@ describe('dialogs on the edit canvas', () => {
     }
     const embedded = withDialog('embedded');
     expect(embeddedDialogs(embedded)).toBe(embedded);
+    // KF-RWJ9KD: the composed dialogs take `embedded`.
+    for (const type of [
+      '@kerfjs/ui:workbench-dialog',
+      '@kerfjs/ui:list-detail-dialog',
+    ]) {
+      const composed = {
+        ...withDialog(),
+        root: { id: PANE, type, props: { id: 'composed' } },
+      } as unknown as ViewDocument;
+      expect(embeddedDialogs(composed).root.props?.embedded).toBe(true);
+      expect(composed.root.props?.embedded).toBeUndefined();
+      const already = {
+        ...composed,
+        root: { ...composed.root, props: { id: 'composed', embedded: true } },
+      } as unknown as ViewDocument;
+      expect(embeddedDialogs(already)).toBe(already);
+    }
     expect(embeddedDialogs(sample())).toEqual(sample());
   });
 

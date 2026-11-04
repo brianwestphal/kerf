@@ -178,4 +178,20 @@ describe('WorkbenchDialog', () => {
     expect(explicit.getAttribute('aria-describedby')).toBe('slide-summary');
     expect(explicit.querySelector('#slide-summary')).not.toBeNull();
   });
+
+  // KF-RWJ9KD: in flow for a catalog or the editor canvas.
+  it('renders embedded in flow, keeping its height, even on compact devices', () => {
+    for (const compact of [false, true]) {
+      const dialog = render(
+        WorkbenchDialog({ ...base, embedded: true, compact }),
+      ).querySelector<HTMLDialogElement>('dialog')!;
+      expect(dialog.dataset.presentation).toBe('embedded');
+      expect(dialog.hasAttribute('open')).toBe(true);
+      expect(dialog.getAttribute('style')).toContain(
+        '--_kui-dialog-surface-height:35rem',
+      );
+    }
+    const modal = render(WorkbenchDialog(base)).querySelector('dialog')!;
+    expect(modal.hasAttribute('open')).toBe(false);
+  });
 });

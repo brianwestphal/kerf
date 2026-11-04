@@ -79,6 +79,12 @@ export interface WorkbenchDialogProps {
    * `deviceClass().value.compact`.
    */
   compact?: boolean;
+  /**
+   * Render in flow and always shown (DialogSurface `presentation="embedded"`)
+   * instead of as a modal, for a catalog, a design canvas, or a document. It
+   * keeps its `height`; `openDialog` and `closeDialog` leave it alone.
+   */
+  embedded?: boolean;
   /** The close control's accessible name (default `Close`). */
   closeLabel?: string;
   /** Close on a press on the backdrop; otherwise the panel pulses. */
@@ -135,6 +141,7 @@ export function WorkbenchDialog({
   rightRail,
   bottomDrawer,
   compact = false,
+  embedded = false,
   closeLabel = 'Close',
   lightDismiss = false,
   size = 'large',
@@ -159,16 +166,16 @@ export function WorkbenchDialog({
       lightDismiss={lightDismiss}
       closeLabel={closeLabel}
       size={size}
-      presentation={compact ? 'fullscreen' : 'modal'}
+      presentation={embedded ? 'embedded' : compact ? 'fullscreen' : 'modal'}
       preferredWidth={preferredWidth}
       height={
-        compact
+        compact && !embedded
           ? undefined
           : maxHeight === undefined
             ? (height ?? remify(560))
             : height
       }
-      maxHeight={compact ? undefined : maxHeight}
+      maxHeight={compact && !embedded ? undefined : maxHeight}
       viewportGutter={compact ? undefined : viewportGutter}
       bodyInset="none"
       bodyLayout="fill"

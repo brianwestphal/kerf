@@ -157,6 +157,26 @@ export function WorkbenchDialogDemo() {
           }}
         />
       </CatalogExample>
+      <CatalogExample
+        label="Embedded"
+        note="embedded renders the dialog in flow and always shown, keeping its height, for a catalog, a design canvas, or a document."
+        align="inline-control"
+      >
+        <WorkbenchDialog
+          id="workbench-dialog-embedded-demo"
+          label="Slide Preview"
+          title="Slide Preview"
+          description="Slide 3 of 12"
+          embedded
+          height={remify(240)}
+          preferredWidth={remify(560)}
+          main={
+            <List controlInsets="tb">
+              <ListInsetText>The slide canvas goes here.</ListInsetText>
+            </List>
+          }
+        />
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

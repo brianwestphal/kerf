@@ -43,9 +43,15 @@ export function shownScenes(
 }
 
 const DIALOG_SURFACE = '@kerfjs/ui:surface-scaffold';
+/** Composed dialogs that render a DialogSurface and take `embedded` (KF-RWJ9KD). */
+const COMPOSED_DIALOGS = new Set([
+  '@kerfjs/ui:workbench-dialog',
+  '@kerfjs/ui:list-detail-dialog',
+]);
 
 /**
- * KF-SYGSD0: `document` with every DialogSurface `embedded`, as the edit
+ * KF-SYGSD0: `document` with every DialogSurface `embedded` (and, KF-RWJ9KD,
+ * every WorkbenchDialog and ListDetailDialog `embedded: true`), as the edit
  * canvas shows it. A modal dialog renders nothing until something opens it,
  * so on the canvas it sits in flow where the author can see and select its
  * content; play mode keeps the authored presentation. The document itself
@@ -56,6 +62,8 @@ export function embeddedDialogs(document: ViewDocument): ViewDocument {
   for (const { node } of visitNodes(document))
     if (node.type === DIALOG_SURFACE && node.props?.presentation !== 'embedded')
       shown = setProp(shown, node.id, 'presentation', 'embedded');
+    else if (COMPOSED_DIALOGS.has(node.type) && node.props?.embedded !== true)
+      shown = setProp(shown, node.id, 'embedded', true);
   return shown;
 }
 

@@ -5482,6 +5482,12 @@ interface ListDetailDialogProps {
      * `NavStack`; every view keeps the close control.
      */
     compact?: boolean;
+    /**
+     * Render in flow and always shown (DialogSurface `presentation="embedded"`)
+     * instead of as a modal, for a catalog, a design canvas, or a document. It
+     * keeps its `height`; `openDialog` and `closeDialog` leave it alone.
+     */
+    embedded?: boolean;
     /** On compact devices, whether the detail is pushed over the list. */
     detailActive?: boolean;
     /** The compact back control's accessible name (default `Back`). */
@@ -5516,7 +5522,7 @@ interface ListDetailDialogProps {
  * stack's back control dispatches `nav-back`). Built from `DialogSurface`,
  * `SplitView`, and `Pane`.
  */
-declare function ListDetailDialog({ id, label, describedBy, list, detail, compact, detailActive, backLabel, closeLabel, lightDismiss, size, preferredWidth, height, maxHeight, viewportGutter, rootAttributes, className, slot, }: ListDetailDialogProps): kerfjs.SafeHtml;
+declare function ListDetailDialog({ id, label, describedBy, list, detail, compact, embedded, detailActive, backLabel, closeLabel, lightDismiss, size, preferredWidth, height, maxHeight, viewportGutter, rootAttributes, className, slot, }: ListDetailDialogProps): kerfjs.SafeHtml;
 
 export { ListDetailDialog, type ListDetailDialogDetail, type ListDetailDialogList, type ListDetailDialogProps, type ListDetailDialogRootAttributes };
 ```
@@ -5596,6 +5602,12 @@ interface WorkbenchDialogProps {
      * `deviceClass().value.compact`.
      */
     compact?: boolean;
+    /**
+     * Render in flow and always shown (DialogSurface `presentation="embedded"`)
+     * instead of as a modal, for a catalog, a design canvas, or a document. It
+     * keeps its `height`; `openDialog` and `closeDialog` leave it alone.
+     */
+    embedded?: boolean;
     /** The close control's accessible name (default `Close`). */
     closeLabel?: string;
     /** Close on a press on the backdrop; otherwise the panel pulses. */
@@ -5628,7 +5640,7 @@ interface WorkbenchDialogProps {
  * Escape or a press outside it before the dialog sees the Escape. Built from
  * `DialogSurface` and `Workbench`.
  */
-declare function WorkbenchDialog({ id, label, title, description, describedBy, leading, actions, main, mainFooter, mainBottomToolbar, leftRail, rightRail, bottomDrawer, compact, closeLabel, lightDismiss, size, preferredWidth, height, maxHeight, viewportGutter, mainMinSize, rootAttributes, className, slot, }: WorkbenchDialogProps): kerfjs.SafeHtml;
+declare function WorkbenchDialog({ id, label, title, description, describedBy, leading, actions, main, mainFooter, mainBottomToolbar, leftRail, rightRail, bottomDrawer, compact, embedded, closeLabel, lightDismiss, size, preferredWidth, height, maxHeight, viewportGutter, mainMinSize, rootAttributes, className, slot, }: WorkbenchDialogProps): kerfjs.SafeHtml;
 
 export { WorkbenchDialog, type WorkbenchDialogProps, type WorkbenchDialogRootAttributes };
 ```

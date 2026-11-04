@@ -57,6 +57,17 @@
   max-width: stretch;
   max-height: none;
   margin: 0;
+  /* What the UA gives a modal dialog: a filling body (a Workbench or a
+     list-detail split) clips to the rounded corners. */
+  overflow: auto;
+}
+/* An embedded dialog keeps a definite height, so a filling body (a Workbench
+   or a list-detail split) has room in flow. */
+.kui-dialog-surface[data-presentation="embedded"][data-height] {
+  height: var(--_kui-dialog-surface-height);
+}
+.kui-dialog-surface[data-presentation="embedded"][data-max-height] {
+  max-height: var(--_kui-dialog-surface-max-height);
 }
 .kui-dialog-surface::backdrop {
   background-color: var(

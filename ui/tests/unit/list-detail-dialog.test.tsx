@@ -167,4 +167,20 @@ describe('ListDetailDialog', () => {
     expect(pushed.textContent).toContain('Open Project');
     expect(pushed.textContent).toContain('Northstar');
   });
+
+  // KF-RWJ9KD: in flow for a catalog or the editor canvas.
+  it('renders embedded in flow, keeping its height, even on compact devices', () => {
+    for (const compact of [false, true]) {
+      const dialog = render(
+        ListDetailDialog({ ...base, embedded: true, compact }),
+      ).querySelector<HTMLDialogElement>('dialog')!;
+      expect(dialog.dataset.presentation).toBe('embedded');
+      expect(dialog.hasAttribute('open')).toBe(true);
+      expect(dialog.getAttribute('style')).toContain(
+        '--_kui-dialog-surface-height:35rem',
+      );
+    }
+    const modal = render(ListDetailDialog(base)).querySelector('dialog')!;
+    expect(modal.hasAttribute('open')).toBe(false);
+  });
 });

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 449800,
-  "measuredLargestJavaScriptGzip": 164546,
-  "measuredTotalJavaScriptGzip": 449717,
+  "totalJavaScriptGzip": 450100,
+  "measuredLargestJavaScriptGzip": 164547,
+  "measuredTotalJavaScriptGzip": 450039,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6659,6 +6659,22 @@
         "measuredTotalJavaScriptGzip": 449717,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 449800
+      }
+    },
+    {
+      "at": "2026-11-04T01:54:50.945Z",
+      "reason": "KF-RWJ9KD: Embedded examples for WorkbenchDialog and ListDetailDialog",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 449717,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 449800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 450039,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 450100
       }
     }
   ]

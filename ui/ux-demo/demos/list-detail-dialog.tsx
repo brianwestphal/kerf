@@ -136,6 +136,47 @@ export function ListDetailDialogDemo() {
           }}
         />
       </CatalogExample>
+      <CatalogExample
+        label="Embedded"
+        note="embedded renders the dialog in flow and always shown, keeping its height, for a catalog, a design canvas, or a document."
+        align="inline-control"
+      >
+        <ListDetailDialog
+          id="list-detail-dialog-embedded-demo"
+          label="Project Preview"
+          embedded
+          height={remify(280)}
+          preferredWidth={remify(560)}
+          list={{
+            title: 'Projects',
+            content: (
+              <List controlInsets="tb">
+                {PROJECTS.slice(0, 2).map(({ id, name, owner }) => (
+                  <ListItem
+                    label={name}
+                    description={owner}
+                    itemId={id}
+                    action="log-more"
+                    selected={id === PROJECTS[0].id}
+                  />
+                ))}
+              </List>
+            ),
+          }}
+          detail={{
+            title: PROJECTS[0].name,
+            description: PROJECTS[0].state,
+            content: (
+              <List controlInsets="tb">
+                <ValueTable label="Project Details">
+                  <ValueTableRow label="Owner" value={PROJECTS[0].owner} />
+                  <ValueTableRow label="Status" value={PROJECTS[0].state} />
+                </ValueTable>
+              </List>
+            ),
+          }}
+        />
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }
