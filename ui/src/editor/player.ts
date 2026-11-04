@@ -9,6 +9,7 @@
 import type { ViewDocument } from '@kerfjs/ui/view';
 import { delegate, effect, raw, type SafeHtml, signal } from 'kerfjs';
 
+import { openDialog } from '../components/surfaces/surface-scaffold/surface-scaffold.js';
 import { deviceClass } from '../shared/environment/device-class.js';
 import {
   type ActionLogEntry,
@@ -22,6 +23,9 @@ import { type DeviceInsets, safeAreaTokens } from './model/play-device.js';
 import { popView, rootViews } from './model/play-state.js';
 import { fresh, type RowProps } from './model/play-values.js';
 import { wirePlayState } from './play-adapters.js';
+
+/** The action Kerf UI's dialog wiring opens a DialogSurface with. */
+const SHOW_DIALOG = 'show-dialog';
 
 /** The query flag that makes the editor page a play page. */
 export const PLAY_PARAM = 'kerf-ui-play';
@@ -177,6 +181,28 @@ export function createPlayer(
       '[data-action]',
       (event, target) => {
         const action = target.dataset.action!;
+        // KF-SYGSD0: the dialog wiring Kerf UI documents (`show-dialog` with
+        // `data-dialog-id`) is built in, as an app's delegate runs it:
+        // `openDialog` also wires `data-dialog-close`, Escape, and the
+        // backdrop. It is logged like any other action.
+        if (action === SHOW_DIALOG && target.dataset.dialogId) {
+          const dialog = root.querySelector<HTMLDialogElement>(
+            `dialog#${CSS.escape(target.dataset.dialogId)}`,
+          );
+          const nodeId =
+            target.closest<HTMLElement>('[data-kerf-node]')?.dataset.kerfNode;
+          if (dialog) openDialog(dialog);
+          report({
+            action,
+            node: nodeId ? label(document.value, nodeId) : action,
+            event: event.type,
+            outcome: dialog ? 'ran' : 'missing',
+            message: dialog
+              ? undefined
+              : `No dialog with id "${target.dataset.dialogId}" in the view`,
+          });
+          return;
+        }
         if (!documentActions(document.value).has(action)) return;
         // Every rendered node carries its id, so an action has one.
         const nodeId =

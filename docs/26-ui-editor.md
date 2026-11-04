@@ -349,6 +349,13 @@ below the shown one, gets no selection ring: the view sits under the shown one,
 and a ring there would mark what that view shows (KF-ZC9EXM: ring over a
 hidden node).
 
+Every DialogSurface shows **embedded** on the edit canvas (KF-SYGSD0): a
+modal dialog renders nothing while closed, so the canvas renders each one in
+flow (`presentation: 'embedded'`), where its content can be seen, selected,
+and dropped into. Its close controls only select there. The document keeps
+the authored presentation, which the Inspector shows and the export writes,
+and play mode opens the dialog modally (§11.4).
+
 The props catalog generator (KF-24G2KV: remaining props) treats a union whose
 members are all content, text, or numbers as one content slot, including
 one a component's variants assemble (a Chip's `children`, a ListHeader's
@@ -1754,6 +1761,12 @@ view }`. It may change params (re-rendering the view), call a NavStack
   handle, or open an overlay, so a flow like "row → push detail" can be
   walked end to end. A handler that throws is logged as an error, and the
   view keeps running.
+- **Dialogs open as an app opens them** (KF-SYGSD0). Kerf UI's documented
+  dialog wiring is built in: a click on a `show-dialog` action whose element
+  carries `data-dialog-id` calls `openDialog` on the DialogSurface with that
+  `id` in the view, which also wires its `data-dialog-close` controls,
+  Escape, and backdrop. The action is logged (`missing`, with a message, when
+  no dialog has that id). The dialog keeps its authored presentation.
 - **Selection is off.** No selection ring, hover outline, drop indicator, or
   canvas key binding is active inside the stage.
 

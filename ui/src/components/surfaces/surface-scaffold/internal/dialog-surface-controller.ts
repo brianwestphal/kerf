@@ -10,6 +10,10 @@ export interface DialogRequestCloseDetail {
 
 const SURFACE = 'dialog.kui-dialog-surface';
 
+/** An embedded DialogSurface sits in flow, always shown: never opened or closed. */
+const embedded = (dialog: HTMLDialogElement): boolean =>
+  dialog.dataset.presentation === 'embedded';
+
 /** The attribute marking a running enter, exit, or pulse animation. */
 export const DIALOG_MOTION_ATTRIBUTE = 'data-kui-dialog-motion';
 
@@ -267,9 +271,11 @@ function settle(dialog: HTMLDialogElement): void {
  * page inert, focus on its `autofocus` element or else the panel. It plays
  * its enter motion and, with the controller installed here, keeps its
  * measured chrome, sheet height, and keyboard clearance across application
- * re-renders. Opening an open dialog does nothing.
+ * re-renders. Opening an open dialog does nothing, and so does opening an
+ * `embedded` one, which is always shown in flow.
  */
 export function openDialog(dialog: HTMLDialogElement): void {
+  if (embedded(dialog)) return;
   installDialogSurfaces(dialog.ownerDocument);
   const closing = states.get(dialog);
   if (closing?.closing) {
@@ -296,11 +302,11 @@ export function openDialog(dialog: HTMLDialogElement): void {
 /**
  * Close an open DialogSurface after its exit motion. The application's own
  * close is never refused: no `kui-request-close` is dispatched. The native
- * `close` event fires once it has closed.
+ * `close` event fires once it has closed. An `embedded` one never closes.
  */
 export function closeDialog(dialog: HTMLDialogElement): void {
   const state = states.get(dialog);
-  if (!dialog.open) return;
+  if (!dialog.open || embedded(dialog)) return;
   if (!state) {
     dialog.close();
     return;
@@ -453,7 +459,7 @@ export function installDialogSurfaces(doc: Document = document): void {
     (event) => {
       const target = event.target as Element;
       const dialog = target.closest?.<HTMLDialogElement>(SURFACE);
-      if (!dialog?.open) return;
+      if (!dialog?.open || embedded(dialog)) return;
       if (target === dialog) {
         if (pressedOutside !== dialog || !outside(dialog, event)) return;
         if (dialog.hasAttribute('data-light-dismiss'))

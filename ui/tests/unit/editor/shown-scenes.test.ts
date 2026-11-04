@@ -4,7 +4,10 @@ import type { ViewDocument } from '@kerfjs/ui/view';
 import { mount } from 'kerfjs';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { shownScenes } from '../../../src/editor/model/shown-scenes.js';
+import {
+  embeddedDialogs,
+  shownScenes,
+} from '../../../src/editor/model/shown-scenes.js';
 import { createEditor } from './kerf-catalog.js';
 
 let cleanup: (() => void) | undefined;
@@ -221,5 +224,92 @@ describe('the NavStack view the canvas shows', () => {
     row(1).click();
     expect(shownView()).toBe('1');
     expect(canvasViews()).toBe(2);
+  });
+});
+
+// KF-SYGSD0: a modal DialogSurface renders nothing while closed, so the edit
+// canvas shows every one embedded; the document keeps its presentation.
+describe('dialogs on the edit canvas', () => {
+  const PANE = '01JB8Z1M6Q8E1X9V4S7K2R3TBA';
+  const DIALOG = '01JB8Z1M6Q8E1X9V4S7K2R3TBB';
+  const DONE = '01JB8Z1M6Q8E1X9V4S7K2R3TBC';
+  const withDialog = (presentation?: string) =>
+    ({
+      schema: 'kerf-ui-document/v1',
+      name: 'Settings',
+      catalogs: ['@kerfjs/ui'],
+      root: {
+        id: PANE,
+        type: '@kerfjs/ui:pane',
+        zones: {
+          content: [
+            {
+              id: DIALOG,
+              type: '@kerfjs/ui:surface-scaffold',
+              props: {
+                id: 'settings',
+                label: 'Settings',
+                ...(presentation ? { presentation } : {}),
+              },
+              zones: {
+                children: [
+                  {
+                    id: DONE,
+                    type: '@kerfjs/ui:button',
+                    props: {
+                      children: 'Done',
+                      rootAttributes: { 'data-dialog-close': '' },
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    }) as unknown as ViewDocument;
+  const presentationOf = (document: ViewDocument) =>
+    (
+      document.root.zones!.content![0] as unknown as {
+        props: { presentation?: string };
+      }
+    ).props.presentation;
+
+  it('shows every DialogSurface embedded and leaves the document alone', () => {
+    for (const authored of [undefined, 'modal', 'side-sheet', 'bottom-sheet']) {
+      const document = withDialog(authored);
+      expect(presentationOf(embeddedDialogs(document))).toBe('embedded');
+      expect(presentationOf(document)).toBe(authored);
+    }
+    const embedded = withDialog('embedded');
+    expect(embeddedDialogs(embedded)).toBe(embedded);
+    expect(embeddedDialogs(sample())).toEqual(sample());
+  });
+
+  it('renders the dialog open in flow on the canvas, where its content is selectable', () => {
+    const root = globalThis.document.createElement('div');
+    globalThis.document.body.append(root);
+    const editor = createEditor();
+    const stopMount = mount(root, editor.render);
+    const unwireEditor = editor.wire(root);
+    cleanup = () => {
+      unwireEditor();
+      stopMount();
+    };
+    editor.document.value = withDialog('side-sheet');
+    const canvas = root.querySelector('[data-editor-canvas]')!;
+    const dialog = canvas.querySelector<HTMLDialogElement>('dialog#settings')!;
+    expect(dialog.open).toBe(true);
+    expect(dialog.dataset.presentation).toBe('embedded');
+    const done = canvas.querySelector<HTMLElement>(
+      `[data-kerf-node="${DONE}"]`,
+    )!;
+    // Pressing its data-dialog-close control on the canvas selects it and
+    // leaves the dialog shown.
+    done.click();
+    expect(dialog.open).toBe(true);
+    expect(editor.selection.value).toEqual({ kind: 'node', id: DONE });
+    // The authored presentation is what the Inspector and export keep.
+    expect(presentationOf(editor.document.value)).toBe('side-sheet');
   });
 });

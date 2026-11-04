@@ -1015,3 +1015,49 @@ test('the bottom-sheet confirm answers through its ToolbarButton footer', async 
     await expect(page.getByText(logged, { exact: true })).toBeVisible();
   }
 });
+
+// KF-SYGSD0: an embedded DialogSurface is the panel in flow, always shown.
+test('an embedded dialog sits in flow, inside its container, and stays shown', async ({
+  page,
+}, testInfo) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 850 });
+    await page.goto('/?component=surface-scaffold');
+    const dialog = page.locator('#catalog-embedded-dialog');
+    await dialog.scrollIntoViewIfNeeded();
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveAttribute('data-presentation', 'embedded');
+    expect(await dialog.evaluate((element) => element.matches(':modal'))).toBe(
+      false,
+    );
+    expect(
+      await dialog.evaluate(
+        (element) => window.getComputedStyle(element).position,
+      ),
+    ).toBe('relative');
+    const box = (await dialog.boundingBox())!;
+    const container = (await dialog.locator('xpath=..').boundingBox())!;
+    expect(box.width).toBeGreaterThan(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(
+      container.x + container.width + 1,
+    );
+    // Its close controls ask nothing and leave it shown.
+    await dialog.getByRole('button', { name: 'Cancel' }).click();
+    await dialog.getByRole('button', { name: 'Close', exact: true }).click();
+    await expect(dialog).toBeVisible();
+    // The page is still interactive: nothing went modal.
+    await expect(page.locator('dialog:modal')).toHaveCount(0);
+    // With its surroundings, so the capture shows its shadow and edges.
+    await page.mouse.move(0, 0);
+    const shown = (await dialog.boundingBox())!;
+    await page.screenshot({
+      path: testInfo.outputPath(`embedded-dialog-${width}.png`),
+      clip: {
+        x: Math.max(0, shown.x - 32),
+        y: Math.max(0, shown.y - 32),
+        width: Math.min(width, shown.width + 64),
+        height: shown.height + 64,
+      },
+    });
+  }
+});

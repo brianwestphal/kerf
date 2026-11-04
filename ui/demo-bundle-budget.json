@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 449600,
-  "measuredLargestJavaScriptGzip": 164547,
-  "measuredTotalJavaScriptGzip": 449539,
+  "totalJavaScriptGzip": 449800,
+  "measuredLargestJavaScriptGzip": 164546,
+  "measuredTotalJavaScriptGzip": 449717,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6643,6 +6643,22 @@
         "measuredTotalJavaScriptGzip": 449539,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 449600
+      }
+    },
+    {
+      "at": "2026-11-04T00:47:16.568Z",
+      "reason": "KF-SYGSD0: the catalog's Embedded Dialog example and the editor's built-in show-dialog play action",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 449539,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 449600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 449717,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 449800
       }
     }
   ]

@@ -738,6 +738,34 @@ export function SurfaceScaffoldDemo() {
         </PopoverDialogSurface>
       </CatalogExample>
       <CatalogExample
+        label="Embedded Dialog"
+        note='presentation="embedded" shows a DialogSurface in flow and always open, for a catalog, a design canvas, or a document. openDialog and closeDialog leave it alone, and its close controls do not hide it.'
+        align="inline-control"
+      >
+        <DialogSurface
+          id="catalog-embedded-dialog"
+          label="Edit Workspace"
+          size="small"
+          presentation="embedded"
+          footer={
+            <>
+              <Button rootAttributes={{ 'data-dialog-close': '' }}>
+                Cancel
+              </Button>
+              <Button tone="brand" rootAttributes={{ 'data-dialog-close': '' }}>
+                Save
+              </Button>
+            </>
+          }
+        >
+          <List>
+            <ListInsetText>
+              The same panel as the modal dialog, shown where it sits.
+            </ListInsetText>
+          </List>
+        </DialogSurface>
+      </CatalogExample>
+      <CatalogExample
         label="Embedded Popover Dialog"
         note='presentation="embedded" shows the same surface in flow, for a catalog or an inline preview.'
         align="inline-control"

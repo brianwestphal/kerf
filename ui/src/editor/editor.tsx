@@ -290,7 +290,7 @@ import {
   readableMessage,
 } from './model/problems.js';
 import { sampleInputs } from './model/sample-inputs.js';
-import { shownScenes } from './model/shown-scenes.js';
+import { embeddedDialogs, shownScenes } from './model/shown-scenes.js';
 import { createPlayStage } from './play-stage.js';
 import {
   createPlayer,
@@ -560,8 +560,9 @@ function canvasRenderer(catalog: EditorCatalog) {
     rows: RowProps = {},
   ): SafeHtml => {
     // The selected node's tab shows, whatever tab the document opens on.
+    const scenes = shownScenes(source, selected, views);
     const { document: shown, slots: placed } = previewSlots(
-      shownScenes(source, selected, views),
+      play ? scenes : embeddedDialogs(scenes),
       play ? () => [] : (node) => emptyZonesOf(node, node.id === selected),
     );
     // KF-7XQAFR: in play, a node nested in a row carries its row's key.

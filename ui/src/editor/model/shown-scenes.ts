@@ -4,7 +4,7 @@
 // override is the canvas preview's own; the document never carries it.
 import type { ViewDocument } from '@kerfjs/ui/view';
 
-import { findNode } from './document.js';
+import { findNode, visitNodes } from './document.js';
 import { setProp } from './edits.js';
 
 const TAB_NAVIGATOR = '@kerfjs/ui:tab-navigator';
@@ -39,6 +39,23 @@ export function shownScenes(
       shown = setProp(shown, node.id, 'active', id);
   }
   for (const [id, index] of views) shown = cutStack(shown, id, index);
+  return shown;
+}
+
+const DIALOG_SURFACE = '@kerfjs/ui:surface-scaffold';
+
+/**
+ * KF-SYGSD0: `document` with every DialogSurface `embedded`, as the edit
+ * canvas shows it. A modal dialog renders nothing until something opens it,
+ * so on the canvas it sits in flow where the author can see and select its
+ * content; play mode keeps the authored presentation. The document itself
+ * is unchanged, so the Inspector and the export keep `presentation`.
+ */
+export function embeddedDialogs(document: ViewDocument): ViewDocument {
+  let shown = document;
+  for (const { node } of visitNodes(document))
+    if (node.type === DIALOG_SURFACE && node.props?.presentation !== 'embedded')
+      shown = setProp(shown, node.id, 'presentation', 'embedded');
   return shown;
 }
 

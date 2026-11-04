@@ -660,3 +660,36 @@ describe('while open', () => {
     expect(dialog.style.getPropertyValue(KEYBOARD_INSET_PROPERTY)).toBe('');
   });
 });
+
+// KF-SYGSD0: an embedded DialogSurface is the panel in flow, always shown.
+describe('the embedded presentation', () => {
+  it('renders open, in flow, and never modal', () => {
+    const { dialog } = setup({ presentation: 'embedded' });
+    expect(dialog.open).toBe(true);
+    expect(dialog.dataset.presentation).toBe('embedded');
+    expect(dialog.matches(':modal')).toBe(false);
+  });
+
+  it('ignores openDialog, closeDialog, and its close controls', () => {
+    const { dialog, requests } = setup({ presentation: 'embedded' });
+    const showModal = vi.spyOn(dialog, 'showModal');
+    openDialog(dialog);
+    expect(showModal).not.toHaveBeenCalled();
+    closeDialog(dialog);
+    expect(dialog.open).toBe(true);
+    click(dialog.querySelector('[data-dialog-close]')!);
+    click(dialog.querySelector('.kui-dialog-surface__close')!);
+    expect(dialog.open).toBe(true);
+    expect(requests).toEqual([]);
+  });
+
+  it('leaves a modal dialog’s close controls working beside it', () => {
+    const embedded = setup({ id: 'shown', presentation: 'embedded' });
+    const modal = setup();
+    openDialog(modal.dialog);
+    click(modal.dialog.querySelector('[data-dialog-close]')!);
+    expect(modal.requests).toEqual(['close-button']);
+    expect(modal.dialog.open).toBe(false);
+    expect(embedded.dialog.open).toBe(true);
+  });
+});

@@ -5086,13 +5086,14 @@ interface DialogRequestCloseDetail {
  * page inert, focus on its `autofocus` element or else the panel. It plays
  * its enter motion and, with the controller installed here, keeps its
  * measured chrome, sheet height, and keyboard clearance across application
- * re-renders. Opening an open dialog does nothing.
+ * re-renders. Opening an open dialog does nothing, and so does opening an
+ * `embedded` one, which is always shown in flow.
  */
 declare function openDialog(dialog: HTMLDialogElement): void;
 /**
  * Close an open DialogSurface after its exit motion. The application's own
  * close is never refused: no `kui-request-close` is dispatched. The native
- * `close` event fires once it has closed.
+ * `close` event fires once it has closed. An `embedded` one never closes.
  */
 declare function closeDialog(dialog: HTMLDialogElement): void;
 /**
@@ -5112,7 +5113,14 @@ type DialogSurfaceSize = 'small' | 'medium' | 'large';
  * attached to the bottom edge (square bottom corners, safe-area and
  * virtual-keyboard clearance, optionally user-resizable).
  */
-type DialogSurfacePresentation = 'modal' | 'side-sheet' | 'fullscreen' | 'bottom-sheet';
+type DialogSurfacePresentation = 'modal' | 'side-sheet' | 'fullscreen' | 'bottom-sheet'
+/**
+ * In flow, always shown: the same panel without the top layer or a
+ * backdrop, never wider than its container. For a catalog, a design
+ * canvas, or a document; `openDialog` / `closeDialog` leave it alone and
+ * `data-dialog-close` does not hide it.
+ */
+ | 'embedded';
 /**
  * How a bottom sheet appears or leaves: `slide` (default) moves the panel in
  * from, or out to, the bottom edge; `standard` keeps the dialog's

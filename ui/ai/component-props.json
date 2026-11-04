@@ -12579,7 +12579,13 @@
           "name": "presentation",
           "type": {
             "kind": "enum",
-            "values": ["modal", "side-sheet", "fullscreen", "bottom-sheet"],
+            "values": [
+              "modal",
+              "side-sheet",
+              "fullscreen",
+              "bottom-sheet",
+              "embedded"
+            ],
             "text": "DialogSurfacePresentation | undefined",
             "nullable": true
           },

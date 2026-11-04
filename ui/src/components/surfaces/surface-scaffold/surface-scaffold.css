@@ -46,6 +46,18 @@
 .kui-dialog-surface:focus {
   outline: none;
 }
+/* In flow for a catalog, a design canvas, or a document: the same panel
+   without the top layer, never wider than its container. */
+.kui-dialog-surface[data-presentation="embedded"] {
+  position: relative;
+  inset: auto;
+  max-width: 100%;
+  max-width: -webkit-fill-available;
+  max-width: -moz-available;
+  max-width: stretch;
+  max-height: none;
+  margin: 0;
+}
 .kui-dialog-surface::backdrop {
   background-color: var(
     --kui-color-overlay-modal,

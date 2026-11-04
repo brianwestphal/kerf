@@ -25,7 +25,17 @@ export type DialogSurfaceSize = 'small' | 'medium' | 'large';
  * virtual-keyboard clearance, optionally user-resizable).
  */
 export type DialogSurfacePresentation =
-  'modal' | 'side-sheet' | 'fullscreen' | 'bottom-sheet';
+  | 'modal'
+  | 'side-sheet'
+  | 'fullscreen'
+  | 'bottom-sheet'
+  /**
+   * In flow, always shown: the same panel without the top layer or a
+   * backdrop, never wider than its container. For a catalog, a design
+   * canvas, or a document; `openDialog` / `closeDialog` leave it alone and
+   * `data-dialog-close` does not hide it.
+   */
+  | 'embedded';
 /**
  * How a bottom sheet appears or leaves: `slide` (default) moves the panel in
  * from, or out to, the bottom edge; `standard` keeps the dialog's
@@ -329,6 +339,7 @@ export function DialogSurface({
       {...filterDataAttributes(rootAttributes, DIALOG_SURFACE_PROTECTED)}
       id={id}
       class={`kui-dialog-surface ${className}`.trim()}
+      open={presentation === 'embedded' ? true : undefined}
       role={alert ? 'alertdialog' : undefined}
       aria-label={label}
       aria-labelledby={labelledBy}

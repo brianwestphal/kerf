@@ -70,8 +70,8 @@ openDialog(document.getElementById('edit-workspace') as HTMLDialogElement);
   `closeDialog()` is never refused.
 
 Choose `size` (`small`, `medium`, or `large`), `presentation` (`modal`,
-`side-sheet`, `fullscreen`, or `bottom-sheet`; see
-[Bottom sheets](#bottom-sheets)), and independent `bodyInset` / `footerInset`
+`side-sheet`, `fullscreen`, `bottom-sheet`, or `embedded`; see
+[Bottom sheets](#bottom-sheets) and [Embedded](#embedded)), and independent `bodyInset` / `footerInset`
 (`none`, `compact`, or `comfortable`). The defaults match Kerf's medium modal,
 8px body, and 16px footer rhythm. The dialog scales and fades in and out
 (150ms), unless motion is reduced or the document's static effects mode is on.
@@ -88,6 +88,16 @@ respectively, before the viewport width cap. Set `preferredWidth` to a branded
 `size`, while the viewport cap still applies. For example, 832px and 480px
 desktop preferences can share the same responsive dialog without changing its
 resource tracks or preview aspect sizing.
+
+### Embedded
+
+`presentation="embedded"` renders the same panel in flow: open, without the top
+layer, a backdrop, or modality, and never wider than its container. Use it where
+a dialog is shown rather than opened, such as a catalog specimen, a design
+canvas, or a document. `openDialog` and `closeDialog` leave an embedded dialog
+alone, and its close button and `data-dialog-close` controls do not hide it.
+The Kerf UI editor shows every DialogSurface embedded on its edit canvas so its
+content can be seen and selected; play mode keeps the authored presentation.
 
 ### Sibling dialogs keep their identity
 

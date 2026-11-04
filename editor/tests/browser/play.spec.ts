@@ -966,3 +966,100 @@ test('a tab placed in a TabBar repeated per group selects and closes per group',
   await expect(tab(1, 'More')).toHaveCount(1);
   await expect(tab(3, 'More')).toHaveCount(1);
 });
+
+// KF-SYGSD0: the edit canvas shows a modal DialogSurface embedded; play mode
+// opens it from its `show-dialog` trigger as an app does.
+test('a dialog shows embedded on the canvas and opens from its trigger in play', async ({
+  page,
+}, testInfo) => {
+  const dialogIds = {
+    pane: '01JB8Z1M6Q8E1X9V4S7K2R3TCA',
+    trigger: '01JB8Z1M6Q8E1X9V4S7K2R3TCB',
+    dialog: '01JB8Z1M6Q8E1X9V4S7K2R3TCC',
+    note: '01JB8Z1M6Q8E1X9V4S7K2R3TCD',
+    done: '01JB8Z1M6Q8E1X9V4S7K2R3TCE',
+  };
+  const withDialog = {
+    schema: 'kerf-ui-document/v1',
+    name: 'Settings',
+    catalogs: ['@kerfjs/ui'],
+    root: {
+      id: dialogIds.pane,
+      type: '@kerfjs/ui:pane',
+      zones: {
+        content: [
+          {
+            id: dialogIds.trigger,
+            type: '@kerfjs/ui:button',
+            props: {
+              children: 'Open settings',
+              action: 'show-dialog',
+              rootAttributes: { 'data-dialog-id': 'settings' },
+            },
+          },
+          {
+            id: dialogIds.dialog,
+            type: '@kerfjs/ui:surface-scaffold',
+            props: { id: 'settings', label: 'Settings' },
+            zones: {
+              children: [text(dialogIds.note, 'Workspace settings')],
+              footer: [
+                {
+                  id: dialogIds.done,
+                  type: '@kerfjs/ui:button',
+                  props: {
+                    children: 'Done',
+                    tone: 'brand',
+                    rootAttributes: { 'data-dialog-close': '' },
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  };
+  await page.goto('/');
+  await page
+    .locator('input[type="file"]')
+    .first()
+    .setInputFiles({
+      name: 'settings.kui.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(withDialog)),
+    });
+  await expect(page.getByText(/· 5 nodes · valid$/)).toBeVisible();
+
+  // The canvas shows the closed modal in flow, and its content selects.
+  const canvas = page.locator('[data-editor-canvas]');
+  const shown = canvas.locator('dialog#settings');
+  await expect(shown).toBeVisible();
+  await expect(shown).toHaveAttribute('data-presentation', 'embedded');
+  await expect(canvas.getByText('Workspace settings')).toBeVisible();
+  await canvas.getByRole('button', { name: 'Done' }).click();
+  await expect(shown).toBeVisible();
+  // Its data-dialog-close control selected (the ring shows) and left the
+  // dialog on the canvas.
+  await expect(page.locator('.kui-editor__selection')).toBeVisible();
+  await page.screenshot({
+    path: testInfo.outputPath('dialog-canvas-embedded.png'),
+  });
+
+  // In play the dialog is modal: closed until its trigger opens it.
+  await page.locator('[data-action="editor-play"]').click();
+  const played = stage(page);
+  const modal = played.locator('dialog#settings');
+  await expect(
+    played.getByRole('button', { name: 'Open settings' }),
+  ).toBeVisible();
+  await expect(modal).toBeHidden();
+  await played.getByRole('button', { name: 'Open settings' }).click();
+  await expect(modal).toBeVisible();
+  await expect(modal).toHaveAttribute('data-presentation', 'modal');
+  // Its enter motion settles before the capture.
+  await expect(modal).not.toHaveAttribute('data-kui-dialog-motion');
+  await page.screenshot({ path: testInfo.outputPath('dialog-play-open.png') });
+  await modal.getByRole('button', { name: 'Done' }).click();
+  await expect(modal).toBeHidden();
+});

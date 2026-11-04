@@ -439,3 +439,140 @@ describe('the action log', () => {
     ).toContain('No actions yet');
   });
 });
+
+// KF-SYGSD0: play mode opens a DialogSurface the way Kerf UI's documented
+// wiring does: a `show-dialog` trigger naming it by `data-dialog-id`.
+describe('the play page’s built-in dialog wiring', () => {
+  const DIALOG = {
+    pane: '01JB8Z1M6Q8E1X9V4S7K2R3TAA',
+    trigger: '01JB8Z1M6Q8E1X9V4S7K2R3TAB',
+    dangling: '01JB8Z1M6Q8E1X9V4S7K2R3TAC',
+    dialog: '01JB8Z1M6Q8E1X9V4S7K2R3TAD',
+    done: '01JB8Z1M6Q8E1X9V4S7K2R3TAE',
+  };
+  const withDialog = (): ViewDocument =>
+    ({
+      schema: 'kerf-ui-document/v1',
+      name: 'Settings',
+      catalogs: ['@kerfjs/ui'],
+      root: {
+        id: DIALOG.pane,
+        type: '@kerfjs/ui:pane',
+        zones: {
+          content: [
+            {
+              id: DIALOG.trigger,
+              type: '@kerfjs/ui:button',
+              props: {
+                children: 'Open settings',
+                action: 'show-dialog',
+                rootAttributes: { 'data-dialog-id': 'settings' },
+              },
+            },
+            {
+              id: DIALOG.dangling,
+              type: '@kerfjs/ui:button',
+              props: {
+                children: 'Open nothing',
+                action: 'show-dialog',
+                rootAttributes: { 'data-dialog-id': 'missing' },
+              },
+            },
+            {
+              id: DIALOG.dialog,
+              type: '@kerfjs/ui:surface-scaffold',
+              props: { id: 'settings', label: 'Settings' },
+              zones: {
+                children: [
+                  {
+                    id: DIALOG.done,
+                    type: '@kerfjs/ui:button',
+                    props: {
+                      children: 'Done',
+                      rootAttributes: { 'data-dialog-close': '' },
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    }) as unknown as ViewDocument;
+
+  let cleanup: (() => void) | undefined;
+  afterEach(() => {
+    cleanup?.();
+    cleanup = undefined;
+    document.body.replaceChildren();
+    window.history.replaceState(null, '', '/');
+    vi.restoreAllMocks();
+  });
+
+  const play = async () => {
+    window.history.replaceState(null, '', playPageUrl(location.href));
+    const post = vi.spyOn(window, 'postMessage');
+    const root = document.createElement('div');
+    document.body.append(root);
+    const player = createEditor();
+    mount(root, player.render);
+    cleanup = player.wire(root);
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        data: { type: PLAY_DOCUMENT, document: withDialog() },
+        origin: location.origin,
+        source: window,
+      }),
+    );
+    await settled();
+    const entries = () =>
+      post.mock.calls
+        .map(([data]) => data as { type: string; entry?: ActionLogEntry })
+        .filter(({ type }) => type === PLAY_ACTION)
+        .map(({ entry }) => entry);
+    const button = (text: string) =>
+      [...root.querySelectorAll<HTMLElement>('button')].find(
+        (candidate) => candidate.textContent?.trim() === text,
+      )!;
+    return { root, entries, button };
+  };
+
+  it('keeps the authored modal presentation, closed until its trigger opens it', async () => {
+    const { root, entries, button } = await play();
+    const dialog = root.querySelector<HTMLDialogElement>('dialog#settings')!;
+    expect(dialog.dataset.presentation).toBe('modal');
+    expect(dialog.open).toBe(false);
+
+    button('Open settings').click();
+    expect(dialog.open).toBe(true);
+    expect(entries()).toEqual([
+      expect.objectContaining({
+        action: 'show-dialog',
+        event: 'click',
+        outcome: 'ran',
+      }),
+    ]);
+
+    // `data-dialog-close` closes it through the same wiring an app gets.
+    button('Done').click();
+    expect(dialog.open).toBe(false);
+    // And the trigger opens it again.
+    button('Open settings').click();
+    expect(dialog.open).toBe(true);
+  });
+
+  it('logs a trigger whose dialog is not in the view as missing', async () => {
+    const { root, entries, button } = await play();
+    button('Open nothing').click();
+    expect(root.querySelector<HTMLDialogElement>('dialog#settings')!.open).toBe(
+      false,
+    );
+    expect(entries()).toEqual([
+      expect.objectContaining({
+        action: 'show-dialog',
+        outcome: 'missing',
+        message: 'No dialog with id "missing" in the view',
+      }),
+    ]);
+  });
+});
