@@ -421,3 +421,84 @@ test('play mode opens the real popups', async ({ page }) => {
   await stage.getByRole('option', { name: 'High' }).click();
   await expect(select.locator('.kui-select__value')).toHaveText('High');
 });
+
+// KF-A1Y7SY: a PopupMenu or Select placed directly in a Pane (no toolbar)
+// shows its embedded popup in flow below its trigger, where the Pane's
+// scrolling content cannot clip it: it is painted and hit-testable.
+test('a popup outside a toolbar is not clipped by its Pane', async ({
+  page,
+}) => {
+  const bare = {
+    schema: 'kerf-ui-document/v1',
+    name: 'BarePopups',
+    catalogs: ['@kerfjs/ui'],
+    root: {
+      id: '01JB8Z1M6Q8E1X9V4S7K2R3TGA',
+      type: '@kerfjs/ui:pane',
+      zones: {
+        content: [
+          {
+            id: '01JB8Z1M6Q8E1X9V4S7K2R3TGB',
+            type: '@kerfjs/ui:popup-menu',
+            props: {
+              text: 'Arrange',
+              items: [
+                { label: 'By Name', action: 'by-name' },
+                { label: 'By Size', action: 'by-size' },
+              ],
+            },
+          },
+          {
+            id: '01JB8Z1M6Q8E1X9V4S7K2R3TGC',
+            type: '@kerfjs/ui:select',
+            props: {
+              name: 'density',
+              label: 'Density',
+              hint: 'Applies to every list.',
+              value: 'comfortable',
+              choices: [
+                { value: 'comfortable', label: 'Comfortable' },
+                { value: 'compact', label: 'Compact' },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  };
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/');
+  await page
+    .locator('input[type="file"]')
+    .first()
+    .setInputFiles({
+      name: 'bare.kui.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(bare)),
+    });
+  await expect(page.getByText(/· 3 nodes · valid$/)).toBeVisible();
+  const outline = page.locator('[data-action="editor-select-node"]');
+
+  await outline.filter({ hasText: 'PopupMenu' }).first().click();
+  const menu = canvasNode(page, '01JB8Z1M6Q8E1X9V4S7K2R3TGB').locator(
+    '.kui-popup-menu__menu',
+  );
+  await expect(menu).toBeVisible();
+  await expect.poll(() => onTop(menu)).toBe(true);
+  await expect(menu.getByText('By Size')).toBeVisible();
+
+  await outline.filter({ hasText: 'Select' }).first().click();
+  const select = canvasNode(page, '01JB8Z1M6Q8E1X9V4S7K2R3TGC');
+  const listbox = select.locator('.kui-select__popup');
+  await expect(listbox).toBeVisible();
+  await expect.poll(() => onTop(listbox)).toBe(true);
+  // In flow, right below the control and above the hint.
+  const [trigger, list, hint] = await Promise.all(
+    ['.kui-select__trigger', '.kui-select__popup', '.kui-select__hint'].map(
+      (part) => select.locator(part).boundingBox(),
+    ),
+  );
+  expect(list!.y).toBeGreaterThanOrEqual(trigger!.y + trigger!.height - 1);
+  expect(hint!.y).toBeGreaterThanOrEqual(list!.y + list!.height - 1);
+  if (process.env.CAP) await capture(page, process.env.CAP);
+});

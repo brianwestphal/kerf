@@ -358,15 +358,18 @@ embedded too (KF-T1V86Q: transient surfaces on the canvas). A PopupMenu or
 Select renders only its trigger until something opens it, so while one is
 selected the canvas shows it `embedded` (KF-KN9CPE: preview the selected
 popup): its menu or listbox open at the trigger, in the document rather
-than the top layer, overlaying what lies below, so the `items` / `choices`
-edited in the Inspector can be seen. Only the selected one opens, since an
+than the top layer, so the `items` / `choices` edited in the Inspector can
+be seen. Inside a Toolbar it overlays what lies below, so the control band
+keeps its height; elsewhere it sits in flow below the trigger, because a
+scrolling ancestor (the Pane holding it) would clip an overlay (KF-A1Y7SY). Only the selected one opens, since an
 open menu on every toolbar trigger would cover the canvas below every
 toolbar, and selecting another node closes it. An embedded popup is the
 component's own inert presentation (its trigger opens nothing and its rows
 choose nothing), so a click on one of its rows selects the PopupMenu or
 Select; the rows take no focus, so the clicked one shows no current-row
-fill, and a Select's listbox hangs right below its control, over its hint,
-as the real one does (KF-HVJDWF: embedded popup polish). While the
+fill, and a Select's listbox hangs right below its control, before (or,
+in a Toolbar, over) its hint, as the real one does (KF-HVJDWF: embedded
+popup polish). While the
 Inspector edits a place inside a PopupMenu item's `submenu` (its open field
 is `items.2.submenu…`), the canvas also shows that submenu open beside its
 item through the component's `embeddedSubmenu` path (KF-M2FGPQ: only the

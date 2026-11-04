@@ -425,6 +425,20 @@
 .kui-select[data-embedded]:has(> .kui-select__hint) > .kui-select__hint {
   grid-area: hint;
 }
+/* KF-A1Y7SY: outside a toolbar's control band the embedded listbox
+   sits in flow right below the control (before the hint), so a scrolling
+   ancestor never clips it; in a toolbar it keeps overlaying. */
+.kui-select[data-embedded]:not(.kui-toolbar *) {
+  display: flex;
+}
+.kui-select[data-embedded]:not(.kui-toolbar *) > .kui-select__popup {
+  position: relative;
+  inset: auto;
+  order: 1;
+}
+.kui-select[data-embedded]:not(.kui-toolbar *) > .kui-select__hint {
+  order: 2;
+}
 .kui-select[data-embedded] .kui-select__caret {
   rotate: var(--_kui-popup-caret-open-rotation);
 }

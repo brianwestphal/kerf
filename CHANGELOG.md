@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Kerf UI embedded popups sit in flow outside a Toolbar (KF-A1Y7SY).** An `embedded` PopupMenu or Select placed directly in a Pane (or any scrolling container) had its preview menu clipped, because an overlay cannot escape a scroller. Outside a Toolbar the embedded popup now sits in flow below its trigger (a Select's listbox before its hint); inside a Toolbar it still overlays so the control band keeps its height.
 - **Editor: the Inspector hides preview-only popup props (KF-TGGSHZ).** PopupMenu `embedded` / `embeddedSubmenu` and Select `embedded` exist for the canvas preview, which sets them itself; authored in a view they would make the app's popup inert, so the props catalog marks them `hidden`. A dialog's `embedded` presentation stays authorable.
 - **Kerf UI `FieldLabel` declares `id` (KF-Q70Q9Y).** `id` was only a pass-through native attribute, so the editor could not author the id a group's `labelledBy` names. It is now a declared prop in the props catalog.
 - **Editor: an object's required switches write `false` (KF-VQTDYG).** Filling in an object prop in the Inspector (a DialogSurface `stack`) now writes `false` for each required boolean whose switch shows off, so the document is valid without turning each switch on and off.

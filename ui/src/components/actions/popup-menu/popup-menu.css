@@ -269,6 +269,39 @@
   }
 }
 
+/* KF-A1Y7SY: outside a toolbar's fixed control band, an embedded
+   menu sits in flow below (or above) its trigger instead of overlaying, the
+   way an embedded dialog does: an overlay is clipped by any scrolling
+   ancestor (a Pane holding the menu directly), while in flow the menu takes
+   its own room. In a toolbar it keeps overlaying, so the trigger keeps
+   its place there. */
+.kui-popup-menu[data-embedded]:not(.kui-toolbar *) {
+  flex-direction: column;
+  align-items: flex-start;
+}
+.kui-popup-menu[data-embedded]:not(.kui-toolbar *):is(
+    [data-placement="bottom-end"],
+    [data-placement="top-end"]
+  ) {
+  align-items: flex-end;
+}
+.kui-popup-menu[data-embedded]:not(.kui-toolbar *):is(
+    [data-placement="bottom"],
+    [data-placement="top"]
+  ) {
+  align-items: center;
+}
+.kui-popup-menu[data-embedded]:not(
+    .kui-toolbar-control-group *
+  )[data-placement^="top"] {
+  flex-direction: column-reverse;
+}
+.kui-popup-menu[data-embedded]:not(.kui-toolbar *) > .kui-popup-menu__menu {
+  position: relative;
+  inset: auto;
+  translate: none;
+}
+
 /* A pointer-opened submenu's safe triangle: from the pointer to the
    submenu's near edge, so a diagonal move toward it stays over the submenu
    instead of crossing (and closing it from) the parent's other items. */

@@ -487,8 +487,9 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   the open popup, announced as the listbox's or menu's description; use it
   for what the choices leave out, notably in a toolbar Select, which has no
   room for a `hint` below its trigger. `embedded` (on both) renders the
-  popup open at its trigger (a Select's listbox over its `hint`), in the
-  document, and inert (no opening, no choosing, no row focus, no
+  popup open at its trigger, in the document, and inert: in flow below the
+  trigger (a Select's listbox before its `hint`), or overlaying inside a
+  Toolbar so the control band keeps its height (no opening, no choosing, no row focus, no
   `data-action`); PopupMenu `embeddedSubmenu` (a path of `items` indices)
   also shows that submenu open beside its item: a static preview such as the Kerf UI editor's
   edit canvas, never a replacement for an interactive popup.
