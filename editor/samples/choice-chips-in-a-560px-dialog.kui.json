@@ -1,0 +1,158 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ChoiceChipsInA560pxDialog",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:button",
+          "props": {
+            "children": "Edit Command",
+            "action": "show-dialog",
+            "rootAttributes": {
+              "data-dialog-id": "choice-chips-dialog"
+            }
+          }
+        },
+        {
+          "id": "00000000000000000000000003",
+          "type": "@kerfjs/ui:surface-scaffold",
+          "props": {
+            "label": "Edit Command",
+            "id": "choice-chips-dialog",
+            "preferredWidth": {
+              "$css": "px(560)"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:form",
+                "props": {
+                  "id": "choice-chips-dialog-form"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:text#FieldLabel",
+                      "props": {
+                        "children": "Color",
+                        "id": "choice-chips-dialog-label"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:choice-chips",
+                      "props": {
+                        "name": "color",
+                        "choices": [
+                          {
+                            "value": "transparent",
+                            "label": "Transparent",
+                            "swatch": "transparent"
+                          },
+                          {
+                            "value": "blue",
+                            "label": "Blue",
+                            "swatch": {
+                              "$css": "fillColor(\"#3b82f6\")"
+                            }
+                          },
+                          {
+                            "value": "green",
+                            "label": "Green",
+                            "swatch": {
+                              "$css": "fillColor(\"#22c55e\")"
+                            }
+                          },
+                          {
+                            "value": "orange",
+                            "label": "Orange",
+                            "swatch": {
+                              "$css": "fillColor(\"#f97316\")"
+                            }
+                          },
+                          {
+                            "value": "red",
+                            "label": "Red",
+                            "swatch": {
+                              "$css": "fillColor(\"#ef4444\")"
+                            }
+                          },
+                          {
+                            "value": "purple",
+                            "label": "Purple",
+                            "swatch": {
+                              "$css": "fillColor(\"#a855f7\")"
+                            }
+                          },
+                          {
+                            "value": "pink",
+                            "label": "Pink",
+                            "swatch": {
+                              "$css": "fillColor(\"#ec4899\")"
+                            }
+                          },
+                          {
+                            "value": "teal",
+                            "label": "Teal",
+                            "swatch": {
+                              "$css": "fillColor(\"#14b8a6\")"
+                            }
+                          },
+                          {
+                            "value": "gray",
+                            "label": "Gray",
+                            "swatch": {
+                              "$css": "fillColor(\"#6b7280\")"
+                            }
+                          }
+                        ],
+                        "id": "choice-chips-dialog-color",
+                        "labelledBy": "choice-chips-dialog-label",
+                        "action": "choice-chips-demo",
+                        "value": "transparent"
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "footer": [
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Cancel",
+                  "rootAttributes": {
+                    "data-dialog-close": ""
+                  }
+                }
+              },
+              {
+                "id": "00000000000000000000000008",
+                "type": "@kerfjs/ui:button",
+                "props": {
+                  "children": "Save",
+                  "tone": "brand",
+                  "action": "save-choice-chips-dialog"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

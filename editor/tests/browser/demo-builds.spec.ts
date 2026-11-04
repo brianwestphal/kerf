@@ -2318,7 +2318,8 @@ async function configureChoices(
 ) {
   await select(page, owner);
   await openConfigure(page, 'Configure choices');
-  const dialog = page.locator('dialog[open]');
+  // A dialog the canvas shows embedded is document content, not the form's.
+  const dialog = page.locator('dialog[open]:not([data-editor-canvas] dialog)');
   for (let added = 3; added < choices.length; added += 1)
     await dialog.getByRole('button', { name: 'Add', exact: true }).click();
   for (let extra = 3; extra > choices.length; extra -= 1)
@@ -3157,6 +3158,96 @@ test('builds ChoiceChips › On Dark Chrome', async ({ page }) => {
               },
               choiceZones(intents),
             ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+// KF-8T2FT4: the chips in a Form (KF-XX4Y95) inside a 560px modal dialog,
+// named by a FieldLabel's id (KF-Q70Q9Y). The edit canvas shows the dialog
+// embedded.
+test('builds ChoiceChips › In a 560px Dialog', async ({ page }) => {
+  test.slow();
+  const id = 'choice-chips-dialog';
+  await dialogTrigger(page, 'Edit Command', id);
+  await dialogSurface(
+    page,
+    { text: { id, label: 'Edit Command' } },
+    { preferredWidth: 'px(560)' },
+  );
+  // The Form takes the place of the dialog's seeded body Text.
+  await addInto(page, DIALOG, 'Form', 0, 0);
+  await select(page, /^Form(?![A-Z])/);
+  await setText(page, 'id', `${id}-form`);
+  await addInto(page, /^Form(?![A-Z])/, 'FieldLabel');
+  await select(page, /^FieldLabel/);
+  await applySpec(page, { text: { children: 'Color', id: `${id}-label` } });
+  await addInto(page, /^Form(?![A-Z])/, 'ChoiceChips');
+  await configureChoices(page, /^ChoiceChips/, colorChoices);
+  await select(page, /^ChoiceChips/);
+  await applySpec(page, {
+    text: {
+      id: `${id}-color`,
+      name: 'color',
+      labelledBy: `${id}-label`,
+      action: 'choice-chips-demo',
+    },
+    // The FieldLabel names the group in place of the seeded label.
+    unsets: ['label'],
+  });
+  // choiceChipsDialogColor starts as 'transparent'.
+  await choose(page, 'value', 'Transparent');
+  await zoneButtons(page, DIALOG, 'footer', [
+    { text: { children: 'Cancel' }, close: true },
+    {
+      choices: { tone: 'brand' },
+      text: { children: 'Save', action: 'save-choice-chips-dialog' },
+    },
+  ]);
+  const shown = canvas(page).locator(`dialog#${id}`);
+  await expect(shown).toBeVisible();
+  await expect(
+    shown.locator(`form#${id}-form .kui-choice-chips`),
+  ).toHaveAttribute('aria-labelledby', `${id}-label`);
+  await expect(shown.locator(`#${id}-label`)).toHaveText('Color');
+  expect(await exported(page)).toEqual(
+    pane(
+      dialogTriggerNode('Edit Command', id),
+      node(
+        'surface-scaffold',
+        { id, label: 'Edit Command', preferredWidth: css('px(560)') },
+        {
+          children: [
+            node(
+              'form',
+              { id: `${id}-form` },
+              {
+                children: [
+                  node('text#FieldLabel', {
+                    children: 'Color',
+                    id: `${id}-label`,
+                  }),
+                  node('choice-chips', {
+                    id: `${id}-color`,
+                    name: 'color',
+                    labelledBy: `${id}-label`,
+                    value: 'transparent',
+                    action: 'choice-chips-demo',
+                    choices: choiceValues(colorChoices),
+                  }),
+                ],
+              },
+            ),
+          ],
+          footer: [
+            closeButton('Cancel'),
+            node('button', {
+              children: 'Save',
+              tone: 'brand',
+              action: 'save-choice-chips-dialog',
+            }),
           ],
         },
       ),
