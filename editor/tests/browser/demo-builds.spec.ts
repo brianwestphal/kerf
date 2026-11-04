@@ -3103,6 +3103,67 @@ test('builds ChoiceChips › Multi-Select Listbox', async ({ page }) => {
   );
 });
 
+// KF-8T2FT4: the chips inside a dark scheme scope, a Kerf-owned
+// ContentItem prop (KF-GBPM07) in place of a `wa-dark` class.
+test('builds ChoiceChips › On Dark Chrome', async ({ page }) => {
+  test.slow();
+  const intents: readonly ChoiceSpec[] = [
+    { value: 'comment', label: 'Comment', glyph: 'message-square' },
+    { value: 'bug', label: 'Bug', glyph: 'bug' },
+    { value: 'change', label: 'Change', glyph: 'pencil' },
+    { value: 'insert', label: 'Insert', glyph: 'plus' },
+    { value: 'remove', label: 'Remove', glyph: 'minus' },
+    { value: 'move', label: 'Move', glyph: 'move' },
+    { value: 'question', label: 'Question', glyph: 'circle-question-mark' },
+  ];
+  await dragComponent(page, 'ContentItem', () => emptySpot(page));
+  await select(page, /^ContentItem/);
+  await applySpec(page, { choices: { appearance: 'surface', scheme: 'dark' } });
+  await dragComponent(page, 'ChoiceChips', () => emptySpot(page));
+  await configureChoices(page, /^ChoiceChips/, intents);
+  await select(page, /^ChoiceChips/);
+  await applySpec(page, {
+    choices: { multiple: 'toggle', size: 'compact' },
+    text: {
+      id: 'choice-chips-intents',
+      name: 'intents',
+      label: 'Annotation Intents',
+      action: 'choice-chips-demo',
+    },
+  });
+  // choiceChipsIntents starts as ['comment'].
+  await chooseValues(page, ['Comment']);
+  await expect(
+    canvas(page).locator('.kui-content-item .kui-choice-chips'),
+  ).toHaveCount(1);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'content-item',
+        { appearance: 'surface', scheme: 'dark' },
+        {
+          children: [
+            node(
+              'choice-chips',
+              {
+                id: 'choice-chips-intents',
+                name: 'intents',
+                label: 'Annotation Intents',
+                multiple: 'toggle',
+                size: 'compact',
+                value: ['comment'],
+                action: 'choice-chips-demo',
+                choices: choiceValues(intents),
+              },
+              choiceZones(intents),
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
 /**
  * Replaces list prop `prop` of the selected node with `value` through its
  * Configure dialog's Edit as JSON, as a person pastes a list in.

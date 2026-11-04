@@ -1,0 +1,161 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ChoiceChipsOnDarkChrome",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:content-item",
+          "props": {
+            "appearance": "surface",
+            "scheme": "dark"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:choice-chips",
+                "props": {
+                  "name": "intents",
+                  "choices": [
+                    {
+                      "value": "comment",
+                      "label": "Comment"
+                    },
+                    {
+                      "value": "bug",
+                      "label": "Bug"
+                    },
+                    {
+                      "value": "change",
+                      "label": "Change"
+                    },
+                    {
+                      "value": "insert",
+                      "label": "Insert"
+                    },
+                    {
+                      "value": "remove",
+                      "label": "Remove"
+                    },
+                    {
+                      "value": "move",
+                      "label": "Move"
+                    },
+                    {
+                      "value": "question",
+                      "label": "Question"
+                    }
+                  ],
+                  "label": "Annotation Intents",
+                  "multiple": "toggle",
+                  "size": "compact",
+                  "id": "choice-chips-intents",
+                  "action": "choice-chips-demo",
+                  "value": [
+                    "comment"
+                  ]
+                },
+                "zones": {
+                  "choices.0.icon": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "message-square"
+                        },
+                        "name": "message-square"
+                      }
+                    }
+                  ],
+                  "choices.1.icon": [
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "bug"
+                        },
+                        "name": "bug"
+                      }
+                    }
+                  ],
+                  "choices.2.icon": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "pencil"
+                        },
+                        "name": "pencil"
+                      }
+                    }
+                  ],
+                  "choices.3.icon": [
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "plus"
+                        },
+                        "name": "plus"
+                      }
+                    }
+                  ],
+                  "choices.4.icon": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "minus"
+                        },
+                        "name": "minus"
+                      }
+                    }
+                  ],
+                  "choices.5.icon": [
+                    {
+                      "id": "00000000000000000000000009",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "move"
+                        },
+                        "name": "move"
+                      }
+                    }
+                  ],
+                  "choices.6.icon": [
+                    {
+                      "id": "00000000000000000000000010",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "circle-question-mark"
+                        },
+                        "name": "circle-question-mark"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
