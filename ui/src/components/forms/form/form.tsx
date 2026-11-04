@@ -16,6 +16,14 @@ export interface FormProps {
    * URL: a Kerf UI Form never navigates (see `wireForms`).
    */
   action?: string;
+  /** Id of a visible heading that names the form. A named form is a `form`
+   * landmark; leave both names off for a form that needs no landmark. */
+  labelledBy?: string;
+  /** Accessible name when no visible heading names the form. */
+  ariaLabel?: string;
+  /** Id of the element whose text describes the form, such as a heading's
+   * supporting line; rendered as `aria-describedby`. */
+  describedBy?: string;
   /** Skip native constraint validation on submit, for a form whose
    * application validates its fields and shows their errors itself. */
   noValidate?: boolean;
@@ -41,6 +49,9 @@ export function Form({
   id,
   name,
   action,
+  labelledBy,
+  ariaLabel,
+  describedBy,
   noValidate = false,
   children,
   className = '',
@@ -55,6 +66,9 @@ export function Form({
       class={`kui-form ${className}`.trim()}
       data-component="form"
       data-action={action}
+      aria-labelledby={labelledBy}
+      aria-label={labelledBy === undefined ? ariaLabel : undefined}
+      aria-describedby={describedBy}
       noValidate={noValidate || undefined}
       slot={slot}
     >

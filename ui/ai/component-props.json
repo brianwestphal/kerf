@@ -4449,6 +4449,24 @@
           "description": "Delegated `data-action` the application handles on `submit`, with\n`delegateActions(root, 'submit', table)`. It is not the native `action`\nURL: a Kerf UI Form never navigates (see `wireForms`)."
         },
         {
+          "name": "labelledBy",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Id of a visible heading that names the form. A named form is a `form`\nlandmark; leave both names off for a form that needs no landmark."
+        },
+        {
+          "name": "ariaLabel",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Accessible name when no visible heading names the form."
+        },
+        {
+          "name": "describedBy",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Id of the element whose text describes the form, such as a heading's\nsupporting line; rendered as `aria-describedby`."
+        },
+        {
           "name": "noValidate",
           "type": {
             "kind": "boolean",

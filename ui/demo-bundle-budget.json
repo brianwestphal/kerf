@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 451100,
-  "measuredLargestJavaScriptGzip": 164549,
-  "measuredTotalJavaScriptGzip": 451056,
+  "totalJavaScriptGzip": 451200,
+  "measuredLargestJavaScriptGzip": 164550,
+  "measuredTotalJavaScriptGzip": 451139,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6707,6 +6707,22 @@
         "measuredTotalJavaScriptGzip": 451056,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 451100
+      }
+    },
+    {
+      "at": "2026-11-04T08:56:53.829Z",
+      "reason": "KF-JPE38T: Form gains labelledBy/ariaLabel/describedBy and the composer recipe renders Form instead of a raw form",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164549,
+        "measuredTotalJavaScriptGzip": 451056,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 451100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164550,
+        "measuredTotalJavaScriptGzip": 451139,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 451200
       }
     }
   ]

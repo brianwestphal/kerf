@@ -104,7 +104,9 @@ from `@kerfjs/ui/wire-forms` once so a submit `Button` or Enter in a field never
 navigates the page, give the Form an `action` (a delegated `data-action`, not a
 URL), and handle it with `delegateActions(root, 'submit', table)`, reading the
 fields with `new FormData(form)`. Native validation runs first unless
-`noValidate` is set. See `../docs/forms-and-validation.md#form`.
+`noValidate` is set. `eslint-plugin-kerfjs` reports a raw `<form>` as
+`KUI-L303` and a `Form` without `wireForms` as `KUI-L401`. See
+`../docs/forms-and-validation.md#form`.
 
 ### Clear chrome over imagery
 

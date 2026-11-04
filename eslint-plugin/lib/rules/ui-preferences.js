@@ -12,6 +12,7 @@ import {
 
 const CODE = 'KUI-L301';
 const SCOPE_CODE = 'KUI-L302';
+const FORM_CODE = 'KUI-L303';
 /** Web Awesome appearance-scope classes, which need its theme to do anything. */
 const WA_SCOPE_CLASS =
   /(?:^|\s)(wa-(?:light|dark|invert|theme-default))(?=\s|$)/g;
@@ -42,6 +43,8 @@ export default {
       config: `${UI_CONTRACT_LOAD_CODE}: Kerf UI catalog/profile could not be loaded: {{error}}`,
       preferred:
         'KUI-L301: `{{actual}}` is discouraged for `{{concept}}`; this profile prefers `{{preferred}}`. {{rationale}}',
+      rawForm:
+        'KUI-L303: a raw `<form>` has no Kerf UI form contract. Render `Form` from `@kerfjs/ui/form` (with `wireForms` installed) so a submission reaches your `submit` handler without navigating the page.',
       scope:
         'KUI-L302: `{{name}}` is a Web Awesome appearance scope that does nothing without its theme. Use the `scheme` prop on ContentItem, Pane, NavStack, or TabNavigator, or the `.kui-light` / `.kui-dark` / `.kui-invert` scope class.',
     },
@@ -74,10 +77,19 @@ export default {
         else registry = importRegistry(node, contract, filename);
       },
       JSXOpeningElement(node) {
-        if (!registry || isExcepted(contract, CODE, filename)) return;
+        if (!registry) return;
         // A declared component's own source is the wrapper that owns the
         // element it renders; the preference governs its callers.
         if (contract.componentSources.has(resolve(filename))) return;
+        // KF-JPE38T: a native form navigates on submit unless something
+        // cancels it; Kerf UI's Form plus wireForms is that contract.
+        if (
+          node.name.type === 'JSXIdentifier' &&
+          node.name.name === 'form' &&
+          !isExcepted(contract, FORM_CODE, filename)
+        )
+          context.report({ node: node.name, messageId: 'rawForm' });
+        if (isExcepted(contract, CODE, filename)) return;
         const actual =
           jsxKey(node.name, registry, contract) ??
           customElementKey(node.name, contract);

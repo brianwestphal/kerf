@@ -35,6 +35,21 @@ describe('Form', () => {
     expect(new FormData(form).get('project')).toBe('Kerf');
   });
 
+  it('names and describes the form only when asked (KF-JPE38T)', () => {
+    const named = render(
+      Form({ labelledBy: 'title', describedBy: 'summary', ariaLabel: 'x' }),
+    ).form;
+    expect(named.getAttribute('aria-labelledby')).toBe('title');
+    expect(named.getAttribute('aria-describedby')).toBe('summary');
+    // A visible heading wins over a fallback name.
+    expect(named.hasAttribute('aria-label')).toBe(false);
+    const labelled = render(Form({ ariaLabel: 'Profile' })).form;
+    expect(labelled.getAttribute('aria-label')).toBe('Profile');
+    const plain = render(Form({})).form;
+    for (const name of ['aria-label', 'aria-labelledby', 'aria-describedby'])
+      expect(plain.hasAttribute(name)).toBe(false);
+  });
+
   it('forwards id, name, action, noValidate, class, slot, and data-*', () => {
     const { form } = render(
       Form({

@@ -19,6 +19,8 @@ Submission follows one contract:
 - Call `wireForms(root)` from `@kerfjs/ui/wire-forms` once. It cancels the native submission's page navigation for every `Form` below `root`, whether a submit `Button` or Enter in a field submitted it. It listens in the capture phase, so no handler can let a submission through, and it leaves a native `<form>` that is not a `Form` alone.
 - Give the `Form` an `action`. Like a `Button`'s, it is a delegated `data-action`, not the native URL: handle it with `delegateActions(root, 'submit', { [action]: (event, form) => … })` and read the fields with `new FormData(form)`.
 - Native constraint validation runs before `submit` fires. Set `noValidate` when the application validates the fields and shows their errors itself.
+- A form a visible heading names, such as a page's `ToolbarText` title, takes `labelledBy` (that heading's id) and optionally `describedBy` (its supporting line's id); a named form is a `form` landmark. Use `ariaLabel` only when no visible heading names it, and leave all three off for a form inside an already-named surface such as a dialog.
+- `eslint-plugin-kerfjs` reports a raw `<form>` (`KUI-L303`) and a `Form` rendered with no `wireForms` reachable (`KUI-L401`).
 - A submit `Button` outside the form, such as in a `DialogSurface` footer, takes `type="submit"` and `form={id}`. A click action that reads `new FormData(document.getElementById(id))` also works.
 
 ```tsx

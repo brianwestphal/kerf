@@ -4,6 +4,7 @@ import '@kerfjs/ui/webawesome.css';
 
 import { Spacer } from '@kerfjs/ui';
 import { Button } from '@kerfjs/ui/button';
+import { Form } from '@kerfjs/ui/form';
 import { List } from '@kerfjs/ui/list';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { Row } from '@kerfjs/ui/row';
@@ -52,10 +53,10 @@ export const createRecipe: RecipeFactory = (announce) => {
   const audience = signal('team');
   const status = signal<'idle' | 'error' | 'saved'>('idle');
   const render = () => (
-    <form
-      data-recipe="recipe-composer-form"
-      aria-labelledby="recipe-composer-title"
-      aria-describedby="recipe-composer-summary"
+    <Form
+      rootAttributes={{ 'data-recipe': 'recipe-composer-form' }}
+      labelledBy="recipe-composer-title"
+      describedBy="recipe-composer-summary"
       noValidate
     >
       <List gap="l" controlInsets="tb">
@@ -139,7 +140,7 @@ export const createRecipe: RecipeFactory = (announce) => {
           </Button>
         </Row>
       </List>
-    </form>
+    </Form>
   );
   return {
     render,

@@ -679,28 +679,29 @@ test('keeps the composer on one labeled surface with shared field and action gut
 
   await expectLayout(1);
   if (browserName === 'chromium')
-    await form.screenshot({
+    // The Form is display: contents, so its List is the box to capture.
+    await stack.screenshot({
       path: 'test-results/composer-layout-reference-after.png',
     });
 
   await page.setViewportSize({ width: 390, height: 1000 });
-  await form.scrollIntoViewIfNeeded();
+  await stack.scrollIntoViewIfNeeded();
   await expectLayout(1);
   if (browserName === 'chromium')
-    await form.screenshot({ path: 'test-results/composer-layout-narrow.png' });
+    await stack.screenshot({ path: 'test-results/composer-layout-narrow.png' });
 
   await page.setViewportSize({ width: 1100, height: 1000 });
   await page.locator('[data-action="toggle-theme"]').click();
   await expectLayout(1);
   if (browserName === 'chromium')
-    await form.screenshot({ path: 'test-results/composer-layout-dark.png' });
+    await stack.screenshot({ path: 'test-results/composer-layout-dark.png' });
 
   await page.goto('/?component=recipe-composer-form');
   await form.getByRole('button', { name: 'Publish Update' }).click();
   await expect(form.getByRole('alert')).toContainText('Add a Title');
   await expectLayout(1, 'alert');
   if (browserName === 'chromium')
-    await form.screenshot({ path: 'test-results/composer-layout-error.png' });
+    await stack.screenshot({ path: 'test-results/composer-layout-error.png' });
 
   await form.locator('[name="recipe-title"]').fill('Tablet navigation shipped');
   await form.locator('[name="recipe-body"]').fill('Updated draft content');
@@ -708,7 +709,9 @@ test('keeps the composer on one labeled surface with shared field and action gut
   await expect(form.getByRole('status')).toContainText('Update Published');
   await expectLayout(1, 'status');
   if (browserName === 'chromium')
-    await form.screenshot({ path: 'test-results/composer-layout-success.png' });
+    await stack.screenshot({
+      path: 'test-results/composer-layout-success.png',
+    });
   await form.getByRole('button', { name: 'Reset' }).click();
   await expect(form.locator('[data-component="state-banner"]')).toHaveCount(0);
   await expect(page.locator('.catalog-log')).toHaveText('Draft reset');
@@ -730,11 +733,11 @@ test('keeps the composer on one labeled surface with shared field and action gut
   });
   await expectLayout(1);
   if (browserName === 'chromium') {
-    await form.screenshot({ path: 'test-results/composer-reset-wide.png' });
+    await stack.screenshot({ path: 'test-results/composer-reset-wide.png' });
     await page.setViewportSize({ width: 390, height: 1000 });
-    await form.scrollIntoViewIfNeeded();
+    await stack.scrollIntoViewIfNeeded();
     await expectLayout(1);
-    await form.screenshot({ path: 'test-results/composer-reset-narrow.png' });
+    await stack.screenshot({ path: 'test-results/composer-reset-narrow.png' });
   }
 
   await page.setViewportSize({ width: 720, height: 1200 });
@@ -742,10 +745,10 @@ test('keeps the composer on one labeled surface with shared field and action gut
   await page.locator('html').evaluate((element) => {
     element.style.fontSize = '200%';
   });
-  await form.scrollIntoViewIfNeeded();
+  await stack.scrollIntoViewIfNeeded();
   await expectLayout(2);
   if (browserName === 'chromium')
-    await form.screenshot({
+    await stack.screenshot({
       path: 'test-results/composer-layout-zoom-200.png',
     });
 
@@ -792,7 +795,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
       { style: 'none', width: 0 },
       { style: 'none', width: 0 },
     ]);
-    await form.screenshot({
+    await stack.screenshot({
       path: 'test-results/composer-layout-forced-colors.png',
     });
     await page.emulateMedia({ forcedColors: 'none' });

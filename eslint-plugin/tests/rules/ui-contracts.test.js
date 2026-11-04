@@ -1528,6 +1528,31 @@ tester.run('ui-preferences Web Awesome scope classes', preferences, {
   ],
 });
 
+// KF-JPE38T: a raw native form navigates on submit; KUI-L303 points at the
+// Kerf UI Form, whose wireForms contract cancels the navigation.
+tester.run('ui-preferences raw form', preferences, {
+  valid: [
+    {
+      code: "import { Form } from '@kerfjs/ui/form'; <Form action='save' />;",
+      settings,
+    },
+    { code: '<formula />;', settings },
+    { code: '<div role="form" />;', settings },
+  ],
+  invalid: [
+    {
+      code: '<form onsubmit="x"><input /></form>;',
+      settings,
+      errors: [{ messageId: 'rawForm' }],
+    },
+    {
+      code: '<section><form /></section>;',
+      settings,
+      errors: [{ messageId: 'rawForm' }],
+    },
+  ],
+});
+
 // The shipped catalogs plus the shipped package-default profile: every
 // Discouraged Web Awesome element authored directly as a JSX tag reports
 // KUI-L301, while a declared wrapper's own source may render what it wraps.
@@ -1724,6 +1749,10 @@ tester.run('ui-wiring', wiring, {
       settings: choiceEntrySettings,
     },
     {
+      code: "import { Form } from '@kerfjs/ui/form'; import { wireForms } from '@kerfjs/ui/wire-forms'; const stop = wireForms(root); <Form action='save' />;",
+      settings: shippedUiSettings,
+    },
+    {
       code: "import { ChoiceChips } from '@kerfjs/ui'; <ChoiceChips multiple='toggle' choices={options} />;",
       filename: choiceLeaf,
       settings: choiceEntrySettings,
@@ -1874,6 +1903,12 @@ tester.run('ui-wiring', wiring, {
     },
     {
       code: "import { ChoiceChips } from '@kerfjs/ui'; <ChoiceChips multiple={mode} choices={options} />;",
+      settings: shippedUiSettings,
+      errors: [{ messageId: 'missing' }],
+    },
+    // KF-JPE38T: a Form without wireForms would navigate on submit.
+    {
+      code: "import { Form } from '@kerfjs/ui/form'; <Form action='save' />;",
       settings: shippedUiSettings,
       errors: [{ messageId: 'missing' }],
     },

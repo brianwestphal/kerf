@@ -152,9 +152,11 @@ describe('production composition recipes', () => {
     const root = template.content.querySelector<HTMLFormElement>(
       '[data-recipe="recipe-composer-form"]',
     )!;
-    // The form carries no styling hook: one List owns its 24px major rhythm.
+    // A Kerf UI Form (layout-neutral, wired by wireForms), not a raw form:
+    // one List owns its 24px major rhythm.
     expect(root.tagName).toBe('FORM');
-    expect(root.getAttribute('class')).toBeNull();
+    expect(root.dataset.component).toBe('form');
+    expect(root.getAttribute('class')).toBe('kui-form');
     const stack = root.querySelector<HTMLElement>(':scope > .kui-list')!;
     expect(stack.dataset.gap).toBe('true');
     expect(root.getAttribute('aria-labelledby')).toBe('recipe-composer-title');
