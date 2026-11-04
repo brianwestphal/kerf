@@ -1035,6 +1035,16 @@ test('an embedded dialog sits in flow, inside its container, and stays shown', a
         (element) => window.getComputedStyle(element).position,
       ),
     ).toBe('relative');
+    // KF-4RSG7D: a border instead of a drop shadow a scroll area could clip.
+    const frame = await dialog.evaluate((element) => {
+      const style = window.getComputedStyle(element);
+      return {
+        shadow: style.boxShadow,
+        width: style.borderTopWidth,
+        border: style.borderTopStyle,
+      };
+    });
+    expect(frame).toEqual({ shadow: 'none', width: '1px', border: 'solid' });
     const box = (await dialog.boundingBox())!;
     const container = (await dialog.locator('xpath=..').boundingBox())!;
     expect(box.width).toBeGreaterThan(0);

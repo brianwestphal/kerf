@@ -92,7 +92,9 @@ resource tracks or preview aspect sizing.
 ### Embedded
 
 `presentation="embedded"` renders the same panel in flow: open, without the top
-layer, a backdrop, or modality, and never wider than its container. Use it where
+layer, a backdrop, or modality, and never wider than its container. In flow it
+is a panel rather than an elevated layer, so it draws a 1px border instead of
+the drop shadow. Use it where
 a dialog is shown rather than opened, such as a catalog specimen, a design
 canvas, or a document. `openDialog` and `closeDialog` leave an embedded dialog
 alone, and its close button and `data-dialog-close` controls do not hide it.

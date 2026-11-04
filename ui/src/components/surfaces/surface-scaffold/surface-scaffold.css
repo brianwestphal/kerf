@@ -60,6 +60,10 @@
   /* What the UA gives a modal dialog: a filling body (a Workbench or a
      list-detail split) clips to the rounded corners. */
   overflow: auto;
+  /* In flow it is a panel, not an elevated layer: a border instead of the
+     drop shadow, which a scrolling container would clip (KF-4RSG7D). */
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  box-shadow: none;
 }
 /* An embedded dialog keeps a definite height, so a filling body (a Workbench
    or a list-detail split) has room in flow. */
