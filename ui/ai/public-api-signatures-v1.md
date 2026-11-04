@@ -2192,6 +2192,8 @@ type PaneChromeDividers = 'scroll' | 'always' | 'none';
 type PaneHeaderPresentation = 'docked' | 'overlay' | 'clear';
 /** Background treatment of the Pane's scrolling work surface. */
 type PaneAppearance = 'default' | 'sunken';
+/** Whether a Pane's scrolling content keeps the browser's scroll anchoring. */
+type PaneScrollAnchoring = 'auto' | 'none';
 interface PaneProps {
     /** Optional fixed chrome above the scrolling content, arranged vertically. */
     header?: KerfUiContent;
@@ -2320,6 +2322,16 @@ interface PaneProps {
      * area, panel, or NavStack view takes it through its `PaneConfig`.
      */
     anchorName?: AnchorName;
+    /**
+     * The scrolling content's CSS scroll anchoring (`overflow-anchor`). `auto`
+     * (the default) keeps the browser's anchoring, which holds visible content
+     * still when something above it grows or shrinks. `none` opts the pane
+     * out: use it for a pane whose own edits insert or remove rows above the
+     * reader, where Safari can apply a late anchoring jump on an unrelated
+     * reflow, such as an inspector. A Workbench panel, work area, or NavStack
+     * view takes it through its `PaneConfig`.
+     */
+    scrollAnchoring?: PaneScrollAnchoring;
     /** Keep the standard focus outline visible, such as for a drop target. */
     outlined?: boolean;
     /** Root semantics. Defaults to `div`. */
@@ -2356,16 +2368,16 @@ interface PaneProps {
  * or a CollapsiblePanel) forwards, so the app configures that pane instead of
  * styling it. An omitted or `undefined` field keeps the composite's default.
  */
-type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'compactChrome' | 'compactChromeOpen' | 'headerPresentation' | 'scrollEdge' | 'scrollEdgeDistance' | 'appearance' | 'background' | 'tint' | 'deepInset' | 'scrollClearance' | 'tabIndex' | 'outlined' | 'anchorName'>;
+type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'compactChrome' | 'compactChromeOpen' | 'headerPresentation' | 'scrollEdge' | 'scrollEdgeDistance' | 'appearance' | 'background' | 'tint' | 'deepInset' | 'scrollClearance' | 'tabIndex' | 'outlined' | 'anchorName' | 'scrollAnchoring'>;
 /**
  * An unpadded application column with optional fixed header/footer slots and one
  * scrolling vertical content owner. Separator lines are independently opt-in on
  * each logical edge, so the same component works as a sidebar, main area,
  * inspector, or dialog column.
  */
-declare function Pane({ header, children, footer, fill, chromePlacement, chromeDividers, compactChrome, compactChromeOpen, headerPresentation, scrollEdge, scrollEdgeDistance, appearance, background, tint, scheme, deepInset, scrollClearance, tabIndex, anchorName, outlined, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
+declare function Pane({ header, children, footer, fill, chromePlacement, chromeDividers, compactChrome, compactChromeOpen, headerPresentation, scrollEdge, scrollEdgeDistance, appearance, background, tint, scheme, deepInset, scrollClearance, tabIndex, anchorName, scrollAnchoring, outlined, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
 
-export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlacement, type PaneCompactChrome, type PaneCompactChromePolicy, type PaneConfig, type PaneContentElement, type PaneElement, type PaneHeaderPresentation, type PaneProps, type PaneSeparatorSide, ScrollClearance, type ScrollEdge, SurfaceTint, SurfaceTintScheme };
+export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlacement, type PaneCompactChrome, type PaneCompactChromePolicy, type PaneConfig, type PaneContentElement, type PaneElement, type PaneHeaderPresentation, type PaneProps, type PaneScrollAnchoring, type PaneSeparatorSide, ScrollClearance, type ScrollEdge, SurfaceTint, SurfaceTintScheme };
 ```
 
 ## `@kerfjs/ui/workbench`

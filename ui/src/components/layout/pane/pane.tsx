@@ -33,6 +33,7 @@ export type PaneContentElement = 'div' | 'main' | 'nav' | 'section';
 
 const paneProtectedAttributes = new Set([
   'data-component',
+  'data-scroll-anchoring',
   'data-fill',
   'data-chrome-placement',
   'data-compact-header',
@@ -141,6 +142,9 @@ export type PaneHeaderPresentation = 'docked' | 'overlay' | 'clear';
 
 /** Background treatment of the Pane's scrolling work surface. */
 export type PaneAppearance = 'default' | 'sunken';
+
+/** Whether a Pane's scrolling content keeps the browser's scroll anchoring. */
+export type PaneScrollAnchoring = 'auto' | 'none';
 
 export interface PaneProps {
   /** Optional fixed chrome above the scrolling content, arranged vertically. */
@@ -267,6 +271,16 @@ export interface PaneProps {
    * area, panel, or NavStack view takes it through its `PaneConfig`.
    */
   anchorName?: AnchorName;
+  /**
+   * The scrolling content's CSS scroll anchoring (`overflow-anchor`). `auto`
+   * (the default) keeps the browser's anchoring, which holds visible content
+   * still when something above it grows or shrinks. `none` opts the pane
+   * out: use it for a pane whose own edits insert or remove rows above the
+   * reader, where Safari can apply a late anchoring jump on an unrelated
+   * reflow, such as an inspector. A Workbench panel, work area, or NavStack
+   * view takes it through its `PaneConfig`.
+   */
+  scrollAnchoring?: PaneScrollAnchoring;
   /** Keep the standard focus outline visible, such as for a drop target. */
   outlined?: boolean;
   /** Root semantics. Defaults to `div`. */
@@ -324,6 +338,7 @@ export type PaneConfig = Pick<
   | 'tabIndex'
   | 'outlined'
   | 'anchorName'
+  | 'scrollAnchoring'
 >;
 
 function paneContent(
@@ -369,6 +384,7 @@ export function Pane({
   scrollClearance,
   tabIndex,
   anchorName,
+  scrollAnchoring = 'auto',
   outlined = false,
   element = 'div',
   contentElement = 'div',
@@ -441,6 +457,7 @@ export function Pane({
     ),
     'data-deep-inset': deepInset ? 'true' : undefined,
     'data-outlined': outlined ? 'true' : undefined,
+    'data-scroll-anchoring': scrollAnchoring === 'none' ? 'none' : undefined,
     'data-scroll-clearance': scrollClearance,
     'data-header-presentation':
       headerPresentation !== 'docked' && header !== undefined

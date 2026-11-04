@@ -407,6 +407,13 @@
   }
 }
 
+/* KF-NV427Y: opt the scroller out of scroll anchoring. Safari can apply a
+   stale anchoring adjustment on an unrelated later reflow after the pane's own
+   edit inserted a row, jumping the content under the pointer. */
+.kui-pane[data-scroll-anchoring="none"] > .kui-pane__content {
+  overflow-anchor: none;
+}
+
 /* Add one outer gutter without changing the inherited item-margin token.
    Nested Row, List, and Grid therefore keep their own default 8px insets. */
 .kui-pane[data-deep-inset="true"] > .kui-pane__content {

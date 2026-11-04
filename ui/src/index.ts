@@ -348,6 +348,7 @@ export {
   type PaneElement,
   type PaneHeaderPresentation,
   type PaneProps,
+  type PaneScrollAnchoring,
   type PaneSeparatorSide,
   type ScrollEdge,
   type SurfaceTint,

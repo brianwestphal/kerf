@@ -89,6 +89,7 @@ import { TagField } from '../components/forms/tag-field/tag-field.js';
 import { wireTagFields } from '../components/forms/tag-field/wiring/wire-tag-fields.js';
 import { TextField } from '../components/forms/text-field/text-field.js';
 import { Grid } from '../components/layout/grid/grid.js';
+import type { PaneConfig } from '../components/layout/pane/pane.js';
 import { Row } from '../components/layout/row/row.js';
 import { wireWorkbench } from '../components/layout/workbench/wiring/wire-workbench.js';
 import { Workbench } from '../components/layout/workbench/workbench.js';
@@ -367,6 +368,12 @@ const FIELD_EXAMPLE_ACTION = 'editor-fill-field-example';
 const FIELD_JSON_ACTION = 'editor-field-json';
 const FIELD_DIALOG = 'editor-field-dialog';
 const INSPECTOR_STACK = 'editor-inspector-stack';
+/**
+ * KF-NV427Y: the Inspector's own edits insert and remove rows above the
+ * reader, and Safari then applies a stale scroll-anchoring jump on the next
+ * unrelated reflow (the autosave status), so its panes opt out of anchoring.
+ */
+const INSPECTOR_PANE: PaneConfig = { scrollAnchoring: 'none' };
 // KF-VYRDDQ: icon data picks a Lucide icon in a searchable dialog.
 const ICON_OPEN_ACTION = 'editor-open-icon';
 const ICON_CHOOSE_ACTION = 'editor-choose-icon';
@@ -2326,6 +2333,7 @@ export function createEditor(options: EditorOptions) {
     return fieldSteps(open).map((place) => ({
       key: `field-${placeKey(place)}`,
       toolbar: { title: stepLabel(node, place) },
+      pane: INSPECTOR_PANE,
       content: fieldStep(node, place),
     }));
   };
@@ -3932,6 +3940,7 @@ export function createEditor(options: EditorOptions) {
                         title: 'Inspector',
                         trailing: nodeActions(document),
                       },
+                      pane: INSPECTOR_PANE,
                       ...inspector(document),
                     },
                     ...fieldViews(),

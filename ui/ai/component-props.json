@@ -8580,6 +8580,18 @@
           "description": "Names the Pane root as a CSS anchor (`anchor-name`): a dashed ident such\nas `--app-main`. A surface that docks to a named anchor, such as a\n`PopoverDialogSurface` with the same `anchorName`, then docks to this\npane, so the app names its main column without CSS. A Workbench work\narea, panel, or NavStack view takes it through its `PaneConfig`."
         },
         {
+          "name": "scrollAnchoring",
+          "type": {
+            "kind": "enum",
+            "values": ["auto", "none"],
+            "text": "PaneScrollAnchoring | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "auto",
+          "description": "The scrolling content's CSS scroll anchoring (`overflow-anchor`). `auto`\n(the default) keeps the browser's anchoring, which holds visible content\nstill when something above it grows or shrinks. `none` opts the pane\nout: use it for a pane whose own edits insert or remove rows above the\nreader, where Safari can apply a late anchoring jump on an unrelated\nreflow, such as an inspector. A Workbench panel, work area, or NavStack\nview takes it through its `PaneConfig`."
+        },
+        {
           "name": "outlined",
           "type": {
             "kind": "boolean",
@@ -26126,6 +26138,18 @@
           },
           "required": false,
           "description": "Names the Pane root as a CSS anchor (`anchor-name`): a dashed ident such\nas `--app-main`. A surface that docks to a named anchor, such as a\n`PopoverDialogSurface` with the same `anchorName`, then docks to this\npane, so the app names its main column without CSS. A Workbench work\narea, panel, or NavStack view takes it through its `PaneConfig`."
+        },
+        {
+          "name": "scrollAnchoring",
+          "type": {
+            "kind": "enum",
+            "values": ["auto", "none"],
+            "text": "PaneScrollAnchoring | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "auto",
+          "description": "The scrolling content's CSS scroll anchoring (`overflow-anchor`). `auto`\n(the default) keeps the browser's anchoring, which holds visible content\nstill when something above it grows or shrinks. `none` opts the pane\nout: use it for a pane whose own edits insert or remove rows above the\nreader, where Safari can apply a late anchoring jump on an unrelated\nreflow, such as an inspector. A Workbench panel, work area, or NavStack\nview takes it through its `PaneConfig`."
         }
       ],
       "text": "PaneConfig"

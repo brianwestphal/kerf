@@ -1976,3 +1976,58 @@ test('shows a NavStack’s lower view from the Flow area', async ({ page }) => {
     document.zones.content[0]!.zones.children[0]!.props.views,
   ).toHaveLength(3);
 });
+
+// KF-NV427Y: in WebKit, an Inspector edit that inserted a row (the icon
+// tile's Configure row) made the Inspector jump by that row's height about
+// 300ms later, when the autosave rewrote the Preview status: a stale scroll
+// anchoring adjustment. The Inspector's panes opt out of scroll anchoring.
+test('keeps the Inspector still across the autosave after an edit inserts a row', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 700 });
+  await newDocument(page);
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await dragComponent(page, 'ListActionRow', () => emptySpot(page));
+  await select(page, /^ListActionRow/);
+  const scroller = page
+    .locator('#editor-inspector-stack .kui-pane__content')
+    .filter({ visible: true });
+  await expect(scroller).toHaveCSS('overflow-anchor', 'none');
+  const trigger = page
+    .locator('[data-editor-prop="iconTile"] .kui-select__trigger')
+    .first();
+  await trigger.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await expect(page.getByText(/ · saving…/)).toHaveCount(0);
+  const before = await scroller.evaluate((el) => {
+    // Record that this edit's autosave really ran: the status passes through
+    // "saving…" and back.
+    const status = document.body;
+    const seen = { saving: false };
+    new MutationObserver(() => {
+      if (status.textContent?.includes(' · saving…')) seen.saving = true;
+    }).observe(status, { subtree: true, childList: true, characterData: true });
+    (window as unknown as { kfNv427y: typeof seen }).kfNv427y = seen;
+    return el.scrollTop;
+  });
+  expect(before).toBeGreaterThan(0);
+  await trigger.click();
+  await page.getByRole('option', { name: 'Custom…', exact: true }).click();
+  await expect(
+    page.getByRole('button', { name: 'Configure icon tile' }),
+  ).toBeVisible();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (window as unknown as { kfNv427y: { saving: boolean } }).kfNv427y
+            .saving,
+      ),
+    )
+    .toBe(true);
+  await expect(page.getByText(/ · saving…/)).toHaveCount(0);
+  // One more frame so a late anchoring adjustment would have landed.
+  await page.evaluate(
+    () => new Promise((done) => requestAnimationFrame(() => done(null))),
+  );
+  expect(await scroller.evaluate((el) => el.scrollTop)).toBe(before);
+});

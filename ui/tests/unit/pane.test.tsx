@@ -361,4 +361,26 @@ describe('Pane', () => {
         Pane({ anchorName: bad as `--${string}`, children: <span /> }),
       ).toThrow(/Pane anchorName must be a CSS dashed-ident/);
   });
+
+  // KF-NV427Y: a pane opts its scroller out of scroll anchoring by prop.
+  it('opts the content out of scroll anchoring, forwarded through PaneConfig', () => {
+    expect(
+      String(Pane({ scrollAnchoring: 'none', children: <span /> })),
+    ).toContain('data-scroll-anchoring="none"');
+    for (const props of [{}, { scrollAnchoring: 'auto' as const }])
+      expect(String(Pane({ ...props, children: <span /> }))).not.toContain(
+        'data-scroll-anchoring',
+      );
+    expect(
+      String(
+        Pane({
+          rootAttributes: { 'data-scroll-anchoring': 'none' },
+          children: <span />,
+        }),
+      ),
+    ).not.toContain('data-scroll-anchoring');
+    expect(paneConfigProps({ scrollAnchoring: 'none' }).scrollAnchoring).toBe(
+      'none',
+    );
+  });
 });

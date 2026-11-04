@@ -111,6 +111,21 @@ NavStack view takes it too. A name that is not a dashed ident throws.
 </PopoverDialogSurface>
 ```
 
+### Scroll anchoring
+
+A Pane's scrolling content keeps the browser's scroll anchoring by default:
+when something above the visible content grows or shrinks, the browser holds
+what the reader sees still. Set `scrollAnchoring="none"` on a pane whose own
+edits insert or remove rows above the reader, such as an inspector. Safari can
+apply a stale anchoring adjustment on a later, unrelated reflow and jump that
+pane's content under the pointer. `PaneConfig` forwards it, so a Workbench
+panel `pane`, `mainPane`, or NavStack view takes it too. Leave other panes at
+the default.
+
+```tsx
+<NavStack views={[{ key: 'inspector', pane: { scrollAnchoring: 'none' }, content }]} />
+```
+
 ### Lowered work surfaces
 
 Set `appearance="sunken"` when the work area itself should use the lowered
