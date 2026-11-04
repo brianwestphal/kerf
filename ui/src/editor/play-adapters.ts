@@ -29,6 +29,7 @@ import {
 import { wireColorFields } from '../components/forms/color-field/wiring/wire-color-fields.js';
 import { wireColorPickers } from '../components/forms/color-picker/wiring/wire-color-pickers.js';
 import { wireComboboxes } from '../components/forms/combobox/wiring/wire-comboboxes.js';
+import { wireForms } from '../components/forms/form/wiring/wire-forms.js';
 import { wireSearchFields } from '../components/forms/search-field/wiring/wire-search-fields.js';
 import { wireSliders } from '../components/forms/slider/wiring/wire-sliders.js';
 import { wireTagFields } from '../components/forms/tag-field/wiring/wire-tag-fields.js';
@@ -468,6 +469,8 @@ export function wirePlayState(
     wireSearchFields(root),
     wireSliders(root),
     wireCheckboxes(root),
+    // KF-XX4Y95: submitting a Form in play never navigates the page.
+    wireForms(root),
     wireChoiceChips(root),
     // KF-XV732Q: the helpers that report a value by the control's `id`.
     wireComboboxes(root, {

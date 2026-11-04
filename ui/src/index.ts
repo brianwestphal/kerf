@@ -241,6 +241,8 @@ export {
   wireFilePickers,
   type WireFilePickersOptions,
 } from './components/forms/file-picker/wiring/wire-file-pickers.js';
+export { Form, type FormProps } from './components/forms/form/form.js';
+export { wireForms } from './components/forms/form/wiring/wire-forms.js';
 export {
   MessageComposer,
   type MessageComposerProps,

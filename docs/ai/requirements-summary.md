@@ -408,6 +408,9 @@ recipes, and apps no longer hand-write `.kui-content-item` modifier classes.
 `success`, `warning`, and `danger` coordinate quiet semantic fills, borders,
 and foregrounds with `StateBanner`. `transparent` is the default. A lowered
 inset surface around a stack remains `SunkenPanel`.
+`Form` (shipped, KF-XX4Y95, `ui/docs/forms-and-validation.md#form`) is a layout-neutral
+native form whose `action` is a delegated `data-action` handled on `submit`; `wireForms`
+cancels the native submission's page navigation.
 `SizedRegion` (shipped, docs/23 §3.9, `ui/docs/app-layouts.md#sizing-a-nested-layout`)
 gives a whole-screen layout below the app root a definite height (fill, typed
 height, min/max); a non-blocking hint for an unsized nested layout is KF-KQ72TW.

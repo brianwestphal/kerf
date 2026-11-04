@@ -4976,6 +4976,79 @@
       }
     },
     {
+      "key": "@kerfjs/ui:form",
+      "package": "@kerfjs/ui",
+      "id": "form",
+      "name": "Form",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the submit action and its handler",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "validation and error messages",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "draft state and transport",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the fields and their layout",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": true,
+        "helpers": ["wireForms"],
+        "obligations": [
+          "Prevents the native submission's page navigation (from a submit Button or Enter in a field) for every Form below root; the submit event still reaches the application's handler."
+        ],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "none",
+          "notes": [
+            "display: contents: the Form generates no box, so its children lay out as the parent's own flex, grid, or block children. A parent rule that selects its direct children (>) does not reach through it."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Form renders a native form with no accessible name, so it is not a landmark; its fields keep their own labels, hints, and errors.",
+          "Enter in a single-line field submits the form natively; wireForms stops the page from navigating while the submit event still reaches the application."
+        ]
+      },
+      "content": { "interactive": [{ "kind": "contains" }] },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-form",
+        "publicClasses": ["kui-form"],
+        "rootElement": "form",
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:segmented-control",
       "package": "@kerfjs/ui",
       "id": "segmented-control",

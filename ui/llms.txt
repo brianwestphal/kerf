@@ -932,6 +932,11 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   channel sliders that follow the color model (R/G/B, H/S/L, H/S/B, or gray)
   plus opacity, RGB/HSL/HSB/Grayscale fields, hex, presets, and
   samples; call `wireColorPickers(root, { onChange })` and re-render.
+- **Group submitted fields in a `Form`** (`@kerfjs/ui/form`), never a raw
+  `<form>`: it adds no inset or layout (`display: contents`). Call
+  `wireForms(root)` (`@kerfjs/ui/wire-forms`) once so a submission never
+  navigates, set the Form's `action` (a delegated `data-action`), handle it with
+  `delegateActions(root, 'submit', table)`, and read `new FormData(form)`.
 - **Put a color in a form with `ColorField`** (`@kerfjs/ui/color-field`): a
   swatch-and-hex trigger that opens a ColorPicker below it; call
   `wireColorFields(root, { onChange, pickers })` and re-render. Never use

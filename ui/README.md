@@ -279,6 +279,8 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `BackdropImage`                                              | `@kerfjs/ui/backdrop-image`             | `@kerfjs/ui/backdrop-image.css`          |
 | `ScrollEffect`                                               | `@kerfjs/ui/scroll-effect`              | `@kerfjs/ui/scroll-effect.css`           |
 | `Select`                                                     | `@kerfjs/ui/select`                     | `@kerfjs/ui/select.css`                  |
+| `Form`                                                       | `@kerfjs/ui/form`                       | `@kerfjs/ui/form.css`                    |
+| `wireForms`                                                  | `@kerfjs/ui/wire-forms`                 | —                                        |
 | `SegmentedControl`                                           | `@kerfjs/ui/segmented-control`          | `@kerfjs/ui/segmented-control.css`       |
 | `ChoiceChips`                                                | `@kerfjs/ui/choice-chips`               | `@kerfjs/ui/choice-chips.css`            |
 | `TextField`                                                  | `@kerfjs/ui/text-field`                 | `@kerfjs/ui/text-field.css`              |

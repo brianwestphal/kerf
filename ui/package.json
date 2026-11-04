@@ -364,6 +364,15 @@
       "browser": "./dist/browser/sunken-panel.js",
       "import": "./dist/sunken-panel.js"
     },
+    "./form": {
+      "types": "./dist/form.d.ts",
+      "browser": "./dist/browser/form.js",
+      "import": "./dist/form.js"
+    },
+    "./wire-forms": {
+      "types": "./dist/wire-forms.d.ts",
+      "import": "./dist/wire-forms.js"
+    },
     "./segmented-control": {
       "types": "./dist/segmented-control.d.ts",
       "browser": "./dist/browser/segmented-control.js",
@@ -669,6 +678,7 @@
     "./anchored-surface.css": "./dist/styles/anchored-surface.css",
     "./skeleton.css": "./dist/styles/skeleton.css",
     "./sunken-panel.css": "./dist/styles/sunken-panel.css",
+    "./form.css": "./dist/styles/form.css",
     "./segmented-control.css": "./dist/styles/segmented-control.css",
     "./choice-chips.css": "./dist/styles/choice-chips.css",
     "./color-swatches.css": "./dist/styles/color-swatches.css",

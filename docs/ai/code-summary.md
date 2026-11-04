@@ -1233,6 +1233,12 @@ or the struck-through `'transparent'` dot) or `icon`. The CSS paints checked
 and focus-visible state on the pill through `:has()`; the browser owns keyboard
 selection and the form value. Tests: `ui/tests/unit/choice-chips.test.tsx`,
 `ui/tests/browser/choice-chips.spec.ts`.
+`ui/src/components/forms/form/form.tsx` (`@kerfjs/ui/form`, KF-XX4Y95: an official Kerf UI form) renders
+a layout-neutral native `form` (`form.css` is only `display: contents`); its `action` is a delegated
+`data-action` handled on `submit`. `ui/src/components/forms/form/wiring/wire-forms.ts`
+(`@kerfjs/ui/wire-forms`) cancels a Form submission's page navigation in the capture phase; the editor
+installs it over its root and in play mode. Demo `ui/ux-demo/demos/form.tsx`; tests
+`ui/tests/unit/form.test.tsx` and `ui/tests/unit/editor/form.test.ts`.
 `ui/src/components/forms/message-composer/message-composer.tsx` (`@kerfjs/ui/message-composer`) renders
 the chat or prompt composer: a raised frame with a focus-within brand border, a
 borderless native textarea sized by `field-sizing: content` between

@@ -689,6 +689,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "form",
+    "name": "Form",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Group fields in a native form so the application reads them with FormData, a submit Button or Enter in a field submits them, and native constraint validation runs, without page navigation or a wrapper that changes the layout.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/form.tsx",
+    "componentSource": "ui/src/components/forms/form/form.tsx",
+    "documentation": "ui/docs/forms-and-validation.md"
+  },
+  {
     "id": "segmented-control",
     "name": "SegmentedControl",
     "category": "Controls",

@@ -7,6 +7,7 @@ import {
   CatalogExample,
   CatalogExampleStack,
 } from '../../src/catalog.js';
+import { Form } from '../../src/components/forms/form/form.js';
 import { CollapsiblePanelToggle } from '../../src/components/layout/collapsible-panel/collapsible-panel.js';
 import { SplitView } from '../../src/components/layout/split-view/split-view.js';
 import { Workbench } from '../../src/components/layout/workbench/workbench.js';
@@ -222,6 +223,7 @@ const cases: SlotCase[] = [
   { name: 'Skeleton', render: (slot) => Skeleton({ slot }) },
   { name: 'Skeleton lines', render: (slot) => Skeleton({ lines: 2, slot }) },
   { name: 'Spacer', render: (slot) => Spacer({ slot }) },
+  { name: 'Form', render: (slot) => Form({ children: content, slot }) },
   {
     name: 'SplitView split',
     render: (slot) =>

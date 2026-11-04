@@ -66,6 +66,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 
 ## Kerf UI — Controls
 
+- [Form](./form.md) — Group fields in a native form so the application reads them with FormData, a submit Button or Enter in a field submits them, and native constraint validation runs, without page navigation or a wrapper that changes the layout.
 - [SegmentedControl](./segmented-control.md) — Controlled exclusive choices in toolbar, rounded-rectangle, and pill presentations.
 - [ChoiceChips](./choice-chips.md) — Choose one value, or with multiple any number of values, from a visible set too large for a segmented track, such as a color palette with labeled swatches or a set of annotation intents.
 - [ColorSwatches](./color-swatches.md) — Let a person choose one color from a small fixed palette (a label, tag, or command color), or no color.

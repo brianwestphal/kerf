@@ -6518,6 +6518,67 @@ declare function Disclosure({ title, detail, children, open, name, appearance, t
 export { Disclosure, type DisclosureAppearance, type DisclosureProps, type DisclosureRootAttributes };
 ```
 
+## `@kerfjs/ui/form`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
+
+interface FormProps {
+    /** The form's id: a `Button` outside it names it with `form`, and the
+     * application reads its fields with `new FormData(form)`. */
+    id?: string;
+    /** Native form `name`, for `document.forms` lookups. */
+    name?: string;
+    /**
+     * Delegated `data-action` the application handles on `submit`, with
+     * `delegateActions(root, 'submit', table)`. It is not the native `action`
+     * URL: a Kerf UI Form never navigates (see `wireForms`).
+     */
+    action?: string;
+    /** Skip native constraint validation on submit, for a form whose
+     * application validates its fields and shows their errors itself. */
+    noValidate?: boolean;
+    /** The fields, field groups, and actions the form holds. */
+    children?: KerfUiContent;
+    className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+    /** Application `data-*` metadata on the root, such as a row key or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
+}
+/**
+ * A native form that groups fields so their values submit and read together.
+ * It adds no inset, chrome, or layout of its own: its children lay out as
+ * the parent's own. Submitting runs the application's `action` handler and,
+ * with `wireForms`, never navigates the page.
+ */
+declare function Form({ id, name, action, noValidate, children, className, slot, rootAttributes, }: FormProps): kerfjs.SafeHtml;
+
+export { Form, type FormProps };
+```
+
+## `@kerfjs/ui/wire-forms`
+
+```ts
+type Root = HTMLElement | Document;
+/**
+ * Keep every Kerf UI `Form` below root from navigating the page when it is
+ * submitted, whether by a submit `Button` or by Enter in a field (implicit
+ * submission). The `submit` event still reaches the application, which
+ * handles it with `delegateActions(root, 'submit', table)` keyed on the
+ * Form's `action`; native constraint validation still runs first unless the
+ * Form sets `noValidate`. It listens in the capture phase, so a handler that
+ * stops propagation cannot let a submission through. A native `<form>` that
+ * is not a Kerf UI Form is left alone. Dispose with the owning application.
+ */
+declare function wireForms(root: Root): () => void;
+
+export { wireForms };
+```
+
 ## `@kerfjs/ui/wire-choice-chips`
 
 ```ts

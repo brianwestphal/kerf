@@ -5,6 +5,7 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ChoiceChips, type ChoiceChipsChoice } from '@kerfjs/ui/choice-chips';
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { fillColor, px, rem } from '@kerfjs/ui/css-values';
+import { Form } from '@kerfjs/ui/form';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { DialogSurface } from '@kerfjs/ui/surface-scaffold';
 import { FieldLabel } from '@kerfjs/ui/text';
@@ -209,7 +210,7 @@ export function ChoiceChipsDemo() {
             </>
           }
         >
-          <form id="choice-chips-dialog-form">
+          <Form id="choice-chips-dialog-form">
             <FieldLabel id="choice-chips-dialog-label">Color</FieldLabel>
             <ChoiceChips
               id="choice-chips-dialog-color"
@@ -219,7 +220,7 @@ export function ChoiceChipsDemo() {
               action="choice-chips-demo"
               choices={colorChoices}
             />
-          </form>
+          </Form>
         </DialogSurface>
       </CatalogExample>
       <CatalogExample

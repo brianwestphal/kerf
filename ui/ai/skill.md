@@ -95,6 +95,17 @@ itself (an app-CSS `min-height` does not). Do not put a whole-screen layout in a
 `List` or `ContentItem`, and do not use `SizedRegion` to size ordinary
 components. See `../docs/app-layouts.md#sizing-a-nested-layout`.
 
+### Group submitted fields in a Form
+
+Wrap fields that are saved or sent together in `Form` from `@kerfjs/ui/form`,
+never a raw `<form>`. It adds no inset, chrome, or layout (`display: contents`);
+lay the fields out with a `List` or `Row` inside it. Call `wireForms(root)`
+from `@kerfjs/ui/wire-forms` once so a submit `Button` or Enter in a field never
+navigates the page, give the Form an `action` (a delegated `data-action`, not a
+URL), and handle it with `delegateActions(root, 'submit', table)`, reading the
+fields with `new FormData(form)`. Native validation runs first unless
+`noValidate` is set. See `../docs/forms-and-validation.md#form`.
+
 ### Clear chrome over imagery
 
 For a header or bar laid over imagery (an Apple-Music-style detail page), use

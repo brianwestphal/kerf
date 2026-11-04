@@ -18,6 +18,7 @@ import { EdgeActivityIndicator } from '../../src/edge-activity-indicator.js';
 import { EmptyState } from '../../src/empty-state.js';
 import { FileDropZone, FilePickerTrigger } from '../../src/file-picker.js';
 import { FloatingToolbar } from '../../src/floating-toolbar.js';
+import { Form } from '../../src/form.js';
 import { ListInsetControl } from '../../src/list-inset-control.js';
 import { LoadingSpinner } from '../../src/loading-spinner.js';
 import { LucideIcon } from '../../src/lucide-icon.js';
@@ -166,6 +167,7 @@ const cases: Case[] = [
         rootAttributes,
       }),
   ],
+  ['Form', () => Form({ children: content, rootAttributes })],
   ['Skeleton', () => Skeleton({ rootAttributes })],
   ['Spacer', () => Spacer({ rootAttributes })],
   [

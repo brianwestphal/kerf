@@ -4381,6 +4381,81 @@
       "dataChannel": "rootAttributes"
     },
     {
+      "key": "@kerfjs/ui:form",
+      "id": "form",
+      "source": "kerf",
+      "import": "@kerfjs/ui/form",
+      "export": "Form",
+      "description": "A native form that groups fields so their values submit and read together.\nIt adds no inset, chrome, or layout of its own: its children lay out as\nthe parent's own. Submitting runs the application's `action` handler and,\nwith `wireForms`, never navigates the page.",
+      "props": [
+        {
+          "name": "id",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "The form's id: a `Button` outside it names it with `form`, and the\napplication reads its fields with `new FormData(form)`."
+        },
+        {
+          "name": "name",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Native form `name`, for `document.forms` lookups."
+        },
+        {
+          "name": "action",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Delegated `data-action` the application handles on `submit`, with\n`delegateActions(root, 'submit', table)`. It is not the native `action`\nURL: a Kerf UI Form never navigates (see `wireForms`)."
+        },
+        {
+          "name": "noValidate",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Skip native constraint validation on submit, for a form whose\napplication validates its fields and shows their errors itself."
+        },
+        {
+          "name": "children",
+          "type": {
+            "kind": "content",
+            "text": "KerfUiContent",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The fields, field groups, and actions the form holds.",
+          "slot": true
+        },
+        {
+          "name": "className",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "control": "classes"
+        },
+        {
+          "name": "slot",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a row key or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
+        }
+      ],
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
+    },
+    {
       "key": "@kerfjs/ui:framed-list",
       "id": "framed-list",
       "source": "kerf",

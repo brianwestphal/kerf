@@ -64,6 +64,8 @@ const entries = [
   'skeleton',
   'sunken-panel',
   'select',
+  'form',
+  'wire-forms',
   'segmented-control',
   'choice-chips',
   'color-swatches',

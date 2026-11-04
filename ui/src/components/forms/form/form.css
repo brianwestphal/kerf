@@ -1,0 +1,6 @@
+/* A Form is layout-neutral: it groups fields for submission without adding a
+   box, so its children lay out as the parent's own flex, grid, or block
+   children. */
+.kui-form {
+  display: contents;
+}

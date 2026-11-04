@@ -127,6 +127,11 @@ Below the app root, wrap a `NavStack`, `SplitView`, `TabNavigator`, or
 height of their own, and `height="fill"` (the default) or `minHeight` gives them
 one. An app-CSS `min-height` does not.
 
+Group fields that submit together in `Form` (`@kerfjs/ui/form`), never a raw
+`<form>`: it adds no layout, and `wireForms(root)` (`@kerfjs/ui/wire-forms`)
+keeps a submission from navigating. Handle its `action` with
+`delegateActions(root, 'submit', table)` and read `new FormData(form)`.
+
 Use `Spacer` for one intentional empty dimension rather than repeated sibling
 rhythm. Fixed spacers do not shrink; `flex` consumes remaining space along a
 flex parent's main axis. The component is decorative and accepts no children.

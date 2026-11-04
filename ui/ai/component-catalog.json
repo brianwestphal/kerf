@@ -6181,6 +6181,96 @@
       }
     },
     {
+      "id": "form",
+      "name": "Form",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A layout-neutral native form that groups fields so their values submit and read together, with no inset, chrome, or layout of its own.",
+      "uses": [],
+      "purpose": "Group fields in a native form so the application reads them with FormData, a submit Button or Enter in a field submits them, and native constraint validation runs, without page navigation or a wrapper that changes the layout.",
+      "publicExports": [
+        "Form",
+        "wireForms"
+      ],
+      "useWhen": [
+        "Fields whose values are saved or sent together, such as a dialog's settings or a compose form, and an action reads them with new FormData(form).",
+        "A submit Button, or Enter in a field, should submit the fields; handle submit with delegateActions(root, 'submit', table) keyed on the Form's action.",
+        "A view built in the Kerf UI editor needs a form around its fields."
+      ],
+      "avoidWhen": [
+        "Do not write a raw form element in Kerf UI markup; render Form so submission never navigates and the editor can place it.",
+        "Do not use Form for spacing, insets, or a frame; it adds none. Lay the fields out with List, Row, or Grid inside it.",
+        "Do not rely on Form to post to a URL; it has no native action or method, and the application owns transport."
+      ],
+      "alternatives": [
+        {
+          "id": "list",
+          "relationship": "composes-with",
+          "when": "Use a List inside the Form for field rhythm; the Form adds no spacing of its own."
+        }
+      ],
+      "appOwns": [
+        "the submit action and its handler",
+        "validation and error messages",
+        "draft state and transport",
+        "the fields and their layout"
+      ],
+      "variants": [
+        "native constraint validation (default)",
+        "noValidate for application-owned validation",
+        "a submit Button inside it, or outside it through Button form"
+      ],
+      "accessibility": [
+        "Form renders a native form with no accessible name, so it is not a landmark; its fields keep their own labels, hints, and errors.",
+        "Enter in a single-line field submits the form natively; wireForms stops the page from navigating while the submit event still reaches the application."
+      ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none",
+        "notes": [
+          "display: contents: the Form generates no box, so its children lay out as the parent's own flex, grid, or block children. A parent rule that selects its direct children (>) does not reach through it."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/form",
+        "manualCssImport": "@kerfjs/ui/form.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wireForms",
+          "import": "@kerfjs/ui/wire-forms",
+          "required": true,
+          "reason": "Prevents the native submission's page navigation (from a submit Button or Enter in a field) for every Form below root; the submit event still reaches the application's handler.",
+          "stateAttributes": []
+        }
+      ],
+      "publicClasses": [
+        "kui-form"
+      ],
+      "publicTokens": [],
+      "rootElement": "form",
+      "links": {
+        "catalogRoute": "?component=form",
+        "documentation": "docs/forms-and-validation.md",
+        "recipe": "docs/forms-and-validation.md#form"
+      },
+      "publicExportImports": {
+        "wireForms": "@kerfjs/ui/wire-forms"
+      }
+    },
+    {
       "id": "segmented-control",
       "name": "SegmentedControl",
       "category": "Controls",

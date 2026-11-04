@@ -51,6 +51,7 @@ import {
   wireContentItems,
 } from '@kerfjs/ui/wire-content-items';
 import { wireFilePickers } from '@kerfjs/ui/wire-file-pickers';
+import { wireForms } from '@kerfjs/ui/wire-forms';
 import { wireListFocusScroll } from '@kerfjs/ui/wire-list-focus-scroll';
 import {
   reorderListItems,
@@ -2088,6 +2089,14 @@ const stopComboboxes = wireComboboxes(app, {
     actionLog.value = `${created ? 'Created' : 'Added'} tag ${tag}`;
   },
 });
+const stopForms = wireForms(app);
+const stopFormSubmits = delegateActions(app, 'submit', {
+  'form-demo': (_event, form) => {
+    const project = new FormData(form as HTMLFormElement).get('project');
+    const name = typeof project === 'string' ? project.trim() : '';
+    actionLog.value = name ? `Saved project: ${name}` : 'Add a project name';
+  },
+});
 const stopMessageComposers = wireMessageComposers(app);
 const stopTextFields = wireTextFields(app);
 const stopCheckboxes = wireCheckboxes(app);
@@ -2586,6 +2595,8 @@ window.addEventListener(
     stopAdoptionKeyboardEffect();
     stopFloatingToolbarReset();
     stopEdgeActivityReset();
+    stopForms();
+    stopFormSubmits();
     stopMessageComposers();
     stopFilePickers();
     stopTextFields();

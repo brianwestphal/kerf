@@ -579,6 +579,7 @@ describe('UX catalog metadata', () => {
       'Disclosure',
       'TabBarItem',
       'TabBar',
+      'Form',
       'SegmentedControl',
       'ChoiceChips',
       'ColorSwatches',

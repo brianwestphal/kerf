@@ -28,6 +28,7 @@ import { EmptyStateDemo } from './empty-state.js';
 import { FeedbackDemo } from './feedback.js';
 import { FilePickerDemo } from './file-picker.js';
 import { FloatingToolbarDemo } from './floating-toolbar.js';
+import { FormDemo } from './form.js';
 import { FoundationDemo } from './foundation.js';
 import { FramedListDemo } from './framed-list.js';
 import { GridDemo } from './grid.js';
@@ -95,6 +96,7 @@ export const demos = {
   toolbar: ToolbarDemo,
   'toolbar-control-group': ToolbarControlGroupDemo,
   'floating-toolbar': FloatingToolbarDemo,
+  form: FormDemo,
   'segmented-control': SegmentedControlDemo,
   'choice-chips': ChoiceChipsDemo,
   'color-field': ColorFieldDemo,

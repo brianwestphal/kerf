@@ -795,6 +795,12 @@ parallax or a scale above 1. The shared scroll-effect layer behind it (also
 under `BackdropImage`) owns the static fallbacks; its markers are package
 internals. See [ScrollEffect](scroll-effect.md).
 
+`Form` renders a native `form` that generates no box (`display: contents`),
+so its children lay out as the parent's own. Its `action` is a delegated
+`data-action` handled on `submit`; `wireForms` cancels the native submission's
+navigation for every Form below its root. See
+[Forms and validation](forms-and-validation.md#form).
+
 `SizedRegion` gives content that cannot size itself, a whole-screen layout
 below the app root, a definite height: `height="fill"` by default, or a typed
 `height` and `minHeight`/`maxHeight`. It is a one-cell grid so its child's

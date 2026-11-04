@@ -78,6 +78,7 @@ import { StateBanner } from '../components/feedback/state-banner/state-banner.js
 import { CheckboxGroup } from '../components/forms/checkbox-group/checkbox-group.js';
 import { FilePickerTrigger } from '../components/forms/file-picker/file-picker.js';
 import { wireFilePickers } from '../components/forms/file-picker/wiring/wire-file-pickers.js';
+import { wireForms } from '../components/forms/form/wiring/wire-forms.js';
 import {
   readSearchField,
   SearchField,
@@ -5438,6 +5439,9 @@ export function createEditor(options: EditorOptions) {
       // KF-67K2VP: a rail's pinned tab strip shows its divider once its
       // area scrolls under it.
       wireScrollDividers(root),
+      // KF-XX4Y95: a Form on the canvas (or in play) never navigates the
+      // editor away when Enter in a field submits it.
+      wireForms(root),
       wireCanvasDrag(root, {
         sourceOf: (element) => {
           const address = element.dataset.editorSlotAddress;
