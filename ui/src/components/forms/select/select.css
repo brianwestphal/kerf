@@ -405,6 +405,26 @@
   inset-inline: 0;
   width: auto;
 }
+/* With a hint, the listbox still hangs from the control, as the real one
+   does, not from the root's bottom edge below the hint: the root lays its
+   parts out on a one-column grid, and the listbox takes the control's grid
+   area as its containing block. (CSS anchor positioning would say this
+   too, but WebKit then paints a scroller holding it at the wrong offset.) */
+.kui-select[data-embedded]:has(> .kui-select__hint) {
+  display: grid;
+  grid-template-areas: "label" "trigger" "hint";
+  grid-template-columns: minmax(0, 1fr);
+}
+.kui-select[data-embedded]:has(> .kui-select__hint) > .kui-select__label {
+  grid-area: label;
+}
+.kui-select[data-embedded]:has(> .kui-select__hint) > .kui-select__trigger,
+.kui-select[data-embedded]:has(> .kui-select__hint) > .kui-select__popup {
+  grid-area: trigger;
+}
+.kui-select[data-embedded]:has(> .kui-select__hint) > .kui-select__hint {
+  grid-area: hint;
+}
 .kui-select[data-embedded] .kui-select__caret {
   rotate: var(--_kui-popup-caret-open-rotation);
 }

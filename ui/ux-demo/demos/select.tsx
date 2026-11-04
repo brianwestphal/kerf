@@ -591,13 +591,14 @@ export function SelectDemo() {
       </CatalogExample>
       <CatalogExample
         label="Embedded Preview"
-        note="embedded shows the listbox open below the control, in the document instead of the top layer, and inert: a static preview, as the Kerf UI editor's edit canvas shows a selected Select."
+        note="embedded shows the listbox open below the control (above any hint), in the document instead of the top layer, and inert: a static preview, as the Kerf UI editor's edit canvas shows a selected Select."
         align="inline-control"
       >
         <Select
           name="select-embedded"
           value="comfortable"
           label="Density"
+          hint="Applies to every list."
           choices={[
             { value: 'compact', label: 'Compact' },
             { value: 'comfortable', label: 'Comfortable' },

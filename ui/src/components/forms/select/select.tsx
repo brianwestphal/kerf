@@ -117,10 +117,12 @@ interface SelectBaseProps<Value extends string = string> {
   /** Maximum closed-control label width in CSS pixels before ellipsis. */
   labelMaxWidth?: number;
   /**
-   * Show the listbox open below the trigger, in the document instead of the
-   * top layer, as a static preview (the Kerf UI editor's edit canvas, a
-   * specification sheet). An embedded Select is inert: the register leaves
-   * it alone, so its trigger opens nothing and its choices choose nothing.
+   * Show the listbox open right below the trigger (over any `hint`), in the
+   * document instead of the top layer, as a static preview (the Kerf UI
+   * editor's edit canvas, a specification sheet). An embedded Select is
+   * inert: the register leaves it alone, so its trigger opens nothing, its
+   * choices choose nothing, and its choices take no focus, so a click on one
+   * leaves no current-row fill.
    * Defaults to false.
    */
   embedded?: boolean;
@@ -359,7 +361,9 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
         <div
           class="kui-select__option"
           role="option"
-          tabindex={-1}
+          // An embedded option takes no focus, so a click on it never
+          // paints the current-row fill.
+          tabindex={embedded ? undefined : -1}
           data-value={choice.value}
           data-default-selected={chosen ? '' : undefined}
           aria-selected={String(chosen)}
@@ -450,7 +454,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
         class="kui-select__popup"
         // An embedded listbox shows in the document, below the control.
         popover={embedded ? undefined : 'manual'}
-        tabindex={-1}
+        tabindex={embedded ? undefined : -1}
       >
         <div
           class="kui-select__listbox"

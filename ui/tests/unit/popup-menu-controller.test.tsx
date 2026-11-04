@@ -937,6 +937,19 @@ describe('PopupMenu register: an embedded menu', () => {
     // Its submenus stay closed popovers; its items carry no data-action.
     expect(submenu?.getAttribute('popover')).toBe('manual');
     expect(root.querySelector('[data-action]')).toBeNull();
+    // KF-HVJDWF: nothing inside the preview takes focus, so a click on a
+    // row never paints the current-row fill: rows are static, not buttons.
+    expect(root.querySelector('.kui-popup-menu__menu button')).toBeNull();
+    expect(menu.hasAttribute('tabindex')).toBe(false);
+    for (const row of root.querySelectorAll<HTMLElement>(
+      '.kui-popup-menu__item',
+    )) {
+      expect(row.localName).toBe('div');
+      expect(row.hasAttribute('tabindex')).toBe(false);
+      expect(row.hasAttribute('value')).toBe(false);
+    }
+    expect(item('Pinned').getAttribute('role')).toBe('menuitemcheckbox');
+    expect(item('Share').getAttribute('aria-haspopup')).toBe('menu');
     const chosen = vi.fn();
     root.addEventListener(POPUP_MENU_SELECT_EVENT, chosen);
     click(trigger);

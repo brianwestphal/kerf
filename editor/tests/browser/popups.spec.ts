@@ -88,6 +88,7 @@ const document = {
           props: {
             name: 'priority',
             label: 'Priority',
+            hint: 'Sets the order of the queue.',
             value: 'normal',
             choices: [
               { value: 'low', label: 'Low' },
@@ -127,6 +128,12 @@ const capture = async (page: Page, path: string) => {
   await page.waitForTimeout(250);
   await page.screenshot({ path, animations: 'disabled' });
 };
+
+/** Whether focus lies outside `locator`. */
+const unfocused = (locator: Locator) =>
+  locator.evaluate(
+    (element) => !element.contains(globalThis.document.activeElement),
+  );
 
 /** Whether the element at the center of `locator` is inside it (on top). */
 const onTop = (locator: Locator) =>
@@ -179,8 +186,17 @@ test("the canvas shows the selected popup's rows at its trigger", async ({
   // A row click selects the menu; it runs nothing and opens no popup.
   await rows.getByText('Print').click();
   await expect(rows).toBeVisible();
+  // KF-HVJDWF: the clicked row takes no focus, so it paints no current-row
+  // fill, and the menu stays selected (only the selected one is embedded).
+  await expect(menu).toHaveAttribute('data-embedded', '');
+  expect(await unfocused(rows)).toBe(true);
+  await page.mouse.move(1, 1);
+  await expect(rows.locator('.kui-popup-menu__item').nth(1)).toHaveCSS(
+    'background-color',
+    'rgba(0, 0, 0, 0)',
+  );
   await expect(page.locator(':popover-open')).toHaveCount(0);
-  await capture(page, info.outputPath('kf-kn9cpe-menu-1440.png'));
+  await capture(page, info.outputPath('kf-hvjdwf-menu-1440.png'));
 
   // Selecting the Select closes the menu and shows the Select's listbox.
   await select.locator('.kui-select__trigger').click();
@@ -195,7 +211,21 @@ test("the canvas shows the selected popup's rows at its trigger", async ({
   // A choice click selects the Select and leaves its value alone.
   await listbox.getByText('High').click();
   await expect(select.locator('.kui-select__value')).toHaveText('Normal');
+  // KF-HVJDWF: the clicked choice takes no focus or current-row fill, and
+  // the Select stays selected.
+  await expect(select).toHaveAttribute('data-embedded', '');
+  expect(await unfocused(listbox)).toBe(true);
+  await page.mouse.move(1, 1);
+  await expect(listbox.locator('.kui-select__option').nth(2)).toHaveCSS(
+    'background-color',
+    'rgba(0, 0, 0, 0)',
+  );
   await expect(page.locator(':popover-open')).toHaveCount(0);
+  // Right below the control, over its hint (KF-HVJDWF), as the real
+  // listbox opens.
+  await expect(select.locator('.kui-select__hint')).toHaveText(
+    'Sets the order of the queue.',
+  );
   const [field, box] = await Promise.all([
     select.locator('.kui-select__trigger').boundingBox(),
     listbox.boundingBox(),
@@ -204,7 +234,7 @@ test("the canvas shows the selected popup's rows at its trigger", async ({
   expect(Math.abs(box!.x - field!.x)).toBeLessThan(2);
   // Over the text below it.
   await expect.poll(() => onTop(listbox.getByText('High'))).toBe(true);
-  await capture(page, info.outputPath('kf-kn9cpe-select-1440.png'));
+  await capture(page, info.outputPath('kf-hvjdwf-select-1440.png'));
 
   // Selecting another node closes it again.
   await canvasNode(page, ids.text).click();
@@ -229,14 +259,14 @@ test('the narrow canvas shows the selected popups too', async ({
         globalThis.innerWidth,
     );
   expect(await fits()).toBe(true);
-  await capture(page, info.outputPath('kf-kn9cpe-menu-390.png'));
+  await capture(page, info.outputPath('kf-hvjdwf-menu-390.png'));
   const select = canvasNode(page, ids.select);
   await select.locator('.kui-select__trigger').click();
   const listbox = select.locator('.kui-select__popup');
   await expect(listbox).toBeVisible();
   await expect.poll(() => onTop(listbox.getByText('High'))).toBe(true);
   expect(await fits()).toBe(true);
-  await capture(page, info.outputPath('kf-kn9cpe-select-390.png'));
+  await capture(page, info.outputPath('kf-hvjdwf-select-390.png'));
 });
 
 test('play mode opens the real popups', async ({ page }) => {

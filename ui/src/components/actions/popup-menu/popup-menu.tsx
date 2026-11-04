@@ -167,7 +167,8 @@ export type PopupMenuProps = PopupMenuTrigger & {
    * instead of the top layer, as a static preview (the Kerf UI editor's edit canvas, a
    * specification sheet). An embedded menu is inert: the register leaves it
    * alone, so its trigger opens nothing and its items choose nothing, and
-   * items render without their `data-action`. Defaults to false.
+   * items render as static rows without their `data-action` that take no
+   * focus, so a click on one leaves no current-row fill. Defaults to false.
    */
   embedded?: boolean;
   /** Application `data-*` metadata on the menu root. */
@@ -196,22 +197,8 @@ function renderItem(
   // A plain command beside checkbox choices keeps their check column, so its
   // icon and label line up with theirs.
   const choice = entry.checked !== undefined;
-  const item = (
-    <button
-      {...(entry.attributes ?? {})}
-      type="button"
-      class="kui-popup-menu__item"
-      role={choice ? 'menuitemcheckbox' : 'menuitem'}
-      tabindex={-1}
-      data-action={embedded ? undefined : entry.action}
-      value={entry.value}
-      data-tone={entry.tone === 'danger' ? 'danger' : undefined}
-      aria-checked={choice ? String(entry.checked) : undefined}
-      aria-disabled={entry.disabled ? 'true' : undefined}
-      aria-haspopup={entry.submenu ? 'menu' : undefined}
-      aria-expanded={entry.submenu ? 'false' : undefined}
-      title={entry.disabled ? entry.disabledReason : undefined}
-    >
+  const content = (
+    <>
       {levelHasChoice ? (
         <span class="kui-popup-menu__check" aria-hidden="true">
           {choice ? <LucideIcon icon={Check} name="check" /> : null}
@@ -231,6 +218,49 @@ function renderItem(
           <PopupSubmenuGlyph />
         </span>
       ) : null}
+    </>
+  );
+  const role = choice ? 'menuitemcheckbox' : 'menuitem';
+  const ariaChecked = choice ? String(entry.checked) : undefined;
+  const ariaDisabled = entry.disabled ? 'true' : undefined;
+  const ariaHaspopup = entry.submenu ? 'menu' : undefined;
+  const ariaExpanded = entry.submenu ? 'false' : undefined;
+  const tone = entry.tone === 'danger' ? 'danger' : undefined;
+  const title = entry.disabled ? entry.disabledReason : undefined;
+  // An embedded item is a static row, not a button: a click on it focuses
+  // nothing, so it never paints the current-row fill, and the click reaches
+  // whatever owns the preview (the editor canvas selects the menu).
+  const item = embedded ? (
+    <div
+      {...(entry.attributes ?? {})}
+      class="kui-popup-menu__item"
+      role={role}
+      data-tone={tone}
+      aria-checked={ariaChecked}
+      aria-disabled={ariaDisabled}
+      aria-haspopup={ariaHaspopup}
+      aria-expanded={ariaExpanded}
+      title={title}
+    >
+      {content}
+    </div>
+  ) : (
+    <button
+      {...(entry.attributes ?? {})}
+      type="button"
+      class="kui-popup-menu__item"
+      role={role}
+      tabindex={-1}
+      data-action={entry.action}
+      value={entry.value}
+      data-tone={tone}
+      aria-checked={ariaChecked}
+      aria-disabled={ariaDisabled}
+      aria-haspopup={ariaHaspopup}
+      aria-expanded={ariaExpanded}
+      title={title}
+    >
+      {content}
     </button>
   );
   if (!entry.submenu) return item;
@@ -303,7 +333,8 @@ function renderMenu(
       // An embedded menu shows in the document; its submenus stay closed
       // popovers.
       popover={embedded && !submenu ? undefined : 'manual'}
-      tabindex={-1}
+      // An embedded menu takes no focus, as its rows take none.
+      tabindex={embedded ? undefined : -1}
       aria-label={name}
       aria-description={note}
       data-submenu={submenu ? '' : undefined}

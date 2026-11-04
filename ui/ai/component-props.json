@@ -9142,7 +9142,7 @@
           },
           "required": false,
           "default": false,
-          "description": "Show the menu open at its trigger (at its `placement`), in the document\ninstead of the top layer, as a static preview (the Kerf UI editor's edit canvas, a\nspecification sheet). An embedded menu is inert: the register leaves it\nalone, so its trigger opens nothing and its items choose nothing, and\nitems render without their `data-action`. Defaults to false."
+          "description": "Show the menu open at its trigger (at its `placement`), in the document\ninstead of the top layer, as a static preview (the Kerf UI editor's edit canvas, a\nspecification sheet). An embedded menu is inert: the register leaves it\nalone, so its trigger opens nothing and its items choose nothing, and\nitems render as static rows without their `data-action` that take no\nfocus, so a click on one leaves no current-row fill. Defaults to false."
         },
         {
           "name": "rootAttributes",
@@ -10852,7 +10852,7 @@
           },
           "required": false,
           "default": false,
-          "description": "Show the listbox open below the trigger, in the document instead of the\ntop layer, as a static preview (the Kerf UI editor's edit canvas, a\nspecification sheet). An embedded Select is inert: the register leaves\nit alone, so its trigger opens nothing and its choices choose nothing.\nDefaults to false."
+          "description": "Show the listbox open right below the trigger (over any `hint`), in the\ndocument instead of the top layer, as a static preview (the Kerf UI\neditor's edit canvas, a specification sheet). An embedded Select is\ninert: the register leaves it alone, so its trigger opens nothing, its\nchoices choose nothing, and its choices take no focus, so a click on one\nleaves no current-row fill.\nDefaults to false."
         },
         {
           "name": "slot",

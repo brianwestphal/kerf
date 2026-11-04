@@ -1,4 +1,4 @@
-// KF-KN9CPE: an embedded PopupMenu or Select shows its popup open at its
+// KF-KN9CPE / KF-HVJDWF: an embedded PopupMenu or Select shows its popup open at its
 // trigger, in the document instead of the top layer, and inert; the Kerf UI
 // editor's edit canvas shows a selected one this way.
 import { expect, type Locator, type Page, test } from '@playwright/test';
@@ -8,6 +8,28 @@ const example = (page: Page, demo: string) =>
     has: page.locator('[data-catalog-example-label]', {
       hasText: 'Embedded Preview',
     }),
+  });
+
+/**
+ * Scrolls the catalog stage until the popup's bottom shows, for the
+ * capture: scrollIntoViewIfNeeded counts a partly shown popup as shown.
+ */
+const reveal = (popup: Locator) =>
+  popup.evaluate((element) => {
+    let scroller = element.parentElement;
+    while (
+      scroller &&
+      !(
+        scroller.scrollHeight > scroller.clientHeight &&
+        globalThis.getComputedStyle(scroller).overflowY !== 'visible'
+      )
+    )
+      scroller = scroller.parentElement;
+    if (!scroller) return;
+    const below =
+      element.getBoundingClientRect().bottom -
+      scroller.getBoundingClientRect().bottom;
+    if (below > 0) scroller.scrollTop += below + 8;
   });
 
 const box = async (locator: Locator) => (await locator.boundingBox())!;
@@ -46,6 +68,18 @@ for (const width of [1280, 390]) {
     );
     await trigger.click();
     await rows.getByText('By Size').click();
+    // KF-HVJDWF: a clicked row takes no focus, so it paints no current-row
+    // fill.
+    expect(
+      await rows.evaluate((element) =>
+        element.contains(document.activeElement),
+      ),
+    ).toBe(false);
+    await page.mouse.move(1, 1);
+    await expect(rows.getByRole('menuitemcheckbox').nth(1)).toHaveCSS(
+      'background-color',
+      'rgba(0, 0, 0, 0)',
+    );
     expect(
       await page.evaluate(
         () => (globalThis as { chosen?: number }).chosen ?? 0,
@@ -57,10 +91,10 @@ for (const width of [1280, 390]) {
       'false',
     );
     await expect(page.locator(':popover-open')).toHaveCount(0);
-    await rows.scrollIntoViewIfNeeded();
+    await reveal(rows);
     await page.mouse.move(1, 1);
     await page.screenshot({
-      path: info.outputPath(`kf-kn9cpe-demo-menu-${width}.png`),
+      path: info.outputPath(`kf-hvjdwf-demo-menu-${width}.png`),
       animations: 'disabled',
     });
 
@@ -74,11 +108,25 @@ for (const width of [1280, 390]) {
       'Spacious',
     ]);
     const field = select.locator('.kui-select__trigger');
+    // KF-HVJDWF: the listbox hangs from the control, over the hint below it.
+    await expect(select.locator('.kui-select__hint')).toHaveText(
+      'Applies to every list.',
+    );
     const [f, l] = [await box(field), await box(listbox)];
     expect(Math.abs(l.y - (f.y + f.height))).toBeLessThan(2);
     expect(Math.abs(l.x - f.x)).toBeLessThan(2);
     await field.click();
     await select.getByRole('option', { name: 'Spacious' }).click();
+    expect(
+      await listbox.evaluate((element) =>
+        element.contains(document.activeElement),
+      ),
+    ).toBe(false);
+    await page.mouse.move(1, 1);
+    await expect(select.getByRole('option', { name: 'Spacious' })).toHaveCSS(
+      'background-color',
+      'rgba(0, 0, 0, 0)',
+    );
     await expect(select.locator('.kui-select__value')).toHaveText(
       'Comfortable',
     );
@@ -86,10 +134,10 @@ for (const width of [1280, 390]) {
       await select.evaluate((element) => element.hasAttribute('open')),
     ).toBe(false);
     await expect(page.locator(':popover-open')).toHaveCount(0);
-    await listbox.scrollIntoViewIfNeeded();
+    await reveal(listbox);
     await page.mouse.move(1, 1);
     await page.screenshot({
-      path: info.outputPath(`kf-kn9cpe-demo-select-${width}.png`),
+      path: info.outputPath(`kf-hvjdwf-demo-select-${width}.png`),
       animations: 'disabled',
     });
   });

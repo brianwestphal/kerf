@@ -364,7 +364,9 @@ open menu on every toolbar trigger would cover the canvas below every
 toolbar, and selecting another node closes it. An embedded popup is the
 component's own inert presentation (its trigger opens nothing and its rows
 choose nothing), so a click on one of its rows selects the PopupMenu or
-Select. AnchoredSurface, tooltips, and toasts are imperative
+Select; the rows take no focus, so the clicked one shows no current-row
+fill, and a Select's listbox hangs right below its control, over its hint,
+as the real one does (KF-HVJDWF: embedded popup polish). AnchoredSurface, tooltips, and toasts are imperative
 `kerfjs/overlay` calls, not view-document nodes. The document keeps
 the authored presentation and props, which the Inspector shows and the export writes,
 and play mode opens the dialog modally (§11.4) and each popup from its
