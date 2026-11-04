@@ -561,6 +561,46 @@ test.describe('row-selector', () => {
     await expect(renders).toHaveText('2');
     await expect(name).toHaveText('Select a host');
   });
+
+  // KF-26Y5SM: at phone width the detail pane stacks above a full-width list.
+  test('stacks the detail above an unclipped list at phone width', async ({
+    page,
+  }) => {
+    for (const width of [390, 1100, 390]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto(`${BASE}/row-selector/`);
+      await expect(page.locator('[data-select]').first()).toBeVisible();
+      const layout = await page.evaluate(() => {
+        const list = document
+          .querySelector('.rs-main')!
+          .getBoundingClientRect();
+        const detail = document
+          .querySelector('.rs-detail')!
+          .getBoundingClientRect();
+        const names = [...document.querySelectorAll<HTMLElement>('.rs-name')];
+        return {
+          overflow: document.documentElement.scrollWidth - window.innerWidth,
+          listWidth: list.width,
+          detailAbove: detail.bottom <= list.top,
+          detailBeside: detail.left >= list.right,
+          clippedNames: names.filter((n) => n.scrollWidth > n.clientWidth + 1)
+            .length,
+          cpuVisible:
+            document.querySelector('.rs-cpu')!.getBoundingClientRect().right <=
+            list.right,
+        };
+      });
+      expect(layout.overflow).toBeLessThanOrEqual(0);
+      expect(layout.clippedNames).toBe(0);
+      expect(layout.cpuVisible).toBe(true);
+      if (width <= 600) {
+        expect(layout.detailAbove).toBe(true);
+        expect(layout.listWidth).toBeGreaterThan(width - 80);
+      } else {
+        expect(layout.detailBeside).toBe(true);
+      }
+    }
+  });
 });
 
 test.describe('live-poll', () => {

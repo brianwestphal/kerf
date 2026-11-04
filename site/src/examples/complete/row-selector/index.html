@@ -27,9 +27,19 @@
       }
       .rs {
         display: grid;
-        grid-template-columns: 1fr 260px;
+        grid-template-columns: minmax(0, 1fr) 260px;
         gap: 1rem;
         align-items: start;
+      }
+      /* Phone width: the detail pane stacks above the list, which keeps its
+         full width for the name, region, and CPU columns. */
+      @media (max-width: 600px) {
+        .rs {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .rs-detail {
+          order: -1;
+        }
       }
       .rs-main {
         background: #fff;
@@ -39,6 +49,7 @@
       }
       .rs-listhead {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         gap: 0.75rem;
         padding: 0.6rem 0.9rem;
