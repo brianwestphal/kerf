@@ -12,16 +12,25 @@
  *   - Create:   first render, no granular wins available — same speed as before.
  *
  * Selection is tracked as a single `selectedId` signal (the upstream-preferred
- * shape — one id for the whole table, not a per-row flag). KF-294 spike: the
- * row's `class` is a FINE-GRAINED BINDING — `computed(() => id === selectedId.value ...)`
- * handed straight to the attribute. A selection flip re-runs NEITHER the mount
- * render NOR the list reconciler; only the ~2 bound effects whose value changed
- * fire, writing `class` directly on their two `<tr>` nodes. (Contrast the
- * cacheKey approach on `main`, which re-renders + reconciles the 2 changed rows.)
+ * shape — one id for the whole table, not a per-row flag). The row's `class`
+ * is a FINE-GRAINED BINDING handed straight to the attribute, read through
+ * `selector(selectedId)`: the selector subscribes to `selectedId` once and a
+ * flip writes only the previous and next rows' key signals. So a selection
+ * re-runs NEITHER the mount render NOR the list reconciler, and NOT every
+ * row's computed either; only the 2 changed rows' bound effects fire, writing
+ * `class` directly on their `<tr>` nodes.
  */
 
 import { arraySignal } from 'kerfjs/array-signal';
-import { batch, computed, delegate, each, mount, signal } from 'kerfjs';
+import {
+  batch,
+  computed,
+  delegate,
+  each,
+  mount,
+  selector,
+  signal,
+} from 'kerfjs';
 
 interface Row {
   id: number;
@@ -103,6 +112,7 @@ function buildData(count: number): Row[] {
 
 const rows = arraySignal<Row>([]);
 const selectedId = signal(-1);
+const isSelected = selector(selectedId);
 
 const root = document.getElementById('main')!;
 
@@ -181,7 +191,7 @@ mount(root, () => (
             <tr
               data-key={row.id}
               className={computed(() =>
-                row.id === selectedId.value ? 'danger' : '',
+                isSelected(row.id).value ? 'danger' : '',
               )}
             >
               <td className="col-md-1">{String(row.id)}</td>

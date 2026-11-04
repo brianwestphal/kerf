@@ -7,10 +7,20 @@
  * render function does NOT re-run (the counter stays put) and the keyed list is
  * NOT reconciled. `selectedId` is deliberately never read in the render body —
  * it only reaches the bound holes, so the coarse mount() effect never
- * subscribes to it.
+ * subscribes to it. The rows read the selection through `selector(selectedId)`,
+ * which subscribes to `selectedId` once and flips only the previous and next
+ * rows, so a click re-evaluates two rows' computeds rather than all of them.
  */
 
-import { attr, computed, delegate, mount, signal, type AttrSpec } from 'kerfjs';
+import {
+  attr,
+  computed,
+  delegate,
+  mount,
+  selector,
+  signal,
+  type AttrSpec,
+} from 'kerfjs';
 
 const ACTIONS = {
   rerender: attr('data-action', 'rerender'),
@@ -31,6 +41,7 @@ const ROWS: Row[] = [
 
 export function mountFineGrainedBinding(root: HTMLElement): void {
   const selectedId = signal<string | null>(null);
+  const isSelected = selector(selectedId);
   // Created once, bound to a text hole — updates fine-grained on selection.
   const selectedLabel = computed(
     () => ROWS.find((r) => r.id === selectedId.value)?.label ?? '(none)',
@@ -55,7 +66,7 @@ export function mountFineGrainedBinding(root: HTMLElement): void {
             <li
               {...SELECT(row.id)}
               className={computed(() =>
-                row.id === selectedId.value
+                isSelected(row.id).value
                   ? 'demo-keyed-row demo-select-row demo-select-row-on'
                   : 'demo-keyed-row demo-select-row',
               )}
