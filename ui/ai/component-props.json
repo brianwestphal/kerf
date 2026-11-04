@@ -14516,6 +14516,12 @@
           "required": true
         },
         {
+          "name": "id",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "The label's id: what a group's `labelledBy` (a ChoiceChips or a preview\ngroup's `aria-labelledby`) names, so the label is that group's name."
+        },
+        {
           "name": "class",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
@@ -14532,7 +14538,6 @@
         "tabIndex",
         "hidden",
         "slot",
-        "id",
         "title",
         "role",
         "lang",

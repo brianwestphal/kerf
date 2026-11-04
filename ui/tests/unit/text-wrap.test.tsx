@@ -25,6 +25,16 @@ describe('FieldLabel', () => {
     expect(html).toContain('>Needed By</div>');
     expect(html).not.toContain('<label');
   });
+  // KF-Q70Q9Y: id is a declared prop, so the editor can author the id a
+  // group's labelledBy names.
+  it('declares id in the props catalog the editor reads', async () => {
+    const { components } = (await import('../../ai/component-props.json'))
+      .default as { components: { key: string; props: { name: string }[] }[] };
+    const label = components.find(
+      (item) => item.key === '@kerfjs/ui:text#FieldLabel',
+    )!;
+    expect(label.props.map((prop) => prop.name)).toContain('id');
+  });
 });
 
 describe('Text wrapping', () => {

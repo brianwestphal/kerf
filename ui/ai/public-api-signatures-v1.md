@@ -5694,13 +5694,18 @@ import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { S as Sides } from './sides-BPSWde0A.js';
 import { CssForegroundColor } from './css-values.js';
 
-type FieldLabelProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
+type FieldLabelProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className' | 'id'> & {
     children: string;
+    /**
+     * The label's id: what a group's `labelledBy` (a ChoiceChips or a preview
+     * group's `aria-labelledby`) names, so the label is that group's name.
+     */
+    id?: string;
     class?: string;
     className?: string;
 };
 /** Visible field heading for a read-only preview; use its id with aria-labelledby on the preview group. */
-declare function FieldLabel({ children, class: classValue, className, ...attributes }: FieldLabelProps): kerfjs.SafeHtml;
+declare function FieldLabel({ children, id, class: classValue, className, ...attributes }: FieldLabelProps): kerfjs.SafeHtml;
 
 type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
 type TextTone = 'default' | 'quiet' | 'danger';

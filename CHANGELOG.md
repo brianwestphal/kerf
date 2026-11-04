@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Kerf UI `FieldLabel` declares `id` (KF-Q70Q9Y).** `id` was only a pass-through native attribute, so the editor could not author the id a group's `labelledBy` names. It is now a declared prop in the props catalog.
 - **Editor: an object's required switches write `false` (KF-VQTDYG).** Filling in an object prop in the Inspector (a DialogSurface `stack`) now writes `false` for each required boolean whose switch shows off, so the document is valid without turning each switch on and off.
 - **View validation places a ListDetailDialog's toolbar controls in their Toolbar (KF-WBH5P2).** A composition entry's `configTypes` can name one field of a config type (`ListDetailDialogList.toolbar`, `ListDetailDialogDetail.actions`), so a ToolbarControlGroup in a ListDetailDialog's list toolbar or detail actions no longer fails `KUI-L201`, while the column's `content` and `footer` keep their own placement rules.
 - **Kerf UI `Pane` `anchorName` (KF-TBCXTR).** A Pane names its root as a CSS anchor (`anchor-name`) from a dashed ident, so an app names its main column for an anchored `PopoverDialogSurface` without CSS. `PaneConfig` forwards it through Workbench panes, panel panes, CollapsiblePanel, and NavStack views. A value that is not a dashed ident throws.
