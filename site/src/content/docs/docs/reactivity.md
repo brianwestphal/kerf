@@ -235,7 +235,7 @@ mount(root, () => (
 
 ### Use `computed()`, not a bare closure
 
-Wrap the expression in `computed(() => …)` (or pass a plain `signal`). The memoization matters: when a _shared_ signal like `selectedId` changes, every row's `computed` re-evaluates cheaply, but only the ones whose value actually changed re-run their bound effect — so a selection flip touches ~2 DOM nodes, not N. (kerf has no compiler, so it can't auto-lift a bare `{expr}` into a tracked closure the way Solid does — the signal/`computed` must be explicit.)
+Wrap the expression in `computed(() => …)` (or pass a plain `signal`). The memoization matters: when a _shared_ signal like `selectedId` changes, every row's `computed` re-evaluates cheaply, but only the ones whose value actually changed re-run their bound effect — so a selection flip touches ~2 DOM nodes, not N. (kerf has no compiler, so it can't auto-lift a bare `{expr}` into a tracked closure the way Solid does — the signal/`computed` must be explicit.) For a large list, read the selection through `selector()` ([`selector(source)`](#selectorsource--keyed-equality-at-o1) below) so a change re-evaluates two rows instead of all N.
 
 ### How it works (and why it's safe)
 
