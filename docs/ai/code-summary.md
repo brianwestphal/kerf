@@ -752,7 +752,8 @@ validator for the Kerf UI editor, `docs/26-ui-editor.md`). `validate.mjs`
 non-blocking hint `validateView` returns in its `hints` list (KF-KQ72TW: a
 nested whole-screen layout nothing gives a height). A composition entry's
 `configTypes` (KF-THTR71) names prop-value types another component renders as
-it; `createViewCatalog` indexes them as `configParents`, and a field zone inside
+it, or one field of such a type (`ListDetailDialogList.toolbar`, KF-WBH5P2);
+`createViewCatalog` indexes them as `configParents`, and a field zone inside
 one (a NavStack view's toolbar) takes that component as its parent. `KUI-V014` (KF-0P9WWB: a
 control or link inside a component whose root is one) reads each composition
 entry's `content` rules (`interactive` / per-export `exports`, each

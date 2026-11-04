@@ -1650,4 +1650,41 @@ describe('content fields inside a value another component renders', () => {
       ui('toolbar'),
     );
   });
+  // KF-WBH5P2: a ListDetailDialog's list column holds toolbar, content, and
+  // footer; only `toolbar` (and the detail's `actions`) render in a Toolbar.
+  const dialog = (zones: Fixture) =>
+    node('list-detail-dialog', {
+      props: {
+        id: 'projects',
+        label: 'Projects',
+        list: { title: 'Projects', content: { $slot: 'listContent' } },
+        detail: { title: 'Project', content: { $slot: 'detailContent' } },
+      },
+      zones,
+    });
+
+  it('places a group in one field of a holder whose other fields render elsewhere', () => {
+    const result = validateView(
+      doc(
+        dialog({
+          'list.toolbar': [group()],
+          'detail.actions': [group()],
+        }),
+      ),
+      catalog,
+    );
+    expect(
+      result.diagnostics.map(({ code, path }) => `${code} ${path}`),
+    ).toEqual([]);
+    expect(
+      catalog.configParents?.get('@kerfjs/ui:ListDetailDialogList.toolbar'),
+    ).toBe(ui('toolbar'));
+    // The holder as a whole is not a Toolbar: its footer is no toolbar zone.
+    expect(
+      catalog.configParents?.get('@kerfjs/ui:ListDetailDialogList'),
+    ).toBeUndefined();
+    expect(codes(doc(dialog({ 'list.footer': [group()] })))).toContain(
+      'KUI-L201',
+    );
+  });
 });

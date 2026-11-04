@@ -167,13 +167,22 @@ function walkField(component, definitions, key) {
 /**
  * The component a field zone's children are placed in (KF-THTR71): a
  * content field inside a value another component renders, such as a
- * NavStack view's toolbar config, which renders as a Toolbar. Undefined when
- * the field's holder is no cataloged config type.
+ * NavStack view's toolbar config, which renders as a Toolbar. A config type
+ * may name one field (`ListDetailDialogList.toolbar`) when only that field
+ * renders in the component. Undefined when neither the field nor its holder
+ * is cataloged.
  */
 function fieldParent(ctx, node, component, definitions, key) {
   const pkg = keyOf(node.type).split(':')[0];
-  for (const holder of walkField(component, definitions, key)?.holders ?? []) {
-    const parent = ctx.catalog.configParents?.get(`${pkg}:${holder}`);
+  const walked = walkField(component, definitions, key);
+  const field = walked?.path.at(-1);
+  for (const holder of walked?.holders ?? []) {
+    // KF-WBH5P2: one field of a holder that renders only that field in
+    // another component (`ListDetailDialogList.toolbar` in a Toolbar)
+    // names it alone; the whole holder's mapping is the fallback.
+    const parent =
+      ctx.catalog.configParents?.get(`${pkg}:${holder}.${field}`) ??
+      ctx.catalog.configParents?.get(`${pkg}:${holder}`);
     if (parent) return parent;
   }
   return undefined;

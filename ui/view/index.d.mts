@@ -100,7 +100,8 @@ export interface ViewCatalog {
   /**
    * Config types another component renders as a cataloged one, keyed
    * `package:TypeName` (a NavStack view's toolbar config renders as a
-   * Toolbar); a content field inside one is placed in that component.
+   * Toolbar) or, for one field alone, `package:TypeName.field`; a content
+   * field inside one is placed in that component.
    */
   readonly configParents?: ReadonlyMap<string, string>;
 }

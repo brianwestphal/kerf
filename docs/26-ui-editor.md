@@ -1316,6 +1316,11 @@ types; Kerf UI's Toolbar lists `NavStackViewToolbar`, `PanelBottomToolbar`,
 `PanelToolbar`, `WorkbenchMainBottomToolbar`, and `WorkbenchMainToolbar`, so a
 ToolbarControlGroup in `views.0.toolbar.leading` has a Toolbar parent.
 `createViewCatalog` indexes them as `configParents`, keyed `package:TypeName`.
+An entry can also name one field of a type whose other fields render elsewhere
+(KF-WBH5P2): a ListDetailDialog's list column holds `toolbar`, `content`, and
+`footer`, and only `toolbar` renders in the column's Toolbar, so the Toolbar
+lists `ListDetailDialogList.toolbar` (and `ListDetailDialogDetail.actions`).
+The field's own mapping wins over its holder's.
 
 The ESLint rule and the document validator read the same
 `component-composition.json`, so the two cannot drift. Composition entries

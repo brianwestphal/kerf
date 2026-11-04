@@ -2,6 +2,8 @@
   "@kerfjs/ui:toolbar": {
     "_source": "docs/component-selection.md#toolbar-composition",
     "configTypes": [
+      "ListDetailDialogDetail.actions",
+      "ListDetailDialogList.toolbar",
       "NavStackViewToolbar",
       "PanelBottomToolbar",
       "PanelToolbar",
