@@ -2278,48 +2278,28 @@ type ChoiceSpec = {
 
 /**
  * Clicks a prop's Configure button and waits for what it opens: a form
- * pushed onto the Inspector (a new Back button) or a dialog. KF-52Q3AP: in
- * WebKit a click that lands while the Inspector re-renders from the previous
- * commit can be dropped, so a button that opened nothing is clicked again.
+ * pushed onto the Inspector (a new Back button) or a dialog. KF-GHMFPC: the
+ * dropped-click retry this used to need is gone; two logged CI runs showed
+ * the only remaining drop came right after `choose()`, which now waits for
+ * its popup to close.
  */
 async function openConfigure(
   page: Page,
   name: string,
   scope: Pick<Page, 'getByRole'> = page,
 ) {
-  const button = scope.getByRole('button', { name });
   const backs = page
     .getByRole('button', { name: 'Back', exact: true })
     .filter({ visible: true });
   const dialogs = page.locator('dialog[open]');
   const before = { backs: await backs.count(), dialogs: await dialogs.count() };
-  const opened = async () =>
-    (await backs.count()) > before.backs ||
-    (await dialogs.count()) > before.dialogs;
-  await button.click();
+  await scope.getByRole('button', { name }).click();
   await expect(async () => {
-    if (!(await opened()) && (await button.isVisible())) {
-      noteDroppedClickRetry('openConfigure', name);
-      await button.click();
-    }
-    expect(await opened()).toBe(true);
-  }).toPass({ intervals: [500, 1_000, 2_000], timeout: 30_000 });
-}
-
-/**
- * KF-GHMFPC: records each time a dropped-click retry actually fires, so CI
- * logs show whether the retries are still needed now that a NavStack pop no
- * longer takes the pointer. Grep CI output for `[dropped-click-retry]`.
- */
-function noteDroppedClickRetry(helper: string, target: string): void {
-  const info = test.info();
-  info.annotations.push({
-    type: 'dropped-click-retry',
-    description: `${helper}: ${target}`,
-  });
-  console.log(
-    `[dropped-click-retry] ${info.project.name} | ${info.title} | ${helper}: ${target}`,
-  );
+    expect(
+      (await backs.count()) > before.backs ||
+        (await dialogs.count()) > before.dialogs,
+    ).toBe(true);
+  }).toPass({ timeout: 10_000 });
 }
 
 /**
@@ -9636,10 +9616,8 @@ async function configure(page: Page, prop: string) {
 
 /**
  * Opens the form of the object at `path` inside prop `prop`'s form, and
- * waits until one of its own fields shows. KF-52Q3AP: in WebKit a click that
- * lands while the Inspector re-renders from the previous commit can be
- * dropped, leaving the form unopened, so a row that did not open is clicked
- * again.
+ * waits until one of its own fields shows. (Its KF-52Q3AP dropped-click
+ * retry never fired in two logged CI runs and was removed in KF-GHMFPC.)
  */
 async function openField(
   page: Page,
@@ -9662,13 +9640,7 @@ async function openField(
     .filter({ visible: true })
     .first();
   await row.click();
-  await expect(async () => {
-    if (!(await opened.isVisible())) {
-      noteDroppedClickRetry('openField', `${prop} ${JSON.stringify(path)}`);
-      await row.click();
-    }
-    await expect(opened).toBeVisible({ timeout: 2_000 });
-  }).toPass({ timeout: 30_000 });
+  await expect(opened).toBeVisible();
 }
 
 /** Leaves the Inspector's open form for the one it was opened from. */

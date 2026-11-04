@@ -96,9 +96,15 @@ export async function setText(page: Page, name: string, value: string) {
 /** Picks `option` in an enum prop's Select. */
 export async function choose(page: Page, name: string, option: string) {
   await prop(page, name).locator('.kui-select__trigger').click();
-  await prop(page, name)
-    .getByRole('option', { name: option, exact: true })
-    .click();
+  const choice = prop(page, name).getByRole('option', {
+    name: option,
+    exact: true,
+  });
+  await choice.click();
+  // KF-GHMFPC: return only once the popup has closed. In WebKit a click that
+  // follows at once (Configure, after picking "Custom…") could otherwise land
+  // while the popup was still closing and be dropped.
+  await expect(choice).toBeHidden();
 }
 
 /** Turns a boolean prop's Switch on. */
