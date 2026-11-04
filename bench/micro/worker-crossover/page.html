@@ -1,0 +1,92 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>worker crossover</title>
+<script type="module">
+  import { makeColumn, makeRows, query, sum } from './shared.js';
+
+  const worker = new Worker(new URL('./worker.js', import.meta.url), {
+    type: 'module',
+  });
+  const pending = new Map();
+  let nextId = 0;
+  worker.onmessage = (e) => {
+    pending.get(e.data.id)(e.data);
+    pending.delete(e.data.id);
+  };
+
+  // Resolves { total, busy, reply }: the wall-clock round trip, and the time
+  // the main thread was blocked inside postMessage (the structured-clone
+  // serialize, which is what a user feels as jank).
+  function call(msg, transfer = []) {
+    const id = nextId++;
+    return new Promise((resolve) => {
+      const t0 = performance.now();
+      let busy = 0;
+      pending.set(id, (reply) =>
+        resolve({ total: performance.now() - t0, busy, reply }),
+      );
+      worker.postMessage({ ...msg, id }, transfer);
+      busy = performance.now() - t0;
+    });
+  }
+
+  const median = (xs) => {
+    const s = [...xs].sort((a, b) => a - b);
+    const m = s.length >> 1;
+    return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+  };
+  const reps = (n) => (n >= 1_000_000 ? 5 : n >= 100_000 ? 9 : 21);
+  const WARM = 2;
+  const Q = 'ea'; // "pretty", "clean", "easy", "elegant", ... a minority of rows
+
+  async function measure(n, runOne) {
+    const totals = [];
+    const busys = [];
+    for (let i = 0; i < WARM + reps(n); i++) {
+      const { total, busy } = await runOne();
+      if (i >= WARM) {
+        totals.push(total);
+        busys.push(busy);
+      }
+    }
+    return { total: median(totals), busy: median(busys) };
+  }
+
+  const sync = (fn) => async () => {
+    const t0 = performance.now();
+    fn();
+    const t = performance.now() - t0;
+    return { total: t, busy: t };
+  };
+
+  window.runBench = async (sizes) => {
+    const out = [];
+    const ping = () => call({ kind: 'ping' });
+    out.push({ case: 'floor', n: 0, mode: 'worker', ...(await measure(0, ping)) });
+    for (const n of sizes) {
+      const rows = makeRows(n);
+      const mainQuery = sync(() => query(rows, Q));
+      out.push({ case: 'a-sent', n, mode: 'main', ...(await measure(n, mainQuery)) });
+      const sent = () => call({ kind: 'query-sent', rows, q: Q });
+      out.push({ case: 'a-sent', n, mode: 'worker', ...(await measure(n, sent)) });
+
+      await call({ kind: 'load', rows });
+      const resident = () => call({ kind: 'query-resident', q: Q });
+      out.push({ case: 'b-resident', n, mode: 'worker', ...(await measure(n, resident)) });
+      await call({ kind: 'load', rows: [] });
+
+      let col = makeColumn(n);
+      out.push({ case: 'c-column', n, mode: 'main', ...(await measure(n, sync(() => sum(col)))) });
+      const clone = () => call({ kind: 'sum-clone', col });
+      out.push({ case: 'c-column', n, mode: 'clone', ...(await measure(n, clone)) });
+      const transfer = async () => {
+        const r = await call({ kind: 'sum-transfer', col }, [col.buffer]);
+        col = r.reply.col;
+        return r;
+      };
+      out.push({ case: 'c-column', n, mode: 'transfer', ...(await measure(n, transfer)) });
+    }
+    return out;
+  };
+  window.ready = true;
+</script>

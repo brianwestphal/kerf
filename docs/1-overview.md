@@ -75,3 +75,4 @@ In prose: a `count.value += 1` write reaches the DOM down one of two paths. A **
 - [§23 App and dialog layouts](23-app-layouts.md) — responsive whole-screen `@kerfjs/ui` layout contracts.
 - [§24 AI-first project setup](24-ai-first-setup.md) — safe, deterministic `npx kerfjs setup` configuration.
 - [§25 Ticket phase timing](25-ticket-timing.md) — structured Hot Sheet work and verification timing.
+- [§27 Off-main-thread compute](27-worker.md) — design: measured Worker crossover, and recipe vs. a `kerfjs/worker` subpath.

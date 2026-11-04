@@ -739,6 +739,10 @@ Generated `*.view.ts` modules are read-only. They export typed inputs, an exhaus
 
 Shipped: `ui/ai/component-props.json`, `ui/ai/view-document.schema.json`, `validateView` (with non-blocking `hints`, `KUI-H001` for an unsized nested layout), the generator and CLI, and the interpreter. Remaining work: `data-*` channels for unmarked components, and the private `editor/` app.
 
+### §27 Off-main-thread compute (`kerfjs/worker`)
+
+**Design only** (`docs/27-worker.md`; KF-3BZ49N, awaiting the maintainer's choice). Measured crossover with real module workers (harness `bench/micro/worker-crossover/`; directional, shared machine): posting N rows on every call loses on both latency (3x to 5x) and main-thread time (serialization ≈ the work) on all three engines; worker-resident data keeps main-thread busy at 5 to 20 µs for any N with round trips near main-thread compute, so it pays once a call exceeds a few ms (10k to 100k rows for filter + sort); transferring an 8 MB `Float64Array` blocks ≤ 20 µs vs. 0.4 to 0.8 ms to clone. Options: extend the `kerfjs/async` Worker recipe (recommended), ship `kerfjs/worker` v1 (`createWorker` pool with `AbortSignal` latest-wins, `init` replay on respawn, `expose()` worker side, no kerf dependencies), or close. Out: stringified-function workers, signal-graph sync, `SharedArrayBuffer` in v1. The recipe's load-failure hang is KF-CP3SZV.
+
 ## Update triggers
 
 Update this doc whenever you:
