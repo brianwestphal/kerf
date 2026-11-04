@@ -279,3 +279,18 @@ const isSelected = selector(selectedId);
 - **Reads outside a subscriber are not cached.** `isSelected(k).peek()` returns a fresh signal holding the current comparison. A key signal obtained earlier and subscribed only later reads the current comparison when it gains its subscriber.
 - **Keys compare like `Map` keys** (SameValueZero), so use primitives or object references. There is no custom equality: a comparator would have to visit every key, which is the O(N) cost this avoids.
 - Use it where one signal selects among many rows. For a handful of rows the plain `computed` is just as good and needs no extra concept.
+
+### `setSelector(source)` — membership in a set
+
+`selector()` answers "is this key _the_ selected one?". For "is this key _in_ the set?" (multi-select, a tree's expanded rows, fields with errors), use `setSelector()` over a signal holding a `ReadonlySet`:
+
+```ts
+import { computed, setSelector, signal } from 'kerfjs';
+
+const checked = signal<ReadonlySet<string>>(new Set());
+const isChecked = setSelector(checked);
+
+<tr class={computed(() => (isChecked(row.id).value ? 'on' : ''))}>…</tr>
+```
+
+Each write diffs the previous set against the next, O(|old| + |new|), and notifies only the keys that were added or removed. Assign a new Set; a new Set with the same members notifies nothing. Per-key signals live and release exactly as `selector()`'s do. It pays off when the sets are small next to the number of rows; a set holding most keys costs about what a plain `computed` per row does.

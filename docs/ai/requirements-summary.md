@@ -121,7 +121,7 @@ Documents `signal()`, `computed()`, `effect()`, `batch()`. Notes that signals ar
 
 Also covers `arraySignal()` (KF-92) — a granular collection signal at the `kerfjs/array-signal` subpath (KF-95). Mutators (`update` / `insert` / `push` / `remove` / `move` / `replace`) emit typed patch events; every indexed mutator validates a finite integer in range before changing state or emitting a patch. When bound to `each(...)` inside a `mount()`, the keyed list reconciler applies just the patches against the live DOM in O(patches) instead of O(N). `arraySig.value` is a tracking read so `computed()` / `effect()` over it still works. Class detected via brand symbol (KF-95) so multiple bundle copies interoperate. Gotchas: only one `each()` callsite per render gets the granular benefit; `replace()` falls back to snapshot; throws fall back to snapshot (KF-99); pre-mount mutations route to snapshot for first render (KF-98).
 
-§2.10 **`selector(source)`** (Shipped, KF-769EW2) — keyed equality at O(1) per change: one subscription to the source, per-key boolean signals that a change flips only for the previous and next keys, registered and released with their subscribers. The select-row fan-out fix without a compiler; main barrel, tree-shaken when unused.
+§2.10 **`selector(source)`** (Shipped, KF-769EW2) — keyed equality at O(1) per change: one subscription to the source, per-key boolean signals that a change flips only for the previous and next keys, registered and released with their subscribers. The select-row fan-out fix without a compiler; main barrel, tree-shaken when unused. `setSelector(source)` (Shipped, KF-1TFHMP) is its set-membership sibling: a write diffs old vs. new set and flips only added/removed members.
 
 ### §3 Stores
 

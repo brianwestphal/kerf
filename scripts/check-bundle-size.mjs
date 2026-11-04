@@ -106,7 +106,9 @@ const BUDGETS = [
     // KF-GS850A (+0.22 KB): the same keyed row identity fix in the barrel.
     // KF-769EW2 (+0.16 KB): selector(), the keyed-equality reader. Absent
     // from `main`, whose named imports tree-shake it away.
-    budgetKb: 17.5,
+    // KF-1TFHMP (+0.02 KB): setSelector(), sharing selector()'s keyed-flags
+    // core (the extraction offsets most of its own size).
+    budgetKb: 17.55,
     description: 'the whole public barrel — worst case for a consumer',
     entry: `
       import * as kerf from '${DIST}/index.js';

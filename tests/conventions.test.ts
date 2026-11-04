@@ -50,6 +50,7 @@ describe('public export surface (KF-286)', () => {
       'renderDocument',
       'resetAllStores',
       'selector',
+      'setSelector',
       'signal',
       'toElement',
     ]);

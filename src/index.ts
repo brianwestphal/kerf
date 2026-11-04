@@ -33,5 +33,6 @@ export {
   type RenderDocumentOptions,
 } from './renderDocument.js';
 export { type Selector, selector } from './selector.js';
+export { type SetSelector, setSelector } from './set-selector.js';
 export { defineStore, resetAllStores, type Store } from './store.js';
 export { toElement } from './toElement.js';

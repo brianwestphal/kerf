@@ -56,6 +56,20 @@ each(rows.value, (row) => (
 - **Keys compare like `Map` keys** (SameValueZero): primitives, or object references by identity. There is no custom equality, because a comparator would have to visit every key.
 - `Selector<K>` is the reader's type: `(key: K) => ReadonlySignal<boolean>`.
 
+### `setSelector<K>(source: ReadonlySignal<ReadonlySet<K>>): SetSelector<K>`
+
+Membership in a set signal, flipping only the members that changed. `setSelector(source)` returns a reader `(key) => ReadonlySignal<boolean>` whose signal is `true` exactly when `source.value.has(key)`. One write diffs the previous set against the next (O(|old| + |new|)) and notifies only the subscribers of keys that were added or removed; a new Set with the same members notifies nothing. Use it for multi-select, a tree's expanded rows, fields with errors, or a router's active path prefixes.
+
+```ts
+const checked = signal<ReadonlySet<string>>(new Set());
+const isChecked = setSelector(checked);
+// in a row:
+<tr class={computed(() => (isChecked(row.id).value ? "on" : ""))}>…</tr>
+checked.value = new Set([...checked.peek(), "r-7"]); // notifies row r-7 only
+```
+
+It pays off when the sets are small next to the number of subscribed keys. Per-key signals follow their subscribers exactly as `selector()`'s do, and membership is `Set.prototype.has`. `SetSelector<K>` is the reader's type.
+
 ### `arraySignal<T>(initial?: readonly T[]): ArraySignal<T>` — `kerfjs/array-signal` subpath
 
 ```ts

@@ -25,12 +25,8 @@
  * references. There is deliberately no custom equality — a comparator would
  * need to visit every key, which is the O(N) this exists to avoid.
  */
-import {
-  effect,
-  rawSignal,
-  type ReadonlySignal,
-  type Signal,
-} from './reactive.js';
+import { effect, type ReadonlySignal } from './reactive.js';
+import { keyedFlags } from './utils/keyed-flags.js';
 
 /** A keyed-equality reader returned by {@link selector}. */
 export type Selector<K> = (key: K) => ReadonlySignal<boolean>;
@@ -45,53 +41,18 @@ const same = (a: unknown, b: unknown): boolean =>
  * notifies only the subscribers of the previous and next keys.
  */
 export function selector<K>(source: ReadonlySignal<K>): Selector<K> {
-  // Watched key signals by key. Usually one signal per key; a set covers two
-  // uncached signals for one key that each gained a subscriber.
-  const watched = new Map<K, Set<Signal<boolean>>>();
-  let stop: (() => void) | undefined;
-  let current: K;
-
-  const flip = (key: K, value: boolean): void => {
-    const entries = watched.get(key);
-    if (entries) for (const entry of entries) entry.value = value;
-  };
-
-  const start = (): void => {
-    current = source.peek();
-    stop = effect(() => {
-      const next = source.value;
-      if (same(next, current)) return;
-      const previous = current;
-      current = next;
-      flip(previous, false);
-      flip(next, true);
-    });
-  };
-
-  return (key: K): ReadonlySignal<boolean> => {
-    const existing = watched.get(key);
-    if (existing) for (const entry of existing) return entry;
-    const entry: Signal<boolean> = rawSignal(same(source.peek(), key), {
-      watched() {
-        let entries = watched.get(key);
-        if (!entries) watched.set(key, (entries = new Set()));
-        entries.add(entry);
-        if (stop === undefined) start();
-        // A signal handed out earlier and watched only now may hold a stale
-        // comparison; nothing watched it, so nothing saw it go stale.
-        const value = same(source.peek(), key);
-        if (entry.peek() !== value) entry.value = value;
-      },
-      unwatched() {
-        const entries = watched.get(key);
-        entries?.delete(entry);
-        if (entries?.size === 0) watched.delete(key);
-        if (watched.size === 0 && stop !== undefined) {
-          stop();
-          stop = undefined;
-        }
-      },
-    });
-    return entry;
-  };
+  return keyedFlags<K>(
+    (key) => same(source.peek(), key),
+    (flip) => {
+      let current = source.peek();
+      return effect(() => {
+        const next = source.value;
+        if (same(next, current)) return;
+        const previous = current;
+        current = next;
+        flip(previous, false);
+        flip(next, true);
+      });
+    },
+  );
 }

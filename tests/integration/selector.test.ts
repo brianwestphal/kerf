@@ -12,6 +12,7 @@ import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { computed, signal } from '../../src/reactive.js';
 import { selector } from '../../src/selector.js';
+import { setSelector } from '../../src/set-selector.js';
 
 interface Row {
   id: number;
@@ -120,6 +121,52 @@ describe('selector() in a mounted keyed list', () => {
     expect(keySignals.every((s) => s.value === (s === keySignals[0]))).toBe(
       true,
     );
+    dispose();
+  });
+});
+
+describe('setSelector() in a mounted keyed list', () => {
+  it('renders identically to the plain Set.has computed, with no render re-run', () => {
+    const rows = signal<Row[]>([1, 2, 3, 4, 5].map((id) => ({ id })));
+    const checked = signal<ReadonlySet<number>>(new Set());
+    const isChecked = setSelector(checked);
+    let renders = 0;
+    const dispose = mount(root, () => {
+      renders++;
+      return jsx('ul', {
+        children: each(
+          rows.value,
+          (r) =>
+            jsx('li', {
+              'data-key': r.id,
+              class: computed(() => (checked.value.has(r.id) ? 'on' : '')),
+              'data-set': computed(() => (isChecked(r.id).value ? 'on' : '')),
+            }),
+          (r) => r.id,
+        ),
+      });
+    });
+    const agree = () => {
+      for (const li of root.querySelectorAll('li'))
+        expect(li.getAttribute('data-set') ?? '').toBe(
+          li.getAttribute('class') ?? '',
+        );
+    };
+    const write = (ids: number[]) => {
+      const before = renders;
+      checked.value = new Set(ids);
+      expect(renders).toBe(before);
+      agree();
+    };
+    agree();
+    write([2, 4]);
+    write([4, 5]);
+    write([]);
+    write([1, 2, 3, 4, 5]);
+    rows.value = rows.value.filter((r) => r.id !== 3);
+    agree();
+    write([3]);
+    expect(root.querySelectorAll('li.on')).toHaveLength(0);
     dispose();
   });
 });
