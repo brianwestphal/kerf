@@ -1154,9 +1154,10 @@ such as its shell's main column. That name is the integration contract. The
 application gives the element the same `anchor-name`, and the surface docks
 to it while open. Bind `anchorName` to a `$param` when the host should choose
 the name. In play mode the editor supplies a placeholder anchor in the
-application's place (§11.4). Kerf UI layouts do not yet take an
-`anchorName` prop, so for now the application names its element itself
-(KF-TBCXTR adds the prop).
+application's place (§11.4). The application names its region with a
+Pane's `anchorName` (KF-TBCXTR), which a Workbench `mainPane`, a panel
+`pane`, or a NavStack view forwards through `PaneConfig`, so no
+application CSS is needed.
 
 ## 6. Re-export: "only fix what's broken"
 

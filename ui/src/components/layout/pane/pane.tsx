@@ -5,6 +5,10 @@ import {
   type ScrollEdge,
   scrollEdgeAttributes,
 } from '../../../shared/layout/scroll-edge.js';
+import {
+  type AnchorName,
+  checkedAnchorName,
+} from '../../../shared/styles/anchor-name.js';
 import type { CssColor } from '../../../shared/styles/css-values.js';
 import { ensureSunkenTexture } from '../../../shared/styles/sunken-texture.js';
 import {
@@ -255,6 +259,14 @@ export interface PaneProps {
   deepInset?: boolean;
   /** Opt into keyboard (`0`) or programmatic (`-1`) focus on the Pane root. */
   tabIndex?: 0 | -1;
+  /**
+   * Names the Pane root as a CSS anchor (`anchor-name`): a dashed ident such
+   * as `--app-main`. A surface that docks to a named anchor, such as a
+   * `PopoverDialogSurface` with the same `anchorName`, then docks to this
+   * pane, so the app names its main column without CSS. A Workbench work
+   * area, panel, or NavStack view takes it through its `PaneConfig`.
+   */
+  anchorName?: AnchorName;
   /** Keep the standard focus outline visible, such as for a drop target. */
   outlined?: boolean;
   /** Root semantics. Defaults to `div`. */
@@ -311,6 +323,7 @@ export type PaneConfig = Pick<
   | 'scrollClearance'
   | 'tabIndex'
   | 'outlined'
+  | 'anchorName'
 >;
 
 function paneContent(
@@ -355,6 +368,7 @@ export function Pane({
   deepInset = false,
   scrollClearance,
   tabIndex,
+  anchorName,
   outlined = false,
   element = 'div',
   contentElement = 'div',
@@ -421,6 +435,9 @@ export function Pane({
         ? undefined
         : `--_kui-pane-background:${background}`,
       tinted.style,
+      anchorName === undefined
+        ? undefined
+        : `anchor-name:${checkedAnchorName(anchorName, 'Pane anchorName')}`,
     ),
     'data-deep-inset': deepInset ? 'true' : undefined,
     'data-outlined': outlined ? 'true' : undefined,

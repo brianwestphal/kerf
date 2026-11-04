@@ -8570,6 +8570,16 @@
           "control": "segmented"
         },
         {
+          "name": "anchorName",
+          "type": {
+            "kind": "string",
+            "text": "`--${string}`",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Names the Pane root as a CSS anchor (`anchor-name`): a dashed ident such\nas `--app-main`. A surface that docks to a named anchor, such as a\n`PopoverDialogSurface` with the same `anchorName`, then docks to this\npane, so the app names its main column without CSS. A Workbench work\narea, panel, or NavStack view takes it through its `PaneConfig`."
+        },
+        {
           "name": "outlined",
           "type": {
             "kind": "boolean",
@@ -26065,6 +26075,16 @@
           },
           "required": false,
           "description": "Opt into keyboard (`0`) or programmatic (`-1`) focus on the Pane root."
+        },
+        {
+          "name": "anchorName",
+          "type": {
+            "kind": "string",
+            "text": "`--${string}`",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Names the Pane root as a CSS anchor (`anchor-name`): a dashed ident such\nas `--app-main`. A surface that docks to a named anchor, such as a\n`PopoverDialogSurface` with the same `anchorName`, then docks to this\npane, so the app names its main column without CSS. A Workbench work\narea, panel, or NavStack view takes it through its `PaneConfig`."
         }
       ],
       "text": "PaneConfig"

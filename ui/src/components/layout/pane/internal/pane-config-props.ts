@@ -35,5 +35,6 @@ export function paneConfigProps(
     scrollClearance: config?.scrollClearance,
     tabIndex: config?.tabIndex,
     outlined: config?.outlined,
+    anchorName: config?.anchorName,
   };
 }

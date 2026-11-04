@@ -5,6 +5,10 @@ import {
   filterDataAttributes,
   type RootDataAttributes,
 } from '../../../shared/dom/extension-attributes.js';
+import {
+  type AnchorName,
+  checkedAnchorName,
+} from '../../../shared/styles/anchor-name.js';
 import type { CssLength } from '../../../shared/styles/css-values.js';
 import { LucideIcon } from '../../media/lucide-icon/lucide-icon.js';
 
@@ -472,7 +476,7 @@ export type PopoverDialogSurfaceProps = PopoverDialogSurfaceName & {
    * positioning keep the centered top-layer placement. Ignored when
    * `embedded`.
    */
-  anchorName?: `--${string}`;
+  anchorName?: AnchorName;
   /** Preferred width preset: 400px, 560px (default), or 800px. */
   size?: DialogSurfaceSize;
   /** Preferred width; takes precedence over `size`, within the viewport cap. */
@@ -493,9 +497,6 @@ export type PopoverDialogSurfaceProps = PopoverDialogSurfaceName & {
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
 };
-
-/** A CSS `<dashed-ident>`: two dashes, then at least one name character. */
-const DASHED_IDENT = /^--[\w\-\u0080-\u{10FFFF}]+$/u;
 
 const POPOVER_DIALOG_PROTECTED = new Set([
   'data-anchored',
@@ -533,10 +534,8 @@ export function PopoverDialogSurface({
   className = '',
   slot,
 }: PopoverDialogSurfaceProps) {
-  if (anchorName !== undefined && !DASHED_IDENT.test(anchorName))
-    throw new TypeError(
-      `PopoverDialogSurface anchorName must be a CSS dashed-ident such as "--app-main"; received ${JSON.stringify(anchorName)}.`,
-    );
+  if (anchorName !== undefined)
+    checkedAnchorName(anchorName, 'PopoverDialogSurface anchorName');
   const anchored = anchorName !== undefined && presentation === 'overlay';
   const style = [
     anchored ? `position-anchor:${anchorName}` : '',

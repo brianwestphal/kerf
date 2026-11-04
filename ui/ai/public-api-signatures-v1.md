@@ -171,6 +171,7 @@ import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { S as Sides } from './sides-BPSWde0A.js';
 import { PaneSeparatorSide } from './pane.js';
 import './scroll-clearance-BikHljTc.js';
+import './anchor-name-BZ1rpxaw.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 
@@ -1932,6 +1933,7 @@ import './semantic-content-BbzjvSu9.js';
 import './extension-attributes-IJ4decoa.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
+import './anchor-name-BZ1rpxaw.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './list.js';
@@ -1977,6 +1979,7 @@ import { N as NavStackProps, a as NavStackView } from './nav-stack-DwxpXxqJ.js';
 import { ResizableRegionProps } from './resizable-region.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
+import './anchor-name-BZ1rpxaw.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './list.js';
@@ -2084,6 +2087,7 @@ export { SplitView, type SplitViewCompactStack, type SplitViewCompactViewToolbar
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { S as ScrollClearance } from './scroll-clearance-BikHljTc.js';
+import { A as AnchorName } from './anchor-name-BZ1rpxaw.js';
 import { CssColor } from './css-values.js';
 import { S as SurfaceTint, a as SurfaceTintScheme } from './surface-tint-DQgYCaP9.js';
 
@@ -2289,6 +2293,14 @@ interface PaneProps {
     deepInset?: boolean;
     /** Opt into keyboard (`0`) or programmatic (`-1`) focus on the Pane root. */
     tabIndex?: 0 | -1;
+    /**
+     * Names the Pane root as a CSS anchor (`anchor-name`): a dashed ident such
+     * as `--app-main`. A surface that docks to a named anchor, such as a
+     * `PopoverDialogSurface` with the same `anchorName`, then docks to this
+     * pane, so the app names its main column without CSS. A Workbench work
+     * area, panel, or NavStack view takes it through its `PaneConfig`.
+     */
+    anchorName?: AnchorName;
     /** Keep the standard focus outline visible, such as for a drop target. */
     outlined?: boolean;
     /** Root semantics. Defaults to `div`. */
@@ -2325,14 +2337,14 @@ interface PaneProps {
  * or a CollapsiblePanel) forwards, so the app configures that pane instead of
  * styling it. An omitted or `undefined` field keeps the composite's default.
  */
-type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'compactChrome' | 'compactChromeOpen' | 'headerPresentation' | 'scrollEdge' | 'scrollEdgeDistance' | 'appearance' | 'background' | 'tint' | 'deepInset' | 'scrollClearance' | 'tabIndex' | 'outlined'>;
+type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers' | 'compactChrome' | 'compactChromeOpen' | 'headerPresentation' | 'scrollEdge' | 'scrollEdgeDistance' | 'appearance' | 'background' | 'tint' | 'deepInset' | 'scrollClearance' | 'tabIndex' | 'outlined' | 'anchorName'>;
 /**
  * An unpadded application column with optional fixed header/footer slots and one
  * scrolling vertical content owner. Separator lines are independently opt-in on
  * each logical edge, so the same component works as a sidebar, main area,
  * inspector, or dialog column.
  */
-declare function Pane({ header, children, footer, fill, chromePlacement, chromeDividers, compactChrome, compactChromeOpen, headerPresentation, scrollEdge, scrollEdgeDistance, appearance, background, tint, scheme, deepInset, scrollClearance, tabIndex, outlined, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
+declare function Pane({ header, children, footer, fill, chromePlacement, chromeDividers, compactChrome, compactChromeOpen, headerPresentation, scrollEdge, scrollEdgeDistance, appearance, background, tint, scheme, deepInset, scrollClearance, tabIndex, anchorName, outlined, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
 
 export { Pane, type PaneAppearance, type PaneChromeDividers, type PaneChromePlacement, type PaneCompactChrome, type PaneCompactChromePolicy, type PaneConfig, type PaneContentElement, type PaneElement, type PaneHeaderPresentation, type PaneProps, type PaneSeparatorSide, ScrollClearance, type ScrollEdge, SurfaceTint, SurfaceTintScheme };
 ```
@@ -2355,6 +2367,7 @@ import './toolbar-text.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './scroll-clearance-BikHljTc.js';
 import './sides-BPSWde0A.js';
+import './anchor-name-BZ1rpxaw.js';
 import './lucide-icon.js';
 import 'lucide';
 
@@ -2766,6 +2779,7 @@ import './css-values.js';
 import './sides-BPSWde0A.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './scroll-clearance-BikHljTc.js';
+import './anchor-name-BZ1rpxaw.js';
 import './surface-tint-DQgYCaP9.js';
 
 /** Which edge a {@link CollapsiblePanel} docks to. */
@@ -2983,6 +2997,7 @@ import { PaneAppearance, ScrollEdge } from './pane.js';
 import { CssColor } from './css-values.js';
 import { S as SurfaceTint, a as SurfaceTintScheme } from './surface-tint-DQgYCaP9.js';
 import './scroll-clearance-BikHljTc.js';
+import './anchor-name-BZ1rpxaw.js';
 
 interface TabNavigatorTabBase<Id extends string> {
     id: Id;
@@ -3331,6 +3346,7 @@ import './extension-attributes-IJ4decoa.js';
 import './sides-BPSWde0A.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
+import './anchor-name-BZ1rpxaw.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './workbench.js';
@@ -3487,6 +3503,7 @@ import './extension-attributes-IJ4decoa.js';
 import './sides-BPSWde0A.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
+import './anchor-name-BZ1rpxaw.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './workbench.js';
@@ -3543,6 +3560,7 @@ import './extension-attributes-IJ4decoa.js';
 import './sides-BPSWde0A.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
+import './anchor-name-BZ1rpxaw.js';
 import './css-values.js';
 import './surface-tint-DQgYCaP9.js';
 import './workbench.js';
@@ -5073,6 +5091,7 @@ export { wireToolbarVisibility };
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
+import { A as AnchorName } from './anchor-name-BZ1rpxaw.js';
 import { CssLength } from './css-values.js';
 
 /** What asked an open DialogSurface to close. */
@@ -5364,7 +5383,7 @@ type PopoverDialogSurfaceProps = PopoverDialogSurfaceName & {
      * positioning keep the centered top-layer placement. Ignored when
      * `embedded`.
      */
-    anchorName?: `--${string}`;
+    anchorName?: AnchorName;
     /** Preferred width preset: 400px, 560px (default), or 800px. */
     size?: DialogSurfaceSize;
     /** Preferred width; takes precedence over `size`, within the viewport cap. */
@@ -5423,6 +5442,7 @@ import './extension-attributes-IJ4decoa.js';
 import './nav-stack-DwxpXxqJ.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
+import './anchor-name-BZ1rpxaw.js';
 import './surface-tint-DQgYCaP9.js';
 import './list.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -5558,6 +5578,7 @@ import './extension-attributes-IJ4decoa.js';
 import './nav-stack-DwxpXxqJ.js';
 import './pane.js';
 import './scroll-clearance-BikHljTc.js';
+import './anchor-name-BZ1rpxaw.js';
 import './surface-tint-DQgYCaP9.js';
 import './list.js';
 import './flex-alignment-4ms8ZbV8.js';

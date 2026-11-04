@@ -537,7 +537,8 @@ region of the app instead of the viewport center, give it an `anchorName`, a
 CSS dashed ident naming the element it belongs to (the shell's main column).
 While open it sits centered on that element's bottom edge, inset by
 `viewportGutter` and no wider than the element less both gutters. The
-application names that element with the same `anchor-name`. Engines without
+application names that element with a Pane's `anchorName` (see
+`layout.md`), which layouts forward through `PaneConfig`. Engines without
 CSS anchor positioning keep the centered placement. Neither prop applies to an
 embedded surface.
 

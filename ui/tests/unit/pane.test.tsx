@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { paneConfigProps } from '../../src/components/layout/pane/internal/pane-config-props.js';
 import { Pane } from '../../src/components/layout/pane/pane.js';
 
 describe('Pane', () => {
@@ -340,4 +341,24 @@ describe('Pane', () => {
       expect(html).toContain(`<${contentElement} class="kui-pane__content`);
     },
   );
+
+  // KF-TBCXTR: the app names its main column as a CSS anchor through a prop.
+  it('names its root as a CSS anchor, forwarded through PaneConfig', () => {
+    const named = String(
+      Pane({ anchorName: '--app-main', children: <span>Content</span> }),
+    );
+    expect(named).toMatch(
+      /class="kui-pane"[^>]*style="anchor-name:--app-main"/,
+    );
+    expect(String(Pane({ children: <span>Content</span> }))).not.toContain(
+      'anchor-name',
+    );
+    expect(paneConfigProps({ anchorName: '--app-main' }).anchorName).toBe(
+      '--app-main',
+    );
+    for (const bad of ['app-main', '--', '--a;color:red'])
+      expect(() =>
+        Pane({ anchorName: bad as `--${string}`, children: <span /> }),
+      ).toThrow(/Pane anchorName must be a CSS dashed-ident/);
+  });
 });

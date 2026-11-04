@@ -95,6 +95,22 @@ Give a focusable Pane a useful `label` when it represents a distinct region.
 The ring paints above edge-to-edge child surfaces without intercepting their
 buttons, selects, or nested scrolling.
 
+### Named anchor
+
+Set `anchorName` (a CSS dashed ident such as `--app-main`) to name the Pane as
+a CSS anchor, so a surface that docks to a named anchor, such as a
+`PopoverDialogSurface` with the same `anchorName`, docks to this pane. Name
+the app's main column this way instead of writing `anchor-name` CSS.
+`PaneConfig` forwards it, so a Workbench `mainPane`, a panel `pane`, or a
+NavStack view takes it too. A name that is not a dashed ident throws.
+
+```tsx
+<Workbench mainPane={{ anchorName: '--app-main' }} main={conversation} />
+<PopoverDialogSurface id="file-request" label="Allow File Access" dismiss="manual" anchorName="--app-main">
+  {request}
+</PopoverDialogSurface>
+```
+
 ### Lowered work surfaces
 
 Set `appearance="sunken"` when the work area itself should use the lowered
