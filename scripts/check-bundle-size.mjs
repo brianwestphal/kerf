@@ -305,7 +305,9 @@ const BUDGETS = [
     // re-render cannot redirect a later delegate onto a recycled target.
     // KF-3SHRTR (~+0.05 KB): single-pass escapeHtml/escapeAttr (about 2x on
     // values that need escaping) in the shared jsx runtime.
-    budgetKb: 7.1, // dominated by the shared jsx-runtime chunk (the outlet builds jsx) + signals; the router's own code is ~2.7 KB pre-gzip. Marginal cost for an app already using kerf is small.
+    // KF-5P2QAP (+0.30 KB): match()/activeClass() run on setSelector over
+    // the path's segment prefixes, so a navigation flips only changed links.
+    budgetKb: 7.4, // dominated by the shared jsx-runtime chunk (the outlet builds jsx) + signals; the router's own code is ~2.7 KB pre-gzip. Marginal cost for an app already using kerf is small.
     description:
       'the router subpath (createRouter — the postcard router) — signals + jsx + delegate, no mount',
     entry: `

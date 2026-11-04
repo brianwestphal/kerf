@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
+import { effect } from '../../src/reactive.js';
 import { createRouter, type RouterHandle } from '../../src/router.js';
 
 // Reset the URL + DOM between tests. happy-dom implements history/location.
@@ -160,6 +161,94 @@ describe('createRouter() — match / activeClass', () => {
     expect(cls.value).toBe('');
     router.navigate('/users/9');
     expect(cls.value).toBe('on');
+  });
+
+  // KF-5P2QAP: match() runs on setSelector over the path's segment prefixes.
+  // The literal-prefix rule it must keep reproducing:
+  const legacyMatch = (pattern: string, p: string): boolean => {
+    if (pattern === '/') return p === '/';
+    const base = pattern.replace(/\/$/, '');
+    return p === base || p.startsWith(base + '/');
+  };
+  const paths = [
+    '/',
+    '//',
+    '//x',
+    '/a',
+    '/a/',
+    '/a//',
+    '/a//b',
+    '/a/b',
+    '/a/b/',
+    '/a/b/c',
+    '/ab',
+    '/b/a',
+  ];
+  const patterns = [
+    '',
+    '/',
+    '//',
+    '/a',
+    '/a/',
+    '/a//',
+    '/a/b',
+    '/a/b/',
+    '/ab',
+    '/a/b/c',
+    '/b',
+    'a',
+    '/a/:id',
+    '*',
+  ];
+
+  it('match() agrees with the literal prefix rule on every path and pattern, held or bound', () => {
+    // Hash mode, so paths such as `//x` are navigable.
+    router = createRouter({ routes, mode: 'hash' });
+    const held = patterns.map((pattern) => router!.match(pattern));
+    const bound: boolean[] = [];
+    const stops = patterns.map((pattern, i) => {
+      const m = router!.match(pattern);
+      return effect(() => {
+        bound[i] = m.value;
+      });
+    });
+    for (const p of paths) {
+      router.navigate(p);
+      expect(router.route.value.path).toBe(p);
+      patterns.forEach((pattern, i) => {
+        const expected = legacyMatch(pattern, p);
+        const label = `match(${JSON.stringify(pattern)}) on ${p}`;
+        expect(bound[i], `bound ${label}`).toBe(expected);
+        expect(held[i].value, `held ${label}`).toBe(expected);
+      });
+    }
+    stops.forEach((stop) => stop());
+  });
+
+  it('a navigation notifies only the links whose answer changed, however many links there are', () => {
+    router = createRouter({ routes });
+    router.navigate('/');
+    let runs = 0;
+    const stops: (() => void)[] = [];
+    for (let i = 0; i < 500; i++) {
+      const link = router.activeClass(`/section${i}`, 'on');
+      stops.push(
+        effect(() => {
+          runs++;
+          void link.value;
+        }),
+      );
+    }
+    runs = 0;
+    router.navigate('/section3/item');
+    expect(runs).toBe(1); // only /section3 turned on
+    runs = 0;
+    router.navigate('/section7');
+    expect(runs).toBe(2); // /section3 off, /section7 on
+    runs = 0;
+    router.navigate('/section7?tab=x');
+    expect(runs).toBe(0); // same path: nothing flips
+    stops.forEach((stop) => stop());
   });
 });
 

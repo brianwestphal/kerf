@@ -34,6 +34,7 @@ import { delegate } from './delegate.js';
 import { jsx } from './jsx-runtime.js';
 import { type MountResult } from './mount.js';
 import { computed, type ReadonlySignal, signal } from './reactive.js';
+import { setSelector } from './set-selector.js';
 
 /** The reactive current-route snapshot (`router.route.value`). */
 export interface RouteState {
@@ -107,7 +108,9 @@ export interface RouterHandle {
    * (`match('/users')` is true on `/users/7`). `match('/')` is exact (only true
    * on `/`). `pattern` is NOT run through the route matcher, so `:param` / `*`
    * segments compare as literal text (`match('/users/:id')` is never true) —
-   * pass the static prefix. Bind it for active-nav styling.
+   * pass the static prefix. Bind it for active-nav styling. A navigation
+   * notifies only the links whose answer changed, and links with the same
+   * pattern share one signal.
    */
   match: (pattern: string) => ReadonlySignal<boolean>;
   /** Convenience: a bound class signal — `className` while {@link match}`(pattern)` is active, else `''`. */
@@ -162,6 +165,25 @@ function matchPattern(
   }
   // No wildcard matched, so the segment counts must be exactly equal.
   return pathSegments.length === patternSegments.length ? params : null;
+}
+
+// `match('/')` is exact, but `'/'` is also a segment prefix of `//x`, so the
+// root pattern gets its own key, present only on the root path.
+const ROOT_KEY = '\0root';
+
+/**
+ * The `match()` keys active on `path`: every `path.slice(0, i)` where
+ * `path[i] === '/'` or `i === path.length` (so `''` too, which `match('')`
+ * has always matched), plus {@link ROOT_KEY} on `/`.
+ */
+function activePrefixes(path: string): ReadonlySet<string> {
+  const keys = new Set<string>();
+  if (path === '/') keys.add(ROOT_KEY);
+  for (let i = path.indexOf('/'); i !== -1; i = path.indexOf('/', i + 1)) {
+    keys.add(path.slice(0, i));
+  }
+  keys.add(path);
+  return keys;
 }
 
 /** Decode a route parameter, treating malformed percent escapes as no match. */
@@ -267,18 +289,15 @@ export function createRouter(options: RouterOptions): RouterHandle {
     route.value = resolve(readLocation());
   };
 
-  // A per-link computed on purpose. `setSelector` over the path's segment
-  // prefixes would notify only the links that flip, but its per-key signals
-  // go stale while held without a subscriber, and `match()` signals are read
-  // that way (a click handler checking `.value`). The per-navigation saving
-  // was ~7 µs at 100 links, so the fan-out stays (KF-EBNHHB).
+  // `match()` is a literal prefix test, so the patterns active on a path are
+  // exactly its segment-boundary prefixes, O(path depth) per navigation. One
+  // set-membership reader over that set flips only the links whose answer
+  // changed, where a per-link computed re-ran every link (KF-5P2QAP).
+  const isActive = setSelector(
+    computed(() => activePrefixes(route.value.path)),
+  );
   const match = (pattern: string): ReadonlySignal<boolean> =>
-    computed(() => {
-      const p = route.value.path;
-      if (pattern === '/') return p === '/';
-      const base = pattern.replace(/\/$/, '');
-      return p === base || p.startsWith(base + '/');
-    });
+    isActive(pattern === '/' ? ROOT_KEY : pattern.replace(/\/$/, ''));
 
   const activeClass = (
     pattern: string,

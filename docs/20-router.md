@@ -91,6 +91,10 @@ state, like `defineStore`):
   `/users-admin`). `match('/')` is **exact**. The pattern never goes through the
   route matcher, so `:param` / `*` segments are compared as literal text —
   `match('/users/:id')` is never true; pass the static prefix (`'/users'`).
+  All links share one `setSelector()` over the current path's segment prefixes,
+  so a navigation notifies only the links whose answer changed (two, typically)
+  however many links a nav holds, and links with the same pattern share one
+  signal. A held `match()` signal read outside any effect is always current.
 - **`activeClass(pattern, className)`** → `ReadonlySignal<string>` — `className`
   while `match(pattern)` is active, else `''`. Spread into a `class` hole.
 - **`outlet()`** → the routed view (call it inside a `mount()` render). The
