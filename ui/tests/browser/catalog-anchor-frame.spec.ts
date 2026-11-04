@@ -66,7 +66,7 @@ for (const width of [1280, 390]) {
 
   test(`a top-layer popover anchors to the frame at ${width}px`, async ({
     page,
-  }) => {
+  }, testInfo) => {
     test.skip(
       !(await page
         .setViewportSize({ width, height: 900 })
@@ -115,6 +115,29 @@ for (const width of [1280, 390]) {
         return dockOffset(next.frameRect, next.popupRect);
       })
       .toBeLessThan(1);
+
+    // KF-T1V86Q: a Kerf PopoverDialogSurface with dismiss="manual": Escape
+    // and a press outside leave the request open; only its answer closes it.
+    await expect(popup).toHaveAttribute(
+      'data-component',
+      'popover-dialog-surface',
+    );
+    await expect(popup).toHaveAttribute('popover', 'manual');
+    await page.keyboard.press('Escape');
+    // A press inside the frame, in the 16px below the docked popup.
+    const outside = await geometry();
+    await page.mouse.click(
+      (outside.frameRect.left + outside.frameRect.right) / 2,
+      outside.frameRect.bottom - 6,
+    );
+    await expect(popup).toBeVisible();
+    expect(
+      (await geometry()).popupRect.right - (await geometry()).popupRect.left,
+    ).toBeLessThanOrEqual(480.5);
+
+    await page.screenshot({
+      path: testInfo.outputPath(`anchored-request-open-${width}.png`),
+    });
 
     await popup.getByRole('button', { name: 'Deny' }).click();
     await expect(popup).toBeHidden();

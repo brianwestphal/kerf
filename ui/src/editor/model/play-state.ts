@@ -472,3 +472,32 @@ export function selectListItem(
   }
   return next;
 }
+
+const POPOVER_DIALOG_SURFACE =
+  '@kerfjs/ui:surface-scaffold#PopoverDialogSurface';
+
+/**
+ * KF-T1V86Q: the CSS anchor names the played view's overlay surfaces dock to
+ * (a PopoverDialogSurface's `anchorName`, literal or bound to a param), in
+ * document order without repeats. The play page names its view root with
+ * them: a placeholder anchor standing in for the element the application
+ * names, so an anchored surface opens and docks there as it will in the app.
+ */
+export function placeholderAnchors(
+  document: ViewDocument,
+  params: Readonly<Record<string, unknown>> = {},
+): string[] {
+  const names = new Set<string>();
+  for (const { node } of visitNodes(document)) {
+    if (node.type !== POPOVER_DIALOG_SURFACE) continue;
+    if ((node.props?.presentation ?? 'overlay') !== 'overlay') continue;
+    const value: unknown = node.props?.anchorName;
+    const name =
+      typeof value === 'object' && value !== null && '$param' in value
+        ? params[String((value as { $param: unknown }).$param)]
+        : value;
+    if (typeof name === 'string' && /^--[\w\-\u0080-\u{10FFFF}]+$/u.test(name))
+      names.add(name);
+  }
+  return [...names];
+}

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 451200,
-  "measuredLargestJavaScriptGzip": 164550,
-  "measuredTotalJavaScriptGzip": 451139,
+  "totalJavaScriptGzip": 451300,
+  "measuredLargestJavaScriptGzip": 164549,
+  "measuredTotalJavaScriptGzip": 451269,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6723,6 +6723,22 @@
         "measuredTotalJavaScriptGzip": 451139,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 451200
+      }
+    },
+    {
+      "at": "2026-11-04T09:33:27.730Z",
+      "reason": "KF-T1V86Q: PopoverDialogSurface gains dismiss and anchorName; the Layout demo's request popup is now a PopoverDialogSurface",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164550,
+        "measuredTotalJavaScriptGzip": 451139,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 451200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164549,
+        "measuredTotalJavaScriptGzip": 451269,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 451300
       }
     }
   ]

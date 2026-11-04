@@ -612,6 +612,59 @@ describe('production UI primitives', () => {
     ).toContain('--_kui-popover-dialog-surface-max-height:300px');
   });
 
+  it('closes manually and docks to a named anchor only as an overlay (KF-T1V86Q)', () => {
+    const request = asHtml(
+      PopoverDialogSurface({
+        id: 'request',
+        label: 'Allow File Access',
+        dismiss: 'manual',
+        anchorName: '--app-main',
+        children: <p>Body</p>,
+      }),
+    );
+    expect(request).toContain('popover="manual"');
+    expect(request).toContain('data-anchored=""');
+    expect(request).toContain('style="position-anchor:--app-main"');
+    // The defaults: light dismiss, centered, no anchor.
+    const plain = asHtml(
+      PopoverDialogSurface({ label: 'Status', children: <p>Body</p> }),
+    );
+    expect(plain).toContain('popover="auto"');
+    expect(plain).not.toContain('data-anchored');
+    expect(plain).not.toContain('position-anchor');
+    // Embedded sits in flow: no popover, no docking, whatever was asked.
+    const embedded = asHtml(
+      PopoverDialogSurface({
+        label: 'Request',
+        presentation: 'embedded',
+        dismiss: 'manual',
+        anchorName: '--app-main',
+        children: <p>Body</p>,
+      }),
+    );
+    expect(embedded).not.toContain('popover=');
+    expect(embedded).not.toContain('data-anchored');
+    expect(embedded).not.toContain('position-anchor');
+    // The anchored marker is the component's own.
+    expect(
+      asHtml(
+        PopoverDialogSurface({
+          label: 'Status',
+          rootAttributes: { 'data-anchored': 'spoofed' },
+          children: <p>Body</p>,
+        }),
+      ),
+    ).not.toContain('data-anchored');
+    for (const bad of ['app-main', '--', '--a;color:red'])
+      expect(() =>
+        PopoverDialogSurface({
+          label: 'Bad',
+          anchorName: bad as `--${string}`,
+          children: <p>Body</p>,
+        }),
+      ).toThrow(/dashed-ident/);
+  });
+
   it('serializes optional modal bounds without changing omitted defaults', () => {
     const defaults = asHtml(
       DialogSurface({ label: 'Edit', children: <>Body</> }),

@@ -20,7 +20,7 @@ import {
   pushView,
 } from './model/play-actions.js';
 import { type DeviceInsets, safeAreaTokens } from './model/play-device.js';
-import { popView, rootViews } from './model/play-state.js';
+import { placeholderAnchors, popView, rootViews } from './model/play-state.js';
 import { fresh, type RowProps } from './model/play-values.js';
 import { wirePlayState } from './play-adapters.js';
 
@@ -271,6 +271,16 @@ export function createPlayer(
       const { size, orientation } = device.value;
       html.dataset.kerfPlayDevice = `${size} ${orientation}`;
     });
+    // KF-T1V86Q: the placeholder anchor. The view root carries every CSS
+    // anchor name an overlay surface docks to, standing in for the element
+    // the application names (its shell's main column).
+    const stopAnchors = effect(() => {
+      void overrides.value;
+      const names = placeholderAnchors(document.value, params());
+      if (names.length > 0)
+        root.style.setProperty('anchor-name', names.join(', '));
+      else root.style.removeProperty('anchor-name');
+    });
     // Adapters follow the rendered view: the mount re-renders first.
     const stopSync = effect(() => {
       void document.value;
@@ -285,6 +295,8 @@ export function createPlayer(
       view.removeEventListener('message', onMessage);
       stopActions();
       stopDevice();
+      stopAnchors();
+      root.style.removeProperty('anchor-name');
       stopSync();
       play.dispose();
     };

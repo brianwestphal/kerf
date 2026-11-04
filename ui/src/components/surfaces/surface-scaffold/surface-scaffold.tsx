@@ -430,6 +430,9 @@ export function DialogSurface({
 /** Where a PopoverDialogSurface appears: the top layer, or in flow. */
 export type PopoverDialogSurfacePresentation = 'overlay' | 'embedded';
 
+/** How an overlay PopoverDialogSurface closes: light dismiss, or its own controls. */
+export type PopoverDialogSurfaceDismiss = 'light' | 'manual';
+
 /** Application `data-*` metadata on the surface root. */
 export type PopoverDialogSurfaceDataAttributes = Readonly<
   Record<`data-${string}`, string>
@@ -454,6 +457,22 @@ export type PopoverDialogSurfaceProps = PopoverDialogSurfaceName & {
    * `embedded` renders the same surface in flow for a catalog or inline use.
    */
   presentation?: PopoverDialogSurfacePresentation;
+  /**
+   * How an overlay closes. `light` (default) is `popover="auto"`: Escape or a
+   * press outside closes it. `manual` is `popover="manual"`: only its own
+   * controls (`popovertargetaction="hide"`) or `hidePopover()` close it, for a
+   * request the person must answer. Ignored when `embedded`.
+   */
+  dismiss?: PopoverDialogSurfaceDismiss;
+  /**
+   * KF-T1V86Q: a CSS anchor name (a dashed ident such as `--app-main`) the
+   * open overlay docks to: centered on the bottom edge of the element whose
+   * `anchor-name` it is, inset by `viewportGutter`. The application names
+   * that element (its shell's main column). Engines without CSS anchor
+   * positioning keep the centered top-layer placement. Ignored when
+   * `embedded`.
+   */
+  anchorName?: `--${string}`;
   /** Preferred width preset: 400px, 560px (default), or 800px. */
   size?: DialogSurfaceSize;
   /** Preferred width; takes precedence over `size`, within the viewport cap. */
@@ -475,7 +494,11 @@ export type PopoverDialogSurfaceProps = PopoverDialogSurfaceName & {
   slot?: string;
 };
 
+/** A CSS `<dashed-ident>`: two dashes, then at least one name character. */
+const DASHED_IDENT = /^--[\w\-\u0080-\u{10FFFF}]+$/u;
+
 const POPOVER_DIALOG_PROTECTED = new Set([
+  'data-anchored',
   'data-component',
   'data-presentation',
   'data-size',
@@ -498,6 +521,8 @@ export function PopoverDialogSurface({
   labelledBy,
   describedBy,
   presentation = 'overlay',
+  dismiss = 'light',
+  anchorName,
   size = 'medium',
   preferredWidth,
   height,
@@ -508,7 +533,13 @@ export function PopoverDialogSurface({
   className = '',
   slot,
 }: PopoverDialogSurfaceProps) {
+  if (anchorName !== undefined && !DASHED_IDENT.test(anchorName))
+    throw new TypeError(
+      `PopoverDialogSurface anchorName must be a CSS dashed-ident such as "--app-main"; received ${JSON.stringify(anchorName)}.`,
+    );
+  const anchored = anchorName !== undefined && presentation === 'overlay';
   const style = [
+    anchored ? `position-anchor:${anchorName}` : '',
     preferredWidth === undefined
       ? ''
       : `--_kui-popover-dialog-surface-preferred-width:${preferredWidth}`,
@@ -535,7 +566,14 @@ export function PopoverDialogSurface({
       data-height={height === undefined ? undefined : ''}
       data-max-height={maxHeight === undefined ? undefined : ''}
       data-body-layout={bodyLayout === 'flow' ? undefined : bodyLayout}
-      popover={presentation === 'overlay' ? 'auto' : undefined}
+      data-anchored={anchored ? '' : undefined}
+      popover={
+        presentation !== 'overlay'
+          ? undefined
+          : dismiss === 'manual'
+            ? 'manual'
+            : 'auto'
+      }
       role="dialog"
       aria-label={label}
       aria-labelledby={labelledBy}

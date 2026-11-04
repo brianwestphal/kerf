@@ -353,7 +353,13 @@ Every DialogSurface (and every WorkbenchDialog and ListDetailDialog, through
 their `embedded` prop, KF-RWJ9KD) shows **embedded** on the edit canvas (KF-SYGSD0): a
 modal dialog renders nothing while closed, so the canvas renders each one in
 flow (`presentation: 'embedded'`), where its content can be seen, selected,
-and dropped into. Its close controls only select there. The document keeps
+and dropped into. A PopoverDialogSurface is transient the same way and shows
+embedded too (KF-T1V86Q: transient surfaces on the canvas). The other
+transient Kerf UI surfaces need no canvas treatment: a PopupMenu's or
+Select's popup content is its `items` / `choices` props, edited in the
+Inspector (KF-KN9CPE tracks previewing the open popup on the canvas), and
+AnchoredSurface, tooltips, and toasts are imperative `kerfjs/overlay` calls,
+not view-document nodes. Its close controls only select there. The document keeps
 the authored presentation, which the Inspector shows and the export writes,
 and play mode opens the dialog modally (§11.4).
 
@@ -1140,6 +1146,18 @@ app's `tsconfig.json`. Its catalog `import` is root-relative
 and `generateView`'s `importFrom` writes it relative to each document
 (KF-7JP509: app-source prop catalogs).
 
+### 5.4 Anchors a view's surfaces dock to
+
+A PopoverDialogSurface's `anchorName` (KF-T1V86Q) names a CSS anchor the
+view does not contain: the application's own region the surface docks to,
+such as its shell's main column. That name is the integration contract. The
+application gives the element the same `anchor-name`, and the surface docks
+to it while open. Bind `anchorName` to a `$param` when the host should choose
+the name. In play mode the editor supplies a placeholder anchor in the
+application's place (§11.4). Kerf UI layouts do not yet take an
+`anchorName` prop, so for now the application names its element itself
+(KF-TBCXTR adds the prop).
+
 ## 6. Re-export: "only fix what's broken"
 
 `kerf-ui-view` (bin, published from `@kerfjs/ui`) and the editor's Export
@@ -1768,6 +1786,14 @@ view }`. It may change params (re-rendering the view), call a NavStack
   `id` in the view, which also wires its `data-dialog-close` controls,
   Escape, and backdrop. The action is logged (`missing`, with a message, when
   no dialog has that id). The dialog keeps its authored presentation.
+- **Anchored surfaces dock to a placeholder anchor** (KF-T1V86Q). A
+  PopoverDialogSurface with an `anchorName` docks to the element the
+  application names with that CSS `anchor-name` (its shell's main column),
+  which the view itself does not contain. The play page stands in for it: its
+  view root carries every `anchorName` an overlay surface in the played
+  document references (a literal, or a `$param` binding resolved through the
+  play-time params), so the surface opens and docks to the play frame as it
+  will to the application's region. See §5.4 for the application side.
 - **Selection is off.** No selection ring, hover outline, drop indicator, or
   canvas key binding is active inside the stage.
 

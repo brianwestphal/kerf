@@ -8,6 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { PlayHandlers } from '../../../src/editor/model/play-actions.js';
 import { fitScale, scaledBox } from '../../../src/editor/model/play-fit.js';
 import {
+  placeholderAnchors,
   popView,
   reorderTabBarItems,
   rootViews,
@@ -476,6 +477,42 @@ describe('the play page', () => {
   const settled = () =>
     new Promise((resolve) => globalThis.setTimeout(resolve, 0));
 
+  it('names its view root as the placeholder anchor an overlay surface docks to (KF-T1V86Q)', () => {
+    const withRequest = {
+      schema: 'kerf-ui-document/v1',
+      root: {
+        id: 'n-root',
+        type: '@kerfjs/ui:pane',
+        zones: {
+          content: [
+            {
+              id: 'n-request',
+              type: '@kerfjs/ui:surface-scaffold#PopoverDialogSurface',
+              props: {
+                id: 'request',
+                label: 'Allow File Access',
+                dismiss: 'manual',
+                anchorName: '--app-main',
+              },
+              zones: { children: [] },
+            },
+          ],
+        },
+      },
+    } as unknown as ViewDocument;
+    const { root } = play(withRequest);
+    expect(root.style.getPropertyValue('anchor-name')).toBe('--app-main');
+    // A document with no anchored surface leaves the root unnamed.
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        data: { type: PLAY_DOCUMENT, document: tabsAndStack() },
+        origin: location.origin,
+        source: window,
+      }),
+    );
+    expect(root.style.getPropertyValue('anchor-name')).toBe('');
+  });
+
   it('asks its parent for the document and renders nothing until it comes', () => {
     window.history.replaceState(null, '', playPageUrl(location.href));
     const post = vi.spyOn(window, 'postMessage');
@@ -642,5 +679,48 @@ describe('the play page', () => {
     await settled();
     click(root.querySelector('[data-action="toggle-side"]'));
     expect(nodeProps(editor.document.value, ids.panel).collapsed).toBe(true);
+  });
+});
+
+// KF-T1V86Q: the play page's placeholder anchor names every anchor an
+// overlay surface docks to, literal or bound to a param.
+describe('placeholderAnchors', () => {
+  const surface = (id: string, props: Record<string, unknown>) => ({
+    id,
+    type: '@kerfjs/ui:surface-scaffold#PopoverDialogSurface',
+    props: { label: 'Request', ...props },
+    zones: { children: [] },
+  });
+  const doc = (...content: unknown[]) =>
+    ({
+      schema: 'kerf-ui-document/v1',
+      root: { id: 'root', type: '@kerfjs/ui:pane', zones: { content } },
+    }) as unknown as ViewDocument;
+
+  it('collects overlay anchor names in order without repeats', () => {
+    expect(
+      placeholderAnchors(
+        doc(
+          surface('a', { anchorName: '--app-main' }),
+          surface('b', { anchorName: { $param: 'anchor' } }),
+          surface('c', { anchorName: '--app-main' }),
+        ),
+        { anchor: '--side' },
+      ),
+    ).toEqual(['--app-main', '--side']);
+  });
+
+  it('skips embedded surfaces, missing names, and invalid values', () => {
+    expect(
+      placeholderAnchors(
+        doc(
+          surface('a', { anchorName: '--app-main', presentation: 'embedded' }),
+          surface('b', {}),
+          surface('c', { anchorName: 'app-main' }),
+          surface('d', { anchorName: { $param: 'unset' } }),
+          { id: 'e', type: '@kerfjs/ui:text', props: { anchorName: '--x' } },
+        ),
+      ),
+    ).toEqual([]);
   });
 });

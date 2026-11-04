@@ -300,6 +300,17 @@ describe('dialogs on the edit canvas', () => {
       } as unknown as ViewDocument;
       expect(embeddedDialogs(already)).toBe(already);
     }
+    // KF-T1V86Q: a PopoverDialogSurface is embedded the same way.
+    const popover = {
+      ...withDialog(),
+      root: {
+        id: PANE,
+        type: '@kerfjs/ui:surface-scaffold#PopoverDialogSurface',
+        props: { label: 'Request', dismiss: 'manual' },
+      },
+    } as unknown as ViewDocument;
+    expect(embeddedDialogs(popover).root.props?.presentation).toBe('embedded');
+    expect(popover.root.props?.presentation).toBeUndefined();
     expect(embeddedDialogs(sample())).toEqual(sample());
   });
 

@@ -732,6 +732,41 @@ h2.kui-dialog-surface__title {
   margin: auto;
   place-self: center;
 }
+/* KF-T1V86Q: an `anchorName` overlay docks to the bottom of that named
+   anchor (the app's main column), inset by its gutter, centered on it, and
+   no wider than the anchor less both gutters. Engines without CSS anchor
+   positioning keep the centered placement above. */
+@supports (anchor-name: --a) {
+  .kui-popover-dialog-surface[data-presentation="overlay"][data-anchored]:popover-open {
+    inset: auto;
+    left: calc(
+      anchor(left) + var(--_kui-popover-dialog-surface-resolved-gutter)
+    );
+    right: calc(
+      anchor(right) + var(--_kui-popover-dialog-surface-resolved-gutter)
+    );
+    bottom: calc(
+      anchor(bottom) + var(--_kui-popover-dialog-surface-resolved-gutter)
+    );
+    width: min(
+      var(
+        --_kui-popover-dialog-surface-preferred-width,
+        var(--_kui-popover-dialog-surface-width)
+      ),
+      max(
+        0px,
+        calc(
+          anchor-size(width) -
+            var(--_kui-popover-dialog-surface-resolved-gutter) -
+            var(--_kui-popover-dialog-surface-resolved-gutter)
+        )
+      )
+    );
+    margin-block: 0;
+    margin-inline: auto;
+    place-self: auto;
+  }
+}
 .kui-popover-dialog-surface::backdrop {
   background: var(
     --kui-color-overlay-modal,

@@ -1063,3 +1063,130 @@ test('a dialog shows embedded on the canvas and opens from its trigger in play',
   await modal.getByRole('button', { name: 'Done' }).click();
   await expect(modal).toBeHidden();
 });
+
+// KF-T1V86Q: a PopoverDialogSurface shows embedded on the canvas, where its
+// content selects; in play it opens from its popovertarget trigger and docks
+// to the placeholder anchor the play page names for its `anchorName`.
+test('a popover dialog shows embedded on the canvas and docks to the placeholder anchor in play', async ({
+  page,
+}, testInfo) => {
+  const ids = {
+    pane: '01JB8Z1M6Q8E1X9V4S7K2R3TDA',
+    trigger: '01JB8Z1M6Q8E1X9V4S7K2R3TDB',
+    request: '01JB8Z1M6Q8E1X9V4S7K2R3TDC',
+    note: '01JB8Z1M6Q8E1X9V4S7K2R3TDD',
+    deny: '01JB8Z1M6Q8E1X9V4S7K2R3TDE',
+  };
+  const withRequest = {
+    schema: 'kerf-ui-document/v1',
+    name: 'Request',
+    catalogs: ['@kerfjs/ui'],
+    root: {
+      id: ids.pane,
+      type: '@kerfjs/ui:pane',
+      zones: {
+        content: [
+          {
+            id: ids.trigger,
+            type: '@kerfjs/ui:button',
+            props: {
+              children: 'Show Request',
+              popoverTarget: 'request',
+              popoverTargetAction: 'show',
+            },
+          },
+          {
+            id: ids.request,
+            type: '@kerfjs/ui:surface-scaffold#PopoverDialogSurface',
+            props: {
+              id: 'request',
+              label: 'Allow File Access',
+              dismiss: 'manual',
+              anchorName: '--app-main',
+            },
+            zones: {
+              children: [
+                text(ids.note, 'The assistant wants to read three files.'),
+                {
+                  id: ids.deny,
+                  type: '@kerfjs/ui:button',
+                  props: {
+                    children: 'Deny',
+                    emphasis: 'secondary',
+                    popoverTarget: 'request',
+                    popoverTargetAction: 'hide',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  };
+  await page.goto('/');
+  await page
+    .locator('input[type="file"]')
+    .first()
+    .setInputFiles({
+      name: 'request.kui.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(withRequest)),
+    });
+  await expect(page.getByText(/· 5 nodes · valid$/)).toBeVisible();
+
+  // The canvas shows the closed popover in flow; its content selects.
+  const canvas = page.locator('[data-editor-canvas]');
+  const shown = canvas.locator('section#request');
+  await expect(shown).toBeVisible();
+  await expect(shown).toHaveAttribute('data-presentation', 'embedded');
+  await expect(shown).not.toHaveAttribute('popover');
+  await canvas.getByText('The assistant wants to read three files.').click();
+  await expect(page.locator('.kui-editor__selection')).toBeVisible();
+  await expect(shown).toBeVisible();
+  await page.screenshot({
+    path: testInfo.outputPath('popover-dialog-canvas-embedded.png'),
+  });
+
+  // In play it is an overlay: closed until its trigger opens it.
+  await page.locator('[data-action="editor-play"]').click();
+  const played = stage(page);
+  const request = played.locator('section#request');
+  const trigger = played.getByRole('button', { name: 'Show Request' });
+  await expect(trigger).toBeVisible();
+  await expect(request).toBeHidden();
+  await trigger.click();
+  await expect(request).toBeVisible();
+  await expect(request).toHaveAttribute('data-presentation', 'overlay');
+  await expect(request).toHaveAttribute('popover', 'manual');
+  // The placeholder anchor: the element the play page named `--app-main`.
+  const docking = await request.evaluate((el) => {
+    const anchor = [
+      ...el.ownerDocument.querySelectorAll<HTMLElement>('*'),
+    ].find(
+      (node) => node.style.getPropertyValue('anchor-name') === '--app-main',
+    );
+    if (!anchor) return null;
+    const a = anchor.getBoundingClientRect();
+    const p = el.getBoundingClientRect();
+    return {
+      supported: CSS.supports('anchor-name', '--a'),
+      bottomGap: a.bottom - p.bottom,
+      leftGap: p.left - a.left,
+      rightGap: a.right - p.right,
+    };
+  });
+  expect(docking).not.toBeNull();
+  if (docking!.supported) {
+    expect(Math.abs(docking!.bottomGap - 16)).toBeLessThan(1);
+    expect(Math.abs(docking!.leftGap - docking!.rightGap)).toBeLessThan(1);
+  }
+  // Manual: Escape leaves the request open; its own control closes it.
+  await page.keyboard.press('Escape');
+  await expect(request).toBeVisible();
+  await page.screenshot({
+    path: testInfo.outputPath('popover-dialog-play-docked.png'),
+  });
+  await request.getByRole('button', { name: 'Deny' }).click();
+  await expect(request).toBeHidden();
+});

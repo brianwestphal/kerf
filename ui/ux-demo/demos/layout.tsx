@@ -1,9 +1,13 @@
 import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
+import { remify } from '@kerfjs/ui/css-values';
+import { List } from '@kerfjs/ui/list';
+import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { Pane } from '@kerfjs/ui/pane';
 import { Row } from '@kerfjs/ui/row';
 import { Spacer } from '@kerfjs/ui/spacer';
+import { PopoverDialogSurface } from '@kerfjs/ui/surface-scaffold';
 import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import {
@@ -12,10 +16,12 @@ import {
 } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 
-import {
-  AnchoredRequestPopup,
-  demoShellMainAnchor,
-} from '../components/anchored-request-popup.js';
+/**
+ * The anchor the request popup docks to. Production names its shell's main
+ * column; the catalog names the specimen frame the same way through
+ * `CatalogExample` `viewport.anchorName`.
+ */
+const demoShellMainAnchor = '--demo-shell-main';
 
 export function LayoutDemo() {
   return (
@@ -62,7 +68,7 @@ export function LayoutDemo() {
       </CatalogExample>
       <CatalogExample
         label="Top-Layer Popup Anchored to the Frame"
-        note="The frame stands in for the shell's main column: it is the named anchor the app's top-layer popup docks to, and its content sits in a centered column."
+        note="The frame stands in for the shell's main column: it is the named anchor a PopoverDialogSurface's anchorName docks to, and its content sits in a centered column. The request dismisses manually, so it stays open until it is answered."
         viewport={{
           layout: 'flex-column',
           width: 'full',
@@ -89,7 +95,54 @@ export function LayoutDemo() {
             Show Request
           </Button>
         </Row>
-        <AnchoredRequestPopup id="layout-anchored-request" />
+        <PopoverDialogSurface
+          id="layout-anchored-request"
+          labelledBy="layout-anchored-request-title"
+          describedBy="layout-anchored-request-description"
+          dismiss="manual"
+          anchorName={demoShellMainAnchor}
+          preferredWidth={remify(480)}
+          rootAttributes={{ 'data-anchored-request-popup': '' }}
+        >
+          {/* The title and its supporting line are one heading unit. */}
+          <List>
+            <Toolbar
+              label="Request Heading"
+              leading={
+                <ToolbarText
+                  text="Allow File Access?"
+                  size="xlarge"
+                  id="layout-anchored-request-title"
+                />
+              }
+            />
+            <ListInsetText sides="rl">
+              <Text
+                variant="span"
+                tone="quiet"
+                id="layout-anchored-request-description"
+              >
+                The assistant wants to read three files in this workspace.
+              </Text>
+            </ListInsetText>
+          </List>
+          <Row hAlign="right" controlInsets="rbl">
+            <Button
+              emphasis="secondary"
+              popoverTarget="layout-anchored-request"
+              popoverTargetAction="hide"
+            >
+              Deny
+            </Button>
+            <Button
+              tone="brand"
+              popoverTarget="layout-anchored-request"
+              popoverTargetAction="hide"
+            >
+              Allow
+            </Button>
+          </Row>
+        </PopoverDialogSurface>
       </CatalogExample>
     </CatalogExampleStack>
   );

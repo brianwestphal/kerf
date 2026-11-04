@@ -530,6 +530,23 @@ preview.
 </PopoverDialogSurface>;
 ```
 
+For a request the person must answer, set `dismiss="manual"` (`popover="manual"`):
+Escape and a press outside leave it open, and only its own controls
+(`popoverTargetAction="hide"`) or `hidePopover()` close it. To dock it to a
+region of the app instead of the viewport center, give it an `anchorName`, a
+CSS dashed ident naming the element it belongs to (the shell's main column).
+While open it sits centered on that element's bottom edge, inset by
+`viewportGutter` and no wider than the element less both gutters. The
+application names that element with the same `anchor-name`. Engines without
+CSS anchor positioning keep the centered placement. Neither prop applies to an
+embedded surface.
+
+```tsx
+<PopoverDialogSurface id="file-request" labelledBy="file-request-title" dismiss="manual" anchorName="--app-main" preferredWidth={remify(480)}>
+  {request}
+</PopoverDialogSurface>;
+```
+
 Use `DialogSurface` whenever the task must block the page.
 
 Wrap one `PopupMenu` (or another single `wa-dropdown`) with `PopupSurface`. `inset="list-zero"` removes menu
