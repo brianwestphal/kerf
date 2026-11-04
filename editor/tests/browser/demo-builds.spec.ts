@@ -2279,15 +2279,18 @@ type ChoiceSpec = {
 /**
  * Clicks a prop's Configure button and waits for what it opens: a form
  * pushed onto the Inspector (a new Back button) or a dialog. KF-GHMFPC: the
- * dropped-click retry this used to need is gone; two logged CI runs showed
- * the only remaining drop came right after `choose()`, which now waits for
- * its popup to close.
+ * dropped-click retry this used to need is gone. The drop it hid was WebKit
+ * scrolling the Inspector about 300ms after an edit, when the debounced
+ * autosave rewrote the Preview header's status (KF-NV427Y: a late scroll
+ * anchoring adjustment), so a click aimed at a stable button landed on the
+ * row below. The click now waits for that save to settle.
  */
 async function openConfigure(
   page: Page,
   name: string,
   scope: Pick<Page, 'getByRole'> = page,
 ) {
+  await expect(page.getByText(/ · saving…/)).toHaveCount(0);
   const backs = page
     .getByRole('button', { name: 'Back', exact: true })
     .filter({ visible: true });
