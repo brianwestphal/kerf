@@ -41,6 +41,24 @@ interface ReadonlySignal<T> {
 }
 ```
 
+### `selector<K>(source: ReadonlySignal<K>): Selector<K>`
+
+Keyed equality against one signal, at O(1) per change. `selector(source)` returns a reader `(key) => ReadonlySignal<boolean>` whose signal is `true` exactly when `source.value` equals `key`. The selector subscribes to `source` once; a change notifies only the previous key's and the next key's subscribers. The plain pattern, `computed(() => row.id === selectedId.value)`, subscribes every row to `selectedId`, so one selection re-evaluates all N rows.
+
+```ts
+const selectedId = signal<number | null>(null);
+const isSelected = selector(selectedId);
+
+each(rows.value, (row) => (
+  <tr class={computed(() => (isSelected(row.id).value ? "danger" : ""))}>…</tr>
+), (row) => row.id);
+```
+
+- **Entries follow their subscribers.** A key's signal joins the selector when its first subscriber arrives and leaves when its last one goes, so removing a row (which disposes its bindings) releases its entry. The selector's own subscription to `source` exists only while some key is watched.
+- **An unwatched read is not cached.** `isSelected(k).peek()` outside any effect returns a fresh signal holding the current comparison. A signal handed out earlier reads the current comparison as soon as it gains a subscriber.
+- **Keys compare like `Map` keys** (SameValueZero): primitives, or object references by identity. There is no custom equality, because a comparator would have to visit every key.
+- `Selector<K>` is the reader's type: `(key: K) => ReadonlySignal<boolean>`.
+
 ### `arraySignal<T>(initial?: readonly T[]): ArraySignal<T>` — `kerfjs/array-signal` subpath
 
 ```ts

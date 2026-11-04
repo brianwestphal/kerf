@@ -1,7 +1,7 @@
 ---
 name: kerf-app
 description: Build UIs in the kerf reactive framework and its @kerfjs/ui component package (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs` or `@kerfjs/ui`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.29.0
+kerf-skill-version: 1.30.0
 ---
 
 # Building apps with kerf
@@ -119,7 +119,8 @@ import {
   signal,
   computed,
   effect,
-  batch, // reactivity
+  batch,
+  selector, // reactivity
   defineStore,
   resetAllStores, // stores
   mount,
@@ -148,6 +149,7 @@ if (import.meta.env.DEV) await import("kerfjs/dev");
 | `computed(fn)`                               | derived value, read-only                                                                                                                                                                                                                                                                                  |
 | `effect(fn)`                                 | side effect on signal change; returns disposer                                                                                                                                                                                                                                                            |
 | `batch(fn)`                                  | coalesce multiple writes into one re-run                                                                                                                                                                                                                                                                  |
+| `selector(source)`                           | keyed equality at O(1) per change: `selector(selectedId)(row.id).value` is true for the selected row; one subscription instead of one per row                                                                                                                                                             |
 | `defineStore({initial, actions})`            | named multi-consumer state                                                                                                                                                                                                                                                                                |
 | `resetAllStores()`                           | reset every store (test teardown)                                                                                                                                                                                                                                                                         |
 | `mount(el, render)`                          | bind reactive render to a DOM element; returns disposer                                                                                                                                                                                                                                                   |
@@ -280,6 +282,9 @@ mount(listEl, () => (
   </ul>
 ));
 // selectedId.value = 3  → only the ~2 affected <li> class attrs update.
+// Large list: `const isSelected = selector(selectedId)` (from "kerfjs") and
+// `computed(() => (isSelected(row.id).value ? "sel" : ""))` — one subscription
+// to selectedId instead of one per row, so a selection flip is O(1).
 
 // Pattern 6: no build step (CDN / importmap) — the html tagged template
 // instead of JSX. Same runtime semantics; real HTML attribute names; a hole

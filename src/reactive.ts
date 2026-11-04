@@ -28,6 +28,7 @@ import {
   effect as coreEffect,
   Signal,
   signal as coreSignal,
+  type SignalOptions,
 } from '@preact/signals-core';
 
 import { devHooks } from './dev-hooks.js';
@@ -54,6 +55,16 @@ export function signal<T>(value?: T): Signal<T> {
   const factory = devHooks.signalFactory;
   if (factory) return factory<T>(value as T);
   return coreSignal(value as T);
+}
+
+/**
+ * A plain signals-core signal that bypasses the dev `signalFactory`, with the
+ * `watched` / `unwatched` options. For kerf-internal signals whose writes are
+ * bookkeeping, not app state (`selector()`'s per-key flags), so the
+ * untracked-signal warning never fires on them. Internal.
+ */
+export function rawSignal<T>(value: T, options?: SignalOptions<T>): Signal<T> {
+  return coreSignal(value, options);
 }
 
 export function effect(fn: () => void | (() => void)): () => void {

@@ -49,6 +49,7 @@ describe('public export surface (KF-286)', () => {
       'raw',
       'renderDocument',
       'resetAllStores',
+      'selector',
       'signal',
       'toElement',
     ]);

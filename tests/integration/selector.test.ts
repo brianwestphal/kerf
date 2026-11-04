@@ -1,0 +1,125 @@
+/**
+ * selector() through the real render pipeline: a keyed each() table whose
+ * rows bind `class` to a selector-backed computed renders exactly like the
+ * plain-computed pattern beside it, across select / delete / clear / re-add,
+ * and removing rows releases their selector entries.
+ */
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
+import { arraySignal } from '../../src/array-signal.js';
+import { each } from '../../src/each.js';
+import { jsx } from '../../src/jsx-runtime.js';
+import { mount } from '../../src/mount.js';
+import { computed, signal } from '../../src/reactive.js';
+import { selector } from '../../src/selector.js';
+
+interface Row {
+  id: number;
+}
+
+let root: HTMLElement;
+
+beforeEach(() => {
+  root = document.createElement('div');
+  document.body.appendChild(root);
+});
+
+afterEach(() => {
+  root.remove();
+});
+
+describe('selector() in a mounted keyed list', () => {
+  it('renders identically to the plain computed pattern in the same list', () => {
+    const rows = arraySignal<Row>([1, 2, 3, 4].map((id) => ({ id })));
+    const selectedId = signal<number | null>(null);
+    const isSelected = selector(selectedId);
+    let renders = 0;
+    const dispose = mount(root, () => {
+      renders++;
+      return jsx('table', {
+        children: jsx('tbody', {
+          children: each(
+            rows.value,
+            (r) =>
+              jsx('tr', {
+                'data-key': r.id,
+                class: computed(() =>
+                  r.id === selectedId.value ? 'danger' : '',
+                ),
+                'data-sel': computed(() =>
+                  isSelected(r.id).value ? 'danger' : '',
+                ),
+                children: jsx('td', { children: String(r.id) }),
+              }),
+            (r) => r.id,
+          ),
+        }),
+      });
+    });
+    const state = () =>
+      Array.from(root.querySelectorAll('tr')).map((tr) => [
+        tr.dataset.key,
+        tr.getAttribute('class') ?? '',
+        tr.getAttribute('data-sel') ?? '',
+      ]);
+    // A selection is binding-only: it never re-runs the render function.
+    const select = (id: number) => {
+      const before = renders;
+      selectedId.value = id;
+      expect(renders).toBe(before);
+    };
+    const agree = () => {
+      for (const [, plain, viaSelector] of state())
+        expect(viaSelector).toBe(plain);
+    };
+
+    agree();
+    select(2);
+    agree();
+    expect(state().find(([k]) => k === '2')?.[2]).toBe('danger');
+    select(3);
+    agree();
+    rows.remove(2); // delete the selected row
+    agree();
+    select(1);
+    agree();
+    rows.replace([]); // clear
+    rows.replace([1, 2].map((id) => ({ id }))); // re-add
+    agree();
+    expect(state().find(([k]) => k === '1')?.[2]).toBe('danger');
+    select(2);
+    agree();
+    dispose();
+  });
+
+  it('removing rows releases their entries: no stale writes after a clear', () => {
+    const rows = signal<Row[]>([1, 2].map((id) => ({ id })));
+    const selectedId = signal(1);
+    const isSelected = selector(selectedId);
+    const keySignals: { value: boolean }[] = [];
+    const dispose = mount(root, () =>
+      jsx('ul', {
+        children: each(
+          rows.value,
+          (r) => {
+            const flag = isSelected(r.id);
+            keySignals.push(flag);
+            return jsx('li', {
+              'data-key': r.id,
+              class: computed(() => (flag.value ? 'on' : '')),
+            });
+          },
+          (r) => r.id,
+        ),
+      }),
+    );
+    expect(root.querySelector('li.on')?.getAttribute('data-key')).toBe('1');
+    rows.value = [];
+    selectedId.value = 2;
+    // The released key signals no longer follow the source.
+    expect(keySignals.every((s) => s.value === (s === keySignals[0]))).toBe(
+      true,
+    );
+    dispose();
+  });
+});

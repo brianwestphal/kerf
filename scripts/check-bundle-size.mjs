@@ -104,7 +104,9 @@ const BUDGETS = [
     // KF-HA8R27 (+2.08 KB): the change-scoped morph in the shared core (see main).
     // KF-G7N4PK (+0.17 KB): rendered-attribute record seeding (see main).
     // KF-GS850A (+0.22 KB): the same keyed row identity fix in the barrel.
-    budgetKb: 17.3,
+    // KF-769EW2 (+0.16 KB): selector(), the keyed-equality reader. Absent
+    // from `main`, whose named imports tree-shake it away.
+    budgetKb: 17.5,
     description: 'the whole public barrel — worst case for a consumer',
     entry: `
       import * as kerf from '${DIST}/index.js';

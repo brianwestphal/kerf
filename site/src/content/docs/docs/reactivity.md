@@ -260,3 +260,24 @@ A marker that collides with a real binding's id **is not contained to where it a
 Because this failure is silent (the UI just stops updating, with no error), there's an opt-in dev warning for it. Install `kerfjs/dev`, then switch on `staleBinding` with `enableWarnings({ staleBinding: true })` (browser) or `KERF_DEV_WARN_STALE_BINDING=1` (Node/SSR/CI); kerf will `console.warn` once, naming the hole, the first time a static-surround hole binds a different signal instance on that fast path. It is off by default, and omitting the dev entry makes the warning unreachable in a production bundle. Note it compares signal identity, so it will also flag a _fresh inline_ `computed(() => …)` on a global hole (safe, but a new instance each render) — bind a stable `computed`/`signal` reference for global holes to keep it quiet.
 
 **Row bindings that depend on the row's own data work across in-place updates.** A row binding's effect closes over the row object as it was when the row rendered. When an `arraySignal` update (or a `cacheKey`-driven re-render) applies to a row **in place** — the DOM node survives — kerf compares the fresh render's binding instances against the wired ones per hole: unchanged instances carry forward for free (stable external signals, cache hits), and any changed instance is re-wired against the surviving node. So `{computed(() => item.label)}` inside an `arraySignal` row updates correctly after `update()` swaps the row object; a bound hole is never left reading the pre-update object.
+
+## `selector(source)` — keyed equality at O(1)
+
+The selection pattern above, `computed(() => row.id === selectedId.value ? 'sel' : '')`, subscribes **every** row's computed to `selectedId`. A selection change touches two rows' DOM, but it notifies and re-evaluates all N computeds. `selector()` moves that work out of the dependency graph:
+
+```ts
+import { computed, selector, signal } from 'kerfjs';
+
+const selectedId = signal<number | null>(null);
+const isSelected = selector(selectedId);
+
+// in a row:
+<tr class={computed(() => (isSelected(row.id).value ? 'danger' : ''))}>…</tr>
+```
+
+`selector(source)` subscribes to `source` once and hands out one boolean signal per key. A source change writes only the previous key's signal (to `false`) and the next key's (to `true`), so one selection costs O(1) row work regardless of list length. It is plain runtime code over signals; no compiler is involved.
+
+- **Entries live as long as their subscribers.** A key's signal is registered when its first subscriber arrives and dropped when its last one goes. Removing a row disposes its binding effects, which releases its key, so create/clear cycles don't accumulate entries. The selector's subscription to `source` exists only while some key is watched.
+- **Reads outside a subscriber are not cached.** `isSelected(k).peek()` returns a fresh signal holding the current comparison. A key signal obtained earlier and subscribed only later reads the current comparison when it gains its subscriber.
+- **Keys compare like `Map` keys** (SameValueZero), so use primitives or object references. There is no custom equality: a comparator would have to visit every key, which is the O(N) cost this avoids.
+- Use it where one signal selects among many rows. For a handful of rows the plain `computed` is just as good and needs no extra concept.
