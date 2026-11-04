@@ -1,10 +1,13 @@
 # 27. Off-main-thread compute: recipe or a `kerfjs/worker` subpath
 
-> **Status: design.** Nothing here ships. This document measures when moving
-> app compute into a Web Worker pays off, compares extending the existing
-> recipe against adding an opt-in `kerfjs/worker` subpath, and specifies the
-> subpath's v1 surface in case the maintainer chooses it. Ticket: KF-3BZ49N
-> (design a worker subpath for off-main-thread compute primitives).
+> **Status: decided — recipe extended, no subpath.** The maintainer chose
+> Option 1 (§27.4): KF-E6ER9X extended the `kerfjs/async` Worker recipe in
+> `docs/8-api-reference.md` with cancellation (abort terminates and respawns
+> the worker, then replays its resident data through `init`), a worker
+> `error` handler that rejects pending calls, `dispose()`, and a pool snippet.
+> No `kerfjs/worker` subpath ships. This document keeps the measurements, the
+> criteria, and the §27.5 subpath design for a later revisit. Ticket:
+> KF-3BZ49N (design a worker subpath for off-main-thread compute primitives).
 
 ## 27.1 Context
 
@@ -334,5 +337,10 @@ should not load both.
 - KF-CP3SZV (the worker recipe's `call()` hung forever when the worker failed
   to load): fixed in the recipe. A worker `error` or `messageerror` now
   rejects every pending call and every later one.
-- On the maintainer's choice: either the recipe extension (Option 1) or the
-  `kerfjs/worker` v1 implementation (Option 2), filed once decided.
+- KF-E6ER9X (extend the Worker recipe, the maintainer's choice of Option 1):
+  done. The recipe's `createCompute(spawn, init)` client and pool snippet were
+  run against real module workers in Chromium, Firefox, and WebKit (abort
+  mid-job, load failure, dispose, error reply, a superseded `resource()` run,
+  and two-worker parallelism).
+- Revisit the subpath when two real apps carry a worker pool, or when the
+  recipe's cancellation code is copied with a bug (§27.4).

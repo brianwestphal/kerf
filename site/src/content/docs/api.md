@@ -970,52 +970,111 @@ diff.run({ fileId }, (report) => fetchDiff(fileId, report));
 
 kerf renders and diffs on the main thread, and it should: render functions read signals there, and parsing HTML and touching the DOM can only happen there. What a Worker _can_ take off the main thread is your app's own compute: fuzzy search over thousands of rows, parsing a CSV or markdown file, aggregating a dataset. `resource()` is the seam. Its fetcher is any function that returns a promise, so it can post a message to a Worker and resolve with the reply, and the result renders on the main thread like any other data.
 
-A small request/reply helper on the main thread:
+Keep the data in the worker. Sending the whole dataset with every request blocks the main thread about as long as doing the work there, because structured clone is linear in the data. Load the data into the worker once and send only the query and the result.
+
+A small client on the main thread owns one worker: a request/reply `call()`, cancellation, error handling, and disposal.
 
 ```ts
 // compute-client.ts — main thread
 type Reply = { id: number; result?: unknown; error?: string };
+type Settle = { resolve: (result: unknown) => void; reject: (error: unknown) => void };
+type Post = (message: Record<string, unknown>, transfer?: Transferable[]) => void;
 
-const worker = new Worker(new URL('./compute.worker.ts', import.meta.url), {
-  type: 'module',
-});
-const pending = new Map<number, (reply: Reply) => void>();
-let nextId = 0;
-
-let failure: string | undefined;
-
-worker.onmessage = (event: MessageEvent<Reply>) => {
-  pending.get(event.data.id)?.(event.data);
-  pending.delete(event.data.id);
-};
-
-/** A worker that fails to load or throws rejects every pending call, and the next ones. */
-function failAll(message: string) {
-  failure = message;
-  for (const settle of pending.values()) settle({ id: -1, error: message });
-  pending.clear();
+export interface Compute {
+  /** Post one request and resolve with its reply. Aborting `signal` cancels it. */
+  call<T>(
+    message: Record<string, unknown>,
+    options?: { transfer?: Transferable[]; signal?: AbortSignal },
+  ): Promise<T>;
+  /** Terminate the worker; every pending and later call rejects. */
+  dispose(): void;
 }
-worker.onerror = (event) => {
-  event.preventDefault();
-  failAll(event.message || 'The compute worker failed to load or crashed');
-};
-worker.onmessageerror = () => failAll('A compute worker reply could not be read');
 
-/** Post one request and resolve with its reply; a worker error rejects. */
-export function call<T>(
-  message: Record<string, unknown>,
-  transfer: Transferable[] = [],
-): Promise<T> {
-  if (failure !== undefined) return Promise.reject(new Error(failure));
-  const id = nextId++;
-  return new Promise<T>((resolve, reject) => {
-    pending.set(id, (reply) =>
-      reply.error === undefined
-        ? resolve(reply.result as T)
-        : reject(new Error(reply.error)),
-    );
-    worker.postMessage({ ...message, id }, { transfer });
-  });
+/**
+ * One module worker behind a request/reply `call()`. `init` runs on every
+ * worker this starts, before any call reaches it: send the worker-resident
+ * data there (or tell the worker where to load it), so a worker respawned
+ * after a cancel starts from the same state.
+ */
+export function createCompute(
+  spawn: () => Worker,
+  init: (post: Post) => void = () => {},
+): Compute {
+  const pending = new Map<number, Settle>();
+  let worker: Worker | undefined;
+  let failure: Error | undefined;
+  let nextId = 0;
+
+  function rejectAll(error: unknown) {
+    for (const settle of pending.values()) settle.reject(error);
+    pending.clear();
+  }
+  /** A worker that fails to load or crashes rejects every pending call, and the next ones. */
+  function fail(message: string) {
+    failure = new Error(message);
+    worker?.terminate();
+    worker = undefined;
+    rejectAll(failure);
+  }
+  function start(): Worker {
+    const next = spawn();
+    next.onmessage = (event: MessageEvent<Reply>) => {
+      const settle = pending.get(event.data.id);
+      if (settle === undefined) return;
+      pending.delete(event.data.id);
+      if (event.data.error === undefined) settle.resolve(event.data.result);
+      else settle.reject(new Error(event.data.error));
+    };
+    next.onerror = (event) => {
+      event.preventDefault();
+      fail(event.message || 'The compute worker failed to load or crashed');
+    };
+    next.onmessageerror = () => fail('A compute worker reply could not be read');
+    init((message, transfer = []) => next.postMessage(message, { transfer }));
+    return next;
+  }
+  /**
+   * A worker runs one message at a time and never sees an abort, so the only
+   * way to stop a running job is to terminate the worker. That discards every
+   * job on it; the next call starts a fresh worker and replays `init`.
+   */
+  function cancel(reason: unknown) {
+    worker?.terminate();
+    worker = undefined;
+    rejectAll(reason);
+  }
+
+  return {
+    call<T>(
+      message: Record<string, unknown>,
+      { transfer = [], signal }: { transfer?: Transferable[]; signal?: AbortSignal } = {},
+    ): Promise<T> {
+      if (failure !== undefined) return Promise.reject(failure);
+      if (signal?.aborted) return Promise.reject(signal.reason);
+      worker ??= start();
+      const id = nextId++;
+      return new Promise<T>((resolve, reject) => {
+        const onAbort = () => {
+          if (pending.has(id)) cancel(signal!.reason);
+        };
+        signal?.addEventListener('abort', onAbort, { once: true });
+        pending.set(id, {
+          resolve: (result) => {
+            signal?.removeEventListener('abort', onAbort);
+            resolve(result as T);
+          },
+          reject: (error) => {
+            signal?.removeEventListener('abort', onAbort);
+            reject(error);
+          },
+        });
+        worker!.postMessage({ ...message, id }, { transfer });
+      });
+    },
+    dispose() {
+      fail('The compute worker was disposed');
+    },
+  };
 }
 ```
 
@@ -1025,10 +1084,12 @@ The worker holds the data and does the work. It needs no kerf import:
 // compute.worker.ts — runs off the main thread
 type Row = { id: number; label: string };
 type Job =
+  | { kind: 'init'; url: string }
   | { id: number; kind: 'search'; query: string }
   | { id: number; kind: 'csv'; buffer: ArrayBuffer };
 
-const rows: Promise<Row[]> = fetch('/rows.json').then((r) => r.json());
+// The worker-resident data. `init` (re)loads it on every worker the client starts.
+let rows: Promise<Row[]> = Promise.resolve([]);
 
 function score(label: string, query: string): number {
   // Subsequence match: every query character, in order; tighter runs score higher.
@@ -1043,7 +1104,7 @@ function score(label: string, query: string): number {
   return total;
 }
 
-async function handle(job: Job): Promise<[unknown, Transferable[]]> {
+async function handle(job: Exclude<Job, { kind: 'init' }>): Promise<[unknown, Transferable[]]> {
   switch (job.kind) {
     case 'search': {
       const hits = (await rows)
@@ -1057,7 +1118,7 @@ async function handle(job: Job): Promise<[unknown, Transferable[]]> {
       const lines = new TextDecoder().decode(job.buffer).trim().split('\n');
       const values = new Float64Array(lines.length - 1);
       for (let i = 1; i < lines.length; i++) {
-        values[i - 1] = Number(lines[i].split(',')[1]);
+        values[i - 1] = Number(lines[i]!.split(',')[1]);
       }
       // Hand the column back without copying it.
       return [{ header: lines[0], values }, [values.buffer]];
@@ -1066,12 +1127,16 @@ async function handle(job: Job): Promise<[unknown, Transferable[]]> {
 }
 
 self.onmessage = async (event: MessageEvent<Job>) => {
-  const { id } = event.data;
+  const job = event.data;
+  if (job.kind === 'init') {
+    rows = fetch(job.url).then((r) => r.json() as Promise<Row[]>);
+    return;
+  }
   try {
-    const [result, transfer] = await handle(event.data);
-    self.postMessage({ id, result }, { transfer });
+    const [result, transfer] = await handle(job);
+    self.postMessage({ id: job.id, result }, { transfer });
   } catch (error) {
-    self.postMessage({ id, error: String(error) });
+    self.postMessage({ id: job.id, error: String(error) });
   }
 };
 ```
@@ -1079,11 +1144,20 @@ self.onmessage = async (event: MessageEvent<Job>) => {
 The app wires a resource per job and renders as usual:
 
 ```tsx
-import { each, effect, mount, signal } from 'kerfjs';
+import { each, signal } from 'kerfjs';
 import { resource } from 'kerfjs/async';
+import { disposeScope } from 'kerfjs/scope';
 import { debouncedSignal } from 'kerfjs/timing';
 
-import { call } from './compute-client.js';
+import { createCompute } from './compute-client.js';
+
+const spawn = () =>
+  new Worker(new URL('./compute.worker.ts', import.meta.url), { type: 'module' });
+
+// One client per resource: cancelling terminates the worker, which discards
+// every job on it, so a search cancel must not take a CSV import with it.
+const search = createCompute(spawn, (post) => post({ kind: 'init', url: '/rows.json' }));
+const csv = createCompute(spawn);
 
 type Hit = { id: number; label: string; score: number };
 
@@ -1091,14 +1165,20 @@ export const query = signal('');
 const settledQuery = debouncedSignal(query, 120);
 export const hits = resource<Hit[], string>();
 
-// Re-runs whenever the settled query changes.
-effect(() => {
+const results = document.getElementById('results')!;
+const scope = disposeScope(results);
+
+// Re-runs whenever the settled query changes. A newer run aborts this one's
+// signal, which terminates the search worker instead of waiting out the job.
+scope.effect(() => {
   const q = settledQuery.value;
-  void hits.run(q, () => call<Hit[]>({ kind: 'search', query: q }));
+  void hits.run(q, (_report, signal) =>
+    search.call<Hit[]>({ kind: 'search', query: q }, { signal }),
+  );
 });
 
 // The render stays on the main thread and reads plain data from the resource.
-mount(document.getElementById('results')!, () => {
+scope.mount(results, () => {
   const { status, data, error } = hits.value;
   if (status === 'failed') return <p role="alert">{String(error)}</p>;
   return (
@@ -1107,6 +1187,9 @@ mount(document.getElementById('results')!, () => {
     </ul>
   );
 });
+// Removing the results panel's scope stops both workers and rejects their pending calls.
+scope.add(search.dispose);
+scope.add(csv.dispose);
 
 type Column = { header: string; values: Float64Array };
 export const column = resource<Column, string>();
@@ -1114,17 +1197,48 @@ export const column = resource<Column, string>();
 export async function importCsv(file: File): Promise<void> {
   const buffer = await file.arrayBuffer();
   // Transferred, not copied: `buffer` is detached (byteLength 0) after this.
-  await column.run(file.name, () =>
-    call<Column>({ kind: 'csv', buffer }, [buffer]),
+  await column.run(file.name, (_report, signal) =>
+    csv.call<Column>({ kind: 'csv', buffer }, { transfer: [buffer], signal }),
   );
+}
+```
+
+For several jobs at once, put a few clients behind one `call()`. Each worker runs one job at a time, so a pool sends each call to the least busy one:
+
+```ts
+// compute-pool.ts — main thread: N workers, each call to the least busy one
+import { type Compute, createCompute } from './compute-client.js';
+
+export function createComputePool(
+  size: number,
+  ...worker: Parameters<typeof createCompute>
+): Compute {
+  const lanes = Array.from({ length: size }, () => ({
+    compute: createCompute(...worker),
+    busy: 0,
+  }));
+  return {
+    call<T>(message: Record<string, unknown>, options?: Parameters<Compute['call']>[1]) {
+      const lane = lanes.reduce((least, next) => (next.busy < least.busy ? next : least));
+      lane.busy += 1;
+      return lane.compute.call<T>(message, options).finally(() => {
+        lane.busy -= 1;
+      });
+    },
+    dispose() {
+      for (const lane of lanes) lane.compute.dispose();
+    },
+  };
 }
 ```
 
 What each piece does:
 
-- **Superseded results never paint.** Typing fires a run per settled query; when an older reply arrives after a newer run started, the stale-response guard drops it, so the list only ever shows the latest query's hits. The worker still finishes the older job: a worker runs one message at a time and cannot see a newer one until the current job returns. The debounce keeps that queue short. For a job that runs for seconds, listen for the fetcher's `AbortSignal` (its second argument), which aborts as soon as a newer run supersedes this one, and in that handler call `worker.terminate()` and create a fresh worker instead of waiting it out.
-- **Errors land in `value.error`.** A throw inside the worker becomes an error reply, `call()` rejects, and the resource moves to `failed` without an unhandled rejection.
-- **Transfer large binary data; let small results copy.** Passing an `ArrayBuffer` (or a typed array's `.buffer`) in the transfer list moves it between threads without a copy, and the sender's copy becomes detached. Plain objects and strings are copied by structured clone, which is fast at these sizes; a megabyte-scale string costs well under a millisecond on a desktop. Transferring pays off for large typed arrays and file contents.
+- **Superseded results never paint, and superseded work stops.** Typing fires a run per settled query. When a newer run starts, the resource aborts the older run's `AbortSignal` and its stale-response guard drops the older result, so the list only shows the latest query's hits. A worker runs one message at a time and never sees a newer message or an abort until its current job returns, so `call()` stops a running job by terminating the worker. The next call starts a fresh worker, and `init` loads the worker-resident data into it again. The debounce keeps cancellations rare. The abort rejection belongs to the superseded run, so the guard drops it and the resource never moves to `failed` because of it.
+- **Give each job its own client.** Terminating a worker discards every job on it, so a cancelled search must not share a worker with a CSV import. In a pool, cancelling a call terminates that call's worker, along with any other call queued on it.
+- **Errors land in `value.error`.** A throw inside the worker becomes an error reply: that `call()` rejects, the resource moves to `failed` without an unhandled rejection, and the worker keeps serving. A worker that fails to load (a missing file, a syntax error) or crashes fires `error` instead. That rejects every pending call and every later one, so no `resource()` stays `running` forever.
+- **Dispose with the view.** `dispose()` terminates the worker and rejects pending and later calls. Register it on the view's scope (`kerfjs/scope`), so removing the view stops its workers along with its mounts and effects.
+- **Transfer large binary data; let small results copy.** Passing an `ArrayBuffer` (or a typed array's `.buffer`) in `transfer` moves it between threads without a copy, and the sender's copy becomes detached. Plain objects and strings are copied by structured clone, which is fast at these sizes; a megabyte-scale string costs well under a millisecond on a desktop. Transferring pays off for large typed arrays and file contents.
 - **Keep the worker's results as data.** Send rows, numbers, and strings back, not HTML: the render function, `each()`, and the morph stay on the main thread, where they can read signals and preserve focus and selection.
 
 ## Keyed reactive list — `kerfjs/list` subpath
