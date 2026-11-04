@@ -515,6 +515,24 @@ A browser makes everything outside an open modal dialog inert and paints a plain
 
 A `popover()` or `tooltip()` whose anchor sits inside the modal dialog never triggers this: it renders into the dialog's host slot — a `[data-kerf-overlay-host][data-morph-skip]` element, created automatically for a dialog kerf opened — so it stays inside the modal subtree and is fully usable. The fix is therefore to anchor the popover inside the dialog and give an app-owned dialog a `<div data-kerf-overlay-host data-morph-skip></div>` element, or to pass a `container` inside the dialog. Each case warns once per page. There is no switch: the broken state is invisible from the code, and the warning is unreachable unless `kerfjs/dev` is imported.
 
+### Selector fan-out (`selectorFanout`)
+
+**Switch:** `enableWarnings({ selectorFanout: true })` · env fallback `KERF_DEV_WARN_SELECTOR_FANOUT=1`
+
+**Trigger:** one signal write re-evaluates at least 200 `computed()`s and at most `max(2, 2%)` of them produce a different value, for three writes of the same signal in a row. **What it catches:** the per-row equality fan-out that [`selector()` and `setSelector()`](/kerf/docs/reactivity/) exist to replace:
+
+```tsx
+<tr class={computed(() => (row.id === selectedId.value ? "danger" : ""))}>
+```
+
+Every `selectedId` write re-evaluates all N row computeds, and only two of them change. `selector()` makes that O(1) per write.
+
+**How it decides.** With the switch on, each `computed()` counts its re-evaluations and how many returned a different value. A value-changing write to a signal opens a short window — closed on a microtask, so it covers both the synchronous update and an enclosing `batch()` — that records the write's stack. A legitimate broad update, such as a theme signal read by 1000 computeds, changes all of them and stays silent. A window in which two signals were written is skipped, since neither can be blamed; a write that doesn't qualify resets that signal's streak. One warning per signal.
+
+**The message is hedged.** kerf can't see why a computed kept its value, so the warning says "if each comparison is an equality or membership test against this signal", names `selector()` (equality) and `setSelector()` (set membership), and prints where the write happened.
+
+**Why opt-in:** counting wraps every computed body and captures a stack on each write, and a fan-out over a short list is sometimes the right trade. **Coverage:** both halves are decided at creation — a `computed()` or `signal()` created before the switch is on is never counted — so switch it on before you build the graph you want checked.
+
 ## Design rules for the family
 
 Every dev-warning in this family follows the same shape.
@@ -664,7 +682,7 @@ reconcile, `set()`, `delegate()` — so installation only needs to precede the
 operation you want diagnosed. Existing stores observe later installation on
 their next `get()` or `set()`; render diagnostics observe it on the next render.
 
-Three hooks are decided once, when their host is _created_, and both the
+Four hooks are decided once, when their host is _created_, and both the
 install and the warning's switch must come before that moment:
 
 - `signal()` picks its constructor — the untracked-signals warning

@@ -570,6 +570,61 @@ the code and has no legitimate use, so like the missing-row-key warning it is
 installed directly in its hook slot with no `KERF_DEV_WARN_*` switch, and is
 unreachable when `kerfjs/dev` is not imported.
 
+### 11.2.18 Selector fan-out (`selectorFanout`)
+
+**Switch:** `enableWarnings({ selectorFanout: true })` · env fallback `KERF_DEV_WARN_SELECTOR_FANOUT=1`
+
+**Module:** [`src/dev-selector-fanout-warn.ts`](../src/dev-selector-fanout-warn.ts),
+reached through two creation-time hook slots: `wrapComputed` in
+[`src/reactive.ts`](../src/reactive.ts)'s `computed()` (the evaluation side)
+and `signalFactory`, whose `DevSignal` ([`src/dev-signal.ts`](../src/dev-signal.ts))
+is the write side. **Trigger:** one signal write re-evaluates at least 200
+`computed()`s and at most `max(2, 2%)` of them produce a different value, for
+three consecutive writes of the same signal. **What it catches:** the per-row
+equality fan-out that `selector()` / `setSelector()` exist to replace
+([doc 2 §2.10](2-reactivity.md)):
+
+```tsx
+<tr class={computed(() => (row.id === selectedId.value ? "danger" : ""))}>
+```
+
+Every `selectedId` write re-evaluates all N row computeds, and two change.
+
+**Mechanism.** With the switch on, `computed()` wraps its body so each
+re-evaluation increments a global evaluation counter and, when the result is
+not `Object.is` to the previous one, a change counter (a computed's first
+evaluation is not counted — it is the initial render, not a response to a
+write). A value-changing write to a tracked `DevSignal` opens a _window_: it
+snapshots both counters and the write's stack _before_ the assignment (outside
+a `batch()`, signals-core flushes synchronously inside the setter), and closes
+on a microtask, which covers both the synchronous flush and an enclosing
+`batch()`. The separating ratio comes from a feasibility prototype: N=1000
+equality computeds give 1000 evaluations and 2 changes per write; a theme
+signal read by 1000 computeds gives 1000 evaluations and 1000 changes.
+
+**Attribution rules.** A window in which more than one tracked signal was
+written cannot be attributed, so it is skipped — it neither advances nor
+resets any streak. A single-signal window that does not qualify resets that
+signal's streak, so one large-but-legitimate write never accumulates toward
+the warning. Dedup is one-shot per signal.
+
+**The message is hedged.** The counters cannot see _why_ a computed kept its
+value, so the warning says "if each comparison is an equality or membership
+test against this signal", names `selector()` (equality) and `setSelector()`
+(set membership), and prints the write's stack so the author can find the
+signal.
+
+**Why opt-in.** Counting wraps every computed body and capturing a stack on
+every tracked write is not free, and a fan-out that mostly re-evaluates to the
+same value is sometimes the right trade (a short list, a computed that is
+cheap and rarely written). The switch keeps that judgement with the consumer.
+
+**Coverage boundary.** Both halves are decided at creation time (§11.3.6): a
+`computed()` created before the switch is on is never counted, and a
+`signal()` created before it is a plain signal that opens no window. Creating
+your graph after `enableWarnings({ selectorFanout: true })` is the whole
+requirement.
+
 ## 11.3 Design rules for the family
 
 Every dev-warning in this family follows the same shape. New warnings
@@ -764,24 +819,28 @@ reconcile, `set()`, `delegate()` — so installation only needs to precede the
 operation you want diagnosed. Existing stores observe later installation on
 their next `get()` or `set()`; render diagnostics observe it on the next render.
 
-Three hooks are decided once, when their host is _created_, and both the
+Four hooks are decided once, when their host is _created_, and both the
 install and the warning's switch must come before that moment:
 
 - `signal()` picks its constructor — the untracked-signals warning
-  (`untrackedSignals`).
+  (`untrackedSignals`) and the write side of the selector fan-out warning
+  (`selectorFanout`).
+- `computed()` decides whether to wrap its body with the evaluation counter —
+  the selector fan-out warning (`selectorFanout`).
 - `effect()` decides whether to wrap its body with the effect-depth counter —
   the delegate-in-effect warning (`delegateInEffect`).
 - `mount()` decides whether to attach the rebuilt-listeners
   `MutationObserver` — the rebuilt-listeners warning (`rebuiltListeners`).
 
-A signal, effect, or mount created earlier stays uncovered for its lifetime.
+A signal, computed, effect, or mount created earlier stays uncovered for its
+lifetime.
 Static imports are hoisted above a top-level `await import()`, so module-scope
 signals and effects in imported modules are created before the dev entry runs.
 To cover those, make `import 'kerfjs/dev'` the first static import of a
 dev-only entry file (and call `enableWarnings()` there), or load your app
 through a dynamic import after it. Only the untracked-signals warning prints
-this boundary when you enable it; for the other two, enable the switch before
-you create the effects and mounts you want checked.
+this boundary when you enable it; for the others, enable the switch before
+you create the computeds, effects, and mounts you want checked.
 
 **Two layers, not one.** Installation decides whether the diagnostics are
 _present_; each opt-in warner then reads its own switch through
@@ -831,7 +890,11 @@ guard lives in `src/mount.ts`; the dangerous-URL screen lives in
 `KERF_DEV_WARN_PARSER_REPAIR` (`src/dev-parser-repair-warn.ts`) report framework
 or invalid-markup defects rather than patterns the AI usage guide should teach;
 their dedicated tests are `tests/unit/dev-invariants.internal.test.ts` and
-`tests/unit/dev-parser-repair-warn.internal.test.tsx`.
+`tests/unit/dev-parser-repair-warn.internal.test.tsx`. `KERF_DEV_WARN_SELECTOR_FANOUT`
+(`src/dev-selector-fanout-warn.ts`, wired through `wrapComputed` and
+`signalFactory` → `src/reactive.ts`) points at `selector()` / `setSelector()`
+([doc 2 §2.10](2-reactivity.md)); its test is
+`tests/unit/dev-selector-fanout-warn.internal.test.ts`.
 
 ## 11.5 Adding a new warning
 

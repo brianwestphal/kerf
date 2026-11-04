@@ -295,6 +295,8 @@ const isChecked = setSelector(checked);
 
 Each write diffs the previous set against the next, O(|old| + |new|), and notifies only the keys that were added or removed. Assign a new Set; a new Set with the same members notifies nothing. Per-key signals live and release exactly as `selector()`'s do. It pays off when the sets are small next to the number of rows; a set holding most keys costs about what a plain `computed` per row does.
 
+**Finding the fan-outs.** With `kerfjs/dev` installed, `enableWarnings({ selectorFanout: true })` warns when one signal write re-evaluates hundreds of `computed()`s and almost none of them change value — the shape both helpers replace — and prints where the write happened. See [docs/11 §11.2.18](11-dev-warnings.md).
+
 ## 2.11 Live per-key values — a Map of signals
 
 For live data keyed by id (presence dots, ticker prices, job status from a websocket) where each message changes one or a few entities, keep **one signal per entity** in a `Map`, not one signal holding the whole `Map`:

@@ -61,6 +61,8 @@ export interface DevWarningOptions {
   staleIndex?: boolean;
   /** Markup the HTML parser repaired (a block element inside a `<p>`). */
   parserRepair?: boolean;
+  /** One signal write re-evaluating many computeds that almost all stay equal. */
+  selectorFanout?: boolean;
   /** Structural audit of kerf's list bookkeeping: warn, or `'throw'`. */
   invariants?: boolean | 'throw';
 }
@@ -78,6 +80,7 @@ const ENV_NAME: Record<keyof DevWarningOptions, string> = {
   listRebind: 'KERF_DEV_WARN_LIST_REBIND',
   staleIndex: 'KERF_DEV_WARN_STALE_INDEX',
   parserRepair: 'KERF_DEV_WARN_PARSER_REPAIR',
+  selectorFanout: 'KERF_DEV_WARN_SELECTOR_FANOUT',
   invariants: 'KERF_DEV_INVARIANTS',
 };
 

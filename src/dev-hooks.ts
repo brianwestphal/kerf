@@ -90,6 +90,13 @@ export interface DevHooks {
    * install or the opt-in is never wrapped.
    */
   wrapEffect?: (fn: () => void | (() => void)) => () => void | (() => void);
+  /**
+   * Wraps a `computed()` body so the selector fan-out warning can count
+   * re-evaluations and value changes. Returns the body to actually run.
+   * Resolved at computed-CREATION time (the `selectorFanout` switch too), so
+   * a computed created before the install or the opt-in is never counted.
+   */
+  wrapComputed?: <T>(fn: () => T) => () => T;
 
   // --- delegate.ts -------------------------------------------------------
   delegateInEffect?: (fn: 'delegate' | 'delegateCapture') => void;

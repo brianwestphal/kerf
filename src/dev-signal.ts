@@ -21,10 +21,16 @@
  * subscriber attaches. We never clear the flag on `unwatched`, so a signal
  * that *was* subscribed at some point won't warn even if its subscribers
  * later detach.
+ *
+ * KF-AJ4KG6: the same subclass is the write side of the selector fan-out
+ * warning. `signalFactory` builds a `DevSignal` when EITHER switch is on, and
+ * each instance records which of the two it serves at construction, so the
+ * untracked warning still fires only when its own switch was on.
  */
 
 import { Signal } from '@preact/signals-core';
 
+import { noteTrackedSignalWrite } from './dev-selector-fanout-warn.js';
 import { devFlag, silenceHint } from './dev-warn-config.js';
 
 const WARNING_MESSAGE =
@@ -34,18 +40,28 @@ const WARNING_MESSAGE =
   "Move the read inside mount()'s render fn or effect() callback. " +
   silenceHint('untrackedSignals');
 
+/** Which diagnostics one `DevSignal` serves, decided at its creation. */
+export interface DevSignalFeatures {
+  /** Warn on a write while the signal never had a subscriber. */
+  untracked: boolean;
+  /** Open a selector fan-out window on each value-changing write. */
+  fanout: boolean;
+}
+
 export class DevSignal<T> extends Signal<T> {
   private __hasSubscriber = false;
   private __warned = false;
   private __constructed = false;
+  private readonly __features: DevSignalFeatures;
 
-  constructor(initial?: T) {
-    super(initial as T, {
+  constructor(initial: T, features: DevSignalFeatures) {
+    super(initial, {
       watched(this: Signal<T>) {
         (this as unknown as { __hasSubscriber: boolean }).__hasSubscriber =
           true;
       },
     });
+    this.__features = features;
     this.__constructed = true;
   }
 
@@ -53,8 +69,19 @@ export class DevSignal<T> extends Signal<T> {
     return super.value;
   }
   override set value(v: T) {
+    // Open the fan-out window BEFORE the write: outside a batch, signals-core
+    // flushes synchronously inside the setter, so the re-evaluations the
+    // window attributes have already run by the time it returns.
+    if (this.__features.fanout && !Object.is(this.peek(), v)) {
+      noteTrackedSignalWrite(this);
+    }
     super.value = v;
-    if (this.__constructed && !this.__hasSubscriber && !this.__warned) {
+    if (
+      this.__constructed &&
+      this.__features.untracked &&
+      !this.__hasSubscriber &&
+      !this.__warned
+    ) {
       this.__warned = true;
       console.warn(WARNING_MESSAGE);
     }

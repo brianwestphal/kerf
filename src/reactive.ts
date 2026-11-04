@@ -4,7 +4,7 @@
  * later (or fronting it with a hand-rolled implementation) is a one-file
  * change.
  *
- * Two dev hook slots sit in front of the bare re-exports:
+ * Three dev hook slots sit in front of the bare re-exports:
  *
  * - `signalFactory` replaces the constructor so writes to never-subscribed
  *   signals can warn (`KERF_DEV_WARN_UNTRACKED_SIGNALS=1`).
@@ -12,20 +12,27 @@
  * - `wrapEffect` wraps the user body so `delegate()` can detect that it's
  *   running inside an effect (`KERF_DEV_WARN_DELEGATE_IN_EFFECT=1`).
  *
- * Both are `undefined` unless the consumer imported `kerfjs/dev`, so production
+ * - `wrapComputed` wraps a `computed()` body so the dev entry can count
+ *   re-evaluations that produced no new value (`KERF_DEV_WARN_SELECTOR_FANOUT=1`,
+ *   KF-AJ4KG6). `signalFactory` is its write side.
+ *
+ * All three are `undefined` unless the consumer imported `kerfjs/dev`, so production
  * sees the bare `@preact/signals-core` exports behind one property read.
  *
- * ORDERING: both slots are resolved at CREATION time. A signal created before
- * `kerfjs/dev` is installed (or before `untrackedSignals` is switched on) stays
- * plain, and an effect created before the install (or before
- * `delegateInEffect` is switched on) is never wrapped. Static imports hoist
+ * ORDERING: all three slots are resolved at CREATION time. A signal created
+ * before `kerfjs/dev` is installed (or before `untrackedSignals` /
+ * `selectorFanout` is switched on) stays plain, an effect created before the
+ * install (or before `delegateInEffect` is switched on) is never wrapped, and
+ * neither is a computed created before `selectorFanout` is switched on. Static imports hoist
  * above a `await import()`, so module-scope signals and effects in imported
- * modules are created first. `mount()`'s `listenerRebuild` hook is the third
+ * modules are created first. `mount()`'s `listenerRebuild` hook is the fourth
  * creation-time boundary. See docs/11-dev-warnings.md §11.3.6.
  */
 
 import {
+  computed as coreComputed,
   effect as coreEffect,
+  type ReadonlySignal,
   Signal,
   signal as coreSignal,
   type SignalOptions,
@@ -33,12 +40,7 @@ import {
 
 import { devHooks } from './dev-hooks.js';
 
-export {
-  batch,
-  computed,
-  type ReadonlySignal,
-  Signal,
-} from '@preact/signals-core';
+export { batch, type ReadonlySignal, Signal } from '@preact/signals-core';
 
 /**
  * Runtime type guard for a `@preact/signals-core` signal (both `signal()`
@@ -70,4 +72,17 @@ export function rawSignal<T>(value: T, options?: SignalOptions<T>): Signal<T> {
 export function effect(fn: () => void | (() => void)): () => void {
   const wrap = devHooks.wrapEffect;
   return coreEffect(wrap ? wrap(fn) : fn);
+}
+
+/**
+ * `@preact/signals-core`'s `computed()`, with the dev `wrapComputed` slot in
+ * front of the body (selector fan-out counting). `options` (`watched` /
+ * `unwatched`) are forwarded unchanged.
+ */
+export function computed<T>(
+  fn: () => T,
+  options?: SignalOptions<T>,
+): ReadonlySignal<T> {
+  const wrap = devHooks.wrapComputed;
+  return coreComputed(wrap ? wrap(fn) : fn, options);
 }

@@ -22,10 +22,13 @@
  * ## Install ordering
  *
  * Most hooks are read at CALL time (render, reconcile, `set()`, `delegate()`).
- * Three are decided once, when their host is CREATED, so both installation and
+ * Four are decided once, when their host is CREATED, so both installation and
  * the warning's switch must precede it:
  *
- *  - `signalFactory` — `signal()` picks its constructor (untracked signals).
+ *  - `signalFactory` — `signal()` picks its constructor (untracked signals,
+ *    and the write side of the selector fan-out warning).
+ *  - `wrapComputed` — `computed()` decides whether to count its
+ *    re-evaluations (selector fan-out).
  *  - `wrapEffect` — `effect()` decides whether to wrap its body with the
  *    effect-depth counter (delegate-in-effect).
  *  - `listenerRebuild` — `mount()` decides whether to attach its
@@ -83,6 +86,10 @@ import { maybeWarnParserRepair } from './dev-parser-repair-warn.js';
 import { maybeWarnValueOnlyRerender } from './dev-rerender-warn.js';
 import { maybeWarnMissingRowKey } from './dev-row-key-warn.js';
 import {
+  isSelectorFanoutEnabled,
+  wrapComputedForFanout,
+} from './dev-selector-fanout-warn.js';
+import {
   DevSignal,
   isDevWarnUntrackedEnabled,
   noteUntrackedCoverage,
@@ -124,9 +131,10 @@ export type { DevWarningOptions } from './dev-warn-config.js';
  * variables are unreachable there.
  *
  * Call it as early as you can. Most diagnostics read their switch at call
- * time, but three are decided when their host is CREATED: `untrackedSignals`
- * per `signal()`, `delegateInEffect` per `effect()`, and `rebuiltListeners` per
- * `mount()`. A signal, effect, or mount created before this call stays
+ * time, but four are decided when their host is CREATED: `untrackedSignals`
+ * per `signal()`, `delegateInEffect` per `effect()`, `rebuiltListeners` per
+ * `mount()`, and `selectorFanout` per `signal()` and per `computed()`. A
+ * signal, computed, effect, or mount created before this call stays
  * uncovered. Enabling `untrackedSignals` prints its coverage boundary once.
  */
 export function enableWarnings(options: DevWarningOptions): void {
@@ -142,10 +150,15 @@ export function enableWarnings(options: DevWarningOptions): void {
  */
 export const DEV_HOOKS: DevHooks = {
   // --- reactive ---------------------------------------------------------
-  signalFactory: <T>(value: T): Signal<T> =>
-    isDevWarnUntrackedEnabled()
-      ? new DevSignal<T>(value)
-      : coreSignal<T>(value),
+  signalFactory: <T>(value: T): Signal<T> => {
+    // Either switch needs a `DevSignal`; each instance records which one it
+    // serves, so the untracked warning still fires only under its own switch.
+    const untracked = isDevWarnUntrackedEnabled();
+    const fanout = isSelectorFanoutEnabled();
+    return untracked || fanout
+      ? new DevSignal<T>(value, { untracked, fanout })
+      : coreSignal<T>(value);
+  },
   wrapEffect: (fn) => {
     // Resolved once per `effect()` call, matching the pre-hook behavior: an
     // effect created while the warning is off is never wrapped.
@@ -159,6 +172,8 @@ export const DEV_HOOKS: DevHooks = {
       }
     };
   },
+
+  wrapComputed: wrapComputedForFanout,
 
   // --- delegate ---------------------------------------------------------
   delegateInEffect: warnIfInsideEffect,

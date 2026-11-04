@@ -188,8 +188,8 @@ if (import.meta.env.DEV) {
 Keys (all optional, all off unless named): `rebuiltListeners`,
 `untrackedSignals`, `narrowSet`, `delegateInEffect`, `eachInMorphSkip`,
 `duplicateEachKeys`, `staleBinding`, `valueOnlyRerender`, `listRebind`,
-`staleIndex`, `parserRepair`, and `invariants` (`true` warns, `'throw'`
-throws). Each corresponds one-to-one with a `KERF_DEV_WARN_*` environment
+`staleIndex`, `parserRepair`, `selectorFanout`, and `invariants` (`true`
+warns, `'throw'` throws). Each corresponds one-to-one with a `KERF_DEV_WARN_*` environment
 variable — those still work for Node, SSR, and CI — and an explicit call wins
 over the environment in both directions, so `{ narrowSet: false }` silences an
 ambient variable.
@@ -200,9 +200,9 @@ environment variables are unreachable in the environment where these warnings
 are most wanted.
 
 Call it as early as you can: most diagnostics read their switch at call time,
-but three are decided when their host is created — `untrackedSignals` per
-`signal()`, `delegateInEffect` per `effect()`, and `rebuiltListeners` per
-`mount()`. Enabling `untrackedSignals` prints its coverage boundary once.
+but four are decided when their host is created — `untrackedSignals` per
+`signal()`, `delegateInEffect` per `effect()`, `rebuiltListeners` per
+`mount()`, and `selectorFanout` per `signal()` and `computed()`. Enabling `untrackedSignals` prints its coverage boundary once.
 
 The subpath also re-exports `clearDevHooks()`, `installDevHooks()` and
 `devHooks` so a consumer's own test suite can assert production-shaped
@@ -213,10 +213,12 @@ it (re-importing `kerfjs/dev` would not reinstall, because a module evaluates
 once). `installDevHooks()` merges into the installed set rather than replacing
 it.
 
-Order matters in three places, all decided at creation: `signal()` chooses
-its constructor (untracked signals), `effect()` decides whether to wrap its
-body (delegate-in-effect), and `mount()` decides whether to attach the
-rebuilt-listeners observer. A signal, effect, or mount created before the dev
+Order matters in four places, all decided at creation: `signal()` chooses
+its constructor (untracked signals, selector fan-out), `computed()` decides
+whether to count its re-evaluations (selector fan-out), `effect()` decides
+whether to wrap its body (delegate-in-effect), and `mount()` decides whether
+to attach the rebuilt-listeners observer. A signal, computed, effect, or mount
+created before the dev
 entry runs, or before its warning is switched on, stays uncovered — and since
 static imports hoist above a top-level `await import()`, that is the common
 case for module-scope code. To cover it, make `import 'kerfjs/dev'` the first
