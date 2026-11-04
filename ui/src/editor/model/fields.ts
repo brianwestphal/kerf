@@ -397,6 +397,64 @@ export function withValueAt(
 }
 
 /**
+ * KF-VQTDYG: `value` with each object along `path` holding its missing
+ * required booleans as `false`. A required boolean's switch shows off while
+ * its key is unset, so the document must say `false` too; otherwise an
+ * object the person filled in (a DialogSurface `stack`) stays invalid until
+ * each switch is turned on and off again. `value` itself is returned when
+ * nothing is missing, and `undefined` stays unset.
+ */
+export function withRequiredBooleans(
+  value: ViewValue | undefined,
+  type: ViewType | undefined,
+  definitions: Definitions,
+  path: FieldPath,
+): ViewValue | undefined {
+  if (value === undefined) return value;
+  const resolved = shape(memberFor(type, definitions, value), definitions);
+  let out = value;
+  const fields = fieldsOf(value);
+  if (resolved?.kind === 'object' && fields) {
+    const missing = (resolved.props ?? []).filter(
+      (prop) =>
+        prop.required &&
+        fields[prop.name] === undefined &&
+        shape(prop.type as ViewType, definitions)?.kind === 'boolean',
+    );
+    if (missing.length)
+      out = {
+        ...fields,
+        ...Object.fromEntries(missing.map((prop) => [prop.name, false])),
+      };
+  }
+  if (!path.length) return out;
+  const [step, ...rest] = path;
+  if (typeof step === 'number') {
+    if (!Array.isArray(out) || out[step] === undefined) return out;
+    const items = memberFor(
+      resolved?.items as ViewType,
+      definitions,
+      out[step],
+    );
+    const item = withRequiredBooleans(out[step], items, definitions, rest);
+    if (item === out[step]) return out;
+    const list = [...out];
+    list[step] = item!;
+    return list;
+  }
+  const holder = fieldsOf(out);
+  const field = resolved?.props?.find((prop) => prop.name === step);
+  if (!holder || holder[step] === undefined || !field) return out;
+  const inner = withRequiredBooleans(
+    holder[step],
+    field.type as ViewType,
+    definitions,
+    rest,
+  );
+  return inner === holder[step] ? out : { ...holder, [step]: inner! };
+}
+
+/**
  * How a structured value reads on its Inspector row: "Not set", "3 fields
  * set", or "2 items".
  */

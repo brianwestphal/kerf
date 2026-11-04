@@ -249,6 +249,7 @@ import {
   stepTitle,
   typeAt,
   valueAt,
+  withRequiredBooleans,
   withValueAt,
 } from './model/fields.js';
 import {
@@ -4113,7 +4114,14 @@ export function createEditor(options: EditorOptions) {
     const node = findNode(doc.value, id)!.node;
     const props = node.props;
     const current = props?.[place.prop] as ViewValue | undefined;
-    const value = withValueAt(current, place.path, next);
+    // KF-VQTDYG: a required boolean shown off is written as false.
+    const value = withRequiredBooleans(
+      withValueAt(current, place.path, next),
+      propsByKey.get(node.type)?.props.find((item) => item.name === place.prop)
+        ?.type as ViewType | undefined,
+      definitionsOf(node.type),
+      place.path,
+    );
     if (JSON.stringify(current) === JSON.stringify(value)) return false;
     // KF-9AWGPS: renaming the selected choice keeps it selected, in the
     // value's own options list (KF-H1X3S7: a ColorSwatches' swatches).

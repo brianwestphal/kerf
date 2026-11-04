@@ -57,12 +57,12 @@
             },
             "stack": {
               "position": 1,
+              "open": false,
+              "active": false,
               "count": 2,
               "offset": {
                 "$css": "rem(0)"
-              },
-              "open": false,
-              "active": false
+              }
             }
           },
           "zones": {
@@ -134,12 +134,12 @@
             },
             "stack": {
               "position": 2,
+              "open": false,
+              "active": false,
               "count": 2,
               "offset": {
                 "$css": "rem(0)"
-              },
-              "open": false,
-              "active": false
+              }
             }
           },
           "zones": {

@@ -21625,12 +21625,8 @@ test('builds SurfaceScaffold › Controlled Reader Stack', async ({ page }) => {
     await setField(page, 'stack', ['position'], String(position));
     await setField(page, 'stack', ['count'], '2');
     await setField(page, 'stack', ['offset'], 'rem(0)');
-    // Neither reader is open yet. An untouched switch writes nothing, so
-    // each required flag is turned on and off again (KF-VQTDYG).
-    for (const flag of ['open', 'active']) {
-      await turnFieldOn(page, 'stack', [flag]);
-      await turnFieldOn(page, 'stack', [flag]);
-    }
+    // Neither reader is open yet: the untouched required switches already
+    // write false (KF-VQTDYG).
     await backOut(page);
     // The first reader's body holds no Text by now.
     await addInto(page, DIALOG, 'List', nth, 0);

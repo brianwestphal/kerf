@@ -27,6 +27,7 @@ import {
   typeAt,
   unionMembers,
   valueAt,
+  withRequiredBooleans,
   withValueAt,
 } from '../../../src/editor/model/fields.js';
 import { createEditor } from './kerf-catalog.js';
@@ -226,6 +227,37 @@ describe('field editor model', () => {
     ]);
     expect(withValueAt(undefined, [0], 'a')).toEqual(['a']);
     expect(withValueAt({ a: 1 }, [], 2)).toBe(2);
+  });
+
+  // KF-VQTDYG: a required boolean's switch shows off while unset, so a
+  // written object (a DialogSurface stack) holds false for it.
+  it('writes a shown-off required boolean as false in each object on the path', () => {
+    const stack = ref('DialogSurfaceStack');
+    expect(
+      withRequiredBooleans({ position: 1 }, stack, definitions, ['position']),
+    ).toEqual({ position: 1, open: false, active: false });
+    // A value already set is kept; nothing missing returns the value itself.
+    const full = { position: 1, open: true, active: false };
+    expect(withRequiredBooleans(full, stack, definitions, ['position'])).toBe(
+      full,
+    );
+    expect(
+      withRequiredBooleans(undefined, stack, definitions, ['position']),
+    ).toBeUndefined();
+    // Nested: the object a list item holds is filled along the path.
+    const items = { kind: 'array', items: stack } as unknown as ViewType;
+    expect(
+      withRequiredBooleans([{ count: 2 }], items, definitions, [0, 'count']),
+    ).toEqual([{ count: 2, open: false, active: false }]);
+    // A path through a field that is not set leaves the value alone.
+    const holder = {
+      kind: 'object',
+      props: [{ name: 'stack', type: stack }],
+    } as unknown as ViewType;
+    const empty = {};
+    expect(
+      withRequiredBooleans(empty, holder, definitions, ['stack', 'count']),
+    ).toBe(empty);
   });
 
   it('summarizes a value for its row', () => {
