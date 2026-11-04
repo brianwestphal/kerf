@@ -76,7 +76,9 @@ fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
 NODE
 
 echo "==> Installing root + webdriver-ts deps"
-(cd "${UPSTREAM_DIR}" && npm install)
+# The upstream root holds only its own lint/dev tooling, whose peer ranges
+# drift (eslint-plugin-react vs eslint 10, 2026-11); nothing the run uses.
+(cd "${UPSTREAM_DIR}" && npm install --legacy-peer-deps)
 (cd "${UPSTREAM_DIR}/webdriver-ts" && npm install && npm run compile)
 (cd "${UPSTREAM_DIR}/webdriver-ts-results" && npm install)
 
