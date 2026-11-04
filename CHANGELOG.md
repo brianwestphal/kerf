@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Editor: the Inspector hides preview-only popup props (KF-TGGSHZ).** PopupMenu `embedded` / `embeddedSubmenu` and Select `embedded` exist for the canvas preview, which sets them itself; authored in a view they would make the app's popup inert, so the props catalog marks them `hidden`. A dialog's `embedded` presentation stays authorable.
 - **Kerf UI `FieldLabel` declares `id` (KF-Q70Q9Y).** `id` was only a pass-through native attribute, so the editor could not author the id a group's `labelledBy` names. It is now a declared prop in the props catalog.
 - **Editor: an object's required switches write `false` (KF-VQTDYG).** Filling in an object prop in the Inspector (a DialogSurface `stack`) now writes `false` for each required boolean whose switch shows off, so the document is valid without turning each switch on and off.
 - **View validation places a ListDetailDialog's toolbar controls in their Toolbar (KF-WBH5P2).** A composition entry's `configTypes` can name one field of a config type (`ListDetailDialogList.toolbar`, `ListDetailDialogDetail.actions`), so a ToolbarControlGroup in a ListDetailDialog's list toolbar or detail actions no longer fails `KUI-L201`, while the column's `content` and `footer` keep their own placement rules.

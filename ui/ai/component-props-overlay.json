@@ -105,7 +105,11 @@
       }
     },
     "@kerfjs/ui:color-swatches": {
-      "props": { "value": { "choicesFrom": "swatches" } }
+      "props": {
+        "value": {
+          "choicesFrom": "swatches"
+        }
+      }
     },
     "@kerfjs/ui:empty-state": {
       "groups": ["Content", "State"],
@@ -539,6 +543,9 @@
         "placeholder": {
           "group": "State",
           "order": 2
+        },
+        "embedded": {
+          "control": "hidden"
         }
       }
     },
@@ -928,6 +935,16 @@
         "placeholder": {
           "group": "Behavior",
           "order": 2
+        }
+      }
+    },
+    "@kerfjs/ui:popup-menu": {
+      "props": {
+        "embedded": {
+          "control": "hidden"
+        },
+        "embeddedSubmenu": {
+          "control": "hidden"
         }
       }
     }

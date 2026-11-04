@@ -25,7 +25,7 @@ import {
 } from '../../../src/editor/model/inspector.js';
 import { sampleValue } from '../../../src/editor/model/sample-inputs.js';
 import sample from '../../fixtures/view/inbox.kui.json';
-import { viewCatalog } from './kerf-catalog.js';
+import { propsByKey, viewCatalog } from './kerf-catalog.js';
 
 const inbox = sample as unknown as ViewDocument;
 const COMPOSE = '01JB8Z1M6Q8E1X9V4S7K2R3T5D';
@@ -165,6 +165,28 @@ describe('inspector edges', () => {
     expect(inspectorSections(undefined, component)[0]!.rows[0]).toMatchObject({
       value: 'number?',
     });
+  });
+});
+
+// KF-TGGSHZ: the canvas sets a popup's preview-only props itself; authored
+// in a view they would make the app's popup inert, so the Inspector hides
+// them. A dialog's `embedded` is a real in-flow presentation and stays.
+describe('preview-only props', () => {
+  const shown = (key: string) =>
+    groupedProps(propsByKey.get(key) as never).flatMap((group) =>
+      group.props.map((prop) => prop.name),
+    );
+
+  it('hides PopupMenu and Select embedded previews from the Inspector', () => {
+    expect(shown('@kerfjs/ui:popup-menu')).not.toContain('embedded');
+    expect(shown('@kerfjs/ui:popup-menu')).not.toContain('embeddedSubmenu');
+    expect(shown('@kerfjs/ui:select')).not.toContain('embedded');
+    expect(shown('@kerfjs/ui:popup-menu')).toContain('items');
+  });
+
+  it("keeps a dialog's embedded presentation authorable", () => {
+    expect(shown('@kerfjs/ui:workbench-dialog')).toContain('embedded');
+    expect(shown('@kerfjs/ui:list-detail-dialog')).toContain('embedded');
   });
 });
 
