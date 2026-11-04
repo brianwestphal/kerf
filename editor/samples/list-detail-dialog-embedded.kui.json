@@ -1,0 +1,116 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListDetailDialogEmbedded",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list-detail-dialog",
+          "props": {
+            "id": "list-detail-dialog-embedded-demo",
+            "label": "Project Preview",
+            "list": {
+              "title": "Projects"
+            },
+            "detail": {
+              "title": "Atlas",
+              "description": "Active"
+            },
+            "embedded": true,
+            "height": {
+              "$css": "rem(17.5)"
+            },
+            "preferredWidth": {
+              "$css": "rem(35)"
+            }
+          },
+          "zones": {
+            "list.content": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "controlInsets": "tb"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Atlas",
+                        "action": "log-more",
+                        "selected": true,
+                        "description": "Mara Chen",
+                        "itemId": "atlas"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:list-item",
+                      "props": {
+                        "label": "Borealis",
+                        "action": "log-more",
+                        "description": "Sam Rivera",
+                        "itemId": "borealis"
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "detail.content": [
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "controlInsets": "tb"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:value-table",
+                      "props": {
+                        "label": "Project Details"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000008",
+                            "type": "@kerfjs/ui:value-table#ValueTableRow",
+                            "props": {
+                              "label": "Owner",
+                              "value": "Mara Chen"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000009",
+                            "type": "@kerfjs/ui:value-table#ValueTableRow",
+                            "props": {
+                              "label": "Status",
+                              "value": "Active"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

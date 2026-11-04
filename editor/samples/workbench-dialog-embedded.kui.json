@@ -1,0 +1,57 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "WorkbenchDialogEmbedded",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:workbench-dialog",
+          "props": {
+            "id": "workbench-dialog-embedded-demo",
+            "label": "Slide Preview",
+            "title": "Slide Preview",
+            "embedded": true,
+            "description": "Slide 3 of 12",
+            "height": {
+              "$css": "rem(15)"
+            },
+            "preferredWidth": {
+              "$css": "rem(35)"
+            }
+          },
+          "zones": {
+            "main": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "controlInsets": "tb"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:list-inset-text",
+                      "props": {
+                        "children": "The slide canvas goes here."
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

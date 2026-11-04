@@ -20537,6 +20537,42 @@ test('builds SurfaceScaffold › Medium Dialog', async ({ page }) => {
   );
 });
 
+// KF-R7MSPP: the same panel as the modal dialog, authored embedded.
+test('builds SurfaceScaffold › Embedded Dialog', async ({ page }) => {
+  const id = 'catalog-embedded-dialog';
+  const copy = 'The same panel as the modal dialog, shown where it sits.';
+  await dialogSurface(page, {
+    choices: { size: 'small', presentation: 'embedded' },
+    text: { id, label: 'Edit Workspace' },
+  });
+  await insetTextList(page, DIALOG, [copy]);
+  await zoneButtons(page, DIALOG, 'footer', [
+    { text: { children: 'Cancel' }, close: true },
+    { choices: { tone: 'brand' }, text: { children: 'Save' }, close: true },
+  ]);
+  await expectShown(page, id, ['Close', 'Cancel', 'Save']);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'surface-scaffold',
+        {
+          id,
+          label: 'Edit Workspace',
+          size: 'small',
+          presentation: 'embedded',
+        },
+        {
+          children: [insetTextListNode([copy])],
+          footer: [
+            closeButton('Cancel'),
+            closeButton('Save', { tone: 'brand' }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
 test('builds SurfaceScaffold › Viewport-Bounded Modal', async ({ page }) => {
   const id = 'catalog-bounded-dialog';
   const summary =
@@ -21172,6 +21208,30 @@ const dialogRailProps = (label: string, size: number, action: string) => ({
   toolbar: { label, toggle: { action, name: label } },
 });
 
+/**
+ * Fills the selected WorkbenchDialog's work area with a List (insets tb)
+ * holding one ListInsetText reading `copy`, in place of its seeded Text.
+ */
+async function workArea(page: Page, copy: string) {
+  await addChild(page, 'List', 'main');
+  // The seeded work-area Text gives way to the List.
+  await select(page, /^Text(?![A-Z])/);
+  await deleteSelected(page);
+  await select(page, /^List(?![A-Z])/);
+  await choose(page, 'controlInsets', 'tb');
+  await addChild(page, 'ListInsetText');
+  await area(page, 'Properties');
+  await setText(page, 'children', copy);
+}
+
+/** The work-area List `workArea` builds. */
+const workAreaNode = (copy: string) =>
+  node(
+    'list',
+    { controlInsets: 'tb' },
+    { children: [node('list-inset-text', { children: copy })] },
+  );
+
 const LAYERS = [
   ['title', 'Title', 'Text'],
   ['hero', 'Hero Image', 'Image'],
@@ -21197,20 +21257,7 @@ test('builds WorkbenchDialog › Edit Slide', async ({ page }) => {
   await setCss(page, 'viewportGutter', 'rem(0.5)');
   await setCss(page, 'height', 'rem(32.5)');
   await setCss(page, 'preferredWidth', 'rem(60)');
-  // The work area: a List (insets tb) holding the canvas placeholder copy.
-  await addChild(page, 'List', 'main');
-  // The seeded work-area Text gives way to the List.
-  await select(page, /^Text(?![A-Z])/);
-  await deleteSelected(page);
-  await select(page, /^List(?![A-Z])/);
-  await choose(page, 'controlInsets', 'tb');
-  await addChild(page, 'ListInsetText');
-  await area(page, 'Properties');
-  await setText(
-    page,
-    'children',
-    'The slide canvas goes here. Hero Image is selected.',
-  );
+  await workArea(page, 'The slide canvas goes here. Hero Image is selected.');
   // The bottom toolbar's trailing Row of Cancel and Save Slide.
   await select(page, WORKBENCH_DIALOG);
   await configure(page, 'mainBottomToolbar');
@@ -21296,18 +21343,7 @@ test('builds WorkbenchDialog › Edit Slide', async ({ page }) => {
         },
         {
           main: [
-            node(
-              'list',
-              { controlInsets: 'tb' },
-              {
-                children: [
-                  node('list-inset-text', {
-                    children:
-                      'The slide canvas goes here. Hero Image is selected.',
-                  }),
-                ],
-              },
-            ),
+            workAreaNode('The slide canvas goes here. Hero Image is selected.'),
           ],
           'mainBottomToolbar.trailing': [
             node(
@@ -21368,6 +21404,44 @@ test('builds WorkbenchDialog › Edit Slide', async ({ page }) => {
           ],
           'rightRail.toolbar.title': [toolbarTextNode('Inspector')],
         },
+      ),
+    ),
+  );
+});
+
+// KF-R7MSPP: a WorkbenchDialog authored embedded, its work area alone.
+test('builds WorkbenchDialog › Embedded', async ({ page }) => {
+  const id = 'workbench-dialog-embedded-demo';
+  const copy = 'The slide canvas goes here.';
+  await addInto(page, /^Pane/, 'WorkbenchDialog');
+  await select(page, WORKBENCH_DIALOG);
+  await applySpec(page, {
+    flags: ['embedded'],
+    text: {
+      id,
+      label: 'Slide Preview',
+      title: 'Slide Preview',
+      description: 'Slide 3 of 12',
+    },
+  });
+  await setCss(page, 'height', 'rem(15)');
+  await setCss(page, 'preferredWidth', 'rem(35)');
+  await workArea(page, copy);
+  await expect(canvas(page).locator(`#${id}`)).toContainText(copy);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'workbench-dialog',
+        {
+          id,
+          label: 'Slide Preview',
+          title: 'Slide Preview',
+          description: 'Slide 3 of 12',
+          embedded: true,
+          height: css('rem(15)'),
+          preferredWidth: css('rem(35)'),
+        },
+        { main: [workAreaNode(copy)] },
       ),
     ),
   );
@@ -21599,6 +21673,53 @@ test('builds ListDetailDialog › Project Details', async ({ page }) => {
                   }),
                 ],
               },
+            ),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+// KF-R7MSPP: a ListDetailDialog authored embedded, with no column controls.
+test('builds ListDetailDialog › Embedded', async ({ page }) => {
+  test.setTimeout(test.info().timeout * 2);
+  const id = 'list-detail-dialog-embedded-demo';
+  const projects = LDD_PROJECTS.slice(0, 2);
+  await addInto(page, /^Pane/, 'ListDetailDialog');
+  await select(page, LIST_DETAIL_DIALOG);
+  await applySpec(page, {
+    flags: ['embedded'],
+    text: { id, label: 'Project Preview' },
+  });
+  await setCss(page, 'height', 'rem(17.5)');
+  await setCss(page, 'preferredWidth', 'rem(35)');
+  await columnTitles(page);
+  await projectColumn(page, projects, 'log-more');
+  await atlasDetails(page);
+  const shown = canvas(page).locator(`#${id}`);
+  await expect(shown).toBeVisible();
+  await expect(shown.locator('.kui-list-item')).toHaveCount(projects.length);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list-detail-dialog',
+        {
+          id,
+          label: 'Project Preview',
+          embedded: true,
+          height: css('rem(17.5)'),
+          preferredWidth: css('rem(35)'),
+          list: { title: 'Projects' },
+          detail: { title: 'Atlas', description: 'Active' },
+        },
+        {
+          'list.content': [projectColumnNode(projects, 'log-more')],
+          'detail.content': [
+            node(
+              'list',
+              { controlInsets: 'tb' },
+              { children: [atlasDetailsNode()] },
             ),
           ],
         },
