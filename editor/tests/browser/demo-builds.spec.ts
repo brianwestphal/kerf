@@ -2298,9 +2298,28 @@ async function openConfigure(
     (await dialogs.count()) > before.dialogs;
   await button.click();
   await expect(async () => {
-    if (!(await opened()) && (await button.isVisible())) await button.click();
+    if (!(await opened()) && (await button.isVisible())) {
+      noteDroppedClickRetry('openConfigure', name);
+      await button.click();
+    }
     expect(await opened()).toBe(true);
   }).toPass({ intervals: [500, 1_000, 2_000], timeout: 30_000 });
+}
+
+/**
+ * KF-GHMFPC: records each time a dropped-click retry actually fires, so CI
+ * logs show whether the retries are still needed now that a NavStack pop no
+ * longer takes the pointer. Grep CI output for `[dropped-click-retry]`.
+ */
+function noteDroppedClickRetry(helper: string, target: string): void {
+  const info = test.info();
+  info.annotations.push({
+    type: 'dropped-click-retry',
+    description: `${helper}: ${target}`,
+  });
+  console.log(
+    `[dropped-click-retry] ${info.project.name} | ${info.title} | ${helper}: ${target}`,
+  );
 }
 
 /**
@@ -9644,7 +9663,10 @@ async function openField(
     .first();
   await row.click();
   await expect(async () => {
-    if (!(await opened.isVisible())) await row.click();
+    if (!(await opened.isVisible())) {
+      noteDroppedClickRetry('openField', `${prop} ${JSON.stringify(path)}`);
+      await row.click();
+    }
     await expect(opened).toBeVisible({ timeout: 2_000 });
   }).toPass({ timeout: 30_000 });
 }
