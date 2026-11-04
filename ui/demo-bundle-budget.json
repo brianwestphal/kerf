@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 451800,
+  "totalJavaScriptGzip": 452000,
   "measuredLargestJavaScriptGzip": 164550,
-  "measuredTotalJavaScriptGzip": 451724,
+  "measuredTotalJavaScriptGzip": 451954,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6771,6 +6771,22 @@
         "measuredTotalJavaScriptGzip": 451724,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 451800
+      }
+    },
+    {
+      "at": "2026-11-04T12:19:04.662Z",
+      "reason": "KF-HVJDWF / KF-M2FGPQ: embedded PopupMenu rows render as static rows, PopupMenu embeddedSubmenu shows the edited submenu open, and the Embedded Preview demos gain a Select hint and a Group By submenu",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164550,
+        "measuredTotalJavaScriptGzip": 451724,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 451800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164550,
+        "measuredTotalJavaScriptGzip": 451954,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 452000
       }
     }
   ]

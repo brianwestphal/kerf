@@ -282,15 +282,23 @@ export function PopupMenuDemo() {
       </CatalogExample>
       <CatalogExample
         label="Embedded Preview"
-        note="embedded shows the menu open at its trigger, in the document instead of the top layer, and inert: its items choose nothing. It is a static preview, as the Kerf UI editor's edit canvas shows a selected PopupMenu."
+        note="embedded shows the menu open at its trigger, in the document instead of the top layer, and inert: its items choose nothing. embeddedSubmenu opens one submenu beside its item too. It is a static preview, as the Kerf UI editor's edit canvas shows a selected PopupMenu and the submenu being edited."
         align="text-trigger"
       >
         <PopupMenu
           text="Arrange"
           embedded
+          embeddedSubmenu={[2]}
           items={[
             { label: 'By Name', action: 'log-more', checked: true },
             { label: 'By Size', action: 'log-more', checked: false },
+            {
+              label: 'Group By',
+              submenu: [
+                { label: 'Kind', action: 'log-more' },
+                { label: 'Date Added', action: 'log-more' },
+              ],
+            },
             { kind: 'divider' },
             { label: 'Clean Up', action: 'log-more' },
           ]}

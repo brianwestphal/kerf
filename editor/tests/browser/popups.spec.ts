@@ -107,7 +107,7 @@ const document = {
   },
 };
 
-const openDocument = async (page: Page) => {
+const openDocument = async (page: Page, opened: object = document) => {
   await page.goto('/');
   await page
     .locator('input[type="file"]')
@@ -115,7 +115,7 @@ const openDocument = async (page: Page) => {
     .setInputFiles({
       name: 'popups.kui.json',
       mimeType: 'application/json',
-      buffer: Buffer.from(JSON.stringify(document)),
+      buffer: Buffer.from(JSON.stringify(opened)),
     });
   await expect(page.getByText(/· 8 nodes · valid$/)).toBeVisible();
 };
@@ -268,6 +268,131 @@ test('the narrow canvas shows the selected popups too', async ({
   expect(await fits()).toBe(true);
   await capture(page, info.outputPath('kf-hvjdwf-select-390.png'));
 });
+
+/** The document with a Share item whose submenu holds two commands. */
+const withSubmenu = () => {
+  interface Node {
+    props?: { items?: unknown[] };
+    zones?: Record<string, Node[]>;
+  }
+  const copy = structuredClone(document) as unknown as { root: Node };
+  const toolbar = copy.root.zones!.content![0]!;
+  const menu = toolbar.zones!.trailing![0]!.zones!.children![0]!;
+  menu.props!.items!.push({
+    label: 'Share',
+    submenu: [
+      { label: 'Mail', action: 'log-more' },
+      { label: 'Message', action: 'log-more' },
+    ],
+  });
+  return copy;
+};
+
+// KF-M2FGPQ: while the Inspector edits an item's submenu, the canvas shows
+// that submenu open beside its item, in the document and inert.
+for (const width of [1440, 390]) {
+  test(`the canvas shows the submenu the Inspector edits at ${width}px`, async ({
+    page,
+  }, info) => {
+    await page.setViewportSize({ width, height: 900 });
+    await openDocument(page, withSubmenu());
+    const menu = canvasNode(page, ids.menu);
+    await menu.locator('.kui-popup-menu__trigger').click();
+    const rows = menu.locator(':scope > .kui-popup-menu__menu');
+    await expect(rows).toBeVisible();
+    const submenu = menu.locator('[data-submenu]');
+    await expect(submenu).toBeHidden();
+    // A narrow window collapses the Inspector; its toggle slides it in.
+    if (width <= 480)
+      await page
+        .locator('[data-action="editor-toggle-inspector"]')
+        .filter({ visible: true })
+        .first()
+        .click();
+    // The Items row is the Inspector's; an item's rows are in the field
+    // dialog it opens.
+    const open = async (path: readonly (string | number)[]) => {
+      const scope = path.length ? page.locator('dialog[open]') : page;
+      const row = scope
+        .locator(
+          `[data-editor-open='${JSON.stringify({ prop: 'items', path })}']`,
+        )
+        .filter({ visible: true })
+        .first();
+      // Once a sliding Inspector has settled across the window.
+      await expect
+        .poll(async () => {
+          const at = await row.boundingBox();
+          return at !== null && at.x >= 0 && at.x + at.width <= width;
+        })
+        .toBe(true);
+      await row.click();
+    };
+    await open([]);
+    const asList = page
+      .getByRole('button', { name: 'Edit as list' })
+      .filter({ visible: true });
+    if (await asList.count()) await asList.click();
+    await open([2]);
+    // The item itself: its submenu stays closed.
+    await expect(submenu).toBeHidden();
+    await open([2, 'submenu']);
+    await expect(submenu).toBeVisible();
+    await expect(submenu.locator('.kui-popup-menu__item')).toHaveText([
+      'Mail',
+      'Message',
+    ]);
+    await expect(
+      rows.locator('.kui-popup-menu__item', { hasText: 'Share' }),
+    ).toHaveAttribute('aria-expanded', 'true');
+    expect(
+      await submenu.evaluate((element) => element.hasAttribute('popover')),
+    ).toBe(false);
+    await expect(page.locator(':popover-open')).toHaveCount(0);
+    const [list, sub] = [
+      (await rows.boundingBox())!,
+      (await submenu.boundingBox())!,
+    ];
+    if (width > 480) {
+      // Beside the item, its first row level with it, and inside the page.
+      const share = (await rows
+        .locator('.kui-popup-menu__item', { hasText: 'Share' })
+        .boundingBox())!;
+      const mail = (await submenu
+        .locator('.kui-popup-menu__item', { hasText: 'Mail' })
+        .boundingBox())!;
+      expect(Math.abs(mail.y - share.y)).toBeLessThan(2);
+      expect(
+        sub.x > list.x + list.width - 8 || sub.x + sub.width < list.x + 8,
+      ).toBe(true);
+    } else {
+      // Below the menu at a phone width.
+      expect(sub.y).toBeGreaterThan(list.y + list.height);
+    }
+    // Inside the canvas: a trailing (bottom-end) menu's submenu opens on the
+    // start side, where there is room, as a real one flips there.
+    const area = (await page.locator('[data-editor-canvas]').boundingBox())!;
+    expect(sub.x).toBeGreaterThanOrEqual(area.x);
+    expect(sub.x + sub.width).toBeLessThanOrEqual(area.x + area.width);
+    expect(
+      await page.evaluate(
+        () =>
+          globalThis.document.documentElement.scrollWidth <=
+          globalThis.innerWidth,
+      ),
+    ).toBe(true);
+    await capture(page, info.outputPath(`kf-m2fgpq-submenu-${width}.png`));
+    // Leaving the submenu's field editor closes it again; the menu stays
+    // open while it is selected.
+    await page
+      .locator('dialog[open]')
+      .getByRole('button', { name: 'Done' })
+      .click();
+    await expect(page.locator('dialog[open]')).toHaveCount(0);
+    await expect(submenu).toBeHidden();
+    await expect(rows).toBeVisible();
+  });
+}
 
 test('play mode opens the real popups', async ({ page }) => {
   await openDocument(page);

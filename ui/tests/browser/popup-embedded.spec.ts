@@ -41,7 +41,7 @@ for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/?component=popup-menu');
     const menu = example(page, 'popup-menu').locator('.kui-popup-menu');
-    const rows = menu.locator('.kui-popup-menu__menu');
+    const rows = menu.locator(':scope > .kui-popup-menu__menu');
     await expect(rows).toBeVisible();
     await expect(rows.getByRole('menuitemcheckbox')).toHaveText([
       'By Name',
@@ -59,6 +59,29 @@ for (const width of [1280, 390]) {
           element.hasAttribute('popover') || element.matches(':popover-open'),
       ),
     ).toBe(false);
+    // KF-M2FGPQ: `embeddedSubmenu` shows Group By's submenu open too: beside
+    // its item, its first row level with the item, or below the menu at a
+    // phone width, as a real submenu opens.
+    const groupBy = rows.getByRole('menuitem', { name: 'Group By' });
+    await expect(groupBy).toHaveAttribute('aria-expanded', 'true');
+    const submenu = menu.locator('[data-submenu][data-embedded-open]');
+    await expect(submenu.getByRole('menuitem')).toHaveText([
+      'Kind',
+      'Date Added',
+    ]);
+    const [g, s, kind] = [
+      await box(groupBy),
+      await box(submenu),
+      await box(submenu.getByRole('menuitem', { name: 'Kind' })),
+    ];
+    if (width > 480) {
+      expect(s.x).toBeGreaterThanOrEqual(g.x + g.width - 1);
+      expect(s.x).toBeLessThan(r.x + r.width + 2);
+      expect(Math.abs(kind.y - g.y)).toBeLessThan(2);
+    } else {
+      expect(s.y).toBeGreaterThan(r.y + r.height);
+      expect(Math.abs(s.x - r.x)).toBeLessThan(2);
+    }
     // Inert: the trigger and the items neither open nor choose.
     await menu.evaluate((element) =>
       element.addEventListener('kui-menu-select', () => {
@@ -92,9 +115,21 @@ for (const width of [1280, 390]) {
     );
     await expect(page.locator(':popover-open')).toHaveCount(0);
     await reveal(rows);
+    await reveal(submenu);
+    // Over what lies beside or below it, and clipped by nothing.
+    expect(
+      await submenu.getByText('Date Added').evaluate((element) => {
+        const at = element.getBoundingClientRect();
+        const hit = document.elementFromPoint(
+          at.x + at.width / 2,
+          at.y + at.height / 2,
+        );
+        return hit !== null && element.contains(hit);
+      }),
+    ).toBe(true);
     await page.mouse.move(1, 1);
     await page.screenshot({
-      path: info.outputPath(`kf-hvjdwf-demo-menu-${width}.png`),
+      path: info.outputPath(`kf-m2fgpq-demo-menu-${width}.png`),
       animations: 'disabled',
     });
 

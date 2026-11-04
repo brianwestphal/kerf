@@ -971,3 +971,90 @@ describe('PopupMenu register: an embedded menu', () => {
     expect(setup().root.dataset.key).not.toBe(root.dataset.key);
   });
 });
+
+// KF-M2FGPQ: an embedded menu shows the submenu on its `embeddedSubmenu`
+// path open too, in the document and inert; the others stay closed.
+describe('PopupMenu: an embedded menu with an open submenu', () => {
+  const NESTED: PopupMenuEntry[] = [
+    { kind: 'heading', label: 'Edit' },
+    { label: 'Copy', action: 'copy' },
+    {
+      label: 'Share',
+      submenu: [
+        { label: 'Mail', action: 'mail' },
+        {
+          label: 'More',
+          submenu: [{ label: 'Print', action: 'print' }],
+        },
+      ],
+    },
+    { kind: 'divider' },
+    {
+      label: 'Move',
+      submenu: [{ label: 'Archive', action: 'archive' }],
+    },
+  ];
+  const submenus = (root: HTMLElement) =>
+    [...root.querySelectorAll<HTMLElement>('[data-submenu]')].map((menu) => ({
+      name: menu.getAttribute('aria-label'),
+      open: menu.hasAttribute('data-embedded-open'),
+      popover: menu.getAttribute('popover'),
+    }));
+
+  it('opens the submenus on the path, by items index at each level', () => {
+    const { root, item } = setup({
+      items: NESTED,
+      embedded: true,
+      embeddedSubmenu: [2, 1],
+    });
+    expect(submenus(root)).toEqual([
+      { name: 'Share', open: true, popover: null },
+      { name: 'More', open: true, popover: null },
+      { name: 'Move', open: false, popover: 'manual' },
+    ]);
+    expect(item('Share').getAttribute('aria-expanded')).toBe('true');
+    expect(item('More').getAttribute('aria-expanded')).toBe('true');
+    expect(item('Move').getAttribute('aria-expanded')).toBe('false');
+    // Still inert: its rows carry no data-action and take no focus.
+    expect(root.querySelector('[data-action]')).toBeNull();
+    expect(item('Print').localName).toBe('div');
+    // Its own content key: a different path rebuilds the menu.
+    expect(
+      setup({ items: NESTED, embedded: true, embeddedSubmenu: [4] }).root
+        .dataset.key,
+    ).not.toBe(root.dataset.key);
+    expect(setup({ items: NESTED, embedded: true }).root.dataset.key).not.toBe(
+      root.dataset.key,
+    );
+  });
+
+  it('stops the path at an index that names no submenu', () => {
+    const { root } = setup({
+      items: NESTED,
+      embedded: true,
+      embeddedSubmenu: [2, 0, 5],
+    });
+    expect(submenus(root).map((menu) => menu.open)).toEqual([
+      true,
+      false,
+      false,
+    ]);
+    const missing = setup({
+      items: NESTED,
+      embedded: true,
+      embeddedSubmenu: [9],
+    });
+    expect(missing.root.querySelector('[data-embedded-open]')).toBeNull();
+  });
+
+  it('is ignored without embedded', () => {
+    const { root, menu, item } = setup({
+      items: NESTED,
+      embeddedSubmenu: [2],
+    });
+    expect(menu.getAttribute('popover')).toBe('manual');
+    expect(root.querySelector('[data-embedded-open]')).toBeNull();
+    expect(item('Share').getAttribute('aria-expanded')).toBe('false');
+    expect(setup({ items: NESTED }).root.dataset.key).toBe(root.dataset.key);
+  });
+});

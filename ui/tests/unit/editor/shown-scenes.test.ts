@@ -8,6 +8,7 @@ import {
   embeddedDialogs,
   embeddedPopup,
   shownScenes,
+  submenuPath,
 } from '../../../src/editor/model/shown-scenes.js';
 import { createEditor } from './kerf-catalog.js';
 
@@ -417,6 +418,52 @@ describe('popups on the edit canvas', () => {
     expect(embeddedPopup(already, MENU)).toBe(already);
   });
 
+  // KF-M2FGPQ: a field place inside an item's submenu opens that submenu.
+  it('maps an items field place to the submenu path it lies inside', () => {
+    expect(submenuPath([])).toEqual([]);
+    expect(submenuPath([2])).toEqual([]);
+    expect(submenuPath([2, 'label'])).toEqual([]);
+    expect(submenuPath([2, 'submenu'])).toEqual([2]);
+    expect(submenuPath([2, 'submenu', 0, 'label'])).toEqual([2]);
+    expect(submenuPath([2, 'submenu', 1, 'submenu'])).toEqual([2, 1]);
+    expect(submenuPath([2, 'submenu', 1, 'submenu', 0])).toEqual([2, 1]);
+    expect(submenuPath(['submenu', 2])).toEqual([]);
+  });
+
+  it("opens the submenu of the selected PopupMenu's edited item", () => {
+    const document = withPopups();
+    const submenuOf = (shown: ViewDocument, index: number) =>
+      (propsOf(shown, index) as { embeddedSubmenu?: number[] }).embeddedSubmenu;
+    const inside = { prop: 'items', path: [1, 'submenu', 0] };
+    const shown = embeddedPopup(document, MENU, inside);
+    expect(propsOf(shown, 0).embedded).toBe(true);
+    expect(submenuOf(shown, 0)).toEqual([1]);
+    // Already embedded, it still opens the submenu.
+    expect(submenuOf(embeddedPopup(withPopups(true), MENU, inside), 0)).toEqual(
+      [1],
+    );
+    // A place outside a submenu, another prop, or a Select: no submenu.
+    expect(
+      submenuOf(embeddedPopup(document, MENU, { prop: 'items', path: [1] }), 0),
+    ).toBeUndefined();
+    expect(
+      submenuOf(
+        embeddedPopup(document, MENU, { prop: 'other', path: [1, 'submenu'] }),
+        0,
+      ),
+    ).toBeUndefined();
+    expect(
+      submenuOf(
+        embeddedPopup(document, SELECT, {
+          prop: 'items',
+          path: [1, 'submenu'],
+        }),
+        1,
+      ),
+    ).toBeUndefined();
+    expect(submenuOf(document, 0)).toBeUndefined();
+  });
+
   it('shows the selected popup open on the canvas, and its rows only select', () => {
     const root = globalThis.document.createElement('div');
     globalThis.document.body.append(root);
@@ -464,5 +511,59 @@ describe('popups on the edit canvas', () => {
     // The document keeps the authored props.
     expect(propsOf(editor.document.value, 0).embedded).toBeUndefined();
     expect(propsOf(editor.document.value, 1).embedded).toBeUndefined();
+  });
+
+  // KF-M2FGPQ: the Inspector's open field place inside an item's submenu
+  // shows that submenu open on the canvas.
+  it('shows the submenu the Inspector edits open beside its item', () => {
+    const root = globalThis.document.createElement('div');
+    globalThis.document.body.append(root);
+    const editor = createEditor();
+    const stopMount = mount(root, editor.render);
+    const unwireEditor = editor.wire(root);
+    cleanup = () => {
+      unwireEditor();
+      stopMount();
+    };
+    const document = globalThis.structuredClone(withPopups()) as unknown as {
+      root: { zones: { content: { props: Record<string, unknown> }[] } };
+    };
+    document.root.zones.content[0]!.props.items = [
+      { label: 'Newest', action: 'sort-newest' },
+      {
+        label: 'More',
+        submenu: [{ label: 'By Size', action: 'sort-size' }],
+      },
+    ];
+    editor.document.value = document as unknown as ViewDocument;
+    editor.selection.value = { kind: 'node', id: MENU };
+    const canvas = root.querySelector('[data-editor-canvas]')!;
+    const shownSubmenu = () =>
+      canvas.querySelector<HTMLElement>(
+        `[data-kerf-node="${MENU}"] [data-submenu][data-embedded-open]`,
+      );
+    // A list row's action is its inner button; the row carries the place.
+    const open = (path: readonly (string | number)[]) => {
+      const row = root.querySelector<HTMLElement>(
+        `[data-editor-open='${JSON.stringify({ prop: 'items', path })}']`,
+      )!;
+      (row.querySelector<HTMLElement>('[data-action]') ?? row).click();
+    };
+    expect(shownSubmenu()).toBeNull();
+    open([]);
+    open([1]);
+
+    // The item itself: its submenu stays closed.
+    expect(shownSubmenu()).toBeNull();
+    open([1, 'submenu']);
+    expect(shownSubmenu()?.getAttribute('aria-label')).toBe('More');
+    expect(shownSubmenu()?.textContent).toContain('By Size');
+    // The document keeps the authored props.
+    expect(propsOf(editor.document.value, 0)).not.toHaveProperty(
+      'embeddedSubmenu',
+    );
+    // Selecting another node closes the field editor and the submenu.
+    editor.selection.value = { kind: 'node', id: SELECT };
+    expect(shownSubmenu()).toBeNull();
   });
 });

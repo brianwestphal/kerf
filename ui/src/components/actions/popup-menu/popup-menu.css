@@ -218,6 +218,56 @@
 .kui-popup-menu[data-embedded][data-placement^="top"] > .kui-popup-menu__menu {
   inset-block: auto 100%;
 }
+/* An embedded menu's open submenu (`embeddedSubmenu`) shows beside its item
+   as the register places a real one: at the item's far edge, lifted so its
+   first row meets the item. The menus around it stop clipping so it can
+   hang outside them. */
+.kui-popup-menu[data-embedded] .kui-popup-menu__menu {
+  overflow: visible;
+}
+.kui-popup-menu[data-embedded]
+  .kui-popup-menu__submenu-host:has(> [data-embedded-open]) {
+  position: relative;
+}
+.kui-popup-menu[data-embedded] .kui-popup-menu__menu[data-embedded-open] {
+  display: flex;
+  position: absolute;
+  z-index: 1;
+  inset-block: remify(-5px) auto;
+  inset-inline: 100% auto;
+  flex-direction: column;
+  gap: var(--_kui-popup-row-gap);
+  opacity: 1;
+  transition: none;
+}
+/* An end-aligned menu hangs from a trigger at the end of its row (a
+   trailing toolbar menu), where there is no room beyond it; a real submenu
+   flips to the start side there, so an embedded one opens on that side. */
+.kui-popup-menu[data-embedded]:is(
+    [data-placement="bottom-end"],
+    [data-placement="top-end"]
+  )
+  .kui-popup-menu__menu[data-embedded-open] {
+  inset-inline: auto 100%;
+}
+/* At phone widths a real submenu opens below its parent menu rather than
+   beside it, so its rows never cover the parent's; the embedded one does
+   the same, its item no longer its containing block. */
+@media (width <= 480px) {
+  .kui-popup-menu[data-embedded]
+    .kui-popup-menu__submenu-host:has(> [data-embedded-open]) {
+    position: static;
+  }
+  .kui-popup-menu[data-embedded] .kui-popup-menu__menu[data-embedded-open],
+  .kui-popup-menu[data-embedded]:is(
+      [data-placement="bottom-end"],
+      [data-placement="top-end"]
+    )
+    .kui-popup-menu__menu[data-embedded-open] {
+    inset-block: calc(100% + remify(5px)) auto;
+    inset-inline: remify(-1px) auto;
+  }
+}
 
 /* A pointer-opened submenu's safe triangle: from the pointer to the
    submenu's near edge, so a diagonal move toward it stays over the submenu

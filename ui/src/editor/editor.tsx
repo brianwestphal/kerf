@@ -564,11 +564,16 @@ function canvasRenderer(catalog: EditorCatalog) {
     overrides?: Readonly<Record<string, unknown>>,
     /** KF-XV732Q: play-time props of repeated rows, by node id and key. */
     rows: RowProps = {},
+    /**
+     * KF-M2FGPQ: the Inspector's open field place on the selected node, so
+     * a PopupMenu shows the submenu being edited open.
+     */
+    field?: FieldPlace,
   ): SafeHtml => {
     // The selected node's tab shows, whatever tab the document opens on.
     const scenes = shownScenes(source, selected, views);
     const { document: shown, slots: placed } = previewSlots(
-      play ? scenes : embeddedPopup(embeddedDialogs(scenes), selected),
+      play ? scenes : embeddedPopup(embeddedDialogs(scenes), selected, field),
       play ? () => [] : (node) => emptyZonesOf(node, node.id === selected),
     );
     // KF-7XQAFR: in play, a node nested in a row carries its row's key.
@@ -3519,6 +3524,10 @@ export function createEditor(options: EditorOptions) {
         currentProblems.value,
         current?.kind === 'node' ? current.id : undefined,
         canvasViews.value,
+        false,
+        undefined,
+        undefined,
+        activeField() ?? undefined,
       ),
     );
   });

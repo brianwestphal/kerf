@@ -366,7 +366,13 @@ component's own inert presentation (its trigger opens nothing and its rows
 choose nothing), so a click on one of its rows selects the PopupMenu or
 Select; the rows take no focus, so the clicked one shows no current-row
 fill, and a Select's listbox hangs right below its control, over its hint,
-as the real one does (KF-HVJDWF: embedded popup polish). AnchoredSurface, tooltips, and toasts are imperative
+as the real one does (KF-HVJDWF: embedded popup polish). While the
+Inspector edits a place inside a PopupMenu item's `submenu` (its open field
+is `items.2.submenu…`), the canvas also shows that submenu open beside its
+item through the component's `embeddedSubmenu` path (KF-M2FGPQ: only the
+submenu being edited, never every submenu). It opens on the start side for
+an end-aligned menu and below the menu at phone widths, as a real one does.
+The preview closes when the field editor does. AnchoredSurface, tooltips, and toasts are imperative
 `kerfjs/overlay` calls, not view-document nodes. The document keeps
 the authored presentation and props, which the Inspector shows and the export writes,
 and play mode opens the dialog modally (§11.4) and each popup from its

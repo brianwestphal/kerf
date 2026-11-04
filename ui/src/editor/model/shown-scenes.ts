@@ -6,6 +6,7 @@ import type { ViewDocument } from '@kerfjs/ui/view';
 
 import { findNode, visitNodes } from './document.js';
 import { setProp } from './edits.js';
+import type { FieldPath } from './fields.js';
 
 const TAB_NAVIGATOR = '@kerfjs/ui:tab-navigator';
 
@@ -112,6 +113,7 @@ export function cutStack(
 
 /** KF-KN9CPE: the transient popups a selected node previews open. */
 const POPUPS = new Set(['@kerfjs/ui:popup-menu', '@kerfjs/ui:select']);
+const POPUP_MENU = '@kerfjs/ui:popup-menu';
 
 /**
  * KF-KN9CPE: `document` with the selected PopupMenu or Select `embedded`, as
@@ -128,10 +130,42 @@ const POPUPS = new Set(['@kerfjs/ui:popup-menu', '@kerfjs/ui:select']);
 export function embeddedPopup(
   document: ViewDocument,
   selected: string | undefined,
+  /**
+   * KF-M2FGPQ: the Inspector's open field place on the selected node. One
+   * inside a PopupMenu item's `submenu` (`items.2.submenu…`) shows that
+   * submenu open beside its item too, so its rows can be seen while they
+   * are edited.
+   */
+  field?: { readonly prop: string; readonly path: FieldPath },
 ): ViewDocument {
   const node =
     selected === undefined ? undefined : findNode(document, selected)?.node;
-  return node && POPUPS.has(node.type) && node.props?.embedded !== true
-    ? setProp(document, node.id, 'embedded', true)
-    : document;
+  if (!node || !POPUPS.has(node.type)) return document;
+  const submenu =
+    node.type === POPUP_MENU && field?.prop === 'items'
+      ? submenuPath(field.path)
+      : [];
+  let shown =
+    node.props?.embedded === true
+      ? document
+      : setProp(document, node.id, 'embedded', true);
+  if (submenu.length > 0)
+    shown = setProp(shown, node.id, 'embeddedSubmenu', submenu);
+  return shown;
+}
+
+/**
+ * KF-M2FGPQ: the submenu path (`embeddedSubmenu`) a field place in a
+ * PopupMenu's `items` lies inside: each item index followed by `submenu`.
+ * `[2, 'submenu', 0, 'label']` is inside the third item's submenu, `[2]`
+ * (the item itself) inside none.
+ */
+export function submenuPath(path: FieldPath): number[] {
+  const out: number[] = [];
+  for (let at = 0; at + 1 < path.length; at += 2) {
+    const index = path[at];
+    if (typeof index !== 'number' || path[at + 1] !== 'submenu') break;
+    out.push(index);
+  }
+  return out;
 }

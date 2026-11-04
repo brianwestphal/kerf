@@ -739,6 +739,16 @@ type PopupMenuProps = PopupMenuTrigger & {
      * focus, so a click on one leaves no current-row fill. Defaults to false.
      */
     embedded?: boolean;
+    /**
+     * With `embedded`, the submenu to show open too, as a path of `items`
+     * indices, one per level: `[2]` opens the third entry's submenu, `[2, 0]`
+     * also the first entry's submenu inside it. Each shows beside its item
+     * (below its parent menu at phone widths), in the document and inert, as
+     * the Kerf UI editor's edit canvas shows the submenu an author edits. An
+     * index that names no submenu stops the path there. Ignored without
+     * `embedded`.
+     */
+    embeddedSubmenu?: readonly number[];
     /** Application `data-*` metadata on the menu root. */
     rootAttributes?: PopupMenuDataAttributes;
     /** Native named-slot assignment when composed inside a web component. */
@@ -780,7 +790,7 @@ declare function closePopupMenu(menu: PopupMenuElement): void;
  * submenus appear above or below their parent menu so their rows do not cover
  * the parent list.
  */
-declare function PopupMenu({ text, label, icon, triggerContent, items, placement, caret, disabled, emphasis, size, rootAttributes, slot, context, anchor, popupNote, embedded, }: PopupMenuProps): SafeHtml;
+declare function PopupMenu({ text, label, icon, triggerContent, items, placement, caret, disabled, emphasis, size, rootAttributes, slot, context, anchor, popupNote, embedded, embeddedSubmenu, }: PopupMenuProps): SafeHtml;
 
 export { PopupMenu, type PopupMenuAnchor, type PopupMenuDivider, type PopupMenuElement, type PopupMenuEmphasis, type PopupMenuEntry, type PopupMenuHeading, type PopupMenuItem, type PopupMenuPlacement, type PopupMenuProps, type PopupMenuSize, closePopupMenu, openPopupMenu, openPopupMenuAt };
 ```
