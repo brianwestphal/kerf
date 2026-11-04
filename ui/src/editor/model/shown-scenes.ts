@@ -109,3 +109,29 @@ export function cutStack(
     );
   return next;
 }
+
+/** KF-KN9CPE: the transient popups a selected node previews open. */
+const POPUPS = new Set(['@kerfjs/ui:popup-menu', '@kerfjs/ui:select']);
+
+/**
+ * KF-KN9CPE: `document` with the selected PopupMenu or Select `embedded`, as
+ * the edit canvas shows it, or `document` itself when nothing changes. A
+ * popup renders only its trigger until something opens it, so while the
+ * node is selected the canvas shows its rows (`items`, `choices`) open at
+ * the trigger, in the document rather than the top layer, where the
+ * Inspector's edits to them can be seen.
+ * Only the selected one opens: an open menu on every toolbar trigger would
+ * cover the canvas below every toolbar. The document is unchanged, so the
+ * Inspector and the export keep the authored props, and play mode keeps the
+ * real popup.
+ */
+export function embeddedPopup(
+  document: ViewDocument,
+  selected: string | undefined,
+): ViewDocument {
+  const node =
+    selected === undefined ? undefined : findNode(document, selected)?.node;
+  return node && POPUPS.has(node.type) && node.props?.embedded !== true
+    ? setProp(document, node.id, 'embedded', true)
+    : document;
+}

@@ -353,15 +353,22 @@ Every DialogSurface (and every WorkbenchDialog and ListDetailDialog, through
 their `embedded` prop, KF-RWJ9KD) shows **embedded** on the edit canvas (KF-SYGSD0): a
 modal dialog renders nothing while closed, so the canvas renders each one in
 flow (`presentation: 'embedded'`), where its content can be seen, selected,
-and dropped into. A PopoverDialogSurface is transient the same way and shows
-embedded too (KF-T1V86Q: transient surfaces on the canvas). The other
-transient Kerf UI surfaces need no canvas treatment: a PopupMenu's or
-Select's popup content is its `items` / `choices` props, edited in the
-Inspector (KF-KN9CPE tracks previewing the open popup on the canvas), and
-AnchoredSurface, tooltips, and toasts are imperative `kerfjs/overlay` calls,
-not view-document nodes. Its close controls only select there. The document keeps
-the authored presentation, which the Inspector shows and the export writes,
-and play mode opens the dialog modally (§11.4).
+and dropped into; its close controls only select there. A PopoverDialogSurface is transient the same way and shows
+embedded too (KF-T1V86Q: transient surfaces on the canvas). A PopupMenu or
+Select renders only its trigger until something opens it, so while one is
+selected the canvas shows it `embedded` (KF-KN9CPE: preview the selected
+popup): its menu or listbox open at the trigger, in the document rather
+than the top layer, overlaying what lies below, so the `items` / `choices`
+edited in the Inspector can be seen. Only the selected one opens, since an
+open menu on every toolbar trigger would cover the canvas below every
+toolbar, and selecting another node closes it. An embedded popup is the
+component's own inert presentation (its trigger opens nothing and its rows
+choose nothing), so a click on one of its rows selects the PopupMenu or
+Select. AnchoredSurface, tooltips, and toasts are imperative
+`kerfjs/overlay` calls, not view-document nodes. The document keeps
+the authored presentation and props, which the Inspector shows and the export writes,
+and play mode opens the dialog modally (§11.4) and each popup from its
+trigger.
 
 The props catalog generator (KF-24G2KV: remaining props) treats a union whose
 members are all content, text, or numbers as one content slot, including

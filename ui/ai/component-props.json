@@ -9134,6 +9134,17 @@
           "description": "Quiet text at the bottom of the open menu, below its items, announced as\nthe menu's description. Submenus don't show it."
         },
         {
+          "name": "embedded",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": false,
+          "description": "Show the menu open at its trigger (at its `placement`), in the document\ninstead of the top layer, as a static preview (the Kerf UI editor's edit canvas, a\nspecification sheet). An embedded menu is inert: the register leaves it\nalone, so its trigger opens nothing and its items choose nothing, and\nitems render without their `data-action`. Defaults to false."
+        },
+        {
           "name": "rootAttributes",
           "type": {
             "kind": "object",
@@ -10831,6 +10842,17 @@
           "type": { "kind": "number", "text": "number", "nullable": true },
           "required": false,
           "description": "Maximum closed-control label width in CSS pixels before ellipsis."
+        },
+        {
+          "name": "embedded",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": false,
+          "description": "Show the listbox open below the trigger, in the document instead of the\ntop layer, as a static preview (the Kerf UI editor's edit canvas, a\nspecification sheet). An embedded Select is inert: the register leaves\nit alone, so its trigger opens nothing and its choices choose nothing.\nDefaults to false."
         },
         {
           "name": "slot",

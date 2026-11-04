@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import {
   embeddedDialogs,
+  embeddedPopup,
   shownScenes,
 } from '../../../src/editor/model/shown-scenes.js';
 import { createEditor } from './kerf-catalog.js';
@@ -339,5 +340,129 @@ describe('dialogs on the edit canvas', () => {
     expect(editor.selection.value).toEqual({ kind: 'node', id: DONE });
     // The authored presentation is what the Inspector and export keep.
     expect(presentationOf(editor.document.value)).toBe('side-sheet');
+  });
+});
+
+// KF-KN9CPE: a PopupMenu or Select shows only its trigger until something
+// opens it, so the edit canvas shows the selected one's rows open at it;
+// the document keeps the authored props and play mode the real popup.
+describe('popups on the edit canvas', () => {
+  const PANE = '01JB8Z1M6Q8E1X9V4S7K2R3TCA';
+  const MENU = '01JB8Z1M6Q8E1X9V4S7K2R3TCB';
+  const SELECT = '01JB8Z1M6Q8E1X9V4S7K2R3TCC';
+  const withPopups = (embedded?: boolean) =>
+    ({
+      schema: 'kerf-ui-document/v1',
+      name: 'Popups',
+      catalogs: ['@kerfjs/ui'],
+      root: {
+        id: PANE,
+        type: '@kerfjs/ui:pane',
+        zones: {
+          content: [
+            {
+              id: MENU,
+              type: '@kerfjs/ui:popup-menu',
+              props: {
+                text: 'Sort',
+                items: [
+                  { label: 'Newest', action: 'sort-newest' },
+                  { label: 'Oldest', action: 'sort-oldest' },
+                ],
+                ...(embedded === undefined ? {} : { embedded }),
+              },
+            },
+            {
+              id: SELECT,
+              type: '@kerfjs/ui:select',
+              props: {
+                name: 'size',
+                label: 'Size',
+                value: 'm',
+                choices: [
+                  { value: 's', label: 'Small' },
+                  { value: 'm', label: 'Medium' },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    }) as unknown as ViewDocument;
+  const propsOf = (document: ViewDocument, index: number) =>
+    (
+      document.root.zones!.content![index] as unknown as {
+        props: { embedded?: boolean };
+      }
+    ).props;
+
+  it('embeds only the selected PopupMenu or Select and leaves the document alone', () => {
+    const document = withPopups();
+    const menu = embeddedPopup(document, MENU);
+    expect(propsOf(menu, 0).embedded).toBe(true);
+    expect(propsOf(menu, 1).embedded).toBeUndefined();
+    const select = embeddedPopup(document, SELECT);
+    expect(propsOf(select, 0).embedded).toBeUndefined();
+    expect(propsOf(select, 1).embedded).toBe(true);
+    expect(propsOf(document, 0).embedded).toBeUndefined();
+    expect(propsOf(document, 1).embedded).toBeUndefined();
+    // Nothing selected, another node, an unknown id, or an already-embedded
+    // menu: the same document.
+    expect(embeddedPopup(document, undefined)).toBe(document);
+    expect(embeddedPopup(document, PANE)).toBe(document);
+    expect(embeddedPopup(document, '01JB8Z1M6Q8E1X9V4S7K2R3TCZ')).toBe(
+      document,
+    );
+    const already = withPopups(true);
+    expect(embeddedPopup(already, MENU)).toBe(already);
+  });
+
+  it('shows the selected popup open on the canvas, and its rows only select', () => {
+    const root = globalThis.document.createElement('div');
+    globalThis.document.body.append(root);
+    const editor = createEditor();
+    const stopMount = mount(root, editor.render);
+    const unwireEditor = editor.wire(root);
+    cleanup = () => {
+      unwireEditor();
+      stopMount();
+    };
+    editor.document.value = withPopups();
+    const canvas = root.querySelector('[data-editor-canvas]')!;
+    const menuNode = () =>
+      canvas.querySelector<HTMLElement>(`[data-kerf-node="${MENU}"]`)!;
+    const selectNode = () =>
+      canvas.querySelector<HTMLElement>(`[data-kerf-node="${SELECT}"]`)!;
+    // Closed until selected.
+    expect(menuNode().hasAttribute('data-embedded')).toBe(false);
+    expect(selectNode().hasAttribute('data-embedded')).toBe(false);
+    editor.selection.value = { kind: 'node', id: MENU };
+    expect(menuNode().hasAttribute('data-embedded')).toBe(true);
+    const menu = menuNode().querySelector('.kui-popup-menu__menu')!;
+    expect(menu.hasAttribute('popover')).toBe(false);
+    expect(
+      [...menu.querySelectorAll('.kui-popup-menu__item')].map(
+        (item) => item.textContent,
+      ),
+    ).toEqual(['Newest', 'Oldest']);
+    // Its rows carry no data-action, and a click on one selects the menu.
+    expect(menu.querySelector('[data-action]')).toBeNull();
+    menu.querySelector<HTMLElement>('.kui-popup-menu__item')!.click();
+    expect(editor.selection.value).toEqual({ kind: 'node', id: MENU });
+    expect(menuNode().hasAttribute('data-embedded')).toBe(true);
+    // Selecting the Select closes the menu and opens the Select's listbox.
+    editor.selection.value = { kind: 'node', id: SELECT };
+    expect(menuNode().hasAttribute('data-embedded')).toBe(false);
+    expect(selectNode().hasAttribute('data-embedded')).toBe(true);
+    const popup = selectNode().querySelector('.kui-select__popup')!;
+    expect(popup.hasAttribute('popover')).toBe(false);
+    expect(
+      [...popup.querySelectorAll('.kui-select__option-label')].map(
+        (label) => label.textContent,
+      ),
+    ).toEqual(['Small', 'Medium']);
+    // The document keeps the authored props.
+    expect(propsOf(editor.document.value, 0).embedded).toBeUndefined();
+    expect(propsOf(editor.document.value, 1).embedded).toBeUndefined();
   });
 });

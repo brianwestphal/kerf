@@ -16,7 +16,8 @@ import {
 } from './popup-menu-events.js';
 import { revealInMenu } from './reveal-in-menu.js';
 
-const ROOT = '.kui-popup-menu';
+// An embedded menu (a static preview, open in the document) is never wired.
+const ROOT = '.kui-popup-menu:not([data-embedded])';
 const MENU = '.kui-popup-menu__menu';
 const ITEM = '.kui-popup-menu__item';
 const TRIGGER = '.kui-popup-menu__trigger';

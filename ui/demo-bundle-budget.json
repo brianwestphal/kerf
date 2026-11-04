@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 451500,
+  "totalJavaScriptGzip": 451800,
   "measuredLargestJavaScriptGzip": 164550,
-  "measuredTotalJavaScriptGzip": 451438,
+  "measuredTotalJavaScriptGzip": 451724,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6755,6 +6755,22 @@
         "measuredTotalJavaScriptGzip": 451438,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 451500
+      }
+    },
+    {
+      "at": "2026-11-04T10:56:46.417Z",
+      "reason": "KF-KN9CPE: PopupMenu and Select embedded presentation (inert open popup at the trigger) and its two Embedded Preview demos",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164550,
+        "measuredTotalJavaScriptGzip": 451438,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 451500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164550,
+        "measuredTotalJavaScriptGzip": 451724,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 451800
       }
     }
   ]

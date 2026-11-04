@@ -280,6 +280,22 @@ export function PopupMenuDemo() {
           />
         </PopupSurface>
       </CatalogExample>
+      <CatalogExample
+        label="Embedded Preview"
+        note="embedded shows the menu open at its trigger, in the document instead of the top layer, and inert: its items choose nothing. It is a static preview, as the Kerf UI editor's edit canvas shows a selected PopupMenu."
+        align="text-trigger"
+      >
+        <PopupMenu
+          text="Arrange"
+          embedded
+          items={[
+            { label: 'By Name', action: 'log-more', checked: true },
+            { label: 'By Size', action: 'log-more', checked: false },
+            { kind: 'divider' },
+            { label: 'Clean Up', action: 'log-more' },
+          ]}
+        />
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

@@ -178,6 +178,47 @@
   outline: none;
 }
 
+/* embedded: the menu shows open at its placement against the trigger, in
+   the document instead of the top layer, as a static preview (the editor's
+   edit canvas). The surface and rows are the open menu's; only the layer it
+   sits in differs. Like the real menu it overlays what lies below the
+   trigger rather than pushing it aside, so a trigger in a toolbar group's
+   fixed control band keeps its place (a toolbar's leading zone stops
+   clipping while it holds one, in toolbar.css). */
+.kui-popup-menu[data-embedded] {
+  position: relative;
+}
+.kui-popup-menu[data-embedded] > .kui-popup-menu__menu {
+  display: flex;
+  position: absolute;
+  z-index: 1;
+  inset-block: 100% auto;
+  inset-inline: 0 auto;
+  flex-direction: column;
+  gap: var(--_kui-popup-row-gap);
+  opacity: 1;
+  transition: none;
+}
+.kui-popup-menu[data-embedded]:is(
+    [data-placement="bottom-end"],
+    [data-placement="top-end"]
+  )
+  > .kui-popup-menu__menu {
+  inset-inline: auto 0;
+}
+.kui-popup-menu[data-embedded]:is(
+    [data-placement="bottom"],
+    [data-placement="top"]
+  )
+  > .kui-popup-menu__menu {
+  left: 50%;
+  right: auto;
+  translate: -50% 0;
+}
+.kui-popup-menu[data-embedded][data-placement^="top"] > .kui-popup-menu__menu {
+  inset-block: auto 100%;
+}
+
 /* A pointer-opened submenu's safe triangle: from the pointer to the
    submenu's near edge, so a diagonal move toward it stays over the submenu
    instead of crossing (and closing it from) the parent's other items. */

@@ -116,6 +116,14 @@ interface SelectBaseProps<Value extends string = string> {
   focusRingInset?: boolean;
   /** Maximum closed-control label width in CSS pixels before ellipsis. */
   labelMaxWidth?: number;
+  /**
+   * Show the listbox open below the trigger, in the document instead of the
+   * top layer, as a static preview (the Kerf UI editor's edit canvas, a
+   * specification sheet). An embedded Select is inert: the register leaves
+   * it alone, so its trigger opens nothing and its choices choose nothing.
+   * Defaults to false.
+   */
+  embedded?: boolean;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
   /** Application `data-*` metadata on the root, such as a row key or an
@@ -224,6 +232,7 @@ const SELECT_PROTECTED = new Set([
   'data-caret',
   'data-component',
   'data-default-selected',
+  'data-embedded',
   'data-focus-ring-inset',
   'data-focus-ring-owner',
   'data-placeholder',
@@ -260,6 +269,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
     focusRingOwner = 'select',
     focusRingInset = false,
     labelMaxWidth,
+    embedded = false,
     slot,
     rootAttributes = {},
   } = props;
@@ -383,6 +393,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
       value={multiple ? undefined : (selected?.value ?? '')}
       multiple={multiple}
       disabled={disabled}
+      data-embedded={embedded ? '' : undefined}
       style={style}
       slot={slot}
     >
@@ -398,7 +409,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
         // Safari's default Tab order skips buttons; a select stays in it.
         tabindex={0}
         aria-haspopup="listbox"
-        aria-expanded="false"
+        aria-expanded={embedded ? 'true' : 'false'}
         aria-label={triggerName}
         aria-description={hint}
         disabled={disabled}
@@ -435,7 +446,12 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
           {hint}
         </span>
       ) : null}
-      <div class="kui-select__popup" popover="manual" tabindex={-1}>
+      <div
+        class="kui-select__popup"
+        // An embedded listbox shows in the document, below the control.
+        popover={embedded ? undefined : 'manual'}
+        tabindex={-1}
+      >
         <div
           class="kui-select__listbox"
           role="listbox"

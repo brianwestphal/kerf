@@ -10,7 +10,8 @@ import {
   setChosen,
 } from './select-element.js';
 
-const ROOT = 'kui-select.kui-select';
+// An embedded Select (a static preview, open in the document) is never wired.
+const ROOT = 'kui-select.kui-select:not([data-embedded])';
 const TRIGGER = '.kui-select__trigger';
 const POPUP = '.kui-select__popup';
 

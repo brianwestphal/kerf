@@ -925,3 +925,36 @@ describe('PopupMenu register: robustness', () => {
     key(menu, 'ArrowDown');
   });
 });
+
+// KF-KN9CPE: an embedded menu is a static preview, open in flow; the
+// register leaves it alone.
+describe('PopupMenu register: an embedded menu', () => {
+  it('renders open in flow with its submenus closed, and never opens, chooses, or navigates', () => {
+    const { root, trigger, menu, item, submenu } = setup({ embedded: true });
+    expect(root.hasAttribute('data-embedded')).toBe(true);
+    expect(menu.hasAttribute('popover')).toBe(false);
+    expect(trigger.getAttribute('aria-expanded')).toBe('true');
+    // Its submenus stay closed popovers; its items carry no data-action.
+    expect(submenu?.getAttribute('popover')).toBe('manual');
+    expect(root.querySelector('[data-action]')).toBeNull();
+    const chosen = vi.fn();
+    root.addEventListener(POPUP_MENU_SELECT_EVENT, chosen);
+    click(trigger);
+    click(item('Copy'));
+    click(item('Pinned'));
+    click(item('Share'));
+    key(trigger, 'ArrowDown');
+    key(item('Copy'), 'ArrowDown');
+    pointer(item('Share'), 'pointerover');
+    openPopupMenu(root);
+    closePopupMenu(root);
+    expect(chosen).not.toHaveBeenCalled();
+    expect(item('Pinned').getAttribute('aria-checked')).toBe('false');
+    expect(isShown(submenu!)).toBe(false);
+    expect(floating.positions).toHaveLength(0);
+    expect(trigger.getAttribute('aria-expanded')).toBe('true');
+    // The embedded markup has its own content key, so turning `embedded` on
+    // or off rebuilds the menu instead of reusing the other's markup.
+    expect(setup().root.dataset.key).not.toBe(root.dataset.key);
+  });
+});

@@ -162,6 +162,14 @@ export type PopupMenuProps = PopupMenuTrigger & {
    * the menu's description. Submenus don't show it.
    */
   popupNote?: string;
+  /**
+   * Show the menu open at its trigger (at its `placement`), in the document
+   * instead of the top layer, as a static preview (the Kerf UI editor's edit canvas, a
+   * specification sheet). An embedded menu is inert: the register leaves it
+   * alone, so its trigger opens nothing and its items choose nothing, and
+   * items render without their `data-action`. Defaults to false.
+   */
+  embedded?: boolean;
   /** Application `data-*` metadata on the menu root. */
   rootAttributes?: PopupMenuDataAttributes;
   /** Native named-slot assignment when composed inside a web component. */
@@ -180,7 +188,11 @@ function hasChoice(entries: readonly PopupMenuEntry[]): boolean {
   );
 }
 
-function renderItem(entry: PopupMenuCommand, levelHasChoice: boolean) {
+function renderItem(
+  entry: PopupMenuCommand,
+  levelHasChoice: boolean,
+  embedded: boolean,
+) {
   // A plain command beside checkbox choices keeps their check column, so its
   // icon and label line up with theirs.
   const choice = entry.checked !== undefined;
@@ -191,7 +203,7 @@ function renderItem(entry: PopupMenuCommand, levelHasChoice: boolean) {
       class="kui-popup-menu__item"
       role={choice ? 'menuitemcheckbox' : 'menuitem'}
       tabindex={-1}
-      data-action={entry.action}
+      data-action={embedded ? undefined : entry.action}
       value={entry.value}
       data-tone={entry.tone === 'danger' ? 'danger' : undefined}
       aria-checked={choice ? String(entry.checked) : undefined}
@@ -225,7 +237,7 @@ function renderItem(entry: PopupMenuCommand, levelHasChoice: boolean) {
   return (
     <div class="kui-popup-menu__submenu-host" role="none">
       {item}
-      {renderMenu(entry.submenu, entry.label, true)}
+      {renderMenu(entry.submenu, entry.label, true, embedded)}
     </div>
   );
 }
@@ -234,7 +246,10 @@ function renderItem(entry: PopupMenuCommand, levelHasChoice: boolean) {
  * One menu level: its entries in order, with each heading opening a labeled
  * group that holds the items up to the next heading or divider.
  */
-function renderEntries(entries: readonly PopupMenuEntry[]): SafeHtml[] {
+function renderEntries(
+  entries: readonly PopupMenuEntry[],
+  embedded: boolean,
+): SafeHtml[] {
   const levelHasChoice = hasChoice(entries);
   const out: SafeHtml[] = [];
   let index = 0;
@@ -251,7 +266,7 @@ function renderEntries(entries: readonly PopupMenuEntry[]): SafeHtml[] {
       while (index < entries.length) {
         const member = entries[index]!;
         if (!isCommand(member)) break;
-        members.push(renderItem(member, levelHasChoice));
+        members.push(renderItem(member, levelHasChoice, embedded));
         index += 1;
       }
       out.push(
@@ -268,7 +283,7 @@ function renderEntries(entries: readonly PopupMenuEntry[]): SafeHtml[] {
       );
       continue;
     }
-    out.push(renderItem(entry, levelHasChoice));
+    out.push(renderItem(entry, levelHasChoice, embedded));
     index += 1;
   }
   return out;
@@ -278,19 +293,22 @@ function renderMenu(
   entries: readonly PopupMenuEntry[],
   name: string | undefined,
   submenu: boolean,
+  embedded: boolean,
   note?: string,
 ) {
   return (
     <div
       class="kui-popup-menu__menu"
       role="menu"
-      popover="manual"
+      // An embedded menu shows in the document; its submenus stay closed
+      // popovers.
+      popover={embedded && !submenu ? undefined : 'manual'}
       tabindex={-1}
       aria-label={name}
       aria-description={note}
       data-submenu={submenu ? '' : undefined}
     >
-      {renderEntries(entries)}
+      {renderEntries(entries, embedded)}
       {note ? (
         <div class="kui-popup-menu__note" aria-hidden="true">
           {note}
@@ -361,6 +379,7 @@ interface PopupMenuContentProps {
   disabled: boolean;
   items: readonly PopupMenuEntry[];
   popupNote: string | undefined;
+  embedded: boolean;
 }
 
 /** The trigger and the menu: everything inside the root. */
@@ -374,6 +393,7 @@ function renderContent({
   disabled,
   items,
   popupNote,
+  embedded,
 }: PopupMenuContentProps): SafeHtml {
   return (
     <>
@@ -389,7 +409,7 @@ function renderContent({
           type="button"
           class="kui-popup-menu__trigger"
           aria-haspopup="menu"
-          aria-expanded="false"
+          aria-expanded={embedded ? 'true' : 'false'}
           disabled={disabled}
         >
           {icon}
@@ -410,7 +430,7 @@ function renderContent({
           ) : null}
         </button>
       )}
-      {renderMenu(items, text ?? label, false, popupNote)}
+      {renderMenu(items, text ?? label, false, embedded, popupNote)}
     </>
   );
 }
@@ -442,6 +462,7 @@ export function PopupMenu({
   context = false,
   anchor,
   popupNote,
+  embedded = false,
 }: PopupMenuProps) {
   if (
     anchor !== undefined &&
@@ -466,6 +487,8 @@ export function PopupMenu({
       ...(triggerContent === undefined ? [] : [String(triggerContent)]),
       // Only a note adds a part, so other menus keep their keys.
       ...(popupNote === undefined ? [] : [`note:${popupNote}`]),
+      // Only an embedded menu adds a part, so other menus keep their keys.
+      ...(embedded ? ['embedded'] : []),
     ],
     items,
   );
@@ -481,6 +504,7 @@ export function PopupMenu({
       disabled,
       items,
       popupNote,
+      embedded,
     });
     cachePopupMenuContent(cacheKey, content);
   }
@@ -501,6 +525,7 @@ export function PopupMenu({
       data-placement={placement}
       data-emphasis={emphasis === 'secondary' ? emphasis : undefined}
       data-size={size === 'compact' ? size : undefined}
+      data-embedded={embedded ? '' : undefined}
       style={
         anchor
           ? `--kui-popup-menu-context-x:${anchor.x}px;--kui-popup-menu-context-y:${anchor.y}px`

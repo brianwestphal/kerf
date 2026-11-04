@@ -242,6 +242,13 @@
   overflow: visible;
 }
 
+/* An embedded PopupMenu or Select (a static preview of its open popup, as
+   the editor's edit canvas shows a selected one) hangs below its trigger in
+   the document, so the zone holding one stops clipping it (KF-KN9CPE). */
+.kui-toolbar__leading:has(:is(.kui-popup-menu, .kui-select)[data-embedded]) {
+  overflow: visible;
+}
+
 .kui-toolbar__center {
   /* The center content never compresses below its own width (a group cannot
      shrink or clip its controls). The track above takes this as its minimum, so

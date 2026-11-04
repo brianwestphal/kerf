@@ -381,6 +381,33 @@
 .kui-select__popup:focus {
   outline: none;
 }
+
+/* embedded: the listbox shows open below the control, in the document
+   instead of the top layer, as a static preview (the editor's edit canvas).
+   The surface and rows are the open listbox's; only the layer it sits in
+   differs. Like the real listbox it overlays what lies below rather than
+   pushing it aside, so a toolbar Select keeps its place in the group's
+   control band (a toolbar's leading zone, where a view-title Select sits,
+   stops clipping while it holds one, in toolbar.css). */
+.kui-select[data-embedded] {
+  position: relative;
+}
+.kui-select[data-embedded] > .kui-select__popup {
+  display: block;
+  position: absolute;
+  z-index: 1;
+  inset-block: 100% auto;
+  inset-inline: 0 auto;
+  opacity: 1;
+  transition: none;
+}
+.kui-select--fit-menu[data-embedded] > .kui-select__popup {
+  inset-inline: 0;
+  width: auto;
+}
+.kui-select[data-embedded] .kui-select__caret {
+  rotate: var(--_kui-popup-caret-open-rotation);
+}
 .kui-select--fit-menu > .kui-select__popup {
   max-width: var(--_kui-popup-available-width, none);
 }

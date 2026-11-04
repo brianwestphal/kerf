@@ -730,6 +730,14 @@ type PopupMenuProps = PopupMenuTrigger & {
      * the menu's description. Submenus don't show it.
      */
     popupNote?: string;
+    /**
+     * Show the menu open at its trigger (at its `placement`), in the document
+     * instead of the top layer, as a static preview (the Kerf UI editor's edit canvas, a
+     * specification sheet). An embedded menu is inert: the register leaves it
+     * alone, so its trigger opens nothing and its items choose nothing, and
+     * items render without their `data-action`. Defaults to false.
+     */
+    embedded?: boolean;
     /** Application `data-*` metadata on the menu root. */
     rootAttributes?: PopupMenuDataAttributes;
     /** Native named-slot assignment when composed inside a web component. */
@@ -771,7 +779,7 @@ declare function closePopupMenu(menu: PopupMenuElement): void;
  * submenus appear above or below their parent menu so their rows do not cover
  * the parent list.
  */
-declare function PopupMenu({ text, label, icon, triggerContent, items, placement, caret, disabled, emphasis, size, rootAttributes, slot, context, anchor, popupNote, }: PopupMenuProps): SafeHtml;
+declare function PopupMenu({ text, label, icon, triggerContent, items, placement, caret, disabled, emphasis, size, rootAttributes, slot, context, anchor, popupNote, embedded, }: PopupMenuProps): SafeHtml;
 
 export { PopupMenu, type PopupMenuAnchor, type PopupMenuDivider, type PopupMenuElement, type PopupMenuEmphasis, type PopupMenuEntry, type PopupMenuHeading, type PopupMenuItem, type PopupMenuPlacement, type PopupMenuProps, type PopupMenuSize, closePopupMenu, openPopupMenu, openPopupMenuAt };
 ```
@@ -4079,6 +4087,14 @@ interface SelectBaseProps<Value extends string = string> {
     focusRingInset?: boolean;
     /** Maximum closed-control label width in CSS pixels before ellipsis. */
     labelMaxWidth?: number;
+    /**
+     * Show the listbox open below the trigger, in the document instead of the
+     * top layer, as a static preview (the Kerf UI editor's edit canvas, a
+     * specification sheet). An embedded Select is inert: the register leaves
+     * it alone, so its trigger opens nothing and its choices choose nothing.
+     * Defaults to false.
+     */
+    embedded?: boolean;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
     /** Application `data-*` metadata on the root, such as a row key or an

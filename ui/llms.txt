@@ -486,7 +486,10 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   `popupNote` (on `Select` and `PopupMenu`) is quiet text at the bottom of
   the open popup, announced as the listbox's or menu's description; use it
   for what the choices leave out, notably in a toolbar Select, which has no
-  room for a `hint` below its trigger.
+  room for a `hint` below its trigger. `embedded` (on both) renders the
+  popup open at its trigger, in the document, and inert (no opening, no
+  choosing, no `data-action`): a static preview such as the Kerf UI editor's
+  edit canvas, never a replacement for an interactive popup.
 - **Trust the defaults.** Render a control at its natural size and color (a
   `LucideIcon` is 24px); if it looks wrong, fix the surrounding layout, not the
   control. Never force a component's width/height to size it — that leaves a halo
