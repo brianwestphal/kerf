@@ -16,6 +16,7 @@ A 120-host list with a list-detail layout. Clicking a host highlights its row an
 
 - **A signal handed into the `class` hole.** Each row's `class` is a `computed()` passed straight into JSX (`class={computed(() => id === selectedId.value ? … : …)}`) — not its `.value`. kerf binds that hole to the signal, so a selection change writes only the two affected rows' `class` attributes through their bound effects. No render re-run, no list reconcile.
 - **Bound text holes in the detail pane.** Every detail field (`name`, `region`, `ip`, `cpu`, `status`) is a `computed()` over the current selection, dropped into a text position. Selecting a row updates just those text nodes.
+- **One subscription, not one per row.** The rows read the selection through `selector(selectedId)`. A plain `id === selectedId.value` computed in every row would subscribe all 120 rows to `selectedId` and re-evaluate each on every click. The selector subscribes once and flips only the previous and next rows, so a selection costs two row updates at any list length.
 - **The discipline that makes it fine-grained.** `selectedId` is _never read in a render body_ — it only reaches the bound holes. So the coarse `mount()` effect never subscribes to it, and selection can't trigger a re-render. The render's one dependency is `hosts`, so the `Regenerate` path (which replaces `hosts`) is the one thing that re-renders the list.
 - **`delegate()` for both flows.** One Tier-1 `click` listener matches `[data-select]` (a row was clicked, via `closest()`), another matches the Regenerate button — dispatched by `attr()`-typed selectors.
 
@@ -23,10 +24,19 @@ A 120-host list with a list-detail layout. Clicking a host highlights its row an
 
 ```tsx
 // site/src/examples/complete/row-selector/main.tsx (excerpt — full source on GitHub)
-import { attr, computed, delegate, mount, signal, type AttrSpec } from "kerfjs";
+import {
+  attr,
+  computed,
+  delegate,
+  mount,
+  selector,
+  signal,
+  type AttrSpec,
+} from "kerfjs";
 
 const SELECT = attr("data-select");
 const selectedId = signal<string | null>(null);
+const isSelected = selector(selectedId); // one subscription for every row
 const selected = computed(
   () => hosts.value.find((h) => h.id === selectedId.value) ?? null,
 );
@@ -46,7 +56,7 @@ mount(root, () => {
           <li
             {...SELECT(h.id)}
             class={computed(() =>
-              h.id === selectedId.value ? "rs-row rs-row-on" : "rs-row",
+              isSelected(h.id).value ? "rs-row rs-row-on" : "rs-row",
             )}
           >
             {/* … name / region / cpu … */}

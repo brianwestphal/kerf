@@ -10,11 +10,23 @@
 //
 // The key discipline: `selectedId` is never read in a render body — it only
 // reaches the bound holes (via `selected` and the per-row `computed`), so the
-// coarse mount() effect never subscribes to it. The render's one dependency is
+// coarse mount() effect never subscribes to it. The rows read it through
+// `selector(selectedId)`, which subscribes to `selectedId` ONCE and flips only
+// the previous and next rows' flags, so a selection costs two row updates
+// however long the list is (instead of re-evaluating all 120 row computeds).
+// The render's one dependency is
 // `hosts`, so only `Regenerate` (which replaces `hosts`) forces an actual
 // re-render, and the counter ticks then.
 
-import { attr, computed, delegate, mount, signal, type AttrSpec } from 'kerfjs';
+import {
+  attr,
+  computed,
+  delegate,
+  mount,
+  selector,
+  signal,
+  type AttrSpec,
+} from 'kerfjs';
 
 // Dev diagnostics: kerf never infers dev mode, so the app installs them behind
 // its own build's dev flag. Vite folds this to `false` when it builds for
@@ -70,6 +82,7 @@ const SELECT = attr('data-select');
 
 const hosts = signal<Host[]>(genHosts(120));
 const selectedId = signal<string | null>(null);
+const isSelected = selector(selectedId);
 const selected = computed<Host | null>(
   () => hosts.value.find((h) => h.id === selectedId.value) ?? null,
 );
@@ -109,7 +122,7 @@ mount(root, () => {
             <li
               {...SELECT(h.id)}
               class={computed(() =>
-                h.id === selectedId.value ? 'rs-row rs-row-on' : 'rs-row',
+                isSelected(h.id).value ? 'rs-row rs-row-on' : 'rs-row',
               )}
             >
               <span class={`rs-dot rs-${h.status}`} />
