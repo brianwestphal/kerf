@@ -14,6 +14,7 @@ import { promisify } from 'node:util';
 
 import { describe, expect, it } from 'vitest';
 
+import { GATE_WEAKENING_ENV } from '../../scripts/lib/check-pass-cache.mjs';
 import { loadScaledTimeout } from '../helpers/load-scaled-timeout.js';
 
 const execFileAsync = promisify(execFile);
@@ -50,8 +51,21 @@ async function fixtureRepo(prefix: string) {
     log,
     git,
     pushInput: `refs/heads/main ${head} refs/heads/main ${'0'.repeat(40)}\n`,
-    env: { ...process.env, HOTSHEET_CLI: fake, TIMING_TEST_LOG: log },
+    env: { ...hermeticEnv(), HOTSHEET_CLI: fake, TIMING_TEST_LOG: log },
   };
+}
+
+/**
+ * KF-65QY9Q: the parent environment without the switches that change what a
+ * gate run records or skips (`KERF_SKIP_PACKAGE_GATES` refuses to record a
+ * pass; `KERF_FORCE_CHECK` always runs the gate). Running the suite under the
+ * documented `KERF_SKIP_PACKAGE_GATES=1` opt-out must not change these tests.
+ */
+function hermeticEnv(): typeof process.env {
+  const env = { ...process.env };
+  for (const name of [...GATE_WEAKENING_ENV, 'KERF_FORCE_CHECK'])
+    delete env[name];
+  return env;
 }
 
 function runWithInput(
@@ -303,7 +317,7 @@ describe('ticket timing CLI', { timeout: loadScaledTimeout(30_000) }, () => {
     await execFileAsync(
       process.execPath,
       [guard, '--record-pass', '--', process.execPath, '-e', ''],
-      { cwd: repo.root },
+      { cwd: repo.root, env: repo.env },
     );
     expect((await prePush()).code).toBe(0);
     expect(await runs()).toBe(1);
@@ -339,7 +353,7 @@ describe('ticket timing CLI', { timeout: loadScaledTimeout(30_000) }, () => {
     await execFileAsync(
       process.execPath,
       [guard, '--record-pass', '--', process.execPath, '-e', ''],
-      { cwd: repo.root },
+      { cwd: repo.root, env: repo.env },
     );
     expect((await prePush()).code).toBe(0);
     expect(await runs()).toBe(4);
@@ -388,7 +402,7 @@ describe('ticket timing CLI', { timeout: loadScaledTimeout(30_000) }, () => {
     await execFileAsync(
       process.execPath,
       [guard, '--record-pass', '--', process.execPath, '-e', ''],
-      { cwd: repo.root },
+      { cwd: repo.root, env: repo.env },
     );
     await expect(
       execFileAsync(
@@ -504,7 +518,7 @@ describe('ticket timing CLI', { timeout: loadScaledTimeout(30_000) }, () => {
     await execFileAsync(
       process.execPath,
       [guard, '--record-pass', '--', process.execPath, '-e', ''],
-      { cwd: repo.root },
+      { cwd: repo.root, env: repo.env },
     );
     await repo.git(['checkout', 'fixture.txt']);
     const { stdout } = await repo.git([
