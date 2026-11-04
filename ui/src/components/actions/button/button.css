@@ -80,6 +80,36 @@
   --_kui-button-height: round(calc(1rem + 1.2em), 1px);
   font-size: var(--kui-font-s, remify(14px));
 }
+/* KF-RESJ2S link emphasis: an inline text link on a <button> or a link
+   alike. It drops the control box (no height, padding, border, or fill) and
+   takes the surrounding text's size, weight, and line, so it can sit in a
+   sentence; compact sets the small text size. A neutral link takes the
+   document link color, and the other tones their own readable text color.
+   The label is underlined, more thickly under the pointer. */
+.kui-button[data-emphasis="link"] {
+  --_kui-button-fill: transparent;
+  --_kui-button-border: transparent;
+  --_kui-button-text: var(--_kui-button-on-quiet);
+  --_kui-button-height: auto;
+  gap: 0.25em;
+  padding: 0;
+  border-width: 0;
+  border-radius: var(--kui-radius-s, remify(3px));
+  font-weight: inherit;
+  line-height: inherit;
+  vertical-align: baseline;
+}
+.kui-button[data-emphasis="link"]:not([data-size="compact"]) {
+  font-size: inherit;
+}
+.kui-button[data-emphasis="link"][data-tone="neutral"] {
+  --_kui-button-text: var(--kui-color-text-link);
+}
+.kui-button[data-emphasis="link"] > .kui-button__label {
+  text-decoration: underline;
+  text-decoration-thickness: from-font;
+  text-underline-offset: 0.12em;
+}
 /* An icon-only button is a square one control height on each side, which a
    tight row never squeezes. */
 .kui-button[data-icon-only] {
@@ -217,12 +247,16 @@
 .kui-state-banner__action
   .kui-button[data-tone="neutral"]:is(
     [data-emphasis="secondary"],
-    [data-emphasis="plain"]
+    [data-emphasis="plain"],
+    [data-emphasis="link"]
   ) {
   --_kui-button-fill: transparent;
 }
 .kui-state-banner__action
-  .kui-button[data-tone="neutral"][data-emphasis="plain"] {
+  .kui-button[data-tone="neutral"]:is(
+    [data-emphasis="plain"],
+    [data-emphasis="link"]
+  ) {
   --_kui-button-border: transparent;
 }
 @media (hover: hover) {
@@ -230,7 +264,8 @@
     .kui-button[data-tone="neutral"]:not(
       :disabled,
       [aria-disabled="true"],
-      [data-loading]
+      [data-loading],
+      [data-emphasis="link"]
     ):hover {
     background-color: var(--_kui-state-banner-action-hover-background);
   }
@@ -256,6 +291,14 @@
     ):hover {
     background-color: var(--_kui-button-quiet);
   }
+  .kui-button[data-emphasis="link"]:not(
+      :disabled,
+      [aria-disabled="true"],
+      [data-loading]
+    ):hover
+    > .kui-button__label {
+    text-decoration-thickness: 2px;
+  }
 }
 .kui-button:not(:disabled, [aria-disabled="true"], [data-loading]):active {
   background-color: color-mix(
@@ -263,6 +306,10 @@
     var(--_kui-button-fill),
     light-dark(#fff, #1c1c1e) 10%
   );
+}
+/* A text link never paints a hover or press fill. */
+.kui-button[data-emphasis="link"]:is(:hover, :active) {
+  background-color: transparent;
 }
 .kui-button:focus {
   outline: none;
@@ -311,6 +358,12 @@
   --_kui-button-border: var(--kui-color-success-border-quiet);
   opacity: 1;
 }
+/* A disabled text link stays a dimmed link, without the quiet fill. */
+.kui-button[data-emphasis="link"]:is(:disabled, [aria-disabled="true"]) {
+  --_kui-button-fill: transparent;
+  --_kui-button-border: transparent;
+  opacity: 0.5;
+}
 .kui-button__icon {
   display: inline-flex;
   flex: none;
@@ -336,5 +389,8 @@
 @media (forced-colors: active) {
   .kui-button {
     border-color: ButtonText;
+  }
+  .kui-button[data-emphasis="link"] {
+    color: LinkText;
   }
 }

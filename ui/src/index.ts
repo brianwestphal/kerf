@@ -3,6 +3,8 @@ export {
   type ButtonContent,
   type ButtonEmphasis,
   type ButtonLabel,
+  type ButtonLink,
+  type ButtonLinkTarget,
   type ButtonOptions,
   type ButtonProps,
   type ButtonRootAttributes,

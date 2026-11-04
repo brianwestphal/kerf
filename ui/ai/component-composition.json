@@ -6662,10 +6662,11 @@
       },
       "accessibility": {
         "obligations": [
-          "A native <button> (type=\"button\" unless set) or, with href, an <a>; its label names it, or ariaLabel when the label is not enough. Focus shows the standard focus ring 1px outside the box; with focusRingInset it is drawn inside the box, two-tone with a surface-colored line inside the ring color, so it keeps 3:1 contrast on a loud fill of its own hue.",
+          "A native <button> (type=\"button\" unless set) or, with link (or href), an <a>; its label names it, or ariaLabel when the label is not enough. Focus shows the standard focus ring 1px outside the box; with focusRingInset it is drawn inside the box, two-tone with a surface-colored line inside the ring color, so it keeps 3:1 contrast on a loud fill of its own hue.",
           "Loading shows a spinner in place of the label, which still names the button, and sets aria-busy=\"true\". A disabled link drops its href and reports aria-disabled=\"true\". Disabled success uses a quiet success fill and readable on-fill text instead of fading the label.",
           "With pressed, it is a toggle: aria-pressed reports the state, and the pressed look adds a doubled outline (secondary and plain) or a darkened fill with an inset ring (primary), so the state never relies on hue alone; forced-colors mode paints it Highlight. An icon-only Button is named by ariaLabel, and help tags show that name on hover and keyboard focus. A title gives native hover text that says more than the name and replaces the help tag.",
-          "With currentStep, a native button or link reports aria-current=\"step\" even when disabled; the app owns the step label and which step is current."
+          "With currentStep, a native button or link reports aria-current=\"step\" even when disabled; the app owns the step label and which step is current.",
+          "With emphasis=\"link\" it keeps its native role (a <button> stays a button, a link a link) and the standard focus ring, drawn around the text; the label is underlined so the link never relies on color alone, and forced-colors mode paints it LinkText. It drops the 44px control height, so use it inline in text (the inline exception to target-size guidance), not as a standalone control."
         ]
       },
       "content": { "interactive": [{ "kind": "root" }] },
@@ -6703,7 +6704,9 @@
           "--kui-focus-ring",
           "--kui-font-m",
           "--kui-font-s",
-          "--kui-layout-rounded-radius"
+          "--kui-layout-rounded-radius",
+          "--kui-color-text-link",
+          "--kui-radius-s"
         ]
       },
       "diagnostics": [],

@@ -41,7 +41,7 @@ export interface FilePickerTriggerProps extends FileInputProps {
    * `primary`, `default`, as on Button); it stays a native file label.
    */
   tone?: ButtonTone;
-  /** The Button look's emphasis: `primary`, `secondary`, or `plain`. */
+  /** The Button look's emphasis: `primary`, `secondary`, `plain`, or `link`. */
   emphasis?: ButtonEmphasis;
   /** The Button look's size: `default` (44px) or `compact`. */
   size?: ButtonSize;

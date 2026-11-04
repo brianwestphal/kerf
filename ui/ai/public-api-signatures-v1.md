@@ -7482,9 +7482,21 @@ import './semantic-tone-CdW013KF.js';
 type ButtonTone = 'neutral' | 'brand' | 'success' | 'danger';
 /**
  * How loudly it asks: `primary` (default) fills the button, `secondary`
- * outlines it, and `plain` shows only its text until hovered.
+ * outlines it, `plain` shows only its text until hovered, and `link` draws it
+ * as an inline text link (the tone's link color, underlined, no box). Any
+ * Button takes any emphasis, whether it renders a `<button>` or a link.
  */
-type ButtonEmphasis = 'primary' | 'secondary' | 'plain';
+type ButtonEmphasis = 'primary' | 'secondary' | 'plain' | 'link';
+/** Where a link Button opens. */
+type ButtonLinkTarget = '_self' | '_blank' | '_parent' | '_top';
+/**
+ * A link Button's destination: a URL (a `URL` or a string), or a URL with
+ * the `target` it opens in. A `URL` is written as its `.href`.
+ */
+type ButtonLink = URL | string | {
+    readonly href: URL | string;
+    readonly target?: ButtonLinkTarget;
+};
 /** `default` is the 44px control height; `compact` is 33px with smaller text. */
 type ButtonSize = 'default' | 'compact';
 /** Corner shape: the shared `rounded` control radius (default) or a full `pill`. */
@@ -7528,14 +7540,15 @@ interface ButtonOptions {
     /**
      * Make it a toggle: `aria-pressed` reports the state, and a pressed look is
      * drawn on top of the tone and emphasis. The application owns the state and
-     * flips it in its `action` handler. A link (`href`) cannot be a toggle.
+     * flips it in its `action` handler. A link (`link` or `href`) cannot be a
+     * toggle, and neither can a Button with the `link` emphasis.
      */
     pressed?: boolean;
     /**
      * Make it a disclosure control: `aria-expanded` reports whether the
      * content it shows or hides is open (KF-DE348P). The application owns the
      * state and flips it in its `action` handler; pair it with a
-     * `DisclosureArrow` icon. A link (`href`) cannot take it.
+     * `DisclosureArrow` icon. A link (`link` or `href`) cannot take it.
      */
     expanded?: boolean;
     /** Mark the current step in a sequence with `aria-current="step"`. */
@@ -7553,10 +7566,16 @@ interface ButtonOptions {
     value?: string;
     /** The id of the form it belongs to, when it sits outside that form. */
     form?: string;
-    /** Render a link with button styling instead of a `<button>`. */
+    /**
+     * Render a link instead of a `<button>`: a URL, or `{ href, target }`. The
+     * Button keeps its emphasis (set `emphasis="link"` for a text link). The
+     * preferred spelling of `href` + `target`; give one or the other, not both.
+     */
+    link?: ButtonLink;
+    /** Render a link instead of a `<button>`; `link` is the preferred form. */
     href?: string;
-    /** Where a link opens. */
-    target?: '_self' | '_blank' | '_parent' | '_top';
+    /** Where an `href` link opens; with `link`, pass `{ href, target }`. */
+    target?: ButtonLinkTarget;
     /** Delegated `data-action` the application handles. */
     action?: string;
     /**
@@ -7599,8 +7618,8 @@ interface ButtonOptions {
     slot?: string;
 }
 /**
- * A standalone action button: a native `<button>` (or a link with `href`)
- * in one of four tones and three emphases, at the 44px control height or
+ * A standalone action button: a native `<button>` (or a link with `link`)
+ * in one of four tones and four emphases, including an inline text link, at the 44px control height or
  * compact, with a label or as an icon-only square, rounded or pill-shaped,
  * sized to its label or filling its parent's width, and optionally a
  * `pressed` toggle or `currentStep` marker. Inside a
@@ -7608,9 +7627,9 @@ interface ButtonOptions {
  * Button for a dialog footer, a form, or a standalone action beside other
  * content.
  */
-declare function Button({ children, tone, emphasis, size, shape, fill, pressed, expanded, currentStep, icon, loading, disabled, type, name, value, form, href, target, action, popoverTarget, popoverTargetAction, ariaHasPopup, focusRingInset, badge, badgeLabel, badgeTone, ariaLabel, title, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
+declare function Button({ children, tone, emphasis, size, shape, fill, pressed, expanded, currentStep, icon, loading, disabled, type, name, value, form, link, href: hrefProp, target: targetProp, action, popoverTarget, popoverTargetAction, ariaHasPopup, focusRingInset, badge, badgeLabel, badgeTone, ariaLabel, title, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
 
-export { Button, type ButtonContent, type ButtonEmphasis, type ButtonLabel, type ButtonOptions, type ButtonProps, type ButtonRootAttributes, type ButtonShape, type ButtonSize, type ButtonTone, type ButtonType };
+export { Button, type ButtonContent, type ButtonEmphasis, type ButtonLabel, type ButtonLink, type ButtonLinkTarget, type ButtonOptions, type ButtonProps, type ButtonRootAttributes, type ButtonShape, type ButtonSize, type ButtonTone, type ButtonType };
 ```
 
 ## `@kerfjs/ui/split-button`
@@ -7727,7 +7746,7 @@ interface FilePickerTriggerProps extends FileInputProps {
      * `primary`, `default`, as on Button); it stays a native file label.
      */
     tone?: ButtonTone;
-    /** The Button look's emphasis: `primary`, `secondary`, or `plain`. */
+    /** The Button look's emphasis: `primary`, `secondary`, `plain`, or `link`. */
     emphasis?: ButtonEmphasis;
     /** The Button look's size: `default` (44px) or `compact`. */
     size?: ButtonSize;

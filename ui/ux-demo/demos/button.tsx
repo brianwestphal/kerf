@@ -1,9 +1,11 @@
 import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { List } from '@kerfjs/ui/list';
 import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
 import { SunkenPanel } from '@kerfjs/ui/sunken-panel';
+import { Text } from '@kerfjs/ui/text';
 import { TextField } from '@kerfjs/ui/text-field';
 import {
   Download,
@@ -56,6 +58,45 @@ export function ButtonDemo() {
         </Row>
       </CatalogExample>
       <CatalogExample
+        label="Link Emphasis"
+        note="emphasis='link' draws any Button as an inline text link at the surrounding text size: a link (link) or an action button alike. The tone picks the link color; a neutral link takes the document link color."
+        align="inline-control"
+      >
+        <List
+          gap="xs"
+          rootAttributes={{ 'data-demo-section': 'link-emphasis' }}
+        >
+          <Text>
+            The release notes list every change.{' '}
+            <Button emphasis="link" link="#button">
+              Read the Notes
+            </Button>
+          </Text>
+          <Row wrap vAlign="middle">
+            <Button emphasis="link" action="log-more">
+              Show Details
+            </Button>
+            <Button emphasis="link" tone="brand" link="#button">
+              Brand Link
+            </Button>
+            <Button emphasis="link" tone="danger" action="log-more">
+              Discard Draft
+            </Button>
+            <Button
+              emphasis="link"
+              size="compact"
+              icon={<LucideIcon icon={Download} name="download" size="s" />}
+              link={{ href: '#button', target: '_self' }}
+            >
+              Save a Copy
+            </Button>
+            <Button emphasis="link" disabled>
+              Unavailable
+            </Button>
+          </Row>
+        </List>
+      </CatalogExample>
+      <CatalogExample
         label="Success Emphasis"
         note="A positive action keeps its success tone as a fill, outline, or plain text."
         align="inline-control"
@@ -74,7 +115,7 @@ export function ButtonDemo() {
       </CatalogExample>
       <CatalogExample
         label="Full-Width Primary Action"
-        note="fill spans the button across its column instead of sizing it to the label; the label stays centered and ellipsizes once it no longer fits. A link Button (href) fills the same way."
+        note="fill spans the button across its column instead of sizing it to the label; the label stays centered and ellipsizes once it no longer fits. A link Button (link) fills the same way."
         align="inline-control"
         viewport={{ width: 'compact' }}
       >
@@ -100,7 +141,7 @@ export function ButtonDemo() {
           <Button
             emphasis="secondary"
             icon={<LucideIcon icon={Download} name="download" size="s" />}
-            href="#button"
+            link="#button"
           >
             Download
           </Button>
@@ -145,7 +186,7 @@ export function ButtonDemo() {
             Configure
           </Button>
           <Button action="log-more">Review</Button>
-          <Button href="#button" currentStep>
+          <Button link="#button" currentStep>
             Current Guide
           </Button>
           <Button currentStep disabled>

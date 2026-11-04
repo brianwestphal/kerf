@@ -8,9 +8,26 @@ export type ButtonTone = 'neutral' | 'brand' | 'success' | 'danger';
 
 /**
  * How loudly it asks: `primary` (default) fills the button, `secondary`
- * outlines it, and `plain` shows only its text until hovered.
+ * outlines it, `plain` shows only its text until hovered, and `link` draws it
+ * as an inline text link (the tone's link color, underlined, no box). Any
+ * Button takes any emphasis, whether it renders a `<button>` or a link.
  */
-export type ButtonEmphasis = 'primary' | 'secondary' | 'plain';
+export type ButtonEmphasis = 'primary' | 'secondary' | 'plain' | 'link';
+
+/** Where a link Button opens. */
+export type ButtonLinkTarget = '_self' | '_blank' | '_parent' | '_top';
+
+/**
+ * A link Button's destination: a URL (a `URL` or a string), or a URL with
+ * the `target` it opens in. A `URL` is written as its `.href`.
+ */
+export type ButtonLink =
+  | URL
+  | string
+  | {
+      readonly href: URL | string;
+      readonly target?: ButtonLinkTarget;
+    };
 
 /** `default` is the 44px control height; `compact` is 33px with smaller text. */
 export type ButtonSize = 'default' | 'compact';
@@ -79,14 +96,15 @@ export interface ButtonOptions {
   /**
    * Make it a toggle: `aria-pressed` reports the state, and a pressed look is
    * drawn on top of the tone and emphasis. The application owns the state and
-   * flips it in its `action` handler. A link (`href`) cannot be a toggle.
+   * flips it in its `action` handler. A link (`link` or `href`) cannot be a
+   * toggle, and neither can a Button with the `link` emphasis.
    */
   pressed?: boolean;
   /**
    * Make it a disclosure control: `aria-expanded` reports whether the
    * content it shows or hides is open (KF-DE348P). The application owns the
    * state and flips it in its `action` handler; pair it with a
-   * `DisclosureArrow` icon. A link (`href`) cannot take it.
+   * `DisclosureArrow` icon. A link (`link` or `href`) cannot take it.
    */
   expanded?: boolean;
   /** Mark the current step in a sequence with `aria-current="step"`. */
@@ -104,10 +122,16 @@ export interface ButtonOptions {
   value?: string;
   /** The id of the form it belongs to, when it sits outside that form. */
   form?: string;
-  /** Render a link with button styling instead of a `<button>`. */
+  /**
+   * Render a link instead of a `<button>`: a URL, or `{ href, target }`. The
+   * Button keeps its emphasis (set `emphasis="link"` for a text link). The
+   * preferred spelling of `href` + `target`; give one or the other, not both.
+   */
+  link?: ButtonLink;
+  /** Render a link instead of a `<button>`; `link` is the preferred form. */
   href?: string;
-  /** Where a link opens. */
-  target?: '_self' | '_blank' | '_parent' | '_top';
+  /** Where an `href` link opens; with `link`, pass `{ href, target }`. */
+  target?: ButtonLinkTarget;
   /** Delegated `data-action` the application handles. */
   action?: string;
   /**
@@ -151,8 +175,8 @@ export interface ButtonOptions {
 }
 
 /**
- * A standalone action button: a native `<button>` (or a link with `href`)
- * in one of four tones and three emphases, at the 44px control height or
+ * A standalone action button: a native `<button>` (or a link with `link`)
+ * in one of four tones and four emphases, including an inline text link, at the 44px control height or
  * compact, with a label or as an icon-only square, rounded or pill-shaped,
  * sized to its label or filling its parent's width, and optionally a
  * `pressed` toggle or `currentStep` marker. Inside a
@@ -177,8 +201,9 @@ export function Button({
   name,
   value,
   form,
-  href,
-  target,
+  link,
+  href: hrefProp,
+  target: targetProp,
   action,
   popoverTarget,
   popoverTargetAction,
@@ -194,6 +219,12 @@ export function Button({
   rootAttributes = {},
   slot,
 }: ButtonProps) {
+  const { href, target } = resolveLink(link, hrefProp, targetProp);
+  // KF-RESJ2S: the link look marks no toggle state.
+  if (emphasis === 'link' && pressed !== undefined)
+    throw new TypeError(
+      'A Button with the link emphasis cannot be a toggle (pressed).',
+    );
   const shared = {
     ...filterDataAttributes(rootAttributes, BUTTON_PROTECTED),
     id,
@@ -297,4 +328,28 @@ export function Button({
       {content}
     </button>
   );
+}
+
+/**
+ * KF-RESJ2S: `link` is sugar over `href` + `target`. A string or `URL` is the
+ * destination; an object adds where it opens. Both forms at once throw rather
+ * than silently preferring one.
+ */
+function resolveLink(
+  link: ButtonLink | undefined,
+  href: string | undefined,
+  target: ButtonLinkTarget | undefined,
+): { href: string | undefined; target: ButtonLinkTarget | undefined } {
+  if (link === undefined) return { href, target };
+  if (href !== undefined || target !== undefined)
+    throw new TypeError(
+      'Give a Button either link or href and target, not both.',
+    );
+  if (typeof link === 'string') return { href: link, target: undefined };
+  // A URL and the object form both carry `href`; only the object a target.
+  const destination = link.href;
+  return {
+    href: typeof destination === 'string' ? destination : destination.href,
+    target: 'target' in link ? link.target : undefined,
+  };
 }

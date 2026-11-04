@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { Button } from '../../src/components/actions/button/button.js';
 
@@ -148,6 +148,107 @@ describe('Button', () => {
     expect(off.hasAttribute('target')).toBe(false);
     expect(off.getAttribute('role')).toBe('link');
     expect(off.getAttribute('aria-disabled')).toBe('true');
+  });
+
+  it('takes link as sugar over href and target (KF-RESJ2S)', () => {
+    const fromString = render(Button({ children: 'Docs', link: '/docs' }));
+    expect(fromString.localName).toBe('a');
+    expect(fromString.getAttribute('href')).toBe('/docs');
+    expect(fromString.hasAttribute('target')).toBe(false);
+    // A link keeps the default emphasis: the look is chosen separately.
+    expect(fromString.dataset.emphasis).toBe('primary');
+    const fromUrl = render(
+      Button({
+        children: 'Docs',
+        link: new URL('https://example.com/docs?a=1'),
+      }),
+    );
+    expect(fromUrl.getAttribute('href')).toBe('https://example.com/docs?a=1');
+    const withTarget = render(
+      Button({ children: 'Docs', link: { href: '/docs', target: '_blank' } }),
+    );
+    expect(withTarget.getAttribute('href')).toBe('/docs');
+    expect(withTarget.getAttribute('target')).toBe('_blank');
+    const urlWithTarget = render(
+      Button({
+        children: 'Docs',
+        link: { href: new URL('https://example.com/a'), target: '_top' },
+      }),
+    );
+    expect(urlWithTarget.getAttribute('href')).toBe('https://example.com/a');
+    expect(urlWithTarget.getAttribute('target')).toBe('_top');
+    const off = render(
+      Button({
+        children: 'Docs',
+        link: { href: '/docs', target: '_blank' },
+        disabled: true,
+      }),
+    );
+    expect(off.hasAttribute('href')).toBe(false);
+    expect(off.hasAttribute('target')).toBe(false);
+    expect(off.getAttribute('aria-disabled')).toBe('true');
+  });
+
+  it('rejects link together with href or target, and keeps the link guards', () => {
+    expect(() =>
+      Button({ children: 'Docs', link: '/docs', href: '/other' }),
+    ).toThrow(/either link or href/);
+    expect(() =>
+      Button({ children: 'Docs', link: '/docs', target: '_blank' }),
+    ).toThrow(/either link or href/);
+    expect(() =>
+      Button({ children: 'Docs', link: '/docs', pressed: true }),
+    ).toThrow(/toggle/);
+    expect(() =>
+      Button({ children: 'Docs', link: '/docs', expanded: false }),
+    ).toThrow(/disclosure/);
+    expect(() =>
+      Button({ children: 'Docs', link: '/docs', popoverTarget: 'menu' }),
+    ).toThrow(/popover/);
+  });
+
+  it('screens a script link like any other href', () => {
+    // kerf's attribute URL screening applies through the link prop too: in
+    // production it warns and drops the destination.
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      for (const link of [
+        'javascript:alert(1)',
+        { href: 'javascript:alert(1)', target: '_blank' as const },
+      ]) {
+        const unsafe = render(Button({ children: 'Run', link }));
+        expect(unsafe.hasAttribute('href')).toBe(false);
+      }
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it('draws the link emphasis on a button or a link (KF-RESJ2S)', () => {
+    const action = render(
+      Button({ children: 'Show Details', emphasis: 'link', action: 'more' }),
+    );
+    expect(action.localName).toBe('button');
+    expect(action.dataset.emphasis).toBe('link');
+    expect(action.dataset.action).toBe('more');
+    const link = render(
+      Button({ children: 'Source', emphasis: 'link', link: '#source' }),
+    );
+    expect(link.localName).toBe('a');
+    expect(link.dataset.emphasis).toBe('link');
+    for (const tone of ['neutral', 'brand', 'success', 'danger'] as const)
+      expect(
+        render(Button({ children: 'Go', emphasis: 'link', tone })).dataset.tone,
+      ).toBe(tone);
+    expect(() =>
+      Button({ children: 'Live', emphasis: 'link', pressed: false }),
+    ).toThrow(/link emphasis cannot be a toggle/);
+    // Disclosure is fine on a link-looking button ("Show More").
+    expect(
+      render(
+        Button({ children: 'More', emphasis: 'link', expanded: false }),
+      ).getAttribute('aria-expanded'),
+    ).toBe('false');
   });
 
   it('renders an icon-only square named by ariaLabel', () => {

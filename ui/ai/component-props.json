@@ -503,7 +503,7 @@
       "source": "kerf",
       "import": "@kerfjs/ui/button",
       "export": "Button",
-      "description": "A standalone action button: a native `<button>` (or a link with `href`)\nin one of four tones and three emphases, at the 44px control height or\ncompact, with a label or as an icon-only square, rounded or pill-shaped,\nsized to its label or filling its parent's width, and optionally a\n`pressed` toggle or `currentStep` marker. Inside a\n`ToolbarControlGroup`, use a plain `<button>`, which the group styles; use\nButton for a dialog footer, a form, or a standalone action beside other\ncontent.",
+      "description": "A standalone action button: a native `<button>` (or a link with `link`)\nin one of four tones and four emphases, including an inline text link, at the 44px control height or\ncompact, with a label or as an icon-only square, rounded or pill-shaped,\nsized to its label or filling its parent's width, and optionally a\n`pressed` toggle or `currentStep` marker. Inside a\n`ToolbarControlGroup`, use a plain `<button>`, which the group styles; use\nButton for a dialog footer, a form, or a standalone action beside other\ncontent.",
       "props": [
         {
           "name": "children",
@@ -556,7 +556,7 @@
           "name": "emphasis",
           "type": {
             "kind": "enum",
-            "values": ["primary", "secondary", "plain"],
+            "values": ["primary", "secondary", "plain", "link"],
             "text": "ButtonEmphasis | undefined",
             "nullable": true
           },
@@ -612,7 +612,7 @@
             "nullable": true
           },
           "required": false,
-          "description": "Make it a toggle: `aria-pressed` reports the state, and a pressed look is\ndrawn on top of the tone and emphasis. The application owns the state and\nflips it in its `action` handler. A link (`href`) cannot be a toggle.",
+          "description": "Make it a toggle: `aria-pressed` reports the state, and a pressed look is\ndrawn on top of the tone and emphasis. The application owns the state and\nflips it in its `action` handler. A link (`link` or `href`) cannot be a\ntoggle, and neither can a Button with the `link` emphasis.",
           "group": "State",
           "order": 1,
           "control": "select"
@@ -625,7 +625,7 @@
             "nullable": true
           },
           "required": false,
-          "description": "Make it a disclosure control: `aria-expanded` reports whether the\ncontent it shows or hides is open (KF-DE348P). The application owns the\nstate and flips it in its `action` handler; pair it with a\n`DisclosureArrow` icon. A link (`href`) cannot take it.",
+          "description": "Make it a disclosure control: `aria-expanded` reports whether the\ncontent it shows or hides is open (KF-DE348P). The application owns the\nstate and flips it in its `action` handler; pair it with a\n`DisclosureArrow` icon. A link (`link` or `href`) cannot take it.",
           "group": "State",
           "order": 2,
           "control": "select"
@@ -695,21 +695,63 @@
           "description": "The id of the form it belongs to, when it sits outside that form."
         },
         {
+          "name": "link",
+          "type": {
+            "kind": "union",
+            "members": [
+              { "kind": "string", "text": "string" },
+              { "kind": "ref", "ref": "URL", "text": "URL" },
+              {
+                "kind": "object",
+                "props": [
+                  {
+                    "name": "href",
+                    "type": {
+                      "kind": "union",
+                      "members": [
+                        { "kind": "string", "text": "string" },
+                        { "kind": "ref", "ref": "URL", "text": "URL" }
+                      ],
+                      "text": "string | URL"
+                    },
+                    "required": true
+                  },
+                  {
+                    "name": "target",
+                    "type": {
+                      "kind": "enum",
+                      "values": ["_self", "_blank", "_parent", "_top"],
+                      "text": "ButtonLinkTarget | undefined",
+                      "nullable": true
+                    },
+                    "required": false
+                  }
+                ],
+                "text": "{ readonly href: string | URL; readonly target?: ButtonLinkTarget | undefined; }"
+              }
+            ],
+            "text": "ButtonLink | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Render a link instead of a `<button>`: a URL, or `{ href, target }`. The\nButton keeps its emphasis (set `emphasis=\"link\"` for a text link). The\npreferred spelling of `href` + `target`; give one or the other, not both."
+        },
+        {
           "name": "href",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Render a link with button styling instead of a `<button>`."
+          "description": "Render a link instead of a `<button>`; `link` is the preferred form."
         },
         {
           "name": "target",
           "type": {
             "kind": "enum",
             "values": ["_self", "_blank", "_parent", "_top"],
-            "text": "\"_self\" | \"_blank\" | \"_parent\" | \"_top\" | undefined",
+            "text": "ButtonLinkTarget | undefined",
             "nullable": true
           },
           "required": false,
-          "description": "Where a link opens."
+          "description": "Where an `href` link opens; with `link`, pass `{ href, target }`."
         },
         {
           "name": "action",
@@ -4094,13 +4136,13 @@
           "name": "emphasis",
           "type": {
             "kind": "enum",
-            "values": ["primary", "secondary", "plain"],
+            "values": ["primary", "secondary", "plain", "link"],
             "text": "ButtonEmphasis | undefined",
             "nullable": true
           },
           "required": false,
           "default": "primary",
-          "description": "The Button look's emphasis: `primary`, `secondary`, or `plain`."
+          "description": "The Button look's emphasis: `primary`, `secondary`, `plain`, or `link`."
         },
         {
           "name": "size",
@@ -28051,6 +28093,7 @@
       ],
       "text": "TreeListNode"
     },
+    "URL": { "kind": "object", "props": [], "text": "URL" },
     "UiGapValue": {
       "kind": "union",
       "members": [

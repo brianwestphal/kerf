@@ -1738,11 +1738,12 @@ export const COMPONENTS = {
       },
       {
         id: 'emphasis',
-        label: 'Secondary and Plain Emphasis',
+        label: 'Secondary, Plain, and Link Emphasis',
         height: 44,
         render: () =>
           Row({
             gap: 'xs',
+            vAlign: 'middle',
             children: [
               Button({ children: 'Export', emphasis: 'secondary' }),
               Button({
@@ -1751,6 +1752,7 @@ export const COMPONENTS = {
                 emphasis: 'secondary',
               }),
               Button({ children: 'Learn More', emphasis: 'plain' }),
+              Button({ children: 'Source', emphasis: 'link', link: '#source' }),
             ],
           }),
       },

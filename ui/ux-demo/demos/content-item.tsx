@@ -100,7 +100,9 @@ export function ContentItemDemo() {
                     A short dispatch from the coast.
                   </Text>
                   <Row vAlign="middle">
-                    <a href="#source">Source</a>
+                    <Button emphasis="link" link="#source">
+                      Source
+                    </Button>
                     <Button emphasis="plain" action="log-more">
                       Save
                     </Button>

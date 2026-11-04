@@ -46,7 +46,7 @@ supported Sketch version.
 | Component             | Source variant       | Presentation                                    | Native status | Ticket    |
 | --------------------- | -------------------- | ----------------------------------------------- | ------------- | --------- |
 | button                | tones                | Primary Tones                                   | supported     | KF-MKW7QZ |
-| button                | emphasis             | Secondary and Plain Emphasis                    | supported     | KF-MKW7QZ |
+| button                | emphasis             | Secondary, Plain, and Link Emphasis             | supported     | KF-MKW7QZ |
 | button                | icons                | With an Icon, and Icon Only                     | supported     | KF-MKW7QZ |
 | button                | states               | Compact and Disabled                            | supported     | KF-MKW7QZ |
 | button                | toggles              | Toggle, Resting and Pressed                     | supported     | KF-MKW7QZ |
