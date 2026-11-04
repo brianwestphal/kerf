@@ -576,4 +576,97 @@ describe('resource()', () => {
         expect(seen[i]).toBeGreaterThanOrEqual(seen[i - 1]);
     });
   });
+
+  describe('AbortSignal: superseded runs can cancel (KF-DSXXTD)', () => {
+    it('run → run aborts the first signal only; its abort rejection never surfaces as failed', async () => {
+      const r = resource<string>();
+      const signals: AbortSignal[] = [];
+      const first = r.run(
+        (_report, sig) =>
+          new Promise<string>((_resolve, reject) => {
+            signals.push(sig);
+            sig.addEventListener('abort', () => reject(sig.reason));
+          }),
+      );
+      const second = deferred<string>();
+      const secondRun = r.run((_report, sig) => {
+        signals.push(sig);
+        return second.promise;
+      });
+      expect(signals[0].aborted).toBe(true);
+      expect((signals[0].reason as DOMException).name).toBe('AbortError');
+      expect(signals[1].aborted).toBe(false);
+      await first;
+      expect(r.value.status).toBe('running');
+      second.resolve('B');
+      await secondRun;
+      expect(r.value).toMatchObject({ status: 'completed', data: 'B' });
+      expect(signals[1].aborted).toBe(false);
+    });
+
+    it('run → reset aborts the in-flight signal', () => {
+      const r = resource<string>();
+      let seen: AbortSignal | undefined;
+      void r.run((_report, sig) => {
+        seen = sig;
+        return deferred<string>().promise;
+      });
+      r.reset();
+      expect(seen?.aborted).toBe(true);
+      expect(r.value.status).toBe('idle');
+    });
+
+    it('a settled run is never aborted by a later run or reset', async () => {
+      const r = resource<string>();
+      let done: AbortSignal | undefined;
+      let failed: AbortSignal | undefined;
+      let threw: AbortSignal | undefined;
+      await r.run((_report, sig) => {
+        done = sig;
+        return Promise.resolve('A');
+      });
+      await r.run((_report, sig) => {
+        failed = sig;
+        return Promise.reject(new Error('boom'));
+      });
+      await r.run((_report, sig) => {
+        threw = sig;
+        throw new Error('sync');
+      });
+      void r.run(() => deferred<string>().promise);
+      r.reset();
+      expect(done?.aborted).toBe(false);
+      expect(failed?.aborted).toBe(false);
+      expect(threw?.aborted).toBe(false);
+    });
+
+    it('a keyed run that paints a cached slice is still aborted when superseded', async () => {
+      const r = resource<string, string>({ cacheKey: (k) => k });
+      await r.run('a', () => Promise.resolve('A'));
+      let seen: AbortSignal | undefined;
+      void r.run('a', (_report, sig) => {
+        seen = sig;
+        return deferred<string>().promise;
+      });
+      expect(r.value).toMatchObject({ status: 'running', data: 'A' });
+      void r.run('b', () => deferred<string>().promise);
+      expect(seen?.aborted).toBe(true);
+    });
+
+    it('a re-entrant run from inside a fetcher aborts the outer run', () => {
+      const r = resource<string>();
+      let outer: AbortSignal | undefined;
+      let inner: AbortSignal | undefined;
+      void r.run((_report, sig) => {
+        outer = sig;
+        void r.run((_r, innerSig) => {
+          inner = innerSig;
+          return deferred<string>().promise;
+        });
+        return deferred<string>().promise;
+      });
+      expect(outer?.aborted).toBe(true);
+      expect(inner?.aborted).toBe(false);
+    });
+  });
 });

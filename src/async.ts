@@ -15,7 +15,12 @@
  *
  * Only the LATEST run may resolve the state, so out-of-order responses are
  * dropped automatically. Optional progress: declare the `report` parameter on
- * your fetcher and call it (e.g. from an upload's progress events).
+ * your fetcher and call it (e.g. from an upload's progress events). Optional
+ * cancellation: declare the second `signal` parameter and hand it to `fetch()`
+ * (or listen for its `abort` event) — it aborts when a newer run supersedes
+ * this one or on `reset()`, and never once this run has settled:
+ *
+ *   users.run((_report, signal) => fetch('/api/users', { signal }).then((r) => r.json()));
  *
  * Pass an input — `run(input, fetcher)` — to carry which request a run is for
  * through to `value.input` (set for `running`/`completed`/`failed`), so a
@@ -93,11 +98,16 @@ export interface ResourceOptions<T, I = void> {
 
 /**
  * The fetcher passed to {@link Resource.run}. You own the transport. It receives
- * a `report(completed, total)` callback for optional progress — ignore it if you
- * don't need progress (a plain `() => Promise<T>` is assignable here).
+ * a `report(completed, total)` callback for optional progress and an
+ * `AbortSignal` that aborts when a newer run supersedes this one or the
+ * resource is `reset()` — never after this run settles. Ignore either if you
+ * don't need it (a plain `() => Promise<T>` or `(report) => Promise<T>` is
+ * assignable here). The abort rejection of a superseded run is dropped by the
+ * stale guard, so it never surfaces as `failed`.
  */
 export type ResourceFetcher<T> = (
   report: (completed: number, total: number) => void,
+  signal: AbortSignal,
 ) => Promise<T>;
 
 /**
@@ -169,6 +179,13 @@ export function resource<T, I = void>(
   });
   // Per-resource run counter (closure-local, not module state) — the stale guard.
   let generation = 0;
+  // The LATEST unsettled run's controller; dropped when that run settles, so a
+  // later run or reset() never aborts work that already finished.
+  let controller: AbortController | undefined;
+  const supersede = (): void => {
+    controller?.abort();
+    controller = undefined;
+  };
 
   function run(
     inputOrFetcher: I | ResourceFetcher<T>,
@@ -194,7 +211,13 @@ export function resource<T, I = void>(
           : undefined
         : state.peek().data;
 
+    supersede();
     const gen = ++generation;
+    const own = new AbortController();
+    controller = own;
+    const settled = (): void => {
+      if (controller === own) controller = undefined;
+    };
     state.value = {
       status: 'running',
       data: runningData,
@@ -211,6 +234,7 @@ export function resource<T, I = void>(
     };
 
     const fail = (error: unknown): undefined => {
+      settled();
       if (gen === generation) {
         // Keep `data` (and thus `revision`) on failure — stale-while-error.
         state.value = {
@@ -226,12 +250,13 @@ export function resource<T, I = void>(
 
     let pending: Promise<T>;
     try {
-      pending = fetcher(report);
+      pending = fetcher(report, own.signal);
     } catch (error: unknown) {
       return Promise.resolve(fail(error));
     }
 
     return pending.then((data) => {
+      settled();
       if (gen === generation) {
         if (key !== undefined) cache.set(key, data);
         state.value = {
@@ -249,6 +274,7 @@ export function resource<T, I = void>(
 
   function reset(): void {
     generation++; // invalidate any in-flight run
+    supersede(); // …and tell its fetcher to stop
     cache.clear();
     state.value = {
       status: 'idle',

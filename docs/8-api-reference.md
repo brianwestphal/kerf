@@ -919,6 +919,14 @@ effect(() => {
 
 **Progress** is opt-in: your fetcher receives a `report(completed, total)` callback (a plain `() => Promise<T>` is assignable — ignore it if unused). Reports from a superseded run are dropped.
 
+**Cancellation** is opt-in too: the fetcher's second argument is an `AbortSignal` that aborts when a newer `run()` supersedes this one or when `reset()` is called. It never aborts once its run has settled (resolved, rejected, or thrown), so a finished run is never cancelled after the fact. Hand it to `fetch()` to close the superseded request; the resulting `AbortError` rejection belongs to a superseded run, so the stale guard drops it and the resource never moves to `failed` because of it.
+
+```ts
+search.run(q, (_report, signal) =>
+  fetch(`/api/search?q=${encodeURIComponent(q)}`, { signal }).then((r) => r.json()),
+);
+```
+
 ```ts
 upload.run((report) =>
   putWithProgress(file, (sent, size) => report(sent, size)),
@@ -1076,7 +1084,7 @@ export async function importCsv(file: File): Promise<void> {
 
 What each piece does:
 
-- **Superseded results never paint.** Typing fires a run per settled query; when an older reply arrives after a newer run started, the stale-response guard drops it, so the list only ever shows the latest query's hits. The worker still finishes the older job: a worker runs one message at a time and cannot see a newer one until the current job returns. The debounce keeps that queue short. For a job that runs for seconds, call `worker.terminate()` and create a fresh worker instead of waiting it out.
+- **Superseded results never paint.** Typing fires a run per settled query; when an older reply arrives after a newer run started, the stale-response guard drops it, so the list only ever shows the latest query's hits. The worker still finishes the older job: a worker runs one message at a time and cannot see a newer one until the current job returns. The debounce keeps that queue short. For a job that runs for seconds, listen for the fetcher's `AbortSignal` (its second argument), which aborts as soon as a newer run supersedes this one, and in that handler call `worker.terminate()` and create a fresh worker instead of waiting it out.
 - **Errors land in `value.error`.** A throw inside the worker becomes an error reply, `call()` rejects, and the resource moves to `failed` without an unhandled rejection.
 - **Transfer large binary data; let small results copy.** Passing an `ArrayBuffer` (or a typed array's `.buffer`) in the transfer list moves it between threads without a copy, and the sender's copy becomes detached. Plain objects and strings are copied by structured clone, which is fast at these sizes; a megabyte-scale string costs well under a millisecond on a desktop. Transferring pays off for large typed arrays and file contents.
 - **Keep the worker's results as data.** Send rows, numbers, and strings back, not HTML: the render function, `each()`, and the morph stay on the main thread, where they can read signals and preserve focus and selection.
