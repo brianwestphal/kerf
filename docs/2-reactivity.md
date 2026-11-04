@@ -294,3 +294,29 @@ const isChecked = setSelector(checked);
 ```
 
 Each write diffs the previous set against the next, O(|old| + |new|), and notifies only the keys that were added or removed. Assign a new Set; a new Set with the same members notifies nothing. Per-key signals live and release exactly as `selector()`'s do. It pays off when the sets are small next to the number of rows; a set holding most keys costs about what a plain `computed` per row does.
+
+## 2.11 Live per-key values — a Map of signals
+
+For live data keyed by id (presence dots, ticker prices, job status from a websocket) where each message changes one or a few entities, keep **one signal per entity** in a `Map`, not one signal holding the whole `Map`:
+
+```ts
+import { signal, type Signal } from 'kerfjs';
+
+const prices = new Map<string, Signal<number>>();
+const priceOf = (id: string): Signal<number> => {
+  let s = prices.get(id);
+  if (!s) prices.set(id, (s = signal(0)));
+  return s;
+};
+
+socket.onmessage = ({ data }) => {
+  const { id, price, removed } = JSON.parse(data);
+  if (removed) prices.delete(id);
+  else priceOf(id).value = price; // O(1): only this row's bound hole updates
+};
+
+// in a row:
+<td>{priceOf(row.id)}</td>
+```
+
+Replacing a `signal<Map<K, V>>` on every message costs O(N) twice: the producer clones N entries, and every row's `computed(() => map.value.get(row.id))` re-evaluates (about 0.6 ms each at 10k entries). A per-entity signal makes the update O(1) with no extra API. Delete an entity's signal when the entity leaves; its rows' bindings release it when they are removed. This answers "what is this key's value?", while `selector()` / `setSelector()` answer "is this key the chosen one?".

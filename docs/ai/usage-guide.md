@@ -817,6 +817,9 @@ mount(rootEl, () => (
 // For a large list, `const isSelected = selector(selectedId)` and
 // `computed(() => (isSelected(it.id).value ? "sel" : ""))` make the flip O(1):
 // one subscription to selectedId instead of one per row.
+// Live per-key values (prices, presence) from a socket: keep a
+// Map<id, Signal<V>> and write only the changed entity's signal (O(1)),
+// not one signal<Map> replaced per message (O(N) clone + N re-evaluations).
 
 // 6. The endpoint of "values bind, structure re-renders": a render that reads
 //    NO .value registers zero effect dependencies, so it runs exactly ONCE —
