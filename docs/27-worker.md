@@ -341,6 +341,8 @@ should not load both.
   done. The recipe's `createCompute(spawn, init)` client and pool snippet were
   run against real module workers in Chromium, Firefox, and WebKit (abort
   mid-job, load failure, dispose, error reply, a superseded `resource()` run,
-  and two-worker parallelism).
+  and two-worker parallelism). KF-DHC4J5 made `check:docs:examples` compile
+  the recipe's blocks together and require the site and internal copies to
+  match.
 - Revisit the subpath when two real apps carry a worker pool, or when the
   recipe's cancellation code is copied with a bug (§27.4).

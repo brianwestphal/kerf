@@ -32,6 +32,15 @@
  *    `/kerf/api/` or `/kerf/docs/…/` Markdown link targets a real content
  *    route, and any fragment names a heading that route actually publishes.
  *
+ * 5. **Multi-file API recipes compile** (docs/8-api-reference.md and the
+ *    site's api.md) — a `###` section whose code blocks name their file on
+ *    the first line (`// compute-client.ts — main thread`) is a recipe: all
+ *    of its ts/tsx blocks compile together against dist/, a named block as
+ *    that file and an unnamed one as `block-N`, so a relative import between
+ *    them resolves. Every relative import must name a file in the same
+ *    recipe. The internal and site copies of a recipe must be identical
+ *    (KF-DHC4J5: the Worker recipe had no compile check at all).
+ *
  * Surfaces the kerf-of-the-shape "doc snippet violates a runtime contract"
  * bug that let the partial-set TodoMVC regression ship plus the "source
  * moved to attr() but doc excerpts didn't" drift caught after v0.11.0.
@@ -318,6 +327,81 @@ ok(
   `${totalPublishedDocLinks} published documentation links resolve to source routes and headings`,
 );
 
+// --- Check 5: multi-file API recipes --------------------------------------
+
+const recipeDocs = [
+  resolve(repoRoot, 'docs/8-api-reference.md'),
+  resolve(siteContentDir, 'api.md'),
+];
+const fileHeaderRe = /^\/\/ ([A-Za-z0-9_.-]+\.(?:ts|tsx))\b/;
+
+/** Every recipe in `src`: `{ heading, files: [{ name, body }] }`. */
+function extractRecipes(src) {
+  const recipes = [];
+  for (const section of src.split(/^(?=### )/m)) {
+    const heading = section.slice(0, section.indexOf('\n'));
+    const blocks = [...section.matchAll(/```(tsx|ts)\n([\s\S]*?)```/g)];
+    if (!blocks.some(([, , body]) => fileHeaderRe.test(body))) continue;
+    const files = blocks.map(([, lang, body], index) => ({
+      name: fileHeaderRe.exec(body)?.[1] ?? `block-${index + 1}.${lang}`,
+      body,
+    }));
+    recipes.push({ heading, files });
+  }
+  return recipes;
+}
+
+const recipesByDoc = recipeDocs.map((doc) => ({
+  doc,
+  recipes: extractRecipes(readFileSync(doc, 'utf8')),
+}));
+let totalRecipeFiles = 0;
+for (const { doc, recipes } of recipesByDoc) {
+  const docName = relative(repoRoot, doc);
+  for (const [index, { heading, files }] of recipes.entries()) {
+    const names = new Set(files.map((file) => file.name));
+    const dir = resolve(
+      scratchDir,
+      'recipes',
+      `${docName.replace(/[^A-Za-z0-9]+/g, '-')}-${index + 1}`,
+    );
+    mkdirSync(dir, { recursive: true });
+    for (const { name, body } of files) {
+      for (const [, specifier] of body.matchAll(/from\s+['"](\.[^'"]+)['"]/g)) {
+        const target = specifier.replace(/^\.\//, '').replace(/\.js$/, '');
+        if (![...names].some((n) => n.replace(/\.tsx?$/, '') === target))
+          fail(
+            `${docName} ${heading}: ${name} imports ${specifier}, which names no file in the recipe (${[...names].join(', ')})`,
+          );
+      }
+      writeFileSync(resolve(dir, name), body);
+      totalRecipeFiles++;
+      totalCompiledBlocks++;
+    }
+  }
+}
+const [internal, site] = recipesByDoc;
+for (const recipe of internal.recipes) {
+  const twin = site.recipes.find((r) => r.heading === recipe.heading);
+  if (twin === undefined)
+    fail(
+      `${recipe.heading}: in docs/8-api-reference.md but not in the site's api.md`,
+    );
+  else if (JSON.stringify(twin.files) !== JSON.stringify(recipe.files))
+    fail(
+      `${recipe.heading}: the site's api.md copy differs from docs/8-api-reference.md`,
+    );
+}
+for (const recipe of site.recipes)
+  if (!internal.recipes.some((r) => r.heading === recipe.heading))
+    fail(
+      `${recipe.heading}: in the site's api.md but not in docs/8-api-reference.md`,
+    );
+if (process.exitCode === 1) process.exit(1);
+ok(
+  `${internal.recipes.length + site.recipes.length} multi-file API recipes (${totalRecipeFiles} files) queued to compile; site and internal copies match`,
+);
+
 // --- Compile self-contained blocks via tsc ------------------------------
 
 // Use the existing tests/dist/jsx-typing tsconfig as the template — it
@@ -326,6 +410,8 @@ const baseTsconfig = JSON.parse(readFileSync(distTypingTsconfig, 'utf8'));
 const tsconfig = {
   compilerOptions: {
     ...baseTsconfig.compilerOptions,
+    // A recipe's worker file has no imports; every block is still its own module.
+    moduleDetection: 'force',
     paths: Object.fromEntries(
       Object.entries(baseTsconfig.compilerOptions.paths).map(([k, v]) => [
         k,
