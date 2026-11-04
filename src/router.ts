@@ -267,6 +267,11 @@ export function createRouter(options: RouterOptions): RouterHandle {
     route.value = resolve(readLocation());
   };
 
+  // A per-link computed on purpose. `setSelector` over the path's segment
+  // prefixes would notify only the links that flip, but its per-key signals
+  // go stale while held without a subscriber, and `match()` signals are read
+  // that way (a click handler checking `.value`). The per-navigation saving
+  // was ~7 µs at 100 links, so the fan-out stays (KF-EBNHHB).
   const match = (pattern: string): ReadonlySignal<boolean> =>
     computed(() => {
       const p = route.value.path;
