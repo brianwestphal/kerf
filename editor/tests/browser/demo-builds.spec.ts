@@ -21492,6 +21492,97 @@ test('builds SurfaceScaffold › Embedded Popover Dialog', async ({ page }) => {
   );
 });
 
+// KF-GFQ20S: the overlay surface shows embedded on the edit canvas
+// (KF-T1V86Q), so its heading and split can be built in place; its trigger
+// group sits in a plain Toolbar (KF-0W87ST).
+test('builds SurfaceScaffold › Non-Modal Popover Dialog', async ({ page }) => {
+  test.setTimeout(test.info().timeout * 3);
+  const id = 'catalog-popover-dialog';
+  const label = 'Non-Modal Popover Dialog';
+  const button = { children: 'Open Repository Status', popoverTarget: id };
+  const description = 'Three projects have uncommitted changes.';
+  await toolbarTrigger(page, label, { text: button });
+  await addInto(page, /^Pane/, 'PopoverDialogSurface');
+  await select(page, /^PopoverDialogSurface/);
+  await applySpec(page, {
+    choices: { bodyLayout: 'fill-last' },
+    text: {
+      id,
+      labelledBy: `${id}-title`,
+      describedBy: `${id}-description`,
+    },
+    unsets: ['label'],
+  });
+  await setCss(page, 'preferredWidth', 'rem(45)');
+  await setCss(page, 'height', 'rem(26.25)');
+  await setCss(page, 'viewportGutter', 'rem(0.5)');
+  // The heading Toolbar takes the seeded body Text's place; the split
+  // follows it.
+  await addInto(page, /^PopoverDialogSurface/, 'Toolbar', 0, 0);
+  await select(page, TOOLBAR, 1);
+  await setText(page, 'label', 'Repository Status Heading');
+  await zoneText(
+    page,
+    'leading',
+    {
+      choices: { size: 'xlarge' },
+      text: {
+        text: 'Repository Status',
+        id: `${id}-title`,
+        description,
+        descriptionId: `${id}-description`,
+      },
+    },
+    1,
+  );
+  await addInto(page, /^PopoverDialogSurface/, 'SplitView');
+  await projectSplit(page, `${id}-split`);
+  const shown = canvas(page).getByRole('dialog', {
+    name: 'Repository Status',
+  });
+  await expect(shown).toBeVisible();
+  await expect(shown).toHaveAttribute('data-presentation', 'embedded');
+  await expect(shown).toHaveAttribute('aria-describedby', `${id}-description`);
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      toolbarTriggerNode(label, button),
+      node(
+        'surface-scaffold#PopoverDialogSurface',
+        {
+          id,
+          labelledBy: `${id}-title`,
+          describedBy: `${id}-description`,
+          preferredWidth: css('rem(45)'),
+          height: css('rem(26.25)'),
+          viewportGutter: css('rem(0.5)'),
+          bodyLayout: 'fill-last',
+        },
+        {
+          children: [
+            node(
+              'toolbar',
+              { label: 'Repository Status Heading' },
+              {
+                leading: [
+                  node('toolbar-text', {
+                    text: 'Repository Status',
+                    size: 'xlarge',
+                    id: `${id}-title`,
+                    description,
+                    descriptionId: `${id}-description`,
+                  }),
+                ],
+              },
+            ),
+            projectSplitNode(`${id}-split`),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
 /**
  * The reader stack's first render: no reader open, Atlas first and
  * Borealis second, neither offset. The demo's two triggers sit in a Row
