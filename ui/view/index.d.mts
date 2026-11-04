@@ -147,6 +147,32 @@ export function validateView(
   },
 ): ViewValidation;
 
+/**
+ * Prepares to ask whether moving node `id` (placed directly in a zone) to the
+ * end of a zone adds a problem: one, by code and message, that
+ * `validateView(moved, catalog)` reports and `validateView(document, catalog)`
+ * does not, with `prepare` applied to every node of the moved document. The
+ * source parent, the target parent, and the moved subtree are checked alone,
+ * so asking costs about one node's checks, not one whole validation.
+ *
+ * The returned function answers `true` when the move changes the document
+ * and adds no problem, `false` when it adds one or moves nothing (into the
+ * node itself), and `undefined` when only a full validation can tell (the
+ * order of action uses, duplicate ids or names, a malformed tree).
+ */
+export function createMoveCheck(
+  document: ViewDocument,
+  catalog: ViewCatalog,
+  id: string,
+  options?: {
+    /**
+     * A node as the moved document holds it, from its own fields and its
+     * zones' lengths (the editor's field ownership). It never changes zones.
+     */
+    prepare?: (node: ViewNode) => ViewNode;
+  },
+): (parent: string, zone: string) => boolean | undefined;
+
 /** Whether a param or binding of type `from` fits type `to`. */
 export function isAssignable(
   from: ViewType,

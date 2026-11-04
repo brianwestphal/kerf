@@ -653,6 +653,9 @@ function checkPropValue(ctx, prop, value, definitions, scope, at, rowScoped) {
   if (type === undefined) return;
   // A param typed as a component prop binds only to that prop.
   if (type?.kind === 'prop') {
+    // Outside a node's own props, `ctx.component` is whichever component was
+    // checked last, so a scoped run cannot reproduce it (KF-SFAA5R).
+    if (ctx.trace && !ctx.inProps) ctx.trace.stale = true;
     if (type.component !== ctx.component || type.prop !== prop.name) {
       ctx.report(
         'KUI-V004',
@@ -665,6 +668,8 @@ function checkPropValue(ctx, prop, value, definitions, scope, at, rowScoped) {
   if (type === null) {
     const onSlot = (slot) => checkValueSlot(ctx, slot, at);
     if (!literalOf(value, prop.type, definitions, onSlot)) {
+      // The message quotes the value, with any field zone's nodes in it.
+      ctx.trace?.quoted?.push(value);
       ctx.report(
         'KUI-V004',
         at,
@@ -786,6 +791,17 @@ function variantMatches(variant, present, literals) {
 // Callers pass only objects: checkChild classifies non-objects, and root and
 // `$each` templates are checked for a `type` before they get here.
 function checkNode(ctx, node, at, scope, rowScoped, parentKey, text = false) {
+  // A scoped run (validate-move.mjs) records where each node is checked:
+  // these arguments and the enclosing control.
+  const trace = ctx.trace;
+  trace?.entries?.set(node, [
+    at,
+    scope,
+    rowScoped,
+    parentKey,
+    text,
+    ctx.interactiveHost,
+  ]);
   ctx.noteId(node.id, at);
   if (node.type === '#text') {
     for (const key of only(node, ['id', 'type', 'value']))
@@ -857,6 +873,7 @@ function checkNode(ctx, node, at, scope, rowScoped, parentKey, text = false) {
   }
   const host = ctx.interactiveHost;
   if (interactive === 'root' && !host) ctx.interactiveHost = node.type;
+  if (trace?.shallow === node) trace.hostAfter = ctx.interactiveHost;
   const zones = zonesOf(ctx, component);
   // The component whose props are checked next, for a prop-typed param.
   ctx.component = node.type;
@@ -880,6 +897,7 @@ function checkNode(ctx, node, at, scope, rowScoped, parentKey, text = false) {
     component,
     definitions,
   );
+  ctx.inProps = true;
   for (const [name, value] of Object.entries(filledProps)) {
     const propAt = `${at}.props.${name}`;
     const prop = byName.get(name);
@@ -929,6 +947,7 @@ function checkNode(ctx, node, at, scope, rowScoped, parentKey, text = false) {
       rowScoped,
     );
   }
+  ctx.inProps = false;
   if (node.zones !== undefined && !isObject(node.zones))
     ctx.report('KUI-V001', `${at}.zones`, '`zones` is an object');
   const shapes = new Map();
@@ -991,17 +1010,30 @@ function checkNode(ctx, node, at, scope, rowScoped, parentKey, text = false) {
     const parent =
       (field && fieldParent(ctx, node, component, definitions, zoneKey)) ||
       node.type;
-    children.forEach((child, index) =>
-      checkChild(
-        ctx,
-        child,
-        `${zoneAt}[${index}]`,
-        scope,
-        rowScoped,
-        parent,
-        binding.text,
-      ),
-    );
+    // A shallow run checks the node alone, noting where a child appended to
+    // `trace.zone` would be checked.
+    if (trace?.shallow === node) {
+      if (zoneKey === trace.zone)
+        trace.child = [
+          `${zoneAt}[${children.length - 1}]`,
+          scope,
+          rowScoped,
+          parent,
+          binding.text,
+          ctx.interactiveHost,
+        ];
+    } else
+      children.forEach((child, index) =>
+        checkChild(
+          ctx,
+          child,
+          `${zoneAt}[${index}]`,
+          scope,
+          rowScoped,
+          parent,
+          binding.text,
+        ),
+      );
     shapes.set(zoneKey, combine(children.map((child) => childShape(child))));
   }
   ctx.interactiveHost = host;
@@ -1531,12 +1563,24 @@ function hintUnsizedLayouts(node, at, sized, hints, isRoot = false) {
  * `#view` nodes are checked for shape only.
  */
 export function validateView(document, catalog, options = {}) {
+  return runView(document, catalog, options);
+}
+
+/**
+ * A validation context: the options, a diagnostics sink, and the id, name,
+ * and action tables. A `trace` marks a scoped run (validate-move.mjs): it
+ * records each action use, and a `quiet` one leaves conflicts to its caller.
+ */
+function createContext(catalog, options, trace) {
   const diagnostics = [];
   const ids = new Map();
   const names = new Map();
   const actions = new Map();
   const ctx = {
     catalog,
+    diagnostics,
+    actions,
+    trace,
     resolveView: options.resolveView,
     icons: options.icons ? new Set(options.icons) : undefined,
     viewStack: options.viewStack ?? [],
@@ -1576,6 +1620,10 @@ export function validateView(document, catalog, options = {}) {
       } else names.set(name, at);
     },
     noteAction(name, scope, at) {
+      if (trace) {
+        trace.notes.push([name, scope]);
+        if (trace.quiet) return;
+      }
       const seen = actions.get(name);
       if (seen && seen !== scope) {
         ctx.report(
@@ -1586,10 +1634,17 @@ export function validateView(document, catalog, options = {}) {
       } else actions.set(name, scope);
     },
   };
+  return ctx;
+}
 
+/**
+ * Checks a document's own fields, params, and slots into `ctx`, which then
+ * knows them. False when the document is not an object.
+ */
+function checkHeader(ctx, document) {
   if (!isObject(document)) {
     ctx.report('KUI-V001', '$', 'a view document is a JSON object');
-    return { valid: false, diagnostics, hints: [], actions };
+    return false;
   }
   for (const key of only(document, [
     '$schema',
@@ -1691,6 +1746,18 @@ export function validateView(document, catalog, options = {}) {
     }
     ctx.slots.set(name, slot);
   }
+  return true;
+}
+
+/**
+ * `validateView` with an optional `trace` (validate-move.mjs): its
+ * `entries` map, when given, records where each node is checked. Internal.
+ */
+export function runView(document, catalog, options, trace) {
+  const ctx = createContext(catalog, options, trace);
+  const { diagnostics, actions } = ctx;
+  if (!checkHeader(ctx, document))
+    return { valid: false, diagnostics, hints: [], actions };
   if (!isObject(document.root) || !('type' in document.root)) {
     ctx.report('KUI-V001', '$.root', 'root is exactly one node');
   } else {
@@ -1700,3 +1767,42 @@ export function validateView(document, catalog, options = {}) {
   hintUnsizedLayouts(document.root, '$.root', true, hints, true);
   return { valid: diagnostics.length === 0, diagnostics, hints, actions };
 }
+
+/**
+ * Checks pieces of `document` alone (KF-SFAA5R: scoped move validation), as
+ * `validateView(document, catalog)` checks them in the place `entry`
+ * describes (an `entries` record of a traced run). Returns a function that
+ * checks `item`, a node (or, with `asChild`, any zone child) and its
+ * subtree, or, with `shallow`, the node alone, noting where a child appended
+ * to `zone` would be checked. Action conflicts and duplicate ids and names
+ * are left to the caller: each run has its own tables. Internal.
+ */
+export function createScopedCheck(document, catalog) {
+  const header = createContext(catalog, {});
+  checkHeader(header, document);
+  return (item, entry, { asChild = false, shallow = false, zone } = {}) => {
+    const trace = {
+      quiet: true,
+      notes: [],
+      stale: false,
+      shallow: shallow ? item : undefined,
+      zone,
+      child: undefined,
+      hostAfter: undefined,
+    };
+    const ctx = createContext(catalog, {}, trace);
+    ctx.params = header.params;
+    ctx.slots = header.slots;
+    ctx.packages = header.packages;
+    ctx.interactiveHost = entry[5];
+    (asChild ? checkChild : checkNode)(ctx, item, ...entry.slice(0, 5));
+    return { ...trace, diagnostics: ctx.diagnostics };
+  };
+}
+
+/**
+ * What a parent's checks read of node `node` as its child: its type and
+ * whether it brings its own content-item inset (`KUI-L204`). Internal.
+ */
+export const childFacts = (catalog, node) =>
+  `${node.type} ${bringsInset(catalog.entries.get(node.type), node)}`;

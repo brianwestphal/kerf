@@ -13,6 +13,7 @@ export {
   validateView,
   VIEW_DOCUMENT_SCHEMA_ID,
 } from './validate.mjs';
+export { createMoveCheck } from './validate-move.mjs';
 export {
   canonicalJson,
   contractDigest,

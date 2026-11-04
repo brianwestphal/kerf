@@ -491,7 +491,9 @@ inside a node (appending to its first zone that takes it). A line at the
 target's label edge or a ring around the target shows where it will land,
 and only drops `validateView` accepts show one. The inspector's **Move to**
 picker is the keyboard alternative: it lists every zone the node can move to
-the end of, beside the existing Move up and Move down. Nodes and slot
+the end of, beside the existing Move up and Move down. It is checked with the
+scoped move check (§8.1), so listing it costs about one validation per
+selection, not one per zone. Nodes and slot
 placeholders also drag on the canvas (KF-CWDE93: canvas drag): past a few
 pixels, a press becomes a drag; the innermost node or slot under the pointer
 is the target, before, after, or inside is read along its parent's flow (left
@@ -1339,6 +1341,58 @@ An entry can also name one field of a type whose other fields render elsewhere
 `footer`, and only `toolbar` renders in the column's Toolbar, so the Toolbar
 lists `ListDetailDialogList.toolbar` (and `ListDetailDialogDetail.actions`).
 The field's own mapping wins over its holder's.
+
+### 8.1 Scoped move check
+
+`createMoveCheck(document, catalog, id, { prepare? })` (KF-SFAA5R:
+`ui/view/validate-move.mjs`) answers whether moving node `id` to the end of a
+zone adds a problem without validating the whole moved document per zone.
+Validating each zone in full made a selection cost O(n²): 617 ms at 300 nodes
+and 7.1 s at 1000. The result must equal what `addsProblems` would say. That
+means comparing the (code, message) multiset of
+`validateView(moved with prepare applied to every node)` against
+`validateView(document)`. The editor's `prepare` is its field ownership,
+`ownNode`.
+
+A move changes no id, name, slot, param, or catalog. So outside three places,
+every node is checked exactly as before:
+
+- the source parent;
+- the target parent;
+- the moved subtree in its new context (`$each` scope, row scope, parent
+  type, text zone, enclosing control).
+
+The check validates the prepared document once, with a trace. The trace
+records each node's context, each action use, and every value a problem
+quotes. Each move then subtracts the three places' old diagnostics and adds
+their new ones, computed by the validator's own `checkNode` run alone
+(`createScopedCheck`; a shallow run skips a node's children). The moved
+subtree's run is cached per context.
+
+Some checks depend on more than those places. For these, the check returns
+`undefined`, and the caller validates that move in full, so an answer is never
+an approximation:
+
+- **Repeated ids or names anywhere.** The duplicate message quotes the first
+  one's path.
+- **A malformed tree, or one `$slot` value shared between two places.** Slot
+  problems are reported once per object.
+- **A prop-typed `$param` / `$bind` read outside a node's own props.** It is
+  checked against whichever component was checked last in document order.
+- **An action used in both row and view scope, where document order decides
+  the conflict count.** One scope reports no conflict, and when both possible
+  counts fall on the same side of the count before the move, the answer
+  follows.
+- **A source or target inside a value a problem quotes.** A `KUI-V004`
+  message quotes a field zone's nodes.
+- **A preparation that changes what a parent reads of the source or target**
+  (its type, its inset), or the enclosing control its other children see.
+
+`ui/tests/unit/editor/move-check.test.ts` is the differential check against
+the full validation (`movesCleanly`, the old path). It covers every editor
+sample and generated documents built by
+`ui/tests/unit/editor/move-fuzz.ts`; `KERF_MOVE_FUZZ_SEEDS` soaks it. It also
+holds a linear-cost guard.
 
 The ESLint rule and the document validator read the same
 `component-composition.json`, so the two cannot drift. Composition entries

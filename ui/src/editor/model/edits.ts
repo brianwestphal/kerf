@@ -511,26 +511,41 @@ export function ownFilledFields(
   catalog: ViewCatalog,
 ): ViewDocument {
   let next = document;
-  for (const { node } of visitNodes(document)) {
-    for (const [key, children] of Object.entries(node.zones ?? {})) {
-      const component = catalog.components.get(node.type);
-      const field =
-        component &&
-        fieldZoneOf(component.component, component.definitions, key);
-      const own = node.props?.[field?.prop ?? ''] as ViewValue | undefined;
-      if (!field || !children.length || valueAt(own, field.path) === undefined)
-        continue;
-      // An object left with no other field stays, so the prop still reads
-      // as set (its rail kind, its toolbar).
-      next = setProp(
-        next,
-        node.id,
-        field.prop,
-        withValueAt(own, field.path, undefined) ?? {},
-      );
-    }
-  }
+  for (const { node } of visitNodes(document))
+    for (const [prop, value] of ownedFields(node, catalog))
+      next = setProp(next, node.id, prop, value);
   return next;
+}
+
+/**
+ * `node` as `ownFilledFields` leaves it: its own props only, read from its
+ * own props and zones (KF-SFAA5R: a move check prepares each node with it).
+ */
+export function ownNode(node: ViewNode, catalog: ViewCatalog): ViewNode {
+  let props = node.props;
+  for (const [prop, value] of ownedFields(node, catalog))
+    props = { ...(props ?? {}), [prop]: value };
+  return props === node.props ? node : { ...node, props };
+}
+
+/** The props `ownFilledFields` sets on `node`, in the order it sets them. */
+function ownedFields(
+  node: ViewNode,
+  catalog: ViewCatalog,
+): [string, ViewValue][] {
+  const fields: [string, ViewValue][] = [];
+  for (const [key, children] of Object.entries(node.zones ?? {})) {
+    const component = catalog.components.get(node.type);
+    const field =
+      component && fieldZoneOf(component.component, component.definitions, key);
+    const own = node.props?.[field?.prop ?? ''] as ViewValue | undefined;
+    if (!field || !children.length || valueAt(own, field.path) === undefined)
+      continue;
+    // An object left with no other field stays, so the prop still reads
+    // as set (its rail kind, its toolbar).
+    fields.push([field.prop, withValueAt(own, field.path, undefined) ?? {}]);
+  }
+  return fields;
 }
 
 /** The document-grammar type a component prop's literal value can be promoted as. */

@@ -3,11 +3,12 @@
 // inspector. The validator decides what is legal, so a move that would add a
 // problem (a zone that does not accept the component, a full zone, a binding
 // out of scope) is never offered.
-import type {
-  ViewCatalog,
-  ViewChild,
-  ViewDocument,
-  ViewNode,
+import {
+  createMoveCheck,
+  type ViewCatalog,
+  type ViewChild,
+  type ViewDocument,
+  type ViewNode,
 } from '@kerfjs/ui/view';
 
 import { findNode, visitNodes } from './document.js';
@@ -15,6 +16,7 @@ import {
   addsProblems,
   insertNode,
   ownFilledFields,
+  ownNode,
   placeChild,
   type Placement,
   placementOf,
@@ -155,7 +157,9 @@ function placementAt(
 
 /**
  * The zones node `id` can move into, at their end, other than its own zone:
- * each node's `zonesOf` keys the move leaves valid.
+ * each node's `zonesOf` keys the move leaves valid. The scoped move check
+ * answers each zone without validating the whole moved document
+ * (KF-SFAA5R); where it cannot tell, the move is validated in full.
  */
 export function moveDestinations(
   document: ViewDocument,
@@ -166,19 +170,16 @@ export function moveDestinations(
 ): MoveDestination[] {
   const from = placementOf(document, id);
   if (!from) return [];
+  const check = createMoveCheck(document, catalog, id, {
+    prepare: (node) => ownNode(node, catalog),
+  });
   const destinations: MoveDestination[] = [];
   for (const { node } of visitNodes(document)) {
     for (const zone of zonesOf(node)) {
       if (node.id === from.parent && zone === from.zone) continue;
-      const to = {
-        parent: node.id,
-        zone,
-        index: node.zones?.[zone]?.length ?? 0,
-      };
-      const next = placeNode(document, id, to);
       if (
-        next !== document &&
-        !addsProblems(document, ownFilledFields(next, catalog), catalog)
+        check(node.id, zone) ??
+        movesCleanly(document, catalog, id, node, zone)
       )
         destinations.push({
           label: `${node.name ?? title(node)} › ${zone}`,
@@ -188,6 +189,28 @@ export function moveDestinations(
     }
   }
   return destinations;
+}
+
+/**
+ * Whether moving node `id` to the end of `zone` of `node` changes the
+ * document and adds no problem, by validating the moved document in full.
+ */
+export function movesCleanly(
+  document: ViewDocument,
+  catalog: ViewCatalog,
+  id: string,
+  node: ViewNode,
+  zone: string,
+): boolean {
+  const next = placeNode(document, id, {
+    parent: node.id,
+    zone,
+    index: node.zones?.[zone]?.length ?? 0,
+  });
+  return (
+    next !== document &&
+    !addsProblems(document, ownFilledFields(next, catalog), catalog)
+  );
 }
 
 /** Whether zone child `child` holds node `id`, through its control flow. */

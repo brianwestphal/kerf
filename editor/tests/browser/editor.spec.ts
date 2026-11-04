@@ -786,6 +786,30 @@ test('drags a node on the canvas to after another', async ({ page }, info) => {
   await expect(page.getByText('composeButton · Button')).toBeVisible();
 });
 
+// KF-SFAA5R: the Inspector's Move to list is checked with the scoped move
+// check rather than a whole-document validation per zone. It still offers
+// only legal zones, and choosing one moves the node there.
+test('moves the selected node with Move to', async ({ page }) => {
+  await select(page, 'composeButton');
+  await area(page, 'Flow');
+  const move = page.locator('[data-editor-move]');
+  await move.locator('.kui-select__trigger').click();
+  // A Button cannot sit inside the repeated ListItem (`row`), which renders
+  // a button itself (KUI-V014).
+  await expect(
+    move.getByRole('option', { name: /^folderList › / }),
+  ).toHaveCount(1);
+  await expect(move.getByRole('option', { name: /^row › / })).toHaveCount(0);
+  const choice = move.getByRole('option', { name: 'Pane › content' });
+  await choice.click();
+  await expect(choice).toBeHidden();
+  const outlineRow = page.locator(
+    `[data-tree-list-id="editor-outline"] [data-item-id="${COMPOSE}"]`,
+  );
+  await expect(outlineRow).toHaveAttribute('aria-level', '2');
+  await expect(page.getByText('7 nodes · valid')).toBeVisible();
+});
+
 // KF-P6FPG2 / KF-0P9WWB: a Button nested in a repeated ListItem's description
 // would split each row into two elements and fail the preview. The editor no
 // longer builds such a document, and one opened from a file reports KUI-V014
