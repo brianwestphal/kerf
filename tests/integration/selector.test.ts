@@ -96,7 +96,12 @@ describe('selector() in a mounted keyed list', () => {
   it('removing rows releases their entries: no stale writes after a clear', () => {
     const rows = signal<Row[]>([1, 2].map((id) => ({ id })));
     const selectedId = signal(1);
-    const isSelected = selector(selectedId);
+    let sourceReads = 0;
+    const counted = computed(() => {
+      sourceReads++;
+      return selectedId.value;
+    });
+    const isSelected = selector(counted);
     const keySignals: { value: boolean }[] = [];
     const dispose = mount(root, () =>
       jsx('ul', {
@@ -116,10 +121,15 @@ describe('selector() in a mounted keyed list', () => {
     );
     expect(root.querySelector('li.on')?.getAttribute('data-key')).toBe('1');
     rows.value = [];
+    sourceReads = 0;
     selectedId.value = 2;
-    // The released key signals no longer follow the source.
-    expect(keySignals.every((s) => s.value === (s === keySignals[0]))).toBe(
-      true,
+    // Every row is gone, so the selector let go of its source: the write
+    // recomputes nothing.
+    expect(sourceReads).toBe(0);
+    // A key signal still held after its row left reads the current answer
+    // (KF-4TXB21).
+    expect(keySignals.map((s) => s.value)).toEqual(
+      keySignals.map((_, i) => i === 1),
     );
     dispose();
   });

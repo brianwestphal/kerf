@@ -34,8 +34,9 @@ export type SetSelector<K> = (key: K) => ReadonlySignal<boolean>;
 export function setSelector<K>(
   source: ReadonlySignal<ReadonlySet<K>>,
 ): SetSelector<K> {
-  return keyedFlags<K>(
-    (key) => source.peek().has(key),
+  return keyedFlags<K, ReadonlySet<K>>(
+    source,
+    (members, key) => members.has(key),
     (flip) => {
       let current = source.peek();
       return effect(() => {

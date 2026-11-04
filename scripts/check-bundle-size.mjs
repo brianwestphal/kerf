@@ -108,7 +108,9 @@ const BUDGETS = [
     // from `main`, whose named imports tree-shake it away.
     // KF-1TFHMP (+0.02 KB): setSelector(), sharing selector()'s keyed-flags
     // core (the extraction offsets most of its own size).
-    budgetKb: 17.55,
+    // KF-4TXB21 (+0.03 KB): keyed-flags hands out a computed per key so a
+    // held selector signal stays current without a subscriber.
+    budgetKb: 17.6,
     description: 'the whole public barrel — worst case for a consumer',
     entry: `
       import * as kerf from '${DIST}/index.js';

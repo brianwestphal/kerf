@@ -55,7 +55,7 @@ each(rows.value, (row) => (
 ```
 
 - **Entries follow their subscribers.** A key's signal joins the selector when its first subscriber arrives and leaves when its last one goes, so removing a row (which disposes its bindings) releases its entry. The selector's own subscription to `source` exists only while some key is watched.
-- **An unwatched read is not cached.** `isSelected(k).peek()` outside any effect returns a fresh signal holding the current comparison. A signal handed out earlier reads the current comparison as soon as it gains a subscriber.
+- **Key signals are always current.** A held key signal read outside any effect returns the current comparison; unsubscribed, it reads the source lazily rather than following the selector's flip. Signals handed out outside a subscriber are not cached.
 - **Keys compare like `Map` keys** (SameValueZero): primitives, or object references by identity. There is no custom equality, because a comparator would have to visit every key.
 - `Selector<K>` is the reader's type: `(key: K) => ReadonlySignal<boolean>`.
 

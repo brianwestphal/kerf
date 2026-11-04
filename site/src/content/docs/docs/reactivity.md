@@ -278,7 +278,7 @@ const isSelected = selector(selectedId);
 `selector(source)` subscribes to `source` once and hands out one boolean signal per key. A source change writes only the previous key's signal (to `false`) and the next key's (to `true`), so one selection costs O(1) row work regardless of list length. It is plain runtime code over signals; no compiler is involved.
 
 - **Entries live as long as their subscribers.** A key's signal is registered when its first subscriber arrives and dropped when its last one goes. Removing a row disposes its binding effects, which releases its key, so create/clear cycles don't accumulate entries. The selector's subscription to `source` exists only while some key is watched.
-- **Reads outside a subscriber are not cached.** `isSelected(k).peek()` returns a fresh signal holding the current comparison. A key signal obtained earlier and subscribed only later reads the current comparison when it gains its subscriber.
+- **A key signal is always current, subscribed or not.** Reading one you hold (in a click handler, say) gives the current comparison: while nothing subscribes, it reads the source lazily, and while something does, it follows the selector's flip. Signals handed out outside a subscriber are not cached, so each `isSelected(k)` call there returns a fresh one.
 - **Keys compare like `Map` keys** (SameValueZero), so use primitives or object references. There is no custom equality: a comparator would have to visit every key, which is the O(N) cost this avoids.
 - Use it where one signal selects among many rows. For a handful of rows the plain `computed` is just as good and needs no extra concept.
 

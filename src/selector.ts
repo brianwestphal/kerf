@@ -18,8 +18,8 @@
  * last one goes (signals-core's `watched` / `unwatched` hooks), so removing a
  * row — which disposes its binding effects — removes its entry. The one
  * subscription to `source` likewise exists only while at least one key is
- * watched. A key read outside any subscriber (`isSelected(k).peek()`) is a
- * fresh, uncached signal holding the current comparison.
+ * watched. A key signal handed out outside any subscriber is not cached, and
+ * a held one is always current: unsubscribed, it reads `source` lazily.
  *
  * Keys compare by `Map` identity (SameValueZero): primitives or object
  * references. There is deliberately no custom equality — a comparator would
@@ -41,18 +41,15 @@ const same = (a: unknown, b: unknown): boolean =>
  * notifies only the subscribers of the previous and next keys.
  */
 export function selector<K>(source: ReadonlySignal<K>): Selector<K> {
-  return keyedFlags<K>(
-    (key) => same(source.peek(), key),
-    (flip) => {
-      let current = source.peek();
-      return effect(() => {
-        const next = source.value;
-        if (same(next, current)) return;
-        const previous = current;
-        current = next;
-        flip(previous, false);
-        flip(next, true);
-      });
-    },
-  );
+  return keyedFlags<K, K>(source, same, (flip) => {
+    let current = source.peek();
+    return effect(() => {
+      const next = source.value;
+      if (same(next, current)) return;
+      const previous = current;
+      current = next;
+      flip(previous, false);
+      flip(next, true);
+    });
+  });
 }

@@ -132,15 +132,39 @@ describe('selector()', () => {
     expect(seen.get(1)).toBe(true);
   });
 
-  it('an unwatched read returns the current comparison without caching it', () => {
+  it('an unwatched read is uncached and a held signal stays current (KF-4TXB21)', () => {
     const selected = signal('x');
     const isSelected = selector(selected);
-    const before = isSelected('x');
-    expect(before.peek()).toBe(true);
-    expect(isSelected('x')).not.toBe(before); // not cached
+    const held = isSelected('x');
+    expect(held.value).toBe(true);
+    expect(isSelected('x')).not.toBe(held); // not cached while unwatched
     selected.value = 'y';
-    expect(isSelected('x').peek()).toBe(false);
+    // Nothing subscribes to `held`, yet a read (a click handler's) is current.
+    expect(held.value).toBe(false);
     expect(isSelected('y').peek()).toBe(true);
+    selected.value = 'x';
+    expect(held.peek()).toBe(true);
+  });
+
+  it('a held signal stays current after its subscribers leave, and is O(1) again when rebound', () => {
+    const selected = signal(0);
+    const isSelected = selector(selected);
+    const keys = Array.from({ length: 100 }, (_, i) => i);
+    const held = keys.map((k) => isSelected(k));
+    const first = watchKeys((k: number) => held[k], keys);
+    selected.value = 3;
+    expect(first.seen.get(3)).toBe(true);
+    for (const stop of first.stops.values()) stop();
+    // Unbound: the flags these signals last read are no longer flipped.
+    selected.value = 7;
+    expect(held[3].value).toBe(false);
+    expect(held[7].value).toBe(true);
+    const second = watchKeys((k: number) => held[k], keys);
+    second.reset();
+    selected.value = 9;
+    const ran = [...second.runs].filter(([, n]) => n > 0).map(([k]) => k);
+    expect(ran.sort((a, b) => a - b)).toEqual([7, 9]);
+    for (const stop of second.stops.values()) stop();
   });
 
   it('a signal handed out earlier and watched later reads the current value', () => {

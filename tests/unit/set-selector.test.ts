@@ -131,7 +131,7 @@ describe('setSelector()', () => {
     });
   });
 
-  it('an unwatched read is the current membership, uncached; a held one re-syncs', () => {
+  it('an unwatched read is the current membership, uncached; a held one stays current', () => {
     const chosen = signal(set('k'));
     const isMember = setSelector(chosen);
     const held = isMember('k');
@@ -139,6 +139,7 @@ describe('setSelector()', () => {
     expect(isMember('k')).not.toBe(held);
     chosen.value = set();
     expect(isMember('k').peek()).toBe(false);
+    expect(held.value).toBe(false); // held and unwatched, still current (KF-4TXB21)
     let seen: boolean | undefined;
     const stop = effect(() => {
       seen = held.value;
