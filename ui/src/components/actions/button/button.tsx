@@ -305,6 +305,11 @@ export function Button({
         {...shared}
         href={disabled ? undefined : href}
         target={disabled ? undefined : target}
+        // KF-6GBJBP: a new-tab link gets Chip `external`'s rel, so the opened
+        // page can't reach window.opener or see this page as its referrer.
+        rel={
+          disabled || target !== '_blank' ? undefined : 'noopener noreferrer'
+        }
         role={disabled ? 'link' : undefined}
         aria-disabled={disabled ? 'true' : undefined}
       >

@@ -789,7 +789,8 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   `<Button link={{ href: '/docs', target: '_blank' }}>Docs</Button>` renders
   an `<a>` with the Button's own emphasis; `link` also takes a plain string or
   a `URL` (written as its `.href`). It is the preferred form of `href` +
-  `target`, which still work; giving both throws. `emphasis="link"` draws any
+  `target`, which still work; giving both throws. A `_blank` link gets
+  `rel="noopener noreferrer"` automatically. `emphasis="link"` draws any
   Button, a `<button>` with an `action` or a link, as inline underlined text
   in its tone's link color at the surrounding text size:
   `<Button emphasis="link" link="#source">Source</Button>`. It drops the 44px

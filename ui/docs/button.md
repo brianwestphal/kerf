@@ -13,7 +13,7 @@
 </Button>
 ```
 
-`link` is the preferred form of the older `href` and `target` props, which keep working. Give one form or the other: a Button with `link` and `href` or `target` throws. A disabled link drops its destination and reports `aria-disabled="true"`. A link cannot be a toggle (`pressed`), a disclosure control (`expanded`), or a popover invoker (`popoverTarget`). kerf's URL screening applies to the destination as to any `href`, so a `javascript:` URL is dropped.
+`link` is the preferred form of the older `href` and `target` props, which keep working. Give one form or the other: a Button with `link` and `href` or `target` throws. A link that opens in a new tab (`target: '_blank'`) also gets `rel="noopener noreferrer"`, as a `Chip`'s `external` does, so the opened page can't reach this one through `window.opener` or see it as its referrer. A disabled link drops its destination and reports `aria-disabled="true"`. A link cannot be a toggle (`pressed`), a disclosure control (`expanded`), or a popover invoker (`popoverTarget`). kerf's URL screening applies to the destination as to any `href`, so a `javascript:` URL is dropped.
 
 ## Link emphasis
 

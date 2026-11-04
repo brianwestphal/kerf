@@ -189,6 +189,28 @@ describe('Button', () => {
     expect(off.getAttribute('aria-disabled')).toBe('true');
   });
 
+  it('adds rel="noopener noreferrer" only to an enabled new-tab link (KF-6GBJBP)', () => {
+    const viaLink = render(
+      Button({ children: 'Docs', link: { href: '/docs', target: '_blank' } }),
+    );
+    expect(viaLink.getAttribute('rel')).toBe('noopener noreferrer');
+    const viaHref = render(
+      Button({ children: 'Docs', href: '/docs', target: '_blank' }),
+    );
+    expect(viaHref.getAttribute('rel')).toBe('noopener noreferrer');
+    for (const props of [
+      { link: '/docs' },
+      { link: { href: '/docs', target: '_top' as const } },
+      { href: '/docs', target: '_self' as const },
+      { link: { href: '/docs', target: '_blank' as const }, disabled: true },
+    ]) {
+      expect(
+        render(Button({ children: 'Docs', ...props })).hasAttribute('rel'),
+      ).toBe(false);
+    }
+    expect(Button({ children: 'Go' }).toString()).not.toContain('rel=');
+  });
+
   it('rejects link together with href or target, and keeps the link guards', () => {
     expect(() =>
       Button({ children: 'Docs', link: '/docs', href: '/other' }),
