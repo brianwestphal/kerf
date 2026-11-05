@@ -1,6 +1,7 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
 import { foregroundColor, uiColor } from '@kerfjs/ui/css-values';
+import { List } from '@kerfjs/ui/list';
 import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { Row } from '@kerfjs/ui/row';
 import { FieldLabel, Text } from '@kerfjs/ui/text';
@@ -98,12 +99,12 @@ export function TextDemo() {
         align="none"
         rootAttributes={{ 'data-demo-section': 'field-label' }}
       >
-        <div role="group" aria-labelledby="needed-by-label">
+        <List landmark="group" labelledBy="needed-by-label">
           <ListInsetControl sides="trl">
             <FieldLabel id="needed-by-label">Needed By</FieldLabel>
           </ListInsetControl>
           <ContentItem>October 16, 2026</ContentItem>
-        </div>
+        </List>
         <ListInsetControl sides="trl">
           <TextField label="Needed By" value="October 16, 2026" />
         </ListInsetControl>

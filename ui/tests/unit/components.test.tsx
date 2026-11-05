@@ -1351,8 +1351,31 @@ describe('production UI primitives', () => {
     expect(landmark).not.toContain('Overridden');
     expect(landmark).not.toContain('aria-multiselectable');
     expect(() => List({ landmark: 'region' } as ListProps)).toThrow(
-      'List landmark requires an ariaLabel',
+      'List landmark requires an ariaLabel or labelledBy',
     );
+    // KF-P9NV94: a group named by its visible label's id.
+    const group = asHtml(
+      List({
+        landmark: 'group',
+        labelledBy: 'needed-by-label',
+        rootAttributes: { 'aria-labelledby': 'other', role: 'region' },
+      }),
+    );
+    expect(group).toContain(
+      'role="group" aria-labelledby="needed-by-label" class="kui-list"',
+    );
+    expect(group).not.toContain('aria-label=');
+    expect(group).not.toContain('"other"');
+    expect(() =>
+      List({
+        landmark: 'group',
+        ariaLabel: 'Needed By',
+        labelledBy: 'needed-by-label',
+      } as unknown as ListProps),
+    ).toThrow('ariaLabel or labelledBy, not both');
+    expect(() =>
+      List({ labelledBy: 'needed-by-label' } as unknown as ListProps),
+    ).toThrow('set landmark too');
     expect(() =>
       List({
         landmark: 'region',

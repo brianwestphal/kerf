@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 452800,
-  "measuredLargestJavaScriptGzip": 164550,
-  "measuredTotalJavaScriptGzip": 452755,
+  "totalJavaScriptGzip": 452900,
+  "measuredLargestJavaScriptGzip": 164549,
+  "measuredTotalJavaScriptGzip": 452815,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6819,6 +6819,22 @@
         "measuredTotalJavaScriptGzip": 452755,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 452800
+      }
+    },
+    {
+      "at": "2026-11-05T04:39:42.048Z",
+      "reason": "KF-P9NV94: the Text demo's read-only field preview is a List landmark group (List joins the text demo chunk)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164550,
+        "measuredTotalJavaScriptGzip": 452755,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 452800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164549,
+        "measuredTotalJavaScriptGzip": 452815,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 452900
       }
     }
   ]

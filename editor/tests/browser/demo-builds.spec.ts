@@ -19187,10 +19187,81 @@ test('builds Text › Presentation Roles', async ({ page }) => {
   );
 });
 
-// KF-CW7Z38: Text › Read-Only Field Preview is not built. Its preview is a
-// group named by its FieldLabel's id (role="group" + aria-labelledby), which
-// neither List `landmark="region"` (a region named by a string) nor any other
-// prop authors; KF-P9NV94 holds the API decision.
+// KF-P9NV94: the preview is a List `landmark="group"` named by its
+// FieldLabel's id (`labelledBy`), beside the editable TextField it previews.
+test('builds Text › Read-Only Field Preview', async ({ page }) => {
+  test.slow();
+  const labelId = 'needed-by-label';
+  const date = 'October 16, 2026';
+  /** Adds a `trl` ListInsetControl into `parent` holding `component`. */
+  const insetHolding = async (
+    parent: RegExp,
+    parentIndex: number,
+    component: string,
+    spec: FieldSpec,
+  ) => {
+    await addInto(page, parent, 'ListInsetControl', parentIndex);
+    await area(page, 'Properties');
+    await choose(page, 'sides', 'trl');
+    await addChild(page, component);
+    // Adding a child turned the inset's seeded text into a Text node.
+    await select(page, /^Text(?![A-Z])/);
+    await deleteSelected(page);
+    await select(page, new RegExp(`^${component}(?![A-Z])`));
+    await applySpec(page, spec);
+  };
+  await addInto(page, /^Pane/, 'List');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { landmark: 'group' },
+    text: { labelledBy: labelId },
+  });
+  await insetHolding(/^List(?![A-Z])/, 0, 'FieldLabel', {
+    text: { children: 'Needed By', id: labelId },
+  });
+  await addInto(page, /^List(?![A-Z])/, 'ContentItem');
+  await setText(page, 'children', date);
+  await insetHolding(/^Pane/, 0, 'TextField', {
+    text: { label: 'Needed By', value: date },
+  });
+  const group = canvas(page).locator('.kui-list[role="group"]');
+  await expect(group).toHaveAttribute('aria-labelledby', labelId);
+  await expect(canvas(page).locator(`#${labelId}`)).toHaveText('Needed By');
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        { landmark: 'group', labelledBy: labelId },
+        {
+          children: [
+            node(
+              'list-inset-control',
+              { sides: 'trl' },
+              {
+                children: [
+                  node('text#FieldLabel', {
+                    children: 'Needed By',
+                    id: labelId,
+                  }),
+                ],
+              },
+            ),
+            node('content-item', { children: date }),
+          ],
+        },
+      ),
+      node(
+        'list-inset-control',
+        { sides: 'trl' },
+        {
+          children: [node('text-field', { label: 'Needed By', value: date })],
+        },
+      ),
+    ),
+  );
+});
+
 test('builds Text › Long Copy and Truncation', async ({ page }) => {
   test.slow();
   const id =

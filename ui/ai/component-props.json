@@ -5425,7 +5425,7 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*`, `aria-*`, and structural `role` metadata (`aria-busy`, a\ndrop target's role); List-owned structural attributes remain protected,\nand a selectable or landmark List owns its role and name. Name a region\nwith `landmark=\"region\"` and `ariaLabel`, which a view document can carry.",
+          "description": "Safe `data-*`, `aria-*`, and structural `role` metadata (`aria-busy`, a\ndrop target's role); List-owned structural attributes remain protected,\nand a selectable or landmark List owns its role and name. Name a region\nor group with `landmark` and `ariaLabel` or `labelledBy`, which a view\ndocument can carry.",
           "control": "hidden"
         },
         {
@@ -5451,33 +5451,48 @@
         {
           "name": "landmark",
           "type": {
-            "kind": "literal",
-            "value": "region",
-            "text": "\"region\""
+            "kind": "enum",
+            "values": ["region", "group"],
+            "text": "ListLandmark"
           },
           "required": false,
-          "description": "Name this list as a landmark: `region` renders `role=\"region\"` with\n`ariaLabel`. Not combined with `selectionMode`.",
+          "description": "Name this list as a landmark: `region` or `group` renders that role,\nnamed by `ariaLabel` or `labelledBy`. Not combined with\n`selectionMode`.",
           "variantOnly": true
         },
         {
           "name": "ariaLabel",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Accessible name for the listbox, grid, or landmark region; required\nwith `selectionMode` or `landmark`.",
+          "description": "Accessible name for the listbox, grid, or landmark; required with\n`selectionMode`, or with `landmark` unless `labelledBy` names it.",
+          "variantOnly": true,
           "group": "Content",
           "order": 1
+        },
+        {
+          "name": "labelledBy",
+          "type": { "kind": "string", "text": "string" },
+          "required": false,
+          "description": "The id of the visible element that names a landmark List (a\n`FieldLabel id`), rendered as `aria-labelledby`, in place of\n`ariaLabel`.",
+          "variantOnly": true
         }
       ],
       "nativeAttributes": [],
       "variants": [
-        { "required": [], "forbidden": ["selectionMode", "landmark"] },
+        {
+          "required": [],
+          "forbidden": ["selectionMode", "landmark", "labelledBy"]
+        },
         {
           "required": ["selectionMode", "ariaLabel"],
-          "forbidden": ["landmark"]
+          "forbidden": ["landmark", "labelledBy"]
         },
         {
           "required": ["landmark", "ariaLabel"],
-          "forbidden": ["selectionMode"]
+          "forbidden": ["selectionMode", "labelledBy"]
+        },
+        {
+          "required": ["landmark", "labelledBy"],
+          "forbidden": ["selectionMode", "ariaLabel"]
         }
       ],
       "dataChannel": "rootAttributes",

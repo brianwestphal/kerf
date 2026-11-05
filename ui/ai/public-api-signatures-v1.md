@@ -969,11 +969,13 @@ type ListContentWidth = 'compact' | 'medium' | 'wide';
  */
 type ListSelectionMode = 'single' | 'multiple';
 /**
- * A landmark a List names itself as: `region` renders `role="region"` with
- * the required `ariaLabel`, for a stack people navigate to by name (a reader,
- * a result picker, a board column).
+ * A landmark a List names itself as: `region` renders `role="region"`, for a
+ * stack people navigate to by name (a reader, a result picker, a board
+ * column); `group` renders `role="group"`, for content that belongs together
+ * under one name (a read-only field preview named by its `FieldLabel`). Either
+ * takes a name: `ariaLabel`, or `labelledBy`, the id of a visible label.
  */
-type ListLandmark = 'region';
+type ListLandmark = 'region' | 'group';
 interface ListBaseProps {
     children?: KerfUiContent;
     /** Standard gap (`true`), one spacing value, or separate column and row values. Defaults to no gap. */
@@ -1063,7 +1065,8 @@ interface ListBaseProps {
      * Safe `data-*`, `aria-*`, and structural `role` metadata (`aria-busy`, a
      * drop target's role); List-owned structural attributes remain protected,
      * and a selectable or landmark List owns its role and name. Name a region
-     * with `landmark="region"` and `ariaLabel`, which a view document can carry.
+     * or group with `landmark` and `ariaLabel` or `labelledBy`, which a view
+     * document can carry.
      */
     rootAttributes?: ListRootAttributes;
     /** Native named-slot assignment when composed inside a web component. */
@@ -1078,15 +1081,22 @@ type ListProps = ListBaseProps & ({
      */
     selectionMode?: never;
     /**
-     * Name this list as a landmark: `region` renders `role="region"` with
-     * `ariaLabel`. Not combined with `selectionMode`.
+     * Name this list as a landmark: `region` or `group` renders that role,
+     * named by `ariaLabel` or `labelledBy`. Not combined with
+     * `selectionMode`.
      */
     landmark?: never;
     /**
-     * Accessible name for the listbox, grid, or landmark region; required
-     * with `selectionMode` or `landmark`.
+     * Accessible name for the listbox, grid, or landmark; required with
+     * `selectionMode`, or with `landmark` unless `labelledBy` names it.
      */
     ariaLabel?: string;
+    /**
+     * The id of the visible element that names a landmark List (a
+     * `FieldLabel id`), rendered as `aria-labelledby`, in place of
+     * `ariaLabel`.
+     */
+    labelledBy?: never;
 } | {
     /**
      * Make this list a labeled single-select `role="listbox"` of options
@@ -1096,15 +1106,22 @@ type ListProps = ListBaseProps & ({
      */
     selectionMode: ListSelectionMode;
     /**
-     * Name this list as a landmark: `region` renders `role="region"` with
-     * `ariaLabel`. Not combined with `selectionMode`.
+     * Name this list as a landmark: `region` or `group` renders that role,
+     * named by `ariaLabel` or `labelledBy`. Not combined with
+     * `selectionMode`.
      */
     landmark?: never;
     /**
-     * Accessible name for the listbox, grid, or landmark region; required
-     * with `selectionMode` or `landmark`.
+     * Accessible name for the listbox, grid, or landmark; required with
+     * `selectionMode`, or with `landmark` unless `labelledBy` names it.
      */
     ariaLabel: string;
+    /**
+     * The id of the visible element that names a landmark List (a
+     * `FieldLabel id`), rendered as `aria-labelledby`, in place of
+     * `ariaLabel`.
+     */
+    labelledBy?: never;
 } | {
     /**
      * Make this list a labeled single-select `role="listbox"` of options
@@ -1114,15 +1131,47 @@ type ListProps = ListBaseProps & ({
      */
     selectionMode?: never;
     /**
-     * Name this list as a landmark: `region` renders `role="region"` with
-     * `ariaLabel`. Not combined with `selectionMode`.
+     * Name this list as a landmark: `region` or `group` renders that role,
+     * named by `ariaLabel` or `labelledBy`. Not combined with
+     * `selectionMode`.
      */
     landmark: ListLandmark;
     /**
-     * Accessible name for the listbox, grid, or landmark region; required
-     * with `selectionMode` or `landmark`.
+     * Accessible name for the listbox, grid, or landmark; required with
+     * `selectionMode`, or with `landmark` unless `labelledBy` names it.
      */
     ariaLabel: string;
+    /**
+     * The id of the visible element that names a landmark List (a
+     * `FieldLabel id`), rendered as `aria-labelledby`, in place of
+     * `ariaLabel`.
+     */
+    labelledBy?: never;
+} | {
+    /**
+     * Make this list a labeled single-select `role="listbox"` of options
+     * (`single`) or a labeled multi-select grid of `ContentItem
+     * selectionMode="multiple"` rows (`multiple`). Omitted, the List is
+     * layout only.
+     */
+    selectionMode?: never;
+    /**
+     * Name this list as a landmark: `region` or `group` renders that role,
+     * named by `ariaLabel` or `labelledBy`. Not combined with
+     * `selectionMode`.
+     */
+    landmark: ListLandmark;
+    /**
+     * Accessible name for the listbox, grid, or landmark; required with
+     * `selectionMode`, or with `landmark` unless `labelledBy` names it.
+     */
+    ariaLabel?: never;
+    /**
+     * The id of the visible element that names a landmark List (a
+     * `FieldLabel id`), rendered as `aria-labelledby`, in place of
+     * `ariaLabel`.
+     */
+    labelledBy: string;
 });
 /**
  * A list's configuration, apart from its content and styling hooks: the props a
@@ -1132,7 +1181,7 @@ type ListProps = ListBaseProps & ({
  */
 type ListConfig = Pick<ListProps, 'gap' | 'hAlign' | 'vAlign' | 'dividerSides' | 'textInsets' | 'controlInsets'>;
 /** A stretch-aligned vertical stack with optional gap, flex, fill, scroll, and dividers. */
-declare function List({ children, selectionMode, landmark, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, scrollClearance, frame, maxHeight, minHeight, surface, inset, contentWidth, contentAlign, dividerSides, textInsets, controlInsets, className, id, hidden, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
+declare function List({ children, selectionMode, landmark, ariaLabel, labelledBy, gap, flex, fill, hAlign, vAlign, scrollable, scrollClearance, frame, maxHeight, minHeight, surface, inset, contentWidth, contentAlign, dividerSides, textInsets, controlInsets, className, id, hidden, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
 
 export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, List, type ListConfig, type ListContentWidth, type ListInset, type ListLandmark, type ListProps, type ListSelectionMode, type ListSurface, ListVerticalAlignment, ScrollClearance, Sides, UiGap };
 ```

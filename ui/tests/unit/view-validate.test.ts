@@ -394,6 +394,18 @@ describe('validateView: types, props, and values', () => {
     expect(list({ landmark: 'banner', ariaLabel: 'Reader' })).toEqual([
       'KUI-V004',
     ]);
+    // KF-P9NV94: a group named by its label's id, but not by both.
+    expect(list({ landmark: 'group', labelledBy: 'needed-by-label' })).toEqual(
+      [],
+    );
+    expect(
+      list({
+        landmark: 'group',
+        ariaLabel: 'Needed By',
+        labelledBy: 'needed-by-label',
+      }),
+    ).toEqual(['KUI-V004']);
+    expect(list({ labelledBy: 'needed-by-label' })).toEqual(['KUI-V004']);
     expect(
       codes(
         doc(

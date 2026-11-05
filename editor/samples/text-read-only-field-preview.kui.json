@@ -1,0 +1,75 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TextReadOnlyFieldPreview",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "landmark": "group",
+            "labelledBy": "needed-by-label"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list-inset-control",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:text#FieldLabel",
+                      "props": {
+                        "children": "Needed By",
+                        "id": "needed-by-label"
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "sides": "trl"
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "children": "October 16, 2026"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "00000000000000000000000006",
+          "type": "@kerfjs/ui:list-inset-control",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:text-field",
+                "props": {
+                  "label": "Needed By",
+                  "value": "October 16, 2026"
+                }
+              }
+            ]
+          },
+          "props": {
+            "sides": "trl"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -168,7 +168,10 @@ option keeps its keyboard selection target and delegated `data-*` identity.
 
 Name a List people navigate to by name (a reader, a result picker, a board
 column) with `landmark="region"` and a required `ariaLabel`, not a `role` in
-`rootAttributes`; a landmark List takes no `selectionMode`. Name a
+`rootAttributes`; a landmark List takes no `selectionMode`. Group content that
+a visible label names (a read-only field preview under a `FieldLabel id`) with
+`landmark="group"` and `labelledBy` set to that id, instead of copying the
+label text into `ariaLabel`. Name a
 `ColumnTrack` board with `ariaLabel`, which makes the track a `role="region"`.
 
 ## Components own their styles; configure, never override
