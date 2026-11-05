@@ -3,6 +3,7 @@ import { expect, type Locator, type Page, test } from '@playwright/test';
 // KF-0QJ2K3: PagedView in the catalog demo, driven by real pointer, wheel,
 // and keys: dot clicks, arrow keys, a sideways scroll that snaps to a page,
 // reduced motion, and a narrow sidebar that stays on its page across resizes.
+// KF-QV9149 adds Chromium-only real touch swipes (see the `touch` group).
 
 const view = (page: Page, label: string) =>
   page
@@ -182,4 +183,159 @@ test('a narrow sidebar keeps its page across resizes', async ({
   await expectShowing(sidebar, 'rates');
   await page.setViewportSize({ width: 1280, height: 900 });
   await expectShowing(sidebar, 'rates');
+});
+
+// KF-QV9149: a real touch swipe. Playwright has no cross-engine touch-drag
+// API, so this drives Chromium's input pipeline over the DevTools protocol
+// (`Input.dispatchTouchEvent` in a `hasTouch` context): the browser's own
+// gesture, fling, and scroll snapping run, as on a phone. iOS Safari and
+// Android Chrome are covered by the manual plan in docs/paged-view.md.
+test.describe('touch', () => {
+  test.use({ hasTouch: true });
+
+  /** Record every `data-page` the view renders, i.e. each onPageChange the
+   * demo applied (it re-renders synchronously with the reported page). */
+  const recordPages = (scope: Locator) =>
+    scope.evaluate((element: HTMLElement) => {
+      const seen: string[] = [];
+      (element as unknown as { kfPages: string[] }).kfPages = seen;
+      new MutationObserver(() => seen.push(element.dataset.page!)).observe(
+        element,
+        { attributes: true, attributeFilter: ['data-page'] },
+      );
+    });
+  const recordedPages = (scope: Locator) =>
+    scope.evaluate(
+      (element) => (element as unknown as { kfPages: string[] }).kfPages,
+    );
+
+  /** One finger drags from `from` to `to` (fractions of the viewport's
+   * width) across its middle in `steps` moves `stepMs` apart, then lifts.
+   * The moves carry synthetic timestamps, so the browser derives the fling
+   * velocity from them without the test sleeping between moves. */
+  async function swipe(
+    page: Page,
+    viewport: Locator,
+    { from, to, steps, stepMs }: Record<string, number>,
+  ) {
+    const box = (await viewport.boundingBox())!;
+    const y = Math.round(box.y + box.height / 2);
+    const session = await page.context().newCDPSession(page);
+    const start = Date.now() / 1000;
+    const at = (fraction: number) => [
+      { x: Math.round(box.x + box.width * fraction), y, id: 1 },
+    ];
+    await session.send('Input.dispatchTouchEvent', {
+      type: 'touchStart',
+      touchPoints: at(from!),
+      timestamp: start,
+    });
+    for (let step = 1; step <= steps!; step += 1)
+      await session.send('Input.dispatchTouchEvent', {
+        type: 'touchMove',
+        touchPoints: at(from! + ((to! - from!) * step) / steps!),
+        timestamp: start + (step * stepMs!) / 1000,
+      });
+    await session.send('Input.dispatchTouchEvent', {
+      type: 'touchEnd',
+      touchPoints: [],
+      timestamp: start + ((steps! + 1) * stepMs!) / 1000,
+    });
+    await session.detach();
+  }
+
+  /** Resolves once the viewport has had no scroll event for a while longer
+   * than the wiring's settle fallback: the fling, the snap, and any late
+   * settle report are over. */
+  const scrollQuiet = (viewport: Locator) =>
+    viewport.evaluate(
+      (element) =>
+        new Promise<void>((resolve) => {
+          let timer = 0;
+          const arm = () => {
+            window.clearTimeout(timer);
+            timer = window.setTimeout(() => {
+              element.removeEventListener('scroll', arm);
+              resolve();
+            }, 300);
+          };
+          element.addEventListener('scroll', arm, { passive: true });
+          arm();
+        }),
+    );
+
+  test('a short flick snaps to the next page and reports it once', async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(
+      browserName !== 'chromium',
+      'touch drags need the Chromium DevTools protocol (Input.dispatchTouchEvent); iOS Safari and Android Chrome are in the manual plan',
+    );
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/?component=paged-view');
+    const three = view(page, 'Activity Pages');
+    const viewport = three.locator('.kui-paged-view__viewport');
+    await expectShowing(three, 'today');
+    await recordPages(three);
+    // A quarter-page flick: short, but quick enough to fling on.
+    await swipe(page, viewport, { from: 0.6, to: 0.35, steps: 4, stepMs: 16 });
+    await expect(dot(three, 'Page 2 of 3: Token Rate')).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    await expectShowing(three, 'rates');
+    // Settled: any late scrollend or quiet-period settle has run, and
+    // onPageChange fired once without the page bouncing.
+    await scrollQuiet(viewport);
+    expect(await recordedPages(three)).toEqual(['rates']);
+  });
+
+  test('a hard fling stops on each page (scroll-snap-stop: always)', async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(
+      browserName !== 'chromium',
+      'touch drags need the Chromium DevTools protocol (Input.dispatchTouchEvent); iOS Safari and Android Chrome are in the manual plan',
+    );
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/?component=paged-view');
+    const three = view(page, 'Activity Pages');
+    const viewport = three.locator('.kui-paged-view__viewport');
+    await expectShowing(three, 'today');
+    await recordPages(three);
+    // A fast flick of under a page. Its momentum alone would carry past
+    // Token Rate to Triage (it does with `scroll-snap-stop: normal`); the
+    // stop holds it on the next page.
+    await swipe(page, viewport, { from: 0.7, to: 0.4, steps: 3, stepMs: 8 });
+    await expectShowing(three, 'rates');
+    await scrollQuiet(viewport);
+    expect(await recordedPages(three)).toEqual(['rates']);
+    // The same flick again moves one more page, reported once more.
+    await swipe(page, viewport, { from: 0.7, to: 0.4, steps: 3, stepMs: 8 });
+    await expectShowing(three, 'triage');
+    await scrollQuiet(viewport);
+    expect(await recordedPages(three)).toEqual(['rates', 'triage']);
+  });
+
+  test('a slow, short drag springs back without a report', async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(
+      browserName !== 'chromium',
+      'touch drags need the Chromium DevTools protocol (Input.dispatchTouchEvent); iOS Safari and Android Chrome are in the manual plan',
+    );
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/?component=paged-view');
+    const three = view(page, 'Activity Pages');
+    const viewport = three.locator('.kui-paged-view__viewport');
+    await expectShowing(three, 'today');
+    await recordPages(three);
+    await swipe(page, viewport, { from: 0.6, to: 0.45, steps: 10, stepMs: 60 });
+    await scrollQuiet(viewport);
+    await expectShowing(three, 'today');
+    expect(await recordedPages(three)).toEqual([]);
+  });
 });

@@ -35,6 +35,27 @@ card stays in place, fully opaque, and undimmed, and the BackdropImage image
 stays static and sharp. On an e-ink reader or print preview, the same
 examples render at rest.
 
+## PagedView: touch swipes on a phone
+
+Route: `?component=paged-view`, examples "Three Pages" and "Narrow Sidebar".
+Run on an iPhone (Safari) and an Android phone (Chrome). Playwright can drive
+a real touch swipe only in Chromium, over the DevTools protocol
+(`tests/browser/paged-view.spec.ts`); the momentum and snapping of a real
+finger on iOS and Android are checked here.
+
+1. On Today, flick left a short distance (well under half the page). The view
+   snaps to Token Rate, and its dot becomes the wide current pill.
+2. Flick left hard and fast from Today, as if to throw past several pages. It
+   stops on Token Rate, not Triage (`scroll-snap-stop: always`); a second
+   flick reaches Triage.
+3. Drag left less than a quarter of the page slowly and let go. The view
+   springs back to the page it started on, and the dot does not change.
+4. After each swipe, the dot changes once, with no flicker back to the old
+   page (the demo applies one `onPageChange` per swipe).
+5. On Triage, scroll the list vertically with a finger. It scrolls under the
+   dots without paging sideways, and a diagonal swipe pages only when it is
+   mostly horizontal.
+
 ## Automated coverage summary
 
 The feed-card route `?component=content-item`, example "Image-Tinted Feed

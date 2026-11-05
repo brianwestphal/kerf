@@ -64,6 +64,9 @@ Re-render the PagedView with the reported id as `page`. When a render changes
 `prefers-reduced-motion` is set; a newly rendered view starts on its page
 without animating. Keeping the old `page` does not snap a swipe back.
 
+A real touch swipe is browser-tested in Chromium only; iOS Safari and
+Android Chrome are checked by hand ([manual test plan](manual-test-plan.md#pagedview-touch-swipes-on-a-phone)).
+
 ## Accessibility
 
 The dot pill is a `tablist`; each dot is a `tab` with `aria-selected` and
