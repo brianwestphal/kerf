@@ -587,6 +587,7 @@ describe('UX catalog metadata', () => {
       'TabBarItem',
       'TabBar',
       'TabPanel',
+      'PagedView',
       'Form',
       'SegmentedControl',
       'ChoiceChips',

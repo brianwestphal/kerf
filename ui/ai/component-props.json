@@ -8365,6 +8365,79 @@
       "dataChannel": "rootAttributes"
     },
     {
+      "key": "@kerfjs/ui:paged-view",
+      "id": "paged-view",
+      "source": "kerf",
+      "import": "@kerfjs/ui/paged-view",
+      "export": "PagedView",
+      "description": "A region that pages horizontally between full-size panes, with compact\npage dots floating in a pill at the bottom. Each pane fills the region and\nscrolls vertically on its own, beneath the dots; swiping, trackpad\nscrolling, the dots, and Left and Right on the dots change the page once\n`wirePagedViews` is wired. The component owns the\ngeometry: put it directly in a Pane, sidebar, or SizedRegion, with no\nwrapper padding.",
+      "typeParameters": [{ "name": "Id", "constraint": "string" }],
+      "props": [
+        {
+          "name": "id",
+          "type": { "kind": "string", "text": "string" },
+          "required": true,
+          "description": "DOM id of the root; page and dot ids derive from it."
+        },
+        {
+          "name": "label",
+          "type": { "kind": "string", "text": "string" },
+          "required": true,
+          "description": "Accessible name of the page-dot tablist (for example \"Sidebar pages\")."
+        },
+        {
+          "name": "pages",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "ref": "PagedViewPage",
+              "text": "PagedViewPage<Id>"
+            },
+            "text": "readonly PagedViewPage<Id>[]"
+          },
+          "required": true,
+          "description": "The pages, in order. With one page no dots render."
+        },
+        {
+          "name": "page",
+          "type": {
+            "kind": "string",
+            "text": "NoInfer<Id>",
+            "typeParameter": "Id"
+          },
+          "required": true,
+          "description": "The controlled current page id (the app owns it and may persist it)."
+        },
+        {
+          "name": "className",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "control": "classes"
+        },
+        {
+          "name": "slot",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a test hook or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
+        }
+      ],
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
+    },
+    {
       "key": "@kerfjs/ui:pane",
       "id": "pane",
       "source": "kerf",
@@ -26006,6 +26079,34 @@
         }
       ],
       "text": "NavStackViewToolbar"
+    },
+    "PagedViewPage": {
+      "kind": "object",
+      "props": [
+        {
+          "name": "id",
+          "type": { "kind": "string", "text": "Id", "typeParameter": "Id" },
+          "required": true,
+          "description": "Stable page id: the controlled `page` value and the persisted choice."
+        },
+        {
+          "name": "label",
+          "type": { "kind": "string", "text": "string" },
+          "required": true,
+          "description": "Short page name, spoken as \"Page 2 of 3: <label>\" and shown as the dot's tooltip."
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "content",
+            "text": "KerfUiContent",
+            "nullable": true
+          },
+          "required": true,
+          "description": "The page's content; it owns its own inset (a `ContentItem`, `List`, `ListInsetText`)."
+        }
+      ],
+      "text": "PagedViewPage<Id>"
     },
     "PaneCompactChromePolicy": {
       "kind": "object",

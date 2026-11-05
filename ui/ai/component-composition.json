@@ -5056,6 +5056,76 @@
       }
     },
     {
+      "key": "@kerfjs/ui:paged-view",
+      "package": "@kerfjs/ui",
+      "id": "paged-view",
+      "name": "PagedView",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the controlled page id and its persistence",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the pages, their labels, and their content",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": true,
+        "helpers": ["wirePagedViews"],
+        "obligations": ["Use wirePagedViews as documented."],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "none",
+          "notes": [
+            "The view fills its region; each page is the full width and height of the region and scrolls vertically on its own. Page content owns its inset (a ContentItem, List, or ListInsetText); add no wrapper padding.",
+            "The dots float in a chrome-material pill fixed 8px above the bottom edge, so content scrolls beneath them; each page ends with block-end padding equal to the pill plus its offsets, so its last item scrolls clear."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "The dots are a tablist named by label; each dot is a tab named \"Page 2 of 3: <page label>\" with aria-selected and aria-controls, and only the current dot is in the Tab order.",
+          "Each page is a tabpanel named by its dot; pages other than the current one are inert, so focus and assistive technology stay on the visible page.",
+          "With wirePagedViews: Left and Right on a focused dot move to the previous and next page (mirrored right to left), Home and End to the first and last.",
+          "Paging slides smoothly, and jumps without animation when prefers-reduced-motion is set. The current dot is a wider pill, so the state does not rest on color alone; forced colors paint it Highlight."
+        ]
+      },
+      "content": { "interactive": [{ "kind": "contains" }] },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-paged-view",
+        "publicClasses": [
+          "kui-paged-view",
+          "kui-paged-view__viewport",
+          "kui-paged-view__page",
+          "kui-paged-view__dots",
+          "kui-paged-view__dot"
+        ],
+        "rootElement": "div",
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:form",
       "package": "@kerfjs/ui",
       "id": "form",

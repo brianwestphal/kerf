@@ -702,6 +702,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/accessibility.md"
   },
   {
+    "id": "paged-view",
+    "name": "PagedView",
+    "category": "Navigation",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Offer two to five alternative presentations of one sidebar or panel region (charts, gauges, a list) one at a time, with swipe, trackpad, dot, and keyboard paging and an app-persisted page.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/paged-view.tsx",
+    "componentSource": "ui/src/components/navigation/paged-view/paged-view.tsx",
+    "documentation": "ui/docs/paged-view.md"
+  },
+  {
     "id": "form",
     "name": "Form",
     "category": "Controls",

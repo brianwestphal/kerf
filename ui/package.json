@@ -429,6 +429,15 @@
       "types": "./dist/wire-column-explorer.d.ts",
       "import": "./dist/wire-column-explorer.js"
     },
+    "./paged-view": {
+      "types": "./dist/paged-view.d.ts",
+      "browser": "./dist/browser/paged-view.js",
+      "import": "./dist/paged-view.js"
+    },
+    "./wire-paged-views": {
+      "types": "./dist/wire-paged-views.d.ts",
+      "import": "./dist/wire-paged-views.js"
+    },
     "./tree-list": {
       "types": "./dist/tree-list.d.ts",
       "browser": "./dist/browser/tree-list.js",
@@ -694,6 +703,7 @@
     "./search-field.css": "./dist/styles/search-field.css",
     "./editor.css": "./dist/styles/editor.css",
     "./column-explorer.css": "./dist/styles/column-explorer.css",
+    "./paged-view.css": "./dist/styles/paged-view.css",
     "./tree-list.css": "./dist/styles/tree-list.css",
     "./tag-field.css": "./dist/styles/tag-field.css",
     "./state-banner.css": "./dist/styles/state-banner.css",

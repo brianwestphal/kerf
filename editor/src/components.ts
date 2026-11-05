@@ -13,6 +13,7 @@ import { ColumnExplorer } from '@kerfjs/ui/column-explorer';
 import { Disclosure } from '@kerfjs/ui/disclosure';
 import { ListDetailDialog } from '@kerfjs/ui/list-detail-dialog';
 import { NavStack } from '@kerfjs/ui/nav-stack';
+import { PagedView } from '@kerfjs/ui/paged-view';
 import { ProgressBar } from '@kerfjs/ui/progress-bar';
 import { ProgressRing } from '@kerfjs/ui/progress-ring';
 import { Slider } from '@kerfjs/ui/slider';
@@ -37,6 +38,7 @@ const subpathOnly: Record<string, unknown> = {
   Disclosure,
   ListDetailDialog,
   NavStack,
+  PagedView,
   ProgressBar,
   ProgressRing,
   Slider,

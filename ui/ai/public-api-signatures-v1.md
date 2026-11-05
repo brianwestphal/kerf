@@ -6766,6 +6766,52 @@ declare function TabPanel({ id, tabId, hidden, busy, children, className, slot, 
 export { TabPanel, type TabPanelProps };
 ```
 
+## `@kerfjs/ui/paged-view`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
+
+/** One page of a {@link PagedView}: its id, its name, and its content. */
+interface PagedViewPage<Id extends string = string> {
+    /** Stable page id: the controlled `page` value and the persisted choice. */
+    id: Id;
+    /** Short page name, spoken as "Page 2 of 3: <label>" and shown as the dot's tooltip. */
+    label: string;
+    /** The page's content; it owns its own inset (a `ContentItem`, `List`, `ListInsetText`). */
+    content: KerfUiContent;
+}
+interface PagedViewProps<Id extends string = string> {
+    /** DOM id of the root; page and dot ids derive from it. */
+    id: string;
+    /** Accessible name of the page-dot tablist (for example "Sidebar pages"). */
+    label: string;
+    /** The pages, in order. With one page no dots render. */
+    pages: readonly PagedViewPage<Id>[];
+    /** The controlled current page id (the app owns it and may persist it). */
+    page: NoInfer<Id>;
+    className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+    /** Application `data-*` metadata on the root, such as a test hook or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
+}
+/**
+ * A region that pages horizontally between full-size panes, with compact
+ * page dots floating in a pill at the bottom. Each pane fills the region and
+ * scrolls vertically on its own, beneath the dots; swiping, trackpad
+ * scrolling, the dots, and Left and Right on the dots change the page once
+ * `wirePagedViews` is wired. The component owns the
+ * geometry: put it directly in a Pane, sidebar, or SizedRegion, with no
+ * wrapper padding.
+ */
+declare function PagedView<Id extends string>({ id, label, pages, page, className, slot, rootAttributes, }: PagedViewProps<Id>): kerfjs.SafeHtml;
+
+export { PagedView, type PagedViewPage, type PagedViewProps };
+```
+
 ## `@kerfjs/ui/form`
 
 ```ts

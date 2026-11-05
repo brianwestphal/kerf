@@ -12,6 +12,7 @@ import { CollapsiblePanelToggle } from '../../src/components/layout/collapsible-
 import { SplitView } from '../../src/components/layout/split-view/split-view.js';
 import { Workbench } from '../../src/components/layout/workbench/workbench.js';
 import { NavStack } from '../../src/components/navigation/nav-stack/nav-stack.js';
+import { PagedView } from '../../src/components/navigation/paged-view/paged-view.js';
 import { TabNavigator } from '../../src/components/navigation/tab-navigator/tab-navigator.js';
 import { TabPanel } from '../../src/components/navigation/tab-panel/tab-panel.js';
 import {
@@ -229,6 +230,17 @@ const cases: SlotCase[] = [
     name: 'TabPanel',
     render: (slot) =>
       TabPanel({ id: 'p', tabId: 't', children: content, slot }),
+  },
+  {
+    name: 'PagedView',
+    render: (slot) =>
+      PagedView({
+        id: 'pv',
+        label: 'Pages',
+        pages: [{ id: 'a', label: 'A', content }],
+        page: 'a',
+        slot,
+      }),
   },
   {
     name: 'SplitView split',

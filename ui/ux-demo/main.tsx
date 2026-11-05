@@ -156,6 +156,7 @@ import {
   TOGGLE_COMPACT_CHROME_DEMO_ACTION,
   toggleCompactChromeDemo,
 } from './demos/nav-stack.js';
+import { resetPagedViewDemo, wirePagedViewDemo } from './demos/paged-view.js';
 import { applyPaneSetting, resetPaneDemo } from './demos/pane.js';
 import {
   resetProgressDemo,
@@ -1818,6 +1819,11 @@ const routeWires: Partial<Record<string, RouteWire>> = {
     reset: resetScrollEffectDemo,
     target: 'canvas',
     wire: () => () => {},
+  },
+  'paged-view': {
+    reset: resetPagedViewDemo,
+    target: 'canvas',
+    wire: (canvas) => wirePagedViewDemo(canvas),
   },
   'column-explorer': {
     reset: resetColumnExplorerDemo,

@@ -64,6 +64,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [TabBarItem](./tabs.md) — Render a controlled application tab with compact or icon-only presentation, a visible drop target, and optional full-name display.
 - [TabBar](./tab-bar.md) — Controlled tab strips whose tabs shrink and scroll while fixed leading, trailing, and far-edge end actions remain visible.
 - [TabPanel](./tab-panel.md) — Render the tabpanel a TabBarItem controls, named by its tab through tabId, hidden while another tab is selected, and busy while its content loads.
+- [PagedView](./paged-view.md) — Offer two to five alternative presentations of one sidebar or panel region (charts, gauges, a list) one at a time, with swipe, trackpad, dot, and keyboard paging and an app-persisted page.
 
 ## Kerf UI — Controls
 

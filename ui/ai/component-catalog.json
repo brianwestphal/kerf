@@ -6273,6 +6273,107 @@
       }
     },
     {
+      "id": "paged-view",
+      "name": "PagedView",
+      "category": "Navigation",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A region that pages horizontally between full-size panes, with compact page dots floating in a pill at the bottom: touch swipes and trackpad scrolls snap to a page, and the dots work by click and arrow keys. The application owns the current page.",
+      "uses": [],
+      "purpose": "Offer two to five alternative presentations of one sidebar or panel region (charts, gauges, a list) one at a time, with swipe, trackpad, dot, and keyboard paging and an app-persisted page.",
+      "publicExports": [
+        "PagedView",
+        "PagedViewProps",
+        "PagedViewPage"
+      ],
+      "useWhen": [
+        "A sidebar or panel region shows one of a few alternative presentations at a time and people page between them by swiping, scrolling sideways, or clicking dots: render PagedView with pages and the controlled page, wire wirePagedViews, and set page from onPageChange.",
+        "The chosen page should persist per viewer: store the id onPageChange reports."
+      ],
+      "avoidWhen": [
+        "Do not use it for named destinations people pick by name; use a TabBar with TabPanels or a SegmentedControl.",
+        "Do not use it for a hierarchy or a drill-down flow; use NavStack or ColumnExplorer.",
+        "Do not build a scroll-snapped pager or page dots by hand; use PagedView."
+      ],
+      "alternatives": [
+        {
+          "id": "tabs",
+          "relationship": "semantic-alternative",
+          "when": "Use TabBar and TabPanel when each page has a visible name people choose by."
+        },
+        {
+          "id": "segmented-control",
+          "relationship": "nearest",
+          "when": "Use a SegmentedControl above the content to switch between a few named views of the same data."
+        },
+        {
+          "id": "column-track",
+          "relationship": "nearest",
+          "when": "Use ColumnTrack layout=\"paged\" for a board of columns with the next one peeking in."
+        }
+      ],
+      "appOwns": [
+        "the controlled page id and its persistence",
+        "the pages, their labels, and their content"
+      ],
+      "variants": [
+        "two to five pages",
+        "a single page (no dots)",
+        "narrow sidebar width"
+      ],
+      "accessibility": [
+        "The dots are a tablist named by label; each dot is a tab named \"Page 2 of 3: <page label>\" with aria-selected and aria-controls, and only the current dot is in the Tab order.",
+        "Each page is a tabpanel named by its dot; pages other than the current one are inert, so focus and assistive technology stay on the visible page.",
+        "With wirePagedViews: Left and Right on a focused dot move to the previous and next page (mirrored right to left), Home and End to the first and last.",
+        "Paging slides smoothly, and jumps without animation when prefers-reduced-motion is set. The current dot is a wider pill, so the state does not rest on color alone; forced colors paint it Highlight."
+      ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none",
+        "notes": [
+          "The view fills its region; each page is the full width and height of the region and scrolls vertically on its own. Page content owns its inset (a ContentItem, List, or ListInsetText); add no wrapper padding.",
+          "The dots float in a chrome-material pill fixed 8px above the bottom edge, so content scrolls beneath them; each page ends with block-end padding equal to the pill plus its offsets, so its last item scrolls clear."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/paged-view",
+        "browserImport": "@kerfjs/ui/paged-view",
+        "manualCssImport": "@kerfjs/ui/paged-view.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wirePagedViews",
+          "import": "@kerfjs/ui/wire-paged-views",
+          "required": true
+        }
+      ],
+      "publicClasses": [
+        "kui-paged-view",
+        "kui-paged-view__viewport",
+        "kui-paged-view__page",
+        "kui-paged-view__dots",
+        "kui-paged-view__dot"
+      ],
+      "publicTokens": [],
+      "rootElement": "div",
+      "links": {
+        "catalogRoute": "?component=paged-view",
+        "documentation": "docs/paged-view.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "form",
       "name": "Form",
       "category": "Controls",

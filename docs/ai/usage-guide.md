@@ -137,6 +137,12 @@ Render a tab's panel with `TabPanel` (`@kerfjs/ui/tab-panel`), never a raw
 `tabId` as `tabId`, set `hidden` on every panel but the selected tab's, and
 `busy` while a pending tab's content loads.
 
+Page one sidebar or panel region between a few presentations with `PagedView`
+(`@kerfjs/ui/paged-view`), never a hand-rolled scroll-snapped pager or dots:
+pass `pages` (`{ id, label, content }`) and the controlled `page`, wire
+`wirePagedViews(root, { onPageChange })` (`@kerfjs/ui/wire-paged-views`) and
+set `page` from it. The dots float at the bottom; page content owns its inset.
+
 Use `Spacer` for one intentional empty dimension rather than repeated sibling
 rhythm. Fixed spacers do not shrink; `flex` consumes remaining space along a
 flex parent's main axis. The component is decorative and accepts no children.

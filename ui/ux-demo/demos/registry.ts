@@ -45,6 +45,7 @@ import { LoadingSpinnerDemo } from './loading-spinner.js';
 import { LucideIconDemo } from './lucide-icon.js';
 import { MessageComposerDemo } from './message-composer.js';
 import { NavStackDemo } from './nav-stack.js';
+import { PagedViewDemo } from './paged-view.js';
 import { PaneDemo, PaneSettings } from './pane.js';
 import { PopupMenuDemo } from './popup-menu.js';
 import { ProgressBarDemo } from './progress-bar.js';
@@ -133,6 +134,7 @@ export const demos = {
   tabs: TabsDemo,
   'tab-bar': TabBarDemo,
   'tab-panel': TabPanelDemo,
+  'paged-view': PagedViewDemo,
   headers: HeadersDemo,
   pane: PaneDemo,
   'nav-stack': NavStackDemo,

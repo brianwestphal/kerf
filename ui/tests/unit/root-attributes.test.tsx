@@ -23,6 +23,7 @@ import { ListInsetControl } from '../../src/list-inset-control.js';
 import { LoadingSpinner } from '../../src/loading-spinner.js';
 import { LucideIcon } from '../../src/lucide-icon.js';
 import { NavStack } from '../../src/nav-stack.js';
+import { PagedView } from '../../src/paged-view.js';
 import { ResizableRegion } from '../../src/resizable-region.js';
 import { SearchField } from '../../src/search-field.js';
 import { SegmentedControl } from '../../src/segmented-control.js';
@@ -172,6 +173,17 @@ const cases: Case[] = [
   [
     'TabPanel',
     () => TabPanel({ id: 'p', tabId: 't', children: content, rootAttributes }),
+  ],
+  [
+    'PagedView',
+    () =>
+      PagedView({
+        id: 'pv',
+        label: 'Pages',
+        pages: [{ id: 'a', label: 'A', content }],
+        page: 'a',
+        rootAttributes,
+      }),
   ],
   ['Skeleton', () => Skeleton({ rootAttributes })],
   ['Spacer', () => Spacer({ rootAttributes })],

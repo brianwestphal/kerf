@@ -414,6 +414,10 @@ cancels the native submission's page navigation.
 `TabPanel` (shipped, KF-RE1EBK, `ui/docs/accessibility.md#tabs`) is the application-owned
 `tabpanel` a `TabBarItem` controls: `id` pairs with the tab's `panelId`, `tabId` becomes
 `aria-labelledby`, and `hidden` / `busy` are application state.
+`PagedView` (shipped, KF-0QJ2K3, `ui/docs/paged-view.md`) pages a sidebar or panel region
+between full-size panes with page dots floating at the bottom; swipe, trackpad, dot click, and
+dot arrow keys change the page through `wirePagedViews`'s `onPageChange`, the app owns `page`,
+off-screen pages are inert, and reduced motion jumps without a slide.
 `SizedRegion` (shipped, docs/23 §3.9, `ui/docs/app-layouts.md#sizing-a-nested-layout`)
 gives a whole-screen layout below the app root a definite height (fill, typed
 height, min/max); a non-blocking hint for an unsized nested layout is KF-KQ72TW.

@@ -63,6 +63,7 @@
 @import "./framed-list.css";
 @import "./tree-list.css";
 @import "./column-explorer.css";
+@import "./paged-view.css";
 @import "./summary-row.css";
 @import "./empty-state.css";
 @import "./value-table.css";

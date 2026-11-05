@@ -113,6 +113,8 @@ const entries = [
   'wire-tree-list',
   'column-explorer',
   'wire-column-explorer',
+  'paged-view',
+  'wire-paged-views',
   'summary-row',
   'wire-corner-status',
   'empty-state',

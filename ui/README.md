@@ -304,6 +304,8 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `wireTreeList`                                               | `@kerfjs/ui/wire-tree-list`             | —                                        |
 | `ColumnExplorer`, `explorerColumns`                          | `@kerfjs/ui/column-explorer`            | `@kerfjs/ui/column-explorer.css`         |
 | `wireColumnExplorer`                                         | `@kerfjs/ui/wire-column-explorer`       | —                                        |
+| `PagedView`                                                  | `@kerfjs/ui/paged-view`                 | `@kerfjs/ui/paged-view.css`              |
+| `wirePagedViews`                                             | `@kerfjs/ui/wire-paged-views`           | —                                        |
 | `SummaryRow`                                                 | `@kerfjs/ui/summary-row`                | `@kerfjs/ui/summary-row.css`             |
 | `ColumnTrack`                                                | `@kerfjs/ui/column-track`               | `@kerfjs/ui/column-track.css`            |
 | `ContentSwap`                                                | `@kerfjs/ui/content-swap`               | `@kerfjs/ui/content-swap.css`            |

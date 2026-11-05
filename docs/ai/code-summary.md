@@ -1248,6 +1248,15 @@ installs it over its root and in play mode. Demo `ui/ux-demo/demos/form.tsx`; te
 TabBarItem controls) renders a `div role="tabpanel"` with `aria-labelledby` from `tabId`, `hidden`, and
 `busy` (`aria-busy`); `tab-panel.css` adds no inset or chrome. Demo `ui/ux-demo/demos/tab-panel.tsx`
 (also used by `application-tabs.tsx`); tests `ui/tests/unit/tab-panel.test.tsx`.
+`ui/src/components/navigation/paged-view/paged-view.tsx` (`@kerfjs/ui/paged-view`, KF-0QJ2K3: swipeable
+panes with page dots) renders `PagedView`: a scroll-snapped viewport of full-size `tabpanel` pages (off-screen
+pages `inert`) and a `tablist` of dots floating in a chrome-material pill at the bottom; each page reserves
+block-end clearance for the pill. `wiring/wire-paged-views.ts` (`@kerfjs/ui/wire-paged-views`) reports
+`onPageChange(page, viewId)` from dot clicks, Left/Right/Home/End, and a swipe or trackpad scroll that settles
+(`scrollend`, or a 120ms quiet fallback), and scrolls the viewport to whatever `page` a render shows (smooth
+unless reduced motion, instant for a newly rendered view), ignoring settles during its own scroll. Docs
+`ui/docs/paged-view.md`; demo `ui/ux-demo/demos/paged-view.tsx`; tests `ui/tests/unit/paged-view.test.tsx`,
+`ui/tests/browser/paged-view.spec.ts`.
 `ui/src/components/forms/message-composer/message-composer.tsx` (`@kerfjs/ui/message-composer`) renders
 the chat or prompt composer: a raised frame with a focus-within brand border, a
 borderless native textarea sized by `field-sizing: content` between

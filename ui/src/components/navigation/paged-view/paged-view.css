@@ -1,0 +1,160 @@
+/* KF-0QJ2K3: the paged view fills its region; the viewport is the sideways
+   scroll owner and each page is a full-size vertical scroll owner whose
+   content owns its inset. The page dots float in a pill fixed at the bottom
+   of the region, above the pages: content scrolls beneath them and they
+   never move. */
+.kui-paged-view {
+  --_kui-paged-view-dot-size: remify(24px);
+  --_kui-paged-view-dots-offset: var(--kui-space-s, remify(8px));
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Mandatory snapping settles a swipe, trackpad scroll, or momentum scroll on
+   a page start; the browser re-snaps to the same page when the region
+   resizes. */
+.kui-paged-view__viewport {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.kui-paged-view__viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.kui-paged-view__page {
+  flex: 0 0 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* With dots, each page ends with room for the floating pill (its height plus
+   the offset above and below), so its last content scrolls clear of it. */
+.kui-paged-view:has(> .kui-paged-view__dots) .kui-paged-view__page {
+  --_kui-paged-view-clearance: calc(
+    var(--_kui-paged-view-dot-size) + remify(2px) + 2 *
+      var(--_kui-paged-view-dots-offset)
+  );
+  padding-block-end: var(--_kui-paged-view-clearance);
+  scroll-padding-block-end: var(--_kui-paged-view-clearance);
+}
+
+/* The floating pill: the translucent chrome material with a specular edge
+   and a soft shadow, like a glass control group; opaque wherever the
+   material is (reduced transparency, increased contrast, no
+   backdrop-filter). */
+.kui-paged-view__dots {
+  position: absolute;
+  inset-block-end: var(--_kui-paged-view-dots-offset);
+  inset-inline: 0;
+  display: flex;
+  width: max-content;
+  margin-inline: auto;
+  padding-inline: var(--kui-space-2xs, remify(4px));
+  border: remify(1px) solid
+    light-dark(rgb(255 255 255 / 0.72), rgb(255 255 255 / 0.16));
+  border-radius: var(--kui-radius-pill);
+  background: var(--kui-chrome-material);
+  -webkit-backdrop-filter: var(--kui-chrome-material-filter);
+  backdrop-filter: var(--kui-chrome-material-filter);
+  box-shadow:
+    0 remify(1px) remify(3px) light-dark(rgb(0 0 0 / 0.08), rgb(0 0 0 / 0.32)),
+    0 remify(6px) remify(18px) light-dark(rgb(0 0 0 / 0.1), rgb(0 0 0 / 0.28));
+}
+
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  .kui-paged-view__dots {
+    border-color: var(--kui-color-neutral-border-quiet);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .kui-paged-view__dots {
+    border-color: var(--kui-color-neutral-border-quiet);
+  }
+}
+
+/* Each dot is a 24px target around its 8px mark; the current page's mark is
+   a wider pill, so the state never rests on color alone. */
+.kui-paged-view__dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: var(--_kui-paged-view-dot-size);
+  block-size: var(--_kui-paged-view-dot-size);
+  padding: 0;
+  border: 0;
+  border-radius: var(--kui-radius-pill);
+  background: none;
+  color: var(--kui-color-text-quiet);
+  cursor: pointer;
+}
+
+.kui-paged-view__dot::before {
+  inline-size: remify(8px);
+  block-size: remify(8px);
+  border-radius: var(--kui-radius-pill);
+  background: currentColor;
+  content: "";
+  transition: inline-size var(--kui-transition-slow, 200ms) ease;
+}
+
+.kui-paged-view__dot:hover {
+  color: var(--kui-color-text);
+}
+
+.kui-paged-view__dot[aria-selected="true"] {
+  min-inline-size: remify(28px);
+  color: var(--kui-color-text);
+}
+
+.kui-paged-view__dot[aria-selected="true"]::before {
+  inline-size: remify(16px);
+}
+
+.kui-paged-view__dot:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: -2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kui-paged-view__viewport {
+    scroll-behavior: auto;
+  }
+
+  .kui-paged-view__dot::before {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .kui-paged-view__dots {
+    border-color: CanvasText;
+    background: Canvas;
+  }
+
+  .kui-paged-view__dot {
+    color: ButtonText;
+  }
+
+  .kui-paged-view__dot[aria-selected="true"] {
+    color: Highlight;
+  }
+}

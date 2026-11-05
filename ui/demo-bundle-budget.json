@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 452900,
+  "totalJavaScriptGzip": 455200,
   "measuredLargestJavaScriptGzip": 164549,
-  "measuredTotalJavaScriptGzip": 452815,
+  "measuredTotalJavaScriptGzip": 455118,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6835,6 +6835,22 @@
         "measuredTotalJavaScriptGzip": 452815,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 452900
+      }
+    },
+    {
+      "at": "2026-11-05T05:39:41.807Z",
+      "reason": "PagedView (KF-0QJ2K3) adds a component, its wirePagedViews wiring, catalog data, and a catalog demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164549,
+        "measuredTotalJavaScriptGzip": 452815,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 452900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164549,
+        "measuredTotalJavaScriptGzip": 455118,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 455200
       }
     }
   ]
