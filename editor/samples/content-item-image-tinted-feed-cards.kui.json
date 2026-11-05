@@ -1,0 +1,385 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ContentItemImageTintedFeedCards",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:pane",
+          "props": {
+            "label": "Stories",
+            "rootAttributes": {
+              "data-content-item-feed": "true"
+            }
+          },
+          "zones": {
+            "content": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "appearance": "surface",
+                  "frame": "framed",
+                  "rootAttributes": {
+                    "data-feed-card": "1"
+                  },
+                  "media": {
+                    "alt": "",
+                    "src": {
+                      "$param": "nodeMediaSrc"
+                    },
+                    "blurredSrc": {
+                      "$param": "nodeMediaBlurredSrc"
+                    },
+                    "aspectRatio": 1.7777777777777777,
+                    "parallax": "subtle",
+                    "deferOffscreen": true
+                  },
+                  "tint": {
+                    "color": {
+                      "$css": "fillColor('#283a54')"
+                    },
+                    "scheme": "dark",
+                    "accent": {
+                      "$css": "fillColor('#8cb7df')"
+                    }
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Harbor at dusk",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "A short dispatch from the coast.",
+                              "variant": "span",
+                              "tone": "quiet"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000007",
+                            "type": "@kerfjs/ui:row",
+                            "props": {
+                              "vAlign": "middle"
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000008",
+                                  "type": "@kerfjs/ui:button",
+                                  "props": {
+                                    "children": "Source",
+                                    "emphasis": "link",
+                                    "link": "#source"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000009",
+                                  "type": "@kerfjs/ui:button",
+                                  "props": {
+                                    "children": "Save",
+                                    "emphasis": "plain",
+                                    "action": "log-more"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000010",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "appearance": "surface",
+                  "frame": "framed",
+                  "rootAttributes": {
+                    "data-feed-card": "2"
+                  },
+                  "media": {
+                    "alt": "",
+                    "src": {
+                      "$param": "nodeMediaSrc"
+                    },
+                    "blurredSrc": {
+                      "$param": "nodeMediaBlurredSrc"
+                    },
+                    "aspectRatio": 1.7777777777777777,
+                    "parallax": "subtle",
+                    "deferOffscreen": true
+                  },
+                  "tint": {
+                    "color": {
+                      "$css": "fillColor('#dad9c8')"
+                    },
+                    "scheme": "light",
+                    "accent": {
+                      "$css": "fillColor('#67502b')"
+                    }
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000012",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Morning coastline",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000013",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "A short dispatch from the coast.",
+                              "variant": "span",
+                              "tone": "quiet"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000014",
+                            "type": "@kerfjs/ui:row",
+                            "props": {
+                              "vAlign": "middle"
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000015",
+                                  "type": "@kerfjs/ui:button",
+                                  "props": {
+                                    "children": "Source",
+                                    "emphasis": "link",
+                                    "link": "#source"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000016",
+                                  "type": "@kerfjs/ui:button",
+                                  "props": {
+                                    "children": "Save",
+                                    "emphasis": "plain",
+                                    "action": "log-more"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000017",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "appearance": "surface",
+                  "frame": "framed",
+                  "rootAttributes": {
+                    "data-feed-card": "3"
+                  },
+                  "media": {
+                    "alt": "",
+                    "src": {
+                      "$param": "nodeMediaSrc"
+                    },
+                    "blurredSrc": {
+                      "$param": "nodeMediaBlurredSrc"
+                    },
+                    "aspectRatio": 1.7777777777777777,
+                    "parallax": "subtle",
+                    "deferOffscreen": true,
+                    "fadeTo": {
+                      "$css": "fillColor('#283a54')"
+                    },
+                    "scrim": "bottom",
+                    "edgeToEdge": true
+                  },
+                  "tint": {
+                    "color": {
+                      "$css": "fillColor('#283a54')"
+                    },
+                    "scheme": "dark",
+                    "accent": {
+                      "$css": "fillColor('#8cb7df')"
+                    }
+                  }
+                },
+                "zones": {
+                  "media.overlay": [
+                    {
+                      "id": "00000000000000000000000018",
+                      "type": "@kerfjs/ui:button",
+                      "props": {
+                        "children": "Explore",
+                        "action": "log-more"
+                      }
+                    }
+                  ],
+                  "children": [
+                    {
+                      "id": "00000000000000000000000019",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000020",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Night crossing",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000021",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "A short dispatch from the coast.",
+                              "variant": "span",
+                              "tone": "quiet"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000022",
+                            "type": "@kerfjs/ui:row",
+                            "props": {
+                              "vAlign": "middle"
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000023",
+                                  "type": "@kerfjs/ui:button",
+                                  "props": {
+                                    "children": "Source",
+                                    "emphasis": "link",
+                                    "link": "#source"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000024",
+                                  "type": "@kerfjs/ui:button",
+                                  "props": {
+                                    "children": "Save",
+                                    "emphasis": "plain",
+                                    "action": "log-more"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000025",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "appearance": "surface",
+                  "rootAttributes": {
+                    "data-feed-card": "no-image"
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000026",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000027",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Text-only update",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000028",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "No image is available for this story.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "nodeMediaSrc": {
+      "type": {
+        "kind": "string"
+      }
+    },
+    "nodeMediaBlurredSrc": {
+      "type": {
+        "kind": "string"
+      }
+    }
+  }
+}

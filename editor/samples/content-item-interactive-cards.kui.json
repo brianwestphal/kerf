@@ -1,0 +1,293 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ContentItemInteractiveCards",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:pane",
+          "props": {
+            "appearance": "sunken",
+            "label": "Interactive Content Items"
+          },
+          "zones": {
+            "content": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "selectionMode": "toggle",
+                  "interactive": true,
+                  "action": "toggle-content-card",
+                  "itemId": "line-42",
+                  "ariaLabel": "Line Item 42",
+                  "title": "Edit this quotation",
+                  "rootAttributes": {
+                    "data-demo-item": "toggle-card"
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000005",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Line Item 42",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000006",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Select this item for review.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "selectionMode": "toggle",
+                  "interactive": true,
+                  "action": "toggle-content-card",
+                  "itemId": "card-with-action",
+                  "ariaLabel": "Card with Action",
+                  "rootAttributes": {
+                    "data-demo-item": "card-with-action"
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000009",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Card with Action",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000010",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "The inner button acts on its own.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:button",
+                      "props": {
+                        "children": "More Actions",
+                        "emphasis": "plain",
+                        "action": "log-more"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000012",
+                "type": "@kerfjs/ui:content-item",
+                "props": {
+                  "interactive": true,
+                  "disabled": true,
+                  "action": "toggle-content-card",
+                  "itemId": "locked-card",
+                  "ariaLabel": "Locked Item",
+                  "rootAttributes": {
+                    "data-demo-item": "disabled-card"
+                  }
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000013",
+                      "type": "@kerfjs/ui:list",
+                      "props": {
+                        "gap": "2xs"
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000014",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Locked Item",
+                              "variant": "span",
+                              "weight": "strong"
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000015",
+                            "type": "@kerfjs/ui:text",
+                            "props": {
+                              "children": "Unavailable while processing.",
+                              "variant": "span",
+                              "tone": "quiet",
+                              "size": "compact"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000016",
+                "type": "@kerfjs/ui:list",
+                "props": {
+                  "selectionMode": "single",
+                  "ariaLabel": "Documents"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000017",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "selectionMode": "single",
+                        "interactive": true,
+                        "selected": true,
+                        "action": "choose-content-card",
+                        "itemId": "document-a",
+                        "ariaLabel": "Document A",
+                        "rootAttributes": {
+                          "data-demo-item": "document-a"
+                        }
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000018",
+                            "type": "@kerfjs/ui:list",
+                            "props": {
+                              "gap": "2xs"
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000019",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Document A",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000020",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Choose a document.",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000021",
+                      "type": "@kerfjs/ui:content-item",
+                      "props": {
+                        "selectionMode": "single",
+                        "interactive": true,
+                        "action": "choose-content-card",
+                        "itemId": "document-b",
+                        "ariaLabel": "Document B",
+                        "rootAttributes": {
+                          "data-demo-item": "document-b"
+                        }
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000022",
+                            "type": "@kerfjs/ui:list",
+                            "props": {
+                              "gap": "2xs"
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000023",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Document B",
+                                    "variant": "span",
+                                    "weight": "strong"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000024",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "children": "Choose a document.",
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

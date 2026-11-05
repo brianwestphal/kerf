@@ -316,7 +316,7 @@ export function ContentItemDemo() {
           >
             {itemCopy('Locked Item', 'Unavailable while processing.')}
           </ContentItem>
-          <div role="listbox" aria-label="Documents">
+          <List selectionMode="single" ariaLabel="Documents">
             {(['document-a', 'document-b'] as const).map((id) => (
               <ContentItem
                 interactive
@@ -333,7 +333,7 @@ export function ContentItemDemo() {
                 )}
               </ContentItem>
             ))}
-          </div>
+          </List>
         </Pane>
       </CatalogExample>
       <CatalogExample

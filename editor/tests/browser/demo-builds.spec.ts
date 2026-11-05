@@ -17103,6 +17103,425 @@ test('builds ContentItem › Pill Shape', async ({ page }) => {
   );
 });
 
+const FEED_TITLES = [
+  'Harbor at dusk',
+  'Morning coastline',
+  'Night crossing',
+] as const;
+
+/**
+ * Closes the open Configure form: Done for one the field dialog holds, Back
+ * for one open in place of the Inspector's Properties.
+ */
+async function closeForm(page: Page) {
+  const dialog = page.locator('dialog[open]:not([data-editor-canvas] dialog)');
+  if (await dialog.count()) {
+    await dialog.getByRole('button', { name: 'Done' }).click();
+    await expect(dialog).toHaveCount(0);
+  } else await backOut(page);
+}
+
+/**
+ * Binds the open form's field `label` to `source` with Bind a field, or
+ * promotes it to a param when `source` is left out (KF-3QEZFB).
+ */
+async function bindField(page: Page, label: string, source?: string) {
+  const pick = async (part: string, option: string) => {
+    const control = page
+      .locator(`[data-editor-bind="${part}"]`)
+      .filter({ visible: true });
+    await control.locator('.kui-select__trigger').click();
+    await control.getByRole('option', { name: option, exact: true }).click();
+  };
+  await pick('field', label);
+  if (source) await pick('field-source', source);
+  else
+    await page
+      .getByRole('button', { name: 'Promote to a param' })
+      .filter({ visible: true })
+      .click();
+  await expect(
+    page.locator('[data-editor-bind="field-source"]').filter({ visible: true }),
+  ).toContainText(source ?? 'Param ');
+}
+
+// KF-YNDRE1: the artwork is the app's generated SVG URLs. The first card
+// promotes media.src and media.blurredSrc to params with the field-level
+// Promote to a param, and the other cards bind the same params; the third
+// card's overlay Button fills its media.overlay field zone.
+test('builds ContentItem › Image-Tinted Feed Cards', async ({ page }) => {
+  // About 50s locally: four cards, each with two object forms.
+  test.setTimeout(test.info().timeout * 4);
+  await nestedPane(page, {
+    text: { label: 'Stories' },
+    data: [['data-content-item-feed', 'true']],
+  });
+  for (const [index, title] of FEED_TITLES.entries()) {
+    const light = index === 1;
+    await addInto(page, /^Pane/, 'ContentItem', 1);
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { appearance: 'surface', frame: 'framed' },
+      data: [['data-feed-card', String(index + 1)]],
+    });
+    await openConfigure(page, 'Configure media');
+    // The empty alt first: a param fits Src only once media's other
+    // required field is set.
+    await setField(page, 'media', ['alt'], 'x');
+    await page
+      .locator(`[data-editor-field='{"prop":"media","path":["alt"]}'] input`)
+      .fill('');
+    await page.keyboard.press('Enter');
+    if (index === 0) {
+      await bindField(page, 'Src');
+      await bindField(page, 'Blurred src');
+    } else {
+      await bindField(page, 'Src', 'Param nodeMediaSrc');
+      await bindField(page, 'Blurred src', 'Param nodeMediaBlurredSrc');
+    }
+    await setField(page, 'media', ['aspectRatio'], String(16 / 9));
+    await chooseField(page, 'media', ['parallax'], 'subtle');
+    await turnFieldOn(page, 'media', ['deferOffscreen']);
+    if (index === 2) {
+      await setField(page, 'media', ['fadeTo'], "fillColor('#283a54')");
+      await chooseField(page, 'media', ['scrim'], 'bottom');
+      await turnFieldOn(page, 'media', ['edgeToEdge']);
+    }
+    await closeForm(page);
+    await openConfigure(page, 'Configure tint');
+    await setField(
+      page,
+      'tint',
+      ['color'],
+      `fillColor('${light ? '#dad9c8' : '#283a54'}')`,
+    );
+    await chooseField(page, 'tint', ['scheme'], light ? 'light' : 'dark');
+    await setField(
+      page,
+      'tint',
+      ['accent'],
+      `fillColor('${light ? '#67502b' : '#8cb7df'}')`,
+    );
+    await closeForm(page);
+    if (index === 2) {
+      await addChild(page, 'Button', 'media › overlay');
+      await area(page, 'Properties');
+      await applySpec(page, {
+        text: { children: 'Explore', action: 'log-more' },
+      });
+      await select(page, /^ContentItem/, index);
+      await addChild(page, 'List', 'children');
+    } else await addChild(page, 'List', 'children');
+    await area(page, 'Properties');
+    await choose(page, 'gap', '2xs');
+    await addChild(page, 'Text');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { variant: 'span', weight: 'strong' },
+      text: { children: title },
+    });
+    await page.getByRole('button', { name: 'Duplicate', exact: true }).click();
+    await applySpec(page, {
+      choices: { weight: 'Default (regular)', tone: 'quiet' },
+      text: { children: 'A short dispatch from the coast.' },
+    });
+    // Each card's copy List follows the earlier cards' Lists and Rows.
+    await select(page, /^List(?![A-Z])/, index);
+    await addChild(page, 'Row');
+    await area(page, 'Properties');
+    await choose(page, 'vAlign', 'middle');
+    await addChild(page, 'Button');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { emphasis: 'link' },
+      unions: { link: ['Text…', '#source'] },
+      text: { children: 'Source' },
+    });
+    await addInto(page, /^Row/, 'Button', index);
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { emphasis: 'plain' },
+      text: { children: 'Save', action: 'log-more' },
+    });
+  }
+  await addInto(page, /^Pane/, 'ContentItem', 1);
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { appearance: 'surface' },
+    data: [['data-feed-card', 'no-image']],
+  });
+  await itemCopy(
+    page,
+    'Text-only update',
+    'No image is available for this story.',
+  );
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  const media = (index: number) => ({
+    src: { $param: 'nodeMediaSrc' },
+    alt: '',
+    blurredSrc: { $param: 'nodeMediaBlurredSrc' },
+    aspectRatio: 16 / 9,
+    parallax: 'subtle',
+    deferOffscreen: true,
+    ...(index === 2
+      ? {
+          fadeTo: { $css: "fillColor('#283a54')" },
+          scrim: 'bottom',
+          edgeToEdge: true,
+        }
+      : {}),
+  });
+  const copy = (title: string) =>
+    node(
+      'list',
+      { gap: '2xs' },
+      {
+        children: [
+          textNode(title, { variant: 'span', weight: 'strong' }),
+          textNode('A short dispatch from the coast.', {
+            variant: 'span',
+            tone: 'quiet',
+          }),
+          node(
+            'row',
+            { vAlign: 'middle' },
+            {
+              children: [
+                node('button', {
+                  children: 'Source',
+                  emphasis: 'link',
+                  link: '#source',
+                }),
+                node('button', {
+                  children: 'Save',
+                  emphasis: 'plain',
+                  action: 'log-more',
+                }),
+              ],
+            },
+          ),
+        ],
+      },
+    );
+  expect(await exported(page)).toEqual(
+    pane(
+      nestedPaneNode(
+        {
+          label: 'Stories',
+          rootAttributes: { 'data-content-item-feed': 'true' },
+        },
+        [
+          ...FEED_TITLES.map((title, index) => {
+            const light = index === 1;
+            return node(
+              'content-item',
+              {
+                appearance: 'surface',
+                frame: 'framed',
+                media: media(index),
+                tint: {
+                  color: {
+                    $css: `fillColor('${light ? '#dad9c8' : '#283a54'}')`,
+                  },
+                  scheme: light ? 'light' : 'dark',
+                  accent: {
+                    $css: `fillColor('${light ? '#67502b' : '#8cb7df'}')`,
+                  },
+                },
+                rootAttributes: { 'data-feed-card': String(index + 1) },
+              },
+              {
+                children: [copy(title)],
+                ...(index === 2
+                  ? {
+                      'media.overlay': [
+                        node('button', {
+                          children: 'Explore',
+                          action: 'log-more',
+                        }),
+                      ],
+                    }
+                  : {}),
+              },
+            );
+          }),
+          node(
+            'content-item',
+            {
+              appearance: 'surface',
+              rootAttributes: { 'data-feed-card': 'no-image' },
+            },
+            {
+              children: [
+                itemCopyNode(
+                  'Text-only update',
+                  'No image is available for this story.',
+                ),
+              ],
+            },
+          ),
+        ],
+      ),
+    ),
+  );
+});
+
+/** The Interactive Cards demo's three cards' `itemCopy` titles and details. */
+const CARD_COPY = [
+  ['Line Item 42', 'Select this item for review.'],
+  ['Card with Action', 'The inner button acts on its own.'],
+  ['Locked Item', 'Unavailable while processing.'],
+] as const;
+
+const DOCUMENT_CARDS = [
+  ['document-a', 'Document A'],
+  ['document-b', 'Document B'],
+] as const;
+
+// KF-YNDRE1: contentCardSelected starts false and contentCardChoice
+// document-a, so only Document A is selected; the two document cards are
+// options of a single-select List instead of an app-owned listbox div.
+test('builds ContentItem › Interactive Cards', async ({ page }) => {
+  test.slow();
+  const card = async (index: number, spec: FieldSpec) => {
+    await addInto(page, /^Pane/, 'ContentItem', 1);
+    await area(page, 'Properties');
+    await applySpec(page, spec);
+    const [title, detail] = CARD_COPY[index]!;
+    await itemCopy(page, title, detail);
+  };
+  await nestedPane(page, {
+    choices: { appearance: 'sunken' },
+    text: { label: 'Interactive Content Items' },
+  });
+  await card(0, {
+    choices: { selectionMode: 'toggle' },
+    flags: ['interactive'],
+    text: {
+      action: 'toggle-content-card',
+      itemId: 'line-42',
+      ariaLabel: 'Line Item 42',
+      title: 'Edit this quotation',
+    },
+    data: [['data-demo-item', 'toggle-card']],
+  });
+  await card(1, {
+    choices: { selectionMode: 'toggle' },
+    flags: ['interactive'],
+    text: {
+      action: 'toggle-content-card',
+      itemId: 'card-with-action',
+      ariaLabel: 'Card with Action',
+    },
+    data: [['data-demo-item', 'card-with-action']],
+  });
+  await addInto(page, /^ContentItem/, 'Button', 1);
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { emphasis: 'plain' },
+    text: { children: 'More Actions', action: 'log-more' },
+  });
+  await card(2, {
+    flags: ['interactive', 'disabled'],
+    text: {
+      action: 'toggle-content-card',
+      itemId: 'locked-card',
+      ariaLabel: 'Locked Item',
+    },
+    data: [['data-demo-item', 'disabled-card']],
+  });
+  await addInto(page, /^Pane/, 'List', 1);
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { selectionMode: 'single' },
+    text: { ariaLabel: 'Documents' },
+  });
+  for (const [id, label] of DOCUMENT_CARDS) {
+    // The card copy Lists come first in the outline: Documents is the 4th.
+    await addInto(page, /^List(?![A-Z])/, 'ContentItem', 3);
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { selectionMode: 'single' },
+      flags: ['interactive', ...(id === 'document-a' ? ['selected'] : [])],
+      text: { action: 'choose-content-card', itemId: id, ariaLabel: label },
+      data: [['data-demo-item', id]],
+    });
+    await itemCopy(page, label, 'Choose a document.');
+  }
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  const cardNode = (
+    index: number,
+    props: Record<string, unknown>,
+    extra: unknown[] = [],
+  ) => {
+    const [title, detail] = CARD_COPY[index]!;
+    return node(
+      'content-item',
+      { interactive: true, action: 'toggle-content-card', ...props },
+      { children: [itemCopyNode(title, detail), ...extra] },
+    );
+  };
+  expect(await exported(page)).toEqual(
+    pane(
+      nestedPaneNode(
+        { label: 'Interactive Content Items', appearance: 'sunken' },
+        [
+          cardNode(0, {
+            itemId: 'line-42',
+            selectionMode: 'toggle',
+            ariaLabel: 'Line Item 42',
+            title: 'Edit this quotation',
+            rootAttributes: { 'data-demo-item': 'toggle-card' },
+          }),
+          cardNode(
+            1,
+            {
+              itemId: 'card-with-action',
+              selectionMode: 'toggle',
+              ariaLabel: 'Card with Action',
+              rootAttributes: { 'data-demo-item': 'card-with-action' },
+            },
+            [
+              node('button', {
+                children: 'More Actions',
+                emphasis: 'plain',
+                action: 'log-more',
+              }),
+            ],
+          ),
+          cardNode(2, {
+            itemId: 'locked-card',
+            disabled: true,
+            ariaLabel: 'Locked Item',
+            rootAttributes: { 'data-demo-item': 'disabled-card' },
+          }),
+          node(
+            'list',
+            { selectionMode: 'single', ariaLabel: 'Documents' },
+            {
+              children: DOCUMENT_CARDS.map(([id, label]) =>
+                node(
+                  'content-item',
+                  {
+                    interactive: true,
+                    action: 'choose-content-card',
+                    itemId: id,
+                    selectionMode: 'single',
+                    ...(id === 'document-a' ? { selected: true } : {}),
+                    ariaLabel: label,
+                    rootAttributes: { 'data-demo-item': id },
+                  },
+                  { children: [itemCopyNode(label, 'Choose a document.')] },
+                ),
+              ),
+            },
+          ),
+        ],
+      ),
+    ),
+  );
+});
+
 /** Adds a Row (set up by `row`) holding a Button to ContentSwap side `zone`. */
 async function swapButtonRow(
   page: Page,
