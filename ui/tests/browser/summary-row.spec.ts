@@ -221,14 +221,26 @@ test('a SummaryRow listbox roves one Tab stop with arrow keys and selects with E
     await page.locator('#before-tickets').focus();
     await page.keyboard.press('Tab');
     await expect(options.nth(0)).toBeFocused();
-    await expect(options.nth(0)).not.toHaveCSS('box-shadow', 'none');
+    expect(
+      await options
+        .nth(0)
+        .evaluate(
+          (row) => window.getComputedStyle(row, '::after').outlineStyle,
+        ),
+    ).toBe('solid');
     await page.keyboard.press('ArrowDown');
     await expect(options.nth(1)).toBeFocused();
     await expect(options.nth(1)).toHaveAttribute('aria-selected', 'false');
     await expect(options.nth(1)).toHaveAttribute('tabindex', '0');
     await expect(options.nth(0)).toHaveAttribute('tabindex', '-1');
     // The keyboard focus ring follows the arrow keys.
-    await expect(options.nth(1)).not.toHaveCSS('box-shadow', 'none');
+    expect(
+      await options
+        .nth(1)
+        .evaluate(
+          (row) => window.getComputedStyle(row, '::after').outlineStyle,
+        ),
+    ).toBe('solid');
     if (testInfo.project.name !== 'firefox')
       await list.screenshot({
         path: testInfo.outputPath(
@@ -267,5 +279,64 @@ test('a SummaryRow listbox roves one Tab stop with arrow keys and selects with E
     await expect(options.nth(2)).toBeFocused();
     await page.keyboard.press('Home');
     await expect(options.nth(0)).toBeFocused();
+  }
+});
+
+// KF-Q1F3FH: a focused SummaryRow draws its keyboard ring inside its own box
+// (a solid outline at a negative offset on an overlay drawn after the rail),
+// so a middle list row's neighbors, the section's rounded clip, and the
+// leading rail never cover it, in row and card presentations.
+test('a focused SummaryRow draws a solid focus ring inside its own box', async ({
+  page,
+}, testInfo) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 1100 });
+    await page.goto('/?component=summary-row');
+    for (const [name, presentation] of [
+      ['Tickets', 'row'],
+      ['Board Column', 'card'],
+    ] as const) {
+      const list = page.getByRole('listbox', { name });
+      const options = list.getByRole('option');
+      await expect(options).toHaveCount(3);
+      await options.first().focus();
+      await page.keyboard.press('ArrowDown');
+      const middle = options.nth(1);
+      await expect(middle).toBeFocused();
+      await expect(middle).toHaveAttribute('data-presentation', presentation);
+      const ring = await middle.evaluate((row) => {
+        const style = window.getComputedStyle(row, '::after');
+        return {
+          position: style.position,
+          inset: [style.top, style.right, style.bottom, style.left],
+          style: style.outlineStyle,
+          width: parseFloat(style.outlineWidth),
+          offset: parseFloat(style.outlineOffset),
+          pointer: style.pointerEvents,
+        };
+      });
+      expect(ring.position).toBe('absolute');
+      expect(ring.inset).toEqual(['0px', '0px', '0px', '0px']);
+      expect(ring.style).toBe('solid');
+      expect(ring.width).toBeGreaterThanOrEqual(2);
+      // The ring's outer edge (offset + width) stays at or inside the
+      // overlay's edge, so nothing outside the row can paint over or clip it.
+      expect(ring.offset + ring.width).toBeLessThanOrEqual(0);
+      expect(ring.pointer).toBe('none');
+      // A blurred row draws no ring.
+      await page.keyboard.press('Shift+Tab');
+      expect(
+        await middle.evaluate(
+          (row) => window.getComputedStyle(row, '::after').content,
+        ),
+      ).toBe('none');
+      await middle.focus();
+      if (testInfo.project.name !== 'firefox')
+        await list.screenshot({
+          path: testInfo.outputPath(
+            `summary-row-focus-ring-${presentation}-${testInfo.project.name}-${width}.png`,
+          ),
+        });
+    }
   }
 });

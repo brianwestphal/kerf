@@ -3287,7 +3287,7 @@
           "--kui-color-text",
           "--kui-color-surface",
           "--kui-color-brand-border-normal",
-          "--kui-color-text-link",
+          "--kui-focus-ring",
           "--kui-color-brand-fill-quiet",
           "--kui-color-neutral-on-quiet",
           "--kui-color-brand-fill-loud",

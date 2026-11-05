@@ -55,9 +55,20 @@
   border-color: var(--kui-color-brand-border-normal);
 }
 
-.kui-summary-row:focus-visible {
-  box-shadow: 0 0 0 3px
-    color-mix(in srgb, var(--kui-color-text-link) 24%, transparent);
+/* The keyboard ring is drawn inside the row, as the scrollable List's is: a
+   list row's neighbors paint over an outside ring's block edges and the
+   section's rounded clip cuts its inline edges. It is an overlay drawn after
+   the rail (the row's own outline would paint under that positioned child),
+   following the row's radius; the selected state stays a quiet fill and
+   hairline border, so focus and selection read apart. */
+.kui-summary-row:focus-visible::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  outline: var(--kui-focus-ring);
+  outline-offset: -3px;
+  content: "";
+  pointer-events: none;
 }
 
 .kui-summary-row[data-selected="true"] {
