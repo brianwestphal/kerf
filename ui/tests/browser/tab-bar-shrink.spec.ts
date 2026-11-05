@@ -21,12 +21,16 @@ interface Geometry {
 
 const geometry = (bar: Locator) =>
   bar.evaluate((element): Geometry => {
+    // Layout widths are fractional, and engines can report the same box a
+    // few hundred-thousandths apart between reads (Firefox did in CI), so
+    // compare them at a hundredth of a pixel.
+    const px = (value: number) => Math.round(value * 100) / 100;
     const strip = element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
     const zones = [
       ...element.querySelectorAll<HTMLElement>(
         ':scope > :is(.kui-tab-bar__leading, .kui-tab-bar__trailing, .kui-tab-bar__end)',
       ),
-    ].map((zone) => zone.getBoundingClientRect().width);
+    ].map((zone) => px(zone.getBoundingClientRect().width));
     const tabs = [
       ...strip.querySelectorAll<HTMLElement>(':scope > .kui-tab-bar-item'),
     ].map((tab) => {
@@ -34,10 +38,10 @@ const geometry = (bar: Locator) =>
       const range = document.createRange();
       range.selectNodeContents(name);
       return {
-        width: tab.getBoundingClientRect().width,
+        width: px(tab.getBoundingClientRect().width),
         nameWidth: name.clientWidth,
         nameScrollWidth: name.scrollWidth,
-        textWidth: range.getBoundingClientRect().width,
+        textWidth: px(range.getBoundingClientRect().width),
         textOverflow: window.getComputedStyle(name).textOverflow,
       };
     });
