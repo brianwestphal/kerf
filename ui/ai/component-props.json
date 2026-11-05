@@ -811,13 +811,19 @@
             "nullable": true
           },
           "required": false,
-          "description": "A count, short text, or `true` for a text-free dot over the button's\ntop-trailing corner, such as how many items a filter hides. It stays out\nof the accessible name unless `badgeLabel` names it."
+          "description": "A count, short text, or `true` for a text-free dot over the button's\ntop-trailing corner, such as how many items a filter hides. A count of 0\nor less, or empty text, shows no badge; a count past `badgeMax` shows\n`99+`. It stays out of the accessible name unless `badgeLabel` names it."
+        },
+        {
+          "name": "badgeMax",
+          "type": { "kind": "number", "text": "number", "nullable": true },
+          "required": false,
+          "description": "The largest count shown before `badgeMax+` (default 99)."
         },
         {
           "name": "badgeLabel",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Words for the badge (\"3 hidden\"), added to the button's name."
+          "description": "Words for the badge (\"3 hidden\"), added to the button's name while the\nbadge shows."
         },
         {
           "name": "badgeTone",

@@ -7955,11 +7955,17 @@ interface ButtonOptions {
     focusRingInset?: boolean;
     /**
      * A count, short text, or `true` for a text-free dot over the button's
-     * top-trailing corner, such as how many items a filter hides. It stays out
-     * of the accessible name unless `badgeLabel` names it.
+     * top-trailing corner, such as how many items a filter hides. A count of 0
+     * or less, or empty text, shows no badge; a count past `badgeMax` shows
+     * `99+`. It stays out of the accessible name unless `badgeLabel` names it.
      */
     badge?: number | string | true;
-    /** Words for the badge ("3 hidden"), added to the button's name. */
+    /** The largest count shown before `badgeMax+` (default 99). */
+    badgeMax?: number;
+    /**
+     * Words for the badge ("3 hidden"), added to the button's name while the
+     * badge shows.
+     */
     badgeLabel?: string;
     /** The badge's tone (default `danger`). */
     badgeTone?: BadgeTone;
@@ -7987,7 +7993,7 @@ interface ButtonOptions {
  * Button for a dialog footer, a form, or a standalone action beside other
  * content.
  */
-declare function Button({ children, tone, emphasis, size, shape, fill, pressed, expanded, currentStep, icon, loading, disabled, type, name, value, form, link, href: hrefProp, target: targetProp, action, popoverTarget, popoverTargetAction, ariaHasPopup, focusRingInset, badge, badgeLabel, badgeTone, ariaLabel, title, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
+declare function Button({ children, tone, emphasis, size, shape, fill, pressed, expanded, currentStep, icon, loading, disabled, type, name, value, form, link, href: hrefProp, target: targetProp, action, popoverTarget, popoverTargetAction, ariaHasPopup, focusRingInset, badge, badgeMax, badgeLabel, badgeTone, ariaLabel, title, id, className, rootAttributes, slot, }: ButtonProps): kerfjs.SafeHtml;
 
 export { Button, type ButtonContent, type ButtonEmphasis, type ButtonLabel, type ButtonLink, type ButtonLinkTarget, type ButtonOptions, type ButtonProps, type ButtonRootAttributes, type ButtonShape, type ButtonSize, type ButtonTone, type ButtonType };
 ```

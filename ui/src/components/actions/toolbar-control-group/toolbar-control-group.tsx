@@ -1,3 +1,4 @@
+import { badgeText } from '../../../shared/content/badge-text.js';
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import {
   filterDataAttributes,
@@ -218,7 +219,7 @@ export function ToolbarButton({
   slot,
   rootAttributes = {},
 }: ToolbarButtonProps) {
-  const badgeText = toolbarBadgeText(badge, badgeMax);
+  const shownBadge = badgeText(badge, badgeMax);
   return (
     <button
       {...filterDataAttributes(rootAttributes, TOOLBAR_BUTTON_PROTECTED)}
@@ -240,7 +241,7 @@ export function ToolbarButton({
       {children}
       {badge === true ? (
         <Badge tone={badgeTone} size="dot" placement="corner" ariaHidden />
-      ) : badgeText === undefined ? null : (
+      ) : shownBadge === undefined ? null : (
         <Badge
           tone={badgeTone}
           appearance="solid"
@@ -248,7 +249,7 @@ export function ToolbarButton({
           placement="corner"
           ariaHidden
         >
-          {badgeText}
+          {shownBadge}
         </Badge>
       )}
     </button>
@@ -257,15 +258,6 @@ export function ToolbarButton({
 
 // KF-HDQTVV: a count of 0 (or less) and empty text hide the badge; a count
 // past `max` collapses to `{max}+`.
-function toolbarBadgeText(
-  badge: number | string | true | undefined,
-  max: number,
-): string | undefined {
-  if (badge === undefined || badge === true) return undefined;
-  if (typeof badge === 'string') return badge === '' ? undefined : badge;
-  if (!(badge > 0)) return undefined;
-  return badge > max ? `${max}+` : String(badge);
-}
 
 export interface ToolbarControlGroupProps {
   children: KerfUiContent;

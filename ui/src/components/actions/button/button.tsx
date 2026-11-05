@@ -1,3 +1,4 @@
+import { badgeShows, badgeText } from '../../../shared/content/badge-text.js';
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import { filterDataAttributes } from '../../../shared/dom/extension-attributes.js';
 import { Badge, type BadgeTone } from '../../feedback/badge/badge.js';
@@ -151,11 +152,17 @@ export interface ButtonOptions {
   focusRingInset?: boolean;
   /**
    * A count, short text, or `true` for a text-free dot over the button's
-   * top-trailing corner, such as how many items a filter hides. It stays out
-   * of the accessible name unless `badgeLabel` names it.
+   * top-trailing corner, such as how many items a filter hides. A count of 0
+   * or less, or empty text, shows no badge; a count past `badgeMax` shows
+   * `99+`. It stays out of the accessible name unless `badgeLabel` names it.
    */
   badge?: number | string | true;
-  /** Words for the badge ("3 hidden"), added to the button's name. */
+  /** The largest count shown before `badgeMax+` (default 99). */
+  badgeMax?: number;
+  /**
+   * Words for the badge ("3 hidden"), added to the button's name while the
+   * badge shows.
+   */
   badgeLabel?: string;
   /** The badge's tone (default `danger`). */
   badgeTone?: BadgeTone;
@@ -210,6 +217,7 @@ export function Button({
   ariaHasPopup,
   focusRingInset = false,
   badge,
+  badgeMax = 99,
   badgeLabel,
   badgeTone = 'danger',
   ariaLabel,
@@ -225,6 +233,9 @@ export function Button({
     throw new TypeError(
       'A Button with the link emphasis cannot be a toggle (pressed).',
     );
+  // KF-78EZ8Q: the same count rules as ToolbarButton.
+  const shownBadge = badgeText(badge, badgeMax);
+  const badgeVisible = badgeShows(badge, badgeMax);
   const shared = {
     ...filterDataAttributes(rootAttributes, BUTTON_PROTECTED),
     id,
@@ -240,7 +251,7 @@ export function Button({
     'data-focus-ring-inset': focusRingInset ? 'true' : undefined,
     'data-action': action,
     'aria-label':
-      ariaLabel && badge !== undefined && badgeLabel
+      ariaLabel && badgeVisible && badgeLabel
         ? `${ariaLabel}, ${badgeLabel}`
         : ariaLabel,
     title,
@@ -259,7 +270,7 @@ export function Button({
       {children === undefined ? null : (
         <span class="kui-button__label">{children}</span>
       )}
-      {badge === undefined || badge === '' ? null : badge === true ? (
+      {badge === true ? (
         <Badge
           tone={badgeTone}
           size="dot"
@@ -268,7 +279,7 @@ export function Button({
             ? { ariaHidden: true as const }
             : { label: badgeLabel })}
         />
-      ) : (
+      ) : shownBadge === undefined ? null : (
         <Badge
           tone={badgeTone}
           appearance="solid"
@@ -278,7 +289,7 @@ export function Button({
             ? { ariaHidden: true as const }
             : { label: badgeLabel })}
         >
-          {String(badge)}
+          {shownBadge}
         </Badge>
       )}
       {loading ? (

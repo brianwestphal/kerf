@@ -472,6 +472,38 @@ describe('Button', () => {
     expect(link.getAttribute('title')).toBe('Open the docs');
   });
 
+  // KF-78EZ8Q: the same count rules as ToolbarButton.
+  it('hides a zero badge and caps a count at badgeMax', () => {
+    const mail = (props: object) =>
+      render(
+        Button({
+          icon: <svg data-lucide="mail" />,
+          ariaLabel: 'Mail',
+          ...props,
+        }),
+      );
+    for (const badge of [0, -2, '']) {
+      const empty = mail({ badge, badgeLabel: 'none unread' });
+      expect(empty.querySelector('.kui-badge')).toBeNull();
+      // A hidden badge adds nothing to the name.
+      expect(empty.getAttribute('aria-label')).toBe('Mail');
+    }
+    expect(mail({ badge: 128 }).querySelector('.kui-badge')!.textContent).toBe(
+      '99+',
+    );
+    expect(mail({ badge: 99 }).querySelector('.kui-badge')!.textContent).toBe(
+      '99',
+    );
+    expect(
+      mail({ badge: 12, badgeMax: 9 }).querySelector('.kui-badge')!.textContent,
+    ).toBe('9+');
+    // Text is shown as written, never capped.
+    expect(
+      mail({ badge: '1000', badgeMax: 9 }).querySelector('.kui-badge')!
+        .textContent,
+    ).toBe('1000');
+  });
+
   it('pins a count or dot badge to the corner, named only through badgeLabel', () => {
     const named = render(
       Button({
