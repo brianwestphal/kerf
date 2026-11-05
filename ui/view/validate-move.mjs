@@ -5,8 +5,7 @@
 // the moved subtree in its new place. Each is checked alone with the
 // validator's own checkNode, and the result is the full validation's,
 // adjusted. Where a check depends on more than those places (the order of
-// action uses, a stale component, duplicate ids, a problem quoting a value
-// the move changes; docs/26-ui-editor.md §8.1), the check answers `undefined`
+// action uses, duplicate ids; docs/26-ui-editor.md §8.1), the check answers `undefined`
 // and the caller validates in full, so an answer is never a guess.
 import {
   childFacts,
@@ -178,10 +177,8 @@ export function createMoveCheck(document, catalog, id, options = {}) {
   const map = new Map();
   const root = prepareTree(document.root, prepare, map);
   const prepared = root === document.root ? document : { ...document, root };
-  const trace = { entries: new Map(), notes: [], stale: false };
+  const trace = { entries: new Map(), notes: [] };
   const base = runView(prepared, catalog, {}, trace).diagnostics;
-  // A stale component read depends on document order.
-  if (trace.stale) return undecided;
   const beforeCounts = count(
     prepared === document ? base : validateView(document, catalog).diagnostics,
   );
@@ -272,9 +269,7 @@ export function createMoveCheck(document, catalog, id, options = {}) {
       removed.push(before);
       added.push(after);
       if (after.child) {
-        const run = subtree(moved, after.child);
-        if (run.stale) return undefined;
-        added.push(run);
+        added.push(subtree(moved, after.child));
       }
     }
     const delta = new Map();

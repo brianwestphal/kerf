@@ -283,9 +283,11 @@ describe('the scoped move check', () => {
     expect(check(id(1), 'footer')).toBe(false);
   });
 
-  it('leaves a stale component read a move brings into view to the full validation', () => {
-    // An unknown zone is not checked, so its `$if` reads the component only
-    // once the list moves into a real zone.
+  it('decides a prop-typed read a move brings into view (KF-3624D4)', () => {
+    // An unknown zone is not checked, so its `$if` is read only once the list
+    // moves into a real zone. Outside a node's props a prop-typed value fits
+    // nothing, whatever component was checked last, so the scoped check
+    // decides the move and agrees with the full validation.
     const list: ViewNode = {
       id: id(2),
       type: '@kerfjs/ui:list',
@@ -294,10 +296,11 @@ describe('the scoped move check', () => {
       },
     };
     const document = pane({ nowhere: [list], content: [] });
-    const check = createMoveCheck(document, viewCatalog, id(2), {
-      prepare: (node) => ownNode(node, viewCatalog),
-    });
-    expect(check(id(1), 'content')).toBeUndefined();
+    const prepare = (node: ViewNode) => ownNode(node, viewCatalog);
+    const check = createMoveCheck(document, viewCatalog, id(2), { prepare });
+    const answer = check(id(1), 'content');
+    expect(answer).toBeDefined();
+    expect(answer).toBe(fullAnswer(document, id(2), id(1), 'content', prepare));
   });
 
   it('decides a move inside a value a problem quotes (KF-20GMVX)', () => {

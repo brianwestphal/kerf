@@ -1378,8 +1378,7 @@ every node is checked exactly as before:
   type, text zone, enclosing control).
 
 The check validates the prepared document once, with a trace. The trace
-records each node's context, each action use, and every value a problem
-quotes. Each move then subtracts the three places' old diagnostics and adds
+records each node's context and each action use. Each move then subtracts the three places' old diagnostics and adds
 their new ones, computed by the validator's own `checkNode` run alone
 (`createScopedCheck`; a shallow run skips a node's children). The moved
 subtree's run is cached per context.
@@ -1392,16 +1391,18 @@ an approximation:
   one's path.
 - **A malformed tree, or one `$slot` value shared between two places.** Slot
   problems are reported once per object.
-- **A prop-typed `$param` / `$bind` read outside a node's own props.** It is
-  checked against whichever component was checked last in document order.
 - **An action used in both row and view scope, where document order decides
   the conflict count.** One scope reports no conflict, and when both possible
   counts fall on the same side of the count before the move, the answer
   follows.
-- **A source or target inside a value a problem quotes.** A `KUI-V004`
-  message quotes a field zone's nodes.
 - **A preparation that changes what a parent reads of the source or target**
   (its type, its inset), or the enclosing control its other children see.
+
+Two former cases no longer need a full validation. A `KUI-V004` message
+names a field zone (`<zone toolbar.leading>`) instead of quoting its nodes
+(KF-20GMVX), and a prop-typed `$param` / `$bind` outside a node's own props
+reports a fixed message instead of naming the last component checked
+(KF-3624D4).
 
 `ui/tests/unit/editor/move-check.test.ts` is the differential check against
 the full validation (`movesCleanly`, the old path). It covers every editor

@@ -59,6 +59,44 @@ const diagnostics = (document: unknown) =>
   );
 
 describe('prop-typed params', () => {
+  // KF-3624D4: outside a node's own props (here a `$if` condition) a
+  // prop-typed value fits nothing. The message is the same whatever component
+  // was checked before it, so it no longer depends on sibling order.
+  it('rejects a prop-typed value outside props, whatever comes before it', () => {
+    const behind = (sibling: Record<string, unknown>) =>
+      diagnostics({
+        schema: VIEW_DOCUMENT_SCHEMA_ID,
+        name: 'Gate',
+        catalogs: ['@kerfjs/ui'],
+        params: { show: { type: render } },
+        root: {
+          id: ROOT,
+          type: '@kerfjs/ui:pane',
+          zones: {
+            content: [
+              { id: '01JB8Z1M6Q8E1X9V4S7K2R3T5B', ...sibling },
+              {
+                $if: { $param: 'show' },
+                then: {
+                  id: '01JB8Z1M6Q8E1X9V4S7K2R3T5C',
+                  type: '@kerfjs/ui:text',
+                  props: { children: 'Shown' },
+                },
+              },
+            ],
+          },
+        },
+      });
+    const message =
+      'KUI-V004 a @kerfjs/ui:select "renderSelected" value fits only that prop, not "condition"';
+    expect(
+      behind({ type: '@kerfjs/ui:button', props: { children: 'Save' } }),
+    ).toEqual([message]);
+    expect(
+      behind({ type: '@kerfjs/ui:text', props: { children: 'Note' } }),
+    ).toEqual([message]);
+  });
+
   it('binds to the same component prop', () => {
     expect(diagnostics(select({ show: { type: render } }))).toEqual([]);
   });

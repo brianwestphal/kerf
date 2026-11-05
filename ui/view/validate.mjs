@@ -672,9 +672,18 @@ function checkPropValue(ctx, prop, value, definitions, scope, at, rowScoped) {
   if (type === undefined) return;
   // A param typed as a component prop binds only to that prop.
   if (type?.kind === 'prop') {
-    // Outside a node's own props, `ctx.component` is whichever component was
-    // checked last, so a scoped run cannot reproduce it (KF-SFAA5R).
-    if (ctx.trace && !ctx.inProps) ctx.trace.stale = true;
+    // Outside a node's own props (a `#text` value, a `#view` prop, a `$if`
+    // condition, a `$slot` input) no component prop is being set, so a
+    // prop-typed value fits nothing there (KF-3624D4). Reading
+    // `ctx.component` there would name whichever component was checked last.
+    if (!ctx.inProps) {
+      ctx.report(
+        'KUI-V004',
+        at,
+        `a ${type.component} "${type.prop}" value fits only that prop, not "${prop.name}"`,
+      );
+      return;
+    }
     if (type.component !== ctx.component || type.prop !== prop.name) {
       ctx.report(
         'KUI-V004',
@@ -1824,7 +1833,6 @@ export function createScopedCheck(document, catalog) {
     const trace = {
       quiet: true,
       notes: [],
-      stale: false,
       shallow: shallow ? item : undefined,
       zone,
       child: undefined,
