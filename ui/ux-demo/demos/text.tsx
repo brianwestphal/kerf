@@ -82,12 +82,12 @@ export function TextDemo() {
           Quiet compact code: PO-1042
         </Text>
         <Text>
-          <strong>
+          <Text variant="span" weight="strong">
             Inbox
-            <Text variant="span" tone="quiet" size="compact">
-              {' · 3 msg'}
-            </Text>
-          </strong>
+          </Text>
+          <Text variant="span" weight="strong" tone="quiet" size="compact">
+            {' · 3 msg'}
+          </Text>
         </Text>
         <Text size="large">Large body copy</Text>
         <Text size="xlarge">Extra large body copy</Text>

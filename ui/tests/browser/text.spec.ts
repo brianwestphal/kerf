@@ -118,12 +118,12 @@ test('Text renders semantic variants with standard padded geometry', async ({
       padding: '8px',
     });
 
-  // The specimens and the span nested in the last one, not the example's
+  // The specimens and the spans nested in the label line, not the example's
   // own catalog label chrome.
   const roles = page.locator(
     ':is([data-demo-section="presentation-roles"] > .kui-text, [data-demo-section="presentation-roles"] > .kui-text .kui-text)',
   );
-  await expect(roles).toHaveCount(9);
+  await expect(roles).toHaveCount(10);
   await expect(roles.nth(0)).toHaveAttribute('data-tone', 'quiet');
   await expect(roles.nth(1)).toHaveAttribute('data-tone', 'danger');
   await expect(roles.nth(2)).toHaveAttribute('data-size', 'compact');
@@ -131,27 +131,31 @@ test('Text renders semantic variants with standard padded geometry', async ({
   await expect(roles.nth(4)).toHaveAttribute('data-tone', 'quiet');
   await expect(roles.nth(4)).toHaveAttribute('data-size', 'compact');
   await expect(roles.nth(4)).toHaveAttribute('data-font', 'monospace');
-  // A block Text wraps the bold label so it takes the component typography;
-  // the inline-span count sits inside it.
-  await expect(roles.nth(5).locator(':scope > strong')).toHaveCount(1);
-  await expect(roles.nth(5).locator('.kui-text')).toHaveCount(1);
+  // A block Text wraps two strong span Texts (KF-MN7QK5: Text nodes, not a
+  // raw <strong>) so the label takes the component typography; the second,
+  // the count, is quiet and compact.
+  await expect(roles.nth(5).locator(':scope > strong')).toHaveCount(0);
+  await expect(roles.nth(5).locator(':scope > .kui-text')).toHaveCount(2);
   await expect(roles.nth(6)).toHaveJSProperty('tagName', 'SPAN');
-  await expect(roles.nth(6)).toHaveAttribute('data-tone', 'quiet');
-  await expect(roles.nth(6)).toHaveAttribute('data-size', 'compact');
-  await expect(roles.nth(7)).toHaveAttribute('data-size', 'large');
-  await expect(roles.nth(8)).toHaveAttribute('data-size', 'xlarge');
+  await expect(roles.nth(6).locator(':scope > strong')).toHaveText('Inbox');
+  await expect(roles.nth(7)).toHaveJSProperty('tagName', 'SPAN');
+  await expect(roles.nth(7).locator(':scope > strong')).toHaveText('· 3 msg');
+  await expect(roles.nth(7)).toHaveAttribute('data-tone', 'quiet');
+  await expect(roles.nth(7)).toHaveAttribute('data-size', 'compact');
+  await expect(roles.nth(8)).toHaveAttribute('data-size', 'large');
+  await expect(roles.nth(9)).toHaveAttribute('data-size', 'xlarge');
   await expect
     .poll(() =>
       roles.evaluateAll((elements) =>
         elements
-          .slice(7)
+          .slice(8)
           .map((element) => globalThis.getComputedStyle(element).fontSize),
       ),
     )
     .toEqual(['20px', '32px']);
   await expect
     .poll(() =>
-      roles.nth(6).evaluate((element) => {
+      roles.nth(7).evaluate((element) => {
         const style = globalThis.getComputedStyle(element);
         return {
           display: style.display,
@@ -238,7 +242,7 @@ test('Text renders semantic variants with standard padded geometry', async ({
     .poll(() =>
       roles.evaluateAll((elements) =>
         elements
-          .slice(7)
+          .slice(8)
           .map((element) => globalThis.getComputedStyle(element).fontSize),
       ),
     )
@@ -259,8 +263,8 @@ test('Text renders semantic variants with standard padded geometry', async ({
     path: 'test-results/text-narrow.png',
     fullPage: true,
   });
-  await roles.nth(8).scrollIntoViewIfNeeded();
-  await expect(roles.nth(8)).toBeVisible();
+  await roles.nth(9).scrollIntoViewIfNeeded();
+  await expect(roles.nth(9)).toBeVisible();
   await page.screenshot({ path: 'test-results/text-size-narrow.png' });
 });
 

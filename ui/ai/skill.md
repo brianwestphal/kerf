@@ -157,7 +157,8 @@ compositor layers for a blank-hero frame after large scroll jumps (scrollbar
 drag, End/Home), so keep it off for short feeds. `BackdropImage` exposes
 the same `deferOffscreen` option directly; leave it off for a single page hero.
 
-`SummaryRow` is an option in a labeled listbox by default. For a diagnostic
+`SummaryRow` is an option in a labeled listbox by default: put the rows in
+`List selectionMode="single" ariaLabel="…"`, which renders `role="listbox"`. For a diagnostic
 row with a nested recovery action, use `semanticRole="group"` and a required
 `ariaLabel`; only the nested native button takes focus and activates, while
 the row/card surface, rail, and selected visual fill remain available.

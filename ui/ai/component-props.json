@@ -5032,27 +5032,6 @@
           "slot": true
         },
         {
-          "name": "selectionMode",
-          "type": {
-            "kind": "literal",
-            "value": "multiple",
-            "text": "\"multiple\"",
-            "nullable": true
-          },
-          "required": false,
-          "description": "Make this list a labeled multi-select grid for `ContentItem selectionMode=\"multiple\"` rows.",
-          "group": "Content",
-          "order": 2
-        },
-        {
-          "name": "ariaLabel",
-          "type": { "kind": "string", "text": "string", "nullable": true },
-          "required": false,
-          "description": "Accessible name for the multi-select grid.",
-          "group": "Content",
-          "order": 1
-        },
-        {
           "name": "gap",
           "type": {
             "kind": "union",
@@ -5440,7 +5419,7 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*`, `aria-*`, and structural `role` metadata (a named drop\n`region`, `aria-busy`); List-owned structural attributes remain\nprotected, and a multi-select List owns its grid role and name.",
+          "description": "Safe `data-*`, `aria-*`, and structural `role` metadata (a named drop\n`region`, `aria-busy`); List-owned structural attributes remain\nprotected, and a selectable List owns its listbox or grid role and name.",
           "control": "hidden"
         },
         {
@@ -5449,9 +5428,34 @@
           "required": false,
           "description": "Native named-slot assignment when composed inside a web component.",
           "control": "hidden"
+        },
+        {
+          "name": "selectionMode",
+          "type": {
+            "kind": "enum",
+            "values": ["single", "multiple"],
+            "text": "ListSelectionMode"
+          },
+          "required": false,
+          "description": "Make this list a labeled single-select `role=\"listbox\"` of options\n(`single`) or a labeled multi-select grid of `ContentItem\nselectionMode=\"multiple\"` rows (`multiple`). Omitted, the List is\nlayout only.",
+          "variantOnly": true,
+          "group": "Content",
+          "order": 2
+        },
+        {
+          "name": "ariaLabel",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Accessible name for the listbox or grid; required with `selectionMode`.",
+          "group": "Content",
+          "order": 1
         }
       ],
       "nativeAttributes": [],
+      "variants": [
+        { "required": [], "forbidden": ["selectionMode"] },
+        { "required": ["selectionMode", "ariaLabel"], "forbidden": [] }
+      ],
       "dataChannel": "rootAttributes",
       "groups": ["Content", "Layout", "Surface"]
     },

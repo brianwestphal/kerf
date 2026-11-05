@@ -5,6 +5,7 @@ import { Chip } from '@kerfjs/ui/chip';
 import { List } from '@kerfjs/ui/list';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { SummaryRow } from '@kerfjs/ui/summary-row';
+import { Text } from '@kerfjs/ui/text';
 import { Bug, Lightbulb, ListTodo } from 'lucide';
 
 import { summaryRowSelected } from './state.js';
@@ -61,7 +62,10 @@ function rows(presentation: 'row' | 'card') {
       trailingMeta={item.updated}
       title={
         <>
-          <strong>{item.id}</strong> {item.title}
+          <Text variant="span" weight="strong">
+            {item.id}
+          </Text>
+          <Text variant="span">{` ${item.title}`}</Text>
         </>
       }
       metadata={
@@ -90,10 +94,8 @@ export function SummaryRowDemo() {
         note="Rows round at the section's edges, clip long titles to two lines, float the timestamp at the title's end, and show the selection; click a row to select it."
         viewport={{ width: 'medium', surface: 'lowered', frame: 'solid' }}
       >
-        <List controlInsets="trbl">
-          <div role="listbox" aria-label="Tickets">
-            {rows('row')}
-          </div>
+        <List controlInsets="trbl" selectionMode="single" ariaLabel="Tickets">
+          {rows('row')}
         </List>
       </CatalogExample>
       <CatalogExample
@@ -101,11 +103,14 @@ export function SummaryRowDemo() {
         note='presentation="card" is a borderless rounded card that allows four title lines.'
         viewport={{ width: 'compact', surface: 'lowered', frame: 'solid' }}
       >
-        <div role="listbox" aria-label="Board Column">
-          <List gap="xs" controlInsets="trbl">
-            {rows('card')}
-          </List>
-        </div>
+        <List
+          gap="xs"
+          controlInsets="trbl"
+          selectionMode="single"
+          ariaLabel="Board Column"
+        >
+          {rows('card')}
+        </List>
       </CatalogExample>
       <CatalogExample
         label="Diagnostic Group"
@@ -122,8 +127,9 @@ export function SummaryRowDemo() {
           leading={<LucideIcon icon={Bug} name="bug" />}
           title={
             <>
-              <strong>Unreadable ticket</strong>
-              {'\u00a0'}
+              <Text variant="span" weight="strong">
+                {'Unreadable ticket\u00a0'}
+              </Text>
               <Button size="compact" emphasis="secondary" action="log-more">
                 Open
               </Button>

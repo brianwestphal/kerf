@@ -564,7 +564,8 @@ For a selectable card, set `interactive`, a delegated `action`, and an optional
 activates focused cards with Enter or Space and forwards the resulting click to
 the app's ordinary `data-action` handler. `selectionMode="toggle"` maps
 `selected` to a button's `aria-pressed`; `selectionMode="single"` maps it to an
-option's `aria-selected` and belongs in an app-owned `role="listbox"` container.
+option's `aria-selected` and belongs in a labeled `List selectionMode="single"`
+listbox.
 For a card with nested controls and multi-selection, place
 `selectionMode="multiple"` cards inside a `List selectionMode="multiple"` with
 `ariaLabel`. The List is a labeled `grid` with `aria-multiselectable`, each card

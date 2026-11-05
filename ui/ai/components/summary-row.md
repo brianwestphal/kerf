@@ -55,7 +55,7 @@ Exact prop names and types: [`@kerfjs/ui/summary-row`](../public-api-signatures-
 
 ## State and wiring
 
-**The app owns:** the listbox container, selection set, and keyboard movement; the title, leading glyph, trailing meta, and metadata content; rail tone and dimming policy.
+**The app owns:** the selection set and keyboard movement inside the List selectionMode="single" listbox; the title, leading glyph, trailing meta, and metadata content; rail tone and dimming policy.
 
 No wiring helper.
 
@@ -67,7 +67,7 @@ Margin: none · border: self · padding: self (layout role: structure). `self` m
 
 ## Accessibility
 
-- By default SummaryRow is role=option with tabindex=0 and aria-selected; place options in a labeled role=listbox and move focus with the arrow keys in the app. semanticRole=group requires ariaLabel and omits the root Tab stop and aria-selected, so a nested native action owns focus and activation. The rail is decorative; carry its meaning in text.
+- By default SummaryRow is role=option with tabindex=0 and aria-selected; place options in a labeled List selectionMode="single" listbox and move focus with the arrow keys in the app. semanticRole=group requires ariaLabel and omits the root Tab stop and aria-selected, so a nested native action owns focus and activation. The rail is decorative; carry its meaning in text.
 
 ## Styling boundary
 

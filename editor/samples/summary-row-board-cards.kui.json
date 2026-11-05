@@ -1,0 +1,233 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "SummaryRowBoardCards",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "selectionMode": "single",
+            "gap": "xs",
+            "controlInsets": "trbl",
+            "ariaLabel": "Board Column"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:summary-row",
+                "props": {
+                  "semanticRole": "option",
+                  "presentation": "card",
+                  "rail": "warning",
+                  "draggable": true,
+                  "selected": true,
+                  "trailingMeta": "2m",
+                  "rootAttributes": {
+                    "data-action": "select-summary-row-demo",
+                    "data-item-id": "KF-12"
+                  }
+                },
+                "zones": {
+                  "title": [
+                    {
+                      "id": "00000000000000000000000004",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "KF-12",
+                        "variant": "span",
+                        "weight": "strong"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000005",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": " Toolbar search overflows the trailing zone on narrow rails",
+                        "variant": "span"
+                      }
+                    }
+                  ],
+                  "leading": [
+                    {
+                      "id": "00000000000000000000000006",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "bug"
+                        },
+                        "name": "bug"
+                      }
+                    }
+                  ],
+                  "metadata": [
+                    {
+                      "id": "00000000000000000000000007",
+                      "type": "@kerfjs/ui:badge",
+                      "props": {
+                        "children": "Started",
+                        "tone": "info",
+                        "size": "compact"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:chip",
+                      "props": {
+                        "children": "toolbar",
+                        "size": "compact"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000009",
+                      "type": "@kerfjs/ui:chip",
+                      "props": {
+                        "children": "layout",
+                        "size": "compact"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000010",
+                "type": "@kerfjs/ui:summary-row",
+                "props": {
+                  "semanticRole": "option",
+                  "presentation": "card",
+                  "draggable": true,
+                  "trailingMeta": "1h",
+                  "rootAttributes": {
+                    "data-action": "select-summary-row-demo",
+                    "data-item-id": "KF-13"
+                  }
+                },
+                "zones": {
+                  "title": [
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "KF-13",
+                        "variant": "span",
+                        "weight": "strong"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000012",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": " Paged board snapping with a peeking next column",
+                        "variant": "span"
+                      }
+                    }
+                  ],
+                  "leading": [
+                    {
+                      "id": "00000000000000000000000013",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "lightbulb"
+                        },
+                        "name": "lightbulb"
+                      }
+                    }
+                  ],
+                  "metadata": [
+                    {
+                      "id": "00000000000000000000000014",
+                      "type": "@kerfjs/ui:badge",
+                      "props": {
+                        "children": "Not started",
+                        "tone": "neutral",
+                        "size": "compact"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000015",
+                      "type": "@kerfjs/ui:chip",
+                      "props": {
+                        "children": "board",
+                        "size": "compact"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "00000000000000000000000016",
+                "type": "@kerfjs/ui:summary-row",
+                "props": {
+                  "semanticRole": "option",
+                  "presentation": "card",
+                  "draggable": true,
+                  "dimmed": true,
+                  "trailingMeta": "3d",
+                  "rootAttributes": {
+                    "data-action": "select-summary-row-demo",
+                    "data-item-id": "KF-14"
+                  }
+                },
+                "zones": {
+                  "title": [
+                    {
+                      "id": "00000000000000000000000017",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "KF-14",
+                        "variant": "span",
+                        "weight": "strong"
+                      }
+                    },
+                    {
+                      "id": "00000000000000000000000018",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": " Document the summary row in the selection guide",
+                        "variant": "span"
+                      }
+                    }
+                  ],
+                  "leading": [
+                    {
+                      "id": "00000000000000000000000019",
+                      "type": "@kerfjs/ui:lucide-icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "list-todo"
+                        },
+                        "name": "list-todo"
+                      }
+                    }
+                  ],
+                  "metadata": [
+                    {
+                      "id": "00000000000000000000000020",
+                      "type": "@kerfjs/ui:badge",
+                      "props": {
+                        "children": "Completed",
+                        "tone": "success",
+                        "size": "compact"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

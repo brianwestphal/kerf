@@ -1,0 +1,104 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "TextPresentationRoles",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Quiet supporting copy",
+            "tone": "quiet"
+          }
+        },
+        {
+          "id": "00000000000000000000000003",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Danger or validation copy",
+            "tone": "danger"
+          }
+        },
+        {
+          "id": "00000000000000000000000004",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Compact metadata",
+            "size": "compact"
+          }
+        },
+        {
+          "id": "00000000000000000000000005",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Monospace identifier: INV-2048",
+            "font": "monospace"
+          }
+        },
+        {
+          "id": "00000000000000000000000006",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Quiet compact code: PO-1042",
+            "tone": "quiet",
+            "size": "compact",
+            "font": "monospace"
+          }
+        },
+        {
+          "id": "00000000000000000000000007",
+          "type": "@kerfjs/ui:text",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000008",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "Inbox",
+                  "variant": "span",
+                  "weight": "strong"
+                }
+              },
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": " · 3 msg",
+                  "variant": "span",
+                  "weight": "strong",
+                  "tone": "quiet",
+                  "size": "compact"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "00000000000000000000000010",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Large body copy",
+            "size": "large"
+          }
+        },
+        {
+          "id": "00000000000000000000000011",
+          "type": "@kerfjs/ui:text",
+          "props": {
+            "children": "Extra large body copy",
+            "size": "xlarge"
+          }
+        }
+      ]
+    }
+  }
+}

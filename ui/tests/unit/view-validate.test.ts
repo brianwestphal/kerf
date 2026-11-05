@@ -368,6 +368,18 @@ describe('validateView: types, props, and values', () => {
     ).toEqual(['KUI-V004']);
   });
 
+  it('KUI-V004: a selectable List needs its accessible name (KF-MN7QK5)', () => {
+    const list = (props: Fixture) => codes(doc(node('list', { props })));
+    expect(list({ selectionMode: 'single', ariaLabel: 'Tickets' })).toEqual([]);
+    expect(list({ selectionMode: 'multiple', ariaLabel: 'Lines' })).toEqual([]);
+    expect(list({ selectionMode: 'single' })).toEqual(['KUI-V004']);
+    expect(list({ selectionMode: 'multiple' })).toEqual(['KUI-V004']);
+    expect(list({ selectionMode: 'listbox', ariaLabel: 'Tickets' })).toEqual([
+      'KUI-V004',
+    ]);
+    expect(list({})).toEqual([]);
+  });
+
   it('accepts $icon and $css inside list and object values (KF-3J9GJV)', () => {
     const select = (choice: Fixture) =>
       codes(

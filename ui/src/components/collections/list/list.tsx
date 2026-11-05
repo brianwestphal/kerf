@@ -19,8 +19,8 @@ import {
   type UiGap,
 } from '../../../shared/styles/css-values.js';
 
-/** Attributes a multi-select List owns as an ARIA grid. */
-const listGridAttributes = ['role', 'aria-label', 'aria-multiselectable'];
+/** Attributes a selectable List owns as an ARIA grid or listbox. */
+const listSelectionAttributes = ['role', 'aria-label', 'aria-multiselectable'];
 
 const listProtectedAttributes = new Set([
   'data-component',
@@ -80,12 +80,16 @@ export type ListInset = 'document';
  */
 export type ListContentWidth = 'compact' | 'medium' | 'wide';
 
-export interface ListProps {
+/**
+ * How a List's rows are selected: `single` makes it a labeled
+ * `role="listbox"` of options (`SummaryRow`, `ContentItem
+ * selectionMode="single"`); `multiple` makes it a labeled multi-select grid
+ * of `ContentItem selectionMode="multiple"` rows.
+ */
+export type ListSelectionMode = 'single' | 'multiple';
+
+interface ListBaseProps {
   children?: KerfUiContent;
-  /** Make this list a labeled multi-select grid for `ContentItem selectionMode="multiple"` rows. */
-  selectionMode?: 'multiple';
-  /** Accessible name for the multi-select grid. */
-  ariaLabel?: string;
   /** Standard gap (`true`), one spacing value, or separate column and row values. Defaults to no gap. */
   gap?: boolean | UiGap;
   /** Allow this list to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
@@ -172,12 +176,38 @@ export interface ListProps {
   /**
    * Safe `data-*`, `aria-*`, and structural `role` metadata (a named drop
    * `region`, `aria-busy`); List-owned structural attributes remain
-   * protected, and a multi-select List owns its grid role and name.
+   * protected, and a selectable List owns its listbox or grid role and name.
    */
   rootAttributes?: ListRootAttributes;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
 }
+
+export type ListProps = ListBaseProps &
+  (
+    | {
+        /**
+         * Make this list a labeled single-select `role="listbox"` of options
+         * (`single`) or a labeled multi-select grid of `ContentItem
+         * selectionMode="multiple"` rows (`multiple`). Omitted, the List is
+         * layout only.
+         */
+        selectionMode?: never;
+        /** Accessible name for the listbox or grid; required with `selectionMode`. */
+        ariaLabel?: string;
+      }
+    | {
+        /**
+         * Make this list a labeled single-select `role="listbox"` of options
+         * (`single`) or a labeled multi-select grid of `ContentItem
+         * selectionMode="multiple"` rows (`multiple`). Omitted, the List is
+         * layout only.
+         */
+        selectionMode: ListSelectionMode;
+        /** Accessible name for the listbox or grid; required with `selectionMode`. */
+        ariaLabel: string;
+      }
+  );
 
 /**
  * A list's configuration, apart from its content and styling hooks: the props a
@@ -189,6 +219,24 @@ export type ListConfig = Pick<
   ListProps,
   'gap' | 'hAlign' | 'vAlign' | 'dividerSides' | 'textInsets' | 'controlInsets'
 >;
+
+function selectionAttributesFor(
+  mode: ListSelectionMode | undefined,
+  ariaLabel: string | undefined,
+): Record<string, string | undefined> {
+  switch (mode) {
+    case 'single':
+      return { role: 'listbox', 'aria-label': ariaLabel };
+    case 'multiple':
+      return {
+        role: 'grid',
+        'aria-label': ariaLabel,
+        'aria-multiselectable': 'true',
+      };
+    case undefined:
+      return {};
+  }
+}
 
 /** A stretch-aligned vertical stack with optional gap, flex, fill, scroll, and dividers. */
 export function List({
@@ -221,20 +269,16 @@ export function List({
   if (selectionMode === 'multiple' && !ariaLabel) {
     throw new Error('Multi-select List requires an ariaLabel');
   }
-  const multiple = selectionMode === 'multiple';
+  if (selectionMode === 'single' && !ariaLabel) {
+    throw new Error('Single-select List requires an ariaLabel');
+  }
   const safeRootAttributes = filterRootAttributes(
     rootAttributes,
-    multiple
-      ? new Set([...listProtectedAttributes, ...listGridAttributes])
+    selectionMode
+      ? new Set([...listProtectedAttributes, ...listSelectionAttributes])
       : listProtectedAttributes,
   );
-  const gridAttributes = multiple
-    ? {
-        role: 'grid',
-        'aria-label': ariaLabel,
-        'aria-multiselectable': 'true',
-      }
-    : {};
+  const selectionAttributes = selectionAttributesFor(selectionMode, ariaLabel);
   const gapStyle =
     gap === true
       ? '--_kui-list-gap:var(--kui-list-gap)'
@@ -256,7 +300,7 @@ export function List({
   return (
     <div
       {...safeRootAttributes}
-      {...gridAttributes}
+      {...selectionAttributes}
       id={id}
       hidden={hidden || undefined}
       class={`kui-list ${className}`.trim()}

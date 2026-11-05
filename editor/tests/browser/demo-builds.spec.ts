@@ -16557,6 +16557,96 @@ test('builds Grid › Sparse Document Tiles', async ({ page }) => {
   );
 });
 
+const DOCUMENT_TILES = [
+  'Brief',
+  'Budget',
+  'Contract',
+  'Invoice',
+  'Receipt',
+] as const;
+
+// KF-MN7QK5: each tile's name is a strong span Text beside its Button
+// (gridTileSelections starts empty, so no tile is selected).
+test('builds Grid › Selectable Document Tiles', async ({ page }) => {
+  test.slow();
+  await grid(
+    page,
+    {
+      choices: { gap: 's', selectionMode: 'multiple' },
+      flags: ['autoFill'],
+      text: { columns: '', ariaLabel: 'Documents' },
+      data: [['data-demo-grid', 'selectable-tiles']],
+    },
+    { minColumnWidth: 'px(160)' },
+  );
+  for (const [index, name] of DOCUMENT_TILES.entries()) {
+    await addInto(page, /^Grid/, 'ContentItem');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { selectionMode: 'multiple', frame: 'framed' },
+      flags: ['interactive'],
+      text: {
+        action: 'select-grid-tile',
+        itemId: `tile-${index + 1}`,
+        ariaLabel: name,
+      },
+    });
+    await addChild(page, 'Text');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { variant: 'span', weight: 'strong' },
+      text: { children: name },
+    });
+    await addInto(page, /^ContentItem/, 'Button', index);
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { size: 'compact' },
+      text: { children: 'Add as Quote', action: 'log-card-primary' },
+    });
+  }
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'grid',
+        {
+          minColumnWidth: { $css: 'px(160)' },
+          autoFill: true,
+          gap: 's',
+          selectionMode: 'multiple',
+          ariaLabel: 'Documents',
+          rootAttributes: { 'data-demo-grid': 'selectable-tiles' },
+        },
+        {
+          children: DOCUMENT_TILES.map((name, index) =>
+            node(
+              'content-item',
+              {
+                interactive: true,
+                action: 'select-grid-tile',
+                itemId: `tile-${index + 1}`,
+                selectionMode: 'multiple',
+                ariaLabel: name,
+                frame: 'framed',
+              },
+              {
+                children: [
+                  textNode(name, { variant: 'span', weight: 'strong' }),
+                  node('button', {
+                    children: 'Add as Quote',
+                    action: 'log-card-primary',
+                    size: 'compact',
+                  }),
+                ],
+              },
+            ),
+          ),
+        },
+      ),
+    ),
+  );
+});
+
 /** A nested Pane (set up by `spec`) at the first empty spot; Pane 1. */
 async function nestedPane(page: Page, spec: FieldSpec) {
   await dragComponent(page, 'Pane', () => emptySpot(page));
@@ -18444,6 +18534,89 @@ test('builds Text › Centered Status Copy', async ({ page }) => {
         align: 'end',
         rootAttributes: { 'data-demo-copy': 'align-end' },
       }),
+    ),
+  );
+});
+
+// KF-MN7QK5: the "Inbox · 3 msg" line is a paragraph of two strong span
+// Texts, the count quiet and compact, instead of a raw <strong>.
+test('builds Text › Presentation Roles', async ({ page }) => {
+  test.slow();
+  const before: readonly RootText[] = [
+    { text: 'Quiet supporting copy', spec: { choices: { tone: 'quiet' } } },
+    {
+      text: 'Danger or validation copy',
+      spec: { choices: { tone: 'danger' } },
+    },
+    { text: 'Compact metadata', spec: { choices: { size: 'compact' } } },
+    {
+      text: 'Monospace identifier: INV-2048',
+      spec: { choices: { font: 'monospace' } },
+    },
+    {
+      text: 'Quiet compact code: PO-1042',
+      spec: {
+        choices: { tone: 'quiet', size: 'compact', font: 'monospace' },
+      },
+    },
+  ];
+  await rootTexts(page, before);
+  // A child added to the paragraph turns its seeded copy into a text run,
+  // which goes: the line is two Texts.
+  await addInto(page, /^Pane/, 'Text');
+  await addChild(page, 'Text');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { variant: 'span', weight: 'strong' },
+    text: { children: 'Inbox' },
+  });
+  await area(page, 'Outline');
+  await outlineRow(page, /^Text “/).click();
+  await deleteSelected(page);
+  await select(page, /^Text(?![A-Z])/, before.length);
+  await addChild(page, 'Text');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: {
+      variant: 'span',
+      weight: 'strong',
+      tone: 'quiet',
+      size: 'compact',
+    },
+    text: { children: ' · 3 msg' },
+  });
+  for (const [text, size] of [
+    ['Large body copy', 'large'],
+    ['Extra large body copy', 'xlarge'],
+  ] as const) {
+    await addInto(page, /^Pane/, 'Text');
+    await applySpec(page, { choices: { size }, text: { children: text } });
+  }
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      textNode('Quiet supporting copy', { tone: 'quiet' }),
+      textNode('Danger or validation copy', { tone: 'danger' }),
+      textNode('Compact metadata', { size: 'compact' }),
+      textNode('Monospace identifier: INV-2048', { font: 'monospace' }),
+      textNode('Quiet compact code: PO-1042', {
+        tone: 'quiet',
+        size: 'compact',
+        font: 'monospace',
+      }),
+      node('text', undefined, {
+        children: [
+          textNode('Inbox', { variant: 'span', weight: 'strong' }),
+          textNode(' · 3 msg', {
+            variant: 'span',
+            weight: 'strong',
+            tone: 'quiet',
+            size: 'compact',
+          }),
+        ],
+      }),
+      textNode('Large body copy', { size: 'large' }),
+      textNode('Extra large body copy', { size: 'xlarge' }),
     ),
   );
 });
@@ -22500,3 +22673,294 @@ test('builds SurfaceScaffold › Controlled Reader Stack', async ({ page }) => {
 });
 
 const READER_ITEMS = [{ label: 'Copy Link' }, { label: 'View History' }];
+
+type SummaryItem = {
+  readonly id: string;
+  readonly glyph: string;
+  readonly title: string;
+  readonly updated: string;
+  readonly status: string;
+  readonly tone: string;
+  readonly rail?: string;
+  readonly tags: readonly string[];
+  readonly dimmed?: boolean;
+};
+
+/** The SummaryRow demo's three tickets; KF-12 starts selected. */
+const SUMMARY_ITEMS: readonly SummaryItem[] = [
+  {
+    id: 'KF-12',
+    glyph: 'bug',
+    title: 'Toolbar search overflows the trailing zone on narrow rails',
+    updated: '2m',
+    status: 'Started',
+    tone: 'info',
+    rail: 'warning',
+    tags: ['toolbar', 'layout'],
+  },
+  {
+    id: 'KF-13',
+    glyph: 'lightbulb',
+    title: 'Paged board snapping with a peeking next column',
+    updated: '1h',
+    status: 'Not started',
+    tone: 'neutral',
+    tags: ['board'],
+  },
+  {
+    id: 'KF-14',
+    glyph: 'list-todo',
+    title: 'Document the summary row in the selection guide',
+    updated: '3d',
+    status: 'Completed',
+    tone: 'success',
+    tags: [],
+    dimmed: true,
+  },
+];
+
+const SUMMARY_EDGES = ['start', undefined, 'end'] as const;
+
+/**
+ * A List (set up by `spec`) of the demo's option SummaryRows, each a
+ * draggable option with a leading glyph, a strong id Text and a title Text,
+ * a trailing time, and a metadata line of a Badge and Chips.
+ */
+async function summaryRows(
+  page: Page,
+  presentation: 'row' | 'card',
+  spec: FieldSpec,
+) {
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List(?![A-Z])/);
+  await applySpec(page, spec);
+  for (const [index, item] of SUMMARY_ITEMS.entries()) {
+    const edge = presentation === 'row' ? SUMMARY_EDGES[index] : undefined;
+    await addInto(page, /^List(?![A-Z])/, 'SummaryRow');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: {
+        ...(presentation === 'card' ? { presentation } : {}),
+        ...(edge ? { listEdge: edge } : {}),
+        ...(item.rail ? { rail: item.rail } : {}),
+      },
+      flags: [
+        'draggable',
+        ...(index === 0 ? ['selected'] : []),
+        ...(item.dimmed ? ['dimmed'] : []),
+      ],
+      text: { trailingMeta: item.updated },
+      data: [
+        ['data-action', 'select-summary-row-demo'],
+        ['data-item-id', item.id],
+      ],
+    });
+    await summaryContent(page, index, item.glyph, async () => {
+      // The row's seeded title copy is a Text: it becomes the strong id.
+      await select(page, /^Text(?![A-Z])/, index * 2);
+      await applySpec(page, {
+        choices: { variant: 'span', weight: 'strong' },
+        text: { children: item.id },
+      });
+      await select(page, /^SummaryRow/, index);
+      await addChild(page, 'Text', 'title');
+      await area(page, 'Properties');
+      await applySpec(page, {
+        choices: { variant: 'span' },
+        text: { children: ` ${item.title}` },
+      });
+    });
+    await select(page, /^SummaryRow/, index);
+    await addChild(page, 'Badge', 'metadata');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { tone: item.tone, size: 'compact' },
+      text: { children: item.status },
+    });
+    for (const tag of item.tags) {
+      await select(page, /^SummaryRow/, index);
+      await addChild(page, 'Chip', 'metadata');
+      await area(page, 'Properties');
+      await applySpec(page, {
+        choices: { size: 'compact' },
+        text: { children: tag },
+      });
+    }
+  }
+}
+
+/** Gives the `index`th SummaryRow its leading glyph, then its title. */
+async function summaryContent(
+  page: Page,
+  index: number,
+  glyph: string,
+  title: () => Promise<void>,
+) {
+  await select(page, /^SummaryRow/, index);
+  await addChild(page, 'LucideIcon', 'leading');
+  await pickIcon(page, page.locator('[data-editor-icon-place]'), glyph);
+  await title();
+}
+
+/** The List of option SummaryRows `summaryRows` builds. */
+const summaryRowsNode = (
+  presentation: 'row' | 'card',
+  props: Record<string, unknown>,
+) =>
+  pane(
+    node('list', props, {
+      children: SUMMARY_ITEMS.map((item, index) => {
+        const edge = presentation === 'row' ? SUMMARY_EDGES[index] : undefined;
+        return node(
+          'summary-row',
+          {
+            semanticRole: 'option',
+            ...(presentation === 'card' ? { presentation } : {}),
+            ...(edge ? { listEdge: edge } : {}),
+            ...(item.rail ? { rail: item.rail } : {}),
+            draggable: true,
+            ...(index === 0 ? { selected: true } : {}),
+            ...(item.dimmed ? { dimmed: true } : {}),
+            trailingMeta: item.updated,
+            rootAttributes: {
+              'data-action': 'select-summary-row-demo',
+              'data-item-id': item.id,
+            },
+          },
+          {
+            leading: [icon(item.glyph)],
+            title: [
+              textNode(item.id, { variant: 'span', weight: 'strong' }),
+              textNode(` ${item.title}`, { variant: 'span' }),
+            ],
+            metadata: [
+              node('badge', {
+                children: item.status,
+                tone: item.tone,
+                size: 'compact',
+              }),
+              ...item.tags.map((tag) =>
+                node('chip', { children: tag, size: 'compact' }),
+              ),
+            ],
+          },
+        );
+      }),
+    }),
+  );
+
+// KF-MN7QK5: the rows sit in a `List selectionMode="single"` listbox (no
+// app-owned role="listbox" wrapper), and each title is a strong id Text plus
+// a title Text. The editor seeds an option's `semanticRole`, the default.
+test('builds SummaryRow › List Section', async ({ page }) => {
+  test.setTimeout(test.info().timeout * 4);
+  const list = {
+    choices: { selectionMode: 'single', controlInsets: 'trbl' },
+    text: { ariaLabel: 'Tickets' },
+  };
+  await summaryRows(page, 'row', list);
+  await expect(
+    canvas(page).getByRole('listbox', { name: 'Tickets' }),
+  ).toBeVisible();
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    summaryRowsNode('row', {
+      selectionMode: 'single',
+      ariaLabel: 'Tickets',
+      controlInsets: 'trbl',
+    }),
+  );
+});
+
+test('builds SummaryRow › Board Cards', async ({ page }) => {
+  test.setTimeout(test.info().timeout * 4);
+  const list = {
+    choices: { selectionMode: 'single', gap: 'xs', controlInsets: 'trbl' },
+    text: { ariaLabel: 'Board Column' },
+  };
+  await summaryRows(page, 'card', list);
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    summaryRowsNode('card', {
+      selectionMode: 'single',
+      ariaLabel: 'Board Column',
+      gap: 'xs',
+      controlInsets: 'trbl',
+    }),
+  );
+});
+
+// KF-MN7QK5: the strong title is a span Text whose copy ends in the no-break
+// space that kept it apart from the Open button.
+test('builds SummaryRow › Diagnostic Group', async ({ page }) => {
+  test.slow();
+  await dragComponent(page, 'SummaryRow', () => emptySpot(page));
+  await select(page, /^SummaryRow/);
+  await applySpec(page, {
+    choices: {
+      semanticRole: 'group',
+      listEdge: 'only',
+      rail: 'danger',
+    },
+    flags: ['selected'],
+    text: { ariaLabel: 'Unreadable ticket diagnostic' },
+  });
+  await summaryContent(page, 0, 'bug', async () => {
+    await select(page, /^Text(?![A-Z])/);
+    await applySpec(page, {
+      choices: { variant: 'span', weight: 'strong' },
+      text: { children: 'Unreadable ticket\u00a0' },
+    });
+    await select(page, /^SummaryRow/);
+    await addChild(page, 'Button', 'title');
+    await area(page, 'Properties');
+    await applySpec(page, {
+      choices: { size: 'compact', emphasis: 'secondary' },
+      text: { children: 'Open', action: 'log-more' },
+    });
+  });
+  await select(page, /^SummaryRow/);
+  await addChild(page, 'Badge', 'metadata');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { tone: 'danger', size: 'compact' },
+    text: { children: 'Needs recovery' },
+  });
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'summary-row',
+        {
+          semanticRole: 'group',
+          ariaLabel: 'Unreadable ticket diagnostic',
+          listEdge: 'only',
+          rail: 'danger',
+          selected: true,
+        },
+        {
+          leading: [icon('bug')],
+          title: [
+            textNode('Unreadable ticket\u00a0', {
+              variant: 'span',
+              weight: 'strong',
+            }),
+            node('button', {
+              children: 'Open',
+              action: 'log-more',
+              size: 'compact',
+              emphasis: 'secondary',
+            }),
+          ],
+          metadata: [
+            node('badge', {
+              children: 'Needs recovery',
+              tone: 'danger',
+              size: 'compact',
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});

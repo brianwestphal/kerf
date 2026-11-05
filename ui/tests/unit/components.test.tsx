@@ -12,7 +12,10 @@ import {
   ToolbarControlGroup,
 } from '../../src/components/actions/toolbar-control-group/toolbar-control-group.js';
 import { ToolbarText } from '../../src/components/actions/toolbar-text/toolbar-text.js';
-import { List } from '../../src/components/collections/list/list.js';
+import {
+  List,
+  type ListProps,
+} from '../../src/components/collections/list/list.js';
 import { ListActionRow } from '../../src/components/collections/list-action-row/list-action-row.js';
 import {
   ListHeader,
@@ -1304,8 +1307,30 @@ describe('production UI primitives', () => {
     expect(grid).toContain('role="grid"');
     expect(grid).toContain('aria-label="Demand Lines"');
     expect(grid).toContain('aria-multiselectable="true"');
-    expect(() => List({ selectionMode: 'multiple' })).toThrow(
+    // TypeScript requires the name; untyped callers still get a runtime error.
+    expect(() => List({ selectionMode: 'multiple' } as ListProps)).toThrow(
       'requires an ariaLabel',
+    );
+    const listbox = asHtml(
+      List({
+        selectionMode: 'single',
+        ariaLabel: 'Tickets',
+        rootAttributes: {
+          role: 'region',
+          'aria-label': 'Overridden',
+          'aria-multiselectable': 'true',
+          'data-board': 'tickets',
+        },
+        children: <span>Row</span>,
+      }),
+    );
+    expect(listbox).toContain(
+      'data-board="tickets" role="listbox" aria-label="Tickets" class="kui-list"',
+    );
+    expect(listbox).not.toContain('aria-multiselectable');
+    expect(listbox).not.toContain('Overridden');
+    expect(() => List({ selectionMode: 'single' } as ListProps)).toThrow(
+      'Single-select List requires an ariaLabel',
     );
     const region = asHtml(
       List({

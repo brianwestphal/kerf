@@ -961,12 +961,15 @@ type ListInset = 'document';
  * `contentWidth`.
  */
 type ListContentWidth = 'compact' | 'medium' | 'wide';
-interface ListProps {
+/**
+ * How a List's rows are selected: `single` makes it a labeled
+ * `role="listbox"` of options (`SummaryRow`, `ContentItem
+ * selectionMode="single"`); `multiple` makes it a labeled multi-select grid
+ * of `ContentItem selectionMode="multiple"` rows.
+ */
+type ListSelectionMode = 'single' | 'multiple';
+interface ListBaseProps {
     children?: KerfUiContent;
-    /** Make this list a labeled multi-select grid for `ContentItem selectionMode="multiple"` rows. */
-    selectionMode?: 'multiple';
-    /** Accessible name for the multi-select grid. */
-    ariaLabel?: string;
     /** Standard gap (`true`), one spacing value, or separate column and row values. Defaults to no gap. */
     gap?: boolean | UiGap;
     /** Allow this list to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
@@ -1053,12 +1056,33 @@ interface ListProps {
     /**
      * Safe `data-*`, `aria-*`, and structural `role` metadata (a named drop
      * `region`, `aria-busy`); List-owned structural attributes remain
-     * protected, and a multi-select List owns its grid role and name.
+     * protected, and a selectable List owns its listbox or grid role and name.
      */
     rootAttributes?: ListRootAttributes;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
+type ListProps = ListBaseProps & ({
+    /**
+     * Make this list a labeled single-select `role="listbox"` of options
+     * (`single`) or a labeled multi-select grid of `ContentItem
+     * selectionMode="multiple"` rows (`multiple`). Omitted, the List is
+     * layout only.
+     */
+    selectionMode?: never;
+    /** Accessible name for the listbox or grid; required with `selectionMode`. */
+    ariaLabel?: string;
+} | {
+    /**
+     * Make this list a labeled single-select `role="listbox"` of options
+     * (`single`) or a labeled multi-select grid of `ContentItem
+     * selectionMode="multiple"` rows (`multiple`). Omitted, the List is
+     * layout only.
+     */
+    selectionMode: ListSelectionMode;
+    /** Accessible name for the listbox or grid; required with `selectionMode`. */
+    ariaLabel: string;
+});
 /**
  * A list's configuration, apart from its content and styling hooks: the props a
  * composite that renders a `List` for the app (the Workbench's `mainHeader` /
@@ -1069,7 +1093,7 @@ type ListConfig = Pick<ListProps, 'gap' | 'hAlign' | 'vAlign' | 'dividerSides' |
 /** A stretch-aligned vertical stack with optional gap, flex, fill, scroll, and dividers. */
 declare function List({ children, selectionMode, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, scrollClearance, frame, maxHeight, minHeight, surface, inset, contentWidth, contentAlign, dividerSides, textInsets, controlInsets, className, id, hidden, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
 
-export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, List, type ListConfig, type ListContentWidth, type ListInset, type ListProps, type ListSurface, ListVerticalAlignment, ScrollClearance, Sides, UiGap };
+export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, List, type ListConfig, type ListContentWidth, type ListInset, type ListProps, type ListSelectionMode, type ListSurface, ListVerticalAlignment, ScrollClearance, Sides, UiGap };
 ```
 
 ## `@kerfjs/ui/list-action-row`

@@ -127,7 +127,9 @@ export function GridDemo() {
                 ariaLabel={name}
                 frame="framed"
               >
-                <strong>{name}</strong>
+                <Text variant="span" weight="strong">
+                  {name}
+                </Text>
                 <Button size="compact" action="log-card-primary">
                   Add as Quote
                 </Button>

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
+import { List } from '../../src/components/collections/list/list.js';
 import { SummaryRow } from '../../src/components/collections/summary-row/summary-row.js';
+import { Text } from '../../src/components/typography/text/text.js';
 
 describe('SummaryRow', () => {
   it('renders an unselected row option with only the title zone by default', () => {
@@ -101,5 +103,38 @@ describe('SummaryRow', () => {
     expect(String(SummaryRow({ title: <span>Ticket</span> }))).not.toContain(
       'draggable=',
     );
+  });
+  it('sits as options in a labeled single-select List listbox with Text titles', () => {
+    const root = document.createElement('div');
+    root.innerHTML = String(
+      <List selectionMode="single" ariaLabel="Tickets">
+        {['KF-12', 'KF-13'].map((id, index) => (
+          <SummaryRow
+            selected={index === 0}
+            title={
+              <>
+                <Text variant="span" weight="strong">
+                  {id}
+                </Text>
+                <Text variant="span"> Fix it</Text>
+              </>
+            }
+          />
+        ))}
+      </List>,
+    );
+    const listbox = root.querySelector('[role="listbox"]')!;
+    expect(listbox.getAttribute('aria-label')).toBe('Tickets');
+    const options = [...listbox.querySelectorAll('[role="option"]')];
+    expect(options.map((node) => node.getAttribute('aria-selected'))).toEqual([
+      'true',
+      'false',
+    ]);
+    expect(options.map((node) => node.textContent)).toEqual([
+      'KF-12 Fix it',
+      'KF-13 Fix it',
+    ]);
+    // Text owns the strong emphasis inside its own span.
+    expect(root.querySelector('.kui-text > strong')?.textContent).toBe('KF-12');
   });
 });

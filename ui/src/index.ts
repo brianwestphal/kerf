@@ -87,6 +87,7 @@ export {
   type ListConfig,
   type ListInset,
   type ListProps,
+  type ListSelectionMode,
   type ListSurface,
   type ListVerticalAlignment,
   type ScrollClearance,

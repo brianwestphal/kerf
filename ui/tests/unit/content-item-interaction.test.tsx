@@ -380,6 +380,87 @@ describe('wireContentItems', () => {
     root.remove();
   });
 
+  it('activates single-select options in a List listbox without moving focus by arrow keys', () => {
+    const root = document.createElement('div');
+    const selected = signal('one');
+    const options = () => (
+      <List selectionMode="single" ariaLabel="Saved Views">
+        {['one', 'two'].map((id) => (
+          <ContentItem
+            interactive
+            action="choose-view"
+            itemId={id}
+            selectionMode="single"
+            selected={selected.value === id}
+          >
+            {id}
+          </ContentItem>
+        ))}
+      </List>
+    );
+    document.body.append(root);
+    const dispose = mount(root, options);
+    const listbox = root.querySelector<HTMLElement>('[role="listbox"]')!;
+    expect(listbox.getAttribute('aria-label')).toBe('Saved Views');
+    expect(listbox.hasAttribute('aria-multiselectable')).toBe(false);
+    const option = (id: string) =>
+      listbox.querySelector<HTMLElement>(`[data-item-id="${id}"]`)!;
+    expect(
+      [...listbox.querySelectorAll('[role="option"]')].map((node) => [
+        node.getAttribute('data-item-id'),
+        node.getAttribute('aria-selected'),
+        node.getAttribute('tabindex'),
+      ]),
+    ).toEqual([
+      ['one', 'true', '0'],
+      ['two', 'false', '0'],
+    ]);
+    // The app owns selection: an activation dispatches the option's action.
+    root.addEventListener('click', (event) => {
+      const id = (event.target as HTMLElement).closest<HTMLElement>(
+        '[data-action="choose-view"]',
+      )?.dataset.itemId;
+      if (id) selected.value = id;
+    });
+    const stop = wireContentItems(root);
+    option('two').focus();
+    option('two').dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Enter',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(option('one').getAttribute('aria-selected')).toBe('false');
+    expect(option('two').getAttribute('aria-selected')).toBe('true');
+    option('one').focus();
+    option('one').dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: ' ',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    option('one').dispatchEvent(
+      new KeyboardEvent('keyup', { key: ' ', bubbles: true, cancelable: true }),
+    );
+    expect(option('one').getAttribute('aria-selected')).toBe('true');
+    // Arrow keys are the app's: a single-select option leaves them alone.
+    expect(
+      option('one').dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: 'ArrowDown',
+          bubbles: true,
+          cancelable: true,
+        }),
+      ),
+    ).toBe(true);
+    expect(document.activeElement).toBe(option('one'));
+    stop();
+    dispose();
+    root.remove();
+  });
+
   it('forwards the activating key modifiers on the activation click', () => {
     const root = document.createElement('div');
     root.innerHTML = String(
