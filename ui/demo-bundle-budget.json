@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 456600,
-  "measuredLargestJavaScriptGzip": 164546,
-  "measuredTotalJavaScriptGzip": 456511,
+  "totalJavaScriptGzip": 458300,
+  "measuredLargestJavaScriptGzip": 164547,
+  "measuredTotalJavaScriptGzip": 458276,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6947,6 +6947,22 @@
         "measuredTotalJavaScriptGzip": 456511,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 456600
+      }
+    },
+    {
+      "at": "2026-11-05T17:44:38.569Z",
+      "reason": "KF-Y0XT2R adds the Gauge component, its catalog demo, and its catalog metadata",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 456511,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 456600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164547,
+        "measuredTotalJavaScriptGzip": 458276,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 458300
       }
     }
   ]

@@ -923,6 +923,10 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   `@kerfjs/ui/progress-ring`): `value` of `max` (omit `value` for
   indeterminate), a `label`, `valueText`, tones. Never use `wa-progress-bar` or
   `wa-progress-ring`.
+- **Read a live rate at a glance with `Gauge`** (`@kerfjs/ui/gauge`): a
+  speedometer dial named by `label`, `value` of `max` (pinned past `max`),
+  `valueText`, `unit`, `variant` `full` or `bare` (chip height), `tone`,
+  `size`, and typed `colors` for a consumer palette. Not for progress.
 - **Pick a value on a range with `Slider`** (`@kerfjs/ui/slider`): a native
   range input drawn as a track, fill, and thumb, with `showValue`/`unit`,
   `ticks`, and `hint`; call `wireSliders(root)` once. Never use `wa-slider`.

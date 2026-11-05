@@ -7,6 +7,7 @@ import {
   CatalogExample,
   CatalogExampleStack,
 } from '../../src/catalog.js';
+import { Gauge } from '../../src/components/feedback/gauge/gauge.js';
 import { Form } from '../../src/components/forms/form/form.js';
 import { CollapsiblePanelToggle } from '../../src/components/layout/collapsible-panel/collapsible-panel.js';
 import { SplitView } from '../../src/components/layout/split-view/split-view.js';
@@ -63,6 +64,10 @@ const catalogSections = [
 ] as const;
 
 const cases: SlotCase[] = [
+  {
+    name: 'Gauge',
+    render: (slot) => Gauge({ label: 'Rate', value: 1, max: 2, slot }),
+  },
   {
     name: 'TabBarItem',
     render: (slot) => TabBarItem({ id: 'tab', name: 'Tab', slot }),

@@ -353,6 +353,11 @@
       "browser": "./dist/browser/progress-ring.js",
       "import": "./dist/progress-ring.js"
     },
+    "./gauge": {
+      "types": "./dist/gauge.d.ts",
+      "browser": "./dist/browser/gauge.js",
+      "import": "./dist/gauge.js"
+    },
     "./loading-spinner": {
       "types": "./dist/loading-spinner.d.ts",
       "browser": "./dist/browser/loading-spinner.js",
@@ -692,6 +697,7 @@
     "./loading-spinner.css": "./dist/styles/loading-spinner.css",
     "./progress-bar.css": "./dist/styles/progress-bar.css",
     "./progress-ring.css": "./dist/styles/progress-ring.css",
+    "./gauge.css": "./dist/styles/gauge.css",
     "./select.css": "./dist/styles/select.css",
     "./popup-menu.css": "./dist/styles/popup-menu.css",
     "./anchored-surface.css": "./dist/styles/anchored-surface.css",

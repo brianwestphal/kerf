@@ -1,0 +1,133 @@
+/* A 240-degree dial: a track arc, a fill from zero to the value, and a needle.
+   The SVG scales with the gauge's width, so a `full` readout keeps its
+   proportions from a stats tile to a standby display. */
+.kui-gauge {
+  --_kui-gauge-track: var(--kui-color-neutral-fill-normal);
+  --_kui-gauge-fill: var(--kui-color-brand-fill-loud);
+  --_kui-gauge-needle: var(--kui-color-text);
+  --_kui-gauge-text: var(--kui-color-text);
+
+  display: inline-block;
+  width: var(--_kui-gauge-size, remify(88px));
+  flex: none;
+  vertical-align: middle;
+}
+
+.kui-gauge[data-tone="success"] {
+  --_kui-gauge-fill: var(--kui-color-success-fill-loud);
+}
+
+.kui-gauge[data-tone="warning"] {
+  --_kui-gauge-fill: var(--kui-color-warning-fill-loud);
+}
+
+.kui-gauge[data-tone="danger"] {
+  --_kui-gauge-fill: var(--kui-color-danger-fill-loud);
+}
+
+.kui-gauge svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.kui-gauge__track,
+.kui-gauge__fill {
+  fill: none;
+  stroke-width: 8;
+}
+
+.kui-gauge__track {
+  stroke: var(--_kui-gauge-track);
+}
+
+.kui-gauge__fill {
+  stroke: var(--_kui-gauge-fill);
+  stroke-linecap: round;
+  transition: stroke-dasharray 300ms ease;
+}
+
+/* A zero reading draws no dot at the start of the scale. */
+.kui-gauge[aria-valuenow="0"] .kui-gauge__fill {
+  stroke-linecap: butt;
+}
+
+.kui-gauge__tick {
+  stroke: var(--_kui-gauge-text);
+  stroke-width: 1.5;
+  opacity: 0.45;
+}
+
+.kui-gauge__tick--major {
+  stroke-width: 2;
+  opacity: 0.8;
+}
+
+/* The needle turns around the dial's center, in viewBox units. */
+.kui-gauge__needle {
+  transform-box: view-box;
+  transform-origin: 50px 50px;
+  transition: transform 300ms ease;
+}
+
+.kui-gauge__needle line {
+  stroke: var(--_kui-gauge-needle);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.kui-gauge__needle circle {
+  fill: var(--_kui-gauge-needle);
+}
+
+.kui-gauge__value,
+.kui-gauge__unit {
+  fill: var(--_kui-gauge-text);
+  font-family: var(--kui-font-sans);
+  font-variant-numeric: tabular-nums;
+  text-anchor: middle;
+}
+
+.kui-gauge__value {
+  font-size: 18px;
+  font-weight: var(--kui-font-weight-semibold);
+}
+
+.kui-gauge__unit {
+  font-size: 11px;
+  opacity: 0.75;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kui-gauge__fill,
+  .kui-gauge__needle {
+    transition: none;
+  }
+}
+
+:root[data-kui-effects="static"] .kui-gauge__fill,
+:root[data-kui-effects="static"] .kui-gauge__needle {
+  transition: none;
+}
+
+@media (forced-colors: active) {
+  .kui-gauge__track {
+    stroke: GrayText;
+  }
+
+  .kui-gauge__fill {
+    stroke: Highlight;
+  }
+
+  .kui-gauge__needle line,
+  .kui-gauge__tick {
+    stroke: CanvasText;
+  }
+
+  .kui-gauge__needle circle,
+  .kui-gauge__value,
+  .kui-gauge__unit {
+    fill: CanvasText;
+  }
+}

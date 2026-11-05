@@ -618,6 +618,7 @@ describe('UX catalog metadata', () => {
       'LoadingSpinner',
       'ProgressBar',
       'ProgressRing',
+      'Gauge',
       'Skeleton',
     ]);
     expect(

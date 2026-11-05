@@ -31,6 +31,7 @@ import { FloatingToolbarDemo } from './floating-toolbar.js';
 import { FormDemo } from './form.js';
 import { FoundationDemo } from './foundation.js';
 import { FramedListDemo } from './framed-list.js';
+import { GaugeDemo } from './gauge.js';
 import { GridDemo } from './grid.js';
 import { HeadersDemo } from './headers.js';
 import { LayoutDemo } from './layout.js';
@@ -109,6 +110,7 @@ export const demos = {
   'workbench-dialog': WorkbenchDialogDemo,
   'progress-bar': ProgressBarDemo,
   'progress-ring': ProgressRingDemo,
+  gauge: GaugeDemo,
   'message-composer': MessageComposerDemo,
   slider: SliderDemo,
   'tag-field': TagFieldDemo,

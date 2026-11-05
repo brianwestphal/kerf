@@ -19,6 +19,7 @@ import { EmptyState } from '../../src/empty-state.js';
 import { FileDropZone, FilePickerTrigger } from '../../src/file-picker.js';
 import { FloatingToolbar } from '../../src/floating-toolbar.js';
 import { Form } from '../../src/form.js';
+import { Gauge } from '../../src/gauge.js';
 import { ListInsetControl } from '../../src/list-inset-control.js';
 import { LoadingSpinner } from '../../src/loading-spinner.js';
 import { LucideIcon } from '../../src/lucide-icon.js';
@@ -61,6 +62,7 @@ const rootAttributes = {
 
 type Case = readonly [name: string, render: () => SafeHtml];
 const cases: Case[] = [
+  ['Gauge', () => Gauge({ label: 'Rate', value: 1, max: 2, rootAttributes })],
   [
     'ChoiceChips',
     () => ChoiceChips({ name: 'pick', label: 'Pick', choices, rootAttributes }),

@@ -9980,6 +9980,95 @@
       }
     },
     {
+      "id": "gauge",
+      "name": "Gauge",
+      "category": "Feedback",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A speedometer-style dial for a reading on a scale that is not progress, such as a live rate: a 240-degree track arc, a fill from zero to the value, and a needle scaled to max. The full variant adds ticks and the value and unit inside the dial; the bare variant is the arc, fill, and needle alone at chip height, as a named meter.",
+      "uses": [],
+      "purpose": "Show a live rate or level against a ceiling at a glance (tokens per minute, tickets updated per hour) on a stats tile, a chip, or a standby display.",
+      "publicExports": [
+        "Gauge",
+        "GaugeProps",
+        "GaugeVariant",
+        "GaugeColors",
+        "GaugeRootAttributes",
+        "ProgressTone"
+      ],
+      "useWhen": [
+        "A live rate or level on a glance surface: pass value, max, a label, and optional valueText and unit.",
+        "A chip-height indicator beside other status: variant=\"bare\", which carries the value in its accessible name and hover title.",
+        "A themed display such as a night palette: pass colors with typed CssColor values instead of writing CSS."
+      ],
+      "avoidWhen": [
+        "Do not use it for progress toward done; use ProgressBar or ProgressRing.",
+        "Do not use it where a precise number matters more than the glance; show the number in Text.",
+        "Do not target its classes to recolor it; pass tone or colors."
+      ],
+      "alternatives": [
+        {
+          "id": "progress-ring",
+          "relationship": "nearest",
+          "when": "Use a ProgressRing for compact progress toward done."
+        },
+        {
+          "id": "progress-bar",
+          "relationship": "nearest",
+          "when": "Use a ProgressBar for measurable progress with a label row."
+        }
+      ],
+      "appOwns": [
+        "the value, max, valueText, and unit",
+        "the label",
+        "the variant, tone, size, and any colors"
+      ],
+      "variants": [
+        "full (ticks, value, and unit)",
+        "bare (arc, fill, and needle)",
+        "brand, success, warning, or danger tone",
+        "pinned at the end when the value exceeds max"
+      ],
+      "accessibility": [
+        "It is role meter named by label, with aria-valuemin 0, aria-valuemax max, aria-valuenow clamped to max, and aria-valuetext set to the value text and unit; the SVG is decorative.",
+        "A bare gauge also sets a hover title of the label and value.",
+        "The needle and fill transition only when the value changes and hold still under prefers-reduced-motion or the static-effects switch; forced colors draw a GrayText track, a Highlight fill, and a CanvasText needle and readout."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none",
+        "notes": [
+          "Its width is size (88px full, 40px bare by default) and its height follows the dial; the drawing scales with the width."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/gauge",
+        "browserImport": "@kerfjs/ui/gauge",
+        "manualCssImport": "@kerfjs/ui/gauge.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-gauge",
+        "kui-gauge__track",
+        "kui-gauge__fill",
+        "kui-gauge__tick",
+        "kui-gauge__tick--major",
+        "kui-gauge__needle",
+        "kui-gauge__value",
+        "kui-gauge__unit"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=gauge",
+        "documentation": "docs/gauge.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "skeleton",
       "name": "Skeleton",
       "category": "Feedback",

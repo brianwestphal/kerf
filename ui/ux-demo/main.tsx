@@ -136,6 +136,11 @@ import {
   wireColumnExplorerDemo,
 } from './demos/column-explorer.js';
 import {
+  resetGaugeDemo,
+  STEP_GAUGE_DEMO_ACTION,
+  stepGaugeDemo,
+} from './demos/gauge.js';
+import {
   popListDetailDialogDemo,
   resetListDetailDialogDemo,
   SELECT_LIST_DETAIL_PROJECT_ACTION,
@@ -877,6 +882,10 @@ const stopActions = delegateActions(app, 'click', {
   },
   [STEP_PROGRESS_DEMO_ACTION]: () => {
     actionLog.value = `Uploaded ${stepProgressDemo()} of 12 files`;
+  },
+  [STEP_GAUGE_DEMO_ACTION]: (_event, target) => {
+    const rate = stepGaugeDemo(Number(target.getAttribute('data-step')));
+    actionLog.value = `Rate set to ${rate} tokens per minute`;
   },
   [ADD_COLOR_SAMPLE_DEMO_ACTION]: () => {
     addColorSampleDemo();
@@ -1805,6 +1814,7 @@ const routeWires: Partial<Record<string, RouteWire>> = {
     target: 'canvas',
     wire: () => () => {},
   },
+  gauge: { reset: resetGaugeDemo, target: 'canvas', wire: () => () => {} },
   slider: { reset: resetSliderDemo, target: 'canvas', wire: () => () => {} },
   pane: {
     reset: resetPaneDemo,

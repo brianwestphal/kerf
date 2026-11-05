@@ -55,8 +55,9 @@ column as `Text`.
 - A brief busy glyph inside a control: `LoadingSpinner`.
 - App-wide progress with no home beside the work: `CornerStatus` or
   `EdgeActivityIndicator`.
-- A reading on a scale that is not progress (a rating, a level): a native
-  `<meter>`.
+- A reading on a scale that is not progress: `Gauge` (`@kerfjs/ui/gauge`,
+  see [`gauge.md`](gauge.md)) for a live rate read at a glance, or a native
+  `<meter>` inline.
 
 Forced colors draw the fills in `Highlight`. Use these instead of
 `wa-progress-bar` and `wa-progress-ring`, which are Discouraged.

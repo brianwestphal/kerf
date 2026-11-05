@@ -1179,6 +1179,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/progress.md"
   },
   {
+    "id": "gauge",
+    "name": "Gauge",
+    "category": "Feedback",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Show a live rate or level against a ceiling at a glance (tokens per minute, tickets updated per hour) on a stats tile, a chip, or a standby display.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/gauge.tsx",
+    "componentSource": "ui/src/components/feedback/gauge/gauge.tsx",
+    "documentation": "ui/docs/gauge.md"
+  },
+  {
     "id": "skeleton",
     "name": "Skeleton",
     "category": "Feedback",

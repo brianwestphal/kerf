@@ -8342,3 +8342,81 @@ declare function ProgressRing({ value, max, label, valueText, tone, size, id, ro
 
 export { ProgressRing, type ProgressRingProps, type ProgressRingRootAttributes, type ProgressRingSize, ProgressTone };
 ```
+
+## `@kerfjs/ui/gauge`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { CssLength, CssColor } from './css-values.js';
+import { ProgressTone } from './progress-bar.js';
+
+/**
+ * `full` draws ticks with the value and unit inside the dial, for a stats
+ * tile or a standby display; `bare` draws only the arc, fill, and needle, for
+ * chip height, and carries the value in its accessible name and hover title.
+ */
+type GaugeVariant = 'full' | 'bare';
+/**
+ * A consumer palette, such as dark red on black for a night display. Each
+ * color is a typed `CssColor` from `uiColor()`, `colorVar()`, or
+ * `fillColor()`; an omitted one keeps the tone's color.
+ */
+interface GaugeColors {
+    /** The unfilled arc. */
+    track?: CssColor;
+    /** The filled arc from zero to the value. */
+    fill?: CssColor;
+    /** The needle and its hub. */
+    needle?: CssColor;
+    /** The value, unit, and ticks of a `full` gauge. */
+    text?: CssColor;
+}
+/**
+ * Application `data-*` identity on the Gauge root, such as `data-key`; its
+ * own configuration attributes stay protected.
+ */
+type GaugeRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
+interface GaugeProps {
+    /**
+     * The reading, zero or more. A value above `max` pins the needle and fill
+     * at the end of the scale while the text still shows the real value.
+     */
+    value: number;
+    /** The end of the scale, such as the highest expected rate. */
+    max: number;
+    /** The gauge's accessible name, such as "Tokens per minute". */
+    label: string;
+    /**
+     * The value as shown in a `full` dial and spoken, such as "1.2k"; defaults
+     * to the value rounded to one decimal place.
+     */
+    valueText?: string;
+    /** The unit under the value in a `full` dial, such as "tok/min". */
+    unit?: string;
+    variant?: GaugeVariant;
+    tone?: ProgressTone;
+    /**
+     * The gauge's width as a typed `CssLength`; its height follows the dial.
+     * Defaults to 88px for `full` and 40px for `bare`.
+     */
+    size?: CssLength;
+    colors?: GaugeColors;
+    id?: string;
+    rootAttributes?: GaugeRootAttributes;
+    className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/**
+ * A speedometer-style dial for a reading on a scale that is not progress,
+ * such as a live rate: a track arc, a fill from zero to the value, and a
+ * needle, scaled to `max`. `full` adds ticks and the value and unit inside
+ * the dial; `bare` is the arc, fill, and needle alone, for chip height. It is
+ * a `role="meter"` named by `label`, with the value and unit as
+ * `aria-valuetext`. The needle and fill transition only when the value
+ * changes, and hold still under reduced motion.
+ */
+declare function Gauge({ value, max, label, valueText, unit, variant, tone, size, colors, id, rootAttributes, className, slot, }: GaugeProps): kerfjs.SafeHtml;
+
+export { Gauge, type GaugeColors, type GaugeProps, type GaugeRootAttributes, type GaugeVariant, ProgressTone };
+```

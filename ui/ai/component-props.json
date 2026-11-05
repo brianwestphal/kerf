@@ -4701,6 +4701,118 @@
       "dataChannel": "rootAttributes"
     },
     {
+      "key": "@kerfjs/ui:gauge",
+      "id": "gauge",
+      "source": "kerf",
+      "import": "@kerfjs/ui/gauge",
+      "export": "Gauge",
+      "description": "A speedometer-style dial for a reading on a scale that is not progress,\nsuch as a live rate: a track arc, a fill from zero to the value, and a\nneedle, scaled to `max`. `full` adds ticks and the value and unit inside\nthe dial; `bare` is the arc, fill, and needle alone, for chip height. It is\na `role=\"meter\"` named by `label`, with the value and unit as\n`aria-valuetext`. The needle and fill transition only when the value\nchanges, and hold still under reduced motion.",
+      "props": [
+        {
+          "name": "value",
+          "type": { "kind": "number", "text": "number" },
+          "required": true,
+          "description": "The reading, zero or more. A value above `max` pins the needle and fill\nat the end of the scale while the text still shows the real value."
+        },
+        {
+          "name": "max",
+          "type": { "kind": "number", "text": "number" },
+          "required": true,
+          "description": "The end of the scale, such as the highest expected rate."
+        },
+        {
+          "name": "label",
+          "type": { "kind": "string", "text": "string" },
+          "required": true,
+          "description": "The gauge's accessible name, such as \"Tokens per minute\"."
+        },
+        {
+          "name": "valueText",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "The value as shown in a `full` dial and spoken, such as \"1.2k\"; defaults\nto the value rounded to one decimal place."
+        },
+        {
+          "name": "unit",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "The unit under the value in a `full` dial, such as \"tok/min\"."
+        },
+        {
+          "name": "variant",
+          "type": {
+            "kind": "enum",
+            "values": ["full", "bare"],
+            "text": "GaugeVariant | undefined",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "tone",
+          "type": {
+            "kind": "enum",
+            "values": ["brand", "success", "warning", "danger"],
+            "text": "ProgressTone | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "brand"
+        },
+        {
+          "name": "size",
+          "type": {
+            "kind": "css-value",
+            "grammar": "CssLength",
+            "text": "CssLength",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The gauge's width as a typed `CssLength`; its height follows the dial.\nDefaults to 88px for `full` and 40px for `bare`."
+        },
+        {
+          "name": "colors",
+          "type": {
+            "kind": "ref",
+            "ref": "GaugeColors",
+            "text": "GaugeColors",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "id",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "control": "hidden"
+        },
+        {
+          "name": "className",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "control": "classes"
+        },
+        {
+          "name": "slot",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
+        }
+      ],
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
+    },
+    {
       "key": "@kerfjs/ui:grid",
       "id": "grid",
       "source": "kerf",
@@ -25229,6 +25341,56 @@
         }
       ],
       "text": "DialogSurfaceStack"
+    },
+    "GaugeColors": {
+      "kind": "object",
+      "props": [
+        {
+          "name": "track",
+          "type": {
+            "kind": "css-value",
+            "grammar": "CssColor",
+            "text": "CssColor",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The unfilled arc."
+        },
+        {
+          "name": "fill",
+          "type": {
+            "kind": "css-value",
+            "grammar": "CssColor",
+            "text": "CssColor",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The filled arc from zero to the value."
+        },
+        {
+          "name": "needle",
+          "type": {
+            "kind": "css-value",
+            "grammar": "CssColor",
+            "text": "CssColor",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The needle and its hub."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "css-value",
+            "grammar": "CssColor",
+            "text": "CssColor",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The value, unit, and ticks of a `full` gauge."
+        }
+      ],
+      "text": "GaugeColors"
     },
     "ListActionRowTrailingMenu": {
       "kind": "object",

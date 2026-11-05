@@ -62,6 +62,7 @@ const entries = [
   'loading-spinner',
   'progress-bar',
   'progress-ring',
+  'gauge',
   'skeleton',
   'sunken-panel',
   'select',

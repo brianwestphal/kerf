@@ -104,6 +104,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [LoadingSpinner](./loading-spinner.md) — Meaningfully labeled or decorative progress.
 - [ProgressBar](./progress-bar.md) — Show how far a measurable task has gone (an upload, a migration, a quota) or that work of unknown size is under way.
 - [ProgressRing](./progress-ring.md) — Show compact progress (a claim's time remaining, a per-row upload) where a bar does not fit.
+- [Gauge](./gauge.md) — Show a live rate or level against a ceiling at a glance (tokens per minute, tickets updated per hour) on a stats tile, a chip, or a standby display.
 - [Skeleton](./skeleton.md) — A subtle, unanimated loading placeholder block for a not-yet-known value slot.
 
 ## Web Awesome — Actions

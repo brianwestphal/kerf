@@ -7779,6 +7779,76 @@
       }
     },
     {
+      "key": "@kerfjs/ui:gauge",
+      "package": "@kerfjs/ui",
+      "id": "gauge",
+      "name": "Gauge",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the value, max, valueText, and unit",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "the label", "owner": "application", "required": false },
+        {
+          "id": "the variant, tone, size, and any colors",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "none",
+          "notes": [
+            "Its width is size (88px full, 40px bare by default) and its height follows the dial; the drawing scales with the width."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "It is role meter named by label, with aria-valuemin 0, aria-valuemax max, aria-valuenow clamped to max, and aria-valuetext set to the value text and unit; the SVG is decorative.",
+          "A bare gauge also sets a hover title of the label and value.",
+          "The needle and fill transition only when the value changes and hold still under prefers-reduced-motion or the static-effects switch; forced colors draw a GrayText track, a Highlight fill, and a CanvasText needle and readout."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-gauge",
+        "publicClasses": [
+          "kui-gauge",
+          "kui-gauge__track",
+          "kui-gauge__fill",
+          "kui-gauge__tick",
+          "kui-gauge__tick--major",
+          "kui-gauge__needle",
+          "kui-gauge__value",
+          "kui-gauge__unit"
+        ],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:skeleton",
       "package": "@kerfjs/ui",
       "id": "skeleton",
