@@ -45,17 +45,22 @@ export function newNodeId(
 const clone = (document: ViewDocument): ViewDocument =>
   globalThis.structuredClone(document);
 
-/** Finds a node by id in a (cloned, mutable) document. */
-function locate(document: ViewDocument, id: string) {
-  let found:
-    | {
-        node: MutableNode;
-        list?: ViewChild[];
-        index?: number;
-        parent?: MutableNode;
-        zone?: string;
-      }
-    | undefined;
+/** Where a node sits: its zone list and index, when it is directly in one. */
+interface Located {
+  readonly node: MutableNode;
+  readonly list?: ViewChild[];
+  readonly index?: number;
+  readonly parent?: MutableNode;
+  readonly zone?: string;
+}
+
+/**
+ * Walks every node in document order, calling `visit` with where it sits;
+ * the walk stops when `visit` returns true. A node in a `$each` template or
+ * an `$if` branch is not directly in its zone list, so it has no list.
+ */
+function walk(document: ViewDocument, visit: (at: Located) => boolean) {
+  let stopped = false;
   const visitChild = (
     item: ViewChild,
     list: ViewChild[],
@@ -93,9 +98,10 @@ function locate(document: ViewDocument, id: string) {
     parent: MutableNode | undefined,
     zone: string | undefined,
   ) => {
-    if (found || !node || typeof node !== 'object' || !('type' in node)) return;
-    if (node.id === id) {
-      found = { node, list, index, parent, zone };
+    if (stopped || !node || typeof node !== 'object' || !('type' in node))
+      return;
+    if (visit({ node, list, index, parent, zone })) {
+      stopped = true;
       return;
     }
     for (const [key, children] of Object.entries(node.zones ?? {})) {
@@ -111,7 +117,38 @@ function locate(document: ViewDocument, id: string) {
     undefined,
     undefined,
   );
+}
+
+/** Finds a node by id in a (cloned, mutable) document. */
+function locate(document: ViewDocument, id: string): Located | undefined {
+  let found: Located | undefined;
+  walk(document, (at) => {
+    if (at.node.id !== id) return false;
+    found = at;
+    return true;
+  });
   return found;
+}
+
+// KF-ZW633Z: where every node sits, computed once per document. The outline
+// asks for each row, so locating one node per row (on a clone) cost the
+// square of the document; documents are immutable, edits return new ones.
+const PLACED = new WeakMap<ViewDocument, ReadonlyMap<string, Located>>();
+
+/** Where node `id` sits in `document`, which is read, never changed. */
+function placed(document: ViewDocument, id: string): Located | undefined {
+  let all = PLACED.get(document);
+  if (!all) {
+    const map = new Map<string, Located>();
+    // The first node with an id wins, as `locate` finds it.
+    walk(document, (at) => {
+      if (!map.has(at.node.id)) map.set(at.node.id, at);
+      return false;
+    });
+    PLACED.set(document, map);
+    all = map;
+  }
+  return all.get(id);
 }
 
 /** Adds `node` to `zone` of the node `parentId`, at `index` (default: the end). */
@@ -173,7 +210,7 @@ export function isMovable(
   document: ViewDocument,
   id: string,
 ): { up: boolean; down: boolean; remove: boolean } {
-  const found = locate(clone(document), id);
+  const found = placed(document, id);
   if (!found?.list || found.index === undefined)
     return { up: false, down: false, remove: false };
   return {
@@ -215,7 +252,7 @@ export function placementOf(
   document: ViewDocument,
   id: string,
 ): Placement | undefined {
-  const found = locate(clone(document), id);
+  const found = placed(document, id);
   return found?.list && found.index !== undefined
     ? { parent: found.parent!.id, zone: found.zone!, index: found.index }
     : undefined;
@@ -882,6 +919,31 @@ export function bindingOptions(
   );
 }
 
+// KF-ZW633Z: one validation of the document being edited serves every
+// candidate an edit is checked against (each Embed in container, each drop
+// place), instead of one per candidate.
+const COUNTED = new WeakMap<
+  ViewDocument,
+  WeakMap<ViewCatalog, ReadonlyMap<string, number>>
+>();
+
+/** `document`'s problems, counted by code and message. */
+function problemCounts(
+  document: ViewDocument,
+  catalog: ViewCatalog,
+): ReadonlyMap<string, number> {
+  let byCatalog = COUNTED.get(document);
+  if (!byCatalog) COUNTED.set(document, (byCatalog = new WeakMap()));
+  let counts = byCatalog.get(catalog);
+  if (!counts) {
+    const map = new Map<string, number>();
+    for (const { code, message } of validateView(document, catalog).diagnostics)
+      map.set(`${code} ${message}`, (map.get(`${code} ${message}`) ?? 0) + 1);
+    byCatalog.set(catalog, (counts = map));
+  }
+  return counts;
+}
+
 /**
  * Whether `next` has a problem `before` does not. Problems compare by code and
  * message, counted, because wrapping a node moves its existing problems to
@@ -894,12 +956,7 @@ export function addsProblems(
   ignore: (diagnostic: { code: string; message: string }) => boolean = () =>
     false,
 ): boolean {
-  const counts = new Map<string, number>();
-  for (const { code, message } of validateView(before, catalog).diagnostics)
-    counts.set(
-      `${code} ${message}`,
-      (counts.get(`${code} ${message}`) ?? 0) + 1,
-    );
+  const counts = new Map(problemCounts(before, catalog));
   return validateView(next, catalog).diagnostics.some((diagnostic) => {
     if (ignore(diagnostic)) return false;
     const { code, message } = diagnostic;
