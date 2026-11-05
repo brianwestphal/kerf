@@ -200,6 +200,17 @@ export class ZoneFill {
   }
 }
 
+/**
+ * A prop value as a problem quotes it: JSON, with each field zone written as
+ * `<zone key>` rather than its nodes (KF-20GMVX), so the message stays short
+ * and does not change when something inside the zone does.
+ */
+function quoteValue(value) {
+  return JSON.stringify(value, (_key, item) =>
+    item instanceof ZoneFill ? `<zone ${item.key}>` : item,
+  );
+}
+
 /** `value` with `fill` at `path`, copying each object and list on the way. */
 function withAt(value, path, fill) {
   if (!path.length) return fill;
@@ -680,12 +691,10 @@ function checkPropValue(ctx, prop, value, definitions, scope, at, rowScoped) {
         nestedDynamicFits(ctx, item, type, definitions, scope, at),
     };
     if (!literalOf(value, prop.type, definitions, hooks)) {
-      // The message quotes the value, with any field zone's nodes in it.
-      ctx.trace?.quoted?.push(value);
       ctx.report(
         'KUI-V004',
         at,
-        `${JSON.stringify(value)} is not a valid ${describe(prop.type)}`,
+        `${quoteValue(value)} is not a valid ${describe(prop.type)}`,
       );
     }
   } else if (!isAssignable(type, prop.type, definitions)) {

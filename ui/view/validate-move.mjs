@@ -13,7 +13,6 @@ import {
   createScopedCheck,
   runView,
   validateView,
-  ZoneFill,
 } from './validate.mjs';
 
 const isObject = (value) =>
@@ -61,36 +60,6 @@ function sharedSlot(root) {
         (list) => Array.isArray(list) && list.some(child),
       ));
   return node(root);
-}
-
-/**
- * Every node inside a field zone's placeholder in `values`: a problem that
- * quotes a prop value quotes them, so moving into or out of one changes the
- * message of a node above the move.
- */
-function quotedNodes(values) {
-  const nodes = new Set();
-  const node = (item) => {
-    if (!isObject(item)) return;
-    nodes.add(item);
-    for (const list of Object.values(isObject(item.zones) ? item.zones : {}))
-      if (Array.isArray(list)) list.forEach(child);
-  };
-  const child = (item) => {
-    if (!isObject(item)) return;
-    if ('$each' in item) node(item.template);
-    else if ('$if' in item) {
-      child(item.then);
-      child(item.else);
-    } else if (!('$slot' in item)) node(item);
-  };
-  const value = (item) => {
-    if (item instanceof ZoneFill) item.children.forEach(child);
-    else if (item !== null && typeof item === 'object')
-      Object.values(item).forEach(value);
-  };
-  values.forEach(value);
-  return nodes;
 }
 
 /**
@@ -209,14 +178,13 @@ export function createMoveCheck(document, catalog, id, options = {}) {
   const map = new Map();
   const root = prepareTree(document.root, prepare, map);
   const prepared = root === document.root ? document : { ...document, root };
-  const trace = { entries: new Map(), notes: [], stale: false, quoted: [] };
+  const trace = { entries: new Map(), notes: [], stale: false };
   const base = runView(prepared, catalog, {}, trace).diagnostics;
   // A stale component read depends on document order.
   if (trace.stale) return undecided;
   const beforeCounts = count(
     prepared === document ? base : validateView(document, catalog).diagnostics,
   );
-  const quoted = quotedNodes(trace.quoted);
   const baseCounts = count(base);
   const excess = [...baseCounts].filter(
     ([key, total]) => total > (beforeCounts.get(key) ?? 0),
@@ -278,7 +246,6 @@ export function createMoveCheck(document, catalog, id, options = {}) {
     if (list !== undefined && !Array.isArray(list)) return undefined;
     const same = targetDoc === sourceDoc;
     const target = map.get(targetDoc);
-    if (quoted.has(source) || quoted.has(target)) return undefined;
     const append = (zones, item) => ({
       ...(zones ?? {}),
       [zone]: [...(zones?.[zone] ?? []), item],

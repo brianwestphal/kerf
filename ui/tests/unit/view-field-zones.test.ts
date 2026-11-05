@@ -147,6 +147,26 @@ describe('field zones: validation', () => {
       'KUI-V003 @kerfjs/ui:workbench has no zone "leftRail.label"',
     );
   });
+
+  // KF-20GMVX: an invalid value names its field zones instead of quoting
+  // their nodes, so the message stays short and steady.
+  it('names a field zone in a mismatch message instead of quoting its nodes', () => {
+    const invalid = (children: string) =>
+      diagnostics(
+        workbench(
+          { leftRail: { label: 'Folders', nope: 1 } },
+          {
+            'leftRail.content': [text('01JB8Z1M6Q8E1X9V4S7K2R3T5C', children)],
+          },
+        ),
+      ).filter((problem) => problem.startsWith('KUI-V004'));
+    const [problem] = invalid('Folders');
+    expect(problem).toContain('"content":"<zone leftRail.content>"');
+    expect(problem).not.toContain('01JB8Z1M6Q8E1X9V4S7K2R3T5C');
+    expect(problem).not.toContain('Folders"}');
+    // An edit inside the zone leaves the message as it was.
+    expect(invalid('Archive')).toEqual([problem]);
+  });
 });
 
 describe('field zones: rendering', () => {

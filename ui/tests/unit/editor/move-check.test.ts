@@ -298,9 +298,10 @@ describe('the scoped move check', () => {
     expect(check(id(1), 'content')).toBeUndefined();
   });
 
-  it('leaves a move inside a value a problem quotes to the full validation', () => {
-    // An invalid toolbar value's message quotes its field zones' nodes, so a
-    // move between them changes a problem of the panel above both.
+  it('decides a move inside a value a problem quotes (KF-20GMVX)', () => {
+    // An invalid toolbar value's message names its field zones (`<zone …>`)
+    // rather than quoting their nodes, so a move between them leaves the
+    // panel's problem as it was, and the scoped check decides it.
     const document = read(
       resolve(samplesFolder, 'collapsible-panel-toolbar-relocation.kui.json'),
     ) as unknown as {
@@ -311,13 +312,13 @@ describe('the scoped move check', () => {
     const probe = document as unknown as ViewDocument;
     const button = id(12);
     const prepare = (node: ViewNode) => ownNode(node, viewCatalog);
-    expect(fullAnswer(probe, button, id(8), 'children', prepare)).toBe(false);
+    expect(fullAnswer(probe, button, id(8), 'children', prepare)).toBe(true);
     expect(
       createMoveCheck(probe, viewCatalog, button, { prepare })(
         id(8),
         'children',
       ),
-    ).toBeUndefined();
+    ).toBe(true);
   });
 
   it('checks the moved node again in each new scope', () => {
