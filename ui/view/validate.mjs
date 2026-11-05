@@ -313,10 +313,19 @@ export function isLiteralOf(value, type, definitions = {}) {
 }
 
 /**
- * `isLiteralOf`, where `onSlot` decides a `{ $slot }` at a content-typed
- * position (KF-SXDM56: item slots); without it a `$slot` is no literal.
+ * `isLiteralOf`, with `hooks` for the forms a prop value may nest:
+ * `hooks.slot` decides a `{ $slot }` at a content-typed position (KF-SXDM56:
+ * item slots), and `hooks.dynamic` a `{ $param }` / `{ $bind }` at any typed
+ * position against that position's type (KF-3QEZFB: nested params). Without
+ * them, neither is a literal.
  */
-function literalOf(value, type, definitions, onSlot) {
+function literalOf(value, type, definitions, hooks) {
+  if (
+    hooks?.dynamic &&
+    isObject(value) &&
+    ('$param' in value || '$bind' in value)
+  )
+    return hooks.dynamic(value, type);
   const target = resolveType(type, definitions);
   if (value === null) return target.nullable === true;
   switch (target.kind) {
@@ -324,7 +333,7 @@ function literalOf(value, type, definitions, onSlot) {
       return true;
     case 'union':
       return target.members.some((member) =>
-        literalOf(value, member, definitions, onSlot),
+        literalOf(value, member, definitions, hooks),
       );
     case 'string':
       return typeof value === 'string';
@@ -341,7 +350,8 @@ function literalOf(value, type, definitions, onSlot) {
       return isObject(value) && parseCssCall(value.$css) !== undefined;
     case 'content':
       if (value instanceof ZoneFill) return true;
-      if (onSlot && isObject(value) && '$slot' in value) return onSlot(value);
+      if (hooks?.slot && isObject(value) && '$slot' in value)
+        return hooks.slot(value);
       return (
         target.acceptsText === true &&
         (typeof value === 'string' || typeof value === 'number')
@@ -349,9 +359,7 @@ function literalOf(value, type, definitions, onSlot) {
     case 'array':
       return (
         Array.isArray(value) &&
-        value.every((item) =>
-          literalOf(item, target.items, definitions, onSlot),
-        )
+        value.every((item) => literalOf(item, target.items, definitions, hooks))
       );
     case 'record':
       return (
@@ -370,10 +378,10 @@ function literalOf(value, type, definitions, onSlot) {
             ? // An icon-data field names its icon (KF-3J9GJV).
               (known.get(name).iconSource &&
                 ICON_NAME.test(item?.$icon ?? '')) ||
-              literalOf(item, known.get(name).type, definitions, onSlot)
+              literalOf(item, known.get(name).type, definitions, hooks)
             : index !== undefined &&
               name.startsWith(index.keyPrefix) &&
-              literalOf(item, index.value, definitions, onSlot),
+              literalOf(item, index.value, definitions, hooks),
         ) &&
         [...known.values()].every(
           (prop) => !prop.required || prop.name in value,
@@ -666,8 +674,12 @@ function checkPropValue(ctx, prop, value, definitions, scope, at, rowScoped) {
     return;
   }
   if (type === null) {
-    const onSlot = (slot) => checkValueSlot(ctx, slot, at);
-    if (!literalOf(value, prop.type, definitions, onSlot)) {
+    const hooks = {
+      slot: (slot) => checkValueSlot(ctx, slot, at),
+      dynamic: (item, type) =>
+        nestedDynamicFits(ctx, item, type, definitions, scope, at),
+    };
+    if (!literalOf(value, prop.type, definitions, hooks)) {
       // The message quotes the value, with any field zone's nodes in it.
       ctx.trace?.quoted?.push(value);
       ctx.report(
@@ -683,6 +695,24 @@ function checkPropValue(ctx, prop, value, definitions, scope, at, rowScoped) {
       `a ${describe(type)} value does not fit ${describe(prop.type)}`,
     );
   }
+}
+
+/**
+ * A `$param` / `$bind` inside a list or object prop value (KF-3QEZFB: nested
+ * params): it fits when its type is assignable to that position's type, as a
+ * whole prop's does. A prop-typed param names a whole component prop, so it
+ * never fits inside one. Each value object resolves once (an unknown param or
+ * an out-of-scope path reports once, though a union may try it against
+ * several members); an unresolved one counts as fitting, so it is not also a
+ * type mismatch.
+ */
+function nestedDynamicFits(ctx, value, type, definitions, scope, at) {
+  if (!ctx.nestedDynamics.has(value))
+    ctx.nestedDynamics.set(value, dynamicType(ctx, value, scope, at));
+  const found = ctx.nestedDynamics.get(value);
+  if (found === undefined) return true;
+  if (found?.kind === 'prop') return false;
+  return isAssignable(found, type, definitions);
 }
 
 /**
@@ -1587,6 +1617,7 @@ function createContext(catalog, options, trace) {
     params: new Map(),
     slots: new Map(),
     checkedSlots: new WeakSet(),
+    nestedDynamics: new WeakMap(),
     packages: undefined,
     interactiveHost: options.interactiveHost,
     rowHost: options.rowHost === true,

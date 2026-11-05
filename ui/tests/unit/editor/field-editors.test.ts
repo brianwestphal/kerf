@@ -664,3 +664,59 @@ describe('css-value examples by grammar (KF-PE0PTT)', () => {
     );
   });
 });
+
+// KF-3QEZFB: an object's form binds or promotes one of its scalar fields.
+describe('Bind a field in an object form (KF-3QEZFB)', () => {
+  const source = (root: HTMLElement) =>
+    field(root, '[data-editor-bind="field-source"]');
+
+  it('promotes a field to a param, unbinds it, and binds it again', () => {
+    const { root, editor, props } = workbench();
+    opener(root, 'mainFooterList').click();
+    choose(at(root, 'mainFooterList', ['hAlign']), 'center');
+    choose(field(root, '[data-editor-bind="field"]'), 'hAlign');
+    expect(
+      JSON.parse(source(root).dataset.editorBindPlace!) as unknown,
+    ).toEqual({ prop: 'mainFooterList', path: ['hAlign'] });
+    click(root, 'editor-promote-field');
+    const bound = (props().mainFooterList as { hAlign: { $param: string } })
+      .hAlign;
+    const name = bound.$param;
+    expect(name).toMatch(/MainFooterListHAlign$/);
+    expect(editor.document.value.params?.[name]).toEqual({
+      type: { kind: 'enum', values: expect.arrayContaining(['center']) },
+      default: 'center',
+    });
+    // The form reads the field as its source, and Promote is spent.
+    expect(root.textContent).toContain(`Param ${name}`);
+    expect(
+      field(root, '[data-action="editor-promote-field"]').hasAttribute(
+        'disabled',
+      ),
+    ).toBe(true);
+    // A bound field does not promote again, even if its action fires.
+    const params = Object.keys(editor.document.value.params ?? {});
+    field(root, '[data-action="editor-promote-field"]').removeAttribute(
+      'disabled',
+    );
+    click(root, 'editor-promote-field');
+    expect(Object.keys(editor.document.value.params ?? {})).toEqual(params);
+    // Not bound clears just that field.
+    choose(source(root), '');
+    expect(props().mainFooterList).toBeUndefined();
+    // Not bound on a field that is not bound changes nothing.
+    const before = editor.document.value;
+    choose(source(root), '');
+    expect(editor.document.value).toBe(before);
+    // The param is offered as a source again, and binds the field.
+    choose(source(root), JSON.stringify({ $param: name }));
+    expect(props().mainFooterList).toEqual({ hAlign: { $param: name } });
+    // Promoting the literal again takes the next free name.
+    choose(source(root), '');
+    choose(at(root, 'mainFooterList', ['hAlign']), 'right');
+    click(root, 'editor-promote-field');
+    expect(props().mainFooterList).toEqual({
+      hAlign: { $param: `${name}2` },
+    });
+  });
+});

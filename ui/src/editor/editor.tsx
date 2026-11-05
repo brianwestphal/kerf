@@ -211,6 +211,7 @@ import {
   renameNode,
   renameParam,
   replaceRoot,
+  setField,
   setProp,
   setTextRun,
   suggestedComponents,
@@ -413,6 +414,8 @@ const FIELD_SET_ACTION = 'editor-set-field';
 const PROMOTE_ACTION = 'editor-promote';
 /** Promotes one app-supplied prop from its own row (KF-D85GY0). */
 const PROMOTE_PROP_ACTION = 'editor-promote-prop';
+/** Promotes one field inside an object prop to a param (KF-3QEZFB). */
+const PROMOTE_FIELD_ACTION = 'editor-promote-field';
 const EXPORT_MODULE_ACTION = 'editor-export-module';
 const EXPORT_DECLARATIONS_ACTION = 'editor-export-declarations';
 const DOCUMENT_TOGGLE = 'editor-toggle-document';
@@ -981,6 +984,7 @@ export function createEditor(options: EditorOptions) {
   const rootComponent = signal('');
   const promoteProp = signal('');
   const bindProp = signal('');
+  const bindField = signal('');
   /**
    * The size prop (`<node id> <prop>`) whose Select is on Custom with no
    * builder call yet, so its builder field shows (KF-Q5AXNP).
@@ -2146,6 +2150,12 @@ export function createEditor(options: EditorOptions) {
       const fieldValue = record[field.name];
       const control = controlFor(field, fieldValue, definitions);
       const label = propLabel(field.name);
+      // KF-3QEZFB: a field bound to a param or an item field names its source.
+      if (isParamOrBind(fieldValue))
+        return {
+          kind: 'fixed',
+          row: <ValueTableRow label={label} value={bindingLabel(fieldValue)} />,
+        };
       if (customFor(field.type as never))
         return { kind: 'open', row: configureRow(label, fieldValue, at) };
       switch (control.kind) {
@@ -2201,7 +2211,107 @@ export function createEditor(options: EditorOptions) {
           switcher ? [{ kind: 'edit', row: switcher }, ...rows] : rows,
           `${stepTitle(place)} fields`,
         )}
+        {fieldBindSection(node, place, fields, definitions, record)}
       </List>
+    );
+  };
+
+  /** Whether `value` reads a document param or an item field. */
+  const isParamOrBind = (value: unknown) =>
+    value !== null &&
+    typeof value === 'object' &&
+    ('$param' in value || '$bind' in value);
+
+  /** How a bound value reads: its param, or its item path. */
+  const bindingLabel = (value: unknown) => {
+    const { $param, $bind } = value as { $param?: string; $bind?: string };
+    return $param === undefined ? String($bind) : `Param ${$param}`;
+  };
+
+  /**
+   * Bind or promote one field of an object (KF-3QEZFB: nested params): the
+   * prop row's Bind a prop and Promote, for a scalar field inside the value,
+   * such as a ContentItem's `media.src` beside its built `overlay`.
+   */
+  const fieldBindSection = (
+    node: ViewNode,
+    place: FieldPlace,
+    fields: readonly InspectorProp[],
+    definitions: Readonly<Record<string, ViewType>>,
+    record: Record<string, ViewValue>,
+  ) => {
+    const bindable = fields.filter(
+      (field) =>
+        field.type.kind !== 'content' &&
+        paramTypeFor(resolveType(field.type as never, definitions) as never) !==
+          undefined,
+    );
+    const field =
+      bindable.find((item) => item.name === bindField.value) ?? bindable[0];
+    if (!field) return undefined;
+    const at = { prop: place.prop, path: [...place.path, field.name] };
+    const options = bindingOptions(
+      doc.value,
+      viewCatalog,
+      node.id,
+      at.prop,
+      at.path,
+    );
+    const current = record[field.name];
+    const bound = isParamOrBind(current) ? JSON.stringify(current) : '';
+    const choices = [
+      { value: '', label: 'Not bound' },
+      ...options.map((option) => ({
+        value: JSON.stringify(option.value),
+        label: option.label,
+      })),
+    ];
+    return (
+      <>
+        <ListHeader label="Bind a field" size="xs" />
+        <List controlInsets="trbl" gap>
+          <Select
+            name={`bind-field-${placeKey(place)}`}
+            label="Field"
+            value={field.name}
+            choices={bindable.map((item) => ({
+              value: item.name,
+              label: propLabel(item.name),
+            }))}
+            rootAttributes={{ 'data-editor-bind': 'field' }}
+          />
+          <Select
+            name={`bind-field-source-${placeKey(place)}`}
+            label="Source"
+            value={
+              choices.some((choice) => choice.value === bound) ? bound : ''
+            }
+            choices={choices}
+            hint={
+              options.length
+                ? undefined
+                : 'No param or item field in scope fits this field.'
+            }
+            rootAttributes={{
+              'data-editor-bind': 'field-source',
+              'data-editor-bind-place': JSON.stringify(at),
+            }}
+          />
+          <Row>
+            <Button
+              emphasis="secondary"
+              size="compact"
+              action={PROMOTE_FIELD_ACTION}
+              disabled={Boolean(bound)}
+              rootAttributes={{
+                'data-editor-promote-field': JSON.stringify(at),
+              }}
+            >
+              Promote to a param
+            </Button>
+          </Row>
+        </List>
+      </>
     );
   };
 
@@ -4499,6 +4609,51 @@ export function createEditor(options: EditorOptions) {
     commit(result.document);
   };
 
+  /**
+   * Promotes one field inside an object prop to a param named after the
+   * node, the prop, and the field (KF-3QEZFB: nested params); its literal
+   * becomes the default.
+   */
+  const promoteField = (at: FieldPlace) => {
+    // The action renders only in the selected node's form, on a field whose
+    // type promotes (fieldBindSection).
+    const node = findNode(doc.value, selectedNodeId()!)!.node;
+    const { type, definitions } = fieldContext(node, at);
+    const paramType = paramTypeFor(
+      resolveType(type as never, definitions) as never,
+    );
+    if (
+      !paramType ||
+      isBinding(valueAt(node.props?.[at.prop], at.path) as never)
+    )
+      return;
+    const words = [
+      at.prop,
+      ...at.path.filter((step) => typeof step === 'string'),
+    ];
+    const base = `${node.name ?? 'node'}${words
+      .map(
+        (word) => `${String(word)[0]!.toUpperCase()}${String(word).slice(1)}`,
+      )
+      .join('')}`;
+    let param = base;
+    for (
+      let index = 2;
+      doc.value.params && param in doc.value.params;
+      index += 1
+    )
+      param = `${base}${index}`;
+    const result = promoteToParam(
+      doc.value,
+      node.id,
+      at.prop,
+      param,
+      paramType,
+      at.path,
+    ) as { document: ViewDocument };
+    commit(result.document);
+  };
+
   /** Adds a `$slot` to the chosen zone of the selected node (KF-90GTJN). */
   const addSlot = () => {
     const id = selectedNodeId();
@@ -4824,8 +4979,28 @@ export function createEditor(options: EditorOptions) {
             bindProp.value = value;
             return;
           }
+          if (field.dataset.editorBind === 'field') {
+            bindField.value = value;
+            return;
+          }
           const id = selectedNodeId();
           if (!id) return;
+          // KF-3QEZFB: a field's source binds or unbinds just that field.
+          if (field.dataset.editorBind === 'field-source') {
+            const at = JSON.parse(field.dataset.editorBindPlace!) as FieldPlace;
+            const own = findNode(doc.value, id)!.node.props?.[at.prop];
+            if (!value && !isParamOrBind(valueAt(own, at.path))) return;
+            commit(
+              setField(
+                doc.value,
+                id,
+                at.prop,
+                at.path,
+                value ? (JSON.parse(value) as ViewValue) : undefined,
+              ),
+            );
+            return;
+          }
           // Not bound clears a binding; a literal value stays as it is.
           const name = field.dataset.editorBindProp!;
           const current = findNode(doc.value, id)!.node.props?.[name];
@@ -5287,6 +5462,10 @@ export function createEditor(options: EditorOptions) {
         [PROMOTE_ACTION]: () => promote(),
         [PROMOTE_PROP_ACTION]: (_event, target) =>
           promote(target.dataset.editorPromoteProp),
+        [PROMOTE_FIELD_ACTION]: (_event, target) =>
+          promoteField(
+            JSON.parse(target.dataset.editorPromoteField!) as FieldPlace,
+          ),
         [OUTLINE_ACTION]: (_event, target) => {
           leaveFieldEditor(target);
           const id = target.dataset.itemId!;

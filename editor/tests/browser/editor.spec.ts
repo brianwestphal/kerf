@@ -13,6 +13,7 @@ import {
   exported,
   newDocument,
   select,
+  setField,
   turnOff,
   zoneSpot,
 } from './build.js';
@@ -2054,4 +2055,48 @@ test('keeps the Inspector still across the autosave after an edit inserts a row'
     () => new Promise((done) => requestAnimationFrame(() => done(null))),
   );
   expect(await scroller.evaluate((el) => el.scrollTop)).toBe(before);
+});
+
+// KF-3QEZFB: a field inside an object prop (a ContentItem's media.src)
+// promotes to a param and binds, beside the object's literal fields.
+test('promotes and binds a field inside an object prop', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await newDocument(page);
+  await dragComponent(page, 'Pane', () => emptySpot(page));
+  await dragComponent(page, 'ContentItem', () => emptySpot(page));
+  await select(page, /^ContentItem/);
+  await page.getByRole('button', { name: 'Configure media' }).click();
+  await setField(page, 'media', ['src'], 'skyline.svg');
+  await setField(page, 'media', ['alt'], 'Skyline');
+  // A larger object opens in the field dialog; a canvas dialog is not it.
+  const form = page.locator('dialog[open]:not([data-editor-canvas] dialog)');
+  await form.getByRole('button', { name: 'Promote to a param' }).click();
+  // The field reads as bound, and its source names the param.
+  await expect(form.getByText('Param nodeMediaSrc').first()).toBeVisible();
+  await expect(form.locator('[data-editor-bind="field-source"]')).toContainText(
+    'Param nodeMediaSrc',
+  );
+  await page.mouse.move(1, 1);
+  await form.screenshot({
+    path: info.outputPath('kf-3qezfb-bind-section-1440.png'),
+    animations: 'disabled',
+  });
+  await form.getByText('Src', { exact: true }).first().scrollIntoViewIfNeeded();
+  await form.screenshot({
+    path: info.outputPath('kf-3qezfb-field-bound-1440.png'),
+    animations: 'disabled',
+  });
+  await form.getByRole('button', { name: 'Done' }).click();
+  await expect(form).toHaveCount(0);
+  // The export keeps media's literal alt beside the bound src; the param
+  // and its default are covered by the model's unit test.
+  const tree = (await exported(page)) as {
+    zones: { content: { zones: { content: { props: unknown }[] } }[] };
+  };
+  expect(tree.zones.content[0]!.zones.content[0]!.props).toEqual({
+    media: { src: { $param: 'nodeMediaSrc' }, alt: 'Skyline' },
+  });
+  await expect(page.getByText(/ · \d+ nodes? · valid$/)).toBeVisible();
 });

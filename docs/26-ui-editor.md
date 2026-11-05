@@ -81,7 +81,13 @@ render, as their chrome alone.
 
 The inspector also binds a prop to a document param or an in-scope `$each`
 item field, offering only the sources `validateView` accepts there
-(KF-K5TKCV: editor bindings).
+(KF-K5TKCV: editor bindings). An object's form does the same for one of its
+scalar fields under **Bind a field**: its Source binds just that field (a
+ContentItem's `media.src` to `card.art`), and **Promote to a param** turns
+the field's literal into a param named after the node, prop, and field
+(`nodeMediaSrc`), its default the literal, while the object's other fields
+stay editable (KF-3QEZFB: nested params). A bound field reads as its source
+in the form.
 
 List and object props have placeholders (KF-HNNWN9: list placeholders). A
 component added from Add a child or the palette has its required lists,
@@ -793,7 +799,7 @@ A node is `{ id, type, name?, props?, zones? }`.
 | Form                       | Meaning                                                                                                                                                                                                                               |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | JSON literal               | String, number, boolean, null, or an array/object of literals, checked against the prop's type descriptor.                                                                                                                            |
-| `{ "$param": "title" }`    | The value of a document param. The param's type must be assignable to the prop's type.                                                                                                                                                |
+| `{ "$param": "title" }`    | The value of a document param. The param's type must be assignable to the prop's type, or, inside a list or object value, to that field's type.                                                                                       |
 | `{ "$bind": "item.x" }`    | A dotted path into an in-scope `$each` item (or into a param). Scope is lexical: only the enclosing templates' `as` names and params resolve.                                                                                         |
 | `{ "$action": "name" }`    | Only on string props the catalog identifies as action names (`action`). Declares a member of the action union (§4.2).                                                                                                                 |
 | `{ "$css": "space('m')" }` | Only on `css-value` props: a call to one of the prop's allowed `cssValue.helpers`, never a raw CSS string. Generated verbatim with its import.                                                                                        |
@@ -817,6 +823,15 @@ application computes.
 - A content prop that is not a composition zone (`slot` in the props schema)
   may be set either in `props` (text, `$param`, `$bind`) or in `zones`
   (nodes), but not both.
+- `$param` and `$bind` also work inside list and object values (KF-3QEZFB:
+  nested params): a field such as a ContentItem's `media.src` holds app data
+  while the object's other fields stay literal or hold document nodes (its
+  `overlay`). The field's type, not the whole prop's, decides the fit, and an
+  `$each` item path resolves in the same lexical scope as a whole prop's. A
+  prop-typed param still holds only a whole prop, and a param default stays a
+  literal. `interpretView` and generated code read the value in place
+  (`media: { src: inputs.skylineUrl }`); the contract lists the param as it
+  would any other.
 - An item slot (KF-SXDM56: item slots) is the way to put
   application-filled content inside a list or object value; a field zone
   puts document nodes there, such as a NavStack view whose

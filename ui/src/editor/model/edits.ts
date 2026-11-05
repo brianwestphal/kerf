@@ -13,7 +13,7 @@ import {
 } from '@kerfjs/ui/view';
 
 import { findNode, visitNodes } from './document.js';
-import { valueAt, withValueAt } from './fields.js';
+import { type FieldPath, valueAt, withValueAt } from './fields.js';
 
 type MutableNode = {
   id: string;
@@ -466,6 +466,22 @@ export function renameNode(
 }
 
 /** Sets (or, with `undefined`, clears) one prop of a node. */
+/**
+ * `document` with `value` at `path` inside prop `prop` of node `id`; an empty
+ * path sets the whole prop, as `setProp` does.
+ */
+export function setField(
+  document: ViewDocument,
+  id: string,
+  prop: string,
+  path: FieldPath,
+  value: ViewValue | undefined,
+): ViewDocument {
+  if (!path.length) return setProp(document, id, prop, value);
+  const current = locate(document, id)?.node.props?.[prop];
+  return setProp(document, id, prop, withValueAt(current, path, value));
+}
+
 export function setProp(
   document: ViewDocument,
   id: string,
@@ -568,8 +584,9 @@ export function paramTypeFor(type: {
 }
 
 /**
- * Turns a prop into a document input: adds a param named `param` (its current
- * literal becomes the default) and points the prop at it.
+ * Turns a prop, or the field at `path` inside it (KF-3QEZFB: nested params),
+ * into a document input: adds a param named `param` (its current literal
+ * becomes the default) and points the prop or field at it.
  */
 export function promoteToParam(
   document: ViewDocument,
@@ -577,6 +594,7 @@ export function promoteToParam(
   prop: string,
   param: string,
   type: ViewType,
+  path: FieldPath = [],
 ): { document: ViewDocument } | { error: string } {
   if (!CAMEL.test(param))
     return { error: 'A param name is a camelCase identifier.' };
@@ -584,14 +602,14 @@ export function promoteToParam(
     return { error: `There is already a param named ${param}.` };
   const node = locate(clone(document), id)?.node;
   if (!node) return { error: `No node ${id}.` };
-  const current = node.props?.[prop];
+  const current = valueAt(node.props?.[prop], path);
   // A list or object literal is a default too (KF-V9V2B6); a binding is not.
   const literal =
     current !== undefined &&
     (current === null ||
       typeof current !== 'object' ||
       !Object.keys(current).some((key) => key.startsWith('$')));
-  const next = setProp(document, id, prop, { $param: param });
+  const next = setField(document, id, prop, path, { $param: param });
   const params = {
     ...(next.params ?? {}),
     [param]: literal ? { type, default: current } : { type },
@@ -821,15 +839,17 @@ export function eachScopes(
 }
 
 /**
- * The params and in-scope `$each` item fields a prop of node `id` can be
- * bound to (KF-K5TKCV). Each candidate is kept only when the validator
- * accepts it there, so its scope and type rules decide.
+ * The params and in-scope `$each` item fields a prop of node `id`, or the
+ * field at `path` inside it (KF-3QEZFB: nested params), can be bound to
+ * (KF-K5TKCV). Each candidate is kept only when the validator accepts it
+ * there, so its scope and type rules decide.
  */
 export function bindingOptions(
   document: ViewDocument,
   catalog: ViewCatalog,
   id: string,
   prop: string,
+  path: FieldPath = [],
 ): BindingOption[] {
   const params = document.params ?? {};
   const candidates: BindingOption[] = Object.keys(params).map((name) => ({
@@ -854,7 +874,7 @@ export function bindingOptions(
   );
   return candidates.filter((candidate) =>
     validateView(
-      setProp(document, id, prop, candidate.value),
+      setField(document, id, prop, path, candidate.value),
       catalog,
     ).diagnostics.every((diagnostic) =>
       known.has(`${diagnostic.code} ${diagnostic.path}`),

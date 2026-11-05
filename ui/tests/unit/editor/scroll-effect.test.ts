@@ -257,7 +257,8 @@ describe(
           `[data-editor-field='${place('effects', [0])}'][data-editor-kind="choice"]`,
         ),
       ).not.toBeNull();
-      expect(dialog.textContent).toContain('"$param":"fadeEnd"');
+      // A bound field reads as its source (KF-3QEZFB: nested params).
+      expect(dialog.textContent).toContain('Param fadeEnd');
       expect(effects()).toHaveLength(1);
     });
   },
