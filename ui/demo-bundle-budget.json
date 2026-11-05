@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 456200,
+  "totalJavaScriptGzip": 456600,
   "measuredLargestJavaScriptGzip": 164546,
-  "measuredTotalJavaScriptGzip": 456119,
+  "measuredTotalJavaScriptGzip": 456511,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6931,6 +6931,22 @@
         "measuredTotalJavaScriptGzip": 456119,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 456200
+      }
+    },
+    {
+      "at": "2026-11-05T08:27:35.338Z",
+      "reason": "KF-VQ1Z8H: TabBarItem shrink label and wireTabBars truncated-name title, plus the Shrinks Before Scrolling example",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 456119,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 456200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 456511,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 456600
       }
     }
   ]

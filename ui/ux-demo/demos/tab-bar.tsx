@@ -171,6 +171,44 @@ export function TabBarDemo() {
         </TabBar>
       </CatalogExample>
       <CatalogExample
+        label="Single Project Tab · Shrinks Before Scrolling"
+        note="In intrinsic allocation, tabs give up width by ellipsizing their names down to a minimum before the strip scrolls; the action zones keep their width. Narrow the viewport to watch the name ellipsize."
+        align="none"
+      >
+        <TabBar
+          id="shrinking-tab-bar"
+          label="Workspace Project Tabs"
+          leading={
+            <ToolbarControlGroup appearance="borderless" single>
+              <ToolbarButton
+                ariaLabel="Dashboard"
+                icon={<LucideIcon icon={LayoutGrid} name="layout-grid" />}
+              />
+            </ToolbarControlGroup>
+          }
+          trailingPlacement="adjacent"
+          trailing={
+            <ToolbarControlGroup appearance="borderless" single>
+              <ToolbarButton
+                ariaLabel="Add Project"
+                icon={<LucideIcon icon={Plus} name="plus" />}
+              />
+            </ToolbarControlGroup>
+          }
+          end={
+            <Button tone="brand" action="log-add">
+              New Ticket…
+            </Button>
+          }
+        >
+          <TabBarItem
+            id="shrinking-terminal-feedback"
+            name="Terminal feedback"
+            selected
+          />
+        </TabBar>
+      </CatalogExample>
+      <CatalogExample
         label="Compact Project Tabs"
         align="none"
         viewport={{

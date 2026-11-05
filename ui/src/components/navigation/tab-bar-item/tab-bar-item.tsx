@@ -62,7 +62,13 @@ export interface TabBarItemProps {
   size?: TabBarItemSize;
   /** Maximum visible label width in CSS pixels before ellipsis. */
   labelMaxWidth?: number;
-  /** Keep the full name visible for an inline loading treatment. */
+  /**
+   * `'ellipsis'` (default): in a narrowing intrinsic TabBar the tab gives up
+   * width by ellipsizing its name down to a few characters before the strip
+   * scrolls, and `wireTabBars` gives a truncated tab its full name as a
+   * `title`. `'visible'` keeps the full name visible (and the tab at its full
+   * width) for an inline loading treatment.
+   */
   nameOverflow?: TabBarItemNameOverflow;
   /** Decorative dormant content for the close button. Must not contain interactive descendants. */
   closeIcon?: SafeHtml;
@@ -136,6 +142,11 @@ export function TabBarItem({
   const unavailable = disabled || placeholder;
   const closeUnavailable = disabled || dormant;
   const named = pending && !placeholder;
+  // A named, ellipsizing tab gives up width before its strip scrolls: the
+  // label sizes itself from this copy of the name (hidden CSS generated
+  // content) so its minimum is a few characters, not the whole name.
+  const shrinkable =
+    !placeholder && nameOverflow === 'ellipsis' && presentation !== 'icon-only';
   const keyshortcuts = [
     closable && !closeUnavailable ? 'Delete Backspace' : '',
     draggable && !closeUnavailable
@@ -204,10 +215,15 @@ export function TabBarItem({
       >
         {leading}
         <span
-          class="kui-tab-bar-item__name"
-          aria-hidden={presentation === 'icon-only' ? 'true' : undefined}
+          class="kui-tab-bar-item__label"
+          data-kui-tab-name={shrinkable ? name : undefined}
         >
-          {placeholder ? <Skeleton width={em(7)} /> : name}
+          <span
+            class="kui-tab-bar-item__name"
+            aria-hidden={presentation === 'icon-only' ? 'true' : undefined}
+          >
+            {placeholder ? <Skeleton width={em(7)} /> : name}
+          </span>
         </span>
         {closable || trailing ? (
           <span class="kui-tab-bar-item__trailing">{trailing}</span>

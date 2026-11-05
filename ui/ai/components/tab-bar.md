@@ -85,6 +85,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 Margin: none · border: self · padding: self (layout role: navigation). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
 - TabBar owns inline flex allocation: tabs shrink and scroll, an adjacent trailing action follows the tab strip, and the end action stays pinned at the far edge; leading, trailing, and end actions do not shrink.
+- In intrinsic allocation, tabs give up width by ellipsizing their names down to a minimum before the strip scrolls; do not cap or clip tab names in app CSS.
 
 ## Accessibility
 

@@ -14111,7 +14111,8 @@
             "nullable": true
           },
           "required": false,
-          "description": "Keep the full name visible for an inline loading treatment."
+          "default": "ellipsis",
+          "description": "`'ellipsis'` (default): in a narrowing intrinsic TabBar the tab gives up\nwidth by ellipsizing its name down to a few characters before the strip\nscrolls, and `wireTabBars` gives a truncated tab its full name as a\n`title`. `'visible'` keeps the full name visible (and the tab at its full\nwidth) for an inline loading treatment."
         },
         {
           "name": "closeIcon",

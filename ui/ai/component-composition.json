@@ -4799,7 +4799,14 @@
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["navigation"],
-        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+        "geometry": {
+          "margin": "none",
+          "border": "self",
+          "padding": "self",
+          "notes": [
+            "TabBarItem owns its own shrinking: in an intrinsic TabBar a named tab starts at its full width and gives up width by ellipsizing its name down to a minimum of its chrome plus a few characters, so its strip scrolls only once every tab is at that minimum; a name shorter than the minimum never widens, nameOverflow=\"visible\" and placeholder tabs keep their full width, and the full name stays the accessible name (wireTabBars adds it as a title while truncated)."
+          ]
+        }
       },
       "accessibility": {
         "obligations": [
@@ -4817,6 +4824,7 @@
           "kui-tab-bar-item",
           "kui-tab-bar-item__close",
           "kui-tab-bar-item__close-icon",
+          "kui-tab-bar-item__label",
           "kui-tab-bar-item__name",
           "kui-tab-bar-item__select",
           "kui-tab-bar-item__trailing"
@@ -4953,7 +4961,8 @@
           "border": "self",
           "padding": "self",
           "notes": [
-            "TabBar owns inline flex allocation: tabs shrink and scroll, an adjacent trailing action follows the tab strip, and the end action stays pinned at the far edge; leading, trailing, and end actions do not shrink."
+            "TabBar owns inline flex allocation: tabs shrink and scroll, an adjacent trailing action follows the tab strip, and the end action stays pinned at the far edge; leading, trailing, and end actions do not shrink.",
+            "In intrinsic allocation, tabs give up width by ellipsizing their names down to a minimum before the strip scrolls; do not cap or clip tab names in app CSS."
           ]
         }
       },

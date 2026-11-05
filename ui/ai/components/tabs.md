@@ -70,6 +70,8 @@ No wiring helper.
 
 Margin: none · border: self · padding: self (layout role: navigation). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
+- TabBarItem owns its own shrinking: in an intrinsic TabBar a named tab starts at its full width and gives up width by ellipsizing its name down to a minimum of its chrome plus a few characters, so its strip scrolls only once every tab is at that minimum; a name shorter than the minimum never widens, nameOverflow="visible" and placeholder tabs keep their full width, and the full name stays the accessible name (wireTabBars adds it as a title while truncated).
+
 ## Accessibility
 
 - Compose in a tablist and pair with an application-owned tabpanel using tabId on the tab button and panelId for aria-controls; the panel uses role=tabpanel and aria-labelledby=tabId.
@@ -83,9 +85,9 @@ The component renders controls inside it, so it cannot sit in the zones of a com
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.
 
-Public class hooks (select for layout placement only, never to change the component's look): `kui-tab-bar-item`, `kui-tab-bar-item__close`, `kui-tab-bar-item__close-icon`, `kui-tab-bar-item__name`, `kui-tab-bar-item__select`, `kui-tab-bar-item__trailing`.
+Public class hooks (select for layout placement only, never to change the component's look): `kui-tab-bar-item`, `kui-tab-bar-item__close`, `kui-tab-bar-item__close-icon`, `kui-tab-bar-item__label`, `kui-tab-bar-item__name`, `kui-tab-bar-item__select`, `kui-tab-bar-item__trailing`.
 
-Never put `kui-tab-bar-item`, `kui-tab-bar-item__close`, `kui-tab-bar-item__close-icon`, `kui-tab-bar-item__name`, `kui-tab-bar-item__select`, `kui-tab-bar-item__trailing` on an element you write; render `TabBarItem` instead (`KUI-L103`).
+Never put `kui-tab-bar-item`, `kui-tab-bar-item__close`, `kui-tab-bar-item__close-icon`, `kui-tab-bar-item__label`, `kui-tab-bar-item__name`, `kui-tab-bar-item__select`, `kui-tab-bar-item__trailing` on an element you write; render `TabBarItem` instead (`KUI-L103`).
 
 Public tokens it reads: `--kui-tab-bar-item-attention-color`, `--kui-tab-bar-item-color`, `--kui-tab-bar-item-drop-indicator`, `--kui-tab-bar-item-drop-target-background`, `--kui-tab-bar-item-drop-target-color`, `--kui-tab-bar-item-drop-target-ring`, `--kui-tab-bar-item-hover-background`, `--kui-tab-bar-item-selected-background`, `--kui-tab-bar-item-selected-border`, `--kui-tab-bar-item-selected-color`, `--kui-color-brand-border-normal`, `--kui-color-brand-on-quiet`, `--kui-color-neutral-border-normal`, `--kui-color-neutral-on-quiet`, `--kui-color-surface`, `--kui-color-text`, `--kui-focus-ring`, `--kui-font-xs`, `--kui-radius-pill`, `--kui-shadow-s`, `--kui-space-2xs`, `--kui-space-xs`. Set a token only where its public contract allows; prefer a prop.
 

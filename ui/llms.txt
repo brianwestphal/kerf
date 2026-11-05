@@ -989,7 +989,9 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   `nameOverflow="visible"` shows the full name during inline loading, and
   `dropTarget` highlights a drag-over without changing selection. `attention`
   uses `--kui-tab-bar-item-attention-color`. TabBar's public
-  `--kui-tab-bar-strip-*` tokens set compact strip geometry.
+  `--kui-tab-bar-strip-*` tokens set compact strip geometry. In intrinsic
+  allocation, tabs give up width by ellipsizing their names down to a minimum
+  before the strip scrolls; do not cap or clip tab names in app CSS.
   An inspector TabBar uses the shared rounded rectangle radius on its strip
   and inset segmented tabs; an ordinary segmented TabBar keeps pill ends and
   smaller interior tab corners, and `shape="rounded"` gives a segmented strip

@@ -19,7 +19,6 @@
   position: relative;
   display: flex;
   width: max-content;
-  min-width: max-content;
   height: remify(40px);
   box-sizing: border-box;
   border: 1px solid transparent;
@@ -27,7 +26,11 @@
   color: var(--kui-tab-bar-item-color);
   background: transparent;
   align-items: center;
-  flex: none;
+  /* Shrink before the strip scrolls (KF-VQ1Z8H): the tab starts at its full
+     width and gives up width down to its automatic minimum, its chrome plus
+     the label's floor below, so the name ellipsizes first and the strip
+     scrolls only once every tab is at its floor. */
+  flex: 0 1 auto;
 }
 .kui-tab-bar__tabs[data-snap-tabs="true"] > .kui-tab-bar-item {
   scroll-snap-align: start;
@@ -117,7 +120,45 @@
   height: remify(16px);
   flex: none;
 }
+/* The label sizes the name. A shrinkable label (one carrying
+   `data-kui-tab-name`) takes its intrinsic widths from two hidden copies of
+   the name instead of the name itself, whose inline size is contained: the
+   nowrap copy capped at the floor sets its min-content to
+   min(name, floor), and the copy that may break anywhere sets its
+   max-content to the whole name. A tab therefore lays out at its full width
+   when there is room, never widens a name shorter than the floor, and
+   shrinks no further than a few characters. The copies are generated
+   content with empty alternative text and hidden, so the real name stays the
+   tab's only accessible name. */
+.kui-tab-bar-item__label {
+  display: block;
+  max-width: var(--kui-tab-bar-item-label-max-width, none);
+  font-size: var(--kui-font-xs);
+  font-weight: 650;
+}
+.kui-tab-bar-item__label[data-kui-tab-name]::before,
+.kui-tab-bar-item__label[data-kui-tab-name]::after {
+  display: block;
+  height: 0;
+  overflow: clip;
+  content: attr(data-kui-tab-name);
+  content: attr(data-kui-tab-name) / "";
+  visibility: hidden;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.kui-tab-bar-item__label[data-kui-tab-name]::before {
+  max-width: remify(48px);
+}
+.kui-tab-bar-item__label[data-kui-tab-name]::after {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.kui-tab-bar-item__label[data-kui-tab-name] > .kui-tab-bar-item__name {
+  contain: inline-size;
+}
 .kui-tab-bar-item__name {
+  display: block;
   max-width: var(--kui-tab-bar-item-label-max-width, none);
   overflow: hidden;
   font-size: var(--kui-font-xs);
@@ -125,8 +166,11 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.kui-tab-bar-item[data-name-overflow="visible"] .kui-tab-bar-item__label,
 .kui-tab-bar-item[data-name-overflow="visible"] .kui-tab-bar-item__name {
   max-width: none;
+}
+.kui-tab-bar-item[data-name-overflow="visible"] .kui-tab-bar-item__name {
   overflow: visible;
   text-overflow: clip;
 }
@@ -139,6 +183,11 @@
 .kui-tab-bar-item[data-presentation="icon-only"] .kui-tab-bar-item__select {
   width: 100%;
   justify-content: center;
+}
+/* An icon-only tab's label takes no box: its name is visually hidden, so the
+   icon centers alone, as before the label existed. */
+.kui-tab-bar-item[data-presentation="icon-only"] .kui-tab-bar-item__label {
+  display: contents;
 }
 .kui-tab-bar-item[data-presentation="icon-only"] .kui-tab-bar-item__name {
   position: absolute;
@@ -173,6 +222,19 @@
   }
   .kui-tab-bar[data-icon-only-at="wide"]
     .kui-tab-bar-item[data-presentation="segmented"]
+    .kui-tab-bar-item__label {
+    display: contents;
+  }
+  .kui-tab-bar[data-icon-only-at="wide"]
+    .kui-tab-bar-item[data-presentation="segmented"]
+    .kui-tab-bar-item__label::before,
+  .kui-tab-bar[data-icon-only-at="wide"]
+    .kui-tab-bar-item[data-presentation="segmented"]
+    .kui-tab-bar-item__label::after {
+    content: none;
+  }
+  .kui-tab-bar[data-icon-only-at="wide"]
+    .kui-tab-bar-item[data-presentation="segmented"]
     .kui-tab-bar-item__name {
     position: absolute;
     width: 1px;
@@ -200,6 +262,19 @@
   }
   .kui-tab-bar[data-icon-only-at="narrow"]
     .kui-tab-bar-item[data-presentation="segmented"]
+    .kui-tab-bar-item__label {
+    display: contents;
+  }
+  .kui-tab-bar[data-icon-only-at="narrow"]
+    .kui-tab-bar-item[data-presentation="segmented"]
+    .kui-tab-bar-item__label::before,
+  .kui-tab-bar[data-icon-only-at="narrow"]
+    .kui-tab-bar-item[data-presentation="segmented"]
+    .kui-tab-bar-item__label::after {
+    content: none;
+  }
+  .kui-tab-bar[data-icon-only-at="narrow"]
+    .kui-tab-bar-item[data-presentation="segmented"]
     .kui-tab-bar-item__name {
     position: absolute;
     width: 1px;
@@ -224,6 +299,19 @@
     .kui-tab-bar-item__select {
     width: 100%;
     justify-content: center;
+  }
+  .kui-tab-bar[data-icon-only-at="compact"]
+    .kui-tab-bar-item[data-presentation="segmented"]
+    .kui-tab-bar-item__label {
+    display: contents;
+  }
+  .kui-tab-bar[data-icon-only-at="compact"]
+    .kui-tab-bar-item[data-presentation="segmented"]
+    .kui-tab-bar-item__label::before,
+  .kui-tab-bar[data-icon-only-at="compact"]
+    .kui-tab-bar-item[data-presentation="segmented"]
+    .kui-tab-bar-item__label::after {
+    content: none;
   }
   .kui-tab-bar[data-icon-only-at="compact"]
     .kui-tab-bar-item[data-presentation="segmented"]
@@ -280,6 +368,14 @@
   > .kui-tab-bar-item__select {
   width: 100%;
   justify-content: center;
+}
+/* Fill tabs already share the strip equally, so a filled label keeps no
+   floor of its own and the name may ellipsize away as it did before. */
+.kui-tab-bar[data-allocation="fill"]
+  .kui-tab-bar__tabs
+  > .kui-tab-bar-item
+  .kui-tab-bar-item__label {
+  min-width: 0;
 }
 .kui-tab-bar-item__trailing {
   display: grid;

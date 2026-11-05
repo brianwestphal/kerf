@@ -17,7 +17,9 @@ const setUp = async (page: Page, tabCount: number) => {
   await bar.scrollIntoViewIfNeeded();
   const strip = bar.locator('.kui-tab-bar__tabs');
   await bar.evaluate((element, tabCount) => {
-    element.style.width = '1100px';
+    // Wide, but narrow enough that twelve tabs already sit at their shrink
+    // floor and scroll (KF-VQ1Z8H: tabs ellipsize before the strip scrolls).
+    element.style.width = '960px';
     const strip = element.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
     const tabs = [
       ...strip.querySelectorAll<HTMLElement>(':scope > .kui-tab-bar-item'),

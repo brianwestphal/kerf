@@ -452,7 +452,12 @@ tab name. For segmented tabs that should show names in a wide reader and icons
 in a narrower container, set `TabBar iconOnlyAt="wide"` (832px), `"narrow"`
 (704px), or `"compact"` (448px), and give each segmented `TabBarItem` a leading
 icon. The tablist's own width controls the switch; the visually hidden name
-remains its accessible name. Use `labelMaxWidth` for an ellipsized visible name. Set `attention`
+remains its accessible name. In intrinsic allocation, tabs give up width by
+ellipsizing their names down to a minimum before the strip scrolls; do not cap
+or clip tab names in app CSS. The full name stays the accessible name, and
+`wireTabBars` shows it as a `title` while a name is truncated. Use
+`labelMaxWidth` only for a visible-name cap that should hold even when there is
+room. Set `attention`
 to color a tab's name with `--kui-tab-bar-item-attention-color`. Set `dropTarget`
 while an app drag is over a tab's content; the tab keeps its selection semantics
 and uses the `--kui-tab-bar-item-drop-target-*` tokens for its highlight. Set

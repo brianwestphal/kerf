@@ -3,8 +3,8 @@ import { expect, type Locator, type Page, test } from '@playwright/test';
 // The snap end room is an in-flow `::after` after the last tab, so it counts
 // in the strip's intrinsic and content-based sizes. Measured across engines,
 // it changes nothing in an intrinsically sized ancestor. A min-content or
-// max-content strip already fits its tabs, which are never shrinkable
-// (`min-width: max-content`), so no room is reserved. It does enter a
+// max-content strip already fits its tabs (a min-content strip holds each
+// tab at its shrink floor), so no room is reserved. It does enter a
 // content-based flex basis, though. When the strip shares shrinking with a
 // shrinkable trailing zone, the room widens the strip's share. That share
 // must converge rather than feed back, and the trailing and end zones must

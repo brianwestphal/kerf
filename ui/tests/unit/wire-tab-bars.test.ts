@@ -648,6 +648,55 @@ describe('TabBar wiring', () => {
     stop();
   });
 
+  it('titles a tab with its full name only while the name is ellipsized (KF-VQ1Z8H)', () => {
+    const root = bar();
+    const dispose = wireTabBars(root, { onReorder: () => {} });
+    const tab = root.querySelector<HTMLElement>('[data-tab-id="two"]')!;
+    const button = tab.querySelector<HTMLElement>('[role="tab"]')!;
+    const name = tab.querySelector<HTMLElement>('.kui-tab-bar-item__name')!;
+    let scrollWidth = 40;
+    let clientWidth = 40;
+    Object.defineProperty(name, 'scrollWidth', { get: () => scrollWidth });
+    Object.defineProperty(name, 'clientWidth', { get: () => clientWidth });
+    const hover = (target: Element) =>
+      target.dispatchEvent(new Event('pointerover', { bubbles: true }));
+
+    // Fits: no title.
+    hover(name);
+    expect(button.hasAttribute('title')).toBe(false);
+    // Narrowed: the tab gains its full name, and keeps it on another hover.
+    clientWidth = 24;
+    hover(name);
+    expect(button.getAttribute('title')).toBe('Two');
+    hover(button);
+    expect(button.getAttribute('title')).toBe('Two');
+    // A re-render that drops the attribute gets it back on the next hover.
+    button.removeAttribute('title');
+    hover(tab);
+    expect(button.getAttribute('title')).toBe('Two');
+    // Widened again: the title goes, but an application's own title stays.
+    clientWidth = 40;
+    hover(name);
+    expect(button.hasAttribute('title')).toBe(false);
+    button.setAttribute('title', 'Application hint');
+    hover(name);
+    expect(button.getAttribute('title')).toBe('Application hint');
+    button.removeAttribute('title');
+
+    // A visually hidden (icon-only) name is never truncated text.
+    clientWidth = 1;
+    name.style.position = 'absolute';
+    hover(name);
+    expect(button.hasAttribute('title')).toBe(false);
+    name.style.position = '';
+    // Hovering outside any tab does nothing.
+    hover(root.querySelector('[role="tablist"]')!);
+
+    dispose();
+    hover(name);
+    expect(button.hasAttribute('title')).toBe(false);
+  });
+
   it('ignores malformed and non-draggable tabs and removes listeners on disposal', () => {
     const root = bar();
     const onReorder = vi.fn();

@@ -145,6 +145,28 @@ function selectedTabs(scopes: Iterable<ParentNode>) {
   return selected;
 }
 
+/**
+ * Give a tab button its full name as a `title` while the visible name is
+ * ellipsized, and remove it once the name fits. A visually hidden
+ * (icon-only) name is not truncated text, so it never sets one.
+ */
+function syncTruncatedTitle(
+  view: Window,
+  button: HTMLElement,
+  name: HTMLElement,
+) {
+  const full = name.textContent?.trim() ?? '';
+  const truncated =
+    full !== '' &&
+    name.scrollWidth > name.clientWidth &&
+    view.getComputedStyle(name).position !== 'absolute';
+  if (truncated) {
+    if (button.getAttribute('title') !== full)
+      button.setAttribute('title', full);
+  } else if (button.getAttribute('title') === full)
+    button.removeAttribute('title');
+}
+
 /** `node` itself when it matches `selector`, plus its matching descendants. */
 function selfAndBelow<T extends Element>(node: Node, selector: string): T[] {
   if (!(node instanceof Element)) return [];
@@ -587,6 +609,18 @@ export function wireTabBars(
     reveal(tab);
   };
 
+  // A tab whose name ellipsizes (an intrinsic strip that narrowed, or a
+  // `labelMaxWidth`) shows its full name as a tooltip. The check runs when
+  // the pointer reaches the tab, so it holds after any re-render or resize
+  // without observers; the visible name stays the tab's accessible name.
+  const onPointerOver = (event: Event) => {
+    const tab = tabRoot(event.target);
+    const button = tab?.querySelector<HTMLElement>('[role="tab"]');
+    const name = tab?.querySelector<HTMLElement>('.kui-tab-bar-item__name');
+    if (!tab || !button || !name) return;
+    syncTruncatedTitle(view, button, name);
+  };
+  root.addEventListener('pointerover', onPointerOver);
   root.addEventListener('dragstart', onDragStart);
   root.addEventListener('dragover', onDragOver);
   root.addEventListener('drop', onDrop);
@@ -654,6 +688,7 @@ export function wireTabBars(
     snapStrips.clear();
     snapObserved.clear();
     clear();
+    root.removeEventListener('pointerover', onPointerOver);
     root.removeEventListener('dragstart', onDragStart);
     root.removeEventListener('dragover', onDragOver);
     root.removeEventListener('drop', onDrop);

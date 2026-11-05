@@ -2976,6 +2976,23 @@ describe('production UI primitives', () => {
       }),
     );
     expect(iconOnly).toContain('aria-label="Activity"');
+    // KF-VQ1Z8H: a named, ellipsizing tab's label carries the sizing copy of
+    // its name; icon-only, placeholder, and visible-name tabs never shrink.
+    expect(responsiveBar).toContain(
+      '<span class="kui-tab-bar-item__label" data-kui-tab-name="Overview"><span class="kui-tab-bar-item__name">Overview</span></span>',
+    );
+    expect(iconOnly).toContain('<span class="kui-tab-bar-item__label"><span');
+    expect(iconOnly).not.toContain('data-kui-tab-name');
+    for (const props of [
+      { placeholder: true },
+      { nameOverflow: 'visible' as const },
+    ])
+      expect(
+        asHtml(TabBarItem({ id: 'n', name: 'Fixed', ...props })),
+      ).not.toContain('data-kui-tab-name');
+    expect(
+      asHtml(TabBarItem({ id: 'p', name: 'Opening "A" & B', pending: true })),
+    ).toContain('data-kui-tab-name="Opening &quot;A&quot; &amp; B"');
     expect(iconOnly).toContain(
       'class="kui-tab-bar-item__name" aria-hidden="true">Activity</span>',
     );
