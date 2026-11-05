@@ -253,6 +253,7 @@ import {
   typeAt,
   valueAt,
   withRequiredBooleans,
+  withRequiredFilled,
   withValueAt,
 } from './model/fields.js';
 import {
@@ -2263,12 +2264,32 @@ export function createEditor(options: EditorOptions) {
       bindable.find((item) => item.name === bindField.value) ?? bindable[0];
     if (!field) return undefined;
     const at = { prop: place.prop, path: [...place.path, field.name] };
+    const propType = propsByKey
+      .get(node.type)
+      ?.props.find((item) => item.name === at.prop)?.type as
+      ViewType | undefined;
+    // KF-PTMNSZ: judge the field alone, with its object's other required
+    // fields standing in, so an unset object's first field can be bound.
+    const prepare = (document: ViewDocument) =>
+      setProp(
+        document,
+        node.id,
+        at.prop,
+        withRequiredFilled(
+          findNode(document, node.id)!.node.props?.[at.prop] as
+            ViewValue | undefined,
+          propType,
+          definitionsOf(node.type),
+          at.path,
+        ),
+      );
     const options = bindingOptions(
       doc.value,
       viewCatalog,
       node.id,
       at.prop,
       at.path,
+      prepare,
     );
     const current = record[field.name];
     const bound = isParamOrBind(current) ? JSON.stringify(current) : '';

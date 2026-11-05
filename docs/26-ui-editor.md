@@ -90,7 +90,10 @@ ContentItem's `media.src` to `card.art`), and **Promote to a param** turns
 the field's literal into a param named after the node, prop, and field
 (`nodeMediaSrc`), its default the literal, while the object's other fields
 stay editable (KF-3QEZFB: nested params). A bound field reads as its source
-in the form.
+in the form. Source judges a candidate by that field alone: the object's
+other required fields stand in as placeholders while it is checked, so the
+first field of an unset object (`src` before `alt`) is offered the params
+that fit it (KF-PTMNSZ).
 
 List and object props have placeholders (KF-HNNWN9: list placeholders). A
 component added from Add a child or the palette has its required lists,

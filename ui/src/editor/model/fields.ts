@@ -11,7 +11,7 @@ import type {
   ViewValue,
 } from '@kerfjs/ui/view';
 
-import { resolveType, singular } from './examples.js';
+import { exampleValue, resolveType, singular } from './examples.js';
 import type { InspectorProp } from './inspector.js';
 
 type Definitions = Readonly<Record<string, ViewType>>;
@@ -458,6 +458,59 @@ export function withRequiredBooleans(
     rest,
   );
   return inner === holder[step] ? out : { ...holder, [step]: inner! };
+}
+
+/**
+ * KF-PTMNSZ: `value` with each object along `path` holding a placeholder for
+ * every required field it is missing (as `exampleValue` makes one), so a
+ * field can be judged on its own: binding an unset object's `src` is not
+ * blamed for its still-missing `alt`. An object along `path` that is unset is
+ * made; fields already set, and fields no placeholder can stand for, stay.
+ */
+export function withRequiredFilled(
+  value: ViewValue | undefined,
+  type: ViewType | undefined,
+  definitions: Definitions,
+  path: FieldPath,
+): ViewValue | undefined {
+  const resolved = shape(memberFor(type, definitions, value), definitions);
+  let out = value;
+  if (resolved?.kind === 'object') {
+    const fields = fieldsOf(value) ?? {};
+    const filled = (resolved.props ?? []).flatMap((prop) => {
+      if (!prop.required || fields[prop.name] !== undefined) return [];
+      const example = exampleValue(prop.type, definitions, prop.name);
+      return example === undefined ? [] : [[prop.name, example] as const];
+    });
+    if (filled.length || value === undefined)
+      out = { ...fields, ...Object.fromEntries(filled) };
+  }
+  if (!path.length) return out;
+  const [step, ...rest] = path;
+  if (typeof step === 'number') {
+    if (!Array.isArray(out) || out[step] === undefined) return out;
+    const item = withRequiredFilled(
+      out[step],
+      resolved?.items as ViewType,
+      definitions,
+      rest,
+    );
+    const list = [...out];
+    list[step] = item!;
+    return list;
+  }
+  const holder = fieldsOf(out);
+  const field = resolved?.props?.find((prop) => prop.name === step);
+  if (!holder || !field) return out;
+  return {
+    ...holder,
+    [step]: withRequiredFilled(
+      holder[step],
+      field.type as ViewType,
+      definitions,
+      rest,
+    )!,
+  };
 }
 
 /**

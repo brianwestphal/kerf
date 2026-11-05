@@ -887,6 +887,12 @@ export function bindingOptions(
   id: string,
   prop: string,
   path: FieldPath = [],
+  /**
+   * KF-PTMNSZ: completes a document before it is judged (a field's object
+   * gets placeholders for its other required fields), so a candidate is
+   * rejected only for problems of its own, not its object's missing fields.
+   */
+  prepare: (document: ViewDocument) => ViewDocument = (same) => same,
 ): BindingOption[] {
   const params = document.params ?? {};
   const candidates: BindingOption[] = Object.keys(params).map((name) => ({
@@ -905,13 +911,13 @@ export function bindingOptions(
       });
   }
   const known = new Set(
-    validateView(document, catalog).diagnostics.map(
+    validateView(prepare(document), catalog).diagnostics.map(
       (diagnostic) => `${diagnostic.code} ${diagnostic.path}`,
     ),
   );
   return candidates.filter((candidate) =>
     validateView(
-      setField(document, id, prop, path, candidate.value),
+      prepare(setField(document, id, prop, path, candidate.value)),
       catalog,
     ).diagnostics.every((diagnostic) =>
       known.has(`${diagnostic.code} ${diagnostic.path}`),

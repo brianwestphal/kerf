@@ -84,6 +84,32 @@ describe('declared order', () => {
     expect(props.value).toEqual({ $param: 'password' });
   });
 
+  it('keeps the keys of an object whose type declares no fields', () => {
+    const empty = { kind: 'object' } as ViewType;
+    expect(Object.keys(inDeclaredOrder({ b: 1, a: 2 }, empty, {})!)).toEqual([
+      'b',
+      'a',
+    ]);
+  });
+
+  it('orders the props of an `else` branch too', () => {
+    const document = withTextField({ label: 'Password' });
+    const condition = document.root.zones!.content![0] as unknown as {
+      else?: unknown;
+    };
+    condition.else = {
+      id: '00000000000000000000000003',
+      type: TEXT_FIELD,
+      props: { value: 'x', label: 'Other' },
+    };
+    const branch = (
+      inOrder(document).root.zones!.content![0] as unknown as {
+        else: { props: Record<string, unknown> };
+      }
+    ).else;
+    expect(Object.keys(branch.props)).toEqual(['label', 'value']);
+  });
+
   it('leaves a component the catalog does not know as written', () => {
     const document = withTextField({ b: 1, a: 2 });
     (

@@ -1,6 +1,6 @@
 // KF-3QEZFB: the Inspector binds and promotes a field inside an object prop
 // (a ContentItem's `media.src`), not only a whole prop.
-import type { ViewDocument } from '@kerfjs/ui/view';
+import type { ViewDocument, ViewType, ViewValue } from '@kerfjs/ui/view';
 import { validateView } from '@kerfjs/ui/view';
 import { describe, expect, it } from 'vitest';
 
@@ -9,8 +9,11 @@ import {
   bindingOptions,
   promoteToParam,
   setField,
+  setProp,
 } from '../../../src/editor/model/edits.js';
-import { viewCatalog } from './kerf-catalog.js';
+import { withRequiredFilled } from '../../../src/editor/model/fields.js';
+import { attach } from './editing-harness.js';
+import { createEditor, defaultCatalog, viewCatalog } from './kerf-catalog.js';
 
 const ui = '@kerfjs/ui';
 const PANE = '01JB8Z1M6Q8E1X9V4S7K2R3T5A';
@@ -129,5 +132,126 @@ describe('field-level bind and promote (KF-3QEZFB)', () => {
     expect(
       media(setField(bound, CARD, 'media', ['src'], undefined), CARD),
     ).toEqual({ alt: '' });
+  });
+});
+
+// KF-PTMNSZ: a field's Source judges the field alone. Binding `src` on an
+// unset `media` made `{ src }`, which still lacks the required `alt`, and that
+// problem rejected every candidate.
+describe('binding a field of an unset object (KF-PTMNSZ)', () => {
+  const EMPTY = '01JB8Z1M6Q8E1X9V4S7K2R3T5E';
+  const withEmptyCard = {
+    ...document,
+    root: {
+      ...document.root,
+      zones: {
+        content: [
+          ...document.root.zones!.content!,
+          { id: EMPTY, type: `${ui}:content-item`, props: { title: 'Empty' } },
+        ],
+      },
+    },
+  } as unknown as ViewDocument;
+  const mediaType = defaultCatalog.propsByKey
+    .get(`${ui}:content-item`)!
+    .props.find((prop) => prop.name === 'media')!.type as ViewType;
+  const definitions = defaultCatalog.viewCatalog.components.get(
+    `${ui}:content-item`,
+  )!.definitions;
+  const prepare = (doc: ViewDocument) =>
+    setProp(
+      doc,
+      EMPTY,
+      'media',
+      withRequiredFilled(
+        findNode(doc, EMPTY)!.node.props?.media as ViewValue | undefined,
+        mediaType,
+        definitions,
+        ['src'],
+      ),
+    );
+
+  it('fills the other required fields with placeholders, keeping set ones', () => {
+    expect(
+      withRequiredFilled(undefined, mediaType, definitions, ['src']),
+    ).toEqual({ src: 'Src', alt: 'Alt' });
+    expect(
+      withRequiredFilled({ src: { $param: 'title' } }, mediaType, definitions, [
+        'src',
+      ]),
+    ).toEqual({ src: { $param: 'title' }, alt: 'Alt' });
+  });
+
+  it('fills inside a list item and leaves places it cannot follow', () => {
+    const item = {
+      kind: 'object',
+      props: [
+        { name: 'a', type: string, required: true },
+        { name: 'b', type: string, required: true },
+      ],
+    } as unknown as ViewType;
+    const list = { kind: 'array', items: item } as unknown as ViewType;
+    expect(withRequiredFilled([{ a: 'x' }], list, {}, [0, 'a'])).toEqual([
+      { a: 'x', b: 'B' },
+    ]);
+    // No item at the index, a field the type does not declare, and a value
+    // that is not a list: nothing to follow, so the value is unchanged.
+    expect(withRequiredFilled([], list, {}, [0, 'a'])).toEqual([]);
+    expect(withRequiredFilled({ a: 'x', b: 'y' }, item, {}, ['c'])).toEqual({
+      a: 'x',
+      b: 'y',
+    });
+    expect(withRequiredFilled('text', list, {}, [0])).toBe('text');
+  });
+
+  it('leaves an object whose type declares no fields', () => {
+    const empty = { kind: 'object' } as unknown as ViewType;
+    expect(withRequiredFilled({ a: 'x' }, empty, {}, [])).toEqual({ a: 'x' });
+  });
+
+  it('offers the params that fit the field, not those that do not', () => {
+    const labels = (options: readonly { label: string }[]) =>
+      options.map((option) => option.label);
+    // Judged with the object's missing `alt`, nothing fits.
+    expect(
+      labels(
+        bindingOptions(withEmptyCard, viewCatalog, EMPTY, 'media', ['src']),
+      ),
+    ).toEqual([]);
+    // Judged alone, the string param fits and the number param does not.
+    expect(
+      labels(
+        bindingOptions(
+          withEmptyCard,
+          viewCatalog,
+          EMPTY,
+          'media',
+          ['src'],
+          prepare,
+        ),
+      ),
+    ).toEqual(['Param title']);
+  });
+
+  it('lists the param in the Inspector’s Source for an unset object', () => {
+    const root = window.document.createElement('div');
+    window.document.body.append(root);
+    const editor = createEditor({ document: withEmptyCard });
+    attach(root, editor);
+    editor.selection.value = { kind: 'node', id: EMPTY };
+    root
+      .querySelector<HTMLElement>(
+        `[data-editor-open='${JSON.stringify({ prop: 'media', path: [] })}']`,
+      )!
+      .click();
+    const field = root.querySelector<HTMLElement>(
+      '[data-editor-bind="field"]',
+    )!;
+    expect(field.getAttribute('value')).toBe('src');
+    const source = root.querySelector<HTMLElement>(
+      '[data-editor-bind="field-source"]',
+    )!;
+    expect(source.textContent).toContain('Param title');
+    expect(source.textContent).not.toContain('Param count');
   });
 });

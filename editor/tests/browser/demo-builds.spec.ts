@@ -17165,13 +17165,8 @@ test('builds ContentItem › Image-Tinted Feed Cards', async ({ page }) => {
       data: [['data-feed-card', String(index + 1)]],
     });
     await openConfigure(page, 'Configure media');
-    // The empty alt first: a param fits Src only once media's other
-    // required field is set.
-    await setField(page, 'media', ['alt'], 'x');
-    await page
-      .locator(`[data-editor-field='{"prop":"media","path":["alt"]}'] input`)
-      .fill('');
-    await page.keyboard.press('Enter');
+    // KF-PTMNSZ: Src binds before media's other required field (alt) is
+    // set; Source judges the field alone.
     if (index === 0) {
       await bindField(page, 'Src');
       await bindField(page, 'Blurred src');
@@ -17179,6 +17174,12 @@ test('builds ContentItem › Image-Tinted Feed Cards', async ({ page }) => {
       await bindField(page, 'Src', 'Param nodeMediaSrc');
       await bindField(page, 'Blurred src', 'Param nodeMediaBlurredSrc');
     }
+    // The demo's alt is empty: type it, then clear it.
+    await setField(page, 'media', ['alt'], 'x');
+    await page
+      .locator(`[data-editor-field='{"prop":"media","path":["alt"]}'] input`)
+      .fill('');
+    await page.keyboard.press('Enter');
     await setField(page, 'media', ['aspectRatio'], String(16 / 9));
     await chooseField(page, 'media', ['parallax'], 'subtle');
     await turnFieldOn(page, 'media', ['deferOffscreen']);
