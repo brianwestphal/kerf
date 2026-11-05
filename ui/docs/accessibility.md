@@ -449,9 +449,15 @@ Set `disabled` for a known tab that must keep its visible name while unavailable
 It leaves controlled `selected` state intact but disables selection, closing,
 dragging, and roving keyboard focus; it does not imply loading or `aria-busy`.
 For an application-owned panel, pass the tab button's DOM ID as `tabId` and the
-panel's DOM ID as `panelId`. The tab then renders `aria-controls=panelId`; set
-`role="tabpanel"` and `aria-labelledby=tabId` on the panel. These DOM IDs are
-distinct from `id`, which remains the application's tab identity for actions.
+panel's DOM ID as `panelId`. The tab then renders `aria-controls=panelId`. Render
+the panel with `TabPanel` (`@kerfjs/ui/tab-panel`) with the same two IDs: its `id`
+is the tab's `panelId` and its `tabId` is the tab's `tabId`, which it writes as
+`aria-labelledby` on its `role="tabpanel"` region. Selection stays application
+state: render every panel of the set and set `hidden` on all but the selected
+tab's, and set `busy` (`aria-busy`) while a pending tab's panel shows
+placeholders. TabPanel adds no inset or chrome; its content owns those. These
+DOM IDs are distinct from `id`, which remains the application's tab identity
+for actions.
 `TabBarItem.rootAttributes` accepts application `data-*` metadata only; runtime
 filtering rejects roles plus case variants of component- or wiring-owned
 action, identity, selection, drag, drop, and component attributes. An optional

@@ -132,6 +132,11 @@ Group fields that submit together in `Form` (`@kerfjs/ui/form`), never a raw
 keeps a submission from navigating. Handle its `action` with
 `delegateActions(root, 'submit', table)` and read `new FormData(form)`.
 
+Render a tab's panel with `TabPanel` (`@kerfjs/ui/tab-panel`), never a raw
+`role="tabpanel"` element: give it the `TabBarItem`'s `panelId` as `id` and its
+`tabId` as `tabId`, set `hidden` on every panel but the selected tab's, and
+`busy` while a pending tab's content loads.
+
 Use `Spacer` for one intentional empty dimension rather than repeated sibling
 rhythm. Fixed spacers do not shrink; `flex` consumes remaining space along a
 flex parent's main axis. The component is decorative and accepts no children.

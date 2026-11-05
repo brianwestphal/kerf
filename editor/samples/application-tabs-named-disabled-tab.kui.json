@@ -1,0 +1,128 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ApplicationTabsNamedDisabledTab",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:tab-bar",
+          "props": {
+            "id": "catalog-disabled-tabs",
+            "label": "Report Tabs",
+            "activation": "manual"
+          },
+          "zones": {
+            "tabs": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "overview",
+                  "name": "Overview",
+                  "selected": true,
+                  "closable": false,
+                  "selectAction": "select-report-tab",
+                  "tabId": "report-overview-tab",
+                  "panelId": "report-overview-panel"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "loading",
+                  "name": "Preparing Report",
+                  "disabled": true,
+                  "closable": false,
+                  "selectAction": "select-report-tab",
+                  "tabId": "report-loading-tab",
+                  "panelId": "report-loading-panel"
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "history",
+                  "name": "History",
+                  "closable": false,
+                  "selectAction": "select-report-tab",
+                  "tabId": "report-history-tab",
+                  "panelId": "report-history-panel"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "00000000000000000000000006",
+          "type": "@kerfjs/ui:tab-panel",
+          "props": {
+            "id": "report-overview-panel",
+            "tabId": "report-overview-tab"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "Overview report"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "00000000000000000000000008",
+          "type": "@kerfjs/ui:tab-panel",
+          "props": {
+            "id": "report-loading-panel",
+            "tabId": "report-loading-tab",
+            "hidden": true
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "Report unavailable"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "00000000000000000000000010",
+          "type": "@kerfjs/ui:tab-panel",
+          "props": {
+            "id": "report-history-panel",
+            "tabId": "report-history-tab",
+            "hidden": true
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000011",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "children": "Report history"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

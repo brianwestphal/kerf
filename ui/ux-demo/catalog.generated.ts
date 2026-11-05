@@ -650,6 +650,7 @@ export const generatedKerfCatalog = [
     "uses": [
       "tabs",
       "tab-bar",
+      "tab-panel",
       "toolbar-control-group",
       "text",
       "pane"
@@ -687,6 +688,18 @@ export const generatedKerfCatalog = [
     "componentSource": "ui/src/components/navigation/tab-bar/tab-bar.tsx",
     "designTemplate": "ui/docs/design/templates/tab-bar.svg",
     "documentation": "ui/docs/component-selection.md"
+  },
+  {
+    "id": "tab-panel",
+    "name": "TabPanel",
+    "category": "Navigation",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Render the tabpanel a TabBarItem controls, named by its tab through tabId, hidden while another tab is selected, and busy while its content loads.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/tab-panel.tsx",
+    "componentSource": "ui/src/components/navigation/tab-panel/tab-panel.tsx",
+    "documentation": "ui/docs/accessibility.md"
   },
   {
     "id": "form",
@@ -1962,7 +1975,7 @@ export const generatedWebAwesomeCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "webawesome",
-    "description": "Ecosystem tab panel; use Kerf TabBar with application-owned panels.",
+    "description": "Ecosystem tab panel; use Kerf TabPanel with a TabBar.",
     "recommendation": "avoid",
     "uses": [],
     "demoSource": "ui/ux-demo/webawesome-demos.tsx",

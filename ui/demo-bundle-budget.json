@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 452000,
+  "totalJavaScriptGzip": 452600,
   "measuredLargestJavaScriptGzip": 164550,
-  "measuredTotalJavaScriptGzip": 451954,
+  "measuredTotalJavaScriptGzip": 452580,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6787,6 +6787,22 @@
         "measuredTotalJavaScriptGzip": 451954,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 452000
+      }
+    },
+    {
+      "at": "2026-11-05T00:44:25.631Z",
+      "reason": "KF-RE1EBK adds the TabPanel component and its catalog demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164550,
+        "measuredTotalJavaScriptGzip": 451954,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 452000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164550,
+        "measuredTotalJavaScriptGzip": 452580,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 452600
       }
     }
   ]

@@ -6603,6 +6603,46 @@ declare function Disclosure({ title, detail, children, open, name, appearance, t
 export { Disclosure, type DisclosureAppearance, type DisclosureProps, type DisclosureRootAttributes };
 ```
 
+## `@kerfjs/ui/tab-panel`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
+
+interface TabPanelProps {
+    /** The panel's DOM id: the controlling `TabBarItem`'s `panelId`
+     * (its `aria-controls`). */
+    id: string;
+    /** The DOM id of the tab that names this panel: the controlling
+     * `TabBarItem`'s `tabId`, written as `aria-labelledby`. */
+    tabId: string;
+    /** Hide the panel while its tab is not selected. The application keeps
+     * exactly one panel of a tab set visible, the selected tab's. */
+    hidden?: boolean;
+    /** The panel's content is still loading (`aria-busy`), as for a
+     * `pending` `TabBarItem` whose panel shows placeholders. */
+    busy?: boolean;
+    /** The panel's content. */
+    children?: KerfUiContent;
+    className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+    /** Application `data-*` metadata on the root, such as a test hook or an
+     * editor node marker; the component's own markers stay protected. */
+    rootAttributes?: RootDataAttributes;
+}
+/**
+ * The application-owned panel a `TabBarItem` controls: a `tabpanel` region
+ * named by its tab. It adds no inset, chrome, or layout of its own; the
+ * content inside it owns those. Selection stays application state: render
+ * every panel of a tab set and set `hidden` on all but the selected tab's.
+ */
+declare function TabPanel({ id, tabId, hidden, busy, children, className, slot, rootAttributes, }: TabPanelProps): kerfjs.SafeHtml;
+
+export { TabPanel, type TabPanelProps };
+```
+
 ## `@kerfjs/ui/form`
 
 ```ts

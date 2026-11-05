@@ -13,6 +13,7 @@ import { SplitView } from '../../src/components/layout/split-view/split-view.js'
 import { Workbench } from '../../src/components/layout/workbench/workbench.js';
 import { NavStack } from '../../src/components/navigation/nav-stack/nav-stack.js';
 import { TabNavigator } from '../../src/components/navigation/tab-navigator/tab-navigator.js';
+import { TabPanel } from '../../src/components/navigation/tab-panel/tab-panel.js';
 import {
   Badge,
   ContentItem,
@@ -224,6 +225,11 @@ const cases: SlotCase[] = [
   { name: 'Skeleton lines', render: (slot) => Skeleton({ lines: 2, slot }) },
   { name: 'Spacer', render: (slot) => Spacer({ slot }) },
   { name: 'Form', render: (slot) => Form({ children: content, slot }) },
+  {
+    name: 'TabPanel',
+    render: (slot) =>
+      TabPanel({ id: 'p', tabId: 't', children: content, slot }),
+  },
   {
     name: 'SplitView split',
     render: (slot) =>

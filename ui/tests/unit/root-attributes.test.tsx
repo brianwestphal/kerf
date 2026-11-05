@@ -34,6 +34,7 @@ import { SunkenPanel } from '../../src/sunken-panel.js';
 import { PopupSurface } from '../../src/surface-scaffold.js';
 import { TabBar } from '../../src/tab-bar.js';
 import { TabNavigator } from '../../src/tab-navigator.js';
+import { TabPanel } from '../../src/tab-panel.js';
 import { TagField } from '../../src/tag-field.js';
 import { Toolbar } from '../../src/toolbar.js';
 import {
@@ -168,6 +169,10 @@ const cases: Case[] = [
       }),
   ],
   ['Form', () => Form({ children: content, rootAttributes })],
+  [
+    'TabPanel',
+    () => TabPanel({ id: 'p', tabId: 't', children: content, rootAttributes }),
+  ],
   ['Skeleton', () => Skeleton({ rootAttributes })],
   ['Spacer', () => Spacer({ rootAttributes })],
   [

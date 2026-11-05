@@ -411,6 +411,9 @@ inset surface around a stack remains `SunkenPanel`.
 `Form` (shipped, KF-XX4Y95, `ui/docs/forms-and-validation.md#form`) is a layout-neutral
 native form whose `action` is a delegated `data-action` handled on `submit`; `wireForms`
 cancels the native submission's page navigation.
+`TabPanel` (shipped, KF-RE1EBK, `ui/docs/accessibility.md#tabs`) is the application-owned
+`tabpanel` a `TabBarItem` controls: `id` pairs with the tab's `panelId`, `tabId` becomes
+`aria-labelledby`, and `hidden` / `busy` are application state.
 `SizedRegion` (shipped, docs/23 §3.9, `ui/docs/app-layouts.md#sizing-a-nested-layout`)
 gives a whole-screen layout below the app root a definite height (fill, typed
 height, min/max); a non-blocking hint for an unsized nested layout is KF-KQ72TW.

@@ -249,6 +249,7 @@ import {
   switchLiveUpdates,
   tabBarActive,
   tabBarTabs,
+  tabPanelActive,
   textFieldPasswordShown,
   ticketLabelFilter,
   ticketLabels,
@@ -1005,6 +1006,10 @@ const stopActions = delegateActions(app, 'click', {
   'select-report-tab': (_event, element) => {
     const id = element.getAttribute('data-tab-id');
     if (id === 'overview' || id === 'history') reportTabActive.value = id;
+  },
+  'select-tab-panel-demo': (_event, element) => {
+    const id = element.getAttribute('data-tab-id');
+    if (id === 'notes' || id === 'activity') tabPanelActive.value = id;
   },
   'close-tab': (_event, element) => {
     actionLog.value = `Close requested for ${element.getAttribute('data-tab-id')}`;

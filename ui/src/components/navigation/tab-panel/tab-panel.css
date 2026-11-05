@@ -1,0 +1,7 @@
+/* A TabPanel is a plain region: the content inside it owns its inset,
+   chrome, and layout. It may shrink below its content's intrinsic width when
+   a parent lays it out as a flex or grid item. It sets no display, so the
+   native hidden attribute keeps hiding it. */
+.kui-tab-panel {
+  min-inline-size: 0;
+}

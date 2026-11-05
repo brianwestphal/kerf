@@ -5853,6 +5853,7 @@
       "uses": [
         "tabs",
         "tab-bar",
+        "tab-panel",
         "toolbar-control-group",
         "text",
         "pane"
@@ -6177,6 +6178,90 @@
       "links": {
         "catalogRoute": "?component=tab-bar",
         "documentation": "docs/component-selection.md",
+        "recipe": "docs/accessibility.md#tabs"
+      }
+    },
+    {
+      "id": "tab-panel",
+      "name": "TabPanel",
+      "category": "Navigation",
+      "kind": "component",
+      "source": "kerf",
+      "description": "The application-owned panel a TabBarItem controls: a tabpanel region named by its tab, with hidden and busy states and no inset, chrome, or layout of its own.",
+      "uses": [],
+      "purpose": "Render the tabpanel a TabBarItem controls, named by its tab through tabId, hidden while another tab is selected, and busy while its content loads.",
+      "publicExports": [
+        "TabPanel"
+      ],
+      "useWhen": [
+        "Render the content region a TabBar's tab selects; pair TabPanel id with the TabBarItem's panelId and TabPanel tabId with the TabBarItem's tabId.",
+        "Show placeholders in the panel of a pending TabBarItem; set busy until its content loads.",
+        "A view built in the Kerf UI editor needs a tab's panel."
+      ],
+      "avoidWhen": [
+        "Do not write a raw element with role=\"tabpanel\" in Kerf UI markup; render TabPanel.",
+        "Do not use TabPanel for spacing, insets, or a frame; it adds none. Put a ListInsetText, List, or Pane content inside it.",
+        "Do not use it inside TabNavigator, which renders its own tab scenes."
+      ],
+      "alternatives": [
+        {
+          "id": "tab-bar",
+          "relationship": "composes-with",
+          "when": "A TabBar of TabBarItems selects among TabPanels; the application owns which one is visible."
+        },
+        {
+          "id": "tab-navigator",
+          "relationship": "nearest",
+          "when": "Use TabNavigator for whole-screen tab scenes it owns, with its own bar and panels."
+        }
+      ],
+      "appOwns": [
+        "the selected tab and which panel is hidden",
+        "the panel and tab DOM IDs",
+        "loading state",
+        "the panel's content and layout"
+      ],
+      "variants": [
+        "visible",
+        "hidden",
+        "busy"
+      ],
+      "accessibility": [
+        "TabPanel renders role=tabpanel with aria-labelledby set to tabId, the id of the TabBarItem tab that controls it; that tab's panelId must equal the panel's id.",
+        "Keep exactly one panel of a tab set visible: set hidden on every panel whose tab is not selected.",
+        "Set busy (aria-busy) while the panel's content loads, as for a pending TabBarItem."
+      ],
+      "content": {
+        "interactive": [
+          {
+            "kind": "contains"
+          }
+        ]
+      },
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none",
+        "notes": [
+          "A plain block: the content inside the panel owns its inset and chrome."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/tab-panel",
+        "manualCssImport": "@kerfjs/ui/tab-panel.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-tab-panel"
+      ],
+      "publicTokens": [],
+      "rootElement": "div",
+      "links": {
+        "catalogRoute": "?component=tab-panel",
+        "documentation": "docs/accessibility.md",
         "recipe": "docs/accessibility.md#tabs"
       }
     },
@@ -11852,22 +11937,22 @@
       "category": "Navigation",
       "kind": "component",
       "source": "webawesome",
-      "description": "Ecosystem tab panel; use Kerf TabBar with application-owned panels.",
+      "description": "Ecosystem tab panel; use Kerf TabPanel with a TabBar.",
       "uses": [],
-      "purpose": "Ecosystem tab panel; use Kerf TabBar with application-owned panels.",
+      "purpose": "Ecosystem tab panel; use Kerf TabPanel with a TabBar.",
       "customElement": "wa-tab-panel",
       "useWhen": [
-        "Ecosystem tab panel; prefer app-owned panels with Kerf navigation."
+        "Ecosystem tab panel; prefer Kerf TabPanel with a TabBar."
       ],
       "avoidWhen": [
-        "Do not use it in Kerf UI; use TabBar; the application owns its panels."
+        "Do not use it in Kerf UI; render TabPanel for the panel a TabBar selects."
       ],
       "recommendation": "avoid",
       "alternatives": [
         {
-          "id": "tab-bar",
+          "id": "tab-panel",
           "relationship": "prefer-kerf",
-          "when": "Use TabBar; the application owns its panels."
+          "when": "Use TabPanel for the panel a Kerf TabBar selects."
         }
       ],
       "geometry": {

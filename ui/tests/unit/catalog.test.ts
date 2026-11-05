@@ -328,7 +328,14 @@ describe('UX catalog metadata', () => {
       artifact.entries.find(({ id }) => id === 'application-tabs'),
     ).toMatchObject({
       kind: 'composition',
-      uses: ['tabs', 'tab-bar', 'toolbar-control-group', 'text', 'pane'],
+      uses: [
+        'tabs',
+        'tab-bar',
+        'tab-panel',
+        'toolbar-control-group',
+        'text',
+        'pane',
+      ],
       publicExports: [],
     });
     expect(
@@ -579,6 +586,7 @@ describe('UX catalog metadata', () => {
       'Disclosure',
       'TabBarItem',
       'TabBar',
+      'TabPanel',
       'Form',
       'SegmentedControl',
       'ChoiceChips',

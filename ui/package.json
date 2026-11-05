@@ -250,6 +250,11 @@
       "types": "./dist/wire-tab-bars.d.ts",
       "import": "./dist/wire-tab-bars.js"
     },
+    "./tab-panel": {
+      "types": "./dist/tab-panel.d.ts",
+      "browser": "./dist/browser/tab-panel.js",
+      "import": "./dist/tab-panel.js"
+    },
     "./wire-scroll-dividers": {
       "types": "./dist/wire-scroll-dividers.d.ts",
       "import": "./dist/wire-scroll-dividers.js"
@@ -662,6 +667,7 @@
     "./tab-bar-item.css": "./dist/styles/tab-bar-item.css",
     "./catalog.css": "./dist/styles/catalog.css",
     "./tab-bar.css": "./dist/styles/tab-bar.css",
+    "./tab-panel.css": "./dist/styles/tab-panel.css",
     "./nav-stack.css": "./dist/styles/nav-stack.css",
     "./split-view.css": "./dist/styles/split-view.css",
     "./list-detail-dialog.css": "./dist/styles/list-detail-dialog.css",

@@ -1242,6 +1242,10 @@ a layout-neutral native `form` (`form.css` is only `display: contents`); its `ac
 (`@kerfjs/ui/wire-forms`) cancels a Form submission's page navigation in the capture phase; the editor
 installs it over its root and in play mode. Demo `ui/ux-demo/demos/form.tsx`; tests
 `ui/tests/unit/form.test.tsx` and `ui/tests/unit/editor/form.test.ts`.
+`ui/src/components/navigation/tab-panel/tab-panel.tsx` (`@kerfjs/ui/tab-panel`, KF-RE1EBK: the panel a
+TabBarItem controls) renders a `div role="tabpanel"` with `aria-labelledby` from `tabId`, `hidden`, and
+`busy` (`aria-busy`); `tab-panel.css` adds no inset or chrome. Demo `ui/ux-demo/demos/tab-panel.tsx`
+(also used by `application-tabs.tsx`); tests `ui/tests/unit/tab-panel.test.tsx`.
 `ui/src/components/forms/message-composer/message-composer.tsx` (`@kerfjs/ui/message-composer`) renders
 the chat or prompt composer: a raised frame with a focus-within brand border, a
 borderless native textarea sized by `field-sizing: content` between

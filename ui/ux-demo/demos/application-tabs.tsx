@@ -7,6 +7,7 @@ import { Pane } from '@kerfjs/ui/pane';
 import { Skeleton } from '@kerfjs/ui/skeleton';
 import { TabBar } from '@kerfjs/ui/tab-bar';
 import { TabBarItem } from '@kerfjs/ui/tab-bar-item';
+import { TabPanel } from '@kerfjs/ui/tab-panel';
 import { Text } from '@kerfjs/ui/text';
 import {
   ToolbarButton,
@@ -74,9 +75,13 @@ export function ApplicationTabsDemo() {
             <ListInsetText>
               <Text tone="quiet" size="compact">
                 Order:{' '}
-                <strong data-tab-order>
+                <Text
+                  variant="span"
+                  weight="strong"
+                  rootAttributes={{ 'data-tab-order': '' }}
+                >
                   {tabBarTabs.value.map((tab) => tab.name).join(' · ')}
-                </strong>
+                </Text>
               </Text>
             </ListInsetText>
           }
@@ -84,21 +89,24 @@ export function ApplicationTabsDemo() {
           {/* A still-opening tab is selectable; its panel keeps the live
               heading chrome with a placeholder value until loading completes,
               so the swap does not shift the panel. */}
-          <ListInsetText>
-            <Text
-              variant="h3"
-              id="catalog-active-panel"
-              role="tabpanel"
-              aria-labelledby={`catalog-tab-${activeName}`}
-              aria-busy={activeTab?.pending ? 'true' : undefined}
-            >
-              {activeTab?.pending ? (
-                <Skeleton width={em(6)} label={`Loading ${activeTab.name}…`} />
-              ) : (
-                activeName
-              )}
-            </Text>
-          </ListInsetText>
+          <TabPanel
+            id="catalog-active-panel"
+            tabId={`catalog-tab-${activeName}`}
+            busy={activeTab?.pending}
+          >
+            <ListInsetText>
+              <Text variant="h3">
+                {activeTab?.pending ? (
+                  <Skeleton
+                    width={em(6)}
+                    label={`Loading ${activeTab.name}…`}
+                  />
+                ) : (
+                  activeName
+                )}
+              </Text>
+            </ListInsetText>
+          </TabPanel>
         </Pane>
       </CatalogExample>
       <CatalogExample
@@ -138,30 +146,23 @@ export function ApplicationTabsDemo() {
             panelId="report-history-panel"
           />
         </TabBar>
-        <section
+        <TabPanel
           id="report-overview-panel"
-          role="tabpanel"
-          aria-labelledby="report-overview-tab"
+          tabId="report-overview-tab"
           hidden={reportTabActive.value !== 'overview'}
         >
-          Overview report
-        </section>
-        <section
-          id="report-loading-panel"
-          role="tabpanel"
-          aria-labelledby="report-loading-tab"
-          hidden
-        >
-          Report unavailable
-        </section>
-        <section
+          <Text>Overview report</Text>
+        </TabPanel>
+        <TabPanel id="report-loading-panel" tabId="report-loading-tab" hidden>
+          <Text>Report unavailable</Text>
+        </TabPanel>
+        <TabPanel
           id="report-history-panel"
-          role="tabpanel"
-          aria-labelledby="report-history-tab"
+          tabId="report-history-tab"
           hidden={reportTabActive.value !== 'history'}
         >
-          Report history
-        </section>
+          <Text>Report history</Text>
+        </TabPanel>
       </CatalogExample>
     </CatalogExampleStack>
   );

@@ -4978,6 +4978,74 @@
       }
     },
     {
+      "key": "@kerfjs/ui:tab-panel",
+      "package": "@kerfjs/ui",
+      "id": "tab-panel",
+      "name": "TabPanel",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the selected tab and which panel is hidden",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the panel and tab DOM IDs",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "loading state", "owner": "application", "required": false },
+        {
+          "id": "the panel's content and layout",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "none",
+          "notes": [
+            "A plain block: the content inside the panel owns its inset and chrome."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "TabPanel renders role=tabpanel with aria-labelledby set to tabId, the id of the TabBarItem tab that controls it; that tab's panelId must equal the panel's id.",
+          "Keep exactly one panel of a tab set visible: set hidden on every panel whose tab is not selected.",
+          "Set busy (aria-busy) while the panel's content loads, as for a pending TabBarItem."
+        ]
+      },
+      "content": { "interactive": [{ "kind": "contains" }] },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-tab-panel",
+        "publicClasses": ["kui-tab-panel"],
+        "rootElement": "div",
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:form",
       "package": "@kerfjs/ui",
       "id": "form",

@@ -13,6 +13,7 @@ export const choiceChipsIntents = signal<readonly string[]>(['comment']);
 export const choiceChipsWorkspaces = signal<readonly string[]>(['atlas']);
 export const tabBarActive = signal('components');
 export const reportTabActive = signal<'overview' | 'history'>('overview');
+export const tabPanelActive = signal<'notes' | 'activity'>('notes');
 /** An application tab; `pending` while its content is still loading. */
 export interface DemoTab {
   id: string;

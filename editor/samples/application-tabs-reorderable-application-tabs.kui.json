@@ -1,0 +1,286 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ApplicationTabsReorderableApplicationTabs",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "rootAttributes": {
+        "data-demo-application-tabs-frame": ""
+      }
+    },
+    "zones": {
+      "header": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:tab-bar",
+          "props": {
+            "id": "catalog-tabs",
+            "label": "Open Catalog Pages"
+          },
+          "zones": {
+            "tabs": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "components",
+                  "name": "Components",
+                  "draggable": true,
+                  "panelId": "catalog-active-panel",
+                  "selectAction": "select-reorder-tab",
+                  "closeAction": "close-reorder-tab",
+                  "selected": true,
+                  "tabId": "catalog-tab-components",
+                  "rootAttributes": {
+                    "data-demo-tab-id": "components"
+                  }
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "design-guidance",
+                  "name": "Design Guidance",
+                  "draggable": true,
+                  "panelId": "catalog-active-panel",
+                  "selectAction": "select-reorder-tab",
+                  "closeAction": "close-reorder-tab",
+                  "tabId": "catalog-tab-design-guidance",
+                  "rootAttributes": {
+                    "data-demo-tab-id": "design-guidance"
+                  }
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "accessibility",
+                  "name": "Accessibility Contracts",
+                  "draggable": true,
+                  "panelId": "catalog-active-panel",
+                  "selectAction": "select-reorder-tab",
+                  "closeAction": "close-reorder-tab",
+                  "tabId": "catalog-tab-accessibility",
+                  "rootAttributes": {
+                    "data-demo-tab-id": "accessibility"
+                  }
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "integration",
+                  "name": "Integration Patterns",
+                  "draggable": true,
+                  "panelId": "catalog-active-panel",
+                  "selectAction": "select-reorder-tab",
+                  "closeAction": "close-reorder-tab",
+                  "tabId": "catalog-tab-integration",
+                  "rootAttributes": {
+                    "data-demo-tab-id": "integration"
+                  }
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "release-notes",
+                  "name": "Release Notes",
+                  "draggable": true,
+                  "panelId": "catalog-active-panel",
+                  "selectAction": "select-reorder-tab",
+                  "closeAction": "close-reorder-tab",
+                  "tabId": "catalog-tab-release-notes",
+                  "rootAttributes": {
+                    "data-demo-tab-id": "release-notes"
+                  }
+                }
+              },
+              {
+                "id": "00000000000000000000000008",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "migration",
+                  "name": "Hot Sheet Migration",
+                  "draggable": true,
+                  "panelId": "catalog-active-panel",
+                  "selectAction": "select-reorder-tab",
+                  "closeAction": "close-reorder-tab",
+                  "tabId": "catalog-tab-migration",
+                  "rootAttributes": {
+                    "data-demo-tab-id": "migration"
+                  }
+                }
+              },
+              {
+                "id": "00000000000000000000000009",
+                "type": "@kerfjs/ui:tabs",
+                "props": {
+                  "id": "examples",
+                  "name": "Consumer Examples",
+                  "draggable": true,
+                  "panelId": "catalog-active-panel",
+                  "selectAction": "select-reorder-tab",
+                  "closeAction": "close-reorder-tab",
+                  "tabId": "catalog-tab-examples",
+                  "rootAttributes": {
+                    "data-demo-tab-id": "examples"
+                  }
+                }
+              }
+            ],
+            "leading": [
+              {
+                "id": "00000000000000000000000010",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000011",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Show Navigation",
+                        "action": "log-sidebar"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000012",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "panel-left"
+                              },
+                              "name": "panel-left"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "appearance": "borderless",
+                  "single": true
+                }
+              }
+            ],
+            "trailing": [
+              {
+                "id": "00000000000000000000000013",
+                "type": "@kerfjs/ui:toolbar-control-group",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000014",
+                      "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
+                      "props": {
+                        "ariaLabel": "Add Tab",
+                        "action": "add-demo-tab"
+                      },
+                      "zones": {
+                        "icon": [
+                          {
+                            "id": "00000000000000000000000015",
+                            "type": "@kerfjs/ui:lucide-icon",
+                            "props": {
+                              "icon": {
+                                "$icon": "plus"
+                              },
+                              "name": "plus"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "props": {
+                  "appearance": "borderless",
+                  "single": true
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "content": [
+        {
+          "id": "00000000000000000000000016",
+          "type": "@kerfjs/ui:tab-panel",
+          "props": {
+            "id": "catalog-active-panel",
+            "tabId": "catalog-tab-components"
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000017",
+                "type": "@kerfjs/ui:list-inset-text",
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000018",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "components",
+                        "variant": "h3"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "footer": [
+        {
+          "id": "00000000000000000000000019",
+          "type": "@kerfjs/ui:list-inset-text",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000020",
+                "type": "@kerfjs/ui:text",
+                "props": {
+                  "tone": "quiet",
+                  "size": "compact"
+                },
+                "zones": {
+                  "children": [
+                    {
+                      "id": "00000000000000000000000021",
+                      "type": "#text",
+                      "value": "Order: "
+                    },
+                    {
+                      "id": "00000000000000000000000022",
+                      "type": "@kerfjs/ui:text",
+                      "props": {
+                        "children": "Components · Design Guidance · Accessibility Contracts · Integration Patterns · Release Notes · Hot Sheet Migration · Consumer Examples",
+                        "variant": "span",
+                        "weight": "strong",
+                        "rootAttributes": {
+                          "data-tab-order": ""
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

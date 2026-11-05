@@ -39,6 +39,7 @@ const entries = [
   'wire-catalog',
   'tab-bar',
   'wire-tab-bars',
+  'tab-panel',
   'wire-scroll-dividers',
   'wire-overlay-sheets',
   'wire-list-reorder',

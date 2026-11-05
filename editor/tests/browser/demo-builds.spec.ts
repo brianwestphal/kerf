@@ -13242,6 +13242,282 @@ test('builds TabBar › Overflow · Scroll Dividers', async ({ page }) => {
   );
 });
 
+/**
+ * KF-RE1EBK: adds a TabPanel to the `nth` `parent`'s zone (`zone` when
+ * given), named by tab `tabId`, hidden when asked.
+ */
+async function tabPanel(
+  page: Page,
+  parent: RegExp,
+  id: string,
+  tabId: string,
+  { hidden = false, zone }: { hidden?: boolean; zone?: string } = {},
+) {
+  await select(page, parent);
+  await addChild(page, 'TabPanel', zone);
+  await area(page, 'Properties');
+  await applySpec(page, {
+    text: { id, tabId },
+    ...(hidden ? { flags: ['hidden'] } : {}),
+  });
+}
+
+/**
+ * Adds a Text to the selected node's children and deletes the text run its
+ * seeded text became (a ListInsetText's), leaving the Text selected.
+ */
+async function textInPlaceOfRun(page: Page) {
+  await addChild(page, 'Text');
+  await area(page, 'Outline');
+  await outlineRow(page, /^Text “/)
+    .first()
+    .click();
+  await deleteSelected(page);
+  await select(page, /^Text(?![A-Z])/, -1);
+}
+
+// KF-RE1EBK: reportTabActive starts as 'overview', so the History panel is
+// hidden with the unavailable report's. Each panel is a TabPanel named by
+// its tab, holding a Text.
+test('builds ApplicationTabs › Named Disabled Tab', async ({ page }) => {
+  test.slow();
+  const reports = [
+    ['overview', 'Overview', 'Overview report'],
+    ['loading', 'Preparing Report', 'Report unavailable'],
+    ['history', 'History', 'Report history'],
+  ] as const;
+  const extra = (id: string) => ({
+    selectAction: 'select-report-tab',
+    tabId: `report-${id}-tab`,
+    panelId: `report-${id}-panel`,
+  });
+  const tabs = reports.map(
+    ([id, name], index) =>
+      [
+        plainTab(id, name, index === 0, {
+          text: extra(id),
+          flags: id === 'loading' ? ['disabled'] : [],
+        }),
+        plainTabProps(id, name, index === 0, {
+          ...extra(id),
+          ...(id === 'loading' ? { disabled: true } : {}),
+        }),
+      ] as const,
+  );
+  const bar = { id: 'catalog-disabled-tabs', label: 'Report Tabs' };
+  await tabBar(
+    page,
+    { choices: { activation: 'manual' }, text: bar },
+    tabs.map(([spec]) => spec),
+  );
+  for (const [index, [id, , copy]] of reports.entries()) {
+    await tabPanel(page, /^Pane/, `report-${id}-panel`, `report-${id}-tab`, {
+      hidden: index > 0,
+    });
+    await addInto(page, /^TabPanel/, 'Text', index);
+    await setText(page, 'children', copy);
+  }
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  const panels = canvas(page).locator('[role="tabpanel"]');
+  await expect(panels).toHaveCount(3);
+  await expect(canvas(page).locator('#report-overview-panel')).toHaveAttribute(
+    'aria-labelledby',
+    'report-overview-tab',
+  );
+  await expect(
+    canvas(page).locator('#report-overview-tab[role="tab"]'),
+  ).toHaveAttribute('aria-controls', 'report-overview-panel');
+  expect(await exported(page)).toEqual(
+    pane(
+      tabBarNode(
+        { ...bar, activation: 'manual' },
+        tabs.map(([spec, props]) => [props, spec]),
+      ),
+      ...reports.map(([id, , copy], index) =>
+        node(
+          'tab-panel',
+          {
+            id: `report-${id}-panel`,
+            tabId: `report-${id}-tab`,
+            ...(index > 0 ? { hidden: true } : {}),
+          },
+          { children: [textNode(copy)] },
+        ),
+      ),
+    ),
+  );
+});
+
+// KF-RE1EBK: a first-render snapshot of the demo. tabBarActive starts as
+// 'components' and no tab is pending, so the one TabPanel shows the
+// Components heading without aria-busy. The footer's order readout is a
+// strong span Text inside the quiet Text, beside an "Order: " run.
+test('builds ApplicationTabs › Reorderable Application Tabs', async ({
+  page,
+}) => {
+  test.slow();
+  const tabs = [
+    ['components', 'Components'],
+    ['design-guidance', 'Design Guidance'],
+    ['accessibility', 'Accessibility Contracts'],
+    ['integration', 'Integration Patterns'],
+    ['release-notes', 'Release Notes'],
+    ['migration', 'Hot Sheet Migration'],
+    ['examples', 'Consumer Examples'],
+  ] as const;
+  const shared = {
+    panelId: 'catalog-active-panel',
+    selectAction: 'select-reorder-tab',
+    closeAction: 'close-reorder-tab',
+  };
+  // The demo's frame: the root Pane, not filled, with its test hook.
+  await select(page, /^Pane/);
+  await turnOff(page, 'fill');
+  await dataAttribute(page, 'data-demo-application-tabs-frame', '');
+  await select(page, /^Pane/);
+  await addChild(page, 'TabBar', 'header');
+  await area(page, 'Properties');
+  const bar = { id: 'catalog-tabs', label: 'Open Catalog Pages' };
+  await applySpec(page, { text: bar });
+  // The TabBar arrives holding one tab: set up its shared props, then copy it.
+  await select(page, /^TabBarItem/);
+  await applySpec(page, { flags: ['draggable'], text: shared });
+  await select(page, /^TabBarItem/);
+  for (let copy = 1; copy < tabs.length; copy += 1)
+    await page.keyboard.press('ControlOrMeta+d');
+  for (const [index, [id, name]] of tabs.entries()) {
+    await select(page, /^TabBarItem/, index);
+    if (index === 0) await turnOn(page, 'selected');
+    await applySpec(page, {
+      text: { id, name, tabId: `catalog-tab-${id}` },
+      data: [['data-demo-tab-id', id]],
+    });
+  }
+  await tabBarGroup(
+    page,
+    'leading',
+    { text: { ariaLabel: 'Show Navigation', action: 'log-sidebar' } },
+    'panel-left',
+  );
+  await tabBarGroup(
+    page,
+    'trailing',
+    { text: { ariaLabel: 'Add Tab', action: 'add-demo-tab' } },
+    'plus',
+  );
+  // The panel: a TabPanel holding the inset h3 heading.
+  await tabPanel(
+    page,
+    /^Pane/,
+    'catalog-active-panel',
+    'catalog-tab-components',
+    {
+      zone: 'content',
+    },
+  );
+  await addInto(page, /^TabPanel/, 'ListInsetText');
+  await textInPlaceOfRun(page);
+  await applySpec(page, {
+    choices: { variant: 'h3' },
+    text: { children: 'components' },
+  });
+  // The footer: a quiet compact Text whose order readout is a strong Text.
+  const order = tabs.map(([, name]) => name).join(' · ');
+  await select(page, /^Pane/);
+  await addChild(page, 'ListInsetText', 'footer');
+  await textInPlaceOfRun(page);
+  await applySpec(page, {
+    choices: { tone: 'quiet', size: 'compact' },
+    text: { children: 'Order: ' },
+  });
+  await page.getByRole('button', { name: 'Use as nodes' }).click();
+  await addChild(page, 'Text');
+  await area(page, 'Properties');
+  await applySpec(page, {
+    choices: { variant: 'span', weight: 'strong' },
+    text: { children: order },
+    data: [['data-tab-order', '']],
+  });
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  await expect(canvas(page).locator('[data-tab-order]')).toHaveText(order);
+  const panel = canvas(page).locator('#catalog-active-panel');
+  await expect(panel).toHaveAttribute('role', 'tabpanel');
+  await expect(panel).toHaveAttribute(
+    'aria-labelledby',
+    'catalog-tab-components',
+  );
+  await expect(panel).not.toHaveAttribute('aria-busy');
+  await expect(panel.locator('h3')).toHaveText('components');
+  const tabNode = ([id, name]: (typeof tabs)[number], index: number) =>
+    node('tabs', {
+      id,
+      name,
+      ...(index === 0 ? { selected: true } : {}),
+      draggable: true,
+      tabId: `catalog-tab-${id}`,
+      ...shared,
+      rootAttributes: { 'data-demo-tab-id': id },
+    });
+  expect(await exported(page)).toEqual(
+    node(
+      'pane',
+      { rootAttributes: { 'data-demo-application-tabs-frame': '' } },
+      {
+        header: [
+          node('tab-bar', bar, {
+            tabs: tabs.map(tabNode),
+            leading: [
+              tabBarGroupNode(
+                { ariaLabel: 'Show Navigation', action: 'log-sidebar' },
+                'panel-left',
+              ),
+            ],
+            trailing: [
+              tabBarGroupNode(
+                { ariaLabel: 'Add Tab', action: 'add-demo-tab' },
+                'plus',
+              ),
+            ],
+          }),
+        ],
+        content: [
+          node(
+            'tab-panel',
+            { id: 'catalog-active-panel', tabId: 'catalog-tab-components' },
+            {
+              children: [
+                node('list-inset-text', undefined, {
+                  children: [textNode('components', { variant: 'h3' })],
+                }),
+              ],
+            },
+          ),
+        ],
+        footer: [
+          node('list-inset-text', undefined, {
+            children: [
+              node(
+                'text',
+                { tone: 'quiet', size: 'compact' },
+                {
+                  children: [
+                    runNode('Order: '),
+                    textNode(order, {
+                      variant: 'span',
+                      weight: 'strong',
+                      rootAttributes: { 'data-tab-order': '' },
+                    }),
+                  ],
+                },
+              ),
+            ],
+          }),
+        ],
+      },
+    ),
+  );
+});
+
 /** Adds a Text reading `text` (with `spec`) to the `nth` `parent`. */
 async function textInto(
   page: Page,

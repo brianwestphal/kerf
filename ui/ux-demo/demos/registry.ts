@@ -69,6 +69,7 @@ import { SurfaceScaffoldDemo } from './surface-scaffold.js';
 import { SwitchDemo } from './switch.js';
 import { TabBarDemo } from './tab-bar.js';
 import { TabNavigatorDemo } from './tab-navigator.js';
+import { TabPanelDemo } from './tab-panel.js';
 import { TabsDemo } from './tabs.js';
 import { TagFieldDemo } from './tag-field.js';
 import { TextDemo } from './text.js';
@@ -131,6 +132,7 @@ export const demos = {
   'application-tabs': ApplicationTabsDemo,
   tabs: TabsDemo,
   'tab-bar': TabBarDemo,
+  'tab-panel': TabPanelDemo,
   headers: HeadersDemo,
   pane: PaneDemo,
   'nav-stack': NavStackDemo,

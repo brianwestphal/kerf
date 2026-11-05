@@ -967,6 +967,11 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   closed value ellipsizes when space runs out. `presentation="title"` gives a
   rail view heading a 36px bold, flush-start trigger and adjacent caret;
   `focusRingInset` keeps its ring inside clipping ancestors.
+- **Render a tab's panel with `TabPanel`** (`@kerfjs/ui/tab-panel`), never a raw
+  `role="tabpanel"` element: its `id` is the `TabBarItem`'s `panelId`, its
+  `tabId` is the tab's `tabId` (`aria-labelledby`), set `hidden` on every panel
+  but the selected tab's and `busy` while a pending tab's panel loads. It adds
+  no inset or chrome.
 - **Configure application tabs at their owners.** TabBarItem's `icon-only`
   presentation keeps `name` accessible, `labelMaxWidth` ellipsizes a long name,
   `nameOverflow="visible"` shows the full name during inline loading, and

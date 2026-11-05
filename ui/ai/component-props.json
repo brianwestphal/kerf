@@ -13758,6 +13758,85 @@
       "dataChannel": "rootAttributes"
     },
     {
+      "key": "@kerfjs/ui:tab-panel",
+      "id": "tab-panel",
+      "source": "kerf",
+      "import": "@kerfjs/ui/tab-panel",
+      "export": "TabPanel",
+      "description": "The application-owned panel a `TabBarItem` controls: a `tabpanel` region\nnamed by its tab. It adds no inset, chrome, or layout of its own; the\ncontent inside it owns those. Selection stays application state: render\nevery panel of a tab set and set `hidden` on all but the selected tab's.",
+      "props": [
+        {
+          "name": "id",
+          "type": { "kind": "string", "text": "string" },
+          "required": true,
+          "description": "The panel's DOM id: the controlling `TabBarItem`'s `panelId`\n(its `aria-controls`)."
+        },
+        {
+          "name": "tabId",
+          "type": { "kind": "string", "text": "string" },
+          "required": true,
+          "description": "The DOM id of the tab that names this panel: the controlling\n`TabBarItem`'s `tabId`, written as `aria-labelledby`."
+        },
+        {
+          "name": "hidden",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Hide the panel while its tab is not selected. The application keeps\nexactly one panel of a tab set visible, the selected tab's."
+        },
+        {
+          "name": "busy",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The panel's content is still loading (`aria-busy`), as for a\n`pending` `TabBarItem` whose panel shows placeholders."
+        },
+        {
+          "name": "children",
+          "type": {
+            "kind": "content",
+            "text": "KerfUiContent",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The panel's content.",
+          "slot": true
+        },
+        {
+          "name": "className",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "control": "classes"
+        },
+        {
+          "name": "slot",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string | undefined>>",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Application `data-*` metadata on the root, such as a test hook or an\neditor node marker; the component's own markers stay protected.",
+          "control": "hidden"
+        }
+      ],
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
+    },
+    {
       "key": "@kerfjs/ui:tabs",
       "id": "tabs",
       "source": "kerf",

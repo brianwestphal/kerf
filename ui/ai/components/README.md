@@ -63,6 +63,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Application Tabs](./application-tabs.md) — Show TabBarItem and TabBar in a complete controlled composition.
 - [TabBarItem](./tabs.md) — Render a controlled application tab with compact or icon-only presentation, a visible drop target, and optional full-name display.
 - [TabBar](./tab-bar.md) — Controlled tab strips whose tabs shrink and scroll while fixed leading, trailing, and far-edge end actions remain visible.
+- [TabPanel](./tab-panel.md) — Render the tabpanel a TabBarItem controls, named by its tab through tabId, hidden while another tab is selected, and busy while its content loads.
 
 ## Kerf UI — Controls
 
@@ -154,7 +155,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Step](./wa-step.md) — Marker and label for one stage of a wa-stepper process, with completed, loading, disabled, and semantic-color states.
 - [Tab](./wa-tab.md) (avoid) — Ecosystem tab label; use Kerf TabBar or SegmentedControl.
 - [Tab Group](./wa-tab-group.md) (avoid) — Ecosystem tabs; use Kerf TabBar or SegmentedControl.
-- [Tab Panel](./wa-tab-panel.md) (avoid) — Ecosystem tab panel; use Kerf TabBar with application-owned panels.
+- [Tab Panel](./wa-tab-panel.md) (avoid) — Ecosystem tab panel; use Kerf TabPanel with a TabBar.
 - [Tree](./wa-tree.md) (avoid) — Ecosystem tree; use the Kerf TreeList.
 - [Tree Item](./wa-tree-item.md) (avoid) — Ecosystem tree item; use the Kerf TreeList.
 

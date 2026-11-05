@@ -418,6 +418,10 @@ export {
   type TabBarItemSize,
 } from './components/navigation/tab-bar-item/tab-bar-item.js';
 export {
+  TabPanel,
+  type TabPanelProps,
+} from './components/navigation/tab-panel/tab-panel.js';
+export {
   BackdropImage,
   type BackdropImageFit,
   type BackdropImageParallax,

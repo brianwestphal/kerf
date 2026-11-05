@@ -266,6 +266,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `TabBarItem`                                                 | `@kerfjs/ui/tab-bar-item`               | `@kerfjs/ui/tab-bar-item.css`            |
 | `TabBar`                                                     | `@kerfjs/ui/tab-bar`                    | `@kerfjs/ui/tab-bar.css`                 |
 | `wireTabBars`, `reorderTabs`                                 | `@kerfjs/ui/wire-tab-bars`              | —                                        |
+| `TabPanel`                                                   | `@kerfjs/ui/tab-panel`                  | `@kerfjs/ui/tab-panel.css`               |
 | `wireScrollDividers`                                         | `@kerfjs/ui/wire-scroll-dividers`       | —                                        |
 | `wireToolbarVisibility`                                      | `@kerfjs/ui/wire-toolbar-visibility`    | —                                        |
 | `wireOverlaySheets`                                          | `@kerfjs/ui/wire-overlay-sheets`        | `@kerfjs/ui/overlay-sheet.css`           |

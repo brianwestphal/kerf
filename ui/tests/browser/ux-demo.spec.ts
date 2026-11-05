@@ -9112,6 +9112,33 @@ test('keeps added tab IDs unique after another tab closes', async ({
   );
 });
 
+// KF-RE1EBK: each TabPanel is named by its tab and only the selected tab's
+// panel is visible; a pending tab's panel is busy.
+test('switches TabPanels with their tabs and marks a loading panel busy', async ({
+  page,
+}) => {
+  await page.goto('/?component=tab-panel');
+  const demo = page.locator('[data-demo="tab-panel"]');
+  const notes = demo.locator('#tab-panel-demo-notes');
+  const activity = demo.locator('#tab-panel-demo-activity');
+  await expect(notes).toHaveAttribute('role', 'tabpanel');
+  await expect(notes).toHaveAttribute(
+    'aria-labelledby',
+    'tab-panel-demo-notes-tab',
+  );
+  await expect(
+    demo.getByRole('tabpanel', { name: 'Notes', exact: true }),
+  ).toBeVisible();
+  await expect(activity).toBeHidden();
+  await demo.getByRole('tab', { name: 'Activity', exact: true }).click();
+  await expect(activity).toBeVisible();
+  await expect(activity).toContainText('Three reviews');
+  await expect(notes).toBeHidden();
+  const busy = demo.locator('#tab-panel-demo-busy');
+  await expect(busy).toHaveAttribute('aria-busy', 'true');
+  await expect(busy.locator('.kui-skeleton')).toBeVisible();
+});
+
 test('autoscrolls the TabBar while a dragged tab rests near either scroll edge', async ({
   page,
   browserName,

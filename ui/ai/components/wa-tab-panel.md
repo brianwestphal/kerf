@@ -6,17 +6,17 @@
 
 ## When to use
 
-Ecosystem tab panel; use Kerf TabBar with application-owned panels.
+Ecosystem tab panel; use Kerf TabPanel with a TabBar.
 
-- Ecosystem tab panel; prefer app-owned panels with Kerf navigation.
+- Ecosystem tab panel; prefer Kerf TabPanel with a TabBar.
 
 **Not when:**
 
-- Do not use it in Kerf UI; use TabBar; the application owns its panels.
+- Do not use it in Kerf UI; render TabPanel for the panel a TabBar selects.
 
 **Alternatives:**
 
-- [TabBar](./tab-bar.md) (prefer-kerf) — Use TabBar; the application owns its panels.
+- [TabPanel](./tab-panel.md) (prefer-kerf) — Use TabPanel for the panel a Kerf TabBar selects.
 
 ## Imports
 
@@ -57,6 +57,6 @@ Theme it only through `@kerfjs/ui/webawesome.css` and cataloged tokens. Do not r
 
 ## Related
 
-- Components: [TabBar](./tab-bar.md).
+- Components: [TabPanel](./tab-panel.md).
 - Docs: [`docs/webawesome-theme.md#coverage`](../../docs/webawesome-theme.md#coverage), [`docs/component-selection.md#web-awesome-integration`](../../docs/component-selection.md#web-awesome-integration).
 - UX catalog route: `?component=wa-tab-panel`.
