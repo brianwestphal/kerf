@@ -2736,6 +2736,12 @@
           "description": "How much of the next column a `paged` track shows; default 24px."
         },
         {
+          "name": "ariaLabel",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Name the track (a board) for assistive technology: the scroller becomes\na `role=\"region\"` landmark with this `aria-label`. Name each column with\n`List landmark=\"region\"` and its own `ariaLabel`."
+        },
+        {
           "name": "id",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false
@@ -2755,7 +2761,7 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*`, `aria-*`, and structural `role` metadata on the scroller.",
+          "description": "Safe `data-*`, `aria-*`, and structural `role` metadata on the scroller;\nwith `ariaLabel` the track owns its role and name.",
           "control": "hidden"
         },
         {
@@ -5419,7 +5425,7 @@
             "nullable": true
           },
           "required": false,
-          "description": "Safe `data-*`, `aria-*`, and structural `role` metadata (a named drop\n`region`, `aria-busy`); List-owned structural attributes remain\nprotected, and a selectable List owns its listbox or grid role and name.",
+          "description": "Safe `data-*`, `aria-*`, and structural `role` metadata (`aria-busy`, a\ndrop target's role); List-owned structural attributes remain protected,\nand a selectable or landmark List owns its role and name. Name a region\nwith `landmark=\"region\"` and `ariaLabel`, which a view document can carry.",
           "control": "hidden"
         },
         {
@@ -5443,18 +5449,36 @@
           "order": 2
         },
         {
+          "name": "landmark",
+          "type": {
+            "kind": "literal",
+            "value": "region",
+            "text": "\"region\""
+          },
+          "required": false,
+          "description": "Name this list as a landmark: `region` renders `role=\"region\"` with\n`ariaLabel`. Not combined with `selectionMode`.",
+          "variantOnly": true
+        },
+        {
           "name": "ariaLabel",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
-          "description": "Accessible name for the listbox or grid; required with `selectionMode`.",
+          "description": "Accessible name for the listbox, grid, or landmark region; required\nwith `selectionMode` or `landmark`.",
           "group": "Content",
           "order": 1
         }
       ],
       "nativeAttributes": [],
       "variants": [
-        { "required": [], "forbidden": ["selectionMode"] },
-        { "required": ["selectionMode", "ariaLabel"], "forbidden": [] }
+        { "required": [], "forbidden": ["selectionMode", "landmark"] },
+        {
+          "required": ["selectionMode", "ariaLabel"],
+          "forbidden": ["landmark"]
+        },
+        {
+          "required": ["landmark", "ariaLabel"],
+          "forbidden": ["selectionMode"]
+        }
       ],
       "dataChannel": "rootAttributes",
       "groups": ["Content", "Layout", "Surface"]

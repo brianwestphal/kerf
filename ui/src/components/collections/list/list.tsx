@@ -19,8 +19,8 @@ import {
   type UiGap,
 } from '../../../shared/styles/css-values.js';
 
-/** Attributes a selectable List owns as an ARIA grid or listbox. */
-const listSelectionAttributes = ['role', 'aria-label', 'aria-multiselectable'];
+/** Attributes a selectable or landmark List owns: its role and name. */
+const listRoleAttributes = ['role', 'aria-label', 'aria-multiselectable'];
 
 const listProtectedAttributes = new Set([
   'data-component',
@@ -87,6 +87,13 @@ export type ListContentWidth = 'compact' | 'medium' | 'wide';
  * of `ContentItem selectionMode="multiple"` rows.
  */
 export type ListSelectionMode = 'single' | 'multiple';
+
+/**
+ * A landmark a List names itself as: `region` renders `role="region"` with
+ * the required `ariaLabel`, for a stack people navigate to by name (a reader,
+ * a result picker, a board column).
+ */
+export type ListLandmark = 'region';
 
 interface ListBaseProps {
   children?: KerfUiContent;
@@ -174,9 +181,10 @@ interface ListBaseProps {
    */
   hidden?: boolean;
   /**
-   * Safe `data-*`, `aria-*`, and structural `role` metadata (a named drop
-   * `region`, `aria-busy`); List-owned structural attributes remain
-   * protected, and a selectable List owns its listbox or grid role and name.
+   * Safe `data-*`, `aria-*`, and structural `role` metadata (`aria-busy`, a
+   * drop target's role); List-owned structural attributes remain protected,
+   * and a selectable or landmark List owns its role and name. Name a region
+   * with `landmark="region"` and `ariaLabel`, which a view document can carry.
    */
   rootAttributes?: ListRootAttributes;
   /** Native named-slot assignment when composed inside a web component. */
@@ -193,7 +201,15 @@ export type ListProps = ListBaseProps &
          * layout only.
          */
         selectionMode?: never;
-        /** Accessible name for the listbox or grid; required with `selectionMode`. */
+        /**
+         * Name this list as a landmark: `region` renders `role="region"` with
+         * `ariaLabel`. Not combined with `selectionMode`.
+         */
+        landmark?: never;
+        /**
+         * Accessible name for the listbox, grid, or landmark region; required
+         * with `selectionMode` or `landmark`.
+         */
         ariaLabel?: string;
       }
     | {
@@ -204,7 +220,34 @@ export type ListProps = ListBaseProps &
          * layout only.
          */
         selectionMode: ListSelectionMode;
-        /** Accessible name for the listbox or grid; required with `selectionMode`. */
+        /**
+         * Name this list as a landmark: `region` renders `role="region"` with
+         * `ariaLabel`. Not combined with `selectionMode`.
+         */
+        landmark?: never;
+        /**
+         * Accessible name for the listbox, grid, or landmark region; required
+         * with `selectionMode` or `landmark`.
+         */
+        ariaLabel: string;
+      }
+    | {
+        /**
+         * Make this list a labeled single-select `role="listbox"` of options
+         * (`single`) or a labeled multi-select grid of `ContentItem
+         * selectionMode="multiple"` rows (`multiple`). Omitted, the List is
+         * layout only.
+         */
+        selectionMode?: never;
+        /**
+         * Name this list as a landmark: `region` renders `role="region"` with
+         * `ariaLabel`. Not combined with `selectionMode`.
+         */
+        landmark: ListLandmark;
+        /**
+         * Accessible name for the listbox, grid, or landmark region; required
+         * with `selectionMode` or `landmark`.
+         */
         ariaLabel: string;
       }
   );
@@ -220,10 +263,12 @@ export type ListConfig = Pick<
   'gap' | 'hAlign' | 'vAlign' | 'dividerSides' | 'textInsets' | 'controlInsets'
 >;
 
-function selectionAttributesFor(
+function roleAttributesFor(
   mode: ListSelectionMode | undefined,
+  landmark: ListLandmark | undefined,
   ariaLabel: string | undefined,
 ): Record<string, string | undefined> {
+  if (landmark === 'region') return { role: 'region', 'aria-label': ariaLabel };
   switch (mode) {
     case 'single':
       return { role: 'listbox', 'aria-label': ariaLabel };
@@ -242,6 +287,7 @@ function selectionAttributesFor(
 export function List({
   children,
   selectionMode,
+  landmark,
   ariaLabel,
   gap = false,
   flex = false,
@@ -272,13 +318,19 @@ export function List({
   if (selectionMode === 'single' && !ariaLabel) {
     throw new Error('Single-select List requires an ariaLabel');
   }
+  if (landmark !== undefined) {
+    if (selectionMode !== undefined) {
+      throw new Error('A List landmark cannot also set a selectionMode');
+    }
+    if (!ariaLabel) throw new Error('List landmark requires an ariaLabel');
+  }
   const safeRootAttributes = filterRootAttributes(
     rootAttributes,
-    selectionMode
-      ? new Set([...listProtectedAttributes, ...listSelectionAttributes])
+    selectionMode || landmark
+      ? new Set([...listProtectedAttributes, ...listRoleAttributes])
       : listProtectedAttributes,
   );
-  const selectionAttributes = selectionAttributesFor(selectionMode, ariaLabel);
+  const roleAttributes = roleAttributesFor(selectionMode, landmark, ariaLabel);
   const gapStyle =
     gap === true
       ? '--_kui-list-gap:var(--kui-list-gap)'
@@ -300,7 +352,7 @@ export function List({
   return (
     <div
       {...safeRootAttributes}
-      {...selectionAttributes}
+      {...roleAttributes}
       id={id}
       hidden={hidden || undefined}
       class={`kui-list ${className}`.trim()}

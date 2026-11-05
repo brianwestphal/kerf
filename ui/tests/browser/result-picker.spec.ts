@@ -329,3 +329,16 @@ test('activating a candidate runs its action', async ({ page }) => {
     page.getByText('Duplicate candidate result-2 selected'),
   ).toBeVisible();
 });
+
+// KF-CW7Z38: List `landmark="region"` names the picker and the reader.
+test('the result picker and the document reader are named List regions', async ({
+  page,
+}) => {
+  await openDemo(page);
+  await expect(
+    page.getByRole('region', { name: 'Possible Duplicates', exact: true }),
+  ).toHaveAttribute('data-demo-result-picker', '');
+  await expect(
+    page.getByRole('region', { name: 'Reader', exact: true }),
+  ).toHaveAttribute('data-inset', 'document');
+});

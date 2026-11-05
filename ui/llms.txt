@@ -887,8 +887,9 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   fallback. Use `NavStack` for full views with toolbars.
 - **Lay out a kanban board with `ColumnTrack`.** Equal columns that never
   narrow below `minColumnWidth` scroll sideways; `layout="paged"` pages one
-  column at a time with a peek and snapping. Never re-track a `Grid` or
-  hand-roll scroll-snap CSS.
+  column at a time with a peek and snapping. Name the board with `ariaLabel`
+  (a `role="region"`) and each column `List` with `landmark="region"` and
+  `ariaLabel`. Never re-track a `Grid` or hand-roll scroll-snap CSS.
 - **Show ambient activity with `EdgeActivityIndicator`.** A layout-free,
   pointer-inert top-edge strip whose bars ripple while `busy`, with an optional
   polite `message` pill; Kerf owns the wave and reduced motion. Never hand-roll

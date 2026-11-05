@@ -17,6 +17,7 @@ Standardize vertical component layout, optional physical-side text/control inset
 - Apply the standard text or control inset to selected physical sides without an application wrapper.
 - Align children horizontally or distribute them vertically with the same physical alignment vocabulary as Row.
 - Use selectionMode="multiple" and ariaLabel to group selectable rich ContentItem rows in a multi-select grid.
+- Name a List people navigate to by name (a reader, a result picker, a board column) with landmark="region" and ariaLabel instead of a role in rootAttributes.
 - Use selectionMode="single" and ariaLabel to make the labeled single-select listbox that SummaryRow options or ContentItem selectionMode="single" options sit in, instead of an app-owned role=listbox wrapper.
 - Use scrollClearance on the scrollable List that reaches an edge overlaid by chrome (a DialogSurface floating footer) so rows scroll visibly beneath it while the first and last rows still rest clear of it.
 - Render a bounded, framed result picker of ListItem rows (search results, duplicate candidates) with scrollable, frame, and typed maxHeight/minHeight instead of an app-owned bordered scroller.
@@ -64,6 +65,7 @@ Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#k
 - rootAttributes: safe data-\*, aria-\*, and structural role on the root
 - scroll dividers when named as wireScrollDividers targets chrome or scroller (by its id)
 - single-select listbox for SummaryRow or ContentItem options
+- landmark="region": a named role=region (a reader, a result picker, a board column)
 - multi-select grid for rich ContentItem rows
 - contentWidth (compact 440px, medium 640px, wide 864px) and contentAlign for a readable, centered page column
 
@@ -83,7 +85,7 @@ Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#k
 
 ## State and wiring
 
-**The app owns:** child semantics and content; the bounded height needed for scrolling; typed gap, flex, alignment, and divider choices; the accessible label and selection state of a single-select listbox or multi-select grid; which one scroller opts into scroll clearance (the one reaching the covered edge); the result picker bounds (maxHeight/minHeight) and its rows.
+**The app owns:** child semantics and content; the bounded height needed for scrolling; typed gap, flex, alignment, and divider choices; the accessible label and selection state of a single-select listbox or multi-select grid; the accessible name of a landmark region List; which one scroller opts into scroll clearance (the one reaching the covered edge); the result picker bounds (maxHeight/minHeight) and its rows.
 
 **Wiring:** `wireScrollDividers`, `wireListFocusScroll` is optional.
 
@@ -105,7 +107,7 @@ Margin: none · border: conditional · padding: conditional (layout role: naviga
 
 ## Accessibility
 
-- List adds layout only and no list role by default; selectionMode="single" makes it a role=listbox and selectionMode="multiple" an aria-multiselectable grid, each with a required ariaLabel. In a listbox the options own their Tab stop, aria-selected, and activation; the app owns the selection and any arrow-key movement.
+- List adds layout only and no list role by default; selectionMode="single" makes it a role=listbox and selectionMode="multiple" an aria-multiselectable grid, each with a required ariaLabel. In a listbox the options own their Tab stop, aria-selected, and activation; the app owns the selection and any arrow-key movement. landmark="region" with a required ariaLabel makes it a named role=region instead; a landmark List takes no selectionMode.
 - Give a scrollable List a bounded block size and keep keyboard focus visible as its contents scroll.
 - A focused scrollable List (a keyboard-focusable scroller) draws the theme focus ring inset and rounded inside its own box, so a rounded or clipping parent never cuts it off; do not restyle its focus.
 - With wireListFocusScroll, a keyboard-focused (:focus-visible) element in a scrollable List whose focus ring crosses the clip is scrolled into view (block and inline nearest, honoring the ring-room scroll padding) in every engine; pointer focus never scrolls, so a click cannot move its row from under the pointer.

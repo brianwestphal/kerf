@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 452600,
+  "totalJavaScriptGzip": 452800,
   "measuredLargestJavaScriptGzip": 164550,
-  "measuredTotalJavaScriptGzip": 452580,
+  "measuredTotalJavaScriptGzip": 452755,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6803,6 +6803,22 @@
         "measuredTotalJavaScriptGzip": 452580,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 452600
+      }
+    },
+    {
+      "at": "2026-11-05T02:06:47.326Z",
+      "reason": "KF-MN7QK5 + KF-CW7Z38: List selectionMode=single and landmark=region, ColumnTrack ariaLabel, and the demos' Text-node titles, on top of KF-RE1EBK's TabPanel",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164550,
+        "measuredTotalJavaScriptGzip": 452580,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 452600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164550,
+        "measuredTotalJavaScriptGzip": 452755,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 452800
       }
     }
   ]

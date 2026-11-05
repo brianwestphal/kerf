@@ -3522,6 +3522,11 @@
           "id": "drag and drop between columns",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "the board's and each column's accessible name",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -3544,7 +3549,7 @@
       },
       "accessibility": {
         "obligations": [
-          "Name the track with aria-label through rootAttributes when it is a landmark-like region; give each column a region name. Paged scrolling is smooth unless reduced motion is preferred."
+          "Name the track with ariaLabel, which makes it a role=region with that name, and name each column List with landmark=\"region\" and its own ariaLabel. Paged scrolling is smooth unless reduced motion is preferred."
         ]
       },
       "cssValueProps": [],
@@ -3838,6 +3843,11 @@
           "required": false
         },
         {
+          "id": "the accessible name of a landmark region List",
+          "owner": "application",
+          "required": false
+        },
+        {
           "id": "which one scroller opts into scroll clearance (the one reaching the covered edge)",
           "owner": "application",
           "required": false
@@ -3891,7 +3901,7 @@
       },
       "accessibility": {
         "obligations": [
-          "List adds layout only and no list role by default; selectionMode=\"single\" makes it a role=listbox and selectionMode=\"multiple\" an aria-multiselectable grid, each with a required ariaLabel. In a listbox the options own their Tab stop, aria-selected, and activation; the app owns the selection and any arrow-key movement.",
+          "List adds layout only and no list role by default; selectionMode=\"single\" makes it a role=listbox and selectionMode=\"multiple\" an aria-multiselectable grid, each with a required ariaLabel. In a listbox the options own their Tab stop, aria-selected, and activation; the app owns the selection and any arrow-key movement. landmark=\"region\" with a required ariaLabel makes it a named role=region instead; a landmark List takes no selectionMode.",
           "Give a scrollable List a bounded block size and keep keyboard focus visible as its contents scroll.",
           "A focused scrollable List (a keyboard-focusable scroller) draws the theme focus ring inset and rounded inside its own box, so a rounded or clipping parent never cuts it off; do not restyle its focus.",
           "With wireListFocusScroll, a keyboard-focused (:focus-visible) element in a scrollable List whose focus ring crosses the clip is scrolled into view (block and inline nearest, honoring the ring-room scroll padding) in every engine; pointer focus never scrolls, so a click cannot move its row from under the pointer."

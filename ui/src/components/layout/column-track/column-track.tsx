@@ -9,6 +9,8 @@ import type { CssLength } from '../../../shared/styles/css-values.js';
 export type ColumnTrackLayout = 'scroll' | 'paged';
 
 const columnTrackProtected = new Set(['data-component', 'data-layout']);
+/** Attributes a named track owns as a region. */
+const columnTrackRegionAttributes = ['role', 'aria-label'];
 
 type ColumnTrackRootAttributes = StructuralRootAttributes &
   Readonly<{ 'data-component'?: never; 'data-layout'?: never }>;
@@ -27,9 +29,18 @@ export interface ColumnTrackProps {
   minColumnWidth?: CssLength;
   /** How much of the next column a `paged` track shows; default 24px. */
   peek?: CssLength;
+  /**
+   * Name the track (a board) for assistive technology: the scroller becomes
+   * a `role="region"` landmark with this `aria-label`. Name each column with
+   * `List landmark="region"` and its own `ariaLabel`.
+   */
+  ariaLabel?: string;
   id?: string;
   className?: string;
-  /** Safe `data-*`, `aria-*`, and structural `role` metadata on the scroller. */
+  /**
+   * Safe `data-*`, `aria-*`, and structural `role` metadata on the scroller;
+   * with `ariaLabel` the track owns its role and name.
+   */
   rootAttributes?: ColumnTrackRootAttributes;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -46,6 +57,7 @@ export function ColumnTrack({
   layout = 'scroll',
   minColumnWidth,
   peek,
+  ariaLabel,
   id,
   className = '',
   rootAttributes = {},
@@ -61,7 +73,13 @@ export function ColumnTrack({
     .join(';');
   return (
     <div
-      {...filterRootAttributes(rootAttributes, columnTrackProtected)}
+      {...filterRootAttributes(
+        rootAttributes,
+        ariaLabel
+          ? new Set([...columnTrackProtected, ...columnTrackRegionAttributes])
+          : columnTrackProtected,
+      )}
+      {...(ariaLabel ? { role: 'region', 'aria-label': ariaLabel } : {})}
       id={id}
       class={`kui-column-track ${className}`.trim()}
       data-component="column-track"

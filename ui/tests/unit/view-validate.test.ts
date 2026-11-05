@@ -380,6 +380,38 @@ describe('validateView: types, props, and values', () => {
     expect(list({})).toEqual([]);
   });
 
+  it('KUI-V004: a List landmark needs its name and no selectionMode (KF-CW7Z38)', () => {
+    const list = (props: Fixture) => codes(doc(node('list', { props })));
+    expect(list({ landmark: 'region', ariaLabel: 'Reader' })).toEqual([]);
+    expect(list({ landmark: 'region' })).toEqual(['KUI-V004']);
+    expect(
+      list({
+        landmark: 'region',
+        selectionMode: 'single',
+        ariaLabel: 'Reader',
+      }),
+    ).toEqual(['KUI-V004']);
+    expect(list({ landmark: 'banner', ariaLabel: 'Reader' })).toEqual([
+      'KUI-V004',
+    ]);
+    expect(
+      codes(
+        doc(
+          node('column-track', {
+            props: { ariaLabel: 'Board' },
+            zones: {
+              children: [
+                node('list', {
+                  props: { landmark: 'region', ariaLabel: 'To Do' },
+                }),
+              ],
+            },
+          }),
+        ),
+      ),
+    ).toEqual([]);
+  });
+
   it('accepts $icon and $css inside list and object values (KF-3J9GJV)', () => {
     const select = (choice: Fixture) =>
       codes(

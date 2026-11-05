@@ -19,11 +19,7 @@ const columns = [
 
 function board() {
   return columns.map((column) => (
-    <List
-      gap="xs"
-      scrollable
-      rootAttributes={{ role: 'region', 'aria-label': column.title }}
-    >
+    <List gap="xs" scrollable landmark="region" ariaLabel={column.title}>
       <ListHeader label={column.title} />
       {column.cards.map((card) => (
         <DemoContentItem title={card} detail={`In ${column.title}`} />
@@ -40,19 +36,14 @@ export function ColumnTrackDemo() {
         note="Equal columns never narrow below 250px; when they do not fit, the track scrolls sideways instead of crushing them."
         viewport={{ height: 'medium', frame: 'solid' }}
       >
-        <ColumnTrack rootAttributes={{ 'aria-label': 'Board' }}>
-          {board()}
-        </ColumnTrack>
+        <ColumnTrack ariaLabel="Board">{board()}</ColumnTrack>
       </CatalogExample>
       <CatalogExample
         label="Paged Board"
         note='layout="paged" shows one near-full-width column per page; the next one peeks in and a swipe snaps to its start.'
         viewport={{ height: 'medium', width: 'compact', frame: 'solid' }}
       >
-        <ColumnTrack
-          layout="paged"
-          rootAttributes={{ 'aria-label': 'Paged Board' }}
-        >
+        <ColumnTrack layout="paged" ariaLabel="Paged Board">
           {board()}
         </ColumnTrack>
       </CatalogExample>

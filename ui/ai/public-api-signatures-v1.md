@@ -968,6 +968,12 @@ type ListContentWidth = 'compact' | 'medium' | 'wide';
  * of `ContentItem selectionMode="multiple"` rows.
  */
 type ListSelectionMode = 'single' | 'multiple';
+/**
+ * A landmark a List names itself as: `region` renders `role="region"` with
+ * the required `ariaLabel`, for a stack people navigate to by name (a reader,
+ * a result picker, a board column).
+ */
+type ListLandmark = 'region';
 interface ListBaseProps {
     children?: KerfUiContent;
     /** Standard gap (`true`), one spacing value, or separate column and row values. Defaults to no gap. */
@@ -1054,9 +1060,10 @@ interface ListBaseProps {
      */
     hidden?: boolean;
     /**
-     * Safe `data-*`, `aria-*`, and structural `role` metadata (a named drop
-     * `region`, `aria-busy`); List-owned structural attributes remain
-     * protected, and a selectable List owns its listbox or grid role and name.
+     * Safe `data-*`, `aria-*`, and structural `role` metadata (`aria-busy`, a
+     * drop target's role); List-owned structural attributes remain protected,
+     * and a selectable or landmark List owns its role and name. Name a region
+     * with `landmark="region"` and `ariaLabel`, which a view document can carry.
      */
     rootAttributes?: ListRootAttributes;
     /** Native named-slot assignment when composed inside a web component. */
@@ -1070,7 +1077,15 @@ type ListProps = ListBaseProps & ({
      * layout only.
      */
     selectionMode?: never;
-    /** Accessible name for the listbox or grid; required with `selectionMode`. */
+    /**
+     * Name this list as a landmark: `region` renders `role="region"` with
+     * `ariaLabel`. Not combined with `selectionMode`.
+     */
+    landmark?: never;
+    /**
+     * Accessible name for the listbox, grid, or landmark region; required
+     * with `selectionMode` or `landmark`.
+     */
     ariaLabel?: string;
 } | {
     /**
@@ -1080,7 +1095,33 @@ type ListProps = ListBaseProps & ({
      * layout only.
      */
     selectionMode: ListSelectionMode;
-    /** Accessible name for the listbox or grid; required with `selectionMode`. */
+    /**
+     * Name this list as a landmark: `region` renders `role="region"` with
+     * `ariaLabel`. Not combined with `selectionMode`.
+     */
+    landmark?: never;
+    /**
+     * Accessible name for the listbox, grid, or landmark region; required
+     * with `selectionMode` or `landmark`.
+     */
+    ariaLabel: string;
+} | {
+    /**
+     * Make this list a labeled single-select `role="listbox"` of options
+     * (`single`) or a labeled multi-select grid of `ContentItem
+     * selectionMode="multiple"` rows (`multiple`). Omitted, the List is
+     * layout only.
+     */
+    selectionMode?: never;
+    /**
+     * Name this list as a landmark: `region` renders `role="region"` with
+     * `ariaLabel`. Not combined with `selectionMode`.
+     */
+    landmark: ListLandmark;
+    /**
+     * Accessible name for the listbox, grid, or landmark region; required
+     * with `selectionMode` or `landmark`.
+     */
     ariaLabel: string;
 });
 /**
@@ -1091,9 +1132,9 @@ type ListProps = ListBaseProps & ({
  */
 type ListConfig = Pick<ListProps, 'gap' | 'hAlign' | 'vAlign' | 'dividerSides' | 'textInsets' | 'controlInsets'>;
 /** A stretch-aligned vertical stack with optional gap, flex, fill, scroll, and dividers. */
-declare function List({ children, selectionMode, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, scrollClearance, frame, maxHeight, minHeight, surface, inset, contentWidth, contentAlign, dividerSides, textInsets, controlInsets, className, id, hidden, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
+declare function List({ children, selectionMode, landmark, ariaLabel, gap, flex, fill, hAlign, vAlign, scrollable, scrollClearance, frame, maxHeight, minHeight, surface, inset, contentWidth, contentAlign, dividerSides, textInsets, controlInsets, className, id, hidden, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
 
-export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, List, type ListConfig, type ListContentWidth, type ListInset, type ListProps, type ListSelectionMode, type ListSurface, ListVerticalAlignment, ScrollClearance, Sides, UiGap };
+export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, List, type ListConfig, type ListContentWidth, type ListInset, type ListLandmark, type ListProps, type ListSelectionMode, type ListSurface, ListVerticalAlignment, ScrollClearance, Sides, UiGap };
 ```
 
 ## `@kerfjs/ui/list-action-row`
@@ -6360,9 +6401,18 @@ interface ColumnTrackProps {
     minColumnWidth?: CssLength;
     /** How much of the next column a `paged` track shows; default 24px. */
     peek?: CssLength;
+    /**
+     * Name the track (a board) for assistive technology: the scroller becomes
+     * a `role="region"` landmark with this `aria-label`. Name each column with
+     * `List landmark="region"` and its own `ariaLabel`.
+     */
+    ariaLabel?: string;
     id?: string;
     className?: string;
-    /** Safe `data-*`, `aria-*`, and structural `role` metadata on the scroller. */
+    /**
+     * Safe `data-*`, `aria-*`, and structural `role` metadata on the scroller;
+     * with `ariaLabel` the track owns its role and name.
+     */
     rootAttributes?: ColumnTrackRootAttributes;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -6373,7 +6423,7 @@ interface ColumnTrackProps {
  * insets and vertical scrolling. Kerf owns the overflow, the paged snapping,
  * and reduced motion.
  */
-declare function ColumnTrack({ children, layout, minColumnWidth, peek, id, className, rootAttributes, slot, }: ColumnTrackProps): kerfjs.SafeHtml;
+declare function ColumnTrack({ children, layout, minColumnWidth, peek, ariaLabel, id, className, rootAttributes, slot, }: ColumnTrackProps): kerfjs.SafeHtml;
 
 export { ColumnTrack, type ColumnTrackLayout, type ColumnTrackProps };
 ```

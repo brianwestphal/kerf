@@ -7426,6 +7426,129 @@ test('builds List › Page Column', async ({ page }) => {
   );
 });
 
+// KF-CW7Z38: the reader is named through List `landmark="region"` and
+// `ariaLabel` instead of a role in rootAttributes.
+test('builds List › Document Inset', async ({ page }) => {
+  const copy = [
+    'The reader keeps a generous inset so long lines of prose have room to breathe, without application padding around the stack.',
+    'On a phone the inline inset narrows so the text column keeps a readable width.',
+  ];
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List(?![A-Z])/);
+  await applySpec(page, {
+    choices: { inset: 'document', gap: 'm', landmark: 'region' },
+    text: { ariaLabel: 'Reader' },
+  });
+  await addChild(page, 'Text');
+  await applySpec(page, {
+    choices: { variant: 'h3' },
+    text: { children: 'Release notes' },
+  });
+  for (const text of copy) {
+    await addInto(page, /^List(?![A-Z])/, 'Text');
+    await setText(page, 'children', text);
+  }
+  await expect(
+    canvas(page).getByRole('region', { name: 'Reader' }),
+  ).toBeVisible();
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        {
+          inset: 'document',
+          gap: 'm',
+          landmark: 'region',
+          ariaLabel: 'Reader',
+        },
+        {
+          children: [
+            node('text', { children: 'Release notes', variant: 'h3' }),
+            ...copy.map((text) => node('text', { children: text })),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+const RESULT_PICKER = [
+  [
+    'result-1',
+    'Dialog footer hides the last message',
+    'Closed last week, surface scaffold',
+  ],
+  ['result-2', 'Transcript stops above the composer', 'Open, chat dialog'],
+  [
+    'result-3',
+    'MessageComposer grows past the panel on phones',
+    'Closed in September, composer',
+  ],
+  [
+    'result-4',
+    'Floating footer loses its offset after resize',
+    'Open, surface scaffold',
+  ],
+  [
+    'result-5',
+    'Scrollable list compresses multiline rows',
+    'Closed in August, list',
+  ],
+] as const;
+
+// KF-CW7Z38: the picker is a named List region (`landmark` and `ariaLabel`);
+// its `data-demo-result-picker` hook stays a root data attribute.
+test('builds List › Result Picker', async ({ page }) => {
+  test.slow();
+  await dragComponent(page, 'List', () => emptySpot(page));
+  await select(page, /^List(?![A-Z])/);
+  await applySpec(page, {
+    choices: { gap: '2xs', landmark: 'region' },
+    flags: ['scrollable', 'frame'],
+    text: { ariaLabel: 'Possible Duplicates' },
+    data: [['data-demo-result-picker', '']],
+  });
+  await setCss(page, 'minHeight', 'rem(4.25)');
+  await setCss(page, 'maxHeight', 'rem(14)');
+  for (const [itemId, label, description] of RESULT_PICKER) {
+    await addInto(page, /^List(?![A-Z])/, 'ListItem');
+    await applySpec(page, {
+      flags: ['multiline'],
+      text: { action: 'log-result-picker', itemId, label, description },
+    });
+  }
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'list',
+        {
+          gap: '2xs',
+          landmark: 'region',
+          scrollable: true,
+          frame: true,
+          ariaLabel: 'Possible Duplicates',
+          minHeight: { $css: 'rem(4.25)' },
+          maxHeight: { $css: 'rem(14)' },
+          rootAttributes: { 'data-demo-result-picker': '' },
+        },
+        {
+          children: RESULT_PICKER.map(([itemId, label, description]) =>
+            node('list-item', {
+              action: 'log-result-picker',
+              itemId,
+              label,
+              description,
+              multiline: true,
+            }),
+          ),
+        },
+      ),
+    ),
+  );
+});
+
 test('builds List › Divider Between Regions', async ({ page }) => {
   const folders = [
     ['log-inbox', 'divider-inbox', 'Inbox', 'inbox'],
@@ -18621,6 +18744,10 @@ test('builds Text › Presentation Roles', async ({ page }) => {
   );
 });
 
+// KF-CW7Z38: Text › Read-Only Field Preview is not built. Its preview is a
+// group named by its FieldLabel's id (role="group" + aria-labelledby), which
+// neither List `landmark="region"` (a region named by a string) nor any other
+// prop authors; KF-P9NV94 holds the API decision.
 test('builds Text › Long Copy and Truncation', async ({ page }) => {
   test.slow();
   const id =
@@ -22962,5 +23089,102 @@ test('builds SummaryRow › Diagnostic Group', async ({ page }) => {
         },
       ),
     ),
+  );
+});
+
+type BoardColumn = {
+  readonly title: string;
+  readonly cards: readonly string[];
+};
+
+/** The ColumnTrack demo's five columns. */
+const BOARD: readonly BoardColumn[] = [
+  { title: 'To Do', cards: ['Draft release notes', 'Audit tokens'] },
+  { title: 'In Progress', cards: ['Paged board snapping'] },
+  { title: 'Review', cards: ['ColumnTrack demo', 'Docs pass'] },
+  { title: 'Done', cards: ['Ship Button toggles'] },
+  { title: 'Later', cards: ['File drop zone'] },
+];
+
+/**
+ * A ColumnTrack (set up by `track`) of the demo's columns: each a scrolling
+ * List named as a region, holding a ListHeader and DemoContentItems.
+ */
+async function board(page: Page, track: FieldSpec) {
+  await dragComponent(page, 'ColumnTrack', () => emptySpot(page));
+  await select(page, /^ColumnTrack/);
+  await applySpec(page, track);
+  let lists = 0;
+  for (const [index, column] of BOARD.entries()) {
+    // The track's seeded copy became a Text with its first child; it goes.
+    await addInto(page, /^ColumnTrack/, 'List', 0, index ? undefined : 0);
+    await select(page, /^List(?![A-Z])/, lists);
+    await applySpec(page, {
+      choices: { gap: 'xs', landmark: 'region' },
+      flags: ['scrollable'],
+      text: { ariaLabel: column.title },
+    });
+    await addChild(page, 'ListHeader');
+    await setText(page, 'label', column.title);
+    for (const card of column.cards)
+      await contentItemInto(
+        page,
+        /^List(?![A-Z])/,
+        lists,
+        card,
+        `In ${column.title}`,
+      );
+    // Each DemoContentItem holds a List of its own.
+    lists += 1 + column.cards.length;
+  }
+}
+
+/** The ColumnTrack `board` builds, given the track's props. */
+const boardNode = (props: Record<string, unknown>) =>
+  pane(
+    node('column-track', props, {
+      children: BOARD.map((column) =>
+        node(
+          'list',
+          {
+            gap: 'xs',
+            landmark: 'region',
+            scrollable: true,
+            ariaLabel: column.title,
+          },
+          {
+            children: [
+              node('list-header', { label: column.title }),
+              ...column.cards.map((card) =>
+                demoContentItem(card, `In ${column.title}`),
+              ),
+            ],
+          },
+        ),
+      ),
+    }),
+  );
+
+// KF-CW7Z38: the track is named through ColumnTrack `ariaLabel` and each
+// column through List `landmark="region"`, not rootAttributes.
+test('builds ColumnTrack › Scrolling Board', async ({ page }) => {
+  test.setTimeout(test.info().timeout * 6);
+  await board(page, { text: { ariaLabel: 'Board' } });
+  await expect(
+    canvas(page).getByRole('region', { name: 'Board', exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(boardNode({ ariaLabel: 'Board' }));
+});
+
+test('builds ColumnTrack › Paged Board', async ({ page }) => {
+  test.setTimeout(test.info().timeout * 6);
+  await board(page, {
+    choices: { layout: 'paged' },
+    text: { ariaLabel: 'Paged Board' },
+  });
+  await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
+  expect(await exported(page)).toEqual(
+    boardNode({ layout: 'paged', ariaLabel: 'Paged Board' }),
   );
 });

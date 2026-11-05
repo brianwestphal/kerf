@@ -30,4 +30,33 @@ describe('ColumnTrack', () => {
       'aria-label="Board" id="board" class="kui-column-track tickets" data-component="column-track" data-layout="paged" style="--_kui-column-track-min-width:280px;--_kui-column-track-peek:32px" slot="body"',
     );
   });
+  it('names the track as a region with ariaLabel, owning its role and name', () => {
+    const html = String(
+      ColumnTrack({
+        children: <section />,
+        ariaLabel: 'Board',
+        rootAttributes: {
+          role: 'group',
+          'aria-label': 'Overridden',
+          'aria-busy': 'true',
+          'data-board': 'tickets',
+        },
+      }),
+    );
+    expect(html).toContain(
+      'data-board="tickets" aria-busy="true" role="region" aria-label="Board" class="kui-column-track"',
+    );
+    expect(html).not.toContain('Overridden');
+    expect(html).not.toContain('role="group"');
+    // Without a name the track keeps rootAttributes' structural metadata.
+    expect(
+      String(
+        ColumnTrack({
+          children: <section />,
+          ariaLabel: '',
+          rootAttributes: { role: 'group', 'aria-label': 'Columns' },
+        }),
+      ),
+    ).toContain('role="group" aria-label="Columns" class="kui-column-track"');
+  });
 });

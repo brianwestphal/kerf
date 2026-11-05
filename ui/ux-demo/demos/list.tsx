@@ -290,14 +290,10 @@ export function ListDemo() {
       </CatalogExample>
       <CatalogExample
         label="Document Inset"
-        note='inset="document" gives long reading content 24px block and 32px inline insets, narrowing to 16px inline on phones; rootAttributes can name the stack as a region.'
+        note='inset="document" gives long reading content 24px block and 32px inline insets, narrowing to 16px inline on phones; landmark="region" with ariaLabel names the stack as a region.'
         viewport={{ frame: 'solid', surface: 'default', overflow: 'hidden' }}
       >
-        <List
-          inset="document"
-          gap="m"
-          rootAttributes={{ role: 'region', 'aria-label': 'Reader' }}
-        >
+        <List inset="document" gap="m" landmark="region" ariaLabel="Reader">
           <Text variant="h3">Release notes</Text>
           <Text>
             The reader keeps a generous inset so long lines of prose have room
@@ -343,11 +339,9 @@ export function ListDemo() {
           gap="2xs"
           minHeight={rem(4.25)}
           maxHeight={rem(14)}
-          rootAttributes={{
-            role: 'region',
-            'aria-label': 'Possible Duplicates',
-            'data-demo-result-picker': '',
-          }}
+          landmark="region"
+          ariaLabel="Possible Duplicates"
+          rootAttributes={{ 'data-demo-result-picker': '' }}
         >
           {RESULT_PICKER_CANDIDATES.map((candidate) => (
             <ListItem
@@ -443,11 +437,9 @@ export function ListDemo() {
           </Row>
           <List
             gap="xs"
-            rootAttributes={{
-              role: 'region',
-              'aria-label': 'Transitioning Rows',
-              'data-vt-row-viewport': '',
-            }}
+            landmark="region"
+            ariaLabel="Transitioning Rows"
+            rootAttributes={{ 'data-vt-row-viewport': '' }}
             minHeight={rem(17)}
             maxHeight={rem(17)}
             scrollable

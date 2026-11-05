@@ -50,3 +50,22 @@ test('ColumnTrack scrolls min-width columns and snaps paged columns', async ({
     )
     .toBe(paged.padding);
 });
+
+// KF-CW7Z38: the boards and their columns are named regions through
+// ColumnTrack `ariaLabel` and List `landmark="region"`, not rootAttributes.
+test('ColumnTrack boards and their columns are named regions', async ({
+  page,
+}) => {
+  await page.goto('/?component=column-track');
+  for (const name of ['Board', 'Paged Board']) {
+    // The catalog example around the paged board shares its name.
+    const board = page
+      .getByRole('region', { name, exact: true })
+      .and(page.locator('.kui-column-track'));
+    await expect(board).toBeVisible();
+    for (const column of ['To Do', 'In Progress', 'Review', 'Done', 'Later'])
+      await expect(
+        board.getByRole('region', { name: column, exact: true }),
+      ).toHaveAttribute('data-component', 'list');
+  }
+});

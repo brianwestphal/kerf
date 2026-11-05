@@ -36,6 +36,7 @@ Exact prop names and types: [`@kerfjs/ui/column-track`](../public-api-signatures
 
 - scroll with a minimum column width
 - paged with peek and mandatory snapping
+- ariaLabel: the track is a named role=region
 
 ## Composition
 
@@ -45,7 +46,7 @@ Exact prop names and types: [`@kerfjs/ui/column-track`](../public-api-signatures
 
 ## State and wiring
 
-**The app owns:** the columns and their content; choosing scroll or paged layout (for example by device class); drag and drop between columns.
+**The app owns:** the columns and their content; choosing scroll or paged layout (for example by device class); drag and drop between columns; the board's and each column's accessible name.
 
 No wiring helper.
 
@@ -57,7 +58,7 @@ Margin: none · border: none · padding: self (layout role: structure). `self` m
 
 ## Accessibility
 
-- Name the track with aria-label through rootAttributes when it is a landmark-like region; give each column a region name. Paged scrolling is smooth unless reduced motion is preferred.
+- Name the track with ariaLabel, which makes it a role=region with that name, and name each column List with landmark="region" and its own ariaLabel. Paged scrolling is smooth unless reduced motion is preferred.
 
 ## Styling boundary
 

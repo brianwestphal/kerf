@@ -1,0 +1,97 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "ListResultPicker",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:list",
+          "props": {
+            "gap": "2xs",
+            "landmark": "region",
+            "scrollable": true,
+            "frame": true,
+            "ariaLabel": "Possible Duplicates",
+            "rootAttributes": {
+              "data-demo-result-picker": ""
+            },
+            "minHeight": {
+              "$css": "rem(4.25)"
+            },
+            "maxHeight": {
+              "$css": "rem(14)"
+            }
+          },
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Dialog footer hides the last message",
+                  "action": "log-result-picker",
+                  "multiline": true,
+                  "itemId": "result-1",
+                  "description": "Closed last week, surface scaffold"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Transcript stops above the composer",
+                  "action": "log-result-picker",
+                  "multiline": true,
+                  "itemId": "result-2",
+                  "description": "Open, chat dialog"
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "MessageComposer grows past the panel on phones",
+                  "action": "log-result-picker",
+                  "multiline": true,
+                  "itemId": "result-3",
+                  "description": "Closed in September, composer"
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Floating footer loses its offset after resize",
+                  "action": "log-result-picker",
+                  "multiline": true,
+                  "itemId": "result-4",
+                  "description": "Open, surface scaffold"
+                }
+              },
+              {
+                "id": "00000000000000000000000007",
+                "type": "@kerfjs/ui:list-item",
+                "props": {
+                  "label": "Scrollable list compresses multiline rows",
+                  "action": "log-result-picker",
+                  "multiline": true,
+                  "itemId": "result-5",
+                  "description": "Closed in August, list"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

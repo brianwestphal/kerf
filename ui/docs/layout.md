@@ -905,6 +905,11 @@ nearly the visible width, lets the next one `peek` in (24px), snaps to column
 starts, hides the scrollbar, and scrolls smoothly unless reduced motion is
 preferred. Choose the layout per device class in the app.
 
+Name a board with `ariaLabel`: the track becomes a `role="region"` with that
+name. Name each column the same way: a column `List` takes
+`landmark="region"` and its own `ariaLabel`. Both are props, so a view
+document carries them; `rootAttributes` holds only `data-*` there.
+
 ## Row and List alignment
 
 Use `Row` for a horizontal flex layout and `List` for a vertical one. `Row`

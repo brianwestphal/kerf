@@ -1332,6 +1332,34 @@ describe('production UI primitives', () => {
     expect(() => List({ selectionMode: 'single' } as ListProps)).toThrow(
       'Single-select List requires an ariaLabel',
     );
+    const landmark = asHtml(
+      List({
+        landmark: 'region',
+        ariaLabel: 'Reader',
+        inset: 'document',
+        rootAttributes: {
+          role: 'group',
+          'aria-label': 'Overridden',
+          'aria-busy': 'true',
+          'data-panel': 'reader',
+        },
+      }),
+    );
+    expect(landmark).toContain(
+      'data-panel="reader" aria-busy="true" role="region" aria-label="Reader" class="kui-list"',
+    );
+    expect(landmark).not.toContain('Overridden');
+    expect(landmark).not.toContain('aria-multiselectable');
+    expect(() => List({ landmark: 'region' } as ListProps)).toThrow(
+      'List landmark requires an ariaLabel',
+    );
+    expect(() =>
+      List({
+        landmark: 'region',
+        selectionMode: 'single',
+        ariaLabel: 'Tickets',
+      } as unknown as ListProps),
+    ).toThrow('cannot also set a selectionMode');
     const region = asHtml(
       List({
         inset: 'document',

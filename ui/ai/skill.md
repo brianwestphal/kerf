@@ -166,6 +166,11 @@ An option SummaryRow accepts `draggable` on its root in either row or card
 presentation; the application owns dragstart/drop behavior, while the same
 option keeps its keyboard selection target and delegated `data-*` identity.
 
+Name a List people navigate to by name (a reader, a result picker, a board
+column) with `landmark="region"` and a required `ariaLabel`, not a `role` in
+`rootAttributes`; a landmark List takes no `selectionMode`. Name a
+`ColumnTrack` board with `ariaLabel`, which makes the track a `role="region"`.
+
 ## Components own their styles; configure, never override
 
 This is the rule every Kerf UI surface follows, and applications and

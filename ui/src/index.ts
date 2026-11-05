@@ -86,6 +86,7 @@ export {
   List,
   type ListConfig,
   type ListInset,
+  type ListLandmark,
   type ListProps,
   type ListSelectionMode,
   type ListSurface,
