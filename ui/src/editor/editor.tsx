@@ -2293,6 +2293,9 @@ export function createEditor(options: EditorOptions) {
     );
     const current = record[field.name];
     const bound = isParamOrBind(current) ? JSON.stringify(current) : '';
+    // KF-5ZMAEM: a field bound to a param names it, as a bound prop's row
+    // does (KF-1HEZZZ); renaming it follows every use.
+    const param = (current as { $param?: unknown } | undefined)?.$param;
     const choices = [
       { value: '', label: 'Not bound' },
       ...options.map((option) => ({
@@ -2331,6 +2334,15 @@ export function createEditor(options: EditorOptions) {
               'data-editor-bind-place': JSON.stringify(at),
             }}
           />
+          {typeof param !== 'string' ? undefined : (
+            <TextField
+              label={`${propLabel(field.name)} param`}
+              value={param}
+              hint="Renaming the param updates every prop and field that uses it."
+              error={fieldErrors.value[`#param:${param}`]}
+              rootAttributes={{ 'data-editor-param': param }}
+            />
+          )}
           <Row>
             <Button
               emphasis="secondary"

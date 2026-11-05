@@ -255,3 +255,68 @@ describe('binding a field of an unset object (KF-PTMNSZ)', () => {
     expect(source.textContent).not.toContain('Param count');
   });
 });
+
+// KF-5ZMAEM: a field promoted to a param is renamed from its form, as a
+// bound prop's row renames its param (KF-1HEZZZ).
+describe('renaming a field-level param (KF-5ZMAEM)', () => {
+  const bound = (doc: ViewDocument) =>
+    setField(
+      setField(doc, CARD, 'media', ['src'], { $param: 'title' }),
+      ROW,
+      'media',
+      ['src'],
+      { $param: 'title' },
+    );
+
+  it('renames the param and every field that uses it', () => {
+    const root = window.document.createElement('div');
+    window.document.body.append(root);
+    const editor = createEditor({ document: bound(document) });
+    attach(root, editor);
+    editor.selection.value = { kind: 'node', id: CARD };
+    root
+      .querySelector<HTMLElement>(
+        `[data-editor-open='${JSON.stringify({ prop: 'media', path: [] })}']`,
+      )!
+      .click();
+    const name = root.querySelector<HTMLElement>(
+      '[data-editor-param="title"]',
+    )!;
+    expect(name.textContent).toContain('Src param');
+    const input = name.querySelector('input')!;
+    input.value = 'skylineUrl';
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    const next = editor.document.value;
+    expect(Object.keys(next.params ?? {})).toContain('skylineUrl');
+    expect(next.params?.title).toBeUndefined();
+    expect(media(next, CARD)).toEqual({
+      src: { $param: 'skylineUrl' },
+      alt: '',
+    });
+    expect(media(next, ROW)).toEqual({
+      src: { $param: 'skylineUrl' },
+      alt: '',
+    });
+  });
+
+  it('shows no name for a field bound to an item field', () => {
+    const root = window.document.createElement('div');
+    window.document.body.append(root);
+    const editor = createEditor({
+      document: setField(document, ROW, 'media', ['src'], {
+        $bind: 'card.art',
+      }),
+    });
+    attach(root, editor);
+    editor.selection.value = { kind: 'node', id: ROW };
+    root
+      .querySelector<HTMLElement>(
+        `[data-editor-open='${JSON.stringify({ prop: 'media', path: [] })}']`,
+      )!
+      .click();
+    expect(root.querySelector('[data-editor-bind="field-source"]')).not.toBe(
+      null,
+    );
+    expect(root.querySelector('[data-editor-param]')).toBe(null);
+  });
+});

@@ -17145,6 +17145,20 @@ async function bindField(page: Page, label: string, source?: string) {
   ).toContainText(source ?? 'Param ');
 }
 
+/** Renames the param an open object form's bound field uses (KF-5ZMAEM). */
+async function nameFieldParam(page: Page, from: string, to: string) {
+  const field = page
+    .locator(`[data-editor-param="${from}"] input`)
+    .filter({ visible: true });
+  await field.click();
+  await page.keyboard.press('ControlOrMeta+a');
+  await page.keyboard.type(to);
+  await page.keyboard.press('Enter');
+  await expect(
+    page.locator(`[data-editor-param="${to}"]`).filter({ visible: true }),
+  ).toHaveCount(1);
+}
+
 // KF-YNDRE1: the artwork is the app's generated SVG URLs. The first card
 // promotes media.src and media.blurredSrc to params with the field-level
 // Promote to a param, and the other cards bind the same params; the third
@@ -17168,11 +17182,14 @@ test('builds ContentItem › Image-Tinted Feed Cards', async ({ page }) => {
     // KF-PTMNSZ: Src binds before media's other required field (alt) is
     // set; Source judges the field alone.
     if (index === 0) {
+      // KF-5ZMAEM: each promoted field's param is named in the form.
       await bindField(page, 'Src');
+      await nameFieldParam(page, 'nodeMediaSrc', 'skylineUrl');
       await bindField(page, 'Blurred src');
+      await nameFieldParam(page, 'nodeMediaBlurredSrc', 'skylineBlurredUrl');
     } else {
-      await bindField(page, 'Src', 'Param nodeMediaSrc');
-      await bindField(page, 'Blurred src', 'Param nodeMediaBlurredSrc');
+      await bindField(page, 'Src', 'Param skylineUrl');
+      await bindField(page, 'Blurred src', 'Param skylineBlurredUrl');
     }
     // The demo's alt is empty: type it, then clear it.
     await setField(page, 'media', ['alt'], 'x');
@@ -17258,9 +17275,9 @@ test('builds ContentItem › Image-Tinted Feed Cards', async ({ page }) => {
   );
   await expect(page.getByText(/problems? in this document/)).toHaveCount(0);
   const media = (index: number) => ({
-    src: { $param: 'nodeMediaSrc' },
+    src: { $param: 'skylineUrl' },
     alt: '',
-    blurredSrc: { $param: 'nodeMediaBlurredSrc' },
+    blurredSrc: { $param: 'skylineBlurredUrl' },
     aspectRatio: 16 / 9,
     parallax: 'subtle',
     deferOffscreen: true,

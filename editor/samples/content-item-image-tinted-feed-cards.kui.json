@@ -30,13 +30,13 @@
                   "appearance": "surface",
                   "media": {
                     "src": {
-                      "$param": "nodeMediaSrc"
+                      "$param": "skylineUrl"
                     },
                     "alt": "",
                     "aspectRatio": 1.7777777777777777,
                     "parallax": "subtle",
                     "blurredSrc": {
-                      "$param": "nodeMediaBlurredSrc"
+                      "$param": "skylineBlurredUrl"
                     },
                     "deferOffscreen": true
                   },
@@ -124,13 +124,13 @@
                   "appearance": "surface",
                   "media": {
                     "src": {
-                      "$param": "nodeMediaSrc"
+                      "$param": "skylineUrl"
                     },
                     "alt": "",
                     "aspectRatio": 1.7777777777777777,
                     "parallax": "subtle",
                     "blurredSrc": {
-                      "$param": "nodeMediaBlurredSrc"
+                      "$param": "skylineBlurredUrl"
                     },
                     "deferOffscreen": true
                   },
@@ -218,13 +218,13 @@
                   "appearance": "surface",
                   "media": {
                     "src": {
-                      "$param": "nodeMediaSrc"
+                      "$param": "skylineUrl"
                     },
                     "alt": "",
                     "aspectRatio": 1.7777777777777777,
                     "parallax": "subtle",
                     "blurredSrc": {
-                      "$param": "nodeMediaBlurredSrc"
+                      "$param": "skylineBlurredUrl"
                     },
                     "deferOffscreen": true,
                     "fadeTo": {
@@ -371,12 +371,12 @@
     }
   },
   "params": {
-    "nodeMediaSrc": {
+    "skylineUrl": {
       "type": {
         "kind": "string"
       }
     },
-    "nodeMediaBlurredSrc": {
+    "skylineBlurredUrl": {
       "type": {
         "kind": "string"
       }
