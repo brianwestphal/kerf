@@ -126,6 +126,7 @@ export {
   type SummaryRowPresentation,
   type SummaryRowProps,
 } from './components/collections/summary-row/summary-row.js';
+export { wireSummaryRows } from './components/collections/summary-row/wiring/wire-summary-rows.js';
 export {
   ValuePreview,
   type ValuePreviewProps,

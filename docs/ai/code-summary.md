@@ -1112,6 +1112,20 @@ value rule (never true on a placeholder). Unit coverage in
 `ui/tests/unit/wire-list-reorder.test.ts` and
 `ui/tests/unit/list-row-reorder-props.test.ts`; Chromium drag/keyboard and
 geometry coverage in `ui/tests/browser/list-reorder.spec.ts`.
+`ui/src/components/collections/summary-row/wiring/wire-summary-rows.ts`
+(`@kerfjs/ui/wire-summary-rows`, `wireSummaryRows(root)`) gives `SummaryRow`
+options in a `List selectionMode="single"` listbox one roving Tab stop,
+Up/Down/Home/End focus movement, and Enter/Space selection through the
+option's delegated click (KF-3WS7RR, Kerf-owned listbox keyboard). It and
+`wireContentItems` (multi-select grid rows and single-select listbox options)
+share `ui/src/shared/dom/roving-tabindex.ts` (the per-container roving stop,
+restored after re-renders) and `ui/src/shared/dom/key-activation.ts` (Enter now,
+Space on release, modifiers mirrored on the click). Both skip a key event that
+is already `defaultPrevented`, which is the app's override hook. Unit coverage
+in `ui/tests/unit/wire-summary-rows.test.tsx` and
+`ui/tests/unit/content-item-interaction.test.tsx`; three-engine keyboard
+coverage in `ui/tests/browser/summary-row.spec.ts` and
+`ui/tests/browser/content-item-interaction.spec.ts`.
 `ui/src/components/collections/list/wiring/wire-list-focus-scroll.ts`
 (`@kerfjs/ui/wire-list-focus-scroll`, `wireListFocusScroll(root)`) scrolls a
 `:focus-visible` element inside a `scrollable` List into view (`block`/`inline`

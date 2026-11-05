@@ -380,20 +380,21 @@ describe('wireContentItems', () => {
     root.remove();
   });
 
-  it('activates single-select options in a List listbox without moving focus by arrow keys', () => {
+  it('roves, moves, and activates single-select options in a List listbox', async () => {
     const root = document.createElement('div');
-    const selected = signal('one');
+    const selected = signal('two');
     const options = () => (
       <List selectionMode="single" ariaLabel="Saved Views">
-        {['one', 'two'].map((id) => (
+        {['one', 'two', 'three', 'four'].map((id) => (
           <ContentItem
             interactive
             action="choose-view"
             itemId={id}
             selectionMode="single"
             selected={selected.value === id}
+            disabled={id === 'three'}
           >
-            {id}
+            {id === 'four' ? <button type="button">Nested</button> : id}
           </ContentItem>
         ))}
       </List>
@@ -405,16 +406,13 @@ describe('wireContentItems', () => {
     expect(listbox.hasAttribute('aria-multiselectable')).toBe(false);
     const option = (id: string) =>
       listbox.querySelector<HTMLElement>(`[data-item-id="${id}"]`)!;
-    expect(
-      [...listbox.querySelectorAll('[role="option"]')].map((node) => [
-        node.getAttribute('data-item-id'),
-        node.getAttribute('aria-selected'),
-        node.getAttribute('tabindex'),
-      ]),
-    ).toEqual([
-      ['one', 'true', '0'],
-      ['two', 'false', '0'],
-    ]);
+    const stops = () =>
+      [...listbox.querySelectorAll('[role="option"]')].map(
+        (node) =>
+          `${node.getAttribute('data-item-id')}:${node.getAttribute('tabindex')}`,
+      );
+    // Unwired, every enabled option is its own Tab stop.
+    expect(stops()).toEqual(['one:0', 'two:0', 'three:-1', 'four:0']);
     // The app owns selection: an activation dispatches the option's action.
     root.addEventListener('click', (event) => {
       const id = (event.target as HTMLElement).closest<HTMLElement>(
@@ -423,41 +421,139 @@ describe('wireContentItems', () => {
       if (id) selected.value = id;
     });
     const stop = wireContentItems(root);
+    // Wired, the listbox is one Tab stop on the selected option.
+    expect(stops()).toEqual(['one:-1', 'two:0', 'three:-1', 'four:-1']);
+    const key = (target: Element, name: string, init: KeyboardEventInit = {}) =>
+      target.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: name,
+          bubbles: true,
+          cancelable: true,
+          ...init,
+        }),
+      );
     option('two').focus();
-    option('two').dispatchEvent(
-      new KeyboardEvent('keydown', {
-        key: 'Enter',
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
-    expect(option('one').getAttribute('aria-selected')).toBe('false');
+    // Up/Down/Home/End move focus (skipping the disabled option) without
+    // selecting; the stop follows focus.
+    expect(key(option('two'), 'ArrowDown')).toBe(false);
+    expect(document.activeElement).toBe(option('four'));
+    expect(stops()).toEqual(['one:-1', 'two:-1', 'three:-1', 'four:0']);
     expect(option('two').getAttribute('aria-selected')).toBe('true');
+    expect(key(option('four'), 'ArrowDown')).toBe(true);
+    expect(key(option('four'), 'Home')).toBe(false);
+    expect(document.activeElement).toBe(option('one'));
+    expect(key(option('one'), 'ArrowUp')).toBe(true);
+    expect(key(option('one'), 'End')).toBe(false);
+    expect(document.activeElement).toBe(option('four'));
+    expect(key(option('four'), 'ArrowUp')).toBe(false);
+    expect(document.activeElement).toBe(option('two'));
+    // A listbox is vertical: Left/Right and Ctrl/Meta-modified keys stay native.
+    expect(key(option('two'), 'ArrowRight')).toBe(true);
+    expect(key(option('two'), 'ArrowDown', { metaKey: true })).toBe(true);
+    expect(document.activeElement).toBe(option('two'));
+    // A nested control keeps the arrow keys.
+    const nested = option('four').querySelector('button')!;
+    nested.focus();
+    expect(key(nested, 'ArrowUp')).toBe(true);
+    expect(document.activeElement).toBe(nested);
+    // Enter and Space select the focused option through its click.
     option('one').focus();
-    option('one').dispatchEvent(
-      new KeyboardEvent('keydown', {
-        key: ' ',
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
-    option('one').dispatchEvent(
+    key(option('one'), 'Enter');
+    expect(option('one').getAttribute('aria-selected')).toBe('true');
+    expect(option('two').getAttribute('aria-selected')).toBe('false');
+    option('two').focus();
+    key(option('two'), ' ');
+    option('two').dispatchEvent(
       new KeyboardEvent('keyup', { key: ' ', bubbles: true, cancelable: true }),
     );
-    expect(option('one').getAttribute('aria-selected')).toBe('true');
-    // Arrow keys are the app's: a single-select option leaves them alone.
-    expect(
-      option('one').dispatchEvent(
+    expect(option('two').getAttribute('aria-selected')).toBe('true');
+    // A re-render resets template tabindex; the wiring restores the stop.
+    await new Promise((resolve) => globalThis.setTimeout(resolve, 0));
+    expect(stops()).toEqual(['one:-1', 'two:0', 'three:-1', 'four:-1']);
+    stop();
+    dispose();
+    root.remove();
+  });
+
+  it('lets an app intercept any grid or listbox key with preventDefault', () => {
+    const root = document.createElement('div');
+    root.innerHTML = String(
+      <div>
+        <List selectionMode="multiple" ariaLabel="Rows">
+          {['a', 'b'].map((id) => (
+            <ContentItem
+              interactive
+              action="pick"
+              itemId={id}
+              selectionMode="multiple"
+            >
+              {id}
+            </ContentItem>
+          ))}
+        </List>
+        <List selectionMode="single" ariaLabel="Options">
+          {['c', 'd'].map((id) => (
+            <ContentItem
+              interactive
+              action="pick"
+              itemId={id}
+              selectionMode="single"
+            >
+              {id}
+            </ContentItem>
+          ))}
+        </List>
+      </div>,
+    );
+    document.body.append(root);
+    const clicks: string[] = [];
+    root.addEventListener('click', (event) => {
+      clicks.push((event.target as HTMLElement).dataset.itemId!);
+    });
+    // The app's own handler, registered before wiring, claims every key on
+    // item "a" and "c"; Kerf leaves a prevented event alone.
+    const claimed = new Set(['a', 'c']);
+    root.addEventListener('keydown', (event) => {
+      if (claimed.has((event.target as HTMLElement).dataset.itemId!))
+        event.preventDefault();
+    });
+    const stop = wireContentItems(root);
+    const item = (id: string) =>
+      root.querySelector<HTMLElement>(`[data-item-id="${id}"]`)!;
+    for (const id of ['a', 'c']) {
+      item(id).focus();
+      for (const name of ['ArrowDown', 'End', 'Enter', ' ']) {
+        item(id).dispatchEvent(
+          new KeyboardEvent('keydown', {
+            key: name,
+            bubbles: true,
+            cancelable: true,
+          }),
+        );
+        expect(document.activeElement).toBe(item(id));
+      }
+      item(id).dispatchEvent(
+        new KeyboardEvent('keyup', { key: ' ', bubbles: true }),
+      );
+      expect(item(id).hasAttribute('data-kui-pressed')).toBe(false);
+    }
+    expect(clicks).toEqual([]);
+    // Unclaimed items keep Kerf's behavior: grid and listbox alike.
+    for (const [from, to] of [
+      ['b', 'a'],
+      ['d', 'c'],
+    ] as const) {
+      item(from).focus();
+      item(from).dispatchEvent(
         new KeyboardEvent('keydown', {
-          key: 'ArrowDown',
+          key: 'ArrowUp',
           bubbles: true,
           cancelable: true,
         }),
-      ),
-    ).toBe(true);
-    expect(document.activeElement).toBe(option('one'));
+      );
+      expect(document.activeElement).toBe(item(to));
+    }
     stop();
-    dispose();
     root.remove();
   });
 

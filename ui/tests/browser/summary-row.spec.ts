@@ -104,7 +104,12 @@ test('row and card options keep native dragstart after a selection rerender', as
       const second = options.nth(1);
       await expect(first).toHaveAttribute('data-presentation', presentation);
       await expect(first).toHaveAttribute('draggable', 'true');
-      await expect(first).toHaveAttribute('tabindex', '0');
+      // wireSummaryRows keeps one Tab stop per listbox, on the selected row.
+      await expect(
+        page
+          .getByRole('listbox', { name })
+          .locator('[role="option"][tabindex="0"]'),
+      ).toHaveCount(1);
       await expect(first).toHaveAttribute('data-item-id', 'KF-12');
       await second.click();
       await expect(second).toHaveAttribute('aria-selected', 'true');
@@ -186,5 +191,81 @@ test('a long title clamps with an ellipsis while the trailing meta stays on its 
           `summary-row-clamp-${testInfo.project.name}-${width}.png`,
         ),
       });
+  }
+});
+
+// KF-3WS7RR: a SummaryRow listbox is one Tab stop; Up/Down/Home/End move the
+// focus ring without selecting, Enter and Space select, and an app keydown
+// listener that calls preventDefault() first overrides Kerf's handling.
+test('a SummaryRow listbox roves one Tab stop with arrow keys and selects with Enter and Space', async ({
+  page,
+}, testInfo) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 1100 });
+    await page.goto('/?component=summary-row');
+    const list = page.getByRole('listbox', { name: 'Tickets' });
+    const options = list.getByRole('option');
+    await expect(options).toHaveCount(3);
+    await expect(options.nth(0)).toHaveAttribute('aria-selected', 'true');
+    await expect(list.locator('[role="option"][tabindex="0"]')).toHaveCount(1);
+    await expect(options.nth(0)).toHaveAttribute('tabindex', '0');
+
+    // Tab enters the listbox once, on the selected option, and leaves it on
+    // the next Tab.
+    await page.getByRole('listbox', { name: 'Tickets' }).evaluate((node) => {
+      const before = document.createElement('button');
+      before.id = 'before-tickets';
+      before.textContent = 'Before';
+      node.before(before);
+    });
+    await page.locator('#before-tickets').focus();
+    await page.keyboard.press('Tab');
+    await expect(options.nth(0)).toBeFocused();
+    await expect(options.nth(0)).not.toHaveCSS('box-shadow', 'none');
+    await page.keyboard.press('ArrowDown');
+    await expect(options.nth(1)).toBeFocused();
+    await expect(options.nth(1)).toHaveAttribute('aria-selected', 'false');
+    await expect(options.nth(1)).toHaveAttribute('tabindex', '0');
+    await expect(options.nth(0)).toHaveAttribute('tabindex', '-1');
+    // The keyboard focus ring follows the arrow keys.
+    await expect(options.nth(1)).not.toHaveCSS('box-shadow', 'none');
+    if (testInfo.project.name !== 'firefox')
+      await list.screenshot({
+        path: testInfo.outputPath(
+          `summary-row-listbox-focus-${testInfo.project.name}-${width}.png`,
+        ),
+      });
+    await page.keyboard.press('End');
+    await expect(options.nth(2)).toBeFocused();
+    await page.keyboard.press('Home');
+    await expect(options.nth(0)).toBeFocused();
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+    await expect(options.nth(1)).toHaveAttribute('aria-selected', 'true');
+    await expect(options.nth(0)).toHaveAttribute('aria-selected', 'false');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Space');
+    await expect(options.nth(2)).toHaveAttribute('aria-selected', 'true');
+    await expect(options.nth(2)).toBeFocused();
+    // Shift+Tab leaves the listbox in one step (no other option is a Tab
+    // stop), and Tab comes back to the option last focused.
+    await page.keyboard.press('Shift+Tab');
+    expect(
+      await list.evaluate((node) => node.contains(document.activeElement)),
+    ).toBe(false);
+    await page.keyboard.press('Tab');
+    await expect(options.nth(2)).toBeFocused();
+
+    // An app listener on the option that prevents ArrowUp and Enter wins.
+    await options.nth(2).evaluate((node: HTMLElement) => {
+      node.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowUp' || event.key === 'Enter')
+          event.preventDefault();
+      });
+    });
+    await page.keyboard.press('ArrowUp');
+    await expect(options.nth(2)).toBeFocused();
+    await page.keyboard.press('Home');
+    await expect(options.nth(0)).toBeFocused();
   }
 });

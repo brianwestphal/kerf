@@ -1,3 +1,9 @@
+import { createKeyActivation } from '../../../../shared/dom/key-activation.js';
+import {
+  LINEAR_NAVIGATION_KEYS,
+  linearNavigationTarget,
+  wireRovingTabindex,
+} from '../../../../shared/dom/roving-tabindex.js';
 import { wireContentItemMedia } from './wire-content-item-media.js';
 
 const ITEM_SELECTOR =
@@ -6,6 +12,8 @@ const NESTED_CONTROL_SELECTOR =
   'button, a[href], input, select, textarea, [contenteditable="true"], [role="button"]';
 const MULTI_GRID_SELECTOR = '[role="grid"][aria-multiselectable="true"]';
 const MULTI_ROW_SELECTOR = `${ITEM_SELECTOR}[data-selection-mode="multiple"]`;
+const LISTBOX_SELECTOR = '[role="listbox"]:not([aria-multiselectable="true"])';
+const OPTION_SELECTOR = `${ITEM_SELECTOR}[data-selection-mode="single"]`;
 
 /** The enabled selectable rows of one multi-select grid, in order. */
 function gridRows(grid: Element): HTMLElement[] {
@@ -14,6 +22,15 @@ function gridRows(grid: Element): HTMLElement[] {
       `${MULTI_ROW_SELECTOR}:not([data-disabled="true"])`,
     ),
   ).filter((row) => row.closest(MULTI_GRID_SELECTOR) === grid);
+}
+
+/** The enabled options of one single-select listbox, in order. */
+function listboxOptions(listbox: Element): HTMLElement[] {
+  return Array.from(
+    listbox.querySelectorAll<HTMLElement>(
+      `${OPTION_SELECTOR}:not([data-disabled="true"])`,
+    ),
+  ).filter((option) => option.closest(LISTBOX_SELECTOR) === listbox);
 }
 
 function nextTile(
@@ -75,30 +92,6 @@ export function isContentItemActivation(
   return actionItem(item, event) === item;
 }
 
-type ActivationModifiers = Pick<
-  KeyboardEvent,
-  'shiftKey' | 'ctrlKey' | 'metaKey'
->;
-
-/**
- * Activate an item with a click that carries the activating key's modifier
- * state, so one delegated click handler serves pointer and keyboard
- * multi-selection alike (Shift extends a range, Cmd/Ctrl toggles one item).
- */
-function activate(item: HTMLElement, modifiers: ActivationModifiers) {
-  item.dispatchEvent(
-    new MouseEvent('click', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-      view: item.ownerDocument.defaultView,
-      shiftKey: modifiers.shiftKey,
-      ctrlKey: modifiers.ctrlKey,
-      metaKey: modifiers.metaKey,
-    }),
-  );
-}
-
 /**
  * Give interactive ContentItems native-like Enter/Space activation with one
  * delegated listener pair. Space activates on release and is cancelled if
@@ -107,173 +100,72 @@ function activate(item: HTMLElement, modifiers: ActivationModifiers) {
  * Ctrl, and Meta state of the activating key (Space uses the state at press),
  * so the click handler can read `shiftKey` / `metaKey` / `ctrlKey` for
  * keyboard range and toggle selection. Alt-modified keys are left to the
- * platform. Returns a disposer.
+ * platform.
+ *
+ * A multi-select grid of `selectionMode="multiple"` rows and a single-select
+ * listbox of `selectionMode="single"` options are each one Tab stop (roving
+ * `tabindex`); Up/Down/Home/End move focus between their enabled items, and
+ * a `Grid` also moves Left/Right along its rendered lines. Selection stays the
+ * app's. Kerf skips any key event that is already `defaultPrevented`, so an
+ * app overrides a key by handling it first (on the item, in the capture
+ * phase, or from a listener added to the same root before wiring) and calling
+ * `preventDefault()`. Returns a disposer.
  */
 export function wireContentItems(root: HTMLElement): () => void {
   const stopMedia = wireContentItemMedia(root);
-  // Roving tabindex: each multi-select grid is one Tab stop, on the last
-  // focused row, else the first selected, else the first enabled row.
-  const activeRows = new WeakMap<Element, HTMLElement>();
-  const rove = (grid: Element) => {
-    const rows = gridRows(grid);
-    const remembered = activeRows.get(grid);
-    const stop =
-      remembered && rows.includes(remembered)
-        ? remembered
-        : (rows.find((row) => row.getAttribute('aria-selected') === 'true') ??
-          rows[0]);
-    for (const row of rows) {
-      const want = row === stop ? '0' : '-1';
-      if (row.getAttribute('tabindex') !== want)
-        row.setAttribute('tabindex', want);
-    }
-  };
-  const grids = () =>
-    [
-      ...(root.matches(MULTI_GRID_SELECTOR) ? [root] : []),
-      ...root.querySelectorAll(MULTI_GRID_SELECTOR),
-    ] as Element[];
-  // A re-render resets every row's tabindex to its template value, so the
-  // roving stop is restored after each change (deduplicated per task).
-  let roving = false;
-  const scheduleRove = () => {
-    if (roving) return;
-    roving = true;
-    globalThis.queueMicrotask(() => {
-      roving = false;
-      for (const grid of grids()) rove(grid);
-    });
-  };
-  const View = root.ownerDocument.defaultView;
-  const observer =
-    View && 'MutationObserver' in View
-      ? new View.MutationObserver(scheduleRove)
-      : null;
-  observer?.observe(root, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ['tabindex', 'aria-selected', 'data-disabled'],
+  const stopRoving = wireRovingTabindex(root, {
+    containerSelector: `${MULTI_GRID_SELECTOR}, ${LISTBOX_SELECTOR}`,
+    items: (container) =>
+      container.matches(MULTI_GRID_SELECTOR)
+        ? gridRows(container)
+        : listboxOptions(container),
+    itemFor: (target) =>
+      target.closest<HTMLElement>(`${MULTI_ROW_SELECTOR}, ${OPTION_SELECTOR}`),
   });
-  for (const grid of grids()) rove(grid);
-
-  const focusin = (event: FocusEvent) => {
-    const target = event.target;
-    if (!(target instanceof Element)) return;
-    const row = target.closest<HTMLElement>(MULTI_ROW_SELECTOR);
-    const grid = row?.closest(MULTI_GRID_SELECTOR);
-    if (!row || !grid || !root.contains(grid)) return;
-    activeRows.set(grid, row);
-    rove(grid);
-  };
-
-  let pendingSpace: {
-    item: HTMLElement;
-    modifiers: ActivationModifiers;
-  } | null = null;
-
-  const clearSpace = () => {
-    pendingSpace?.item.removeAttribute('data-kui-pressed');
-    pendingSpace = null;
-  };
+  const activation = createKeyActivation((event) => actionItem(root, event));
 
   const keydown = (event: KeyboardEvent) => {
     if (event.defaultPrevented || event.altKey) return;
     const item = actionItem(root, event);
     if (!item) return;
     const commandKey = event.ctrlKey || event.metaKey;
+    const mode = item.dataset.selectionMode;
     if (
       !commandKey &&
-      item.dataset.selectionMode === 'multiple' &&
-      [
-        'ArrowDown',
-        'ArrowUp',
-        'ArrowLeft',
-        'ArrowRight',
-        'Home',
-        'End',
-      ].includes(event.key)
+      (mode === 'multiple' || mode === 'single') &&
+      [...LINEAR_NAVIGATION_KEYS, 'ArrowLeft', 'ArrowRight'].includes(event.key)
     ) {
-      const grid = item.closest(MULTI_GRID_SELECTOR);
-      if (!grid) return;
-      const rows = gridRows(grid);
-      const index = rows.indexOf(item);
+      const container = item.closest(
+        mode === 'multiple' ? MULTI_GRID_SELECTOR : LISTBOX_SELECTOR,
+      );
+      if (!container) return;
+      const items =
+        mode === 'multiple' ? gridRows(container) : listboxOptions(container);
+      const index = items.indexOf(item);
       if (index < 0) return;
-      const isTileGrid = grid.getAttribute('data-component') === 'grid';
-      let next: HTMLElement | undefined;
-      switch (event.key) {
-        case 'Home':
-          next = rows[0];
-          break;
-        case 'End':
-          next = rows[rows.length - 1];
-          break;
-        case 'ArrowDown':
-        case 'ArrowUp':
-          next = isTileGrid
-            ? nextTile(item, rows, event.key)
-            : rows[index + (event.key === 'ArrowDown' ? 1 : -1)];
-          break;
-        case 'ArrowLeft':
-        case 'ArrowRight':
-          next = isTileGrid ? nextTile(item, rows, event.key) : undefined;
-          break;
-      }
+      const isTileGrid = container.getAttribute('data-component') === 'grid';
+      const next =
+        isTileGrid && event.key.startsWith('Arrow')
+          ? nextTile(item, items, event.key)
+          : linearNavigationTarget(items, index, event.key);
       if (next) {
         event.preventDefault();
         next.focus();
       }
       return;
     }
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      activate(item, event);
-      return;
-    }
-    if (event.key === ' ' || event.key === 'Spacebar') {
-      event.preventDefault();
-      if (event.repeat) return;
-      clearSpace();
-      pendingSpace = {
-        item,
-        modifiers: {
-          shiftKey: event.shiftKey,
-          ctrlKey: event.ctrlKey,
-          metaKey: event.metaKey,
-        },
-      };
-      item.setAttribute('data-kui-pressed', 'true');
-    }
-  };
-
-  const keyup = (event: KeyboardEvent) => {
-    if (event.key !== ' ' && event.key !== 'Spacebar') return;
-    if (!pendingSpace) return;
-    const { item, modifiers } = pendingSpace;
-    event.preventDefault();
-    clearSpace();
-    if (
-      item === actionItem(root, event) &&
-      item.ownerDocument.activeElement === item
-    )
-      activate(item, modifiers);
-  };
-
-  const focusout = (event: FocusEvent) => {
-    if (event.target === pendingSpace?.item) clearSpace();
+    activation.keydown(event, item);
   };
 
   root.addEventListener('keydown', keydown);
-  root.addEventListener('keyup', keyup);
-  root.addEventListener('focusout', focusout);
-  root.addEventListener('focusin', focusin);
+  root.addEventListener('keyup', activation.keyup);
+  root.addEventListener('focusout', activation.focusout);
   return () => {
     stopMedia();
-    clearSpace();
-    observer?.disconnect();
-    root.removeEventListener('focusin', focusin);
+    activation.clear();
+    stopRoving();
     root.removeEventListener('keydown', keydown);
-    root.removeEventListener('keyup', keyup);
-    root.removeEventListener('focusout', focusout);
+    root.removeEventListener('keyup', activation.keyup);
+    root.removeEventListener('focusout', activation.focusout);
   };
 }

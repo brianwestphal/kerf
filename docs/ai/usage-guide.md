@@ -310,6 +310,11 @@ Use `SummaryRow` for selectable list or board summaries. Its default root is
 an option; for a diagnostic row with a nested recovery button, set
 `semanticRole="group"` and `ariaLabel`. The group keeps the row's visual state
 without entering the option Tab order or exposing `aria-selected`.
+Put option rows in a `List selectionMode="single"` listbox and wire
+`wireSummaryRows(root)` once: Kerf makes the listbox one Tab stop, moves focus
+with Up/Down/Home/End, and selects with Enter/Space through the option's
+delegated click. Intercept a key by calling `preventDefault()` before Kerf's
+root listener sees it (on the option or in the capture phase).
 For native drag on selectable rows or cards, pass `draggable` to the option
 `SummaryRow`; the app still owns drag and drop handling.
 

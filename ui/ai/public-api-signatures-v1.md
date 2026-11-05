@@ -2057,6 +2057,29 @@ declare function wireListFocusScroll(root: Root): () => void;
 export { wireListFocusScroll };
 ```
 
+## `@kerfjs/ui/wire-summary-rows`
+
+```ts
+/**
+ * Give `SummaryRow` options in a `List selectionMode="single"` listbox the
+ * listbox keyboard with one delegated listener set: the listbox is one Tab
+ * stop (roving `tabindex` on the last focused option, else the selected one,
+ * else the first), Up/Down/Home/End move focus between options, and
+ * Enter/Space select the focused option by dispatching its click (Space on
+ * release), so the app's ordinary delegated `data-action` click handler
+ * changes the selection. The click mirrors the key's Shift, Ctrl, and Meta
+ * state; Alt-modified keys and Ctrl/Meta-modified movement keys are left to
+ * the platform. Kerf skips any key event that is already `defaultPrevented`,
+ * so an app overrides a key by handling it first (on the option, in the
+ * capture phase, or from a listener added to the same root before wiring) and
+ * calling `preventDefault()`. A `semanticRole="group"` row is not managed.
+ * Returns a disposer.
+ */
+declare function wireSummaryRows(root: HTMLElement): () => void;
+
+export { wireSummaryRows };
+```
+
 ## `@kerfjs/ui/nav-stack`
 
 ```ts

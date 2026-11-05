@@ -126,3 +126,39 @@ test('keyboard activation forwards Shift, Ctrl, and Meta to the click', async ({
       'metaKey',
     ]);
 });
+
+// KF-3WS7RR: a single-select ContentItem listbox is one Tab stop with
+// Up/Down/Home/End movement and Enter/Space selection.
+test('a single-select ContentItem listbox roves one Tab stop with arrow keys', async ({
+  page,
+}) => {
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?component=content-item');
+    const listbox = page.getByRole('listbox', { name: 'Documents' });
+    const optionA = listbox.locator('[data-demo-item="document-a"]');
+    const optionB = listbox.locator('[data-demo-item="document-b"]');
+    await expect(optionA).toHaveAttribute('aria-selected', 'true');
+    await expect(optionA).toHaveAttribute('tabindex', '0');
+    await expect(optionB).toHaveAttribute('tabindex', '-1');
+    await optionA.focus();
+    await page.keyboard.press('ArrowDown');
+    await expect(optionB).toBeFocused();
+    await expect(optionB).toHaveAttribute('aria-selected', 'false');
+    await expect(optionB).toHaveAttribute('tabindex', '0');
+    await page.keyboard.press('Home');
+    await expect(optionA).toBeFocused();
+    await page.keyboard.press('End');
+    await expect(optionB).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(optionB).toHaveAttribute('aria-selected', 'true');
+    await expect(optionA).toHaveAttribute('aria-selected', 'false');
+    await page.keyboard.press('ArrowUp');
+    await page.keyboard.press('Space');
+    await expect(optionA).toHaveAttribute('aria-selected', 'true');
+    // The selection moved the stop with focus: one Tab stop remains.
+    await expect(listbox.locator('[role="option"][tabindex="0"]')).toHaveCount(
+      1,
+    );
+  }
+});

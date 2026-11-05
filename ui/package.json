@@ -288,6 +288,10 @@
       "types": "./dist/wire-pane-chrome.d.ts",
       "import": "./dist/wire-pane-chrome.js"
     },
+    "./wire-summary-rows": {
+      "types": "./dist/wire-summary-rows.d.ts",
+      "import": "./dist/wire-summary-rows.js"
+    },
     "./wire-content-items": {
       "types": "./dist/wire-content-items.d.ts",
       "import": "./dist/wire-content-items.js"

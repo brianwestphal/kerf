@@ -448,6 +448,11 @@ labeled static diagnostic with a nested recovery action, while preserving
 the same visual row states without option selection semantics.
 Selectable SummaryRow options can also opt into native drag on their row or
 card root without splitting the selection and drag targets.
+`wireSummaryRows` (shipped) gives a SummaryRow listbox the Kerf-owned
+listbox keyboard (one roving Tab stop, Up/Down/Home/End, Enter/Space), and
+`wireContentItems` does the same for single-select ContentItem options; apps
+override any key with `preventDefault()` before Kerf handles it, in listboxes
+and multi-select grids alike.
 The List UX demo now exposes the shipped opt-in document View Transitions
 recipe with interactive reorder, insert, remove, and reset controls; it uses
 `each()` and keeps names, motion, scroll-position preservation, the visible

@@ -26,13 +26,14 @@ Present dense item summaries (tickets, tasks, messages) as selectable list rows 
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/summary-row` — exports `SummaryRow`.
+- JavaScript: `@kerfjs/ui/summary-row` — exports `SummaryRow`, `wireSummaryRows`.
 - CSS: the browser build of `@kerfjs/ui/summary-row` pulls its CSS automatically; import `@kerfjs/ui/summary-row.css` manually only without the `browser` export condition.
+- Wiring: `wireSummaryRows` from `@kerfjs/ui/wire-summary-rows` (optional).
 - Declared side effects: browser-condition-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/summary-row`](../public-api-signatures-v1.md#kerfjsuisummary-row) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/summary-row`](../public-api-signatures-v1.md#kerfjsuisummary-row), [`@kerfjs/ui/wire-summary-rows`](../public-api-signatures-v1.md#kerfjsuiwire-summary-rows) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
@@ -55,9 +56,13 @@ Exact prop names and types: [`@kerfjs/ui/summary-row`](../public-api-signatures-
 
 ## State and wiring
 
-**The app owns:** the selection set and keyboard movement inside the List selectionMode="single" listbox; the title, leading glyph, trailing meta, and metadata content; rail tone and dimming policy.
+**The app owns:** the selection set (Enter, Space, and click dispatch the option's delegated data-action click) and any key it intercepts with preventDefault; the title, leading glyph, trailing meta, and metadata content; rail tone and dimming policy.
 
-No wiring helper.
+**Wiring:** `wireSummaryRows` is optional.
+
+**Wiring-owned state attributes** — never render, remove, or branch on these as app state:
+
+- `data-kui-pressed` on `kui-summary-row` (`wireSummaryRows`): true on a listbox option while Space is held on it, before the release selects it; removed on release, when focus leaves the option, or on disposal.
 
 ## Geometry
 
@@ -68,7 +73,7 @@ Margin: none · border: self · padding: self (layout role: structure). `self` m
 
 ## Accessibility
 
-- By default SummaryRow is role=option with tabindex=0 and aria-selected; place options in a labeled List selectionMode="single" listbox and move focus with the arrow keys in the app. semanticRole=group requires ariaLabel and omits the root Tab stop and aria-selected, so a nested native action owns focus and activation. The rail is decorative; carry its meaning in text.
+- By default SummaryRow is role=option with tabindex=0 and aria-selected; place options in a labeled List selectionMode="single" listbox and wire wireSummaryRows once on the containing root: the listbox becomes one roving Tab stop (the last focused option, else the selected one, else the first) kept across re-renders, Up/Down/Home/End move focus without selecting, and Enter/Space select the focused option by dispatching its click (Space on release) with the key's Shift, Ctrl, and Cmd state. Kerf skips a key event that is already defaultPrevented, so an app overrides a key by handling it first (on the option, in the capture phase, or from a listener added to the wired root before wiring) and calling preventDefault(). semanticRole=group requires ariaLabel and omits the root Tab stop and aria-selected, so a nested native action owns focus and activation. The rail is decorative; carry its meaning in text.
 
 ## Styling boundary
 

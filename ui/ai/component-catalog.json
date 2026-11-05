@@ -3770,7 +3770,8 @@
       "uses": [],
       "purpose": "Present dense item summaries (tickets, tasks, messages) as selectable list rows or board cards with Kerf-owned selection, hover, focus, rail, clamping, list-edge rounding, and narrow compaction, without app row CSS.",
       "publicExports": [
-        "SummaryRow"
+        "SummaryRow",
+        "wireSummaryRows"
       ],
       "useWhen": [
         "A list or board shows many items as dense, selectable summaries with an identifier, a title, a timestamp, and metadata.",
@@ -3794,7 +3795,7 @@
         }
       ],
       "appOwns": [
-        "the selection set and keyboard movement inside the List selectionMode=\"single\" listbox",
+        "the selection set (Enter, Space, and click dispatch the option's delegated data-action click) and any key it intercepts with preventDefault",
         "the title, leading glyph, trailing meta, and metadata content",
         "rail tone and dimming policy"
       ],
@@ -3811,7 +3812,7 @@
         "native draggable option root for list rows and board cards"
       ],
       "accessibility": [
-        "By default SummaryRow is role=option with tabindex=0 and aria-selected; place options in a labeled List selectionMode=\"single\" listbox and move focus with the arrow keys in the app. semanticRole=group requires ariaLabel and omits the root Tab stop and aria-selected, so a nested native action owns focus and activation. The rail is decorative; carry its meaning in text."
+        "By default SummaryRow is role=option with tabindex=0 and aria-selected; place options in a labeled List selectionMode=\"single\" listbox and wire wireSummaryRows once on the containing root: the listbox becomes one roving Tab stop (the last focused option, else the selected one, else the first) kept across re-renders, Up/Down/Home/End move focus without selecting, and Enter/Space select the focused option by dispatching its click (Space on release) with the key's Shift, Ctrl, and Cmd state. Kerf skips a key event that is already defaultPrevented, so an app overrides a key by handling it first (on the option, in the capture phase, or from a listener added to the wired root before wiring) and calling preventDefault(). semanticRole=group requires ariaLabel and omits the root Tab stop and aria-selected, so a nested native action owns focus and activation. The rail is decorative; carry its meaning in text."
       ],
       "geometry": {
         "margin": "none",
@@ -3829,7 +3830,20 @@
           "browser-condition-css"
         ]
       },
-      "wiring": [],
+      "wiring": [
+        {
+          "export": "wireSummaryRows",
+          "import": "@kerfjs/ui/wire-summary-rows",
+          "required": false,
+          "stateAttributes": [
+            {
+              "name": "data-kui-pressed",
+              "on": "kui-summary-row",
+              "meaning": "true on a listbox option while Space is held on it, before the release selects it; removed on release, when focus leaves the option, or on disposal."
+            }
+          ]
+        }
+      ],
       "publicClasses": [
         "kui-summary-row",
         "kui-summary-row__rail",
@@ -4869,7 +4883,7 @@
         "contentWidth (compact 440px, medium 640px, wide 864px) and contentAlign for a readable, centered page column"
       ],
       "accessibility": [
-        "List adds layout only and no list role by default; selectionMode=\"single\" makes it a role=listbox and selectionMode=\"multiple\" an aria-multiselectable grid, each with a required ariaLabel. In a listbox the options own their Tab stop, aria-selected, and activation; the app owns the selection and any arrow-key movement. landmark=\"region\" with a required ariaLabel makes it a named role=region instead; a landmark List takes no selectionMode.",
+        "List adds layout only and no list role by default; selectionMode=\"single\" makes it a role=listbox and selectionMode=\"multiple\" an aria-multiselectable grid, each with a required ariaLabel. In a listbox the options own aria-selected; wireSummaryRows (SummaryRow options) or wireContentItems (ContentItem options) makes the listbox one roving Tab stop with Up/Down/Home/End movement and Enter/Space selection, while the app owns the selection. landmark=\"region\" with a required ariaLabel makes it a named role=region instead; a landmark List takes no selectionMode.",
         "Give a scrollable List a bounded block size and keep keyboard focus visible as its contents scroll.",
         "A focused scrollable List (a keyboard-focusable scroller) draws the theme focus ring inset and rounded inside its own box, so a rounded or clipping parent never cuts it off; do not restyle its focus.",
         "With wireListFocusScroll, a keyboard-focused (:focus-visible) element in a scrollable List whose focus ring crosses the clip is scrolled into view (block and inline nearest, honoring the ring-room scroll padding) in every engine; pointer focus never scrolls, so a click cannot move its row from under the pointer."
@@ -5714,7 +5728,7 @@
         "focusTarget makes the item a programmatic focus target (tabindex=\"-1\", never a tab stop), such as a NavStack view's data-nav-focus target.",
         "The frame is decorative and never the only signal of state.",
         "selectionMode=\"multiple\" renders a focusable row with aria-selected and a gridcell for nested controls; place it in a labeled List selectionMode=\"multiple\" grid. wireContentItems moves focus among rows with Up/Down and Home/End while nested controls retain those keys. Enter and Space activate the card with a click that carries the key's Shift, Ctrl, and Cmd state, so one delegated click handler implements range and toggle selection for pointer and keyboard alike. Guard the app's delegated card action with isContentItemActivation so a nested control does not select the row.",
-        "In a multi-select List or Grid, wireContentItems keeps one roving Tab stop (the last focused row, else the first selected, else the first enabled) across re-renders. A gridRow item is a row with a gridcell and no aria-selected or Tab stop; arrow keys skip it and its controls stay reachable by Tab."
+        "In a multi-select List or Grid, and in a single-select List listbox of selectionMode=\"single\" options, wireContentItems keeps one roving Tab stop (the last focused item, else the first selected, else the first enabled) across re-renders; in the listbox Up/Down/Home/End move focus between enabled options and Enter/Space select. Kerf skips a key event that is already defaultPrevented, so an app overrides a key by handling it first (on the item, in the capture phase, or from a listener added to the wired root before wiring) and calling preventDefault(). A gridRow item is a row with a gridcell and no aria-selected or Tab stop; arrow keys skip it and its controls stay reachable by Tab."
       ],
       "geometry": {
         "margin": "self",

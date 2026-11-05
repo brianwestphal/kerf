@@ -307,6 +307,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `PagedView`                                                  | `@kerfjs/ui/paged-view`                 | `@kerfjs/ui/paged-view.css`              |
 | `wirePagedViews`                                             | `@kerfjs/ui/wire-paged-views`           | —                                        |
 | `SummaryRow`                                                 | `@kerfjs/ui/summary-row`                | `@kerfjs/ui/summary-row.css`             |
+| `wireSummaryRows`                                            | `@kerfjs/ui/wire-summary-rows`          | —                                        |
 | `ColumnTrack`                                                | `@kerfjs/ui/column-track`               | `@kerfjs/ui/column-track.css`            |
 | `ContentSwap`                                                | `@kerfjs/ui/content-swap`               | `@kerfjs/ui/content-swap.css`            |
 | `FilePickerTrigger`, `FileDropZone`                          | `@kerfjs/ui/file-picker`                | `@kerfjs/ui/file-picker.css`             |

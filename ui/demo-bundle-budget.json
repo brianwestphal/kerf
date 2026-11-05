@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 455200,
+  "totalJavaScriptGzip": 455600,
   "measuredLargestJavaScriptGzip": 164549,
-  "measuredTotalJavaScriptGzip": 455118,
+  "measuredTotalJavaScriptGzip": 455592,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6851,6 +6851,22 @@
         "measuredTotalJavaScriptGzip": 455118,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 455200
+      }
+    },
+    {
+      "at": "2026-11-05T05:49:37.540Z",
+      "reason": "wireSummaryRows (KF-3WS7RR) and the shared roving-tabindex and key-activation helpers join the demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164549,
+        "measuredTotalJavaScriptGzip": 455118,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 455200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164549,
+        "measuredTotalJavaScriptGzip": 455592,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 455600
       }
     }
   ]

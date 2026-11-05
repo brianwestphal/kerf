@@ -6,7 +6,7 @@ Choose by the relationship between items, not by the presence of rows:
 | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | Label–value facts about one object                      | `ValueTable` and `ValueTableRow`. Use `density="compact"` when the facts belong in a compact inspector.                                         |
 | A framed group of settings or actions with row dividers | `FramedList`.                                                                                                                                   |
-| Selectable summaries in a listbox                       | `SummaryRow`; let the owning listbox handle selection and keyboard movement.                                                                    |
+| Selectable summaries in a listbox                       | `SummaryRow` in a `List selectionMode="single"` listbox; `wireSummaryRows` gives it one Tab stop, arrow-key focus, and Enter/Space selection.   |
 | Navigation, actions, or grouped content                 | `List` with the appropriate row component. `List` alone is layout, not an ARIA list or data grid.                                               |
 | Repeating records with aligned column headers and cells | A native `<table>` with `<th>` and `<td>`. Import `@kerfjs/ui/document.css` for the opt-in font baseline.                                       |
 | Many keyed, independently reactive rows                 | `bindList` from `kerfjs/list` when its row ownership or virtualization solves a measured need; compose the visible row with Kerf UI primitives. |

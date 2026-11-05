@@ -383,6 +383,20 @@ describe('consumer bundle boundaries', { timeout: 30_000 }, () => {
     expect(output(result, '.js')).toContain('focus-visible');
   });
 
+  it('keeps the SummaryRow listbox wiring a DOM-only module with no CSS or components', async () => {
+    const result = await bundle(
+      "import { wireSummaryRows } from '@kerfjs/ui/wire-summary-rows'; console.log(wireSummaryRows);",
+    );
+    const inputs = Object.keys(result.metafile!.inputs).filter(
+      (input) => input !== 'consumer.ts',
+    );
+    expect(inputs).toContain('dist/wire-summary-rows.js');
+    for (const input of inputs)
+      expect(input).toMatch(/^dist\/(wire-summary-rows|chunk-[A-Z0-9]+)\.js$/);
+    expect(output(result, '.css')).toBe('');
+    expect(output(result, '.js')).toContain('data-kui-pressed');
+  });
+
   it('keeps the scroll-divider wiring a DOM-only module with no CSS or components', async () => {
     const result = await bundle(
       "import { wireScrollDividers } from '@kerfjs/ui/wire-scroll-dividers'; console.log(wireScrollDividers);",
@@ -924,6 +938,11 @@ describe('consumer bundle boundaries', { timeout: 30_000 }, () => {
     expect(pkg.exports['./wire-list-focus-scroll']).not.toHaveProperty(
       'browser',
     );
+    expect(pkg.exports['./wire-summary-rows']).toMatchObject({
+      types: './dist/wire-summary-rows.d.ts',
+      import: './dist/wire-summary-rows.js',
+    });
+    expect(pkg.exports['./wire-summary-rows']).not.toHaveProperty('browser');
     expect(pkg.exports['./toolbar.css']).toBe('./dist/styles/toolbar.css');
     expect(pkg.exports['./list.css']).toBe('./dist/styles/list.css');
     expect(pkg.exports['./row']).toMatchObject({

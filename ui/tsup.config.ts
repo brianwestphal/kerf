@@ -116,6 +116,7 @@ const entries = [
   'paged-view',
   'wire-paged-views',
   'summary-row',
+  'wire-summary-rows',
   'wire-corner-status',
   'empty-state',
   'value-table',

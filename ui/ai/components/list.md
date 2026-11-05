@@ -107,7 +107,7 @@ Margin: none · border: conditional · padding: conditional (layout role: naviga
 
 ## Accessibility
 
-- List adds layout only and no list role by default; selectionMode="single" makes it a role=listbox and selectionMode="multiple" an aria-multiselectable grid, each with a required ariaLabel. In a listbox the options own their Tab stop, aria-selected, and activation; the app owns the selection and any arrow-key movement. landmark="region" with a required ariaLabel makes it a named role=region instead; a landmark List takes no selectionMode.
+- List adds layout only and no list role by default; selectionMode="single" makes it a role=listbox and selectionMode="multiple" an aria-multiselectable grid, each with a required ariaLabel. In a listbox the options own aria-selected; wireSummaryRows (SummaryRow options) or wireContentItems (ContentItem options) makes the listbox one roving Tab stop with Up/Down/Home/End movement and Enter/Space selection, while the app owns the selection. landmark="region" with a required ariaLabel makes it a named role=region instead; a landmark List takes no selectionMode.
 - Give a scrollable List a bounded block size and keep keyboard focus visible as its contents scroll.
 - A focused scrollable List (a keyboard-focusable scroller) draws the theme focus ring inset and rounded inside its own box, so a rounded or clipping parent never cuts it off; do not restyle its focus.
 - With wireListFocusScroll, a keyboard-focused (:focus-visible) element in a scrollable List whose focus ring crosses the clip is scrolled into view (block and inline nearest, honoring the ring-room scroll padding) in every engine; pointer focus never scrolls, so a click cannot move its row from under the pointer.

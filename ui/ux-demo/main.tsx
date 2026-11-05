@@ -65,6 +65,7 @@ import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { wireSearchFields } from '@kerfjs/ui/wire-search-fields';
 import { wireSidebar } from '@kerfjs/ui/wire-sidebar';
 import { wireSliders } from '@kerfjs/ui/wire-sliders';
+import { wireSummaryRows } from '@kerfjs/ui/wire-summary-rows';
 import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 import { wireTabNavigator } from '@kerfjs/ui/wire-tab-navigator';
 import { wireTagFields } from '@kerfjs/ui/wire-tag-fields';
@@ -2544,6 +2545,7 @@ const stopResizeObserver = delegate(
   },
 );
 const stopContentItems = wireContentItems(app);
+const stopSummaryRows = wireSummaryRows(app);
 const stopTabBars = wireTabBars(app, {
   onReorder: ({ barId, sourceId, targetId, position, source }) => {
     tabBarTabs.value = reorderTabs(
@@ -2639,6 +2641,7 @@ window.addEventListener(
     stopListReorder();
     stopListFocusScroll();
     stopContentItems();
+    stopSummaryRows();
     systemDarkTheme.removeEventListener('change', syncSystemTheme);
   },
   { once: true },
