@@ -64,6 +64,7 @@ No wiring helper.
 Margin: none · border: self · padding: self (layout role: structure). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
 - Rows sit flush in a list section and round only the corners at its edges; cards are borderless rounded cards.
+- A title longer than `titleLines` ends its last visible line with an ellipsis; do not add a clamp or `text-overflow` in app CSS.
 
 ## Accessibility
 
@@ -73,9 +74,9 @@ Margin: none · border: self · padding: self (layout role: structure). `self` m
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.
 
-Public class hooks (select for layout placement only, never to change the component's look): `kui-summary-row`, `kui-summary-row__rail`, `kui-summary-row__body`, `kui-summary-row__leading`, `kui-summary-row__content`, `kui-summary-row__title`, `kui-summary-row__trailing`, `kui-summary-row__metadata`.
+Public class hooks (select for layout placement only, never to change the component's look): `kui-summary-row`, `kui-summary-row__rail`, `kui-summary-row__body`, `kui-summary-row__leading`, `kui-summary-row__content`, `kui-summary-row__title`, `kui-summary-row__title-text`, `kui-summary-row__trailing`, `kui-summary-row__metadata`.
 
-Never put `kui-summary-row`, `kui-summary-row__rail`, `kui-summary-row__body`, `kui-summary-row__leading`, `kui-summary-row__content`, `kui-summary-row__title`, `kui-summary-row__trailing`, `kui-summary-row__metadata` on an element you write; render `SummaryRow` instead (`KUI-L103`).
+Never put `kui-summary-row`, `kui-summary-row__rail`, `kui-summary-row__body`, `kui-summary-row__leading`, `kui-summary-row__content`, `kui-summary-row__title`, `kui-summary-row__title-text`, `kui-summary-row__trailing`, `kui-summary-row__metadata` on an element you write; render `SummaryRow` instead (`KUI-L103`).
 
 Public tokens it reads: `--kui-color-neutral-border-quiet`, `--kui-color-text`, `--kui-color-surface`, `--kui-color-brand-border-normal`, `--kui-color-text-link`, `--kui-color-brand-fill-quiet`, `--kui-color-neutral-on-quiet`, `--kui-color-brand-fill-loud`, `--kui-color-pop-fill-loud`, `--kui-color-success-fill-loud`, `--kui-color-warning-fill-loud`, `--kui-color-danger-fill-loud`, `--kui-color-text-quiet`, `--kui-font-2xs`, `--kui-font-xs`, `--kui-layout-rounded-radius`, `--kui-space-2xs`, `--kui-space-s`, `--kui-space-xs`. Set a token only where its public contract allows; prefer a prop.
 

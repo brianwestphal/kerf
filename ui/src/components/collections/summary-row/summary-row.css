@@ -128,14 +128,26 @@
   gap: var(--kui-space-2xs);
 }
 
-/* The identity line clips at its line budget; the trailing meta floats to its
-   end so the title wraps around it. */
+/* The identity line clamps at its line budget and ends its last visible line
+   with an ellipsis; the trailing meta floats to its end so the title wraps
+   around it. The clamp box holds one block (`__title-text`) with the float and
+   the inline title content: WebKit turns a float that is a direct child of a
+   -webkit-box into its own box item, so the float lives one level down, where
+   every engine still clamps the nested lines. `max-height` is the fallback. */
 .kui-summary-row__title {
+  display: -webkit-box;
   min-width: 0;
   max-height: calc(var(--_kui-summary-row-title-lines) * 1.3em);
   overflow: hidden;
   line-height: 1.3;
   overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--_kui-summary-row-title-lines);
+}
+
+.kui-summary-row__title-text {
+  display: block;
+  min-width: 0;
 }
 
 .kui-summary-row__trailing {

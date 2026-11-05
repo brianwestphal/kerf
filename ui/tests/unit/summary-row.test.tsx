@@ -8,7 +8,7 @@ describe('SummaryRow', () => {
   it('renders an unselected row option with only the title zone by default', () => {
     expect(String(SummaryRow({ title: <span>Fix it</span> }))).toBe(
       '<div class="kui-summary-row" data-component="summary-row" data-presentation="row" role="option" tabindex="0" aria-selected="false">' +
-        '<div class="kui-summary-row__body"><div class="kui-summary-row__content"><div class="kui-summary-row__title"><span>Fix it</span></div></div></div></div>',
+        '<div class="kui-summary-row__body"><div class="kui-summary-row__content"><div class="kui-summary-row__title"><div class="kui-summary-row__title-text"><span>Fix it</span></div></div></div></div></div>',
     );
   });
 

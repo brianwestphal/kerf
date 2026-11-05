@@ -126,3 +126,65 @@ test('row and card options keep native dragstart after a selection rerender', as
     }
   }
 });
+
+// KF-KZNNT2: a title past its line budget clamps with an ellipsis (a line
+// clamp, not a bare max-height clip) in row and card form, the trailing meta
+// still floats at the first line's end, and a short title is not clamped.
+test('a long title clamps with an ellipsis while the trailing meta stays on its first line', async ({
+  page,
+}, testInfo) => {
+  const long =
+    ' Toolbar search overflows the trailing zone on narrow rails when the window is resized from wide to narrow and back again, clipping the final control and hiding its label behind the overflow menu for good';
+  for (const width of [1024, 390]) {
+    await page.setViewportSize({ width, height: 1100 });
+    await page.goto('/?component=summary-row');
+    for (const [name, lines] of [
+      ['Tickets', 2],
+      ['Board Column', 4],
+    ] as const) {
+      const list = page.getByRole('listbox', { name });
+      await expect(list.getByRole('option')).toHaveCount(3);
+      const measured = await list.evaluate((node, text) => {
+        const [first, second] =
+          node.querySelectorAll<HTMLElement>('[role="option"]');
+        const spans = first!.querySelectorAll(
+          '.kui-summary-row__title-text > .kui-text',
+        );
+        spans[spans.length - 1]!.textContent = text;
+        const measure = (row: HTMLElement) => {
+          const title = row.querySelector<HTMLElement>(
+            '.kui-summary-row__title',
+          )!;
+          const style = window.getComputedStyle(title);
+          const lineHeight = parseFloat(style.lineHeight);
+          const box = title.getBoundingClientRect();
+          const trailing = row
+            .querySelector('.kui-summary-row__trailing')!
+            .getBoundingClientRect();
+          return {
+            clamp: style.webkitLineClamp,
+            lines: Math.round(box.height / lineHeight),
+            clipped: title.scrollHeight > title.clientHeight + 1,
+            trailingTop: trailing.top - box.top,
+            trailingEnd: box.right - trailing.right,
+          };
+        };
+        return { long: measure(first!), short: measure(second!) };
+      }, long);
+      for (const row of [measured.long, measured.short]) {
+        expect(row.clamp).toBe(String(lines));
+        expect(Math.abs(row.trailingTop)).toBeLessThanOrEqual(2);
+        expect(Math.abs(row.trailingEnd)).toBeLessThanOrEqual(1);
+      }
+      expect(measured.long.lines).toBe(lines);
+      expect(measured.long.clipped).toBe(true);
+      expect(measured.short.clipped).toBe(false);
+    }
+    if (testInfo.project.name !== 'firefox')
+      await page.locator('[data-demo="summary-row"]').screenshot({
+        path: testInfo.outputPath(
+          `summary-row-clamp-${testInfo.project.name}-${width}.png`,
+        ),
+      });
+  }
+});

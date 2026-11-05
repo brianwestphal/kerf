@@ -136,10 +136,12 @@ export function SummaryRow({
         {leading && <span class="kui-summary-row__leading">{leading}</span>}
         <div class="kui-summary-row__content">
           <div class="kui-summary-row__title">
-            {trailingMeta !== undefined && (
-              <span class="kui-summary-row__trailing">{trailingMeta}</span>
-            )}
-            {title}
+            <div class="kui-summary-row__title-text">
+              {trailingMeta !== undefined && (
+                <span class="kui-summary-row__trailing">{trailingMeta}</span>
+              )}
+              {title}
+            </div>
           </div>
           {metadata && <div class="kui-summary-row__metadata">{metadata}</div>}
         </div>

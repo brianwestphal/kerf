@@ -817,7 +817,8 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
 - **Show selectable item summaries with `SummaryRow`.** One `role="option"`
   per item as a list `row` or board `card`, with a state `rail`, a clamped
   `title`, `trailingMeta`, a `metadata` line, `selected`, `dimmed`, and
-  `listEdge` rounding; put the rows in a `List selectionMode="single"` with
+  `listEdge` rounding (a title past `titleLines` ends in an ellipsis; never
+  add a clamp in app CSS); put the rows in a `List selectionMode="single"` with
   `ariaLabel` (a `role="listbox"`); the app owns selection and keyboard movement. Never
   hand-roll ticket-row chrome. For a non-option diagnostic with a nested
   recovery button, set `semanticRole="group"` and `ariaLabel`; the root is not

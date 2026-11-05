@@ -3250,7 +3250,8 @@
           "border": "self",
           "padding": "self",
           "notes": [
-            "Rows sit flush in a list section and round only the corners at its edges; cards are borderless rounded cards."
+            "Rows sit flush in a list section and round only the corners at its edges; cards are borderless rounded cards.",
+            "A title longer than `titleLines` ends its last visible line with an ellipsis; do not add a clamp or `text-overflow` in app CSS."
           ]
         }
       },
@@ -3269,6 +3270,7 @@
           "kui-summary-row__leading",
           "kui-summary-row__content",
           "kui-summary-row__title",
+          "kui-summary-row__title-text",
           "kui-summary-row__trailing",
           "kui-summary-row__metadata"
         ],

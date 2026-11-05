@@ -162,6 +162,8 @@ the same `deferOffscreen` option directly; leave it off for a single page hero.
 row with a nested recovery action, use `semanticRole="group"` and a required
 `ariaLabel`; only the nested native button takes focus and activates, while
 the row/card surface, rail, and selected visual fill remain available.
+A title longer than `titleLines` ends its last visible line with an
+ellipsis; do not add a clamp or `text-overflow` in app CSS.
 An option SummaryRow accepts `draggable` on its root in either row or card
 presentation; the application owns dragstart/drop behavior, while the same
 option keeps its keyboard selection target and delegated `data-*` identity.

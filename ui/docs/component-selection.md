@@ -841,6 +841,8 @@ no root Tab stop or `aria-selected`; the nested button owns keyboard focus and
 activation. Keep option rows in a labeled single-select listbox:
 `List selectionMode="single" ariaLabel="…"` renders `role="listbox"`; the
 app owns the selection and any arrow-key movement.
+A title longer than `titleLines` ends its last visible line with an ellipsis;
+do not add a clamp or `text-overflow` in app CSS.
 Set `draggable` on an option to make the same row or card root a native drag
 source; it preserves role, selection, focus, and delegated `data-*` identity
 through rerenders. Handle `dragstart` and drop policy in the application.
