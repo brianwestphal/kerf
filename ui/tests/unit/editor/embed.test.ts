@@ -334,3 +334,60 @@ describe('Embed in', () => {
     expect(root.querySelector('.kui-editor__screen')).toBeNull();
   });
 });
+
+// KF-N7K17T: a layout with no main zone holds the node in its first view's
+// or tab's content, or a SplitView in its detail pane.
+describe('Embed in a slot-backed layout (KF-N7K17T)', () => {
+  const embedVia = (id: string, key: string) => {
+    const { root, editor } = open(pane([button]));
+    editor.selection.value = { kind: 'node', id };
+    root
+      .querySelector<HTMLElement>('[data-action="editor-embed-other"]')!
+      .click();
+    const choice = root.querySelector<HTMLElement>(
+      `#editor-embed-dialog [data-editor-embed="${key}"]`,
+    );
+    expect(choice, key).not.toBeNull();
+    choice!.click();
+    return editor;
+  };
+  const held = (editor: ReturnType<typeof embedVia>, id: string) =>
+    findNode(editor.document.value, id)!.ancestors.at(-1)!;
+
+  it('puts the node in a NavStack’s first view, in place of its slot', () => {
+    const editor = embedVia(BUTTON, '@kerfjs/ui:nav-stack');
+    const parent = held(editor, BUTTON);
+    expect(parent.node.type).toBe('@kerfjs/ui:nav-stack');
+    expect(parent.zone).toBe('views.0.content');
+    const views = parent.node.props!.views as Record<string, unknown>[];
+    expect(views[0]).not.toHaveProperty('content');
+    expect(views[1]!.content).toEqual({ $slot: expect.any(String) });
+  });
+
+  it('puts the node in a TabNavigator’s first tab', () => {
+    const editor = embedVia(BUTTON, '@kerfjs/ui:tab-navigator');
+    const parent = held(editor, BUTTON);
+    expect(parent.zone).toBe('tabs.0.content');
+    const tabs = parent.node.props!.tabs as Record<string, unknown>[];
+    expect(tabs[0]).not.toHaveProperty('content');
+  });
+
+  it('puts the node in a SplitView’s detail pane beside its list', () => {
+    const editor = embedVia(BUTTON, '@kerfjs/ui:split-view');
+    const parent = held(editor, BUTTON);
+    expect(parent.zone).toBe('detail');
+    expect(parent.node.zones!.list).toHaveLength(1);
+    expect(parent.node.zones!.detail).toHaveLength(1);
+  });
+
+  it('turns the root Pane into a NavStack holding the whole tree', () => {
+    const editor = embedVia(PANE, '@kerfjs/ui:nav-stack');
+    const next = editor.document.value.root;
+    expect(next.type).toBe('@kerfjs/ui:nav-stack');
+    expect(
+      next.zones!['views.0.content']!.map(
+        (child) => (child as { id: string }).id,
+      ),
+    ).toEqual([PANE]);
+  });
+});

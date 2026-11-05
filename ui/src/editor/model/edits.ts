@@ -426,6 +426,11 @@ export function embedNode(
   container: {
     readonly type: string;
     readonly props?: Record<string, ViewValue>;
+    /**
+     * KF-N7K17T: the container's other seeded zones (a SplitView's list
+     * pane), kept beside `zone`, which holds the node in place of its seed.
+     */
+    readonly zones?: Readonly<Record<string, readonly ViewChild[]>>;
   },
   zone: string,
   makeId: () => string = newNodeId,
@@ -442,7 +447,7 @@ export function embedNode(
       ...(container.props && Object.keys(container.props).length
         ? { props: { ...container.props } }
         : {}),
-      zones: { [zone]: [node] },
+      zones: { ...container.zones, [zone]: [node] },
     } as ViewNode;
   };
   // The child in a holder's place: wrapped when it is the node, else visited.

@@ -415,6 +415,13 @@ const EMBED_FIRST = [
   '@kerfjs/ui:list-inset-text',
 ];
 /**
+ * KF-N7K17T: the pane a split layout holds an embedded node in, when it has
+ * no main zone: a SplitView's detail, the content beside its list.
+ */
+const EMBED_PANES: Readonly<Record<string, string>> = {
+  '@kerfjs/ui:split-view': 'detail',
+};
+/**
  * Props a new container starts with when it embeds a node: a SizedRegion
  * keeps a usable height even where its parent sizes to its content, such as
  * the canvas's root Pane.
@@ -4582,27 +4589,63 @@ export function createEditor(options: EditorOptions) {
     );
 
   /**
+   * Where a new container holds the node it embeds, and the props and other
+   * zones it starts with: its main zone; else (KF-N7K17T) a layout's first
+   * view or tab content (a NavStack's `views.0.content`), whose seeded
+   * `$slot` the node replaces; else a SplitView's detail pane, beside its
+   * seeded list pane.
+   */
+  const embedPlace = (seeded: ViewNode) => {
+    const options = zonesOf(seeded);
+    const main = options.find(
+      (option) => option.primary && !option.disabledReason,
+    );
+    if (main) return { zone: main.key, props: seeded.props };
+    const content = options
+      .map((option) => /^([^.]+)\.0\.content$/.exec(option.key))
+      .find((match) => match !== null);
+    if (content) {
+      const prop = content[1]!;
+      return {
+        zone: content[0],
+        props: {
+          ...seeded.props,
+          [prop]: withValueAt(
+            seeded.props?.[prop] as ViewValue | undefined,
+            [0, 'content'],
+            undefined,
+          )!,
+        },
+      };
+    }
+    const pane = EMBED_PANES[seeded.type];
+    return pane && seeded.zones?.[pane]
+      ? { zone: pane, props: seeded.props, zones: seeded.zones }
+      : undefined;
+  };
+
+  /**
    * Node `id` embedded in a new container of component `key` (KF-6MGYSG):
    * undefined when the container has no main zone or the result adds a
    * problem. A container that becomes the root starts as a new root does: a
    * Pane fills (KF-84CCD1).
    */
   const embedded = (id: string, key: string) => {
-    const seeded = seededNode(key);
-    const zone = zonesOf(seeded).find(
-      (option) => option.primary && !option.disabledReason,
-    )?.key;
-    if (!zone) return undefined;
-    const props = { ...seeded.props, ...EMBED_PROPS[key] };
+    const target = embedPlace(seededNode(key));
+    if (!target) return undefined;
+    const props = { ...target.props, ...EMBED_PROPS[key] };
     const result = embedNode(
       doc.value,
       id,
       {
         type: key,
         props:
-          id === doc.value.root.id ? asRoot({ ...seeded, props }).props : props,
+          id === doc.value.root.id
+            ? asRoot({ id, type: key, props }).props
+            : props,
+        ...(target.zones ? { zones: target.zones } : {}),
       },
-      zone,
+      target.zone,
     );
     return result && !addsProblems(doc.value, result.document, viewCatalog)
       ? result

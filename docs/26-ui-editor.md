@@ -352,7 +352,11 @@ starts with its seeded props, and is selected; the step is one undo. Every node
 has it (KF-84CCD1): on the root, the container becomes the new root and holds
 the whole old tree, and a Pane that becomes the root starts with `fill`, as
 New's does; a `$each` template or an `$if` branch is embedded in place, so the
-container repeats or shows under the condition instead.
+container repeats or shows under the condition instead. A layout with no main
+zone holds the node in its first content place (KF-N7K17T): a NavStack's
+first view or a TabNavigator's first tab (`views.0.content`, `tabs.0.content`),
+in place of that view's seeded `$slot`, and a SplitView's detail pane, beside
+its seeded list. So a Pane root becomes a NavStack without losing its tree.
 
 The same commands are in a node context menu (KF-JV7XW1). A right-click on an
 Outline row or an element on the edit canvas, or Shift+F10 or the ContextMenu
