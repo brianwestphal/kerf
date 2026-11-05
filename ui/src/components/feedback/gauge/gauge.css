@@ -30,6 +30,7 @@
   width: 100%;
   height: auto;
   overflow: visible;
+  font-family: var(--kui-font-sans);
 }
 
 .kui-gauge__track,
@@ -81,21 +82,19 @@
   fill: var(--_kui-gauge-needle);
 }
 
+/* Anchor and size are presentation attributes on the text, in viewBox units,
+   so an exported SVG keeps them outside this stylesheet. */
 .kui-gauge__value,
 .kui-gauge__unit {
   fill: var(--_kui-gauge-text);
-  font-family: var(--kui-font-sans);
   font-variant-numeric: tabular-nums;
-  text-anchor: middle;
 }
 
 .kui-gauge__value {
-  font-size: 18px;
   font-weight: var(--kui-font-weight-semibold);
 }
 
 .kui-gauge__unit {
-  font-size: 11px;
   opacity: 0.75;
 }
 

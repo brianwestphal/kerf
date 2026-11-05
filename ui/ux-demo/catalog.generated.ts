@@ -1188,6 +1188,7 @@ export const generatedKerfCatalog = [
     "uses": [],
     "demoSource": "ui/ux-demo/demos/gauge.tsx",
     "componentSource": "ui/src/components/feedback/gauge/gauge.tsx",
+    "designTemplate": "ui/docs/design/templates/gauge.svg",
     "documentation": "ui/docs/gauge.md"
   },
   {

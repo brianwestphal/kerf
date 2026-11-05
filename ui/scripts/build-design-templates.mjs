@@ -75,6 +75,7 @@ import { Disclosure } from '../dist/disclosure.js';
 import { List } from '../dist/list.js';
 import { ProgressBar } from '../dist/progress-bar.js';
 import { ProgressRing } from '../dist/progress-ring.js';
+import { Gauge } from '../dist/gauge.js';
 import { ListActionRow } from '../dist/list-action-row.js';
 import { ListHeader } from '../dist/list-header.js';
 import { ListItem } from '../dist/list-item.js';
@@ -1057,6 +1058,67 @@ export const COMPONENTS = {
                 value: 0.4,
                 size: 'compact',
               }),
+            ],
+          }),
+      },
+    ],
+  },
+  gauge: {
+    css: ['foundation', 'layout', 'row', 'gauge'],
+    selector: '#frame',
+    width: 420,
+    frameWidth: 'max-content',
+    variants: [
+      {
+        id: 'full',
+        label: 'Full, with Tones',
+        height: 92,
+        render: () =>
+          Row({
+            gap: 'm',
+            vAlign: 'middle',
+            children: [
+              Gauge({
+                label: 'Tokens per Minute',
+                value: 420,
+                max: 1000,
+                unit: 'tok/min',
+              }),
+              Gauge({
+                label: 'Tickets Updated per Hour',
+                value: 18,
+                max: 40,
+                unit: 'per hour',
+                tone: 'success',
+              }),
+              Gauge({
+                label: 'Queue Depth',
+                value: 72,
+                max: 100,
+                tone: 'warning',
+              }),
+              Gauge({
+                label: 'Error Rate',
+                value: 9.5,
+                max: 10,
+                unit: '%',
+                tone: 'danger',
+              }),
+            ],
+          }),
+      },
+      {
+        id: 'bare',
+        label: 'Bare',
+        height: 40,
+        render: () =>
+          Row({
+            gap: 'm',
+            vAlign: 'middle',
+            children: [
+              Gauge({ label: 'Rate', value: 0, max: 10, variant: 'bare' }),
+              Gauge({ label: 'Rate', value: 4, max: 10, variant: 'bare' }),
+              Gauge({ label: 'Rate', value: 12, max: 10, variant: 'bare' }),
             ],
           }),
       },

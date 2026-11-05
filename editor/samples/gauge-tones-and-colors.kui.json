@@ -1,0 +1,87 @@
+{
+  "schema": "kerf-ui-document/v1",
+  "name": "GaugeTonesAndColors",
+  "catalogs": [
+    "@kerfjs/ui"
+  ],
+  "root": {
+    "id": "00000000000000000000000001",
+    "type": "@kerfjs/ui:pane",
+    "props": {
+      "fill": true
+    },
+    "zones": {
+      "content": [
+        {
+          "id": "00000000000000000000000002",
+          "type": "@kerfjs/ui:row",
+          "zones": {
+            "children": [
+              {
+                "id": "00000000000000000000000003",
+                "type": "@kerfjs/ui:gauge",
+                "props": {
+                  "value": 18,
+                  "max": 40,
+                  "label": "Tickets Updated per Hour",
+                  "unit": "per hour",
+                  "tone": "success"
+                }
+              },
+              {
+                "id": "00000000000000000000000004",
+                "type": "@kerfjs/ui:gauge",
+                "props": {
+                  "value": 72,
+                  "max": 100,
+                  "label": "Queue Depth",
+                  "tone": "warning"
+                }
+              },
+              {
+                "id": "00000000000000000000000005",
+                "type": "@kerfjs/ui:gauge",
+                "props": {
+                  "value": 9.5,
+                  "max": 10,
+                  "label": "Error Rate",
+                  "unit": "%",
+                  "tone": "danger"
+                }
+              },
+              {
+                "id": "00000000000000000000000006",
+                "type": "@kerfjs/ui:gauge",
+                "props": {
+                  "value": 420,
+                  "max": 1000,
+                  "label": "Tokens per Minute, Night",
+                  "unit": "tok/min",
+                  "colors": {
+                    "track": {
+                      "$css": "fillColor(\"#2a0606\")"
+                    },
+                    "fill": {
+                      "$css": "fillColor(\"#a30d0d\")"
+                    },
+                    "needle": {
+                      "$css": "fillColor(\"#d63a3a\")"
+                    },
+                    "text": {
+                      "$css": "fillColor(\"#d63a3a\")"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "props": {
+            "vAlign": "middle",
+            "gap": "m",
+            "wrap": true
+          }
+        }
+      ]
+    }
+  }
+}

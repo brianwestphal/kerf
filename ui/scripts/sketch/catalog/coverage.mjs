@@ -87,6 +87,12 @@ const families = [
       'skeleton',
     ],
   },
+  {
+    name: 'Gauge',
+    ticket: 'KF-RS788E',
+    status: 'pending',
+    components: ['gauge'],
+  },
 ];
 
 const seen = new Set();
@@ -117,9 +123,9 @@ const rows = families.flatMap((family) =>
     })),
   ),
 );
-assert.equal(rows.length, 112, 'Reconcile catalog count and ticket batches');
+assert.equal(rows.length, 114, 'Reconcile catalog count and ticket batches');
 assert.equal(rows.filter((row) => row.status === 'supported').length, 112);
-assert.equal(rows.filter((row) => row.status === 'pending').length, 0);
+assert.equal(rows.filter((row) => row.status === 'pending').length, 2);
 assert.equal(
   new Set(rows.map((row) => `${row.component}/${row.variant}`)).size,
   rows.length,

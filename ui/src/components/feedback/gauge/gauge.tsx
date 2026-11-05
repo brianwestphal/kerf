@@ -209,12 +209,24 @@ export function Gauge({
           <circle cx={String(CENTER)} cy={String(CENTER)} r="5" />
         </g>
         {variant === 'full' ? (
-          <text class="kui-gauge__value" x="50" y="83">
+          <text
+            class="kui-gauge__value"
+            x="50"
+            y="83"
+            text-anchor="middle"
+            font-size="18"
+          >
             {text}
           </text>
         ) : null}
         {variant === 'full' && unit !== undefined ? (
-          <text class="kui-gauge__unit" x="50" y="95">
+          <text
+            class="kui-gauge__unit"
+            x="50"
+            y="95"
+            text-anchor="middle"
+            font-size="11"
+          >
             {unit}
           </text>
         ) : null}

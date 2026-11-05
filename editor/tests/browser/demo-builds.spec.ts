@@ -2259,6 +2259,205 @@ test('builds ProgressRing › Tones and Indeterminate', async ({ page }) => {
   );
 });
 
+const GAUGE_RATE = {
+  text: { value: '420', max: '1000', unit: 'tok/min' },
+} as const;
+
+test('builds Gauge › Full', async ({ page }) => {
+  await stacked(
+    page,
+    'Row',
+    'Gauge',
+    [
+      { text: { label: 'Tokens per Minute', ...GAUGE_RATE.text } },
+      { text: { label: 'Tokens per Minute, Standby', ...GAUGE_RATE.text } },
+    ],
+    async () => {
+      await choose(page, 'gap', 'm');
+      await choose(page, 'vAlign', 'middle');
+      await turnOn(page, 'wrap');
+    },
+  );
+  await select(page, /^Gauge(?![A-Z])/, 1);
+  await setCss(page, 'size', 'remify(220)');
+  for (const [label, step] of [
+    ['Slow Down', '-1'],
+    ['Speed Up', '1'],
+  ] as const) {
+    await select(page, /^Row/);
+    await addChild(page, 'Button');
+    await select(page, /^Button/, step === '-1' ? 0 : 1);
+    await setText(page, 'children', label);
+    await setText(page, 'action', 'step-gauge-demo');
+    await dataAttribute(page, 'data-step', step);
+  }
+  await expect(canvas(page).locator('.kui-gauge').nth(1)).toHaveCSS(
+    'width',
+    '220px',
+  );
+  const gauge = (label: string, extra: object = {}) =>
+    node('gauge', {
+      label,
+      value: 420,
+      max: 1000,
+      unit: 'tok/min',
+      ...extra,
+    });
+  const button = (children: string, step: string) =>
+    node('button', {
+      children,
+      action: 'step-gauge-demo',
+      rootAttributes: { 'data-step': step },
+    });
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'row',
+        { gap: 'm', vAlign: 'middle', wrap: true },
+        {
+          children: [
+            gauge('Tokens per Minute'),
+            gauge('Tokens per Minute, Standby', {
+              size: { $css: 'remify(220)' },
+            }),
+            button('Slow Down', '-1'),
+            button('Speed Up', '1'),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds Gauge › Bare', async ({ page }) => {
+  await stacked(
+    page,
+    'Row',
+    'Gauge',
+    [
+      {
+        choices: { variant: 'bare' },
+        text: { label: 'Agent Tokens per Minute', ...GAUGE_RATE.text },
+      },
+    ],
+    async () => {
+      await choose(page, 'gap', 's');
+      await choose(page, 'vAlign', 'middle');
+    },
+  );
+  await select(page, /^Row/);
+  await addChild(page, 'Text');
+  await select(page, /^Text/);
+  await setText(page, 'children', 'Agent activity');
+  await expect(canvas(page).locator('.kui-gauge')).toHaveAttribute(
+    'title',
+    'Agent Tokens per Minute: 420 tok/min',
+  );
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'row',
+        { gap: 's', vAlign: 'middle' },
+        {
+          children: [
+            node('gauge', {
+              variant: 'bare',
+              label: 'Agent Tokens per Minute',
+              value: 420,
+              max: 1000,
+              unit: 'tok/min',
+            }),
+            node('text', { children: 'Agent activity' }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
+test('builds Gauge › Tones and Colors', async ({ page }) => {
+  await stacked(
+    page,
+    'Row',
+    'Gauge',
+    [
+      {
+        choices: { tone: 'success' },
+        text: {
+          label: 'Tickets Updated per Hour',
+          value: '18',
+          max: '40',
+          unit: 'per hour',
+        },
+      },
+      {
+        choices: { tone: 'warning' },
+        text: { label: 'Queue Depth', value: '72', max: '100' },
+      },
+      {
+        choices: { tone: 'danger' },
+        text: { label: 'Error Rate', value: '9.5', max: '10', unit: '%' },
+      },
+      { text: { label: 'Tokens per Minute, Night', ...GAUGE_RATE.text } },
+    ],
+    async () => {
+      await choose(page, 'gap', 'm');
+      await choose(page, 'vAlign', 'middle');
+      await turnOn(page, 'wrap');
+    },
+  );
+  const night = {
+    track: { $css: 'fillColor("#2a0606")' },
+    fill: { $css: 'fillColor("#a30d0d")' },
+    needle: { $css: 'fillColor("#d63a3a")' },
+    text: { $css: 'fillColor("#d63a3a")' },
+  };
+  await select(page, /^Gauge(?![A-Z])/, 3);
+  await editAsJson(page, 'colors', night);
+  await expect(
+    canvas(page).locator('.kui-gauge').nth(3).locator('.kui-gauge__fill'),
+  ).toHaveCSS('stroke', 'rgb(163, 13, 13)');
+  expect(await exported(page)).toEqual(
+    pane(
+      node(
+        'row',
+        { gap: 'm', vAlign: 'middle', wrap: true },
+        {
+          children: [
+            node('gauge', {
+              tone: 'success',
+              label: 'Tickets Updated per Hour',
+              value: 18,
+              max: 40,
+              unit: 'per hour',
+            }),
+            node('gauge', {
+              tone: 'warning',
+              label: 'Queue Depth',
+              value: 72,
+              max: 100,
+            }),
+            node('gauge', {
+              tone: 'danger',
+              label: 'Error Rate',
+              value: 9.5,
+              max: 10,
+              unit: '%',
+            }),
+            node('gauge', {
+              label: 'Tokens per Minute, Night',
+              value: 420,
+              max: 1000,
+              unit: 'tok/min',
+              colors: night,
+            }),
+          ],
+        },
+      ),
+    ),
+  );
+});
+
 /** One choice of a `choices` prop, as the Configure choices form sets it. */
 type ChoiceSpec = {
   readonly value: string;

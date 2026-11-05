@@ -5,8 +5,8 @@ Generated from `scripts/build-design-templates.mjs` by
 the template manifest or a family assignment. The offline
 `check:design-templates` gate compares this file with the current tree.
 
-The source inventory has **34 components**, **112 variants**,
-and **224 light/dark SVG captures**. Supported means that an editable
+The source inventory has **35 components**, **114 variants**,
+and **228 light/dark SVG captures**. Supported means that an editable
 native Symbol batch passed its own browser, override, resize, imported consumer,
 and save/reopen checks. Pending means the SVG exists but its reusable Sketch
 component boundary and semantic layout have not passed those checks. A source
@@ -40,6 +40,7 @@ supported Sketch version.
 | Toolbars and navigation |          7 |              25 | supported | KF-6Q8S95 |
 | Lists and data          |          6 |              23 | supported | KF-83M2MW |
 | Content and feedback    |          7 |              20 | supported | KF-P0X4R9 |
+| Gauge                   |          1 |               2 | pending   | KF-RS788E |
 
 ## Variant inventory
 
@@ -157,3 +158,5 @@ supported Sketch version.
 | skeleton              | block                | Single Block                                    | supported     | KF-P0X4R9 |
 | skeleton              | lines                | Paragraph Lines                                 | supported     | KF-P0X4R9 |
 | skeleton              | avatar               | Circular (Avatar)                               | supported     | KF-P0X4R9 |
+| gauge                 | full                 | Full, with Tones                                | pending       | KF-RS788E |
+| gauge                 | bare                 | Bare                                            | pending       | KF-RS788E |
