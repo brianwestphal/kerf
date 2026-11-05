@@ -280,42 +280,47 @@ export function ContentItemDemo() {
         align="none"
       >
         <Pane label="Interactive Content Items" appearance="sunken">
-          <ContentItem
-            interactive
-            action="toggle-content-card"
-            itemId="line-42"
-            selectionMode="toggle"
-            selected={contentCardSelected.value}
-            ariaLabel="Line Item 42"
-            title="Edit this quotation"
-            rootAttributes={{ 'data-demo-item': 'toggle-card' }}
-          >
-            {itemCopy('Line Item 42', 'Select this item for review.')}
-          </ContentItem>
-          <ContentItem
-            interactive
-            action="toggle-content-card"
-            itemId="card-with-action"
-            selectionMode="toggle"
-            selected={false}
-            ariaLabel="Card with Action"
-            rootAttributes={{ 'data-demo-item': 'card-with-action' }}
-          >
-            {itemCopy('Card with Action', 'The inner button acts on its own.')}
-            <Button emphasis="plain" action="log-more">
-              More Actions
-            </Button>
-          </ContentItem>
-          <ContentItem
-            interactive
-            action="toggle-content-card"
-            itemId="locked-card"
-            disabled
-            ariaLabel="Locked Item"
-            rootAttributes={{ 'data-demo-item': 'disabled-card' }}
-          >
-            {itemCopy('Locked Item', 'Unavailable while processing.')}
-          </ContentItem>
+          <List>
+            <ContentItem
+              interactive
+              action="toggle-content-card"
+              itemId="line-42"
+              selectionMode="toggle"
+              selected={contentCardSelected.value}
+              ariaLabel="Line Item 42"
+              title="Edit this quotation"
+              rootAttributes={{ 'data-demo-item': 'toggle-card' }}
+            >
+              {itemCopy('Line Item 42', 'Select this item for review.')}
+            </ContentItem>
+            <ContentItem
+              interactive
+              action="toggle-content-card"
+              itemId="card-with-action"
+              selectionMode="toggle"
+              selected={false}
+              ariaLabel="Card with Action"
+              rootAttributes={{ 'data-demo-item': 'card-with-action' }}
+            >
+              {itemCopy(
+                'Card with Action',
+                'The inner button acts on its own.',
+              )}
+              <Button emphasis="plain" action="log-more">
+                More Actions
+              </Button>
+            </ContentItem>
+            <ContentItem
+              interactive
+              action="toggle-content-card"
+              itemId="locked-card"
+              disabled
+              ariaLabel="Locked Item"
+              rootAttributes={{ 'data-demo-item': 'disabled-card' }}
+            >
+              {itemCopy('Locked Item', 'Unavailable while processing.')}
+            </ContentItem>
+          </List>
           <List selectionMode="single" ariaLabel="Documents">
             {(['document-a', 'document-b'] as const).map((id) => (
               <ContentItem

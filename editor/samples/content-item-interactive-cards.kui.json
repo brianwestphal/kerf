@@ -23,150 +23,158 @@
             "content": [
               {
                 "id": "00000000000000000000000003",
-                "type": "@kerfjs/ui:content-item",
-                "props": {
-                  "title": "Edit this quotation",
-                  "ariaLabel": "Line Item 42",
-                  "interactive": true,
-                  "action": "toggle-content-card",
-                  "itemId": "line-42",
-                  "selectionMode": "toggle",
-                  "rootAttributes": {
-                    "data-demo-item": "toggle-card"
-                  }
-                },
+                "type": "@kerfjs/ui:list",
                 "zones": {
                   "children": [
                     {
                       "id": "00000000000000000000000004",
-                      "type": "@kerfjs/ui:list",
+                      "type": "@kerfjs/ui:content-item",
                       "props": {
-                        "gap": "2xs"
+                        "title": "Edit this quotation",
+                        "ariaLabel": "Line Item 42",
+                        "interactive": true,
+                        "action": "toggle-content-card",
+                        "itemId": "line-42",
+                        "selectionMode": "toggle",
+                        "rootAttributes": {
+                          "data-demo-item": "toggle-card"
+                        }
                       },
                       "zones": {
                         "children": [
                           {
                             "id": "00000000000000000000000005",
-                            "type": "@kerfjs/ui:text",
+                            "type": "@kerfjs/ui:list",
                             "props": {
-                              "variant": "span",
-                              "weight": "strong",
-                              "children": "Line Item 42"
-                            }
-                          },
-                          {
-                            "id": "00000000000000000000000006",
-                            "type": "@kerfjs/ui:text",
-                            "props": {
-                              "variant": "span",
-                              "tone": "quiet",
-                              "size": "compact",
-                              "children": "Select this item for review."
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "id": "00000000000000000000000007",
-                "type": "@kerfjs/ui:content-item",
-                "props": {
-                  "ariaLabel": "Card with Action",
-                  "interactive": true,
-                  "action": "toggle-content-card",
-                  "itemId": "card-with-action",
-                  "selectionMode": "toggle",
-                  "rootAttributes": {
-                    "data-demo-item": "card-with-action"
-                  }
-                },
-                "zones": {
-                  "children": [
-                    {
-                      "id": "00000000000000000000000008",
-                      "type": "@kerfjs/ui:list",
-                      "props": {
-                        "gap": "2xs"
-                      },
-                      "zones": {
-                        "children": [
-                          {
-                            "id": "00000000000000000000000009",
-                            "type": "@kerfjs/ui:text",
-                            "props": {
-                              "variant": "span",
-                              "weight": "strong",
-                              "children": "Card with Action"
-                            }
-                          },
-                          {
-                            "id": "00000000000000000000000010",
-                            "type": "@kerfjs/ui:text",
-                            "props": {
-                              "variant": "span",
-                              "tone": "quiet",
-                              "size": "compact",
-                              "children": "The inner button acts on its own."
+                              "gap": "2xs"
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000006",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "variant": "span",
+                                    "weight": "strong",
+                                    "children": "Line Item 42"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000007",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact",
+                                    "children": "Select this item for review."
+                                  }
+                                }
+                              ]
                             }
                           }
                         ]
                       }
                     },
                     {
-                      "id": "00000000000000000000000011",
-                      "type": "@kerfjs/ui:button",
+                      "id": "00000000000000000000000008",
+                      "type": "@kerfjs/ui:content-item",
                       "props": {
-                        "children": "More Actions",
-                        "emphasis": "plain",
-                        "action": "log-more"
+                        "ariaLabel": "Card with Action",
+                        "interactive": true,
+                        "action": "toggle-content-card",
+                        "itemId": "card-with-action",
+                        "selectionMode": "toggle",
+                        "rootAttributes": {
+                          "data-demo-item": "card-with-action"
+                        }
+                      },
+                      "zones": {
+                        "children": [
+                          {
+                            "id": "00000000000000000000000009",
+                            "type": "@kerfjs/ui:list",
+                            "props": {
+                              "gap": "2xs"
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000010",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "variant": "span",
+                                    "weight": "strong",
+                                    "children": "Card with Action"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000011",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact",
+                                    "children": "The inner button acts on its own."
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "id": "00000000000000000000000012",
+                            "type": "@kerfjs/ui:button",
+                            "props": {
+                              "children": "More Actions",
+                              "emphasis": "plain",
+                              "action": "log-more"
+                            }
+                          }
+                        ]
                       }
-                    }
-                  ]
-                }
-              },
-              {
-                "id": "00000000000000000000000012",
-                "type": "@kerfjs/ui:content-item",
-                "props": {
-                  "ariaLabel": "Locked Item",
-                  "interactive": true,
-                  "action": "toggle-content-card",
-                  "itemId": "locked-card",
-                  "disabled": true,
-                  "rootAttributes": {
-                    "data-demo-item": "disabled-card"
-                  }
-                },
-                "zones": {
-                  "children": [
+                    },
                     {
                       "id": "00000000000000000000000013",
-                      "type": "@kerfjs/ui:list",
+                      "type": "@kerfjs/ui:content-item",
                       "props": {
-                        "gap": "2xs"
+                        "ariaLabel": "Locked Item",
+                        "interactive": true,
+                        "action": "toggle-content-card",
+                        "itemId": "locked-card",
+                        "disabled": true,
+                        "rootAttributes": {
+                          "data-demo-item": "disabled-card"
+                        }
                       },
                       "zones": {
                         "children": [
                           {
                             "id": "00000000000000000000000014",
-                            "type": "@kerfjs/ui:text",
+                            "type": "@kerfjs/ui:list",
                             "props": {
-                              "variant": "span",
-                              "weight": "strong",
-                              "children": "Locked Item"
-                            }
-                          },
-                          {
-                            "id": "00000000000000000000000015",
-                            "type": "@kerfjs/ui:text",
-                            "props": {
-                              "variant": "span",
-                              "tone": "quiet",
-                              "size": "compact",
-                              "children": "Unavailable while processing."
+                              "gap": "2xs"
+                            },
+                            "zones": {
+                              "children": [
+                                {
+                                  "id": "00000000000000000000000015",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "variant": "span",
+                                    "weight": "strong",
+                                    "children": "Locked Item"
+                                  }
+                                },
+                                {
+                                  "id": "00000000000000000000000016",
+                                  "type": "@kerfjs/ui:text",
+                                  "props": {
+                                    "variant": "span",
+                                    "tone": "quiet",
+                                    "size": "compact",
+                                    "children": "Unavailable while processing."
+                                  }
+                                }
+                              ]
                             }
                           }
                         ]
@@ -176,7 +184,7 @@
                 }
               },
               {
-                "id": "00000000000000000000000016",
+                "id": "00000000000000000000000017",
                 "type": "@kerfjs/ui:list",
                 "props": {
                   "selectionMode": "single",
@@ -185,7 +193,7 @@
                 "zones": {
                   "children": [
                     {
-                      "id": "00000000000000000000000017",
+                      "id": "00000000000000000000000018",
                       "type": "@kerfjs/ui:content-item",
                       "props": {
                         "ariaLabel": "Document A",
@@ -201,7 +209,7 @@
                       "zones": {
                         "children": [
                           {
-                            "id": "00000000000000000000000018",
+                            "id": "00000000000000000000000019",
                             "type": "@kerfjs/ui:list",
                             "props": {
                               "gap": "2xs"
@@ -209,7 +217,7 @@
                             "zones": {
                               "children": [
                                 {
-                                  "id": "00000000000000000000000019",
+                                  "id": "00000000000000000000000020",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
                                     "variant": "span",
@@ -218,7 +226,7 @@
                                   }
                                 },
                                 {
-                                  "id": "00000000000000000000000020",
+                                  "id": "00000000000000000000000021",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
                                     "variant": "span",
@@ -234,7 +242,7 @@
                       }
                     },
                     {
-                      "id": "00000000000000000000000021",
+                      "id": "00000000000000000000000022",
                       "type": "@kerfjs/ui:content-item",
                       "props": {
                         "ariaLabel": "Document B",
@@ -249,7 +257,7 @@
                       "zones": {
                         "children": [
                           {
-                            "id": "00000000000000000000000022",
+                            "id": "00000000000000000000000023",
                             "type": "@kerfjs/ui:list",
                             "props": {
                               "gap": "2xs"
@@ -257,7 +265,7 @@
                             "zones": {
                               "children": [
                                 {
-                                  "id": "00000000000000000000000023",
+                                  "id": "00000000000000000000000024",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
                                     "variant": "span",
@@ -266,7 +274,7 @@
                                   }
                                 },
                                 {
-                                  "id": "00000000000000000000000024",
+                                  "id": "00000000000000000000000025",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
                                     "variant": "span",

@@ -17401,8 +17401,9 @@ const DOCUMENT_CARDS = [
 // options of a single-select List instead of an app-owned listbox div.
 test('builds ContentItem › Interactive Cards', async ({ page }) => {
   test.slow();
+  // KF-GNK57N: the toggle cards sit in a List, so they space as one group.
   const card = async (index: number, spec: FieldSpec) => {
-    await addInto(page, /^Pane/, 'ContentItem', 1);
+    await addInto(page, /^List(?![A-Z])/, 'ContentItem', 0);
     await area(page, 'Properties');
     await applySpec(page, spec);
     const [title, detail] = CARD_COPY[index]!;
@@ -17412,6 +17413,7 @@ test('builds ContentItem › Interactive Cards', async ({ page }) => {
     choices: { appearance: 'sunken' },
     text: { label: 'Interactive Content Items' },
   });
+  await addInto(page, /^Pane/, 'List', 1);
   await card(0, {
     choices: { selectionMode: 'toggle' },
     flags: ['interactive'],
@@ -17455,8 +17457,8 @@ test('builds ContentItem › Interactive Cards', async ({ page }) => {
     text: { ariaLabel: 'Documents' },
   });
   for (const [id, label] of DOCUMENT_CARDS) {
-    // The card copy Lists come first in the outline: Documents is the 4th.
-    await addInto(page, /^List(?![A-Z])/, 'ContentItem', 3);
+    // The cards' List and their copy Lists come first: Documents is the 5th.
+    await addInto(page, /^List(?![A-Z])/, 'ContentItem', 4);
     await area(page, 'Properties');
     await applySpec(page, {
       choices: { selectionMode: 'single' },
@@ -17484,34 +17486,38 @@ test('builds ContentItem › Interactive Cards', async ({ page }) => {
       nestedPaneNode(
         { label: 'Interactive Content Items', appearance: 'sunken' },
         [
-          cardNode(0, {
-            itemId: 'line-42',
-            selectionMode: 'toggle',
-            ariaLabel: 'Line Item 42',
-            title: 'Edit this quotation',
-            rootAttributes: { 'data-demo-item': 'toggle-card' },
-          }),
-          cardNode(
-            1,
-            {
-              itemId: 'card-with-action',
-              selectionMode: 'toggle',
-              ariaLabel: 'Card with Action',
-              rootAttributes: { 'data-demo-item': 'card-with-action' },
-            },
-            [
-              node('button', {
-                children: 'More Actions',
-                emphasis: 'plain',
-                action: 'log-more',
+          node('list', undefined, {
+            children: [
+              cardNode(0, {
+                itemId: 'line-42',
+                selectionMode: 'toggle',
+                ariaLabel: 'Line Item 42',
+                title: 'Edit this quotation',
+                rootAttributes: { 'data-demo-item': 'toggle-card' },
+              }),
+              cardNode(
+                1,
+                {
+                  itemId: 'card-with-action',
+                  selectionMode: 'toggle',
+                  ariaLabel: 'Card with Action',
+                  rootAttributes: { 'data-demo-item': 'card-with-action' },
+                },
+                [
+                  node('button', {
+                    children: 'More Actions',
+                    emphasis: 'plain',
+                    action: 'log-more',
+                  }),
+                ],
+              ),
+              cardNode(2, {
+                itemId: 'locked-card',
+                disabled: true,
+                ariaLabel: 'Locked Item',
+                rootAttributes: { 'data-demo-item': 'disabled-card' },
               }),
             ],
-          ),
-          cardNode(2, {
-            itemId: 'locked-card',
-            disabled: true,
-            ariaLabel: 'Locked Item',
-            rootAttributes: { 'data-demo-item': 'disabled-card' },
           }),
           node(
             'list',
