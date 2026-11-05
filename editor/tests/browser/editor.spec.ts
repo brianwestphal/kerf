@@ -12,6 +12,7 @@ import {
   emptySpot,
   exported,
   newDocument,
+  outlineRow,
   select,
   setField,
   turnOff,
@@ -1890,6 +1891,146 @@ test('embeds the root in a new root Pane', async ({ page }) => {
   expect(
     document.zones.content[0]!.zones.content!.map(({ type }) => type),
   ).toEqual(['@kerfjs/ui:button']);
+});
+
+// KF-JV7XW1: a right-click on an Outline row or a canvas element selects its
+// node and opens the node context menu, with Embed in and the node commands.
+test('embeds a node from the Outline row’s context menu', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await newDocument(page);
+  await dragComponent(page, 'Button', () => emptySpot(page));
+  await area(page, 'Outline');
+  await outlineRow(page, /^Button/).click({ button: 'right' });
+  const menu = page.getByRole('menu', { name: 'Node actions' });
+  await expect(menu).toBeVisible();
+  // Opening it selected the row's node.
+  await expect(outlineRow(page, /^Button/)).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  for (const name of ['Move up', 'Move down'])
+    await expect(menu.getByRole('menuitem', { name })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
+  await menu.getByRole('menuitem', { name: 'Embed in' }).hover();
+  const embedIn = page.getByRole('menu', { name: 'Embed in' });
+  await expect(
+    embedIn.getByRole('menuitem', { name: 'SizedRegion' }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: test.info().outputPath('kf-jv7xw1-outline-menu-1440.png'),
+  });
+  await embedIn.getByRole('menuitem', { name: 'SizedRegion' }).click();
+  await expect(menu).toBeHidden();
+  await expect(outlineRow(page, /^SizedRegion/)).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  const document = (await exported(page)) as {
+    zones: {
+      content: { type: string; zones: Record<string, { type: string }[]> }[];
+    };
+  };
+  expect(document.zones.content[0]!.type).toBe('@kerfjs/ui:sized-region');
+  expect(
+    document.zones.content[0]!.zones.children!.map(({ type }) => type),
+  ).toEqual(['@kerfjs/ui:button']);
+});
+
+test('embeds a canvas element from its context menu’s Other…', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await newDocument(page);
+  await dragComponent(page, 'Button', () => emptySpot(page));
+  const button = canvas(page).locator('.kui-button', { hasText: 'Button' });
+  await button.click({ button: 'right' });
+  const menu = page.getByRole('menu', { name: 'Node actions' });
+  await expect(menu).toBeVisible();
+  // The menu opens at the pointer, over the canvas element.
+  const at = (await button.boundingBox())!;
+  const box = (await menu.boundingBox())!;
+  expect(box.x).toBeGreaterThanOrEqual(at.x);
+  expect(box.x).toBeLessThan(at.x + at.width);
+  await page.screenshot({
+    path: test.info().outputPath('kf-jv7xw1-canvas-menu-1440.png'),
+  });
+  await menu.getByRole('menuitem', { name: 'Embed in' }).hover();
+  await page
+    .getByRole('menu', { name: 'Embed in' })
+    .getByRole('menuitem', { name: 'Other…' })
+    .click();
+  const dialog = page.locator('#editor-embed-dialog');
+  await expect(dialog).toBeVisible();
+  await page.keyboard.type('row');
+  await dialog.locator('[data-editor-embed="@kerfjs/ui:row"]').click();
+  await expect(dialog).toBeHidden();
+  const document = (await exported(page)) as {
+    zones: {
+      content: { type: string; zones: Record<string, { type: string }[]> }[];
+    };
+  };
+  expect(document.zones.content[0]!.type).toBe('@kerfjs/ui:row');
+  expect(
+    document.zones.content[0]!.zones.children!.map(({ type }) => type),
+  ).toEqual(['@kerfjs/ui:button']);
+  // A left click still only selects.
+  await button.click();
+  await expect(menu).toBeHidden();
+});
+
+test('opens the node context menu from the keyboard', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await newDocument(page);
+  await dragComponent(page, 'Button', () => emptySpot(page));
+  await area(page, 'Outline');
+  const row = outlineRow(page, /^Button/);
+  await row.click();
+  await row.focus();
+  await page.keyboard.press('Shift+F10');
+  const menu = page.getByRole('menu', { name: 'Node actions' });
+  await expect(menu).toBeVisible();
+  // Below the row it opened from.
+  const rowBox = (await row.boundingBox())!;
+  expect((await menu.boundingBox())!.y).toBeGreaterThanOrEqual(
+    rowBox.y + rowBox.height - 1,
+  );
+  await page.keyboard.press('Escape');
+  await expect(menu).toBeHidden();
+  // Focus goes back to the row the menu opened from.
+  await expect(row).toBeFocused();
+  // Delete from the menu removes the node, one undo step.
+  await page.keyboard.press('Shift+F10');
+  await menu.getByRole('menuitem', { name: 'Delete' }).click();
+  await expect(outlineRow(page, /^Button/)).toHaveCount(0);
+  await page.getByRole('button', { name: 'Undo' }).click();
+  await expect(outlineRow(page, /^Button/)).toHaveCount(1);
+});
+
+test('shows the node context menu on the narrow canvas', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await newDocument(page);
+  await dragComponent(page, 'Button', () => emptySpot(page));
+  await page.setViewportSize({ width: 390, height: 900 });
+  const button = canvas(page).locator('.kui-button', { hasText: 'Button' });
+  await button.click({ button: 'right' });
+  const menu = page.getByRole('menu', { name: 'Node actions' });
+  await expect(menu).toBeVisible();
+  await menu.getByRole('menuitem', { name: 'Embed in' }).hover();
+  await expect(
+    page
+      .getByRole('menu', { name: 'Embed in' })
+      .getByRole('menuitem', { name: 'Other…' }),
+  ).toBeVisible();
+  const fits = await page.evaluate(
+    () =>
+      globalThis.document.documentElement.scrollWidth <= globalThis.innerWidth,
+  );
+  expect(fits).toBe(true);
+  await page.screenshot({
+    path: test.info().outputPath('kf-jv7xw1-canvas-menu-390.png'),
+  });
 });
 
 // KF-YZPBFH: the canvas shows the tab that holds the selected node, and

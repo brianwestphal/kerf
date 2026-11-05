@@ -354,6 +354,19 @@ the whole old tree, and a Pane that becomes the root starts with `fill`, as
 New's does; a `$each` template or an `$if` branch is embedded in place, so the
 container repeats or shows under the condition instead.
 
+The same commands are in a node context menu (KF-JV7XW1). A right-click on an
+Outline row or an element on the edit canvas, or Shift+F10 or the ContextMenu
+key on a focused Outline row, selects that node and opens Kerf UI's context
+`PopupMenu` (`openPopupMenuAt`) at the pointer, or below the row when the
+keyboard opened it. The menu has **Embed in ›**, with the Flow area's entries
+and legality and then Other… (the same dialog), followed by Move up, Move
+down, Duplicate, and Delete. Each acts on the selected node, and a command
+that cannot act on it (the root's Move or Delete) is disabled. A slot row has
+no menu, and play mode has none. The menu is its own event, so click-to-select
+and drag behave as before. When the menu closes, focus returns to the Outline's
+selected row, or to the canvas element when that element takes focus. Copy
+and Paste stay keyboard shortcuts (Cmd/Ctrl+C, Cmd/Ctrl+V).
+
 While a node inside a TabNavigator tab's content is selected, the canvas shows
 that tab, whatever tab the document opens on, so the ring and the tab's drop
 targets apply to what is being edited (KF-YZPBFH: show the selected node's

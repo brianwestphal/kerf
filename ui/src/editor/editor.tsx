@@ -50,7 +50,11 @@ import {
 } from 'lucide';
 
 import { Button } from '../components/actions/button/button.js';
-import { PopupMenu } from '../components/actions/popup-menu/popup-menu.js';
+import {
+  openPopupMenuAt,
+  PopupMenu,
+  type PopupMenuEntry,
+} from '../components/actions/popup-menu/popup-menu.js';
 import { Toolbar } from '../components/actions/toolbar/toolbar.js';
 import { ToolbarControlGroup } from '../components/actions/toolbar-control-group/toolbar-control-group.js';
 import { ToolbarText } from '../components/actions/toolbar-text/toolbar-text.js';
@@ -391,6 +395,16 @@ const EMBED_ACTION = 'editor-embed';
 const EMBED_OTHER_ACTION = 'editor-embed-other';
 const EMBED_CLEAR_ACTION = 'editor-embed-clear';
 const EMBED_DIALOG = 'editor-embed-dialog';
+/** The node context menu's root (KF-JV7XW1). */
+const CONTEXT_MENU = 'data-editor-context-menu';
+// The node context menu's commands have actions of their own, so a page
+// still finds one Inspector control per action.
+const CONTEXT_EMBED_ACTION = 'editor-context-embed';
+const CONTEXT_EMBED_OTHER_ACTION = 'editor-context-embed-other';
+const CONTEXT_MOVE_UP_ACTION = 'editor-context-move-up';
+const CONTEXT_MOVE_DOWN_ACTION = 'editor-context-move-down';
+const CONTEXT_DUPLICATE_ACTION = 'editor-context-duplicate';
+const CONTEXT_DELETE_ACTION = 'editor-context-delete';
 /**
  * The containers Embed in offers first (KF-6MGYSG); Other… lists every
  * container that can hold the node.
@@ -982,6 +996,11 @@ export function createEditor(options: EditorOptions) {
   });
   /** Why the last duplicate or paste did not happen (KF-QAVK73). */
   const editNotice = signal<string | null>(null);
+  /**
+   * The Outline row or canvas element the node context menu opened from,
+   * where focus goes back when it closes (KF-JV7XW1).
+   */
+  let contextInvoker: HTMLElement | undefined;
   /** The node Copy took, for Paste; held per editor, never shared. */
   let clipboard: ViewNode | undefined;
   // Editing (KF-KX77TV): every change goes through commit(), so the
@@ -2735,6 +2754,70 @@ export function createEditor(options: EditorOptions) {
     </List>
   );
 
+  /**
+   * The node context menu (KF-JV7XW1), opened at the pointer on an Outline
+   * row or a canvas element, or from the keyboard: Embed in with the Flow
+   * area's entries and legality, then the node commands the Inspector has.
+   * It acts on the selected node, which opening it selects.
+   */
+  const contextMenu = () => {
+    const id = selectedNodeId();
+    const movable = id ? isMovable(doc.value, id) : undefined;
+    const embedIn: PopupMenuEntry[] = [
+      ...EMBED_FIRST.filter((key) => propsByKey.has(key)).map((key) => {
+        const legal = embedFirstLegal.value.has(key);
+        return {
+          label: componentNames.get(key)!,
+          action: CONTEXT_EMBED_ACTION,
+          disabled: !legal,
+          ...(legal
+            ? {}
+            : { disabledReason: 'It cannot hold this node here.' }),
+          attributes: { 'data-editor-context-embed': key },
+        };
+      }),
+      { kind: 'divider' },
+      { label: 'Other…', action: CONTEXT_EMBED_OTHER_ACTION },
+    ];
+    return (
+      <PopupMenu
+        context
+        label="Node actions"
+        rootAttributes={{ [CONTEXT_MENU]: '' }}
+        items={
+          movable
+            ? [
+                { label: 'Embed in', submenu: embedIn },
+                { kind: 'divider' },
+                {
+                  label: 'Move up',
+                  action: CONTEXT_MOVE_UP_ACTION,
+                  disabled: !movable.up,
+                },
+                {
+                  label: 'Move down',
+                  action: CONTEXT_MOVE_DOWN_ACTION,
+                  disabled: !movable.down,
+                },
+                {
+                  label: 'Duplicate',
+                  action: CONTEXT_DUPLICATE_ACTION,
+                  disabled: !movable.remove,
+                },
+                { kind: 'divider' },
+                {
+                  label: 'Delete',
+                  action: CONTEXT_DELETE_ACTION,
+                  tone: 'danger',
+                  disabled: !movable.remove,
+                },
+              ]
+            : []
+        }
+      />
+    );
+  };
+
   /** Move and delete controls for the selected node, when it can move. */
   const nodeActions = (document: ViewDocument) => {
     const movable = selectedMovable(document);
@@ -4105,6 +4188,8 @@ export function createEditor(options: EditorOptions) {
               }}
             />
           </List>
+          {/* After the panes, so the Inspector's own commands come first. */}
+          {contextMenu()}
         </div>
         {playing.value ? playMode() : undefined}
       </List>
@@ -4401,6 +4486,43 @@ export function createEditor(options: EditorOptions) {
    * A field zone's row (KF-VSWT2Q) leads out of the field editor it sits in:
    * its dialog closes, and a subview's field steps pop.
    */
+  /**
+   * The node an Outline row or canvas element under `target` stands for, and
+   * that element (KF-JV7XW1); undefined for a slot row or anything else.
+   */
+  const contextNode = (root: HTMLElement, target: Element) => {
+    const row = target.closest<HTMLElement>('#editor-outline [data-item-id]');
+    if (row) {
+      const id = row.dataset.itemId!;
+      return slotRowAddress(id)
+        ? undefined
+        : { id: itemSlotRowNode(id) ?? id, element: row };
+    }
+    const node = target.closest<HTMLElement>('[data-kerf-node]');
+    return node && root.querySelector('[data-editor-canvas]')!.contains(node)
+      ? { id: node.dataset.kerfNode!, element: node }
+      : undefined;
+  };
+
+  /**
+   * Selects node `id` and opens the node context menu at `point`, or below
+   * the start of `element` when the keyboard opened it (KF-JV7XW1).
+   */
+  const openContextMenu = (
+    root: HTMLElement,
+    { id, element }: { id: string; element: HTMLElement },
+    point?: { x: number; y: number },
+  ) => {
+    select({ kind: 'node', id });
+    contextInvoker = element;
+    const box = element.getBoundingClientRect();
+    openPopupMenuAt(
+      root.querySelector<HTMLElement>(`[${CONTEXT_MENU}]`)!,
+      point?.x ?? box.left + Math.min(16, box.width / 2),
+      point?.y ?? box.bottom,
+    );
+  };
+
   const leaveFieldEditor = (target: HTMLElement) => {
     const zone =
       target.dataset.editorContentAdd ?? target.dataset.editorContentNode;
@@ -4501,6 +4623,31 @@ export function createEditor(options: EditorOptions) {
         : [],
     );
   });
+
+  /** Opens Embed in › Other… for the selected node (KF-6MGYSG). */
+  const openEmbedDialog = (root: HTMLElement) => {
+    // Other… shows only with a node selected.
+    embedTarget.value = selectedNodeId()!;
+    embedQuery.value = '';
+    embedQueryRevision.value += 1;
+    openDialog(root.querySelector<HTMLDialogElement>(`#${EMBED_DIALOG}`)!);
+    root.querySelector<HTMLElement>('[data-editor-embed-search]')!.focus();
+  };
+
+  /** Removes the selected slot, or the selected node when it can go. */
+  const deleteSelected = () => {
+    const current = selection.value;
+    if (current?.kind === 'slot') {
+      if (!slotAt(doc.value, current.address)) return;
+      commit(removeSlot(doc.value, current.address));
+      selection.value = null;
+      return;
+    }
+    const id = selectedNodeId();
+    if (!id || !isMovable(doc.value, id).remove) return;
+    commit(removeNode(doc.value, id));
+    selection.value = null;
+  };
 
   /** Embeds node `id` in a new `key` container and selects the container. */
   const embed = (id: string, key: string) => {
@@ -5128,6 +5275,15 @@ export function createEditor(options: EditorOptions) {
           }
           return;
         }
+        // KF-JV7XW1: Shift+F10 opens the node context menu, as the
+        // ContextMenu key does through its contextmenu event.
+        if (key.key === 'F10' && key.shiftKey) {
+          const at = contextNode(root, key.target as Element);
+          if (!at) return;
+          key.preventDefault();
+          openContextMenu(root, at);
+          return;
+        }
         const letter = key.key.toLowerCase();
         if (!(key.metaKey || key.ctrlKey) || !'zdcv'.includes(letter)) return;
         const target = key.target as Element | null;
@@ -5199,20 +5355,16 @@ export function createEditor(options: EditorOptions) {
         [REDO_ACTION]: () => redo(),
         [MOVE_UP_ACTION]: () => moveSelected(-1),
         [MOVE_DOWN_ACTION]: () => moveSelected(1),
-        [DELETE_ACTION]: () => {
-          const current = selection.value;
-          if (current?.kind === 'slot') {
-            if (!slotAt(doc.value, current.address)) return;
-            commit(removeSlot(doc.value, current.address));
-            selection.value = null;
-            return;
-          }
-          const id = selectedNodeId();
-          if (!id || !isMovable(doc.value, id).remove) return;
-          commit(removeNode(doc.value, id));
-          selection.value = null;
-        },
+        [DELETE_ACTION]: () => deleteSelected(),
         [DUPLICATE_ACTION]: () => duplicate(),
+        // KF-JV7XW1: the node context menu's commands.
+        [CONTEXT_MOVE_UP_ACTION]: () => moveSelected(-1),
+        [CONTEXT_MOVE_DOWN_ACTION]: () => moveSelected(1),
+        [CONTEXT_DUPLICATE_ACTION]: () => duplicate(),
+        [CONTEXT_DELETE_ACTION]: () => deleteSelected(),
+        [CONTEXT_EMBED_ACTION]: (_event, target) =>
+          embed(selectedNodeId()!, target.dataset.editorContextEmbed!),
+        [CONTEXT_EMBED_OTHER_ACTION]: () => openEmbedDialog(root),
         [ADD_ACTION]: () => addChild(),
         [UNSET_ACTION]: (_event, target) => {
           const field = target.closest<HTMLElement>(
@@ -5339,18 +5491,7 @@ export function createEditor(options: EditorOptions) {
           else next.set(id, index);
           canvasViews.value = next;
         },
-        [EMBED_OTHER_ACTION]: () => {
-          // Other… shows only with a node selected.
-          embedTarget.value = selectedNodeId()!;
-          embedQuery.value = '';
-          embedQueryRevision.value += 1;
-          openDialog(
-            root.querySelector<HTMLDialogElement>(`#${EMBED_DIALOG}`)!,
-          );
-          root
-            .querySelector<HTMLElement>('[data-editor-embed-search]')!
-            .focus();
-        },
+        [EMBED_OTHER_ACTION]: () => openEmbedDialog(root),
         [EMBED_CLEAR_ACTION]: () => {
           embedQuery.value = '';
           embedQueryRevision.value += 1;
@@ -5584,6 +5725,43 @@ export function createEditor(options: EditorOptions) {
           );
         },
       }),
+      // KF-JV7XW1: a right-click (or the ContextMenu key) on an Outline row
+      // or a canvas element selects its node and opens the node context menu
+      // at the pointer. Play mode has none; the canvas is hidden then.
+      on(root, 'contextmenu', (event) => {
+        const mouse = event as MouseEvent;
+        const at = playing.value
+          ? undefined
+          : contextNode(root, mouse.target as Element);
+        if (!at) return;
+        mouse.preventDefault();
+        const box = at.element.getBoundingClientRect();
+        const { clientX: x, clientY: y } = mouse;
+        // The ContextMenu key's event has no pointer inside the element.
+        const pointer =
+          x >= box.left && x <= box.right && y >= box.top && y <= box.bottom;
+        openContextMenu(root, at, pointer ? { x, y } : undefined);
+      }),
+      // A closing context menu returns focus to its zero-footprint anchor;
+      // send it on to where the menu opened: the Outline's selected row
+      // (the node, or the container it was embedded in), or the canvas
+      // element when it takes focus.
+      delegate(
+        root,
+        'focusin',
+        `[${CONTEXT_MENU}] > .kui-popup-menu__context-anchor`,
+        () => {
+          const invoker = contextInvoker;
+          contextInvoker = undefined;
+          const outline = invoker?.closest('#editor-outline');
+          const target = outline
+            ? outline.querySelector<HTMLElement>(
+                '[data-item-id][aria-selected="true"]',
+              )
+            : invoker;
+          target?.focus({ preventScroll: true });
+        },
+      ),
       // Canvas clicks select the innermost node; the previewed document's own
       // links, buttons, and form controls never act.
       delegate(root, 'click', '[data-editor-canvas]', (event) => {
