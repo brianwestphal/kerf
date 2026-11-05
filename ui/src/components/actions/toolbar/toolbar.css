@@ -242,6 +242,16 @@
   overflow: visible;
 }
 
+/* A group button's corner badge (ToolbarButton `badge`, KF-HDQTVV) and its
+   2px ring rise a few pixels above the zone; WebKit has no
+   `overflow-clip-margin`, so it cut the badge's top off flat. While the zone
+   holds one it stops clipping, as for a glass group above. */
+.kui-toolbar__leading:has(
+  > .kui-toolbar-control-group > button > .kui-badge[data-placement="corner"]
+) {
+  overflow: visible;
+}
+
 /* An embedded PopupMenu or Select (a static preview of its open popup, as
    the editor's edit canvas shows a selected one) hangs below its trigger in
    the document, so the zone holding one stops clipping it (KF-KN9CPE). */

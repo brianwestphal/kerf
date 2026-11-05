@@ -1008,6 +1008,12 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   with `badge: true` plus its required `badgeLabel`. A text badge takes a
   decorative leading `icon`, a `title` tooltip, and `data-*` `rootAttributes`
   for app identity; never wrap a Badge or nest a `Row` in it for those.
+  For a count on a toolbar group button, pass `ToolbarButton` `badge` (a
+  count, short text, or `true` for a dot) with `badgeTone` and `badgeMax`
+  (default 99, so 128 shows "99+"); a count of 0 shows nothing. The group owns
+  the corner placement, the ring against its surface, and compact sizing. The
+  badge is `aria-hidden`, so name the count in the button's `ariaLabel` and
+  `title`.
   For app-supplied text that can run long (a tag or category name), set
   `maxWidth` (a `CssLength`, such as `px(160)`): the label truncates with an
   ellipsis and string or number content becomes the hover `title`.

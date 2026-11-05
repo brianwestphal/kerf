@@ -43,6 +43,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar`](../public-api-signatures-v1.m
 - compact density: a 40px header (34px band, 3px block insets) for an embedded panel, filled with compact ToolbarControlGroups
 - app bar or bottom bar claiming its screen edges (safeAreaEdges)
 - typed hideBelow/showBelow thresholds at the nearest Toolbar content width
+- ToolbarButton corner badge: count (hidden at 0, capped at badgeMax as 99+), short text, or dot, in any semantic badgeTone
 
 ## Composition
 

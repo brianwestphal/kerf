@@ -1,5 +1,4 @@
 import { BackdropImage } from '@kerfjs/ui/backdrop-image';
-import { Badge } from '@kerfjs/ui/badge';
 import { Button } from '@kerfjs/ui/button';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ContentItem } from '@kerfjs/ui/content-item';
@@ -20,6 +19,8 @@ import {
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import {
   ArrowDownAZ,
+  Bell,
+  Bot,
   CalendarClock,
   ChevronLeft,
   ChevronRight,
@@ -29,6 +30,7 @@ import {
   EyeOff,
   Flag,
   GitCompare,
+  Inbox,
   List as ListIcon,
   PanelLeftOpen,
   Pin,
@@ -129,35 +131,64 @@ export function ToolbarControlGroupDemo() {
       </CatalogExample>
       <CatalogExample
         label="Corner Count"
-        note='A Badge with placement="corner" pins a count over the top-trailing corner of the button, which names the count itself.'
+        note={
+          <>
+            A ToolbarButton <code>badge</code> pins a count, short text, or a
+            dot over the button's top-trailing corner, ringed against the group.
+            A count of 0 shows nothing and a count past <code>badgeMax</code>{' '}
+            (99) shows 99+. The badge is decorative: the button's{' '}
+            <code>ariaLabel</code> names the count.
+          </>
+        }
         align="inline-control"
+        rootAttributes={{ 'data-demo-section': 'corner-count' }}
       >
-        <Toolbar
-          label="Corner Count"
-          leading={
-            <ToolbarControlGroup shape={shape} single>
-              <ToolbarButton
-                ariaLabel="Hidden Workspaces, 3 hidden"
-                action="log-more"
-                rootAttributes={{ 'data-demo-corner-count': '' }}
-                icon={
-                  <>
-                    <LucideIcon icon={EyeOff} name="eye-off" />
-                    <Badge
-                      tone="warning"
-                      appearance="solid"
-                      size="compact"
-                      placement="corner"
-                      ariaHidden
-                    >
-                      3
-                    </Badge>
-                  </>
-                }
-              />
-            </ToolbarControlGroup>
-          }
-        />
+        {(['default', 'compact'] as const).map((size) => (
+          <Toolbar
+            label={size === 'compact' ? 'Compact Corner Count' : 'Corner Count'}
+            leading={
+              <ToolbarControlGroup
+                shape={shape}
+                size={size}
+                label={size === 'compact' ? 'Compact Workspace' : 'Workspace'}
+                rootAttributes={{ 'data-demo-corner-count': size }}
+              >
+                <ToolbarButton
+                  ariaLabel="Inbox"
+                  action="log-more"
+                  icon={<LucideIcon icon={Inbox} name="inbox" />}
+                  badge={0}
+                  rootAttributes={{ 'data-demo-badge-count': '0' }}
+                />
+                <ToolbarButton
+                  ariaLabel="Workers, 2 live"
+                  title="2 workers live"
+                  action="log-more"
+                  icon={<LucideIcon icon={Bot} name="bot" />}
+                  badge={2}
+                  badgeTone="info"
+                  rootAttributes={{ 'data-demo-badge-count': '2' }}
+                />
+                <ToolbarButton
+                  ariaLabel="Alerts, 128 unread"
+                  title="128 unread alerts"
+                  action="log-more"
+                  icon={<LucideIcon icon={Bell} name="bell" />}
+                  badge={128}
+                  rootAttributes={{ 'data-demo-badge-count': '99+' }}
+                />
+                <ToolbarButton
+                  ariaLabel="Hidden Workspaces, new"
+                  action="log-more"
+                  icon={<LucideIcon icon={EyeOff} name="eye-off" />}
+                  badge
+                  badgeTone="warning"
+                  rootAttributes={{ 'data-demo-badge-count': 'dot' }}
+                />
+              </ToolbarControlGroup>
+            }
+          />
+        ))}
       </CatalogExample>
       <CatalogExample label="Segmented Choices" align="inline-control">
         <Toolbar

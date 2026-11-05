@@ -155,3 +155,34 @@
   inset-block-start: remify(2px);
   inset-inline-end: remify(2px);
 }
+
+/* A corner badge on a ToolbarControlGroup button (ToolbarButton `badge`,
+   KF-HDQTVV): a 16px pill whose bottom edge just overlaps the icon's
+   top-trailing corner, so a wide "99+" covers no more than the icon's top
+   row. It never animates, so reduced motion needs no override. */
+.kui-toolbar-control-group
+  > button
+  > .kui-badge[data-placement="corner"]:not([data-size="dot"]) {
+  min-width: remify(16px);
+  min-height: remify(16px);
+  padding-inline: remify(4px);
+  font-size: var(--kui-font-2xs);
+}
+
+/* A compact button's 16px icon sits higher in its 32px box, so the pill
+   rises with it and keeps the same overlap. */
+.kui-toolbar-control-group[data-size="compact"]
+  > button
+  > .kui-badge[data-placement="corner"]:not([data-size="dot"]) {
+  inset-block-start: remify(-8px);
+}
+
+/* A 2px ring in the group's surface (the context value the group provides)
+   separates the mark from the icon and the group's border. The group's fill
+   may be translucent, so it is layered over an opaque surface ring exactly as
+   the group itself sits over the page. */
+.kui-toolbar-control-group > button > .kui-badge[data-placement="corner"] {
+  box-shadow:
+    0 0 0 2px var(--_kui-toolbar-control-group-badge-ring),
+    0 0 0 2px var(--kui-color-surface);
+}

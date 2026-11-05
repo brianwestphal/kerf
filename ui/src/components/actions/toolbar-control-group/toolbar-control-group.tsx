@@ -5,6 +5,8 @@ import {
 } from '../../../shared/dom/extension-attributes.js';
 import { markRelocatableGroup } from '../../../shared/panels/panel-toolbar-group.js';
 import type { CssLength } from '../../../shared/styles/css-values.js';
+import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
+import { Badge } from '../../feedback/badge/badge.js';
 import { LoadingSpinner } from '../../feedback/loading-spinner/loading-spinner.js';
 import type { ButtonLabel } from '../button/button.js';
 
@@ -162,6 +164,21 @@ export type ToolbarButtonProps = ToolbarButtonContent & {
   title?: string;
   /** `none` keeps this pressed control looking like its neighbors. */
   selectedChrome?: 'none';
+  /**
+   * A count, short text, or `true` for a text-free dot over the button's
+   * top-trailing corner, such as how many workers are live. A count of 0 (or
+   * less) and empty text show no badge. The badge is decorative
+   * (`aria-hidden`): put its meaning in `ariaLabel` (or the visible label)
+   * and `title` yourself, for example "Workers, 2 live".
+   */
+  badge?: number | string | true;
+  /** The badge's tone (default `danger`). */
+  badgeTone?: SemanticTone;
+  /**
+   * The largest count shown in full; a larger count shows as `{badgeMax}+`
+   * (default 99, so 100 shows "99+"). Text badges are shown as given.
+   */
+  badgeMax?: number;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -194,10 +211,14 @@ export function ToolbarButton({
   disabled = false,
   title,
   selectedChrome,
+  badge,
+  badgeTone = 'danger',
+  badgeMax = 99,
   className = '',
   slot,
   rootAttributes = {},
 }: ToolbarButtonProps) {
+  const badgeText = toolbarBadgeText(badge, badgeMax);
   return (
     <button
       {...filterDataAttributes(rootAttributes, TOOLBAR_BUTTON_PROTECTED)}
@@ -217,8 +238,33 @@ export function ToolbarButton({
     >
       {icon}
       {children}
+      {badge === true ? (
+        <Badge tone={badgeTone} size="dot" placement="corner" ariaHidden />
+      ) : badgeText === undefined ? null : (
+        <Badge
+          tone={badgeTone}
+          appearance="solid"
+          size="compact"
+          placement="corner"
+          ariaHidden
+        >
+          {badgeText}
+        </Badge>
+      )}
     </button>
   );
+}
+
+// KF-HDQTVV: a count of 0 (or less) and empty text hide the badge; a count
+// past `max` collapses to `{max}+`.
+function toolbarBadgeText(
+  badge: number | string | true | undefined,
+  max: number,
+): string | undefined {
+  if (badge === undefined || badge === true) return undefined;
+  if (typeof badge === 'string') return badge === '' ? undefined : badge;
+  if (!(badge > 0)) return undefined;
+  return badge > max ? `${max}+` : String(badge);
 }
 
 export interface ToolbarControlGroupProps {

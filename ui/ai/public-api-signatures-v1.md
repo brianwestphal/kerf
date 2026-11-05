@@ -353,9 +353,9 @@ import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 import { CssLength } from './css-values.js';
+import { S as SemanticTone } from './semantic-tone-CdW013KF.js';
 import { ButtonLabel } from './button.js';
 import './badge.js';
-import './semantic-tone-CdW013KF.js';
 
 type ToolbarControlGroupAppearance = 'contained' | 'borderless';
 type ToolbarControlGroupTone = 'default' | 'dark';
@@ -438,6 +438,21 @@ type ToolbarButtonProps = ToolbarButtonContent & {
     title?: string;
     /** `none` keeps this pressed control looking like its neighbors. */
     selectedChrome?: 'none';
+    /**
+     * A count, short text, or `true` for a text-free dot over the button's
+     * top-trailing corner, such as how many workers are live. A count of 0 (or
+     * less) and empty text show no badge. The badge is decorative
+     * (`aria-hidden`): put its meaning in `ariaLabel` (or the visible label)
+     * and `title` yourself, for example "Workers, 2 live".
+     */
+    badge?: number | string | true;
+    /** The badge's tone (default `danger`). */
+    badgeTone?: SemanticTone;
+    /**
+     * The largest count shown in full; a larger count shows as `{badgeMax}+`
+     * (default 99, so 100 shows "99+"). Text badges are shown as given.
+     */
+    badgeMax?: number;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -450,7 +465,7 @@ type ToolbarButtonProps = ToolbarButtonContent & {
  * focus ring, pressed chrome, and busy state, exactly as for a hand-written
  * `<button type="button">`.
  */
-declare function ToolbarButton({ children, icon, ariaLabel, action, pressed, popoverTarget, popoverTargetAction, ariaHasPopup, disabled, title, selectedChrome, className, slot, rootAttributes, }: ToolbarButtonProps): kerfjs.SafeHtml;
+declare function ToolbarButton({ children, icon, ariaLabel, action, pressed, popoverTarget, popoverTargetAction, ariaHasPopup, disabled, title, selectedChrome, badge, badgeTone, badgeMax, className, slot, rootAttributes, }: ToolbarButtonProps): kerfjs.SafeHtml;
 interface ToolbarControlGroupProps {
     children: KerfUiContent;
     label?: string;

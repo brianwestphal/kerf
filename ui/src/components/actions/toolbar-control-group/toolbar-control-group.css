@@ -32,6 +32,11 @@
   --_kui-toolbar-control-group-slot-height: remify(40px);
   --_kui-toolbar-control-group-slot-overlap: 0px;
   --_kui-toolbar-control-group-slot-radius: var(--kui-toolbar-item-radius);
+  /* Context for a ToolbarButton's corner badge (badge.css): the surface its
+     ring separates it from, which is the group's own fill (KF-HDQTVV). */
+  --_kui-toolbar-control-group-badge-ring: var(
+    --kui-toolbar-control-background
+  );
   display: inline-flex;
   position: relative;
   height: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
@@ -403,6 +408,8 @@
   --kui-toolbar-control-selected-background: var(
     --kui-color-neutral-fill-normal
   );
+  /* No fill of its own: the corner badge rings against the page surface. */
+  --_kui-toolbar-control-group-badge-ring: var(--kui-color-surface);
   border-color: transparent;
   background: transparent;
 }

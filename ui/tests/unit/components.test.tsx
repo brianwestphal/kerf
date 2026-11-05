@@ -1131,6 +1131,67 @@ describe('production UI primitives', () => {
     ).toContain('<button type="button" class="kui-toolbar-button"');
   });
 
+  it('pins a decorative corner badge on a ToolbarButton, hidden at 0 and capped at badgeMax (KF-HDQTVV)', () => {
+    const icon = LucideIcon({ icon: Check, name: 'check' });
+    const badgeOf = (props: Parameters<typeof ToolbarButton>[0]) => {
+      const host = document.createElement('div');
+      host.innerHTML = asHtml(ToolbarButton(props));
+      return host.querySelector<HTMLElement>('button > .kui-badge');
+    };
+    const two = badgeOf({ icon, ariaLabel: 'Workers, 2 live', badge: 2 });
+    expect(two?.textContent).toBe('2');
+    expect(two?.dataset).toMatchObject({
+      tone: 'danger',
+      appearance: 'solid',
+      size: 'compact',
+      placement: 'corner',
+    });
+    expect(two?.getAttribute('aria-hidden')).toBe('true');
+    // The badge stays out of the caller's accessible name.
+    expect(
+      asHtml(ToolbarButton({ icon, ariaLabel: 'Workers, 2 live', badge: 2 })),
+    ).toContain('aria-label="Workers, 2 live"');
+    expect(
+      badgeOf({ icon, ariaLabel: 'Workers', badge: 2, badgeTone: 'info' })
+        ?.dataset.tone,
+    ).toBe('info');
+    // 0 (or less) and empty text render no badge at all.
+    expect(badgeOf({ icon, ariaLabel: 'Inbox', badge: 0 })).toBeNull();
+    expect(badgeOf({ icon, ariaLabel: 'Inbox', badge: -3 })).toBeNull();
+    expect(badgeOf({ icon, ariaLabel: 'Inbox', badge: '' })).toBeNull();
+    expect(badgeOf({ icon, ariaLabel: 'Inbox' })).toBeNull();
+    // A count past badgeMax (default 99) collapses to "{max}+".
+    expect(badgeOf({ icon, ariaLabel: 'Alerts', badge: 99 })?.textContent).toBe(
+      '99',
+    );
+    expect(
+      badgeOf({ icon, ariaLabel: 'Alerts', badge: 128 })?.textContent,
+    ).toBe('99+');
+    expect(
+      badgeOf({ icon, ariaLabel: 'Alerts', badge: 12, badgeMax: 9 })
+        ?.textContent,
+    ).toBe('9+');
+    // Short text is shown as given, whatever its length.
+    expect(
+      badgeOf({ icon, ariaLabel: 'Release', badge: 'New', badgeMax: 1 })
+        ?.textContent,
+    ).toBe('New');
+    // `true` is a decorative dot.
+    const dot = badgeOf({
+      icon,
+      ariaLabel: 'Downloads, new',
+      badge: true,
+      badgeTone: 'warning',
+    });
+    expect(dot?.dataset).toMatchObject({
+      size: 'dot',
+      tone: 'warning',
+      placement: 'corner',
+    });
+    expect(dot?.getAttribute('aria-hidden')).toBe('true');
+    expect(dot?.textContent).toBe('');
+  });
+
   it('never clips toolbar actions under any responsive policy', () => {
     expect(
       asHtml(

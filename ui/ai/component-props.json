@@ -15987,6 +15987,46 @@
           "description": "`none` keeps this pressed control looking like its neighbors."
         },
         {
+          "name": "badge",
+          "type": {
+            "kind": "union",
+            "members": [
+              { "kind": "string", "text": "string" },
+              { "kind": "number", "text": "number" },
+              { "kind": "literal", "value": true, "text": "true" }
+            ],
+            "text": "string | number | true | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "A count, short text, or `true` for a text-free dot over the button's\ntop-trailing corner, such as how many workers are live. A count of 0 (or\nless) and empty text show no badge. The badge is decorative\n(`aria-hidden`): put its meaning in `ariaLabel` (or the visible label)\nand `title` yourself, for example \"Workers, 2 live\"."
+        },
+        {
+          "name": "badgeTone",
+          "type": {
+            "kind": "enum",
+            "values": [
+              "neutral",
+              "info",
+              "pop",
+              "success",
+              "warning",
+              "danger"
+            ],
+            "text": "SemanticTone | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "danger",
+          "description": "The badge's tone (default `danger`)."
+        },
+        {
+          "name": "badgeMax",
+          "type": { "kind": "number", "text": "number", "nullable": true },
+          "required": false,
+          "description": "The largest count shown in full; a larger count shows as `{badgeMax}+`\n(default 99, so 100 shows \"99+\"). Text badges are shown as given."
+        },
+        {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
