@@ -844,7 +844,11 @@ activation. Keep option rows in a labeled single-select listbox:
 roving Tab stop (the last focused option, else the selected one, else the
 first), Up/Down/Home/End move focus without selecting, and Enter or Space
 selects the focused option by dispatching its click, so the app's ordinary
-delegated `data-action` handler changes the selection. The app owns the
+delegated `data-action` handler changes the selection. Name that action with
+the option's `action` prop (rendered as `data-action`, as on ContentItem and
+ListItem), so a view document and the editor's play log see it; a
+`data-action` in `rootAttributes` still works, and `action` wins when both are
+set. A `semanticRole="group"` row takes no `action`. The app owns the
 selection state.
 Kerf skips a key event that is already `defaultPrevented`, so an app overrides
 any of these keys by handling it first (on the option, in the capture phase,

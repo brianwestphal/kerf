@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 455800,
-  "measuredLargestJavaScriptGzip": 164549,
-  "measuredTotalJavaScriptGzip": 455786,
+  "totalJavaScriptGzip": 455900,
+  "measuredLargestJavaScriptGzip": 164550,
+  "measuredTotalJavaScriptGzip": 455827,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6899,6 +6899,22 @@
         "measuredTotalJavaScriptGzip": 455786,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 455800
+      }
+    },
+    {
+      "at": "2026-11-05T07:30:30.985Z",
+      "reason": "KF-YT6A0N: SummaryRow renders an option action prop as data-action",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164549,
+        "measuredTotalJavaScriptGzip": 455786,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 455800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164550,
+        "measuredTotalJavaScriptGzip": 455827,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 455900
       }
     }
   ]

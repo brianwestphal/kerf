@@ -52,6 +52,25 @@ describe('SummaryRow', () => {
     );
   });
 
+  // KF-YT6A0N: an option names its delegated action with `action`, as
+  // ContentItem and ListItem do; a rootAttributes data-action still works.
+  it('renders an option action as data-action, over a rootAttributes one', () => {
+    const row = (props: object) =>
+      String(SummaryRow({ title: <span>Fix it</span>, ...props }));
+    expect(row({ action: 'open-row' })).toContain('data-action="open-row"');
+    expect(row({ rootAttributes: { 'data-action': 'legacy' } })).toContain(
+      'data-action="legacy"',
+    );
+    const both = row({
+      action: 'open-row',
+      rootAttributes: { 'data-action': 'legacy', 'data-item-id': 'KF-1' },
+    });
+    expect(both).toContain('data-action="open-row"');
+    expect(both).not.toContain('legacy');
+    expect(both).toContain('data-item-id="KF-1"');
+    expect(row({})).not.toContain('data-action');
+  });
+
   it('rejects a title line budget that is not a positive integer', () => {
     for (const titleLines of [0, 1.5, -1])
       expect(() => SummaryRow({ title: <span />, titleLines })).toThrow(

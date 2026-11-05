@@ -1249,7 +1249,8 @@ test('a played SummaryRow listbox is one Tab stop with arrow keys and Enter', as
   const row = (n: number, title: string) => ({
     id: `01JB8Z1M6Q8E1X9V4S7K2R3V${n}A`,
     type: '@kerfjs/ui:summary-row',
-    props: { semanticRole: 'option' },
+    // KF-YT6A0N: an option's `action` is a document action.
+    props: { semanticRole: 'option', action: { $action: `open-row-${n}` } },
     zones: {
       title: [
         {
@@ -1271,16 +1272,18 @@ test('a played SummaryRow listbox is one Tab stop with arrow keys and Enter', as
   );
   await expect(page.getByText(/· 7 nodes · valid$/)).toBeVisible();
   await play(page);
-  const options = await expectListboxKeys(page);
-  // Enter activates the focused option by clicking it, which is how an
-  // app's delegated selection handler hears it.
-  await options.nth(1).evaluate((option) => {
-    option.addEventListener('click', () => {
-      option.dataset.clicked = String(Number(option.dataset.clicked ?? 0) + 1);
-    });
-  });
+  await expectListboxKeys(page);
+  // Moving focus fires nothing; Enter fires the focused option's action.
+  const log = page.locator('[data-action="editor-play-log"]');
+  await expect(log).toHaveAttribute('aria-label', 'Action log');
   await page.keyboard.press('Enter');
-  await expect(options.nth(1)).toHaveAttribute('data-clicked', '1');
+  await expect(log).toHaveAttribute('aria-label', 'Action log, 1 new');
+  await log.click();
+  const entries = page
+    .locator('[data-component="anchored-surface"]')
+    .locator('[data-editor-play-log-entry]');
+  await expect(entries).toHaveCount(1);
+  await expect(entries.nth(0)).toContainText('open-row-2');
 });
 
 test('a played ContentItem listbox moves with the arrows and logs Enter', async ({

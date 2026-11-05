@@ -12612,6 +12612,13 @@
           "description": "Selectable option, the default; place it in a labeled listbox."
         },
         {
+          "name": "action",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "The delegated action this option fires when chosen (rendered as\n`data-action`, as on ContentItem and ListItem), so a view\ndocument can name it. It takes precedence over a `data-action`\nin `rootAttributes`.",
+          "variantOnly": true
+        },
+        {
           "name": "draggable",
           "type": {
             "kind": "boolean",
@@ -12639,7 +12646,7 @@
         {
           "when": { "semanticRole": "group" },
           "required": ["title", "semanticRole", "ariaLabel"],
-          "forbidden": ["draggable"]
+          "forbidden": ["draggable", "action"]
         }
       ],
       "discriminant": ["semanticRole"],

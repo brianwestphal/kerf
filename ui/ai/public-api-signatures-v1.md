@@ -6299,6 +6299,13 @@ interface SummaryRowBaseProps {
 type SummaryRowProps = SummaryRowBaseProps & ({
     /** Selectable option, the default; place it in a labeled listbox. */
     semanticRole?: 'option';
+    /**
+     * The delegated action this option fires when chosen (rendered as
+     * `data-action`, as on ContentItem and ListItem), so a view
+     * document can name it. It takes precedence over a `data-action`
+     * in `rootAttributes`.
+     */
+    action?: string;
     /** Native HTML drag source on this option root, in row or card form. */
     draggable?: boolean;
     /** Accessible name when the visible content is not a good one. */
@@ -6307,6 +6314,7 @@ type SummaryRowProps = SummaryRowBaseProps & ({
     /** Static labeled group; nested actions own focus and activation. */
     semanticRole: 'group';
     draggable?: never;
+    action?: never;
     ariaLabel: string;
 });
 /**
@@ -6314,7 +6322,7 @@ type SummaryRowProps = SummaryRowBaseProps & ({
  * rail. The default is a focusable `role="option"` for a labeled listbox;
  * `semanticRole="group"` gives a static labeled row for nested actions.
  */
-declare function SummaryRow({ title, leading, trailingMeta, metadata, presentation, titleLines, rail, selected, dimmed, listEdge, deferRendering, semanticRole, draggable, ariaLabel, id, className, rootAttributes, }: SummaryRowProps): SafeHtml;
+declare function SummaryRow({ title, leading, trailingMeta, metadata, presentation, titleLines, rail, selected, dimmed, listEdge, deferRendering, semanticRole, draggable, action, ariaLabel, id, className, rootAttributes, }: SummaryRowProps): SafeHtml;
 
 export { SummaryRow, type SummaryRowListEdge, type SummaryRowPresentation, type SummaryRowProps };
 ```

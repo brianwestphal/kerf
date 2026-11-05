@@ -160,8 +160,8 @@ the same `deferOffscreen` option directly; leave it off for a single page hero.
 `SummaryRow` is an option in a labeled listbox by default: put the rows in
 `List selectionMode="single" ariaLabel="…"`, which renders `role="listbox"`, and wire
 `wireSummaryRows(root)` once: the listbox is one roving Tab stop, Up/Down/Home/End move
-focus, and Enter/Space select through the option's delegated click (the app owns the
-selection). Kerf skips a key the app already `preventDefault()`ed, so intercept a key by
+focus, and Enter/Space select through the option's delegated click; name that action with
+the option's `action` prop (the app owns the selection). Kerf skips a key the app already `preventDefault()`ed, so intercept a key by
 handling it first (on the option or in the capture phase). For a diagnostic
 row with a nested recovery action, use `semanticRole="group"` and a required
 `ariaLabel`; only the nested native button takes focus and activates, while

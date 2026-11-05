@@ -820,7 +820,8 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   `listEdge` rounding (a title past `titleLines` ends in an ellipsis; never
   add a clamp in app CSS); put the rows in a `List selectionMode="single"` with
   `ariaLabel` (a `role="listbox"`) and wire `wireSummaryRows` once for one
-  Tab stop, Up/Down/Home/End focus, and Enter/Space selection; the app owns
+  Tab stop, Up/Down/Home/End focus, and Enter/Space selection; name each
+  option's action with `action` (its `data-action`); the app owns
   the selection and intercepts a key by calling `preventDefault()` first. Never
   hand-roll ticket-row chrome. For a non-option diagnostic with a nested
   recovery button, set `semanticRole="group"` and `ariaLabel`; the root is not

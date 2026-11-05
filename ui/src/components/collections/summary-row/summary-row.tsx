@@ -64,6 +64,13 @@ export type SummaryRowProps = SummaryRowBaseProps &
     | {
         /** Selectable option, the default; place it in a labeled listbox. */
         semanticRole?: 'option';
+        /**
+         * The delegated action this option fires when chosen (rendered as
+         * `data-action`, as on ContentItem and ListItem), so a view
+         * document can name it. It takes precedence over a `data-action`
+         * in `rootAttributes`.
+         */
+        action?: string;
         /** Native HTML drag source on this option root, in row or card form. */
         draggable?: boolean;
         /** Accessible name when the visible content is not a good one. */
@@ -73,6 +80,7 @@ export type SummaryRowProps = SummaryRowBaseProps &
         /** Static labeled group; nested actions own focus and activation. */
         semanticRole: 'group';
         draggable?: never;
+        action?: never;
         ariaLabel: string;
       }
   );
@@ -96,6 +104,7 @@ export function SummaryRow({
   deferRendering = false,
   semanticRole = 'option',
   draggable,
+  action,
   ariaLabel,
   id,
   className = '',
@@ -109,6 +118,7 @@ export function SummaryRow({
   return (
     <div
       {...filterDataAttributes(rootAttributes, summaryRowProtected)}
+      {...(action === undefined ? {} : { 'data-action': action })}
       id={id}
       class={`kui-summary-row ${className}`.trim()}
       data-component="summary-row"
