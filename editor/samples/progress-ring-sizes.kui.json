@@ -16,8 +16,8 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:row",
           "props": {
-            "gap": "m",
-            "vAlign": "middle"
+            "vAlign": "middle",
+            "gap": "m"
           },
           "zones": {
             "children": [
@@ -25,33 +25,33 @@
                 "id": "00000000000000000000000003",
                 "type": "@kerfjs/ui:progress-ring",
                 "props": {
-                  "label": "Upload Progress, small",
-                  "size": "small",
                   "value": 3,
                   "max": 12,
-                  "valueText": "3 of 12 files"
+                  "label": "Upload Progress, small",
+                  "valueText": "3 of 12 files",
+                  "size": "small"
                 }
               },
               {
                 "id": "00000000000000000000000004",
                 "type": "@kerfjs/ui:progress-ring",
                 "props": {
-                  "label": "Upload Progress, medium",
-                  "size": "medium",
                   "value": 3,
                   "max": 12,
-                  "valueText": "3 of 12 files"
+                  "label": "Upload Progress, medium",
+                  "valueText": "3 of 12 files",
+                  "size": "medium"
                 }
               },
               {
                 "id": "00000000000000000000000005",
                 "type": "@kerfjs/ui:progress-ring",
                 "props": {
-                  "label": "Upload Progress, large",
-                  "size": "large",
                   "value": 3,
                   "max": 12,
-                  "valueText": "3 of 12 files"
+                  "label": "Upload Progress, large",
+                  "valueText": "3 of 12 files",
+                  "size": "large"
                 }
               },
               {

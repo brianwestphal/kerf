@@ -17,8 +17,8 @@
           "type": "@kerfjs/ui:list-item#ListItemLink",
           "props": {
             "href": "https://example.com",
-            "label": "Open External Example",
             "external": true,
+            "label": "Open External Example",
             "itemId": "external-link"
           }
         }

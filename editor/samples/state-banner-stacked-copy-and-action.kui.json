@@ -17,8 +17,8 @@
           "type": "@kerfjs/ui:state-banner",
           "props": {
             "title": "Migration Needs Review",
-            "tone": "warning",
             "detail": "Check the imported projects before removing the old source.",
+            "tone": "warning",
             "copyLayout": "stacked",
             "actionPlacement": "below"
           },

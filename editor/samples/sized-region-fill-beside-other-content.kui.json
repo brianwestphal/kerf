@@ -29,19 +29,19 @@
                       "id": "00000000000000000000000004",
                       "type": "@kerfjs/ui:text",
                       "props": {
-                        "children": "Project Atlas",
                         "variant": "span",
-                        "weight": "strong"
+                        "weight": "strong",
+                        "children": "Project Atlas"
                       }
                     },
                     {
                       "id": "00000000000000000000000005",
                       "type": "@kerfjs/ui:text",
                       "props": {
-                        "children": "Summary content sits above the nested layout.",
                         "variant": "span",
                         "tone": "quiet",
-                        "size": "compact"
+                        "size": "compact",
+                        "children": "Summary content sits above the nested layout."
                       }
                     }
                   ]
@@ -97,19 +97,19 @@
                                         "id": "00000000000000000000000011",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Fills the Region",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "Fills the Region"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000012",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "The stack's scenes take the height the SizedRegion gives them.",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "The stack's scenes take the height the SizedRegion gives them."
                                         }
                                       }
                                     ]

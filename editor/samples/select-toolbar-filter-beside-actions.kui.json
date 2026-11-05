@@ -71,14 +71,14 @@
                             "label": "Performance"
                           }
                         ],
+                        "presentation": "toolbar-borderless",
+                        "ariaLabel": "Filter by Label",
+                        "multiple": true,
                         "value": [
                           "bug",
                           "docs"
                         ],
-                        "presentation": "toolbar-borderless",
-                        "selectedPresentation": "icon-only",
-                        "multiple": true,
-                        "ariaLabel": "Filter by Label"
+                        "selectedPresentation": "icon-only"
                       },
                       "zones": {
                         "triggerIcon": [
@@ -99,13 +99,13 @@
                       "id": "00000000000000000000000008",
                       "type": "@kerfjs/ui:popup-menu",
                       "props": {
+                        "label": "More Actions",
                         "items": [
                           {
                             "label": "Archive",
                             "action": "log-more"
                           }
-                        ],
-                        "label": "More Actions"
+                        ]
                       },
                       "zones": {
                         "icon": [

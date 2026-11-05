@@ -29,6 +29,7 @@
                       "id": "00000000000000000000000004",
                       "type": "@kerfjs/ui:popup-menu",
                       "props": {
+                        "text": "Actions",
                         "items": [
                           {
                             "kind": "heading",
@@ -50,8 +51,7 @@
                             "action": "log-more",
                             "disabled": true
                           }
-                        ],
-                        "text": "Actions"
+                        ]
                       },
                       "zones": {
                         "icon": [
@@ -107,10 +107,10 @@
                   ]
                 },
                 "props": {
-                  "content": "mixed",
-                  "menuInset": "compact",
                   "single": true,
-                  "nestedDropdown": true
+                  "content": "mixed",
+                  "nestedDropdown": true,
+                  "menuInset": "compact"
                 }
               }
             ]

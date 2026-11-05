@@ -38,10 +38,10 @@
                   ]
                 },
                 "props": {
-                  "tileTone": "neutral",
-                  "shape": "pill",
+                  "label": "Neutral Icon Tile",
                   "single": true,
-                  "label": "Neutral Icon Tile"
+                  "tileTone": "neutral",
+                  "shape": "pill"
                 }
               },
               {
@@ -80,10 +80,10 @@
                   ]
                 },
                 "props": {
-                  "tileTone": "brand",
-                  "shape": "pill",
+                  "label": "Brand Icon Tile",
                   "single": true,
-                  "label": "Brand Icon Tile"
+                  "tileTone": "brand",
+                  "shape": "pill"
                 }
               },
               {
@@ -122,10 +122,10 @@
                   ]
                 },
                 "props": {
-                  "tileTone": "success",
-                  "shape": "pill",
+                  "label": "Success Icon Tile",
                   "single": true,
-                  "label": "Success Icon Tile"
+                  "tileTone": "success",
+                  "shape": "pill"
                 }
               },
               {
@@ -164,10 +164,10 @@
                   ]
                 },
                 "props": {
-                  "tileTone": "warning",
-                  "shape": "pill",
+                  "label": "Warning Icon Tile",
                   "single": true,
-                  "label": "Warning Icon Tile"
+                  "tileTone": "warning",
+                  "shape": "pill"
                 }
               },
               {
@@ -206,10 +206,10 @@
                   ]
                 },
                 "props": {
-                  "tileTone": "danger",
-                  "shape": "pill",
+                  "label": "Danger Icon Tile",
                   "single": true,
-                  "label": "Danger Icon Tile"
+                  "tileTone": "danger",
+                  "shape": "pill"
                 }
               },
               {

@@ -16,9 +16,9 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:toolbar",
           "props": {
+            "label": "Stacked Editor Controls",
             "responsive": "stack",
-            "responsiveAt": "compact",
-            "label": "Stacked Editor Controls"
+            "responsiveAt": "compact"
           },
           "zones": {
             "leading": [
@@ -41,8 +41,8 @@
                       "id": "00000000000000000000000005",
                       "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
                       "props": {
-                        "pressed": false,
-                        "ariaLabel": "Bold"
+                        "ariaLabel": "Bold",
+                        "pressed": false
                       },
                       "zones": {
                         "icon": [
@@ -63,8 +63,8 @@
                       "id": "00000000000000000000000007",
                       "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
                       "props": {
-                        "pressed": false,
-                        "ariaLabel": "Italic"
+                        "ariaLabel": "Italic",
+                        "pressed": false
                       },
                       "zones": {
                         "icon": [
@@ -85,8 +85,8 @@
                       "id": "00000000000000000000000009",
                       "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
                       "props": {
-                        "pressed": false,
-                        "ariaLabel": "Underline"
+                        "ariaLabel": "Underline",
+                        "pressed": false
                       },
                       "zones": {
                         "icon": [
@@ -106,8 +106,8 @@
                   ]
                 },
                 "props": {
-                  "buttonAppearance": "push",
-                  "label": "Text Style"
+                  "label": "Text Style",
+                  "buttonAppearance": "push"
                 }
               },
               {
@@ -160,8 +160,8 @@
                   ]
                 },
                 "props": {
-                  "buttonAppearance": "push",
-                  "label": "Draft Actions"
+                  "label": "Draft Actions",
+                  "buttonAppearance": "push"
                 }
               },
               {
@@ -193,8 +193,8 @@
                   ]
                 },
                 "props": {
-                  "single": true,
-                  "label": "More Draft Actions"
+                  "label": "More Draft Actions",
+                  "single": true
                 }
               }
             ]

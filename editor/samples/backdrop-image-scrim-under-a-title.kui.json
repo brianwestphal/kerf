@@ -21,10 +21,10 @@
             },
             "alt": "Ridges at dusk under a low sun",
             "position": "bottom",
-            "scrim": "bottom",
             "height": {
               "$css": "rem(15)"
-            }
+            },
+            "scrim": "bottom"
           },
           "zones": {
             "children": [

@@ -27,8 +27,8 @@
                 "id": "00000000000000000000000003",
                 "type": "@kerfjs/ui:content-item",
                 "props": {
-                  "bubble": "end",
-                  "appearance": "brand-loud"
+                  "appearance": "brand-loud",
+                  "bubble": "end"
                 },
                 "zones": {
                   "children": [
@@ -36,8 +36,8 @@
                       "id": "00000000000000000000000004",
                       "type": "@kerfjs/ui:grid",
                       "props": {
-                        "columns": 1,
-                        "gap": "xs"
+                        "gap": "xs",
+                        "columns": 1
                       },
                       "zones": {
                         "children": [
@@ -45,8 +45,8 @@
                             "id": "00000000000000000000000005",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Why is the build red?",
-                              "variant": "span"
+                              "variant": "span",
+                              "children": "Why is the build red?"
                             }
                           },
                           {
@@ -65,8 +65,8 @@
                                   "id": "00000000000000000000000007",
                                   "type": "@kerfjs/ui:chip",
                                   "props": {
-                                    "children": "failing-checks.log",
                                     "tone": "inherit",
+                                    "children": "failing-checks.log",
                                     "truncate": true,
                                     "href": "data:text/plain;charset=utf-8,bundle%20budget%3A%20%2B213%20B",
                                     "download": "failing-checks.log"
@@ -99,8 +99,8 @@
                 "id": "00000000000000000000000009",
                 "type": "@kerfjs/ui:content-item",
                 "props": {
-                  "bubble": "start",
-                  "appearance": "neutral"
+                  "appearance": "neutral",
+                  "bubble": "start"
                 },
                 "zones": {
                   "children": [
@@ -108,8 +108,8 @@
                       "id": "00000000000000000000000010",
                       "type": "@kerfjs/ui:grid",
                       "props": {
-                        "columns": 1,
-                        "gap": "xs"
+                        "gap": "xs",
+                        "columns": 1
                       },
                       "zones": {
                         "children": [
@@ -117,8 +117,8 @@
                             "id": "00000000000000000000000011",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "The bundle budget grew and one design template drifted.",
-                              "variant": "span"
+                              "variant": "span",
+                              "children": "The bundle budget grew and one design template drifted."
                             }
                           },
                           {
@@ -137,8 +137,8 @@
                                   "id": "00000000000000000000000013",
                                   "type": "@kerfjs/ui:chip",
                                   "props": {
-                                    "children": "chip.tsx",
                                     "tone": "inherit",
+                                    "children": "chip.tsx",
                                     "truncate": true,
                                     "href": "data:text/plain;charset=utf-8,export%20function%20Chip()%20%7B%7D",
                                     "download": "chip.tsx"
@@ -162,8 +162,8 @@
                                   "id": "00000000000000000000000015",
                                   "type": "@kerfjs/ui:chip",
                                   "props": {
-                                    "children": "design-template-drift-report-2026-10-13.md",
                                     "tone": "inherit",
+                                    "children": "design-template-drift-report-2026-10-13.md",
                                     "truncate": true,
                                     "href": "data:text/plain;charset=utf-8,%23%20Design%20template%20drift",
                                     "download": "design-template-drift-report-2026-10-13.md"

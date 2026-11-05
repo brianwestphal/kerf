@@ -16,8 +16,8 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:toolbar",
           "props": {
-            "responsive": "trailing-priority",
-            "label": "Search Tickets"
+            "label": "Search Tickets",
+            "responsive": "trailing-priority"
           },
           "zones": {
             "leading": [
@@ -42,17 +42,17 @@
                       "props": {
                         "id": "trailing-priority-search",
                         "label": "Search Tickets",
-                        "presentation": "toolbar-group",
+                        "placeholder": "Search tickets",
                         "collapsible": true,
                         "expanded": true,
-                        "placeholder": "Search tickets"
+                        "presentation": "toolbar-group"
                       }
                     }
                   ]
                 },
                 "props": {
-                  "content": "search",
-                  "expanded": true
+                  "expanded": true,
+                  "content": "search"
                 }
               },
               {
@@ -84,9 +84,9 @@
                   ]
                 },
                 "props": {
-                  "visibility": "yield-to-expanded-sibling",
+                  "label": "View",
                   "single": true,
-                  "label": "View"
+                  "visibility": "yield-to-expanded-sibling"
                 }
               },
               {
@@ -118,9 +118,9 @@
                   ]
                 },
                 "props": {
-                  "visibility": "yield-to-expanded-sibling",
+                  "label": "Actions",
                   "single": true,
-                  "label": "Actions"
+                  "visibility": "yield-to-expanded-sibling"
                 }
               }
             ]

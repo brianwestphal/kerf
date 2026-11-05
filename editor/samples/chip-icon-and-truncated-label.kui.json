@@ -27,8 +27,8 @@
                 "id": "00000000000000000000000003",
                 "type": "@kerfjs/ui:chip",
                 "props": {
-                  "children": "Acme International Procurement and Manufacturing Limited",
                   "tone": "success",
+                  "children": "Acme International Procurement and Manufacturing Limited",
                   "truncate": true
                 },
                 "zones": {
@@ -50,8 +50,8 @@
                 "id": "00000000000000000000000005",
                 "type": "@kerfjs/ui:text",
                 "props": {
-                  "children": "$129 / unit",
                   "variant": "span",
+                  "children": "$129 / unit",
                   "wrap": "nowrap"
                 }
               }

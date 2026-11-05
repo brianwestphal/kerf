@@ -23,9 +23,9 @@
                 "props": {
                   "label": "Drops Above This Row",
                   "action": "log-projects",
-                  "dropPosition": "before",
+                  "itemId": "reorder-before",
                   "draggable": true,
-                  "itemId": "reorder-before"
+                  "dropPosition": "before"
                 }
               },
               {
@@ -34,9 +34,9 @@
                 "props": {
                   "label": "Row Being Dragged",
                   "action": "log-projects",
+                  "itemId": "reorder-dragging",
                   "draggable": true,
-                  "dragging": true,
-                  "itemId": "reorder-dragging"
+                  "dragging": true
                 }
               },
               {
@@ -45,9 +45,9 @@
                 "props": {
                   "label": "Drops Below This Row",
                   "action": "log-projects",
-                  "dropPosition": "after",
+                  "itemId": "reorder-after",
                   "draggable": true,
-                  "itemId": "reorder-after"
+                  "dropPosition": "after"
                 }
               }
             ]

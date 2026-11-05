@@ -22,12 +22,12 @@
                 "type": "@kerfjs/ui:slider",
                 "props": {
                   "id": "slider-demo-opacity",
-                  "label": "Layer Opacity",
-                  "size": "compact",
-                  "showValue": true,
                   "value": 80,
+                  "showValue": true,
                   "unit": "%",
-                  "action": "set-slider-demo"
+                  "size": "compact",
+                  "action": "set-slider-demo",
+                  "label": "Layer Opacity"
                 }
               },
               {
@@ -35,9 +35,9 @@
                 "type": "@kerfjs/ui:slider",
                 "props": {
                   "id": "slider-demo-locked",
-                  "label": "Locked Setting",
+                  "value": 40,
                   "disabled": true,
-                  "value": 40
+                  "label": "Locked Setting"
                 }
               }
             ]

@@ -46,19 +46,19 @@
                                   "id": "00000000000000000000000006",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Catalog Panel",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Catalog Panel"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000007",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Navigation or inspector content, 180⁠–⁠420 px wide.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Navigation or inspector content, 180⁠–⁠420 px wide."
                                   }
                                 }
                               ]

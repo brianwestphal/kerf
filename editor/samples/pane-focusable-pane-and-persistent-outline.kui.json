@@ -8,9 +8,9 @@
     "id": "00000000000000000000000001",
     "type": "@kerfjs/ui:pane",
     "props": {
-      "element": "section",
       "tabIndex": 0,
       "outlined": true,
+      "element": "section",
       "label": "Drop Target Pane",
       "rootAttributes": {
         "data-demo-focus-pane": ""

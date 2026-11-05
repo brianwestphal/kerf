@@ -18,7 +18,6 @@
           "props": {
             "id": "disabled-search",
             "label": "Saved Search",
-            "disabled": true,
             "query": "release",
             "tokens": [
               {
@@ -26,7 +25,8 @@
                 "label": "tag:design-system",
                 "offset": 7
               }
-            ]
+            ],
+            "disabled": true
           },
           "zones": {
             "clearIcon": [

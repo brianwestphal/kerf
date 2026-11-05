@@ -16,9 +16,9 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:sunken-panel",
           "props": {
+            "ariaLabel": "Selected Work Surface",
             "tabIndex": 0,
-            "outlined": true,
-            "ariaLabel": "Selected Work Surface"
+            "outlined": true
           },
           "zones": {
             "children": [

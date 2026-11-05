@@ -33,8 +33,8 @@
                 "type": "@kerfjs/ui:button",
                 "props": {
                   "children": "Swap Order",
-                  "action": "reorder-dialog-stack",
-                  "disabled": true
+                  "disabled": true,
+                  "action": "reorder-dialog-stack"
                 }
               }
             ]
@@ -45,24 +45,24 @@
           "type": "@kerfjs/ui:surface-scaffold",
           "props": {
             "label": "Atlas Reader",
-            "height": "viewport",
-            "bodyInset": "none",
-            "bodyLayout": "fill",
             "id": "catalog-reader-atlas",
-            "rootAttributes": {
-              "data-reader-id": "atlas"
-            },
-            "preferredWidth": {
-              "$css": "rem(64)"
-            },
             "stack": {
-              "position": 1,
               "open": false,
               "active": false,
+              "position": 1,
               "count": 2,
               "offset": {
                 "$css": "rem(0)"
               }
+            },
+            "preferredWidth": {
+              "$css": "rem(64)"
+            },
+            "bodyInset": "none",
+            "height": "viewport",
+            "bodyLayout": "fill",
+            "rootAttributes": {
+              "data-reader-id": "atlas"
             }
           },
           "zones": {
@@ -97,6 +97,7 @@
                             "id": "00000000000000000000000010",
                             "type": "@kerfjs/ui:popup-menu",
                             "props": {
+                              "text": "Reader Actions",
                               "items": [
                                 {
                                   "label": "Copy Link"
@@ -104,8 +105,7 @@
                                 {
                                   "label": "View History"
                                 }
-                              ],
-                              "text": "Reader Actions"
+                              ]
                             }
                           }
                         ]
@@ -122,24 +122,24 @@
           "type": "@kerfjs/ui:surface-scaffold",
           "props": {
             "label": "Borealis Reader",
-            "height": "viewport",
-            "bodyInset": "none",
-            "bodyLayout": "fill",
             "id": "catalog-reader-borealis",
-            "rootAttributes": {
-              "data-reader-id": "borealis"
-            },
-            "preferredWidth": {
-              "$css": "rem(64)"
-            },
             "stack": {
-              "position": 2,
               "open": false,
               "active": false,
+              "position": 2,
               "count": 2,
               "offset": {
                 "$css": "rem(0)"
               }
+            },
+            "preferredWidth": {
+              "$css": "rem(64)"
+            },
+            "bodyInset": "none",
+            "height": "viewport",
+            "bodyLayout": "fill",
+            "rootAttributes": {
+              "data-reader-id": "borealis"
             }
           },
           "zones": {
@@ -174,6 +174,7 @@
                             "id": "00000000000000000000000016",
                             "type": "@kerfjs/ui:popup-menu",
                             "props": {
+                              "text": "Reader Actions",
                               "items": [
                                 {
                                   "label": "Copy Link"
@@ -181,8 +182,7 @@
                                 {
                                   "label": "View History"
                                 }
-                              ],
-                              "text": "Reader Actions"
+                              ]
                             }
                           }
                         ]

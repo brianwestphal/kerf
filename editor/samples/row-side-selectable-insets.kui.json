@@ -24,9 +24,9 @@
                 "id": "00000000000000000000000003",
                 "type": "@kerfjs/ui:row",
                 "props": {
+                  "vAlign": "middle",
                   "textInsets": "tbl",
-                  "controlInsets": "r",
-                  "vAlign": "middle"
+                  "controlInsets": "r"
                 },
                 "zones": {
                   "children": [

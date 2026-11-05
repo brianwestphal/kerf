@@ -28,12 +28,12 @@
           "type": "@kerfjs/ui:surface-scaffold",
           "props": {
             "label": "Edit Workspace",
+            "id": "catalog-medium-dialog",
             "closeEmphasis": "quiet",
             "size": "medium",
             "presentation": "modal",
             "bodyInset": "none",
-            "footerInset": "comfortable",
-            "id": "catalog-medium-dialog"
+            "footerInset": "comfortable"
           },
           "zones": {
             "children": [

@@ -28,17 +28,17 @@
           "type": "@kerfjs/ui:surface-scaffold",
           "props": {
             "label": "Close Workspace",
-            "size": "large",
-            "maxHeight": "viewport",
-            "bodyInset": "none",
             "id": "catalog-bounded-dialog",
             "describedBy": "catalog-bounded-dialog-summary",
+            "size": "large",
             "preferredWidth": {
               "$css": "rem(52)"
             },
+            "bodyInset": "none",
             "viewportGutter": {
               "$css": "rem(0.5)"
-            }
+            },
+            "maxHeight": "viewport"
           },
           "zones": {
             "children": [
@@ -56,9 +56,9 @@
                             "id": "00000000000000000000000006",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Closing this workspace stops its running tasks. Saved files remain available when you reopen it.",
+                              "id": "catalog-bounded-dialog-summary",
                               "variant": "span",
-                              "id": "catalog-bounded-dialog-summary"
+                              "children": "Closing this workspace stops its running tasks. Saved files remain available when you reopen it."
                             }
                           }
                         ]

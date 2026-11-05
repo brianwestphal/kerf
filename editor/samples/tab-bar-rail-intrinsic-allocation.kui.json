@@ -27,10 +27,10 @@
                 "props": {
                   "id": "pill-one",
                   "name": "Overview",
-                  "presentation": "pill",
-                  "size": "default",
                   "selected": true,
-                  "closable": false
+                  "closable": false,
+                  "presentation": "pill",
+                  "size": "default"
                 }
               },
               {
@@ -39,9 +39,9 @@
                 "props": {
                   "id": "pill-two",
                   "name": "Activity",
+                  "closable": false,
                   "presentation": "pill",
-                  "size": "default",
-                  "closable": false
+                  "size": "default"
                 }
               }
             ]

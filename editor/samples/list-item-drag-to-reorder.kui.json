@@ -23,9 +23,9 @@
                 "props": {
                   "label": "Run Tests",
                   "action": "toggle-reorder-row",
+                  "itemId": "run-tests",
                   "pressed": false,
-                  "draggable": true,
-                  "itemId": "run-tests"
+                  "draggable": true
                 },
                 "zones": {
                   "icon": [
@@ -48,9 +48,9 @@
                 "props": {
                   "label": "Build Package",
                   "action": "toggle-reorder-row",
+                  "itemId": "build",
                   "pressed": false,
-                  "draggable": true,
-                  "itemId": "build"
+                  "draggable": true
                 },
                 "zones": {
                   "icon": [
@@ -73,9 +73,9 @@
                 "props": {
                   "label": "Lint Sources",
                   "action": "toggle-reorder-row",
+                  "itemId": "lint",
                   "pressed": false,
-                  "draggable": true,
-                  "itemId": "lint"
+                  "draggable": true
                 },
                 "zones": {
                   "icon": [
@@ -98,9 +98,9 @@
                 "props": {
                   "label": "Deploy Preview",
                   "action": "toggle-reorder-row",
+                  "itemId": "deploy-preview",
                   "pressed": false,
-                  "draggable": true,
-                  "itemId": "deploy-preview"
+                  "draggable": true
                 },
                 "zones": {
                   "icon": [

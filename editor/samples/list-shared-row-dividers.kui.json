@@ -35,8 +35,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Regular Row",
-                  "action": "log-inbox",
                   "divider": "both",
+                  "action": "log-inbox",
                   "itemId": "divider-row"
                 }
               },
@@ -45,8 +45,8 @@
                 "type": "@kerfjs/ui:list-action-row",
                 "props": {
                   "label": "Action Row",
-                  "action": "log-projects",
                   "divider": "both",
+                  "action": "log-projects",
                   "itemId": "divider-action-row",
                   "trailingAction": "log-settings",
                   "trailingActionLabel": "Action row options"

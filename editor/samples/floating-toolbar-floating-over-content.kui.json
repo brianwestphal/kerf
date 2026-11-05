@@ -16,8 +16,8 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:toolbar",
           "props": {
-            "dividerSides": "b",
-            "label": "Work Area"
+            "label": "Work Area",
+            "dividerSides": "b"
           },
           "zones": {
             "leading": [
@@ -37,8 +37,8 @@
                   ]
                 },
                 "props": {
-                  "appearance": "borderless",
-                  "single": true
+                  "single": true,
+                  "appearance": "borderless"
                 }
               }
             ],
@@ -52,9 +52,9 @@
                       "id": "00000000000000000000000006",
                       "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
                       "props": {
-                        "pressed": false,
                         "ariaLabel": "Show Floating Toolbar",
-                        "action": "toggle-floating-toolbar"
+                        "action": "toggle-floating-toolbar",
+                        "pressed": false
                       },
                       "zones": {
                         "icon": [
@@ -74,8 +74,8 @@
                   ]
                 },
                 "props": {
-                  "appearance": "borderless",
-                  "single": true
+                  "single": true,
+                  "appearance": "borderless"
                 }
               }
             ]

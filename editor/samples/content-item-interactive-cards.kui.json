@@ -25,12 +25,12 @@
                 "id": "00000000000000000000000003",
                 "type": "@kerfjs/ui:content-item",
                 "props": {
-                  "selectionMode": "toggle",
+                  "title": "Edit this quotation",
+                  "ariaLabel": "Line Item 42",
                   "interactive": true,
                   "action": "toggle-content-card",
                   "itemId": "line-42",
-                  "ariaLabel": "Line Item 42",
-                  "title": "Edit this quotation",
+                  "selectionMode": "toggle",
                   "rootAttributes": {
                     "data-demo-item": "toggle-card"
                   }
@@ -49,19 +49,19 @@
                             "id": "00000000000000000000000005",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Line Item 42",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Line Item 42"
                             }
                           },
                           {
                             "id": "00000000000000000000000006",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Select this item for review.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Select this item for review."
                             }
                           }
                         ]
@@ -74,11 +74,11 @@
                 "id": "00000000000000000000000007",
                 "type": "@kerfjs/ui:content-item",
                 "props": {
-                  "selectionMode": "toggle",
+                  "ariaLabel": "Card with Action",
                   "interactive": true,
                   "action": "toggle-content-card",
                   "itemId": "card-with-action",
-                  "ariaLabel": "Card with Action",
+                  "selectionMode": "toggle",
                   "rootAttributes": {
                     "data-demo-item": "card-with-action"
                   }
@@ -97,19 +97,19 @@
                             "id": "00000000000000000000000009",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Card with Action",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Card with Action"
                             }
                           },
                           {
                             "id": "00000000000000000000000010",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "The inner button acts on its own.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "The inner button acts on its own."
                             }
                           }
                         ]
@@ -131,11 +131,11 @@
                 "id": "00000000000000000000000012",
                 "type": "@kerfjs/ui:content-item",
                 "props": {
+                  "ariaLabel": "Locked Item",
                   "interactive": true,
-                  "disabled": true,
                   "action": "toggle-content-card",
                   "itemId": "locked-card",
-                  "ariaLabel": "Locked Item",
+                  "disabled": true,
                   "rootAttributes": {
                     "data-demo-item": "disabled-card"
                   }
@@ -154,19 +154,19 @@
                             "id": "00000000000000000000000014",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Locked Item",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Locked Item"
                             }
                           },
                           {
                             "id": "00000000000000000000000015",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Unavailable while processing.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Unavailable while processing."
                             }
                           }
                         ]
@@ -188,12 +188,12 @@
                       "id": "00000000000000000000000017",
                       "type": "@kerfjs/ui:content-item",
                       "props": {
-                        "selectionMode": "single",
+                        "ariaLabel": "Document A",
                         "interactive": true,
-                        "selected": true,
                         "action": "choose-content-card",
                         "itemId": "document-a",
-                        "ariaLabel": "Document A",
+                        "selectionMode": "single",
+                        "selected": true,
                         "rootAttributes": {
                           "data-demo-item": "document-a"
                         }
@@ -212,19 +212,19 @@
                                   "id": "00000000000000000000000019",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Document A",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Document A"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000020",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Choose a document.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Choose a document."
                                   }
                                 }
                               ]
@@ -237,11 +237,11 @@
                       "id": "00000000000000000000000021",
                       "type": "@kerfjs/ui:content-item",
                       "props": {
-                        "selectionMode": "single",
+                        "ariaLabel": "Document B",
                         "interactive": true,
                         "action": "choose-content-card",
                         "itemId": "document-b",
-                        "ariaLabel": "Document B",
+                        "selectionMode": "single",
                         "rootAttributes": {
                           "data-demo-item": "document-b"
                         }
@@ -260,19 +260,19 @@
                                   "id": "00000000000000000000000023",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Document B",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Document B"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000024",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Choose a document.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Choose a document."
                                   }
                                 }
                               ]

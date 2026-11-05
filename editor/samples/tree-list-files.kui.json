@@ -63,9 +63,9 @@
               "src",
               "components"
             ],
+            "selected": "button",
             "action": "tree-list-demo-pick",
-            "toggleAction": "tree-list-demo-toggle",
-            "selected": "button"
+            "toggleAction": "tree-list-demo-toggle"
           },
           "zones": {
             "nodes.0.icon": [

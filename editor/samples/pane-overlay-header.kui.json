@@ -8,8 +8,8 @@
     "id": "00000000000000000000000001",
     "type": "@kerfjs/ui:pane",
     "props": {
-      "element": "section",
       "headerPresentation": "overlay",
+      "element": "section",
       "label": "Inbox",
       "rootAttributes": {
         "data-overlay-header-demo": "pane"
@@ -48,8 +48,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Design Review",
-                  "action": "log-inbox",
                   "iconTile": "brand",
+                  "action": "log-inbox",
                   "itemId": "inbox-1"
                 },
                 "zones": {
@@ -72,8 +72,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Backup Complete",
-                  "action": "log-inbox",
                   "iconTile": "success",
+                  "action": "log-inbox",
                   "itemId": "inbox-2"
                 },
                 "zones": {
@@ -96,8 +96,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Storage Almost Full",
-                  "action": "log-inbox",
                   "iconTile": "warning",
+                  "action": "log-inbox",
                   "itemId": "inbox-3"
                 },
                 "zones": {
@@ -120,8 +120,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Weekly Summary",
-                  "action": "log-inbox",
                   "iconTile": "neutral",
+                  "action": "log-inbox",
                   "itemId": "inbox-4"
                 },
                 "zones": {
@@ -144,8 +144,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Design Review",
-                  "action": "log-inbox",
                   "iconTile": "brand",
+                  "action": "log-inbox",
                   "itemId": "inbox-5"
                 },
                 "zones": {
@@ -168,8 +168,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Backup Complete",
-                  "action": "log-inbox",
                   "iconTile": "success",
+                  "action": "log-inbox",
                   "itemId": "inbox-6"
                 },
                 "zones": {
@@ -192,8 +192,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Storage Almost Full",
-                  "action": "log-inbox",
                   "iconTile": "warning",
+                  "action": "log-inbox",
                   "itemId": "inbox-7"
                 },
                 "zones": {
@@ -216,8 +216,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Weekly Summary",
-                  "action": "log-inbox",
                   "iconTile": "neutral",
+                  "action": "log-inbox",
                   "itemId": "inbox-8"
                 },
                 "zones": {
@@ -240,8 +240,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Design Review",
-                  "action": "log-inbox",
                   "iconTile": "brand",
+                  "action": "log-inbox",
                   "itemId": "inbox-9"
                 },
                 "zones": {
@@ -264,8 +264,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Backup Complete",
-                  "action": "log-inbox",
                   "iconTile": "success",
+                  "action": "log-inbox",
                   "itemId": "inbox-10"
                 },
                 "zones": {
@@ -288,8 +288,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Storage Almost Full",
-                  "action": "log-inbox",
                   "iconTile": "warning",
+                  "action": "log-inbox",
                   "itemId": "inbox-11"
                 },
                 "zones": {
@@ -312,8 +312,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Weekly Summary",
-                  "action": "log-inbox",
                   "iconTile": "neutral",
+                  "action": "log-inbox",
                   "itemId": "inbox-12"
                 },
                 "zones": {
@@ -336,8 +336,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Design Review",
-                  "action": "log-inbox",
                   "iconTile": "brand",
+                  "action": "log-inbox",
                   "itemId": "inbox-13"
                 },
                 "zones": {
@@ -360,8 +360,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Backup Complete",
-                  "action": "log-inbox",
                   "iconTile": "success",
+                  "action": "log-inbox",
                   "itemId": "inbox-14"
                 },
                 "zones": {
@@ -384,8 +384,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Storage Almost Full",
-                  "action": "log-inbox",
                   "iconTile": "warning",
+                  "action": "log-inbox",
                   "itemId": "inbox-15"
                 },
                 "zones": {
@@ -408,8 +408,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Weekly Summary",
-                  "action": "log-inbox",
                   "iconTile": "neutral",
+                  "action": "log-inbox",
                   "itemId": "inbox-16"
                 },
                 "zones": {
@@ -432,8 +432,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Design Review",
-                  "action": "log-inbox",
                   "iconTile": "brand",
+                  "action": "log-inbox",
                   "itemId": "inbox-17"
                 },
                 "zones": {
@@ -456,8 +456,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Backup Complete",
-                  "action": "log-inbox",
                   "iconTile": "success",
+                  "action": "log-inbox",
                   "itemId": "inbox-18"
                 },
                 "zones": {

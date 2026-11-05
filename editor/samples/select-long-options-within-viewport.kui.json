@@ -53,21 +53,21 @@
                             "iconName": "wrench"
                           }
                         ],
-                        "value": "balanced",
                         "presentation": "toolbar-borderless",
-                        "selectedPresentation": "icon-only",
-                        "focusRingOwner": "group",
                         "size": "compact",
-                        "ariaLabel": "Project Attention"
+                        "focusRingOwner": "group",
+                        "ariaLabel": "Project Attention",
+                        "value": "balanced",
+                        "selectedPresentation": "icon-only"
                       }
                     }
                   ]
                 },
                 "props": {
-                  "size": "compact",
-                  "content": "icon",
+                  "label": "Project Attention",
                   "single": true,
-                  "label": "Project Attention"
+                  "size": "compact",
+                  "content": "icon"
                 }
               }
             ]

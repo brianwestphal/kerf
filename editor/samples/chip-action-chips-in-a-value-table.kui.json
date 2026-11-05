@@ -42,36 +42,36 @@
                             "id": "00000000000000000000000005",
                             "type": "@kerfjs/ui:chip",
                             "props": {
-                              "children": "is:draft",
-                              "size": "compact",
                               "shape": "rounded",
+                              "size": "compact",
+                              "itemId": "is:draft",
+                              "children": "is:draft",
                               "action": "log-chip-insert",
-                              "actionLabel": "Insert filter is:draft",
-                              "itemId": "is:draft"
+                              "actionLabel": "Insert filter is:draft"
                             }
                           },
                           {
                             "id": "00000000000000000000000006",
                             "type": "@kerfjs/ui:chip",
                             "props": {
-                              "children": "is:sent",
-                              "size": "compact",
                               "shape": "rounded",
+                              "size": "compact",
+                              "itemId": "is:sent",
+                              "children": "is:sent",
                               "action": "log-chip-insert",
-                              "actionLabel": "Insert filter is:sent",
-                              "itemId": "is:sent"
+                              "actionLabel": "Insert filter is:sent"
                             }
                           },
                           {
                             "id": "00000000000000000000000007",
                             "type": "@kerfjs/ui:chip",
                             "props": {
-                              "children": "is:awarded",
-                              "size": "compact",
                               "shape": "rounded",
+                              "size": "compact",
+                              "itemId": "is:awarded",
+                              "children": "is:awarded",
                               "action": "log-chip-insert",
-                              "actionLabel": "Insert filter is:awarded",
-                              "itemId": "is:awarded"
+                              "actionLabel": "Insert filter is:awarded"
                             }
                           }
                         ]
@@ -101,24 +101,24 @@
                             "id": "00000000000000000000000010",
                             "type": "@kerfjs/ui:chip",
                             "props": {
-                              "children": "is:mine",
-                              "size": "compact",
                               "shape": "rounded",
+                              "size": "compact",
+                              "itemId": "is:mine",
+                              "children": "is:mine",
                               "action": "log-chip-insert",
-                              "actionLabel": "Insert filter is:mine",
-                              "itemId": "is:mine"
+                              "actionLabel": "Insert filter is:mine"
                             }
                           },
                           {
                             "id": "00000000000000000000000011",
                             "type": "@kerfjs/ui:chip",
                             "props": {
-                              "children": "is:shared",
-                              "size": "compact",
                               "shape": "rounded",
+                              "size": "compact",
+                              "itemId": "is:shared",
+                              "children": "is:shared",
                               "action": "log-chip-insert",
-                              "actionLabel": "Insert filter is:shared",
-                              "itemId": "is:shared"
+                              "actionLabel": "Insert filter is:shared"
                             }
                           }
                         ]
@@ -148,36 +148,36 @@
                             "id": "00000000000000000000000014",
                             "type": "@kerfjs/ui:chip",
                             "props": {
-                              "children": "site:Karachi",
-                              "size": "compact",
                               "shape": "rounded",
+                              "size": "compact",
+                              "itemId": "site:Karachi",
+                              "children": "site:Karachi",
                               "action": "log-chip-insert",
-                              "actionLabel": "Insert filter site:Karachi",
-                              "itemId": "site:Karachi"
+                              "actionLabel": "Insert filter site:Karachi"
                             }
                           },
                           {
                             "id": "00000000000000000000000015",
                             "type": "@kerfjs/ui:chip",
                             "props": {
-                              "children": "site:Lahore",
-                              "size": "compact",
                               "shape": "rounded",
+                              "size": "compact",
+                              "itemId": "site:Lahore",
+                              "children": "site:Lahore",
                               "action": "log-chip-insert",
-                              "actionLabel": "Insert filter site:Lahore",
-                              "itemId": "site:Lahore"
+                              "actionLabel": "Insert filter site:Lahore"
                             }
                           },
                           {
                             "id": "00000000000000000000000016",
                             "type": "@kerfjs/ui:chip",
                             "props": {
-                              "children": "site:Islamabad",
-                              "size": "compact",
                               "shape": "rounded",
+                              "size": "compact",
+                              "itemId": "site:Islamabad",
+                              "children": "site:Islamabad",
                               "action": "log-chip-insert",
-                              "actionLabel": "Insert filter site:Islamabad",
-                              "itemId": "site:Islamabad"
+                              "actionLabel": "Insert filter site:Islamabad"
                             }
                           }
                         ]
@@ -207,25 +207,25 @@
                             "id": "00000000000000000000000019",
                             "type": "@kerfjs/ui:chip",
                             "props": {
-                              "children": "has:questions",
-                              "size": "compact",
                               "shape": "rounded",
+                              "size": "compact",
+                              "itemId": "has:questions",
+                              "children": "has:questions",
                               "action": "log-chip-insert",
-                              "actionLabel": "Insert filter has:questions",
-                              "itemId": "has:questions"
+                              "actionLabel": "Insert filter has:questions"
                             }
                           },
                           {
                             "id": "00000000000000000000000020",
                             "type": "@kerfjs/ui:chip",
                             "props": {
-                              "children": "has:attachments",
-                              "size": "compact",
                               "shape": "rounded",
+                              "size": "compact",
                               "disabled": true,
+                              "itemId": "has:attachments",
+                              "children": "has:attachments",
                               "action": "log-chip-insert",
-                              "actionLabel": "Insert filter has:attachments",
-                              "itemId": "has:attachments"
+                              "actionLabel": "Insert filter has:attachments"
                             }
                           }
                         ]

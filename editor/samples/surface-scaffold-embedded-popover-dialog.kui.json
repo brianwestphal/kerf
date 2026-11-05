@@ -18,13 +18,13 @@
           "props": {
             "label": "Repository Status Preview",
             "presentation": "embedded",
-            "bodyLayout": "fill",
             "preferredWidth": {
               "$css": "rem(35)"
             },
             "height": {
               "$css": "rem(17.5)"
-            }
+            },
+            "bodyLayout": "fill"
           },
           "zones": {
             "children": [
@@ -53,8 +53,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Atlas",
-                              "action": "log-more",
                               "selected": true,
+                              "action": "log-more",
                               "itemId": "Atlas"
                             }
                           },

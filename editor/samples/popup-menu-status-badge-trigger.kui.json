@@ -16,6 +16,7 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:popup-menu",
           "props": {
+            "label": "Status: Started",
             "items": [
               {
                 "label": "Not Started",
@@ -44,7 +45,6 @@
                 "checked": false
               }
             ],
-            "label": "Status: Started",
             "rootAttributes": {
               "data-popup-badge-menu": ""
             }
@@ -56,8 +56,8 @@
                 "type": "@kerfjs/ui:badge",
                 "props": {
                   "children": "Started",
-                  "tone": "info",
-                  "appearance": "solid"
+                  "appearance": "solid",
+                  "tone": "info"
                 }
               }
             ]

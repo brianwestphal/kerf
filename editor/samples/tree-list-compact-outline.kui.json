@@ -22,8 +22,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "New node",
-                  "action": "tree-list-demo-new",
                   "description": "Drag onto the outline, or choose to add at the end",
+                  "action": "tree-list-demo-new",
                   "rootAttributes": {
                     "data-tree-list-demo-new": ""
                   }

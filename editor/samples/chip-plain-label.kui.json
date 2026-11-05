@@ -16,8 +16,8 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:chip",
           "props": {
-            "children": "Backlog",
-            "appearance": "solid"
+            "appearance": "solid",
+            "children": "Backlog"
           }
         }
       ]

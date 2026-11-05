@@ -31,22 +31,22 @@
                   "mainToolbar": {
                     "label": "Editor"
                   },
-                  "overlayBackdrop": true,
                   "mainBottomToolbar": {
                     "label": "Editor Status"
                   },
                   "bottomDrawer": {
-                    "label": "Output",
-                    "size": 180,
-                    "responsiveOverlayAt": "narrow",
                     "toolbar": {
                       "label": "Output",
                       "toggle": {
                         "action": "toggle-workbench-output",
                         "name": "Output"
                       }
-                    }
-                  }
+                    },
+                    "size": 180,
+                    "label": "Output",
+                    "responsiveOverlayAt": "narrow"
+                  },
+                  "overlayBackdrop": true
                 },
                 "zones": {
                   "main": [
@@ -64,19 +64,19 @@
                                   "id": "00000000000000000000000006",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Narrow the Workbench",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Narrow the Workbench"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000007",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "At 704 px or narrower the output drawer overlays the bottom of the editor instead of taking its own track.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "At 704 px or narrower the output drawer overlays the bottom of the editor instead of taking its own track."
                                   }
                                 }
                               ]
@@ -124,19 +124,19 @@
                                   "id": "00000000000000000000000012",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Build Output",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Build Output"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000013",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Inline above 704 px; an overlay below it",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Inline above 704 px; an overlay below it"
                                   }
                                 }
                               ]

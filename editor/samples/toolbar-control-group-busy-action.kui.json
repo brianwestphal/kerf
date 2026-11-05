@@ -50,8 +50,8 @@
                   ]
                 },
                 "props": {
-                  "shape": "pill",
                   "single": true,
+                  "shape": "pill",
                   "busyLabel": "Running pricing check"
                 }
               },
@@ -85,9 +85,9 @@
                   ]
                 },
                 "props": {
-                  "content": "mixed",
-                  "shape": "pill",
                   "single": true,
+                  "shape": "pill",
+                  "content": "mixed",
                   "busyLabel": "Running pricing check"
                 }
               }

@@ -22,9 +22,9 @@
                 "type": "@kerfjs/ui:switch",
                 "props": {
                   "label": "Show avatars",
+                  "checked": true,
                   "size": "compact",
-                  "action": "switch-demo",
-                  "checked": true
+                  "action": "switch-demo"
                 }
               },
               {

@@ -51,22 +51,22 @@
                       "id": "00000000000000000000000006",
                       "type": "@kerfjs/ui:popup-menu",
                       "props": {
+                        "text": "More",
                         "items": [
                           {
                             "label": "Archive"
                           }
-                        ],
-                        "text": "More"
+                        ]
                       }
                     }
                   ]
                 },
                 "props": {
+                  "label": "Compact Formatting",
+                  "shape": "pill",
                   "size": "compact",
                   "content": "mixed",
-                  "shape": "pill",
-                  "nestedDropdown": true,
-                  "label": "Compact Formatting"
+                  "nestedDropdown": true
                 }
               }
             ]

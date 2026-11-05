@@ -17,16 +17,16 @@
           "type": "@kerfjs/ui:slider",
           "props": {
             "id": "slider-demo-level",
-            "label": "Level",
-            "size": "compact",
-            "orientation": "vertical",
-            "showValue": true,
             "value": 60,
+            "showValue": true,
             "unit": "%",
-            "action": "set-slider-demo",
+            "orientation": "vertical",
             "length": {
               "$css": "remify(120)"
-            }
+            },
+            "size": "compact",
+            "action": "set-slider-demo",
+            "label": "Level"
           }
         }
       ]

@@ -24,9 +24,9 @@
                 "id": "00000000000000000000000003",
                 "type": "@kerfjs/ui:grid",
                 "props": {
-                  "columns": 3,
                   "gap": "xs",
-                  "flex": true
+                  "flex": true,
+                  "columns": 3
                 },
                 "zones": {
                   "children": [
@@ -35,8 +35,8 @@
                       "type": "@kerfjs/ui:content-item",
                       "props": {
                         "appearance": "surface",
-                        "frame": "framed",
-                        "children": "One"
+                        "children": "One",
+                        "frame": "framed"
                       }
                     },
                     {
@@ -44,8 +44,8 @@
                       "type": "@kerfjs/ui:content-item",
                       "props": {
                         "appearance": "surface",
-                        "frame": "framed",
-                        "children": "Two"
+                        "children": "Two",
+                        "frame": "framed"
                       }
                     },
                     {
@@ -53,8 +53,8 @@
                       "type": "@kerfjs/ui:content-item",
                       "props": {
                         "appearance": "surface",
-                        "frame": "framed",
-                        "children": "Three"
+                        "children": "Three",
+                        "frame": "framed"
                       }
                     }
                   ]

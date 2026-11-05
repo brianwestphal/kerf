@@ -31,10 +31,10 @@
                 "label": "Explicit"
               }
             ],
-            "value": "balanced",
-            "label": "Rendering Preference",
+            "hint": "Controls how much rendering detail is shown.",
             "triggerWidth": "fill",
-            "hint": "Controls how much rendering detail is shown."
+            "label": "Rendering Preference",
+            "value": "balanced"
           }
         }
       ]

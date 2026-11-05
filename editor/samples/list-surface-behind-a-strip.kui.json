@@ -17,8 +17,8 @@
           "type": "@kerfjs/ui:list",
           "props": {
             "surface": "base",
-            "controlInsets": "tb",
-            "dividerSides": "b"
+            "dividerSides": "b",
+            "controlInsets": "tb"
           },
           "zones": {
             "children": [
@@ -27,8 +27,8 @@
                 "type": "@kerfjs/ui:state-banner",
                 "props": {
                   "title": "Codex Hooks Are Not Installed",
-                  "tone": "info",
-                  "detail": "Install them to sync agent activity."
+                  "detail": "Install them to sync agent activity.",
+                  "tone": "info"
                 },
                 "zones": {
                   "icon": [
@@ -73,19 +73,19 @@
                             "id": "00000000000000000000000008",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Work Area",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Work Area"
                             }
                           },
                           {
                             "id": "00000000000000000000000009",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "The lowered region continues below the strip.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "The lowered region continues below the strip."
                             }
                           }
                         ]

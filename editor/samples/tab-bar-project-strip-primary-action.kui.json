@@ -145,8 +145,8 @@
                   ]
                 },
                 "props": {
-                  "appearance": "borderless",
-                  "single": true
+                  "single": true,
+                  "appearance": "borderless"
                 }
               }
             ],

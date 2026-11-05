@@ -17,9 +17,9 @@
           "type": "@kerfjs/ui:surface-scaffold",
           "props": {
             "label": "Edit Workspace",
+            "id": "catalog-embedded-dialog",
             "size": "small",
-            "presentation": "embedded",
-            "id": "catalog-embedded-dialog"
+            "presentation": "embedded"
           },
           "zones": {
             "children": [

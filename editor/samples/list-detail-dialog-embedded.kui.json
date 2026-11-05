@@ -26,11 +26,11 @@
               "description": "Active"
             },
             "embedded": true,
-            "height": {
-              "$css": "rem(17.5)"
-            },
             "preferredWidth": {
               "$css": "rem(35)"
+            },
+            "height": {
+              "$css": "rem(17.5)"
             }
           },
           "zones": {
@@ -48,9 +48,9 @@
                       "type": "@kerfjs/ui:list-item",
                       "props": {
                         "label": "Atlas",
-                        "action": "log-more",
-                        "selected": true,
                         "description": "Mara Chen",
+                        "selected": true,
+                        "action": "log-more",
                         "itemId": "atlas"
                       }
                     },
@@ -59,8 +59,8 @@
                       "type": "@kerfjs/ui:list-item",
                       "props": {
                         "label": "Borealis",
-                        "action": "log-more",
                         "description": "Sam Rivera",
+                        "action": "log-more",
                         "itemId": "borealis"
                       }
                     }

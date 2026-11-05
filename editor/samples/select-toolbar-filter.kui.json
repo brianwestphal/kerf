@@ -49,15 +49,15 @@
                             "label": "Performance"
                           }
                         ],
+                        "presentation": "toolbar-borderless",
+                        "focusRingOwner": "group",
+                        "ariaLabel": "Filter by Label",
+                        "multiple": true,
                         "value": [
                           "bug",
                           "docs"
                         ],
-                        "presentation": "toolbar-borderless",
-                        "selectedPresentation": "icon-only",
-                        "focusRingOwner": "group",
-                        "multiple": true,
-                        "ariaLabel": "Filter by Label"
+                        "selectedPresentation": "icon-only"
                       },
                       "zones": {
                         "triggerIcon": [
@@ -77,10 +77,10 @@
                   ]
                 },
                 "props": {
-                  "content": "icon",
-                  "focusRing": "outline",
+                  "label": "Label Filter",
                   "single": true,
-                  "label": "Label Filter"
+                  "content": "icon",
+                  "focusRing": "outline"
                 }
               }
             ]

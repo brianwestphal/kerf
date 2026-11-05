@@ -32,7 +32,6 @@
                     "label": "Editor"
                   },
                   "leftRail": {
-                    "label": "Navigator",
                     "toolbar": {
                       "label": "Navigator",
                       "toggle": {
@@ -40,17 +39,13 @@
                         "name": "Navigator"
                       }
                     },
-                    "collapsed": true
+                    "collapsed": true,
+                    "label": "Navigator"
                   },
                   "rightRail": {
                     "label": "Inspector"
                   },
                   "bottomDrawer": {
-                    "label": "Console",
-                    "size": 120,
-                    "separator": "hidden",
-                    "collapseMotion": "fade-slide",
-                    "contentOverflow": "visible",
                     "toolbar": {
                       "label": "Console",
                       "toggle": {
@@ -58,7 +53,12 @@
                         "name": "Console"
                       }
                     },
-                    "collapsed": true
+                    "collapsed": true,
+                    "size": 120,
+                    "label": "Console",
+                    "separator": "hidden",
+                    "collapseMotion": "fade-slide",
+                    "contentOverflow": "visible"
                   }
                 },
                 "zones": {
@@ -77,19 +77,19 @@
                                   "id": "00000000000000000000000006",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "App-Owned Collapsed Flags",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "App-Owned Collapsed Flags"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000007",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "A closed panel lends its always-available groups and its toggle to the editor toolbars.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "A closed panel lends its always-available groups and its toggle to the editor toolbars."
                                   }
                                 }
                               ]
@@ -127,19 +127,19 @@
                                   "id": "00000000000000000000000011",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Navigator",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Navigator"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000012",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Still mounted",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Still mounted"
                                   }
                                 }
                               ]
@@ -167,19 +167,19 @@
                                   "id": "00000000000000000000000015",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Inspector",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Inspector"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000016",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Visible peripheral panel",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Visible peripheral panel"
                                   }
                                 }
                               ]
@@ -207,19 +207,19 @@
                                   "id": "00000000000000000000000019",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Console",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Console"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000020",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Still mounted",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Still mounted"
                                   }
                                 }
                               ]
@@ -276,8 +276,8 @@
                       },
                       "props": {
                         "label": "New File",
-                        "appearance": "borderless",
-                        "single": true
+                        "single": true,
+                        "appearance": "borderless"
                       }
                     }
                   ],
@@ -316,8 +316,8 @@
                       },
                       "props": {
                         "label": "Search Files",
-                        "appearance": "borderless",
                         "single": true,
+                        "appearance": "borderless",
                         "relocateOnCollapse": true
                       }
                     }

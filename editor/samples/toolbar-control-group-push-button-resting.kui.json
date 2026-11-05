@@ -29,9 +29,9 @@
                       "id": "00000000000000000000000004",
                       "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
                       "props": {
-                        "pressed": false,
                         "ariaLabel": "Resting Comparison",
-                        "action": "log-resting"
+                        "action": "log-resting",
+                        "pressed": false
                       },
                       "zones": {
                         "icon": [
@@ -51,9 +51,9 @@
                   ]
                 },
                 "props": {
+                  "single": true,
                   "buttonAppearance": "push",
-                  "shape": "pill",
-                  "single": true
+                  "shape": "pill"
                 }
               }
             ]

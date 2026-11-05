@@ -29,6 +29,7 @@
                       "id": "00000000000000000000000004",
                       "type": "@kerfjs/ui:popup-menu",
                       "props": {
+                        "label": "Sort Direction",
                         "items": [
                           {
                             "label": "Recently Updated",
@@ -39,7 +40,6 @@
                             "action": "sort-priority"
                           }
                         ],
-                        "label": "Sort Direction",
                         "caret": false
                       },
                       "zones": {
@@ -60,10 +60,10 @@
                   ]
                 },
                 "props": {
-                  "menuInset": "compact",
-                  "shape": "pill",
                   "single": true,
-                  "nestedDropdown": true
+                  "shape": "pill",
+                  "nestedDropdown": true,
+                  "menuInset": "compact"
                 }
               }
             ]

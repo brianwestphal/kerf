@@ -22,9 +22,9 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Ana Ruiz",
-                  "action": "log-projects",
                   "description": "Member",
                   "divider": "after",
+                  "action": "log-projects",
                   "itemId": "member-0"
                 }
               },
@@ -33,11 +33,11 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Ben Okafor",
-                  "action": "log-projects",
                   "description": "Member",
                   "divider": "after",
-                  "itemId": "member-1",
-                  "selected": true
+                  "selected": true,
+                  "action": "log-projects",
+                  "itemId": "member-1"
                 }
               },
               {
@@ -45,9 +45,9 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Chen Wei",
-                  "action": "log-projects",
                   "description": "Member",
                   "divider": "after",
+                  "action": "log-projects",
                   "itemId": "member-2"
                 }
               },
@@ -56,8 +56,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Dana Holt",
-                  "action": "log-projects",
                   "description": "Member",
+                  "action": "log-projects",
                   "itemId": "member-3"
                 }
               }

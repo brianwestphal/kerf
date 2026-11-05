@@ -25,11 +25,11 @@
                 "id": "00000000000000000000000003",
                 "type": "@kerfjs/ui:content-item",
                 "props": {
-                  "selectionMode": "multiple",
+                  "ariaLabel": "Demand Line A",
                   "interactive": true,
                   "action": "select-rich-card",
                   "itemId": "demand-a",
-                  "ariaLabel": "Demand Line A",
+                  "selectionMode": "multiple",
                   "rootAttributes": {
                     "data-demo-item": "demand-a"
                   }
@@ -57,19 +57,19 @@
                                   "id": "00000000000000000000000006",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Demand Line A",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Demand Line A"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000007",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Review the quote and choose a decision.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Review the quote and choose a decision."
                                   }
                                 }
                               ]
@@ -87,13 +87,13 @@
                             "id": "00000000000000000000000009",
                             "type": "@kerfjs/ui:popup-menu",
                             "props": {
+                              "text": "More Actions",
                               "items": [
                                 {
                                   "label": "Show Details",
                                   "action": "log-more"
                                 }
-                              ],
-                              "text": "More Actions"
+                              ]
                             }
                           },
                           {
@@ -117,11 +117,11 @@
                 "id": "00000000000000000000000011",
                 "type": "@kerfjs/ui:content-item",
                 "props": {
-                  "selectionMode": "multiple",
+                  "ariaLabel": "Demand Line B",
                   "interactive": true,
                   "action": "select-rich-card",
                   "itemId": "demand-b",
-                  "ariaLabel": "Demand Line B",
+                  "selectionMode": "multiple",
                   "rootAttributes": {
                     "data-demo-item": "demand-b"
                   }
@@ -149,19 +149,19 @@
                                   "id": "00000000000000000000000014",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Demand Line B",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Demand Line B"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000015",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Review the quote and choose a decision.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Review the quote and choose a decision."
                                   }
                                 }
                               ]
@@ -179,13 +179,13 @@
                             "id": "00000000000000000000000017",
                             "type": "@kerfjs/ui:popup-menu",
                             "props": {
+                              "text": "More Actions",
                               "items": [
                                 {
                                   "label": "Show Details",
                                   "action": "log-more"
                                 }
-                              ],
-                              "text": "More Actions"
+                              ]
                             }
                           },
                           {

@@ -51,8 +51,8 @@
                         "name": "Tickets"
                       }
                     },
-                    "label": "Tickets",
-                    "size": 360
+                    "size": 360,
+                    "label": "Tickets"
                   }
                 },
                 "zones": {
@@ -71,19 +71,19 @@
                                   "id": "00000000000000000000000006",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Workspace",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Workspace"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000007",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Open a ticket in the right rail.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Open a ticket in the right rail."
                                   }
                                 }
                               ]
@@ -119,10 +119,10 @@
                             "id": "00000000000000000000000010",
                             "type": "@kerfjs/ui:content-item",
                             "props": {
+                              "ariaLabel": "Open Ticket T-42",
                               "interactive": true,
                               "action": "open-workbench-ticket",
-                              "itemId": "T-42",
-                              "ariaLabel": "Open Ticket T-42"
+                              "itemId": "T-42"
                             },
                             "zones": {
                               "children": [
@@ -135,19 +135,19 @@
                                         "id": "00000000000000000000000012",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "T-42",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "T-42"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000013",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Review the workspace rail",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "Review the workspace rail"
                                         }
                                       }
                                     ]
@@ -163,10 +163,10 @@
                             "id": "00000000000000000000000014",
                             "type": "@kerfjs/ui:content-item",
                             "props": {
+                              "ariaLabel": "Open Ticket T-43",
                               "interactive": true,
                               "action": "open-workbench-ticket",
-                              "itemId": "T-43",
-                              "ariaLabel": "Open Ticket T-43"
+                              "itemId": "T-43"
                             },
                             "zones": {
                               "children": [
@@ -179,19 +179,19 @@
                                         "id": "00000000000000000000000016",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "T-43",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "T-43"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000017",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Review the workspace rail",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "Review the workspace rail"
                                         }
                                       }
                                     ]
@@ -207,10 +207,10 @@
                             "id": "00000000000000000000000018",
                             "type": "@kerfjs/ui:content-item",
                             "props": {
+                              "ariaLabel": "Open Ticket T-44",
                               "interactive": true,
                               "action": "open-workbench-ticket",
-                              "itemId": "T-44",
-                              "ariaLabel": "Open Ticket T-44"
+                              "itemId": "T-44"
                             },
                             "zones": {
                               "children": [
@@ -223,19 +223,19 @@
                                         "id": "00000000000000000000000020",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "T-44",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "T-44"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000021",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Review the workspace rail",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "Review the workspace rail"
                                         }
                                       }
                                     ]
@@ -273,9 +273,9 @@
                             "id": "00000000000000000000000024",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Three open tickets",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Three open tickets"
                             }
                           }
                         ]
@@ -317,8 +317,8 @@
                       },
                       "props": {
                         "label": "Choose Project",
-                        "appearance": "borderless",
-                        "single": true
+                        "single": true,
+                        "appearance": "borderless"
                       }
                     }
                   ]

@@ -56,14 +56,14 @@
                       "label": "Question"
                     }
                   ],
-                  "label": "Annotation Intents",
-                  "multiple": "toggle",
+                  "action": "choice-chips-demo",
                   "size": "compact",
                   "id": "choice-chips-intents",
-                  "action": "choice-chips-demo",
+                  "multiple": "toggle",
                   "value": [
                     "comment"
-                  ]
+                  ],
+                  "label": "Annotation Intents"
                 },
                 "zones": {
                   "choices.0.icon": [

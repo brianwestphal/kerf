@@ -8,13 +8,13 @@
     "id": "00000000000000000000000001",
     "type": "@kerfjs/ui:pane",
     "props": {
+      "background": {
+        "$css": "fillColor('light-dark(#e6edfb, #1b2438)')"
+      },
       "element": "section",
       "label": "Album",
       "rootAttributes": {
         "data-background-demo": "pane"
-      },
-      "background": {
-        "$css": "fillColor('light-dark(#e6edfb, #1b2438)')"
       }
     },
     "zones": {

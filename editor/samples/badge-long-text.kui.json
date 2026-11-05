@@ -17,10 +17,10 @@
           "type": "@kerfjs/ui:badge",
           "props": {
             "children": "customer-escalation-priority-review",
-            "tone": "info",
             "maxWidth": {
               "$css": "px(120)"
             },
+            "tone": "info",
             "rootAttributes": {
               "data-demo-badge": "truncate"
             }

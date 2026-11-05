@@ -29,10 +29,10 @@
                 "props": {
                   "id": "split-overview",
                   "name": "Overview",
-                  "presentation": "segmented",
-                  "size": "compact",
                   "selected": true,
-                  "closable": false
+                  "closable": false,
+                  "presentation": "segmented",
+                  "size": "compact"
                 }
               },
               {
@@ -41,9 +41,9 @@
                 "props": {
                   "id": "split-backlog",
                   "name": "Backlog",
+                  "closable": false,
                   "presentation": "segmented",
-                  "size": "compact",
-                  "closable": false
+                  "size": "compact"
                 }
               },
               {
@@ -52,9 +52,9 @@
                 "props": {
                   "id": "split-activity",
                   "name": "Activity",
+                  "closable": false,
                   "presentation": "segmented",
-                  "size": "compact",
-                  "closable": false
+                  "size": "compact"
                 }
               },
               {
@@ -63,9 +63,9 @@
                 "props": {
                   "id": "split-automations",
                   "name": "Automations",
+                  "closable": false,
                   "presentation": "segmented",
-                  "size": "compact",
-                  "closable": false
+                  "size": "compact"
                 }
               },
               {
@@ -74,9 +74,9 @@
                 "props": {
                   "id": "split-settings",
                   "name": "Settings",
+                  "closable": false,
                   "presentation": "segmented",
-                  "size": "compact",
-                  "closable": false
+                  "size": "compact"
                 }
               }
             ],
@@ -110,8 +110,8 @@
                   ]
                 },
                 "props": {
-                  "appearance": "borderless",
-                  "single": true
+                  "single": true,
+                  "appearance": "borderless"
                 }
               }
             ],
@@ -145,8 +145,8 @@
                   ]
                 },
                 "props": {
-                  "appearance": "borderless",
-                  "single": true
+                  "single": true,
+                  "appearance": "borderless"
                 }
               }
             ]

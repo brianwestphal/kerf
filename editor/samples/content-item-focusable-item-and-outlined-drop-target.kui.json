@@ -38,19 +38,19 @@
                             "id": "00000000000000000000000005",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Drop Target",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Drop Target"
                             }
                           },
                           {
                             "id": "00000000000000000000000006",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Drop a file here or focus this item.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Drop a file here or focus this item."
                             }
                           }
                         ]
@@ -59,8 +59,8 @@
                   ]
                 },
                 "props": {
-                  "tabIndex": 0,
                   "outlined": true,
+                  "tabIndex": 0,
                   "rootAttributes": {
                     "data-demo-item": "outlined"
                   }

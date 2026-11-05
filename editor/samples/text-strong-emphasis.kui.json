@@ -16,19 +16,19 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "Release Notes",
             "variant": "span",
-            "weight": "strong"
+            "weight": "strong",
+            "children": "Release Notes"
           }
         },
         {
           "id": "00000000000000000000000003",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "Updated a moment ago",
             "variant": "span",
             "tone": "quiet",
-            "size": "compact"
+            "size": "compact",
+            "children": "Updated a moment ago"
           }
         }
       ]

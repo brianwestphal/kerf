@@ -32,10 +32,10 @@
                       "id": "00000000000000000000000004",
                       "type": "@kerfjs/ui:text",
                       "props": {
-                        "children": "Attachments",
                         "variant": "h3",
                         "size": "compact",
-                        "flush": true
+                        "flush": true,
+                        "children": "Attachments"
                       }
                     },
                     {
@@ -43,8 +43,8 @@
                       "type": "@kerfjs/ui:file-picker",
                       "props": {
                         "label": "Add",
-                        "multiple": true,
                         "accessibleLabel": "Browse attachments",
+                        "multiple": true,
                         "pickerId": "demo-attachments"
                       },
                       "zones": {
@@ -70,12 +70,12 @@
                 "type": "@kerfjs/ui:file-picker#FileDropZone",
                 "props": {
                   "title": "Drop attachments here or browse",
-                  "multiple": true,
                   "detail": "Images and PDFs, up to 10 MB each",
                   "accessibleLabel": "Add attachments by dropping or choosing files",
+                  "dropScope": "[data-demo-attachments-panel]",
                   "accept": "image/*,.pdf",
-                  "pickerId": "demo-drop",
-                  "dropScope": "[data-demo-attachments-panel]"
+                  "multiple": true,
+                  "pickerId": "demo-drop"
                 },
                 "zones": {
                   "icon": [

@@ -46,10 +46,10 @@
                             "label": "Settings View"
                           }
                         ],
+                        "action": "select-segment-demo",
                         "appearance": "toolbar",
                         "shape": "pill",
-                        "size": "small",
-                        "action": "select-segment-demo"
+                        "size": "small"
                       },
                       "zones": {
                         "choices.0.content": [

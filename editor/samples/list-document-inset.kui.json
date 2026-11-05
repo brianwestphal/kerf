@@ -16,8 +16,8 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:list",
           "props": {
-            "inset": "document",
             "gap": "m",
+            "inset": "document",
             "landmark": "region",
             "ariaLabel": "Reader"
           },
@@ -27,8 +27,8 @@
                 "id": "00000000000000000000000003",
                 "type": "@kerfjs/ui:text",
                 "props": {
-                  "children": "Release notes",
-                  "variant": "h3"
+                  "variant": "h3",
+                  "children": "Release notes"
                 }
               },
               {

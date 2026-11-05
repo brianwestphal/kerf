@@ -16,6 +16,7 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:radio-group",
           "props": {
+            "label": "Layout Density",
             "name": "layout-density",
             "choices": [
               {
@@ -37,10 +38,9 @@
                 "disabled": true
               }
             ],
-            "label": "Layout Density",
+            "value": "balanced",
             "hint": "Applies to every list.",
-            "action": "radio-group-demo",
-            "value": "balanced"
+            "action": "radio-group-demo"
           }
         }
       ]

@@ -234,6 +234,7 @@ import {
 import {
   appParamFor,
   containerFor,
+  documentInDeclaredOrder,
   type FieldContainer,
   type FieldEditorKind,
   fieldEditorKind,
@@ -953,6 +954,18 @@ export function createEditor(options: EditorOptions) {
   /** The type table component `key`'s props catalog declares. */
   const definitionsOf = (key: string) =>
     viewCatalog.components.get(key)?.definitions ?? {};
+  /**
+   * KF-YJFMZY: the file text for `document`, its props in declared order,
+   * so a document saves the same bytes however its fields were edited.
+   */
+  const fileText = (document: ViewDocument) =>
+    serializeDocument(
+      documentInDeclaredOrder(
+        document,
+        (key) => propsByKey.get(key)?.props,
+        definitionsOf,
+      ),
+    );
   const doc = signal<ViewDocument>(options.document ?? emptyDocument());
   const selection = signal<Selection>(null);
   const loadError = signal<string | null>(null);
@@ -3693,7 +3706,7 @@ export function createEditor(options: EditorOptions) {
     selection.value = null;
     loadError.value = null;
     if (!autosave) return;
-    const text = serializeDocument(document);
+    const text = fileText(document);
     if (path) autosave.adopt(path, text);
     else void autosave.create(draftPath(newNodeId()), text);
   };
@@ -4748,16 +4761,13 @@ export function createEditor(options: EditorOptions) {
     const start = historyVersion.peek();
     // A new draft for the document on screen, written on its first change.
     const fresh = () =>
-      saver.adopt(draftPath(newNodeId()), serializeDocument(doc.peek()));
+      saver.adopt(draftPath(newNodeId()), fileText(doc.peek()));
     if (last)
       void options.storage!.read(last).then(
         (text) => {
           // An edit made while the file loaded wins: it saves to a draft.
           if (historyVersion.peek() !== start) {
-            void saver.create(
-              draftPath(newNodeId()),
-              serializeDocument(doc.peek()),
-            );
+            void saver.create(draftPath(newNodeId()), fileText(doc.peek()));
             return;
           }
           const parsed = text === undefined ? undefined : parseDocument(text);
@@ -4769,7 +4779,7 @@ export function createEditor(options: EditorOptions) {
     else fresh();
     return [
       effect(() => {
-        const text = serializeDocument(doc.value);
+        const text = fileText(doc.value);
         if (saver.path.peek()) saver.change(text);
       }),
       effect(() => {
@@ -5522,18 +5532,16 @@ export function createEditor(options: EditorOptions) {
               'Name a .kui.json file outside the drafts folder.';
             return;
           }
-          void autosave!
-            .saveAs(path, serializeDocument(doc.value))
-            .then((failure) => {
-              saveAsError.value = failure ?? '';
-              if (!failure) closeDialog(dialog);
-            });
+          void autosave!.saveAs(path, fileText(doc.value)).then((failure) => {
+            saveAsError.value = failure ?? '';
+            if (!failure) closeDialog(dialog);
+          });
         },
         [SAVE_ACTION]: () => {
           const document = doc.value;
           (options.save ?? download)(
             documentFileName(document),
-            serializeDocument(document),
+            fileText(document),
           );
         },
       }),

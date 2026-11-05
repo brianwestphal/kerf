@@ -21,22 +21,22 @@
                 "id": "00000000000000000000000003",
                 "type": "@kerfjs/ui:progress-bar",
                 "props": {
-                  "label": "Confidence",
-                  "id": "progress-bar-demo-confidence",
                   "value": 0.82,
+                  "showValue": true,
                   "tone": "success",
-                  "showValue": true
+                  "id": "progress-bar-demo-confidence",
+                  "label": "Confidence"
                 }
               },
               {
                 "id": "00000000000000000000000004",
                 "type": "@kerfjs/ui:progress-bar",
                 "props": {
-                  "label": "Storage Used",
-                  "id": "progress-bar-demo-storage",
                   "value": 0.93,
+                  "showValue": true,
                   "tone": "warning",
-                  "showValue": true
+                  "id": "progress-bar-demo-storage",
+                  "label": "Storage Used"
                 }
               },
               {
@@ -44,8 +44,8 @@
                 "type": "@kerfjs/ui:progress-bar",
                 "props": {
                   "value": 0.4,
-                  "ariaLabel": "Sync Progress",
-                  "size": "compact"
+                  "size": "compact",
+                  "ariaLabel": "Sync Progress"
                 }
               }
             ]

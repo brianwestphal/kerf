@@ -33,8 +33,8 @@
                 "id": "00000000000000000000000004",
                 "type": "@kerfjs/ui:chip",
                 "props": {
-                  "children": "Approved",
-                  "tone": "success"
+                  "tone": "success",
+                  "children": "Approved"
                 }
               }
             ],
@@ -50,18 +50,18 @@
                       "props": {
                         "id": "toolbar-text-demand-search",
                         "label": "Search Demands",
-                        "presentation": "toolbar-group",
+                        "placeholder": "Search demands",
                         "fill": true,
-                        "placeholder": "Search demands"
+                        "presentation": "toolbar-group"
                       }
                     }
                   ]
                 },
                 "props": {
-                  "content": "search",
-                  "sizing": "grow",
+                  "label": "Search",
                   "expanded": true,
-                  "label": "Search"
+                  "content": "search",
+                  "sizing": "grow"
                 }
               }
             ]

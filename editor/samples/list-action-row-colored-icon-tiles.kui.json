@@ -22,18 +22,18 @@
                 "type": "@kerfjs/ui:list-action-row",
                 "props": {
                   "label": "Run Tests",
-                  "action": "select-icon-tile-row",
-                  "trailingActionVisibility": "interaction",
-                  "selected": true,
                   "description": "npm test",
-                  "itemId": "tile-run-tests",
-                  "trailingAction": "open-list-action-row-actions",
-                  "trailingActionLabel": "Edit Run Tests",
                   "iconTile": {
                     "color": {
                       "$css": "fillColor('#30a46c')"
                     }
-                  }
+                  },
+                  "action": "select-icon-tile-row",
+                  "itemId": "tile-run-tests",
+                  "selected": true,
+                  "trailingActionVisibility": "interaction",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Edit Run Tests"
                 },
                 "zones": {
                   "icon": [
@@ -67,17 +67,17 @@
                 "type": "@kerfjs/ui:list-action-row",
                 "props": {
                   "label": "Deploy Preview",
-                  "action": "select-icon-tile-row",
-                  "trailingActionVisibility": "interaction",
                   "description": "npm run deploy",
-                  "itemId": "tile-deploy-preview",
-                  "trailingAction": "open-list-action-row-actions",
-                  "trailingActionLabel": "Edit Deploy Preview",
                   "iconTile": {
                     "color": {
                       "$css": "fillColor('#0090ff')"
                     }
-                  }
+                  },
+                  "action": "select-icon-tile-row",
+                  "itemId": "tile-deploy-preview",
+                  "trailingActionVisibility": "interaction",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Edit Deploy Preview"
                 },
                 "zones": {
                   "icon": [
@@ -111,17 +111,17 @@
                 "type": "@kerfjs/ui:list-action-row",
                 "props": {
                   "label": "Format Code",
-                  "action": "select-icon-tile-row",
-                  "trailingActionVisibility": "interaction",
                   "description": "npm run format",
-                  "itemId": "tile-format-code",
-                  "trailingAction": "open-list-action-row-actions",
-                  "trailingActionLabel": "Edit Format Code",
                   "iconTile": {
                     "color": {
                       "$css": "fillColor('#ffc53d')"
                     }
-                  }
+                  },
+                  "action": "select-icon-tile-row",
+                  "itemId": "tile-format-code",
+                  "trailingActionVisibility": "interaction",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Edit Format Code"
                 },
                 "zones": {
                   "icon": [
@@ -155,17 +155,17 @@
                 "type": "@kerfjs/ui:list-action-row",
                 "props": {
                   "label": "Clean Build",
-                  "action": "select-icon-tile-row",
-                  "trailingActionVisibility": "interaction",
                   "description": "npm run clean",
-                  "itemId": "tile-clean-build",
-                  "trailingAction": "open-list-action-row-actions",
-                  "trailingActionLabel": "Edit Clean Build",
                   "iconTile": {
                     "color": {
                       "$css": "fillColor('#e5484d')"
                     }
-                  }
+                  },
+                  "action": "select-icon-tile-row",
+                  "itemId": "tile-clean-build",
+                  "trailingActionVisibility": "interaction",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Edit Clean Build"
                 },
                 "zones": {
                   "icon": [
@@ -199,12 +199,7 @@
                 "type": "@kerfjs/ui:list-action-row",
                 "props": {
                   "label": "Open Docs",
-                  "action": "select-icon-tile-row",
-                  "trailingActionVisibility": "interaction",
                   "description": "npm run docs",
-                  "itemId": "tile-open-docs",
-                  "trailingAction": "open-list-action-row-actions",
-                  "trailingActionLabel": "Edit Open Docs",
                   "iconTile": {
                     "color": {
                       "$css": "uiColor('brand-fill-loud')"
@@ -212,7 +207,12 @@
                     "foreground": {
                       "$css": "uiColor('brand-on-loud')"
                     }
-                  }
+                  },
+                  "action": "select-icon-tile-row",
+                  "itemId": "tile-open-docs",
+                  "trailingActionVisibility": "interaction",
+                  "trailingAction": "open-list-action-row-actions",
+                  "trailingActionLabel": "Edit Open Docs"
                 },
                 "zones": {
                   "icon": [

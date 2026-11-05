@@ -22,10 +22,10 @@
                 "type": "@kerfjs/ui:text-field",
                 "props": {
                   "label": "Confirmation Phrase",
+                  "placeholder": "Type the phrase exactly",
                   "autocapitalize": "off",
                   "autocorrect": "off",
-                  "spellcheck": false,
-                  "placeholder": "Type the phrase exactly"
+                  "spellcheck": false
                 }
               },
               {
@@ -33,8 +33,8 @@
                 "type": "@kerfjs/ui:text-field",
                 "props": {
                   "label": "Card Number",
-                  "inputMode": "numeric",
                   "autocorrect": "off",
+                  "inputMode": "numeric",
                   "spellcheck": false
                 }
               },
@@ -43,11 +43,11 @@
                 "type": "@kerfjs/ui:text-field",
                 "props": {
                   "label": "Place Names",
+                  "multiline": true,
+                  "rows": 2,
                   "autocapitalize": "words",
                   "autocorrect": "off",
-                  "spellcheck": false,
-                  "multiline": true,
-                  "rows": 2
+                  "spellcheck": false
                 }
               }
             ]

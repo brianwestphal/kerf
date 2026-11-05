@@ -17,10 +17,10 @@
           "type": "@kerfjs/ui:list-header",
           "props": {
             "label": "Needs Attention",
-            "status": "3 blocked",
-            "indicatorTone": "danger",
             "density": "compact",
             "divider": "before",
+            "indicatorTone": "danger",
+            "status": "3 blocked",
             "headingLevel": 3
           }
         }

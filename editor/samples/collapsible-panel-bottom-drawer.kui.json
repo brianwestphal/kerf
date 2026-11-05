@@ -18,8 +18,8 @@
           "props": {
             "id": "catalog-panel-bottom",
             "side": "bottom",
-            "label": "Build Output",
-            "size": 180
+            "size": 180,
+            "label": "Build Output"
           },
           "zones": {
             "children": [
@@ -40,19 +40,19 @@
                             "id": "00000000000000000000000005",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Build Output",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Build Output"
                             }
                           },
                           {
                             "id": "00000000000000000000000006",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Use Workbench when several panels form one shell.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Use Workbench when several panels form one shell."
                             }
                           }
                         ]

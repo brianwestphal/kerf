@@ -16,23 +16,23 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "The terminal could not start. Check the shell path in settings, then try again.",
-            "align": "center",
             "tone": "quiet",
+            "align": "center",
             "rootAttributes": {
               "data-demo-copy": "align-center"
-            }
+            },
+            "children": "The terminal could not start. Check the shell path in settings, then try again."
           }
         },
         {
           "id": "00000000000000000000000003",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "Total: 42 items",
             "align": "end",
             "rootAttributes": {
               "data-demo-copy": "align-end"
-            }
+            },
+            "children": "Total: 42 items"
           }
         }
       ]

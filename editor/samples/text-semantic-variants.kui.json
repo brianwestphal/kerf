@@ -16,61 +16,61 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "Heading level 1",
-            "variant": "h1"
+            "variant": "h1",
+            "children": "Heading level 1"
           }
         },
         {
           "id": "00000000000000000000000003",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "Heading level 2",
-            "variant": "h2"
+            "variant": "h2",
+            "children": "Heading level 2"
           }
         },
         {
           "id": "00000000000000000000000004",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "Heading level 3",
-            "variant": "h3"
+            "variant": "h3",
+            "children": "Heading level 3"
           }
         },
         {
           "id": "00000000000000000000000005",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "Heading level 4",
-            "variant": "h4"
+            "variant": "h4",
+            "children": "Heading level 4"
           }
         },
         {
           "id": "00000000000000000000000006",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "Heading level 5",
-            "variant": "h5"
+            "variant": "h5",
+            "children": "Heading level 5"
           }
         },
         {
           "id": "00000000000000000000000007",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "Heading level 6",
-            "variant": "h6"
+            "variant": "h6",
+            "children": "Heading level 6"
           }
         },
         {
           "id": "00000000000000000000000008",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "Paragraph text keeps native semantics and accepts ordinary global, data, and ARIA attributes.",
             "id": "text-demo-paragraph",
             "lang": "en",
             "ariaLabel": "Example Paragraph",
             "rootAttributes": {
               "data-demo-copy": "paragraph"
-            }
+            },
+            "children": "Paragraph text keeps native semantics and accepts ordinary global, data, and ARIA attributes."
           }
         }
       ]

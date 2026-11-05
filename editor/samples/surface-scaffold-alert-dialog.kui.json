@@ -29,10 +29,10 @@
           "type": "@kerfjs/ui:surface-scaffold",
           "props": {
             "label": "Delete Topic",
-            "size": "small",
-            "alert": true,
             "id": "catalog-alert-dialog",
-            "describedBy": "catalog-alert-dialog-message"
+            "describedBy": "catalog-alert-dialog-message",
+            "alert": true,
+            "size": "small"
           },
           "zones": {
             "children": [
@@ -45,9 +45,9 @@
                       "id": "00000000000000000000000005",
                       "type": "@kerfjs/ui:text",
                       "props": {
-                        "children": "Delete this topic? Its saved stories are removed too.",
+                        "id": "catalog-alert-dialog-message",
                         "variant": "span",
-                        "id": "catalog-alert-dialog-message"
+                        "children": "Delete this topic? Its saved stories are removed too."
                       }
                     }
                   ]

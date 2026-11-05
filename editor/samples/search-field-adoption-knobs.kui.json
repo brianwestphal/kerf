@@ -23,15 +23,15 @@
                 "props": {
                   "id": "adoption-search",
                   "label": "Filter Records",
-                  "collapsible": true,
-                  "expanded": true,
-                  "clearAction": "clear-adoption-search",
                   "placeholder": "Filter records",
                   "tokenPlaceholder": "Add a filter…",
-                  "expandLabel": "Open filter",
+                  "clearAction": "clear-adoption-search",
                   "editorAttributes": {
                     "data-demo-adoption-search": "true"
-                  }
+                  },
+                  "collapsible": true,
+                  "expanded": true,
+                  "expandLabel": "Open filter"
                 }
               },
               {
@@ -51,8 +51,8 @@
                       "type": "@kerfjs/ui:button",
                       "props": {
                         "children": "status:open",
-                        "size": "compact",
                         "emphasis": "secondary",
+                        "size": "compact",
                         "action": "add-adoption-token",
                         "rootAttributes": {
                           "data-token-value": "status:open"
@@ -64,8 +64,8 @@
                       "type": "@kerfjs/ui:button",
                       "props": {
                         "children": "owner:me",
-                        "size": "compact",
                         "emphasis": "secondary",
+                        "size": "compact",
                         "action": "add-adoption-token",
                         "rootAttributes": {
                           "data-token-value": "owner:me"
@@ -77,8 +77,8 @@
                       "type": "@kerfjs/ui:button",
                       "props": {
                         "children": "due:today",
-                        "size": "compact",
                         "emphasis": "secondary",
+                        "size": "compact",
                         "action": "add-adoption-token",
                         "rootAttributes": {
                           "data-token-value": "due:today"
@@ -92,14 +92,14 @@
                 "id": "00000000000000000000000008",
                 "type": "@kerfjs/ui:text",
                 "props": {
-                  "children": "No edits yet",
                   "variant": "span",
                   "tone": "quiet",
                   "size": "compact",
                   "live": "polite",
                   "rootAttributes": {
                     "data-demo-adoption-readout": ""
-                  }
+                  },
+                  "children": "No edits yet"
                 }
               }
             ]

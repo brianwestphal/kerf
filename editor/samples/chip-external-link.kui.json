@@ -16,11 +16,11 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:chip",
           "props": {
-            "children": "Kerf Source",
             "tone": "info",
-            "external": true,
+            "itemId": "kerf-source",
+            "children": "Kerf Source",
             "href": "https://github.com/brianwestphal/kerf",
-            "itemId": "kerf-source"
+            "external": true
           },
           "zones": {
             "icon": [

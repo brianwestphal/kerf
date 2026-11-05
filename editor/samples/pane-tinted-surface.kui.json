@@ -8,17 +8,17 @@
     "id": "00000000000000000000000001",
     "type": "@kerfjs/ui:pane",
     "props": {
-      "element": "section",
       "headerPresentation": "overlay",
-      "label": "Album",
-      "rootAttributes": {
-        "data-tint-demo": "pane"
-      },
       "tint": {
         "color": {
           "$css": "fillColor('#5b2a86')"
         },
         "scheme": "dark"
+      },
+      "element": "section",
+      "label": "Album",
+      "rootAttributes": {
+        "data-tint-demo": "pane"
       }
     },
     "zones": {

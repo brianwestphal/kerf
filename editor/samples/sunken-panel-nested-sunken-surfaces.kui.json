@@ -32,8 +32,8 @@
                 "type": "@kerfjs/ui:disclosure",
                 "props": {
                   "title": "Nested Details",
-                  "appearance": "sunken",
-                  "open": true
+                  "open": true,
+                  "appearance": "sunken"
                 },
                 "zones": {
                   "children": [

@@ -16,8 +16,8 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:toolbar",
           "props": {
-            "responsive": "wrap",
-            "label": "Q3 Release"
+            "label": "Q3 Release",
+            "responsive": "wrap"
           },
           "zones": {
             "leading": [
@@ -39,8 +39,8 @@
                   ]
                 },
                 "props": {
-                  "appearance": "borderless",
-                  "single": true
+                  "single": true,
+                  "appearance": "borderless"
                 }
               },
               {
@@ -69,9 +69,9 @@
                   ]
                 },
                 "props": {
+                  "single": true,
                   "appearance": "borderless",
-                  "content": "text",
-                  "single": true
+                  "content": "text"
                 }
               }
             ]

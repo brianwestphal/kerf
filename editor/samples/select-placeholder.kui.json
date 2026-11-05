@@ -18,11 +18,11 @@
           "props": {
             "name": "select-placeholder",
             "choices": [],
-            "value": "",
-            "label": "Rendering Balance",
+            "hint": "Loading selection options.",
             "placeholder": true,
+            "label": "Rendering Balance",
             "ariaLabel": "Rendering Balance",
-            "hint": "Loading selection options."
+            "value": ""
           }
         }
       ]

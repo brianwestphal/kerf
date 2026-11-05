@@ -38,8 +38,8 @@
                 "id": "00000000000000000000000004",
                 "type": "@kerfjs/ui:text",
                 "props": {
-                  "children": "Link",
-                  "variant": "span"
+                  "variant": "span",
+                  "children": "Link"
                 }
               }
             ]
@@ -49,9 +49,9 @@
           "id": "00000000000000000000000005",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "List destination",
+            "id": "list-item-link-target",
             "variant": "span",
-            "id": "list-item-link-target"
+            "children": "List destination"
           }
         }
       ]

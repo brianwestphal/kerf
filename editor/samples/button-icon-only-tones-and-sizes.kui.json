@@ -43,8 +43,8 @@
                 "id": "00000000000000000000000005",
                 "type": "@kerfjs/ui:button",
                 "props": {
-                  "emphasis": "plain",
                   "ariaLabel": "Refresh (Plain)",
+                  "emphasis": "plain",
                   "action": "log-refresh"
                 },
                 "zones": {
@@ -66,9 +66,9 @@
                 "id": "00000000000000000000000007",
                 "type": "@kerfjs/ui:button",
                 "props": {
+                  "ariaLabel": "Delete",
                   "tone": "danger",
                   "emphasis": "secondary",
-                  "ariaLabel": "Delete",
                   "action": "log-delete",
                   "title": "Delete the Selected Draft"
                 },
@@ -93,8 +93,8 @@
                 "props": {
                   "ariaLabel": "Messages",
                   "action": "log-more",
-                  "badgeLabel": "4 unread",
                   "badge": 4,
+                  "badgeLabel": "4 unread",
                   "rootAttributes": {
                     "data-demo-badge": "count"
                   }
@@ -118,11 +118,11 @@
                 "id": "00000000000000000000000011",
                 "type": "@kerfjs/ui:button",
                 "props": {
-                  "badge": true,
-                  "badgeTone": "info",
                   "ariaLabel": "Downloads",
                   "action": "log-more",
+                  "badge": true,
                   "badgeLabel": "new download",
+                  "badgeTone": "info",
                   "rootAttributes": {
                     "data-demo-badge": "dot"
                   }
@@ -146,8 +146,8 @@
                 "id": "00000000000000000000000013",
                 "type": "@kerfjs/ui:button",
                 "props": {
-                  "size": "compact",
                   "ariaLabel": "Refresh (Compact)",
+                  "size": "compact",
                   "action": "log-refresh"
                 },
                 "zones": {

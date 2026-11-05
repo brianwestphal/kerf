@@ -27,15 +27,15 @@
                   "action": "toggle-split-button-demo",
                   "optionsLabel": "Choose Drive Provider, Model, and Effort",
                   "optionsAction": "toggle-split-button-options-demo",
+                  "optionsExpanded": {
+                    "$param": "optionsOpen"
+                  },
                   "tone": {
                     "$param": "driveTone"
                   },
                   "fill": true,
                   "busy": {
                     "$param": "running"
-                  },
-                  "optionsExpanded": {
-                    "$param": "optionsOpen"
                   }
                 },
                 "zones": {

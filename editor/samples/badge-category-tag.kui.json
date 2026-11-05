@@ -17,9 +17,9 @@
           "type": "@kerfjs/ui:badge",
           "props": {
             "children": "Design",
-            "tone": "pop",
             "appearance": "outline",
-            "shape": "rounded"
+            "shape": "rounded",
+            "tone": "pop"
           }
         }
       ]

@@ -50,8 +50,8 @@
                   ]
                 },
                 "props": {
-                  "shape": "pill",
-                  "single": true
+                  "single": true,
+                  "shape": "pill"
                 }
               }
             ]

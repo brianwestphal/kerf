@@ -44,18 +44,18 @@
                             "group": "Desktop"
                           }
                         ],
-                        "value": "phone",
+                        "popupNote": "Touch input and the on-screen keyboard aren’t emulated.",
                         "presentation": "toolbar-borderless",
                         "focusRingOwner": "group",
                         "ariaLabel": "Preview Device",
-                        "popupNote": "Touch input and the on-screen keyboard aren’t emulated."
+                        "value": "phone"
                       }
                     }
                   ]
                 },
                 "props": {
-                  "single": true,
-                  "label": "Preview Device"
+                  "label": "Preview Device",
+                  "single": true
                 }
               }
             ]

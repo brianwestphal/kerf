@@ -23,16 +23,16 @@
                 "label": "A Very Long Workspace Name"
               }
             ],
-            "value": "long",
             "presentation": "toolbar-borderless",
             "size": "compact",
             "triggerWidth": "fit-content",
-            "ariaLabel": "Workspace",
-            "renderSelected": {
-              "$param": "nodeRenderSelected"
-            },
             "maxTriggerWidth": {
               "$css": "remify(160)"
+            },
+            "ariaLabel": "Workspace",
+            "value": "long",
+            "renderSelected": {
+              "$param": "nodeRenderSelected"
             }
           }
         }

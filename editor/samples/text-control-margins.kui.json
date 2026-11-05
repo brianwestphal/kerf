@@ -16,34 +16,34 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "A paragraph aligned with neighboring content items.",
             "controlMargins": "trbl",
             "rootAttributes": {
               "data-demo-copy": "margin-all"
-            }
+            },
+            "children": "A paragraph aligned with neighboring content items."
           }
         },
         {
           "id": "00000000000000000000000003",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "Horizontal margins keep the same text column without a vertical gutter.",
             "controlMargins": "rl",
             "rootAttributes": {
               "data-demo-copy": "margin-horizontal"
-            }
+            },
+            "children": "Horizontal margins keep the same text column without a vertical gutter."
           }
         },
         {
           "id": "00000000000000000000000004",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "Flush supporting copy retains the exterior control gutter.",
             "controlMargins": "rl",
             "flush": true,
             "rootAttributes": {
               "data-demo-copy": "margin-flush"
-            }
+            },
+            "children": "Flush supporting copy retains the exterior control gutter."
           }
         },
         {
@@ -60,12 +60,12 @@
                 "id": "00000000000000000000000007",
                 "type": "@kerfjs/ui:text",
                 "props": {
-                  "children": "copy",
                   "variant": "span",
                   "controlMargins": "rl",
                   "rootAttributes": {
                     "data-demo-copy": "margin-inline"
-                  }
+                  },
+                  "children": "copy"
                 }
               },
               {

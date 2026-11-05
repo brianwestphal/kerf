@@ -21,27 +21,27 @@
                 "id": "00000000000000000000000003",
                 "type": "@kerfjs/ui:progress-ring",
                 "props": {
+                  "value": 0.75,
                   "label": "Claim Time Remaining",
-                  "tone": "success",
-                  "value": 0.75
+                  "tone": "success"
                 }
               },
               {
                 "id": "00000000000000000000000004",
                 "type": "@kerfjs/ui:progress-ring",
                 "props": {
+                  "value": 0.9,
                   "label": "Quota Used",
-                  "tone": "warning",
-                  "value": 0.9
+                  "tone": "warning"
                 }
               },
               {
                 "id": "00000000000000000000000005",
                 "type": "@kerfjs/ui:progress-ring",
                 "props": {
+                  "value": 0.98,
                   "label": "Error Budget Used",
-                  "tone": "danger",
-                  "value": 0.98
+                  "tone": "danger"
                 }
               },
               {
@@ -61,8 +61,8 @@
             ]
           },
           "props": {
-            "gap": "m",
-            "vAlign": "middle"
+            "vAlign": "middle",
+            "gap": "m"
           }
         }
       ]

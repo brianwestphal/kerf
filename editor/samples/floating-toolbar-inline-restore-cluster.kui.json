@@ -50,8 +50,8 @@
                   ]
                 },
                 "props": {
-                  "single": true,
-                  "label": "Restore Drawer"
+                  "label": "Restore Drawer",
+                  "single": true
                 }
               }
             ]

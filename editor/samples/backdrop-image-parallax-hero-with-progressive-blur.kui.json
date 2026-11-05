@@ -23,12 +23,12 @@
               "$param": "skylineUrl"
             },
             "alt": "",
-            "blur": {
-              "$param": "skylineBlur"
-            },
             "parallax": "subtle",
             "fadeTo": {
               "$css": "uiColor('surface')"
+            },
+            "blur": {
+              "$param": "skylineBlur"
             }
           },
           "zones": {
@@ -61,9 +61,9 @@
                             "id": "00000000000000000000000006",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "3:42",
                               "variant": "span",
-                              "tone": "quiet"
+                              "tone": "quiet",
+                              "children": "3:42"
                             }
                           }
                         ]
@@ -83,9 +83,9 @@
                             "id": "00000000000000000000000008",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "4:05",
                               "variant": "span",
-                              "tone": "quiet"
+                              "tone": "quiet",
+                              "children": "4:05"
                             }
                           }
                         ]
@@ -105,9 +105,9 @@
                             "id": "00000000000000000000000010",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "3:18",
                               "variant": "span",
-                              "tone": "quiet"
+                              "tone": "quiet",
+                              "children": "3:18"
                             }
                           }
                         ]
@@ -127,9 +127,9 @@
                             "id": "00000000000000000000000012",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "5:01",
                               "variant": "span",
-                              "tone": "quiet"
+                              "tone": "quiet",
+                              "children": "5:01"
                             }
                           }
                         ]
@@ -149,9 +149,9 @@
                             "id": "00000000000000000000000014",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "3:56",
                               "variant": "span",
-                              "tone": "quiet"
+                              "tone": "quiet",
+                              "children": "3:56"
                             }
                           }
                         ]
@@ -171,9 +171,9 @@
                             "id": "00000000000000000000000016",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "4:27",
                               "variant": "span",
-                              "tone": "quiet"
+                              "tone": "quiet",
+                              "children": "4:27"
                             }
                           }
                         ]
@@ -193,9 +193,9 @@
                             "id": "00000000000000000000000018",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "2:59",
                               "variant": "span",
-                              "tone": "quiet"
+                              "tone": "quiet",
+                              "children": "2:59"
                             }
                           }
                         ]
@@ -215,9 +215,9 @@
                             "id": "00000000000000000000000020",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "4:12",
                               "variant": "span",
-                              "tone": "quiet"
+                              "tone": "quiet",
+                              "children": "4:12"
                             }
                           }
                         ]
@@ -237,9 +237,9 @@
                             "id": "00000000000000000000000022",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "3:33",
                               "variant": "span",
-                              "tone": "quiet"
+                              "tone": "quiet",
+                              "children": "3:33"
                             }
                           }
                         ]
@@ -259,9 +259,9 @@
                             "id": "00000000000000000000000024",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "4:48",
                               "variant": "span",
-                              "tone": "quiet"
+                              "tone": "quiet",
+                              "children": "4:48"
                             }
                           }
                         ]

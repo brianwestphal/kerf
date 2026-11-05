@@ -104,19 +104,19 @@
                                   "id": "00000000000000000000000009",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Projects",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Projects"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000010",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Each destination stays mounted when inactive.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Each destination stays mounted when inactive."
                                   }
                                 }
                               ]
@@ -144,19 +144,19 @@
                                   "id": "00000000000000000000000013",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Search",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Search"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000014",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "This plain scene uses a deeper content inset.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "This plain scene uses a deeper content inset."
                                   }
                                 }
                               ]
@@ -184,19 +184,19 @@
                                   "id": "00000000000000000000000017",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Settings",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Settings"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000018",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Promote these destinations to a rail on desktop.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Promote these destinations to a rail on desktop."
                                   }
                                 }
                               ]

@@ -33,11 +33,11 @@
                 "disabled": true
               }
             ],
-            "label": "Board View",
+            "action": "choice-chips-demo",
             "size": "compact",
             "id": "choice-chips-view",
-            "action": "choice-chips-demo",
-            "value": "board"
+            "value": "board",
+            "label": "Board View"
           },
           "zones": {
             "choices.0.icon": [

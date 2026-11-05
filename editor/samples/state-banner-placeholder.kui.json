@@ -17,9 +17,9 @@
           "type": "@kerfjs/ui:state-banner",
           "props": {
             "title": "Syncing Workspace",
+            "detail": "Fetching the latest changes.",
             "tone": "neutral",
-            "placeholder": true,
-            "detail": "Fetching the latest changes."
+            "placeholder": true
           }
         }
       ]

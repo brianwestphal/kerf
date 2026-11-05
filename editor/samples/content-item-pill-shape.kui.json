@@ -36,8 +36,8 @@
                       "id": "00000000000000000000000004",
                       "type": "@kerfjs/ui:text",
                       "props": {
-                        "children": "Three reviewers approved this change.",
-                        "variant": "span"
+                        "variant": "span",
+                        "children": "Three reviewers approved this change."
                       }
                     }
                   ]

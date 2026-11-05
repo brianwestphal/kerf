@@ -23,31 +23,31 @@
           "id": "00000000000000000000000003",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "Warning foreground",
             "color": {
               "$css": "uiColor('warning-on-quiet')"
-            }
+            },
+            "children": "Warning foreground"
           }
         },
         {
           "id": "00000000000000000000000004",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "Application foreground",
             "color": {
               "$css": "foregroundColor('rebeccapurple')"
-            }
+            },
+            "children": "Application foreground"
           }
         },
         {
           "id": "00000000000000000000000005",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "Explicit color overrides tone",
             "tone": "danger",
             "color": {
               "$css": "uiColor('text-quiet')"
-            }
+            },
+            "children": "Explicit color overrides tone"
           }
         }
       ]

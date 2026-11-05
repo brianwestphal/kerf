@@ -16,9 +16,9 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:toolbar",
           "props": {
+            "label": "Focus Ring Zones",
             "responsive": "stack",
-            "responsiveAt": "compact",
-            "label": "Focus Ring Zones"
+            "responsiveAt": "compact"
           },
           "zones": {
             "leading": [
@@ -51,9 +51,9 @@
                   ]
                 },
                 "props": {
-                  "focusRing": "outline",
+                  "label": "Leading Action",
                   "single": true,
-                  "label": "Leading Action"
+                  "focusRing": "outline"
                 }
               },
               {
@@ -95,9 +95,9 @@
                   ]
                 },
                 "props": {
-                  "focusRing": "outline",
+                  "label": "Center Action",
                   "single": true,
-                  "label": "Center Action"
+                  "focusRing": "outline"
                 }
               }
             ],
@@ -131,9 +131,9 @@
                   ]
                 },
                 "props": {
-                  "focusRing": "outline",
+                  "label": "Trailing Action",
                   "single": true,
-                  "label": "Trailing Action"
+                  "focusRing": "outline"
                 }
               }
             ]

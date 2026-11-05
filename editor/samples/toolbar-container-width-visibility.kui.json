@@ -62,8 +62,8 @@
                   ]
                 },
                 "props": {
-                  "single": true,
-                  "label": "Refresh Workspace"
+                  "label": "Refresh Workspace",
+                  "single": true
                 }
               },
               {
@@ -133,6 +133,7 @@
                       "id": "00000000000000000000000013",
                       "type": "@kerfjs/ui:popup-menu",
                       "props": {
+                        "label": "More Workspace Actions",
                         "items": [
                           {
                             "label": "Filter Workspace",
@@ -142,8 +143,7 @@
                             "label": "Workspace Settings",
                             "action": "log-settings"
                           }
-                        ],
-                        "label": "More Workspace Actions"
+                        ]
                       },
                       "zones": {
                         "icon": [
@@ -163,9 +163,9 @@
                   ]
                 },
                 "props": {
+                  "label": "More Workspace Actions",
                   "single": true,
                   "nestedDropdown": true,
-                  "label": "More Workspace Actions",
                   "showBelow": {
                     "$css": "px(416)"
                   }

@@ -89,9 +89,9 @@
                 }
               }
             ],
-            "label": "Command Color",
+            "value": "#0a84ff",
             "action": "pick-swatch-demo",
-            "value": "#0a84ff"
+            "label": "Command Color"
           }
         }
       ]

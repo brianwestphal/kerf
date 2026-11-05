@@ -34,19 +34,19 @@
                             "id": "00000000000000000000000005",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "App-Owned Collapsed Flag",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "App-Owned Collapsed Flag"
                             }
                           },
                           {
                             "id": "00000000000000000000000006",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Hide the console from its own toolbar; restore it from the corner control.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Hide the console from its own toolbar; restore it from the corner control."
                             }
                           }
                         ]
@@ -85,16 +85,16 @@
           "props": {
             "id": "catalog-panel-restore",
             "side": "bottom",
-            "label": "Console",
+            "collapsed": true,
             "size": 140,
+            "label": "Console",
             "toolbar": {
               "label": "Console",
               "toggle": {
                 "action": "toggle-catalog-panel-restore",
                 "name": "Console"
               }
-            },
-            "collapsed": true
+            }
           },
           "zones": {
             "children": [
@@ -115,19 +115,19 @@
                             "id": "00000000000000000000000012",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Build Finished",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Build Finished"
                             }
                           },
                           {
                             "id": "00000000000000000000000013",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "The drawer stays mounted while it is collapsed.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "The drawer stays mounted while it is collapsed."
                             }
                           }
                         ]

@@ -31,39 +31,39 @@
             "label": "Edit Slide",
             "title": "Edit Slide",
             "description": "Slide 3 of 12",
-            "viewportGutter": {
-              "$css": "rem(0.5)"
-            },
-            "height": {
-              "$css": "rem(32.5)"
-            },
-            "preferredWidth": {
-              "$css": "rem(60)"
-            },
             "mainBottomToolbar": {
               "label": "Slide Actions"
             },
             "leftRail": {
-              "label": "Layers",
-              "size": 200,
               "toolbar": {
                 "label": "Layers",
                 "toggle": {
                   "action": "toggle-workbench-dialog-layers",
                   "name": "Layers"
                 }
-              }
+              },
+              "size": 200,
+              "label": "Layers"
             },
             "rightRail": {
-              "label": "Inspector",
-              "size": 220,
               "toolbar": {
                 "label": "Inspector",
                 "toggle": {
                   "action": "toggle-workbench-dialog-inspector",
                   "name": "Inspector"
                 }
-              }
+              },
+              "size": 220,
+              "label": "Inspector"
+            },
+            "preferredWidth": {
+              "$css": "rem(60)"
+            },
+            "height": {
+              "$css": "rem(32.5)"
+            },
+            "viewportGutter": {
+              "$css": "rem(0.5)"
             }
           },
           "zones": {
@@ -144,8 +144,8 @@
                       "type": "@kerfjs/ui:list-item",
                       "props": {
                         "label": "Title",
-                        "action": "select-workbench-dialog-layer",
                         "description": "Text",
+                        "action": "select-workbench-dialog-layer",
                         "itemId": "title"
                       }
                     },
@@ -154,9 +154,9 @@
                       "type": "@kerfjs/ui:list-item",
                       "props": {
                         "label": "Hero Image",
-                        "action": "select-workbench-dialog-layer",
-                        "selected": true,
                         "description": "Image",
+                        "selected": true,
+                        "action": "select-workbench-dialog-layer",
                         "itemId": "hero"
                       }
                     },
@@ -165,8 +165,8 @@
                       "type": "@kerfjs/ui:list-item",
                       "props": {
                         "label": "Caption",
-                        "action": "select-workbench-dialog-layer",
                         "description": "Text",
+                        "action": "select-workbench-dialog-layer",
                         "itemId": "caption"
                       }
                     },
@@ -175,8 +175,8 @@
                       "type": "@kerfjs/ui:list-item",
                       "props": {
                         "label": "Badge",
-                        "action": "select-workbench-dialog-layer",
                         "description": "Shape",
+                        "action": "select-workbench-dialog-layer",
                         "itemId": "badge"
                       }
                     }

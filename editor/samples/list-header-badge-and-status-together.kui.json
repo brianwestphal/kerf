@@ -17,9 +17,9 @@
           "type": "@kerfjs/ui:list-header",
           "props": {
             "label": "Purchases",
+            "indicatorTone": "danger",
             "badge": "3 lines unpriced",
-            "status": "Needs review",
-            "indicatorTone": "danger"
+            "status": "Needs review"
           }
         }
       ]

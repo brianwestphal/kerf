@@ -22,11 +22,11 @@
                 "type": "@kerfjs/ui:text-field",
                 "props": {
                   "label": "Email",
-                  "type": "email",
-                  "required": true,
                   "value": "robin@",
                   "hint": "Used for sign-in.",
-                  "error": "Enter a complete email address."
+                  "error": "Enter a complete email address.",
+                  "type": "email",
+                  "required": true
                 }
               },
               {
@@ -34,8 +34,8 @@
                 "type": "@kerfjs/ui:text-field",
                 "props": {
                   "label": "Owner",
-                  "readOnly": true,
-                  "value": "Design Systems"
+                  "value": "Design Systems",
+                  "readOnly": true
                 }
               }
             ]

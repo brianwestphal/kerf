@@ -28,20 +28,20 @@
                 "id": "00000000000000000000000004",
                 "type": "@kerfjs/ui:loading-spinner",
                 "props": {
-                  "size": "s",
                   "color": {
                     "$css": "uiColor('warning-on-quiet')"
-                  }
+                  },
+                  "size": "s"
                 }
               },
               {
                 "id": "00000000000000000000000005",
                 "type": "@kerfjs/ui:loading-spinner",
                 "props": {
-                  "size": "s",
                   "color": {
                     "$css": "foregroundColor('rebeccapurple')"
-                  }
+                  },
+                  "size": "s"
                 }
               }
             ]

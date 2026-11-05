@@ -56,11 +56,11 @@
                                   "type": "@kerfjs/ui:list-item",
                                   "props": {
                                     "label": "Project update",
-                                    "action": "select-roomy-split-view-message",
-                                    "multiline": true,
-                                    "itemId": "project-update",
                                     "description": "Mina Chen · The interaction pass is ready for review.",
-                                    "selected": true
+                                    "selected": true,
+                                    "action": "select-roomy-split-view-message",
+                                    "itemId": "project-update",
+                                    "multiline": true
                                   },
                                   "zones": {
                                     "icon": [
@@ -94,10 +94,10 @@
                                   "type": "@kerfjs/ui:list-item",
                                   "props": {
                                     "label": "Design review",
+                                    "description": "Sam Rivera · Notes from today’s component review.",
                                     "action": "select-roomy-split-view-message",
-                                    "multiline": true,
                                     "itemId": "design-review",
-                                    "description": "Sam Rivera · Notes from today’s component review."
+                                    "multiline": true
                                   },
                                   "zones": {
                                     "icon": [
@@ -131,10 +131,10 @@
                                   "type": "@kerfjs/ui:list-item",
                                   "props": {
                                     "label": "Launch plan",
+                                    "description": "Avery Singh · Beta milestones and owner assignments.",
                                     "action": "select-roomy-split-view-message",
-                                    "multiline": true,
                                     "itemId": "launch-plan",
-                                    "description": "Avery Singh · Beta milestones and owner assignments."
+                                    "multiline": true
                                   },
                                   "zones": {
                                     "icon": [
@@ -216,8 +216,8 @@
                                   },
                                   "props": {
                                     "label": "Hide Threads",
-                                    "appearance": "borderless",
-                                    "single": true
+                                    "single": true,
+                                    "appearance": "borderless"
                                   }
                                 }
                               ]
@@ -242,29 +242,29 @@
                                   "id": "00000000000000000000000022",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "From Mina Chen",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "From Mina Chen"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000023",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Project update",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Project update"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000024",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "The interaction pass is ready. Please review the navigation and responsive states before Thursday.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "The interaction pass is ready. Please review the navigation and responsive states before Thursday."
                                   }
                                 }
                               ]

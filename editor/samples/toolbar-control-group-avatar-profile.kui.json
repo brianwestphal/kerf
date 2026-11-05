@@ -35,12 +35,12 @@
                   ]
                 },
                 "props": {
+                  "label": "Profile",
+                  "single": true,
+                  "shape": "pill",
                   "content": "avatar",
                   "selectedTone": "neutral",
-                  "shape": "pill",
                   "scrim": true,
-                  "single": true,
-                  "label": "Profile",
                   "avatarImage": {
                     "$param": "profileImageUrl"
                   }

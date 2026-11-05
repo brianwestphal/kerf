@@ -24,9 +24,9 @@
               },
               {
                 "kind": "scale",
+                "from": 0.94,
                 "range": "entry",
-                "rangeEnd": 50,
-                "from": 0.94
+                "rangeEnd": 50
               },
               {
                 "kind": "fade",
@@ -50,19 +50,19 @@
                             "id": "00000000000000000000000005",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Harbor Survey",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Harbor Survey"
                             }
                           },
                           {
                             "id": "00000000000000000000000006",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Tide tables and mooring notes for the north basin.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Tide tables and mooring notes for the north basin."
                             }
                           }
                         ]

@@ -17,14 +17,12 @@
           "type": "@kerfjs/ui:slider",
           "props": {
             "id": "slider-demo-zoom",
-            "label": "Zoom",
-            "showValue": true,
+            "value": 100,
             "min": 50,
             "max": 200,
             "step": 25,
-            "value": 100,
+            "showValue": true,
             "unit": "%",
-            "action": "set-slider-demo",
             "ticks": [
               {
                 "value": 50,
@@ -42,7 +40,9 @@
                 "value": 200,
                 "label": "200%"
               }
-            ]
+            ],
+            "action": "set-slider-demo",
+            "label": "Zoom"
           }
         }
       ]

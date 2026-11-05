@@ -30,8 +30,8 @@
                       "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
                       "props": {
                         "children": "Start Activity",
-                        "pressed": false,
-                        "action": "toggle-edge-activity-demo"
+                        "action": "toggle-edge-activity-demo",
+                        "pressed": false
                       }
                     },
                     {
@@ -39,8 +39,8 @@
                       "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
                       "props": {
                         "children": "Status Pill",
-                        "pressed": true,
-                        "action": "toggle-edge-activity-message-demo"
+                        "action": "toggle-edge-activity-message-demo",
+                        "pressed": true
                       }
                     }
                   ]

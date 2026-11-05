@@ -17,10 +17,10 @@
           "type": "@kerfjs/ui:badge",
           "props": {
             "children": "12",
-            "tone": "info",
             "appearance": "solid",
             "size": "compact",
-            "label": "12 unread items"
+            "label": "12 unread items",
+            "tone": "info"
           }
         }
       ]

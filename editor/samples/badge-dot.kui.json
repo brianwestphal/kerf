@@ -16,9 +16,9 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:badge",
           "props": {
-            "tone": "danger",
             "size": "dot",
-            "label": "New activity"
+            "label": "New activity",
+            "tone": "danger"
           }
         }
       ]

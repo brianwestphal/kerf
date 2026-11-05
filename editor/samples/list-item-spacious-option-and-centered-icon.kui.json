@@ -17,12 +17,12 @@
           "type": "@kerfjs/ui:list-item",
           "props": {
             "label": "Create a Project from an Existing Repository with a Longer Name",
-            "action": "log-settings",
             "density": "spacious",
             "divider": "after",
-            "multilineIconAlign": "center",
+            "action": "log-settings",
+            "itemId": "spacious",
             "multiline": true,
-            "itemId": "spacious"
+            "multilineIconAlign": "center"
           },
           "zones": {
             "icon": [
@@ -42,8 +42,8 @@
                 "id": "00000000000000000000000004",
                 "type": "@kerfjs/ui:text",
                 "props": {
-                  "children": "Open",
-                  "variant": "span"
+                  "variant": "span",
+                  "children": "Open"
                 }
               }
             ]

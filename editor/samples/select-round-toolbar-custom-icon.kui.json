@@ -53,25 +53,25 @@
                             "iconName": "wrench"
                           }
                         ],
-                        "value": "balanced",
                         "presentation": "toolbar-borderless",
-                        "selectedPresentation": "icon-only",
+                        "caret": false,
                         "focusRingOwner": "group",
                         "ariaLabel": "Custom Workspace Sort",
+                        "value": "balanced",
                         "renderSelected": {
                           "$param": "nodeRenderSelected"
                         },
-                        "caret": false
+                        "selectedPresentation": "icon-only"
                       }
                     }
                   ]
                 },
                 "props": {
-                  "content": "icon",
-                  "focusRing": "outline",
-                  "shape": "pill",
+                  "label": "Custom Workspace Sort",
                   "single": true,
-                  "label": "Custom Workspace Sort"
+                  "shape": "pill",
+                  "content": "icon",
+                  "focusRing": "outline"
                 }
               }
             ]

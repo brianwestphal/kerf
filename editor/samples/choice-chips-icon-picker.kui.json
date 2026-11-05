@@ -107,14 +107,14 @@
                 "label": "Lightning"
               }
             ],
-            "label": "Command Icon",
-            "presentation": "icons",
-            "id": "choice-chips-icon",
             "action": "choice-chips-demo",
+            "presentation": "icons",
             "maxHeight": {
               "$css": "rem(7)"
             },
-            "value": "star"
+            "id": "choice-chips-icon",
+            "value": "star",
+            "label": "Command Icon"
           },
           "zones": {
             "choices.0.icon": [

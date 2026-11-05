@@ -45,13 +45,13 @@
                 "label": "Fjord"
               }
             ],
-            "label": "Workspaces",
-            "multiple": true,
-            "id": "choice-chips-workspaces",
             "action": "choice-chips-demo",
+            "id": "choice-chips-workspaces",
+            "multiple": true,
             "value": [
               "atlas"
-            ]
+            ],
+            "label": "Workspaces"
           }
         }
       ]

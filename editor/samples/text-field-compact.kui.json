@@ -22,8 +22,8 @@
                 "type": "@kerfjs/ui:text-field",
                 "props": {
                   "label": "Quantity",
-                  "size": "compact",
-                  "value": "12"
+                  "value": "12",
+                  "size": "compact"
                 }
               },
               {
@@ -31,9 +31,9 @@
                 "type": "@kerfjs/ui:text-field",
                 "props": {
                   "label": "Unit",
+                  "value": "pieces",
                   "size": "compact",
-                  "disabled": true,
-                  "value": "pieces"
+                  "disabled": true
                 }
               }
             ]

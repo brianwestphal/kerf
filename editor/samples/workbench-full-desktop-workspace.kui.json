@@ -58,19 +58,19 @@
                                   "id": "00000000000000000000000006",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Editor",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Editor"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000007",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "The central work area expands into free space.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "The central work area expands into free space."
                                   }
                                 }
                               ]
@@ -98,19 +98,19 @@
                                   "id": "00000000000000000000000010",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Navigator",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Navigator"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000011",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Files and symbols",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Files and symbols"
                                   }
                                 }
                               ]
@@ -138,19 +138,19 @@
                                   "id": "00000000000000000000000014",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Inspector",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Inspector"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000015",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Selection details",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Selection details"
                                   }
                                 }
                               ]
@@ -178,19 +178,19 @@
                                   "id": "00000000000000000000000018",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Console",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Console"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000019",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Build output and diagnostics",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Build output and diagnostics"
                                   }
                                 }
                               ]

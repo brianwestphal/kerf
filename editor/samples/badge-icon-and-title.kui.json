@@ -17,9 +17,9 @@
           "type": "@kerfjs/ui:badge",
           "props": {
             "children": "82%",
+            "label": "82% confidence",
             "tone": "success",
             "title": "Confidence of the latest completion",
-            "label": "82% confidence",
             "rootAttributes": {
               "data-band": "high"
             }

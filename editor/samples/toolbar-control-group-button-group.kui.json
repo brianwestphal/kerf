@@ -72,8 +72,8 @@
                   ]
                 },
                 "props": {
-                  "shape": "pill",
-                  "label": "View Actions"
+                  "label": "View Actions",
+                  "shape": "pill"
                 }
               }
             ]

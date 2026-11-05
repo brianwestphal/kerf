@@ -96,9 +96,9 @@
                                   "type": "@kerfjs/ui:list-item",
                                   "props": {
                                     "label": "Project Atlas",
+                                    "description": "Open this project while keeping the tab bar in place.",
                                     "action": "open-tab-scaffold-project",
-                                    "itemId": "atlas",
-                                    "description": "Open this project while keeping the tab bar in place."
+                                    "itemId": "atlas"
                                   },
                                   "zones": {
                                     "trailing": [
@@ -137,19 +137,19 @@
                                   "id": "00000000000000000000000012",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Search",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Search"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000013",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "The Projects stack remains mounted.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "The Projects stack remains mounted."
                                   }
                                 }
                               ]

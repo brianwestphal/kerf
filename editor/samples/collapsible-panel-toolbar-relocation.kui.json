@@ -27,10 +27,11 @@
                 "props": {
                   "id": "catalog-panel-relocation",
                   "side": "left",
+                  "collapsed": true,
+                  "size": 220,
+                  "label": "Navigator",
                   "tabIndex": 0,
                   "outlined": true,
-                  "label": "Navigator",
-                  "size": 220,
                   "toolbar": {
                     "label": "Navigator",
                     "toggle": {
@@ -40,8 +41,7 @@
                   },
                   "headerList": {
                     "textInsets": "trbl"
-                  },
-                  "collapsed": true
+                  }
                 },
                 "zones": {
                   "children": [
@@ -62,19 +62,19 @@
                                   "id": "00000000000000000000000006",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Files",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Files"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000007",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Panel-only New file waits here while closed.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Panel-only New file waits here while closed."
                                   }
                                 }
                               ]
@@ -115,9 +115,9 @@
                         ]
                       },
                       "props": {
-                        "appearance": "borderless",
+                        "label": "New File",
                         "single": true,
-                        "label": "New File"
+                        "appearance": "borderless"
                       }
                     }
                   ],
@@ -152,10 +152,10 @@
                         ]
                       },
                       "props": {
-                        "appearance": "borderless",
+                        "label": "Search Files",
                         "single": true,
-                        "relocateOnCollapse": true,
-                        "label": "Search Files"
+                        "appearance": "borderless",
+                        "relocateOnCollapse": true
                       }
                     }
                   ],
@@ -201,19 +201,19 @@
                                         "id": "00000000000000000000000019",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "App-Owned Collapsed Flag",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "App-Owned Collapsed Flag"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000020",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Show the navigator from the editor toolbar; hide it from its own toolbar.",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "Show the navigator from the editor toolbar; hide it from its own toolbar."
                                         }
                                       }
                                     ]
@@ -279,9 +279,9 @@
                                           ]
                                         },
                                         "props": {
-                                          "appearance": "borderless",
+                                          "label": "New File",
                                           "single": true,
-                                          "label": "New File"
+                                          "appearance": "borderless"
                                         }
                                       }
                                     ],
@@ -316,10 +316,10 @@
                                           ]
                                         },
                                         "props": {
-                                          "appearance": "borderless",
+                                          "label": "Search Files",
                                           "single": true,
-                                          "relocateOnCollapse": true,
-                                          "label": "Search Files"
+                                          "appearance": "borderless",
+                                          "relocateOnCollapse": true
                                         }
                                       }
                                     ]

@@ -17,8 +17,8 @@
           "type": "@kerfjs/ui:state-banner",
           "props": {
             "title": "Consumer Palette",
-            "tone": "info",
-            "detail": "Only this instance uses the override."
+            "detail": "Only this instance uses the override.",
+            "tone": "info"
           },
           "zones": {
             "icon": [

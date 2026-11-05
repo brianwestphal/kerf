@@ -33,8 +33,8 @@
                 "type": "@kerfjs/ui:button",
                 "props": {
                   "children": "Add Release Tag",
-                  "size": "compact",
                   "emphasis": "secondary",
+                  "size": "compact",
                   "action": "commit-grammar-release"
                 }
               },
@@ -43,8 +43,8 @@
                 "type": "@kerfjs/ui:button",
                 "props": {
                   "children": "Load Saved Search",
-                  "size": "compact",
                   "emphasis": "secondary",
+                  "size": "compact",
                   "action": "replace-grammar-search"
                 }
               },
@@ -52,13 +52,13 @@
                 "id": "00000000000000000000000006",
                 "type": "@kerfjs/ui:text",
                 "props": {
-                  "children": "No free text · 0 filters",
                   "variant": "span",
                   "tone": "quiet",
                   "size": "compact",
                   "rootAttributes": {
                     "data-demo-grammar-result": ""
-                  }
+                  },
+                  "children": "No free text · 0 filters"
                 }
               }
             ]

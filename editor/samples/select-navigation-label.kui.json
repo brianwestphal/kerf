@@ -31,12 +31,12 @@
                 "label": "Explicit Navigation Workspace"
               }
             ],
-            "value": "balanced",
             "presentation": "navigation",
-            "triggerWidth": "max-content",
             "size": "compact",
+            "triggerWidth": "max-content",
+            "labelMaxWidth": 120,
             "ariaLabel": "Navigation Rendering Balance",
-            "labelMaxWidth": 120
+            "value": "balanced"
           }
         }
       ]

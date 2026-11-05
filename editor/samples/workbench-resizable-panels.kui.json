@@ -31,29 +31,22 @@
                   "mainToolbar": {
                     "label": "Editor"
                   },
-                  "overlayBackdrop": true,
                   "leftRail": {
-                    "label": "Navigator",
-                    "size": 240,
-                    "resizable": {
-                      "min": 180,
-                      "max": 400
-                    },
                     "toolbar": {
                       "label": "Navigator",
                       "toggle": {
                         "action": "toggle-workbench-navigator",
                         "name": "Navigator"
                       }
-                    }
+                    },
+                    "size": 240,
+                    "resizable": {
+                      "min": 180,
+                      "max": 400
+                    },
+                    "label": "Navigator"
                   },
                   "rightRail": {
-                    "label": "Inspector",
-                    "size": 160,
-                    "resizable": {
-                      "min": 160,
-                      "max": 360
-                    },
                     "toolbar": {
                       "label": "Inspector",
                       "toggle": {
@@ -61,6 +54,13 @@
                         "name": "Inspector"
                       }
                     },
+                    "collapsed": true,
+                    "size": 160,
+                    "resizable": {
+                      "min": 160,
+                      "max": 360
+                    },
+                    "label": "Inspector",
                     "headerList": {
                       "gap": "2xs",
                       "textInsets": "trbl"
@@ -70,18 +70,18 @@
                     },
                     "bottomToolbar": {
                       "label": "Inspector Actions"
-                    },
-                    "collapsed": true
+                    }
                   },
                   "bottomDrawer": {
-                    "label": "Console",
                     "size": 160,
                     "resizable": {
                       "min": 120,
                       "max": 320
                     },
+                    "label": "Console",
                     "contentOverflow": "auto"
-                  }
+                  },
+                  "overlayBackdrop": true
                 },
                 "zones": {
                   "main": [
@@ -104,19 +104,19 @@
                                         "id": "00000000000000000000000007",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Resize the Panels",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "Resize the Panels"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000008",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Drag a separator, or focus it and use the arrow keys, Home, or End. The editor keeps at least 320 px, so a rail stops growing there; a hidden panel returns at its last size.",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "Drag a separator, or focus it and use the arrow keys, Home, or End. The editor keeps at least 320 px, so a rail stops growing there; a hidden panel returns at its last size."
                                         }
                                       }
                                     ]
@@ -132,11 +132,11 @@
                             "id": "00000000000000000000000009",
                             "type": "@kerfjs/ui:content-item",
                             "props": {
+                              "children": "Select Underlying Item",
+                              "ariaLabel": "Select Underlying Item",
                               "interactive": true,
                               "action": "workbench-demo-command",
                               "itemId": "underlay",
-                              "ariaLabel": "Select Underlying Item",
-                              "children": "Select Underlying Item",
                               "rootAttributes": {
                                 "data-demo-underlay": ""
                               }
@@ -174,19 +174,19 @@
                                   "id": "00000000000000000000000013",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Files and Symbols",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Files and Symbols"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000014",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "180–400 px wide",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "180–400 px wide"
                                   }
                                 }
                               ]
@@ -219,19 +219,19 @@
                                         "id": "00000000000000000000000018",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Selection",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "Selection"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000019",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "160–360 px wide",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "160–360 px wide"
                                         }
                                       }
                                     ]
@@ -257,19 +257,19 @@
                                         "id": "00000000000000000000000022",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Field 1",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "Field 1"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000023",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Scrollable inspector detail",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "Scrollable inspector detail"
                                         }
                                       }
                                     ]
@@ -295,19 +295,19 @@
                                         "id": "00000000000000000000000026",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Field 2",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "Field 2"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000027",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Scrollable inspector detail",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "Scrollable inspector detail"
                                         }
                                       }
                                     ]
@@ -333,19 +333,19 @@
                                         "id": "00000000000000000000000030",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Field 3",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "Field 3"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000031",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Scrollable inspector detail",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "Scrollable inspector detail"
                                         }
                                       }
                                     ]
@@ -371,19 +371,19 @@
                                         "id": "00000000000000000000000034",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Field 4",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "Field 4"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000035",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Scrollable inspector detail",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "Scrollable inspector detail"
                                         }
                                       }
                                     ]
@@ -409,19 +409,19 @@
                                         "id": "00000000000000000000000038",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Field 5",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "Field 5"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000039",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Scrollable inspector detail",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "Scrollable inspector detail"
                                         }
                                       }
                                     ]
@@ -447,19 +447,19 @@
                                         "id": "00000000000000000000000042",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Field 6",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "Field 6"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000043",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Scrollable inspector detail",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "Scrollable inspector detail"
                                         }
                                       }
                                     ]
@@ -485,19 +485,19 @@
                                         "id": "00000000000000000000000046",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Field 7",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "Field 7"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000047",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Scrollable inspector detail",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "Scrollable inspector detail"
                                         }
                                       }
                                     ]
@@ -523,19 +523,19 @@
                                         "id": "00000000000000000000000050",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Field 8",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "Field 8"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000051",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Scrollable inspector detail",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "Scrollable inspector detail"
                                         }
                                       }
                                     ]
@@ -561,19 +561,19 @@
                                         "id": "00000000000000000000000054",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Field 9",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "Field 9"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000055",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Scrollable inspector detail",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "Scrollable inspector detail"
                                         }
                                       }
                                     ]
@@ -599,19 +599,19 @@
                                         "id": "00000000000000000000000058",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Field 10",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "Field 10"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000059",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Scrollable inspector detail",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "Scrollable inspector detail"
                                         }
                                       }
                                     ]
@@ -637,19 +637,19 @@
                                         "id": "00000000000000000000000062",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Field 11",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "Field 11"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000063",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Scrollable inspector detail",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "Scrollable inspector detail"
                                         }
                                       }
                                     ]
@@ -675,19 +675,19 @@
                                         "id": "00000000000000000000000066",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Field 12",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "Field 12"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000067",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Scrollable inspector detail",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "Scrollable inspector detail"
                                         }
                                       }
                                     ]
@@ -726,19 +726,19 @@
                                         "id": "00000000000000000000000071",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Console",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "Console"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000072",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "120–320 px tall",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "120–320 px tall"
                                         }
                                       }
                                     ]
@@ -754,6 +754,7 @@
                             "id": "00000000000000000000000073",
                             "type": "@kerfjs/ui:popup-menu",
                             "props": {
+                              "text": "Create Item",
                               "items": [
                                 {
                                   "label": "New Terminal",
@@ -764,7 +765,6 @@
                                   "action": "create-task"
                                 }
                               ],
-                              "text": "Create Item",
                               "placement": "top-start"
                             }
                           }
@@ -838,8 +838,8 @@
                       },
                       "props": {
                         "label": "Search Inspector",
-                        "appearance": "borderless",
-                        "single": true
+                        "single": true,
+                        "appearance": "borderless"
                       }
                     }
                   ],

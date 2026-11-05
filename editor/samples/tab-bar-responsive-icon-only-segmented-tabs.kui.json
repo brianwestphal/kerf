@@ -29,10 +29,10 @@
                 "props": {
                   "id": "responsive-overview",
                   "name": "Overview",
-                  "presentation": "segmented",
-                  "size": "compact",
                   "selected": true,
-                  "closable": false
+                  "closable": false,
+                  "presentation": "segmented",
+                  "size": "compact"
                 },
                 "zones": {
                   "leading-decoration": [
@@ -55,9 +55,9 @@
                 "props": {
                   "id": "responsive-activity",
                   "name": "Activity",
+                  "closable": false,
                   "presentation": "segmented",
-                  "size": "compact",
-                  "closable": false
+                  "size": "compact"
                 },
                 "zones": {
                   "leading-decoration": [

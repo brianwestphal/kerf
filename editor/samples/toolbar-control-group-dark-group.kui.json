@@ -72,9 +72,9 @@
                   ]
                 },
                 "props": {
+                  "label": "Dark Navigation",
                   "tone": "dark",
-                  "shape": "pill",
-                  "label": "Dark Navigation"
+                  "shape": "pill"
                 }
               }
             ]

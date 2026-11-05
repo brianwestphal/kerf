@@ -22,8 +22,8 @@
                 "type": "@kerfjs/ui:checkbox",
                 "props": {
                   "label": "Show archived",
-                  "size": "compact",
                   "checked": true,
+                  "size": "compact",
                   "action": "checkbox-demo"
                 }
               },
@@ -32,8 +32,8 @@
                 "type": "@kerfjs/ui:checkbox",
                 "props": {
                   "label": "Show drafts",
-                  "size": "compact",
                   "hint": "Only yours.",
+                  "size": "compact",
                   "action": "checkbox-demo"
                 }
               }

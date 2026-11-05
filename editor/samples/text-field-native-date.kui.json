@@ -22,10 +22,10 @@
                 "type": "@kerfjs/ui:text-field",
                 "props": {
                   "label": "Needed By",
-                  "type": "date",
-                  "required": true,
+                  "value": "2026-11-12",
                   "name": "neededBy",
-                  "value": "2026-11-12"
+                  "type": "date",
+                  "required": true
                 }
               },
               {
@@ -33,10 +33,10 @@
                 "type": "@kerfjs/ui:text-field",
                 "props": {
                   "label": "Received On",
-                  "type": "date",
-                  "readOnly": true,
+                  "value": "2026-10-18",
                   "name": "receivedOn",
-                  "value": "2026-10-18"
+                  "type": "date",
+                  "readOnly": true
                 }
               }
             ]

@@ -143,8 +143,8 @@
                   ]
                 },
                 "props": {
-                  "appearance": "borderless",
-                  "single": true
+                  "single": true,
+                  "appearance": "borderless"
                 }
               }
             ],
@@ -178,8 +178,8 @@
                   ]
                 },
                 "props": {
-                  "appearance": "borderless",
-                  "single": true
+                  "single": true,
+                  "appearance": "borderless"
                 }
               }
             ]

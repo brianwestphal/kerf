@@ -16,6 +16,7 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:checkbox-group",
           "props": {
+            "label": "Platforms",
             "name": "platforms",
             "choices": [
               {
@@ -31,10 +32,9 @@
                 "label": "Linux"
               }
             ],
-            "label": "Platforms",
+            "error": "Choose a platform.",
             "size": "compact",
             "orientation": "horizontal",
-            "error": "Choose a platform.",
             "action": "checkbox-group-demo"
           }
         }

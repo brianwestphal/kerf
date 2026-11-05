@@ -16,6 +16,7 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:popup-menu",
           "props": {
+            "text": "Sort Choices",
             "items": [
               {
                 "label": "Updated",
@@ -35,7 +36,6 @@
                 "action": "log-more"
               }
             ],
-            "text": "Sort Choices",
             "rootAttributes": {
               "data-popup-checked-menu": ""
             }

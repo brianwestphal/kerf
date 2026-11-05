@@ -29,12 +29,12 @@
                 "props": {
                   "id": "components",
                   "name": "Components",
-                  "draggable": true,
-                  "panelId": "catalog-active-panel",
-                  "selectAction": "select-reorder-tab",
-                  "closeAction": "close-reorder-tab",
                   "selected": true,
                   "tabId": "catalog-tab-components",
+                  "panelId": "catalog-active-panel",
+                  "draggable": true,
+                  "selectAction": "select-reorder-tab",
+                  "closeAction": "close-reorder-tab",
                   "rootAttributes": {
                     "data-demo-tab-id": "components"
                   }
@@ -46,11 +46,11 @@
                 "props": {
                   "id": "design-guidance",
                   "name": "Design Guidance",
-                  "draggable": true,
+                  "tabId": "catalog-tab-design-guidance",
                   "panelId": "catalog-active-panel",
+                  "draggable": true,
                   "selectAction": "select-reorder-tab",
                   "closeAction": "close-reorder-tab",
-                  "tabId": "catalog-tab-design-guidance",
                   "rootAttributes": {
                     "data-demo-tab-id": "design-guidance"
                   }
@@ -62,11 +62,11 @@
                 "props": {
                   "id": "accessibility",
                   "name": "Accessibility Contracts",
-                  "draggable": true,
+                  "tabId": "catalog-tab-accessibility",
                   "panelId": "catalog-active-panel",
+                  "draggable": true,
                   "selectAction": "select-reorder-tab",
                   "closeAction": "close-reorder-tab",
-                  "tabId": "catalog-tab-accessibility",
                   "rootAttributes": {
                     "data-demo-tab-id": "accessibility"
                   }
@@ -78,11 +78,11 @@
                 "props": {
                   "id": "integration",
                   "name": "Integration Patterns",
-                  "draggable": true,
+                  "tabId": "catalog-tab-integration",
                   "panelId": "catalog-active-panel",
+                  "draggable": true,
                   "selectAction": "select-reorder-tab",
                   "closeAction": "close-reorder-tab",
-                  "tabId": "catalog-tab-integration",
                   "rootAttributes": {
                     "data-demo-tab-id": "integration"
                   }
@@ -94,11 +94,11 @@
                 "props": {
                   "id": "release-notes",
                   "name": "Release Notes",
-                  "draggable": true,
+                  "tabId": "catalog-tab-release-notes",
                   "panelId": "catalog-active-panel",
+                  "draggable": true,
                   "selectAction": "select-reorder-tab",
                   "closeAction": "close-reorder-tab",
-                  "tabId": "catalog-tab-release-notes",
                   "rootAttributes": {
                     "data-demo-tab-id": "release-notes"
                   }
@@ -110,11 +110,11 @@
                 "props": {
                   "id": "migration",
                   "name": "Hot Sheet Migration",
-                  "draggable": true,
+                  "tabId": "catalog-tab-migration",
                   "panelId": "catalog-active-panel",
+                  "draggable": true,
                   "selectAction": "select-reorder-tab",
                   "closeAction": "close-reorder-tab",
-                  "tabId": "catalog-tab-migration",
                   "rootAttributes": {
                     "data-demo-tab-id": "migration"
                   }
@@ -126,11 +126,11 @@
                 "props": {
                   "id": "examples",
                   "name": "Consumer Examples",
-                  "draggable": true,
+                  "tabId": "catalog-tab-examples",
                   "panelId": "catalog-active-panel",
+                  "draggable": true,
                   "selectAction": "select-reorder-tab",
                   "closeAction": "close-reorder-tab",
-                  "tabId": "catalog-tab-examples",
                   "rootAttributes": {
                     "data-demo-tab-id": "examples"
                   }
@@ -168,8 +168,8 @@
                   ]
                 },
                 "props": {
-                  "appearance": "borderless",
-                  "single": true
+                  "single": true,
+                  "appearance": "borderless"
                 }
               }
             ],
@@ -204,8 +204,8 @@
                   ]
                 },
                 "props": {
-                  "appearance": "borderless",
-                  "single": true
+                  "single": true,
+                  "appearance": "borderless"
                 }
               }
             ]
@@ -231,8 +231,8 @@
                       "id": "00000000000000000000000018",
                       "type": "@kerfjs/ui:text",
                       "props": {
-                        "children": "components",
-                        "variant": "h3"
+                        "variant": "h3",
+                        "children": "components"
                       }
                     }
                   ]
@@ -266,12 +266,12 @@
                       "id": "00000000000000000000000022",
                       "type": "@kerfjs/ui:text",
                       "props": {
-                        "children": "Components · Design Guidance · Accessibility Contracts · Integration Patterns · Release Notes · Hot Sheet Migration · Consumer Examples",
                         "variant": "span",
                         "weight": "strong",
                         "rootAttributes": {
                           "data-tab-order": ""
-                        }
+                        },
+                        "children": "Components · Design Guidance · Accessibility Contracts · Integration Patterns · Release Notes · Hot Sheet Migration · Consumer Examples"
                       }
                     }
                   ]

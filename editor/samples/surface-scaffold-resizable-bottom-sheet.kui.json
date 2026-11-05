@@ -28,14 +28,14 @@
           "type": "@kerfjs/ui:surface-scaffold",
           "props": {
             "label": "New Message",
+            "id": "catalog-sheet-dialog",
+            "lightDismiss": true,
             "presentation": "bottom-sheet",
             "bodyInset": "none",
-            "lightDismiss": true,
-            "resizable": true,
-            "id": "catalog-sheet-dialog",
             "minHeight": {
               "$css": "rem(12.5)"
-            }
+            },
+            "resizable": true
           },
           "zones": {
             "children": [
@@ -86,8 +86,8 @@
                             "type": "@kerfjs/ui:text-field",
                             "props": {
                               "label": "Message",
-                              "multiline": true,
                               "name": "catalog-sheet-message",
+                              "multiline": true,
                               "rows": 4
                             }
                           }

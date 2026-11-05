@@ -22,8 +22,8 @@
                 "type": "@kerfjs/ui:button",
                 "props": {
                   "children": "Dismiss",
-                  "focusRingInset": true,
-                  "action": "log-more"
+                  "action": "log-more",
+                  "focusRingInset": true
                 }
               },
               {
@@ -32,8 +32,8 @@
                 "props": {
                   "children": "Confirm",
                   "tone": "brand",
-                  "focusRingInset": true,
-                  "action": "log-more"
+                  "action": "log-more",
+                  "focusRingInset": true
                 }
               },
               {
@@ -42,8 +42,8 @@
                 "props": {
                   "children": "Apply",
                   "tone": "success",
-                  "focusRingInset": true,
-                  "action": "log-more"
+                  "action": "log-more",
+                  "focusRingInset": true
                 }
               },
               {
@@ -52,8 +52,8 @@
                 "props": {
                   "children": "Erase",
                   "tone": "danger",
-                  "focusRingInset": true,
-                  "action": "log-more"
+                  "action": "log-more",
+                  "focusRingInset": true
                 }
               }
             ]

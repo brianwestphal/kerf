@@ -29,10 +29,10 @@
                   "id": "overview",
                   "name": "Overview",
                   "selected": true,
-                  "closable": false,
-                  "selectAction": "select-report-tab",
                   "tabId": "report-overview-tab",
-                  "panelId": "report-overview-panel"
+                  "panelId": "report-overview-panel",
+                  "closable": false,
+                  "selectAction": "select-report-tab"
                 }
               },
               {
@@ -42,10 +42,10 @@
                   "id": "loading",
                   "name": "Preparing Report",
                   "disabled": true,
-                  "closable": false,
-                  "selectAction": "select-report-tab",
                   "tabId": "report-loading-tab",
-                  "panelId": "report-loading-panel"
+                  "panelId": "report-loading-panel",
+                  "closable": false,
+                  "selectAction": "select-report-tab"
                 }
               },
               {
@@ -54,10 +54,10 @@
                 "props": {
                   "id": "history",
                   "name": "History",
-                  "closable": false,
-                  "selectAction": "select-report-tab",
                   "tabId": "report-history-tab",
-                  "panelId": "report-history-panel"
+                  "panelId": "report-history-panel",
+                  "closable": false,
+                  "selectAction": "select-report-tab"
                 }
               }
             ]

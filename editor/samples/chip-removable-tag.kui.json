@@ -16,11 +16,11 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:chip",
           "props": {
-            "children": "Urgent",
             "tone": "info",
             "itemId": "urgent",
-            "removeLabel": "Remove Urgent tag",
-            "removeAction": "log-chip-remove"
+            "children": "Urgent",
+            "removeAction": "log-chip-remove",
+            "removeLabel": "Remove Urgent tag"
           }
         }
       ]

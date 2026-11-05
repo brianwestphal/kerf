@@ -17,10 +17,10 @@
           "type": "@kerfjs/ui:value-table",
           "props": {
             "label": "Connection Details",
-            "stackBelow": "compact",
             "labelWidth": {
               "$css": "px(160)"
-            }
+            },
+            "stackBelow": "compact"
           },
           "zones": {
             "children": [

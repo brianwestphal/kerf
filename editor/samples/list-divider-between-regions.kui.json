@@ -34,8 +34,8 @@
                       "type": "@kerfjs/ui:list-item",
                       "props": {
                         "label": "Inbox",
-                        "action": "log-inbox",
                         "selected": true,
+                        "action": "log-inbox",
                         "itemId": "divider-inbox"
                       },
                       "zones": {
@@ -127,19 +127,19 @@
                                   "id": "00000000000000000000000013",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Inbox",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Inbox"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000014",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "12 unread conversations. The selected folder's contents appear in this region.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "12 unread conversations. The selected folder's contents appear in this region."
                                   }
                                 }
                               ]

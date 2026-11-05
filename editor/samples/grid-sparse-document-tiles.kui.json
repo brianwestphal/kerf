@@ -17,10 +17,10 @@
           "type": "@kerfjs/ui:grid",
           "props": {
             "gap": "m",
-            "autoFill": true,
             "minColumnWidth": {
               "$css": "px(160)"
-            }
+            },
+            "autoFill": true
           },
           "zones": {
             "children": [
@@ -29,8 +29,8 @@
                 "type": "@kerfjs/ui:content-item",
                 "props": {
                   "appearance": "surface",
-                  "frame": "framed",
-                  "children": "One document"
+                  "children": "One document",
+                  "frame": "framed"
                 }
               }
             ]

@@ -22,8 +22,8 @@
                 "type": "@kerfjs/ui:list",
                 "props": {
                   "gap": "xs",
-                  "landmark": "region",
                   "scrollable": true,
+                  "landmark": "region",
                   "ariaLabel": "To Do"
                 },
                 "zones": {
@@ -52,19 +52,19 @@
                                   "id": "00000000000000000000000007",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Draft release notes",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Draft release notes"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000008",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "In To Do",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "In To Do"
                                   }
                                 }
                               ]
@@ -90,19 +90,19 @@
                                   "id": "00000000000000000000000011",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Audit tokens",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Audit tokens"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000012",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "In To Do",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "In To Do"
                                   }
                                 }
                               ]
@@ -119,8 +119,8 @@
                 "type": "@kerfjs/ui:list",
                 "props": {
                   "gap": "xs",
-                  "landmark": "region",
                   "scrollable": true,
+                  "landmark": "region",
                   "ariaLabel": "In Progress"
                 },
                 "zones": {
@@ -149,19 +149,19 @@
                                   "id": "00000000000000000000000017",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Paged board snapping",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Paged board snapping"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000018",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "In In Progress",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "In In Progress"
                                   }
                                 }
                               ]
@@ -178,8 +178,8 @@
                 "type": "@kerfjs/ui:list",
                 "props": {
                   "gap": "xs",
-                  "landmark": "region",
                   "scrollable": true,
+                  "landmark": "region",
                   "ariaLabel": "Review"
                 },
                 "zones": {
@@ -208,19 +208,19 @@
                                   "id": "00000000000000000000000023",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "ColumnTrack demo",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "ColumnTrack demo"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000024",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "In Review",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "In Review"
                                   }
                                 }
                               ]
@@ -246,19 +246,19 @@
                                   "id": "00000000000000000000000027",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Docs pass",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Docs pass"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000028",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "In Review",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "In Review"
                                   }
                                 }
                               ]
@@ -275,8 +275,8 @@
                 "type": "@kerfjs/ui:list",
                 "props": {
                   "gap": "xs",
-                  "landmark": "region",
                   "scrollable": true,
+                  "landmark": "region",
                   "ariaLabel": "Done"
                 },
                 "zones": {
@@ -305,19 +305,19 @@
                                   "id": "00000000000000000000000033",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Ship Button toggles",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Ship Button toggles"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000034",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "In Done",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "In Done"
                                   }
                                 }
                               ]
@@ -334,8 +334,8 @@
                 "type": "@kerfjs/ui:list",
                 "props": {
                   "gap": "xs",
-                  "landmark": "region",
                   "scrollable": true,
+                  "landmark": "region",
                   "ariaLabel": "Later"
                 },
                 "zones": {
@@ -364,19 +364,19 @@
                                   "id": "00000000000000000000000039",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "File drop zone",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "File drop zone"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000040",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "In Later",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "In Later"
                                   }
                                 }
                               ]

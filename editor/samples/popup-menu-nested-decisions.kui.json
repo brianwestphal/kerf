@@ -16,6 +16,7 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:popup-menu",
           "props": {
+            "text": "Decide",
             "items": [
               {
                 "label": "Decide",
@@ -58,8 +59,7 @@
                   }
                 ]
               }
-            ],
-            "text": "Decide"
+            ]
           },
           "zones": {
             "items.0.icon": [

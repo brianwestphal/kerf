@@ -28,17 +28,17 @@
           "type": "@kerfjs/ui:surface-scaffold",
           "props": {
             "label": "Assistant",
-            "bodyInset": "none",
-            "bodyLayout": "fill-last",
-            "footerPresentation": "floating",
-            "footerInset": "none",
             "id": "catalog-chat-dialog",
+            "bodyInset": "none",
+            "footerInset": "none",
             "viewportGutter": {
               "$css": "rem(0.5)"
             },
             "height": {
               "$css": "rem(35)"
             },
+            "bodyLayout": "fill-last",
+            "footerPresentation": "floating",
             "footerOffset": {
               "$css": "rem(0.5)"
             }
@@ -58,9 +58,9 @@
                 "type": "@kerfjs/ui:list",
                 "props": {
                   "gap": "xs",
-                  "controlInsets": "tb",
-                  "scrollClearance": "block-end",
                   "scrollable": true,
+                  "scrollClearance": "block-end",
+                  "controlInsets": "tb",
                   "rootAttributes": {
                     "data-demo-chat-transcript": ""
                   }
@@ -71,8 +71,8 @@
                       "id": "00000000000000000000000006",
                       "type": "@kerfjs/ui:content-item",
                       "props": {
-                        "bubble": "end",
-                        "appearance": "brand-loud"
+                        "appearance": "brand-loud",
+                        "bubble": "end"
                       },
                       "zones": {
                         "children": [
@@ -80,8 +80,8 @@
                             "id": "00000000000000000000000007",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Why did the nightly build fail?",
-                              "variant": "span"
+                              "variant": "span",
+                              "children": "Why did the nightly build fail?"
                             }
                           }
                         ]
@@ -91,8 +91,8 @@
                       "id": "00000000000000000000000008",
                       "type": "@kerfjs/ui:content-item",
                       "props": {
-                        "bubble": "start",
-                        "appearance": "neutral"
+                        "appearance": "neutral",
+                        "bubble": "start"
                       },
                       "zones": {
                         "children": [
@@ -100,8 +100,8 @@
                             "id": "00000000000000000000000009",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "The bundle budget check failed: the demo bundle grew by 213 bytes after the dialog changes landed.",
-                              "variant": "span"
+                              "variant": "span",
+                              "children": "The bundle budget check failed: the demo bundle grew by 213 bytes after the dialog changes landed."
                             }
                           }
                         ]
@@ -111,8 +111,8 @@
                       "id": "00000000000000000000000010",
                       "type": "@kerfjs/ui:content-item",
                       "props": {
-                        "bubble": "end",
-                        "appearance": "brand-loud"
+                        "appearance": "brand-loud",
+                        "bubble": "end"
                       },
                       "zones": {
                         "children": [
@@ -120,8 +120,8 @@
                             "id": "00000000000000000000000011",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Which entry grew?",
-                              "variant": "span"
+                              "variant": "span",
+                              "children": "Which entry grew?"
                             }
                           }
                         ]
@@ -131,8 +131,8 @@
                       "id": "00000000000000000000000012",
                       "type": "@kerfjs/ui:content-item",
                       "props": {
-                        "bubble": "start",
-                        "appearance": "neutral"
+                        "appearance": "neutral",
+                        "bubble": "start"
                       },
                       "zones": {
                         "children": [
@@ -140,8 +140,8 @@
                             "id": "00000000000000000000000013",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "The surface scaffold entry. Its stylesheet gained the floating footer and fill-last body rules.",
-                              "variant": "span"
+                              "variant": "span",
+                              "children": "The surface scaffold entry. Its stylesheet gained the floating footer and fill-last body rules."
                             }
                           }
                         ]
@@ -151,8 +151,8 @@
                       "id": "00000000000000000000000014",
                       "type": "@kerfjs/ui:content-item",
                       "props": {
-                        "bubble": "end",
-                        "appearance": "brand-loud"
+                        "appearance": "brand-loud",
+                        "bubble": "end"
                       },
                       "zones": {
                         "children": [
@@ -160,8 +160,8 @@
                             "id": "00000000000000000000000015",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Is that expected?",
-                              "variant": "span"
+                              "variant": "span",
+                              "children": "Is that expected?"
                             }
                           }
                         ]
@@ -171,8 +171,8 @@
                       "id": "00000000000000000000000016",
                       "type": "@kerfjs/ui:content-item",
                       "props": {
-                        "bubble": "start",
-                        "appearance": "neutral"
+                        "appearance": "neutral",
+                        "bubble": "start"
                       },
                       "zones": {
                         "children": [
@@ -180,8 +180,8 @@
                             "id": "00000000000000000000000017",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Yes. Rebaseline the budget with a reason that names the new dialog layouts.",
-                              "variant": "span"
+                              "variant": "span",
+                              "children": "Yes. Rebaseline the budget with a reason that names the new dialog layouts."
                             }
                           }
                         ]
@@ -191,8 +191,8 @@
                       "id": "00000000000000000000000018",
                       "type": "@kerfjs/ui:content-item",
                       "props": {
-                        "bubble": "end",
-                        "appearance": "brand-loud"
+                        "appearance": "brand-loud",
+                        "bubble": "end"
                       },
                       "zones": {
                         "children": [
@@ -200,8 +200,8 @@
                             "id": "00000000000000000000000019",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Anything else failing?",
-                              "variant": "span"
+                              "variant": "span",
+                              "children": "Anything else failing?"
                             }
                           }
                         ]
@@ -211,8 +211,8 @@
                       "id": "00000000000000000000000020",
                       "type": "@kerfjs/ui:content-item",
                       "props": {
-                        "bubble": "start",
-                        "appearance": "neutral"
+                        "appearance": "neutral",
+                        "bubble": "start"
                       },
                       "zones": {
                         "children": [
@@ -220,8 +220,8 @@
                             "id": "00000000000000000000000021",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "No. Every other gate passed, including the browser suite.",
-                              "variant": "span"
+                              "variant": "span",
+                              "children": "No. Every other gate passed, including the browser suite."
                             }
                           }
                         ]
@@ -238,9 +238,9 @@
                 "props": {
                   "label": "Message",
                   "name": "catalog-chat-message",
-                  "submitOnEnter": true,
                   "id": "catalog-chat-message",
-                  "placeholder": "Ask about this build"
+                  "placeholder": "Ask about this build",
+                  "submitOnEnter": true
                 },
                 "zones": {
                   "trailing": [

@@ -22,9 +22,9 @@
                 "type": "@kerfjs/ui:text-field",
                 "props": {
                   "label": "View Name",
-                  "required": true,
+                  "value": "Open procurement",
                   "hint": "Name this saved view.",
-                  "value": "Open procurement"
+                  "required": true
                 }
               },
               {
@@ -33,9 +33,6 @@
                 "props": {
                   "id": "saved-view-query",
                   "label": "Search Query",
-                  "presentation": "form-field",
-                  "required": true,
-                  "hint": "Add filters to narrow the view.",
                   "query": "status:open",
                   "tokens": [
                     {
@@ -43,7 +40,10 @@
                       "label": "tag:client",
                       "offset": 0
                     }
-                  ]
+                  ],
+                  "presentation": "form-field",
+                  "hint": "Add filters to narrow the view.",
+                  "required": true
                 }
               }
             ]

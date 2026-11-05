@@ -52,17 +52,17 @@
                                   "label": "Archive"
                                 }
                               ],
-                              "value": "queue",
                               "presentation": "title",
                               "focusRingInset": true,
-                              "ariaLabel": "Ticket View"
+                              "ariaLabel": "Ticket View",
+                              "value": "queue"
                             }
                           }
                         ]
                       },
                       "props": {
-                        "appearance": "borderless",
-                        "single": true
+                        "single": true,
+                        "appearance": "borderless"
                       }
                     }
                   ]

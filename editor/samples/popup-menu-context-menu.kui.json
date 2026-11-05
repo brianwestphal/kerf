@@ -72,6 +72,12 @@
           "id": "00000000000000000000000007",
           "type": "@kerfjs/ui:popup-menu",
           "props": {
+            "label": "Demand Actions",
+            "context": true,
+            "anchor": {
+              "x": 0,
+              "y": 0
+            },
             "items": [
               {
                 "label": "Open",
@@ -92,14 +98,8 @@
                 "tone": "danger"
               }
             ],
-            "context": true,
-            "label": "Demand Actions",
             "rootAttributes": {
               "data-popup-context-menu": ""
-            },
-            "anchor": {
-              "x": 0,
-              "y": 0
             }
           }
         }

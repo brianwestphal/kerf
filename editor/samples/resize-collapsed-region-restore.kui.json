@@ -21,8 +21,8 @@
             "size": 240,
             "min": 180,
             "max": 420,
-            "restorePosition": "top-end",
-            "collapsed": true
+            "collapsed": true,
+            "restorePosition": "top-end"
           },
           "zones": {
             "children": [
@@ -70,8 +70,8 @@
                         ]
                       },
                       "props": {
-                        "single": true,
-                        "label": "Restore Panel"
+                        "label": "Restore Panel",
+                        "single": true
                       }
                     }
                   ]

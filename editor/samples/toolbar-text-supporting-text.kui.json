@@ -38,9 +38,9 @@
                   ]
                 },
                 "props": {
-                  "tileTone": "brand",
+                  "label": "Commands",
                   "single": true,
-                  "label": "Commands"
+                  "tileTone": "brand"
                 }
               },
               {
@@ -49,8 +49,8 @@
                 "props": {
                   "text": "Custom Commands",
                   "size": "xlarge",
-                  "headingLevel": 2,
                   "id": "toolbar-text-description-title",
+                  "headingLevel": 2,
                   "description": "Changes save automatically.",
                   "descriptionId": "toolbar-text-description-copy"
                 }
@@ -86,8 +86,8 @@
                   ]
                 },
                 "props": {
-                  "single": true,
-                  "label": "Close"
+                  "label": "Close",
+                  "single": true
                 }
               }
             ]

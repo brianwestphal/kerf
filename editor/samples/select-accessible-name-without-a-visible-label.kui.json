@@ -31,8 +31,8 @@
                 "label": "Explicit"
               }
             ],
-            "value": "balanced",
-            "ariaLabel": "Plain Rendering Balance"
+            "ariaLabel": "Plain Rendering Balance",
+            "value": "balanced"
           }
         }
       ]

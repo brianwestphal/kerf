@@ -34,8 +34,8 @@
                       "props": {
                         "text": "UI Foundations",
                         "size": "xlarge",
-                        "headingLevel": 1,
-                        "id": "headers-page-title"
+                        "id": "headers-page-title",
+                        "headingLevel": 1
                       }
                     }
                   ],
@@ -56,8 +56,8 @@
                         ]
                       },
                       "props": {
-                        "appearance": "borderless",
-                        "single": true
+                        "single": true,
+                        "appearance": "borderless"
                       }
                     }
                   ]
@@ -89,8 +89,8 @@
                         ]
                       },
                       "props": {
-                        "appearance": "borderless",
-                        "single": true
+                        "single": true,
+                        "appearance": "borderless"
                       }
                     },
                     {
@@ -120,8 +120,8 @@
                         ]
                       },
                       "props": {
-                        "appearance": "borderless",
-                        "single": true
+                        "single": true,
+                        "appearance": "borderless"
                       }
                     }
                   ]

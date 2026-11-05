@@ -16,8 +16,8 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:grid",
           "props": {
-            "columns": 4,
-            "gap": "xs"
+            "gap": "xs",
+            "columns": 4
           },
           "zones": {
             "children": [
@@ -26,8 +26,8 @@
                 "type": "@kerfjs/ui:content-item",
                 "props": {
                   "appearance": "surface",
-                  "frame": "framed",
-                  "children": "Q1"
+                  "children": "Q1",
+                  "frame": "framed"
                 }
               },
               {
@@ -35,8 +35,8 @@
                 "type": "@kerfjs/ui:content-item",
                 "props": {
                   "appearance": "surface",
-                  "frame": "framed",
-                  "children": "Q2"
+                  "children": "Q2",
+                  "frame": "framed"
                 }
               },
               {
@@ -44,8 +44,8 @@
                 "type": "@kerfjs/ui:content-item",
                 "props": {
                   "appearance": "surface",
-                  "frame": "framed",
-                  "children": "Q3"
+                  "children": "Q3",
+                  "frame": "framed"
                 }
               },
               {
@@ -53,8 +53,8 @@
                 "type": "@kerfjs/ui:content-item",
                 "props": {
                   "appearance": "surface",
-                  "frame": "framed",
-                  "children": "Q4 est."
+                  "children": "Q4 est.",
+                  "frame": "framed"
                 }
               }
             ]

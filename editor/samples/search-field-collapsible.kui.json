@@ -18,8 +18,8 @@
           "props": {
             "id": "collapsible-search",
             "label": "Find Records",
-            "collapsible": true,
             "placeholder": "Find records",
+            "collapsible": true,
             "expandLabel": "Open find"
           }
         }

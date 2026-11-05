@@ -37,19 +37,19 @@
                             "id": "00000000000000000000000005",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Earlier Story 1",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Earlier Story 1"
                             }
                           },
                           {
                             "id": "00000000000000000000000006",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -75,19 +75,19 @@
                             "id": "00000000000000000000000009",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Earlier Story 2",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Earlier Story 2"
                             }
                           },
                           {
                             "id": "00000000000000000000000010",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -113,19 +113,19 @@
                             "id": "00000000000000000000000013",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Earlier Story 3",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Earlier Story 3"
                             }
                           },
                           {
                             "id": "00000000000000000000000014",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -151,19 +151,19 @@
                             "id": "00000000000000000000000017",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Earlier Story 4",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Earlier Story 4"
                             }
                           },
                           {
                             "id": "00000000000000000000000018",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -189,19 +189,19 @@
                             "id": "00000000000000000000000021",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Earlier Story 5",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Earlier Story 5"
                             }
                           },
                           {
                             "id": "00000000000000000000000022",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -227,19 +227,19 @@
                             "id": "00000000000000000000000025",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Earlier Story 6",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Earlier Story 6"
                             }
                           },
                           {
                             "id": "00000000000000000000000026",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -265,19 +265,19 @@
                             "id": "00000000000000000000000029",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Earlier Story 7",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Earlier Story 7"
                             }
                           },
                           {
                             "id": "00000000000000000000000030",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -303,19 +303,19 @@
                             "id": "00000000000000000000000033",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Earlier Story 8",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Earlier Story 8"
                             }
                           },
                           {
                             "id": "00000000000000000000000034",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -341,19 +341,19 @@
                             "id": "00000000000000000000000037",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Earlier Story 9",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Earlier Story 9"
                             }
                           },
                           {
                             "id": "00000000000000000000000038",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -379,19 +379,19 @@
                             "id": "00000000000000000000000041",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Earlier Story 10",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Earlier Story 10"
                             }
                           },
                           {
                             "id": "00000000000000000000000042",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -435,19 +435,19 @@
                                   "id": "00000000000000000000000046",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Night Harbor",
                                     "variant": "span",
-                                    "weight": "strong"
+                                    "weight": "strong",
+                                    "children": "Night Harbor"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000047",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "This card carries the effect. Change the preset or its range in Settings.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "This card carries the effect. Change the preset or its range in Settings."
                                   }
                                 }
                               ]
@@ -476,19 +476,19 @@
                             "id": "00000000000000000000000050",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Later Story 1",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Later Story 1"
                             }
                           },
                           {
                             "id": "00000000000000000000000051",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -514,19 +514,19 @@
                             "id": "00000000000000000000000054",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Later Story 2",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Later Story 2"
                             }
                           },
                           {
                             "id": "00000000000000000000000055",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -552,19 +552,19 @@
                             "id": "00000000000000000000000058",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Later Story 3",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Later Story 3"
                             }
                           },
                           {
                             "id": "00000000000000000000000059",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -590,19 +590,19 @@
                             "id": "00000000000000000000000062",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Later Story 4",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Later Story 4"
                             }
                           },
                           {
                             "id": "00000000000000000000000063",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -628,19 +628,19 @@
                             "id": "00000000000000000000000066",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Later Story 5",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Later Story 5"
                             }
                           },
                           {
                             "id": "00000000000000000000000067",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -666,19 +666,19 @@
                             "id": "00000000000000000000000070",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Later Story 6",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Later Story 6"
                             }
                           },
                           {
                             "id": "00000000000000000000000071",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -704,19 +704,19 @@
                             "id": "00000000000000000000000074",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Later Story 7",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Later Story 7"
                             }
                           },
                           {
                             "id": "00000000000000000000000075",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -742,19 +742,19 @@
                             "id": "00000000000000000000000078",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Later Story 8",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Later Story 8"
                             }
                           },
                           {
                             "id": "00000000000000000000000079",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -780,19 +780,19 @@
                             "id": "00000000000000000000000082",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Later Story 9",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Later Story 9"
                             }
                           },
                           {
                             "id": "00000000000000000000000083",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]
@@ -818,19 +818,19 @@
                             "id": "00000000000000000000000086",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Later Story 10",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Later Story 10"
                             }
                           },
                           {
                             "id": "00000000000000000000000087",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Scroll the pane to move Night Harbor through the view.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Scroll the pane to move Night Harbor through the view."
                             }
                           }
                         ]

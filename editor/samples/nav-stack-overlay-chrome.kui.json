@@ -37,11 +37,11 @@
                     }
                   ],
                   "backLabel": "Back to Inbox",
-                  "chromePresentation": "overlay",
-                  "bottomToolbarPresentation": "overlay",
                   "bottomToolbar": {
                     "label": "Inbox Actions"
-                  }
+                  },
+                  "chromePresentation": "overlay",
+                  "bottomToolbarPresentation": "overlay"
                 },
                 "zones": {
                   "bottomToolbar.leading": [
@@ -76,8 +76,8 @@
                       },
                       "props": {
                         "label": "Filter",
-                        "appearance": "borderless",
-                        "single": true
+                        "single": true,
+                        "appearance": "borderless"
                       }
                     }
                   ],
@@ -123,8 +123,8 @@
                       },
                       "props": {
                         "label": "Compose",
-                        "appearance": "borderless",
-                        "single": true
+                        "single": true,
+                        "appearance": "borderless"
                       }
                     }
                   ],
@@ -139,8 +139,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Design Review",
-                              "action": "open-overlay-nav-stack-message",
                               "iconTile": "brand",
+                              "action": "open-overlay-nav-stack-message",
                               "itemId": "overlay-inbox-1"
                             },
                             "zones": {
@@ -163,8 +163,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Backup Complete",
-                              "action": "open-overlay-nav-stack-message",
                               "iconTile": "success",
+                              "action": "open-overlay-nav-stack-message",
                               "itemId": "overlay-inbox-2"
                             },
                             "zones": {
@@ -187,8 +187,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Storage Almost Full",
-                              "action": "open-overlay-nav-stack-message",
                               "iconTile": "warning",
+                              "action": "open-overlay-nav-stack-message",
                               "itemId": "overlay-inbox-3"
                             },
                             "zones": {
@@ -211,8 +211,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Weekly Summary",
-                              "action": "open-overlay-nav-stack-message",
                               "iconTile": "neutral",
+                              "action": "open-overlay-nav-stack-message",
                               "itemId": "overlay-inbox-4"
                             },
                             "zones": {
@@ -235,8 +235,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Design Review",
-                              "action": "open-overlay-nav-stack-message",
                               "iconTile": "brand",
+                              "action": "open-overlay-nav-stack-message",
                               "itemId": "overlay-inbox-5"
                             },
                             "zones": {
@@ -259,8 +259,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Backup Complete",
-                              "action": "open-overlay-nav-stack-message",
                               "iconTile": "success",
+                              "action": "open-overlay-nav-stack-message",
                               "itemId": "overlay-inbox-6"
                             },
                             "zones": {
@@ -283,8 +283,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Storage Almost Full",
-                              "action": "open-overlay-nav-stack-message",
                               "iconTile": "warning",
+                              "action": "open-overlay-nav-stack-message",
                               "itemId": "overlay-inbox-7"
                             },
                             "zones": {
@@ -307,8 +307,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Weekly Summary",
-                              "action": "open-overlay-nav-stack-message",
                               "iconTile": "neutral",
+                              "action": "open-overlay-nav-stack-message",
                               "itemId": "overlay-inbox-8"
                             },
                             "zones": {
@@ -331,8 +331,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Design Review",
-                              "action": "open-overlay-nav-stack-message",
                               "iconTile": "brand",
+                              "action": "open-overlay-nav-stack-message",
                               "itemId": "overlay-inbox-9"
                             },
                             "zones": {
@@ -355,8 +355,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Backup Complete",
-                              "action": "open-overlay-nav-stack-message",
                               "iconTile": "success",
+                              "action": "open-overlay-nav-stack-message",
                               "itemId": "overlay-inbox-10"
                             },
                             "zones": {
@@ -379,8 +379,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Storage Almost Full",
-                              "action": "open-overlay-nav-stack-message",
                               "iconTile": "warning",
+                              "action": "open-overlay-nav-stack-message",
                               "itemId": "overlay-inbox-11"
                             },
                             "zones": {
@@ -403,8 +403,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Weekly Summary",
-                              "action": "open-overlay-nav-stack-message",
                               "iconTile": "neutral",
+                              "action": "open-overlay-nav-stack-message",
                               "itemId": "overlay-inbox-12"
                             },
                             "zones": {
@@ -427,8 +427,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Design Review",
-                              "action": "open-overlay-nav-stack-message",
                               "iconTile": "brand",
+                              "action": "open-overlay-nav-stack-message",
                               "itemId": "overlay-inbox-13"
                             },
                             "zones": {
@@ -451,8 +451,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Backup Complete",
-                              "action": "open-overlay-nav-stack-message",
                               "iconTile": "success",
+                              "action": "open-overlay-nav-stack-message",
                               "itemId": "overlay-inbox-14"
                             },
                             "zones": {
@@ -475,8 +475,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Storage Almost Full",
-                              "action": "open-overlay-nav-stack-message",
                               "iconTile": "warning",
+                              "action": "open-overlay-nav-stack-message",
                               "itemId": "overlay-inbox-15"
                             },
                             "zones": {
@@ -499,8 +499,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Weekly Summary",
-                              "action": "open-overlay-nav-stack-message",
                               "iconTile": "neutral",
+                              "action": "open-overlay-nav-stack-message",
                               "itemId": "overlay-inbox-16"
                             },
                             "zones": {
@@ -523,8 +523,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Design Review",
-                              "action": "open-overlay-nav-stack-message",
                               "iconTile": "brand",
+                              "action": "open-overlay-nav-stack-message",
                               "itemId": "overlay-inbox-17"
                             },
                             "zones": {
@@ -547,8 +547,8 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Backup Complete",
-                              "action": "open-overlay-nav-stack-message",
                               "iconTile": "success",
+                              "action": "open-overlay-nav-stack-message",
                               "itemId": "overlay-inbox-18"
                             },
                             "zones": {

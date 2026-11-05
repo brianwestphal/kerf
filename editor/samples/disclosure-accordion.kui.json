@@ -25,8 +25,8 @@
                 "type": "@kerfjs/ui:disclosure",
                 "props": {
                   "title": "When am I billed?",
-                  "appearance": "framed",
-                  "name": "disclosure-demo-faq"
+                  "name": "disclosure-demo-faq",
+                  "appearance": "framed"
                 },
                 "zones": {
                   "children": [
@@ -45,8 +45,8 @@
                 "type": "@kerfjs/ui:disclosure",
                 "props": {
                   "title": "Can I change the number of seats?",
-                  "appearance": "framed",
-                  "name": "disclosure-demo-faq"
+                  "name": "disclosure-demo-faq",
+                  "appearance": "framed"
                 },
                 "zones": {
                   "children": [
@@ -65,8 +65,8 @@
                 "type": "@kerfjs/ui:disclosure",
                 "props": {
                   "title": "How do I export my data?",
-                  "appearance": "framed",
-                  "name": "disclosure-demo-faq"
+                  "name": "disclosure-demo-faq",
+                  "appearance": "framed"
                 },
                 "zones": {
                   "children": [

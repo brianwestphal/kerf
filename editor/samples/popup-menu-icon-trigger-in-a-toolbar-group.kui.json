@@ -26,6 +26,7 @@
                       "id": "00000000000000000000000004",
                       "type": "@kerfjs/ui:popup-menu",
                       "props": {
+                        "label": "Sort Tickets",
                         "items": [
                           {
                             "label": "Recently Updated",
@@ -35,8 +36,7 @@
                             "label": "Priority",
                             "action": "sort-priority"
                           }
-                        ],
-                        "label": "Sort Tickets"
+                        ]
                       },
                       "zones": {
                         "icon": [

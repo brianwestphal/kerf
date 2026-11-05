@@ -42,21 +42,21 @@
                             "props": {
                               "id": "toolbar-group-grow-search",
                               "label": "Search Tickets",
-                              "presentation": "toolbar-group",
+                              "placeholder": "Search tickets",
                               "collapsible": true,
                               "expanded": true,
-                              "placeholder": "Search tickets"
+                              "presentation": "toolbar-group"
                             }
                           }
                         ]
                       },
                       "props": {
-                        "content": "search",
-                        "sizing": "grow",
+                        "label": "Search",
                         "expanded": true,
                         "single": true,
-                        "growBasis": "19rem",
-                        "label": "Search"
+                        "content": "search",
+                        "sizing": "grow",
+                        "growBasis": "19rem"
                       }
                     },
                     {
@@ -88,8 +88,8 @@
                         ]
                       },
                       "props": {
-                        "single": true,
-                        "label": "View"
+                        "label": "View",
+                        "single": true
                       }
                     },
                     {
@@ -121,8 +121,8 @@
                         ]
                       },
                       "props": {
-                        "single": true,
-                        "label": "Sort"
+                        "label": "Sort",
+                        "single": true
                       }
                     }
                   ]
@@ -158,15 +158,15 @@
                                   "label": "Board"
                                 }
                               ],
-                              "appearance": "toolbar",
-                              "action": "select-segment-demo"
+                              "action": "select-segment-demo",
+                              "appearance": "toolbar"
                             }
                           }
                         ]
                       },
                       "props": {
-                        "sizing": "fill",
-                        "label": "Rail View"
+                        "label": "Rail View",
+                        "sizing": "fill"
                       }
                     },
                     {
@@ -198,8 +198,8 @@
                         ]
                       },
                       "props": {
-                        "single": true,
-                        "label": "Sort"
+                        "label": "Sort",
+                        "single": true
                       }
                     },
                     {
@@ -213,21 +213,21 @@
                             "props": {
                               "id": "toolbar-stack-search",
                               "label": "Search Tickets",
-                              "presentation": "toolbar-group",
+                              "placeholder": "Search tickets",
                               "collapsible": true,
                               "expandLabel": "Open search",
-                              "placeholder": "Search tickets"
+                              "presentation": "toolbar-group"
                             }
                           }
                         ]
                       },
                       "props": {
+                        "label": "Search",
+                        "single": true,
                         "content": "search",
                         "visibility": "hide-collapsed-tiny",
                         "sizing": "content",
-                        "placement": "end",
-                        "single": true,
-                        "label": "Search"
+                        "placement": "end"
                       }
                     }
                   ]

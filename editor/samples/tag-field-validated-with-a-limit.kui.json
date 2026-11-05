@@ -26,11 +26,11 @@
                   "tags": [
                     "mara@example.com"
                   ],
-                  "required": true,
                   "name": "recipients",
-                  "max": 3,
                   "placeholder": "Add an email address…",
-                  "hint": "Up to three addresses."
+                  "hint": "Up to three addresses.",
+                  "max": 3,
+                  "required": true
                 }
               },
               {

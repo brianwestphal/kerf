@@ -22,8 +22,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "General",
-                  "action": "select-icon-tile-row",
                   "iconTile": "neutral",
+                  "action": "select-icon-tile-row",
                   "itemId": "tile-general"
                 },
                 "zones": {
@@ -46,8 +46,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Notifications",
-                  "action": "select-icon-tile-row",
                   "iconTile": "brand",
+                  "action": "select-icon-tile-row",
                   "itemId": "tile-notifications"
                 },
                 "zones": {
@@ -70,8 +70,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Backups",
-                  "action": "select-icon-tile-row",
                   "iconTile": "success",
+                  "action": "select-icon-tile-row",
                   "itemId": "tile-backups"
                 },
                 "zones": {
@@ -94,8 +94,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Storage",
-                  "action": "select-icon-tile-row",
                   "iconTile": "warning",
+                  "action": "select-icon-tile-row",
                   "itemId": "tile-storage"
                 },
                 "zones": {
@@ -118,8 +118,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Reset Workspace",
-                  "action": "select-icon-tile-row",
                   "iconTile": "danger",
+                  "action": "select-icon-tile-row",
                   "itemId": "tile-reset"
                 },
                 "zones": {

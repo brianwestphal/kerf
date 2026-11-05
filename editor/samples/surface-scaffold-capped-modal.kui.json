@@ -28,11 +28,11 @@
           "type": "@kerfjs/ui:surface-scaffold",
           "props": {
             "label": "Review Workspace Changes",
-            "bodyInset": "none",
             "id": "catalog-capped-dialog",
             "preferredWidth": {
               "$css": "rem(30)"
             },
+            "bodyInset": "none",
             "viewportGutter": {
               "$css": "rem(0.5)"
             },

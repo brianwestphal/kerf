@@ -35,8 +35,8 @@
                       "id": "00000000000000000000000004",
                       "type": "@kerfjs/ui:content-item",
                       "props": {
-                        "bubble": "end",
                         "appearance": "brand-loud",
+                        "bubble": "end",
                         "rootAttributes": {
                           "data-demo-bubble": "user"
                         }
@@ -47,8 +47,8 @@
                             "id": "00000000000000000000000005",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Summarize the failing checks.",
-                              "variant": "span"
+                              "variant": "span",
+                              "children": "Summarize the failing checks."
                             }
                           }
                         ]
@@ -58,8 +58,8 @@
                       "id": "00000000000000000000000006",
                       "type": "@kerfjs/ui:content-item",
                       "props": {
-                        "bubble": "start",
                         "appearance": "neutral",
+                        "bubble": "start",
                         "rootAttributes": {
                           "data-demo-bubble": "assistant"
                         }
@@ -70,8 +70,8 @@
                             "id": "00000000000000000000000007",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Two checks fail: the bundle budget grew by 213 bytes, and the design-template drift render is missing the new variant.",
-                              "variant": "span"
+                              "variant": "span",
+                              "children": "Two checks fail: the bundle budget grew by 213 bytes, and the design-template drift render is missing the new variant."
                             }
                           }
                         ]
@@ -81,8 +81,8 @@
                       "id": "00000000000000000000000008",
                       "type": "@kerfjs/ui:content-item",
                       "props": {
-                        "bubble": "end",
-                        "appearance": "brand-loud"
+                        "appearance": "brand-loud",
+                        "bubble": "end"
                       },
                       "zones": {
                         "children": [
@@ -90,8 +90,8 @@
                             "id": "00000000000000000000000009",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Thanks!",
-                              "variant": "span"
+                              "variant": "span",
+                              "children": "Thanks!"
                             }
                           }
                         ]

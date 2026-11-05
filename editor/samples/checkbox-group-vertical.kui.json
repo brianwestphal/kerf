@@ -16,6 +16,7 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:checkbox-group",
           "props": {
+            "label": "Notification Channels",
             "name": "notification-channels",
             "choices": [
               {
@@ -37,12 +38,11 @@
                 "disabled": true
               }
             ],
-            "label": "Notification Channels",
-            "hint": "Sent to your work account.",
-            "action": "checkbox-group-demo",
             "value": [
               "email"
-            ]
+            ],
+            "hint": "Sent to your work account.",
+            "action": "checkbox-group-demo"
           }
         }
       ]

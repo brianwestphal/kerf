@@ -23,9 +23,9 @@
                 "props": {
                   "label": "Drops Above This Row",
                   "action": "select-list-action-row",
-                  "dropPosition": "before",
-                  "draggable": true,
                   "itemId": "reorder-before",
+                  "draggable": true,
+                  "dropPosition": "before",
                   "trailingAction": "open-list-action-row-actions",
                   "trailingActionLabel": "Actions for the row below the drop"
                 },
@@ -50,9 +50,9 @@
                 "props": {
                   "label": "Row Being Dragged",
                   "action": "select-list-action-row",
+                  "itemId": "reorder-dragging",
                   "draggable": true,
                   "dragging": true,
-                  "itemId": "reorder-dragging",
                   "trailingAction": "open-list-action-row-actions",
                   "trailingActionLabel": "Actions for the dragged row"
                 },
@@ -77,9 +77,9 @@
                 "props": {
                   "label": "Drops Below This Row",
                   "action": "select-list-action-row",
-                  "dropPosition": "after",
-                  "draggable": true,
                   "itemId": "reorder-after",
+                  "draggable": true,
+                  "dropPosition": "after",
                   "trailingAction": "open-list-action-row-actions",
                   "trailingActionLabel": "Actions for the row above the drop"
                 },

@@ -9,13 +9,13 @@
     "type": "@kerfjs/ui:pane",
     "props": {
       "element": "section",
-      "label": "Pane Anatomy",
       "separators": [
         "block-start",
         "block-end",
         "inline-start",
         "inline-end"
-      ]
+      ],
+      "label": "Pane Anatomy"
     },
     "zones": {
       "header": [

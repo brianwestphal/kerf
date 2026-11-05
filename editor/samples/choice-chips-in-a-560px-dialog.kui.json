@@ -119,10 +119,10 @@
                             }
                           }
                         ],
-                        "id": "choice-chips-dialog-color",
-                        "labelledBy": "choice-chips-dialog-label",
                         "action": "choice-chips-demo",
-                        "value": "transparent"
+                        "id": "choice-chips-dialog-color",
+                        "value": "transparent",
+                        "labelledBy": "choice-chips-dialog-label"
                       }
                     }
                   ]

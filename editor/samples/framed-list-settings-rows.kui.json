@@ -26,8 +26,8 @@
                       "id": "00000000000000000000000004",
                       "type": "@kerfjs/ui:row",
                       "props": {
-                        "gap": "s",
-                        "vAlign": "middle"
+                        "vAlign": "middle",
+                        "gap": "s"
                       },
                       "zones": {
                         "children": [
@@ -43,18 +43,18 @@
                                   "id": "00000000000000000000000006",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "New Ticket",
-                                    "variant": "span"
+                                    "variant": "span",
+                                    "children": "New Ticket"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000007",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Create a ticket in the current project.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Create a ticket in the current project."
                                   }
                                 }
                               ]
@@ -64,9 +64,9 @@
                             "id": "00000000000000000000000008",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "N",
                               "variant": "span",
                               "font": "monospace",
+                              "children": "N",
                               "wrap": "nowrap"
                             }
                           },
@@ -74,8 +74,8 @@
                             "id": "00000000000000000000000009",
                             "type": "@kerfjs/ui:button",
                             "props": {
-                              "emphasis": "plain",
                               "ariaLabel": "Edit New Ticket Shortcut",
+                              "emphasis": "plain",
                               "action": "log-edit-shortcut"
                             },
                             "zones": {
@@ -97,8 +97,8 @@
                             "id": "00000000000000000000000011",
                             "type": "@kerfjs/ui:button",
                             "props": {
-                              "emphasis": "plain",
                               "ariaLabel": "Reset New Ticket Shortcut",
+                              "emphasis": "plain",
                               "action": "log-reset-shortcut"
                             },
                             "zones": {
@@ -131,8 +131,8 @@
                       "id": "00000000000000000000000014",
                       "type": "@kerfjs/ui:row",
                       "props": {
-                        "gap": "s",
-                        "vAlign": "middle"
+                        "vAlign": "middle",
+                        "gap": "s"
                       },
                       "zones": {
                         "children": [
@@ -148,18 +148,18 @@
                                   "id": "00000000000000000000000016",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Search",
-                                    "variant": "span"
+                                    "variant": "span",
+                                    "children": "Search"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000017",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Focus the search field.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Focus the search field."
                                   }
                                 }
                               ]
@@ -169,9 +169,9 @@
                             "id": "00000000000000000000000018",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "/",
                               "variant": "span",
                               "font": "monospace",
+                              "children": "/",
                               "wrap": "nowrap"
                             }
                           },
@@ -179,8 +179,8 @@
                             "id": "00000000000000000000000019",
                             "type": "@kerfjs/ui:button",
                             "props": {
-                              "emphasis": "plain",
                               "ariaLabel": "Edit Search Shortcut",
+                              "emphasis": "plain",
                               "action": "log-edit-shortcut"
                             },
                             "zones": {
@@ -202,8 +202,8 @@
                             "id": "00000000000000000000000021",
                             "type": "@kerfjs/ui:button",
                             "props": {
-                              "emphasis": "plain",
                               "ariaLabel": "Reset Search Shortcut",
+                              "emphasis": "plain",
                               "action": "log-reset-shortcut"
                             },
                             "zones": {
@@ -239,8 +239,8 @@
                       "id": "00000000000000000000000024",
                       "type": "@kerfjs/ui:row",
                       "props": {
-                        "gap": "s",
-                        "vAlign": "middle"
+                        "vAlign": "middle",
+                        "gap": "s"
                       },
                       "zones": {
                         "children": [
@@ -256,18 +256,18 @@
                                   "id": "00000000000000000000000026",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Complete Ticket",
-                                    "variant": "span"
+                                    "variant": "span",
+                                    "children": "Complete Ticket"
                                   }
                                 },
                                 {
                                   "id": "00000000000000000000000027",
                                   "type": "@kerfjs/ui:text",
                                   "props": {
-                                    "children": "Mark the selected ticket done.",
                                     "variant": "span",
                                     "tone": "quiet",
-                                    "size": "compact"
+                                    "size": "compact",
+                                    "children": "Mark the selected ticket done."
                                   }
                                 }
                               ]
@@ -277,9 +277,9 @@
                             "id": "00000000000000000000000028",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "⌘ ↵",
                               "variant": "span",
                               "font": "monospace",
+                              "children": "⌘ ↵",
                               "wrap": "nowrap"
                             }
                           },
@@ -287,8 +287,8 @@
                             "id": "00000000000000000000000029",
                             "type": "@kerfjs/ui:button",
                             "props": {
-                              "emphasis": "plain",
                               "ariaLabel": "Edit Complete Ticket Shortcut",
+                              "emphasis": "plain",
                               "action": "log-edit-shortcut"
                             },
                             "zones": {
@@ -310,8 +310,8 @@
                             "id": "00000000000000000000000031",
                             "type": "@kerfjs/ui:button",
                             "props": {
-                              "emphasis": "plain",
                               "ariaLabel": "Reset Complete Ticket Shortcut",
+                              "emphasis": "plain",
                               "action": "log-reset-shortcut"
                             },
                             "zones": {

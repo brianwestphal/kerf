@@ -23,10 +23,10 @@
                 "props": {
                   "id": "color-field-demo-fill",
                   "value": "#0a84ff",
-                  "label": "Fill",
                   "mode": "rgb",
                   "name": "fill",
-                  "hint": "Applies to the selected shapes."
+                  "hint": "Applies to the selected shapes.",
+                  "label": "Fill"
                 }
               },
               {
@@ -35,10 +35,10 @@
                 "props": {
                   "id": "color-field-demo-border",
                   "value": "#1c1c1e80",
-                  "label": "Border",
                   "mode": "hsl",
+                  "name": "border",
                   "size": "compact",
-                  "name": "border"
+                  "label": "Border"
                 }
               },
               {
@@ -47,10 +47,10 @@
                 "props": {
                   "id": "color-field-demo-locked",
                   "value": "#bf5af2",
-                  "label": "Theme Accent",
-                  "disabled": true,
+                  "alpha": false,
                   "error": "The theme locks this color.",
-                  "alpha": false
+                  "disabled": true,
+                  "label": "Theme Accent"
                 }
               }
             ]

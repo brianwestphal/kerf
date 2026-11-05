@@ -22,12 +22,12 @@
                 "type": "@kerfjs/ui:text-field",
                 "props": {
                   "label": "Release Note",
-                  "multiline": true,
-                  "showCount": true,
-                  "rows": 4,
                   "value": "Every free component has a focused catalog route.",
                   "hint": "Markdown is supported.",
-                  "maxLength": 200
+                  "maxLength": 200,
+                  "showCount": true,
+                  "multiline": true,
+                  "rows": 4
                 }
               },
               {
@@ -35,10 +35,10 @@
                 "type": "@kerfjs/ui:text-field",
                 "props": {
                   "label": "Comment",
+                  "placeholder": "Grows as you type",
                   "multiline": true,
                   "rows": 2,
-                  "maxRows": 6,
-                  "placeholder": "Grows as you type"
+                  "maxRows": 6
                 }
               }
             ]

@@ -26,19 +26,19 @@
                       "id": "00000000000000000000000004",
                       "type": "@kerfjs/ui:text",
                       "props": {
-                        "children": "Projects",
                         "variant": "span",
-                        "weight": "strong"
+                        "weight": "strong",
+                        "children": "Projects"
                       }
                     },
                     {
                       "id": "00000000000000000000000005",
                       "type": "@kerfjs/ui:text",
                       "props": {
-                        "children": "Each destination stays mounted.",
                         "variant": "span",
                         "tone": "quiet",
-                        "size": "compact"
+                        "size": "compact",
+                        "children": "Each destination stays mounted."
                       }
                     }
                   ]

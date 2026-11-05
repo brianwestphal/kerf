@@ -70,9 +70,9 @@
                 "type": "@kerfjs/ui:button",
                 "props": {
                   "children": "Remove",
-                  "action": "log-more",
                   "tone": "danger",
-                  "emphasis": "plain"
+                  "emphasis": "plain",
+                  "action": "log-more"
                 },
                 "zones": {
                   "icon": [
@@ -93,8 +93,8 @@
             ]
           },
           "props": {
-            "wrap": true,
-            "vAlign": "middle"
+            "vAlign": "middle",
+            "wrap": true
           }
         }
       ]

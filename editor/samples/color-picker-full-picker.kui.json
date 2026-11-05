@@ -21,7 +21,6 @@
             "value": "#d8d8d8",
             "mode": "rgb",
             "name": "fill",
-            "addSampleAction": "add-color-sample-demo",
             "presets": [
               {
                 "value": "#ff3b30",
@@ -114,7 +113,8 @@
                   }
                 ]
               }
-            ]
+            ],
+            "addSampleAction": "add-color-sample-demo"
           }
         }
       ]

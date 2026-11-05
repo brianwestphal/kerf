@@ -37,11 +37,11 @@
               "description": "Active"
             },
             "backLabel": "Back to Projects",
-            "viewportGutter": {
-              "$css": "rem(0.5)"
-            },
             "height": {
               "$css": "rem(30)"
+            },
+            "viewportGutter": {
+              "$css": "rem(0.5)"
             }
           },
           "zones": {
@@ -63,8 +63,8 @@
                   ]
                 },
                 "props": {
-                  "appearance": "borderless",
-                  "single": true
+                  "single": true,
+                  "appearance": "borderless"
                 }
               }
             ],
@@ -82,9 +82,9 @@
                       "type": "@kerfjs/ui:list-item",
                       "props": {
                         "label": "Atlas",
-                        "action": "select-list-detail-project",
-                        "selected": true,
                         "description": "Mara Chen",
+                        "selected": true,
+                        "action": "select-list-detail-project",
                         "itemId": "atlas"
                       }
                     },
@@ -93,8 +93,8 @@
                       "type": "@kerfjs/ui:list-item",
                       "props": {
                         "label": "Borealis",
-                        "action": "select-list-detail-project",
                         "description": "Sam Rivera",
+                        "action": "select-list-detail-project",
                         "itemId": "borealis"
                       }
                     },
@@ -103,8 +103,8 @@
                       "type": "@kerfjs/ui:list-item",
                       "props": {
                         "label": "Cirrus",
-                        "action": "select-list-detail-project",
                         "description": "Inez Okafor",
+                        "action": "select-list-detail-project",
                         "itemId": "cirrus"
                       }
                     },
@@ -113,8 +113,8 @@
                       "type": "@kerfjs/ui:list-item",
                       "props": {
                         "label": "Delta",
-                        "action": "select-list-detail-project",
                         "description": "Theo Park",
+                        "action": "select-list-detail-project",
                         "itemId": "delta"
                       }
                     },
@@ -123,8 +123,8 @@
                       "type": "@kerfjs/ui:list-item",
                       "props": {
                         "label": "Ember",
-                        "action": "select-list-detail-project",
                         "description": "Ana Ruiz",
+                        "action": "select-list-detail-project",
                         "itemId": "ember"
                       }
                     },
@@ -133,8 +133,8 @@
                       "type": "@kerfjs/ui:list-item",
                       "props": {
                         "label": "Fjord",
-                        "action": "select-list-detail-project",
                         "description": "Lena Holm",
+                        "action": "select-list-detail-project",
                         "itemId": "fjord"
                       }
                     }

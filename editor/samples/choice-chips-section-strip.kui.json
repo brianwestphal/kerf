@@ -59,11 +59,11 @@
                 "label": "Transport"
               }
             ],
-            "label": "Feed Section",
+            "action": "choice-chips-demo",
             "overflow": "scroll",
             "id": "choice-chips-section",
-            "action": "choice-chips-demo",
-            "value": "all"
+            "value": "all",
+            "label": "Feed Section"
           }
         }
       ]

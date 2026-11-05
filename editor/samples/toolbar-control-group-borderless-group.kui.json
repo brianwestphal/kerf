@@ -50,9 +50,9 @@
                   ]
                 },
                 "props": {
+                  "single": true,
                   "appearance": "borderless",
-                  "shape": "pill",
-                  "single": true
+                  "shape": "pill"
                 }
               }
             ]

@@ -24,12 +24,12 @@
                 "id": "00000000000000000000000003",
                 "type": "@kerfjs/ui:progress-bar",
                 "props": {
-                  "label": "Uploading Files",
-                  "showValue": true,
-                  "id": "progress-bar-demo-upload",
                   "value": 3,
                   "max": 12,
-                  "valueText": "3 of 12 files"
+                  "valueText": "3 of 12 files",
+                  "showValue": true,
+                  "id": "progress-bar-demo-upload",
+                  "label": "Uploading Files"
                 }
               },
               {

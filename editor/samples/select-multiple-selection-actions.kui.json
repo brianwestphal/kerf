@@ -37,12 +37,12 @@
                 "label": "Tabs"
               }
             ],
+            "placeholderText": "No types",
+            "label": "Item Types",
+            "multiple": true,
             "value": [
               "files"
             ],
-            "label": "Item Types",
-            "multiple": true,
-            "placeholderText": "No types",
             "selectAllLabel": "Select all",
             "clearLabel": "Clear"
           }

@@ -54,14 +54,14 @@
                 }
               }
             ],
-            "label": "Labels",
-            "multiple": "toggle",
-            "id": "choice-chips-labels",
             "action": "choice-chips-demo",
+            "id": "choice-chips-labels",
+            "multiple": "toggle",
             "value": [
               "bug",
               "docs"
-            ]
+            ],
+            "label": "Labels"
           }
         }
       ]

@@ -16,8 +16,8 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:grid",
           "props": {
-            "columns": 2,
-            "gap": "m"
+            "gap": "m",
+            "columns": 2
           },
           "zones": {
             "children": [

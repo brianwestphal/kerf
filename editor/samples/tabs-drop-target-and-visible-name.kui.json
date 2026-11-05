@@ -37,10 +37,10 @@
                 "props": {
                   "id": "accounting",
                   "name": "Accounting Project",
-                  "nameOverflow": "visible",
                   "dropTarget": true,
                   "closable": false,
-                  "labelMaxWidth": 80
+                  "labelMaxWidth": 80,
+                  "nameOverflow": "visible"
                 }
               }
             ]

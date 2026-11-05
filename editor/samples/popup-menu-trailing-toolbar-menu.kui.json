@@ -39,6 +39,7 @@
                       "id": "00000000000000000000000005",
                       "type": "@kerfjs/ui:popup-menu",
                       "props": {
+                        "label": "More Actions",
                         "items": [
                           {
                             "label": "Export",
@@ -49,7 +50,6 @@
                             "action": "log-more"
                           }
                         ],
-                        "label": "More Actions",
                         "placement": "bottom-end"
                       },
                       "zones": {
@@ -70,9 +70,9 @@
                   ]
                 },
                 "props": {
-                  "menuInset": "compact",
                   "single": true,
-                  "nestedDropdown": true
+                  "nestedDropdown": true,
+                  "menuInset": "compact"
                 }
               }
             ]

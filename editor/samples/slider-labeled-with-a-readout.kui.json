@@ -17,12 +17,12 @@
           "type": "@kerfjs/ui:slider",
           "props": {
             "id": "slider-demo-volume",
-            "label": "Volume",
-            "showValue": true,
             "value": 30,
+            "showValue": true,
             "unit": "%",
             "hint": "Applies to every output device.",
-            "action": "set-slider-demo"
+            "action": "set-slider-demo",
+            "label": "Volume"
           }
         }
       ]

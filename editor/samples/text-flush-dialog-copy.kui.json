@@ -16,12 +16,12 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:text",
           "props": {
-            "children": "Compact supporting copy inside a dialog body.",
-            "lineHeight": "tight",
             "flush": true,
+            "lineHeight": "tight",
             "rootAttributes": {
               "data-demo-copy": "flush"
-            }
+            },
+            "children": "Compact supporting copy inside a dialog body."
           }
         }
       ]

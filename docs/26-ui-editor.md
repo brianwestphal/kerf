@@ -59,7 +59,10 @@ remembers the current path in browser storage and reopens it on the next
 visit; a missing or unreadable file starts a draft, and an edit made while it
 loads saves to a new draft instead. A pending change saves as the page hides.
 With storage, a copy downloads from Export's Document (.kui.json); without
-it, Save downloads as before. New (KF-QSSTMX) starts an empty document (an
+it, Save downloads as before. Every saved or downloaded file is two-space JSON
+with each node's props, and each object inside them, in the component's
+declared prop order, whatever order the fields were edited in (KF-YJFMZY), so
+the same document always writes the same bytes. New (KF-QSSTMX) starts an empty document (an
 empty Pane) with no history or selection; with storage it is a new draft,
 saved at once, and the previous document stays in its own file. The new
 root Pane starts with `fill` on (KF-Z70DBC), so a new view fills the screen

@@ -43,13 +43,13 @@
                 "iconName": "wrench"
               }
             ],
-            "value": "balanced",
             "presentation": "inline",
+            "caret": false,
             "ariaLabel": "Status",
+            "value": "balanced",
             "renderSelected": {
               "$param": "nodeRenderSelected"
-            },
-            "caret": false
+            }
           }
         }
       ]

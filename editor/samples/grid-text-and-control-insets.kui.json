@@ -16,12 +16,12 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:grid",
           "props": {
-            "columns": 2,
             "textInsets": "l",
             "controlInsets": "rl",
             "rootAttributes": {
               "data-demo-grid-insets": ""
-            }
+            },
+            "columns": 2
           },
           "zones": {
             "children": [
@@ -29,8 +29,8 @@
                 "id": "00000000000000000000000003",
                 "type": "@kerfjs/ui:text",
                 "props": {
-                  "children": "Text aligned to the full content inset",
-                  "flush": true
+                  "flush": true,
+                  "children": "Text aligned to the full content inset"
                 }
               },
               {

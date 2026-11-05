@@ -47,9 +47,9 @@
                   ]
                 },
                 "props": {
+                  "single": true,
                   "tone": "dark",
-                  "content": "text",
-                  "single": true
+                  "content": "text"
                 }
               }
             ]

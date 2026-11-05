@@ -18,10 +18,10 @@
           "props": {
             "label": "Message",
             "name": "message-composer-demo-chat",
-            "submitOnEnter": true,
             "id": "message-composer-demo-chat",
             "placeholder": "Ask about this build",
-            "hint": "Answers use the latest nightly build."
+            "hint": "Answers use the latest nightly build.",
+            "submitOnEnter": true
           },
           "zones": {
             "trailing": [

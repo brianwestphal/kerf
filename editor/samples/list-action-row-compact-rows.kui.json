@@ -22,10 +22,10 @@
                 "type": "@kerfjs/ui:list-action-row",
                 "props": {
                   "label": "Open Folder",
-                  "action": "select-list-action-row",
                   "density": "compact",
-                  "trailingActionVisibility": "interaction",
+                  "action": "select-list-action-row",
                   "itemId": "compact-open-folder",
+                  "trailingActionVisibility": "interaction",
                   "trailingAction": "open-list-action-row-actions",
                   "trailingActionLabel": "Actions for Open Folder"
                 },
@@ -61,10 +61,10 @@
                 "type": "@kerfjs/ui:list-action-row",
                 "props": {
                   "label": "Run Tests",
-                  "action": "select-list-action-row",
                   "density": "compact",
-                  "trailingActionVisibility": "interaction",
+                  "action": "select-list-action-row",
                   "itemId": "compact-run-tests",
+                  "trailingActionVisibility": "interaction",
                   "trailingAction": "open-list-action-row-actions",
                   "trailingActionLabel": "Actions for Run Tests"
                 },
@@ -100,10 +100,10 @@
                 "type": "@kerfjs/ui:list-action-row",
                 "props": {
                   "label": "Read Docs",
-                  "action": "select-list-action-row",
                   "density": "compact",
-                  "trailingActionVisibility": "interaction",
+                  "action": "select-list-action-row",
                   "itemId": "compact-read-docs",
+                  "trailingActionVisibility": "interaction",
                   "trailingAction": "open-list-action-row-actions",
                   "trailingActionLabel": "Actions for Read Docs"
                 },

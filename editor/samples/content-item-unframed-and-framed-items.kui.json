@@ -37,19 +37,19 @@
                             "id": "00000000000000000000000005",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Workspace Details",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Workspace Details"
                             }
                           },
                           {
                             "id": "00000000000000000000000006",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "An ordinary item sits directly on the surface.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "An ordinary item sits directly on the surface."
                             }
                           }
                         ]
@@ -80,19 +80,19 @@
                             "id": "00000000000000000000000009",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Unsaved Changes",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Unsaved Changes"
                             }
                           },
                           {
                             "id": "00000000000000000000000010",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "A framed item reads as visibly bounded without moving its content.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "A framed item reads as visibly bounded without moving its content."
                             }
                           }
                         ]

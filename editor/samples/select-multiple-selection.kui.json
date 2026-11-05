@@ -39,13 +39,13 @@
                 "label": "Performance"
               }
             ],
+            "placeholderText": "No labels",
+            "label": "Labels",
+            "multiple": true,
             "value": [
               "bug",
               "docs"
-            ],
-            "label": "Labels",
-            "multiple": true,
-            "placeholderText": "No labels"
+            ]
           }
         }
       ]

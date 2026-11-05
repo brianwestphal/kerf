@@ -22,8 +22,8 @@
                 "type": "@kerfjs/ui:file-picker",
                 "props": {
                   "label": "Import",
-                  "tone": "brand",
                   "accessibleLabel": "Import a document",
+                  "tone": "brand",
                   "pickerId": "demo-import"
                 },
                 "zones": {
@@ -91,8 +91,8 @@
             ]
           },
           "props": {
-            "gap": "xs",
             "vAlign": "middle",
+            "gap": "xs",
             "controlInsets": "trbl",
             "rootAttributes": {
               "data-demo-file-buttons": ""

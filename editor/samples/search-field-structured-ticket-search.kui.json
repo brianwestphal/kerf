@@ -23,7 +23,6 @@
                 "props": {
                   "id": "catalog-search",
                   "label": "Search Tickets",
-                  "autofocus": true,
                   "query": "NOT  AND parser",
                   "tokens": [
                     {
@@ -38,6 +37,7 @@
                       "offset": 4
                     }
                   ],
+                  "autofocus": true,
                   "editorAttributes": {
                     "data-demo-search-field": "true"
                   },
@@ -68,14 +68,14 @@
                 "id": "00000000000000000000000005",
                 "type": "@kerfjs/ui:text",
                 "props": {
-                  "children": "2 filters · NOT  AND parser",
                   "variant": "span",
                   "tone": "quiet",
                   "size": "compact",
                   "live": "polite",
                   "rootAttributes": {
                     "data-demo-search-field-readout": ""
-                  }
+                  },
+                  "children": "2 filters · NOT  AND parser"
                 }
               }
             ]

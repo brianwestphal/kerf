@@ -53,8 +53,8 @@
                 "id": "00000000000000000000000004",
                 "type": "@kerfjs/ui:text",
                 "props": {
-                  "children": "Summary",
-                  "variant": "span"
+                  "variant": "span",
+                  "children": "Summary"
                 }
               }
             ],
@@ -73,8 +73,8 @@
                 "id": "00000000000000000000000006",
                 "type": "@kerfjs/ui:text",
                 "props": {
-                  "children": "Activity",
-                  "variant": "span"
+                  "variant": "span",
+                  "children": "Activity"
                 }
               }
             ],
@@ -93,8 +93,8 @@
                 "id": "00000000000000000000000008",
                 "type": "@kerfjs/ui:text",
                 "props": {
-                  "children": "Files",
-                  "variant": "span"
+                  "variant": "span",
+                  "children": "Files"
                 }
               }
             ]

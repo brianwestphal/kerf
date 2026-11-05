@@ -50,8 +50,8 @@
                   "action": "log-split-button-pill",
                   "optionsLabel": "Check Options",
                   "optionsAction": "log-split-button-pill-options",
-                  "shape": "pill",
-                  "tone": "neutral"
+                  "tone": "neutral",
+                  "shape": "pill"
                 }
               }
             ]

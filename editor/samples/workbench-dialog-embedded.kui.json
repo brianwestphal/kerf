@@ -19,13 +19,13 @@
             "id": "workbench-dialog-embedded-demo",
             "label": "Slide Preview",
             "title": "Slide Preview",
-            "embedded": true,
             "description": "Slide 3 of 12",
-            "height": {
-              "$css": "rem(15)"
-            },
+            "embedded": true,
             "preferredWidth": {
               "$css": "rem(35)"
+            },
+            "height": {
+              "$css": "rem(15)"
             }
           },
           "zones": {

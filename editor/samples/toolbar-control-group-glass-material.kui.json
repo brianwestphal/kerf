@@ -82,9 +82,9 @@
                         ]
                       },
                       "props": {
+                        "label": "Glass Navigation",
                         "material": "glass",
-                        "shape": "pill",
-                        "label": "Glass Navigation"
+                        "shape": "pill"
                       }
                     }
                   ],
@@ -119,10 +119,10 @@
                         ]
                       },
                       "props": {
-                        "material": "glass",
-                        "shape": "pill",
+                        "label": "Glass Share",
                         "single": true,
-                        "label": "Glass Share"
+                        "material": "glass",
+                        "shape": "pill"
                       }
                     }
                   ]
@@ -138,13 +138,13 @@
                     "$param": "skylineUrl"
                   },
                   "alt": "",
-                  "underChrome": true,
                   "height": {
                     "$css": "rem(12.5)"
                   },
                   "fadeTo": {
                     "$css": "uiColor('surface')"
-                  }
+                  },
+                  "underChrome": true
                 },
                 "zones": {
                   "children": [

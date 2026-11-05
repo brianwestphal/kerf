@@ -16,6 +16,7 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:radio-group",
           "props": {
+            "label": "Release Channel",
             "name": "release-channel",
             "choices": [
               {
@@ -31,11 +32,10 @@
                 "label": "Nightly"
               }
             ],
-            "label": "Release Channel",
+            "error": "Choose a channel.",
             "size": "compact",
             "orientation": "horizontal",
             "required": true,
-            "error": "Choose a channel.",
             "action": "radio-group-demo"
           }
         }

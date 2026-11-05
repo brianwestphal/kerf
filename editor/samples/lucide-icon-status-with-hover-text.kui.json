@@ -20,9 +20,9 @@
               "$icon": "bell"
             },
             "name": "bell-status",
-            "size": "l",
             "label": "Notifications Paused",
-            "title": "Notifications resume at 9:00"
+            "title": "Notifications resume at 9:00",
+            "size": "l"
           }
         }
       ]

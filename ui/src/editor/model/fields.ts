@@ -3,7 +3,13 @@
 // opens in, the fields of an object type, and edits at a path inside a prop
 // value. Read from the props catalog's type graph, so an application
 // component's catalog gets the same editors with no per-component table.
-import type { ViewNode, ViewType, ViewValue } from '@kerfjs/ui/view';
+import type {
+  ViewChild,
+  ViewDocument,
+  ViewNode,
+  ViewType,
+  ViewValue,
+} from '@kerfjs/ui/view';
 
 import { resolveType, singular } from './examples.js';
 import type { InspectorProp } from './inspector.js';
@@ -452,6 +458,93 @@ export function withRequiredBooleans(
     rest,
   );
   return inner === holder[step] ? out : { ...holder, [step]: inner! };
+}
+
+/**
+ * KF-YJFMZY: `value` with every object it holds in its type's declared field
+ * order, then any undeclared keys as they were. An edit writes a field where
+ * it lands (a required boolean seeded before a later field), so without this
+ * the saved file's key order would depend on the order fields were edited.
+ * Bindings (`$param`, `$css`, …) and values of other types stay as given.
+ */
+export function inDeclaredOrder(
+  value: ViewValue | undefined,
+  type: ViewType | undefined,
+  definitions: Definitions,
+): ViewValue | undefined {
+  if (value === null || typeof value !== 'object') return value;
+  const resolved = shape(memberFor(type, definitions, value), definitions);
+  if (Array.isArray(value))
+    return resolved?.kind === 'array'
+      ? value.map((item) => inDeclaredOrder(item, resolved.items, definitions)!)
+      : value;
+  const fields = value as Fields;
+  if (resolved?.kind !== 'object' || Object.keys(fields).some(isBindingKey))
+    return value;
+  const ordered: Record<string, ViewValue> = {};
+  for (const prop of resolved.props ?? [])
+    if (prop.name in fields)
+      ordered[prop.name] = inDeclaredOrder(
+        fields[prop.name],
+        prop.type,
+        definitions,
+      )!;
+  for (const [key, inner] of Object.entries(fields))
+    if (!(key in ordered)) ordered[key] = inner;
+  return ordered;
+}
+
+const isBindingKey = (key: string) => key.startsWith('$');
+
+/**
+ * `document` with each node's props in declared order (`inDeclaredOrder`), as
+ * the editor saves it: the same document always writes the same bytes. Props
+ * of a component the catalog does not know stay as given.
+ */
+export function documentInDeclaredOrder(
+  document: ViewDocument,
+  propsOf: (
+    type: string,
+  ) =>
+    readonly { readonly name: string; readonly type: ViewType }[] | undefined,
+  definitionsOf: (type: string) => Definitions,
+): ViewDocument {
+  const node = (item: ViewNode): ViewNode => {
+    const declared = propsOf(item.type);
+    const props =
+      item.props && declared
+        ? inDeclaredOrder(
+            item.props as ViewValue,
+            { kind: 'object', props: declared } as unknown as ViewType,
+            definitionsOf(item.type),
+          )
+        : item.props;
+    const zones = item.zones
+      ? Object.fromEntries(
+          Object.entries(item.zones).map(([zone, children]) => [
+            zone,
+            children.map(child),
+          ]),
+        )
+      : undefined;
+    return {
+      ...item,
+      ...(props ? { props: props as ViewNode['props'] } : {}),
+      ...(zones ? { zones } : {}),
+    };
+  };
+  const child = (item: ViewChild): ViewChild => {
+    if ('$each' in item) return { ...item, template: node(item.template) };
+    if ('$if' in item)
+      return {
+        ...item,
+        then: child(item.then),
+        ...(item.else ? { else: child(item.else) } : {}),
+      };
+    if ('$slot' in item) return item;
+    return node(item);
+  };
+  return { ...document, root: node(document.root) };
 }
 
 /**

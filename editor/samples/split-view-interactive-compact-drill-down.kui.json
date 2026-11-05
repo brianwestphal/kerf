@@ -32,14 +32,14 @@
                   "listTitle": "Inbox",
                   "backLabel": "Back to Inbox",
                   "compactStack": {
-                    "toolbarConfig": {
-                      "headingLevel": 2,
-                      "dividerSides": "b"
-                    },
                     "detail": {
                       "bottomToolbar": {
                         "label": "Message Actions"
                       }
+                    },
+                    "toolbarConfig": {
+                      "headingLevel": 2,
+                      "dividerSides": "b"
                     }
                   }
                 },
@@ -64,10 +64,10 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Project update",
+                              "description": "Mina Chen · The interaction pass is ready for review.",
                               "action": "open-split-view-message",
-                              "multiline": true,
                               "itemId": "project-update",
-                              "description": "Mina Chen · The interaction pass is ready for review."
+                              "multiline": true
                             },
                             "zones": {
                               "icon": [
@@ -101,10 +101,10 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Design review",
+                              "description": "Sam Rivera · Notes from today’s component review.",
                               "action": "open-split-view-message",
-                              "multiline": true,
                               "itemId": "design-review",
-                              "description": "Sam Rivera · Notes from today’s component review."
+                              "multiline": true
                             },
                             "zones": {
                               "icon": [
@@ -138,10 +138,10 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Launch plan",
+                              "description": "Avery Singh · Beta milestones and owner assignments.",
                               "action": "open-split-view-message",
-                              "multiline": true,
                               "itemId": "launch-plan",
-                              "description": "Avery Singh · Beta milestones and owner assignments."
+                              "multiline": true
                             },
                             "zones": {
                               "icon": [
@@ -207,8 +207,8 @@
                       },
                       "props": {
                         "label": "Compose",
-                        "appearance": "borderless",
-                        "single": true
+                        "single": true,
+                        "appearance": "borderless"
                       }
                     }
                   ],
@@ -244,8 +244,8 @@
                       },
                       "props": {
                         "label": "Reply",
-                        "appearance": "borderless",
-                        "single": true
+                        "single": true,
+                        "appearance": "borderless"
                       }
                     }
                   ],
@@ -281,8 +281,8 @@
                       },
                       "props": {
                         "label": "Archive",
-                        "appearance": "borderless",
-                        "single": true
+                        "single": true,
+                        "appearance": "borderless"
                       }
                     }
                   ],

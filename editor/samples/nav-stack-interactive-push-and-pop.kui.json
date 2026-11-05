@@ -31,14 +31,14 @@
                   "views": [
                     {
                       "key": "library",
-                      "pane": {
-                        "appearance": "sunken"
-                      },
                       "toolbar": {
                         "title": "Library"
                       },
                       "bottomToolbar": {
                         "label": "View Status"
+                      },
+                      "pane": {
+                        "appearance": "sunken"
                       }
                     }
                   ],
@@ -85,10 +85,10 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Project Atlas",
+                              "description": "Navigation and workspace patterns for the Kerf UI catalog.",
                               "action": "open-nav-stack-project",
-                              "multiline": true,
                               "itemId": "atlas",
-                              "description": "Navigation and workspace patterns for the Kerf UI catalog."
+                              "multiline": true
                             },
                             "zones": {
                               "icon": [
@@ -122,10 +122,10 @@
                             "type": "@kerfjs/ui:list-item",
                             "props": {
                               "label": "Project Relay",
+                              "description": "Interaction contracts shared across responsive application layouts.",
                               "action": "open-nav-stack-project",
-                              "multiline": true,
                               "itemId": "relay",
-                              "description": "Interaction contracts shared across responsive application layouts."
+                              "multiline": true
                             },
                             "zones": {
                               "icon": [

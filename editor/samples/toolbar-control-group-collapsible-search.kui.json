@@ -42,20 +42,20 @@
                             "props": {
                               "id": "toolbar-group-search",
                               "label": "Search Views",
-                              "presentation": "toolbar-group",
-                              "collapsible": true,
                               "placeholder": "Search views",
-                              "expandLabel": "Open search"
+                              "collapsible": true,
+                              "expandLabel": "Open search",
+                              "presentation": "toolbar-group"
                             }
                           }
                         ]
                       },
                       "props": {
+                        "single": true,
                         "shape": "pill",
                         "content": "search",
                         "focusRing": "halo",
-                        "expandedOverflow": "visible",
-                        "single": true
+                        "expandedOverflow": "visible"
                       }
                     }
                   ]

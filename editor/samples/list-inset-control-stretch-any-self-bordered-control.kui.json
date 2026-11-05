@@ -44,8 +44,8 @@
                             "label": "Done"
                           }
                         ],
-                        "value": "review",
-                        "label": "Status"
+                        "label": "Status",
+                        "value": "review"
                       }
                     }
                   ]

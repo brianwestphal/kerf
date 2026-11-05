@@ -25,11 +25,11 @@
                 "type": "@kerfjs/ui:row",
                 "props": {
                   "vAlign": "top",
-                  "wrap": true,
                   "gap": {
                     "column": "none",
                     "row": "m"
-                  }
+                  },
+                  "wrap": true
                 },
                 "zones": {
                   "children": [

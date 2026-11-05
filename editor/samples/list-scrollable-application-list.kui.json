@@ -57,8 +57,8 @@
                   ]
                 },
                 "props": {
-                  "appearance": "borderless",
-                  "single": true
+                  "single": true,
+                  "appearance": "borderless"
                 }
               }
             ]
@@ -114,8 +114,8 @@
                   ]
                 },
                 "props": {
-                  "appearance": "borderless",
-                  "single": true
+                  "single": true,
+                  "appearance": "borderless"
                 }
               }
             ]
@@ -173,8 +173,8 @@
                       "type": "@kerfjs/ui:list-item",
                       "props": {
                         "label": "Inbox",
-                        "action": "log-inbox",
                         "selected": true,
+                        "action": "log-inbox",
                         "itemId": "inbox"
                       },
                       "zones": {
@@ -195,8 +195,8 @@
                             "id": "00000000000000000000000018",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "12",
-                              "variant": "span"
+                              "variant": "span",
+                              "children": "12"
                             }
                           }
                         ]
@@ -250,10 +250,10 @@
                       "type": "@kerfjs/ui:list-header",
                       "props": {
                         "label": "Tools",
+                        "controls": "menu-tools-content",
                         "toggle": true,
-                        "expanded": true,
                         "action": "toggle-menu-tools",
-                        "controls": "menu-tools-content"
+                        "expanded": true
                       }
                     },
                     {
@@ -327,19 +327,19 @@
                                         "id": "00000000000000000000000031",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "Shared Item Geometry",
                                           "variant": "span",
-                                          "weight": "strong"
+                                          "weight": "strong",
+                                          "children": "Shared Item Geometry"
                                         }
                                       },
                                       {
                                         "id": "00000000000000000000000032",
                                         "type": "@kerfjs/ui:text",
                                         "props": {
-                                          "children": "The child owns its margin, border, and padding.",
                                           "variant": "span",
                                           "tone": "quiet",
-                                          "size": "compact"
+                                          "size": "compact",
+                                          "children": "The child owns its margin, border, and padding."
                                         }
                                       }
                                     ]

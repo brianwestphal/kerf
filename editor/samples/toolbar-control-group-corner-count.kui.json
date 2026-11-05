@@ -52,11 +52,11 @@
                             "type": "@kerfjs/ui:badge",
                             "props": {
                               "children": "3",
-                              "tone": "warning",
                               "appearance": "solid",
                               "size": "compact",
-                              "placement": "corner",
-                              "ariaHidden": true
+                              "ariaHidden": true,
+                              "tone": "warning",
+                              "placement": "corner"
                             }
                           }
                         ]
@@ -65,8 +65,8 @@
                   ]
                 },
                 "props": {
-                  "shape": "pill",
-                  "single": true
+                  "single": true,
+                  "shape": "pill"
                 }
               }
             ]

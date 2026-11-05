@@ -26,37 +26,37 @@
                     {
                       "value": "quiet",
                       "label": "Quiet",
-                      "group": "Attention",
-                      "color": {
-                        "$css": "uiColor(\"success-on-quiet\")"
-                      },
                       "icon": {
                         "$icon": "bell"
                       },
-                      "iconName": "bell"
+                      "iconName": "bell",
+                      "color": {
+                        "$css": "uiColor(\"success-on-quiet\")"
+                      },
+                      "group": "Attention"
                     },
                     {
                       "value": "balanced",
                       "label": "Balanced",
-                      "group": "Attention",
                       "icon": {
                         "$icon": "sliders-horizontal"
                       },
-                      "iconName": "sliders-horizontal"
+                      "iconName": "sliders-horizontal",
+                      "group": "Attention"
                     },
                     {
                       "value": "explicit",
                       "label": "Explicit",
-                      "group": "Control",
-                      "separatorBefore": true,
                       "icon": {
                         "$icon": "wrench"
                       },
-                      "iconName": "wrench"
+                      "iconName": "wrench",
+                      "group": "Control",
+                      "separatorBefore": true
                     }
                   ],
-                  "value": "quiet",
                   "ariaLabel": "Rendering Balance",
+                  "value": "quiet",
                   "renderSelected": {
                     "$param": "nodeRenderSelected"
                   }

@@ -25,8 +25,8 @@
                 "type": "@kerfjs/ui:state-banner",
                 "props": {
                   "title": "A Content Item, for Reference",
-                  "tone": "neutral",
-                  "detail": "Note where its title text starts."
+                  "detail": "Note where its title text starts.",
+                  "tone": "neutral"
                 },
                 "zones": {
                   "icon": [

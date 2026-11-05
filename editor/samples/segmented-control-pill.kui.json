@@ -31,8 +31,8 @@
               {
                 "value": "roomy",
                 "label": "Roomy",
-                "disabled": true,
-                "title": "Roomy density is unavailable"
+                "title": "Roomy density is unavailable",
+                "disabled": true
               }
             ],
             "action": "select-segment-demo",

@@ -16,16 +16,16 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:grid",
           "props": {
-            "gap": "s",
             "selectionMode": "multiple",
-            "autoFill": true,
             "ariaLabel": "Documents",
+            "gap": "s",
             "rootAttributes": {
               "data-demo-grid": "selectable-tiles"
             },
             "minColumnWidth": {
               "$css": "px(160)"
-            }
+            },
+            "autoFill": true
           },
           "zones": {
             "children": [
@@ -33,12 +33,12 @@
                 "id": "00000000000000000000000003",
                 "type": "@kerfjs/ui:content-item",
                 "props": {
-                  "selectionMode": "multiple",
                   "frame": "framed",
+                  "ariaLabel": "Brief",
                   "interactive": true,
                   "action": "select-grid-tile",
                   "itemId": "tile-1",
-                  "ariaLabel": "Brief"
+                  "selectionMode": "multiple"
                 },
                 "zones": {
                   "children": [
@@ -46,9 +46,9 @@
                       "id": "00000000000000000000000004",
                       "type": "@kerfjs/ui:text",
                       "props": {
-                        "children": "Brief",
                         "variant": "span",
-                        "weight": "strong"
+                        "weight": "strong",
+                        "children": "Brief"
                       }
                     },
                     {
@@ -67,12 +67,12 @@
                 "id": "00000000000000000000000006",
                 "type": "@kerfjs/ui:content-item",
                 "props": {
-                  "selectionMode": "multiple",
                   "frame": "framed",
+                  "ariaLabel": "Budget",
                   "interactive": true,
                   "action": "select-grid-tile",
                   "itemId": "tile-2",
-                  "ariaLabel": "Budget"
+                  "selectionMode": "multiple"
                 },
                 "zones": {
                   "children": [
@@ -80,9 +80,9 @@
                       "id": "00000000000000000000000007",
                       "type": "@kerfjs/ui:text",
                       "props": {
-                        "children": "Budget",
                         "variant": "span",
-                        "weight": "strong"
+                        "weight": "strong",
+                        "children": "Budget"
                       }
                     },
                     {
@@ -101,12 +101,12 @@
                 "id": "00000000000000000000000009",
                 "type": "@kerfjs/ui:content-item",
                 "props": {
-                  "selectionMode": "multiple",
                   "frame": "framed",
+                  "ariaLabel": "Contract",
                   "interactive": true,
                   "action": "select-grid-tile",
                   "itemId": "tile-3",
-                  "ariaLabel": "Contract"
+                  "selectionMode": "multiple"
                 },
                 "zones": {
                   "children": [
@@ -114,9 +114,9 @@
                       "id": "00000000000000000000000010",
                       "type": "@kerfjs/ui:text",
                       "props": {
-                        "children": "Contract",
                         "variant": "span",
-                        "weight": "strong"
+                        "weight": "strong",
+                        "children": "Contract"
                       }
                     },
                     {
@@ -135,12 +135,12 @@
                 "id": "00000000000000000000000012",
                 "type": "@kerfjs/ui:content-item",
                 "props": {
-                  "selectionMode": "multiple",
                   "frame": "framed",
+                  "ariaLabel": "Invoice",
                   "interactive": true,
                   "action": "select-grid-tile",
                   "itemId": "tile-4",
-                  "ariaLabel": "Invoice"
+                  "selectionMode": "multiple"
                 },
                 "zones": {
                   "children": [
@@ -148,9 +148,9 @@
                       "id": "00000000000000000000000013",
                       "type": "@kerfjs/ui:text",
                       "props": {
-                        "children": "Invoice",
                         "variant": "span",
-                        "weight": "strong"
+                        "weight": "strong",
+                        "children": "Invoice"
                       }
                     },
                     {
@@ -169,12 +169,12 @@
                 "id": "00000000000000000000000015",
                 "type": "@kerfjs/ui:content-item",
                 "props": {
-                  "selectionMode": "multiple",
                   "frame": "framed",
+                  "ariaLabel": "Receipt",
                   "interactive": true,
                   "action": "select-grid-tile",
                   "itemId": "tile-5",
-                  "ariaLabel": "Receipt"
+                  "selectionMode": "multiple"
                 },
                 "zones": {
                   "children": [
@@ -182,9 +182,9 @@
                       "id": "00000000000000000000000016",
                       "type": "@kerfjs/ui:text",
                       "props": {
-                        "children": "Receipt",
                         "variant": "span",
-                        "weight": "strong"
+                        "weight": "strong",
+                        "children": "Receipt"
                       }
                     },
                     {

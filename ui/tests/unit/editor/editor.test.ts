@@ -167,10 +167,11 @@ describe('the editor shell', () => {
     const save = vi.fn();
     const { root, editor } = open({ save });
     root.querySelector<HTMLElement>('[data-action="editor-save"]')!.click();
-    expect(save).toHaveBeenCalledWith(
-      'inbox.kui.json',
-      `${JSON.stringify(editor.document.value, null, 2)}\n`,
-    );
+    const [file, text] = save.mock.calls[0] as [string, string];
+    expect(file).toBe('inbox.kui.json');
+    // KF-YJFMZY: two-space JSON of the document, its props in declared order.
+    expect(JSON.parse(text)).toEqual(editor.document.value);
+    expect(text).toBe(`${JSON.stringify(JSON.parse(text), null, 2)}\n`);
   });
 
   it('reports document problems and previews a placeholder for the broken node', () => {

@@ -49,8 +49,8 @@
                 "type": "@kerfjs/ui:checkbox",
                 "props": {
                   "label": "I accept the release terms",
-                  "required": true,
                   "error": "Accept the terms to publish.",
+                  "required": true,
                   "action": "checkbox-demo"
                 }
               }

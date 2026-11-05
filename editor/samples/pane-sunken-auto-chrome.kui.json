@@ -9,8 +9,8 @@
     "type": "@kerfjs/ui:pane",
     "props": {
       "fill": true,
-      "appearance": "sunken",
       "chromePlacement": "auto",
+      "appearance": "sunken",
       "label": "Sunken Auto Workspace"
     },
     "zones": {

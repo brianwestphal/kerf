@@ -17,10 +17,10 @@
           "type": "@kerfjs/ui:state-banner",
           "props": {
             "title": "Notifications Paused",
-            "presentation": "strip",
+            "detail": "Desktop alerts resume when you reconnect.",
             "tone": "warning",
             "copyLayout": "stacked",
-            "detail": "Desktop alerts resume when you reconnect."
+            "presentation": "strip"
           },
           "zones": {
             "icon": [

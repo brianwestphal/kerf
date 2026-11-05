@@ -99,10 +99,10 @@
                       }
                     }
                   ],
-                  "label": "Label Color",
+                  "value": "none",
                   "size": "compact",
                   "action": "pick-swatch-demo",
-                  "value": "none"
+                  "label": "Label Color"
                 }
               },
               {
@@ -147,10 +147,10 @@
                       }
                     }
                   ],
-                  "label": "Locked Color",
+                  "value": "#34c759",
                   "size": "compact",
                   "disabled": true,
-                  "value": "#34c759"
+                  "label": "Locked Color"
                 }
               }
             ]

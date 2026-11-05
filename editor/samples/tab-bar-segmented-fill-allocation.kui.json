@@ -18,8 +18,8 @@
           "props": {
             "id": "segmented-tab-bar",
             "label": "Segmented Tab Bar",
-            "presentation": "segmented",
-            "allocation": "fill"
+            "allocation": "fill",
+            "presentation": "segmented"
           },
           "zones": {
             "tabs": [
@@ -29,10 +29,10 @@
                 "props": {
                   "id": "segmented-one",
                   "name": "Overview",
-                  "presentation": "segmented",
-                  "size": "compact",
                   "selected": true,
-                  "closable": false
+                  "closable": false,
+                  "presentation": "segmented",
+                  "size": "compact"
                 }
               },
               {
@@ -41,9 +41,9 @@
                 "props": {
                   "id": "segmented-two",
                   "name": "Activity",
+                  "closable": false,
                   "presentation": "segmented",
-                  "size": "compact",
-                  "closable": false
+                  "size": "compact"
                 }
               }
             ]

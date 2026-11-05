@@ -31,8 +31,8 @@
                 "type": "@kerfjs/ui:list-item",
                 "props": {
                   "label": "Current Project",
-                  "action": "log-projects",
                   "selected": true,
+                  "action": "log-projects",
                   "itemId": "tone-selected"
                 }
               }

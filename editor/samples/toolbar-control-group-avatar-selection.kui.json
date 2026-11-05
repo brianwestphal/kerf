@@ -29,9 +29,9 @@
                       "id": "00000000000000000000000004",
                       "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
                       "props": {
-                        "pressed": true,
                         "ariaLabel": "Primary Profile",
                         "action": "select-avatar-demo",
+                        "pressed": true,
                         "rootAttributes": {
                           "data-avatar-value": "primary"
                         }
@@ -41,9 +41,9 @@
                       "id": "00000000000000000000000005",
                       "type": "@kerfjs/ui:toolbar-control-group#ToolbarButton",
                       "props": {
-                        "pressed": false,
                         "ariaLabel": "Secondary Profile",
                         "action": "select-avatar-demo",
+                        "pressed": false,
                         "rootAttributes": {
                           "data-avatar-value": "secondary"
                         }
@@ -52,10 +52,10 @@
                   ]
                 },
                 "props": {
+                  "label": "Profile View",
+                  "shape": "pill",
                   "content": "avatar",
                   "selectedTone": "neutral",
-                  "shape": "pill",
-                  "label": "Profile View",
                   "avatarImage": {
                     "$param": "profileImageUrl"
                   }

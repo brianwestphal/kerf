@@ -28,10 +28,10 @@
                 "props": {
                   "id": "activity",
                   "name": "Activity",
-                  "presentation": "segmented",
-                  "size": "compact",
                   "selected": true,
-                  "closable": false
+                  "closable": false,
+                  "presentation": "segmented",
+                  "size": "compact"
                 }
               },
               {
@@ -40,9 +40,9 @@
                 "props": {
                   "id": "status",
                   "name": "Status",
+                  "closable": false,
                   "presentation": "icon-only",
-                  "size": "compact",
-                  "closable": false
+                  "size": "compact"
                 },
                 "zones": {
                   "leading-decoration": [

@@ -18,10 +18,10 @@
           "props": {
             "id": "catalog-panel-left",
             "side": "left",
-            "tabIndex": 0,
-            "outlined": true,
+            "size": 280,
             "label": "Project Navigator",
-            "size": 280
+            "tabIndex": 0,
+            "outlined": true
           },
           "zones": {
             "children": [
@@ -42,19 +42,19 @@
                             "id": "00000000000000000000000005",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Navigator",
                               "variant": "span",
-                              "weight": "strong"
+                              "weight": "strong",
+                              "children": "Navigator"
                             }
                           },
                           {
                             "id": "00000000000000000000000006",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Collapse from panel chrome; restore from adjacent chrome.",
                               "variant": "span",
                               "tone": "quiet",
-                              "size": "compact"
+                              "size": "compact",
+                              "children": "Collapse from panel chrome; restore from adjacent chrome."
                             }
                           }
                         ]

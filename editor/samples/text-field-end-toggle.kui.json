@@ -17,14 +17,14 @@
           "type": "@kerfjs/ui:text-field",
           "props": {
             "label": "Password",
-            "type": "password",
             "value": "correct horse battery",
-            "autocomplete": "off",
             "toggle": {
               "label": "Show Password",
-              "action": "text-field-demo-reveal",
-              "pressed": false
-            }
+              "pressed": false,
+              "action": "text-field-demo-reveal"
+            },
+            "type": "password",
+            "autocomplete": "off"
           },
           "zones": {
             "toggle.icon": [

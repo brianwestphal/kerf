@@ -21,6 +21,7 @@
                 "id": "00000000000000000000000003",
                 "type": "@kerfjs/ui:popup-menu",
                 "props": {
+                  "text": "Choose View",
                   "items": [
                     {
                       "label": "Inbox"
@@ -28,8 +29,7 @@
                     {
                       "label": "Archive"
                     }
-                  ],
-                  "text": "Choose View"
+                  ]
                 }
               }
             ]

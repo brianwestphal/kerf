@@ -25,9 +25,9 @@
                 "type": "@kerfjs/ui:state-banner",
                 "props": {
                   "title": "Everything Is Connected",
+                  "detail": "State is expressed with text and color.",
                   "tone": "info",
-                  "urgency": "status",
-                  "detail": "State is expressed with text and color."
+                  "urgency": "status"
                 },
                 "zones": {
                   "icon": [
@@ -108,8 +108,8 @@
                       "id": "00000000000000000000000011",
                       "type": "@kerfjs/ui:text",
                       "props": {
-                        "children": "Meaningfully labeled progress",
-                        "variant": "span"
+                        "variant": "span",
+                        "children": "Meaningfully labeled progress"
                       }
                     },
                     {
@@ -120,8 +120,8 @@
                       "id": "00000000000000000000000013",
                       "type": "@kerfjs/ui:text",
                       "props": {
-                        "children": "Decorative progress",
-                        "variant": "span"
+                        "variant": "span",
+                        "children": "Decorative progress"
                       }
                     }
                   ]

@@ -42,10 +42,10 @@
                             "label": "Rounded"
                           }
                         ],
+                        "action": "select-segment-demo",
                         "appearance": "toolbar",
                         "shape": "pill",
-                        "size": "small",
-                        "action": "select-segment-demo"
+                        "size": "small"
                       }
                     }
                   ]

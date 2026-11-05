@@ -80,10 +80,10 @@
                 }
               }
             ],
-            "label": "Command Color",
-            "id": "choice-chips-color",
             "action": "choice-chips-demo",
-            "value": "blue"
+            "id": "choice-chips-color",
+            "value": "blue",
+            "label": "Command Color"
           }
         }
       ]

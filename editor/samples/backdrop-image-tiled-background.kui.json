@@ -16,11 +16,11 @@
           "id": "00000000000000000000000002",
           "type": "@kerfjs/ui:backdrop-image",
           "props": {
+            "repeat": "repeat",
             "src": {
               "$param": "tileUrl"
             },
             "alt": "",
-            "repeat": "repeat",
             "height": {
               "$css": "rem(10)"
             },

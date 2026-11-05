@@ -35,8 +35,8 @@
                       "id": "00000000000000000000000004",
                       "type": "@kerfjs/ui:text",
                       "props": {
-                        "children": "Move the export button into the toolbar so it sits beside Share.",
-                        "flush": true
+                        "flush": true,
+                        "children": "Move the export button into the toolbar so it sits beside Share."
                       }
                     },
                     {
@@ -44,8 +44,8 @@
                       "type": "@kerfjs/ui:disclosure",
                       "props": {
                         "title": "AI Feedback",
-                        "appearance": "embedded",
-                        "detail": "2 suggestions"
+                        "detail": "2 suggestions",
+                        "appearance": "embedded"
                       },
                       "zones": {
                         "children": [
@@ -53,9 +53,9 @@
                             "id": "00000000000000000000000006",
                             "type": "@kerfjs/ui:text",
                             "props": {
-                              "children": "Group Export and Share in one control group, and keep Delete in the overflow menu.",
                               "tone": "quiet",
-                              "flush": true
+                              "flush": true,
+                              "children": "Group Export and Share in one control group, and keep Delete in the overflow menu."
                             }
                           }
                         ]

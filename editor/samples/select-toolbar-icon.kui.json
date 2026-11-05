@@ -53,20 +53,20 @@
                             "iconName": "wrench"
                           }
                         ],
-                        "value": "balanced",
                         "presentation": "toolbar-borderless",
-                        "selectedPresentation": "icon-only",
                         "focusRingOwner": "group",
-                        "ariaLabel": "Default Toolbar Rendering Balance"
+                        "ariaLabel": "Default Toolbar Rendering Balance",
+                        "value": "balanced",
+                        "selectedPresentation": "icon-only"
                       }
                     }
                   ]
                 },
                 "props": {
-                  "content": "icon",
-                  "focusRing": "outline",
+                  "label": "Rendering Mode",
                   "single": true,
-                  "label": "Rendering Mode"
+                  "content": "icon",
+                  "focusRing": "outline"
                 }
               }
             ]

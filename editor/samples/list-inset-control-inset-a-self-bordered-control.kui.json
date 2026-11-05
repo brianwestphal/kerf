@@ -25,8 +25,8 @@
                 "type": "@kerfjs/ui:state-banner",
                 "props": {
                   "title": "A Content Item, for Reference",
-                  "tone": "info",
-                  "detail": "Its edges are the alignment reference."
+                  "detail": "Its edges are the alignment reference.",
+                  "tone": "info"
                 },
                 "zones": {
                   "icon": [

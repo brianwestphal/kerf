@@ -51,9 +51,9 @@
                   ]
                 },
                 "props": {
-                  "content": "mixed",
+                  "single": true,
                   "shape": "pill",
-                  "single": true
+                  "content": "mixed"
                 }
               }
             ]
