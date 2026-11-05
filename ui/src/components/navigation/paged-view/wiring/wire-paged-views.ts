@@ -85,7 +85,9 @@ function viewsIn(node: Node): HTMLElement[] {
  *   focus with them;
  * - when a render changes a view's `page`, its viewport scrolls there
  *   (smoothly unless reduced motion is preferred), and a newly rendered view
- *   starts on its page without animating.
+ *   starts on its page without animating;
+ * - when a viewport resizes, it realigns to its page at once, so the offset a
+ *   resize leaves is never reported as a person's choice.
  * Returns a disposer.
  */
 export function wirePagedViews(
@@ -195,6 +197,29 @@ export function wirePagedViews(
     choose(view, target.dataset.pagedViewDot);
   });
 
+  // KF-W093WV: a resize (a window, or a resizable sidebar) moves the snap
+  // points under a held scroll offset, and an engine can settle between
+  // pages, or on the wrong one, before it re-snaps. Realign each resized
+  // viewport to its rendered page at once, so that offset is never reported
+  // as a choice.
+  const resizes = win.ResizeObserver
+    ? new win.ResizeObserver((entries) => {
+        for (const { target } of entries) {
+          const viewport = target as HTMLElement;
+          if (!viewport.isConnected) continue;
+          win.clearTimeout(timers.get(viewport));
+          timers.delete(viewport);
+          show(viewport.parentElement!, 'instant');
+        }
+      })
+    : undefined;
+  /** Start a view on its page and follow its viewport's size. */
+  const track = (view: HTMLElement) => {
+    show(view, 'instant');
+    const viewport = viewportOf(view);
+    if (viewport) resizes?.observe(viewport);
+  };
+
   const observer = new MutationObserver((records) => {
     for (const record of records) {
       if (record.type === 'attributes') {
@@ -203,7 +228,12 @@ export function wirePagedViews(
         continue;
       }
       for (const node of record.addedNodes)
-        for (const view of viewsIn(node)) show(view, 'instant');
+        for (const view of viewsIn(node)) track(view);
+      for (const node of record.removedNodes)
+        for (const view of viewsIn(node)) {
+          const viewport = viewportOf(view);
+          if (viewport) resizes?.unobserve(viewport);
+        }
     }
   });
   observer.observe(root, {
@@ -212,10 +242,11 @@ export function wirePagedViews(
     attributes: true,
     attributeFilter: ['data-page'],
   });
-  for (const view of viewsIn(root)) show(view, 'instant');
+  for (const view of viewsIn(root)) track(view);
 
   return () => {
     observer.disconnect();
+    resizes?.disconnect();
     stopClicks();
     stopKeys();
     root.removeEventListener('scroll', onScroll, { capture: true });

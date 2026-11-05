@@ -439,3 +439,108 @@ describe('wirePagedViews', () => {
     stop = () => {};
   });
 });
+
+// KF-W093WV: a resize realigns the viewport to its rendered page at once,
+// so the offset a resize leaves is never reported as a person's choice.
+describe('wirePagedViews on resize', () => {
+  class FakeResizeObserver {
+    static last: FakeResizeObserver | undefined;
+    observed = new Set<Element>();
+    disconnected = false;
+    constructor(readonly callback: ResizeObserverCallback) {
+      FakeResizeObserver.last = this;
+    }
+    observe(target: Element) {
+      this.observed.add(target);
+    }
+    unobserve(target: Element) {
+      this.observed.delete(target);
+    }
+    disconnect() {
+      this.disconnected = true;
+    }
+    fire(target: Element) {
+      this.callback(
+        [{ target } as ResizeObserverEntry],
+        this as unknown as ResizeObserver,
+      );
+    }
+  }
+  const original = window.ResizeObserver;
+  afterEach(() => {
+    window.ResizeObserver = original;
+    FakeResizeObserver.last = undefined;
+  });
+
+  const setUp = (current = 'rates') => {
+    const host = document.createElement('div');
+    document.body.append(host);
+    const page = signal(current);
+    const unmount = mount(host, () => (
+      <PagedView id="side" label="Pages" pages={PAGES} page={page.value} />
+    ));
+    const view = host.querySelector<HTMLElement>('.kui-paged-view')!;
+    const laid = layOut(view);
+    laid.viewport.scrollLeft = 100;
+    const onPageChange = vi.fn();
+    const stop = wirePagedViews(host, { onPageChange });
+    return { host, view, ...laid, onPageChange, stop, unmount };
+  };
+
+  it('realigns a resized viewport and drops the settle it left pending', () => {
+    window.ResizeObserver =
+      FakeResizeObserver as unknown as typeof ResizeObserver;
+    vi.useFakeTimers();
+    const { viewport, scrollTo, onPageChange, stop, unmount } = setUp();
+    const observer = FakeResizeObserver.last!;
+    expect(observer.observed.has(viewport)).toBe(true);
+    // The region narrowed: the held offset now sits nearer the third page.
+    viewport.scrollLeft = 160;
+    viewport.dispatchEvent(new Event('scroll'));
+    observer.fire(viewport);
+    expect(scrollTo).toHaveBeenLastCalledWith({
+      left: 100,
+      behavior: 'instant',
+    });
+    vi.advanceTimersByTime(200);
+    expect(onPageChange).not.toHaveBeenCalled();
+    stop();
+    expect(observer.disconnected).toBe(true);
+    unmount();
+  });
+
+  it('follows views added later and lets removed ones go', async () => {
+    window.ResizeObserver =
+      FakeResizeObserver as unknown as typeof ResizeObserver;
+    const { host, viewport, scrollTo, stop, unmount } = setUp();
+    const observer = FakeResizeObserver.last!;
+    const added = render(
+      <PagedView id="more" label="More" pages={PAGES} page="today" />,
+    );
+    host.append(added);
+    await flush();
+    const addedViewport = added.querySelector('.kui-paged-view__viewport')!;
+    expect(observer.observed.has(addedViewport)).toBe(true);
+    added.remove();
+    await flush();
+    expect(observer.observed.has(addedViewport)).toBe(false);
+    // A viewport that left the document is not realigned.
+    viewport.remove();
+    scrollTo.mockClear();
+    observer.fire(viewport);
+    expect(scrollTo).not.toHaveBeenCalled();
+    stop();
+    unmount();
+  });
+
+  it('wires without ResizeObserver', async () => {
+    window.ResizeObserver = undefined as unknown as typeof ResizeObserver;
+    const { view, onPageChange, stop, unmount } = setUp('today');
+    view.querySelector<HTMLElement>('[data-paged-view-dot="rates"]')!.click();
+    expect(onPageChange).toHaveBeenCalledWith('rates', 'side');
+    view.remove();
+    await flush();
+    stop();
+    unmount();
+  });
+});

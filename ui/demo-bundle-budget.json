@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 455700,
+  "totalJavaScriptGzip": 455800,
   "measuredLargestJavaScriptGzip": 164549,
-  "measuredTotalJavaScriptGzip": 455643,
+  "measuredTotalJavaScriptGzip": 455786,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6883,6 +6883,22 @@
         "measuredTotalJavaScriptGzip": 455643,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 455700
+      }
+    },
+    {
+      "at": "2026-11-05T06:50:51.099Z",
+      "reason": "KF-W093WV: wirePagedViews realigns each viewport to its page on resize (ResizeObserver)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164549,
+        "measuredTotalJavaScriptGzip": 455643,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 455700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164549,
+        "measuredTotalJavaScriptGzip": 455786,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 455800
       }
     }
   ]
