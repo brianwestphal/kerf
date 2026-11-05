@@ -28236,7 +28236,13 @@
                 "nullable": true
               },
               "required": false,
-              "description": "Optional count or short status shown as a solid danger `Badge` at the\ntop-trailing corner of the tab icon (the iOS tab-bar badge). Omitted, `''`,\nor non-finite numbers render no badge. The visual badge is `aria-hidden`;\nits meaning reaches assistive technology through `badgeLabel`.\n\nPass `true` instead for the text-free dot (new content without a count)."
+              "description": "Optional count or short status shown as a solid danger `Badge` at the\ntop-trailing corner of the tab icon (the iOS tab-bar badge). Omitted, `''`,\na count of 0 or less, or non-finite numbers render no badge, and a count\npast `badgeMax` shows `99+`, as on Button. The visual badge is `aria-hidden`;\nits meaning reaches assistive technology through `badgeLabel`.\n\nPass `true` instead for the text-free dot (new content without a count)."
+            },
+            {
+              "name": "badgeMax",
+              "type": { "kind": "number", "text": "number", "nullable": true },
+              "required": false,
+              "description": "The largest count shown before `badgeMax+` (default 99)."
             },
             {
               "name": "badgeLabel",

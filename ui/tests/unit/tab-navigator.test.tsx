@@ -192,7 +192,9 @@ describe('TabNavigator markup', () => {
     );
   });
 
-  it('renders 0 but ignores empty, whitespace-only, and non-finite badges', () => {
+  // KF-0V773N: the shared count rules (as Button and ToolbarButton): a count
+  // of 0 or less renders nothing, and a count past badgeMax shows max+.
+  it('ignores zero, negative, empty, whitespace-only, and non-finite badges', () => {
     const render = (badge: string | number) =>
       String(
         TabNavigator({
@@ -202,12 +204,42 @@ describe('TabNavigator markup', () => {
           tabs: [{ ...tabs[0]!, badge, badgeLabel: 'ignored' }],
         }),
       );
-    expect(render(0)).toContain('aria-label="Home, ignored"');
-    for (const badge of ['', '  ', Number.NaN, Number.POSITIVE_INFINITY]) {
+    for (const badge of [
+      0,
+      -1,
+      '',
+      '  ',
+      Number.NaN,
+      Number.POSITIVE_INFINITY,
+    ]) {
       const html = render(badge);
       expect(html).not.toContain('kui-tab-scaffold__tab-badge');
       expect(html).not.toContain('aria-label="Home');
     }
+  });
+
+  it('caps a count badge at badgeMax and defaults the name to the capped text', () => {
+    document.body.innerHTML = String(
+      TabNavigator({
+        id: 'app',
+        label: 'Sections',
+        active: 'home',
+        tabs: [
+          { ...tabs[0]!, badge: 128 },
+          { ...tabs[1]!, badge: 12, badgeMax: 9 },
+        ],
+      }),
+    );
+    const [home, search] = [
+      ...document.querySelectorAll<HTMLElement>('[role="tab"]'),
+    ];
+    expect(home!.querySelector('[data-component="badge"]')!.textContent).toBe(
+      '99+',
+    );
+    expect(home!.getAttribute('aria-label')).toBe('Home, 99+');
+    expect(search!.querySelector('[data-component="badge"]')!.textContent).toBe(
+      '9+',
+    );
   });
 
   it('renders the dot badge form over the icon with the required badgeLabel in the tab name', () => {

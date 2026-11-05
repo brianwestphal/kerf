@@ -264,10 +264,11 @@ which the tab folds into its accessible name as `"<label>, <badgeLabel>"`:
 
 `badgeLabel` defaults to the badge text itself, so supply a localized phrase
 whenever the bare text would be ambiguous. Omitting `badge` (or passing an
-empty string or a non-finite number) renders no badge and leaves the tab's name
-as its label; `0` renders, so pass `undefined` when a count should disappear.
-Keep the text short — clamp large counts (`"99+"`) in the app. The tone follows
-the platform convention and is fixed; do not restyle the badge.
+empty string, a count of `0` or less, or a non-finite number) renders no badge
+and leaves the tab's name as its label, so a count that drops to zero simply
+disappears. A count past `badgeMax` (default 99) shows `99+`, the same rules as
+`Button` and `ToolbarButton`; text is shown as written, so keep it short. The
+tone follows the platform convention and is fixed; do not restyle the badge.
 
 ### Dot badges
 

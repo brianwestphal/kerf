@@ -1,5 +1,6 @@
 import type { SafeHtml } from 'kerfjs';
 
+import { badgeText } from '../../../shared/content/badge-text.js';
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import {
   filterDataAttributes,
@@ -60,12 +61,15 @@ interface TabNavigatorTabCountBadge {
   /**
    * Optional count or short status shown as a solid danger `Badge` at the
    * top-trailing corner of the tab icon (the iOS tab-bar badge). Omitted, `''`,
-   * or non-finite numbers render no badge. The visual badge is `aria-hidden`;
+   * a count of 0 or less, or non-finite numbers render no badge, and a count
+   * past `badgeMax` shows `99+`, as on Button. The visual badge is `aria-hidden`;
    * its meaning reaches assistive technology through `badgeLabel`.
    *
    * Pass `true` instead for the text-free dot (new content without a count).
    */
   badge?: string | number;
+  /** The largest count shown before `badgeMax+` (default 99). */
+  badgeMax?: number;
   /**
    * Localized phrase folded into the tab's accessible name as
    * `"<label>, <badgeLabel>"` (for example `"3 unread"` → `"Inbox, 3 unread"`).
@@ -321,7 +325,9 @@ export function TabNavigator<Id extends string>({
       <nav class="kui-tab-scaffold__bar" role="tablist" aria-label={label}>
         {tabs.map((tab) => {
           const dot = tab.badge === true;
-          const badgeText = dot ? undefined : normalizeBadge(tab.badge);
+          const badgeText = dot
+            ? undefined
+            : normalizeBadge(tab.badge, tab.badgeMax ?? 99);
           const hasBadge = dot || badgeText !== undefined;
           const badge = hasBadge && (
             <span
@@ -379,11 +385,12 @@ export function TabNavigator<Id extends string>({
   );
 }
 
+// KF-0V773N: the shared count rules (as Button and ToolbarButton), plus the
+// tab's own: text is trimmed and a non-finite number shows nothing.
 function normalizeBadge(
   badge: string | number | undefined,
+  max: number,
 ): string | undefined {
-  if (typeof badge === 'number')
-    return Number.isFinite(badge) ? String(badge) : undefined;
-  if (typeof badge === 'string' && badge.trim()) return badge.trim();
-  return undefined;
+  if (typeof badge === 'number' && !Number.isFinite(badge)) return undefined;
+  return badgeText(typeof badge === 'string' ? badge.trim() : badge, max);
 }

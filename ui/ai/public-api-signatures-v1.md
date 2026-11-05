@@ -3227,12 +3227,15 @@ interface TabNavigatorTabCountBadge {
     /**
      * Optional count or short status shown as a solid danger `Badge` at the
      * top-trailing corner of the tab icon (the iOS tab-bar badge). Omitted, `''`,
-     * or non-finite numbers render no badge. The visual badge is `aria-hidden`;
+     * a count of 0 or less, or non-finite numbers render no badge, and a count
+     * past `badgeMax` shows `99+`, as on Button. The visual badge is `aria-hidden`;
      * its meaning reaches assistive technology through `badgeLabel`.
      *
      * Pass `true` instead for the text-free dot (new content without a count).
      */
     badge?: string | number;
+    /** The largest count shown before `badgeMax+` (default 99). */
+    badgeMax?: number;
     /**
      * Localized phrase folded into the tab's accessible name as
      * `"<label>, <badgeLabel>"` (for example `"3 unread"` → `"Inbox, 3 unread"`).
