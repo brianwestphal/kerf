@@ -116,6 +116,13 @@ export function installSelects(doc: Document = document): void {
     // and popup back to their rendered (closed) attributes; restore the open
     // state and placement.
     let replacing = false;
+    // Focus that fell back to the trigger or the body returns to the
+    // listbox; focus the person moved elsewhere stays where it is.
+    const keepFocus = () => {
+      const active = doc.activeElement;
+      if (!isOpen(popup) || (active !== trigger && active !== doc.body)) return;
+      focusOption(root, chosenOptions(root)[0] ?? optionsOf(root)[0]);
+    };
     const restore = new MutationObserver(() => {
       // A Select disabled while open closes, so nothing more can be chosen.
       if (trigger.disabled) {
@@ -124,6 +131,7 @@ export function installSelects(doc: Document = document): void {
       }
       if (trigger.getAttribute('aria-expanded') !== 'true')
         trigger.setAttribute('aria-expanded', 'true');
+      keepFocus();
       if (popup.style.top || replacing) return;
       // Placement writes its own styles before `top`; restore once.
       replacing = true;
@@ -147,6 +155,10 @@ export function installSelects(doc: Document = document): void {
           ? options[0]
           : (chosenOptions(root)[0] ?? options[0]);
     focusOption(root, target);
+    // A re-render landing as the listbox opens can leave focus on the
+    // trigger (or drop it to the body), where navigation keys are ignored;
+    // an open listbox keeps focus, so check again once that render settles.
+    win.requestAnimationFrame(keepFocus);
   };
 
   const close = (root: HTMLElement, restoreFocus: boolean) => {

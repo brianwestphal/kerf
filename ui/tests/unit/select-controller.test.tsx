@@ -224,6 +224,24 @@ describe('Select register: edges', () => {
     expect(popup.scrollTop).toBe(30);
   });
 
+  it('returns focus to an open listbox a re-render left on the trigger', async () => {
+    const { trigger, popup } = setup();
+    click(trigger);
+    await flush();
+    // A morph back to the closed markup while focus sits on the trigger.
+    trigger.focus();
+    trigger.setAttribute('aria-expanded', 'false');
+    await flush();
+    expect(popup.contains(document.activeElement)).toBe(true);
+    // Focus the person moved elsewhere stays there.
+    const outside = document.body.appendChild(document.createElement('button'));
+    outside.focus();
+    trigger.setAttribute('aria-expanded', 'false');
+    await flush();
+    expect(document.activeElement).toBe(outside);
+    outside.remove();
+  });
+
   it('stops placing and resets a Select removed while open', async () => {
     const { host, root, trigger } = setup();
     click(trigger);
