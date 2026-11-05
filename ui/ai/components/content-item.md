@@ -34,6 +34,7 @@ Render one self-contained .kui-content child that owns its 8px inline margin, re
 - JavaScript: `@kerfjs/ui/content-item` — exports `ContentItem`.
 - JavaScript: `@kerfjs/ui/selection` — exports `applySelection`, `selectionGesture`, `isApplePlatform`.
 - CSS: the browser build of `@kerfjs/ui/content-item` pulls its CSS automatically; import `@kerfjs/ui/content-item.css` manually only without the `browser` export condition.
+- Wiring: `wireContentItems` from `@kerfjs/ui/wire-content-items` (optional).
 - Declared side effects: browser-condition-css.
 
 ## Props
@@ -65,7 +66,11 @@ Exact prop names and types: [`@kerfjs/ui/content-item`](../public-api-signatures
 
 **The app owns:** the item content; whether the item marks a real distinction that warrants a visible frame; whether the item needs a surface or semantic appearance; corner shape; region semantics and accessible name; whether the item is a programmatic focus target; optional static-item Tab stop and persistent focus outline; the selection set and Shift/Cmd extension for multi-select rich cards.
 
-No wiring helper.
+**Wiring:** `wireContentItems` is optional.
+
+**Wiring-owned state attributes** — never render, remove, or branch on these as app state:
+
+- `data-kui-pressed` on `kui-content-item` (`wireContentItems`): true on an interactive, selectable, or option item while Space is held on it, before the release activates it; removed on release, when focus leaves the item, or on disposal.
 
 ## Geometry
 

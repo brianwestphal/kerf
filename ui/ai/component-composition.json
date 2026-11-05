@@ -4544,9 +4544,16 @@
       ],
       "wiring": {
         "required": false,
-        "helpers": [],
+        "helpers": ["wireContentItems"],
         "obligations": [],
-        "stateAttributes": []
+        "stateAttributes": [
+          {
+            "name": "data-kui-pressed",
+            "on": "kui-content-item",
+            "helper": "wireContentItems",
+            "meaning": "true on an interactive, selectable, or option item while Space is held on it, before the release activates it; removed on release, when focus leaves the item, or on disposal."
+          }
+        ]
       },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {

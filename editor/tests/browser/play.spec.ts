@@ -1190,3 +1190,134 @@ test('a popover dialog shows embedded on the canvas and docks to the placeholder
   await request.getByRole('button', { name: 'Deny' }).click();
   await expect(request).toBeHidden();
 });
+
+// KF-963DMT: play mode runs the shipped listbox keyboard: one Tab stop,
+// arrows move focus without selecting, and Enter activates the focused
+// option through its click. A SummaryRow listbox gets it from
+// `wireSummaryRows`, a ContentItem one from `wireContentItems`, whose
+// `action` then reaches the action log.
+const loadDocument = async (page: Page, name: string, root: object) => {
+  await page.goto('/');
+  await page
+    .locator('input[type="file"]')
+    .first()
+    .setInputFiles({
+      name: `${name}.kui.json`,
+      mimeType: 'application/json',
+      buffer: Buffer.from(
+        JSON.stringify({
+          schema: 'kerf-ui-document/v1',
+          name,
+          catalogs: ['@kerfjs/ui'],
+          root,
+        }),
+      ),
+    });
+};
+const listboxOf = (children: object[]) => ({
+  id: '01JB8Z1M6Q8E1X9V4S7K2R3V0A',
+  type: '@kerfjs/ui:list',
+  props: { selectionMode: 'single', ariaLabel: 'Tickets' },
+  zones: { children },
+});
+/** Tabbing, arrows, and Home/End over three played options. */
+const expectListboxKeys = async (page: Page) => {
+  const options = stage(page).getByRole('option');
+  await expect(options).toHaveCount(3);
+  await expect(options.nth(0)).toHaveAttribute('tabindex', '0');
+  await expect(options.nth(1)).toHaveAttribute('tabindex', '-1');
+  await expect(options.nth(2)).toHaveAttribute('tabindex', '-1');
+  await options.nth(0).focus();
+  await page.keyboard.press('ArrowDown');
+  await expect(options.nth(1)).toBeFocused();
+  await page.keyboard.press('End');
+  await expect(options.nth(2)).toBeFocused();
+  await page.keyboard.press('Home');
+  await expect(options.nth(0)).toBeFocused();
+  await page.keyboard.press('ArrowDown');
+  await expect(options.nth(1)).toBeFocused();
+  // Only the moved-to option is the Tab stop.
+  await expect(options.nth(0)).toHaveAttribute('tabindex', '-1');
+  await expect(options.nth(1)).toHaveAttribute('tabindex', '0');
+  return options;
+};
+
+test('a played SummaryRow listbox is one Tab stop with arrow keys and Enter', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const row = (n: number, title: string) => ({
+    id: `01JB8Z1M6Q8E1X9V4S7K2R3V${n}A`,
+    type: '@kerfjs/ui:summary-row',
+    props: { semanticRole: 'option' },
+    zones: {
+      title: [
+        {
+          id: `01JB8Z1M6Q8E1X9V4S7K2R3V${n}B`,
+          type: '@kerfjs/ui:text',
+          props: { variant: 'span', children: title },
+        },
+      ],
+    },
+  });
+  await loadDocument(
+    page,
+    'Tickets',
+    listboxOf([
+      row(1, 'First ticket'),
+      row(2, 'Second ticket'),
+      row(3, 'Third ticket'),
+    ]),
+  );
+  await expect(page.getByText(/· 7 nodes · valid$/)).toBeVisible();
+  await play(page);
+  const options = await expectListboxKeys(page);
+  // Enter activates the focused option by clicking it, which is how an
+  // app's delegated selection handler hears it.
+  await options.nth(1).evaluate((option) => {
+    option.addEventListener('click', () => {
+      option.dataset.clicked = String(Number(option.dataset.clicked ?? 0) + 1);
+    });
+  });
+  await page.keyboard.press('Enter');
+  await expect(options.nth(1)).toHaveAttribute('data-clicked', '1');
+});
+
+test('a played ContentItem listbox moves with the arrows and logs Enter', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const item = (n: number, title: string, action: string) => ({
+    id: `01JB8Z1M6Q8E1X9V4S7K2R3V${n}C`,
+    type: '@kerfjs/ui:content-item',
+    props: {
+      interactive: true,
+      selectionMode: 'single',
+      title,
+      action: { $action: action },
+    },
+  });
+  await loadDocument(
+    page,
+    'Documents',
+    listboxOf([
+      item(1, 'Brief', 'open-brief'),
+      item(2, 'Budget', 'open-budget'),
+      item(3, 'Plan', 'open-plan'),
+    ]),
+  );
+  await expect(page.getByText(/· 4 nodes · valid$/)).toBeVisible();
+  await play(page);
+  await expectListboxKeys(page);
+  // Moving focus fires nothing; Enter fires the focused option's action.
+  const log = page.locator('[data-action="editor-play-log"]');
+  await expect(log).toHaveAttribute('aria-label', 'Action log');
+  await page.keyboard.press('Enter');
+  await expect(log).toHaveAttribute('aria-label', 'Action log, 1 new');
+  await log.click();
+  const entries = page
+    .locator('[data-component="anchored-surface"]')
+    .locator('[data-editor-play-log-entry]');
+  await expect(entries).toHaveCount(1);
+  await expect(entries.nth(0)).toContainText('open-budget');
+});

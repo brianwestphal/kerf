@@ -1744,6 +1744,12 @@ transitions in `model/play-state.ts` and `model/play-values.ts`, wiring in
   as `wireTabBars` does.
 - **A sidebar toggled by several actions.** `wireSidebar` takes the first
   toggle action; any other action naming the panel flips the same state.
+- **Listbox and card keyboard (KF-963DMT, play wires the content helpers).**
+  Play installs `wireContentItems` and `wireSummaryRows`, as a shipped app
+  does: a `List selectionMode` listbox or grid is one Tab stop, the arrows
+  and Home/End move focus without selecting, and Enter/Space activate the
+  focused item through its click. A ContentItem's `action` therefore
+  reaches the action log. Media cards get their load and tint state.
 - **Limits:** KF-7XQAFR (below) lifts both of this ticket's limits.
 
 **As built (KF-7XQAFR).** Nested rows, in the same split.

@@ -5745,7 +5745,20 @@
           "browser-condition-css"
         ]
       },
-      "wiring": [],
+      "wiring": [
+        {
+          "export": "wireContentItems",
+          "import": "@kerfjs/ui/wire-content-items",
+          "required": false,
+          "stateAttributes": [
+            {
+              "name": "data-kui-pressed",
+              "on": "kui-content-item",
+              "meaning": "true on an interactive, selectable, or option item while Space is held on it, before the release activates it; removed on release, when focus leaves the item, or on disposal."
+            }
+          ]
+        }
+      ],
       "publicClasses": [
         "kui-content-item",
         "kui-content-item--pill",

@@ -21,6 +21,7 @@ import {
   signal,
 } from 'kerfjs';
 
+import { wireSummaryRows } from '../components/collections/summary-row/wiring/wire-summary-rows.js';
 import { wireCheckboxes } from '../components/forms/checkbox/wiring/wire-checkboxes.js';
 import {
   readChoiceChips,
@@ -41,6 +42,7 @@ import { wireWorkbench } from '../components/layout/workbench/wiring/wire-workbe
 import { wireNavStack } from '../components/navigation/nav-stack/wiring/wire-nav-stack.js';
 import { wireTabBars } from '../components/navigation/tab-bar/wiring/wire-tab-bars.js';
 import { wireTabNavigator } from '../components/navigation/tab-navigator/wiring/wire-tab-navigator.js';
+import { wireContentItems } from '../components/surfaces/content-item/wiring/wire-content-items.js';
 import { wireScrollDividers } from '../wiring/wire-scroll-dividers.js';
 import { findNode } from './model/document.js';
 import {
@@ -472,6 +474,12 @@ export function wirePlayState(
     // KF-XX4Y95: submitting a Form in play never navigates the page.
     wireForms(root),
     wireChoiceChips(root),
+    // KF-963DMT: the shipped keyboard for ContentItems (Enter/Space, media
+    // state, and a selectable grid or listbox's one Tab stop and arrows) and
+    // for a SummaryRow listbox. Their activation is a click, so an option's
+    // action still reaches the action log.
+    wireContentItems(root),
+    wireSummaryRows(root),
     // KF-XV732Q: the helpers that report a value by the control's `id`.
     wireComboboxes(root, {
       onCommit: recordById('@kerfjs/ui:combobox', 'value'),
