@@ -1842,6 +1842,56 @@ test('embeds the selected node from the Flow area’s Embed in section', async (
   ).toEqual(['@kerfjs/ui:button']);
 });
 
+// KF-84CCD1: Embed in on the root makes the container the new root, holding
+// the whole old tree; a Pane that becomes the root fills.
+test('embeds the root in a new root Pane', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await newDocument(page);
+  await dragComponent(page, 'Button', () => emptySpot(page));
+  await select(page, /^Pane/);
+  await area(page, 'Flow');
+  const section = page.locator('[data-editor-embed-section]');
+  await expect(section).toBeVisible();
+  await page.screenshot({
+    path: test.info().outputPath('kf-84ccd1-root-embed-section-1440.png'),
+  });
+  await embedInOther(page, 'Pane');
+  await expect(
+    canvas(page).locator('.kui-button', { hasText: 'Button' }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: test.info().outputPath('kf-84ccd1-root-embedded-1440.png'),
+  });
+  // The narrow Inspector offers it too, for the new root.
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.getByRole('button', { name: 'Show Inspector' }).click();
+  await area(page, 'Flow');
+  await expect(section).toBeVisible();
+  await section.scrollIntoViewIfNeeded();
+  await page.screenshot({
+    path: test.info().outputPath('kf-84ccd1-root-embed-section-390.png'),
+  });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const document = (await exported(page)) as {
+    type: string;
+    props?: Record<string, unknown>;
+    zones: {
+      content: {
+        type: string;
+        zones: Record<string, { type: string }[]>;
+      }[];
+    };
+  };
+  expect(document.type).toBe('@kerfjs/ui:pane');
+  expect(document.props).toEqual({ fill: true });
+  expect(document.zones.content.map(({ type }) => type)).toEqual([
+    '@kerfjs/ui:pane',
+  ]);
+  expect(
+    document.zones.content[0]!.zones.content!.map(({ type }) => type),
+  ).toEqual(['@kerfjs/ui:button']);
+});
+
 // KF-YZPBFH: the canvas shows the tab that holds the selected node, and
 // rings it there; the document keeps the tab it opens on.
 test('shows the tab that holds the selected node', async ({ page }) => {

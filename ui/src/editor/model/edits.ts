@@ -415,9 +415,10 @@ export function duplicateNode(
 
 /**
  * Node `id` embedded in a new container (KF-6MGYSG: Embed in): the container
- * takes the node's place in its zone and holds it in `zone`, its main zone.
- * Undefined when the node does not sit directly in a zone (the root, a
- * repeated template, a branch).
+ * takes the node's place and holds it in `zone`, its main zone. The place is
+ * wherever the node is held (KF-84CCD1): a zone list, the root (the container
+ * becomes the root), a `$each` template, or an `$if` branch. Undefined when
+ * the document has no node `id`.
  */
 export function embedNode(
   document: ViewDocument,
@@ -429,21 +430,46 @@ export function embedNode(
   zone: string,
   makeId: () => string = newNodeId,
 ): { readonly document: ViewDocument; readonly id: string } | undefined {
-  if (!placementOf(document, id)) return undefined;
-  const next = clone(document);
-  const found = locate(next, id)!;
-  const wrapper: MutableNode = {
-    id: makeId(),
-    type: container.type,
-    // No props reads as no `props` key, as a palette drop writes it
-    // (KF-QX497W).
-    ...(container.props && Object.keys(container.props).length
-      ? { props: { ...container.props } }
-      : {}),
-    zones: { [zone]: [found.node as ViewChild] },
+  const next = clone(document) as { root: ViewNode };
+  let wrapperId: string | undefined;
+  const wrap = (node: ViewNode): ViewNode => {
+    wrapperId = makeId();
+    return {
+      id: wrapperId,
+      type: container.type,
+      // No props reads as no `props` key, as a palette drop writes it
+      // (KF-QX497W).
+      ...(container.props && Object.keys(container.props).length
+        ? { props: { ...container.props } }
+        : {}),
+      zones: { [zone]: [node] },
+    } as ViewNode;
   };
-  found.list!.splice(found.index!, 1, wrapper as ViewChild);
-  return { document: withCatalog(next, container.type), id: wrapper.id };
+  // The child in a holder's place: wrapped when it is the node, else visited.
+  const place = (child: ViewChild): ViewChild => {
+    // The first node with the id is wrapped, as `locate` finds it.
+    if (wrapperId !== undefined || '$slot' in child) return child;
+    if ('$each' in child)
+      return { ...child, template: place(child.template) as ViewNode };
+    if ('$if' in child)
+      return {
+        ...child,
+        then: place(child.then),
+        ...(child.else ? { else: place(child.else) } : {}),
+      };
+    if (child.id === id) return wrap(child);
+    const node = child as MutableNode;
+    for (const list of Object.values(node.zones ?? {}))
+      list.forEach((item, index) => (list[index] = place(item)));
+    return child;
+  };
+  next.root = place(next.root) as ViewNode;
+  return wrapperId === undefined
+    ? undefined
+    : {
+        document: withCatalog(next as ViewDocument, container.type),
+        id: wrapperId,
+      };
 }
 
 /** Moves a node into another zone (of any node), at the end. */

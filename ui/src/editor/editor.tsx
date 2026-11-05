@@ -2707,33 +2707,33 @@ export function createEditor(options: EditorOptions) {
   /**
    * Embed in (KF-6MGYSG), in the Flow area beside the other commands that
    * restructure the node: its first containers, each offered only where it
-   * can hold the node, then Other… for any container.
+   * can hold the node, then Other… for any container. Every node has it,
+   * the root included (KF-84CCD1).
    */
-  const embedSection = (id: string) =>
-    placementOf(doc.value, id) ? (
-      <List rootAttributes={{ 'data-editor-embed-section': '' }}>
-        <ListHeader label="Embed in" size="xs" />
-        {EMBED_FIRST.filter((key) => propsByKey.has(key)).map((key) => {
-          const legal = embedFirstLegal.value.has(key);
-          return (
-            <ListItem
-              label={componentNames.get(key)!}
-              action={EMBED_ACTION}
-              itemId={key}
-              disabled={!legal}
-              description={legal ? undefined : 'It cannot hold this node here.'}
-              rootAttributes={{ 'data-editor-embed': key }}
-            />
-          );
-        })}
-        <ListItem
-          label="Other…"
-          action={EMBED_OTHER_ACTION}
-          itemId="other"
-          trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
-        />
-      </List>
-    ) : undefined;
+  const embedSection = () => (
+    <List rootAttributes={{ 'data-editor-embed-section': '' }}>
+      <ListHeader label="Embed in" size="xs" />
+      {EMBED_FIRST.filter((key) => propsByKey.has(key)).map((key) => {
+        const legal = embedFirstLegal.value.has(key);
+        return (
+          <ListItem
+            label={componentNames.get(key)!}
+            action={EMBED_ACTION}
+            itemId={key}
+            disabled={!legal}
+            description={legal ? undefined : 'It cannot hold this node here.'}
+            rootAttributes={{ 'data-editor-embed': key }}
+          />
+        );
+      })}
+      <ListItem
+        label="Other…"
+        action={EMBED_OTHER_ACTION}
+        itemId="other"
+        trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
+      />
+    </List>
+  );
 
   /** Move and delete controls for the selected node, when it can move. */
   const nodeActions = (document: ViewDocument) => {
@@ -3590,7 +3590,7 @@ export function createEditor(options: EditorOptions) {
           otherwiseChoices,
         )}
         {viewsSection(node)}
-        {embedSection(node.id)}
+        {embedSection()}
         {moveSection(node)}
       </List>
     );
@@ -4461,8 +4461,9 @@ export function createEditor(options: EditorOptions) {
 
   /**
    * Node `id` embedded in a new container of component `key` (KF-6MGYSG):
-   * undefined when the container has no main zone, the node is not in a
-   * zone, or the result adds a problem.
+   * undefined when the container has no main zone or the result adds a
+   * problem. A container that becomes the root starts as a new root does: a
+   * Pane fills (KF-84CCD1).
    */
   const embedded = (id: string, key: string) => {
     const seeded = seededNode(key);
@@ -4470,10 +4471,15 @@ export function createEditor(options: EditorOptions) {
       (option) => option.primary && !option.disabledReason,
     )?.key;
     if (!zone) return undefined;
+    const props = { ...seeded.props, ...EMBED_PROPS[key] };
     const result = embedNode(
       doc.value,
       id,
-      { type: key, props: { ...seeded.props, ...EMBED_PROPS[key] } },
+      {
+        type: key,
+        props:
+          id === doc.value.root.id ? asRoot({ ...seeded, props }).props : props,
+      },
       zone,
     );
     return result && !addsProblems(doc.value, result.document, viewCatalog)

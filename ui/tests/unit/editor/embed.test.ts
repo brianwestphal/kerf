@@ -19,6 +19,13 @@ afterEach(() => {
 const PANE = '01JB8Z1M6Q8E1X9V4S7K2R3TA0';
 const BUTTON = '01JB8Z1M6Q8E1X9V4S7K2R3TA1';
 const STACK = '01JB8Z1M6Q8E1X9V4S7K2R3TA2';
+const OTHER = '01JB8Z1M6Q8E1X9V4S7K2R3TA3';
+const WRAP = '01JB8Z1M6Q8E1X9V4S7K2R3TA9';
+const other = {
+  id: OTHER,
+  type: '@kerfjs/ui:button',
+  props: { children: 'Other' },
+};
 const button = {
   id: BUTTON,
   type: '@kerfjs/ui:button',
@@ -101,12 +108,84 @@ describe('embedNode', () => {
     }
   });
 
-  it('leaves the root alone', () => {
+  // KF-84CCD1: the root, a repeated template, and a branch embed in place.
+  it('makes the container the root, holding the old root', () => {
+    const result = embedNode(
+      pane([button]),
+      PANE,
+      { type: '@kerfjs/ui:sized-region' },
+      'children',
+      () => WRAP,
+    )!;
+    expect(result.id).toBe(WRAP);
+    expect(result.document.root).toEqual({
+      id: WRAP,
+      type: '@kerfjs/ui:sized-region',
+      zones: {
+        children: [
+          { id: PANE, type: '@kerfjs/ui:pane', zones: { content: [button] } },
+        ],
+      },
+    });
+    expect(result.document.name).toBe('Embed');
+  });
+
+  it('embeds a repeated template and a condition’s branches in place', () => {
+    const repeat = { $each: { $param: 'items' }, as: 'item', template: button };
+    const branch = {
+      $if: { $param: 'open' },
+      then: { ...button, id: STACK },
+      else: { $each: { $param: 'items' }, as: 'item', template: other },
+    };
+    const document = pane([{ $slot: 'top' }, repeat, branch]);
+    const wrapped = (id: string) =>
+      embedNode(
+        document,
+        id,
+        { type: '@kerfjs/ui:row' },
+        'children',
+        () => WRAP,
+      )!.document.root.zones!.content!;
+    const holding = (node: object) => ({
+      id: WRAP,
+      type: '@kerfjs/ui:row',
+      zones: { children: [node] },
+    });
+    expect(wrapped(BUTTON)[1]).toEqual({
+      ...repeat,
+      template: holding(button),
+    });
+    expect(wrapped(STACK)[2]).toEqual({
+      ...branch,
+      then: holding({ ...button, id: STACK }),
+    });
+    expect(wrapped(OTHER)[2]).toEqual({
+      ...branch,
+      else: { ...branch.else, template: holding(other) },
+    });
+  });
+
+  it('wraps only the first node with a repeated id', () => {
+    const result = embedNode(
+      pane([button, button]),
+      BUTTON,
+      { type: '@kerfjs/ui:row' },
+      'children',
+      () => WRAP,
+    )!;
+    expect(
+      result.document.root.zones!.content!.map(
+        (child) => (child as { type: string }).type,
+      ),
+    ).toEqual(['@kerfjs/ui:row', '@kerfjs/ui:button']);
+  });
+
+  it('is undefined for an id the document lacks', () => {
     expect(
       embedNode(
-        pane([]),
-        PANE,
-        { type: '@kerfjs/ui:sized-region' },
+        pane([button]),
+        'missing',
+        { type: '@kerfjs/ui:row' },
         'children',
       ),
     ).toBeUndefined();
@@ -194,6 +273,43 @@ describe('Embed in', () => {
     expect(
       findNode(editor.document.value, BUTTON)!.ancestors.at(-1)!.zone,
     ).toBe('children');
+  });
+
+  // KF-84CCD1: Embed in on the root makes the container the new root.
+  it('embeds the root, a Pane starting with fill, as one undo step', () => {
+    const { root, editor } = open(pane([button]));
+    editor.selection.value = { kind: 'node', id: PANE };
+    root
+      .querySelector<HTMLElement>('[data-action="editor-embed-other"]')!
+      .click();
+    root
+      .querySelector<HTMLElement>(
+        '#editor-embed-dialog [data-editor-embed="@kerfjs/ui:pane"]',
+      )!
+      .click();
+    const next = editor.document.value.root;
+    expect(next.type).toBe('@kerfjs/ui:pane');
+    expect(next.props).toEqual({ fill: true });
+    expect(
+      next.zones!.content!.map((child) => (child as { id: string }).id),
+    ).toEqual([PANE]);
+    expect(editor.selection.value).toEqual({ kind: 'node', id: next.id });
+    root.querySelector<HTMLElement>('[data-action="editor-undo"]')!.click();
+    expect(editor.document.value.root.id).toBe(PANE);
+  });
+
+  it('embeds the root in a SizedRegion from the Flow area', () => {
+    const { root, editor } = open(pane([button]));
+    editor.selection.value = { kind: 'node', id: PANE };
+    root
+      .querySelector<HTMLElement>(
+        '[data-editor-embed-section] [data-editor-embed="@kerfjs/ui:sized-region"]',
+      )!
+      .click();
+    const next = editor.document.value.root;
+    expect(next.type).toBe('@kerfjs/ui:sized-region');
+    // Only a Pane takes `fill` as a new root.
+    expect(next.props).toEqual({ minHeight: { $css: 'rem(20)' } });
   });
 
   it('fixes a nested layout’s hint from its row', () => {

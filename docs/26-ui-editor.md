@@ -348,7 +348,11 @@ the Inspector's toolbar: SizedRegion, ListInsetControl, and ListInsetText,
 each offered only where it can hold the node (the result must add no
 validation problem), then **Other…**, a dialog that filters every container by
 name. The new container takes the node's place, holds it in its main zone,
-starts with its seeded props, and is selected; the step is one undo.
+starts with its seeded props, and is selected; the step is one undo. Every node
+has it (KF-84CCD1): on the root, the container becomes the new root and holds
+the whole old tree, and a Pane that becomes the root starts with `fill`, as
+New's does; a `$each` template or an `$if` branch is embedded in place, so the
+container repeats or shows under the condition instead.
 
 While a node inside a TabNavigator tab's content is selected, the canvas shows
 that tab, whatever tab the document opens on, so the ring and the tab's drop
