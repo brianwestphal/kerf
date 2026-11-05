@@ -134,8 +134,10 @@ describe('the scoped move check', () => {
     expect(result.undecided).toBe(0);
   }, 60_000);
 
-  // `KERF_MOVE_FUZZ_SEEDS=2000` soaks it.
-  const SEEDS = Number(env.KERF_MOVE_FUZZ_SEEDS ?? 80);
+  // `KERF_MOVE_FUZZ_SEEDS=2000` soaks it. The default stays small, with
+  // headroom for a loaded machine running the parallel coverage suite
+  // (KF-KFR16N: 80 seeds once took 30-110s there against a 60s limit).
+  const SEEDS = Number(env.KERF_MOVE_FUZZ_SEEDS ?? 40);
   it(`agrees with the full validation on ${SEEDS} generated documents`, () => {
     const pool = corpus.flatMap(poolOf);
     const context = { catalog: viewCatalog, pool, zoneKeys };
@@ -161,7 +163,7 @@ describe('the scoped move check', () => {
     // Most answers are the scoped check's own.
     expect(result.decided).toBeGreaterThan(result.undecided * 4);
     expect(result.legal).toBeGreaterThan(100);
-  }, 60_000);
+  }, 180_000);
 
   it('answers a move into itself, and leaves repeated names and the root to the full validation', () => {
     const document = inbox as unknown as ViewDocument;
