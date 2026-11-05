@@ -21,13 +21,17 @@ test('SummaryRow selects, clamps, and rounds by presentation', async ({
       [...node.querySelectorAll<HTMLElement>('[role="option"]')].map((row) => {
         const style = window.getComputedStyle(row);
         const title = row.querySelector('.kui-summary-row__title')!;
-        const lineHeight = parseFloat(
-          window.getComputedStyle(title).lineHeight,
-        );
+        const titleStyle = window.getComputedStyle(title);
+        const lineHeight = parseFloat(titleStyle.lineHeight);
+        // The clamp box carries ring room as padding; count the text lines.
+        const textHeight =
+          title.getBoundingClientRect().height -
+          parseFloat(titleStyle.paddingTop) -
+          parseFloat(titleStyle.paddingBottom);
         return {
           top: parseFloat(style.borderTopLeftRadius),
           bottom: parseFloat(style.borderBottomLeftRadius),
-          lines: Math.round(title.getBoundingClientRect().height / lineHeight),
+          lines: Math.round(textHeight / lineHeight),
           opacity: style.opacity,
         };
       }),
@@ -162,7 +166,16 @@ test('a long title clamps with an ellipsis while the trailing meta stays on its 
           )!;
           const style = window.getComputedStyle(title);
           const lineHeight = parseFloat(style.lineHeight);
-          const box = title.getBoundingClientRect();
+          // The text box: the clamp's border box less its ring-room padding.
+          const outer = title.getBoundingClientRect();
+          const box = {
+            top: outer.top + parseFloat(style.paddingTop),
+            right: outer.right - parseFloat(style.paddingRight),
+            height:
+              outer.height -
+              parseFloat(style.paddingTop) -
+              parseFloat(style.paddingBottom),
+          };
           const trailing = row
             .querySelector('.kui-summary-row__trailing')!
             .getBoundingClientRect();
@@ -338,5 +351,61 @@ test('a focused SummaryRow draws a solid focus ring inside its own box', async (
           ),
         });
     }
+  }
+});
+
+// KF-ETTYMK: a nested action inside the clamped title keeps its whole focus
+// ring: the ring's rect (the button grown by outline width + offset) lies
+// inside the title's clip rect (its padding box) in every engine.
+test('a nested action in a SummaryRow title shows its whole focus ring', async ({
+  page,
+}, testInfo) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?component=summary-row');
+    const group = page.getByRole('group', {
+      name: 'Unreadable ticket diagnostic',
+    });
+    const open = group.getByRole('button', { name: 'Open' });
+    // Focus with no pointer interaction matches :focus-visible, so the ring
+    // draws (WebKit's Tab skips buttons by default, so focus directly).
+    await page.keyboard.press('Shift');
+    await open.focus();
+    await expect(open).toBeFocused();
+    await expect(open).toHaveCSS('outline-style', 'solid');
+    const fit = await open.evaluate((button) => {
+      const style = window.getComputedStyle(button);
+      const reach =
+        parseFloat(style.outlineWidth) + parseFloat(style.outlineOffset);
+      const b = button.getBoundingClientRect();
+      const title = button.closest<HTMLElement>('.kui-summary-row__title')!;
+      const t = title.getBoundingClientRect();
+      const ts = window.getComputedStyle(title);
+      // overflow: hidden clips at the padding box (inside the border).
+      const clip = {
+        top: t.top + parseFloat(ts.borderTopWidth),
+        bottom: t.bottom - parseFloat(ts.borderBottomWidth),
+        left: t.left + parseFloat(ts.borderLeftWidth),
+        right: t.right - parseFloat(ts.borderRightWidth),
+      };
+      return {
+        overflow: ts.overflowY,
+        reach,
+        top: b.top - reach - clip.top,
+        bottom: clip.bottom - (b.bottom + reach),
+        left: b.left - reach - clip.left,
+        right: clip.right - (b.right + reach),
+      };
+    });
+    expect(fit.overflow).toBe('hidden');
+    expect(fit.reach).toBeGreaterThan(0);
+    for (const side of [fit.top, fit.bottom, fit.left, fit.right])
+      expect(side).toBeGreaterThanOrEqual(-0.5);
+    if (testInfo.project.name !== 'firefox')
+      await group.screenshot({
+        path: testInfo.outputPath(
+          `summary-row-nested-ring-${testInfo.project.name}-${width}.png`,
+        ),
+      });
   }
 });

@@ -144,12 +144,22 @@
    around it. The clamp box holds one block (`__title-text`) with the float and
    the inline title content: WebKit turns a float that is a direct child of a
    -webkit-box into its own box item, so the float lives one level down, where
-   every engine still clamps the nested lines. `max-height` is the fallback. */
+   every engine still clamps the nested lines. `max-height` is the fallback.
+   The clip edge sits a focus ring's reach (a 3px ring at a 1px offset)
+   outside the text, through a padding / negative-margin pair that leaves the
+   layout unchanged, so a nested action's ring is not cut off. */
 .kui-summary-row__title {
+  --_kui-summary-row-ring-room: 4px;
   display: -webkit-box;
   min-width: 0;
-  max-height: calc(var(--_kui-summary-row-title-lines) * 1.3em);
+  max-height: calc(
+    var(--_kui-summary-row-title-lines) * 1.3em + 2 *
+      var(--_kui-summary-row-ring-room)
+  );
+  margin: calc(-1 * var(--_kui-summary-row-ring-room));
+  padding: var(--_kui-summary-row-ring-room);
   overflow: hidden;
+  box-sizing: border-box;
   line-height: 1.3;
   overflow-wrap: anywhere;
   -webkit-box-orient: vertical;
