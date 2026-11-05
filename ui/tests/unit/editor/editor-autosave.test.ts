@@ -242,16 +242,23 @@ describe('editor autosave', () => {
     const [first] = [...stored.keys()];
     editor.selection.value = { kind: 'node', id: COMPOSE };
     root.querySelector<HTMLElement>('[data-action="editor-new"]')!.click();
-    expect(editor.document.value.root.type).toBe('@kerfjs/ui:pane');
-    expect(editor.document.value.root.zones).toBeUndefined();
+    // KF-PK3GVY: New has no root until a first component is chosen.
+    expect(editor.document.value.root).toBeUndefined();
     expect(editor.selection.value).toBeNull();
     await vi.waitFor(() => expect(stored.size).toBe(2));
     const second = [...stored.keys()].find((path) => path !== first)!;
     expect(isDraft(second)).toBe(true);
-    expect(JSON.parse(stored.get(second)!).name).toBe('Untitled');
+    // The rootless draft saves as is: a document with no root field.
+    expect(JSON.parse(stored.get(second)!)).toEqual({
+      schema: 'kerf-ui-document/v1',
+      name: 'Untitled',
+      catalogs: ['@kerfjs/ui'],
+    });
     expect(JSON.parse(stored.get(first!)!).name).toBe('Inbox');
     await vi.waitFor(() =>
-      expect(header(root)).toContain('Unsaved draft · autosaved · 1 node'),
+      expect(header(root)).toContain(
+        'Unsaved draft · autosaved · 0 nodes · 1 problem',
+      ),
     );
     // Undo has nothing to go back to: the new document starts fresh.
     expect(

@@ -319,11 +319,11 @@ function workbench() {
   };
   editor.selection.value = {
     kind: 'node',
-    id: editor.document.value.root.id,
+    id: editor.document.value.root!.id,
   };
   choose(field(root, '[data-editor-root="component"]'), '@kerfjs/ui:workbench');
   click(root, 'editor-replace-root');
-  const id = editor.document.value.root.id;
+  const id = editor.document.value.root!.id;
   const props = () => findNode(editor.document.value, id)!.node.props ?? {};
   return { root, editor, props };
 }
@@ -584,7 +584,9 @@ describe('inline list editors (KF-A9ZHGW)', () => {
     check(field(root, '[data-editor-prop="separators"]'), 'block-end', false);
     expect(props()).not.toHaveProperty('separators');
     click(root, 'editor-undo');
-    expect(editor.document.value.root.props?.separators).toEqual(['block-end']);
+    expect(editor.document.value.root!.props?.separators).toEqual([
+      'block-end',
+    ]);
   });
 
   it('edits a TagField’s tags inline', () => {

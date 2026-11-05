@@ -73,11 +73,11 @@ describe('a Button link in the Inspector (KF-RESJ2S)', () => {
     };
     editor.selection.value = {
       kind: 'node',
-      id: editor.document.value.root.id,
+      id: editor.document.value.root!.id,
     };
     choose(field(root, '[data-editor-root="component"]'), '@kerfjs/ui:button');
     field(root, '[data-action="editor-replace-root"]').click();
-    const id = editor.document.value.root.id;
+    const id = editor.document.value.root!.id;
     const props = () => findNode(editor.document.value, id)!.node.props ?? {};
     const kind = root.querySelector<HTMLElement>(
       '[data-editor-prop="link"][data-editor-kind="choice"]',

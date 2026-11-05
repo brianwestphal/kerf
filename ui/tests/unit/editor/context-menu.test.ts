@@ -154,7 +154,7 @@ describe('node context menu', () => {
         '[data-editor-context-embed="@kerfjs/ui:sized-region"]',
       )!
       .click();
-    const first = editor.document.value.root.zones!.content![0] as {
+    const first = editor.document.value.root!.zones!.content![0] as {
       id: string;
       type: string;
     };
@@ -162,7 +162,7 @@ describe('node context menu', () => {
     expect(editor.selection.value).toEqual({ kind: 'node', id: first.id });
     root.querySelector<HTMLElement>('[data-action="editor-undo"]')!.click();
     expect(
-      (editor.document.value.root.zones!.content![0] as { id: string }).id,
+      (editor.document.value.root!.zones!.content![0] as { id: string }).id,
     ).toBe(SAVE);
   });
 
@@ -173,7 +173,7 @@ describe('node context menu', () => {
       .querySelector<HTMLElement>('[data-action="editor-context-move-up"]')!
       .click();
     const ids = () =>
-      editor.document.value.root.zones!.content!.map(
+      editor.document.value.root!.zones!.content!.map(
         (child) => (child as { id: string }).id,
       );
     expect(ids()).toEqual([CANCEL, SAVE]);
@@ -202,7 +202,7 @@ describe('node context menu', () => {
     dialog
       .querySelector<HTMLElement>('[data-editor-embed="@kerfjs/ui:row"]')!
       .click();
-    const row1 = editor.document.value.root.zones!.content![1] as unknown as {
+    const row1 = editor.document.value.root!.zones!.content![1] as unknown as {
       type: string;
       zones: Record<string, { id: string }[]>;
     };
@@ -218,8 +218,25 @@ describe('node context menu', () => {
       { label: 'Move up', disabled: true },
       { label: 'Move down', disabled: true },
       { label: 'Duplicate', disabled: true },
-      { label: 'Delete', disabled: true },
+      // KF-PK3GVY: deleting the root leaves the document rootless.
+      { label: 'Delete', disabled: false },
     ]);
+  });
+
+  it('deletes the root from the menu, as one undo step', () => {
+    const { root, editor } = open();
+    rightClick(row(root, PANE), 0, 0);
+    menuOf(root)
+      .querySelector<HTMLElement>('[data-action="editor-context-delete"]')!
+      .click();
+    expect(editor.document.value.root).toBeUndefined();
+    expect(editor.document.value.name).toBe('Menu');
+    expect(editor.selection.value).toBeNull();
+    expect(
+      root.querySelector('[data-editor-canvas] [data-editor-empty="root"]'),
+    ).not.toBeNull();
+    root.querySelector<HTMLElement>('[data-action="editor-undo"]')!.click();
+    expect(editor.document.value).toEqual(doc());
   });
 
   it('opens below a canvas element when the keyboard opened it', () => {

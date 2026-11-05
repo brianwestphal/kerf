@@ -114,9 +114,9 @@ describe('showing a node only when a condition holds', () => {
     const { root } = open(NEW, (document) => ({
       ...document,
       root: {
-        ...document.root,
+        ...document.root!,
         zones: {
-          ...document.root.zones,
+          ...document.root!.zones,
           content: [
             {
               $if: { $param: 'showEmpty' },

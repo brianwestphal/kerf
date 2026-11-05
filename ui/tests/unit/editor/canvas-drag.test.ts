@@ -97,7 +97,7 @@ function setUp() {
 }
 
 const content = (document: ViewDocument) =>
-  (document.root.zones!.content as readonly { id?: string }[]).map(
+  (document.root!.zones!.content as readonly { id?: string }[]).map(
     (child) => child.id,
   );
 
@@ -578,7 +578,7 @@ describe('canvas drag', () => {
         .textContent,
     ).toBe('Inside Toolbar › trailing');
     fire('pointerup', 650, 30);
-    const toolbar = editor.document.value.root.zones!.content![0] as {
+    const toolbar = editor.document.value.root!.zones!.content![0] as {
       zones?: Record<string, { type: string }[]>;
     };
     expect(Object.keys(toolbar.zones!)).toEqual(['trailing']);
@@ -780,7 +780,7 @@ describe('canvas drag', () => {
     expect(overlay.style.width).toBe('792px');
     fire('pointerup', 400, 300);
     // KF-W10DXQ: it lands in the Pane's content, not its header.
-    const zones = editor.document.value.root.zones!;
+    const zones = editor.document.value.root!.zones!;
     expect(Object.keys(zones)).toEqual(['content']);
     expect((zones.content as readonly { type?: string }[])[0]!.type).toBe(
       '@kerfjs/ui:text',
@@ -819,8 +819,79 @@ describe('canvas drag', () => {
     fire('pointermove', 400, 300);
     fire('pointerup', 400, 300);
     expect(
-      Object.values(editor.document.value.root.zones!).flat(),
+      Object.values(editor.document.value.root!.zones!).flat(),
     ).toHaveLength(2);
+  });
+
+  // KF-PK3GVY: a document with no root takes a palette drop as its root, on
+  // the empty state or the canvas's blank space.
+  it('makes a palette drop on a rootless canvas the root', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    const editor = createEditor({
+      document: {
+        schema: 'kerf-ui-document/v1',
+        name: 'Untitled',
+        catalogs: ['@kerfjs/ui'],
+      } as ViewDocument,
+    });
+    const stopMount = mount(root, editor.render);
+    let under: Element | null = null;
+    Object.defineProperty(document, 'elementFromPoint', {
+      configurable: true,
+      value: () => under,
+    });
+    const unwireEditor = editor.wire(root);
+    cleanup = () => {
+      unwireEditor();
+      stopMount();
+    };
+    const canvas = root.querySelector<HTMLElement>('[data-editor-canvas]')!;
+    at(canvas, 0, 0, 800, 600);
+    const empty = canvas.querySelector<HTMLElement>(
+      '[data-editor-empty="root"]',
+    )!;
+    at(empty, 200, 100, 400, 200);
+    const drag = (key: string, over: Element) => {
+      const row = root.querySelector<HTMLElement>(
+        `[data-editor-palette="${key}"]`,
+      )!;
+      const fire = (type: string, x: number, y: number) => {
+        const event = new Event(type, { bubbles: true, cancelable: true });
+        for (const [name, value] of Object.entries({
+          clientX: x,
+          clientY: y,
+          button: 0,
+          pointerId: 1,
+        }))
+          Object.defineProperty(event, name, { value });
+        row.dispatchEvent(event);
+      };
+      fire('pointerdown', 10, 700);
+      under = over;
+      fire('pointermove', 400, 200);
+      const caption = canvas.querySelector<HTMLElement>(
+        '.kui-editor__drop-caption',
+      )!;
+      expect(caption.textContent).toBe('As the root');
+      fire('pointerup', 400, 200);
+    };
+    drag('@kerfjs/ui:pane', empty);
+    const pane = editor.document.value.root!;
+    // Seeded as Replace the root seeds it: a Pane root fills.
+    expect(pane).toMatchObject({
+      type: '@kerfjs/ui:pane',
+      props: { fill: true },
+    });
+    expect(editor.selection.value).toEqual({ kind: 'node', id: pane.id });
+    // The drag swallows the click that ends it, so undo from the keyboard.
+    document.body.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'z', metaKey: true, bubbles: true }),
+    );
+    expect(editor.document.value.root).toBeUndefined();
+    // The canvas's blank space around the empty state takes it too.
+    drag('@kerfjs/ui:text', canvas);
+    expect(editor.document.value.root!.type).toBe('@kerfjs/ui:text');
   });
 });
 

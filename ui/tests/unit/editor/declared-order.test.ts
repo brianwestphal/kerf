@@ -51,7 +51,7 @@ const withTextField = (props: Record<string, unknown>) =>
 
 const textFieldProps = (document: ViewDocument) =>
   (
-    document.root.zones!.content![0] as unknown as {
+    document.root!.zones!.content![0] as unknown as {
       then: { props: Record<string, unknown> };
     }
   ).then.props;
@@ -94,7 +94,7 @@ describe('declared order', () => {
 
   it('orders the props of an `else` branch too', () => {
     const document = withTextField({ label: 'Password' });
-    const condition = document.root.zones!.content![0] as unknown as {
+    const condition = document.root!.zones!.content![0] as unknown as {
       else?: unknown;
     };
     condition.else = {
@@ -103,7 +103,7 @@ describe('declared order', () => {
       props: { value: 'x', label: 'Other' },
     };
     const branch = (
-      inOrder(document).root.zones!.content![0] as unknown as {
+      inOrder(document).root!.zones!.content![0] as unknown as {
         else: { props: Record<string, unknown> };
       }
     ).else;
@@ -113,7 +113,7 @@ describe('declared order', () => {
   it('leaves a component the catalog does not know as written', () => {
     const document = withTextField({ b: 1, a: 2 });
     (
-      document.root.zones!.content![0] as unknown as {
+      document.root!.zones!.content![0] as unknown as {
         then: { type: string };
       }
     ).then.type = '@app/ui:unknown';

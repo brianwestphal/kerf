@@ -53,7 +53,9 @@ export interface CanvasDragOptions {
   };
   /**
    * The outline id of the document's root, which a drop on the canvas's
-   * blank space lands inside (an empty root Pane has no height to hit).
+   * blank space lands inside (an empty root Pane has no height to hit), or
+   * the editor's stand-in id for a document with no root yet, which the
+   * drop becomes (KF-PK3GVY).
    */
   readonly rootOf?: () => string;
   /** What a source id is called on the pointer's chip. */

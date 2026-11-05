@@ -118,6 +118,20 @@ describe('generateView: the inbox module', () => {
   });
 });
 
+describe('a rootless document (KF-PK3GVY: KUI-V017)', () => {
+  it('generates nothing and names the diagnostic, as contractOf does', () => {
+    const document = inbox();
+    delete document.root;
+    for (const run of [
+      () => generate(document),
+      () => generate(document, { declarationsOnly: true }),
+      () => contractOf(document, catalog),
+    ]) {
+      expect(run).toThrow(/KUI-V017 at \$\.root: the document has no root/);
+    }
+  });
+});
+
 describe('the contract digest ignores layout and tracks the interface', () => {
   const digest = (edit: (doc: Doc) => void) => {
     const document = inbox();

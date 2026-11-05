@@ -4,7 +4,7 @@
   "title": "Kerf UI view document",
   "description": "A kerf-ui-document/v1 view document (docs/26-ui-editor.md): the editor-owned source of truth that generates a read-only view module. This schema checks shape for editors and IDEs; validateView from @kerfjs/ui/view also checks types, scope, actions, and composition against the component catalogs.",
   "type": "object",
-  "required": ["schema", "name", "catalogs", "root"],
+  "required": ["schema", "name", "catalogs"],
   "additionalProperties": false,
   "properties": {
     "$schema": {
@@ -48,6 +48,7 @@
       }
     },
     "root": {
+      "description": "The document's one top node. A document without one (an editor's empty draft) is well formed, but validateView reports KUI-V017 and nothing generates or renders it.",
       "$ref": "#/$defs/node"
     }
   },

@@ -8,8 +8,15 @@ import type { ViewContract, ViewDocument } from '@kerfjs/ui/view';
 import { describe, expect, it } from 'vitest';
 
 import { createEditorCatalog } from '../../../src/editor/catalog.js';
-import { controlFor, seedProps } from '../../../src/editor/model/controls.js';
 import {
+  controlOf,
+  removeSlot,
+  slotAt,
+} from '../../../src/editor/model/control-flow.js';
+import { controlFor, seedProps } from '../../../src/editor/model/controls.js';
+import { findNode, visitNodes } from '../../../src/editor/model/document.js';
+import {
+  eachScopes,
   legalZones,
   promoteToParam,
   setProp as setPropOn,
@@ -18,11 +25,15 @@ import {
   compareWithModule,
   exportModule,
 } from '../../../src/editor/model/export.js';
+import { documentInDeclaredOrder } from '../../../src/editor/model/fields.js';
 import {
   groupedProps,
   type InspectorProp,
   inspectorSections,
 } from '../../../src/editor/model/inspector.js';
+import { outlineTree } from '../../../src/editor/model/outline.js';
+import { markRows } from '../../../src/editor/model/play-values.js';
+import { previewSlots } from '../../../src/editor/model/preview-slots.js';
 import { sampleValue } from '../../../src/editor/model/sample-inputs.js';
 import sample from '../../fixtures/view/inbox.kui.json';
 import { propsByKey, viewCatalog } from './kerf-catalog.js';
@@ -215,5 +226,37 @@ describe('comparison edges', () => {
       detail: 'Compatible: input "subtitle" added',
       breaking: false,
     });
+  });
+});
+
+// KF-PK3GVY: an empty draft has no root; every model reads it as empty.
+describe('a rootless document', () => {
+  const rootless = {
+    schema: 'kerf-ui-document/v1',
+    name: 'Untitled',
+    catalogs: ['@kerfjs/ui'],
+  } as ViewDocument;
+  const address = { parent: COMPOSE, zone: 'content', index: 0 };
+
+  it('has no nodes, scopes, controls, slots, or outline rows', () => {
+    expect(visitNodes(rootless)).toEqual([]);
+    expect(findNode(rootless, COMPOSE)).toBeUndefined();
+    expect(eachScopes(rootless, COMPOSE)).toEqual([]);
+    expect(controlOf(rootless, COMPOSE)).toBeUndefined();
+    expect(slotAt(rootless, address)).toBeUndefined();
+    expect(removeSlot(rootless, address)).toBe(rootless);
+    expect(outlineTree(rootless, new Map())).toEqual([]);
+  });
+
+  it('passes through the preview and save transforms unchanged', () => {
+    expect(previewSlots(rootless).document).toBe(rootless);
+    expect(markRows(rootless, viewCatalog)).toBe(rootless);
+    expect(
+      documentInDeclaredOrder(
+        rootless,
+        (key) => propsByKey.get(key)?.props,
+        () => ({}),
+      ),
+    ).toBe(rootless);
   });
 });

@@ -116,7 +116,7 @@ const orders = (): ViewDocument =>
   }) as unknown as ViewDocument;
 
 const viewsOf = (document: ViewDocument) =>
-  (document.root.props!.views as { key: string }[]).map(({ key }) => key);
+  (document.root!.props!.views as { key: string }[]).map(({ key }) => key);
 
 describe('the action model', () => {
   it('names the document’s actions, not its literal ones', () => {
@@ -138,11 +138,11 @@ describe('the action model', () => {
     const original = orders();
     const list = pushView(original, original, ids.stack, 'list');
     expect(viewsOf(list)).toEqual(['list']);
-    expect(Object.keys(list.root.zones!)).toEqual(['views.0.content']);
+    expect(Object.keys(list.root!.zones!)).toEqual(['views.0.content']);
     const pushed = pushView(list, original, ids.stack, 'order');
     expect(viewsOf(pushed)).toEqual(['list', 'order']);
-    expect(pushed.root.zones!['views.1.content']).toEqual(
-      original.root.zones!['views.1.content'],
+    expect(pushed.root!.zones!['views.1.content']).toEqual(
+      original.root!.zones!['views.1.content'],
     );
     // An unknown view, or a node that is not a stack, changes nothing.
     expect(pushView(list, original, ids.stack, 'nothing')).toBe(list);
@@ -278,7 +278,7 @@ describe('the play page’s actions', () => {
   it('logs an async handler once it settles, and its rejection', async () => {
     let fail = false;
     // A document with no params: the handler gets none.
-    const refresh = orders().root.zones!['views.0.content']![1]!;
+    const refresh = orders().root!.zones!['views.0.content']![1]!;
     const { entries, click } = await play(
       {
         refresh: ({ params }) => {

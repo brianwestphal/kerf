@@ -25,7 +25,7 @@ describe('structural edits', () => {
       const { root, editor } = open(FOLDERS);
       const content = () =>
         (
-          editor.document.value.root.zones!.content as readonly {
+          editor.document.value.root!.zones!.content as readonly {
             id: string;
             name?: string;
           }[]
@@ -90,7 +90,9 @@ describe('structural edits', () => {
           }),
         );
       const content = () =>
-        editor.document.value.root.zones!.content as readonly { id?: string }[];
+        editor.document.value.root!.zones!.content as readonly {
+          id?: string;
+        }[];
       // Nothing to paste yet, and the root has no place to duplicate beside.
       const start = editor.document.value;
       key('v');
@@ -340,15 +342,48 @@ describe('structural edits', () => {
     expect(editor.selection.value).toBeNull();
   });
 
-  it('cannot move or delete the root', () => {
+  it('cannot move the root, but deletes it to a rootless document (KF-PK3GVY)', () => {
     const { root, editor } = open(PANE);
     expect(
-      field(root, '[data-action="editor-delete"]').hasAttribute('disabled'),
+      field(root, '[data-action="editor-move-down"]').hasAttribute('disabled'),
     ).toBe(true);
+    expect(
+      field(root, '[data-action="editor-delete"]').hasAttribute('disabled'),
+    ).toBe(false);
     const before = editor.document.value;
-    click(root, 'editor-delete');
     click(root, 'editor-move-down');
     expect(editor.document.value).toBe(before);
+    click(root, 'editor-delete');
+    // Params, slots, and the name stay; only the root goes.
+    expect('root' in editor.document.value).toBe(false);
+    expect(editor.document.value).toEqual({ ...before, root: undefined });
+    expect(editor.selection.value).toBeNull();
+    expect(root.textContent).toContain('No components yet');
+    expect(root.textContent).toContain('Start with a component');
+    // One undo brings the whole tree back.
+    click(root, 'editor-undo');
+    expect(editor.document.value).toBe(before);
+  });
+
+  it('pastes a copy as the root of a rootless document (KF-PK3GVY)', () => {
+    const { root, editor } = open(FOLDERS);
+    const key = (letter: string) =>
+      document.body.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: letter,
+          metaKey: true,
+          bubbles: true,
+        }),
+      );
+    key('c');
+    editor.selection.value = { kind: 'node', id: PANE };
+    click(root, 'editor-delete');
+    expect(editor.document.value.root).toBeUndefined();
+    key('v');
+    const pasted = editor.document.value.root!;
+    expect(pasted.name).toBe('folderList');
+    expect(pasted.id).not.toBe(FOLDERS);
+    expect(editor.selection.value).toEqual({ kind: 'node', id: pasted.id });
   });
 
   it('adds a chosen component to a chosen zone and selects it', () => {

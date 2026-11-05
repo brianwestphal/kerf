@@ -75,7 +75,7 @@ export function controlFlowSection(
 ) {
   const control = controlOf(document, id);
   if (!control) {
-    return id === document.root.id ? undefined : (
+    return id === document.root?.id ? undefined : (
       <>
         <ListHeader label="Control flow" size="xs" />
         <ListInsetText>

@@ -71,8 +71,11 @@ const sample = () =>
   }) as unknown as ViewDocument;
 
 const activeOf = (document: ViewDocument) =>
-  (document.root.zones!.content![0] as unknown as { props: { active: string } })
-    .props.active;
+  (
+    document.root!.zones!.content![0] as unknown as {
+      props: { active: string };
+    }
+  ).props.active;
 
 describe('the scene the canvas shows', () => {
   it('shows the tab whose content holds the selected node, at any depth', () => {
@@ -142,13 +145,13 @@ describe('the NavStack view the canvas shows', () => {
       },
     }) as unknown as ViewDocument;
   const views = (document: ViewDocument) =>
-    (document.root.props!.views as { key: string }[]).map(({ key }) => key);
+    (document.root!.props!.views as { key: string }[]).map(({ key }) => key);
 
   it('cuts the stack back to the chosen view and drops later zones', () => {
     const document = stackDocument();
     const shown = shownScenes(document, undefined, new Map([[STACK, 0]]));
     expect(views(shown)).toEqual(['library']);
-    expect(shown.root.zones).toEqual({});
+    expect(shown.root!.zones).toEqual({});
     expect(views(document)).toEqual(['library', 'project']);
   });
 
@@ -272,7 +275,7 @@ describe('dialogs on the edit canvas', () => {
     }) as unknown as ViewDocument;
   const presentationOf = (document: ViewDocument) =>
     (
-      document.root.zones!.content![0] as unknown as {
+      document.root!.zones!.content![0] as unknown as {
         props: { presentation?: string };
       }
     ).props.presentation;
@@ -294,8 +297,8 @@ describe('dialogs on the edit canvas', () => {
         ...withDialog(),
         root: { id: PANE, type, props: { id: 'composed' } },
       } as unknown as ViewDocument;
-      expect(embeddedDialogs(composed).root.props?.embedded).toBe(true);
-      expect(composed.root.props?.embedded).toBeUndefined();
+      expect(embeddedDialogs(composed).root!.props?.embedded).toBe(true);
+      expect(composed.root!.props?.embedded).toBeUndefined();
       const already = {
         ...composed,
         root: { ...composed.root, props: { id: 'composed', embedded: true } },
@@ -311,8 +314,8 @@ describe('dialogs on the edit canvas', () => {
         props: { label: 'Request', dismiss: 'manual' },
       },
     } as unknown as ViewDocument;
-    expect(embeddedDialogs(popover).root.props?.presentation).toBe('embedded');
-    expect(popover.root.props?.presentation).toBeUndefined();
+    expect(embeddedDialogs(popover).root!.props?.presentation).toBe('embedded');
+    expect(popover.root!.props?.presentation).toBeUndefined();
     expect(embeddedDialogs(sample())).toEqual(sample());
   });
 
@@ -392,7 +395,7 @@ describe('popups on the edit canvas', () => {
     }) as unknown as ViewDocument;
   const propsOf = (document: ViewDocument, index: number) =>
     (
-      document.root.zones!.content![index] as unknown as {
+      document.root!.zones!.content![index] as unknown as {
         props: { embedded?: boolean };
       }
     ).props;

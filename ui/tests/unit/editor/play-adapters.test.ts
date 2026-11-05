@@ -983,7 +983,7 @@ describe('play-time layout transitions (pure)', () => {
     // A compact the author binds is theirs.
     const bound = setRegionSize(source, 'x', 0);
     (
-      bound.root.zones!.content![3] as { props: Record<string, unknown> }
+      bound.root!.zones!.content![3] as { props: Record<string, unknown> }
     ).props.compact = { $param: 'tabs' };
     expect(followCompact(bound, true)).toBe(bound);
   });
@@ -1263,13 +1263,13 @@ describe('the play page’s nested rows (KF-7XQAFR)', () => {
     // the rows-inside-rows tests (KF-ZMBST3) below.
     const source = nestedTabs();
     const content = (
-      source.root.zones as { content: readonly ViewDocument['root'][] }
+      source.root!.zones as { content: readonly ViewDocument['root'][] }
     ).content;
     const { type } = source.params!.data!;
     const { root, player } = await play({
       ...source,
       params: { data: { type } },
-      root: { ...source.root, zones: { content: [content[1]!] } },
+      root: { ...source.root!, zones: { content: [content[1]!] } },
     });
     const data = (key: string) =>
       root.querySelector<HTMLElement>(

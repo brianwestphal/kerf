@@ -37,7 +37,7 @@ function selectionCost(count: number) {
   document.body.append(root);
   const editor = createEditor({ document: flatPane(count) });
   attach(root, editor);
-  const rows = editor.document.value.root.zones!.content! as readonly {
+  const rows = editor.document.value.root!.zones!.content! as readonly {
     id: string;
   }[];
   editor.selection.value = { kind: 'node', id: rows[1]!.id };

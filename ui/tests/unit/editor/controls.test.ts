@@ -583,7 +583,7 @@ describe('seedNode', () => {
   });
 
   it('fills a required zone with its accepted component, or a Text', () => {
-    const workbench = seededDocument('@kerfjs/ui:workbench').root;
+    const workbench = seededDocument('@kerfjs/ui:workbench').root!;
     expect(workbench.zones?.main).toEqual([
       {
         id: expect.any(String),
@@ -591,14 +591,14 @@ describe('seedNode', () => {
         props: { children: 'Main' },
       },
     ]);
-    const split = seededDocument('@kerfjs/ui:split-view').root;
+    const split = seededDocument('@kerfjs/ui:split-view').root!;
     expect(Object.keys(split.zones ?? {})).toEqual(['list', 'detail']);
     // A TabBar's tabs zone names TabBarItem, so it gets a seeded one.
-    const [tab] = seededDocument('@kerfjs/ui:tab-bar').root.zones!.tabs!;
+    const [tab] = seededDocument('@kerfjs/ui:tab-bar').root!.zones!.tabs!;
     expect((tab as ViewNode).type).toBe('@kerfjs/ui:tabs');
     // A required content prop that takes no text holds a Text naming it.
     expect(
-      seededDocument('@kerfjs/ui:toolbar-control-group').root.zones,
+      seededDocument('@kerfjs/ui:toolbar-control-group').root!.zones,
     ).toEqual({
       children: [
         {
@@ -663,12 +663,12 @@ describe('seedNode', () => {
   });
 
   it('seeds icon data, in-range numbers, and list-shaped unions', () => {
-    expect(seededDocument('@kerfjs/ui:lucide-icon').root.props?.icon).toEqual({
+    expect(seededDocument('@kerfjs/ui:lucide-icon').root!.props?.icon).toEqual({
       $icon: PLACEHOLDER_ICON,
     });
     expect(
       Array.isArray(
-        seededDocument('@kerfjs/ui:tree-list').root.props?.expanded,
+        seededDocument('@kerfjs/ui:tree-list').root!.props?.expanded,
       ),
     ).toBe(true);
     expect(seeded('@kerfjs/ui:grid').columns).toBe(1);

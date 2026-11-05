@@ -16,6 +16,7 @@ import {
   newNodeId,
   paramTypeFor,
   pasteNode,
+  placementOf,
   primaryFirst,
   promoteToParam,
   removeNode,
@@ -25,6 +26,7 @@ import {
   setProp,
   setTextRun,
   suggestedComponents,
+  withoutRoot,
 } from '../../../src/editor/model/edits.js';
 import sample from '../../fixtures/view/inbox.kui.json';
 import { propsByKey, viewCatalog } from './kerf-catalog.js';
@@ -77,19 +79,14 @@ describe('structural edits', () => {
     expect(() => insertNode(inbox, 'missing', 'x', button)).toThrow(/no node/);
   });
 
-  it('removes and reorders nodes placed in zones, but not the root or a template', () => {
+  it('removes and reorders nodes placed in zones, but not a template', () => {
     expect(ids(removeNode(inbox, COMPOSE))).not.toContain('5D');
-    expect(() => removeNode(inbox, PANE)).toThrow(/cannot be removed/);
     expect(() => removeNode(inbox, ROW)).toThrow(/cannot be removed/);
-    expect(isMovable(inbox, PANE)).toEqual({
-      up: false,
-      down: false,
-      remove: false,
-    });
     expect(isMovable(inbox, FOLDERS)).toEqual({
       up: false,
       down: true,
       remove: true,
+      placed: true,
     });
     const moved = moveNode(inbox, FOLDERS, 1);
     const content = findNode(moved, PANE)!.node.zones!.content as readonly {
@@ -240,7 +237,7 @@ describe('names and props', () => {
     }
     // The rest of the document is untouched.
     expect(rename('title', 'title')).toBe(inbox);
-    expect(rename('title', 'heading').root.id).toBe(inbox.root.id);
+    expect(rename('title', 'heading').root!.id).toBe(inbox.root!.id);
     expect(renameParam(inbox, 'title', 'showEmpty')).toEqual({
       error: 'There is already a param named showEmpty.',
     });
@@ -262,7 +259,7 @@ describe('names and props', () => {
       root: {
         ...inbox.root,
         zones: {
-          ...inbox.root.zones,
+          ...inbox.root!.zones,
           footer: [{ id: 'run', type: '#text', value: 'Hi' }],
         },
       },
@@ -347,7 +344,7 @@ describe('copies (KF-QAVK73)', () => {
   it('duplicates a node right after itself and pastes one at a place', () => {
     next = 10;
     const duplicated = duplicateNode(inbox, FOLDERS, makeId)!;
-    const content = duplicated.document.root.zones!.content as readonly {
+    const content = duplicated.document.root!.zones!.content as readonly {
       id: string;
       name?: string;
     }[];
@@ -365,7 +362,7 @@ describe('copies (KF-QAVK73)', () => {
       root: {
         ...inbox.root,
         zones: {
-          ...inbox.root.zones,
+          ...inbox.root!.zones,
           footer: [
             {
               $if: { $param: 'showEmpty' },
@@ -394,9 +391,9 @@ describe('copies (KF-QAVK73)', () => {
       { parent: PANE, zone: 'content', index: 0 },
       makeId,
     );
-    expect((pasted.document.root.zones!.content![0] as { id: string }).id).toBe(
-      pasted.id,
-    );
+    expect(
+      (pasted.document.root!.zones!.content![0] as { id: string }).id,
+    ).toBe(pasted.id);
   });
 });
 
@@ -620,7 +617,34 @@ describe('nodes inside branches', () => {
       up: false,
       down: false,
       remove: false,
+      placed: false,
     });
+  });
+});
+
+describe('removing the root (KF-PK3GVY)', () => {
+  it('leaves the document rootless with its params, slots, and name', () => {
+    expect(isMovable(inbox, PANE)).toEqual({
+      up: false,
+      down: false,
+      remove: true,
+      placed: false,
+    });
+    const rootless = removeNode(inbox, PANE);
+    expect('root' in rootless).toBe(false);
+    expect(Object.keys(rootless)).toEqual(
+      Object.keys(inbox).filter((key) => key !== 'root'),
+    );
+    expect(rootless).toEqual({ ...inbox, root: undefined });
+    expect(withoutRoot(rootless)).toEqual(rootless);
+    // Nothing is left to find, move, or remove.
+    expect(findNode(rootless, PANE)).toBeUndefined();
+    expect(isMovable(rootless, PANE).remove).toBe(false);
+    expect(() => removeNode(rootless, PANE)).toThrow(/cannot be removed/);
+    expect(placementOf(rootless, PANE)).toBeUndefined();
+    // A new root takes its place.
+    const root = { id: newNodeId(), type: '@kerfjs/ui:pane' };
+    expect(replaceRoot(rootless, root).root).toBe(root);
   });
 });
 

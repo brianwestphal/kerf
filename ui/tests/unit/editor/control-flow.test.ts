@@ -95,7 +95,7 @@ describe('otherwise branches', () => {
     props: { children: 'Something here' },
   };
   const content = (document: ViewDocument) =>
-    document.root.zones!.content as readonly object[];
+    document.root!.zones!.content as readonly object[];
 
   it('adds, reads, and removes what shows otherwise', () => {
     const both = setOtherwise(inbox, EMPTY, other);
@@ -466,7 +466,7 @@ describe('slots', () => {
     expect(result.document.slots).toEqual({ body: {} });
     const removed = removeSlot(result.document, result.address);
     expect(removed.slots).toBeUndefined();
-    expect(removed.root.zones).toEqual({ content: [] });
+    expect(removed.root!.zones).toEqual({ content: [] });
   });
 
   it('keeps a declaration still used in an else branch', () => {
@@ -475,7 +475,7 @@ describe('slots', () => {
       root: {
         ...inbox.root,
         zones: {
-          ...inbox.root.zones,
+          ...inbox.root!.zones,
           footer: [
             {
               $if: { $param: 'showEmpty' },

@@ -197,7 +197,7 @@ const barsAndPanels = () =>
 
 /** The NavStack node in `tabsAndStack()`. */
 const findStack = (document: ViewDocument) =>
-  (document.root.zones as Record<string, unknown[]>)['tabs.0.content']![0];
+  (document.root!.zones as Record<string, unknown[]>)['tabs.0.content']![0];
 
 const nodeProps = (document: ViewDocument, id: string) => {
   const find = (node: Record<string, unknown>): Record<string, unknown> => {

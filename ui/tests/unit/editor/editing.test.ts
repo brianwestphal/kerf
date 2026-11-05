@@ -146,7 +146,7 @@ describe('replacing the root (KF-KWQVDJ)', () => {
       '@kerfjs/ui:nav-stack',
     );
     click(root, 'editor-replace-root');
-    const next = editor.document.value.root;
+    const next = editor.document.value.root!;
     expect(next.type).toBe('@kerfjs/ui:nav-stack');
     expect(next.id).not.toBe(PANE);
     expect(editor.selection.value).toEqual({ kind: 'node', id: next.id });
@@ -167,7 +167,7 @@ describe('replacing the root (KF-KWQVDJ)', () => {
     const picker = () => field(root, '[data-editor-root="component"]');
     choose(picker(), '@kerfjs/ui:nav-stack');
     click(root, 'editor-replace-root');
-    expect(editor.document.value.root.props?.fill).toBeUndefined();
+    expect(editor.document.value.root!.props?.fill).toBeUndefined();
     choose(picker(), '@kerfjs/ui:pane');
     click(root, 'editor-replace-root');
     expect(editor.document.value.root).toMatchObject({

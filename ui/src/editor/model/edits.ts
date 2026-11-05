@@ -192,11 +192,21 @@ export function replaceRoot(
   return withCatalog({ ...document, root: node }, node.type);
 }
 
+/** `document` with no root (KF-PK3GVY): its other fields stay, in order. */
+export function withoutRoot(document: ViewDocument): ViewDocument {
+  return Object.fromEntries(
+    Object.entries(document).filter(([key]) => key !== 'root'),
+  ) as unknown as ViewDocument;
+}
+
 /**
- * Removes a node. Only a node placed directly in a zone list can be removed;
- * the root, `$each` templates, and `$if` branches belong to their structure.
+ * Removes a node. A node placed directly in a zone list leaves its list; the
+ * root leaves the document rootless (KF-PK3GVY: delete the root), keeping its
+ * params, slots, and name. `$each` templates and `$if` branches belong to
+ * their structure.
  */
 export function removeNode(document: ViewDocument, id: string): ViewDocument {
+  if (document.root?.id === id) return withoutRoot(document);
   const next = clone(document);
   const found = locate(next, id);
   if (!found?.list || found.index === undefined)
@@ -205,18 +215,26 @@ export function removeNode(document: ViewDocument, id: string): ViewDocument {
   return next;
 }
 
-/** Whether `removeNode` / `moveNode` can act on a node. */
+/**
+ * Whether `removeNode` / `moveNode` can act on a node: `placed` when it sits
+ * directly in a zone list, so it can also be dragged or copied beside
+ * itself. The root is not placed but can be removed (KF-PK3GVY), which
+ * leaves the document rootless.
+ */
 export function isMovable(
   document: ViewDocument,
   id: string,
-): { up: boolean; down: boolean; remove: boolean } {
+): { up: boolean; down: boolean; remove: boolean; placed: boolean } {
+  if (document.root?.id === id)
+    return { up: false, down: false, remove: true, placed: false };
   const found = placed(document, id);
   if (!found?.list || found.index === undefined)
-    return { up: false, down: false, remove: false };
+    return { up: false, down: false, remove: false, placed: false };
   return {
     up: found.index > 0,
     down: found.index < found.list.length - 1,
     remove: true,
+    placed: true,
   };
 }
 
@@ -376,7 +394,7 @@ function namesIn(document: ViewDocument): Set<string> {
     if (child.name) names.add(child.name);
     for (const list of Object.values(child.zones ?? {})) list.forEach(visit);
   };
-  visit(document.root);
+  if (document.root) visit(document.root);
   return names;
 }
 
@@ -903,7 +921,7 @@ export function eachScopes(
       }
     return undefined;
   };
-  return visit(document.root, []) ?? [];
+  return (document.root && visit(document.root, [])) ?? [];
 }
 
 /**

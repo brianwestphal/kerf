@@ -40,7 +40,7 @@ const zonesOf = (node: ViewNode) =>
   ).map((zone) => zone.key);
 const contentIds = (document: ViewDocument) =>
   (
-    document.root.zones!.content as readonly {
+    document.root!.zones!.content as readonly {
       id?: string;
       $slot?: string;
       then?: { id: string };
@@ -75,14 +75,14 @@ describe('placing nodes', () => {
       root: {
         ...inbox.root,
         zones: {
-          ...inbox.root.zones,
+          ...inbox.root!.zones,
           header: [
             {
-              ...(inbox.root.zones!.header![0] as ViewNode),
+              ...(inbox.root!.zones!.header![0] as ViewNode),
               zones: {
-                ...(inbox.root.zones!.header![0] as ViewNode).zones,
+                ...(inbox.root!.zones!.header![0] as ViewNode).zones,
                 trailing: [
-                  (inbox.root.zones!.header![0] as ViewNode).zones!
+                  (inbox.root!.zones!.header![0] as ViewNode).zones!
                     .trailing![0]!,
                   button,
                 ],

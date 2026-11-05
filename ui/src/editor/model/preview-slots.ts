@@ -98,6 +98,7 @@ export function previewSlots(
       zones: filled,
     };
   };
+  if (!document.root) return { document, slots };
   const root = node(document.root);
   return slots.size
     ? {

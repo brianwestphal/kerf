@@ -1807,7 +1807,15 @@ export function runView(document, catalog, options, trace) {
   const { diagnostics, actions } = ctx;
   if (!checkHeader(ctx, document))
     return { valid: false, diagnostics, hints: [], actions };
-  if (!isObject(document.root) || !('type' in document.root)) {
+  // KF-PK3GVY: an editor's empty draft has no root yet; it is a document,
+  // but nothing can generate or render it until a component becomes one.
+  if (document.root === undefined) {
+    ctx.report(
+      'KUI-V017',
+      '$.root',
+      'the document has no root; add a component to start it',
+    );
+  } else if (!isObject(document.root) || !('type' in document.root)) {
     ctx.report('KUI-V001', '$.root', 'root is exactly one node');
   } else {
     checkNode(ctx, document.root, '$.root', new Map(), false, undefined);

@@ -597,7 +597,7 @@ export function documentInDeclaredOrder(
     if ('$slot' in item) return item;
     return node(item);
   };
-  return { ...document, root: node(document.root) };
+  return document.root ? { ...document, root: node(document.root) } : document;
 }
 
 /**

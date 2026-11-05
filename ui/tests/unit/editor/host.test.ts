@@ -56,16 +56,44 @@ async function choose(root: HTMLElement, pickerId: string, text: string) {
 }
 
 describe('the published editor', () => {
-  it('starts with an empty Pane when the host gives no document', async () => {
+  // KF-PK3GVY: the first draft is New's rootless document.
+  it('starts with no root when the host gives no document', async () => {
     const { createEditor: bare } =
       await import('../../../src/editor/editor.js');
     const editor = bare({ catalog: defaultCatalog });
-    expect(editor.document.value).toMatchObject({
+    expect(editor.document.value).toEqual({
       schema: 'kerf-ui-document/v1',
+      name: 'Untitled',
       catalogs: ['@kerfjs/ui'],
-      root: { type: '@kerfjs/ui:pane' },
     });
-    expect(editor.document.value.root.id).toMatch(/^[0-9A-HJKMNP-TV-Z]{26}$/);
+  });
+
+  it('saves and reopens a rootless document as it is', async () => {
+    const saved: [string, string][] = [];
+    const { root, editor } = open({
+      save: (name, text) => saved.push([name, text]),
+    });
+    root.querySelector<HTMLElement>('[data-action="editor-new"]')!.click();
+    root.querySelector<HTMLElement>('[data-action="editor-save"]')!.click();
+    expect(saved).toEqual([
+      [
+        'untitled.kui.json',
+        `${JSON.stringify(
+          {
+            schema: 'kerf-ui-document/v1',
+            name: 'Untitled',
+            catalogs: ['@kerfjs/ui'],
+          },
+          null,
+          2,
+        )}\n`,
+      ],
+    ]);
+    await choose(root, 'open-document', saved[0]![1]);
+    expect(editor.document.value.root).toBeUndefined();
+    expect(
+      canvas(root).querySelector('[data-editor-empty="root"]'),
+    ).not.toBeNull();
   });
 
   it('downloads a saved file when the host gives no save function', () => {

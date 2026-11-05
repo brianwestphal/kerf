@@ -180,7 +180,8 @@ editor.wire(root);
 ```
 
 - `createEditor({ catalog, document?, save?, storage?, fieldEditors?, devicePresets?, playHandlers? })`:
-  `document` is the document to start with (default an empty Pane),
+  `document` is the document to start with (default an empty document
+  with no root, whose canvas asks for the first component),
   `save(fileName, text)` replaces the default download for Save and Export,
   `fieldEditors` registers field editors by type name (above), and
   `devicePresets` adds play mode's devices and `playHandlers` its mock

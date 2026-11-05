@@ -108,14 +108,14 @@ describe('a Workbench panel in the Inspector (KF-907BXY)', () => {
     };
     editor.selection.value = {
       kind: 'node',
-      id: editor.document.value.root.id,
+      id: editor.document.value.root!.id,
     };
     choose(
       field(root, '[data-editor-root="component"]'),
       '@kerfjs/ui:workbench',
     );
     field(root, '[data-action="editor-replace-root"]').click();
-    const id = editor.document.value.root.id;
+    const id = editor.document.value.root!.id;
     const rail = () =>
       findNode(editor.document.value, id)!.node.props?.leftRail;
     const kind = () =>

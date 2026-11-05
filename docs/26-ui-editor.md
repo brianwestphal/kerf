@@ -62,21 +62,39 @@ With storage, a copy downloads from Export's Document (.kui.json); without
 it, Save downloads as before. Every saved or downloaded file is two-space JSON
 with each node's props, and each object inside them, in the component's
 declared prop order, whatever order the fields were edited in (KF-YJFMZY), so
-the same document always writes the same bytes. New (KF-QSSTMX) starts an empty document (an
-empty Pane) with no history or selection; with storage it is a new draft,
-saved at once, and the previous document stays in its own file. The new
-root Pane starts with `fill` on (KF-Z70DBC), so a new view fills the screen
-in an app's `.kui-app-root` and in play mode instead of ending after its
-content; authors can turn it off in Properties. The editor's first draft,
+the same document always writes the same bytes. New (KF-QSSTMX) starts an empty document
+with no history or selection; with storage it is a new draft, saved at once,
+and the previous document stays in its own file. The editor's first draft,
 when the host passes no document, is the same empty document.
 
+An empty document has no root (KF-PK3GVY: rootless documents). It saves as
+it is, a document without a `root` field (§3.1), which `validateView` reports
+as `KUI-V017`, so nothing generates or interprets it yet. The canvas shows
+an `EmptyState`, "Start with a component", with a component picker that
+starts on Pane and an Add button; the Outline shows "No components yet" and
+points to the canvas. The chosen component becomes the root, seeded as
+**Replace the root** seeds it, and is selected on its Properties. A
+component dragged from Components onto the empty canvas becomes the root the
+same way, and Cmd/Ctrl+V pastes a copy as the root. A Pane that becomes the
+root starts with `fill` on (KF-Z70DBC), so a new view fills the screen in an
+app's `.kui-app-root` and in play mode instead of ending after its content;
+authors can turn it off in Properties. The problems banner above the canvas
+stays hidden while the document has no root, since the canvas already says
+what it needs; Problems still lists `KUI-V017`, and Export stays disabled.
+Play shows an empty stage.
+
+The root can be deleted, from the Inspector's Delete, the context menu, or
+the Delete key: the document goes back to having no root, with its params,
+slots, and name kept, and one Undo restores the whole tree.
+
 **Replace the root** (KF-KWQVDJ: choose the root) starts a document from any
-component. Selecting the root shows it in the Children area: a component
+component. It stays as a shortcut for deleting the root and choosing again
+(KF-PK3GVY). Selecting the root shows it in the Children area: a component
 picker and Replace swap the whole tree for a new, seeded node of that
 component and select it; params, slots, and the document's name stay, and
 Undo restores the previous tree. A Pane chosen as the root starts with
-`fill` on, as New's does: it takes the same position, so it fills the same
-screen. A Pane added anywhere else keeps the plain seed, since `fill` only
+`fill` on, as a rootless document's first Pane does: it takes the same
+position, so it fills the same screen. A Pane added anywhere else keeps the plain seed, since `fill` only
 reaches the screen from the root. Full-height layouts (NavStack,
 TabNavigator, SplitView, Workbench) fill the view only as the root: nested
 in a Pane's content they have no definite height and preview, as they would
@@ -229,7 +247,8 @@ Duplicate (the selected node's heading action, or Cmd/Ctrl+D) inserts a
 copy right after the node; Cmd/Ctrl+C copies it and Cmd/Ctrl+V pastes a
 copy after the selection, or at the end of the main zone of a selected
 node with no place of its own (the root), or of the root with nothing
-selected (KF-QAVK73: duplicate and paste). Every node in a copy gets a fresh
+selected (KF-QAVK73: duplicate and paste); a document with no root takes
+the copy as its root. Every node in a copy gets a fresh
 id and every name a unique one (`folderList2`); a copy that would add a
 validation problem is refused with a notice above the canvas. Copy and
 paste leave text fields and a text selection to the browser.
@@ -365,7 +384,8 @@ key on a focused Outline row, selects that node and opens Kerf UI's context
 keyboard opened it. The menu has **Embed in ›**, with the Flow area's entries
 and legality and then Other… (the same dialog), followed by Move up, Move
 down, Duplicate, and Delete. Each acts on the selected node, and a command
-that cannot act on it (the root's Move or Delete) is disabled. A slot row has
+that cannot act on it (the root's Move or Duplicate) is disabled. Delete on
+the root leaves the document with no root. A slot row has
 no menu, and play mode has none. The menu is its own event, so click-to-select
 and drag behave as before. When the menu closes, focus returns to the Outline's
 selected row, or to the canvas element when that element takes focus. Copy
@@ -583,8 +603,9 @@ not sit in, a full zone, a binding out of scope): the new node's own unfilled
 required props, unmatched variants, and empty required zones are accepted,
 as Add a child accepts them, and Problems then lists them (KF-DC23E9). It joins the document's catalogs when it comes from another
 package, and the drop selects it. A drop on the canvas's blank space lands
-inside the document's root, which is how an empty document gets its first
-node (an empty Pane has no height to hit). A click without a drag still shows
+inside the document's root (an empty Pane has no height to hit). A document
+with no root takes the drop as its root, on the canvas's empty state or its
+blank space, and the caption reads "As the root". A click without a drag still shows
 the component's documentation.
 
 While a drag is under way (KF-Y4GHQV: drag feedback), a solid `Badge` chip
@@ -774,7 +795,7 @@ the other catalogs.
 | `catalogs` | Packages or catalog files whose components the document may use. `@kerfjs/ui` resolves to its shipped catalogs; a path resolves to a consumer `kerf.components.json` set. |
 | `params`   | The document's typed inputs (§3.4). Optional.                                                                                                                             |
 | `slots`    | Optional declared slot input types (§3.6); a slot used without a declaration takes no input.                                                                              |
-| `root`     | Exactly one node.                                                                                                                                                         |
+| `root`     | One node. Optional on disk: an editor's empty draft has none (KF-PK3GVY), and `validateView` reports it as `KUI-V017`, so it never generates or renders.                  |
 
 ### 3.2 Nodes
 
@@ -1295,6 +1316,9 @@ surface a human reads: "adds the action `archive`, removes the input
   list maps to), and each node whose rendering throws, renders the caller's
   placeholder instead, so one bad node never blanks the canvas. Applications
   never use it: interpretView's strictness is what protects a deployed client.
+  A document with no root (`KUI-V017`, KF-PK3GVY) previews as empty markup;
+  `interpretView`, `generateView`, and `kerf-ui-view` refuse it with that
+  diagnostic, as they refuse any invalid document.
 - `$css` is evaluated by walking its parsed call tree (`parseCssTree`) over
   the `@kerfjs/ui/css-values` builders, never by `eval`. `$param` defaults
   apply to `null` as well as `undefined`, as `??` does in generated code,
@@ -1334,6 +1358,7 @@ schema and the validator in agreement.
 | `KUI-V014` | A control, link, or component that renders one, at any depth in the zones of a component whose root is a control or link               |
 | `KUI-V015` | A `rootAttributes` key that is not a lowercase `data-*` name, or a reserved one (`data-kerf-*`, `data-key`, `data-editor-*`; §3.3)     |
 | `KUI-V016` | An `$each` at the top of a document that a `#view` composes inside an `$each` row (§3.5); reported at the composed `$each`'s path      |
+| `KUI-V017` | The document has no `root` (an editor's empty draft, KF-PK3GVY); reported at `$.root`. A `root` that is not a node stays `KUI-V001`    |
 
 **Hints** (KF-KQ72TW: non-blocking view hints) are advice about a valid
 document. They never set `valid` to false, and generation, export, and Compare

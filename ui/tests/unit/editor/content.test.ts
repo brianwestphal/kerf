@@ -81,7 +81,7 @@ describe('content props', () => {
       ...nodes,
       root: {
         ...nodes.root,
-        zones: { ...nodes.root.zones, icon: [] },
+        zones: { ...nodes.root!.zones, icon: [] },
       },
     } as ViewDocument;
     expect(node(nodesToText(withIcon, COMPOSE, 'children')).zones).toEqual({

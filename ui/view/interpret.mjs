@@ -2,7 +2,7 @@
 // with exactly the generated module's semantics, after checking that the
 // document's contract is the one the application compiled against. For
 // server-driven screens; tree-shakes away when unused.
-import { each } from 'kerfjs';
+import { each, raw } from 'kerfjs';
 import { jsx } from 'kerfjs/jsx-runtime';
 
 import * as cssValues from '../dist/css-values.js';
@@ -90,6 +90,8 @@ export function interpretView(document, options) {
  */
 export function previewView(document, options) {
   const { inputs = {}, slots = {} } = options;
+  // KF-PK3GVY: an empty draft has no root yet, so it previews as nothing.
+  if (document.root === undefined) return raw('');
   return renderDocument(document, inputs, slots, options);
 }
 

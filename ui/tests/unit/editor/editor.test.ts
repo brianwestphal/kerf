@@ -61,15 +61,79 @@ describe('the editor shell', () => {
   });
 
   // KF-QSSTMX: without storage, New simply replaces the document.
-  it('starts a new empty document from New', () => {
+  // KF-PK3GVY: New has no root; the first component chosen becomes it.
+  it('starts a new rootless document from New and makes the first pick its root', () => {
     const { root, editor } = open();
     root.querySelector<HTMLElement>('[data-action="editor-new"]')!.click();
-    expect(editor.document.value).toMatchObject({
+    expect(editor.document.value).toEqual({
+      schema: 'kerf-ui-document/v1',
       name: 'Untitled',
-      // KF-Z70DBC: the new root Pane fills the screen in apps and play mode.
-      root: { type: '@kerfjs/ui:pane', props: { fill: true } },
+      catalogs: ['@kerfjs/ui'],
     });
+    expect(root.textContent).toContain(
+      'untitled.kui.json · 0 nodes · 1 problem',
+    );
+    expect(root.textContent).toContain('KUI-V017');
+    // The empty canvas says what it needs; no problems banner repeats it.
+    expect(root.textContent).not.toContain('problem in this document');
+    // The canvas asks for the first component; the Outline points there.
+    const canvas = root.querySelector('[data-editor-canvas]')!;
+    const empty = canvas.querySelector<HTMLElement>(
+      '[data-editor-empty="root"]',
+    )!;
+    expect(empty.textContent).toContain('Start with a component');
+    expect(root.querySelector('#editor-outline')).toBeNull();
+    expect(root.textContent).toContain('No components yet');
+    // The picker starts on a Pane, which becomes a filling root.
+    const picker = empty.querySelector<HTMLElement>(
+      '[data-editor-root="component"]',
+    )!;
+    expect(picker.getAttribute('value')).toBe('@kerfjs/ui:pane');
+    // Clicking the picker is the editor's own control, not a canvas pick.
+    const press = new MouseEvent('click', { bubbles: true, cancelable: true });
+    picker.dispatchEvent(press);
+    expect(press.defaultPrevented).toBe(false);
+    empty
+      .querySelector<HTMLElement>('[data-action="editor-first-root"]')!
+      .click();
+    const first = editor.document.value.root!;
+    expect(first).toMatchObject({
+      type: '@kerfjs/ui:pane',
+      // KF-Z70DBC: a root Pane fills the screen in apps and play mode.
+      props: { fill: true },
+    });
+    expect(editor.selection.value).toEqual({ kind: 'node', id: first.id });
     expect(root.textContent).toContain('untitled.kui.json · 1 node · valid');
+    expect(root.querySelector('[data-editor-empty="root"]')).toBeNull();
+    // One undo goes back to the rootless document.
+    root.querySelector<HTMLElement>('[data-action="editor-undo"]')!.click();
+    expect(editor.document.value.root).toBeUndefined();
+    // Another component chosen in the picker becomes the root as it is.
+    const again = root.querySelector<HTMLElement>(
+      '[data-editor-empty="root"] [data-editor-root="component"]',
+    )!;
+    again.setAttribute('value', '@kerfjs/ui:nav-stack');
+    Object.defineProperty(again, 'value', {
+      configurable: true,
+      value: '@kerfjs/ui:nav-stack',
+    });
+    again.dispatchEvent(new Event('change', { bubbles: true }));
+    root
+      .querySelector<HTMLElement>('[data-action="editor-first-root"]')!
+      .click();
+    expect(editor.document.value.root!.type).toBe('@kerfjs/ui:nav-stack');
+    expect(editor.document.value.root!.props?.fill).toBeUndefined();
+  });
+
+  it('plays and lists problems for a rootless document without throwing', () => {
+    const { root, editor } = open();
+    root.querySelector<HTMLElement>('[data-action="editor-new"]')!.click();
+    root.querySelector<HTMLElement>('[data-action="editor-play"]')!.click();
+    expect(editor.document.value.root).toBeUndefined();
+    root
+      .querySelector<HTMLElement>('[data-action="editor-play-done"]')!
+      .click();
+    expect(root.querySelector('[data-editor-empty="root"]')).not.toBeNull();
   });
 
   it('selects a node from the outline and shows its props', () => {
@@ -288,7 +352,7 @@ describe('the editor shell', () => {
     empties[0]!.click();
     expect(editor.selection.value).toEqual({ kind: 'node', id: ROW });
     // The placeholder is preview-only: the document and its count are unchanged.
-    expect(editor.document.value.root.zones!.content![0]).not.toHaveProperty(
+    expect(editor.document.value.root!.zones!.content![0]).not.toHaveProperty(
       'zones',
     );
     expect(root.textContent).toContain('3 nodes');

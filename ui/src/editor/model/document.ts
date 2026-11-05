@@ -76,7 +76,7 @@ export function visitNodes(document: ViewDocument): NodeVisit[] {
         child(entry, [...ancestors, { node: item, zone }], repeated);
     }
   };
-  node(document.root, [], false);
+  if (document.root) node(document.root, [], false);
   return visits;
 }
 

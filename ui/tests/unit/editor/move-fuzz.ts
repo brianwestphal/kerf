@@ -290,6 +290,6 @@ export function poolOf(document: ViewDocument): ViewNode[] {
     nodes.push(item);
     for (const list of Object.values(item.zones ?? {})) list.forEach(child);
   };
-  node(document.root);
+  node(document.root!);
   return nodes;
 }

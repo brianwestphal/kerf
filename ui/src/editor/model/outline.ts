@@ -270,7 +270,7 @@ export function outlineTree(
     }
     return [entry(item, zone, repeated, control)];
   };
-  return [entry(document.root, undefined, false, [])];
+  return document.root ? [entry(document.root, undefined, false, [])] : [];
 }
 
 /** Ids of every outline node with children, so a tree can start expanded. */

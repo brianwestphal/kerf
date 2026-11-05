@@ -282,6 +282,32 @@ describe('interpretView: node kinds', () => {
   });
 });
 
+describe('a rootless document (KF-PK3GVY: KUI-V017)', () => {
+  const rootless = () => {
+    const document = inbox();
+    delete document.root;
+    return document;
+  };
+
+  it('interpretView refuses it with the diagnostic', () => {
+    expect(() => interpret(cases[1]!, rootless())).toThrow(
+      /KUI-V017 at \$\.root: the document has no root/,
+    );
+  });
+
+  it('previewView renders nothing', () => {
+    const html = previewView(rootless(), {
+      catalog,
+      components,
+      inputs: cases[1]!,
+      slots,
+      broken: new Set(),
+      placeholder: () => raw('<mark></mark>'),
+    });
+    expect(String(html)).toBe('');
+  });
+});
+
 describe('previewView: an editor preview that survives broken nodes', () => {
   const placeholder = (node: { id: string; type: string }, reason: string) =>
     raw(`<mark data-broken="${node.id}">${node.type}: ${reason}</mark>`);

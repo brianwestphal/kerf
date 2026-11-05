@@ -95,12 +95,12 @@ describe('preview slots', () => {
         empty: true,
       },
     ]);
-    const row = document.root.zones!.content![0] as {
+    const row = document.root!.zones!.content![0] as {
       zones: Record<string, unknown>;
     };
     expect(row.zones.children).toEqual([{ $slot: 'kuiEmptyPreview0' }]);
     // The document itself is untouched.
-    expect(bare.root.zones!.content![0]).not.toHaveProperty('zones');
+    expect(bare.root!.zones!.content![0]).not.toHaveProperty('zones');
   });
 });
 
@@ -121,7 +121,7 @@ describe('placeChild', () => {
       index: 0,
     });
     expect(slotAt(moved.document, moved.at)?.$slot).toBe('detail');
-    expect(moved.document.root.zones!.content).toHaveLength(2);
+    expect(moved.document.root!.zones!.content).toHaveLength(2);
   });
 
   it('leaves the document alone for no-op, missing, too-far, and self moves', () => {
@@ -152,7 +152,7 @@ describe('placeChild', () => {
       root: {
         ...inbox.root,
         zones: {
-          ...inbox.root.zones,
+          ...inbox.root!.zones,
           footer: [
             {
               $if: { $param: 'showEmpty' },
@@ -173,7 +173,7 @@ describe('placeChild', () => {
       { parent: PANE, zone: 'footer', index: 0 },
       { parent: TOOLBAR, zone: 'trailing', index: 1 },
     );
-    expect(moved.document.root.zones!.footer).toEqual([]);
+    expect(moved.document.root!.zones!.footer).toEqual([]);
   });
 
   it('drops a slot row beside a node', () => {

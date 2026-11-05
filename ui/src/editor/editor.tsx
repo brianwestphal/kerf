@@ -349,6 +349,14 @@ const ADD_ACTION = 'editor-add-child';
 /** Add a child's choice for a text run in a text-accepting zone (KF-YBMVVM). */
 const TEXT_RUN = '#text';
 const REPLACE_ROOT_ACTION = 'editor-replace-root';
+/** KF-PK3GVY: makes the chosen component a rootless document's root. */
+const FIRST_ROOT_ACTION = 'editor-first-root';
+/**
+ * A rootless document's canvas empty state (KF-PK3GVY): a drop target whose
+ * outline id is `ROOT_TARGET`, where a palette drop becomes the root.
+ */
+const ROOT_EMPTY = 'root';
+const ROOT_TARGET = 'editor-root';
 const CONTENT_TO_NODES_ACTION = 'editor-content-to-nodes';
 const CONTENT_TO_TEXT_ACTION = 'editor-content-to-text';
 /** A canvas drop target naming an empty zone (KF-7BB55F). */
@@ -712,14 +720,16 @@ function asRoot(node: ViewNode): ViewNode {
     : node;
 }
 
-/** A new document: an empty, filling Pane in Kerf UI's catalog. */
+/**
+ * A new document (KF-PK3GVY): Kerf UI's catalog and no root yet; the first
+ * component the author chooses becomes the root.
+ */
 export function emptyDocument(): ViewDocument {
   return {
     schema: 'kerf-ui-document/v1',
     name: 'Untitled',
     catalogs: ['@kerfjs/ui'],
-    root: asRoot({ id: newNodeId(), type: PANE }),
-  } as ViewDocument;
+  };
 }
 
 export {
@@ -1126,13 +1136,20 @@ export function createEditor(options: EditorOptions) {
         trailing: badge(node.id),
         // KF-WXP6AB, KF-5RKX3W: a node directly in a zone, or a slot,
         // drags to another place.
-        ...(slotRowAddress(node.id) || isMovable(document, node.id).remove
+        ...(slotRowAddress(node.id) || isMovable(document, node.id).placed
           ? { draggable: true }
           : {}),
         ...(node.children ? { children: toTree(node.children) } : {}),
       }));
     const tree = outlineTree(document, componentNames);
     const closed = collapsed.value;
+    if (!tree.length)
+      return (
+        <EmptyState
+          title="No components yet"
+          detail="Add the first component on the canvas, or drag one there from Components."
+        />
+      );
     return (
       <TreeList
         id="editor-outline"
@@ -1391,7 +1408,7 @@ export function createEditor(options: EditorOptions) {
     prop: (typeof propsByKey extends ReadonlyMap<string, infer C>
       ? C
       : never)['props'][number],
-    value: ViewDocument['root']['props'] extends infer P
+    value: ViewNode['props'] extends infer P
       ? P extends Record<string, infer V>
         ? V
         : never
@@ -2572,7 +2589,7 @@ export function createEditor(options: EditorOptions) {
    * inside a prop value (KF-VSWT2Q) passes its field zone and own label.
    */
   const nodeContentRow = (
-    node: ViewDocument['root'],
+    node: ViewNode,
     prop: string,
     label = propLabel(prop),
     /** What an empty row says it holds (KF-1ZSW5J: an item slot). */
@@ -2621,7 +2638,7 @@ export function createEditor(options: EditorOptions) {
   };
 
   const contentControl = (
-    node: ViewDocument['root'],
+    node: ViewNode,
     prop: (typeof propsByKey extends ReadonlyMap<string, infer C>
       ? C
       : never)['props'][number],
@@ -2689,7 +2706,12 @@ export function createEditor(options: EditorOptions) {
       return undefined;
     const { parent, zone, index } = current.address;
     const count = findNode(document, parent)!.node.zones![zone]!.length;
-    return { up: index > 0, down: index < count - 1, remove: true };
+    return {
+      up: index > 0,
+      down: index < count - 1,
+      remove: true,
+      placed: true,
+    };
   };
 
   /**
@@ -2809,7 +2831,7 @@ export function createEditor(options: EditorOptions) {
                 {
                   label: 'Duplicate',
                   action: CONTEXT_DUPLICATE_ACTION,
-                  disabled: !movable.remove,
+                  disabled: !movable.placed,
                 },
                 { kind: 'divider' },
                 {
@@ -2864,7 +2886,7 @@ export function createEditor(options: EditorOptions) {
    * (KF-K5TKCV): the sources the validator accepts for the chosen prop.
    */
   const bindSection = (
-    node: ViewDocument['root'],
+    node: ViewNode,
     component: NonNullable<ReturnType<typeof propsByKey.get>>,
   ) => {
     const bindable = component.props.filter(
@@ -2947,6 +2969,14 @@ export function createEditor(options: EditorOptions) {
       if (!to) return;
       const node = draggedNode(move.sourceId);
       dragged = undefined;
+      if (to.parent === ROOT_TARGET) {
+        // KF-PK3GVY: seeded as Replace the root seeds it (a Pane fills).
+        const root = asRoot(node);
+        commit(replaceRoot(doc.value, root));
+        select({ kind: 'node', id: root.id });
+        inspectorArea.value = 'properties';
+        return;
+      }
       commit(
         withCatalog(
           insertNode(doc.value, to.parent, to.zone, node, to.index),
@@ -2999,6 +3029,7 @@ export function createEditor(options: EditorOptions) {
    * or inside it, naming the zone when the target has more than one.
    */
   const dropCaption = (move: TreeListMove): string => {
+    if (move.target.id === ROOT_TARGET) return 'As the root';
     const empty = emptyZoneTarget(move.target.id);
     if (empty) return `Inside ${rowLabel(empty.parent)} › ${empty.zone}`;
     const target = rowLabel(move.target.id);
@@ -3109,6 +3140,12 @@ export function createEditor(options: EditorOptions) {
     drops: new Map(),
   };
   const dropFor = (target: TreeListMove) => {
+    // KF-PK3GVY: only a palette drag reaches a rootless canvas, and it
+    // becomes the root.
+    if (target.target.id === ROOT_TARGET)
+      return doc.value.root || !target.sourceId.startsWith(PALETTE_SOURCE)
+        ? undefined
+        : { parent: ROOT_TARGET, zone: '', index: 0 };
     // KF-7BB55F: inside an empty zone's placeholder is the zone's first place.
     const empty = emptyZoneTarget(target.target.id);
     const move = empty
@@ -3185,7 +3222,7 @@ export function createEditor(options: EditorOptions) {
 
   /** The zones a node offers for adding a child. */
   const zonesOf = (
-    node: ViewDocument['root'],
+    node: ViewNode,
     /**
      * A content field the person asked to add to ("Add to trailing"), a
      * zone even before the objects around it are set (KF-KAVBDD).
@@ -3271,6 +3308,42 @@ export function createEditor(options: EditorOptions) {
       label: componentNames.get(key)!,
       ...group(key),
     }));
+  };
+
+  /**
+   * A rootless document's canvas (KF-PK3GVY): asks for the first component,
+   * which becomes the root, from a picker (a Pane first) or a palette drop.
+   */
+  const firstRoot = () => {
+    const choices = addableIn(undefined);
+    const value = choices.some((item) => item.value === rootComponent.value)
+      ? rootComponent.value
+      : (choices.find((item) => item.value === PANE) ?? choices[0]!).value;
+    return (
+      <EmptyState
+        title="Start with a component"
+        detail="The component you add becomes the root of the document. You can also drag one here from Components."
+        action={
+          <List controlInsets="trbl" gap>
+            <Select
+              name="first-root-component"
+              label="Component"
+              value={value}
+              choices={choices}
+              rootAttributes={{ 'data-editor-root': 'component' }}
+            />
+            <Button
+              emphasis="primary"
+              size="compact"
+              action={FIRST_ROOT_ACTION}
+            >
+              Add
+            </Button>
+          </List>
+        }
+        rootAttributes={{ 'data-editor-empty': ROOT_EMPTY }}
+      />
+    );
   };
 
   /**
@@ -3449,7 +3522,7 @@ export function createEditor(options: EditorOptions) {
 
   /** The inspector for a selected node: name, editable props, add child. */
   const nodeEditor = (
-    node: ViewDocument['root'],
+    node: ViewNode,
     component: NonNullable<ReturnType<typeof propsByKey.get>>,
     title: string,
   ) => {
@@ -3725,7 +3798,7 @@ export function createEditor(options: EditorOptions) {
         {zones.length && zone
           ? addSlotFields(doc.value, node.id, fieldErrors.value['#slot'])
           : undefined}
-        {node.id === doc.value.root.id ? replaceRootSection() : undefined}
+        {node.id === doc.value.root?.id ? replaceRootSection() : undefined}
       </List>
     );
     const [strip, ...panels] = areaTabs(
@@ -3753,7 +3826,7 @@ export function createEditor(options: EditorOptions) {
             action={DUPLICATE_ACTION}
             actionLabel="Duplicate"
             actionIcon={<LucideIcon icon={CopyPlus} name="copy-plus" />}
-            actionDisabled={!isMovable(doc.value, node.id).remove}
+            actionDisabled={!isMovable(doc.value, node.id).placed}
             disabledReason="The root has no place to copy it beside."
           />
           {strip}
@@ -3788,7 +3861,7 @@ export function createEditor(options: EditorOptions) {
 
   const canvas = () => (
     <div class="kui-editor__canvas" data-editor-canvas>
-      {preview.value}
+      {doc.value.root ? preview.value : firstRoot()}
       <div
         class="kui-editor__selection"
         data-morph-skip
@@ -4156,7 +4229,9 @@ export function createEditor(options: EditorOptions) {
                     title={lastExport.value.report.title}
                     detail={lastExport.value.report.detail}
                   />
-                ) : problems ? (
+                ) : problems && document.root ? (
+                  // KF-PK3GVY: a rootless document's canvas already says
+                  // what it needs.
                   <StateBanner
                     tone="warning"
                     title={`${problems} ${problems === 1 ? 'problem' : 'problems'} in this document`}
@@ -4640,7 +4715,7 @@ export function createEditor(options: EditorOptions) {
       {
         type: key,
         props:
-          id === doc.value.root.id
+          id === doc.value.root?.id
             ? asRoot({ id, type: key, props }).props
             : props,
         ...(target.zones ? { zones: target.zones } : {}),
@@ -4702,9 +4777,13 @@ export function createEditor(options: EditorOptions) {
   };
 
   /** Adds the chosen component to the chosen zone and selects it. */
-  /** Makes a new node of the chosen component the document's root. */
+  /**
+   * Makes a new node of the chosen component the document's root: Replace
+   * the root, or a rootless document's first component (KF-PK3GVY).
+   */
   const replaceRootWith = () => {
-    // The picker renders beside Replace and offers only cataloged components.
+    // The picker renders beside Replace, or in a rootless canvas's empty
+    // state (never both), and offers only cataloged components.
     const picker = document.querySelector<HTMLElement>(
       '[data-editor-root="component"]',
     )!;
@@ -4748,6 +4827,13 @@ export function createEditor(options: EditorOptions) {
    * or of the root's with nothing selected.
    */
   const paste = (node: ViewNode) => {
+    // KF-PK3GVY: a rootless document's paste becomes its root.
+    if (!doc.value.root) {
+      const copy = copyChild(node, new Set());
+      commit(replaceRoot(doc.value, copy));
+      select({ kind: 'node', id: copy.id });
+      return;
+    }
     const id = selectedNodeId() ?? doc.value.root.id;
     const at = placementOf(doc.value, id);
     const target = findNode(doc.value, id)!.node;
@@ -5442,6 +5528,7 @@ export function createEditor(options: EditorOptions) {
           }
         },
         [REPLACE_ROOT_ACTION]: () => replaceRootWith(),
+        [FIRST_ROOT_ACTION]: () => replaceRootWith(),
         [CONTENT_TO_NODES_ACTION]: (_event, target) => {
           const id = selectedNodeId();
           if (id)
@@ -5808,6 +5895,9 @@ export function createEditor(options: EditorOptions) {
       // Canvas clicks select the innermost node; the previewed document's own
       // links, buttons, and form controls never act.
       delegate(root, 'click', '[data-editor-canvas]', (event) => {
+        // KF-PK3GVY: a rootless canvas's picker is the editor's own control.
+        if ((event.target as Element).closest('[data-editor-empty="root"]'))
+          return;
         event.preventDefault();
         const placeholder = (event.target as Element).closest<HTMLElement>(
           '[data-editor-slot-address]',
@@ -5927,11 +6017,12 @@ export function createEditor(options: EditorOptions) {
             return slotRowId(parent, zone, index);
           }
           const id = element.dataset.kerfNode!;
-          return isMovable(doc.value, id).remove ? id : undefined;
+          return isMovable(doc.value, id).placed ? id : undefined;
         },
         targetOf: (element) => {
           // KF-7BB55F: an empty zone's placeholder targets that zone.
           const empty = element.dataset.editorEmpty;
+          if (empty === ROOT_EMPTY) return ROOT_TARGET;
           if (empty) return `${EMPTY_ZONE_TARGET}${empty}`;
           const address = element.dataset.editorSlotAddress;
           if (!address) return element.dataset.kerfNode!;
@@ -5940,7 +6031,8 @@ export function createEditor(options: EditorOptions) {
         },
         canDrop: (move) => dropFor(move) !== undefined,
         onMove: applyMove,
-        rootOf: () => doc.value.root.id,
+        // KF-PK3GVY: a rootless document's blank canvas takes its root.
+        rootOf: () => doc.value.root?.id ?? ROOT_TARGET,
         labelOf: (sourceId) =>
           sourceId.startsWith(PALETTE_SOURCE)
             ? componentNames.get(sourceId.slice(PALETTE_SOURCE.length))!

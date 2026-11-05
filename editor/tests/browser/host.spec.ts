@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 
 import { area } from './areas.js';
 
@@ -7,18 +7,31 @@ import { area } from './areas.js';
 // app source) is placed, previewed with its real function, and inspected.
 const EDITOR = 'http://127.0.0.1:42918/__kerf-ui-editor/';
 
+/**
+ * Opens the hosted editor on its first draft, which has no root
+ * (KF-PK3GVY), and adds the empty state's default Pane as the root.
+ */
+async function openWithPane(page: Page) {
+  await page.goto(EDITOR);
+  const empty = page.locator('[data-editor-canvas] [data-editor-empty="root"]');
+  await expect(empty).toContainText('Start with a component');
+  await empty.getByRole('button', { name: 'Add' }).click();
+  await expect(page.getByText('1 node · valid')).toBeVisible();
+}
+
 test('an app’s dev server hosts the editor with its own components', async ({
   page,
 }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto(EDITOR);
+  await openWithPane(page);
   const canvas = page.locator('[data-editor-canvas]');
-  // A new document is an empty Pane.
-  await expect(page.getByText('1 node · valid')).toBeVisible();
 
   // The palette lists the app's component under Application.
   await area(page, 'Components');
-  await expect(page.getByText('Application', { exact: true })).toBeVisible();
+  // The root Pane is selected, so the Inspector's pickers group it too.
+  await expect(
+    page.getByRole('heading', { name: 'Application', exact: true }),
+  ).toBeVisible();
   await expect(
     page.locator(
       '[data-action="editor-show-component"][data-item-id="orders-app:order-card"]',
@@ -71,8 +84,7 @@ test('an app’s dev server hosts the editor with its own components', async ({
 // plugin's `fieldEditors` option, edits its ShippingWindow type.
 test('an app’s field editor edits its own type', async ({ page }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto(EDITOR);
-  await expect(page.getByText('1 node · valid')).toBeVisible();
+  await openWithPane(page);
   await area(page, 'Outline');
   await page.getByRole('treeitem', { name: /Pane/ }).click();
   await area(page, 'Children');
@@ -109,8 +121,7 @@ test('an app’s dev server plays the document in the stage', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto(EDITOR);
-  await expect(page.getByText('1 node · valid')).toBeVisible();
+  await openWithPane(page);
   await page.locator('[data-action="editor-play"]').click();
   const frame = page.locator('[data-editor-play-frame]');
   await expect(frame).toHaveAttribute(

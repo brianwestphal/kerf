@@ -215,7 +215,9 @@ export function markRows(
       ),
     };
   };
-  return { ...document, root: node(document.root, [], false) };
+  return document.root
+    ? { ...document, root: node(document.root, [], false) }
+    : document;
 }
 
 type ComponentFunction = (props: Record<string, unknown>) => SafeHtml;

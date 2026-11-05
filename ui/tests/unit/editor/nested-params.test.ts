@@ -146,7 +146,7 @@ describe('binding a field of an unset object (KF-PTMNSZ)', () => {
       ...document.root,
       zones: {
         content: [
-          ...document.root.zones!.content!,
+          ...document.root!.zones!.content!,
           { id: EMPTY, type: `${ui}:content-item`, props: { title: 'Empty' } },
         ],
       },

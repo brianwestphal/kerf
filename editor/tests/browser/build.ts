@@ -15,6 +15,12 @@ import { sampleName } from './sample-name.js';
 export async function newDocument(page: Page) {
   await page.goto('/');
   await page.getByRole('button', { name: 'New' }).click();
+  // KF-PK3GVY: New has no root; its first component, a Pane by default,
+  // becomes a filling root, as New's own Pane did before.
+  await canvas(page)
+    .locator('[data-editor-empty="root"]')
+    .getByRole('button', { name: 'Add' })
+    .click();
   await expect(canvas(page).locator('[data-editor-empty]')).toBeVisible();
 }
 

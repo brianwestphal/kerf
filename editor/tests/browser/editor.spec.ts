@@ -926,26 +926,76 @@ test('autosaves edits, reopens them, and saves as a project path', async ({
 });
 
 // KF-QSSTMX: New starts an empty document in a new draft that a reload keeps.
+// KF-PK3GVY: it has no root; the canvas asks for the first component.
 for (const width of [1440, 390] as const) {
   test(`starts a new empty document at ${width}px`, async ({ page }, info) => {
     await page.setViewportSize({ width, height: 900 });
     await page.getByRole('button', { name: 'New' }).click();
+    const empty = page.locator(
+      '[data-editor-canvas] [data-editor-empty="root"]',
+    );
     await expect(
-      page.getByText('Unsaved draft · autosaved · 1 node · valid'),
+      page.getByText('Unsaved draft · autosaved · 0 nodes · 1 problem'),
     ).toBeVisible();
+    await expect(empty).toBeVisible();
+    await expect(empty).toContainText('Start with a component');
     await expect(page.locator('[data-editor-canvas]')).not.toContainText(
       'Inbox',
     );
     await page.screenshot({
-      path: info.outputPath(`KF-QSSTMX-new-${width}.png`),
+      path: info.outputPath(`KF-PK3GVY-new-${width}.png`),
       animations: 'disabled',
     });
     await page.reload();
     await expect(
-      page.getByText('Unsaved draft · autosaved · 1 node · valid'),
+      page.getByText('Unsaved draft · autosaved · 0 nodes · 1 problem'),
     ).toBeVisible();
+    await expect(empty).toBeVisible();
   });
 }
+
+// KF-PK3GVY: the first component chosen becomes the root (a Pane fills),
+// and deleting the root goes back to the empty state as one undo step.
+test('picks the first component as the root, deletes it, and undoes', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.getByRole('button', { name: 'New' }).click();
+  const empty = page.locator('[data-editor-canvas] [data-editor-empty="root"]');
+  await area(page, 'Outline');
+  await expect(page.getByText('No components yet')).toBeVisible();
+  await expect(
+    empty.locator('[data-editor-root="component"]'),
+  ).toHaveJSProperty('value', '@kerfjs/ui:pane');
+  await empty.getByRole('button', { name: 'Add' }).click();
+  await expect(empty).toHaveCount(0);
+  await expect(page.getByText('1 node · valid')).toBeVisible();
+  await expect(outlineRow(page, /^Pane/)).toBeVisible();
+  expect(await exported(page)).toEqual({
+    type: '@kerfjs/ui:pane',
+    props: { fill: true },
+  });
+  await page.screenshot({
+    path: info.outputPath('KF-PK3GVY-first-root-1440.png'),
+    animations: 'disabled',
+  });
+  // The root is selected; Delete empties the document.
+  await page.getByRole('button', { name: 'Delete', exact: true }).click();
+  await expect(empty).toBeVisible();
+  await expect(page.getByText('0 nodes · 1 problem')).toBeVisible();
+  await page.getByRole('button', { name: 'Undo' }).click();
+  await expect(empty).toHaveCount(0);
+  await expect(page.getByText('1 node · valid')).toBeVisible();
+  // The context menu deletes it too.
+  await outlineRow(page, /^Pane/).click({ button: 'right' });
+  await page.getByRole('menuitem', { name: 'Delete' }).click();
+  await expect(empty).toBeVisible();
+  // A component dropped on the empty canvas becomes the root.
+  await dragComponent(page, 'NavStack', () => empty);
+  await expect(empty).toHaveCount(0);
+  const root = (await exported(page)) as { type: string; props?: object };
+  expect(root.type).toBe('@kerfjs/ui:nav-stack');
+});
 
 // KF-67K2VP: a palette drag rests on the Outline tab to open it, then drops
 // on an outline row.
@@ -953,7 +1003,7 @@ test('drags a palette component onto an outline row', async ({
   page,
 }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.getByRole('button', { name: 'New' }).click();
+  await newDocument(page);
   await expect(page.getByText('1 node · valid')).toBeVisible();
   await area(page, 'Components');
   const row = page.locator('[data-editor-palette="@kerfjs/ui:text"]');
@@ -1001,7 +1051,7 @@ test('drags components from the palette onto the canvas', async ({
   page,
 }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.getByRole('button', { name: 'New' }).click();
+  await newDocument(page);
   await expect(page.getByText('1 node · valid')).toBeVisible();
   await area(page, 'Components');
   const canvas = page.locator('[data-editor-canvas]');
@@ -1118,7 +1168,7 @@ test('renders a Workbench chosen as the root with its placeholders', async ({
   page,
 }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.getByRole('button', { name: 'New' }).click();
+  await newDocument(page);
   await area(page, 'Outline');
   await page.locator('[data-action="editor-select-node"]').first().click();
   await area(page, 'Children');
@@ -1140,7 +1190,7 @@ test('renders a Workbench chosen as the root with its placeholders', async ({
 // in the Inspector for a single step of at most 10 fields and in a dialog
 // for more.
 async function workbenchRoot(page: Page) {
-  await page.getByRole('button', { name: 'New' }).click();
+  await newDocument(page);
   await area(page, 'Outline');
   await page.locator('[data-action="editor-select-node"]').first().click();
   await area(page, 'Children');
@@ -1695,7 +1745,7 @@ test('drops a component into a tab’s content from the canvas', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.getByRole('button', { name: 'New' }).click();
+  await newDocument(page);
   await area(page, 'Outline');
   await page.locator('[data-action="editor-select-node"]').first().click();
   await area(page, 'Children');

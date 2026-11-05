@@ -167,7 +167,7 @@ describe('the scoped move check', () => {
 
   it('answers a move into itself, and leaves repeated names and the root to the full validation', () => {
     const document = inbox as unknown as ViewDocument;
-    const list = (document.root.zones!.content![0] as ViewNode).id;
+    const list = (document.root!.zones!.content![0] as ViewNode).id;
     // A move into the node itself moves nothing.
     expect(createMoveCheck(document, viewCatalog, list)(list, 'children')).toBe(
       false,
@@ -177,7 +177,7 @@ describe('the scoped move check', () => {
       createMoveCheck(
         document,
         viewCatalog,
-        document.root.id,
+        document.root!.id,
       )(list, 'children'),
     ).toBeUndefined();
     // A duplicate name's message quotes where the first one is.
@@ -191,7 +191,7 @@ describe('the scoped move check', () => {
         twins as unknown as ViewDocument,
         viewCatalog,
         list,
-      )(document.root.id, 'footer'),
+      )(document.root!.id, 'footer'),
     ).toBeUndefined();
   });
 
@@ -229,7 +229,7 @@ describe('the scoped move check', () => {
     };
     return (
       next !== document &&
-      !addsProblems(document, { ...next, root: node(next.root) }, viewCatalog)
+      !addsProblems(document, { ...next, root: node(next.root!) }, viewCatalog)
     );
   }
   const id = (index: number) => String(index).padStart(26, '0');
@@ -447,7 +447,7 @@ describe('the Move to list', () => {
     });
     const catalog = { ...viewCatalog, components } as ViewCatalog;
     const document = flatPane(count);
-    const moved = (document.root.zones!.content![1] as ViewNode).id;
+    const moved = (document.root!.zones!.content![1] as ViewNode).id;
     const destinations = moveDestinations(
       document,
       catalog,

@@ -166,6 +166,26 @@ describe('kerf-ui-view', () => {
     expect(run(['check', documentPath]).output).toContain('KUI-V012');
   });
 
+  it('refuses a rootless document (KUI-V017) without writing a module', () => {
+    // KF-PK3GVY: an editor's empty draft saves with no root.
+    writeFileSync(
+      documentPath,
+      JSON.stringify({
+        schema: 'kerf-ui-document/v1',
+        name: 'Inbox',
+        catalogs: ['@kerfjs/ui'],
+      }),
+    );
+    for (const command of ['generate', 'check']) {
+      const result = run([command, documentPath]);
+      expect(result.code).toBe(1);
+      expect(result.output).toContain(
+        'KUI-V017 $.root: the document has no root',
+      );
+    }
+    expect(() => readFileSync(join(folder, 'inbox.view.ts'))).toThrow();
+  });
+
   it('accepts extra catalogs and rejects bad arguments', () => {
     const props = resolve(root, 'ai/component-props.json');
     const composition = resolve(root, 'ai/component-composition.json');

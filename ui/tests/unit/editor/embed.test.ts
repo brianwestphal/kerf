@@ -62,7 +62,7 @@ function open(document: ViewDocument) {
 }
 
 const first = (editor: ReturnType<typeof open>['editor']) =>
-  editor.document.value.root.zones!.content![0] as {
+  editor.document.value.root!.zones!.content![0] as {
     id: string;
     type: string;
     props?: Record<string, unknown>;
@@ -79,7 +79,7 @@ describe('embedNode', () => {
       () => '01JB8Z1M6Q8E1X9V4S7K2R3TA9',
     )!;
     expect(result.id).toBe('01JB8Z1M6Q8E1X9V4S7K2R3TA9');
-    expect(result.document.root.zones!.content).toEqual([
+    expect(result.document.root!.zones!.content).toEqual([
       {
         id: '01JB8Z1M6Q8E1X9V4S7K2R3TA9',
         type: '@kerfjs/ui:sized-region',
@@ -98,7 +98,7 @@ describe('embedNode', () => {
         'children',
         () => '01JB8Z1M6Q8E1X9V4S7K2R3TA9',
       )!;
-      expect(result.document.root.zones!.content).toEqual([
+      expect(result.document.root!.zones!.content).toEqual([
         {
           id: '01JB8Z1M6Q8E1X9V4S7K2R3TA9',
           type: '@kerfjs/ui:list',
@@ -145,7 +145,7 @@ describe('embedNode', () => {
         { type: '@kerfjs/ui:row' },
         'children',
         () => WRAP,
-      )!.document.root.zones!.content!;
+      )!.document.root!.zones!.content!;
     const holding = (node: object) => ({
       id: WRAP,
       type: '@kerfjs/ui:row',
@@ -174,7 +174,7 @@ describe('embedNode', () => {
       () => WRAP,
     )!;
     expect(
-      result.document.root.zones!.content!.map(
+      result.document.root!.zones!.content!.map(
         (child) => (child as { type: string }).type,
       ),
     ).toEqual(['@kerfjs/ui:row', '@kerfjs/ui:button']);
@@ -287,7 +287,7 @@ describe('Embed in', () => {
         '#editor-embed-dialog [data-editor-embed="@kerfjs/ui:pane"]',
       )!
       .click();
-    const next = editor.document.value.root;
+    const next = editor.document.value.root!;
     expect(next.type).toBe('@kerfjs/ui:pane');
     expect(next.props).toEqual({ fill: true });
     expect(
@@ -295,7 +295,7 @@ describe('Embed in', () => {
     ).toEqual([PANE]);
     expect(editor.selection.value).toEqual({ kind: 'node', id: next.id });
     root.querySelector<HTMLElement>('[data-action="editor-undo"]')!.click();
-    expect(editor.document.value.root.id).toBe(PANE);
+    expect(editor.document.value.root!.id).toBe(PANE);
   });
 
   it('embeds the root in a SizedRegion from the Flow area', () => {
@@ -306,7 +306,7 @@ describe('Embed in', () => {
         '[data-editor-embed-section] [data-editor-embed="@kerfjs/ui:sized-region"]',
       )!
       .click();
-    const next = editor.document.value.root;
+    const next = editor.document.value.root!;
     expect(next.type).toBe('@kerfjs/ui:sized-region');
     // Only a Pane takes `fill` as a new root.
     expect(next.props).toEqual({ minHeight: { $css: 'rem(20)' } });
@@ -382,7 +382,7 @@ describe('Embed in a slot-backed layout (KF-N7K17T)', () => {
 
   it('turns the root Pane into a NavStack holding the whole tree', () => {
     const editor = embedVia(PANE, '@kerfjs/ui:nav-stack');
-    const next = editor.document.value.root;
+    const next = editor.document.value.root!;
     expect(next.type).toBe('@kerfjs/ui:nav-stack');
     expect(
       next.zones!['views.0.content']!.map(

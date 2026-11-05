@@ -81,14 +81,14 @@ describe('the props left read-only (KF-24G2KV)', () => {
     const { root, editor: instance } = editor();
     instance.selection.value = {
       kind: 'node',
-      id: instance.document.value.root.id,
+      id: instance.document.value.root!.id,
     };
     choose(
       field(root, '[data-editor-root="component"]'),
       '@kerfjs/ui:workbench',
     );
     field(root, '[data-action="editor-replace-root"]').click();
-    const id = instance.document.value.root.id;
+    const id = instance.document.value.root!.id;
     field(root, `[data-editor-open='{"prop":"mainPane","path":[]}']`).click();
     field(
       root,

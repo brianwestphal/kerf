@@ -134,14 +134,14 @@ describe('a Workbench rail’s content in the editor (KF-PD6QC5)', () => {
     };
     editor.selection.value = {
       kind: 'node',
-      id: editor.document.value.root.id,
+      id: editor.document.value.root!.id,
     };
     choose(
       field(root, '[data-editor-root="component"]'),
       '@kerfjs/ui:workbench',
     );
     field(root, '[data-action="editor-replace-root"]').click();
-    const id = editor.document.value.root.id;
+    const id = editor.document.value.root!.id;
     const workbench = () => findNode(editor.document.value, id)!.node;
     // A rail first: its kind seeds its content as an item slot.
     choose(

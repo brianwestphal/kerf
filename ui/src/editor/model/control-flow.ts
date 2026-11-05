@@ -105,7 +105,7 @@ function ownerOf(document: ViewDocument, id: string): Owner | undefined {
     }
     return undefined;
   };
-  return visit(document.root);
+  return document.root ? visit(document.root) : undefined;
 }
 
 /** The nodes directly under a zone child, through its control flow. */
@@ -500,7 +500,8 @@ function findHolder(document: ViewDocument, id: string): ViewNode | undefined {
         }
     return undefined;
   };
-  return visit(document.root);
+  // A stale slot address can outlive the root (KF-PK3GVY).
+  return document.root ? visit(document.root) : undefined;
 }
 
 /** Every `$slot` name the document places. */
@@ -518,7 +519,8 @@ function placedSlots(document: ViewDocument): Set<string> {
     for (const children of Object.values(item.zones ?? {}))
       children.forEach(child);
   };
-  node(document.root);
+  // Asked only after removing a slot it found, so the document has a root.
+  node(document.root!);
   return names;
 }
 

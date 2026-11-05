@@ -173,6 +173,41 @@ describe('validateView: a complete document', () => {
   });
 });
 
+describe('validateView: a rootless document (KUI-V017)', () => {
+  // KF-PK3GVY: an editor's empty draft has no root; it is a well-formed
+  // document that nothing can generate or render yet.
+  const rootless = () => {
+    const document = doc(button(), {
+      params: { title: { type: { kind: 'string' } } },
+      slots: { footer: {} },
+    });
+    delete document.root;
+    return document;
+  };
+
+  it('reports only that the document has no root', () => {
+    const result = validateView(rootless(), catalog);
+    expect(result.valid).toBe(false);
+    expect(result.diagnostics).toEqual([
+      {
+        code: 'KUI-V017',
+        path: '$.root',
+        message: 'the document has no root; add a component to start it',
+      },
+    ]);
+    expect(result.hints).toEqual([]);
+  });
+
+  it('agrees with the JSON Schema, which makes root optional', () => {
+    expect(validateJsonSchemaSubset(schema, rootless())).toEqual([]);
+    expect(schema.required).not.toContain('root');
+  });
+
+  it('keeps KUI-V001 for a root that is not a node', () => {
+    expect(codes(doc(null as unknown as Fixture))).toEqual(['KUI-V001']);
+  });
+});
+
 describe('validateView: KUI-V001 shape', () => {
   it('reports malformed catalogs, params, slots, and root', () => {
     expect(codes(doc(button(), { catalogs: 'ui' }))).toContain('KUI-V001');

@@ -88,7 +88,12 @@ export interface ViewDocument {
   readonly slots?: Readonly<
     Record<string, { readonly input?: ViewType; readonly description?: string }>
   >;
-  readonly root: ViewNode;
+  /**
+   * The document's one top node. A document without one (an editor's empty
+   * draft) is valid JSON but fails validation with `KUI-V017`, so nothing
+   * generates or interprets it.
+   */
+  readonly root?: ViewNode;
 }
 
 export interface ViewCatalog {
@@ -114,7 +119,7 @@ export function createViewCatalog(input: {
 
 export interface ViewDiagnostic {
   /**
-   * `KUI-V001`–`KUI-V016`, or `KUI-L201`–`KUI-L204` for composition; a hint
+   * `KUI-V001`–`KUI-V017`, or `KUI-L201`–`KUI-L204` for composition; a hint
    * is `KUI-H001` (a whole-screen layout below the root whose place has no
    * height: not in a SizedRegion, another layout, or a filled Pane's content).
    */
