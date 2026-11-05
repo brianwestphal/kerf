@@ -6800,7 +6800,7 @@ import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
 interface PagedViewPage<Id extends string = string> {
     /** Stable page id: the controlled `page` value and the persisted choice. */
     id: Id;
-    /** Short page name, spoken as "Page 2 of 3: <label>" and shown as the dot's tooltip. */
+    /** Short page name, spoken in the dot's name (see `pageLabel`) and shown as the dot's tooltip. */
     label: string;
     /** The page's content; it owns its own inset (a `ContentItem`, `List`, `ListInsetText`). */
     content: KerfUiContent;
@@ -6814,6 +6814,12 @@ interface PagedViewProps<Id extends string = string> {
     pages: readonly PagedViewPage<Id>[];
     /** The controlled current page id (the app owns it and may persist it). */
     page: NoInfer<Id>;
+    /**
+     * Accessible name of each page dot, for localization: `{index}` is the
+     * 1-based page number, `{count}` the page count, and `{label}` the page's
+     * label. Defaults to `Page {index} of {count}: {label}`.
+     */
+    pageLabel?: string;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -6830,7 +6836,7 @@ interface PagedViewProps<Id extends string = string> {
  * geometry: put it directly in a Pane, sidebar, or SizedRegion, with no
  * wrapper padding.
  */
-declare function PagedView<Id extends string>({ id, label, pages, page, className, slot, rootAttributes, }: PagedViewProps<Id>): kerfjs.SafeHtml;
+declare function PagedView<Id extends string>({ id, label, pages, page, pageLabel, className, slot, rootAttributes, }: PagedViewProps<Id>): kerfjs.SafeHtml;
 
 export { PagedView, type PagedViewPage, type PagedViewProps };
 ```

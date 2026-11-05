@@ -6351,7 +6351,7 @@
         "narrow sidebar width"
       ],
       "accessibility": [
-        "The dots are a tablist named by label; each dot is a tab named \"Page 2 of 3: <page label>\" with aria-selected and aria-controls, and only the current dot is in the Tab order.",
+        "The dots are a tablist named by label; each dot is a tab named \"Page 2 of 3: <page label>\" (localize it with the pageLabel template, which fills {index}, {count}, and {label}) with aria-selected and aria-controls, and only the current dot is in the Tab order.",
         "Each page is a tabpanel named by its dot; pages other than the current one are inert, so focus and assistive technology stay on the visible page.",
         "With wirePagedViews: Left and Right on a focused dot move to the previous and next page (mirrored right to left), Home and End to the first and last.",
         "Paging slides smoothly, and jumps without animation when prefers-reduced-motion is set. The current dot is a wider pill, so the state does not rest on color alone; forced colors paint it Highlight."

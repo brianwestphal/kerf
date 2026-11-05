@@ -122,6 +122,30 @@ describe('PagedView', () => {
     expect(dots[0]!.getAttribute('type')).toBe('button');
   });
 
+  // KF-QSWJGQ: pageLabel localizes each dot's accessible name.
+  it('names the dots from a pageLabel template', () => {
+    const host = render(
+      <PagedView
+        id="v"
+        label="Seiten"
+        pages={[
+          ...PAGES.slice(0, 2),
+          { id: 'odd', label: 'Literal {count}', content: <p>Odd</p> },
+        ]}
+        page="today"
+        pageLabel="{label} ({index}/{count}) {unknown}"
+      />,
+    );
+    const dots = [...host.querySelectorAll<HTMLElement>('[role="tab"]')];
+    expect(dots.map((dot) => dot.getAttribute('aria-label'))).toEqual([
+      'Today (1/3) {unknown}',
+      'Token Rate (2/3) {unknown}',
+      // A placeholder inside a page label is spoken as written.
+      'Literal {count} (3/3) {unknown}',
+    ]);
+    expect(dots[0]!.getAttribute('title')).toBe('Today');
+  });
+
   it('shows the first page for an unknown page id', () => {
     const host = render(
       <PagedView id="v" label="Pages" pages={PAGES} page="missing" />,

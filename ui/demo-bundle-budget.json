@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 455600,
+  "totalJavaScriptGzip": 455700,
   "measuredLargestJavaScriptGzip": 164549,
-  "measuredTotalJavaScriptGzip": 455592,
+  "measuredTotalJavaScriptGzip": 455643,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6867,6 +6867,22 @@
         "measuredTotalJavaScriptGzip": 455592,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 455600
+      }
+    },
+    {
+      "at": "2026-11-05T06:29:54.842Z",
+      "reason": "KF-QSWJGQ: PagedView pageLabel template substitution (+0.04 kB gzip)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164549,
+        "measuredTotalJavaScriptGzip": 455592,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 455600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164549,
+        "measuredTotalJavaScriptGzip": 455643,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 455700
       }
     }
   ]

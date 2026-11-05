@@ -11,7 +11,7 @@ import {
 export interface PagedViewPage<Id extends string = string> {
   /** Stable page id: the controlled `page` value and the persisted choice. */
   id: Id;
-  /** Short page name, spoken as "Page 2 of 3: <label>" and shown as the dot's tooltip. */
+  /** Short page name, spoken in the dot's name (see `pageLabel`) and shown as the dot's tooltip. */
   label: string;
   /** The page's content; it owns its own inset (a `ContentItem`, `List`, `ListInsetText`). */
   content: KerfUiContent;
@@ -26,6 +26,12 @@ export interface PagedViewProps<Id extends string = string> {
   pages: readonly PagedViewPage<Id>[];
   /** The controlled current page id (the app owns it and may persist it). */
   page: NoInfer<Id>;
+  /**
+   * Accessible name of each page dot, for localization: `{index}` is the
+   * 1-based page number, `{count}` the page count, and `{label}` the page's
+   * label. Defaults to `Page {index} of {count}: {label}`.
+   */
+  pageLabel?: string;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -45,6 +51,28 @@ const pagedViewPageId = (view: string, page: string) => `${view}-page-${page}`;
 /** The DOM id of one page's dot (its tab). */
 const pagedViewDotId = (view: string, page: string) => `${view}-dot-${page}`;
 
+/** The default accessible name of a page dot. */
+const DEFAULT_PAGE_LABEL = 'Page {index} of {count}: {label}';
+
+/** Fill a `pageLabel` template for one dot (one pass, so a label containing
+ * a placeholder is spoken as written). */
+const fillPageLabel = (
+  template: string,
+  index: number,
+  count: number,
+  label: string,
+) =>
+  template.replace(/\{(index|count|label)\}/g, (_, key: string) => {
+    switch (key) {
+      case 'index':
+        return String(index);
+      case 'count':
+        return String(count);
+      default:
+        return label;
+    }
+  });
+
 /**
  * A region that pages horizontally between full-size panes, with compact
  * page dots floating in a pill at the bottom. Each pane fills the region and
@@ -59,6 +87,7 @@ export function PagedView<Id extends string>({
   label,
   pages,
   page,
+  pageLabel = DEFAULT_PAGE_LABEL,
   className = '',
   slot,
   rootAttributes = {},
@@ -104,7 +133,12 @@ export function PagedView<Id extends string>({
               role="tab"
               aria-selected={String(index === current)}
               aria-controls={pagedViewPageId(id, entry.id)}
-              aria-label={`Page ${index + 1} of ${pages.length}: ${entry.label}`}
+              aria-label={fillPageLabel(
+                pageLabel,
+                index + 1,
+                pages.length,
+                entry.label,
+              )}
               title={entry.label}
               tabindex={index === current ? '0' : '-1'}
             />

@@ -40,6 +40,10 @@ const stop = wirePagedViews(root, {
   rate") and is the dot's tooltip. With one page no dots render.
 - `page` (required): the controlled current page id. An id that matches no
   page shows the first.
+- `pageLabel`: the accessible name of each dot, for localization. `{index}`
+  is the 1-based page number, `{count}` the page count, and `{label}` the
+  page's label; the default is `Page {index} of {count}: {label}`. For
+  example, `pageLabel="Seite {index} von {count}: {label}"`.
 - `className`, `slot`, and `rootAttributes` (`data-*` metadata).
 
 ## Wiring

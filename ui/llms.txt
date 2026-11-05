@@ -944,7 +944,8 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   (`@kerfjs/ui/paged-view`): full-size swipeable pages with page dots floating
   at the bottom. Pass `id`, `label`, `pages` (`{ id, label, content }`), and the
   controlled `page`; call `wirePagedViews(root, { onPageChange })` and set
-  `page` from it. Page content owns its inset; add no wrapper padding.
+  `page` from it. Localize the dot names with `pageLabel` (`{index}`,
+  `{count}`, `{label}`). Page content owns its inset; add no wrapper padding.
 - **Show a hierarchy with `TreeList`** (`@kerfjs/ui/tree-list`): ListItem rows
   indented by depth with disclosure arrows, an ARIA tree. Pass `nodes`,
   `expanded`, `selected`, `action`, and `toggleAction`, flip the ids in your

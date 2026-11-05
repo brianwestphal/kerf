@@ -8410,6 +8410,13 @@
           "description": "The controlled current page id (the app owns it and may persist it)."
         },
         {
+          "name": "pageLabel",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "default": "Page {index} of {count}: {label}",
+          "description": "Accessible name of each page dot, for localization: `{index}` is the\n1-based page number, `{count}` the page count, and `{label}` the page's\nlabel. Defaults to `Page {index} of {count}: {label}`."
+        },
+        {
           "name": "className",
           "type": { "kind": "string", "text": "string", "nullable": true },
           "required": false,
@@ -26093,7 +26100,7 @@
           "name": "label",
           "type": { "kind": "string", "text": "string" },
           "required": true,
-          "description": "Short page name, spoken as \"Page 2 of 3: <label>\" and shown as the dot's tooltip."
+          "description": "Short page name, spoken in the dot's name (see `pageLabel`) and shown as the dot's tooltip."
         },
         {
           "name": "content",
