@@ -1,4 +1,20 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
+
+/**
+ * Resizes the viewport and waits out the catalog's response (KF-DD4MDF): the
+ * resize flips the catalog's responsive rails from its media-query and
+ * ResizeObserver callbacks, and the re-render that follows resets the inline
+ * placement this test gives the toolbar. Both run by the second frame.
+ */
+async function resize(page: Page, width: number) {
+  await page.setViewportSize({ width, height: 844 });
+  await page.evaluate(
+    () =>
+      new Promise((done) =>
+        window.requestAnimationFrame(() => window.requestAnimationFrame(done)),
+      ),
+  );
+}
 
 for (const width of [1100, 390]) {
   test(`Select contains long menus at both viewport edges (${width}px)`, async ({
@@ -72,7 +88,7 @@ for (const width of [1100, 390]) {
     }
     await select.getByRole('combobox').click();
     const resizedWidth = width === 1100 ? 390 : 1100;
-    await page.setViewportSize({ width: resizedWidth, height: 844 });
+    await resize(page, resizedWidth);
     await select.evaluate((element, x) => {
       element.closest<HTMLElement>('.kui-toolbar')!.style.left = `${x - 68}px`;
     }, resizedWidth);
@@ -88,7 +104,7 @@ for (const width of [1100, 390]) {
       .toBe(true);
     await page.keyboard.press('Escape');
     await expect(select).not.toHaveAttribute('open');
-    await page.setViewportSize({ width, height: 844 });
+    await resize(page, width);
     await select.evaluate((element, x) => {
       element.closest<HTMLElement>('.kui-toolbar')!.style.left = `${x - 68}px`;
     }, width);
