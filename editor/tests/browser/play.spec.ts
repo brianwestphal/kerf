@@ -1457,3 +1457,31 @@ test('a played ContentItem listbox moves with the arrows and logs Enter', async 
   await expect(entries).toHaveCount(1);
   await expect(entries.nth(0)).toContainText('open-budget');
 });
+
+// KF-MAM4AT: at a phone-width window the play bar keeps every control whole
+// and inside the window; whole groups move to another row instead.
+for (const width of [390, 1440]) {
+  test(`the play bar keeps every control whole at ${width} (KF-MAM4AT)`, async ({
+    page,
+  }, testInfo) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.setViewportSize({ width, height: 900 });
+    await openDocument(page);
+    await play(page);
+    await expect(page.locator('[data-editor-play-frame]')).toBeVisible();
+    const bar = page.locator('[data-key="editor-play-bar"]');
+    if (testInfo.project.name === 'chromium')
+      await page.screenshot({
+        path: testInfo.outputPath(`kf-mam4at-play-bar-${width}.png`),
+        animations: 'disabled',
+      });
+    const controls = bar.locator(
+      '[data-editor-play="device"], [data-editor-play="scale"], button',
+    );
+    expect(await controls.count()).toBeGreaterThan(4);
+    for (const control of await controls.all()) {
+      if (await control.isVisible())
+        await expect(control).toBeInViewport({ ratio: 1 });
+    }
+  });
+}

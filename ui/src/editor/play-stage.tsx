@@ -217,6 +217,13 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
                 />
               </>
             ) : undefined}
+          </>
+        }
+        // KF-MAM4AT: the device's options and the scale sit with the
+        // trailing controls, whose zone wraps whole groups at a narrow
+        // window, so none is clipped; the leading zone keeps one row.
+        trailing={
+          <>
             <ToolbarControlGroup label="Device options">
               <ToolbarButton
                 ariaLabel="Landscape"
@@ -273,10 +280,6 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
                 rootAttributes={{ 'data-editor-play': 'scale' }}
               />
             </ToolbarControlGroup>
-          </>
-        }
-        trailing={
-          <>
             <ToolbarControlGroup single>
               <ToolbarButton
                 ariaLabel={

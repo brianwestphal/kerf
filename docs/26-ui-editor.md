@@ -2100,8 +2100,12 @@ pushed views). Undo history is untouched.
 Play mode replaces the Workbench's rails and canvas with two regions:
 
 - **A play bar** across the top: a `Toolbar` that owns every control below,
-  with the device at its leading end and Done at its trailing end, after the
-  action log.
+  with the device (and Flexible's fields) at its leading end, and the device
+  options, Scale, action log, and Done at its trailing end. KF-MAM4AT: the
+  trailing zone wraps whole groups at a narrow window, so at 390px the
+  options, Scale, log, and Done move to a second row instead of the Scale
+  being clipped. A Toolbar policy that wraps a leading zone of control
+  groups would let them sit beside the device (component gap KF-K3TXCT).
 - **The stage**, which fills the rest. It centers the device on a neutral
   backdrop, scaled to fit when needed.
 
