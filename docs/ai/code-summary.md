@@ -698,6 +698,8 @@ increased-contrast / static-effects and forced-colors fallbacks in Chromium;
 contract (the glass fill reuses `--kui-chrome-material` /
 `--kui-chrome-material-filter`).
 
+`ui/tests/browser/no-network.spec.ts` (KF-WK5DEF: no CDN fetches by default) loads every `source: "kerf"` entry of `ui/ai/component-catalog.json` at its catalog route and fails on any request off the page's origin; the no-network guarantee and the Web Awesome icon-library note live in `ui/docs/webawesome-theme.md`, `ui/llms.txt`, and `ui/ai/skill.md`.
+
 UI palette browser checks share `ui/tests/browser/painted-contrast.ts`, which
 composites solid ancestor/component fills and foreground alpha in a browser
 canvas, then uses the evaluator's WCAG contrast math.

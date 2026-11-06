@@ -270,6 +270,11 @@ title-style labels as `KUI-D040`. See
   `TabBar`, `LucideIcon`; see
   [webawesome-migration.md](./docs/webawesome-migration.md)), and file a
   component gap rather than dropping to the raw tag.
+- **No network.** No Kerf UI component requests anything at runtime: icons
+  are bundled Lucide SVG and no component renders a Web Awesome element. An
+  application that renders Web Awesome elements itself registers a local
+  icon library, or `wa-icon` fetches from Font Awesome's CDN (see
+  [webawesome-theme.md](./docs/webawesome-theme.md)).
 - **Reach for the primitive, not for CSS.** The package is built to look right
   without an application customization layer. Before adding `padding`, `margin`,
   `width`, `height`, `border`, `background`, a wrapper card, or a decoration,

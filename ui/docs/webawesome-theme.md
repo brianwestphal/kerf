@@ -19,6 +19,22 @@ panel or ResizableRegion gives an open raw dropdown) ship only in this
 bridge, so a Kerf-only bundle carries none of them. The consumer-bundle tests and the
 `webawesome-optional` browser spec enforce all of this.
 
+**No network by default.** No Kerf component requests anything
+at runtime: every icon a component draws is bundled Lucide SVG, and no
+component renders a Web Awesome element, so a Kerf-only page works offline
+and in a self-contained tool. The `no-network` browser spec loads every Kerf
+component's catalog demo and fails on any request off the page's own origin.
+Web Awesome's own `wa-icon` (and every element that draws its icons through
+it) resolves its default icon library from Font Awesome's CDN. An
+application that renders Web Awesome elements itself owns that: register a
+local library before they render:
+
+```ts
+import { registerIconLibrary } from "@awesome.me/webawesome/dist/webawesome.js";
+
+registerIconLibrary("default", { resolver: (name) => `/icons/${name}.svg` });
+```
+
 **Supported versions.** `@kerfjs/ui` supports every Web Awesome 3.x release
 from 3.14 (its optional peer range is `^3.14.0`). No Kerf component patches
 Web Awesome's internals any more: `PopupMenu`, `Select`, and `DialogSurface`
