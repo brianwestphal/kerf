@@ -17,6 +17,11 @@ import {
   type EditorOptions,
 } from '../../../src/editor/editor.js';
 import inbox from '../../fixtures/view/inbox.kui.json';
+import { installPopoverPolyfill } from '../helpers/popover.js';
+
+// KF-Z54E4H: the Library and the drag chip are popovers; happy-dom has no
+// Popover API.
+installPopoverPolyfill();
 
 export { createEditorCatalog };
 

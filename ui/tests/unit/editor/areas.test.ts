@@ -39,20 +39,22 @@ const panel = (root: HTMLElement, strip: string, area: string) =>
 describe('document rail areas', () => {
   const strip = 'editor-document-areas';
 
-  it('starts on the outline and switches to components and problems', () => {
+  it('starts on the outline and switches to problems', () => {
     const { root } = open();
     expect(tab(root, strip, 'outline').getAttribute('aria-selected')).toBe(
       'true',
     );
     expect(panel(root, strip, 'outline').hidden).toBe(false);
-    expect(panel(root, strip, 'components').hidden).toBe(true);
-    tab(root, strip, 'components').click();
-    expect(panel(root, strip, 'components').hidden).toBe(false);
-    expect(panel(root, strip, 'outline').hidden).toBe(true);
+    // KF-Z54E4H: components live in the Library popover, not a rail tab.
+    expect(tab(root, strip, 'components')).toBeNull();
     expect(
-      root.querySelector(`#${strip}-components-panel [data-editor-palette]`),
+      root.querySelector(`[data-workbench-rail] [data-editor-palette]`),
+    ).toBeNull();
+    expect(
+      root.querySelector('#editor-library [data-editor-palette]'),
     ).not.toBeNull();
     tab(root, strip, 'problems').click();
+    expect(panel(root, strip, 'outline').hidden).toBe(true);
     expect(panel(root, strip, 'problems').textContent).toContain('No problems');
     // A valid document's Problems tab carries no count.
     expect(
@@ -64,8 +66,7 @@ describe('document rail areas', () => {
 
   it('filters the components by name or category (KF-Y26SKM)', () => {
     const { root } = open();
-    tab(root, strip, 'components').click();
-    const components = panel(root, strip, 'components');
+    const components = root.querySelector<HTMLElement>('#editor-library')!;
     const names = () =>
       [
         ...components.querySelectorAll<HTMLElement>('[data-editor-palette]'),
@@ -74,10 +75,10 @@ describe('document rail areas', () => {
       [...components.querySelectorAll('[data-component="list-header"]')].map(
         (header) => header.textContent!.trim(),
       );
-    // KF-PR8MA6: the filter sits in the rail's pinned header, not the panel.
+    // KF-Z54E4H: the filter sits in the Library, above the palette.
     const editor = () =>
       root.querySelector<HTMLElement>('[data-editor-palette-filter]')!;
-    expect(components.contains(editor())).toBe(false);
+    expect(components.contains(editor())).toBe(true);
     const filter = (text: string) => {
       editor().textContent = text;
       editor().dispatchEvent(new Event('input', { bubbles: true }));
@@ -112,9 +113,10 @@ describe('document rail areas', () => {
     expect(
       root.querySelector('[data-action="editor-clear-palette-filter"]'),
     ).toBeNull();
-    // Only the Components area shows the filter.
-    tab(root, strip, 'outline').click();
-    expect(root.querySelector('[data-editor-palette-filter]')).toBeNull();
+    // The rail shows no filter.
+    expect(
+      root.querySelector('[data-workbench-rail] [data-editor-palette-filter]'),
+    ).toBeNull();
   });
 
   it('counts problems on the tab and lists them in its panel', () => {
@@ -189,14 +191,14 @@ describe('inspector areas', () => {
       new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
     );
     expect(
-      tab(root, 'editor-document-areas', 'components').getAttribute(
+      tab(root, 'editor-document-areas', 'problems').getAttribute(
         'aria-selected',
       ),
     ).toBe('true');
     // Even a tab made draggable keeps its place: the editor ignores reorders.
-    const components = tab(root, 'editor-document-areas', 'components');
-    components.closest('.kui-tab-bar-item')!.setAttribute('draggable', 'true');
-    components.dispatchEvent(
+    const problems = tab(root, 'editor-document-areas', 'problems');
+    problems.closest('.kui-tab-bar-item')!.setAttribute('draggable', 'true');
+    problems.dispatchEvent(
       new KeyboardEvent('keydown', {
         key: 'ArrowLeft',
         altKey: true,
@@ -210,6 +212,6 @@ describe('inspector areas', () => {
           '[role="tab"][data-tab-id^="editor-document-areas-"]',
         ),
       ].map((item) => item.textContent),
-    ).toEqual(['Outline', 'Components', 'Problems']);
+    ).toEqual(['Outline', 'Problems']);
   });
 });

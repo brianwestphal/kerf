@@ -1,6 +1,6 @@
 import { expect, type Page, test } from '@playwright/test';
 
-import { area } from './areas.js';
+import { area, openLibrary } from './areas.js';
 
 // KF-6GT5QY: an application's own dev server hosts the editor through
 // `@kerfjs/ui/vite-editor`, and its own component (OrderCard, which lives in
@@ -27,7 +27,7 @@ test('an app’s dev server hosts the editor with its own components', async ({
   const canvas = page.locator('[data-editor-canvas]');
 
   // The palette lists the app's component under Application.
-  await area(page, 'Components');
+  await openLibrary(page);
   // The root Pane is selected, so the Inspector's pickers group it too.
   await expect(
     page.getByRole('heading', { name: 'Application', exact: true }),

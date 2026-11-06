@@ -134,6 +134,21 @@ export interface CanvasDragOptions {
   ) => void;
   /** The element under a point; `document.elementFromPoint` by default. */
   readonly pick?: (x: number, y: number) => Element | null;
+  /**
+   * KF-Z54E4H: a press on `sourceId` became a drag; `altKey` is whether
+   * Option (Alt) was held as it did.
+   */
+  readonly onDragStart?: (sourceId: string, altKey: boolean) => void;
+  /**
+   * KF-Z54E4H: a drag of `sourceId` ended: `dropped` when it dropped
+   * somewhere (or asked where), not when it was cancelled or fell where
+   * nothing takes it; `altKey` is whether Option (Alt) was held at the end.
+   */
+  readonly onDragEnd?: (end: {
+    readonly sourceId: string;
+    readonly dropped: boolean;
+    readonly altKey: boolean;
+  }) => void;
 }
 
 /** Whether `element` sits in a row: its parent lays children out left to right. */
@@ -264,6 +279,8 @@ export function wireCanvasDrag(
       const host = part(name);
       if (host) host.hidden = true;
     }
+    const chip = part('drag-chip');
+    if (chip?.matches(':popover-open')) chip.hidePopover();
   };
   /** A canvas element's box relative to the canvas's scrolled content. */
   const within = (box: { readonly left: number; readonly top: number }) => {
@@ -308,6 +325,10 @@ export function wireCanvasDrag(
     if (chip && options.labelOf) {
       chip.innerHTML = badge(options.labelOf(press!.source));
       chip.hidden = false;
+      // KF-Z54E4H: a popover chip goes into the top layer last, so it draws
+      // over an open popover (the Library) as well as the rails.
+      if (chip.hasAttribute('popover') && !chip.matches(':popover-open'))
+        chip.showPopover();
     }
     const source = part('drag-source');
     if (source && press!.element) {
@@ -487,6 +508,7 @@ export function wireCanvasDrag(
       return;
     if (!press.dragging) {
       press.dragging = true;
+      options.onDragStart?.(press.source, pointer.altKey);
       begin();
     }
     pointer.preventDefault();
@@ -541,7 +563,8 @@ export function wireCanvasDrag(
           !at!.zones &&
           !at!.replace &&
           at!.move.target.position === 'inside'));
-    suppressClick = press.dragging;
+    const { source, dragging } = press;
+    suppressClick = dragging;
     // The click that ends a drag comes in this same task; a later click
     // (on the menu a drop asks with, KF-WKABP2) is the person's own.
     if (suppressClick)
@@ -553,14 +576,27 @@ export function wireCanvasDrag(
     if (asks)
       options.choose!(choices, { x: pointer.clientX, y: pointer.clientY });
     else if (found) options.onMove(found);
+    if (dragging)
+      options.onDragEnd?.({
+        sourceId: source,
+        dropped: asks || found !== undefined,
+        altKey: pointer.altKey,
+      });
   };
   const cancel = () => {
-    if (press?.dragging) suppressClick = true;
+    const ended = press?.dragging ? press.source : undefined;
+    if (ended !== undefined) suppressClick = true;
     press = undefined;
     clear();
+    if (ended !== undefined)
+      options.onDragEnd?.({ sourceId: ended, dropped: false, altKey: false });
+    return ended !== undefined;
   };
   const onKey = (event: Event) => {
-    if ((event as KeyboardEvent).key === 'Escape' && press) cancel();
+    if ((event as KeyboardEvent).key !== 'Escape' || !press) return;
+    // KF-Z54E4H: Escape that ends a drag ends only the drag, not also the
+    // popover (the Library) it started in.
+    if (cancel()) event.preventDefault();
   };
   // A drag ends in a click on whatever was under the pointer; that click
   // must not select it.

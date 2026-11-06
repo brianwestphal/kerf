@@ -397,7 +397,7 @@ describe('canvas drag', () => {
           root.querySelector<HTMLElement>(
             `#editor-document-areas-${area}-panel`,
           )!;
-        tab('components').click();
+        tab('problems').click();
         expect(panel('outline').hidden).toBe(true);
         const badge = paletteRow(root, '@kerfjs/ui:badge');
         pointer('pointerdown', badge, 10, 700);
@@ -942,6 +942,19 @@ describe('wireCanvasDrag without its optional parts', () => {
     expect(moves).toEqual([
       { sourceId: 'a', target: { id: 'b', position: 'after' } },
     ]);
+    // KF-Z54E4H: Escape before a press becomes a drag ends the press but
+    // leaves the key to whatever else listens.
+    send('pointerdown', 10, 10);
+    const escape = new KeyboardEvent('keydown', {
+      key: 'Escape',
+      bubbles: true,
+      cancelable: true,
+    });
+    root.dispatchEvent(escape);
+    expect(escape.defaultPrevented).toBe(false);
+    send('pointermove', 10, 138);
+    send('pointerup', 10, 138);
+    expect(moves).toHaveLength(1);
     stop();
   });
 });

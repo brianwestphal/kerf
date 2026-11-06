@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 
 import { expect, type Page, test } from '@playwright/test';
 
-import { area } from './areas.js';
+import { area, openLibrary } from './areas.js';
 import {
   addChild,
   canvas,
@@ -70,7 +70,7 @@ test('selects from the outline and documents a palette component', async ({
   await expect(
     page.getByText('folderList · List', { exact: false }),
   ).toBeVisible();
-  await area(page, 'Components');
+  await openLibrary(page);
   await page
     .locator('[data-action="editor-show-component"]', { hasText: /^Badge$/ })
     .click();
@@ -78,9 +78,9 @@ test('selects from the outline and documents a palette component', async ({
 });
 
 test('filters the components list as you type', async ({ page }, info) => {
-  // KF-Y26SKM: the Components area narrows to names or categories.
+  // KF-Y26SKM: the Library narrows to names or categories.
   await page.setViewportSize({ width: 1440, height: 900 });
-  await area(page, 'Components');
+  await openLibrary(page);
   const rows = page.locator('[data-editor-palette]');
   const all = await rows.count();
   const filter = page.locator('[data-editor-palette-filter]');
@@ -105,8 +105,8 @@ test('filters the components list as you type', async ({ page }, info) => {
   await page.getByRole('button', { name: 'Clear Filter' }).click();
   await expect(rows).toHaveCount(all);
   await expect(filter).toBeFocused();
-  // KF-PR8MA6: the filter is pinned in the rail's header, so scrolling to
-  // the end of the list leaves it in view above the rows.
+  // KF-PR8MA6 / KF-Z54E4H: the filter stays above the Library's scrolling
+  // list, so scrolling to its end leaves it in view above the rows.
   await rows.last().scrollIntoViewIfNeeded();
   await expect(filter).toBeInViewport();
   const field = (await filter.boundingBox())!;
@@ -1005,7 +1005,7 @@ test('drags a palette component onto an outline row', async ({
   await page.setViewportSize({ width: 1440, height: 900 });
   await newDocument(page);
   await expect(page.getByText('1 node · valid')).toBeVisible();
-  await area(page, 'Components');
+  await openLibrary(page);
   const row = page.locator('[data-editor-palette="@kerfjs/ui:text"]');
   await row.scrollIntoViewIfNeeded();
   const from = (await row.boundingBox())!;
@@ -1042,16 +1042,8 @@ test('drags a palette component onto an outline row', async ({
   await page.mouse.up();
   await expect(page.getByText('2 nodes · valid')).toBeVisible();
   await expect(target).not.toHaveAttribute('data-drop-position');
-  // The strip stays pinned while a long area scrolls.
-  await area(page, 'Components');
-  await page
-    .locator('[data-editor-palette="@kerfjs/ui:tree-list"]')
-    .scrollIntoViewIfNeeded();
-  await expect(page.getByRole('tab', { name: 'Outline' })).toBeInViewport();
-  await page.screenshot({
-    path: info.outputPath('KF-67K2VP-pinned-strip-1440.png'),
-    animations: 'disabled',
-  });
+  // KF-Z54E4H: the transient Library closed after the drop.
+  await expect(page.locator('#editor-library')).toBeHidden();
 });
 
 // KF-78MHM8: components drag from the palette onto the canvas.
@@ -1072,7 +1064,7 @@ test('targets a Workbench’s zones, replaces Main, and asks on Option-drop', as
   const caption = page.locator('.kui-editor__drop-caption');
   /** Starts a palette drag of `name` and rests at a point of the Workbench. */
   const hover = async (name: string, fx: number, fy: number) => {
-    await area(page, 'Components');
+    await openLibrary(page);
     const row = page.locator('[data-editor-palette]', {
       hasText: new RegExp(`^${name}$`),
     });
@@ -1155,13 +1147,13 @@ test('targets a Workbench’s zones, replaces Main, and asks on Option-drop', as
   await expect(workbench.locator('.kui-badge')).toBeVisible();
 });
 
-// KF-JC7WTW: the Components area's grid shows each component as added (a
+// KF-JC7WTW: the Library's grid shows each component as added (a
 // layout as a sketch), and a tile drags onto the canvas like a row.
 test('shows the palette as a grid of thumbnails', async ({ page }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await newDocument(page);
   await expect(page.getByText('1 node · valid')).toBeVisible();
-  await area(page, 'Components');
+  await openLibrary(page);
   await page
     .locator(
       '[data-segmented-control-id="editor-palette-view"] [data-segment-value="grid"]',
@@ -1209,7 +1201,7 @@ test('shows the palette as a grid of thumbnails', async ({ page }, info) => {
   await expect(page.getByText('2 nodes · valid')).toBeVisible();
   // The choice lasts across a reload.
   await page.reload();
-  await area(page, 'Components');
+  await openLibrary(page);
   await expect(tile('switch')).toHaveClass(/kui-content-item/);
 });
 
@@ -1219,13 +1211,15 @@ test('drags components from the palette onto the canvas', async ({
   await page.setViewportSize({ width: 1440, height: 900 });
   await newDocument(page);
   await expect(page.getByText('1 node · valid')).toBeVisible();
-  await area(page, 'Components');
+  await openLibrary(page);
   const canvas = page.locator('[data-editor-canvas]');
   const drag = async (
     key: string,
     to: { x: number; y: number },
     shot?: string,
   ) => {
+    // KF-Z54E4H: each drop closes the transient Library.
+    await openLibrary(page);
     const row = page.locator(`[data-editor-palette="${key}"]`);
     await row.scrollIntoViewIfNeeded();
     const box = (await row.boundingBox())!;

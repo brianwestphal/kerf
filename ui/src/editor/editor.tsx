@@ -1,7 +1,7 @@
 // The Kerf UI editor shell (docs/26-ui-editor.md; KF-4NRZCV: editor
 // scaffold), published as `@kerfjs/ui/editor` (KF-6GT5QY: editor host). A
-// Workbench with the document rail (problems, outline, and component
-// palette), the canvas (the document rendered through interpretView), and
+// Workbench with the document rail (outline and problems), the component
+// Library popover (KF-Z54E4H), the canvas (the document rendered through interpretView), and
 // the inspector that edits it, plus open, save, export, and compare of the
 // generated view module. The host registers `@kerfjs/ui/popup-menu/register`
 // and `@kerfjs/ui/select/register` and loads the global stylesheets, as for
@@ -118,9 +118,14 @@ import { ContentItem } from '../components/surfaces/content-item/content-item.js
 import {
   closeDialog,
   DialogSurface,
+  isPopoverPinned,
   openDialog,
+  type PinnablePopoverChange,
+  PinnablePopoverSurface,
+  wirePinnablePopover,
 } from '../components/surfaces/surface-scaffold/surface-scaffold.js';
 import { Text } from '../components/typography/text/text.js';
+import { isApplePlatform } from '../shared/selection/selection.js';
 import { px } from '../shared/styles/css-values.js';
 import {
   reorderListItems,
@@ -376,7 +381,7 @@ const OUTLINE_ACTION = 'editor-select-node';
 const OUTLINE_TOGGLE_ACTION = 'editor-toggle-node';
 const PALETTE_ACTION = 'editor-show-component';
 const PALETTE_CLEAR_ACTION = 'editor-clear-palette-filter';
-/** KF-JC7WTW: the Components area shows a list or a grid of thumbnails. */
+/** KF-JC7WTW: the Library shows a list or a grid of thumbnails. */
 const PALETTE_VIEW_ACTION = 'editor-palette-view';
 const PALETTE_VIEW_KEY = 'kerf-ui-editor:palette-view';
 type PaletteView = 'list' | 'grid';
@@ -411,6 +416,46 @@ function rememberPaletteView(view: PaletteView): void {
     // Without storage the choice lasts until the editor reloads.
   }
 }
+
+/**
+ * KF-Z54E4H: the component Library, an Xcode-style popover the Preview
+ * toolbar's Library button (and Shift+Cmd+L) opens, and where it was
+ * pinned, kept per browser.
+ */
+const LIBRARY_ID = 'editor-library';
+const LIBRARY_KEY = 'kerf-ui-editor:library';
+type LibraryMemory = Pick<PinnablePopoverChange, 'pinned' | 'placement'>;
+
+/** Whether the Library was left pinned, and where, in this browser. */
+function rememberedLibrary(): LibraryMemory | undefined {
+  try {
+    const stored = globalThis.localStorage?.getItem(LIBRARY_KEY);
+    if (!stored) return undefined;
+    const value = JSON.parse(stored) as Partial<LibraryMemory> | null;
+    return {
+      pinned: value?.pinned === true,
+      placement:
+        value?.placement &&
+        Number.isFinite(value.placement.x) &&
+        Number.isFinite(value.placement.y)
+          ? value.placement
+          : null,
+    };
+  } catch {
+    return undefined;
+  }
+}
+
+function rememberLibrary({ pinned, placement }: LibraryMemory): void {
+  try {
+    globalThis.localStorage?.setItem(
+      LIBRARY_KEY,
+      JSON.stringify({ pinned, placement }),
+    );
+  } catch {
+    // Without storage the Library opens transient after a reload.
+  }
+}
 const PROBLEM_ACTION = 'editor-select-problem';
 const NEW_ACTION = 'editor-new';
 // KF-60BEEJ: play mode's Play (Canvas toolbar) and Done (play bar).
@@ -423,7 +468,7 @@ const INSPECTOR_TAB_ACTION = 'editor-inspector-tab';
 const DOCUMENT_AREAS = 'editor-document-areas';
 /** How long a drag rests on a tab before it opens. */
 const SPRING_MS = 500;
-type DocumentArea = 'outline' | 'components' | 'problems';
+type DocumentArea = 'outline' | 'problems';
 type InspectorArea = 'properties' | 'flow' | 'children';
 const SAVE_ACTION = 'editor-save';
 const SAVE_AS_ACTION = 'editor-save-as';
@@ -1255,7 +1300,7 @@ export function createEditor(options: EditorOptions) {
   /** Every Lucide icon's document name, listed on first use. */
   let allIcons: readonly string[] | undefined;
   let allAliases: ReadonlyMap<string, readonly string[]> | undefined;
-  /** The Components filter's text (KF-Y26SKM), and its editor's revision. */
+  /** The Library filter's text (KF-Y26SKM), and its editor's revision. */
   const paletteFilter = signal('');
   const paletteFilterRevision = signal(0);
   const paletteView = signal<PaletteView>(rememberedPaletteView());
@@ -1342,7 +1387,7 @@ export function createEditor(options: EditorOptions) {
       return (
         <EmptyState
           title="No components yet"
-          detail="Add the first component on the canvas, or drag one there from Components."
+          detail="Add the first component on the canvas, or drag one there from the Library."
         />
       );
     return (
@@ -3641,6 +3686,13 @@ export function createEditor(options: EditorOptions) {
       ambiguous,
     };
   };
+  /**
+   * KF-Z54E4H: where the Library stands during a palette drag. `aside`: the
+   * transient Library closed when the drag began, out of the way of what
+   * it covered; `asked`: the drop asked where it goes; `back`: it returns
+   * once that question is answered.
+   */
+  const library = { aside: false, asked: false, back: false };
   /** The drop choices the menu shows while it is open. */
   const dropChoices = signal<readonly { move: TreeListMove; label: string }[]>(
     [],
@@ -3652,6 +3704,7 @@ export function createEditor(options: EditorOptions) {
     point: { x: number; y: number },
   ) => {
     dropChoices.value = choices;
+    library.asked = true;
     // The menu renders its new entries first.
     window.requestAnimationFrame(() =>
       openPopupMenuAt(
@@ -3876,7 +3929,7 @@ export function createEditor(options: EditorOptions) {
     return (
       <EmptyState
         title="Start with a component"
-        detail="The component you add becomes the root of the document. You can also drag one here from Components."
+        detail="The component you add becomes the root of the document. You can also drag one here from the Library."
         action={
           <List controlInsets="trbl" gap>
             <Select
@@ -4574,14 +4627,82 @@ export function createEditor(options: EditorOptions) {
    * (a pane clips it in WebKit) while a drag heads for a spring tab or the
    * outline.
    */
+  // KF-Z54E4H: a manual popover, shown in the top layer while a drag
+  // lasts, so it also draws over the open Library.
   const dragChip = () => (
     <div
       class="kui-editor__drag-chip"
       data-morph-skip
       aria-hidden="true"
+      popover="manual"
       hidden
     />
   );
+
+  /**
+   * KF-Z54E4H: the component Library, Xcode style: a popover below the
+   * Preview toolbar's Library button that closes after a drop unless pinned
+   * or Option is held. Its filter stays above the scrolling palette.
+   */
+  const libraryPopover = () => {
+    const groups = paletteMatches();
+    return (
+      <PinnablePopoverSurface
+        id={LIBRARY_ID}
+        label="Library"
+        size="small"
+        height={px(560)}
+        bodyLayout="fill-last"
+        headerActions={
+          // KF-JC7WTW: a list of names, or a grid of thumbnails.
+          <SegmentedControl
+            id="editor-palette-view"
+            label="Component View"
+            value={paletteView.value}
+            action={PALETTE_VIEW_ACTION}
+            choices={[
+              {
+                value: 'list',
+                label: 'List',
+                title: 'List',
+                content: <LucideIcon icon={ListIcon} name="list" />,
+              },
+              {
+                value: 'grid',
+                label: 'Grid',
+                title: 'Grid',
+                content: <LucideIcon icon={LayoutGrid} name="layout-grid" />,
+              },
+            ]}
+          />
+        }
+        rootAttributes={{ 'data-editor-library': '' }}
+      >
+        <List controlInsets="trbl">
+          <SearchField
+            id="editor-palette-filter"
+            label="Filter Components"
+            placeholder="Filter"
+            query={paletteFilter.value}
+            revision={paletteFilterRevision.value}
+            clearAction={PALETTE_CLEAR_ACTION}
+            clearLabel="Clear Filter"
+            editorAttributes={{ 'data-editor-palette-filter': '' }}
+          />
+        </List>
+        <List scrollable flex>
+          {groups.length ? (
+            palette(groups)
+          ) : (
+            <EmptyState
+              title="No matching components"
+              detail="No component name or category holds that text."
+            />
+          )}
+        </List>
+      </PinnablePopoverSurface>
+    );
+  };
 
   /**
    * Shows `document` as a fresh session: no history or selection. With
@@ -4814,48 +4935,6 @@ export function createEditor(options: EditorOptions) {
     const problems = problemList.length;
     const hintList = currentHints.value;
     const hints = hintList.length;
-    // KF-PR8MA6: the Components filter sits in the rail's pinned header,
-    // under the strip, so it stays in reach while the list scrolls.
-    const paletteFilterField =
-      documentArea.value === 'components' ? (
-        <List controlInsets="trbl">
-          <Row gap="xs" vAlign="middle">
-            <List flex>
-              <SearchField
-                id="editor-palette-filter"
-                label="Filter Components"
-                placeholder="Filter"
-                query={paletteFilter.value}
-                revision={paletteFilterRevision.value}
-                clearAction={PALETTE_CLEAR_ACTION}
-                clearLabel="Clear Filter"
-                editorAttributes={{ 'data-editor-palette-filter': '' }}
-              />
-            </List>
-            {/* KF-JC7WTW: a list of names, or a grid of thumbnails. */}
-            <SegmentedControl
-              id="editor-palette-view"
-              label="Component View"
-              value={paletteView.value}
-              action={PALETTE_VIEW_ACTION}
-              choices={[
-                {
-                  value: 'list',
-                  label: 'List',
-                  title: 'List',
-                  content: <LucideIcon icon={ListIcon} name="list" />,
-                },
-                {
-                  value: 'grid',
-                  label: 'Grid',
-                  title: 'Grid',
-                  content: <LucideIcon icon={LayoutGrid} name="layout-grid" />,
-                },
-              ]}
-            />
-          </Row>
-        </List>
-      ) : undefined;
     const [documentStrip, ...documentPanels] = areaTabs(
       DOCUMENT_AREAS,
       'Document areas',
@@ -4870,25 +4949,6 @@ export function createEditor(options: EditorOptions) {
           // The tab names the area; the Preview header counts
           // its nodes.
           panel: <List>{outline(document, problemCounts(problemList))}</List>,
-        },
-        {
-          area: 'components',
-          name: 'Components',
-          panel: (() => {
-            const groups = paletteMatches();
-            return (
-              <>
-                {groups.length ? (
-                  palette(groups)
-                ) : (
-                  <EmptyState
-                    title="No matching components"
-                    detail="No component name or category holds that text."
-                  />
-                )}
-              </>
-            );
-          })(),
         },
         {
           area: 'problems',
@@ -5029,12 +5089,7 @@ export function createEditor(options: EditorOptions) {
                 // KF-67K2VP: the strip stays pinned under the toolbar, so a
                 // drag (or a click) reaches another area from anywhere in a
                 // long panel.
-                header: (
-                  <>
-                    {documentStrip}
-                    {paletteFilterField}
-                  </>
-                ),
+                header: documentStrip,
                 content: <List>{documentPanels}</List>,
               }}
               mainToolbar={{
@@ -5059,6 +5114,17 @@ export function createEditor(options: EditorOptions) {
                   </Button>
                 ) : undefined,
                 trailing: [
+                  // KF-Z54E4H: the component Library, as Xcode's + button.
+                  <Button
+                    emphasis="plain"
+                    popoverTarget={LIBRARY_ID}
+                    ariaHasPopup="dialog"
+                    title={`Library (${isApplePlatform() ? '⇧⌘L' : 'Ctrl+Shift+L'})`}
+                    icon={<LucideIcon icon={Plus} name="plus" />}
+                    rootAttributes={{ 'data-editor-library-button': '' }}
+                  >
+                    Library
+                  </Button>,
                   <ToolbarControlGroup
                     label="History"
                     appearance="borderless"
@@ -5153,6 +5219,7 @@ export function createEditor(options: EditorOptions) {
           {dropMenu()}
         </div>
         {playing.value ? playMode() : undefined}
+        {libraryPopover()}
         {dragChip()}
       </List>
     );
@@ -6128,6 +6195,136 @@ export function createEditor(options: EditorOptions) {
         saver.dispose();
       },
     ];
+  };
+
+  /** KF-Z54E4H: the Library popover under `root`. */
+  const librarySurface = (root: HTMLElement) =>
+    root.querySelector<HTMLElement>(`#${LIBRARY_ID}`)!;
+  /** Whether the Library is open and closes after a drop (not pinned). */
+  const libraryTransient = (root: HTMLElement) => {
+    const surface = librarySurface(root);
+    return surface.matches(':popover-open') && !isPopoverPinned(surface);
+  };
+  /**
+   * A palette drag began: the transient Library steps aside, so the canvas
+   * and outline it covered take the drop, unless Option (Alt) is held.
+   */
+  const libraryDragStarted = (root: HTMLElement, altKey: boolean) => {
+    library.asked = false;
+    if (altKey || !libraryTransient(root)) return;
+    library.aside = true;
+    librarySurface(root).hidePopover();
+  };
+  /**
+   * A palette drag ended. A transient Library closes after a drop; it
+   * comes back after a drop that found no place, and stays (or comes back)
+   * when Option (Alt) is held at the drop. An Option drop that asks where
+   * it goes (KF-WKABP2) keeps the Library out of the way until the menu
+   * closes, then brings it back.
+   */
+  const libraryDragEnded = (
+    root: HTMLElement,
+    dropped: boolean,
+    altKey: boolean,
+  ) => {
+    const surface = librarySurface(root);
+    const { aside, asked } = library;
+    library.aside = false;
+    // Pinned, or closed before the drag: nothing changes.
+    if (!aside && !libraryTransient(root)) return;
+    if (!dropped || (altKey && !asked)) {
+      if (aside) surface.showPopover();
+      return;
+    }
+    library.back = asked && altKey;
+    if (aside) return;
+    // Not a close the person asked for: focus stays with the drop.
+    library.aside = true;
+    surface.hidePopover();
+    library.aside = false;
+  };
+
+  /**
+   * KF-Z54E4H: the Library's pinned placement, kept per browser; Shift+Cmd+L
+   * (Ctrl+Shift+L) toggles it; it opens with focus in its filter and closes
+   * with focus back on the Library button; play mode closes it.
+   */
+  const wireLibrary = (root: HTMLElement) => {
+    const surface = librarySurface(root);
+    const button = () =>
+      root.querySelector<HTMLElement>('[data-editor-library-button]');
+    const remembered = rememberedLibrary();
+    const doc = root.ownerDocument;
+    /** Closed by a drag or drop rather than by the person: keep focus. */
+    let quiet = false;
+    const stopPopover = wirePinnablePopover(surface, {
+      anchor: () => button(),
+      ...(remembered
+        ? {
+            pinned: remembered.pinned,
+            ...(remembered.placement
+              ? { placement: remembered.placement }
+              : {}),
+          }
+        : {}),
+      onChange: rememberLibrary,
+    });
+    const onBeforeToggle = (event: Event) => {
+      if ((event as ToggleEvent).newState === 'closed') quiet = library.aside;
+    };
+    const onToggle = (event: Event) => {
+      if ((event as ToggleEvent).newState === 'open') {
+        surface
+          .querySelector<HTMLElement>('[data-editor-palette-filter]')
+          ?.focus();
+        return;
+      }
+      if (quiet || surface.matches(':popover-open')) return;
+      const active = doc.activeElement;
+      if (!active || active === doc.body || surface.contains(active))
+        button()?.focus();
+    };
+    /** A drop's question was answered: the Library comes back if held. */
+    const answered = (event: Event) => {
+      if (
+        !library.back ||
+        (event as ToggleEvent).newState !== 'closed' ||
+        !(event.target as Element).closest(`[${DROP_MENU}]`)
+      )
+        return;
+      library.back = false;
+      surface.showPopover();
+    };
+    surface.addEventListener('beforetoggle', onBeforeToggle);
+    surface.addEventListener('toggle', onToggle);
+    root.addEventListener('toggle', answered, true);
+    const stops = [
+      stopPopover,
+      on(doc, 'keydown', (event) => {
+        const key = event as KeyboardEvent;
+        if (
+          playing.value ||
+          key.key.toLowerCase() !== 'l' ||
+          !key.shiftKey ||
+          key.altKey ||
+          !(key.metaKey || key.ctrlKey)
+        )
+          return;
+        key.preventDefault();
+        if (surface.matches(':popover-open')) surface.hidePopover();
+        else surface.showPopover();
+      }),
+      effect(() => {
+        if (playing.value && surface.matches(':popover-open'))
+          surface.hidePopover();
+      }),
+    ];
+    return () => {
+      surface.removeEventListener('beforetoggle', onBeforeToggle);
+      surface.removeEventListener('toggle', onToggle);
+      root.removeEventListener('toggle', answered, true);
+      for (const stop of stops) stop();
+    };
   };
 
   /** KF-60BEEJ: enters play mode, with focus on Done. */
@@ -7166,6 +7363,14 @@ export function createEditor(options: EditorOptions) {
           sourceOf: (element) =>
             `${PALETTE_SOURCE}${element.dataset.editorPalette}`,
         },
+        onDragStart: (sourceId, altKey) => {
+          if (sourceId.startsWith(PALETTE_SOURCE))
+            libraryDragStarted(root, altKey);
+        },
+        onDragEnd: ({ sourceId, dropped, altKey }) => {
+          if (sourceId.startsWith(PALETTE_SOURCE))
+            libraryDragEnded(root, dropped, altKey);
+        },
       }),
       wireFilePickers(root, {
         onFiles: ({ files, id }) => {
@@ -7203,7 +7408,7 @@ export function createEditor(options: EditorOptions) {
       })(),
     ];
     if (autosave) stops.push(...wireAutosave(root));
-    stops.push(wirePlay(root));
+    stops.push(wirePlay(root), wireLibrary(root));
     const observer = new ResizeObserver(() => placeHighlight(root));
     observer.observe(root.querySelector('[data-editor-canvas]')!);
     return () => {

@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
-import { area } from './areas.js';
+import { area, openLibrary } from './areas.js';
 import { sampleName } from './sample-name.js';
 
 /**
@@ -45,7 +45,7 @@ export async function dragComponent(
   target: () => Locator,
   fraction = 0.5,
 ) {
-  await area(page, 'Components');
+  await openLibrary(page);
   const row = page.locator('[data-editor-palette]', {
     hasText: new RegExp(`^${name}$`),
   });

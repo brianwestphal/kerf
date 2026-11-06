@@ -74,7 +74,7 @@ an `EmptyState`, "Start with a component", with a component picker that
 starts on Pane and an Add button; the Outline shows "No components yet" and
 points to the canvas. The chosen component becomes the root, seeded as
 **Replace the root** seeds it, and is selected on its Properties. A
-component dragged from Components onto the empty canvas becomes the root the
+component dragged from the Library onto the empty canvas becomes the root the
 same way, and Cmd/Ctrl+V pastes a copy as the root. A Pane that becomes the
 root starts with `fill` on (KF-Z70DBC), so a new view fills the screen in an
 app's `.kui-app-root` and in play mode instead of ending after its content;
@@ -619,8 +619,8 @@ ToolbarControlGroup's ToolbarButton, then ToolbarActionLink) seed that
 parent's required content and lead its Add a child suggestions.
 
 Each rail switches between focus areas with a segmented `TabBar` under its
-toolbar (KF-MHY1GB: rail areas). The Document rail shows Outline, Components,
-or Problems (with a count badge while there are any, and "No problems"
+toolbar (KF-MHY1GB: rail areas). The Document rail shows Outline or Problems
+(with a count badge while there are any, and "No problems"
 otherwise); its tabs take their own widths so the names fit. The Inspector,
 for a selected node, shows Properties (name, props, promote, bind; each
 field labeled in sentence case from its prop name, KF-7M4XQR: readable
@@ -631,13 +631,42 @@ Each panel is a `tabpanel`; hidden panels stay rendered, so a field keeps its
 state while another area shows. The Inspector's area persists across
 selections, except that a node just added (from Add a child or the palette)
 opens on its Properties. Arrow keys move between tabs (`wireTabBars`).
-Components opens with a **Filter Components** `SearchField` (KF-Y26SKM:
-palette filter): typing keeps the components whose name or category holds
+**The Library** (KF-Z54E4H: Library popover) holds the component palette.
+It is an Xcode-style transient popover, a `PinnablePopoverSurface`
+(`#editor-library`, wired by `wirePinnablePopover`), that the Preview
+toolbar's **Library** (`+`) button and Shift+Cmd+L (Ctrl+Shift+L off Apple
+platforms) open and close. It opens below the button with focus in its
+filter; Escape, its Close button, the shortcut, or a press outside it closes
+it, and focus returns to the Library button when it was inside the Library
+(or nowhere). Its Pin toggle, or dragging its title, pins it: a pinned
+Library stays open while the editor is used, moves and resizes, and is
+restored pinned, where it was, in the next session
+(`kerf-ui-editor:library`, `{ pinned, placement }` from `onChange`; without
+storage it opens transient). Play mode closes it. The Library is
+**transient around a drop**:
+
+- A drag from an unpinned Library **steps it aside** (it closes as the drag
+  starts), so the canvas and the outline it covered take the drop.
+- A drop that lands closes it for good; a drop that finds no place, or a
+  drag cancelled with Escape, brings it back. Escape during a drag ends only
+  the drag.
+- **Option (Alt) keeps it open.** Held as the drag starts, the Library never
+  steps aside (the drag chip, a top-layer popover, draws over it); held at
+  the drop, the Library stays open, or comes back. Option at the drop also
+  still asks where the drop goes on a container with several places (the
+  "drop where?" menu below): both mean "keep me in control", so an Option
+  drop that asks keeps the Library out of the way until the menu closes,
+  then brings it back. A drop that asks without Option closes it as any drop
+  does.
+- A pinned Library stays open throughout.
+
+It opens with a **Filter Components** `SearchField` (KF-Y26SKM:
+palette filter) above its scrolling palette: typing keeps the components whose name or category holds
 the text, case-insensitively (a category match keeps its whole group), drops
 groups left empty, and shows "No matching components" when none match; its
 clear button lists them all again and keeps focus in the field.
-A **Component View** `SegmentedControl` beside the filter (KF-JC7WTW: palette
-grid) switches the area between the list of names and a grid of tiles; the
+A **Component View** `SegmentedControl` in the Library's header (KF-JC7WTW:
+palette grid) switches it between the list of names and a grid of tiles; the
 choice persists per browser (`kerf-ui-editor:palette-view`). Each tile shows
 its component as Add would make it: the seeded node rendered by the canvas
 renderer (as play mode renders it, so no empty-zone stand-ins), in the tile's
@@ -700,10 +729,10 @@ inside the canvas rather than on its clipped edge. Dropping, Escape, or a
 cancelled pointer clears all of them. A drag also drops on the outline's rows (KF-67K2VP: outline drops), with
 TreeList's own before, after, and inside indicator through
 `treeListExternalDrop`, and resting on a Document tab for half a second opens
-it (spring-loading), so a drag from Components reaches Outline. The Document
+it (spring-loading), so a drag from the Library reaches Outline. The Document
 rail's tab strip is pinned under its toolbar (the rail Pane's `header`), with
 the scroll divider once its area scrolls, so the tabs stay in reach anywhere
-in a long palette. The Inspector pins a node's title and its Properties, Flow,
+in a long outline. The Inspector pins a node's title and its Properties, Flow,
 and Children strip the same way (KF-5QXNWS). Add a child stays the keyboard path.
 
 The canvas preview is rendered and test-mounted outside the editor's own

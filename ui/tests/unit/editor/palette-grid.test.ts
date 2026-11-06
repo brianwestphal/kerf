@@ -1,4 +1,4 @@
-// KF-JC7WTW: the Components area shows a list of names or a grid of tiles,
+// KF-JC7WTW: the Library shows a list of names or a grid of tiles,
 // each a live thumbnail of its component as added, a sketch of a layout, or
 // an icon; the choice persists.
 import { mount } from 'kerfjs';
@@ -28,11 +28,8 @@ function open() {
     unwireEditor();
     stopMount();
   };
-  root
-    .querySelector<HTMLElement>(
-      '[role="tab"][data-tab-id="editor-document-areas-components"]',
-    )!
-    .click();
+  // KF-Z54E4H: the palette lives in the Library popover.
+  root.querySelector<HTMLElement>('#editor-library')!.showPopover();
   return { root, editor };
 }
 

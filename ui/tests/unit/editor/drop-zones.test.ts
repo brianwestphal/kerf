@@ -379,11 +379,17 @@ function setUp() {
     return { drop: () => pointer('pointerup', from, x, y) };
   };
   /** Drags component `key` from the palette to (`x`, `y`) over `element`. */
-  const drag = (key: string, element: Element, x: number, y: number) => {
+  const drag = (
+    key: string,
+    element: Element | null,
+    x: number,
+    y: number,
+    altStart = false,
+  ) => {
     const row = palette(key);
     pointer('pointerdown', row, 10, 790);
     under = element;
-    pointer('pointermove', row, x, y);
+    pointer('pointermove', row, x, y, altStart);
     return {
       drop: (alt = false) => pointer('pointerup', row, x, y, alt),
     };
@@ -637,5 +643,123 @@ describe('smarter drop targeting', () => {
     await frame();
     expect(editor.document.value).toBe(before);
     expect(menuItems()).toContain('Inside Workbench › Left rail');
+  });
+});
+
+// KF-Z54E4H: the component Library is a transient popover. A drag from it
+// steps it aside; a drop closes it unless it is pinned or Option is held;
+// a drop that finds no place brings it back.
+describe('the Library around a palette drop', () => {
+  const library = (root: HTMLElement) =>
+    root.querySelector<HTMLElement>('#editor-library')!;
+  const shown = (root: HTMLElement) => library(root).matches(':popover-open');
+  const added = (editor: ReturnType<typeof setUp>['editor']) =>
+    (editor.document.value.root!.zones!.content as ViewNode[]).length;
+
+  it('steps aside while a drag lasts and stays closed after a drop', () => {
+    const { root, editor, drag } = setUp();
+    const canvas = root.querySelector('[data-editor-canvas]')!;
+    library(root).showPopover();
+    const before = added(editor);
+    const move = drag('badge', canvas, 900, 790);
+    expect(shown(root)).toBe(false);
+    move.drop();
+    expect(added(editor)).toBe(before + 1);
+    expect(shown(root)).toBe(false);
+    // Closed by the drop, not the person: focus is not sent to the button.
+    expect(document.activeElement).not.toBe(
+      root.querySelector('[data-editor-library-button]'),
+    );
+  });
+
+  it('comes back after a drop that finds no place, or a cancelled drag', () => {
+    const { root, editor, drag } = setUp();
+    library(root).showPopover();
+    const before = editor.document.value;
+    drag('badge', null, 900, 790).drop();
+    expect(editor.document.value).toBe(before);
+    expect(shown(root)).toBe(true);
+    drag('badge', null, 900, 790);
+    expect(shown(root)).toBe(false);
+    const escape = new KeyboardEvent('keydown', {
+      key: 'Escape',
+      bubbles: true,
+      cancelable: true,
+    });
+    root.dispatchEvent(escape);
+    // Escape ends the drag only, so the Library does not also close on it.
+    expect(escape.defaultPrevented).toBe(true);
+    expect(shown(root)).toBe(true);
+  });
+
+  it('stays open through an Option-drag, and for an Option-drop', () => {
+    const { root, editor, drag } = setUp();
+    const canvas = root.querySelector('[data-editor-canvas]')!;
+    library(root).showPopover();
+    const before = added(editor);
+    // Option as the drag starts: it never steps aside...
+    const held = drag('badge', canvas, 900, 790, true);
+    expect(shown(root)).toBe(true);
+    // ...and a drop with Option released closes it.
+    held.drop();
+    expect(added(editor)).toBe(before + 1);
+    expect(shown(root)).toBe(false);
+    // Option at the drop brings it back.
+    library(root).showPopover();
+    drag('badge', canvas, 900, 790).drop(true);
+    expect(added(editor)).toBe(before + 2);
+    expect(shown(root)).toBe(true);
+    // An Option-drag that drops nowhere leaves it open.
+    drag('badge', null, 900, 790, true).drop();
+    expect(shown(root)).toBe(true);
+  });
+
+  it('comes back after the menu an Option-drop asks with', async () => {
+    const { root, node, drag, layOut, frame, choose } = setUp();
+    layOut();
+    library(root).showPopover();
+    drag('badge', node(WB), 500, 300).drop(true);
+    expect(shown(root)).toBe(false);
+    await frame();
+    choose('Inside Workbench › Right rail');
+    expect(shown(root)).toBe(true);
+    // Option held throughout: it steps aside for the menu, then returns.
+    layOut();
+    drag('badge', node(WB), 500, 300, true).drop(true);
+    expect(shown(root)).toBe(false);
+    await frame();
+    choose('Inside Workbench › Right rail');
+    expect(shown(root)).toBe(true);
+  });
+
+  it('closes for a drop that asks without Option, and stays closed', async () => {
+    const { root, node, drag, frame, menuItems, choose } = setUp();
+    at(node(BAR), 0, 0, 800, 60);
+    library(root).showPopover();
+    drag('button', node(BAR), 400, 30).drop();
+    expect(shown(root)).toBe(false);
+    await frame();
+    choose(menuItems()[1]!);
+    expect(shown(root)).toBe(false);
+  });
+
+  it('stays open while pinned, and leaves a closed Library closed', async () => {
+    const { root, editor, drag, frame } = setUp();
+    const canvas = root.querySelector('[data-editor-canvas]')!;
+    const before = added(editor);
+    // Dragging out of a closed Library opens nothing.
+    drag('badge', canvas, 900, 790).drop();
+    expect(shown(root)).toBe(false);
+    // The click that ended that drag has passed.
+    await frame();
+    library(root).showPopover();
+    library(root)
+      .querySelector<HTMLElement>('[data-pinnable-popover-pin]')!
+      .click();
+    const move = drag('badge', canvas, 900, 790);
+    expect(shown(root)).toBe(true);
+    move.drop();
+    expect(added(editor)).toBe(before + 2);
+    expect(shown(root)).toBe(true);
   });
 });

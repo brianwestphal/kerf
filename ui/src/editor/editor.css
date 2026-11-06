@@ -101,9 +101,17 @@
   opacity: 0.7;
 }
 
+/* KF-Z54E4H: a manual popover while a drag lasts, so it draws over the
+   top-layer Library; the popover's UA box (centered, framed) is cleared. */
 .kui-editor__drag-chip {
   position: fixed;
   z-index: 2;
+  overflow: visible;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: inherit;
   pointer-events: none;
 }
 
