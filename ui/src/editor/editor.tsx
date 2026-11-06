@@ -39,6 +39,7 @@ import {
   ChevronRight,
   Component,
   CopyPlus,
+  FaceSlightlySmiling,
   FileCode,
   FilePlus,
   FolderOpen,
@@ -53,7 +54,6 @@ import {
   Plus,
   Redo2,
   Save,
-  Smile,
   Trash,
   Undo2,
 } from 'lucide';
@@ -345,7 +345,7 @@ type PaletteView = 'list' | 'grid';
  * one.
  */
 const PALETTE_ICONS: Readonly<Record<string, IconNode>> = {
-  '@kerfjs/ui:lucide-icon': Smile,
+  '@kerfjs/ui:lucide-icon': FaceSlightlySmiling,
   '@kerfjs/ui:loading-spinner': LoaderCircle,
   '@kerfjs/ui:corner-status': BadgeCheck,
   '@kerfjs/ui:edge-activity-indicator': Activity,
