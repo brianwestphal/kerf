@@ -319,6 +319,15 @@ describe('paletteSketch', () => {
       paletteSketch('@kerfjs/ui:collapsible-panel#CollapsiblePanelRelocated'),
     ).toBe(paletteSketch('@kerfjs/ui:collapsible-panel'));
     expect(paletteSketch('@kerfjs/ui:switch')).toBeUndefined();
+    // KF-ZWG0B2: the pinnable popover has its own sketch, not the dialog's.
+    const pinnable = paletteSketch(
+      '@kerfjs/ui:surface-scaffold#PinnablePopoverSurface',
+    );
+    expect(pinnable).toContain('<svg');
+    expect(pinnable).not.toBe(paletteSketch('@kerfjs/ui:surface-scaffold'));
+    expect(pinnable).not.toBe(
+      paletteSketch('@kerfjs/ui:surface-scaffold#PopoverDialogSurface'),
+    );
     expect(paletteSketch('@acme/app:workbench')).toBeUndefined();
   });
 });

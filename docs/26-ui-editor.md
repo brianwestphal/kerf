@@ -409,7 +409,9 @@ their `embedded` prop, KF-RWJ9KD) shows **embedded** on the edit canvas (KF-SYGS
 modal dialog renders nothing while closed, so the canvas renders each one in
 flow (`presentation: 'embedded'`), where its content can be seen, selected,
 and dropped into; its close controls only select there. A PopoverDialogSurface is transient the same way and shows
-embedded too (KF-T1V86Q: transient surfaces on the canvas). A PopupMenu or
+embedded too (KF-T1V86Q: transient surfaces on the canvas), and so is a
+PinnablePopoverSurface, with its header's title, Pin, and Close (KF-ZWG0B2).
+A PopupMenu or
 Select renders only its trigger until something opens it, so while one is
 selected the canvas shows it `embedded` (KF-KN9CPE: preview the selected
 popup): its menu or listbox open at the trigger, in the document rather
@@ -2194,6 +2196,13 @@ view }`. It may change params (re-rendering the view), call a NavStack
   document references (a literal, or a `$param` binding resolved through the
   play-time params), so the surface opens and docks to the play frame as it
   will to the application's region. See §5.4 for the application side.
+- **A pinnable popover runs as wired** (KF-ZWG0B2). An overlay
+  PinnablePopoverSurface gets `wirePinnablePopover`, as an application wires
+  it: it opens below its `popovertarget` control and light-dismisses while
+  transient, and its Pin toggle keeps it open, movable by its title and the
+  arrow keys, and resizable. Its `pinned` prop starts it pinned. Pinned state
+  and placement stay with the controller for the session; nothing reaches
+  the document.
 - **Selection is off.** No selection ring, hover outline, drop indicator, or
   canvas key binding is active inside the stage.
 

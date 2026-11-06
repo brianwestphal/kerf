@@ -103,6 +103,17 @@ const SKETCHES: Readonly<Record<string, string>> = {
     box({ x: 10, y: 24, w: 62, h: 40, line: true, r: 4 }),
     lines(16, 32, 50, 3),
   ].join(''),
+  // KF-ZWG0B2: a floating panel whose header holds the title (its move
+  // handle), Pin, and Close.
+  'surface-scaffold#PinnablePopoverSurface': [
+    box({ x: 14, y: 10, w: 68, h: 52, line: true, r: 4 }),
+    box({ x: 14, y: 10, w: 68, h: 12, fill: 0.12, r: 4 }),
+    box({ x: 20, y: 14.5, w: 24, h: 3, fill: 0.45, r: 1.5 }),
+    stroke('M62 13 L66 17 M64 15 L60 19 M66 13 L68 15', 0.55),
+    stroke('M72 13.5 L76 17.5 M76 13.5 L72 17.5', 0.55),
+    lines(20, 30, 54, 3),
+    stroke('M76 58 L78 56 M73 58 L78 53', 0.4),
+  ].join(''),
   'surface-scaffold#PopupSurface': [
     box({ x: 22, y: 10, w: 52, h: 52, line: true, r: 4 }),
     box({ x: 26, y: 24, w: 44, h: 10, fill: 0.14, r: 2 }),

@@ -10,6 +10,10 @@ import { mount, raw } from 'kerfjs';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {
+  isPopoverPinned,
+  pinPopover,
+} from '../../../src/components/surfaces/surface-scaffold/wiring/wire-pinnable-popover.js';
+import {
   closeTabBarItem,
   closeTabBarItemInRow,
   followCompact,
@@ -1124,6 +1128,38 @@ describe('the play page’s value controls', () => {
       new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }),
     );
     expect(props(13).value).toBe('rome');
+  });
+});
+
+describe('the play page’s pinnable popover (KF-ZWG0B2)', () => {
+  const surface = (n: number, props: object) =>
+    node(
+      n,
+      'surface-scaffold#PinnablePopoverSurface',
+      { label: 'Library', ...props },
+      { children: [node(n + 10, 'text', { children: 'Components' })] },
+    );
+
+  it('wires an overlay PinnablePopoverSurface, pinned as the document says', async () => {
+    const { root, at } = await play(
+      doc([
+        surface(1, { id: 'library' }),
+        surface(2, { id: 'palette', pinned: true }),
+        surface(3, { id: 'preview', presentation: 'embedded' }),
+      ]),
+    );
+    expect(root.textContent).not.toContain('cannot render');
+    expect(at(1).getAttribute('popover')).toBe('manual');
+    // Wired, Pin is the controller's: pinPopover reaches it.
+    expect(isPopoverPinned(at(1))).toBe(false);
+    pinPopover(at(1));
+    expect(isPopoverPinned(at(1))).toBe(true);
+    expect(at(1).hasAttribute('data-pinned')).toBe(true);
+    expect(isPopoverPinned(at(2))).toBe(true);
+    // An embedded one is left alone, as the app's wiring leaves it.
+    const before = at(3).outerHTML;
+    pinPopover(at(3));
+    expect(at(3).outerHTML).toBe(before);
   });
 });
 

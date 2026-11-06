@@ -43,6 +43,7 @@ import { wireNavStack } from '../components/navigation/nav-stack/wiring/wire-nav
 import { wireTabBars } from '../components/navigation/tab-bar/wiring/wire-tab-bars.js';
 import { wireTabNavigator } from '../components/navigation/tab-navigator/wiring/wire-tab-navigator.js';
 import { wireContentItems } from '../components/surfaces/content-item/wiring/wire-content-items.js';
+import { wirePinnablePopover } from '../components/surfaces/surface-scaffold/wiring/wire-pinnable-popover.js';
 import { wireScrollDividers } from '../wiring/wire-scroll-dividers.js';
 import { findNode } from './model/document.js';
 import {
@@ -168,6 +169,10 @@ const rowKeysAt = (element: HTMLElement, root: HTMLElement) => {
   return keys;
 };
 
+/** KF-ZWG0B2: a non-modal surface a person can pin and move. */
+const PINNABLE_POPOVER_SURFACE =
+  '@kerfjs/ui:surface-scaffold#PinnablePopoverSurface';
+
 const ADAPTERS: Readonly<
   Record<string, (context: AdapterContext) => (() => void) | undefined>
 > = {
@@ -176,6 +181,14 @@ const ADAPTERS: Readonly<
       onSelect: (tabId) => {
         state.value = selectTab(state.value, id, tabId);
       },
+    }),
+  // KF-ZWG0B2: an overlay PinnablePopoverSurface opens below its trigger,
+  // light-dismisses, pins, moves, and resizes as the app wires it, starting
+  // pinned when the document says so. Its pinned state and placement are
+  // the controller's, kept across re-renders; nothing reaches the document.
+  [PINNABLE_POPOVER_SURFACE]: ({ element, id, state }) =>
+    wirePinnablePopover(element, {
+      pinned: findNode(state.peek(), id)!.node.props?.pinned === true,
     }),
   [NAV_STACK]: ({ element, id, state }) =>
     wireNavStack(element, {

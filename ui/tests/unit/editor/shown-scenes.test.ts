@@ -316,6 +316,19 @@ describe('dialogs on the edit canvas', () => {
     } as unknown as ViewDocument;
     expect(embeddedDialogs(popover).root!.props?.presentation).toBe('embedded');
     expect(popover.root!.props?.presentation).toBeUndefined();
+    // KF-ZWG0B2: so is a PinnablePopoverSurface.
+    const pinnable = {
+      ...withDialog(),
+      root: {
+        id: PANE,
+        type: '@kerfjs/ui:surface-scaffold#PinnablePopoverSurface',
+        props: { id: 'library', label: 'Library' },
+      },
+    } as unknown as ViewDocument;
+    expect(embeddedDialogs(pinnable).root!.props?.presentation).toBe(
+      'embedded',
+    );
+    expect(pinnable.root!.props?.presentation).toBeUndefined();
     expect(embeddedDialogs(sample())).toEqual(sample());
   });
 

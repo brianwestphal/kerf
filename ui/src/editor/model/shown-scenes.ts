@@ -47,6 +47,12 @@ const DIALOG_SURFACE = '@kerfjs/ui:surface-scaffold';
 /** KF-T1V86Q: a non-modal popover dialog is transient the same way. */
 const POPOVER_DIALOG_SURFACE =
   '@kerfjs/ui:surface-scaffold#PopoverDialogSurface';
+/**
+ * KF-ZWG0B2: a pinnable popover is a closed top-layer overlay until its
+ * trigger opens it, so the canvas shows it embedded too.
+ */
+const PINNABLE_POPOVER_SURFACE =
+  '@kerfjs/ui:surface-scaffold#PinnablePopoverSurface';
 /** Composed dialogs that render a DialogSurface and take `embedded` (KF-RWJ9KD). */
 const COMPOSED_DIALOGS = new Set([
   '@kerfjs/ui:workbench-dialog',
@@ -56,7 +62,8 @@ const COMPOSED_DIALOGS = new Set([
 /**
  * KF-SYGSD0: `document` with every DialogSurface `embedded` (and, KF-RWJ9KD,
  * every WorkbenchDialog and ListDetailDialog `embedded: true`; KF-T1V86Q,
- * every PopoverDialogSurface `embedded`), as the edit
+ * every PopoverDialogSurface `embedded`; KF-ZWG0B2, every
+ * PinnablePopoverSurface `embedded`), as the edit
  * canvas shows it. A modal dialog renders nothing until something opens it,
  * so on the canvas it sits in flow where the author can see and select its
  * content; play mode keeps the authored presentation. The document itself
@@ -66,7 +73,9 @@ export function embeddedDialogs(document: ViewDocument): ViewDocument {
   let shown = document;
   for (const { node } of visitNodes(document))
     if (
-      (node.type === DIALOG_SURFACE || node.type === POPOVER_DIALOG_SURFACE) &&
+      (node.type === DIALOG_SURFACE ||
+        node.type === POPOVER_DIALOG_SURFACE ||
+        node.type === PINNABLE_POPOVER_SURFACE) &&
       node.props?.presentation !== 'embedded'
     )
       shown = setProp(shown, node.id, 'presentation', 'embedded');

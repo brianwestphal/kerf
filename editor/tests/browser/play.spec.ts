@@ -1191,6 +1191,139 @@ test('a popover dialog shows embedded on the canvas and docks to the placeholder
   await expect(request).toBeHidden();
 });
 
+// KF-ZWG0B2: a PinnablePopoverSurface shows embedded on the canvas, where its
+// content selects; in play it opens below its popovertarget trigger, light-
+// dismisses while transient, and stays open once pinned, as
+// wirePinnablePopover wires it in an app.
+const libraryIds = {
+  pane: '01JB8Z1M6Q8E1X9V4S7K2R3TEA',
+  trigger: '01JB8Z1M6Q8E1X9V4S7K2R3TEB',
+  library: '01JB8Z1M6Q8E1X9V4S7K2R3TEC',
+  note: '01JB8Z1M6Q8E1X9V4S7K2R3TED',
+};
+const withLibrary = {
+  schema: 'kerf-ui-document/v1',
+  name: 'Library',
+  catalogs: ['@kerfjs/ui'],
+  root: {
+    id: libraryIds.pane,
+    type: '@kerfjs/ui:pane',
+    zones: {
+      content: [
+        {
+          id: libraryIds.trigger,
+          type: '@kerfjs/ui:button',
+          props: { children: 'Components', popoverTarget: 'library' },
+        },
+        {
+          id: libraryIds.library,
+          type: '@kerfjs/ui:surface-scaffold#PinnablePopoverSurface',
+          props: { id: 'library', label: 'Library' },
+          zones: {
+            children: [
+              text(libraryIds.note, 'Drag a component onto the page.'),
+            ],
+          },
+        },
+      ],
+    },
+  },
+};
+
+/** Opens the Library document at `width`. */
+const openLibrary = async (page: Page, width: number) => {
+  await page.setViewportSize({ width, height: 900 });
+  await page.goto('/');
+  await page
+    .locator('input[type="file"]')
+    .first()
+    .setInputFiles({
+      name: 'library.kui.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(withLibrary)),
+    });
+  await expect(page.getByText(/· 4 nodes · valid$/)).toBeVisible();
+};
+
+test('a pinnable popover shows embedded on the canvas and pins in play', async ({
+  page,
+}, testInfo) => {
+  const ids = libraryIds;
+  await openLibrary(page, 1440);
+
+  // The canvas shows the closed popover in flow; its content selects.
+  const canvas = page.locator('[data-editor-canvas]');
+  const shown = canvas.locator(`[data-kerf-node="${ids.library}"]`);
+  await expect(shown).toBeVisible();
+  await expect(shown).toHaveAttribute('data-presentation', 'embedded');
+  await expect(shown).not.toHaveAttribute('popover');
+  await canvas.getByText('Drag a component onto the page.').click();
+  await expect(page.locator('.kui-editor__selection')).toBeVisible();
+  await page.screenshot({
+    path: testInfo.outputPath('kf-zwg0b2-canvas-embedded-1440.png'),
+  });
+
+  // In play it is a closed overlay that opens below its trigger.
+  await page.locator('[data-action="editor-play"]').click();
+  const played = stage(page);
+  const library = played.locator(`[data-kerf-node="${ids.library}"]`);
+  const trigger = played.getByRole('button', { name: 'Components' });
+  await expect(trigger).toBeVisible();
+  await expect(library).toBeHidden();
+  await trigger.click();
+  await expect(library).toBeVisible();
+  await expect(library).toHaveAttribute('data-presentation', 'overlay');
+  await expect(library).toHaveAttribute('popover', 'manual');
+  const below = await library.evaluate((surface) => {
+    const opener = surface.ownerDocument.querySelector('[popovertarget]')!;
+    return (
+      surface.getBoundingClientRect().top >=
+      opener.getBoundingClientRect().bottom
+    );
+  });
+  expect(below).toBe(true);
+  // Transient, a press outside closes it.
+  const outside = played.locator('#editor');
+  await outside.click({ position: { x: 20, y: 400 } });
+  await expect(library).toBeHidden();
+  // Pinned, it stays open after a press outside.
+  await trigger.click();
+  await expect(library).toBeVisible();
+  const pin = library.locator('[data-pinnable-popover-pin]');
+  await pin.click();
+  await expect(pin).toHaveAttribute('aria-pressed', 'true');
+  await expect(library).toHaveAttribute('data-pinned', '');
+  await outside.click({ position: { x: 20, y: 400 } });
+  await expect(library).toBeVisible();
+  await page.screenshot({
+    path: testInfo.outputPath('kf-zwg0b2-play-pinned-1440.png'),
+  });
+});
+
+// KF-ZWG0B2: visual QA captures of the canvas and the pinned popover in play.
+test('captures the pinnable popover at 390', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'visual QA capture');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await openLibrary(page, 390);
+  await expect(
+    page
+      .locator('[data-editor-canvas]')
+      .locator(`[data-kerf-node="${libraryIds.library}"]`),
+  ).toBeVisible();
+  await page.screenshot({
+    path: testInfo.outputPath('kf-zwg0b2-canvas-embedded-390.png'),
+  });
+  await page.locator('[data-action="editor-play"]').click();
+  const played = stage(page);
+  await played.getByRole('button', { name: 'Components' }).click();
+  const library = played.locator(`[data-kerf-node="${libraryIds.library}"]`);
+  await library.locator('[data-pinnable-popover-pin]').click();
+  await expect(library).toHaveAttribute('data-pinned', '');
+  await page.screenshot({
+    path: testInfo.outputPath('kf-zwg0b2-play-pinned-390.png'),
+  });
+});
+
 // KF-963DMT: play mode runs the shipped listbox keyboard: one Tab stop,
 // arrows move focus without selecting, and Enter activates the focused
 // option through its click. A SummaryRow listbox gets it from
