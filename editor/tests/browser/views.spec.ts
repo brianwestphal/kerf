@@ -1,0 +1,199 @@
+// KF-5N26H6: a list document whose `$each` rows are a composed row document
+// (`#view`, docs/26-ui-editor.md §3.7): the editor loads the row through the
+// dev server's file API, renders the rows in place, edits the `#view`'s
+// props as the row document's params, and opens the row with a way back.
+import { expect, type Page, test } from '@playwright/test';
+
+import { canvas } from './build.js';
+
+const API = '/__kerf-ui-editor/api/file';
+const VIEW = '01JC0V1EW0000000000000000V';
+
+const row = {
+  schema: 'kerf-ui-document/v1',
+  name: 'MessageRow',
+  catalogs: ['@kerfjs/ui'],
+  params: {
+    title: { type: { kind: 'string' } },
+    unread: { type: { kind: 'boolean' }, default: false },
+  },
+  root: {
+    id: '01JC0V1EW0000000000000000R',
+    type: '@kerfjs/ui:list-item',
+    props: {
+      label: { $param: 'title' },
+      selected: { $param: 'unread' },
+      action: { $action: 'open-message' },
+    },
+  },
+};
+
+const list = {
+  schema: 'kerf-ui-document/v1',
+  name: 'Messages',
+  catalogs: ['@kerfjs/ui'],
+  params: {
+    messages: {
+      type: {
+        kind: 'array',
+        items: {
+          kind: 'object',
+          props: [
+            { name: 'id', type: { kind: 'string' }, required: true },
+            { name: 'subject', type: { kind: 'string' }, required: true },
+          ],
+        },
+      },
+      default: [
+        { id: 'm1', subject: 'Quarterly report' },
+        { id: 'm2', subject: 'Lunch on Friday' },
+        { id: 'm3', subject: 'Design review notes' },
+      ],
+    },
+  },
+  root: {
+    id: '01JC0V1EW0000000000000000S',
+    type: '@kerfjs/ui:pane',
+    props: { fill: true },
+    zones: {
+      content: [
+        {
+          id: '01JC0V1EW0000000000000000T',
+          type: '@kerfjs/ui:list',
+          props: { ariaLabel: 'Messages' },
+          zones: {
+            children: [
+              {
+                $each: { $param: 'messages' },
+                as: 'message',
+                key: 'message.id',
+                template: {
+                  id: VIEW,
+                  type: '#view',
+                  src: './message-row.kui.json',
+                  props: { title: { $bind: 'message.subject' } },
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
+  },
+};
+
+/** Saves both documents in a folder of their own and opens the list. */
+async function openList(page: Page, name: string) {
+  const folder = `.kerf-ui-editor/pw-views/${name}-${Date.now()}`;
+  const put = (path: string, document: unknown) =>
+    page.request.put(`${API}?path=${encodeURIComponent(path)}`, {
+      headers: { 'X-Kerf-UI-Editor': '1', 'Content-Type': 'application/json' },
+      data: JSON.stringify(document),
+    });
+  expect((await put(`${folder}/message-row.kui.json`, row)).ok()).toBe(true);
+  expect((await put(`${folder}/messages.kui.json`, list)).ok()).toBe(true);
+  await page.addInitScript((path) => {
+    globalThis.localStorage.setItem('kerf-ui-editor:path', path);
+  }, `${folder}/messages.kui.json`);
+  await page.goto('/');
+  await expect(canvas(page)).toContainText('Quarterly report');
+  return folder;
+}
+
+const read = async (page: Page, path: string) =>
+  JSON.parse(
+    await (
+      await page.request.get(`${API}?path=${encodeURIComponent(path)}`)
+    ).text(),
+  );
+
+test('renders composed rows, edits their params, and opens the row document', async ({
+  page,
+}, info) => {
+  const folder = await openList(page, info.project.name);
+  await expect(canvas(page)).toContainText('Lunch on Friday');
+  await expect(canvas(page)).toContainText('Design review notes');
+
+  // A click inside a row selects the #view, not the row document's node.
+  await canvas(page).getByText('Lunch on Friday').click();
+  const inspector = page.locator('[data-workbench-panel="rightRail"], body');
+  await expect(
+    inspector.getByText('View ./message-row.kui.json').first(),
+  ).toBeVisible();
+  await expect(page.getByText('Open document').first()).toBeVisible();
+  await expect(page.getByText(`${folder}/message-row.kui.json`)).toBeVisible();
+  await expect(page.getByText('message.subject').first()).toBeVisible();
+
+  // Turning on `unread` (the row's `selected`) saves into the list document.
+  await page.getByRole('switch', { name: 'Unread' }).click();
+  await expect
+    .poll(
+      async () =>
+        (await read(page, `${folder}/messages.kui.json`)).root.zones.content[0]
+          .zones.children[0].template.props.unread,
+    )
+    .toBe(true);
+
+  // Open document shows the row; Back returns to the list with it selected.
+  await page.locator('[data-action="editor-open-view"]').click();
+  const back = page.getByRole('button', { name: 'Back to messages.kui.json' });
+  await expect(back).toBeVisible();
+  await expect(
+    page.getByText(`${folder}/message-row.kui.json · saved`),
+  ).toBeVisible();
+  await expect(canvas(page)).not.toContainText('Quarterly report');
+  await back.click();
+  await expect(canvas(page)).toContainText('Quarterly report');
+  await expect(back).toBeHidden();
+  await expect(
+    page.getByText(`${folder}/messages.kui.json · saved`),
+  ).toBeVisible();
+  await expect(
+    page.getByText('View ./message-row.kui.json').first(),
+  ).toBeVisible();
+});
+
+for (const width of [1440, 390]) {
+  test(`captures the composed list and its Inspector at ${width}`, async ({
+    page,
+  }, info) => {
+    test.skip(info.project.name !== 'chromium', 'visual QA capture');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.setViewportSize({ width, height: 900 });
+    await openList(page, `capture-${width}`);
+    await canvas(page).getByText('Quarterly report').click();
+    const narrow = width < 600;
+    // A narrow editor keeps the Inspector closed until it is asked for.
+    if (narrow)
+      await page
+        .getByRole('button', { name: 'Show Inspector' })
+        .first()
+        .click();
+    const open = page.locator('[data-action="editor-open-view"]');
+    await expect(open).toBeInViewport({ ratio: 1 });
+    await page.screenshot({
+      path: info.outputPath(`kf-5n26h6-composed-${width}.png`),
+    });
+    await open.click();
+    if (narrow) {
+      await page
+        .getByRole('button', { name: 'Hide Inspector' })
+        .first()
+        .click();
+      // The drawer has slid out once no transition is running.
+      await expect(
+        page.locator('.kui-workbench__rail--right[data-collapsed="true"]'),
+      ).toHaveCount(1);
+      await expect
+        .poll(() => page.evaluate(() => document.getAnimations().length))
+        .toBe(0);
+      await page.mouse.move(0, 899);
+    }
+    await expect(
+      page.locator('[data-action="editor-view-back"]'),
+    ).toBeInViewport();
+    await page.screenshot({
+      path: info.outputPath(`kf-5n26h6-opened-${width}.png`),
+    });
+  });
+}

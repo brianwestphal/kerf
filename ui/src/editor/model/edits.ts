@@ -942,6 +942,11 @@ export function bindingOptions(
    * rejected only for problems of its own, not its object's missing fields.
    */
   prepare: (document: ViewDocument) => ViewDocument = (same) => same,
+  /**
+   * KF-5N26H6: loads a `#view`'s document, so a binding to one of its
+   * params is checked against that param's type.
+   */
+  resolveView?: (src: string) => unknown,
 ): BindingOption[] {
   const params = document.params ?? {};
   const candidates: BindingOption[] = Object.keys(params).map((name) => ({
@@ -960,7 +965,7 @@ export function bindingOptions(
       });
   }
   const known = new Set(
-    validateView(prepare(document), catalog).diagnostics.map(
+    validateView(prepare(document), catalog, { resolveView }).diagnostics.map(
       (diagnostic) => `${diagnostic.code} ${diagnostic.path}`,
     ),
   );
@@ -968,6 +973,7 @@ export function bindingOptions(
     validateView(
       prepare(setField(document, id, prop, path, candidate.value)),
       catalog,
+      { resolveView },
     ).diagnostics.every((diagnostic) =>
       known.has(`${diagnostic.code} ${diagnostic.path}`),
     ),

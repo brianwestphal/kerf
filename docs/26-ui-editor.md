@@ -1035,9 +1035,11 @@ item's details, the equivalent of dequeuing a prototype cell. Rows that
 differ by kind either vary inside one row component through `$if`, or pick a
 row design per item through an `$if`-chain template (above). KF-B5JFTM chose
 both that and a `templates` map keyed by a bound kind, which KF-YX6HMT adds
-on the same row-branching plumbing. The editor cannot yet insert, extract,
-or render a `#view` row document (KF-5N26H6), nor author an `$if`-chain
-template (KF-1CRGP1).
+on the same row-branching plumbing. The editor renders and inspects a
+`#view` row document and opens it (KF-5N26H6, §3.7); inserting one from a
+document picker (KF-PX5EVZ) and extracting a subtree into one (KF-D9P3NP)
+are not built yet, and neither is authoring an `$if`-chain template
+(KF-1CRGP1).
 
 There are no other control-flow forms. Anything richer belongs in application
 code behind a slot.
@@ -1063,6 +1065,45 @@ A parent reaches a child's refs through the child's generated `refs` function,
 called on the subtree it rendered. Cycles are errors, and so is composing a
 document that declares slots: the parent has no way to fill them. That case
 stays out of v1 until a design names the parent-side slot surface.
+
+**In the editor** (KF-5N26H6: row template phase 1). With storage, the
+editor loads each `#view`'s document through `EditorStorage.read`, resolving
+`src` from the composing document's folder as `kerf-ui-view` does (`./row.kui.json`
+beside `views/list.kui.json` is `views/row.kui.json`; a source that leaves
+the project is not loaded). A composed document's own `#view`s load too,
+resolved the same way, because validation passes one resolver down. Loads
+start again whenever a document opens, and whenever its `#view` set names a
+document not loaded yet; a draft resolves from the drafts folder, so a
+composing document belongs beside its rows before they render.
+
+- **Canvas.** A loaded document renders in place, as `interpretView` renders
+  it, and every element it draws carries its `#view`'s node id, so a click
+  anywhere in a row selects the `#view`, never a node of the row document. A
+  composing document always previews through `previewView`.
+- **Problems.** Validation gets the loaded documents, so `KUI-V012` and the
+  param type checks report against them, and a composed document's own
+  problems mark its `#view` (`…{./row.kui.json}…`). A `#view` whose document
+  has not loaded renders as a placeholder, and its problem says why: the
+  editor has no storage, it is loading, there is no such file (naming the
+  path it looked for), it could not be read or parsed, or it is outside the
+  project. A missing required param shows on that param's field.
+- **Inspector.** A selected `#view` shows its document (its name and path)
+  with **Open document**, then **Params**: one field per param of the
+  composed document, the same control a prop of that type gets, and **Bind a
+  prop**, whose sources are checked against the param's type (a row's
+  `message.subject` for a string param, not `message.count`). A param with a
+  default is optional; one without is required.
+- **Open document** saves the composing document's pending change and opens
+  the composed one from its file, with a fresh history as Open gives.
+  **Back to <file>**, after the canvas toolbar's title, saves the composed
+  document, reopens the composing one from storage, and selects the `#view`
+  again; the composing document then loads its rows as they are now saved.
+  Opening a document any other way (Open, New, a reload) ends the trail.
+- **Export and Compare** generate the composing document's module with its
+  composed documents, as the CLI does.
+
+Play mode does not load composed documents yet: a `#view` plays as a
+placeholder (KF-85SCQD). Nested sources resolve from the top document, as `kerf-ui-view` resolves them today (KF-3X7MFF).
 
 ## 4. The generated view module
 

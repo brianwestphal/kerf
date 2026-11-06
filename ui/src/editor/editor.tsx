@@ -21,6 +21,7 @@ import {
   type ViewValue,
 } from '@kerfjs/ui/view';
 import {
+  batch,
   computed,
   delegate,
   effect,
@@ -33,6 +34,7 @@ import { delegateActions } from 'kerfjs/actions';
 import {
   Activity,
   ArrowDown,
+  ArrowLeft,
   ArrowUp,
   BadgeCheck,
   Ban,
@@ -325,6 +327,16 @@ import {
   embeddedPopup,
   shownScenes,
 } from './model/shown-scenes.js';
+import {
+  composesViews,
+  explainViewLoads,
+  neededViews,
+  ownedSourceOf,
+  ownedViews,
+  type ViewLoad,
+  viewPath,
+  viewPropsEntry,
+} from './model/views.js';
 import { paletteSketch } from './palette-schematics.js';
 import { wirePaletteThumbnails } from './palette-thumbnails.js';
 import { createPlayStage } from './play-stage.js';
@@ -466,6 +478,8 @@ const ICON_REMOVE_ACTION = 'editor-remove-icon';
 const ICON_CLEAR_ACTION = 'editor-clear-icon-search';
 const ICON_DIALOG = 'editor-icon-dialog';
 // KF-65FTKX: a component's data-* attributes.
+const OPEN_VIEW_ACTION = 'editor-open-view';
+const VIEW_BACK_ACTION = 'editor-view-back';
 const DATA_ATTRIBUTE_ADD_ACTION = 'editor-add-data-attribute';
 const DATA_ATTRIBUTE_REMOVE_ACTION = 'editor-remove-data-attribute';
 const SHOW_VIEW_ACTION = 'editor-show-view';
@@ -592,7 +606,14 @@ const canvasInputs = (
   );
 
 /** The canvas renderer for one catalog. */
-function canvasRenderer(catalog: EditorCatalog) {
+function canvasRenderer(
+  catalog: EditorCatalog,
+  /**
+   * KF-5N26H6: a composed document by its `#view` `src`, once loaded; the
+   * canvas renders it in place, selectable as its `#view` node.
+   */
+  resolveView?: (src: string) => ViewDocument | undefined,
+) {
   const { viewCatalog, componentNames, placeholders, propsByKey } = catalog;
   /** Stands in for a node the preview cannot render; still selectable. */
   const brokenNode = (node: ViewNode): SafeHtml =>
@@ -688,7 +709,10 @@ function canvasRenderer(catalog: EditorCatalog) {
       play ? () => [] : (node) => emptyZonesOf(node, node.id === selected),
     );
     // KF-7XQAFR: in play, a node nested in a row carries its row's key.
-    const document = play ? markRows(shown, viewCatalog) : shown;
+    const marked = play ? markRows(shown, viewCatalog) : shown;
+    // KF-5N26H6: a composed document's nodes carry its `#view`'s id.
+    const composed = resolveView !== undefined && composesViews(marked);
+    const document = composed ? ownedViews(marked) : marked;
     const titles = new Map(
       visitNodes(source).map(({ node }) => [
         node.id,
@@ -716,6 +740,16 @@ function canvasRenderer(catalog: EditorCatalog) {
         return `${place} — drop here`;
       }),
       icons,
+      // Only a `#view` the validation found loaded renders (one that is not
+      // is a problem, so a placeholder), and the play stage has none.
+      ...(composed
+        ? {
+            resolveView: (key: string) => {
+              const { owner, src } = ownedSourceOf(key);
+              return ownedViews(resolveView(src)!, owner);
+            },
+          }
+        : {}),
     };
     // A node whose component has no function here (an application component
     // its host did not register) previews as a placeholder too (KF-6GT5QY).
@@ -724,7 +758,9 @@ function canvasRenderer(catalog: EditorCatalog) {
     );
     // A document with problems still previews (KF-F355BF): each node a problem
     // is about renders as a placeholder and everything else renders normally.
-    if (problems.length || unregistered.length) {
+    // A composing document previews this way too: its composed documents'
+    // nodes share their `#view`'s id, which a strict render would refuse.
+    if (problems.length || unregistered.length || composed) {
       return previewView(document, {
         ...preview,
         broken: new Set([
@@ -1015,11 +1051,51 @@ export function createEditor(options: EditorOptions) {
       loadError: signal<string | null>(null),
     };
   }
-  /** The document's validation, once per edit. */
-  const validation = computed(() => validateView(doc.value, viewCatalog));
+  /**
+   * KF-5N26H6: the composed documents `#view` nodes name, by project path,
+   * as their loads stand. Loading a document starts it again.
+   */
+  const viewLoads = signal<ReadonlyMap<string, ViewLoad>>(new Map());
+  /**
+   * The documents Open document came from, newest last: each one's path and
+   * the `#view` node to select on the way back.
+   */
+  const viewTrail = signal<readonly { path: string; node: string }[]>([]);
+  /** Where `#view` sources resolve from: the current file, with storage. */
+  const documentPath = () => (autosave ? autosave.path.value : undefined);
+  /** A composed document, once it has loaded. */
+  const resolveView = (src: string): ViewDocument | undefined => {
+    const base = documentPath();
+    const path = base === undefined ? undefined : viewPath(base, src);
+    const load = path === undefined ? undefined : viewLoads.value.get(path);
+    return load?.state === 'loaded' ? load.document : undefined;
+  };
+  /**
+   * The Inspector entry for a node: its component's, or for a `#view` one
+   * prop per param of the document it composes (none until it loads).
+   */
+  const propsEntryOf = (node: ViewNode) =>
+    node.type === '#view'
+      ? viewPropsEntry(
+          node.src ?? '',
+          resolveView(node.src ?? '') ?? emptyDocument(),
+        )
+      : propsByKey.get(node.type);
+  /** The document's validation, once per edit (and per composed load). */
+  const validation = computed(() =>
+    validateView(doc.value, viewCatalog, { resolveView }),
+  );
   /** The document's problems. */
   const currentProblems = computed(() =>
-    problemsOf(doc.value, validation.value.diagnostics, variantsOf),
+    problemsOf(
+      doc.value,
+      explainViewLoads(
+        validation.value.diagnostics,
+        documentPath(),
+        viewLoads.value,
+      ),
+      variantsOf,
+    ),
   );
   /**
    * Non-blocking advice (KF-KQ72TW: a nested layout with no height), with
@@ -1044,15 +1120,21 @@ export function createEditor(options: EditorOptions) {
     const byProp = new Map<string, string>();
     for (const { diagnostic, nodeId } of currentProblems.value) {
       if (nodeId !== id) continue;
-      const prop = /\.props\.([A-Za-z]\w*)$/.exec(diagnostic.path)?.[1];
+      // A composed document's problem (`…{./row.kui.json}…`) is its own.
+      const prop = /^[^{]*\.props\.([A-Za-z]\w*)$/.exec(diagnostic.path)?.[1];
       if (prop) byProp.set(prop, diagnostic.message);
+      // KF-5N26H6: a `#view` missing a required param shows it on that field.
+      const required = /^#view "[^"]*" requires param "(\w+)"$/.exec(
+        diagnostic.message,
+      )?.[1];
+      if (required) byProp.set(required, diagnostic.message);
       const fix = diagnostic.message.split('variants: ')[1];
       for (const [, name] of fix?.matchAll(/"([^"]+)"/g) ?? [])
         byProp.set(name!, `To fix: ${fix}`);
     }
     return byProp;
   });
-  const canvasContent = canvasRenderer(catalog);
+  const canvasContent = canvasRenderer(catalog, resolveView);
   /** The type table component `key`'s props catalog declares. */
   const definitionsOf = (key: string) =>
     viewCatalog.components.get(key)?.definitions ?? {};
@@ -1493,6 +1575,8 @@ export function createEditor(options: EditorOptions) {
           </List>
         ),
       };
+    // KF-5N26H6: a composed document's props are its params.
+    if (visit?.node.type === '#view') return viewEditor(visit.node, title);
     if (!component) {
       return {
         content: (
@@ -2054,9 +2138,9 @@ export function createEditor(options: EditorOptions) {
 
   /** What a field of the selected node's prop is: its type and value. */
   const fieldContext = (node: ViewNode, place: FieldPlace) => {
-    const prop = propsByKey
-      .get(node.type)!
-      .props.find((item) => item.name === place.prop)!;
+    const prop = propsEntryOf(node)!.props.find(
+      (item) => item.name === place.prop,
+    )!;
     const definitions = definitionsOf(node.type);
     const propValue = node.props?.[place.prop] as ViewValue | undefined;
     const value = valueAt(propValue, place.path);
@@ -2429,10 +2513,9 @@ export function createEditor(options: EditorOptions) {
       bindable.find((item) => item.name === bindField.value) ?? bindable[0];
     if (!field) return undefined;
     const at = { prop: place.prop, path: [...place.path, field.name] };
-    const propType = propsByKey
-      .get(node.type)
-      ?.props.find((item) => item.name === at.prop)?.type as
-      ViewType | undefined;
+    const propType = propsEntryOf(node)?.props.find(
+      (item) => item.name === at.prop,
+    )?.type as ViewType | undefined;
     // KF-PTMNSZ: judge the field alone, with its object's other required
     // fields standing in, so an unset object's first field can be bound.
     const prepare = (document: ViewDocument) =>
@@ -2455,6 +2538,7 @@ export function createEditor(options: EditorOptions) {
       at.prop,
       at.path,
       prepare,
+      resolveView,
     );
     const current = record[field.name];
     const bound = isParamOrBind(current) ? JSON.stringify(current) : '';
@@ -3017,7 +3101,15 @@ export function createEditor(options: EditorOptions) {
     const prop =
       bindable.find((item) => item.name === bindProp.value) ?? bindable[0];
     if (!prop) return undefined;
-    const options = bindingOptions(doc.value, viewCatalog, node.id, prop.name);
+    const options = bindingOptions(
+      doc.value,
+      viewCatalog,
+      node.id,
+      prop.name,
+      [],
+      undefined,
+      resolveView,
+    );
     const current = node.props?.[prop.name];
     const bound =
       current !== null &&
@@ -3905,6 +3997,124 @@ export function createEditor(options: EditorOptions) {
     );
   };
 
+  /**
+   * KF-5N26H6: the inspector for a `#view` node: the document it composes,
+   * with Open document, and one field per param of that document, which
+   * binds as any prop does (a row's `item.title`).
+   */
+  const viewEditor = (node: ViewNode, title: string) => {
+    const src = node.src ?? '';
+    const base = documentPath();
+    const path = base === undefined ? undefined : viewPath(base, src);
+    const composed = resolveView(src);
+    const entry = propsEntryOf(node)!;
+    const props = node.props ?? {};
+    const own = currentProblems.value.filter(
+      (problem) => problem.nodeId === node.id,
+    );
+    const rows = entry.props.map((prop): InspectorRow => {
+      const value = props[prop.name] as never;
+      const control = propControl(prop, value, node.type);
+      if (control) return { kind: 'edit', row: control };
+      const param = (value as { $param?: unknown } | undefined)?.$param;
+      if (typeof param === 'string')
+        return {
+          kind: 'edit',
+          row: (
+            <TextField
+              label={`${propLabel(prop.name)} param`}
+              value={param}
+              hint="Renaming the param updates every prop that uses it."
+              error={fieldErrors.value[`#param:${param}`]}
+              rootAttributes={{ 'data-editor-param': param }}
+            />
+          ),
+        };
+      return {
+        kind: 'fixed',
+        row: (
+          <ValueTableRow
+            label={propLabel(prop.name)}
+            value={
+              inspectorSections(node, {
+                ...entry,
+                props: [prop],
+                groups: [],
+              })[0]!.rows[0]!.value
+            }
+          />
+        ),
+      };
+    });
+    const properties = (
+      <List>
+        {own.length ? (
+          <List
+            controlInsets="trbl"
+            gap
+            rootAttributes={{ 'data-key': 'editor-node-problems' }}
+          >
+            {own.map(({ diagnostic }) => (
+              <StateBanner
+                tone="warning"
+                title={diagnostic.message}
+                detail={diagnostic.code}
+                rootAttributes={{ 'data-editor-node-problem': diagnostic.code }}
+              />
+            ))}
+          </List>
+        ) : undefined}
+        <ListHeader label="Document" size="xs" />
+        <List>
+          <ListItem
+            label={composed?.name ?? src}
+            description={path ?? src}
+            status="Open document"
+            accessibleLabel={`Open document ${path ?? src}`}
+            action={OPEN_VIEW_ACTION}
+            disabled={!composed}
+            trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
+            rootAttributes={{ 'data-editor-open-view': src }}
+          />
+        </List>
+        <ListHeader
+          label="Params"
+          size="xs"
+          count={entry.props.length}
+          countLabel="params"
+        />
+        {rows.length ? (
+          inspectorRuns(rows, `${title} Params`)
+        ) : (
+          <ListInsetText>
+            <Text tone="quiet">
+              {composed
+                ? 'This document takes no params.'
+                : 'Its params show once the document loads.'}
+            </Text>
+          </ListInsetText>
+        )}
+        {bindSection(node, entry)}
+        {moveSection(node)}
+      </List>
+    );
+    return {
+      header: (
+        <List>
+          <ListHeader
+            label={title}
+            action={DUPLICATE_ACTION}
+            actionLabel="Duplicate"
+            actionIcon={<LucideIcon icon={CopyPlus} name="copy-plus" />}
+            actionDisabled={!isMovable(doc.value, node.id).placed}
+            disabledReason="The root has no place to copy it beside."
+          />
+        </List>
+      ),
+      content: properties,
+    };
+  };
+
   /** The inspector for a selected node: name, editable props, add child. */
   const nodeEditor = (
     node: ViewNode,
@@ -4296,16 +4506,77 @@ export function createEditor(options: EditorOptions) {
    * Shows `document` as a fresh session: no history or selection. With
    * storage it becomes the file at `path`, or a new draft saved right away.
    */
-  const load = (document: ViewDocument, path?: string) => {
-    doc.value = document;
-    history.clear();
-    historyVersion.value += 1;
-    selection.value = null;
-    loadError.value = null;
-    if (!autosave) return;
-    const text = fileText(document);
-    if (path) autosave.adopt(path, text);
-    else void autosave.create(draftPath(newNodeId()), text);
+  const load = (document: ViewDocument, path?: string) =>
+    // One batch, so the composed-document loader sees the new path with the
+    // new document, never the old path's folder.
+    batch(() => {
+      doc.value = document;
+      history.clear();
+      historyVersion.value += 1;
+      selection.value = null;
+      loadError.value = null;
+      // KF-5N26H6: composed documents load again for this one, and a
+      // document opened any other way leaves the Open document trail.
+      viewLoads.value = new Map();
+      viewTrail.value = [];
+      if (!autosave) return;
+      const text = fileText(document);
+      if (path) autosave.adopt(path, text);
+      else void autosave.create(draftPath(newNodeId()), text);
+    });
+
+  /**
+   * KF-5N26H6: Open document. Saves the composing document's pending change,
+   * opens the selected `#view`'s document from where it loaded, and
+   * remembers the way back.
+   */
+  const openView = async () => {
+    // The row is enabled only once the selected `#view`'s document loaded,
+    // which needs storage.
+    const saver = autosave!;
+    const id = selectedNodeId()!;
+    const src = findNode(doc.value, id)!.node.src!;
+    const from = saver.path.peek();
+    const composed = resolveView(src)!;
+    const trail = viewTrail.peek();
+    await saver.flush();
+    load(composed, viewPath(from, src));
+    viewTrail.value = [...trail, { path: from, node: id }];
+  };
+
+  /**
+   * KF-5N26H6: Back. Saves the composed document, then reopens the document
+   * it was opened from, from storage, with its `#view` selected again.
+   */
+  const viewBack = async () => {
+    const saver = autosave!;
+    const trail = viewTrail.peek();
+    const { path, node } = trail.at(-1)!;
+    await saver.flush();
+    let text: string | undefined;
+    try {
+      text = await options.storage!.read(path);
+    } catch (error) {
+      loadError.value = (error as Error).message;
+      return;
+    }
+    const parsed =
+      text === undefined
+        ? { ok: false as const, error: `There is no ${path}.` }
+        : parseDocument(text);
+    if (!parsed.ok) {
+      loadError.value = parsed.error;
+      return;
+    }
+    load(parsed.document, path);
+    viewTrail.value = trail.slice(0, -1);
+    if (findNode(parsed.document, node)) select({ kind: 'node', id: node });
+  };
+
+  /** The Back control's label: the file Open document came from. */
+  const backLabel = () => {
+    const { path } = viewTrail.value.at(-1)!;
+    return `Back to ${isDraft(path) ? 'Unsaved draft' : path.slice(path.lastIndexOf('/') + 1)}`;
   };
 
   /** The Preview header's file part: its name, or with storage its path and save state. */
@@ -4607,6 +4878,16 @@ export function createEditor(options: EditorOptions) {
                   />
                 ),
                 responsive: 'wrap',
+                // KF-5N26H6: back to the document Open document came from.
+                leading: viewTrail.value.length ? (
+                  <Button
+                    emphasis="plain"
+                    action={VIEW_BACK_ACTION}
+                    icon={<LucideIcon icon={ArrowLeft} name="arrow-left" />}
+                  >
+                    {backLabel()}
+                  </Button>
+                ) : undefined,
                 trailing: [
                   <ToolbarControlGroup
                     label="History"
@@ -4757,7 +5038,7 @@ export function createEditor(options: EditorOptions) {
   };
 
   const exportAs = (kind: ExportKind) => {
-    const result = exportModule(doc.value, viewCatalog, kind);
+    const result = exportModule(doc.value, viewCatalog, kind, resolveView);
     lastExport.value = {
       contract: result.contract,
       report: describeExport(result.contract, lastExport.value?.contract),
@@ -4821,9 +5102,7 @@ export function createEditor(options: EditorOptions) {
       customSize.value = raw === CUSTOM_SIZE ? `${id} ${name}` : '';
     const node = findNode(doc.value, id)!.node;
     // A field renders only for a prop of the node's props entry.
-    const prop = propsByKey
-      .get(node.type)!
-      .props.find((item) => item.name === name)!;
+    const prop = propsEntryOf(node)!.props.find((item) => item.name === name)!;
     // A value picked from the choices keeps its type (KF-9AWGPS).
     // Several picked values, in choice order; none is [] (KF-8MEWP2).
     if (kind === 'value-choices') {
@@ -4867,7 +5146,7 @@ export function createEditor(options: EditorOptions) {
     // same undo step: one value becomes a list of it, a list its first.
     const valueProp =
       name === 'multiple'
-        ? propsByKey.get(node.type)!.props.find((item) => item.name === 'value')
+        ? propsEntryOf(node)!.props.find((item) => item.name === 'value')
         : undefined;
     if (valueProp) {
       const after = findNode(next, id)!.node.props;
@@ -4891,7 +5170,7 @@ export function createEditor(options: EditorOptions) {
     // KF-VQTDYG: a required boolean shown off is written as false.
     const value = withRequiredBooleans(
       withValueAt(current, place.path, next),
-      propsByKey.get(node.type)?.props.find((item) => item.name === place.prop)
+      propsEntryOf(node)?.props.find((item) => item.name === place.prop)
         ?.type as ViewType | undefined,
       definitionsOf(node.type),
       place.path,
@@ -4900,7 +5179,7 @@ export function createEditor(options: EditorOptions) {
     // KF-9AWGPS: renaming the selected choice keeps it selected, in the
     // value's own options list (KF-H1X3S7: a ColorSwatches' swatches).
     const list =
-      propsByKey.get(node.type)?.props.find((item) => item.name === 'value')
+      propsEntryOf(node)?.props.find((item) => item.name === 'value')
         ?.choicesFrom ?? 'choices';
     const [index, field] = place.path;
     const followed =
@@ -4972,9 +5251,9 @@ export function createEditor(options: EditorOptions) {
     const id = selectedNodeId()!;
     const open = activeField();
     const node = findNode(doc.value, id)!.node;
-    const prop = propsByKey
-      .get(node.type)!
-      .props.find((item) => item.name === place.prop)!;
+    const prop = propsEntryOf(node)!.props.find(
+      (item) => item.name === place.prop,
+    )!;
     const container =
       open && open.prop === place.prop
         ? open.container
@@ -5553,6 +5832,44 @@ export function createEditor(options: EditorOptions) {
         if (path && (!isDraft(path) || saver.status.value === 'saved'))
           rememberPath(path);
       }),
+      // KF-5N26H6: loads each composed document the current one needs (and
+      // theirs), once per document; a load started for an earlier document
+      // is dropped when it arrives.
+      effect(() => {
+        const path = saver.path.value;
+        const loads = viewLoads.value;
+        if (!path) return;
+        const wanted = neededViews(doc.value, path, loads).filter(
+          (item) => !loads.has(item),
+        );
+        if (!wanted.length) return;
+        const started = new Map(loads);
+        for (const item of wanted) started.set(item, { state: 'loading' });
+        viewLoads.value = started;
+        const settle = (item: string, load: ViewLoad) => {
+          const current = viewLoads.peek();
+          if (current.get(item)?.state !== 'loading') return;
+          viewLoads.value = new Map(current).set(item, load);
+        };
+        for (const item of wanted)
+          options.storage!.read(item).then(
+            (text) => {
+              if (text === undefined) return settle(item, { state: 'missing' });
+              const parsed = parseDocument(text);
+              settle(
+                item,
+                parsed.ok
+                  ? { state: 'loaded', document: parsed.document }
+                  : { state: 'failed', error: parsed.error },
+              );
+            },
+            (error: unknown) =>
+              settle(item, {
+                state: 'failed',
+                error: error instanceof Error ? error.message : String(error),
+              }),
+          );
+      }),
       on(root.ownerDocument.defaultView!, 'pagehide', () => {
         void saver.flush();
       }),
@@ -5943,6 +6260,8 @@ export function createEditor(options: EditorOptions) {
         [MOVE_DOWN_ACTION]: () => moveSelected(1),
         [DELETE_ACTION]: () => deleteSelected(),
         [DUPLICATE_ACTION]: () => duplicate(),
+        [OPEN_VIEW_ACTION]: () => void openView(),
+        [VIEW_BACK_ACTION]: () => void viewBack(),
         // KF-JV7XW1: the node context menu's commands.
         [CONTEXT_MOVE_UP_ACTION]: () => moveSelected(-1),
         [CONTEXT_MOVE_DOWN_ACTION]: () => moveSelected(1),
@@ -6120,7 +6439,7 @@ export function createEditor(options: EditorOptions) {
                   fieldContext(node, { prop: place.prop, path: parent }).type,
                   definitionsOf(node.type),
                 )
-              : propsByKey.get(node.type)!.props
+              : propsEntryOf(node)!.props
           )
             .filter((field) => field.type.kind === 'string')
             .map((field) => field.name);
@@ -6208,9 +6527,9 @@ export function createEditor(options: EditorOptions) {
           const id = selectedNodeId()!;
           const name = target.dataset.editorExample!;
           const node = findNode(doc.value, id)!.node;
-          const prop = propsByKey
-            .get(node.type)!
-            .props.find((item) => item.name === name)!;
+          const prop = propsEntryOf(node)!.props.find(
+            (item) => item.name === name,
+          )!;
           commit(
             setProp(
               doc.value,
@@ -6567,7 +6886,9 @@ export function createEditor(options: EditorOptions) {
           // wireFilePickers reports a choice only when it has files.
           void files[0]!.text().then((text) => {
             if (id === 'compare-module') {
-              const current = contractOf(doc.value, viewCatalog);
+              const current = contractOf(doc.value, viewCatalog, {
+                resolveView,
+              });
               lastExport.value = compareWithModule(text, current);
               return;
             }

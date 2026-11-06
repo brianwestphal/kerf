@@ -185,7 +185,10 @@ editor.wire(root);
   `save(fileName, text)` replaces the default download for Save and Export,
   `fieldEditors` registers field editors by type name (above), and
   `devicePresets` adds play mode's devices and `playHandlers` its mock
-  action handlers (below).
+  action handlers (below). `storage` (an `EditorStorage`, `read(path)` and
+  `write(path, text)` by project path) also loads the documents a `#view`
+  composes, so the canvas renders them and Problems validates against them;
+  without it a `#view` previews as a placeholder.
 - `createEditorCatalog({ props, composition, selection?, components, placeholders? })`
   combines catalogs. Without a selection catalog a component is named by its
   export. `placeholders` maps `<component key>.<prop>` to a factory for the
