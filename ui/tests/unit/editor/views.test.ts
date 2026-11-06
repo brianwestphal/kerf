@@ -11,6 +11,7 @@ import {
 } from '../../../src/editor/autosave.js';
 import { exportModule } from '../../../src/editor/model/export.js';
 import {
+  composedDocuments,
   composesViews,
   explainViewLoads,
   neededViews,
@@ -144,6 +145,33 @@ describe('composed document model', () => {
     expect(
       neededViews(listDocument({}, '../../../x.kui.json'), LIST_PATH, loads),
     ).toEqual([]);
+  });
+
+  it('collects the composed documents a document reaches, by path (KF-85SCQD)', () => {
+    const inner = {
+      ...rowDocument(),
+      root: { id: 'i', type: '#view', src: '../message-row.kui.json' },
+    } as ViewDocument;
+    const nested = {
+      ...rowDocument(),
+      root: { id: 'r', type: '#view', src: './inner.kui.json' },
+    } as ViewDocument;
+    const files: Record<string, ViewDocument> = {
+      'rows/row.kui.json': nested,
+      'rows/inner.kui.json': inner,
+      'message-row.kui.json': rowDocument(),
+    };
+    const list = {
+      ...listDocument({}, './rows/row.kui.json'),
+    };
+    expect(composedDocuments(list, (path) => files[path])).toEqual(files);
+    // A cycle is visited once, and a document not loaded is left out.
+    expect(
+      composedDocuments(listDocument(), (path) =>
+        path === 'message-row.kui.json' ? listDocument() : undefined,
+      ),
+    ).toEqual({ 'message-row.kui.json': listDocument() });
+    expect(composedDocuments(listDocument(), () => undefined)).toEqual({});
   });
 
   it('makes one Inspector prop per param', () => {
@@ -362,6 +390,39 @@ describe('composed documents in the editor', () => {
     );
     expect(storage.read).not.toHaveBeenCalledWith(ROW_PATH);
     expect(problems(root)).toEqual([]);
+  });
+
+  it('sends the loaded composed documents with the document it plays (KF-85SCQD)', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const { root, editor } = open(files());
+    await vi.waitFor(() =>
+      expect(canvas(root).textContent).toContain('Quarterly report'),
+    );
+    root.querySelector<HTMLElement>('[data-action="editor-play"]')!.click();
+    const frame = root.querySelector<HTMLIFrameElement>(
+      '[data-editor-play-frame]',
+    )!;
+    const stage = { postMessage: vi.fn() };
+    Object.defineProperty(frame, 'contentWindow', { value: stage });
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        data: { type: 'kerf-ui-play:ready' },
+        origin: location.origin,
+        source: stage as never,
+      }),
+    );
+    expect(stage.postMessage).toHaveBeenLastCalledWith(
+      {
+        type: 'kerf-ui-play:document',
+        document: editor.document.value,
+        views: { 'message-row.kui.json': rowDocument() },
+      },
+      location.origin,
+    );
+    root
+      .querySelector<HTMLElement>('[data-action="editor-play-done"]')!
+      .click();
+    vi.restoreAllMocks();
   });
 
   it('edits the #view’s props as the composed document’s params', async () => {

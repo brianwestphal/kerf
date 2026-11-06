@@ -348,6 +348,7 @@ import {
   shownScenes,
 } from './model/shown-scenes.js';
 import {
+  composedDocuments,
   composesViews,
   explainViewLoads,
   neededViews,
@@ -764,7 +765,8 @@ function canvasRenderer(
       }),
       icons,
       // Only a `#view` the validation found loaded renders (one that is not
-      // is a problem, so a placeholder), and the play stage has none.
+      // is a problem, so a placeholder); the play stage's are the ones its
+      // editor sent (KF-85SCQD).
       ...(composed
         ? {
             // KF-3X7MFF: a key's source is already where it points from the
@@ -1043,7 +1045,11 @@ export function createEditor(options: EditorOptions) {
   // KF-60BEEJ: on the play page (play mode's stage) this is the player:
   // the document its editor sends, rendered and wired as it runs.
   if (isPlayPage(globalThis.location)) {
-    const render = canvasRenderer(catalog);
+    // KF-85SCQD: `#view`s render the composed documents the editor sent,
+    // by path, as the canvas renders the ones it loaded.
+    const playView = (src: string, path: string = src) =>
+      player.views.value[path];
+    const render = canvasRenderer(catalog, playView);
     const player = createPlayer(
       options.document ?? emptyDocument(),
       (document, overrides, rows) =>
@@ -1051,7 +1057,8 @@ export function createEditor(options: EditorOptions) {
           document,
           problemsOf(
             document,
-            validateView(document, viewCatalog).diagnostics,
+            validateView(document, viewCatalog, { resolveView: playView })
+              .diagnostics,
             variantsOf,
           ),
           undefined,
@@ -6183,7 +6190,13 @@ export function createEditor(options: EditorOptions) {
       if (data?.type !== PLAY_READY) return;
       sendEnvironment(root);
       frame.contentWindow.postMessage(
-        { type: PLAY_DOCUMENT, document: doc.value },
+        {
+          type: PLAY_DOCUMENT,
+          document: doc.value,
+          // KF-85SCQD: the stage has no storage, so it gets the loaded
+          // composed documents its `#view`s render.
+          views: composedDocuments(doc.value, (path) => resolveView(path)),
+        },
         view.location.origin,
       );
     };

@@ -169,6 +169,31 @@ export function ownedViews(
   return document.root ? { ...document, root: node(document.root) } : document;
 }
 
+/**
+ * KF-85SCQD: every composed document `document` reaches that `resolve`
+ * has, by where it is from the top document's folder (`composedViewPath`),
+ * nested ones included, each once. What play mode's stage renders `#view`s
+ * from, since it has no storage of its own.
+ */
+export function composedDocuments(
+  document: ViewDocument,
+  resolve: (path: string) => ViewDocument | undefined,
+): Record<string, ViewDocument> {
+  const found: Record<string, ViewDocument> = {};
+  const visit = (current: ViewDocument, at?: string) => {
+    for (const src of viewSources(current)) {
+      const path = composedViewPath(at, src);
+      if (path in found) continue;
+      const loaded = resolve(path);
+      if (!loaded) continue;
+      found[path] = loaded;
+      visit(loaded, path);
+    }
+  };
+  visit(document);
+  return found;
+}
+
 /** Whether a document composes another anywhere. */
 export const composesViews = (document: ViewDocument) =>
   viewSources(document).length > 0;

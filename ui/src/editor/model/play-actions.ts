@@ -90,9 +90,14 @@ function actionsIn(value: unknown, into: Set<string>): void {
  * The document's action names: what its `$action`s name. A component's own
  * `data-action` wiring (a literal action name) is not one.
  */
-export function documentActions(document: ViewDocument): ReadonlySet<string> {
+export function documentActions(
+  document: ViewDocument,
+  /** KF-85SCQD: composed documents its `#view`s render, whose actions join. */
+  composed: Iterable<ViewDocument> = [],
+): ReadonlySet<string> {
   const names = new Set<string>();
-  for (const { node } of visitNodes(document)) actionsIn(node.props, names);
+  for (const each of [document, ...composed])
+    for (const { node } of visitNodes(each)) actionsIn(node.props, names);
   return names;
 }
 

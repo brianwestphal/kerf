@@ -24,6 +24,7 @@ import {
   PLAY_READY,
   playPageUrl,
 } from '../../../src/editor/player.js';
+import { listDocument, ROW_VIEW, rowDocument } from './fixtures-views.js';
 import { createEditor } from './kerf-catalog.js';
 
 let cleanup: (() => void) | undefined;
@@ -450,7 +451,8 @@ describe('play mode in the editor', () => {
         location.origin,
       ],
       [
-        { type: PLAY_DOCUMENT, document: editor.document.value },
+        // No storage, so no composed documents (KF-85SCQD).
+        { type: PLAY_DOCUMENT, document: editor.document.value, views: {} },
         location.origin,
       ],
     ]);
@@ -511,6 +513,51 @@ describe('the play page', () => {
       }),
     );
     expect(root.style.getPropertyValue('anchor-name')).toBe('');
+  });
+
+  it('renders #view rows from the composed documents its editor sent (KF-85SCQD)', () => {
+    window.history.replaceState(null, '', playPageUrl(location.href));
+    const send = (views?: Record<string, ViewDocument>) =>
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { type: PLAY_DOCUMENT, document: listDocument(), views },
+          origin: location.origin,
+          source: window,
+        }),
+      );
+    const { root } = open();
+    // Without them, a #view plays as the placeholder it always was.
+    send();
+    expect(root.textContent).toContain('cannot render');
+    expect(root.textContent).not.toContain('Quarterly report');
+    send({ 'message-row.kui.json': rowDocument() });
+    expect(root.textContent).toContain('Quarterly report');
+    expect(root.textContent).toContain('Lunch on Friday');
+    expect(root.textContent).not.toContain('cannot render');
+    // Every element a row draws is its #view, so it is in the document.
+    const list = root.querySelector(
+      '[data-kerf-node="01JC0V1EW0000000000000000S"]',
+    )!;
+    const nodes = [...list.querySelectorAll<HTMLElement>('[data-kerf-node]')];
+    expect(nodes.length).toBeGreaterThan(0);
+    expect(new Set(nodes.map((node) => node.dataset.kerfNode))).toEqual(
+      new Set([ROW_VIEW]),
+    );
+    // A row document's action is the played view's, logged as its #view.
+    const post = vi.spyOn(window, 'postMessage');
+    click(list.querySelector('[data-action="open-message"]'));
+    expect(post).toHaveBeenCalledWith(
+      {
+        type: 'kerf-ui-play:action',
+        entry: expect.objectContaining({
+          action: 'open-message',
+          outcome: 'missing',
+          node: expect.stringContaining(ROW_VIEW),
+        }),
+      },
+      location.origin,
+    );
+    post.mockRestore();
   });
 
   it('asks its parent for the document and renders nothing until it comes', () => {

@@ -7,7 +7,7 @@
 // editing stand-ins, and wires it for real over a play-time copy
 // (play-adapters.ts). Nothing it does reaches the edited document.
 import type { ViewDocument } from '@kerfjs/ui/view';
-import { delegate, effect, raw, type SafeHtml, signal } from 'kerfjs';
+import { batch, delegate, effect, raw, type SafeHtml, signal } from 'kerfjs';
 
 import { openDialog } from '../components/surfaces/surface-scaffold/surface-scaffold.js';
 import { deviceClass } from '../shared/environment/device-class.js';
@@ -31,8 +31,14 @@ const SHOW_DIALOG = 'show-dialog';
 export const PLAY_PARAM = 'kerf-ui-play';
 /** The player's message to its parent once it listens for the document. */
 export const PLAY_READY = 'kerf-ui-play:ready';
-/** The editor's message carrying the document to play. */
+/**
+ * The editor's message carrying the document to play, with `views`: the
+ * composed documents its `#view`s render, by path (KF-85SCQD).
+ */
 export const PLAY_DOCUMENT = 'kerf-ui-play:document';
+
+/** Composed documents by their path from the top document's folder. */
+export type PlayViews = Readonly<Record<string, ViewDocument>>;
 /**
  * KF-R7KXSN: the editor's message carrying the emulated device's safe areas
  * (physical insets), sent with the document and whenever they change.
@@ -87,6 +93,8 @@ export function createPlayer(
     document: ViewDocument,
     overrides: Readonly<Record<string, unknown>>,
     rows: RowProps,
+    /** KF-85SCQD: the composed documents the editor sent. */
+    views: PlayViews,
   ) => SafeHtml,
   options: PlayerOptions,
 ) {
@@ -101,14 +109,21 @@ export function createPlayer(
   const rows = signal<RowProps>({});
   /** Nothing renders until the editor sends the document to play. */
   const received = signal(false);
+  /** The composed documents `#view`s render, as the editor loaded them. */
+  const views = signal<PlayViews>({});
 
   const render = (): SafeHtml => {
     if (!received.value) return raw('');
     // KF-XV732Q: rows with play-time props render from fresh items.
     const repeated = Object.keys(rows.value).length > 0;
     return repeated
-      ? preview(fresh(document.value), fresh(overrides.value), rows.value)
-      : preview(document.value, overrides.value, rows.value);
+      ? preview(
+          fresh(document.value),
+          fresh(overrides.value),
+          rows.value,
+          views.value,
+        )
+      : preview(document.value, overrides.value, rows.value, views.value);
   };
   const setParams = (values: Readonly<Record<string, unknown>>) => {
     overrides.value = { ...overrides.value, ...values };
@@ -144,6 +159,7 @@ export function createPlayer(
       const data = event.data as {
         type?: unknown;
         document?: ViewDocument;
+        views?: PlayViews;
         safeArea?: DeviceInsets;
       };
       if (data?.type === PLAY_ENVIRONMENT && data.safeArea) {
@@ -163,9 +179,13 @@ export function createPlayer(
       original = data.document;
       // KF-BFE3EC: each NavStack starts at its root view, as an app
       // launches; handlers push the rest from `original`.
-      document.value = rootViews(data.document);
-      rows.value = {};
-      received.value = true;
+      // One render for the document and the composed documents it shows.
+      batch(() => {
+        document.value = rootViews(data.document!);
+        views.value = data.views ?? {};
+        rows.value = {};
+        received.value = true;
+      });
     };
     /** Tells the editor's action log about one fired action. */
     const report = (entry: ActionLogEntry) =>
@@ -203,7 +223,13 @@ export function createPlayer(
           });
           return;
         }
-        if (!documentActions(document.value).has(action)) return;
+        // A composed document's actions are the view's too (KF-85SCQD).
+        if (
+          !documentActions(document.value, Object.values(views.value)).has(
+            action,
+          )
+        )
+          return;
         // Every rendered node carries its id, so an action has one.
         const nodeId =
           target.closest<HTMLElement>('[data-kerf-node]')!.dataset.kerfNode!;
@@ -302,5 +328,5 @@ export function createPlayer(
     };
   };
 
-  return { render, wire, document };
+  return { render, wire, document, views };
 }

@@ -1211,8 +1211,15 @@ composing document belongs beside its rows before they render.
   - One Undo restores the original subtree. The new file stays, as a file
     Save As wrote does.
 
-Play mode does not load composed documents yet: a `#view` plays as a
-placeholder (KF-85SCQD).
+- **Play** (KF-85SCQD: play renders composed documents). The play stage has
+  no storage, so the editor sends the loaded composed documents with the
+  document, keyed by their path from its folder. The stage renders a `#view`
+  from them as the canvas does, every element it draws owned by its `#view`,
+  and a composed document's actions are the played view's: they reach the
+  host's handlers and the action log, named as the `#view`. A `#view` whose
+  document had not loaded when Play started still plays as a placeholder.
+  Play-time state adapters (a TabNavigator's tab, a NavStack's views) wire
+  only the played document's own nodes, not nodes inside a composed one.
 
 ## 4. The generated view module
 
@@ -2089,7 +2096,8 @@ responds as it would on the device: media and container queries,
 hosted at `body`. The iframe is a host page served by the editor's host (the
 Vite plugin's `/__kerf-ui-editor/play`, or the private editor's own page) that
 loads the same catalogs and global CSS as the canvas. It receives the
-document and its param values by `postMessage` and renders them with
+document, its param values, and the composed documents its `#view`s render
+(§3.7) by `postMessage` and renders them with
 `interpretView`, plus the real wiring (§11.4).
 
 - **Safe areas.** The iframe can't set `env(safe-area-inset-*)`, so the host

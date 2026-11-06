@@ -153,6 +153,47 @@ test('renders composed rows, edits their params, and opens the row document', as
   ).toBeVisible();
 });
 
+test('play renders composed rows and logs an action from one (KF-85SCQD)', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openList(page, `play-${info.project.name}`);
+  await page.locator('[data-action="editor-play"]').click();
+  const stage = page.frameLocator('[data-editor-play-frame]');
+  await expect(stage.getByText('Quarterly report')).toBeVisible();
+  await expect(stage.getByText('Design review notes')).toBeVisible();
+  await expect(stage.getByText(/cannot render/)).toHaveCount(0);
+  // The row document's action fires from the played row, named as its #view.
+  await stage.getByText('Lunch on Friday').click();
+  const log = page.locator('[data-action="editor-play-log"]');
+  await expect(log).toHaveAttribute('aria-label', 'Action log, 1 new');
+  await log.click();
+  await expect(
+    page
+      .locator('[data-component="anchored-surface"]')
+      .locator('[data-editor-play-log-entry]')
+      .first(),
+  ).toContainText('open-message');
+});
+
+for (const width of [1440, 390]) {
+  test(`captures play with composed rows at ${width} (KF-85SCQD)`, async ({
+    page,
+  }, info) => {
+    test.skip(info.project.name !== 'chromium', 'visual QA capture');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.setViewportSize({ width, height: 900 });
+    await openList(page, `play-capture-${width}`);
+    await page.locator('[data-action="editor-play"]').click();
+    const stage = page.frameLocator('[data-editor-play-frame]');
+    await expect(stage.getByText('Quarterly report')).toBeVisible();
+    await page.screenshot({
+      path: info.outputPath(`kf-85scqd-play-${width}.png`),
+      animations: 'disabled',
+    });
+  });
+}
+
 for (const width of [1440, 390]) {
   test(`captures the composed list and its Inspector at ${width}`, async ({
     page,
