@@ -8664,9 +8664,11 @@ test('renders controlled toolbar, rounded, and pill SegmentedControl Variants', 
   const controls = demo.locator(
     '[data-component="segmented-control"]:not([data-placeholder="true"], [data-disabled="true"])',
   );
-  await expect(controls).toHaveCount(3);
+  // Toolbar, Corner Count (a toolbar and a filled track), Rounded, and Pill.
+  await expect(controls).toHaveCount(5);
   await expect(demo.locator('.kui-list-header__title > .kui-text')).toHaveText([
     'Toolbar',
+    'Corner Count',
     'Rounded Rectangle',
     'Pill',
     'Placeholder',
