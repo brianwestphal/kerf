@@ -7,6 +7,7 @@ import {
   devServerStorage,
   draftPath,
   EDITOR_FILE_API,
+  EDITOR_LIST_API,
   type EditorStorage,
   isDraft,
   rememberedPath,
@@ -200,5 +201,23 @@ describe('devServerStorage', () => {
     await expect(storage.write('denied.kui.json', '{}')).rejects.toThrow(
       'Writes come from the editor only.',
     );
+  });
+
+  // KF-PX5EVZ: Insert Document's picker lists the project's documents.
+  it('lists the project documents and reports a failed listing', async () => {
+    const fetch = vi.fn(async (url: string) =>
+      url.includes('broken')
+        ? new Response('No listing.', { status: 500 })
+        : new Response('["a.kui.json","views/b.kui.json"]'),
+    );
+    vi.stubGlobal('fetch', fetch);
+    expect(await devServerStorage().list!()).toEqual([
+      'a.kui.json',
+      'views/b.kui.json',
+    ]);
+    expect(fetch).toHaveBeenLastCalledWith(EDITOR_LIST_API);
+    await expect(
+      devServerStorage(EDITOR_FILE_API, '/broken').list!(),
+    ).rejects.toThrow('No listing.');
   });
 });

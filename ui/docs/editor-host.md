@@ -33,7 +33,10 @@ the editor reopens it on your next visit. The plugin's file endpoint
 the project, outside `node_modules` and `.git`, and only for requests the
 editor itself makes. A host that mounts the editor itself passes
 `createEditor({ catalog, storage: devServerStorage() })` and adds
-`editorFileMiddleware(root)` to its server.
+`editorFileMiddleware(root)` to its server. The same middleware lists the
+project's documents (GET `/__kerf-ui-editor/api/files`: every `.kui.json`
+outside `node_modules`, `dist`, `test-results`, and dot-folders), which
+Add a child's **Existing document…** offers in a picker.
 
 The editor offers Kerf UI's components and every component your
 `.kerf-ui-profile.json` declares a catalog for. Generate your package's
@@ -188,7 +191,12 @@ editor.wire(root);
   action handlers (below). `storage` (an `EditorStorage`, `read(path)` and
   `write(path, text)` by project path) also loads the documents a `#view`
   composes, so the canvas renders them and Problems validates against them;
-  without it a `#view` previews as a placeholder.
+  without it a `#view` previews as a placeholder. An optional `list()`
+  answers the project's documents as project-relative `.kui.json` paths;
+  with it, Add a child's **Existing document…** inserts one as a `#view`
+  from a picker, and without it that choice asks for a path.
+  `devServerStorage(api?, listApi?)` implements all three over the dev
+  server (`EDITOR_FILE_API`, `EDITOR_LIST_API`).
 - `createEditorCatalog({ props, composition, selection?, components, placeholders? })`
   combines catalogs. Without a selection catalog a component is named by its
   export. `placeholders` maps `<component key>.<prop>` to a factory for the

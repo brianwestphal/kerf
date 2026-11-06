@@ -1155,8 +1155,9 @@ row design per item through an `$if`-chain template or a `templates` map
 keyed by the item's kind (above; KF-B5JFTM chose both). The editor authors
 both in the Repeat section's Row designs (KF-1CRGP1, KF-YX6HMT), and renders
 and inspects a `#view` row document and opens it (KF-5N26H6, §3.7), and
-extracts a selected row (or any subtree) into one (KF-D9P3NP, §3.7);
-inserting one from a document picker (KF-PX5EVZ) is not built yet.
+extracts a selected row (or any subtree) into one (KF-D9P3NP, §3.7), and
+inserts an existing document as a `#view` from a document picker
+(KF-PX5EVZ, §3.7).
 
 There are no other control-flow forms. Anything richer belongs in application
 code behind a slot.
@@ -1287,6 +1288,44 @@ composing document belongs beside its rows before they render.
     declare slots), and without storage.
   - One Undo restores the original subtree. The new file stays, as a file
     Save As wrote does.
+- **Insert an existing document** (KF-PX5EVZ: row template phase 2). With
+  storage, the Children area's **Add a child** offers **Existing document…**
+  in a Documents group of its Component Select. Add then opens an **Insert
+  Document** dialog. **Decision (maintainer): pick from a list.**
+  - `EditorStorage` has an optional `list(): Promise<readonly string[]>`
+    that answers the project's documents as project-relative POSIX paths of
+    `.kui.json` files. `devServerStorage(api?, listApi?)` implements it with
+    a GET on `EDITOR_LIST_API` (`/__kerf-ui-editor/api/files`), which
+    `@kerfjs/ui/vite-editor`'s `editorFileMiddleware` answers
+    (`KERF_UI_EDITOR_LIST_API`, through `editorDocuments(root)`): every
+    `.kui.json` under the project root, sorted, at most 5000, never inside
+    `node_modules`, `dist`, `test-results`, or a dot-folder (`.git`, the
+    `.kerf-ui-editor` drafts).
+  - With `list()`, the dialog shows a filter (every word must appear in the
+    path, ignoring case) over a list of the project's documents, without the
+    current document's own file and drafts. Each row leads with its file
+    name, under its folder. While the listing loads it says so; an empty
+    project, no match, and a failed listing each show an empty state with
+    the reason. Choosing a row inserts it.
+  - Without `list()` (a custom storage), the dialog asks for a **Path**
+    instead, with an Insert button, as Extract does.
+  - Inserting reads the document through `storage.read` and puts a `#view`
+    of it in the chosen zone: its `src` relative to the composing document,
+    and its props seeding every required param (no `default`, not
+    `optional`) with an example value of the param's type (`exampleValue`;
+    a minimal literal where no example fits: `''` for content, `[]`, an
+    `$action` for a function, `{}`). It is selected, and the loaded document
+    renders on the canvas at once. It is one undoable edit; a zone that held
+    a content prop's text takes the text in first, as Add does.
+  - It is refused, with the reason in the dialog, when the path is not a
+    `.kui.json` file inside the project and outside the drafts folder, is
+    the document's own file, does not exist, cannot be read or parsed, is
+    empty, or **declares slots** (a composing document cannot fill them,
+    `KUI-V012`; the picker shows the document and refuses it on choice,
+    since only reading it tells), and when the document changed while it
+    was being read.
+  - The Library palette does not list documents yet (KF-FXACB5), and
+    Embed in does not apply to a document.
 
 - **Play** (KF-85SCQD: play renders composed documents). The play stage has
   no storage, so the editor sends the loaded composed documents with the

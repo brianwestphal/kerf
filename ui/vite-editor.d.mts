@@ -6,6 +6,10 @@ export declare const DEFAULT_REGISTRY: 'src/kerf-ui-registry.ts';
 export declare const DEFAULT_FIELD_EDITORS: 'src/kerf-ui-field-editors.ts';
 /** Where the editor reads and writes documents. */
 export declare const KERF_UI_EDITOR_FILE_API: '/__kerf-ui-editor/api/file';
+/** Where the editor lists the project's documents (GET: a JSON array of paths). */
+export declare const KERF_UI_EDITOR_LIST_API: '/__kerf-ui-editor/api/files';
+/** The most documents the list answers. */
+export declare const KERF_UI_EDITOR_LIST_LIMIT: 5000;
 /** The project folder unsaved drafts autosave into; it ignores itself in git. */
 export declare const KERF_UI_EDITOR_FOLDER: '.kerf-ui-editor';
 /** The header every write must carry. */
@@ -106,7 +110,18 @@ export declare function editorFilePath(
   root: string,
   path: string | null | undefined,
 ): string | undefined;
-/** Connect middleware reading (GET) and writing (PUT) documents under `root`. */
+/**
+ * The `.kui.json` files under `root`: sorted project-relative POSIX paths,
+ * outside `node_modules`, `dist`, `test-results`, and every dot-folder.
+ */
+export declare function editorDocuments(
+  root: string,
+  limit?: number,
+): Promise<string[]>;
+/**
+ * Connect middleware reading (GET) and writing (PUT) documents under `root`,
+ * and listing them (GET `KERF_UI_EDITOR_LIST_API`).
+ */
 export declare function editorFileMiddleware(
   root: string,
 ): (

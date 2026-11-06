@@ -2,3 +2,6 @@ node_modules/
 dist/
 test-results/
 playwright-report/
+# KF-PX5EVZ: documents the browser tests seed where the editor's document
+# list (which skips dot-folders) can find them.
+pw-documents/

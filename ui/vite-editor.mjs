@@ -13,7 +13,7 @@
  * production build.
  */
 import { existsSync, readFileSync } from 'node:fs';
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, rename, writeFile } from 'node:fs/promises';
 import {
   basename,
   dirname,
@@ -40,6 +40,15 @@ export const DEFAULT_FIELD_EDITORS = 'src/kerf-ui-field-editors.ts';
 
 /** Where the editor reads and writes documents (KF-0SY9M6: autosave). */
 export const KERF_UI_EDITOR_FILE_API = '/__kerf-ui-editor/api/file';
+/**
+ * Where the editor lists the project's documents (KF-PX5EVZ: insert an
+ * existing document): GET answers a JSON array of `.kui.json` paths.
+ */
+export const KERF_UI_EDITOR_LIST_API = '/__kerf-ui-editor/api/files';
+/** The most documents the list answers. */
+export const KERF_UI_EDITOR_LIST_LIMIT = 5000;
+/** Folders the list never walks, beside every dot-folder. */
+const UNLISTED = new Set(['node_modules', 'dist', 'test-results']);
 /** The project folder unsaved drafts autosave into. */
 export const KERF_UI_EDITOR_FOLDER = '.kerf-ui-editor';
 /** The header every write carries; a cross-site page cannot send it. */
@@ -98,6 +107,28 @@ export function editorFilePath(root, path) {
   return file;
 }
 
+/**
+ * The project's documents: every `.kui.json` file under `root`, as sorted
+ * project-relative POSIX paths, outside `node_modules`, `dist`,
+ * `test-results`, and every dot-folder (`.git`, the drafts folder), at most
+ * `limit` of them.
+ */
+export async function editorDocuments(root, limit = KERF_UI_EDITOR_LIST_LIMIT) {
+  const found = [];
+  const walk = async (folder, prefix) => {
+    const entries = await readdir(folder, { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.isDirectory()) {
+        if (!entry.name.startsWith('.') && !UNLISTED.has(entry.name))
+          await walk(join(folder, entry.name), `${prefix}${entry.name}/`);
+      } else if (entry.isFile() && entry.name.endsWith('.kui.json'))
+        found.push(`${prefix}${entry.name}`);
+    }
+  };
+  await walk(root, '');
+  return found.sort().slice(0, limit);
+}
+
 const send = (response, status, body, type = 'text/plain; charset=utf-8') => {
   response.statusCode = status;
   response.setHeader('Content-Type', type);
@@ -106,7 +137,8 @@ const send = (response, status, body, type = 'text/plain; charset=utf-8') => {
 
 /**
  * Connect middleware serving `KERF_UI_EDITOR_FILE_API` over `root`: GET reads
- * a document, PUT writes one (creating folders). Writes need the
+ * a document, PUT writes one (creating folders). GET
+ * `KERF_UI_EDITOR_LIST_API` lists the project's documents. Writes need the
  * `KERF_UI_EDITOR_HEADER` header, which a cross-site page cannot send without
  * a preflight this middleware never answers. The drafts folder ignores
  * itself in git.
@@ -114,6 +146,27 @@ const send = (response, status, body, type = 'text/plain; charset=utf-8') => {
 export function editorFileMiddleware(root) {
   return async (request, response, next) => {
     const url = new URL(request.url ?? '/', 'http://localhost');
+    if (url.pathname === KERF_UI_EDITOR_LIST_API) {
+      if (request.method !== 'GET') {
+        send(response, 405, 'Use GET.');
+        return;
+      }
+      try {
+        send(
+          response,
+          200,
+          JSON.stringify(await editorDocuments(root)),
+          'application/json',
+        );
+      } catch (error) {
+        send(
+          response,
+          500,
+          error instanceof Error ? error.message : String(error),
+        );
+      }
+      return;
+    }
     if (url.pathname !== KERF_UI_EDITOR_FILE_API) {
       next();
       return;

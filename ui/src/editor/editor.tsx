@@ -304,6 +304,12 @@ import {
   matchIcons,
 } from './model/icons.js';
 import {
+  filterDocuments,
+  insertableDocuments,
+  insertedView,
+  insertProblem,
+} from './model/insert-view.js';
+import {
   formatValue,
   groupedProps,
   type InspectorProp,
@@ -557,6 +563,15 @@ const EMBED_ACTION = 'editor-embed';
 const EMBED_OTHER_ACTION = 'editor-embed-other';
 const EMBED_CLEAR_ACTION = 'editor-embed-clear';
 const EMBED_DIALOG = 'editor-embed-dialog';
+/**
+ * KF-PX5EVZ: Add a child's choice that inserts an existing document as a
+ * `#view`, and its dialog: a filtered pick list when the storage lists the
+ * project's documents, a path field when it does not.
+ */
+const INSERT_DOCUMENT = '#view';
+const INSERT_DOCUMENT_ACTION = 'editor-insert-document';
+const INSERT_DOCUMENT_CLEAR_ACTION = 'editor-insert-document-clear';
+const INSERT_DOCUMENT_DIALOG = 'editor-insert-document-dialog';
 /** The node context menu's root (KF-JV7XW1). */
 const CONTEXT_MENU = 'data-editor-context-menu';
 // The node context menu's commands have actions of their own, so a page
@@ -924,6 +939,7 @@ export function emptyDocument(): ViewDocument {
 export {
   devServerStorage,
   EDITOR_FILE_API,
+  EDITOR_LIST_API,
   type EditorStorage,
 } from './autosave.js';
 export {
@@ -1312,6 +1328,20 @@ export function createEditor(options: EditorOptions) {
   const embedTarget = signal<string | null>(null);
   const embedQuery = signal('');
   const embedQueryRevision = signal(0);
+  /**
+   * KF-PX5EVZ: where Insert Document puts the `#view` (the node and zone Add
+   * a child had chosen), the documents it offers as their listing stands,
+   * its filter, and why the last insert failed.
+   */
+  const insertTarget = signal<{ id: string; zone: string } | null>(null);
+  const insertFiles = signal<
+    | { readonly state: 'loading' }
+    | { readonly state: 'loaded'; readonly paths: readonly string[] }
+    | { readonly state: 'failed'; readonly error: string }
+  >({ state: 'loading' });
+  const insertQuery = signal('');
+  const insertQueryRevision = signal(0);
+  const insertError = signal('');
   /** Every Lucide icon's document name, listed on first use. */
   let allIcons: readonly string[] | undefined;
   let allAliases: ReadonlyMap<string, readonly string[]> | undefined;
@@ -4296,6 +4326,16 @@ export function createEditor(options: EditorOptions) {
       ...(takesText
         ? [{ value: TEXT_RUN, label: 'Text run', group: 'Text' }]
         : []),
+      // KF-PX5EVZ: a composed document, which storage reads.
+      ...(autosave
+        ? [
+            {
+              value: INSERT_DOCUMENT,
+              label: 'Existing document…',
+              group: 'Documents',
+            },
+          ]
+        : []),
     ];
     // What can show otherwise: what the zone holding this node accepts.
     const parent = findNode(doc.value, node.id)?.ancestors.at(-1);
@@ -4936,6 +4976,213 @@ export function createEditor(options: EditorOptions) {
   };
 
   /**
+   * KF-PX5EVZ: Insert Document. With a storage that lists the project's
+   * documents, a filter over them and a pick list; without one, a path.
+   */
+  const insertDialog = () => {
+    const listed = Boolean(options.storage!.list);
+    const files = insertFiles.value;
+    const paths =
+      files.state === 'loaded'
+        ? filterDocuments(files.paths, insertQuery.value)
+        : [];
+    const picker =
+      files.state === 'loading' ? (
+        <ListInsetText>
+          <Text tone="quiet">Listing the project’s documents…</Text>
+        </ListInsetText>
+      ) : files.state === 'failed' ? (
+        <EmptyState
+          title="The documents could not be listed"
+          detail={files.error}
+        />
+      ) : !files.paths.length ? (
+        <EmptyState
+          title="No other documents"
+          detail="The project has no other .kui.json document to insert."
+        />
+      ) : paths.length ? (
+        <List>
+          {paths.map((path) => (
+            // The file name leads, so a long folder cannot truncate it away;
+            // the whole path names the row and shows on hover.
+            <ListItem
+              label={path.slice(path.lastIndexOf('/') + 1)}
+              description={path.slice(0, path.lastIndexOf('/') + 1) || './'}
+              accessibleLabel={path}
+              title={path}
+              action={INSERT_DOCUMENT_ACTION}
+              rootAttributes={{ 'data-editor-insert-document': path }}
+            />
+          ))}
+        </List>
+      ) : (
+        <EmptyState
+          title="No matching document"
+          detail="No document’s path holds that text."
+        />
+      );
+    return (
+      <DialogSurface
+        id={INSERT_DOCUMENT_DIALOG}
+        label="Insert Document"
+        size={listed ? 'medium' : 'small'}
+        rootAttributes={{ 'data-key': INSERT_DOCUMENT_DIALOG }}
+        footer={
+          <>
+            <Button rootAttributes={{ 'data-dialog-close': '' }}>Cancel</Button>
+            {listed ? undefined : (
+              <Button
+                tone="brand"
+                action={INSERT_DOCUMENT_ACTION}
+                rootAttributes={{ 'data-editor-insert-document': 'confirm' }}
+              >
+                Insert
+              </Button>
+            )}
+          </>
+        }
+      >
+        {listed ? (
+          <>
+            <List controlInsets="trbl" gap>
+              <SearchField
+                id="editor-insert-document-search"
+                label="Filter Documents"
+                placeholder="Filter documents"
+                query={insertQuery.value}
+                revision={insertQueryRevision.value}
+                clearAction={INSERT_DOCUMENT_CLEAR_ACTION}
+                clearLabel="Clear Filter"
+                editorAttributes={{ 'data-editor-insert-document-search': '' }}
+              />
+              {insertError.value ? (
+                <StateBanner
+                  tone="danger"
+                  title="That document cannot be inserted"
+                  detail={insertError.value}
+                  rootAttributes={{ 'data-editor-insert-document-error': '' }}
+                />
+              ) : undefined}
+            </List>
+            {picker}
+          </>
+        ) : (
+          <TextField
+            label="Path"
+            name="path"
+            value=""
+            hint="A .kui.json document inside the project. This document shows it through a #view."
+            error={insertError.value || undefined}
+            spellcheck={false}
+            autocapitalize="off"
+            autocorrect="off"
+            rootAttributes={{ 'data-editor-insert-document': 'path' }}
+          />
+        )}
+      </DialogSurface>
+    );
+  };
+
+  /** Opens Insert Document for zone `zone` of node `id`. */
+  const openInsertDialog = (id: string, zone: string) => {
+    const root = wired!;
+    const storage = options.storage!;
+    const dialog = root.querySelector<HTMLDialogElement>(
+      `#${INSERT_DOCUMENT_DIALOG}`,
+    )!;
+    insertTarget.value = { id, zone };
+    insertError.value = '';
+    insertQuery.value = '';
+    insertQueryRevision.value += 1;
+    if (!storage.list) {
+      dialog.querySelector<HTMLInputElement>(
+        '[data-editor-insert-document="path"] input',
+      )!.value = '';
+      openDialog(dialog);
+      return;
+    }
+    // Only this opening's listing answers; a later opening replaces it.
+    const loading = { state: 'loading' } as const;
+    insertFiles.value = loading;
+    const current = autosave!.path.peek();
+    void storage.list().then(
+      (paths) => {
+        if (insertFiles.peek() === loading)
+          insertFiles.value = {
+            state: 'loaded',
+            paths: insertableDocuments(paths, current),
+          };
+      },
+      (error: unknown) => {
+        if (insertFiles.peek() === loading)
+          insertFiles.value = {
+            state: 'failed',
+            error: error instanceof Error ? error.message : String(error),
+          };
+      },
+    );
+    openDialog(dialog);
+    root
+      .querySelector<HTMLElement>('[data-editor-insert-document-search]')!
+      .focus();
+  };
+
+  /**
+   * KF-PX5EVZ: reads the document at `given`, then puts a `#view` of it in
+   * the chosen zone as one undoable edit, selected, with the document
+   * already loaded so the canvas shows it at once.
+   */
+  const insertDocument = async (dialog: HTMLDialogElement, given: string) => {
+    const storage = options.storage!;
+    const target = insertTarget.peek()!;
+    const from = autosave!.path.peek();
+    const path = viewPath('', given.trim());
+    const fail = (message: string) => {
+      insertError.value = message;
+    };
+    if (!path?.endsWith('.kui.json') || isDraft(path))
+      return fail(
+        'Name a .kui.json file inside the project, outside the drafts folder.',
+      );
+    if (path === from) return fail('That is this document’s own file.');
+    const before = doc.peek();
+    let text: string | undefined;
+    try {
+      text = await storage.read(path);
+    } catch (error) {
+      return fail(error instanceof Error ? error.message : String(error));
+    }
+    if (text === undefined) return fail(`There is no ${path}.`);
+    const parsed = parseDocument(text);
+    if (!parsed.ok) return fail(parsed.error);
+    const problem = insertProblem(parsed.document);
+    if (problem) return fail(problem);
+    if (doc.peek() !== before)
+      return fail('The document changed meanwhile; insert it again.');
+    const node = insertedView(newNodeId(), from, path, parsed.document);
+    // A content prop holds text or nodes, never both (KF-YR91FA). Add a
+    // child offers zones only on a cataloged component.
+    const parent = findNode(before, target.id)!.node;
+    const base = propsByKey
+      .get(parent.type)!
+      .props.some((prop) => prop.name === target.zone && prop.slot)
+      ? textToNodes(before, target.id, target.zone)
+      : before;
+    batch(() => {
+      viewLoads.value = new Map(viewLoads.peek()).set(path, {
+        state: 'loaded',
+        document: parsed.document,
+      });
+      commit(insertNode(base, target.id, target.zone, node));
+      select({ kind: 'node', id: node.id });
+      inspectorArea.value = 'properties';
+      insertTarget.value = null;
+    });
+    closeDialog(dialog);
+  };
+
+  /**
    * KF-60BEEJ: play mode's play bar and stage (docs/26-ui-editor.md §11.1).
    * The stage's iframe loads this page as a play page, which asks for the
    * document once it listens (wirePlay).
@@ -5086,6 +5333,7 @@ export function createEditor(options: EditorOptions) {
           {fieldDialog()}
           {iconDialog()}
           {embedDialog()}
+          {autosave ? insertDialog() : undefined}
           {replaceDialog()}
           <List flex>
             <Workbench
@@ -5855,6 +6103,10 @@ export function createEditor(options: EditorOptions) {
     const key =
       chosen?.key ??
       (picker ? String(controlValue(picker)) : addComponent.value);
+    if (zone && key === INSERT_DOCUMENT) {
+      openInsertDialog(id, zone);
+      return;
+    }
     const component = propsByKey.get(key);
     if (!zone || (!component && key !== TEXT_RUN)) return;
     // A content prop holds text or nodes, never both: a child added to a
@@ -6693,6 +6945,14 @@ export function createEditor(options: EditorOptions) {
       delegate<HTMLElement>(
         root,
         'input',
+        '[data-editor-insert-document-search]',
+        (_event, editor) => {
+          insertQuery.value = readSearchField(editor).query;
+        },
+      ),
+      delegate<HTMLElement>(
+        root,
+        'input',
         '[data-editor-icon-search]',
         (_event, editor) => {
           iconQuery.value = readSearchField(editor).query;
@@ -6880,6 +7140,28 @@ export function createEditor(options: EditorOptions) {
           canvasViews.value = next;
         },
         [EMBED_OTHER_ACTION]: () => openEmbedDialog(root),
+        // KF-PX5EVZ: a picked document, or the path field's Insert.
+        [INSERT_DOCUMENT_ACTION]: (_event, target) => {
+          const dialog = root.querySelector<HTMLDialogElement>(
+            `#${INSERT_DOCUMENT_DIALOG}`,
+          )!;
+          const picked = target.dataset.editorInsertDocument!;
+          void insertDocument(
+            dialog,
+            picked === 'confirm'
+              ? dialog.querySelector<HTMLInputElement>(
+                  '[data-editor-insert-document="path"] input',
+                )!.value
+              : picked,
+          );
+        },
+        [INSERT_DOCUMENT_CLEAR_ACTION]: () => {
+          insertQuery.value = '';
+          insertQueryRevision.value += 1;
+          root
+            .querySelector<HTMLElement>('[data-editor-insert-document-search]')!
+            .focus();
+        },
         [EMBED_CLEAR_ACTION]: () => {
           embedQuery.value = '';
           embedQueryRevision.value += 1;

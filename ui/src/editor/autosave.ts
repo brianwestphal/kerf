@@ -9,10 +9,18 @@ export interface EditorStorage {
   /** The document's text, or undefined when there is none at `path`. */
   read(path: string): Promise<string | undefined>;
   write(path: string, text: string): Promise<void>;
+  /**
+   * KF-PX5EVZ: the project's documents, as project-relative POSIX paths of
+   * `.kui.json` files. Optional: without it the editor asks for a path where
+   * it would offer a picker.
+   */
+  list?(): Promise<readonly string[]>;
 }
 
 /** Where the dev server's file middleware answers. */
 export const EDITOR_FILE_API = '/__kerf-ui-editor/api/file';
+/** Where the dev server lists the project's documents (KF-PX5EVZ). */
+export const EDITOR_LIST_API = '/__kerf-ui-editor/api/files';
 /** Where unsaved documents autosave. */
 export const DRAFTS_FOLDER = '.kerf-ui-editor/drafts/';
 
@@ -23,7 +31,10 @@ export const isDraft = (path: string) => path.startsWith(DRAFTS_FOLDER);
 export const draftPath = (id: string) => `${DRAFTS_FOLDER}${id}.kui.json`;
 
 /** Storage over the dev server that hosts the editor. */
-export function devServerStorage(api = EDITOR_FILE_API): EditorStorage {
+export function devServerStorage(
+  api = EDITOR_FILE_API,
+  listApi = EDITOR_LIST_API,
+): EditorStorage {
   const url = (path: string) => `${api}?path=${encodeURIComponent(path)}`;
   const failure = async (response: Response) =>
     new Error((await response.text()) || response.statusText);
@@ -46,6 +57,11 @@ export function devServerStorage(api = EDITOR_FILE_API): EditorStorage {
         keepalive: true,
       });
       if (!response.ok) throw await failure(response);
+    },
+    async list() {
+      const response = await globalThis.fetch(listApi);
+      if (!response.ok) throw await failure(response);
+      return (await response.json()) as string[];
     },
   };
 }

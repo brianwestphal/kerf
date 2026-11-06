@@ -4,6 +4,7 @@
 // only a write that carries the editor's header; drafts ignore themselves.
 import {
   existsSync,
+  mkdirSync,
   mkdtempSync,
   readdirSync,
   readFileSync,
@@ -16,9 +17,11 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
+  editorDocuments,
   editorFileMiddleware,
   editorFilePath,
   KERF_UI_EDITOR_FILE_API,
+  KERF_UI_EDITOR_LIST_API,
 } from '../../vite-editor.mjs';
 
 let root: string;
@@ -128,5 +131,59 @@ describe('editorFileMiddleware', () => {
     expect(failed.response.body).toMatch(/EEXIST|ENOTDIR/);
     const other = await call('GET', null, { url: '/src/main.ts' });
     expect(other.next).toHaveBeenCalled();
+  });
+});
+
+// KF-PX5EVZ: the editor's Insert Document picker lists the project's
+// documents through the dev server.
+describe('editorDocuments and the list endpoint', () => {
+  const file = (path: string) => {
+    mkdirSync(join(root, path, '..'), { recursive: true });
+    writeFileSync(join(root, path), '{}');
+  };
+
+  it('lists .kui.json files as sorted POSIX paths, skipping build and dot folders', async () => {
+    for (const path of [
+      'views/row.kui.json',
+      'app.kui.json',
+      'views/nested/deep.kui.json',
+      'views/notes.json',
+      'node_modules/pkg/a.kui.json',
+      '.git/b.kui.json',
+      '.kerf-ui-editor/drafts/c.kui.json',
+      '.hidden/d.kui.json',
+      'dist/e.kui.json',
+      'test-results/f.kui.json',
+      'src/dist-like/g.kui.json',
+    ])
+      file(path);
+    expect(await editorDocuments(root)).toEqual([
+      'app.kui.json',
+      'src/dist-like/g.kui.json',
+      'views/nested/deep.kui.json',
+      'views/row.kui.json',
+    ]);
+    expect(await editorDocuments(root, 2)).toEqual([
+      'app.kui.json',
+      'src/dist-like/g.kui.json',
+    ]);
+  });
+
+  it('answers GET with a JSON array and refuses other methods', async () => {
+    file('views/row.kui.json');
+    const get = await call('GET', null, { url: KERF_UI_EDITOR_LIST_API });
+    expect(get.response.statusCode).toBe(200);
+    expect(get.response.headers['Content-Type']).toBe('application/json');
+    expect(JSON.parse(get.response.body)).toEqual(['views/row.kui.json']);
+    expect(get.next).not.toHaveBeenCalled();
+    const put = await call('PUT', null, { url: KERF_UI_EDITOR_LIST_API });
+    expect(put.response.statusCode).toBe(405);
+  });
+
+  it('reports a listing that fails', async () => {
+    rmSync(root, { recursive: true, force: true });
+    const get = await call('GET', null, { url: KERF_UI_EDITOR_LIST_API });
+    expect(get.response.statusCode).toBe(500);
+    expect(get.response.body).toMatch(/ENOENT/);
   });
 });
