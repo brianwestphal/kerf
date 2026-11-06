@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 461400,
-  "measuredLargestJavaScriptGzip": 164545,
-  "measuredTotalJavaScriptGzip": 461318,
+  "totalJavaScriptGzip": 461500,
+  "measuredLargestJavaScriptGzip": 164549,
+  "measuredTotalJavaScriptGzip": 461491,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7011,6 +7011,22 @@
         "measuredTotalJavaScriptGzip": 461318,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 461400
+      }
+    },
+    {
+      "at": "2026-11-06T19:54:44.458Z",
+      "reason": "KF-K3TXCT adds the Toolbar wrap-groups catalog example (Leading Groups Wrap), +0.09 kB gzip",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 461318,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 461400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164549,
+        "measuredTotalJavaScriptGzip": 461491,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 461500
       }
     }
   ]
