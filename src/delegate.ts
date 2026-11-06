@@ -105,7 +105,7 @@ interface Registered {
 }
 
 interface Snapshotted {
-  [KEY]?: Map<Resolve, (() => void) | undefined>;
+  [KEY]?: [EventTarget[], Map<Resolve, (() => void) | undefined>];
 }
 
 /**
@@ -135,10 +135,16 @@ interface Snapshotted {
  *
  * A missing entry (a re-dispatch of the same event object, a delegate added
  * mid-dispatch, or a root hidden from the first listener by a closed shadow
- * boundary) takes a fresh snapshot. Accepted residuals: a same-path
- * re-dispatch after a stopped dispatch can reuse an unconsumed entry if all
- * earlier kerf listeners were disposed, and a closed shadow boundary can
- * hide delegates from the first listener's path view. See docs/5 §5.2.1.
+ * boundary) takes a fresh snapshot, and so does a snapshot recorded on a
+ * different propagation path: a stopped dispatch leaves entries unconsumed,
+ * and the same event object re-dispatched on another target (or after its
+ * target moved) must not consume them (KF-50DWVS: a re-dispatched stopped
+ * event could hand a later listener its stale entry). A same-path re-dispatch
+ * re-resolves at its first kerf listener, whose entry the first dispatch
+ * already consumed. Accepted residuals: a same-path re-dispatch after a
+ * stopped dispatch can reuse an unconsumed entry if all earlier kerf
+ * listeners were disposed, and a closed shadow boundary can hide delegates
+ * from the first listener's path view. See docs/5 §5.2.1.
  * Internal — exported for `kerfjs/actions`.
  */
 export function _delegate(
@@ -174,10 +180,18 @@ export function _delegate(
     return undefined;
   };
   const listener = (event: Event): void => {
-    let snap = (event as Snapshotted)[KEY];
-    if (!snap?.has(resolve)) {
-      snap = (event as Snapshotted)[KEY] = new Map();
-      for (const node of event.composedPath()) {
+    const path = event.composedPath();
+    let [prior, snap] = (event as Snapshotted)[KEY] ?? [];
+    // A missing entry, or a snapshot taken on another propagation path (the
+    // same event object re-dispatched after a stopped dispatch left entries
+    // unconsumed), resolves afresh.
+    if (
+      !snap?.has(resolve) ||
+      path.some((node, i) => node !== prior![i]) ||
+      prior![path.length]
+    ) {
+      (event as Snapshotted)[KEY] = [path, (snap = new Map())];
+      for (const node of path) {
         for (const other of (node as Registered)[KEY] ?? []) {
           snap.set(other, other(event));
         }

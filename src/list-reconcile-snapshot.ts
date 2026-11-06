@@ -35,7 +35,7 @@ import {
 import { getNodeKey } from './morph.js';
 import type { ListSegment } from './segment.js';
 import { moveNode } from './utils/moveNode.js';
-import { parseRowTemplate, rowContractError } from './utils/row-contract.js';
+import { parseRows } from './utils/row-contract.js';
 
 interface Classification {
   newRecord: BoundItem[];
@@ -235,53 +235,15 @@ function buildFreshNodes(
   liveParent: Element,
 ): void {
   if (freshHtmls.length === 0) return;
-  const { content, count } = parseRowTemplate(freshHtmls.join(''), liveParent);
-  if (count !== freshHtmls.length) {
-    throw findOffendingRow(newRecord, freshIndices, freshHtmls, liveParent);
-  }
-  // After the count check above, we know the fragment's `children.length`
-  // equals `freshIndices.length`, so the walk below always finds an element
-  // for every index. No defensive null-guard needed.
-  let node = content.firstElementChild;
-  for (const idx of freshIndices) {
-    const next = (node as Element).nextElementSibling;
+  const rows = parseRows(freshHtmls, liveParent, (i) => freshIndices[i]);
+  freshIndices.forEach((idx, k) => {
     const item = newRecord[idx];
-    item.node = node as Element;
+    item.node = rows[k];
     // KF-294: wire this fresh row's fine-grained bindings to its new node.
     if (item.bindings !== undefined && item.bindings.length > 0) {
       item.bindingDisposers = wireRowBindings(item.node, item.bindings);
     }
-    node = next;
-  }
-}
-
-/**
- * Walk per-row to find the offending row that violated the contract,
- * returning a precise error to throw. Only invoked when the bulk parse
- * detected a count mismatch — the success path is one parse with no
- * per-row work.
- */
-function findOffendingRow(
-  newRecord: BoundItem[],
-  freshIndices: number[],
-  freshHtmls: string[],
-  liveParent: Element,
-): Error {
-  for (let i = 0; i < freshHtmls.length; i++) {
-    // Parse in the live parent's namespace so the per-row count matches the bulk
-    // parse (KF-420) — a namespace mismatch would otherwise miss the offender.
-    if (parseRowTemplate(freshHtmls[i], liveParent).count !== 1) {
-      return rowContractError(
-        freshIndices[i],
-        newRecord[freshIndices[i]].html,
-        liveParent,
-      );
-    }
-  }
-  /* c8 ignore next 2 — unreachable: bulk mismatch ⇒ at least one row violates. */
-  return new Error(
-    'each(): bulk-parse mismatch with no per-row offender (kerf bug).',
-  );
+  });
 }
 
 /**

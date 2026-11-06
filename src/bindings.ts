@@ -536,8 +536,12 @@ function isSafeHtmlValue(v: unknown): v is { __html: string } {
   );
 }
 
-/** Coerce a bound text value: nullish + boolean render nothing (React-style). */
-function coerceText(value: unknown): string {
+/**
+ * Coerce a bound text value or a non-`SafeHtml` `mount()` render result:
+ * nullish + boolean render nothing (React-style, so `{cond && <jsx/>}` works),
+ * everything else is stringified. Shared with `mount.ts`.
+ */
+export function coerceText(value: unknown): string {
   if (value == null || typeof value === 'boolean') return '';
   return String(value);
 }

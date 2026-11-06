@@ -185,15 +185,27 @@ let context: RenderContext | null = null;
  */
 let renderingRow = false;
 
-/** Run `fn` marked as row-render scope, restoring the previous scope after. */
-function inRowScope<R>(fn: () => R): R {
-  const prev = renderingRow;
-  renderingRow = true;
-  try {
-    return fn();
-  } finally {
-    renderingRow = prev;
-  }
+/**
+ * Render one row marked as row-render scope (restoring the previous scope
+ * after), capturing its fine-grained bindings (KF-294: signals in row attrs /
+ * text, which both reconcilers wire to the row node on create and dispose on
+ * remove) alongside its HTML.
+ */
+function renderRow<T>(
+  render: (item: T, index: number) => SafeHtml | string,
+  item: T,
+  index: number,
+): { html: string; bindings: Binding[] } {
+  return captureRowBindings(() => {
+    const prev = renderingRow;
+    renderingRow = true;
+    try {
+      const out = render(item, index);
+      return isSafeHtml(out) ? out.toString() : out;
+    } finally {
+      renderingRow = prev;
+    }
+  });
 }
 
 export function _setRenderContext(c: RenderContext | null): void {
@@ -291,7 +303,13 @@ function assertValidKey(key: string): void {
   }
 }
 
-function claimKey(ctx: RenderContext, key: string): string {
+/**
+ * The list's id: a keyed list takes its identity from the key and does NOT
+ * consume a call-order slot — so keying a conditional list also stops it
+ * shifting its unkeyed siblings when it appears or disappears.
+ */
+function listId(ctx: RenderContext, key: string | undefined): string {
+  if (key === undefined) return String(ctx.counter++);
   assertValidKey(key);
   if (renderingRow) {
     // KF-398: every row claims the same key, so this used to surface as
@@ -359,18 +377,7 @@ function eachSnapshot<T extends object>(
   cacheKey: ((item: T, index: number) => unknown) | undefined,
   listKey: string | undefined,
 ): SafeHtml {
-  let id: string;
-  if (context !== null) {
-    // A keyed list takes its identity from the key and does NOT consume a
-    // call-order slot — so keying a conditional list also stops it shifting
-    // its unkeyed siblings when it appears or disappears.
-    id =
-      listKey !== undefined
-        ? claimKey(context, listKey)
-        : String(context.counter++);
-  } else {
-    id = 'orphan';
-  }
+  const id = context !== null ? listId(context, listKey) : 'orphan';
   return eachSnapshotById(items, render, cacheKey, id);
 }
 
@@ -468,9 +475,8 @@ function eachGranular<T extends object>(
   // We're inside a mount context (caller-checked).
   const ctx = context as RenderContext;
   // Keyed lists are identified by their key and skip the call-order counter
-  // (see eachSnapshot for why that also helps unkeyed siblings).
-  const id =
-    listKey !== undefined ? claimKey(ctx, listKey) : String(ctx.counter++);
+  // (see listId for why that also helps unkeyed siblings).
+  const id = listId(ctx, listKey);
   // KF-336: dispatch through the reified state machine (`list-render-state.ts`
   // holds the transition table). The state derives from the count `mount()`
   // recorded after this list's last successful reconcile; the patch queue is
@@ -590,16 +596,6 @@ function eachGranular<T extends object>(
   // KF-294: capture each insert/update row's fine-grained bindings (signals
   // in row attrs/text) so the granular reconciler can wire them to the fresh
   // row node and dispose them on removal — same lifecycle as the snapshot path.
-  const renderRow = (
-    item: object,
-    index: number,
-  ): { html: string; bindings: Binding[] } =>
-    captureRowBindings(() =>
-      inRowScope(() => {
-        const out = render(item as T, index);
-        return isSafeHtml(out) ? out.toString() : out;
-      }),
-    );
   const internalPatches = new Array<ArrayPatchInternal>(patches.length);
   // KF-414: the per-item HTML memo. The granular path renders fresh HTML for
   // each insert/update below; it must write that back into the memo too, or a
@@ -622,7 +618,7 @@ function eachGranular<T extends object>(
         // primitive item already flows (its `cache.set` TypeError takes the same
         // route) and giving the same message at the same moment.
         assertObjectItem(p.item, p.index);
-        const { html, bindings } = renderRow(p.item as object, p.index);
+        const { html, bindings } = renderRow(render, p.item as T, p.index);
         internalPatches[i] = {
           type: p.type,
           index: p.index,
@@ -731,12 +727,7 @@ function eachSnapshotById<T extends object>(
       // / text). The snapshot reconciler wires them to the row node on create
       // and disposes on remove, so a bound signal updates the row without a
       // render re-run. Cached by row identity alongside the html.
-      const captured = captureRowBindings(() =>
-        inRowScope(() => {
-          const out = render(item, i);
-          return isSafeHtml(out) ? out.toString() : out;
-        }),
-      );
+      const captured = renderRow(render, item, i);
       html = captured.html;
       bindings = captured.bindings;
       if (cache !== null)

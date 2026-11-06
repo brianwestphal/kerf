@@ -142,13 +142,7 @@ export function morph(
  * Underscore-prefixed export (not part of the public API surface). Public
  * callers should use `morph(liveRoot, template)`.
  */
-export function _morphElement(
-  fromEl: Element,
-  toEl: Element,
-  ownedItems: ReadonlySet<Element> = EMPTY_OWNED,
-): void {
-  morphElement(fromEl, toEl, ownedItems);
-}
+export { morphElement as _morphElement };
 
 function isElementNode(t: Element | SafeHtml | string): t is Element {
   return (
@@ -431,12 +425,7 @@ function morphChildren(
     //    travels WITH its whole row region: moving it alone would let a later
     //    template sibling (a trailing <button>, say) match ahead of the rows
     //    and wedge itself between the anchor and the rows it anchors.
-    if (
-      matched === null &&
-      fromChild !== null &&
-      toChild.nodeType === COMMENT_NODE &&
-      (toChild as Comment).data.startsWith(LIST_MARKER_PREFIX)
-    ) {
+    if (matched === null && fromChild !== null && isListMarker(toChild)) {
       const wantData = (toChild as Comment).data;
       for (
         let scan: Node | null = fromChild.nextSibling;
@@ -537,7 +526,7 @@ function morphNode(
 function morphElement(
   fromEl: Element,
   toEl: Element,
-  ownedItems: ReadonlySet<Element>,
+  ownedItems: ReadonlySet<Element> = EMPTY_OWNED,
 ): void {
   if (fromEl.tagName !== toEl.tagName) {
     const replacement = toEl.cloneNode(true) as Element;
@@ -553,7 +542,7 @@ function morphElement(
   if (fromEl === document.activeElement) {
     const ce = fromEl.getAttribute('contenteditable');
     if (ce !== null && ce.toLowerCase() !== 'false') return;
-    if (isTextInputOrTextarea(fromEl)) preserveTextEntryState(fromEl, toEl);
+    preserveTextEntryState(fromEl, toEl);
   }
   morphAttributes(fromEl, toEl);
   // 4. Subtree-only skip (KF-152) — attributes have already morphed; leave
@@ -653,25 +642,20 @@ function morphAttributes(fromEl: Element, toEl: Element): void {
   if (fromTag.includes('-')) host[RENDERED_ATTRS] = toEl.getAttributeNames();
 }
 
-function isTextInputOrTextarea(el: Element): boolean {
-  if (el.tagName === 'TEXTAREA') return true;
-  if (el.tagName === 'INPUT') {
-    const type = (el as HTMLInputElement).type;
-    return (
-      type === 'text' ||
-      type === 'search' ||
-      type === 'url' ||
-      type === 'email' ||
-      type === 'tel' ||
-      type === 'password' ||
-      type === ''
-    );
-  }
-  return false;
-}
-
+/**
+ * A focused text-entry control (a `<textarea>` or a text-like `<input>`)
+ * keeps the user's in-progress value and caret: copy them onto the template
+ * so the attribute + child morph below carries them instead of the stale
+ * template value.
+ */
 function preserveTextEntryState(fromEl: Element, toEl: Element): void {
-  if (fromEl.tagName === 'TEXTAREA' || fromEl.tagName === 'INPUT') {
+  if (
+    fromEl.tagName === 'TEXTAREA' ||
+    (fromEl.tagName === 'INPUT' &&
+      /^(text|search|url|email|tel|password|)$/.test(
+        (fromEl as HTMLInputElement).type,
+      ))
+  ) {
     const fromInput = fromEl as HTMLInputElement;
     const toInput = toEl as HTMLInputElement;
     toInput.value = fromInput.value;

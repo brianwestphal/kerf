@@ -135,7 +135,7 @@ Every `delegate()` / `delegateCapture()` / `delegateActions()` listener therefor
 - A handler that **removes** the matched element from the root still suppresses later delegates for that element, as before.
 - The handler receives the live element. Attributes you read inside the handler are the current ones, so a later handler reading `el.dataset.id` after an earlier handler re-rendered sees the re-rendered value.
 
-This holds across capture and bubble phases, nested roots (a delegate on `document.body` and one on the mount root), `each()` rows, and `stopImmediatePropagation()` (a stopped listener still stops the rest). A nested dispatch — a handler that calls `other.click()` — gets its own snapshot. `mount()` stays synchronous: code after a signal write inside a handler still sees the updated DOM (`editing.value = true; root.querySelector('input')!.focus()` keeps working).
+This holds across capture and bubble phases, nested roots (a delegate on `document.body` and one on the mount root), `each()` rows, and `stopImmediatePropagation()` (a stopped listener still stops the rest). A nested dispatch — a handler that calls `other.click()` — gets its own snapshot. Re-dispatching the same event object resolves against the DOM of the new dispatch, even when its first dispatch was stopped part-way. `mount()` stays synchronous: code after a signal write inside a handler still sees the updated DOM (`editing.value = true; root.querySelector('input')!.focus()` keeps working).
 
 You no longer need to wrap the new state in a distinct element (for example `<div role="group">`) to force the morph to replace nodes rather than recycle them.
 

@@ -101,3 +101,28 @@ for (const style of ['delegate', 'actions'] as const) {
     expect(final.confirming).toBe(false);
   });
 }
+
+test('re-dispatching a stopped event object on another target resolves against the new dispatch (KF-50DWVS: a later delegate could consume a stale snapshot entry)', async ({
+  page,
+}) => {
+  const hits = await page.evaluate(() => {
+    const { delegate } = (window as any).kerf;
+    const root = document.getElementById('root')!;
+    root.innerHTML =
+      '<div class="zone-a"><button class="a">a</button></div>' +
+      '<div class="zone-b"><button class="b">b</button></div>';
+    const out: string[] = [];
+    delegate(root.querySelector('.zone-a'), 'click', 'button', (e: Event) => {
+      out.push('stop');
+      e.stopPropagation();
+    });
+    delegate(root, 'click', 'button', (_e: Event, el: Element) =>
+      out.push(el.className),
+    );
+    const ev = new MouseEvent('click', { bubbles: true });
+    root.querySelector('.a')!.dispatchEvent(ev);
+    root.querySelector('.b')!.dispatchEvent(ev);
+    return out;
+  });
+  expect(hits).toEqual(['stop', 'b']);
+});

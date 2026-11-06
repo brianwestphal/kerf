@@ -24,7 +24,7 @@ import {
   type Segment,
 } from './segment.js';
 import { isOverlayHost } from './utils/overlay-host.js';
-import { parseRowTemplate, rowContractError } from './utils/row-contract.js';
+import { parseSingleRow } from './utils/row-contract.js';
 
 /**
  * KF-411: did the morph rebuild a list's container whose `each()` emitted a
@@ -208,8 +208,7 @@ function validateInlinedRowMatch(
   // case-sensitive, then rejected a perfectly good list. The everyday trigger
   // was an apostrophe in any attribute (kerf emits `&#39;`, serializers emit
   // `'`), which is what makes the outerHTML compare miss and reach here at all.
-  const { content, count } = parseRowTemplate(expectedHtml, liveParent);
-  if (count !== 1) throw rowContractError(index, expectedHtml, liveParent);
+  const expected = parseSingleRow(expectedHtml, index, liveParent);
   // KF-391: single-root, but is it the SAME root? The HTML parser restructures
   // some markup — most commonly `<tr>` directly under `<table>`, where it
   // inserts an implicit `<tbody>` around the whole row run. The binding walk
@@ -219,7 +218,7 @@ function validateInlinedRowMatch(
   // tags catches it: this is the same "the parse can't line up one row per
   // element" class the row contract exists to reject, so reject it loudly
   // rather than binding to the wrong node.
-  const expectedTag = (content.firstElementChild as Element).tagName;
+  const expectedTag = expected.tagName;
   if (boundEl.tagName !== expectedTag)
     throw rowStructureError(index, boundEl.tagName, expectedTag);
 }

@@ -54,7 +54,7 @@ describe('Audit gap coverage', () => {
     it('error message pinpoints which row violates when earlier rows are valid', () => {
       // Subsequent-render path: bulk-update / bulk-insert / fresh classify
       // walks all rows; the false-branch (count === 1, valid row) must run
-      // before the loop reaches the offending row. Verifies findOffendingRow
+      // before the loop reaches the offending row. Verifies parseRows' per-row offender search
       // skips valid rows correctly.
       const items = signal<{ id: number }[]>([{ id: 0 }]);
       mount(root, () => (
@@ -88,7 +88,7 @@ describe('Audit gap coverage', () => {
           )}
         </ul>
       ));
-      // Three contiguous inserts: 1 and 2 valid, 3 multi-root. findOffendingInsert
+      // Three contiguous inserts: 1 and 2 valid, 3 multi-root. parseRows' per-row offender search
       // walks them in order — the false branch (count === 1) fires for indices
       // 1 and 2 before the throw at index 3.
       expect(() => {
@@ -144,7 +144,7 @@ describe('Audit gap coverage', () => {
 
     it('long row HTML in the error is truncated (subsequent reconcile path)', () => {
       // Exercises rowContractError's `html.length > 120` ternary via the
-      // findOffendingRow path (not validateInlinedRowMatch).
+      // parseRows offender path (not validateInlinedRowMatch).
       const longHtml = '<li>' + 'x'.repeat(150) + '</li><li>extra</li>';
       const items = signal<{ id: number }[]>([]);
       mount(root, () => (

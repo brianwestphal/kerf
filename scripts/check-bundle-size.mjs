@@ -85,7 +85,11 @@ const BUDGETS = [
     // written before their attributes (WebKit's change baseline), and each()'s
     // duplicate-reference error says an arraySignal duplicate likely came
     // from an earlier push/insert/update.
-    budgetKb: 15.35,
+    // KF-50DWVS + KF-DK0B7T (-0.19 KB net, 15.30 → 15.11 for main): the
+    // delegate snapshot records its path (+0.03), and both list reconcilers
+    // share one bulk row parse and offender diagnosis (parseRows), each() one
+    // renderRow helper, and mount() a shorter nested-mount walk.
+    budgetKb: 15.2,
     description: 'realistic app import — the number the docs advertise',
     entry: `
       import { signal, computed, effect, batch, mount, each, delegate } from '${DIST}/index.js';
@@ -110,7 +114,11 @@ const BUDGETS = [
     // core (the extraction offsets most of its own size).
     // KF-4TXB21 (+0.03 KB): keyed-flags hands out a computed per key so a
     // held selector signal stays current without a subscriber.
-    budgetKb: 17.6,
+    // KF-50DWVS + KF-DK0B7T (-0.19 KB net, 15.30 → 15.11 for main): the
+    // delegate snapshot records its path (+0.03), and both list reconcilers
+    // share one bulk row parse and offender diagnosis (parseRows), each() one
+    // renderRow helper, and mount() a shorter nested-mount walk.
+    budgetKb: 17.45,
     description: 'the whole public barrel — worst case for a consumer',
     entry: `
       import * as kerf from '${DIST}/index.js';
@@ -231,7 +239,11 @@ const BUDGETS = [
     // KF-S92WX8 (+0.1 KB): autoReposition also observes the surface's own
     // size, skipping resizes its own positioning writes caused.
     // KF-GS850A (+0.14 KB): shared keyed row identity logic.
-    budgetKb: 23.6,
+    // KF-50DWVS + KF-DK0B7T (-0.19 KB net, 15.30 → 15.11 for main): the
+    // delegate snapshot records its path (+0.03), and both list reconcilers
+    // share one bulk row parse and offender diagnosis (parseRows), each() one
+    // renderRow helper, and mount() a shorter nested-mount walk.
+    budgetKb: 23.45,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
@@ -251,7 +263,13 @@ const BUDGETS = [
     // KF-HA8R27 (+2.1 KB): the change-scoped morph in the shared core (see main).
     // KF-G7N4PK (+0.17 KB): rendered-attribute record seeding (see main).
     // KF-GS850A (+0.16 KB): shared keyed row identity logic.
-    budgetKb: 13.7,
+    // KF-50DWVS (+0.03 KB): the snapshot records its propagation path, so a
+    // stopped event object re-dispatched elsewhere cannot consume stale entries.
+    // KF-50DWVS + KF-DK0B7T (-0.19 KB net, 15.30 → 15.11 for main): the
+    // delegate snapshot records its path (+0.03), and both list reconcilers
+    // share one bulk row parse and offender diagnosis (parseRows), each() one
+    // renderRow helper, and mount() a shorter nested-mount walk.
+    budgetKb: 13.55,
     description:
       'the dispose-scope subpath (disposeScope + disposeSubtree + observeRemovals) — includes shared core',
     entry: `
@@ -287,7 +305,11 @@ const BUDGETS = [
     // KF-HA8R27's change-scoped morph in the shared core (see main).
     // KF-G7N4PK (+0.17 KB): rendered-attribute record seeding (see main).
     // KF-GS850A (+0.21 KB): shared keyed row identity logic.
-    budgetKb: 16.0,
+    // KF-50DWVS + KF-DK0B7T (-0.19 KB net, 15.30 → 15.11 for main): the
+    // delegate snapshot records its path (+0.03), and both list reconcilers
+    // share one bulk row parse and offender diagnosis (parseRows), each() one
+    // renderRow helper, and mount() a shorter nested-mount walk.
+    budgetKb: 15.8,
     description:
       'the bindList subpath (keyed per-row mount + virtualization) — includes shared core',
     entry: `
@@ -336,7 +358,11 @@ const BUDGETS = [
     // +2.1 for KF-HA8R27's change-scoped morph in the shared core (see main).
     // KF-G7N4PK (+0.17 KB): rendered-attribute record seeding (see main).
     // KF-GS850A (+0.19 KB): shared keyed row identity logic.
-    budgetKb: 13.3,
+    // KF-50DWVS + KF-DK0B7T (-0.19 KB net, 15.30 → 15.11 for main): the
+    // delegate snapshot records its path (+0.03), and both list reconcilers
+    // share one bulk row parse and offender diagnosis (parseRows), each() one
+    // renderRow helper, and mount() a shorter nested-mount walk.
+    budgetKb: 13.1,
     description:
       'the remount subpath (remountOn — keyed subtree replacement) — includes shared core',
     entry: `
@@ -367,7 +393,7 @@ const BUDGETS = [
     // Same figure as `main` (see its KF-G7N4PK note).
     // KF-GS850A: same measured growth as `main`, with the dev-code guard intact.
     // KF-FMGEJ6 + KF-7HMTZQ: same as `main`.
-    budgetKb: 15.35,
+    budgetKb: 15.2,
     description:
       'same as `main`, and asserts zero dev-diagnostic code leaked in',
     forbid: [

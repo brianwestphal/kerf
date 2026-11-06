@@ -29,6 +29,7 @@ import {
   _setBindingContext,
   type Binding,
   type BindingContext,
+  coerceText,
   disposeRowBindings,
   newBindingContext,
   wireBindings,
@@ -116,14 +117,11 @@ function assertNotInsideMountedTree(rootEl: HTMLElement): void {
     ancestor = ancestor.parentElement;
   }
   // Descendants — DFS, not descending into overlay host slots.
-  const stack: Element[] = [];
-  for (let i = 0; i < rootEl.children.length; i++)
-    stack.push(rootEl.children[i]);
-  while (stack.length > 0) {
-    const cur = stack.pop() as Element;
+  const stack = [...rootEl.children];
+  for (let cur; (cur = stack.pop());) {
     if (isMounted(cur)) throw new Error(NESTED_MOUNT_MSG);
-    if (isOverlayHost(cur)) continue;
-    for (let i = 0; i < cur.children.length; i++) stack.push(cur.children[i]);
+    if (!isOverlayHost(cur))
+      for (const child of cur.children) stack.push(child);
   }
 }
 
@@ -584,18 +582,6 @@ function runSubsequentRender(
 }
 
 /**
- * Coerce a non-`SafeHtml` render result to a safe HTML string. Nullish
- * values and booleans become `''` (render nothing) — matches the React /
- * Solid convention so `{cond ? <jsx/> : null}` and `{cond && <jsx/>}`
- * patterns work without each consumer adding a sentinel. Everything else
- * is stringified (numbers → `"42"`, strings pass through).
- */
-function coerceRenderResult(result: unknown): string {
-  if (result == null || typeof result === 'boolean') return '';
-  return String(result);
-}
-
-/**
  * A render result → the `Segment` the pipeline consumes. `SafeHtml` carries its
  * structured segment (or a plain `__html` for a cross-bundle shim); everything
  * else is coerced to a static-html segment.
@@ -603,5 +589,5 @@ function coerceRenderResult(result: unknown): string {
 function resultToSegment(result: MountResult): Segment {
   return isSafeHtml(result)
     ? (result.__segment ?? { kind: 'static', html: result.__html })
-    : { kind: 'static', html: coerceRenderResult(result) };
+    : { kind: 'static', html: coerceText(result) };
 }

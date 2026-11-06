@@ -116,37 +116,50 @@ export function parseRowTemplate(
 }
 
 /**
- * Parse one row's HTML to its single top-level element, enforcing the
- * "exactly one top-level element per row" contract with a row-precise error.
- * Shared by the granular reconciler's single-row paths and the snapshot
- * in-place morph path.
+ * Parse row HTML strings in ONE `innerHTML` pass (in `parent`'s namespace) and
+ * return the resulting top-level elements, captured before a fragment insert
+ * can empty the fragment (they share it as `parentNode`). Enforces the
+ * "exactly one top-level element per row" contract: when the bulk count
+ * differs, each row is re-parsed in isolation and the first offender's
+ * row-precise error is thrown — `indexOf(i)` maps position `i` in `htmls` to
+ * that row's item index. The success path stays a single parse. Shared by
+ * both reconcile paths' bulk parses and their single-row parses.
+ */
+export function parseRows(
+  htmls: readonly string[],
+  parent: Element | null | undefined,
+  indexOf: (i: number) => number,
+): Element[] {
+  const { content, count } = parseRowTemplate(htmls.join(''), parent);
+  if (count !== htmls.length) {
+    htmls.forEach((html, i) => {
+      // Parse in the live parent's namespace so the per-row count matches the
+      // bulk parse (KF-420: MathML rows must re-parse as MathML) — a namespace
+      // mismatch would otherwise miss the offender.
+      if (parseRowTemplate(html, parent).count !== 1)
+        throw rowContractError(indexOf(i), html, parent);
+    });
+    /* c8 ignore start — unreachable: same-namespace per-row parse ⇒ a bulk mismatch has an offender. */
+    throw new Error(
+      'each(): bulk-parse mismatch with no per-row offender (kerf bug).',
+    );
+  }
+  /* c8 ignore stop */
+  return Array.from(content.children);
+}
+
+/**
+ * Parse one row's HTML to its single top-level element, enforcing the row
+ * contract with a row-precise error. Shared by the granular reconciler's
+ * single-row paths, the snapshot in-place morph path, and the first-render
+ * inlined-row check.
  */
 export function parseSingleRow(
   html: string,
   index: number,
   parent?: Element | null,
 ): Element {
-  const { content, count } = parseRowTemplate(html, parent);
-  if (count !== 1) throw rowContractError(index, html, parent);
-  return content.firstElementChild as Element;
-}
-
-/**
- * Capture the first `n` element children of a parsed row fragment into an
- * array BEFORE a fragment insert empties it. Callers have already verified the
- * parse count equals `n`, so the walk never sees a null.
- */
-export function collectTemplateChildren(
-  content: DocumentFragment,
-  n: number,
-): Element[] {
-  const nodes = new Array<Element>(n);
-  let child = content.firstElementChild;
-  for (let k = 0; k < n; k++) {
-    nodes[k] = child as Element;
-    child = (child as Element).nextElementSibling;
-  }
-  return nodes;
+  return parseRows([html], parent, () => index)[0];
 }
 
 /**

@@ -37,12 +37,7 @@ import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { _morphElement } from './morph.js';
 import type { InsertPatch, ListSegment, UpdatePatch } from './segment.js';
 import { moveNode } from './utils/moveNode.js';
-import {
-  collectTemplateChildren,
-  parseRowTemplate,
-  parseSingleRow,
-  rowContractError,
-} from './utils/row-contract.js';
+import { parseRows, parseSingleRow } from './utils/row-contract.js';
 
 export function reconcileGranular(
   binding: ListBinding,
@@ -329,14 +324,11 @@ function applyBulkUpdate(
   if (morphChanges.length === 0) return;
 
   // Bulk-parse only the rows the fast paths couldn't handle.
-  const { content, count } = parseRowTemplate(
-    morphChanges.map((c) => c.html).join(''),
+  const newNodes = parseRows(
+    morphChanges.map((c) => c.html),
     liveParent,
+    (k) => (patches[morphChanges[k].patchIdx] as UpdatePatch).index,
   );
-  if (count !== morphChanges.length) {
-    throw findOffendingChange(patches, morphChanges, liveParent);
-  }
-  const newNodes = collectTemplateChildren(content, morphChanges.length);
 
   // Shared KF-201 morph-vs-replace ladder per row (same tail as
   // applySingleUpdate).
@@ -367,15 +359,14 @@ function applyBulkInsert(
   for (let k = start; k < end; k++) {
     htmls[k - start] = (patches[k] as InsertPatch).html;
   }
-  const { content, count } = parseRowTemplate(htmls.join(''), liveParent);
-  if (count !== htmls.length) {
-    throw findOffendingInsert(patches, start, htmls, liveParent);
-  }
-  // Count matches; capture child refs BEFORE the fragment-insert empties
-  // the fragment.
-  const newNodes = collectTemplateChildren(content, end - start);
+  const newNodes = parseRows(
+    htmls,
+    liveParent,
+    (k) => (patches[start + k] as InsertPatch).index,
+  );
   const anchor = startIdx < items.length ? items[startIdx].node : tailAnchor;
-  liveParent.insertBefore(content, anchor);
+  // The rows share the parsed fragment: insert it in one DOM op.
+  liveParent.insertBefore(newNodes[0].parentNode as DocumentFragment, anchor);
   // Splice all new entries into binding.items at the run's start index.
   const newEntries = new Array<BoundItem>(end - start);
   for (let k = 0; k < newEntries.length; k++) {
@@ -393,58 +384,3 @@ function applyBulkInsert(
   }
   items.splice(startIdx, 0, ...newEntries);
 }
-
-/**
- * Slow-path helper for `applyBulkInsert`. Walks each pre-rendered insert
- * patch's html in isolation to find the offending row.
- */
-function findOffendingInsert(
-  patches: NonNullable<ListSegment['patches']>,
-  start: number,
-  htmls: string[],
-  liveParent: Element,
-): Error {
-  for (let i = 0; i < htmls.length; i++) {
-    // Parse in the live parent's namespace so the per-row count matches the bulk
-    // parse (KF-420) — a namespace mismatch would otherwise miss the offender.
-    if (parseRowTemplate(htmls[i], liveParent).count !== 1) {
-      return rowContractError(
-        (patches[start + i] as InsertPatch).index,
-        htmls[i],
-        liveParent,
-      );
-    }
-  }
-  /* c8 ignore start — unreachable: same-namespace per-row parse ⇒ a bulk mismatch has an offender. */
-  return new Error(
-    'each(): bulk-insert mismatch with no per-row offender (kerf bug).',
-  );
-}
-/* c8 ignore stop */
-
-/**
- * Slow-path helper for `applyBulkUpdate`. Walks each non-no-op change to
- * find the offending row.
- */
-function findOffendingChange(
-  patches: NonNullable<ListSegment['patches']>,
-  changes: { patchIdx: number; html: string }[],
-  liveParent: Element,
-): Error {
-  for (const c of changes) {
-    // Parse in the live parent's namespace so the per-row count matches the bulk
-    // parse (KF-420) — a namespace mismatch would otherwise miss the offender.
-    if (parseRowTemplate(c.html, liveParent).count !== 1) {
-      return rowContractError(
-        (patches[c.patchIdx] as UpdatePatch).index,
-        c.html,
-        liveParent,
-      );
-    }
-  }
-  /* c8 ignore start — unreachable: same-namespace per-row parse ⇒ a bulk mismatch has an offender. */
-  return new Error(
-    'each(): bulk-update mismatch with no per-row offender (kerf bug).',
-  );
-}
-/* c8 ignore stop */
