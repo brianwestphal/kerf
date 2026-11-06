@@ -975,6 +975,18 @@ never styled from outside. This matches Kerf UI's "configure, never override".
 - **`$if`**: `{ "$if": <boolean value>, "then": <child>, "else"?: <child> }`.
   The condition is a param, a binding, or a literal.
 
+**Row and grid item templates** (KF-YWF5T8 evaluated Interface Builder's
+prototype cells, a row design the app reaches by id and fills per item). The
+format already has that pattern: an `$each` template may be a `#view` (§3.7),
+so the row is its own document whose params are the item fields. Its
+generated module is a plain render function, so app code that owns its own
+list can call it per item with `each()` or `bindList` and fill only the
+item's details, the equivalent of dequeuing a prototype cell. A row is one
+template per list: rows that differ by kind vary inside one row component
+through `$if` (KF-B5JFTM decides whether to allow one template per item
+kind). The editor cannot yet insert, extract, or render a `#view` row
+document (KF-5N26H6).
+
 There are no other control-flow forms. Anything richer belongs in application
 code behind a slot.
 
