@@ -1,3 +1,5 @@
+import process from 'node:process';
+
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
 const GUTTER = 16;
@@ -170,6 +172,7 @@ test('reopens at the saved pinned placement', async ({ page }) => {
 
 test('resizes from its corner while pinned and reports the size', async ({
   page,
+  browserName,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   const surface = await openLibrary(page);
@@ -177,17 +180,30 @@ test('resizes from its corner while pinned and reports the size', async ({
   await surface.getByRole('button', { name: 'Pin', exact: true }).click();
   await expect(surface).toHaveCSS('resize', 'both');
   const before = await box(surface);
-  await page.mouse.move(
-    before.x + before.width - 3,
-    before.y + before.height - 3,
-  );
-  await page.mouse.down();
-  await page.mouse.move(
-    before.x + before.width + 77,
-    before.y + before.height - 63,
-    { steps: 6 },
-  );
-  await page.mouse.up();
+  // Linux WebKit draws no draggable resize grip for a pointer drag (its
+  // headless build ignores it), so there the box is resized as the grip
+  // would resize it; what Kerf owns is reporting and keeping the new size.
+  if (browserName === 'webkit' && process.platform === 'linux') {
+    await surface.evaluate(
+      (element, size) => {
+        element.style.width = `${size.width}px`;
+        element.style.height = `${size.height}px`;
+      },
+      { width: before.width + 80, height: before.height - 60 },
+    );
+  } else {
+    await page.mouse.move(
+      before.x + before.width - 3,
+      before.y + before.height - 3,
+    );
+    await page.mouse.down();
+    await page.mouse.move(
+      before.x + before.width + 77,
+      before.y + before.height - 63,
+      { steps: 6 },
+    );
+    await page.mouse.up();
+  }
   const after = await box(surface);
   expect(after.width - before.width).toBeCloseTo(80, -1);
   expect(after.height - before.height).toBeCloseTo(-60, -1);
