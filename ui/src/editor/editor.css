@@ -54,12 +54,20 @@
   box-sizing: border-box;
   border: 1px dashed var(--kui-color-brand-border-loud);
   border-radius: var(--kui-radius-s);
-  background: color-mix(in srgb, var(--kui-color-brand-border-loud) 6%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--kui-color-brand-border-loud) 6%,
+    transparent
+  );
   pointer-events: none;
 }
 
 .kui-editor__zone-ghost[data-chosen] {
-  background: color-mix(in srgb, var(--kui-color-brand-border-loud) 14%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--kui-color-brand-border-loud) 14%,
+    transparent
+  );
 }
 
 .kui-editor__zone-ghosts[hidden] {

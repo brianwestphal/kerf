@@ -188,7 +188,6 @@ function nearEdge(
     : y - box.top < ZONE_EDGE || box.bottom - y < ZONE_EDGE;
 }
 
-
 /** How far the pointer's chip sits below and right of the pointer. */
 const CHIP_OFFSET = 14;
 /** Half a caption's height, so it never rides above the canvas's top. */
