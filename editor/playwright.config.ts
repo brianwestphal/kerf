@@ -1,5 +1,12 @@
 import { defineConfig } from '@playwright/test';
 
+import { guardWebkitRun } from '../scripts/playwright-webkit-guard.mjs';
+
+const BROWSERS = ['chromium', 'firefox', 'webkit'] as const;
+// KF-YN8JNT: refuse a local repeated WebKit run, and warn on any local
+// WebKit run, until a machine-wide browser slot pool exists.
+guardWebkitRun([...BROWSERS]);
+
 export default defineConfig({
   testDir: './tests/browser',
   // KF-PW9DA7: every build starts from a new document, so tests run in
@@ -32,8 +39,8 @@ export default defineConfig({
       timeout: 120_000,
     },
   ],
-  projects: ['chromium', 'firefox', 'webkit'].map((browserName) => ({
+  projects: BROWSERS.map((browserName) => ({
     name: browserName,
-    use: { browserName: browserName as 'chromium' | 'firefox' | 'webkit' },
+    use: { browserName },
   })),
 });

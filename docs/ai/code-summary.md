@@ -94,6 +94,11 @@ install fingerprint's lockfile/installed-tree/absence inputs, and the
 `KERF_FORCE_CHECK` override;
 `tests/unit/push-command.test.ts` covers dirty-checkout early failure,
 same-tree publication after a recorded pass, and rejected unverified refs;
+`tests/unit/playwright-webkit-guard.test.ts` covers the interim local WebKit
+guard (`scripts/playwright-webkit-guard.mjs`, called by the `ui/` and
+`editor/` Playwright configs; KF-YN8JNT): a refused repeated WebKit run, the
+`KERF_ALLOW_WEBKIT_REPEAT` override, the warning, and CI, worker, and
+non-WebKit runs left alone;
 `tests/unit/ticket-timing-steps-ci.test.ts` covers check-chain splitting and
 step naming against the real `check:core`, step-log sanitizing, and CI run
 record mapping, predecessor pairing, and idempotency (by run id and by

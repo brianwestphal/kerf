@@ -267,6 +267,14 @@ behavior, or deliberately validating a cross-browser concern. CI remains the
 authoritative full Chromium/Firefox/WebKit matrix; ordinary local iteration
 does not need to duplicate it.
 
+Concurrent local WebKit browsers across sessions can exhaust macOS
+IOSurfaces and crash WindowServer (one WebKit page holds about 500-800), and
+nothing limits them across sessions yet. Until a machine-wide browser slot
+pool exists, `scripts/playwright-webkit-guard.mjs` (called by the `ui/` and
+`editor/` Playwright configs) refuses a local `--repeat-each` above 1 that
+includes WebKit, unless `KERF_ALLOW_WEBKIT_REPEAT=1` is set while no other
+browser suite runs, and warns on any local WebKit run. CI is unaffected.
+
 Visually validate every site-facing change with Playwright, not just DOM
 assertions. From `site/`, `npm run test:visual` builds three full-page captures
 for every emitted HTML surface (including standalone pages such as `404.html`)

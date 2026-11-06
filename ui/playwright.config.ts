@@ -1,6 +1,8 @@
 import { getPriority, setPriority } from 'node:os';
 import { defineConfig } from '@playwright/test';
 
+import { guardWebkitRun } from '../scripts/playwright-webkit-guard.mjs';
+
 // Run local Playwright at a lower CPU priority so several parallel suites can't starve the
 // machine; its workers, browsers, and web server inherit it. PLAYWRIGHT_NICE overrides the
 // default of 10 (0 opts out), and CI keeps its priority unless overridden.
@@ -25,6 +27,11 @@ if (process.env.NO_COLOR !== undefined) {
   process.env.FORCE_COLOR = forceColor ?? '0';
 }
 
+const BROWSERS = ['chromium', 'firefox', 'webkit'] as const;
+// KF-YN8JNT: refuse a local repeated WebKit run, and warn on any local
+// WebKit run, until a machine-wide browser slot pool exists.
+guardWebkitRun([...BROWSERS]);
+
 export default defineConfig({
   testDir: './tests/browser',
   fullyParallel: false,
@@ -43,9 +50,8 @@ export default defineConfig({
     reuseExistingServer: false,
     timeout: 180_000,
   },
-  projects: [
-    { name: 'chromium', use: { browserName: 'chromium' } },
-    { name: 'firefox', use: { browserName: 'firefox' } },
-    { name: 'webkit', use: { browserName: 'webkit' } },
-  ],
+  projects: BROWSERS.map((browserName) => ({
+    name: browserName,
+    use: { browserName },
+  })),
 });
