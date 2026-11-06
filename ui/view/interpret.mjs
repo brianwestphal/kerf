@@ -103,9 +103,20 @@ export function previewView(document, options) {
  * (undefined for the top one), so a nested `#view`'s `src` resolves from the
  * document that contains it, as the validator resolves it (KF-3X7MFF).
  * `inRow` marks a composed document rendered inside a composing document's
- * `$each` row, through any number of `#view` levels.
+ * `$each` row, through any number of `#view` levels, and `rowKey` is that
+ * row's key, which its root carries as `data-key` the way any other row root
+ * does (KF-EP2152), so kerf reconciles the row by key and a row action reads
+ * it (KF-RDZ7N7).
  */
-function renderDocument(document, inputs, slots, options, at, inRow = false) {
+function renderDocument(
+  document,
+  inputs,
+  slots,
+  options,
+  at,
+  inRow = false,
+  rowKey = undefined,
+) {
   const { catalog, components, resolveView } = options;
   const params = document.params ?? {};
 
@@ -258,6 +269,7 @@ function renderDocument(document, inputs, slots, options, at, inRow = false) {
         options,
         path,
         inRow || scope.size > 0,
+        rowKey,
       );
     }
     const { component: definition, definitions } = catalog.components.get(
@@ -319,5 +331,5 @@ function renderDocument(document, inputs, slots, options, at, inRow = false) {
     return render(out);
   };
 
-  return nodeValue(document.root, new Map(), undefined, undefined);
+  return nodeValue(document.root, new Map(), rowKey, undefined);
 }

@@ -173,25 +173,48 @@ describe('Extract to document', () => {
   });
 
   it('refuses what extraction would break, and a document changed meanwhile', async () => {
+    // A row that repeats itself cannot become a document composed into a row
+    // (KUI-V016). (A row design sharing an action with another is no longer
+    // refused: a composed row's actions are row actions, KF-RDZ7N7.)
     const tagged = list();
-    const row = template(tagged);
-    // A second ListItem shares the row's action in the row's scope.
-    (tagged.root!.zones!.children as unknown[]).push({
-      $each: { $param: 'messages' },
-      as: 'other',
-      key: 'other.id',
-      template: {
-        ...row,
-        id: '01JC0V1EW0000000000000000U',
-        props: { label: 'Other', action: { $action: 'open-message' } },
+    const messages = tagged.params!.messages as {
+      type: { items: { props: unknown[] } };
+    };
+    messages.type.items.props.push({
+      name: 'parts',
+      type: {
+        kind: 'array',
+        items: {
+          kind: 'object',
+          props: [{ name: 'id', type: { kind: 'string' }, required: true }],
+        },
       },
+      required: true,
     });
+    const repeat = tagged.root!.zones!.children![0] as { template: unknown };
+    repeat.template = {
+      id: ROW,
+      type: '@kerfjs/ui:list',
+      props: { ariaLabel: { $bind: 'message.subject' } },
+      zones: {
+        children: [
+          {
+            $each: { $bind: 'message.parts' },
+            as: 'part',
+            key: 'part.id',
+            template: {
+              id: '01JC0V1EW0000000000000000U',
+              type: '@kerfjs/ui:list-item',
+              props: { label: { $bind: 'part.id' } },
+            },
+          },
+        ],
+      },
+    };
     const { root, editor } = open(LIST_PATH, tagged);
     await start(root, editor);
     confirm(root);
-    await vi.waitFor(() =>
-      expect(errorText(root)).toContain('both row and view scope'),
-    );
+    await vi.waitFor(() => expect(errorText(root)).toContain('cannot repeat'));
     // An edit made while the file is being checked wins over the extraction.
     cleanup!();
     cleanup = undefined;

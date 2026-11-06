@@ -258,6 +258,16 @@ function createEmitter(document, catalog, imports, importFrom) {
     return raw(literal(input));
   };
 
+  // KF-EP2152: the document root's key is the render function's optional
+  // `rowKey` argument, given when a composing document renders this one as a
+  // row; every other row root's key is an expression over its item.
+  const ROOT_KEY = Symbol('root key');
+  const keyEntries = (rowKey) => {
+    if (rowKey === ROOT_KEY)
+      return [["...(rowKey === undefined ? {} : { 'data-key': rowKey })"]];
+    return rowKey ? [["'data-key'", raw(`String(${rowKey})`)]] : [];
+  };
+
   /** Marker (and row key) attributes merged into a node's data-* channel. */
   const markers = (node, rowKey, base, scope) => {
     const entries = [];
@@ -268,7 +278,7 @@ function createEmitter(document, catalog, imports, importFrom) {
       entries.push([`...${flat(value(base, scope))}`]);
     }
     entries.push(["'data-kerf-node'", raw(literal(node.id))]);
-    if (rowKey) entries.push(["'data-key'", raw(`String(${rowKey})`)]);
+    entries.push(...keyEntries(rowKey));
     return obj(entries);
   };
 
@@ -365,6 +375,20 @@ function createEmitter(document, catalog, imports, importFrom) {
       const child = document.views[node.src];
       const names = namesOf(child.name);
       imports.value(viewImport(node.src), names.render);
+      // A composed row's root carries the row's key (KF-EP2152); a composed
+      // document has no slots, so the second argument is always empty.
+      if (rowKey === ROOT_KEY)
+        return call(
+          `${names.render}(`,
+          value(node.props ?? {}, scope),
+          ', {}, rowKey)',
+        );
+      if (rowKey)
+        return call(
+          `${names.render}(`,
+          value(node.props ?? {}, scope),
+          `, {}, String(${rowKey}))`,
+        );
       return call(`${names.render}(`, value(node.props ?? {}, scope));
     }
     const { component: definition, definitions } = catalog.components.get(
@@ -384,7 +408,7 @@ function createEmitter(document, catalog, imports, importFrom) {
     }
     if (definition.source === 'webawesome') {
       entries.push(["'data-kerf-node'", raw(literal(node.id))]);
-      if (rowKey) entries.push(["'data-key'", raw(`String(${rowKey})`)]);
+      entries.push(...keyEntries(rowKey));
       if (slot) entries.push(['slot', raw(literal(slot))]);
       const parts = Object.keys(zones)
         .sort()
@@ -419,7 +443,7 @@ function createEmitter(document, catalog, imports, importFrom) {
     } else if (channel === 'native') {
       // The component passes data-* props straight through to its root.
       entries.push(["'data-kerf-node'", raw(literal(node.id))]);
-      if (rowKey) entries.push(["'data-key'", raw(`String(${rowKey})`)]);
+      entries.push(...keyEntries(rowKey));
     }
     imports.value(
       moduleSpecifier(definition.import, importFrom),
@@ -428,7 +452,7 @@ function createEmitter(document, catalog, imports, importFrom) {
     return call(`${definition.export}(`, obj(entries));
   };
 
-  return { root: (node) => nodeExpr(node, new Map(), undefined, undefined) };
+  return { root: (node) => nodeExpr(node, new Map(), ROOT_KEY, undefined) };
 }
 
 function typesBlock(name, contract, inputType = (input) => input.type) {
@@ -518,7 +542,7 @@ function functionsBlock(name, contract, rootExpr, ts) {
     const slotsDefault =
       Object.keys(contract.slots).length === 0 ? ' = {}' : '';
     blocks.push(
-      `export function render${name}(inputs${t(`: ${name}Inputs`)}${inputsDefault}, slots${t(`: ${name}Slots`)}${slotsDefault})${t(': SafeHtml')} {\n${unused(rootExpr, 'inputs', 'slots')}  return ${rootExpr};\n}`,
+      `export function render${name}(inputs${t(`: ${name}Inputs`)}${inputsDefault}, slots${t(`: ${name}Slots`)}${slotsDefault}, rowKey${t('?: string')})${t(': SafeHtml')} {\n${unused(rootExpr, 'inputs', 'slots', 'rowKey')}  return ${rootExpr};\n}`,
     );
   }
   const handlerLines = actions.map(([key, scope]) => {
@@ -568,7 +592,7 @@ function declarationsBlock(name, contract, includeRender) {
       : '';
     const slotsDefault = Object.keys(contract.slots).length === 0 ? '?' : '';
     lines.push(
-      `export declare function render${name}(inputs${inputsDefault}: ${name}Inputs, slots${slotsDefault}: ${name}Slots): SafeHtml;`,
+      `export declare function render${name}(inputs${inputsDefault}: ${name}Inputs, slots${slotsDefault}: ${name}Slots, rowKey?: string): SafeHtml;`,
     );
   }
   lines.push(

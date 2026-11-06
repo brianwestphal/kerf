@@ -406,17 +406,25 @@ describe('Extract to document', () => {
         type: '@kerfjs/ui:list-item',
         props: { label: 'Row' },
       }) as ViewNode;
-    // A row document's actions are its own view's, so one the other row
-    // designs share in the row's scope is refused.
+    // KF-RDZ7N7: a document composed into a row contributes its actions as
+    // row actions, so a design sharing the other designs' action extracts,
+    // and the composing document hands it the row key.
     const shared = inbox({
       $if: { $bind: 'message.unread' },
       then: header,
-      else: { ...row({}), id: '01JC0V1EW0000000000000000X' },
+      else: { ...row({ label: 'Read' }), id: '01JC0V1EW0000000000000000X' },
     });
-    expect(extract(shared)).toEqual({
-      error:
-        'It cannot be extracted: action "open-message" is used with both row and view scope.',
+    const fromShared = ok(extract(shared));
+    const resolveShared = (name: string) =>
+      name === fromShared.src ? fromShared.extracted : undefined;
+    const validation = validateView(fromShared.document, viewCatalog, {
+      resolveView: resolveShared,
     });
+    expect(validation.diagnostics).toEqual([]);
+    expect(validation.actions.get('open-message')).toBe('row');
+    expect(validateView(fromShared.extracted, viewCatalog).actions).toEqual(
+      new Map([['open-message', 'view']]),
+    );
     const chain = inbox({
       $if: { $bind: 'message.unread' },
       then: header,

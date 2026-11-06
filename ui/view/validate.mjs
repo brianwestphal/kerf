@@ -1543,8 +1543,13 @@ function checkView(ctx, node, at, scope, rowScoped) {
       diagnostic.message,
     );
   }
+  // KF-RDZ7N7: a document composed into a row renders inside that keyed row,
+  // and the generated row passes its key to the composed root, so a delegated
+  // handler reads the row key there. Its actions are row actions of the
+  // composing document; its own contract keeps them view-scoped, since
+  // standalone it has no row.
   for (const [name, actionScope] of nested.actions)
-    ctx.noteAction(name, actionScope, at);
+    ctx.noteAction(name, rowScoped ? 'row' : actionScope, at);
 }
 
 // Zone shapes, as the ESLint rule computes them over JSX: how many direct

@@ -125,7 +125,7 @@ describe(
       expect(row).toContain('readonly subject?: string;');
       expect(row).toContain('description: inputs.subject,');
       expect(list).toContain(
-        'renderInboxRow({ id: message.id, subject: message.subject })',
+        'renderInboxRow({ id: message.id, subject: message.subject }, {}, String(message.id))',
       );
 
       mkdirSync(join(uiRoot, 'test-results'), { recursive: true });

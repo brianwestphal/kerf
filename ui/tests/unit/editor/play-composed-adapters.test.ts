@@ -313,8 +313,13 @@ describe('composed controls reported by their id prop', () => {
     expect(copied(ids.kit, ids.city).value).toBe('rome');
     // The second row's field: the row keeps its own value.
     await commit(fields()[2]!, 'OSLO');
+    // KF-EP2152: the composed rows are keyed, so the row is morphed in place
+    // and its focused field keeps both focus and the typed text; the
+    // rendered value is the committed one, and only that row has it.
     const [, first, second] = fields();
-    expect(second!.value).toBe('oslo');
+    expect(document.activeElement).toBe(second);
+    expect(second!.getAttribute('value')).toBe('oslo');
+    expect(first!.getAttribute('value') ?? '').toBe('');
     expect(first!.value).toBe('');
     expect(root.textContent).toContain('City');
   });

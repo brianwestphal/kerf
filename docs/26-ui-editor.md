@@ -1162,6 +1162,23 @@ renders another document. Its props are that document's params. The two
 documents share action names: a child's actions join the parent's action union
 (§4.2), and it is an error for the same name to be row-scoped in one document
 and not in the other. Named nodes and slots stay private to their own document.
+
+**A document composed into a row** (KF-RDZ7N7: composed row actions;
+KF-EP2152: composed row keys). A `#view` whose markup renders inside a keyed
+row (an `$each` template, an `$if`-chain row design, a kinds-map entry, or a
+node nested in one of them) contributes its actions to the composing document
+as **row** actions, through any number of `#view` levels. Its own contract
+keeps them view-scoped, since standalone it has no row. Composing the same
+document both inside and outside a row reports `KUI-V009` for its actions,
+since §4.2 allows one context type per name. **Decision:** the row key reaches
+the composed root through an optional third render argument,
+`render<Name>(inputs, slots, rowKey?)` (§4). The composing row passes
+`String(<key>)`, the root puts it on its marker channel as `data-key` (a
+composed document whose root is itself a `#view` passes it on), and
+`interpretView` and `previewView` thread it the same way. So kerf `each()`
+reconciles those rows by key, and `wire<Parent>`'s row handlers read the
+row's key. The argument is not an input, so it adds nothing to the contract
+digest.
 A parent reaches a child's refs through the child's generated `refs` function,
 called on the subtree it rendered. Cycles are errors, and so is composing a
 document that declares slots: the parent has no way to fill them. That case
@@ -1245,9 +1262,9 @@ composing document belongs beside its rows before they render.
     new `.kui.json` file inside the project and outside the drafts folder,
     when a read has no known type (a repeat over a literal list), and when
     the result has a problem the document did not, for example a row with
-    its own keyed repeat (`KUI-V016`) or an action the other row designs
-    share in the row's scope (a composed document's actions are its own
-    view's). A subtree that composes documents extracts only into the same
+    its own keyed repeat (`KUI-V016`). A row design that shares the other
+    designs' action extracts, since a composed row's actions are row actions
+    (§3.7). A subtree that composes documents extracts only into the same
     folder, since nested sources resolve from the top document (KF-3X7MFF).
   - It is disabled with its reason on the root (Save As copies a whole
     document), on a subtree holding a `$slot` (a composed document cannot
@@ -1346,7 +1363,7 @@ export interface InboxRefs {
   readonly folderList: HTMLElement;
 }
 export const inboxContract = 'kui1:5f0c2a9e7d41b3c8';
-export function renderInbox(inputs: InboxInputs, slots: InboxSlots): SafeHtml { … }
+export function renderInbox(inputs: InboxInputs, slots: InboxSlots, rowKey?: string): SafeHtml { … }
 export function wireInbox(root: HTMLElement, handlers: InboxHandlers): () => void { … }
 export function inboxRefs(root: ParentNode): InboxRefs { … }
 ```
@@ -1370,7 +1387,9 @@ handler per action:
 
 Actions declared inside an `$each` template are **row-scoped**: their context
 carries the row's `key`, read from the `data-key` that the generator puts on
-the row root. `wire<Name>` is a thin wrapper over `delegateActions`
+the row root. A document composed into a row (§3.7) contributes row-scoped
+actions too, and its root carries the key the composing row passes as
+`render<Name>`'s optional `rowKey` argument. `wire<Name>` is a thin wrapper over `delegateActions`
 (`kerfjs/actions`), with one delegated `click` listener on the given root. It
 returns that disposer. An action name that is row-scoped in one place and not
 in another is a validation error, so each name has exactly one context type.
