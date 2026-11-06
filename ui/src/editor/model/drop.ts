@@ -11,7 +11,7 @@ import {
   type ViewNode,
 } from '@kerfjs/ui/view';
 
-import { findNode, templateNodes, visitNodes } from './document.js';
+import { findNode, rowNodes, visitNodes } from './document.js';
 import {
   addsProblems,
   insertNode,
@@ -216,8 +216,7 @@ export function movesCleanly(
 /** Whether zone child `child` holds node `id`, through its control flow. */
 function holds(child: ViewChild, id: string): boolean {
   if ('$slot' in child) return false;
-  if ('$each' in child)
-    return templateNodes(child.template).some((node) => node.id === id);
+  if ('$each' in child) return rowNodes(child).some((node) => node.id === id);
   if ('$if' in child)
     return (
       holds(child.then, id) || (child.else ? holds(child.else, id) : false)

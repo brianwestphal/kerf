@@ -16,7 +16,7 @@ import {
   reorderTabs,
   type TabReorder,
 } from '../../components/navigation/tab-bar/wiring/wire-tab-bars.js';
-import { findNode, templateNodes, visitNodes } from './document.js';
+import { findNode, rowNodes, visitNodes } from './document.js';
 import { removeNode, setProp } from './edits.js';
 import {
   CLOSED,
@@ -96,7 +96,7 @@ function barItems(bar: ViewNode) {
   return Object.values(bar.zones ?? {}).flatMap((children) =>
     children.flatMap((child) => {
       const nodes: readonly ViewChild[] =
-        '$each' in child ? templateNodes(child.template) : [child];
+        '$each' in child ? rowNodes(child) : [child];
       return nodes.flatMap((node) =>
         'type' in node && node.type === TAB_BAR_ITEM
           ? [{ node, repeated: '$each' in child }]

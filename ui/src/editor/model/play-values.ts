@@ -27,8 +27,9 @@ import { raw, type SafeHtml } from 'kerfjs';
 
 import {
   findNode,
+  mapRows,
   mapTemplate,
-  templateNodes,
+  rowNodes,
   visitNodes,
 } from './document.js';
 import { setProp } from './edits.js';
@@ -190,12 +191,11 @@ export function markRows(
   };
   const child = (item: ViewChild, keys: readonly string[]): ViewChild => {
     if ('$each' in item)
-      return {
-        ...item,
-        template: mapTemplate(item.template, (branch) =>
+      return mapRows(item, (template) =>
+        mapTemplate(template, (branch) =>
           node(branch, [...keys, item.key], true),
         ),
-      };
+      );
     if ('$if' in item)
       return {
         ...item,
@@ -360,10 +360,7 @@ export function eachOf(
   for (const { node } of visitNodes(document))
     for (const children of Object.values(node.zones ?? {}))
       for (const child of children)
-        if (
-          '$each' in child &&
-          templateNodes(child.template).some((node) => node.id === id)
-        )
+        if ('$each' in child && rowNodes(child).some((node) => node.id === id))
           return child;
   return undefined;
 }
@@ -406,7 +403,7 @@ function sourceOf(
   if (at < 0) return { param: head, steps: rest };
   const outer = enclosing[at]!;
   // The outer row rendered one of its template's branches (KF-1CRGP1).
-  const key = templateNodes(outer.template)
+  const key = rowNodes(outer)
     .map((node) => keys[node.id])
     .find((found) => found !== undefined);
   if (key === undefined) return undefined;

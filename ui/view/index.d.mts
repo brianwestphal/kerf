@@ -71,6 +71,20 @@ export type ViewChild =
       readonly template: ViewTemplate;
     }
   | {
+      readonly $each: ViewValue;
+      readonly as: string;
+      readonly key: string;
+      /**
+       * One row node per item kind; `kind` picks one, and an item of any
+       * other kind takes `default`, which is required.
+       */
+      readonly templates: Readonly<Record<string, ViewNode>> & {
+        readonly default: ViewNode;
+      };
+      /** A string in the item's scope, such as `{ "$bind": "item.kind" }`. */
+      readonly kind: ViewValue;
+    }
+  | {
       readonly $if: ViewValue;
       readonly then: ViewChild;
       readonly else?: ViewChild;
@@ -269,10 +283,15 @@ export interface ViewContract {
       }
     >
   >;
+  /**
+   * The kinds each `templates` repeat names, by its item name, sorted.
+   * Absent when the document has none.
+   */
+  readonly kinds?: Readonly<Record<string, readonly string[]>>;
 }
 
 export interface ViewContractChange {
-  readonly member: 'input' | 'action' | 'slot' | 'ref';
+  readonly member: 'input' | 'action' | 'slot' | 'ref' | 'kind';
   readonly name: string;
   readonly change: string;
   readonly breaking: boolean;

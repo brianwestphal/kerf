@@ -34,11 +34,15 @@ import {
 } from '../../../src/editor/model/play-values.js';
 import { previewSlots } from '../../../src/editor/model/preview-slots.js';
 import {
+  addKind,
   addRowDesign,
   removeRowDesign,
+  renameKind,
   rowConditionOptions,
   rowDesignChoices,
+  rowKindOptions,
   setRowCondition,
+  setRowKind,
 } from '../../../src/editor/model/row-designs.js';
 import { defaultCatalog, viewCatalog } from './kerf-catalog.js';
 
@@ -74,8 +78,11 @@ const chain = () => ({
   else: row(),
 });
 
-/** A Pane holding a List whose rows come from `template`. */
-const documentWith = (template: unknown): ViewDocument =>
+/**
+ * A Pane holding a List whose rows come from `template`, or (KF-YX6HMT) from
+ * `rows`, such as a `templates` map with its `kind`.
+ */
+const documentWith = (template: unknown, rows?: object): ViewDocument =>
   ({
     schema: 'kerf-ui-document/v1',
     name: 'Rows',
@@ -92,6 +99,7 @@ const documentWith = (template: unknown): ViewDocument =>
               { name: 'label', type: { kind: 'string' }, required: true },
               { name: 'header', type: { kind: 'boolean' }, required: false },
               { name: 'muted', type: { kind: 'boolean' }, required: false },
+              { name: 'kind', type: { kind: 'string' }, required: false },
             ],
           },
         },
@@ -111,7 +119,7 @@ const documentWith = (template: unknown): ViewDocument =>
                   $each: { $param: 'items' },
                   as: 'item',
                   key: 'item.id',
-                  template,
+                  ...(rows ?? { template }),
                 },
               ],
             },
@@ -367,6 +375,190 @@ describe('model walkers', () => {
       { id: 'b', label: 'B' },
     ];
     expect(closeRow(document, HEADER, { [HEADER]: 'a' }, { items })).toEqual({
+      items: [items[1]],
+    });
+  });
+});
+
+// KF-YX6HMT: rows picked by the item's kind from a `templates` map.
+const KIND = { $bind: 'item.kind' };
+const keyed = (
+  templates: Record<string, ViewNode> = {
+    header: header(),
+    default: row(),
+  },
+) => documentWith(undefined, { templates, kind: KIND });
+const rowsOfEach = (document: ViewDocument) =>
+  each(document) as unknown as {
+    template?: ViewNode;
+    templates?: Record<string, ViewNode>;
+    kind?: unknown;
+  };
+
+describe('row designs keyed by kind', () => {
+  it('reports the kinds, and walks every template', () => {
+    const document = keyed();
+    expect(valid(document)).toEqual([]);
+    expect(controlOf(document, HEADER)?.rows).toEqual({
+      branches: [
+        { node: header(), kind: 'header' },
+        { node: row(), kind: 'default' },
+      ],
+      index: 0,
+      kind: KIND,
+    });
+    expect(findNode(document, ROW)?.repeated).toBe(true);
+    expect(eachScopes(document, HEADER)).toHaveLength(1);
+    expect(eachOf(document, ROW)).toBe(each(document));
+    // A map with only `default` still edits as one keyed by kind.
+    expect(controlOf(keyed({ default: row() }), ROW)?.rows?.kind).toEqual(KIND);
+  });
+
+  it('picks a one-node list’s designs by kind, and changes the kind', () => {
+    const one = documentWith(row());
+    const picked = setRowKind(one, ROW, KIND);
+    expect(rowsOfEach(picked)).toMatchObject({
+      templates: { default: row() },
+      kind: KIND,
+    });
+    expect(valid(picked)).toEqual([]);
+    const relabeled = setRowKind(keyed(), ROW, { $bind: 'item.label' });
+    expect(rowsOfEach(relabeled).kind).toEqual({ $bind: 'item.label' });
+    expect(Object.keys(rowsOfEach(relabeled).templates!)).toEqual([
+      'header',
+      'default',
+    ]);
+    const chained = documentWith(chain());
+    expect(setRowKind(chained, ROW, KIND)).toBe(chained);
+    expect(setRowKind(one, LIST, KIND)).toBe(one);
+  });
+
+  it('offers the text values in the item scope as the kind', () => {
+    const labels = (document: ViewDocument, id: string) =>
+      rowKindOptions(document, viewCatalog, id).map((option) => option.label);
+    expect(labels(documentWith(row()), ROW)).toEqual([
+      'item.id',
+      'item.label',
+      'item.kind',
+    ]);
+    expect(labels(keyed(), HEADER)).toEqual(labels(documentWith(row()), ROW));
+    expect(labels(documentWith(chain()), ROW)).toEqual([]);
+    expect(labels(documentWith(row()), LIST)).toEqual([]);
+  });
+
+  it('adds and renames kinds, refusing empty and taken names', () => {
+    const added = addKind(keyed(), ROW, 'note', muted());
+    if (!('document' in added)) throw new Error(added.error);
+    expect(Object.keys(rowsOfEach(added.document).templates!)).toEqual([
+      'header',
+      'default',
+      'note',
+    ]);
+    expect(valid(added.document)).toEqual([]);
+    expect(addKind(keyed(), ROW, '', muted())).toEqual({
+      error: 'A kind is a name, such as header.',
+    });
+    expect(addKind(keyed(), ROW, 'header', muted())).toEqual({
+      error: 'This list already has a header design.',
+    });
+    expect(addKind(documentWith(row()), ROW, 'note', muted())).toEqual({
+      error: 'This list does not pick its rows by kind.',
+    });
+    const renamed = renameKind(keyed(), HEADER, 'section');
+    if (!('document' in renamed)) throw new Error(renamed.error);
+    expect(Object.keys(rowsOfEach(renamed.document).templates!)).toEqual([
+      'section',
+      'default',
+    ]);
+    const same = keyed();
+    expect(renameKind(same, HEADER, 'header')).toEqual({ document: same });
+    expect(renameKind(keyed(), ROW, 'item')).toEqual({
+      error: 'The default design keeps its name.',
+    });
+    expect(renameKind(keyed(), HEADER, 'default')).toEqual({
+      error: 'This list already has a default design.',
+    });
+    expect(renameKind(documentWith(row()), ROW, 'x')).toEqual({
+      error: 'This list does not pick its rows by kind.',
+    });
+  });
+
+  it('removes a kind, keeps default, and collapses to one template', () => {
+    const three = addKind(keyed(), ROW, 'note', muted()) as {
+      document: ViewDocument;
+    };
+    expect(
+      Object.keys(
+        rowsOfEach(removeRowDesign(three.document, MUTED)).templates!,
+      ),
+    ).toEqual(['header', 'default']);
+    expect(removeRowDesign(keyed(), ROW)).toEqual(keyed());
+    expect(rowsOfEach(removeRowDesign(keyed(), HEADER))).toMatchObject({
+      template: row(),
+    });
+    expect('kind' in rowsOfEach(removeRowDesign(keyed(), HEADER))).toBe(false);
+  });
+
+  it('leaves conditions to $if chains', () => {
+    const document = keyed();
+    expect(addRowDesign(document, ROW, muted(), true)).toBe(document);
+    expect(setRowCondition(document, HEADER, true)).toBe(document);
+    expect(rowConditionOptions(document, viewCatalog, HEADER)).toEqual([]);
+  });
+
+  it('keeps the map through repeat, item, and walker edits', () => {
+    const renamed = renameItem(keyed(), HEADER, 'entry');
+    if (!('document' in renamed)) throw new Error(renamed.error);
+    expect(rowsOfEach(renamed.document).kind).toEqual({ $bind: 'entry.kind' });
+    expect(
+      rowsOfEach(renamed.document).templates!.header!.props?.label,
+    ).toEqual({ $bind: 'entry.label' });
+    const resourced = setRepeat(keyed(), ROW, {
+      source: { $param: 'items' },
+      as: 'item',
+      key: 'item.id',
+    });
+    expect(rowsOfEach(resourced).templates).toEqual(
+      rowsOfEach(keyed()).templates,
+    );
+    const tree = outlineTree(keyed(), new Map());
+    expect(tree[0]!.children![0]!.children!.map((item) => item.detail)).toEqual(
+      [
+        expect.stringContaining('item.kind is header'),
+        expect.stringContaining('otherwise'),
+      ],
+    );
+    const edited = setProp(keyed(), HEADER, 'label', 'Section');
+    expect(findNode(edited, HEADER)?.node.props?.label).toBe('Section');
+    let count = 0;
+    const copy = copyChild(
+      each(keyed()) as never,
+      new Set(),
+      () => `01JB8Z1M6Q8E1X9V4S7K2R3T${(count += 10)}`,
+    ) as { templates: Record<string, ViewNode> };
+    expect(Object.values(copy.templates).map((node) => node.id)).toEqual([
+      '01JB8Z1M6Q8E1X9V4S7K2R3T10',
+      '01JB8Z1M6Q8E1X9V4S7K2R3T20',
+    ]);
+    const embedded = embedNode(
+      keyed(),
+      ROW,
+      { type: `${ui}:list` },
+      'children',
+    );
+    expect(
+      embedded && findNode(embedded.document, ROW)?.ancestors.at(-1)?.node.id,
+    ).toBe(embedded?.id);
+    expect(rowsOfEach(previewSlots(keyed()).document).templates).toEqual(
+      rowsOfEach(keyed()).templates,
+    );
+    const marked = rowsOfEach(markRows(keyed(), viewCatalog));
+    expect(Object.keys(marked.templates!)).toEqual(['header', 'default']);
+    const items = [
+      { id: 'a', label: 'A', kind: 'header' },
+      { id: 'b', label: 'B' },
+    ];
+    expect(closeRow(keyed(), HEADER, { [HEADER]: 'a' }, { items })).toEqual({
       items: [items[1]],
     });
   });

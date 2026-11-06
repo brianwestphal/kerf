@@ -13,6 +13,7 @@ import {
   type ViewNode,
 } from '@kerfjs/ui/view';
 
+import { rowNodes } from '../../../src/editor/model/document.js';
 import { copyChild, newNodeId } from '../../../src/editor/model/edits.js';
 import { withValueAt } from '../../../src/editor/model/fields.js';
 
@@ -49,7 +50,7 @@ function survey(root: Json) {
       });
   };
   const child = (item: Json) => {
-    if ('$each' in item) child(item.template);
+    if ('$each' in item) rowsIn(item).forEach(child);
     else if ('$if' in item) {
       child(item.then);
       if (item.else) child(item.else);
@@ -59,11 +60,16 @@ function survey(root: Json) {
   return { spots, nodes };
 }
 
+/** An `$each`'s templates: `template`, or each `templates` entry. */
+const rowsIn = (each: Json): Json[] =>
+  'templates' in each ? Object.values(each.templates) : [each.template];
+
 /** Whether `inner` is `outer` or inside it. */
 function within(outer: Json, inner: Json): boolean {
   if (outer === inner) return true;
   if ('$slot' in outer) return false;
-  if ('$each' in outer) return within(outer.template, inner);
+  if ('$each' in outer)
+    return rowsIn(outer).some((template) => within(template, inner));
   if ('$if' in outer)
     return (
       within(outer.then, inner) ||
@@ -192,11 +198,17 @@ export function scramble(
             ]),
             as,
             key: `${as}.id`,
-            // KF-1CRGP1: sometimes an `$if` chain of row designs.
-            template:
-              random() < 0.3
-                ? { $if: condition(), then: entry, else: graft() }
-                : entry,
+            // KF-1CRGP1: sometimes an `$if` chain of row designs, and
+            // (KF-YX6HMT) sometimes a `templates` map picked by a kind.
+            ...pick<Json>([
+              { template: entry },
+              { template: entry },
+              { template: { $if: condition(), then: entry, else: graft() } },
+              {
+                templates: { default: entry, header: graft() },
+                kind: { $bind: `${as}.label` },
+              },
+            ]),
           };
         }
         break;
@@ -284,7 +296,7 @@ export function scramble(
 export function poolOf(document: ViewDocument): ViewNode[] {
   const nodes: ViewNode[] = [];
   const child = (item: ViewChild) => {
-    if ('$each' in item) child(item.template);
+    if ('$each' in item) rowNodes(item).forEach(node);
     else if ('$if' in item) {
       child(item.then);
       if (item.else) child(item.else);

@@ -1173,8 +1173,91 @@ function checkTemplate(
 }
 
 /**
+ * An `$each`'s rows: exactly one of `template` (one node or an `$if` chain)
+ * and `templates`, a map of one node per item kind picked by `kind`
+ * (KF-YX6HMT: keyed row designs). `templates` needs a `default`, which an
+ * item of any other kind takes, so every item yields exactly one row.
+ */
+function checkRows(ctx, child, at, scope, parentKey, text) {
+  if (!('templates' in child)) {
+    if ('kind' in child)
+      ctx.report(
+        'KUI-V008',
+        `${at}.kind`,
+        '`kind` picks one of `templates`; this `$each` has none',
+      );
+    checkTemplate(
+      ctx,
+      child.template,
+      `${at}.template`,
+      scope,
+      parentKey,
+      text,
+    );
+    return;
+  }
+  if ('template' in child)
+    ctx.report(
+      'KUI-V008',
+      at,
+      'an `$each` has exactly one of `template` and `templates`',
+    );
+  const templates = isObject(child.templates) ? child.templates : {};
+  if (!('default' in templates))
+    ctx.report(
+      'KUI-V008',
+      `${at}.templates`,
+      '`templates` needs a `default` row design, which an item of any other kind takes',
+    );
+  if ('kind' in child)
+    checkPropValue(
+      ctx,
+      { name: 'kind', type: { kind: 'string' } },
+      child.kind,
+      {},
+      scope,
+      `${at}.kind`,
+      true,
+    );
+  else
+    ctx.report(
+      'KUI-V008',
+      `${at}.kind`,
+      '`templates` needs a `kind` that resolves to a string on the item',
+    );
+  for (const [kind, template] of Object.entries(templates)) {
+    const path = `${at}.templates.${kind}`;
+    if (!isObject(template) || !('type' in template))
+      ctx.report(
+        'KUI-V008',
+        path,
+        'each `templates` entry is exactly one node',
+      );
+    else checkTemplate(ctx, template, path, scope, parentKey, text, false);
+  }
+}
+
+/**
+ * The templates an `$each` can render a row from: its `template`, or every
+ * entry of its `templates` map in order (KF-YX6HMT). Each is one node or an
+ * `$if` chain of them.
+ */
+export function eachTemplates(each) {
+  if (!('templates' in each)) return [each.template];
+  // A malformed map is one malformed template, so walkers report it.
+  return isObject(each.templates)
+    ? Object.values(each.templates)
+    : [each.templates];
+}
+
+/** Every node an `$each` can render a row from, in order; the first keys it. */
+export function eachNodes(each) {
+  return eachTemplates(each).flatMap(templateNodes);
+}
+
+/**
  * The nodes an `$each` template can render, in branch order: the template
- * itself, or every leaf of its `$if` chain. The first one's id keys the list.
+ * itself, or every leaf of its `$if` chain.
  */
 export function templateNodes(template) {
   if (isObject(template) && '$if' in template)
@@ -1191,7 +1274,14 @@ function checkChild(ctx, child, at, scope, rowScoped, parentKey, text = false) {
     return;
   }
   if ('$each' in child) {
-    for (const key of only(child, ['$each', 'as', 'key', 'template']))
+    for (const key of only(child, [
+      '$each',
+      'as',
+      'key',
+      'template',
+      'templates',
+      'kind',
+    ]))
       ctx.report('KUI-V001', `${at}.${key}`, 'unknown `$each` field');
     // KF-CFA1S1: an inner `$each` in this document renders as a plain map, but
     // a document composed into another's row cannot know it is in one: its
@@ -1260,14 +1350,7 @@ function checkChild(ctx, child, at, scope, rowScoped, parentKey, text = false) {
         '`key` is a path on the item that resolves to a string or number',
       );
     }
-    checkTemplate(
-      ctx,
-      child.template,
-      `${at}.template`,
-      inner,
-      parentKey,
-      text,
-    );
+    checkRows(ctx, child, at, inner, parentKey, text);
     return;
   }
   if ('$if' in child) {
@@ -1450,10 +1533,10 @@ function combine(shapes) {
 function childShape(child) {
   if (!isObject(child)) return shape(0, 0, []);
   if ('$each' in child) {
-    const template = isObject(child.template)
-      ? childShape(child.template)
-      : shape(0, 0, []);
-    return shape(0, Number.POSITIVE_INFINITY, template.items);
+    const items = eachTemplates(child).flatMap((template) =>
+      isObject(template) ? childShape(template).items : [],
+    );
+    return shape(0, Number.POSITIVE_INFINITY, items);
   }
   if ('$if' in child) {
     const then = childShape(child.then);
@@ -1645,8 +1728,14 @@ function hintUnsizedLayouts(node, at, sized, hints, isRoot = false) {
     });
   const child = (item, path, childSized) => {
     if (!isObject(item)) return;
-    if ('$each' in item) child(item.template, `${path}.template`, childSized);
-    else if ('$if' in item) {
+    if ('$each' in item) {
+      if ('templates' in item)
+        for (const [kind, template] of Object.entries(
+          isObject(item.templates) ? item.templates : {},
+        ))
+          child(template, `${path}.templates.${kind}`, childSized);
+      else child(item.template, `${path}.template`, childSized);
+    } else if ('$if' in item) {
       child(item.then, `${path}.then`, childSized);
       if ('else' in item) child(item.else, `${path}.else`, childSized);
     } else hintUnsizedLayouts(item, path, childSized, hints);

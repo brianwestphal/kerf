@@ -2,7 +2,7 @@
 // application code compiles against — inputs, actions, slots, refs — with its
 // layout-independent `kui1:` digest and a breaking/non-breaking diff. Shared
 // by the generator and the runtime interpreter so both compute the same digest.
-import { validateView } from './validate.mjs';
+import { eachTemplates, validateView } from './validate.mjs';
 
 const MASK_64 = 0xffffffffffffffffn;
 const FNV_OFFSET = 0xcbf29ce484222325n;
@@ -108,7 +108,8 @@ function elementOf(catalog, node) {
 export function walkView(document, visit) {
   const child = (item, row) => {
     if (!isObject(item)) return;
-    if ('$each' in item) child(item.template, true);
+    if ('$each' in item)
+      for (const template of eachTemplates(item)) child(template, true);
     else if ('$if' in item) {
       child(item.then, row);
       if ('else' in item) child(item.else, row);
@@ -136,7 +137,8 @@ export function walkView(document, visit) {
     if (!isObject(item)) return;
     valueSlots(item.props, found);
     if ('$slot' in item) found.add(item.$slot);
-    else if ('$each' in item) slots(item.template, found);
+    else if ('$each' in item)
+      for (const template of eachTemplates(item)) slots(template, found);
     else if ('$if' in item) {
       slots(item.then, found);
       slots(item.else, found);
@@ -152,6 +154,38 @@ export function walkView(document, visit) {
   const found = new Set();
   slots(document.root, found);
   return found;
+}
+
+/**
+ * KF-YX6HMT: the kinds each `templates` repeat names, by its item name
+ * (`as`), sorted. Repeats that share an item name share one list.
+ */
+function rowKinds(document) {
+  const found = {};
+  const child = (item) => {
+    if (!isObject(item)) return;
+    if ('$each' in item) {
+      if (isObject(item.templates)) {
+        found[item.as] ??= new Set();
+        for (const kind of Object.keys(item.templates))
+          found[item.as].add(kind);
+      }
+      eachTemplates(item).forEach(child);
+    } else if ('$if' in item) {
+      child(item.then);
+      child(item.else);
+    } else if (!('$slot' in item)) node(item);
+  };
+  const node = (item) => {
+    for (const list of Object.values(isObject(item.zones) ? item.zones : {}))
+      if (Array.isArray(list)) list.forEach(child);
+  };
+  node(document.root);
+  return Object.fromEntries(
+    Object.entries(found)
+      .sort(([a], [b]) => (a < b ? -1 : 1))
+      .map(([as, kinds]) => [as, [...kinds].sort()]),
+  );
 }
 
 /**
@@ -198,6 +232,7 @@ export function contractOf(document, catalog, options = {}) {
     const input = document.slots?.[name]?.input;
     slots[name] = input ? typeText(input) : null;
   }
+  const kinds = rowKinds(document);
   return {
     inputs,
     actions: Object.fromEntries(
@@ -205,6 +240,9 @@ export function contractOf(document, catalog, options = {}) {
     ),
     slots,
     refs,
+    // Only a document with a `templates` repeat has kinds, so every other
+    // document keeps its digest.
+    ...(Object.keys(kinds).length ? { kinds } : {}),
   };
 }
 
@@ -225,6 +263,7 @@ function digestForm(contract) {
         { element: ref.element, keyed: ref.keyed },
       ]),
     ),
+    ...(contract.kinds ? { kinds: contract.kinds } : {}),
   };
 }
 
@@ -336,6 +375,19 @@ export function diffContracts(before, after) {
         true,
         `${old.keyed ? 'keyed ' : ''}${old.element} → ${next.keyed ? 'keyed ' : ''}${next.element}`,
       );
+    }
+  }
+  // KF-YX6HMT: a new kind is optional (other items keep `default`); code
+  // that names a removed one through the generated type no longer compiles.
+  const oldKinds = before.kinds ?? {};
+  const newKinds = after.kinds ?? {};
+  for (const as of names(oldKinds, newKinds)) {
+    const old = new Set(oldKinds[as] ?? []);
+    const next = new Set(newKinds[as] ?? []);
+    for (const kind of [...new Set([...old, ...next])].sort()) {
+      if (!old.has(kind)) add('kind', `${as}.${kind}`, 'added', false, kind);
+      else if (!next.has(kind))
+        add('kind', `${as}.${kind}`, 'removed', true, kind);
     }
   }
   return changes;

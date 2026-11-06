@@ -15,7 +15,7 @@ import {
   fieldZoneOf,
   parseCssCall,
   withFieldZones,
-  templateNodes,
+  eachNodes,
   ZoneFill,
   zonePropOf,
 } from './validate.mjs';
@@ -281,7 +281,10 @@ function createEmitter(document, catalog, imports, importFrom) {
   const childExpr = (child, scope, slot) => {
     if ('$each' in child) {
       const inner = new Map(scope).set(child.as, true);
-      const template = rowExpr(child.template, inner, child.key, slot);
+      const template =
+        'templates' in child
+          ? kindExpr(child, inner, child.key, slot)
+          : rowExpr(child.template, inner, child.key, slot);
       // Scope holds only `$each` items, so a non-empty scope is a row
       // template. kerf never reconciles a list inside a row (a keyed each()
       // there throws), so an inner repeat is a plain map that re-renders with
@@ -296,7 +299,7 @@ function createEmitter(document, catalog, imports, importFrom) {
       return call(
         `each(${flat(value(child.$each, scope))}, (${child.as}) => `,
         template,
-        `, { key: ${literal(templateNodes(child.template)[0].id)} })`,
+        `, { key: ${literal(eachNodes(child)[0].id)} })`,
       );
     }
     if ('$if' in child) {
@@ -326,6 +329,23 @@ function createEmitter(document, catalog, imports, importFrom) {
           rowExpr(template.else, scope, rowKey, slot),
         )
       : nodeExpr(template, scope, rowKey, slot);
+
+  // KF-YX6HMT: the template an item's `kind` picks from `templates`, one
+  // comparison per kind in document order, with `default` for the rest.
+  const kindExpr = (child, scope, rowKey, slot) => {
+    const kind = flat(value(child.kind, scope));
+    return Object.entries(child.templates)
+      .filter(([name]) => name !== 'default')
+      .reduceRight(
+        (otherwise, [name, node]) =>
+          cond(
+            `${kind} === ${literal(name)}`,
+            nodeExpr(node, scope, rowKey, slot),
+            otherwise,
+          ),
+        nodeExpr(child.templates.default, scope, rowKey, slot),
+      );
+  };
 
   const nodeExpr = (node, scope, rowKey, slot) => {
     if (node.type === '#text') {
@@ -468,6 +488,11 @@ function typesBlock(name, contract, inputType = (input) => input.type) {
           .join('\n')}\n}`
       : `export type ${name}Refs = Readonly<Record<string, never>>;`,
   );
+  // KF-YX6HMT: the kinds a `templates` repeat renders, by its item name.
+  for (const [as, kinds] of Object.entries(contract.kinds ?? {}))
+    lines.push(
+      `/** The \`kind\` values with a row design of their own; any other takes \`default\`. */\nexport type ${name}${as[0].toUpperCase()}${as.slice(1)}Kind = ${kinds.map(literal).join(' | ')};`,
+    );
   return lines.join('\n\n');
 }
 
@@ -582,8 +607,7 @@ export function generateView(document, catalog, options = {}) {
     if (node.type === '#view') views[node.src] = options.resolveView(node.src);
     for (const list of Object.values(isObject(node.zones) ? node.zones : {})) {
       for (const child of list) {
-        if ('$each' in child)
-          templateNodes(child.template).forEach(collectViews);
+        if ('$each' in child) eachNodes(child).forEach(collectViews);
         else if ('$if' in child) {
           collectViews(child.then);
           collectViews(child.else);

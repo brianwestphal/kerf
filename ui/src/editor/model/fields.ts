@@ -12,6 +12,7 @@ import type {
   ViewValue,
 } from '@kerfjs/ui/view';
 
+import { mapRows } from './document.js';
 import { exampleValue, resolveType, singular } from './examples.js';
 import type { InspectorProp } from './inspector.js';
 
@@ -589,7 +590,7 @@ export function documentInDeclaredOrder(
   };
   const child = (item: ViewChild): ViewChild => {
     if ('$each' in item)
-      return { ...item, template: child(item.template) as ViewTemplate };
+      return mapRows(item, (template) => child(template) as ViewTemplate);
     if ('$if' in item)
       return {
         ...item,

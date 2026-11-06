@@ -13,7 +13,7 @@ import {
   type ViewValue,
 } from '@kerfjs/ui/view';
 
-import { findNode, templateNodes, visitNodes } from './document.js';
+import { findNode, mapRows, rowNodes, visitNodes } from './document.js';
 import { type FieldPath, valueAt, withValueAt } from './fields.js';
 
 type MutableNode = {
@@ -71,7 +71,7 @@ function walk(document: ViewDocument, visit: (at: Located) => boolean) {
     branch = false,
   ): void => {
     if ('$each' in item)
-      for (const node of templateNodes(item.template))
+      for (const node of rowNodes(item))
         visitNode(node as MutableNode, undefined, undefined, parent, zone);
     else if ('$if' in item) {
       // A branch is itself a child: a node, a repeat, or a nested condition.
@@ -308,7 +308,10 @@ export function placeChild(
 /** The ids of every node a zone child holds, itself included. */
 function heldIds(child: ViewChild, ids = new Set<string>()): Set<string> {
   if ('$slot' in child) return ids;
-  if ('$each' in child) return heldIds(child.template, ids);
+  if ('$each' in child) {
+    for (const node of rowNodes(child)) heldIds(node, ids);
+    return ids;
+  }
   if ('$if' in child) {
     heldIds(child.then, ids);
     if (child.else) heldIds(child.else, ids);
@@ -354,7 +357,7 @@ export function copyChild<Child extends ViewChild>(
   const copy = (item: ViewChild): ViewChild => {
     if ('$slot' in item) return { ...item };
     if ('$each' in item)
-      return { ...item, template: copy(item.template) as ViewTemplate };
+      return mapRows(item, (template) => copy(template) as ViewTemplate);
     if ('$if' in item)
       return {
         ...item,
@@ -381,7 +384,7 @@ function namesIn(document: ViewDocument): Set<string> {
   const names = new Set<string>();
   const visit = (child: ViewChild) => {
     if ('$slot' in child) return;
-    if ('$each' in child) return visit(child.template);
+    if ('$each' in child) return rowNodes(child).forEach(visit);
     if ('$if' in child) {
       visit(child.then);
       if (child.else) visit(child.else);
@@ -469,7 +472,7 @@ export function embedNode(
     // The first node with the id is wrapped, as `locate` finds it.
     if (wrapperId !== undefined || '$slot' in child) return child;
     if ('$each' in child)
-      return { ...child, template: place(child.template) as ViewTemplate };
+      return mapRows(child, (template) => place(template) as ViewTemplate);
     if ('$if' in child)
       return {
         ...child,
@@ -903,7 +906,7 @@ export function eachScopes(
       for (const item of children) {
         const found =
           '$each' in item
-            ? templateNodes(item.template)
+            ? rowNodes(item)
                 .map((node) =>
                   visit(node, [...frames, { as: item.as, source: item.$each }]),
                 )

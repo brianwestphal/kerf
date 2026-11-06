@@ -51,6 +51,58 @@ export interface TemplateBranch {
   readonly node: ViewNode;
   /** The condition that picks this branch; none for the last (`else`) one. */
   readonly condition?: ViewValue;
+  /** KF-YX6HMT: in a `templates` map, the kind that picks this node. */
+  readonly kind?: string;
+}
+
+/** An `$each` zone child. */
+export type Each = Extract<ViewChild, { $each: unknown }>;
+
+/**
+ * How an `$each` picks its rows: one `template` (a node or an `$if` chain),
+ * or (KF-YX6HMT) `templates` keyed by the item's `kind`.
+ */
+export type EachRows =
+  | { readonly template: ViewTemplate }
+  | {
+      readonly templates: Extract<Each, { templates: unknown }>['templates'];
+      readonly kind: ViewValue;
+    };
+
+/** The part of `each` that picks its rows. */
+export function rowsOf(each: Each): EachRows {
+  return 'templates' in each
+    ? { templates: each.templates, kind: each.kind }
+    : { template: each.template };
+}
+
+/** Every row design of `each` in order: its template's branches, or its kinds. */
+export function rowBranches(each: Each): TemplateBranch[] {
+  if (!('templates' in each)) return templateBranches(each.template);
+  return Object.entries(each.templates).map(([kind, node]) => ({ node, kind }));
+}
+
+/** The nodes `each` renders rows from, in order. */
+export function rowNodes(each: Each): ViewNode[] {
+  return rowBranches(each).map((branch) => branch.node);
+}
+
+/** `each` with each of its templates (or `templates` entries) changed. */
+export function mapRows(
+  each: Each,
+  change: (template: ViewTemplate) => ViewTemplate,
+): Each {
+  if (!('templates' in each))
+    return { ...each, template: change(each.template) };
+  return {
+    ...each,
+    templates: Object.fromEntries(
+      Object.entries(each.templates).map(([kind, node]) => [
+        kind,
+        change(node),
+      ]),
+    ),
+  } as Each;
 }
 
 /**
@@ -103,8 +155,7 @@ export function visitNodes(document: ViewDocument): NodeVisit[] {
     repeated: boolean,
   ) => {
     if ('$each' in item)
-      for (const branch of templateNodes(item.template))
-        node(branch, ancestors, true);
+      for (const branch of rowNodes(item)) node(branch, ancestors, true);
     else if ('$if' in item) {
       child(item.then, ancestors, repeated);
       if (item.else) child(item.else, ancestors, repeated);

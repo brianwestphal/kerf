@@ -13,9 +13,11 @@ import {
 } from '@kerfjs/ui/view';
 
 import {
+  type EachRows,
+  rowBranches,
+  rowNodes,
+  rowsOf,
   type TemplateBranch,
-  templateBranches,
-  templateNodes,
 } from './document.js';
 import type { BindingOption } from './edits.js';
 import { addsProblems, eachScopes } from './edits.js';
@@ -44,11 +46,14 @@ export interface NodeControl {
   readonly otherwise?: ViewChild;
   /**
    * KF-1CRGP1: for a node in an `$if`-chain template, the template's row
-   * designs in order, and which one it is. Absent for a one-node template.
+   * designs in order, and which one it is. KF-YX6HMT: for a node in a
+   * `templates` map, its kinds in order, with the value that picks one.
+   * Absent for a one-node template.
    */
   readonly rows?: {
     readonly branches: readonly TemplateBranch[];
     readonly index: number;
+    readonly kind?: ViewValue;
   };
 }
 
@@ -58,8 +63,8 @@ type Owner = {
   readonly node: ViewNode;
   /** For a node in `else`: the `then` branch beside it. */
   readonly sibling?: ViewChild;
-  /** For a repeated node: its `$each`'s whole template. */
-  readonly template?: ViewTemplate;
+  /** For a repeated node: how its `$each` picks rows. */
+  readonly eachRows?: EachRows;
 } & NodeControl;
 
 const isNode = (child: ViewChild): child is ViewNode =>
@@ -75,16 +80,24 @@ function matchBranch(
 ): Omit<Owner, 'list' | 'index'> | undefined {
   if (isNode(child)) return child.id === id ? { node: child } : undefined;
   if (!('$each' in child)) return undefined;
-  const branches = templateBranches(child.template);
+  const branches = rowBranches(child);
   const index = branches.findIndex((branch) => branch.node.id === id);
-  return index < 0
-    ? undefined
-    : {
-        node: branches[index]!.node,
-        template: child.template,
-        repeat: { source: child.$each, as: child.as, key: child.key },
-        ...(branches.length > 1 ? { rows: { branches, index } } : {}),
-      };
+  if (index < 0) return undefined;
+  const keyed = 'kind' in child;
+  return {
+    node: branches[index]!.node,
+    eachRows: rowsOf(child),
+    repeat: { source: child.$each, as: child.as, key: child.key },
+    ...(branches.length > 1 || keyed
+      ? {
+          rows: {
+            branches,
+            index,
+            ...(keyed ? { kind: child.kind } : {}),
+          },
+        }
+      : {}),
+  };
 }
 
 /**
@@ -135,7 +148,7 @@ function ownerOf(document: ViewDocument, id: string): Owner | undefined {
 /** The nodes directly under a zone child, through its control flow. */
 function nodesUnder(child: ViewChild): ViewNode[] {
   if ('$slot' in child) return [];
-  if ('$each' in child) return templateNodes(child.template);
+  if ('$each' in child) return rowNodes(child);
   if ('$if' in child)
     return [
       ...nodesUnder(child.then),
@@ -171,7 +184,7 @@ type ControlPatch = {
   readonly condition?: ViewValue | undefined;
   readonly repeat?: Repeat | undefined;
   readonly otherwise?: ViewChild | undefined;
-  readonly template?: ViewTemplate | undefined;
+  readonly eachRows?: EachRows | undefined;
 };
 
 /**
@@ -191,14 +204,14 @@ function withControl(
     key in patch ? patch[key] : owner[key];
   const condition = pick('condition');
   const repeat = pick('repeat');
-  // A repeat keeps its whole template; one that stops keeps only this node.
+  // A repeat keeps its row designs; one that stops keeps only this node.
   const inner: ViewChild = repeat
-    ? {
+    ? ({
         $each: repeat.source,
         as: repeat.as,
         key: repeat.key,
-        template: pick('template') ?? owner.node,
-      }
+        ...(pick('eachRows') ?? { template: owner.node }),
+      } as ViewChild)
     : owner.node;
   if (owner.branch === 'else') {
     owner.list.splice(
@@ -262,17 +275,27 @@ export function setOtherwise(
 }
 
 /**
- * Replaces the template of the `$each` that repeats node `id` (KF-1CRGP1:
- * row designs); unchanged when no editable repeat holds it.
+ * Replaces how the `$each` that repeats node `id` picks rows (KF-1CRGP1: row
+ * designs): one `template`, or a `templates` map with its `kind`. Unchanged
+ * when no editable repeat holds the node.
  */
+export function setRows(
+  document: ViewDocument,
+  id: string,
+  rows: EachRows,
+): ViewDocument {
+  return controlOf(document, id)?.repeat
+    ? withControl(document, id, { eachRows: rows })
+    : document;
+}
+
+/** Replaces the template of the `$each` that repeats node `id`. */
 export function setTemplate(
   document: ViewDocument,
   id: string,
   template: ViewTemplate,
 ): ViewDocument {
-  return controlOf(document, id)?.repeat
-    ? withControl(document, id, { template })
-    : document;
+  return setRows(document, id, { template });
 }
 
 /** Points every `$bind` that starts at item `from` at item `to` instead. */
@@ -305,17 +328,15 @@ export function renameItem(
     return { error: 'An item name is a camelCase identifier.' };
   const repeat = controlOf(document, id)?.repeat;
   if (!repeat) return { error: 'This node does not repeat.' };
-  const next = clone(document);
-  const owner = ownerOf(next, id)!;
-  // Every row design's bindings, and each branch condition, follow.
-  const template = owner.template!;
-  Object.assign(template, renameBindings(template, repeat.as, as));
-  const result = withControl(next, id, {
+  // Every row design's bindings, each branch condition, and a kind follow.
+  const rows = ownerOf(document, id)!.eachRows!;
+  const result = withControl(document, id, {
     repeat: {
       source: repeat.source,
       as,
       key: renameBindings({ $bind: repeat.key }, repeat.as, as).$bind,
     },
+    eachRows: renameBindings(rows, repeat.as, as),
   });
   return { document: result };
 }
@@ -551,7 +572,7 @@ function placedSlots(document: ViewDocument): Set<string> {
   const names = new Set<string>();
   const child = (item: ViewChild) => {
     if ('$slot' in item) names.add(item.$slot);
-    else if ('$each' in item) templateNodes(item.template).forEach(node);
+    else if ('$each' in item) rowNodes(item).forEach(node);
     else if ('$if' in item) {
       child(item.then);
       if (item.else) child(item.else);

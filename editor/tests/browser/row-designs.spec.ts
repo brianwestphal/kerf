@@ -1,4 +1,4 @@
-// KF-1CRGP1: a list picks a row design per item. The Repeat section's Row
+// KF-1CRGP1 / KF-YX6HMT: a list picks a row design per item. The Repeat section's Row
 // designs turn a one-node `$each` template into an `$if` chain; the canvas
 // renders each item's design, the outline lists both, and play mode runs a
 // row of either design.
@@ -27,13 +27,14 @@ const document = {
             { name: 'id', type: { kind: 'string' }, required: true },
             { name: 'label', type: { kind: 'string' }, required: true },
             { name: 'header', type: { kind: 'boolean' }, required: false },
+            { name: 'kind', type: { kind: 'string' }, required: false },
           ],
         },
       },
       default: [
-        { id: 'today', label: 'Today', header: true },
-        { id: 'lunch', label: 'Lunch with Sam' },
-        { id: 'standup', label: 'Standup notes' },
+        { id: 'today', label: 'Today', header: true, kind: 'section' },
+        { id: 'lunch', label: 'Lunch with Sam', kind: 'message' },
+        { id: 'standup', label: 'Standup notes', kind: 'note' },
       ],
     },
   },
@@ -189,4 +190,67 @@ test('removing a design leaves one template', async ({ page }, info) => {
     'data-kerf-node',
     ids.row,
   );
+});
+
+// KF-YX6HMT: the same list picks its designs by the item's kind.
+test('a list keyed by kind renders each kind’s design', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openDocument(page);
+  await page
+    .locator(`[data-action="editor-select-node"][data-item-id="${ids.row}"]`)
+    .click();
+  await area(page, 'Flow');
+  await page.locator('[data-editor-control="row-kind"]').click();
+  await page.getByRole('option', { name: 'item.kind', exact: true }).click();
+  await expect(
+    page.getByRole('combobox', { name: 'Pick the design by' }),
+  ).toContainText('item.kind');
+  await page.locator('[data-editor-kind="name"] input').fill('section');
+  await page.locator('[data-editor-kind="component"]').click();
+  await page.getByRole('option', { name: 'ListHeader', exact: true }).click();
+  await page.getByRole('button', { name: 'Add kind' }).click();
+  await expect(page.getByText(/· 4 nodes · valid$/)).toBeVisible();
+  // The section item takes the new design; the others take `default`.
+  await expect(canvasRow(page, 'today')).not.toHaveAttribute(
+    'data-kerf-node',
+    ids.row,
+  );
+  await expect(canvasRow(page, 'lunch')).toHaveAttribute(
+    'data-kerf-node',
+    ids.row,
+  );
+  await expect(canvasRow(page, 'standup')).toHaveAttribute(
+    'data-kerf-node',
+    ids.row,
+  );
+  const section = await canvasRow(page, 'today').getAttribute('data-kerf-node');
+  await expect(
+    page
+      .locator(`[data-item-id="${section}"]`)
+      .getByText(/item\.kind is section/),
+  ).toBeAttached();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-yx6hmt-row-kinds-1440.png'),
+    animations: 'disabled',
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole('button', { name: 'Show Inspector' }).click();
+  await area(page, 'Flow');
+  await page.getByRole('button', { name: 'Add kind' }).scrollIntoViewIfNeeded();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-yx6hmt-row-kinds-390.png'),
+    animations: 'disabled',
+  });
+  await page.setViewportSize({ width: 1440, height: 900 });
+
+  // Play mode renders each kind's design and logs a default row's action.
+  await page.locator('[data-action="editor-play"]').click();
+  const stage = page.frameLocator('[data-editor-play-frame]');
+  await stage.getByText('Lunch with Sam').click();
+  const log = page.locator('[data-action="editor-play-log"]');
+  await expect(log).toHaveAttribute('aria-label', 'Action log, 1 new');
 });

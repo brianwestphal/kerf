@@ -92,6 +92,12 @@ const addDesign = (root: HTMLElement, condition = HEADER) => {
   choose(field(root, '[data-editor-row-design="condition"]'), condition);
   click(root, 'editor-add-row-design');
 };
+/** Types into a text field and commits it with `change`. */
+function type(host: HTMLElement, value: string) {
+  const input = host.querySelector<HTMLInputElement>('input')!;
+  input.value = value;
+  input.dispatchEvent(new Event('change', { bubbles: true }));
+}
 const selectedId = (editor: ReturnType<typeof createEditor>) =>
   (editor.selection.value as { id: string }).id;
 
@@ -175,5 +181,88 @@ describe('row designs in the Repeat section', () => {
     expect(root.textContent).not.toContain('Row designs');
     editor.selection.value = { kind: 'node', id: COMPOSE };
     expect(root.querySelector('[data-editor-row-design]')).toBeNull();
+  });
+});
+
+// KF-YX6HMT: rows picked by the item's kind from a `templates` map.
+describe('row designs keyed by kind', () => {
+  const LABEL = JSON.stringify({ $bind: 'item.label' });
+  const rowKind = (root: HTMLElement) =>
+    field(root, '[data-editor-control="row-kind"]');
+  const addKind = (root: HTMLElement, name: string) => {
+    type(field(root, '[data-editor-kind="name"]'), name);
+    choose(field(root, '[data-editor-kind="component"]'), LIST_ITEM);
+    click(root, 'editor-add-kind');
+  };
+  const kindsOf = (editor: ReturnType<typeof createEditor>) =>
+    controlOf(editor.document.value, ROW)!.rows!.branches.map(
+      (branch) => branch.kind,
+    );
+
+  it('picks designs by kind, adds, renames, and removes kinds', () => {
+    const { root, editor } = open();
+    // Not by kind changes nothing.
+    const before = editor.document.value;
+    choose(rowKind(root), '');
+    expect(editor.document.value).toBe(before);
+    choose(rowKind(root), LABEL);
+    expect(controlOf(editor.document.value, ROW)!.rows!.kind).toEqual({
+      $bind: 'item.label',
+    });
+    expect(kindsOf(editor)).toEqual(['default']);
+    // The default design keeps its name and cannot be removed.
+    expect(
+      field(root, '[data-editor-control="kind-name"]').hasAttribute(
+        'disabled',
+      ) ||
+        field(root, '[data-editor-control="kind-name"] input').hasAttribute(
+          'disabled',
+        ),
+    ).toBe(true);
+    expect(root.querySelector('[data-action="editor-remove-row-design"]')).toBe(
+      null,
+    );
+    // The same kind value again changes nothing.
+    const picked = editor.document.value;
+    choose(rowKind(root), LABEL);
+    expect(editor.document.value).toBe(picked);
+
+    addKind(root, 'Today');
+    const added = selectedId(editor);
+    expect(added).not.toBe(ROW);
+    expect(kindsOf(editor)).toEqual(['default', 'Today']);
+    expect(root.textContent).toContain('item.label is Today');
+    // The canvas renders the row whose label is Today with the new design.
+    expect(
+      root.querySelector('[data-key="a"]')?.getAttribute('data-kerf-node'),
+    ).toBe(added);
+
+    // Renaming to a taken name explains why; a free name renames.
+    const name = () => field(root, '[data-editor-control="kind-name"]');
+    type(name(), 'default');
+    expect(root.textContent).toContain(
+      'This list already has a default design.',
+    );
+    type(name(), 'Lunch');
+    expect(kindsOf(editor)).toEqual(['default', 'Lunch']);
+    const renamed = editor.document.value;
+    type(name(), 'Lunch');
+    expect(editor.document.value).toBe(renamed);
+
+    // An empty or taken new kind is refused.
+    addKind(root, '');
+    expect(root.textContent).toContain('A kind is a name, such as header.');
+    addKind(root, 'Lunch');
+    expect(kindsOf(editor)).toEqual(['default', 'Lunch']);
+
+    // Another value picks the designs.
+    choose(rowKind(root), JSON.stringify({ $bind: 'item.id' }));
+    expect(controlOf(editor.document.value, ROW)!.rows!.kind).toEqual({
+      $bind: 'item.id',
+    });
+
+    click(root, 'editor-remove-row-design');
+    expect(selectedId(editor)).toBe(ROW);
+    expect(controlOf(editor.document.value, ROW)?.rows).toBeUndefined();
   });
 });

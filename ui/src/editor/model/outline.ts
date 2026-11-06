@@ -1,7 +1,7 @@
 // The outline rail's rows: one per node, in document order.
 import type { ViewChild, ViewDocument, ViewNode } from '@kerfjs/ui/view';
 
-import { templateBranches, visitNodes } from './document.js';
+import { rowBranches, visitNodes } from './document.js';
 
 export interface OutlineRow {
   readonly id: string;
@@ -160,6 +160,24 @@ function sourceName(value: unknown): string {
 }
 
 /**
+ * When one row design of several shows: `if`/`else if` a condition, or
+ * (KF-YX6HMT) when the item's kind is its name; `otherwise` for the `else`
+ * branch or the `default` kind.
+ */
+function rowDetail(
+  at: number,
+  condition: unknown,
+  kind: string | undefined,
+  name: string | undefined,
+): string {
+  if (name !== undefined)
+    return name === 'default' ? 'otherwise' : `${kind} is ${name}`;
+  return condition === undefined
+    ? 'otherwise'
+    : `${at ? 'else if' : 'if'} ${sourceName(condition)}`;
+}
+
+/**
  * The document as a tree for the outline: each node under its parent, in
  * document order, with its condition (`$if`) and repeat (`$each`) in its
  * detail. A `$slot` is a row of its own (KF-90GTJN).
@@ -249,18 +267,15 @@ export function outlineTree(
     if ('$each' in item) {
       // KF-1CRGP1: each row design of an `$if`-chain template, with when it
       // shows.
-      const branches = templateBranches(item.template);
-      return branches.map(({ node, condition }, at) =>
+      const branches = rowBranches(item);
+      const kind = 'kind' in item ? sourceName(item.kind) : undefined;
+      return branches.map(({ node, condition, kind: name }, at) =>
         entry(node, zone, true, [
           ...control,
           `for each ${item.as} in ${sourceName(item.$each)}`,
           ...(branches.length === 1
             ? []
-            : [
-                condition === undefined
-                  ? 'otherwise'
-                  : `${at ? 'else if' : 'if'} ${sourceName(condition)}`,
-              ]),
+            : [rowDetail(at, condition, kind, name)]),
         ]),
       );
     }

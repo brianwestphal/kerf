@@ -11,7 +11,7 @@ import {
   channelOf,
   fieldZoneOf,
   parseCssTree,
-  templateNodes,
+  eachNodes,
   withFieldZones,
   ZoneFill,
   zonePropOf,
@@ -155,13 +155,15 @@ function renderDocument(document, inputs, slots, options) {
       // from the item.
       const rest = child.key.split('.').slice(1);
       const items = value(child.$each, scope);
-      const row = (item) =>
-        rowValue(
-          child.template,
-          new Map(scope).set(child.as, item),
+      const row = (item) => {
+        const inner = new Map(scope).set(child.as, item);
+        return rowValue(
+          rowTemplate(child, inner),
+          inner,
           readPath(item, rest),
           slot,
         );
+      };
       // Scope holds only `$each` items, so a non-empty scope is a row
       // template. kerf never reconciles a list inside a row (the row is
       // flattened to HTML, and a keyed each() there throws), so an inner
@@ -169,7 +171,7 @@ function renderDocument(document, inputs, slots, options) {
       // module writes it (KF-CFA1S1).
       return scope.size
         ? items.map(row)
-        : each(items, row, { key: templateNodes(child.template)[0]?.id });
+        : each(items, row, { key: eachNodes(child)[0]?.id });
     }
     if ('$if' in child) {
       if (value(child.$if, scope)) return childValue(child.then, scope, slot);
@@ -181,6 +183,17 @@ function renderDocument(document, inputs, slots, options) {
         : slots[child.$slot]();
     }
     return nodeValue(child, scope, undefined, slot);
+  };
+
+  // KF-YX6HMT: the template an item's `kind` picks from `templates`, else
+  // the `default` one. A preview of a map with no `default` falls back to
+  // its first template, since a keyed row must be one element.
+  const rowTemplate = (child, scope) => {
+    if (!('templates' in child)) return child.template;
+    const { templates } = child;
+    const kind = value(child.kind, scope);
+    if (Object.hasOwn(templates, kind)) return templates[kind];
+    return templates.default ?? Object.values(templates)[0];
   };
 
   // A row: the template node, or the branch its `$if` chain picks for this

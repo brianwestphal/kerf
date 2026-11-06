@@ -290,7 +290,7 @@
             "required": ["$each"]
           },
           "then": {
-            "required": ["$each", "as", "key", "template"],
+            "required": ["$each", "as", "key"],
             "additionalProperties": false,
             "properties": {
               "$each": {
@@ -306,6 +306,32 @@
               },
               "template": {
                 "$ref": "#/$defs/template"
+              },
+              "templates": {
+                "description": "One row node per item kind; kind picks one, and an item of any other kind takes default, which is required.",
+                "type": "object",
+                "required": ["default"],
+                "additionalProperties": {
+                  "$ref": "#/$defs/node"
+                }
+              },
+              "kind": {
+                "description": "A string in the item's scope that names the row's template in templates."
+              }
+            },
+            "if": {
+              "required": ["templates"]
+            },
+            "then": {
+              "required": ["kind"],
+              "not": {
+                "required": ["template"]
+              }
+            },
+            "else": {
+              "required": ["template"],
+              "not": {
+                "required": ["kind"]
               }
             }
           }

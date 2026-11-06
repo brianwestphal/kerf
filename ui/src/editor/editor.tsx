@@ -138,6 +138,7 @@ import {
 import { type CanvasDropSurface, wireCanvasDrag } from './canvas-drag.js';
 import type { EditorCatalog } from './catalog.js';
 import {
+  ADD_KIND_ACTION,
   ADD_ROW_DESIGN_ACTION,
   ADD_SLOT_ACTION,
   addSlotFields,
@@ -324,10 +325,13 @@ import {
   readableMessage,
 } from './model/problems.js';
 import {
+  addKind,
   addRowDesign,
   removeRowDesign,
+  renameKind,
   rowDesignChoices,
   setRowCondition,
+  setRowKind,
 } from './model/row-designs.js';
 import { sampleInputs } from './model/sample-inputs.js';
 import {
@@ -4355,6 +4359,8 @@ export function createEditor(options: EditorOptions) {
           fieldErrors.value['#item'],
           otherwiseChoices,
           rowDesignChoices(viewCatalog, otherwiseChoices),
+          fieldErrors.value['#kind'],
+          fieldErrors.value['#new-kind'],
         )}
         {viewsSection(node)}
         {embedSection()}
@@ -5775,6 +5781,33 @@ export function createEditor(options: EditorOptions) {
     select({ kind: 'node', id: node.id });
   };
 
+  /**
+   * KF-YX6HMT: adds the kind named in the Row designs add form, shown as the
+   * chosen component, and selects it.
+   */
+  const addRowKind = () => {
+    // The form shows only for a selected node in a list keyed by kind.
+    const id = selectedNodeId()!;
+    const field = (name: string) =>
+      document.querySelector<HTMLElement>(`[data-editor-kind="${name}"]`)!;
+    const type = String(controlValue(field('component')));
+    const node = seededNode(type);
+    const result = addKind(
+      doc.value,
+      id,
+      String(controlValue(field('name'))).trim(),
+      node,
+    );
+    if ('error' in result) {
+      fieldErrors.value = { '#new-kind': result.error };
+      return;
+    }
+    // The name field is uncontrolled; a new kind starts it empty again.
+    field('name').querySelector('input')!.value = '';
+    commit(withCatalog(result.document, type));
+    select({ kind: 'node', id: node.id });
+  };
+
   /** Removes the selected row design and selects the design before it. */
   const removeRow = () => {
     // The button shows only for a selected node in a chain.
@@ -5817,6 +5850,17 @@ export function createEditor(options: EditorOptions) {
               key: option.key,
             }),
           );
+        return;
+      }
+      case 'row-kind': {
+        if (!value || value === JSON.stringify(current?.rows?.kind)) return;
+        commit(setRowKind(doc.value, id, JSON.parse(value) as ViewValue));
+        return;
+      }
+      case 'kind-name': {
+        const result = renameKind(doc.value, id, value.trim());
+        if ('error' in result) fieldErrors.value = { '#kind': result.error };
+        else if (result.document !== doc.value) commit(result.document);
         return;
       }
       case 'row-condition': {
@@ -6621,6 +6665,7 @@ export function createEditor(options: EditorOptions) {
           }),
         [ADD_SLOT_ACTION]: () => addSlot(),
         [ADD_ROW_DESIGN_ACTION]: () => addRow(),
+        [ADD_KIND_ACTION]: () => addRowKind(),
         [REMOVE_ROW_DESIGN_ACTION]: () => removeRow(),
         [PROMOTE_ACTION]: () => promote(),
         [PROMOTE_PROP_ACTION]: (_event, target) =>

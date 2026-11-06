@@ -28,7 +28,7 @@ import {
 } from './model/control-flow.js';
 import { findNode } from './model/document.js';
 import { eachScopes } from './model/edits.js';
-import { rowConditionOptions } from './model/row-designs.js';
+import { rowConditionOptions, rowKindOptions } from './model/row-designs.js';
 
 /** Adds a `$slot` to the chosen zone. */
 export const ADD_SLOT_ACTION = 'editor-add-slot';
@@ -38,6 +38,9 @@ export const ADD_ROW_DESIGN_ACTION = 'editor-add-row-design';
 
 /** Removes the selected row design from its list (KF-1CRGP1). */
 export const REMOVE_ROW_DESIGN_ACTION = 'editor-remove-row-design';
+
+/** Adds the kind chosen in the Row designs add form (KF-YX6HMT). */
+export const ADD_KIND_ACTION = 'editor-add-kind';
 
 /** How a `$param` or `$bind` reads as a choice label. */
 const sourceLabel = (value: ViewValue) => {
@@ -82,6 +85,10 @@ export function controlFlowSection(
   otherwiseChoices: readonly { value: string; label: string }[],
   /** Components that can be a row design there: each has a data-* channel. */
   rowChoices: readonly { value: string; label: string }[] = [],
+  /** KF-YX6HMT: why the last kind name typed was refused. */
+  kindError?: string,
+  /** KF-YX6HMT: why the last kind added was refused. */
+  newKindError?: string,
 ) {
   const control = controlOf(document, id);
   if (!control) {
@@ -155,7 +162,17 @@ export function controlFlowSection(
         ) : undefined}
       </List>
       {control.repeat
-        ? rowDesignFields(document, catalog, id, control, rowChoices)
+        ? control.rows?.kind === undefined
+          ? rowDesignFields(document, catalog, id, control, rowChoices)
+          : kindFields(
+              document,
+              catalog,
+              id,
+              control,
+              rowChoices,
+              kindError,
+              newKindError,
+            )
         : undefined}
     </>
   );
@@ -180,6 +197,8 @@ function rowDesignFields(
   const own = findNode(document, id)!.node.type;
   const current =
     rows && !last ? rows.branches[rows.index]!.condition : undefined;
+  // KF-YX6HMT: a one-node list can pick its designs by kind instead.
+  const kinds = rows ? [] : rowKindOptions(document, catalog, id);
   return (
     <>
       <ListHeader label="Row designs" size="xs" />
@@ -248,6 +267,16 @@ function rowDesignFields(
             </Button>
           </>
         ) : undefined}
+        {kinds.length ? (
+          <Select
+            name="control-row-kind"
+            label="Or pick designs by kind"
+            value=""
+            choices={choicesWith(kinds, undefined, 'Not by kind')}
+            hint="A text field of the item names each row's design; this one becomes the default."
+            rootAttributes={{ 'data-editor-control': 'row-kind' }}
+          />
+        ) : undefined}
       </List>
       {ready ? undefined : (
         <ListInsetText>
@@ -256,6 +285,82 @@ function rowDesignFields(
           </Text>
         </ListInsetText>
       )}
+    </>
+  );
+}
+
+/**
+ * KF-YX6HMT: the row designs of a list keyed by kind: the value that picks
+ * a design, the selected design's kind (the `default` one takes every other
+ * kind and keeps its name), and adding a kind with its component.
+ */
+function kindFields(
+  document: ViewDocument,
+  catalog: ViewCatalog,
+  id: string,
+  control: NonNullable<ReturnType<typeof controlOf>>,
+  choices: readonly { value: string; label: string }[],
+  error: string | undefined,
+  addError: string | undefined,
+) {
+  const rows = control.rows!;
+  const kind = rows.branches[rows.index]!.kind!;
+  const fallback = kind === 'default';
+  const own = findNode(document, id)!.node.type;
+  return (
+    <>
+      <ListHeader label="Row designs" size="xs" />
+      <List controlInsets="trbl" gap>
+        <Select
+          name="control-row-kind"
+          label="Pick the design by"
+          value={JSON.stringify(rows.kind)}
+          choices={choicesWith(
+            rowKindOptions(document, catalog, id),
+            rows.kind,
+            'Choose a value',
+          ).slice(1)}
+          hint="Each item shows the design named by this text value."
+          rootAttributes={{ 'data-editor-control': 'row-kind' }}
+        />
+        <TextField
+          label="Kind"
+          value={kind}
+          disabled={fallback}
+          hint={
+            fallback
+              ? 'Items of any other kind show this design.'
+              : 'Items whose kind is this name show this design.'
+          }
+          error={error}
+          rootAttributes={{ 'data-editor-control': 'kind-name' }}
+        />
+        {fallback ? undefined : (
+          <Button
+            emphasis="secondary"
+            size="compact"
+            action={REMOVE_ROW_DESIGN_ACTION}
+          >
+            Remove row design
+          </Button>
+        )}
+        <TextField
+          label="Add a kind"
+          placeholder="header"
+          error={addError}
+          rootAttributes={{ 'data-editor-kind': 'name' }}
+        />
+        <Select
+          name="kind-component"
+          label="Shown as"
+          value={own}
+          choices={choices}
+          rootAttributes={{ 'data-editor-kind': 'component' }}
+        />
+        <Button emphasis="secondary" size="compact" action={ADD_KIND_ACTION}>
+          Add kind
+        </Button>
+      </List>
     </>
   );
 }

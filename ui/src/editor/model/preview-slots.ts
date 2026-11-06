@@ -10,6 +10,7 @@ import type {
 } from '@kerfjs/ui/view';
 
 import type { SlotAddress } from './control-flow.js';
+import { mapRows } from './document.js';
 
 /** A placed slot in the preview: its document name and where it sits. */
 export interface PreviewSlot {
@@ -48,10 +49,10 @@ export function previewSlots(
       return { ...item, $slot: preview };
     }
     if ('$each' in item)
-      return {
-        ...item,
-        template: child(item.template, address) as ViewTemplate,
-      };
+      return mapRows(
+        item,
+        (template) => child(template, address) as ViewTemplate,
+      );
     if ('$if' in item)
       return {
         ...item,

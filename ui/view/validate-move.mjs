@@ -10,6 +10,7 @@
 import {
   childFacts,
   createScopedCheck,
+  eachTemplates,
   runView,
   validateView,
 } from './validate.mjs';
@@ -45,7 +46,8 @@ function sharedSlot(root) {
   };
   const child = (item) => {
     if (!isObject(item)) return false;
-    if ('$each' in item) return child(item.template);
+    if ('$each' in item)
+      return value(item.kind) || eachTemplates(item).some(child);
     if ('$if' in item)
       return value(item.$if) || child(item.then) || child(item.else);
     if ('$slot' in item) return value(item.input);
@@ -89,7 +91,9 @@ function indexDocument(document) {
   };
   const child = (item, parent, zone, index, direct) => {
     if (!isObject(item)) ok = false;
-    else if ('$each' in item) child(item.template, parent, zone, index, false);
+    else if ('$each' in item)
+      for (const template of eachTemplates(item))
+        child(template, parent, zone, index, false);
     else if ('$if' in item) {
       child(item.then, parent, zone, index, false);
       if ('else' in item) child(item.else, parent, zone, index, false);
@@ -105,7 +109,10 @@ function indexDocument(document) {
 /** The ids of every node a zone child holds, itself included. */
 function heldIds(item, ids = new Set()) {
   if ('$slot' in item) return ids;
-  if ('$each' in item) return heldIds(item.template, ids);
+  if ('$each' in item) {
+    for (const template of eachTemplates(item)) heldIds(template, ids);
+    return ids;
+  }
   if ('$if' in item) {
     heldIds(item.then, ids);
     if (item.else) heldIds(item.else, ids);
@@ -139,6 +146,17 @@ function prepareTree(node, prepare, map) {
 
 function prepareChild(item, prepare, map) {
   if ('$each' in item) {
+    if ('templates' in item) {
+      // KF-YX6HMT: one prepared node per kind, sharing an unchanged map.
+      const entries = Object.entries(item.templates);
+      const prepared = entries.map(([kind, node]) => [
+        kind,
+        prepareChild(node, prepare, map),
+      ]);
+      return prepared.every(([, node], index) => node === entries[index][1])
+        ? item
+        : { ...item, templates: Object.fromEntries(prepared) };
+    }
     const template = prepareChild(item.template, prepare, map);
     return template === item.template ? item : { ...item, template };
   }

@@ -500,6 +500,16 @@ of any design. Renaming the item rewrites every design's bindings and each
 condition; changing the list keeps the designs, and Do not repeat keeps only
 the selected design.
 
+A one-design list can instead **pick designs by kind** (KF-YX6HMT: keyed
+templates): Or pick designs by kind chooses a text param or item field
+(those `validateView` accepts as the `kind`), and the design becomes the
+`default` entry of a `templates` map. A selected design then shows Pick the
+design by (the kind value), its Kind name (the `default` design keeps its
+name and cannot be removed), and Remove row design; Add a kind takes a name
+and a component, refusing an empty or taken name. Removing the last other
+kind makes the list a plain template again. The outline reads
+`item.kind is header` for a kind's design and `otherwise` for `default`.
+
 A css-value prop's field takes any `$css` builder call, compositions
 included (`calc(plus(px(8), space("m")))`, `lengthVar("--app-gap", px(8))`);
 its hint lists the builders the prop accepts (the catalog's `cssValue.helpers`)
@@ -1017,6 +1027,28 @@ never styled from outside. This matches Kerf UI's "configure, never override".
     branch's node id. Every branch's nodes are row-scoped: their actions are
     row actions and their named nodes keyed refs (§4.4). A document without a
     chain generates exactly what it did before.
+  - **A row design per item kind** (KF-YX6HMT: keyed templates). Instead of
+    `template`, an `$each` may carry `"templates": { "<kind>": <node>, … }`
+    with `"kind": <string value>` (`{ "$bind": "item.kind" }`, a param, or a
+    literal), like Interface Builder's prototype cells. Exactly one of
+    `template` and `templates` is set, and `kind` goes only with
+    `templates`. Each entry is one keyable node under the same rules as a
+    single template (no `$if` chain inside an entry). **Decision: an unknown
+    kind falls back to a required `default` entry**, rather than rendering
+    nothing, so a repeat never filters, as with the chain's required `else`.
+    `default` also serves items whose kind is literally `"default"`, and the
+    lookup reads only the map's own keys, so a kind such as `"toString"`
+    takes `default` too. The generated module compares the kind per row in
+    the map's order (`row.kind === "header" ? A : … : Default`), keyed by the
+    first entry's node id, and exports
+    `type <Name><As>Kind = "default" | "header" | …` (sorted) so application
+    data can name the kinds. Named nodes in any entry are keyed refs. A
+    preview of a map with no `default` yet renders its first entry for an
+    unknown kind.
+  - **Two branching forms.** Use an `$if` chain when a row's design follows
+    true/false facts about the item (a header flag, a muted flag), checked in
+    order. Use `templates` when the item carries one discriminant string
+    naming its design (a message, a date separator, a section header).
   - Items must be objects, because `each()` keys rows by item identity.
   - The template's component needs a `data-*` channel to carry the row's
     `data-key`.
@@ -1050,13 +1082,12 @@ generated module is a plain render function, so app code that owns its own
 list can call it per item with `each()` or `bindList` and fill only the
 item's details, the equivalent of dequeuing a prototype cell. Rows that
 differ by kind either vary inside one row component through `$if`, or pick a
-row design per item through an `$if`-chain template (above). KF-B5JFTM chose
-both that and a `templates` map keyed by a bound kind, which KF-YX6HMT adds
-on the same row-branching plumbing. The editor authors an `$if`-chain
-template in the Repeat section's Row designs (KF-1CRGP1), and renders and
-inspects a `#view` row document and opens it (KF-5N26H6, §3.7); inserting
-one from a document picker (KF-PX5EVZ) and extracting a subtree into one
-(KF-D9P3NP) are not built yet.
+row design per item through an `$if`-chain template or a `templates` map
+keyed by the item's kind (above; KF-B5JFTM chose both). The editor authors
+both in the Repeat section's Row designs (KF-1CRGP1, KF-YX6HMT), and renders
+and inspects a `#view` row document and opens it (KF-5N26H6, §3.7);
+inserting one from a document picker (KF-PX5EVZ) and extracting a subtree
+into one (KF-D9P3NP) are not built yet.
 
 There are no other control-flow forms. Anything richer belongs in application
 code behind a slot.
@@ -1203,8 +1234,9 @@ cannot hand the view a raw string.
 catalog `rootElement` (`ul` → `HTMLUListElement`), falling back to
 `HTMLElement`. A named node inside an `$each` template becomes a lookup,
 `(key: string) => <Element> | null`, instead of a single element. That
-includes a node in any branch of a template `$if` chain (§3.5): the lookup
-returns `null` for a row that took another branch.
+includes a node in any branch of a template `$if` chain, or in any entry of
+a `templates` map (§3.5): the lookup returns `null` for a row that took
+another design.
 `<name>Refs(root)` resolves each ref by its `data-kerf-node` marker, never by
 class name or DOM position. It throws, naming the ref, when a non-row ref is
 missing. That catches a stale generated module paired with a different render.
@@ -1257,7 +1289,11 @@ no whitespace, and these members:
 - `inputs`: each name with its printed type and optionality;
 - `actions`: each name with its scope (`row` or `view`);
 - `slots`: each name with its printed input type;
-- `refs`: each name with its element type and multiplicity.
+- `refs`: each name with its element type and multiplicity;
+- `kinds` (KF-YX6HMT), only when a repeat uses `templates`: each `templates`
+  repeat's item name (`as`) with its sorted kinds. Repeats that share an item
+  name share one list, and one exported `<Name><As>Kind` type. A document
+  without `templates` has no `kinds` member, so its digest is unchanged.
 
 Layout, literal prop values, text, ordering, and unnamed nodes are excluded.
 So a purely visual edit (reorder, a prop literal, new static text, a moved
@@ -1386,6 +1422,8 @@ command run the same pipeline:
    | Slot added, removed, or its input changed                | breaking     |
    | Ref removed or retyped; ref changed from single to keyed | breaking     |
    | Ref added                                                | non-breaking |
+   | Kind removed from a `templates` map (KF-YX6HMT)          | breaking     |
+   | Kind added to a `templates` map                          | non-breaking |
    | Layout, literals, text, unnamed nodes                    | no change    |
 
    Type changes are classified by printed type: identical means no change, an
@@ -1490,6 +1528,14 @@ row"), a branch that is not one node, including a chain in `then` ("the
 template is exactly one node, or an `$if` chain of them"), and a branch whose
 component has no `data-*` channel, each at that branch's path. The condition
 is checked as any `$if` condition is, in the item's scope.
+
+For a `templates` map (§3.5, KF-YX6HMT), `KUI-V008` reports both `template`
+and `templates` ("an `$each` has exactly one of `template` and
+`templates`"), a missing `default` entry at `.templates`, a missing `kind`
+("`templates` needs a `kind` that resolves to a string on the item"), a
+`kind` without `templates`, an entry that is not one node ("each `templates`
+entry is exactly one node"), and an entry whose component has no `data-*`
+channel. The `kind` is checked as a string value in the item's scope.
 
 **Hints** (KF-KQ72TW: non-blocking view hints) are advice about a valid
 document. They never set `valid` to false, and generation, export, and Compare
