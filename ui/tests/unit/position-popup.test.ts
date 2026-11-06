@@ -63,6 +63,15 @@ const offsetOf = () =>
 
 describe('positionPopup', () => {
   it('positions fixed against the anchor and records the placement used', async () => {
+    const root = document.documentElement;
+    Object.defineProperty(root, 'clientWidth', {
+      value: 1024,
+      configurable: true,
+    });
+    Object.defineProperty(root, 'clientHeight', {
+      value: 768,
+      configurable: true,
+    });
     const anchor = document.createElement('button');
     const popup = document.createElement('div');
     popup.style.maxHeight = '10px';
@@ -84,8 +93,10 @@ describe('positionPopup', () => {
       'shift',
       'size',
     ]);
-    // Only the viewport bounds a top-layer popup.
-    const boundary = document.documentElement;
+    // Only the viewport bounds a top-layer popup, as a rectangle in viewport
+    // coordinates (KF-GRNDW5: the document element's client rect moves up
+    // as the page scrolls, which flipped and capped a scrolled page's popup).
+    const boundary = { x: 0, y: 0, width: 1024, height: 768 };
     expect(options.middleware[1]!.options).toEqual({
       fallbackStrategy: 'bestFit',
       padding: POPUP_VIEWPORT_PADDING,
@@ -100,6 +111,8 @@ describe('positionPopup', () => {
     expect(popup.style.left).toBe('12px');
     expect(popup.style.top).toBe('34px');
     expect(popup.getAttribute('data-placement')).toBe('bottom-start-used');
+    delete (root as { clientWidth?: number }).clientWidth;
+    delete (root as { clientHeight?: number }).clientHeight;
   });
 
   it('caps the popup to the room its side has, never below zero', async () => {

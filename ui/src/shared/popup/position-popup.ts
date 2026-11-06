@@ -65,7 +65,17 @@ export async function positionPopup(
 ): Promise<void> {
   // The popup is in the top layer, which no ancestor clips: only the
   // viewport bounds it, not the scroll containers it is rendered inside.
-  const boundary = popup.ownerDocument.documentElement;
+  // KF-GRNDW5: as a rectangle in the viewport coordinates `fixed` places
+  // in. The document element as the boundary was measured by its client
+  // rect, which moves up as the page scrolls, so a scrolled page flipped
+  // the popup to the wrong side and capped it short.
+  const root = popup.ownerDocument.documentElement;
+  const boundary = {
+    x: 0,
+    y: 0,
+    width: root.clientWidth,
+    height: root.clientHeight,
+  };
   // Measure the natural size: a cap from an earlier, shorter side would
   // otherwise steer the flip.
   popup.style.removeProperty('max-height');
