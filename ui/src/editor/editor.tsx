@@ -143,6 +143,8 @@ import {
   ADD_SLOT_ACTION,
   addSlotFields,
   controlFlowSection,
+  MOVE_ROW_DESIGN_EARLIER_ACTION,
+  MOVE_ROW_DESIGN_LATER_ACTION,
   REMOVE_ROW_DESIGN_ACTION,
   slotEditor,
 } from './control-flow-section.js';
@@ -327,6 +329,7 @@ import {
 import {
   addKind,
   addRowDesign,
+  moveRowDesign,
   removeRowDesign,
   renameKind,
   rowDesignChoices,
@@ -6667,6 +6670,11 @@ export function createEditor(options: EditorOptions) {
         [ADD_ROW_DESIGN_ACTION]: () => addRow(),
         [ADD_KIND_ACTION]: () => addRowKind(),
         [REMOVE_ROW_DESIGN_ACTION]: () => removeRow(),
+        // KF-STBQBG: the moved design stays selected.
+        [MOVE_ROW_DESIGN_EARLIER_ACTION]: () =>
+          commit(moveRowDesign(doc.value, selectedNodeId()!, -1)),
+        [MOVE_ROW_DESIGN_LATER_ACTION]: () =>
+          commit(moveRowDesign(doc.value, selectedNodeId()!, 1)),
         [PROMOTE_ACTION]: () => promote(),
         [PROMOTE_PROP_ACTION]: (_event, target) =>
           promote(target.dataset.editorPromoteProp),

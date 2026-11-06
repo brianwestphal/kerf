@@ -259,3 +259,58 @@ test('a list keyed by kind renders each kind’s design', async ({
   const log = page.locator('[data-action="editor-play-log"]');
   await expect(log).toHaveAttribute('aria-label', 'Action log, 1 new');
 });
+
+// KF-STBQBG: a selected design moves earlier or later; the else stays last.
+test('row designs reorder, the last one staying last', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openDocument(page);
+  await addHeaderDesign(page);
+  const first = await canvasRow(page, 'today').getAttribute('data-kerf-node');
+  // A second design from the selected one goes before the last, so the
+  // header item still takes the first.
+  await page.getByRole('button', { name: 'Add row design' }).click();
+  await expect(page.getByText(/· 5 nodes · valid$/)).toBeVisible();
+  await expect(canvasRow(page, 'today')).toHaveAttribute(
+    'data-kerf-node',
+    first!,
+  );
+  const earlier = page.getByRole('button', { name: 'Move design earlier' });
+  const later = page.getByRole('button', { name: 'Move design later' });
+  // The new design sits just before the else, so it cannot move later.
+  await expect(later).toBeDisabled();
+  await earlier.click();
+  // Now first, it takes the header item.
+  await expect(canvasRow(page, 'today')).not.toHaveAttribute(
+    'data-kerf-node',
+    first!,
+  );
+  await expect(earlier).toBeDisabled();
+  await expect(later).toBeEnabled();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-stbqbg-row-designs-1440.png'),
+    animations: 'disabled',
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole('button', { name: 'Show Inspector' }).click();
+  await area(page, 'Flow');
+  await later.scrollIntoViewIfNeeded();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-stbqbg-row-designs-390.png'),
+    animations: 'disabled',
+  });
+  await later.click();
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(canvasRow(page, 'today')).toHaveAttribute(
+    'data-kerf-node',
+    first!,
+  );
+  // The else design has no move controls.
+  await canvasRow(page, 'lunch').click();
+  await area(page, 'Flow');
+  await expect(earlier).toHaveCount(0);
+  await expect(later).toHaveCount(0);
+});

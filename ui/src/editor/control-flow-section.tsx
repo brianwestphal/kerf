@@ -28,7 +28,11 @@ import {
 } from './model/control-flow.js';
 import { findNode } from './model/document.js';
 import { eachScopes } from './model/edits.js';
-import { rowConditionOptions, rowKindOptions } from './model/row-designs.js';
+import {
+  rowConditionOptions,
+  rowDesignMoves,
+  rowKindOptions,
+} from './model/row-designs.js';
 
 /** Adds a `$slot` to the chosen zone. */
 export const ADD_SLOT_ACTION = 'editor-add-slot';
@@ -38,6 +42,42 @@ export const ADD_ROW_DESIGN_ACTION = 'editor-add-row-design';
 
 /** Removes the selected row design from its list (KF-1CRGP1). */
 export const REMOVE_ROW_DESIGN_ACTION = 'editor-remove-row-design';
+
+/** Moves the selected row design one place earlier (KF-STBQBG). */
+export const MOVE_ROW_DESIGN_EARLIER_ACTION = 'editor-move-row-design-earlier';
+
+/** Moves the selected row design one place later (KF-STBQBG). */
+export const MOVE_ROW_DESIGN_LATER_ACTION = 'editor-move-row-design-later';
+
+/**
+ * KF-STBQBG: Move design earlier / later for the selected row design, each
+ * disabled where the design cannot move that way. None for the last design
+ * of an `$if` chain, which stays last.
+ */
+function moveRowDesignButtons(document: ViewDocument, id: string) {
+  const moves = rowDesignMoves(document, id);
+  if (!moves.earlier && !moves.later) return undefined;
+  return (
+    <>
+      <Button
+        emphasis="secondary"
+        size="compact"
+        action={MOVE_ROW_DESIGN_EARLIER_ACTION}
+        disabled={!moves.earlier}
+      >
+        Move design earlier
+      </Button>
+      <Button
+        emphasis="secondary"
+        size="compact"
+        action={MOVE_ROW_DESIGN_LATER_ACTION}
+        disabled={!moves.later}
+      >
+        Move design later
+      </Button>
+    </>
+  );
+}
 
 /** Adds the kind chosen in the Row designs add form (KF-YX6HMT). */
 export const ADD_KIND_ACTION = 'editor-add-kind';
@@ -212,7 +252,7 @@ function rowDesignFields(
                 value=""
                 choices={[{ value: '', label: 'For every other item' }]}
                 disabled
-                hint={`The last of ${rows.branches.length} designs shows for every item no earlier design takes.`}
+                hint={`The last of ${rows.branches.length} designs shows for every item no earlier design takes, so it stays last.`}
               />
             ) : (
               <Select
@@ -228,6 +268,7 @@ function rowDesignFields(
                 rootAttributes={{ 'data-editor-control': 'row-condition' }}
               />
             )}
+            {moveRowDesignButtons(document, id)}
             <Button
               emphasis="secondary"
               size="compact"
@@ -335,6 +376,7 @@ function kindFields(
           error={error}
           rootAttributes={{ 'data-editor-control': 'kind-name' }}
         />
+        {moveRowDesignButtons(document, id)}
         {fallback ? undefined : (
           <Button
             emphasis="secondary"

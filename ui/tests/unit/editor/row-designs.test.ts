@@ -36,10 +36,12 @@ import { previewSlots } from '../../../src/editor/model/preview-slots.js';
 import {
   addKind,
   addRowDesign,
+  moveRowDesign,
   removeRowDesign,
   renameKind,
   rowConditionOptions,
   rowDesignChoices,
+  rowDesignMoves,
   rowKindOptions,
   setRowCondition,
   setRowKind,
@@ -276,6 +278,43 @@ describe('row design edits', () => {
     expect(setRowCondition(one, ROW, true)).toBe(one);
   });
 
+  // KF-STBQBG: reordering keeps each design's condition and the else last.
+  it('moves a design with its condition, keeping the last one last', () => {
+    const three = addRowDesign(documentWith(chain()), ROW, muted(), {
+      $bind: 'item.muted',
+    });
+    const later = moveRowDesign(three, HEADER, 1);
+    expect(each(later).template).toEqual({
+      $if: { $bind: 'item.muted' },
+      then: muted(),
+      else: { $if: { $bind: 'item.header' }, then: header(), else: row() },
+    });
+    expect(valid(later)).toEqual([]);
+    expect(each(moveRowDesign(later, HEADER, -1)).template).toEqual(
+      each(three).template,
+    );
+    // The first cannot move earlier, the one before the else cannot pass it,
+    // and the else does not move.
+    expect(moveRowDesign(three, HEADER, -1)).toBe(three);
+    expect(moveRowDesign(three, MUTED, 1)).toBe(three);
+    expect(moveRowDesign(three, ROW, -1)).toBe(three);
+    expect(rowDesignMoves(three, HEADER)).toEqual({
+      earlier: false,
+      later: true,
+    });
+    expect(rowDesignMoves(three, MUTED)).toEqual({
+      earlier: true,
+      later: false,
+    });
+    expect(rowDesignMoves(three, ROW)).toEqual({
+      earlier: false,
+      later: false,
+    });
+    const one = documentWith(row());
+    expect(moveRowDesign(one, ROW, 1)).toBe(one);
+    expect(moveRowDesign(one, LIST, 1)).toBe(one);
+  });
+
   it('offers the true/false values in the item scope as conditions', () => {
     const labels = (document: ViewDocument, id: string) =>
       rowConditionOptions(document, viewCatalog, id).map(
@@ -497,6 +536,34 @@ describe('row designs keyed by kind', () => {
       template: row(),
     });
     expect('kind' in rowsOfEach(removeRowDesign(keyed(), HEADER))).toBe(false);
+  });
+
+  // KF-STBQBG: in a map, order is only map order, so every kind moves.
+  it('moves a kind, default included, within the map', () => {
+    const later = moveRowDesign(keyed(), HEADER, 1);
+    expect(Object.keys(rowsOfEach(later).templates!)).toEqual([
+      'default',
+      'header',
+    ]);
+    expect(valid(later)).toEqual([]);
+    expect(
+      Object.keys(rowsOfEach(moveRowDesign(later, HEADER, -1)).templates!),
+    ).toEqual(['header', 'default']);
+    expect(rowDesignMoves(keyed(), ROW)).toEqual({
+      earlier: true,
+      later: false,
+    });
+    expect(rowDesignMoves(keyed(), HEADER)).toEqual({
+      earlier: false,
+      later: true,
+    });
+    // An integer-like kind always sorts first, so it cannot move later.
+    const numbered = keyed({ '2': header(), default: row() });
+    expect(moveRowDesign(numbered, HEADER, 1)).toBe(numbered);
+    expect(rowDesignMoves(keyed({ default: row() }), ROW)).toEqual({
+      earlier: false,
+      later: false,
+    });
   });
 
   it('leaves conditions to $if chains', () => {

@@ -500,6 +500,19 @@ of any design. Renaming the item rewrites every design's bindings and each
 condition; changing the list keeps the designs, and Do not repeat keeps only
 the selected design.
 
+A selected design moves with **Move design earlier** and **Move design
+later** (KF-STBQBG: reorder row designs), each disabled at an end. In a
+chain the first true condition wins, so order is meaning: a design's
+condition moves with it, and the last design (the `else`) stays last. It
+has no move controls, and the design before it cannot move after it.
+Swapping the two would hand the else's node a condition and turn the other
+design into the fallback, changing which items each design shows for;
+to change the fallback, add the new one and remove the old. In a list keyed
+by kind any design moves, `default` included: the order is only the map's
+(the generated comparisons and the outline), since `default` always takes
+the remaining kinds. A kind named like an integer always sorts first in a
+JSON object, so it cannot move.
+
 A one-design list can instead **pick designs by kind** (KF-YX6HMT: keyed
 templates): Or pick designs by kind chooses a text param or item field
 (those `validateView` accepts as the `kind`), and the design becomes the

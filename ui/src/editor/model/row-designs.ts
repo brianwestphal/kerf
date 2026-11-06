@@ -100,6 +100,53 @@ export function setRowCondition(
 }
 
 /**
+ * KF-STBQBG: moves row design `id` one place earlier (-1) or later (+1) in
+ * its list. In an `$if` chain its condition moves with it, and the last
+ * design (the `else`, for every other item) stays last: it does not move,
+ * and the design before it cannot move after it. In a list keyed by kind
+ * any design moves, which changes only the map's order (the generated
+ * comparisons and the outline); a move the map's key order cannot hold (a
+ * kind named like an integer always sorts first) leaves it unchanged.
+ * Unchanged past either end, or for a node with one design.
+ */
+export function moveRowDesign(
+  document: ViewDocument,
+  id: string,
+  delta: -1 | 1,
+): ViewDocument {
+  const rows = controlOf(document, id)?.rows;
+  if (!rows) return document;
+  const target = rows.index + delta;
+  const end =
+    rows.kind === undefined ? rows.branches.length - 1 : rows.branches.length;
+  if (target < 0 || target >= end || rows.index >= end) return document;
+  const branches = [...rows.branches];
+  [branches[rows.index], branches[target]] = [
+    branches[target]!,
+    branches[rows.index]!,
+  ];
+  if (rows.kind === undefined)
+    return setTemplate(document, id, chainOf(branches));
+  const moved = withKinds(document, id, branches, rows.kind);
+  const order = (at: ViewDocument) =>
+    controlOf(at, id)!
+      .rows!.branches.map((branch) => branch.kind)
+      .join('\n');
+  return order(moved) === order(document) ? document : moved;
+}
+
+/** KF-STBQBG: whether row design `id` can move earlier and later. */
+export function rowDesignMoves(
+  document: ViewDocument,
+  id: string,
+): { earlier: boolean; later: boolean } {
+  return {
+    earlier: moveRowDesign(document, id, -1) !== document,
+    later: moveRowDesign(document, id, 1) !== document,
+  };
+}
+
+/**
  * The params and item fields that can pick a row design in the list that
  * repeats node `id`: each one the validator accepts as a branch condition
  * there, judged on a probe chain that adds a copy of the node.

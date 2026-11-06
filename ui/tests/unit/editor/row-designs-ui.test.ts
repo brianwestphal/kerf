@@ -168,6 +168,36 @@ describe('row designs in the Repeat section', () => {
     });
   });
 
+  // KF-STBQBG: Move design earlier / later reorder the chain; the else stays.
+  it('moves a design earlier and later, keeping the last one last', () => {
+    const { root, editor } = open();
+    addDesign(root);
+    const first = selectedId(editor);
+    editor.selection.value = { kind: 'node', id: ROW };
+    addDesign(root);
+    const second = selectedId(editor);
+    const order = () =>
+      controlOf(editor.document.value, ROW)!.rows!.branches.map(
+        (branch) => branch.node.id,
+      );
+    const button = (action: string) =>
+      root.querySelector<HTMLButtonElement>(`[data-action="${action}"]`);
+    expect(order()).toEqual([first, second, ROW]);
+    expect(button('editor-move-row-design-later')!.disabled).toBe(true);
+    click(root, 'editor-move-row-design-earlier');
+    expect(order()).toEqual([second, first, ROW]);
+    expect(selectedId(editor)).toBe(second);
+    expect(button('editor-move-row-design-earlier')!.disabled).toBe(true);
+    click(root, 'editor-move-row-design-later');
+    expect(order()).toEqual([first, second, ROW]);
+    click(root, 'editor-undo');
+    expect(order()).toEqual([second, first, ROW]);
+    // The last design, for every other item, has no move controls.
+    editor.selection.value = { kind: 'node', id: ROW };
+    expect(button('editor-move-row-design-earlier')).toBeNull();
+    expect(button('editor-move-row-design-later')).toBeNull();
+  });
+
   it('offers no design when no true/false value can pick one', () => {
     const { root } = open(ROW, false);
     expect(root.textContent).toContain(
@@ -260,6 +290,12 @@ describe('row designs keyed by kind', () => {
     expect(controlOf(editor.document.value, ROW)!.rows!.kind).toEqual({
       $bind: 'item.id',
     });
+
+    // KF-STBQBG: any kind moves; the order is the map's.
+    click(root, 'editor-move-row-design-earlier');
+    expect(kindsOf(editor)).toEqual(['Lunch', 'default']);
+    click(root, 'editor-move-row-design-later');
+    expect(kindsOf(editor)).toEqual(['default', 'Lunch']);
 
     click(root, 'editor-remove-row-design');
     expect(selectedId(editor)).toBe(ROW);
