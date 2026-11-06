@@ -189,20 +189,38 @@ describe('composed document model', () => {
       },
     } as ViewDocument;
     expect(viewPropsEntry('./row.kui.json', row).props).toEqual([
-      { name: 'title', type: { kind: 'string' }, required: true },
+      // KF-WDA59Q: each type carries its text, as a props catalog's does.
+      {
+        name: 'title',
+        type: { kind: 'string', text: 'string' },
+        required: true,
+      },
       {
         name: 'unread',
-        type: { kind: 'boolean' },
+        type: { kind: 'boolean', text: 'boolean' },
         required: false,
         default: false,
       },
-      { name: 'size', type: { kind: 'number' }, required: false, default: 2 },
+      {
+        name: 'size',
+        type: { kind: 'number', text: 'number' },
+        required: false,
+        default: 2,
+      },
       {
         name: 'tags',
-        type: { kind: 'array', items: { kind: 'string' } },
+        type: {
+          kind: 'array',
+          items: { kind: 'string' },
+          text: 'readonly string[]',
+        },
         required: false,
       },
-      { name: 'note', type: { kind: 'string' }, required: false },
+      {
+        name: 'note',
+        type: { kind: 'string', text: 'string' },
+        required: false,
+      },
     ]);
     expect(
       viewPropsEntry('./x.kui.json', { ...row, params: undefined }).props,
@@ -464,6 +482,35 @@ describe('composed documents in the editor', () => {
     choose(source, JSON.stringify({ $bind: 'message.id' }));
     expect(view().props.title).toEqual({ $bind: 'message.id' });
     await vi.waitFor(() => expect(canvas(root).textContent).toContain('m1'));
+  });
+
+  // KF-WDA59Q: an array or object param edits as JSON, named by its type.
+  it('inspects a #view whose document has array and object params', async () => {
+    const row = {
+      ...rowDocument(),
+      params: {
+        ...rowDocument().params,
+        tags: {
+          type: { kind: 'array', items: { kind: 'string' } },
+          default: [],
+        },
+        meta: {
+          type: {
+            kind: 'object',
+            props: [{ name: 'a', type: { kind: 'string' }, required: true }],
+          },
+          optional: true,
+        },
+      },
+    } as ViewDocument;
+    const { root, editor } = open(files(listDocument(), text(row)));
+    await vi.waitFor(() =>
+      expect(canvas(root).textContent).toContain('Quarterly report'),
+    );
+    select(editor);
+    expect(root.querySelector('[data-editor-prop="tags"]')).not.toBeNull();
+    expect(root.textContent).toContain('JSON for');
+    expect(root.querySelector('[data-editor-prop="meta"]')).not.toBeNull();
   });
 
   it('shows a missing required param on its field', async () => {

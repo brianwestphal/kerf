@@ -5,6 +5,7 @@
 // of a composed document the canvas renders so it selects as its `#view`.
 import {
   composedViewPath,
+  typeText,
   type ViewChild,
   type ViewDiagnostic,
   type ViewDocument,
@@ -98,7 +99,10 @@ export function viewPropsEntry(
     source: 'package',
     props: Object.entries(params).map(([name, param]): InspectorProp => ({
       name,
-      type: param.type,
+      // KF-WDA59Q: a param type as the props catalog writes one, with its
+      // `text`, which the JSON control's hint reads for array and object
+      // params.
+      type: { ...param.type, text: typeText(param.type) },
       required: !('default' in param) && param.optional !== true,
       ...(typeof param.default === 'string' ||
       typeof param.default === 'number' ||
