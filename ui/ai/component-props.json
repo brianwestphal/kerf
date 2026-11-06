@@ -13316,6 +13316,204 @@
       "dataChannel": "rootAttributes"
     },
     {
+      "key": "@kerfjs/ui:surface-scaffold#PinnablePopoverSurface",
+      "id": "surface-scaffold",
+      "source": "kerf",
+      "import": "@kerfjs/ui/surface-scaffold",
+      "export": "PinnablePopoverSurface",
+      "description": "A non-modal surface a person can pin and move. Transient by default: it\nopens below the control that opened it and closes on Escape or a press\noutside. Pinned (by its header Pin toggle or `pinPopover()`), it stays\nopen while the page is used, drags by its title, moves with the arrow\nkeys, resizes, and stays inside the viewport gutter. Open it with a\n`popoverTarget` control or `showPopover()`, and call `wirePinnablePopover()`\nonce for its placement, dismissal, and movement; the application stores\nwhat `onChange` reports. Use `PopoverDialogSurface` for a dialog that only\never light-dismisses.",
+      "props": [
+        {
+          "name": "id",
+          "type": { "kind": "string", "text": "string" },
+          "required": true,
+          "description": "The root id: what an opening control's `popoverTarget` names. The title\nand the move description derive their ids from it."
+        },
+        {
+          "name": "label",
+          "type": { "kind": "string", "text": "string" },
+          "required": true,
+          "description": "The title text: the surface's accessible name and its move handle's."
+        },
+        {
+          "name": "describedBy",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Id of the element whose text describes the surface, rendered as\n`aria-describedby` on the `role=\"dialog\"` root."
+        },
+        {
+          "name": "children",
+          "type": {
+            "kind": "content",
+            "text": "KerfUiContent",
+            "nullable": true
+          },
+          "required": true,
+          "description": "The body content, below the header.",
+          "slot": true
+        },
+        {
+          "name": "headerActions",
+          "type": {
+            "kind": "content",
+            "text": "KerfUiContent",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Controls before the Pin and Close buttons in the header.",
+          "slot": true
+        },
+        {
+          "name": "presentation",
+          "type": {
+            "kind": "enum",
+            "values": ["overlay", "embedded"],
+            "text": "PinnablePopoverSurfacePresentation | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "overlay",
+          "description": "`overlay` (default) is a native `popover=\"manual\"` in the top layer that\n`wirePinnablePopover` places, dismisses, and moves; `embedded` renders\nthe same surface in flow for a catalog or a design canvas."
+        },
+        {
+          "name": "pinned",
+          "type": {
+            "kind": "boolean",
+            "text": "boolean | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Render it pinned: an `embedded` preview of the pinned state. An\noverlay's pinned state belongs to `wirePinnablePopover`; pass `pinned`\nthere to restore it."
+        },
+        {
+          "name": "size",
+          "type": {
+            "kind": "enum",
+            "values": ["small", "medium", "large"],
+            "text": "DialogSurfaceSize | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Preferred width preset: 400px, 560px (default), or 800px."
+        },
+        {
+          "name": "preferredWidth",
+          "type": {
+            "kind": "css-value",
+            "grammar": "CssLength",
+            "text": "CssLength",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Preferred width; takes precedence over `size`, within the viewport cap."
+        },
+        {
+          "name": "height",
+          "type": {
+            "kind": "union",
+            "members": [
+              {
+                "kind": "css-value",
+                "grammar": "CssLength",
+                "text": "CssLength"
+              },
+              { "kind": "literal", "value": "viewport", "text": "\"viewport\"" }
+            ],
+            "text": "DialogSurfaceHeight | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Definite height, bounded by the dynamic viewport minus both gutters."
+        },
+        {
+          "name": "maxHeight",
+          "type": {
+            "kind": "union",
+            "members": [
+              {
+                "kind": "css-value",
+                "grammar": "CssLength",
+                "text": "CssLength"
+              },
+              { "kind": "literal", "value": "viewport", "text": "\"viewport\"" }
+            ],
+            "text": "DialogSurfaceMaxHeight | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Height cap, bounded the same way, for a surface that sizes to content."
+        },
+        {
+          "name": "viewportGutter",
+          "type": {
+            "kind": "css-value",
+            "grammar": "CssLength",
+            "text": "CssLength",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Edge clearance on each side of the viewport (default 16px): the surface\nis placed, dragged, and moved inside it."
+        },
+        {
+          "name": "bodyLayout",
+          "type": {
+            "kind": "enum",
+            "values": ["flow", "fill", "fill-last"],
+            "text": "DialogSurfaceBodyLayout | undefined",
+            "nullable": true
+          },
+          "required": false,
+          "default": "flow",
+          "description": "Body layout (default `flow`); `fill` lets one child own the body and\n`fill-last` stacks fixed rows above one filling last child."
+        },
+        {
+          "name": "pinLabel",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "default": "Pin",
+          "description": "The Pin toggle's accessible name (default `Pin`)."
+        },
+        {
+          "name": "closeLabel",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "default": "Close",
+          "description": "The close button's accessible name (default `Close`)."
+        },
+        {
+          "name": "moveDescription",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "The move handle's accessible description of the pointer and keyboard move."
+        },
+        {
+          "name": "rootAttributes",
+          "type": {
+            "kind": "record",
+            "text": "Readonly<Record<`data-${string}`, string>>",
+            "nullable": true
+          },
+          "required": false,
+          "control": "hidden"
+        },
+        {
+          "name": "className",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "control": "classes"
+        },
+        {
+          "name": "slot",
+          "type": { "kind": "string", "text": "string", "nullable": true },
+          "required": false,
+          "description": "Native named-slot assignment when composed inside a web component.",
+          "control": "hidden"
+        }
+      ],
+      "nativeAttributes": [],
+      "dataChannel": "rootAttributes"
+    },
+    {
       "key": "@kerfjs/ui:surface-scaffold#PopoverDialogSurface",
       "id": "surface-scaffold",
       "source": "kerf",

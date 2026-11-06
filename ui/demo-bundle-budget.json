@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 458800,
+  "totalJavaScriptGzip": 461400,
   "measuredLargestJavaScriptGzip": 164545,
-  "measuredTotalJavaScriptGzip": 458707,
+  "measuredTotalJavaScriptGzip": 461318,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6995,6 +6995,22 @@
         "measuredTotalJavaScriptGzip": 458707,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 458800
+      }
+    },
+    {
+      "at": "2026-11-06T11:21:20.660Z",
+      "reason": "PinnablePopoverSurface, its wirePinnablePopover controller, and the Surface Scaffolds demo's Pinnable Popover example",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 458707,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 458800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 461318,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 461400
       }
     }
   ]

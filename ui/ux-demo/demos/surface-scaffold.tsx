@@ -13,9 +13,12 @@ import { SplitView } from '@kerfjs/ui/split-view';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import {
   DialogSurface,
+  type PinnablePopoverChange,
+  PinnablePopoverSurface,
   PopoverDialogSurface,
   PopupSurface,
   wireDialogStack,
+  wirePinnablePopover,
 } from '@kerfjs/ui/surface-scaffold';
 import { Text } from '@kerfjs/ui/text';
 import { TextField } from '@kerfjs/ui/text-field';
@@ -68,7 +71,65 @@ export function reorderDialogStackDemo(): void {
     readerOrder.value = [...readerOrder.value].reverse();
 }
 
+const LIBRARY_COMPONENTS = [
+  'Button',
+  'Checkbox',
+  'List',
+  'Pane',
+  'Select',
+  'Slider',
+  'Switch',
+  'Text Field',
+  'Toolbar',
+];
+
+/** The saved state, as the app would show what it stored. */
+function libraryPlacementText(saved: PinnablePopoverChange | null): string {
+  if (saved === null) return 'Nothing saved yet.';
+  if (!saved.pinned || saved.placement === null) return 'Saved: transient.';
+  const { x, y, width, height } = saved.placement;
+  const size =
+    width === undefined || height === undefined ? '' : `, ${width} × ${height}`;
+  return `Saved: pinned at ${Math.round(x)}, ${Math.round(y)}${size}.`;
+}
+
+/** The pinnable Library popover example's id. */
+export const LIBRARY_POPOVER_ID = 'catalog-library-popover';
+
+/** What the Library popover last reported: the app-owned position memory. */
+const savedLibrary = signal<PinnablePopoverChange | null>(null);
+let unwireLibrary: (() => void) | undefined;
+
+/** Wire the Library popover from what the demo last saved. */
+function wireLibraryPopover(root: ParentNode): void {
+  unwireLibrary?.();
+  unwireLibrary = undefined;
+  const surface = root.querySelector<HTMLElement>(`#${LIBRARY_POPOVER_ID}`);
+  if (!surface) return;
+  const saved = savedLibrary.value;
+  unwireLibrary = wirePinnablePopover(surface, {
+    pinned: saved?.pinned ?? false,
+    placement: saved?.placement ?? undefined,
+    onChange: (change) => {
+      savedLibrary.value = change;
+    },
+  });
+}
+
+/**
+ * Close the Library popover, then reopen it as a fresh page would: wired
+ * from the saved pinned state and placement.
+ */
+export function restoreLibraryPopoverDemo(root: ParentNode = document): void {
+  const surface = root.querySelector<HTMLElement>(`#${LIBRARY_POPOVER_ID}`);
+  if (!surface) return;
+  if (surface.matches(':popover-open')) surface.hidePopover();
+  wireLibraryPopover(root);
+  surface.showPopover();
+}
+
 export function wireDialogStackDemo(root: ParentNode): () => void {
+  wireLibraryPopover(root);
   const onClose = (event: Event) => {
     const dialog = event.target;
     if (!(dialog instanceof HTMLDialogElement)) return;
@@ -79,6 +140,8 @@ export function wireDialogStackDemo(root: ParentNode): () => void {
   const stop = wireDialogStack(root);
   return () => {
     stop();
+    unwireLibrary?.();
+    unwireLibrary = undefined;
     root.removeEventListener('kui-request-close', onClose);
   };
 }
@@ -292,6 +355,10 @@ export function sendSurfaceScaffoldChatMessage(
 /** Restore the chat-style examples' opening transcripts. */
 export function resetSurfaceScaffoldDemo(): void {
   readerOrder.value = [];
+  savedLibrary.value = null;
+  document
+    .querySelector<HTMLElement>(`#${LIBRARY_POPOVER_ID}:popover-open`)
+    ?.hidePopover();
   transcripts[CHAT_DIALOG_ID].value = INITIAL_CHAT;
   transcripts[THREAD_DIALOG_ID].value = INITIAL_THREAD;
 }
@@ -744,6 +811,50 @@ export function SurfaceScaffoldDemo() {
           />
           {projectSplit('catalog-popover-dialog-split')}
         </PopoverDialogSurface>
+      </CatalogExample>
+      <CatalogExample
+        label="Pinnable Popover"
+        note="A transient popover that opens below its button and closes on Escape or a press outside. Pin it, or drag its title, and it stays open while you use the page: drag it, or focus the title and press the arrow keys (Shift moves farther). It stays inside the viewport and resizes from its corner. The app stores what onChange reports; Reopen Saved wires a fresh surface from it."
+        align="inline-control"
+      >
+        <Toolbar
+          label="Pinnable Popover"
+          leading={
+            <ToolbarControlGroup single>
+              <ToolbarButton
+                popoverTarget={LIBRARY_POPOVER_ID}
+                ariaHasPopup="dialog"
+              >
+                Open Library
+              </ToolbarButton>
+            </ToolbarControlGroup>
+          }
+          trailing={
+            <ToolbarControlGroup single>
+              <ToolbarButton
+                action="restore-pinnable-popover"
+                disabled={savedLibrary.value === null}
+              >
+                Reopen Saved
+              </ToolbarButton>
+            </ToolbarControlGroup>
+          }
+        />
+        <Text variant="p" tone="quiet">
+          {libraryPlacementText(savedLibrary.value)}
+        </Text>
+        <PinnablePopoverSurface
+          id={LIBRARY_POPOVER_ID}
+          label="Library"
+          size="small"
+          maxHeight={remify(420)}
+        >
+          <List>
+            {LIBRARY_COMPONENTS.map((name) => (
+              <ListItem label={name} itemId={name} action="log-more" />
+            ))}
+          </List>
+        </PinnablePopoverSurface>
       </CatalogExample>
       <CatalogExample
         label="Embedded Dialog"

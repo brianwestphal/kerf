@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.73.0
+kerf-ui-skill-version: 1.74.0
 ---
 
 # Building with @kerfjs/ui
@@ -690,6 +690,8 @@ Give sibling `DialogSurface`s that render conditionally a stable `rootAttributes
 Render a modal dialog as `DialogSurface` itself, a native `<dialog>` (set `alert` for a confirmation before a destructive action, which renders `role="alertdialog"`; pair it with `describedBy` on the message and leave `lightDismiss` off): `label` (or `labelledBy` with a `heading`, such as an xl `ToolbarText` with a description) names it, `describedBy` (the heading ToolbarText's `descriptionId`, or app-owned summary copy) describes it as `aria-describedby`, `children` is its body, `footer` holds its buttons, and `headerActions` sit before its close button (`withoutHeader` drops the header for content that owns its heading and close control). Open it with `openDialog(dialog)` and close it with `closeDialog(dialog)` from `@kerfjs/ui/surface-scaffold`; never toggle its `open` attribute. The close button, any `data-dialog-close` element inside (a Cancel button), Escape, and, with `lightDismiss`, a backdrop press dispatch a cancelable `kui-request-close` (`detail.source`: `close-button`, `escape`, or `backdrop`); cancel it to keep the dialog open (the panel pulses). The native `close` event fires once it closes. `openDialog` installs the listeners and, while the dialog is open, measures its floating header/footer, follows a bottom sheet's keyboard and grabber, and keeps that state across re-renders; import `@kerfjs/ui/surface-scaffold/register` only when a dialog may open some other way. Do not write `wa-dialog` inside a `DialogSurface`.
 
 Render a non-modal dialog as `PopoverDialogSurface` (opened by a control's `popoverTarget`), never a hand-built `popover` element with its own chrome CSS. For a request the person must answer, set `dismiss="manual"` so Escape and outside presses leave it open; to dock it to an app region (the shell's main column) instead of the viewport center, pass that region's CSS anchor name as `anchorName` and name the region with the same `anchorName` on its `Pane` (or a layout's `PaneConfig`, such as Workbench `mainPane`), never with app CSS. See `docs/surface-scaffold.md`.
+
+For a non-modal panel the person may keep open while working (a component library, a palette), render `PinnablePopoverSurface` (same subpath, an `id` and a `label`) and call `wirePinnablePopover(surface, { pinned, placement, onChange })` once, never a hand-built draggable panel with app CSS and pointer handlers. It opens transient below its `popoverTarget` control and closes on Escape or a press outside; pinned (its header Pin toggle or `pinPopover(surface)`, read with `isPopoverPinned`) it stays open while the page is used, drags by its title, moves with the arrow keys (Shift for larger steps), resizes from its corner, and stays inside the viewport gutter after a window resize. The app owns storage: keep what `onChange` reports (`{ pinned, placement: { x, y, width?, height? } | null, reason }`) and pass it back to restore. Close it after a task (a drop) only when `isPopoverPinned` is false.
 
 Set `DialogSurface closeEmphasis="quiet"` when its built-in close control should recede. It keeps the native 40px button target, `closeLabel`, focus ring, and `kui-request-close` behavior. See `docs/surface-scaffold.md`.
 

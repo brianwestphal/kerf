@@ -5311,345 +5311,77 @@ export { wireToolbarVisibility };
 ## `@kerfjs/ui/surface-scaffold`
 
 ```ts
-import * as kerfjs from 'kerfjs';
-import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
-import { A as AnchorName } from './anchor-name-BZ1rpxaw.js';
-import { CssLength } from './css-values.js';
+export { D as DialogCloseSource, a as DialogRequestCloseDetail, b as DialogSurface, c as DialogSurfaceBodyLayout, z as DialogSurfaceCloseEmphasis, d as DialogSurfaceFooterPresentation, e as DialogSurfaceHeaderPresentation, f as DialogSurfaceHeight, g as DialogSurfaceMaxHeight, h as DialogSurfaceName, i as DialogSurfaceOptions, j as DialogSurfacePresentation, k as DialogSurfaceProps, l as DialogSurfaceRootAttributes, m as DialogSurfaceSheetMotion, n as DialogSurfaceSize, A as DialogSurfaceStack, P as PinnablePopoverSurface, o as PinnablePopoverSurfacePresentation, p as PinnablePopoverSurfaceProps, q as PopoverDialogSurface, r as PopoverDialogSurfaceDataAttributes, B as PopoverDialogSurfaceDismiss, s as PopoverDialogSurfacePresentation, t as PopoverDialogSurfaceProps, u as PopupSurface, v as PopupSurfaceInset, w as PopupSurfaceProps, S as SurfaceInset, x as closeDialog, y as openDialog, C as syncDialogStack, E as wireDialogStack } from './surface-scaffold-DNc6q8NV.js';
+import 'kerfjs';
+import './semantic-content-BbzjvSu9.js';
+import './extension-attributes-IJ4decoa.js';
+import './anchor-name-BZ1rpxaw.js';
+import './css-values.js';
 
-/** What asked an open DialogSurface to close. */
-type DialogCloseSource = 'close-button' | 'escape' | 'backdrop';
-/** The detail of a DialogSurface's cancelable `kui-request-close` event. */
-interface DialogRequestCloseDetail {
-    readonly source: DialogCloseSource;
+/**
+ * Where a pinned PinnablePopoverSurface sits: its top-left corner in viewport
+ * px, and the size the person resized it to (omitted until they do).
+ */
+interface PinnablePopoverPlacement {
+    readonly x: number;
+    readonly y: number;
+    readonly width?: number;
+    readonly height?: number;
 }
+/** What changed a PinnablePopoverSurface's pinned state or placement. */
+type PinnablePopoverChangeReason = 'pin' | 'unpin' | 'move' | 'resize';
+/** What `wirePinnablePopover`'s `onChange` reports. */
+interface PinnablePopoverChange {
+    readonly pinned: boolean;
+    /** The pinned placement; `null` while transient. */
+    readonly placement: PinnablePopoverPlacement | null;
+    readonly reason: PinnablePopoverChangeReason;
+}
+interface PinnablePopoverOptions {
+    /**
+     * The element a transient surface opens below (or above, without room
+     * below). Default: the first control whose `popovertarget` names the
+     * surface. Without one, a transient surface opens centered.
+     */
+    anchor?: Element | (() => Element | null);
+    /** Start pinned, as the application last stored it. */
+    pinned?: boolean;
+    /** The pinned placement to restore, as `onChange` last reported it. */
+    placement?: PinnablePopoverPlacement;
+    /** An arrow key's move, in px (default 8). */
+    step?: number;
+    /** A Shift+arrow move, in px (default 40). */
+    largeStep?: number;
+    /**
+     * Called when the person (or `pinPopover`) pins, unpins, moves, or resizes
+     * the surface. A clamp after a window resize is not reported: the surface
+     * returns to the reported placement when the window has room again.
+     */
+    onChange?: (change: PinnablePopoverChange) => void;
+}
+/** Whether `surface` is pinned (its rendered state when it is not wired). */
+declare function isPopoverPinned(surface: HTMLElement): boolean;
 /**
- * Open a DialogSurface as a modal dialog: in the top layer, the rest of the
- * page inert, focus on its `autofocus` element or else the panel. It plays
- * its enter motion and, with the controller installed here, keeps its
- * measured chrome, sheet height, and keyboard clearance across application
- * re-renders. Opening an open dialog does nothing, and so does opening an
- * `embedded` one, which is always shown in flow.
+ * Pin (or, with `false`, unpin) a wired PinnablePopoverSurface, as its
+ * header Pin toggle does. Pinned, it no longer closes on a press outside
+ * and keeps where it is; unpinned, it returns below its anchor. Reported
+ * through `onChange`. Does nothing to a surface that is not wired.
  */
-declare function openDialog(dialog: HTMLDialogElement): void;
+declare function pinPopover(surface: HTMLElement, pinned?: boolean): void;
 /**
- * Close an open DialogSurface after its exit motion. The application's own
- * close is never refused: no `kui-request-close` is dispatched. The native
- * `close` event fires once it has closed. An `embedded` one never closes.
+ * Give an overlay PinnablePopoverSurface its behavior: placement below its
+ * anchor while transient, a press outside or Escape closing it; the Pin
+ * toggle; a drag by the header and the arrow keys on the focused title
+ * (Shift for `largeStep`) moving it, which pins it; a pinned surface's
+ * resize; and a clamp inside the viewport gutter, kept after a window
+ * resize. Pinned, it closes only by Escape (with focus inside it), its Close
+ * button, or `hidePopover()`. The state survives application re-renders and
+ * closing; `onChange` reports it for the application to store. An
+ * `embedded` surface is left alone. Returns a disposer.
  */
-declare function closeDialog(dialog: HTMLDialogElement): void;
-/**
- * Reconcile one controlled stack after rendering its DialogSurface layers.
- * Opening back-to-front establishes native top-layer order; unchanged layers
- * keep their DOM nodes and focus. The application owns `stack.open` and handles
- * `kui-request-close` to update that state before calling this again.
- */
-declare function syncDialogStack(root: ParentNode): void;
-/** Follow a controlled stack's render updates until the returned stop runs. */
-declare function wireDialogStack(root: ParentNode): () => void;
+declare function wirePinnablePopover(surface: HTMLElement, options?: PinnablePopoverOptions): () => void;
 
-type DialogSurfaceSize = 'small' | 'medium' | 'large';
-/**
- * How the dialog is presented: `modal` (default) centered on the screen,
- * `side-sheet` against the inline end, `fullscreen`, or `bottom-sheet`
- * attached to the bottom edge (square bottom corners, safe-area and
- * virtual-keyboard clearance, optionally user-resizable).
- */
-type DialogSurfacePresentation = 'modal' | 'side-sheet' | 'fullscreen' | 'bottom-sheet'
-/**
- * In flow, always shown: the same panel without the top layer or a
- * backdrop, never wider than its container. For a catalog, a design
- * canvas, or a document; `openDialog` / `closeDialog` leave it alone and
- * `data-dialog-close` does not hide it.
- */
- | 'embedded';
-/**
- * How a bottom sheet appears or leaves: `slide` (default) moves the panel in
- * from, or out to, the bottom edge; `standard` keeps the dialog's
- * scale-and-fade. Both honor `prefers-reduced-motion`.
- */
-type DialogSurfaceSheetMotion = 'slide' | 'standard';
-type SurfaceInset = 'none' | 'compact' | 'comfortable';
-type DialogSurfaceMaxHeight = CssLength | 'viewport';
-/** A definite modal height: a length or the full viewport, minus both gutters. */
-type DialogSurfaceHeight = CssLength | 'viewport';
-/**
- * How the dialog body lays out its children: `flow` (default) scrolls ordinary
- * content in the body; `fill` gives one child the body's whole height and
- * lets it own scrolling (a SplitView, a Pane, an editor); `fill-last` stacks
- * the leading children at their natural height and gives the last child the
- * remaining height to own its scrolling (a heading and notices above a
- * scrolling transcript).
- */
-type DialogSurfaceBodyLayout = 'flow' | 'fill' | 'fill-last';
-/**
- * Where the dialog footer sits: `docked` (default) below the body, or
- * `floating` over the body's block end, inset from the panel's inline and
- * block-end edges on a transparent background (a chat composer).
- */
-type DialogSurfaceFooterPresentation = 'docked' | 'floating';
-/**
- * Where the dialog header sits: `docked` (default) above the body, or
- * `floating` over the body's block-start edge on the translucent chrome
- * material, so content scrolls visibly beneath the title bar.
- */
-type DialogSurfaceHeaderPresentation = 'docked' | 'floating';
-/** The built-in close control's visual weight; `normal` keeps the default. */
-type DialogSurfaceCloseEmphasis = 'normal' | 'quiet';
-/**
- * Application `data-*` identity on the DialogSurface root, such as
- * `data-key`; the surface's own configuration attributes stay protected.
- */
-type DialogSurfaceRootAttributes = Readonly<Record<`data-${string}`, string | undefined>>;
-/**
- * The dialog's accessible name: its `label` text (also the default title), or
- * the id of an element that names it, such as a `heading` ToolbarText.
- */
-type DialogSurfaceName = {
-    label: string;
-    labelledBy?: never;
-} | {
-    label?: never;
-    labelledBy: string;
-};
-type DialogSurfaceProps = DialogSurfaceName & DialogSurfaceOptions;
-/** Controlled state of one native modal layer inside a `wireDialogStack` root. */
-interface DialogSurfaceStack {
-    /** Whether this layer belongs in the native top layer. */
-    open: boolean;
-    /** The one frontmost open layer; it owns modal focus and accessibility. */
-    active: boolean;
-    /** One-based order from the back to the front. */
-    position: number;
-    /** Number of layers in the stack, including closed layers still rendered. */
-    count: number;
-    /** Optional vertical offset for an inactive layer; omitted on phones. */
-    offset?: CssLength;
-}
-interface DialogSurfaceOptions {
-    /** The dialog's id, for `openDialog(document.getElementById(id))`. */
-    id?: string;
-    /**
-     * Id of the element whose text is the dialog's accessible description,
-     * such as the `heading` ToolbarText's `descriptionId` or app-owned summary
-     * copy in the body; rendered as `aria-describedby` on the `<dialog>`.
-     */
-    describedBy?: string;
-    /**
-     * An alert dialog: a confirmation that interrupts the person to report
-     * something urgent or ask before a destructive action ("Delete this
-     * topic?"). Renders `role="alertdialog"` on the `<dialog>`; set
-     * `describedBy` to the element holding the message, and leave
-     * `lightDismiss` off so the person answers it.
-     */
-    alert?: boolean;
-    /** The body content. */
-    children: KerfUiContent;
-    /** Controlled modal stack state; call `wireDialogStack` on the containing root. */
-    stack?: DialogSurfaceStack;
-    /**
-     * Header title content in place of the `label` text, such as an xl
-     * `ToolbarText` with a description. The dialog keeps its `label` (or
-     * `labelledBy`) name.
-     */
-    heading?: KerfUiContent;
-    /** Controls before the close button in the header. */
-    headerActions?: KerfUiContent;
-    /** The footer, below the body (or floating over it); usually its buttons. */
-    footer?: KerfUiContent;
-    /**
-     * Render no header: no title and no close button. The content then owns its
-     * heading and a way to close (an element with `data-dialog-close`).
-     */
-    withoutHeader?: boolean;
-    /** Close on a press on the backdrop; otherwise the panel pulses. */
-    lightDismiss?: boolean;
-    /** The close button's accessible name (default `Close`). */
-    closeLabel?: string;
-    /** Soften the built-in close control without changing its 40px target. */
-    closeEmphasis?: DialogSurfaceCloseEmphasis;
-    size?: DialogSurfaceSize;
-    presentation?: DialogSurfacePresentation;
-    /** Modal preferred width. Takes precedence over size, within the viewport cap. */
-    preferredWidth?: CssLength;
-    bodyInset?: SurfaceInset;
-    footerInset?: SurfaceInset;
-    /** Modal edge clearance. Omit to retain Web Awesome's default viewport cap. */
-    viewportGutter?: CssLength;
-    /**
-     * Modal height cap, bounded by the dynamic viewport minus both gutters. On a
-     * bottom sheet, the cap (and the resize ceiling), bounded by the dynamic
-     * viewport minus the top safe area and one gutter.
-     */
-    maxHeight?: DialogSurfaceMaxHeight;
-    /**
-     * Modal definite height, bounded the same way, so a filling child has a
-     * height to fill. Takes precedence over `maxHeight`. On a bottom sheet, the
-     * height it opens at (the visible height above the safe area or keyboard).
-     */
-    height?: DialogSurfaceHeight;
-    /**
-     * A resizable bottom sheet's resize floor (default 160px), the visible
-     * height above the safe area or keyboard.
-     */
-    minHeight?: CssLength;
-    /**
-     * Let the person resize a bottom sheet by its top grabber (drag, or the
-     * arrow, Page Up/Down, Home and End keys) between `minHeight` and the
-     * sheet's cap. Needs the `/register` entry; each opening starts at `height`
-     * (or the content height). Ignored by other presentations.
-     */
-    resizable?: boolean;
-    /** How a bottom sheet appears (default `slide` up from the bottom edge). */
-    enterMotion?: DialogSurfaceSheetMotion;
-    /** How a bottom sheet is dismissed (default `slide` down off the bottom edge). */
-    exitMotion?: DialogSurfaceSheetMotion;
-    /**
-     * Body layout (default `flow`); `fill` lets one child own the body and
-     * `fill-last` stacks fixed rows above one filling last child.
-     */
-    bodyLayout?: DialogSurfaceBodyLayout;
-    /**
-     * Header placement (default `docked`); `floating` lays the dialog's header
-     * (its title and close control) over the body's block-start edge on the
-     * translucent chrome material (`--kui-chrome-material-raised`, opaque under
-     * `prefers-reduced-transparency`, increased contrast, forced colors, or
-     * without `backdrop-filter`). The `/register` entry measures the header;
-     * the body reserves that height before its own inset, so its first content
-     * rests below the title bar. A `fill`/`fill-last` child that is the body's
-     * only child and opts into block-start `scrollClearance` (a `List` or
-     * `Pane`) takes the clearance inside its own scroll area instead, published
-     * as `--kui-scroll-clearance-block-start`, so its content scrolls visibly
-     * beneath the header. Unmeasured (without the register), the header stays
-     * docked. Keep header text in the normal text color: quiet text can fall
-     * below AA over the content passing beneath it.
-     */
-    headerPresentation?: DialogSurfaceHeaderPresentation;
-    /**
-     * Footer placement (default `docked`); `floating` lays the footer over the
-     * body's block end. The body reserves the footer's measured height so its
-     * last content is never hidden beneath it. A `fill`/`fill-last` child that
-     * opts into block-end `scrollClearance` (a `List` or `Pane`) takes that
-     * clearance inside its own scroll area instead, published as
-     * `--kui-scroll-clearance-block-end`, so its content scrolls visibly beneath
-     * the transparent footer.
-     */
-    footerPresentation?: DialogSurfaceFooterPresentation;
-    /**
-     * A floating footer's clearance from the panel's inline and block-end edges
-     * (default the 16px container inset). Choose a phone value such as
-     * `remify(8)` from `deviceClass()`; the scaffold adds no breakpoint.
-     */
-    footerOffset?: CssLength;
-    /**
-     * Safe `data-*` identity on the root. Give sibling dialogs distinct
-     * `data-key`s so a re-render morphs each surface into itself instead of
-     * reusing one dialog's element for another (structurally identical roots
-     * are otherwise matched by position).
-     */
-    rootAttributes?: DialogSurfaceRootAttributes;
-    className?: string;
-    /** Native named-slot assignment when composed inside a web component. */
-    slot?: string;
-}
-/**
- * A modal dialog: a native `<dialog>` with Kerf's header, body, and footer
- * chrome, sized and presented by its props. Render it closed, then open it
- * with `openDialog()` and close it with `closeDialog()`, the close button, an
- * element with `data-dialog-close`, Escape, or (with `lightDismiss`) a press
- * on the backdrop. Import `@kerfjs/ui/surface-scaffold/register` for the
- * floating header and footer measurement, the bottom sheet's keyboard
- * clearance and grabber, and re-render resilience while open.
- */
-declare function DialogSurface({ id, label, labelledBy, describedBy, alert, heading, headerActions, footer, withoutHeader, lightDismiss, closeLabel, closeEmphasis, children, stack, size, presentation, preferredWidth, bodyInset, footerInset, viewportGutter, maxHeight, height, minHeight, resizable, enterMotion, exitMotion, bodyLayout, headerPresentation, footerPresentation, footerOffset, rootAttributes, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
-/** Where a PopoverDialogSurface appears: the top layer, or in flow. */
-type PopoverDialogSurfacePresentation = 'overlay' | 'embedded';
-/** How an overlay PopoverDialogSurface closes: light dismiss, or its own controls. */
-type PopoverDialogSurfaceDismiss = 'light' | 'manual';
-/** Application `data-*` metadata on the surface root. */
-type PopoverDialogSurfaceDataAttributes = Readonly<Record<`data-${string}`, string>>;
-type PopoverDialogSurfaceName = {
-    label: string;
-    labelledBy?: never;
-} | {
-    label?: never;
-    labelledBy: string;
-};
-type PopoverDialogSurfaceProps = PopoverDialogSurfaceName & {
-    /** The root id: what an opening control's `popovertarget` names. */
-    id?: string;
-    /**
-     * Id of the element whose text is the dialog's accessible description,
-     * such as a title `ToolbarText`'s `descriptionId`; rendered as
-     * `aria-describedby` on the `role="dialog"` root.
-     */
-    describedBy?: string;
-    children: KerfUiContent;
-    /**
-     * `overlay` (default) is a native `popover="auto"` in the top layer:
-     * non-modal, light dismiss (Escape or a press outside), nothing inert.
-     * `embedded` renders the same surface in flow for a catalog or inline use.
-     */
-    presentation?: PopoverDialogSurfacePresentation;
-    /**
-     * How an overlay closes. `light` (default) is `popover="auto"`: Escape or a
-     * press outside closes it. `manual` is `popover="manual"`: only its own
-     * controls (`popovertargetaction="hide"`) or `hidePopover()` close it, for a
-     * request the person must answer. Ignored when `embedded`.
-     */
-    dismiss?: PopoverDialogSurfaceDismiss;
-    /**
-     * KF-T1V86Q: a CSS anchor name (a dashed ident such as `--app-main`) the
-     * open overlay docks to: centered on the bottom edge of the element whose
-     * `anchor-name` it is, inset by `viewportGutter`. The application names
-     * that element (its shell's main column). Engines without CSS anchor
-     * positioning keep the centered top-layer placement. Ignored when
-     * `embedded`.
-     */
-    anchorName?: AnchorName;
-    /** Preferred width preset: 400px, 560px (default), or 800px. */
-    size?: DialogSurfaceSize;
-    /** Preferred width; takes precedence over `size`, within the viewport cap. */
-    preferredWidth?: CssLength;
-    /** Definite height, bounded by the dynamic viewport minus both gutters. */
-    height?: DialogSurfaceHeight;
-    /** Height cap, bounded the same way, for a surface that sizes to content. */
-    maxHeight?: DialogSurfaceMaxHeight;
-    /** Edge clearance on each side of the viewport (default 16px). */
-    viewportGutter?: CssLength;
-    /**
-     * Body layout (default `flow`); `fill` lets one child own the surface and
-     * `fill-last` stacks fixed rows above one filling last child.
-     */
-    bodyLayout?: DialogSurfaceBodyLayout;
-    rootAttributes?: PopoverDialogSurfaceDataAttributes;
-    className?: string;
-    /** Native named-slot assignment when composed inside a web component. */
-    slot?: string;
-};
-/**
- * A non-modal dialog surface on the native Popover API: Kerf's dialog chrome,
- * viewport-bounded size, and single-child fill without application CSS.
- * Open it with a `popovertarget` control or `showPopover()`; it light
- * dismisses and leaves the page interactive. Use `DialogSurface` when the
- * task must block the page.
- */
-declare function PopoverDialogSurface({ id, children, label, labelledBy, describedBy, presentation, dismiss, anchorName, size, preferredWidth, height, maxHeight, viewportGutter, bodyLayout, rootAttributes, className, slot, }: PopoverDialogSurfaceProps): kerfjs.SafeHtml;
-type PopupSurfaceInset = 'standard' | 'compact' | 'list-zero';
-interface PopupSurfaceProps {
-    children: KerfUiContent;
-    inset?: PopupSurfaceInset;
-    className?: string;
-    /** Native named-slot assignment when composed inside a web component. */
-    slot?: string;
-    /** Application `data-*` metadata on the root, such as a row key or an
-     * editor node marker; the component's own markers stay protected. */
-    rootAttributes?: RootDataAttributes;
-}
-/** Configure recurring Web Awesome dropdown-menu geometry without consumer ::part() CSS. */
-declare function PopupSurface({ children, inset, className, slot, rootAttributes, }: PopupSurfaceProps): kerfjs.SafeHtml;
-
-export { type DialogCloseSource, type DialogRequestCloseDetail, DialogSurface, type DialogSurfaceBodyLayout, type DialogSurfaceCloseEmphasis, type DialogSurfaceFooterPresentation, type DialogSurfaceHeaderPresentation, type DialogSurfaceHeight, type DialogSurfaceMaxHeight, type DialogSurfaceName, type DialogSurfaceOptions, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceRootAttributes, type DialogSurfaceSheetMotion, type DialogSurfaceSize, type DialogSurfaceStack, PopoverDialogSurface, type PopoverDialogSurfaceDataAttributes, type PopoverDialogSurfaceDismiss, type PopoverDialogSurfacePresentation, type PopoverDialogSurfaceProps, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset, closeDialog, openDialog, syncDialogStack, wireDialogStack };
+export { type PinnablePopoverChange, type PinnablePopoverChangeReason, type PinnablePopoverOptions, type PinnablePopoverPlacement, isPopoverPinned, pinPopover, wirePinnablePopover };
 ```
 
 ## `@kerfjs/ui/list-detail-dialog`
@@ -5659,8 +5391,8 @@ import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { CssLength } from './css-values.js';
 import { SplitViewListWidth } from './split-view.js';
-import { DialogSurfaceSize, DialogSurfaceHeight, DialogSurfaceMaxHeight, DialogSurfaceRootAttributes } from './surface-scaffold.js';
-export { DialogCloseSource, DialogRequestCloseDetail, closeDialog, openDialog } from './surface-scaffold.js';
+import { n as DialogSurfaceSize, f as DialogSurfaceHeight, g as DialogSurfaceMaxHeight, l as DialogSurfaceRootAttributes } from './surface-scaffold-DNc6q8NV.js';
+export { D as DialogCloseSource, a as DialogRequestCloseDetail, x as closeDialog, y as openDialog } from './surface-scaffold-DNc6q8NV.js';
 import './extension-attributes-IJ4decoa.js';
 import './nav-stack-DwxpXxqJ.js';
 import './pane.js';
@@ -5795,8 +5527,8 @@ import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { CssLength } from './css-values.js';
 import { WorkbenchMainBottomToolbar, WorkbenchPanel } from './workbench.js';
-import { DialogSurfaceSize, DialogSurfaceHeight, DialogSurfaceMaxHeight, DialogSurfaceRootAttributes } from './surface-scaffold.js';
-export { DialogCloseSource, DialogRequestCloseDetail, closeDialog, openDialog } from './surface-scaffold.js';
+import { n as DialogSurfaceSize, f as DialogSurfaceHeight, g as DialogSurfaceMaxHeight, l as DialogSurfaceRootAttributes } from './surface-scaffold-DNc6q8NV.js';
+export { D as DialogCloseSource, a as DialogRequestCloseDetail, x as closeDialog, y as openDialog } from './surface-scaffold-DNc6q8NV.js';
 import './extension-attributes-IJ4decoa.js';
 import './nav-stack-DwxpXxqJ.js';
 import './pane.js';

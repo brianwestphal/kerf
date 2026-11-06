@@ -811,6 +811,255 @@ h2.kui-dialog-surface__title {
   max-width: stretch;
   margin: 0;
 }
+
+/* PinnablePopoverSurface: a native popover="manual" surface that
+   wirePinnablePopover places below its anchor while transient and where the
+   person moved it while pinned. Without a placement it stays centered. */
+@property --_kui-pinnable-popover-surface-gutter-px {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+.kui-pinnable-popover-surface {
+  --_kui-pinnable-popover-surface-width: remify(560px);
+  --_kui-pinnable-popover-surface-resolved-gutter: max(
+    0px,
+    var(--_kui-pinnable-popover-surface-gutter, remify(16px))
+  );
+  /* The resolved gutter in px, which the controller reads to clamp moves. */
+  --_kui-pinnable-popover-surface-gutter-px: var(
+    --_kui-pinnable-popover-surface-resolved-gutter
+  );
+  --_kui-pinnable-popover-surface-available-width: max(
+    0px,
+    calc(
+      100vw - var(--_kui-pinnable-popover-surface-resolved-gutter) -
+        var(--_kui-pinnable-popover-surface-resolved-gutter)
+    )
+  );
+  --_kui-pinnable-popover-surface-available-height: max(
+    0px,
+    calc(
+      100dvh - var(--_kui-pinnable-popover-surface-resolved-gutter) -
+        var(--_kui-pinnable-popover-surface-resolved-gutter)
+    )
+  );
+  box-sizing: border-box;
+  width: min(
+    var(
+      --_kui-pinnable-popover-surface-preferred-width,
+      var(--_kui-pinnable-popover-surface-width)
+    ),
+    var(--_kui-pinnable-popover-surface-available-width)
+  );
+  max-width: var(--_kui-pinnable-popover-surface-available-width);
+  max-height: var(--_kui-pinnable-popover-surface-available-height);
+  padding: 0;
+  overflow: hidden;
+  color: var(--kui-color-text);
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  /* The PopoverDialogSurface corner: a pill control at the 8px inset. */
+  border-radius: calc(
+    var(--kui-layout-pill-radius, calc(1px + remify(21px))) +
+      var(--kui-surface-inset, remify(8px))
+  );
+  --kui-color-surface-current: var(--kui-color-surface-raised);
+  --kui-color-surface-current-region: transparent;
+  --kui-color-surface-current-tint: transparent;
+  background: var(--kui-color-surface-raised);
+  box-shadow: var(--kui-shadow-l);
+}
+.kui-pinnable-popover-surface:is(
+  :popover-open,
+  [data-presentation="embedded"]
+) {
+  display: flex;
+  flex-direction: column;
+}
+.kui-pinnable-popover-surface[data-size="small"] {
+  --_kui-pinnable-popover-surface-width: remify(400px);
+}
+.kui-pinnable-popover-surface[data-size="large"] {
+  --_kui-pinnable-popover-surface-width: remify(800px);
+}
+.kui-pinnable-popover-surface[data-max-height] {
+  max-height: max(
+    0px,
+    min(
+      var(--_kui-pinnable-popover-surface-max-height, 100dvh),
+      var(--_kui-pinnable-popover-surface-available-height)
+    )
+  );
+}
+.kui-pinnable-popover-surface[data-height] {
+  height: max(
+    0px,
+    min(
+      var(--_kui-pinnable-popover-surface-height, 100dvh),
+      var(--_kui-pinnable-popover-surface-available-height)
+    )
+  );
+}
+.kui-pinnable-popover-surface[data-presentation="overlay"]:popover-open {
+  inset: 0;
+  margin: auto;
+  place-self: center;
+}
+.kui-pinnable-popover-surface[data-presentation="overlay"][data-placed]:popover-open {
+  inset: auto;
+  top: var(--_kui-pinnable-popover-surface-y, 0px);
+  left: var(--_kui-pinnable-popover-surface-x, 0px);
+  margin: 0;
+  place-self: auto;
+}
+/* A pinned overlay resizes from its corner, within the viewport caps. */
+.kui-pinnable-popover-surface[data-presentation="overlay"][data-pinned]:popover-open {
+  min-width: min(remify(240px), 100%);
+  min-height: min(remify(160px), 100%);
+  resize: both;
+}
+.kui-pinnable-popover-surface[data-presentation="embedded"] {
+  position: relative;
+  inset: auto;
+  max-width: 100%;
+  max-width: -webkit-fill-available;
+  max-width: -moz-available;
+  max-width: stretch;
+  margin: 0;
+}
+
+/* The header is the move handle: the title, then the header actions, Pin,
+   and Close. A press anywhere on it but its controls drags the surface. */
+.kui-pinnable-popover-surface__header {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: remify(4px);
+  padding: var(--kui-surface-inset, remify(8px));
+}
+.kui-pinnable-popover-surface[data-presentation="overlay"]
+  > .kui-pinnable-popover-surface__header {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.kui-pinnable-popover-surface__handle {
+  display: flex;
+  min-width: 0;
+  min-height: remify(40px);
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: flex-start;
+  /* The title's text lines up with a List row's text in the body: the row's
+     8px margin, 1px border, and 8px padding. */
+  padding: 0
+    calc(
+      var(--kui-surface-inset, remify(8px)) +
+        var(--kui-layout-item-padding, remify(8px)) + 1px
+    );
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  border: none;
+  border-radius: var(--kui-radius-m, remify(8px));
+  background: transparent;
+  cursor: inherit;
+}
+.kui-pinnable-popover-surface__handle:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: var(--kui-focus-ring-offset, 1px);
+}
+.kui-pinnable-popover-surface__title {
+  overflow: hidden;
+  font-size: var(--kui-font-l, remify(20px));
+  font-weight: 600;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.kui-pinnable-popover-surface__header-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: remify(4px);
+  cursor: auto;
+}
+/* Pin and Close match the DialogSurface close control: a 40px circle with
+   the neutral hover fill; a pressed Pin takes the loud neutral fill. */
+.kui-pinnable-popover-surface__control {
+  display: inline-flex;
+  width: remify(40px);
+  height: remify(40px);
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  color: var(--kui-color-neutral-on-quiet);
+  font: inherit;
+  border: none;
+  border-radius: var(--kui-radius-circle, 50%);
+  background: transparent;
+  cursor: pointer;
+}
+.kui-pinnable-popover-surface__control:hover {
+  background-color: var(--kui-color-neutral-fill-normal);
+}
+.kui-pinnable-popover-surface__control[aria-pressed="true"] {
+  color: var(--kui-color-neutral-on-loud);
+  background-color: var(--kui-color-neutral-fill-loud);
+}
+.kui-pinnable-popover-surface__control:focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: var(--kui-focus-ring-offset, 1px);
+}
+@media (forced-colors: active) {
+  .kui-pinnable-popover-surface {
+    border-color: CanvasText;
+  }
+  .kui-pinnable-popover-surface__control {
+    color: ButtonText;
+  }
+  .kui-pinnable-popover-surface__control[aria-pressed="true"] {
+    color: HighlightText;
+    background-color: Highlight;
+  }
+}
+.kui-pinnable-popover-surface__body {
+  --kui-scroll-clearance-block-start: 0px;
+  --kui-scroll-clearance-block-end: 0px;
+  display: block;
+  min-height: 0;
+  flex: 1 1 auto;
+  padding: var(--kui-surface-inset, remify(8px));
+  padding-block-start: 0;
+  overflow: auto;
+}
+.kui-pinnable-popover-surface[data-body-layout="fill"]
+  > .kui-pinnable-popover-surface__body {
+  display: grid;
+  overflow: hidden;
+  grid-template-rows: minmax(0, 1fr);
+}
+.kui-pinnable-popover-surface[data-body-layout="fill-last"]
+  > .kui-pinnable-popover-surface__body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.kui-pinnable-popover-surface[data-body-layout="fill-last"]
+  > .kui-pinnable-popover-surface__body
+  > * {
+  flex: none;
+}
+.kui-pinnable-popover-surface[data-body-layout="fill-last"]
+  > .kui-pinnable-popover-surface__body
+  > :last-child {
+  flex: 1 1 0;
+  min-block-size: 0;
+}
 .kui-popup-surface {
   display: inline-flex;
 }

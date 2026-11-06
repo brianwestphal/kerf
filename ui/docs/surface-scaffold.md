@@ -3,6 +3,7 @@
 `DialogSurface` is Kerf's modal dialog: a native `<dialog>` with a header
 (title, header actions, close button), a body, and an optional footer, sized
 and presented by its props. `PopoverDialogSurface` is its non-modal sibling,
+`PinnablePopoverSurface` a non-modal panel the person can pin and move,
 and `PopupSurface` insets a raw Web Awesome dropdown. The application owns
 open state, dismissal policy, ids, names, and content.
 
@@ -549,6 +550,65 @@ embedded surface.
 ```
 
 Use `DialogSurface` whenever the task must block the page.
+
+## Pinnable panels: `PinnablePopoverSurface`
+
+A panel the person may keep open while working (a component library, a
+palette, a quick inspector) starts as a transient popover and becomes a
+floating panel when pinned. Render `PinnablePopoverSurface` instead of a
+hand-built draggable panel. It takes the same geometry props as
+`PopoverDialogSurface` (`size`, `preferredWidth`, `viewportGutter`, `height`
+/ `maxHeight`, `bodyLayout`) and owns its header: the `label` title, optional
+`headerActions`, a Pin toggle (`aria-pressed`), and Close. Call
+`wirePinnablePopover()` once for its behavior:
+
+- **Transient** (the default). It opens below the control whose
+  `popoverTarget` names it (or the `anchor` option), above it without room
+  below, start-aligned and kept inside the viewport gutter. Escape or a press
+  outside it and its opener closes it.
+- **Pinned** by its Pin toggle or `pinPopover(surface)`. It no longer closes on
+  a press outside; Escape (with focus inside it), Close, or `hidePopover()`
+  still close it. Pinned state and placement survive closing and reopening.
+- **Moved** by dragging its header, or with the arrow keys on its focused title
+  (8px a press, 40px with Shift; the `step` and `largeStep` options).
+  Moving a transient surface pins it. It stays inside the viewport gutter,
+  and after a window resize it is clamped again; when the window has room it
+  returns to where the person put it.
+- **Resized** from its corner while pinned, within the viewport caps.
+
+The surface is `popover="manual"`, so the controller provides its light
+dismiss; changing an `auto` popover into a pinned one is not possible while
+it is open. The title is the move handle: a focusable button named by the
+label, whose accessible description (`moveDescription`) explains the drag
+and the keys. Focus stays where the person puts it, as with any non-modal
+popover; give its first control `autofocus` to move focus in on open.
+
+The application owns storage. `onChange` reports `{ pinned, placement, reason }`
+whenever the person or `pinPopover` pins, unpins, moves, or resizes it
+(`placement` is `{ x, y, width?, height? }` in viewport px, `null` while
+transient); a clamp after a window resize is not reported. Pass the stored
+values back as `pinned` and `placement` to restore it. `isPopoverPinned()`
+reads the current state.
+
+```tsx
+<button type="button" popoverTarget="library">Library</button>
+<PinnablePopoverSurface id="library" label="Library" size="small" maxHeight={remify(480)}>
+  <List>{rows}</List>
+</PinnablePopoverSurface>;
+
+const stop = wirePinnablePopover(document.getElementById('library')!, {
+  pinned: saved?.pinned,
+  placement: saved?.placement ?? undefined,
+  onChange: (change) => store(change),
+});
+```
+
+The controller keeps its pinned state, placement, and the Pin toggle's
+`aria-pressed` across application re-renders. An application that closes the
+panel after a task (a drop from a library) checks `isPopoverPinned()` first.
+`presentation="embedded"` (with `pinned` for the pinned look) renders it in
+flow for a catalog or a design canvas; `wirePinnablePopover` leaves an
+embedded surface alone.
 
 Wrap one `PopupMenu` (or another single `wa-dropdown`) with `PopupSurface`. `inset="list-zero"` removes menu
 padding for a child that already owns row insets, `compact` uses 4px, and

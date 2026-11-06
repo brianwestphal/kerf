@@ -489,6 +489,9 @@ export {
   type DialogSurfaceSheetMotion,
   type DialogSurfaceSize,
   openDialog,
+  PinnablePopoverSurface,
+  type PinnablePopoverSurfacePresentation,
+  type PinnablePopoverSurfaceProps,
   PopoverDialogSurface,
   type PopoverDialogSurfaceDataAttributes,
   type PopoverDialogSurfacePresentation,
@@ -499,6 +502,15 @@ export {
   type SurfaceInset,
 } from './components/surfaces/surface-scaffold/surface-scaffold.js';
 export { wireOverlaySheets } from './components/surfaces/surface-scaffold/wiring/wire-overlay-sheets.js';
+export {
+  isPopoverPinned,
+  type PinnablePopoverChange,
+  type PinnablePopoverChangeReason,
+  type PinnablePopoverOptions,
+  type PinnablePopoverPlacement,
+  pinPopover,
+  wirePinnablePopover,
+} from './components/surfaces/surface-scaffold/wiring/wire-pinnable-popover.js';
 export {
   Text,
   type TextContent,

@@ -2153,13 +2153,31 @@
           "id": "whether core kerfjs/overlay dialogs presented as bottom sheets take this package's geometry and slide (import @kerfjs/ui/overlay-sheet.css; exitClass 'kui-overlay-sheet-exit' for the slide out; the kui-overlay-sheet-resizable class plus wireOverlaySheets for a resize grabber)",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "pinned state and placement storage for a PinnablePopoverSurface (wirePinnablePopover's onChange reports them; its pinned and placement options restore them)",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
-        "required": false,
-        "helpers": ["wireOverlaySheets"],
-        "obligations": [],
-        "stateAttributes": []
+        "required": true,
+        "helpers": ["wireOverlaySheets", "wirePinnablePopover"],
+        "obligations": ["Use wirePinnablePopover as documented."],
+        "stateAttributes": [
+          {
+            "name": "data-pinned",
+            "on": "kui-pinnable-popover-surface",
+            "helper": "wirePinnablePopover",
+            "meaning": "Present while the surface is pinned: no light dismiss, movable by its title, resizable. Re-applied if a re-render drops it."
+          },
+          {
+            "name": "data-placed",
+            "on": "kui-pinnable-popover-surface",
+            "helper": "wirePinnablePopover",
+            "meaning": "Present while the controller places the open surface (below its anchor, or where the person moved it); absent, it is centered. Re-applied if a re-render drops it."
+          }
+        ]
       },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
@@ -2172,6 +2190,7 @@
           "Name it with label (also its title text) or labelledBy (the id of a heading, such as a ToolbarText). The close button is named Close (closeLabel) and Escape asks to close; the cancelable kui-request-close event reports source close-button, escape, or backdrop.",
           "closeEmphasis=\"quiet\" uses a smaller, quiet-colored close glyph inside the same 40px target; hover, focus ring, forced colors, accessible naming, and close requests remain available.",
           "Name a PopoverDialogSurface with label or labelledBy. Describe either surface with describedBy (rendered as aria-describedby on the dialog root), usually the heading ToolbarText descriptionId or app-owned summary copy in the body; rootAttributes accepts only data-* attributes, so it never sets aria-describedby.",
+          "PinnablePopoverSurface is a role=\"dialog\" named by its label, non-modal (nothing inert, focus stays where the person puts it). Its title is the move handle: a focusable button named by the label whose accessible description explains the drag and the arrow keys (Shift moves farther); the Pin control is a toggle button with aria-pressed, and Close and Escape (from inside it while pinned) close it.",
           "A floating header's title uses the normal text color, which keeps WCAG AA over the 80% raised chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.",
           "A resizable bottom sheet's grabber is a focusable horizontal separator (\"Resize sheet\") with aria-valuemin, aria-valuenow, and aria-valuemax in visible px; the arrow keys, Page Up/Down, Home, and End resize it, and its slide motion is skipped under prefers-reduced-motion.",
           "Use popup surfaces only for real dropdown menus with named triggers."
@@ -2291,6 +2310,7 @@
           "kui-dialog-surface__header-actions",
           "kui-dialog-surface__title",
           "kui-popover-dialog-surface",
+          "kui-pinnable-popover-surface",
           "kui-popup-surface"
         ],
         "publicTokens": [

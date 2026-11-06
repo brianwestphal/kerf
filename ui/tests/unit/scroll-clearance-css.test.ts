@@ -15,6 +15,8 @@ function declarations(file: string) {
   const found: { selector: string; prop: string; value: string }[] = [];
   root.walkDecls((decl) => {
     const parent = decl.parent as postcss.Rule;
+    // An `@property` registration's descriptors belong to no selector.
+    if (parent.type !== 'rule') return;
     found.push({
       selector: parent.selector.replace(/\s+/g, ' '),
       prop: decl.prop,

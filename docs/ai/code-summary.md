@@ -1347,6 +1347,23 @@ re-renders, and publishes `--_kui-overlay-sheet-height` on the wrapper.
 `ui/tests/browser/overlay-sheet-resize.spec.ts` (fixture
 `fixtures/overlay-sheet-resize.tsx`) cover both hosts.
 
+Pinnable popover (KF-C57ZX0, a non-modal panel the person can pin and move):
+`PinnablePopoverSurface` in
+`ui/src/components/surfaces/surface-scaffold/surface-scaffold.tsx` renders a
+`popover="manual"` `role="dialog"` with a component-owned header (the title as
+a focusable move-handle button, `headerActions`, a Pin toggle with
+`aria-pressed`, Close). Its controller,
+`ui/src/components/surfaces/surface-scaffold/wiring/wire-pinnable-popover.ts`
+(`wirePinnablePopover`, `pinPopover`, `isPopoverPinned`, exported from
+`@kerfjs/ui/surface-scaffold`), places a transient surface below its
+`popovertarget` opener, provides its light dismiss and Escape, pins, drags by
+the header, moves by arrow keys, reads the pinned resize, clamps to the
+registered `--_kui-pinnable-popover-surface-gutter-px`, re-clamps on window
+resize, restores owned state after a morph, and reports `onChange`. Demo: the
+Surface Scaffolds catalog's Pinnable Popover example. Tests:
+`ui/tests/unit/pinnable-popover-surface.test.tsx`,
+`ui/tests/browser/pinnable-popover.spec.ts`.
+
 Media Detail recipe (KF-HZM8BT, the backgrounds family composed):
 `ui/ux-demo/recipes/media-detail.tsx` (`recipe-media-detail`, eleventh in
 `loaders.ts` and `scripts/check-recipes.mjs`) with

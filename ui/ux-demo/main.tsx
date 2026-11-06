@@ -279,6 +279,7 @@ import {
   pushDialogStackDemo,
   reorderDialogStackDemo,
   resetSurfaceScaffoldDemo,
+  restoreLibraryPopoverDemo,
   SEND_CHAT_DIALOG_MESSAGE_ACTION,
   sendSurfaceScaffoldChatMessage,
   wireDialogStackDemo,
@@ -816,6 +817,7 @@ const stopActions = delegateActions(app, 'click', {
     if (dialog instanceof HTMLDialogElement) openDialog(dialog);
   },
   'push-dialog-stack': () => pushDialogStackDemo(),
+  'restore-pinnable-popover': () => restoreLibraryPopoverDemo(),
   'reorder-dialog-stack': () => reorderDialogStackDemo(),
   'pop-dialog-stack': () => popDialogStackDemo(),
   'save-choice-chips-dialog': () => {

@@ -4,7 +4,7 @@
 
 `@kerfjs/ui:surface-scaffold` · Kerf UI · component · Structure
 
-A native modal dialog (DialogSurface) with Kerf's header, body, and footer chrome, typed preferred widths, viewport bounds, and presentations, plus a non-modal popover dialog and popup inset composition.
+A native modal dialog (DialogSurface) with Kerf's header, body, and footer chrome, typed preferred widths, viewport bounds, and presentations, plus a non-modal popover dialog, a pinnable and movable non-modal popover, and popup inset composition.
 
 ## When to use
 
@@ -15,6 +15,7 @@ Configure recurring dialog and popup geometry without consumer ::part() override
 - A modal needs a typed preferred width, viewport gutter, or dynamic viewport-bounded height cap while retaining native body scrolling and footer actions.
 - A dialog needs a less prominent built-in close control: closeEmphasis="quiet" softens the glyph while keeping the native button target and close behavior.
 - A dialog that must leave the page interactive and close on Escape or an outside press uses PopoverDialogSurface; one that fills its body with a SplitView or Pane uses height and bodyLayout="fill".
+- A non-modal panel the person may keep open while working (a component library, a palette, a quick inspector) uses PinnablePopoverSurface with wirePinnablePopover: it opens transient below its button and light-dismisses; pinned (its header Pin toggle or pinPopover()) it stays open, drags by its title, moves with the arrow keys, resizes, and stays inside the viewport gutter, and onChange reports the pinned state and placement for the app to store and restore.
 - A chat-style dialog floats its composer over the transcript with footerPresentation="floating" and keeps a heading or notice above one scrolling transcript with bodyLayout="fill-last".
 - A phone-first task (compose, quick edit, a picker) should rise from the bottom edge as a sheet the person can resize: presentation="bottom-sheet" with height, and resizable with minHeight / maxHeight bounds.
 - A dialog's title bar should float over the body on the translucent chrome material so a transcript scrolls visibly beneath both the title bar and a floating composer (headerPresentation="floating" with bodyLayout="fill" and a List or Pane that opts into scrollClearance="both").
@@ -24,13 +25,15 @@ Configure recurring dialog and popup geometry without consumer ::part() override
 - Do not use it as a generic layout wrapper, and do not toggle the dialog's open attribute (that opens it non-modally); open and close it with openDialog() and closeDialog().
 - Do not stack a dialog body inset around children that already own List or content-item geometry; use bodyInset none.
 - Do not put quiet secondary text of your own in a floating dialog header; it can fall below AA over the content passing beneath. A ToolbarText as the dialog's heading (or in headerActions) is fine: its title takes the normal text color and its description lifts halfway toward it, keeping AA.
+- Do not hand-roll a draggable floating panel with app CSS and pointer handlers; render PinnablePopoverSurface and wire it. Do not toggle its popover attribute or data-pinned yourself: pin with pinPopover() and restore with wirePinnablePopover's pinned and placement options.
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/surface-scaffold` — exports `DialogSurface`, `openDialog`, `closeDialog`, `PopoverDialogSurface`, `PopupSurface`, `wireOverlaySheets`.
+- JavaScript: `@kerfjs/ui/surface-scaffold` — exports `DialogSurface`, `openDialog`, `closeDialog`, `PopoverDialogSurface`, `PinnablePopoverSurface`, `wirePinnablePopover`, `pinPopover`, `isPopoverPinned`, `PopupSurface`, `wireOverlaySheets`.
 - CSS: the browser build of `@kerfjs/ui/surface-scaffold` pulls its CSS automatically; import `@kerfjs/ui/surface-scaffold.css` manually only without the `browser` export condition.
 - Registration: import `@kerfjs/ui/surface-scaffold/register` once (a side effect).
 - Wiring: `wireOverlaySheets` from `@kerfjs/ui/wire-overlay-sheets` (optional).
+- Wiring: `wirePinnablePopover` from `@kerfjs/ui/surface-scaffold` (required).
 - Declared side effects: browser-condition-css, document-listeners.
 
 ## Props
@@ -53,6 +56,7 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 - floating header over a filling only child that opts into block-start scrollClearance: content scrolls beneath the title bar through the published --kui-scroll-clearance-block-start
 - floating header divider as scroll state: a hairline under the title bar only while the body or a filling child beneath it is scrolled away from its top
 - non-modal light-dismiss PopoverDialogSurface, overlay or embedded in flow, named by label or labelledBy and described by describedBy
+- pinnable non-modal PinnablePopoverSurface: transient below its anchor with light dismiss, or pinned (no light dismiss, Escape still closes) and moved by a header drag or the arrow keys (Shift for larger steps), resizable from its corner, clamped to the viewport gutter after a window resize, overlay or embedded in flow
 - none, compact, or comfortable body and footer inset
 - standard, compact, or zero-inset popup menu
 - core kerfjs/overlay confirm/prompt/form/choice as a bottom sheet styled by @kerfjs/ui/overlay-sheet.css
@@ -79,9 +83,16 @@ Exact prop names and types: [`@kerfjs/ui/surface-scaffold`](../public-api-signat
 
 ## State and wiring
 
-**The app owns:** open state (openDialog and closeDialog); whether a close request may proceed (cancel kui-request-close to keep the dialog open; the panel pulses); dismissal policy (lightDismiss); content, heading, header actions, and footer; outer placement; whether core kerfjs/overlay dialogs presented as bottom sheets take this package's geometry and slide (import @kerfjs/ui/overlay-sheet.css; exitClass 'kui-overlay-sheet-exit' for the slide out; the kui-overlay-sheet-resizable class plus wireOverlaySheets for a resize grabber).
+**The app owns:** open state (openDialog and closeDialog); whether a close request may proceed (cancel kui-request-close to keep the dialog open; the panel pulses); dismissal policy (lightDismiss); content, heading, header actions, and footer; outer placement; whether core kerfjs/overlay dialogs presented as bottom sheets take this package's geometry and slide (import @kerfjs/ui/overlay-sheet.css; exitClass 'kui-overlay-sheet-exit' for the slide out; the kui-overlay-sheet-resizable class plus wireOverlaySheets for a resize grabber); pinned state and placement storage for a PinnablePopoverSurface (wirePinnablePopover's onChange reports them; its pinned and placement options restore them).
 
-**Wiring:** `wireOverlaySheets` is optional.
+**Wiring:** `wireOverlaySheets`, `wirePinnablePopover` is required.
+
+- Use wirePinnablePopover as documented.
+
+**Wiring-owned state attributes** — never render, remove, or branch on these as app state:
+
+- `data-pinned` on `kui-pinnable-popover-surface` (`wirePinnablePopover`): Present while the surface is pinned: no light dismiss, movable by its title, resizable. Re-applied if a re-render drops it.
+- `data-placed` on `kui-pinnable-popover-surface` (`wirePinnablePopover`): Present while the controller places the open surface (below its anchor, or where the person moved it); absent, it is centered. Re-applied if a re-render drops it.
 
 ## Geometry
 
@@ -93,6 +104,7 @@ Margin: parent · border: child · padding: self (layout role: structure). `self
 - Name it with label (also its title text) or labelledBy (the id of a heading, such as a ToolbarText). The close button is named Close (closeLabel) and Escape asks to close; the cancelable kui-request-close event reports source close-button, escape, or backdrop.
 - closeEmphasis="quiet" uses a smaller, quiet-colored close glyph inside the same 40px target; hover, focus ring, forced colors, accessible naming, and close requests remain available.
 - Name a PopoverDialogSurface with label or labelledBy. Describe either surface with describedBy (rendered as aria-describedby on the dialog root), usually the heading ToolbarText descriptionId or app-owned summary copy in the body; rootAttributes accepts only data-\* attributes, so it never sets aria-describedby.
+- PinnablePopoverSurface is a role="dialog" named by its label, non-modal (nothing inert, focus stays where the person puts it). Its title is the move handle: a focusable button named by the label whose accessible description explains the drag and the arrow keys (Shift moves farther); the Pin control is a toggle button with aria-pressed, and Close and Escape (from inside it while pinned) close it.
 - A floating header's title uses the normal text color, which keeps WCAG AA over the 80% raised chrome material on any content; the material turns opaque under prefers-reduced-transparency, prefers-contrast: more, forced colors, or without backdrop-filter.
 - A resizable bottom sheet's grabber is a focusable horizontal separator ("Resize sheet") with aria-valuemin, aria-valuenow, and aria-valuemax in visible px; the arrow keys, Page Up/Down, Home, and End resize it, and its slide motion is skipped under prefers-reduced-motion.
 - Use popup surfaces only for real dropdown menus with named triggers.
@@ -103,11 +115,13 @@ The component renders controls inside it, so it cannot sit in the zones of a com
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.
 
-Public class hooks (select for layout placement only, never to change the component's look): `kui-dialog-surface`, `kui-dialog-surface__body`, `kui-dialog-surface__close`, `kui-dialog-surface__footer`, `kui-dialog-surface__header`, `kui-dialog-surface__header-actions`, `kui-dialog-surface__title`, `kui-popover-dialog-surface`, `kui-popup-surface`.
+Public class hooks (select for layout placement only, never to change the component's look): `kui-dialog-surface`, `kui-dialog-surface__body`, `kui-dialog-surface__close`, `kui-dialog-surface__footer`, `kui-dialog-surface__header`, `kui-dialog-surface__header-actions`, `kui-dialog-surface__title`, `kui-popover-dialog-surface`, `kui-pinnable-popover-surface`, `kui-popup-surface`.
 
 Never put `kui-dialog-surface`, `kui-dialog-surface__body`, `kui-dialog-surface__close`, `kui-dialog-surface__footer`, `kui-dialog-surface__header`, `kui-dialog-surface__header-actions`, `kui-dialog-surface__title` on an element you write; render `DialogSurface` instead (`KUI-L103`).
 
 Never put `kui-popover-dialog-surface` on an element you write; render `PopoverDialogSurface` instead (`KUI-L103`).
+
+Never put `kui-pinnable-popover-surface` on an element you write; render `PinnablePopoverSurface` instead (`KUI-L103`).
 
 Never put `kui-popup-surface` on an element you write; render `PopupSurface` instead (`KUI-L103`).
 
