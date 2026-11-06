@@ -3886,6 +3886,21 @@ export function createEditor(options: EditorOptions) {
   );
 
   /**
+   * KF-Y4GHQV: the chip naming what is dragged, which follows the pointer.
+   * KF-23EBGS: it renders outside the panes, so it draws over the rails too
+   * (a pane clips it in WebKit) while a drag heads for a spring tab or the
+   * outline.
+   */
+  const dragChip = () => (
+    <div
+      class="kui-editor__drag-chip"
+      data-morph-skip
+      aria-hidden="true"
+      hidden
+    />
+  );
+
+  /**
    * Shows `document` as a fresh session: no history or selection. With
    * storage it becomes the file at `path`, or a new draft saved right away.
    */
@@ -4268,16 +4283,7 @@ export function createEditor(options: EditorOptions) {
           {contextMenu()}
         </div>
         {playing.value ? playMode() : undefined}
-        {/* KF-Y4GHQV: the chip naming what is dragged follows the pointer.
-            KF-23EBGS: it lives outside the panes, so it draws over the rails
-            too (a pane clips it in WebKit) while a drag heads for a spring
-            tab or the outline. */}
-        <div
-          class="kui-editor__drag-chip"
-          data-morph-skip
-          aria-hidden="true"
-          hidden
-        />
+        {dragChip()}
       </List>
     );
   };
