@@ -13,8 +13,16 @@
  * production build.
  */
 import { existsSync, readFileSync } from 'node:fs';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
+import {
+  basename,
+  dirname,
+  isAbsolute,
+  join,
+  relative,
+  resolve,
+  sep,
+} from 'node:path';
 import process from 'node:process';
 import { URL } from 'node:url';
 
@@ -141,7 +149,16 @@ export function editorFileMiddleware(root) {
         !existsSync(join(folder, '.gitignore'))
       )
         await writeFile(join(folder, '.gitignore'), '*\n');
-      await writeFile(file, text);
+      // Atomically: a read while autosave writes (the editor reading a
+      // composed document, a test checking the file) never sees a truncated
+      // file. The temp file sits beside the target, so the rename stays on
+      // one file system.
+      const temp = join(
+        dirname(file),
+        `.${basename(file)}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2)}.tmp`,
+      );
+      await writeFile(temp, text);
+      await rename(temp, file);
       send(response, 204, '');
     } catch (error) {
       send(

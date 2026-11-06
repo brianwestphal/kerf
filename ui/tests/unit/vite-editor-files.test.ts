@@ -5,6 +5,7 @@
 import {
   existsSync,
   mkdtempSync,
+  readdirSync,
   readFileSync,
   rmSync,
   writeFileSync,
@@ -87,6 +88,13 @@ describe('editorFileMiddleware', () => {
     expect(get.response).toMatchObject({ statusCode: 200, body: '{"a":1}' });
     expect(get.response.headers['Content-Type']).toBe('application/json');
     expect(existsSync(join(root, '.kerf-ui-editor'))).toBe(false);
+    // The write lands whole, by rename: no temp file stays beside it, and an
+    // overwrite replaces the content in one step.
+    await call('PUT', 'views/inbox.kui.json', { body: '{"a":2}' });
+    expect(readdirSync(join(root, 'views'))).toEqual(['inbox.kui.json']);
+    expect(readFileSync(join(root, 'views/inbox.kui.json'), 'utf8')).toBe(
+      '{"a":2}',
+    );
   });
 
   it('makes the drafts folder ignore itself, once', async () => {
