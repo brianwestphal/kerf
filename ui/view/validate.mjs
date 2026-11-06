@@ -1513,7 +1513,12 @@ function checkView(ctx, node, at, scope, rowScoped) {
     );
   }
   for (const [name, param] of Object.entries(params)) {
-    if (isObject(param) && !('default' in param) && !(name in given)) {
+    if (
+      isObject(param) &&
+      !('default' in param) &&
+      param.optional !== true &&
+      !(name in given)
+    ) {
       ctx.report(
         'KUI-V012',
         at,
@@ -1919,12 +1924,26 @@ function checkHeader(ctx, document) {
       ctx.report(
         'KUI-V001',
         at,
-        'a param is a camelCase name mapped to `{ type, default? }`',
+        'a param is a camelCase name mapped to `{ type, default?, optional? }`',
       );
       continue;
     }
-    for (const key of only(param, ['type', 'default', 'description']))
+    for (const key of only(param, [
+      'type',
+      'default',
+      'optional',
+      'description',
+    ]))
       ctx.report('KUI-V001', `${at}.${key}`, 'unknown param field');
+    // KF-JE8KHX: `optional: true` makes an input optional with no default,
+    // so an omitted value reads as absent (an optional item field extracted
+    // into a row document).
+    if ('optional' in param && (param.optional !== true || 'default' in param))
+      ctx.report(
+        'KUI-V001',
+        `${at}.optional`,
+        'optional is `true`, on a param with no default (a default already makes it optional)',
+      );
     validateDeclaredType(ctx, param.type, `${at}.type`);
     // A prop-typed param's default is a literal of that prop (KF-V9V2B6: a
     // Select's choices promoted with their current list).

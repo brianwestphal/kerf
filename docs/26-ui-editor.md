@@ -1020,10 +1020,15 @@ application computes.
 
 ### 3.4 Params
 
-`params` maps a camelCase name to `{ type, default?, description? }`. `type` is
-a descriptor in the component-props type grammar (`string`, `number`,
-`boolean`, `enum`, `content`, `array`, `object`). A param with no default
-becomes a required input. `content` params are application-rendered `SafeHtml`.
+`params` maps a camelCase name to `{ type, default?, optional?, description? }`.
+`type` is a descriptor in the component-props type grammar (`string`,
+`number`, `boolean`, `enum`, `content`, `array`, `object`). A param with no
+default becomes a required input, unless it declares `optional: true`
+(KF-JE8KHX: optional item fields): its input is optional with no default, so
+an omitted value reads as absent (`undefined`), and a `#view` may leave it out.
+`optional` is only ever `true`, and a param with a default does not take it,
+since the default already makes the input optional (`KUI-V001`). `content`
+params are application-rendered `SafeHtml`.
 
 A default applies wherever the param is read: a `$param`, and the head of a
 `$bind` path into it (KF-8P3H7F: bound defaults). `{ "$bind": "data.tabs" }`
@@ -1223,7 +1228,11 @@ composing document belongs beside its rows before they render.
     becomes a param named for the field (`subject`; `messageSubject` when a
     copied param already holds that name), typed from the item's type, and
     reads as `$param subject` (a deeper `message.meta.title` as
-    `$bind meta.title`). A repeat inside the subtree keeps its own item.
+    `$bind meta.title`). A field the item type does not mark `required`
+    becomes an `optional: true` param (§3.4), so the composing module's
+    `message.subject` (possibly `undefined`) type-checks against it and an
+    absent value still reads as absent. A repeat inside the subtree keeps its
+    own item.
   - A `#view` takes the subtree's place, its `src` relative to the
     composing document, and its props pass each value back
     (`{ "subject": { "$bind": "message.subject" } }`, `$param p`). It is

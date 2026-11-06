@@ -112,6 +112,14 @@ const fieldOf = (type: ViewType | undefined, name: string) =>
     ? type.props?.find((prop) => prop.name === name)?.type
     : undefined;
 
+/**
+ * Whether field `name` of an item type may be absent: the generated type
+ * marks every field not `required` optional. Called only for a field
+ * `fieldOf` found, so the item is an object with that field.
+ */
+const optionalField = (type: ViewType | undefined, name: string) =>
+  type!.props!.find((prop) => prop.name === name)!.required !== true;
+
 const CAMEL = /^[a-z][A-Za-z0-9]*$/;
 /** Names the generated module uses, which a param must not take. */
 const RESERVED = new Set(['inputs', 'slots', 'each', 'handlers']);
@@ -369,7 +377,7 @@ export function extractToDocument(
     }
   const newParams: Record<
     string,
-    { type: ViewType; default?: unknown; description?: string }
+    { type: ViewType; default?: unknown; optional?: true; description?: string }
   > = {};
   const props: Record<string, ViewValue> = {};
   for (const [key, read] of reads) {
@@ -402,7 +410,12 @@ export function extractToDocument(
       };
     names.set(key, name);
     taken.add(name);
-    newParams[name] = { type };
+    // KF-JE8KHX: an optional field stays optional, with no default, so the
+    // row reads an absent value as absent, as it did inline.
+    newParams[name] =
+      read.field !== undefined && optionalField(itemType, read.field)
+        ? { type, optional: true }
+        : { type };
     props[name] = { $bind: bound };
   }
 

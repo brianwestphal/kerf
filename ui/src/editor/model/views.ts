@@ -99,7 +99,7 @@ export function viewPropsEntry(
     props: Object.entries(params).map(([name, param]): InspectorProp => ({
       name,
       type: param.type,
-      required: !('default' in param),
+      required: !('default' in param) && param.optional !== true,
       ...(typeof param.default === 'string' ||
       typeof param.default === 'number' ||
       typeof param.default === 'boolean'

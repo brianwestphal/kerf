@@ -7,6 +7,7 @@ import { validateJsonSchemaSubset } from '../../scripts/lib/json-schema-subset.m
 import {
   channelOf,
   composedViewPath,
+  contractOf,
   createViewCatalog,
   dataAttributeProblem,
   isAssignable,
@@ -1063,6 +1064,40 @@ describe('validateView: composed documents (KUI-V012)', () => {
       'KUI-V012',
     ]);
     expect(codes(view({ label: 3 }), { resolveView })).toEqual(['KUI-V004']);
+  });
+
+  it('lets an optional param be omitted, with no default (KF-JE8KHX)', () => {
+    const optional = (param: Fixture) =>
+      doc(button({ props: { title: { $param: 'label' } } }), {
+        name: 'Child',
+        params: { label: { type: { kind: 'string' }, ...param } },
+      });
+    const composing = (param: Fixture) =>
+      validateView(view({}), catalog, {
+        resolveView: () => optional(param),
+      }).diagnostics;
+    expect(composing({ optional: true })).toEqual([]);
+    expect(contractOf(optional({ optional: true }), catalog).inputs).toEqual({
+      label: {
+        type: 'string',
+        optional: true,
+        shape: { kind: 'string' },
+      },
+    });
+    // It is `true`, and only on a param without a default.
+    const misuse = {
+      code: 'KUI-V001',
+      path: '$.params.label.optional',
+      message:
+        'optional is `true`, on a param with no default (a default already makes it optional)',
+    };
+    expect(
+      validateView(optional({ optional: false }), catalog).diagnostics,
+    ).toEqual([misuse]);
+    expect(
+      validateView(optional({ optional: true, default: 'Go' }), catalog)
+        .diagnostics,
+    ).toEqual([misuse]);
   });
 
   it('rejects composing a document that declares slots', () => {

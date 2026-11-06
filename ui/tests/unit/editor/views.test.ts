@@ -184,6 +184,8 @@ describe('composed document model', () => {
           type: { kind: 'array', items: { kind: 'string' } },
           default: [],
         },
+        // KF-JE8KHX: an optional param with no default.
+        note: { type: { kind: 'string' }, optional: true },
       },
     } as ViewDocument;
     expect(viewPropsEntry('./row.kui.json', row).props).toEqual([
@@ -200,6 +202,7 @@ describe('composed document model', () => {
         type: { kind: 'array', items: { kind: 'string' } },
         required: false,
       },
+      { name: 'note', type: { kind: 'string' }, required: false },
     ]);
     expect(
       viewPropsEntry('./x.kui.json', { ...row, params: undefined }).props,

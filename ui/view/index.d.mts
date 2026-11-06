@@ -109,6 +109,11 @@ export interface ViewDocument {
          * a `$bind` path that starts at this param.
          */
         readonly default?: unknown;
+        /**
+         * `true` makes the input optional with no default, so an omitted
+         * value reads as `undefined`. A param with a default does not take it.
+         */
+        readonly optional?: true;
         readonly description?: string;
       }
     >

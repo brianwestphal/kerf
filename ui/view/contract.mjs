@@ -209,6 +209,7 @@ export function contractOf(document, catalog, options = {}) {
       // A prop-typed input is optional exactly when that prop is.
       optional:
         'default' in param ||
+        param.optional === true ||
         (param.type.kind === 'prop' &&
           !catalog.components
             .get(param.type.component)
