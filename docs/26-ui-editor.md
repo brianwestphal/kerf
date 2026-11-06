@@ -619,6 +619,33 @@ with no root takes the drop as its root, on the canvas's empty state or its
 blank space, and the caption reads "As the root". A click without a drag still shows
 the component's documentation.
 
+**Zones and replacing** (KF-WKABP2: smarter drop targeting). A drop inside
+a container used to land in the first zone that took it, so every drop on a
+fresh Workbench said "main header". Now:
+
+- **Zone regions.** Over a multi-panel layout (a Workbench, a SplitView;
+  `ui/src/editor/model/drop-zones.ts`), each zone that would take the drag
+  shows as a dashed region where it renders, and the region under the
+  pointer is the drop: "Inside Workbench › Left rail". A zone that renders
+  takes its panel's real box (a set rail, the drawer, a SplitView pane); one
+  that does not yet takes a default region (a Workbench's rails are a
+  quarter of its width each), and a Workbench's header, main, and footer
+  bands split the column left between its rails. A field zone fills the
+  object around it when it is unset, so dropping on the left region sets
+  the left rail. Only an 8px band along the container's edge still drops
+  beside it. A Pane keeps its main-zone-first drop (KF-W10DXQ).
+- **Replace.** A node alone in a zone that holds one child (a Workbench's
+  `main`, a SplitView's `list` or `detail`) is replaced by the drop when
+  nothing else takes it, and a full one-child zone's region replaces its
+  child: "Replace Main". A seeded placeholder (the catalog Text naming its
+  zone, as `seedNode` makes it, untouched) is replaced at once, and the drag
+  passes through it to its container's zones; authored content asks first
+  in a "Replace X?" dialog. One Undo restores what was replaced.
+- **Asking.** A drop made with Option (Alt) held opens a menu at the pointer
+  listing every legal place (each zone, and replacing), and so does a drop
+  inside a container with several zones and no main one to default to, on
+  the canvas or in the Outline. Escape keeps the document as it was.
+
 While a drag is under way (KF-Y4GHQV: drag feedback), a solid `Badge` chip
 naming what is dragged (the component, or the node's outline label) follows
 the pointer, and the line or ring carries a caption saying where the drop

@@ -106,7 +106,7 @@ export function insertPlacement(
  * inspector then asks for them, so a drop accepts them too; where the node
  * may go (its parent, a full zone, a binding's scope) still decides.
  */
-function unfilled(
+export function unfilled(
   { code, message }: { code: string; message: string },
   type: string,
 ): boolean {

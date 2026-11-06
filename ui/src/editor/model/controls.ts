@@ -938,6 +938,18 @@ export interface SeedCatalog {
   readonly childrenOf?: (key: string) => readonly string[];
 }
 
+/**
+ * The text of the placeholder a seeded node puts in zone `zone` when nothing
+ * cataloged fills it (KF-WKABP2 reads it back to tell an untouched
+ * placeholder from authored content): the component's name for its
+ * `children`, else the zone's name capitalized ("Main", "Detail").
+ */
+export function seedLabel(zone: string, componentName: string): string {
+  return zone === 'children'
+    ? componentName
+    : zone.charAt(0).toUpperCase() + zone.slice(1);
+}
+
 /** How deep seeded children of seeded children go. */
 const SEED_DEPTH = 3;
 
@@ -973,8 +985,7 @@ export function seedNode(
     catalog.component(textKey)
       ? { id: makeId(), type: textKey, props: { children: label } }
       : ({ id: makeId(), type: '#text', value: label } as ViewNode);
-  const label = (zone: string) =>
-    zone === 'children' ? name : zone.charAt(0).toUpperCase() + zone.slice(1);
+  const label = (zone: string) => seedLabel(zone, name);
   for (const zone of entry?.zones ?? []) {
     // A zone the composition may leave empty is still seeded when its prop
     // is required (KF-YCM09F: SplitView's `detail`), so a new node starts

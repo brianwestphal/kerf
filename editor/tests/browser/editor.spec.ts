@@ -1055,6 +1055,106 @@ test('drags a palette component onto an outline row', async ({
 });
 
 // KF-78MHM8: components drag from the palette onto the canvas.
+// KF-WKABP2: a drag over a Workbench shows its zones where they render and
+// drops into the one under the pointer; the seeded "Main" is replaced
+// without asking, authored content after a confirmation; an Option-drop
+// asks where it goes.
+test('targets a Workbench’s zones, replaces Main, and asks on Option-drop', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await newDocument(page);
+  await dragComponent(page, 'Workbench', () =>
+    page.locator('[data-editor-canvas] [data-editor-empty]').first(),
+  );
+  const workbench = page.locator('[data-editor-canvas] .kui-workbench');
+  await expect(workbench).toBeVisible();
+  const caption = page.locator('.kui-editor__drop-caption');
+  /** Starts a palette drag of `name` and rests at a point of the Workbench. */
+  const hover = async (name: string, fx: number, fy: number) => {
+    await area(page, 'Components');
+    const row = page.locator('[data-editor-palette]', {
+      hasText: new RegExp(`^${name}$`),
+    });
+    await row.scrollIntoViewIfNeeded();
+    const from = (await row.boundingBox())!;
+    await page.mouse.move(from.x + 20, from.y + from.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(from.x + 40, from.y + from.height / 2, { steps: 3 });
+    const box = (await workbench.boundingBox())!;
+    await page.mouse.move(box.x + box.width * fx, box.y + box.height * fy, {
+      steps: 10,
+    });
+  };
+  await hover('NavStack', 0.1, 0.5);
+  await expect(caption).toHaveText('Inside Workbench › Left rail');
+  await expect(page.locator('.kui-editor__zone-ghost')).not.toHaveCount(0);
+  await page.screenshot({
+    path: info.outputPath('KF-WKABP2-left-rail-1440.png'),
+    animations: 'disabled',
+  });
+  await page.mouse.move(
+    ...(await workbench
+      .boundingBox()
+      .then(
+        (box) =>
+          [box!.x + box!.width / 2, box!.y + box!.height * 0.05] as const,
+      )),
+    { steps: 4 },
+  );
+  await expect(caption).toHaveText('Inside Workbench › Header');
+  await page.mouse.move(
+    ...(await workbench
+      .boundingBox()
+      .then(
+        (box) => [box!.x + box!.width * 0.1, box!.y + box!.height / 2] as const,
+      )),
+    { steps: 4 },
+  );
+  await page.mouse.up();
+  await expect(page.locator('.kui-editor__zone-ghost')).toHaveCount(0);
+  // The NavStack fills the new left rail.
+  await expect(workbench.locator('.kui-nav-stack')).toBeVisible();
+  // The seeded Main is replaced without asking.
+  await hover('Button', 0.5, 0.4);
+  await expect(caption).toHaveText('Replace Main');
+  await page.screenshot({
+    path: info.outputPath('KF-WKABP2-replace-main-1440.png'),
+    animations: 'disabled',
+  });
+  await page.mouse.up();
+  const dialog = page.locator('#editor-replace-dialog');
+  await expect(dialog).not.toHaveJSProperty('open', true);
+  await expect(workbench.locator('.kui-button')).toBeVisible();
+  // Authored content asks first.
+  await hover('Text', 0.5, 0.4);
+  await expect(caption).toHaveText('Replace Button');
+  await page.mouse.up();
+  await expect(dialog).toHaveJSProperty('open', true);
+  await page.screenshot({
+    path: info.outputPath('KF-WKABP2-confirm-1440.png'),
+    animations: 'disabled',
+  });
+  await dialog.getByRole('button', { name: 'Replace', exact: true }).click();
+  await expect(dialog).not.toHaveJSProperty('open', true);
+  await expect(workbench.locator('.kui-button')).toHaveCount(0);
+  // An Option-drop asks where it goes.
+  await hover('Badge', 0.5, 0.4);
+  await page.keyboard.down('Alt');
+  await page.mouse.up();
+  await page.keyboard.up('Alt');
+  const choice = page.getByRole('menuitem', {
+    name: 'Inside Workbench › Right rail',
+  });
+  await expect(choice).toBeVisible();
+  await page.screenshot({
+    path: info.outputPath('KF-WKABP2-option-drop-1440.png'),
+    animations: 'disabled',
+  });
+  await choice.click();
+  await expect(workbench.locator('.kui-badge')).toBeVisible();
+});
+
 // KF-JC7WTW: the Components area's grid shows each component as added (a
 // layout as a sketch), and a tile drags onto the canvas like a row.
 test('shows the palette as a grid of thumbnails', async ({ page }, info) => {

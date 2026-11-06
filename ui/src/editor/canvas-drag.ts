@@ -36,6 +36,26 @@ export interface CanvasDropSurface {
   readonly clear: () => void;
 }
 
+/**
+ * A zone of a container a drag can drop into (KF-WKABP2), with the box it
+ * shows as while the drag rests over the container, in client coordinates.
+ */
+export interface CanvasZone {
+  readonly move: TreeListMove;
+  readonly box: {
+    readonly left: number;
+    readonly top: number;
+    readonly width: number;
+    readonly height: number;
+  };
+}
+
+/** One entry of the menu a drop asks with (KF-WKABP2). */
+export interface CanvasDropChoice {
+  readonly move: TreeListMove;
+  readonly label: string;
+}
+
 export interface CanvasDragOptions {
   /** The outline id of a canvas element that can be dragged, if any. */
   readonly sourceOf: (element: HTMLElement) => string | undefined;
@@ -72,6 +92,46 @@ export interface CanvasDragOptions {
    * pointer, asked in order; the first legal move wins.
    */
   readonly surfaces?: readonly CanvasDropSurface[];
+  /**
+   * KF-WKABP2: the legal zones of the container `element` laid out where
+   * they render, when the editor knows its layout. Two or more show as
+   * regions, and the one the pointer rests in is where the drop goes.
+   */
+  readonly zonesOf?: (
+    element: HTMLElement,
+    sourceId: string,
+  ) => readonly CanvasZone[] | undefined;
+  /**
+   * KF-WKABP2: the legal move replacing the node `element` shows, when it is
+   * alone in a zone that holds one child and nothing else takes the drop.
+   */
+  readonly replaceOf?: (
+    element: HTMLElement,
+    sourceId: string,
+  ) => TreeListMove | undefined;
+  /**
+   * KF-WKABP2: every legal way a drop on `element` can land (each zone, and
+   * replacing it), for a drop that asks: one made with Option (Alt) held,
+   * or, when `ambiguous` (several zones and no main one to default to), any
+   * drop inside it.
+   */
+  readonly choicesOf?: (
+    element: HTMLElement,
+    sourceId: string,
+  ) => {
+    readonly choices: readonly CanvasDropChoice[];
+    readonly ambiguous: boolean;
+  };
+  /**
+   * KF-WKABP2: whether a drag over canvas element `element` targets its
+   * container instead (an untouched placeholder standing in for a zone).
+   */
+  readonly passesThrough?: (element: HTMLElement) => boolean;
+  /** Asks which of `choices` a drop at `point` means, and applies it. */
+  readonly choose?: (
+    choices: readonly CanvasDropChoice[],
+    point: { readonly x: number; readonly y: number },
+  ) => void;
   /** The element under a point; `document.elementFromPoint` by default. */
   readonly pick?: (x: number, y: number) => Element | null;
 }
@@ -101,6 +161,33 @@ function positionsAt(
   // beside it (the root) still takes it inside.
   return offset < 0.25 || offset > 0.75 ? [edge, 'inside'] : ['inside', edge];
 }
+
+/** Whether client point (`x`, `y`) is inside `box`. */
+function contains(box: CanvasZone['box'], x: number, y: number): boolean {
+  return (
+    x >= box.left &&
+    x < box.left + box.width &&
+    y >= box.top &&
+    y < box.top + box.height
+  );
+}
+
+/** How close to a laid-out container's edge a drag drops beside it. */
+const ZONE_EDGE = 8;
+
+/** Whether (`x`, `y`) is within `ZONE_EDGE` of `element`'s flow edges. */
+function nearEdge(
+  element: HTMLElement,
+  x: number,
+  y: number,
+  across: boolean,
+): boolean {
+  const box = element.getBoundingClientRect();
+  return across
+    ? x - box.left < ZONE_EDGE || box.right - x < ZONE_EDGE
+    : y - box.top < ZONE_EDGE || box.bottom - y < ZONE_EDGE;
+}
+
 
 /** How far the pointer's chip sits below and right of the pointer. */
 const CHIP_OFFSET = 14;
@@ -145,8 +232,14 @@ export function wireCanvasDrag(
       `.kui-editor__${name}`,
     );
   const caption = () => part('drop-caption');
+  const ghosts = () => part('zone-ghosts');
   const hide = () => {
     overlay().hidden = true;
+    const host = ghosts();
+    if (host) {
+      host.hidden = true;
+      host.replaceChildren();
+    }
     const text = caption();
     if (text) {
       text.hidden = true;
@@ -174,13 +267,39 @@ export function wireCanvasDrag(
     }
   };
   /** A canvas element's box relative to the canvas's scrolled content. */
-  const within = (box: DOMRect) => {
+  const within = (box: { readonly left: number; readonly top: number }) => {
     const host = canvas();
     const outer = host.getBoundingClientRect();
     return {
       left: box.left - outer.left + host.scrollLeft,
       top: box.top - outer.top + host.scrollTop,
     };
+  };
+  /** Draws each of a container's zones, the chosen one marked. */
+  const drawZones = (
+    zones: readonly CanvasZone[] | undefined,
+    chosen: CanvasZone | undefined,
+  ) => {
+    const host = ghosts();
+    if (!host) return;
+    if (!zones) {
+      host.hidden = true;
+      host.replaceChildren();
+      return;
+    }
+    host.hidden = false;
+    host.replaceChildren(
+      ...zones.map((zone) => {
+        const region = host.ownerDocument.createElement('div');
+        region.className = 'kui-editor__zone-ghost';
+        if (zone === chosen) region.dataset.chosen = '';
+        const { left, top } = within(zone.box);
+        region.style.inset = `${top}px auto auto ${left}px`;
+        region.style.width = `${zone.box.width}px`;
+        region.style.height = `${zone.box.height}px`;
+        return region;
+      }),
+    );
   };
   const badge = (text: string, tone: 'info' | 'danger' = 'info') =>
     String(Badge({ children: text, tone, appearance: 'solid' }));
@@ -210,7 +329,9 @@ export function wireCanvasDrag(
   /** The legal move at a point, with the target element, if any. */
   const moveAt = (x: number, y: number) => {
     const hit = pick(x, y);
-    const element = hit?.closest<HTMLElement>(TARGETS);
+    let element = hit?.closest<HTMLElement>(TARGETS) ?? null;
+    while (element && options.passesThrough?.(element))
+      element = element.parentElement?.closest<HTMLElement>(TARGETS) ?? null;
     if (press && !element && hit === canvas() && options.rootOf) {
       const move = {
         sourceId: press.source,
@@ -229,19 +350,45 @@ export function wireCanvasDrag(
     )
       ? ['inside']
       : positionsAt(element.getBoundingClientRect(), x, y, across);
+    // KF-WKABP2: a container's zones, where they render; the pointer picks
+    // one. Only a thin band along its edges still drops beside it.
+    const zones = element.matches('[data-editor-empty]')
+      ? undefined
+      : options.zonesOf?.(element, press.source);
+    // A point over no legal zone drops as anywhere else would.
+    const zone =
+      zones && zones.length > 1 && !nearEdge(element, x, y, across)
+        ? zones.find(({ box }) => contains(box, x, y))
+        : undefined;
+    if (zone) return { move: zone.move, element, across, zones, zone };
     for (const position of positions) {
       const move = { sourceId: press.source, target: { id, position } };
       if (options.canDrop(move)) return { move, element, across };
+      if (position === 'inside') {
+        const replace = options.replaceOf?.(element, press.source);
+        if (replace) return { move: replace, element, across, replace: true };
+      }
     }
     return undefined;
   };
 
-  /** Draws a line beside, or a ring around, the target element. */
-  const show = (element: HTMLElement, move: TreeListMove, across: boolean) => {
+  /**
+   * Draws a line beside, or a ring around, the target element; over a
+   * container's zones (KF-WKABP2), each zone's region and a ring around the
+   * one the drop takes.
+   */
+  const show = ({
+    element,
+    move,
+    across,
+    zones,
+    zone,
+  }: NonNullable<ReturnType<typeof moveAt>>) => {
     const { position } = move.target;
-    const box = element.getBoundingClientRect();
+    const box = zone?.box ?? element.getBoundingClientRect();
     const host = canvas();
     const { left, top } = within(box);
+    drawZones(zones, zone);
     const mark = overlay();
     mark.hidden = false;
     mark.dataset.drop = position === 'inside' ? 'ring' : 'line';
@@ -291,7 +438,13 @@ export function wireCanvasDrag(
         'on',
       ];
     };
-    const [captionX, captionY, side] = placeCaption();
+    const [farX, captionY, side] = placeCaption();
+    // KF-WKABP2: a caption wider than its target (a narrow rail's region)
+    // never runs off the canvas's left edge.
+    const captionX =
+      side === 'on'
+        ? Math.max(farX, host.scrollLeft + text.offsetWidth + gap)
+        : farX;
     text.dataset.side = side;
     text.style.inset = `${captionY}px auto auto ${captionX}px`;
   };
@@ -341,7 +494,7 @@ export function wireCanvasDrag(
     follow(pointer.clientX, pointer.clientY);
     const found = moveAt(pointer.clientX, pointer.clientY);
     if (found) {
-      show(found.element, found.move, found.across);
+      show(found);
       for (const surface of surfaces) surface.clear();
       return;
     }
@@ -367,14 +520,40 @@ export function wireCanvasDrag(
   const onUp = (event: Event) => {
     const pointer = event as PointerEvent;
     if (!press || pointer.pointerId !== press.pointer) return;
-    const found = press.dragging
-      ? (moveAt(pointer.clientX, pointer.clientY)?.move ??
-        surfaceMoveAt(pointer.clientX, pointer.clientY))
+    const at = press.dragging
+      ? moveAt(pointer.clientX, pointer.clientY)
       : undefined;
+    const found =
+      at?.move ??
+      (press.dragging
+        ? surfaceMoveAt(pointer.clientX, pointer.clientY)
+        : undefined);
+    // KF-WKABP2: a drop made with Option (Alt) held asks where it goes, and
+    // so does one inside a container with several zones, no layout to pick
+    // one by, and no main zone to default to.
+    const { choices, ambiguous } =
+      at && options.choose && options.choicesOf
+        ? options.choicesOf(at.element, press.source)
+        : { choices: [], ambiguous: false };
+    const asks =
+      choices.length > 0 &&
+      (pointer.altKey ||
+        (ambiguous &&
+          !at!.zones &&
+          !at!.replace &&
+          at!.move.target.position === 'inside'));
     suppressClick = press.dragging;
+    // The click that ends a drag comes in this same task; a later click
+    // (on the menu a drop asks with, KF-WKABP2) is the person's own.
+    if (suppressClick)
+      root.ownerDocument.defaultView!.setTimeout(() => {
+        suppressClick = false;
+      });
     press = undefined;
     clear();
-    if (found) options.onMove(found);
+    if (asks)
+      options.choose!(choices, { x: pointer.clientX, y: pointer.clientY });
+    else if (found) options.onMove(found);
   };
   const cancel = () => {
     if (press?.dragging) suppressClick = true;

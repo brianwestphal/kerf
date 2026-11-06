@@ -46,6 +46,32 @@
   display: none;
 }
 
+/* KF-WKABP2: a container's zones while a drag rests over it, where its
+   layout renders them; the drop ring marks the one the pointer picks. */
+.kui-editor__zone-ghost {
+  position: absolute;
+  z-index: 1;
+  box-sizing: border-box;
+  border: 1px dashed var(--kui-color-brand-border-loud);
+  border-radius: var(--kui-radius-s);
+  background: color-mix(in srgb, var(--kui-color-brand-border-loud) 6%, transparent);
+  pointer-events: none;
+}
+
+.kui-editor__zone-ghost[data-chosen] {
+  background: color-mix(in srgb, var(--kui-color-brand-border-loud) 14%, transparent);
+}
+
+.kui-editor__zone-ghosts[hidden] {
+  display: none;
+}
+
+@media (forced-colors: active) {
+  .kui-editor__zone-ghost {
+    border-color: Highlight;
+  }
+}
+
 /* KF-Y4GHQV: the caption saying where a drag lands, beside its line or
    inside its ring; the dimmed place of a node moved on the canvas; and the
    chip naming what is dragged, which follows the pointer. Each only places

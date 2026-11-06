@@ -203,6 +203,15 @@ import {
   sourceOf,
 } from './model/drop.js';
 import {
+  isSeedPlaceholder,
+  layoutZones,
+  type Replacement,
+  replaceNode,
+  singleChildPlace,
+  zoneRegions,
+  zoneTitle,
+} from './model/drop-zones.js';
+import {
   addsProblems,
   bindingOptions,
   copyChild,
@@ -414,6 +423,19 @@ const emptyZoneTarget = (id: string) =>
   id.startsWith(EMPTY_ZONE_TARGET)
     ? (JSON.parse(id.slice(EMPTY_ZONE_TARGET.length)) as SlotAddress)
     : undefined;
+/**
+ * KF-WKABP2: a drop target replacing the node it names, alone in a zone
+ * that holds one child.
+ */
+const REPLACE_TARGET = 'editor-replace:';
+/** The node a replacing drop target names, if `id` is one. */
+const replaceTarget = (id: string) =>
+  id.startsWith(REPLACE_TARGET) ? id.slice(REPLACE_TARGET.length) : undefined;
+/** KF-WKABP2: the menu a drop asks with, and its entries' action. */
+const DROP_MENU = 'data-editor-drop-menu';
+const DROP_CHOICE_ACTION = 'editor-drop-choice';
+const REPLACE_DIALOG = 'editor-replace-dialog';
+const REPLACE_CONFIRM_ACTION = 'editor-replace-confirm';
 /** Adds a node to a content prop's zone from its Properties row (KF-5T3TE4). */
 const CONTENT_ADD_ACTION = 'editor-content-add';
 /**
@@ -3064,6 +3086,20 @@ export function createEditor(options: EditorOptions) {
   };
 
   const applyMove = (move: TreeListMove) => {
+    // KF-WKABP2: a drop replacing a node alone in its zone; authored content
+    // asks first, a seeded placeholder does not.
+    const replaced = replaceTarget(move.target.id);
+    if (replaced) {
+      if (!replaceFor(move)) return;
+      if (
+        isSeedPlaceholder(doc.value, replaced, (key) =>
+          componentNames.get(key)!,
+        )
+      )
+        commitReplace(move);
+      else pendingReplace.value = move;
+      return;
+    }
     if (move.sourceId.startsWith(PALETTE_SOURCE)) {
       const to = dropFor(move);
       if (!to) return;
@@ -3125,13 +3161,30 @@ export function createEditor(options: EditorOptions) {
   };
 
   /**
+   * A zone as a drop caption names it (KF-WKABP2): its container, then the
+   * zone by its layout's name ("Workbench › Left rail") or its key.
+   */
+  const zoneName = (parent: string, zone: string) => {
+    const node = findNode(doc.value, parent)?.node;
+    const title = (node && zoneTitle(node.type, zone)) ?? zoneLabel(zone);
+    return `${rowLabel(parent)} › ${title}`;
+  };
+  /** What a replacing drop replaces, by name: a placeholder by its text. */
+  const replacedName = (id: string) =>
+    isSeedPlaceholder(doc.value, id, (key) => componentNames.get(key)!)
+      ? String(findNode(doc.value, id)!.node.props!.children)
+      : rowLabel(id);
+
+  /**
    * Where a legal drag move lands, in words (KF-Y4GHQV): beside its target,
    * or inside it, naming the zone when the target has more than one.
    */
   const dropCaption = (move: TreeListMove): string => {
     if (move.target.id === ROOT_TARGET) return 'As the root';
+    const replaced = replaceTarget(move.target.id);
+    if (replaced) return `Replace ${replacedName(replaced)}`;
     const empty = emptyZoneTarget(move.target.id);
-    if (empty) return `Inside ${rowLabel(empty.parent)} › ${empty.zone}`;
+    if (empty) return `Inside ${zoneName(empty.parent, empty.zone)}`;
     const target = rowLabel(move.target.id);
     if (move.target.position === 'before') return `Before ${target}`;
     if (move.target.position === 'after') return `After ${target}`;
@@ -3239,6 +3292,12 @@ export function createEditor(options: EditorOptions) {
     document: doc.value,
     drops: new Map(),
   };
+  /** The drop results kept for the current document. */
+  const cachedDrops = () => {
+    if (dropCache.document !== doc.value)
+      dropCache = { document: doc.value, drops: new Map() };
+    return dropCache.drops;
+  };
   const dropFor = (target: TreeListMove) => {
     // KF-PK3GVY: only a palette drag reaches a rootless canvas, and it
     // becomes the root.
@@ -3248,20 +3307,20 @@ export function createEditor(options: EditorOptions) {
         : { parent: ROOT_TARGET, zone: '', index: 0 };
     // KF-7BB55F: inside an empty zone's placeholder is the zone's first place.
     const empty = emptyZoneTarget(target.target.id);
+    // KF-WKABP2: a zone region's target names the zone's end.
     const move = empty
       ? {
           ...target,
           target: {
-            id: slotRowId(empty.parent, empty.zone, 0),
+            id: slotRowId(empty.parent, empty.zone, empty.index),
             position: 'before' as const,
           },
         }
       : target;
-    if (dropCache.document !== doc.value)
-      dropCache = { document: doc.value, drops: new Map() };
+    const drops = cachedDrops();
     const key = `${move.sourceId} ${move.target.id} ${move.target.position}`;
-    if (!dropCache.drops.has(key))
-      dropCache.drops.set(
+    if (!drops.has(key))
+      drops.set(
         key,
         move.sourceId.startsWith(PALETTE_SOURCE)
           ? insertPlacement(
@@ -3281,7 +3340,233 @@ export function createEditor(options: EditorOptions) {
               zoneKeys,
             ),
       );
-    return dropCache.drops.get(key) as ReturnType<typeof dropPlacement>;
+    return drops.get(key) as ReturnType<typeof dropPlacement>;
+  };
+
+  /**
+   * KF-WKABP2: the document a replacing drop leaves, if legal: the dragged
+   * component or node in place of the node the target names.
+   */
+  const replaceFor = (move: TreeListMove) => {
+    const target = replaceTarget(move.target.id)!;
+    const drops = cachedDrops();
+    const key = `replace ${move.sourceId} ${target}`;
+    if (!drops.has(key)) {
+      const by: Replacement = move.sourceId.startsWith(PALETTE_SOURCE)
+        ? { node: draggedNode(move.sourceId) }
+        : { moved: move.sourceId };
+      drops.set(
+        key,
+        slotRowAddress(move.sourceId)
+          ? undefined
+          : replaceNode(doc.value, viewCatalog, target, by),
+      );
+    }
+    return drops.get(key) as ViewDocument | undefined;
+  };
+  /** The move replacing node `id` with what `sourceId` drags, if legal. */
+  const replaceMove = (sourceId: string, id: string) => {
+    if (id === sourceId || !singleChildPlace(doc.value, viewCatalog, id))
+      return undefined;
+    const move = {
+      sourceId,
+      target: { id: `${REPLACE_TARGET}${id}`, position: 'inside' as const },
+    };
+    return replaceFor(move) ? move : undefined;
+  };
+  /** The move into the end of zone `zone` of node `parent`. */
+  const zoneMove = (sourceId: string, parent: ViewNode, zone: string) => ({
+    sourceId,
+    target: {
+      id: `${EMPTY_ZONE_TARGET}${JSON.stringify({
+        parent: parent.id,
+        zone,
+        index: parent.zones?.[zone]?.length ?? 0,
+      })}`,
+      position: 'inside' as const,
+    },
+  });
+  /**
+   * The legal move into zone `zone` of `parent`; for a zone full with one
+   * child, the move replacing that child.
+   */
+  const zoneDrop = (sourceId: string, parent: ViewNode, zone: string) => {
+    const move = zoneMove(sourceId, parent, zone);
+    if (dropFor(move)) return move;
+    const children = parent.zones?.[zone];
+    const only = children?.length === 1 ? children[0] : undefined;
+    return only && 'id' in only && 'type' in only
+      ? replaceMove(sourceId, only.id)
+      : undefined;
+  };
+  /** The canvas node an element shows, if it is one. */
+  const canvasNode = (element: HTMLElement) => {
+    const id = element.dataset.kerfNode;
+    return id ? findNode(doc.value, id)?.node : undefined;
+  };
+  /**
+   * A container's legal zones where its layout puts them (KF-WKABP2), in
+   * client coordinates over `element`.
+   */
+  const canvasZones = (element: HTMLElement, sourceId: string) => {
+    const node = canvasNode(element);
+    if (!node || !zoneRegions(node.type) || node.id === sourceId)
+      return undefined;
+    // A rendered panel of this container (not of one nested in it) with a
+    // size gives its zone's box.
+    const partBox = (selector: string) => {
+      const part = [...element.querySelectorAll<HTMLElement>(selector)].find(
+        (item) => item.parentElement?.closest('[data-kerf-node]') === element,
+      );
+      const box = part?.getBoundingClientRect();
+      return box?.width && box.height ? box : undefined;
+    };
+    return layoutZones(
+      node.type,
+      element.getBoundingClientRect(),
+      partBox,
+    ).flatMap(({ zone, box }) => {
+      const move = zoneDrop(sourceId, node, zone);
+      return move ? [{ move, box }] : [];
+    });
+  };
+  /**
+   * Every legal way a drop on node `id` lands (KF-WKABP2), for the menu a
+   * drop asks with: into each of its zones, and replacing it; ambiguous
+   * when two or more zones take it and none is the node's main zone, which
+   * a drop inside would otherwise default to (KF-W10DXQ).
+   */
+  const dropChoicesFor = (id: string, sourceId: string) => {
+    const node = findNode(doc.value, id)?.node;
+    if (!node || id === sourceId) return { choices: [], ambiguous: false };
+    const zones = new Set([
+      ...zoneKeys(node),
+      ...(zoneRegions(node.type) ?? []).map((region) => region.zone),
+    ]);
+    // A full zone with one child offers replacing that child.
+    const choices = [...zones].flatMap((zone) => {
+      const move = zoneDrop(sourceId, node, zone);
+      if (!move) return [];
+      const replaced = replaceTarget(move.target.id);
+      return [
+        {
+          move,
+          label: replaced
+            ? `Replace ${replacedName(replaced)}`
+            : `Inside ${zoneName(id, zone)}`,
+        },
+      ];
+    });
+    const primary = zonesOf(node).find((zone) => zone.primary)?.key;
+    const into = choices.filter(({ move }) => emptyZoneTarget(move.target.id));
+    const ambiguous =
+      into.length > 1 &&
+      !into.some(
+        ({ move }) => emptyZoneTarget(move.target.id)!.zone === primary,
+      );
+    const replace = replaceMove(sourceId, id);
+    return {
+      choices: replace
+        ? [...choices, { move: replace, label: `Replace ${replacedName(id)}` }]
+        : choices,
+      ambiguous,
+    };
+  };
+  /** The drop choices the menu shows while it is open. */
+  const dropChoices = signal<readonly { move: TreeListMove; label: string }[]>(
+    [],
+  );
+  /** Opens the drop menu with `choices` at `point` (KF-WKABP2). */
+  const askDrop = (
+    root: HTMLElement,
+    choices: readonly { move: TreeListMove; label: string }[],
+    point: { x: number; y: number },
+  ) => {
+    dropChoices.value = choices;
+    // The menu renders its new entries first.
+    window.requestAnimationFrame(() =>
+      openPopupMenuAt(
+        root.querySelector<HTMLElement>(`[${DROP_MENU}]`)!,
+        point.x,
+        point.y,
+      ),
+    );
+  };
+  /**
+   * An outline drop inside a row whose node has several places for it asks
+   * where (KF-WKABP2), below the row; any other drop applies.
+   */
+  const moveOrAsk = (root: HTMLElement, move: TreeListMove) => {
+    const { id, position } = move.target;
+    if (position === 'inside' && !replaceTarget(id) && !emptyZoneTarget(id)) {
+      const { choices, ambiguous } = dropChoicesFor(id, move.sourceId);
+      if (ambiguous) {
+        // The drop came from this row.
+        const box = root
+          .querySelector<HTMLElement>(
+            `.kui-tree-list [data-item-id="${CSS.escape(id)}"]`,
+          )!
+          .getBoundingClientRect();
+        askDrop(root, choices, { x: box.left + 24, y: box.bottom });
+        return;
+      }
+    }
+    applyMove(move);
+  };
+  /** A replacing drop awaiting confirmation (KF-WKABP2). */
+  const pendingReplace = signal<TreeListMove | null>(null);
+  /** Applies a legal replacing drop and selects what took the place. */
+  const commitReplace = (move: TreeListMove) => {
+    const next = replaceFor(move);
+    if (!next) return;
+    const id = move.sourceId.startsWith(PALETTE_SOURCE)
+      ? draggedNode(move.sourceId).id
+      : move.sourceId;
+    dragged = undefined;
+    commit(next);
+    select({ kind: 'node', id });
+    inspectorArea.value = 'properties';
+  };
+  /** The drop menu (KF-WKABP2): where an asking drop goes. */
+  const dropMenu = () => (
+    <PopupMenu
+      context
+      label="Drop into"
+      rootAttributes={{ [DROP_MENU]: '' }}
+      items={dropChoices.value.map((choice, index) => ({
+        label: choice.label,
+        action: DROP_CHOICE_ACTION,
+        attributes: { 'data-editor-drop-choice': String(index) },
+      }))}
+    />
+  );
+  /** Asks before a drop replaces authored content (KF-WKABP2). */
+  const replaceDialog = () => {
+    const move = pendingReplace.value;
+    const target = move ? replaceTarget(move.target.id)! : undefined;
+    const name = target ? rowLabel(target) : '';
+    return (
+      <DialogSurface
+        id={REPLACE_DIALOG}
+        label={`Replace ${name}?`}
+        size="small"
+        rootAttributes={{ 'data-key': REPLACE_DIALOG }}
+        footer={
+          <>
+            <Button rootAttributes={{ 'data-dialog-close': '' }}>Cancel</Button>
+            <Button tone="danger" action={REPLACE_CONFIRM_ACTION}>
+              Replace
+            </Button>
+          </>
+        }
+      >
+        <List textInsets="trbl">
+          <Text>
+            {`${name} and everything inside it will be removed. Undo restores it.`}
+          </Text>
+        </List>
+      </DialogSurface>
+    );
   };
 
   /** Moves a node into another zone: the keyboard alternative to dragging. */
@@ -3968,6 +4253,13 @@ export function createEditor(options: EditorOptions) {
         aria-hidden="true"
         hidden
       />
+      {/* KF-WKABP2: a container's zones while a drag rests over it. */}
+      <div
+        class="kui-editor__zone-ghosts"
+        data-morph-skip
+        aria-hidden="true"
+        hidden
+      />
       <div class="kui-editor__drop" data-morph-skip aria-hidden="true" hidden />
       {/* KF-Y4GHQV: the drag's caption and dimmed source. */}
       <div
@@ -4278,6 +4570,7 @@ export function createEditor(options: EditorOptions) {
           {fieldDialog()}
           {iconDialog()}
           {embedDialog()}
+          {replaceDialog()}
           <List flex>
             <Workbench
               id={WORKBENCH_ID}
@@ -4406,6 +4699,7 @@ export function createEditor(options: EditorOptions) {
           </List>
           {/* After the panes, so the Inspector's own commands come first. */}
           {contextMenu()}
+          {dropMenu()}
         </div>
         {playing.value ? playMode() : undefined}
         {dragChip()}
@@ -5654,6 +5948,20 @@ export function createEditor(options: EditorOptions) {
         [CONTEXT_MOVE_DOWN_ACTION]: () => moveSelected(1),
         [CONTEXT_DUPLICATE_ACTION]: () => duplicate(),
         [CONTEXT_DELETE_ACTION]: () => deleteSelected(),
+        // KF-WKABP2: the drop menu's choice, and a confirmed replacement.
+        [DROP_CHOICE_ACTION]: (_event, target) => {
+          const choice =
+            dropChoices.value[Number(target.dataset.editorDropChoice)];
+          if (choice) applyMove(choice.move);
+        },
+        [REPLACE_CONFIRM_ACTION]: () => {
+          const move = pendingReplace.value;
+          pendingReplace.value = null;
+          closeDialog(
+            root.querySelector<HTMLDialogElement>(`#${REPLACE_DIALOG}`)!,
+          );
+          if (move) commitReplace(move);
+        },
         [CONTEXT_EMBED_ACTION]: (_event, target) =>
           embed(selectedNodeId()!, target.dataset.editorContextEmbed!),
         [CONTEXT_EMBED_OTHER_ACTION]: () => openEmbedDialog(root),
@@ -6156,13 +6464,25 @@ export function createEditor(options: EditorOptions) {
           const { id } = event.target as Element;
           if (id === FIELD_DIALOG) openField.value = null;
           if (id === ICON_DIALOG) iconPicker.value = null;
+          if (id === REPLACE_DIALOG) pendingReplace.value = null;
         };
         root.addEventListener('close', closed, true);
         return () => root.removeEventListener('close', closed, true);
       })(),
       wireTreeList(root, {
         canDrop: (move) => dropFor(move) !== undefined,
-        onMove: applyMove,
+        // KF-WKABP2: an inside drop with several places asks where.
+        onMove: (move) => moveOrAsk(root, move),
+      }),
+      // KF-WKABP2: a replacing drop of authored content asks first.
+      effect(() => {
+        if (!pendingReplace.value) return;
+        window.requestAnimationFrame(() => {
+          const dialog = root.querySelector<HTMLDialogElement>(
+            `#${REPLACE_DIALOG}`,
+          )!;
+          if (!dialog.open) openDialog(dialog);
+        });
       }),
       // Arrow keys move between a strip's tabs; nothing here reorders.
       wireTabBars(root, { onReorder: () => {} }),
@@ -6195,7 +6515,31 @@ export function createEditor(options: EditorOptions) {
           return slotRowId(parent, zone, index);
         },
         canDrop: (move) => dropFor(move) !== undefined,
-        onMove: applyMove,
+        onMove: (move) => moveOrAsk(root, move),
+        // KF-WKABP2: a container's zones where they render, replacing a
+        // node alone in its zone, and the menu a drop asks with.
+        zonesOf: canvasZones,
+        replaceOf: (element, sourceId) => {
+          const node = canvasNode(element);
+          return node ? replaceMove(sourceId, node.id) : undefined;
+        },
+        choicesOf: (element, sourceId) => {
+          const node = canvasNode(element);
+          return node
+            ? dropChoicesFor(node.id, sourceId)
+            : { choices: [], ambiguous: false };
+        },
+        choose: (choices, point) => askDrop(root, choices, point),
+        // KF-WKABP2: a container's untouched seed placeholder ("Main") is
+        // part of its container's zones; replacing it is the Main region.
+        passesThrough: (element) => {
+          const node = canvasNode(element);
+          return node
+            ? isSeedPlaceholder(doc.value, node.id, (key) =>
+                componentNames.get(key)!,
+              )
+            : false;
+        },
         // KF-PK3GVY: a rootless document's blank canvas takes its root.
         rootOf: () => doc.value.root?.id ?? ROOT_TARGET,
         labelOf: (sourceId) =>
