@@ -594,6 +594,17 @@ palette filter): typing keeps the components whose name or category holds
 the text, case-insensitively (a category match keeps its whole group), drops
 groups left empty, and shows "No matching components" when none match; its
 clear button lists them all again and keeps focus in the field.
+A **Component View** `SegmentedControl` beside the filter (KF-JC7WTW: palette
+grid) switches the area between the list of names and a grid of tiles; the
+choice persists per browser (`kerf-ui-editor:palette-view`). Each tile shows
+its component as Add would make it: the seeded node rendered by the canvas
+renderer (as play mode renders it, so no empty-zone stand-ins), in the tile's
+shadow root so its ids and node markers never meet the canvas, scaled down to
+fit and never up (`ui/src/editor/palette-thumbnails.ts`). Layouts, dialogs,
+and arrangement primitives, which render nothing useful when added empty,
+show a simplified `currentColor` sketch instead (`palette-schematics.ts`);
+a component that draws nothing recognizable shows an icon. Tiles select,
+filter, and drag like rows.
 
 Components drag from the palette onto the canvas the same way (KF-78MHM8:
 palette drag). The dragged component is a new node with its required props

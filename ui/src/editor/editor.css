@@ -528,3 +528,16 @@
 .kui-editor__action-log {
   inline-size: min(380px, calc(100vw - 48px));
 }
+
+/* KF-JC7WTW: a palette tile's thumbnail of its component, drawn in its
+   shadow root and scaled to fit; its icon shows while the component renders
+   nothing until it opens. */
+.kui-editor__palette-thumb {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  pointer-events: none;
+  color: var(--kui-color-text-quiet);
+}

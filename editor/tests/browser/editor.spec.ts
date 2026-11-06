@@ -1055,6 +1055,64 @@ test('drags a palette component onto an outline row', async ({
 });
 
 // KF-78MHM8: components drag from the palette onto the canvas.
+// KF-JC7WTW: the Components area's grid shows each component as added (a
+// layout as a sketch), and a tile drags onto the canvas like a row.
+test('shows the palette as a grid of thumbnails', async ({ page }, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await newDocument(page);
+  await expect(page.getByText('1 node · valid')).toBeVisible();
+  await area(page, 'Components');
+  await page
+    .locator(
+      '[data-segmented-control-id="editor-palette-view"] [data-segment-value="grid"]',
+    )
+    .click();
+  const tile = (key: string) =>
+    page.locator(`[data-editor-palette="@kerfjs/ui:${key}"]`);
+  // A control renders live, scaled into its tile.
+  const host = tile('switch').locator('[data-editor-palette-thumb]');
+  await expect(host).not.toHaveAttribute('data-thumb-empty');
+  await expect
+    .poll(() =>
+      host.evaluate((element) => {
+        const stage =
+          element.shadowRoot!.querySelector<HTMLElement>('[data-thumb-stage]')!;
+        const content = stage.firstElementChild!.getBoundingClientRect();
+        const box = element.getBoundingClientRect();
+        return (
+          stage.style.visibility === '' &&
+          content.width > 0 &&
+          content.left >= box.left &&
+          content.right <= box.right
+        );
+      }),
+    )
+    .toBe(true);
+  // A layout shows its sketch.
+  await expect(tile('workbench').locator('svg')).toBeVisible();
+  await page.screenshot({
+    path: info.outputPath('KF-JC7WTW-palette-grid-1440.png'),
+    animations: 'disabled',
+  });
+  // A tile drags onto the canvas.
+  const button = tile('button');
+  await button.scrollIntoViewIfNeeded();
+  const from = (await button.boundingBox())!;
+  await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+  await page.mouse.down();
+  const empty = page.locator('[data-editor-canvas] [data-editor-empty]');
+  const to = (await empty.boundingBox())!;
+  await page.mouse.move(to.x + to.width / 2, to.y + to.height / 2, {
+    steps: 10,
+  });
+  await page.mouse.up();
+  await expect(page.getByText('2 nodes · valid')).toBeVisible();
+  // The choice lasts across a reload.
+  await page.reload();
+  await area(page, 'Components');
+  await expect(tile('switch')).toHaveClass(/kui-content-item/);
+});
+
 test('drags components from the palette onto the canvas', async ({
   page,
 }, info) => {

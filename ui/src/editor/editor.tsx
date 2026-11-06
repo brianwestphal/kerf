@@ -25,26 +25,35 @@ import {
   delegate,
   effect,
   mount,
+  raw,
   type SafeHtml,
   signal,
 } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 import {
+  Activity,
   ArrowDown,
   ArrowUp,
+  BadgeCheck,
   Ban,
   ChevronRight,
+  Component,
   CopyPlus,
   FileCode,
   FilePlus,
   FolderOpen,
   GitCompare,
   Group,
+  type IconNode,
   icons as lucideIcons,
+  LayoutGrid,
+  List as ListIcon,
+  LoaderCircle,
   Play,
   Plus,
   Redo2,
   Save,
+  Smile,
   Trash,
   Undo2,
 } from 'lucide';
@@ -87,6 +96,7 @@ import {
   readSearchField,
   SearchField,
 } from '../components/forms/search-field/search-field.js';
+import { SegmentedControl } from '../components/forms/segmented-control/segmented-control.js';
 import { Select } from '../components/forms/select/select.js';
 import { Switch } from '../components/forms/switch/switch.js';
 import { TagField } from '../components/forms/tag-field/tag-field.js';
@@ -102,6 +112,7 @@ import { wireNavStack } from '../components/navigation/nav-stack/wiring/wire-nav
 import { TabBar } from '../components/navigation/tab-bar/tab-bar.js';
 import { wireTabBars } from '../components/navigation/tab-bar/wiring/wire-tab-bars.js';
 import { TabBarItem } from '../components/navigation/tab-bar-item/tab-bar-item.js';
+import { ContentItem } from '../components/surfaces/content-item/content-item.js';
 import {
   closeDialog,
   DialogSurface,
@@ -305,6 +316,8 @@ import {
   embeddedPopup,
   shownScenes,
 } from './model/shown-scenes.js';
+import { paletteSketch } from './palette-schematics.js';
+import { wirePaletteThumbnails } from './palette-thumbnails.js';
 import { createPlayStage } from './play-stage.js';
 import {
   createPlayer,
@@ -321,6 +334,41 @@ const OUTLINE_ACTION = 'editor-select-node';
 const OUTLINE_TOGGLE_ACTION = 'editor-toggle-node';
 const PALETTE_ACTION = 'editor-show-component';
 const PALETTE_CLEAR_ACTION = 'editor-clear-palette-filter';
+/** KF-JC7WTW: the Components area shows a list or a grid of thumbnails. */
+const PALETTE_VIEW_ACTION = 'editor-palette-view';
+const PALETTE_VIEW_KEY = 'kerf-ui-editor:palette-view';
+type PaletteView = 'list' | 'grid';
+/**
+ * A palette tile's icon where its component draws nothing recognizable
+ * when added (an icon with no name, a status mark) and has no sketch
+ * (KF-JC7WTW); any other tile whose thumbnail is empty shows the generic
+ * one.
+ */
+const PALETTE_ICONS: Readonly<Record<string, IconNode>> = {
+  '@kerfjs/ui:lucide-icon': Smile,
+  '@kerfjs/ui:loading-spinner': LoaderCircle,
+  '@kerfjs/ui:corner-status': BadgeCheck,
+  '@kerfjs/ui:edge-activity-indicator': Activity,
+};
+
+/** The palette view the person last chose, kept per browser. */
+function rememberedPaletteView(): PaletteView {
+  try {
+    return globalThis.localStorage?.getItem(PALETTE_VIEW_KEY) === 'grid'
+      ? 'grid'
+      : 'list';
+  } catch {
+    return 'list';
+  }
+}
+
+function rememberPaletteView(view: PaletteView): void {
+  try {
+    globalThis.localStorage?.setItem(PALETTE_VIEW_KEY, view);
+  } catch {
+    // Without storage the choice lasts until the editor reloads.
+  }
+}
 const PROBLEM_ACTION = 'editor-select-problem';
 const NEW_ACTION = 'editor-new';
 // KF-60BEEJ: play mode's Play (Canvas toolbar) and Done (play bar).
@@ -1064,6 +1112,7 @@ export function createEditor(options: EditorOptions) {
   /** The Components filter's text (KF-Y26SKM), and its editor's revision. */
   const paletteFilter = signal('');
   const paletteFilterRevision = signal(0);
+  const paletteView = signal<PaletteView>(rememberedPaletteView());
   // Every caller passes a changed document (edits clone; moves are checked
   // against isMovable first).
   const commit = (next: ViewDocument) => {
@@ -1235,26 +1284,77 @@ export function createEditor(options: EditorOptions) {
       .filter((group) => group.items.length);
   };
 
+  const paletteSelected = (key: string) =>
+    selection.value?.kind === 'component' && selection.value.key === key;
+
   // KF-K2VP9A / KF-YR81M0: each category is its own List under a default
   // ListHeader, spaced apart as the catalog's sidebar sections are.
+  // KF-JC7WTW: in the grid view each category's components are tiles, each
+  // showing its component as added (`wirePaletteThumbnails` draws them),
+  // or its icon when it shows nothing until opened.
   const palette = (groups: ReturnType<typeof paletteMatches>) => (
     <List gap="m">
       {groups.map((group) => (
         <List>
           <ListHeader label={group.category} />
-          {group.items.map((item) => (
-            <ListItem
-              action={PALETTE_ACTION}
-              itemId={item.key}
-              label={item.name}
-              // KF-78MHM8: a palette row drags onto the canvas to add one.
-              rootAttributes={{ 'data-editor-palette': item.key }}
-              selected={
-                selection.value?.kind === 'component' &&
-                selection.value.key === item.key
-              }
-            />
-          ))}
+          {paletteView.value === 'grid' ? (
+            <Grid minColumnWidth={px(96)} autoFill gap="xs">
+              {group.items.map((item) => (
+                <ContentItem
+                  interactive
+                  action={PALETTE_ACTION}
+                  itemId={item.key}
+                  selectionMode="single"
+                  selected={paletteSelected(item.key)}
+                  ariaLabel={item.name}
+                  title={item.name}
+                  frame="framed"
+                  // KF-78MHM8: a tile drags onto the canvas to add one.
+                  rootAttributes={{
+                    'data-editor-palette': item.key,
+                    'data-key': item.key,
+                  }}
+                >
+                  {paletteSketch(item.key) || PALETTE_ICONS[item.key] ? (
+                    <div class="kui-editor__palette-thumb" aria-hidden="true">
+                      {PALETTE_ICONS[item.key] ? (
+                        <LucideIcon
+                          icon={PALETTE_ICONS[item.key]!}
+                          name="component"
+                        />
+                      ) : (
+                        raw(paletteSketch(item.key)!)
+                      )}
+                    </div>
+                  ) : (
+                    <div
+                      class="kui-editor__palette-thumb"
+                      data-editor-palette-thumb={item.key}
+                      data-morph-skip
+                      aria-hidden="true"
+                      inert
+                    >
+                      <LucideIcon icon={Component} name="component" />
+                    </div>
+                  )}
+                  <Text variant="span" size="compact" maxLines={1}>
+                    {item.name}
+                  </Text>
+                </ContentItem>
+              ))}
+            </Grid>
+          ) : (
+            group.items.map((item) => (
+              <ListItem
+                action={PALETTE_ACTION}
+                itemId={item.key}
+                label={item.name}
+                // KF-78MHM8: a palette row drags onto the canvas to add one.
+                rootAttributes={{ 'data-editor-palette': item.key }}
+                selected={paletteSelected(item.key)}
+              />
+            ))
+          )}
         </List>
       ))}
     </List>
@@ -3987,16 +4087,41 @@ export function createEditor(options: EditorOptions) {
     const paletteFilterField =
       documentArea.value === 'components' ? (
         <List controlInsets="trbl">
-          <SearchField
-            id="editor-palette-filter"
-            label="Filter Components"
-            placeholder="Filter components"
-            query={paletteFilter.value}
-            revision={paletteFilterRevision.value}
-            clearAction={PALETTE_CLEAR_ACTION}
-            clearLabel="Clear Filter"
-            editorAttributes={{ 'data-editor-palette-filter': '' }}
-          />
+          <Row gap="xs" vAlign="middle">
+            <List flex>
+              <SearchField
+                id="editor-palette-filter"
+                label="Filter Components"
+                placeholder="Filter"
+                query={paletteFilter.value}
+                revision={paletteFilterRevision.value}
+                clearAction={PALETTE_CLEAR_ACTION}
+                clearLabel="Clear Filter"
+                editorAttributes={{ 'data-editor-palette-filter': '' }}
+              />
+            </List>
+            {/* KF-JC7WTW: a list of names, or a grid of thumbnails. */}
+            <SegmentedControl
+              id="editor-palette-view"
+              label="Component View"
+              value={paletteView.value}
+              action={PALETTE_VIEW_ACTION}
+              choices={[
+                {
+                  value: 'list',
+                  label: 'List',
+                  title: 'List',
+                  content: <LucideIcon icon={ListIcon} name="list" />,
+                },
+                {
+                  value: 'grid',
+                  label: 'Grid',
+                  title: 'Grid',
+                  content: <LucideIcon icon={LayoutGrid} name="layout-grid" />,
+                },
+              ]}
+            />
+          </Row>
         </List>
       ) : undefined;
     const [documentStrip, ...documentPanels] = areaTabs(
@@ -4672,6 +4797,32 @@ export function createEditor(options: EditorOptions) {
       newNodeId,
       slotNamer(usedSlots(doc.value)),
     );
+
+  /**
+   * KF-JC7WTW: component `key`'s palette thumbnail: its seeded node as the
+   * root of an otherwise empty document, rendered as the canvas renders it,
+   * once per editor. An empty layout's zones show their canvas stand-ins,
+   * so a Workbench's thumbnail sketches its regions.
+   */
+  const thumbnails = new Map<string, string | undefined>();
+  const thumbnailOf = (key: string) => {
+    if (!thumbnails.has(key)) {
+      const document = withCatalog(
+        { ...emptyDocument(), root: asRoot(seededNode(key)) },
+        key,
+      );
+      const html = canvasContent(document, [], undefined, undefined, true);
+      // As `contained` does: a thumbnail that cannot mount keeps the icon.
+      const probe = globalThis.document.createElement('div');
+      try {
+        mount(probe, () => html)();
+        thumbnails.set(key, html.toString());
+      } catch {
+        thumbnails.set(key, undefined);
+      }
+    }
+    return thumbnails.get(key);
+  };
 
   /**
    * Where a new container holds the node it embeds, and the props and other
@@ -5481,6 +5632,12 @@ export function createEditor(options: EditorOptions) {
         },
       ),
       delegateActions<HTMLElement>(root, 'click', {
+        [PALETTE_VIEW_ACTION]: (_event, target) => {
+          const view: PaletteView =
+            target.dataset.segmentValue === 'grid' ? 'grid' : 'list';
+          paletteView.value = view;
+          rememberPaletteView(view);
+        },
         [PALETTE_CLEAR_ACTION]: () => {
           paletteFilter.value = '';
           paletteFilterRevision.value += 1;
@@ -6013,6 +6170,8 @@ export function createEditor(options: EditorOptions) {
       }),
       // Arrow keys move between a strip's tabs; nothing here reorders.
       wireTabBars(root, { onReorder: () => {} }),
+      // KF-JC7WTW: the palette grid's tiles show their components as added.
+      wirePaletteThumbnails(root, { htmlOf: thumbnailOf }),
       // KF-67K2VP: a rail's pinned tab strip shows its divider once its
       // area scrolls under it.
       wireScrollDividers(root),
