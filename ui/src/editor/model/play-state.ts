@@ -16,7 +16,7 @@ import {
   reorderTabs,
   type TabReorder,
 } from '../../components/navigation/tab-bar/wiring/wire-tab-bars.js';
-import { findNode, visitNodes } from './document.js';
+import { findNode, templateNodes, visitNodes } from './document.js';
 import { removeNode, setProp } from './edits.js';
 import {
   CLOSED,
@@ -95,10 +95,13 @@ export function popView(document: ViewDocument, id: string): ViewDocument {
 function barItems(bar: ViewNode) {
   return Object.values(bar.zones ?? {}).flatMap((children) =>
     children.flatMap((child) => {
-      const node = '$each' in child ? child.template : child;
-      return 'type' in node && node.type === TAB_BAR_ITEM
-        ? [{ node, repeated: '$each' in child }]
-        : [];
+      const nodes: readonly ViewChild[] =
+        '$each' in child ? templateNodes(child.template) : [child];
+      return nodes.flatMap((node) =>
+        'type' in node && node.type === TAB_BAR_ITEM
+          ? [{ node, repeated: '$each' in child }]
+          : [],
+      );
     }),
   );
 }

@@ -483,6 +483,23 @@ branch edits the shared condition and its own repeat; choosing Always on a
 two-branch condition keeps both nodes as plain siblings. A node under a
 nested `$if` keeps its control flow in the file.
 
+A repeated node's **Row designs** (KF-1CRGP1: editor `$if`-chain templates)
+author an `$if`-chain template (§3.5). Add a row design picks a component
+whose catalog entry has a `data-*` channel and a true/false param or item
+field (the conditions `validateView` accepts in the item's scope), and the
+new design goes before the last one, so the last design stays the `else`
+that shows for every other item; a one-node template becomes that last
+design. A selected design changes when it shows (This design shows when),
+except the last, which reads For every other item, and Remove row design
+drops it: removing the last design makes the one before it the `else`, and
+a chain left with one design is a plain template again. The outline lists
+every design under the list (`if item.header`, `else if item.muted`,
+`otherwise`), the canvas renders each item's design with its `data-key` and
+click-to-select, and play mode keys row state and logs row actions for rows
+of any design. Renaming the item rewrites every design's bindings and each
+condition; changing the list keeps the designs, and Do not repeat keeps only
+the selected design.
+
 A css-value prop's field takes any `$css` builder call, compositions
 included (`calc(plus(px(8), space("m")))`, `lengthVar("--app-gap", px(8))`);
 its hint lists the builders the prop accepts (the catalog's `cssValue.helpers`)
@@ -583,7 +600,7 @@ otherwise); its tabs take their own widths so the names fit. The Inspector,
 for a selected node, shows Properties (name, props, promote, bind; each
 field labeled in sentence case from its prop name, KF-7M4XQR: readable
 labels, so `controlInsets` reads "Control insets"), Flow
-(Show, Otherwise, Repeat, Move to), or Children (Add a child, slots); a
+(Show, Otherwise, Repeat, Row designs, Move to), or Children (Add a child, slots); a
 component, a slot, or an empty selection shows its single view without tabs.
 Each panel is a `tabpanel`; hidden panels stay rendered, so a field keeps its
 state while another area shows. The Inspector's area persists across
@@ -1035,11 +1052,11 @@ item's details, the equivalent of dequeuing a prototype cell. Rows that
 differ by kind either vary inside one row component through `$if`, or pick a
 row design per item through an `$if`-chain template (above). KF-B5JFTM chose
 both that and a `templates` map keyed by a bound kind, which KF-YX6HMT adds
-on the same row-branching plumbing. The editor renders and inspects a
-`#view` row document and opens it (KF-5N26H6, §3.7); inserting one from a
-document picker (KF-PX5EVZ) and extracting a subtree into one (KF-D9P3NP)
-are not built yet, and neither is authoring an `$if`-chain template
-(KF-1CRGP1).
+on the same row-branching plumbing. The editor authors an `$if`-chain
+template in the Repeat section's Row designs (KF-1CRGP1), and renders and
+inspects a `#view` row document and opens it (KF-5N26H6, §3.7); inserting
+one from a document picker (KF-PX5EVZ) and extracting a subtree into one
+(KF-D9P3NP) are not built yet.
 
 There are no other control-flow forms. Anything richer belongs in application
 code behind a slot.

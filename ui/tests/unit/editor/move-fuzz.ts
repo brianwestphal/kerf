@@ -49,7 +49,7 @@ function survey(root: Json) {
       });
   };
   const child = (item: Json) => {
-    if ('$each' in item) node(item.template);
+    if ('$each' in item) child(item.template);
     else if ('$if' in item) {
       child(item.then);
       if (item.else) child(item.else);
@@ -192,7 +192,11 @@ export function scramble(
             ]),
             as,
             key: `${as}.id`,
-            template: entry,
+            // KF-1CRGP1: sometimes an `$if` chain of row designs.
+            template:
+              random() < 0.3
+                ? { $if: condition(), then: entry, else: graft() }
+                : entry,
           };
         }
         break;
@@ -280,7 +284,7 @@ export function scramble(
 export function poolOf(document: ViewDocument): ViewNode[] {
   const nodes: ViewNode[] = [];
   const child = (item: ViewChild) => {
-    if ('$each' in item) node(item.template);
+    if ('$each' in item) child(item.template);
     else if ('$if' in item) {
       child(item.then);
       if (item.else) child(item.else);

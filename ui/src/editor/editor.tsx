@@ -138,9 +138,11 @@ import {
 import { type CanvasDropSurface, wireCanvasDrag } from './canvas-drag.js';
 import type { EditorCatalog } from './catalog.js';
 import {
+  ADD_ROW_DESIGN_ACTION,
   ADD_SLOT_ACTION,
   addSlotFields,
   controlFlowSection,
+  REMOVE_ROW_DESIGN_ACTION,
   slotEditor,
 } from './control-flow-section.js';
 import {
@@ -321,6 +323,12 @@ import {
   type PropsVariant,
   readableMessage,
 } from './model/problems.js';
+import {
+  addRowDesign,
+  removeRowDesign,
+  rowDesignChoices,
+  setRowCondition,
+} from './model/row-designs.js';
 import { sampleInputs } from './model/sample-inputs.js';
 import {
   embeddedDialogs,
@@ -4346,6 +4354,7 @@ export function createEditor(options: EditorOptions) {
           node.id,
           fieldErrors.value['#item'],
           otherwiseChoices,
+          rowDesignChoices(viewCatalog, otherwiseChoices),
         )}
         {viewsSection(node)}
         {embedSection()}
@@ -5741,6 +5750,43 @@ export function createEditor(options: EditorOptions) {
     select({ kind: 'slot', address: result.address });
   };
 
+  /** The condition that picks the selected row design, when one does. */
+  const rowCondition = (control: ReturnType<typeof controlOf>) =>
+    control?.rows?.branches[control.rows.index]!.condition;
+
+  /**
+   * KF-1CRGP1: adds the row design chosen in the Repeat section's add form
+   * (a component, shown when a true/false value holds) and selects it.
+   */
+  const addRow = () => {
+    // The form shows only for a selected repeated node, with both values.
+    const id = selectedNodeId()!;
+    const field = (name: string) =>
+      document.querySelector<HTMLElement>(`[data-editor-row-design="${name}"]`);
+    const type = String(controlValue(field('component')!));
+    const condition = String(controlValue(field('condition')!));
+    const node = seededNode(type);
+    commit(
+      withCatalog(
+        addRowDesign(doc.value, id, node, JSON.parse(condition) as ViewValue),
+        type,
+      ),
+    );
+    select({ kind: 'node', id: node.id });
+  };
+
+  /** Removes the selected row design and selects the design before it. */
+  const removeRow = () => {
+    // The button shows only for a selected node in a chain.
+    const id = selectedNodeId()!;
+    const rows = controlOf(doc.value, id)!.rows!;
+    commit(removeRowDesign(doc.value, id));
+    select({
+      kind: 'node',
+      id: rows.branches[rows.index ? rows.index - 1 : 1]!.node.id,
+    });
+  };
+
   /** Applies a change to a Show, Repeat, or Item name control. */
   const editControl = (field: HTMLElement) => {
     const id = selectedNodeId();
@@ -5771,6 +5817,11 @@ export function createEditor(options: EditorOptions) {
               key: option.key,
             }),
           );
+        return;
+      }
+      case 'row-condition': {
+        if (!value || value === JSON.stringify(rowCondition(current))) return;
+        commit(setRowCondition(doc.value, id, JSON.parse(value) as ViewValue));
         return;
       }
       case 'otherwise': {
@@ -6569,6 +6620,8 @@ export function createEditor(options: EditorOptions) {
             index: Number(target.dataset.editorAttributeRemove),
           }),
         [ADD_SLOT_ACTION]: () => addSlot(),
+        [ADD_ROW_DESIGN_ACTION]: () => addRow(),
+        [REMOVE_ROW_DESIGN_ACTION]: () => removeRow(),
         [PROMOTE_ACTION]: () => promote(),
         [PROMOTE_PROP_ACTION]: (_event, target) =>
           promote(target.dataset.editorPromoteProp),

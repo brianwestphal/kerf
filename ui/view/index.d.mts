@@ -67,13 +67,8 @@ export type ViewChild =
       readonly $each: ViewValue;
       readonly as: string;
       readonly key: string;
-      /**
-       * One node, or a `ViewTemplateChain`. Typed as the node form until the
-       * editor's model handles chains (KF-1CRGP1: editor chain support); a document that
-       * uses a chain is valid and renders, and TypeScript callers building
-       * one pass it as `ViewTemplate`.
-       */
-      readonly template: ViewNode;
+      /** One node, or a `ViewTemplateChain` that picks one per item. */
+      readonly template: ViewTemplate;
     }
   | {
       readonly $if: ViewValue;

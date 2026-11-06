@@ -1,5 +1,11 @@
 // Loading, saving, and querying a view document (docs/26-ui-editor.md §3).
-import type { ViewChild, ViewDocument, ViewNode } from '@kerfjs/ui/view';
+import type {
+  ViewChild,
+  ViewDocument,
+  ViewNode,
+  ViewTemplate,
+  ViewValue,
+} from '@kerfjs/ui/view';
 import { VIEW_DOCUMENT_SCHEMA_ID } from '@kerfjs/ui/view';
 
 export type ParseResult =
@@ -40,6 +46,43 @@ export function documentFileName(document: ViewDocument): string {
   return `${base || 'view'}.kui.json`;
 }
 
+/** One row design of an `$each` template: its node, and when it shows. */
+export interface TemplateBranch {
+  readonly node: ViewNode;
+  /** The condition that picks this branch; none for the last (`else`) one. */
+  readonly condition?: ViewValue;
+}
+
+/**
+ * The branches of an `$each` template in order (KF-1CRGP1: editor `$if`-chain
+ * templates): the template node alone, or each branch of its `$if` chain, the
+ * last one the `else` that shows for every other item.
+ */
+export function templateBranches(template: ViewTemplate): TemplateBranch[] {
+  if (!('$if' in template)) return [{ node: template }];
+  // An unfinished chain (no `else`) still lists its `then`.
+  const rest = template.else ? templateBranches(template.else) : [];
+  return [{ node: template.then, condition: template.$if }, ...rest];
+}
+
+/** `template` with each branch node replaced by `change(node)`. */
+export function mapTemplate(
+  template: ViewTemplate,
+  change: (node: ViewNode) => ViewNode,
+): ViewTemplate {
+  if (!('$if' in template)) return change(template);
+  return {
+    ...template,
+    then: change(template.then),
+    ...(template.else ? { else: mapTemplate(template.else, change) } : {}),
+  } as ViewTemplate;
+}
+
+/** The nodes an `$each` template renders, in branch order; the first keys it. */
+export function templateNodes(template: ViewTemplate): ViewNode[] {
+  return templateBranches(template).map((branch) => branch.node);
+}
+
 export interface NodeVisit {
   readonly node: ViewNode;
   /** Ancestor path: each entry is a parent node and the zone it holds the node in. */
@@ -59,7 +102,9 @@ export function visitNodes(document: ViewDocument): NodeVisit[] {
     ancestors: NodeVisit['ancestors'],
     repeated: boolean,
   ) => {
-    if ('$each' in item) node(item.template, ancestors, true);
+    if ('$each' in item)
+      for (const branch of templateNodes(item.template))
+        node(branch, ancestors, true);
     else if ('$if' in item) {
       child(item.then, ancestors, repeated);
       if (item.else) child(item.else, ancestors, repeated);

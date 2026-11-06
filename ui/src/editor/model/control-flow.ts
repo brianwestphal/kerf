@@ -7,10 +7,16 @@ import {
   type ViewChild,
   type ViewDocument,
   type ViewNode,
+  type ViewTemplate,
   type ViewType,
   type ViewValue,
 } from '@kerfjs/ui/view';
 
+import {
+  type TemplateBranch,
+  templateBranches,
+  templateNodes,
+} from './document.js';
 import type { BindingOption } from './edits.js';
 import { addsProblems, eachScopes } from './edits.js';
 
@@ -36,6 +42,14 @@ export interface NodeControl {
   readonly branch?: 'else';
   /** For a node in `then`: what shows while the condition does not hold. */
   readonly otherwise?: ViewChild;
+  /**
+   * KF-1CRGP1: for a node in an `$if`-chain template, the template's row
+   * designs in order, and which one it is. Absent for a one-node template.
+   */
+  readonly rows?: {
+    readonly branches: readonly TemplateBranch[];
+    readonly index: number;
+  };
 }
 
 type Owner = {
@@ -44,23 +58,33 @@ type Owner = {
   readonly node: ViewNode;
   /** For a node in `else`: the `then` branch beside it. */
   readonly sibling?: ViewChild;
+  /** For a repeated node: its `$each`'s whole template. */
+  readonly template?: ViewTemplate;
 } & NodeControl;
 
 const isNode = (child: ViewChild): child is ViewNode =>
   !('$each' in child) && !('$if' in child) && !('$slot' in child);
 
-/** Node `id` as a whole branch: the node itself, or the template of `$each`. */
+/**
+ * Node `id` as a whole branch: the node itself, or the template of `$each`,
+ * or one row design of its `$if`-chain template (KF-1CRGP1).
+ */
 function matchBranch(
   child: ViewChild,
   id: string,
-): { node: ViewNode; repeat?: Repeat } | undefined {
+): Omit<Owner, 'list' | 'index'> | undefined {
   if (isNode(child)) return child.id === id ? { node: child } : undefined;
-  if ('$each' in child && child.template.id === id)
-    return {
-      node: child.template,
-      repeat: { source: child.$each, as: child.as, key: child.key },
-    };
-  return undefined;
+  if (!('$each' in child)) return undefined;
+  const branches = templateBranches(child.template);
+  const index = branches.findIndex((branch) => branch.node.id === id);
+  return index < 0
+    ? undefined
+    : {
+        node: branches[index]!.node,
+        template: child.template,
+        repeat: { source: child.$each, as: child.as, key: child.key },
+        ...(branches.length > 1 ? { rows: { branches, index } } : {}),
+      };
 }
 
 /**
@@ -111,7 +135,7 @@ function ownerOf(document: ViewDocument, id: string): Owner | undefined {
 /** The nodes directly under a zone child, through its control flow. */
 function nodesUnder(child: ViewChild): ViewNode[] {
   if ('$slot' in child) return [];
-  if ('$each' in child) return [child.template];
+  if ('$each' in child) return templateNodes(child.template);
   if ('$if' in child)
     return [
       ...nodesUnder(child.then),
@@ -133,12 +157,13 @@ export function controlOf(
 ): NodeControl | undefined {
   const owner = ownerOf(document, id);
   if (!owner) return undefined;
-  const { condition, repeat, branch, otherwise } = owner;
+  const { condition, repeat, branch, otherwise, rows } = owner;
   return {
     ...(condition !== undefined ? { condition } : {}),
     ...(repeat ? { repeat } : {}),
     ...(branch ? { branch } : {}),
     ...(otherwise ? { otherwise } : {}),
+    ...(rows ? { rows } : {}),
   };
 }
 
@@ -146,6 +171,7 @@ type ControlPatch = {
   readonly condition?: ViewValue | undefined;
   readonly repeat?: Repeat | undefined;
   readonly otherwise?: ViewChild | undefined;
+  readonly template?: ViewTemplate | undefined;
 };
 
 /**
@@ -165,12 +191,13 @@ function withControl(
     key in patch ? patch[key] : owner[key];
   const condition = pick('condition');
   const repeat = pick('repeat');
+  // A repeat keeps its whole template; one that stops keeps only this node.
   const inner: ViewChild = repeat
     ? {
         $each: repeat.source,
         as: repeat.as,
         key: repeat.key,
-        template: owner.node,
+        template: pick('template') ?? owner.node,
       }
     : owner.node;
   if (owner.branch === 'else') {
@@ -234,6 +261,20 @@ export function setOtherwise(
   return withControl(document, id, { otherwise });
 }
 
+/**
+ * Replaces the template of the `$each` that repeats node `id` (KF-1CRGP1:
+ * row designs); unchanged when no editable repeat holds it.
+ */
+export function setTemplate(
+  document: ViewDocument,
+  id: string,
+  template: ViewTemplate,
+): ViewDocument {
+  return controlOf(document, id)?.repeat
+    ? withControl(document, id, { template })
+    : document;
+}
+
 /** Points every `$bind` that starts at item `from` at item `to` instead. */
 function renameBindings<T>(value: T, from: string, to: string): T {
   if (Array.isArray(value))
@@ -266,8 +307,9 @@ export function renameItem(
   if (!repeat) return { error: 'This node does not repeat.' };
   const next = clone(document);
   const owner = ownerOf(next, id)!;
-  const renamed = renameBindings(owner.node, repeat.as, as);
-  Object.assign(owner.node, renamed);
+  // Every row design's bindings, and each branch condition, follow.
+  const template = owner.template!;
+  Object.assign(template, renameBindings(template, repeat.as, as));
   const result = withControl(next, id, {
     repeat: {
       source: repeat.source,
@@ -289,7 +331,7 @@ function objectItems(type: ViewType | undefined): ViewType | undefined {
  * Params and in-scope item fields, as bind candidates, with each one's type.
  * `items` adds each `$each` item itself (a slot can take a whole row).
  */
-function sources(
+export function sources(
   document: ViewDocument,
   id: string,
   items = false,
@@ -509,7 +551,7 @@ function placedSlots(document: ViewDocument): Set<string> {
   const names = new Set<string>();
   const child = (item: ViewChild) => {
     if ('$slot' in item) names.add(item.$slot);
-    else if ('$each' in item) node(item.template);
+    else if ('$each' in item) templateNodes(item.template).forEach(node);
     else if ('$if' in item) {
       child(item.then);
       if (item.else) child(item.else);

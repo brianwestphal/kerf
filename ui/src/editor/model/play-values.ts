@@ -25,7 +25,12 @@ import {
 } from '@kerfjs/ui/view';
 import { raw, type SafeHtml } from 'kerfjs';
 
-import { findNode, visitNodes } from './document.js';
+import {
+  findNode,
+  mapTemplate,
+  templateNodes,
+  visitNodes,
+} from './document.js';
 import { setProp } from './edits.js';
 
 /**
@@ -187,7 +192,9 @@ export function markRows(
     if ('$each' in item)
       return {
         ...item,
-        template: node(item.template, [...keys, item.key], true),
+        template: mapTemplate(item.template, (branch) =>
+          node(branch, [...keys, item.key], true),
+        ),
       };
     if ('$if' in item)
       return {
@@ -353,7 +360,11 @@ export function eachOf(
   for (const { node } of visitNodes(document))
     for (const children of Object.values(node.zones ?? {}))
       for (const child of children)
-        if ('$each' in child && child.template.id === id) return child;
+        if (
+          '$each' in child &&
+          templateNodes(child.template).some((node) => node.id === id)
+        )
+          return child;
   return undefined;
 }
 
@@ -394,7 +405,10 @@ function sourceOf(
   while (at >= 0 && enclosing[at]!.as !== head) at -= 1;
   if (at < 0) return { param: head, steps: rest };
   const outer = enclosing[at]!;
-  const key = keys[outer.template.id];
+  // The outer row rendered one of its template's branches (KF-1CRGP1).
+  const key = templateNodes(outer.template)
+    .map((node) => keys[node.id])
+    .find((found) => found !== undefined);
   if (key === undefined) return undefined;
   const base = sourceOf(outer.$each, enclosing.slice(0, at), keys);
   return (

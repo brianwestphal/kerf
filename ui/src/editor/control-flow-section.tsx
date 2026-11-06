@@ -26,10 +26,18 @@ import {
   slotInputOptions,
   slotInputs,
 } from './model/control-flow.js';
+import { findNode } from './model/document.js';
 import { eachScopes } from './model/edits.js';
+import { rowConditionOptions } from './model/row-designs.js';
 
 /** Adds a `$slot` to the chosen zone. */
 export const ADD_SLOT_ACTION = 'editor-add-slot';
+
+/** Adds the chosen row design to the selected node's list (KF-1CRGP1). */
+export const ADD_ROW_DESIGN_ACTION = 'editor-add-row-design';
+
+/** Removes the selected row design from its list (KF-1CRGP1). */
+export const REMOVE_ROW_DESIGN_ACTION = 'editor-remove-row-design';
 
 /** How a `$param` or `$bind` reads as a choice label. */
 const sourceLabel = (value: ViewValue) => {
@@ -72,6 +80,8 @@ export function controlFlowSection(
   itemError: string | undefined,
   /** Components that can show otherwise, in the node's zone (KF-5S56VQ). */
   otherwiseChoices: readonly { value: string; label: string }[],
+  /** Components that can be a row design there: each has a data-* channel. */
+  rowChoices: readonly { value: string; label: string }[] = [],
 ) {
   const control = controlOf(document, id);
   if (!control) {
@@ -144,6 +154,108 @@ export function controlFlowSection(
           />
         ) : undefined}
       </List>
+      {control.repeat
+        ? rowDesignFields(document, catalog, id, control, rowChoices)
+        : undefined}
+    </>
+  );
+}
+
+/**
+ * KF-1CRGP1: the row designs of a repeated node's list. A node in an `$if`
+ * chain shows when it is picked and can be removed; any repeated node can
+ * add a design, shown for the items where a true/false value holds.
+ */
+function rowDesignFields(
+  document: ViewDocument,
+  catalog: ViewCatalog,
+  id: string,
+  control: NonNullable<ReturnType<typeof controlOf>>,
+  choices: readonly { value: string; label: string }[],
+) {
+  const rows = control.rows;
+  const last = rows && rows.index === rows.branches.length - 1;
+  const conditions = rowConditionOptions(document, catalog, id);
+  const ready = conditions.length > 0 && choices.length > 0;
+  const own = findNode(document, id)!.node.type;
+  const current =
+    rows && !last ? rows.branches[rows.index]!.condition : undefined;
+  return (
+    <>
+      <ListHeader label="Row designs" size="xs" />
+      <List controlInsets="trbl" gap>
+        {rows ? (
+          <>
+            {last ? (
+              <Select
+                name="control-row-condition"
+                label="This design shows"
+                value=""
+                choices={[{ value: '', label: 'For every other item' }]}
+                disabled
+                hint={`The last of ${rows.branches.length} designs shows for every item no earlier design takes.`}
+              />
+            ) : (
+              <Select
+                name="control-row-condition"
+                label="This design shows when"
+                value={JSON.stringify(current)}
+                choices={choicesWith(
+                  conditions,
+                  current,
+                  'Choose a value',
+                ).slice(1)}
+                hint={`Design ${rows.index + 1} of ${rows.branches.length}. An item whose value matches several designs shows the first.`}
+                rootAttributes={{ 'data-editor-control': 'row-condition' }}
+              />
+            )}
+            <Button
+              emphasis="secondary"
+              size="compact"
+              action={REMOVE_ROW_DESIGN_ACTION}
+            >
+              Remove row design
+            </Button>
+          </>
+        ) : undefined}
+        {ready ? (
+          <>
+            <Select
+              name="row-design-component"
+              label="Add a row design"
+              // The selected design's own component: a variant row.
+              value={own}
+              choices={choices}
+              hint="A row of another component, for the items a true/false value picks."
+              rootAttributes={{ 'data-editor-row-design': 'component' }}
+            />
+            <Select
+              name="row-design-condition"
+              label="Shown when"
+              value={JSON.stringify(conditions[0]!.value)}
+              choices={conditions.map((option) => ({
+                value: JSON.stringify(option.value),
+                label: option.label,
+              }))}
+              rootAttributes={{ 'data-editor-row-design': 'condition' }}
+            />
+            <Button
+              emphasis="secondary"
+              size="compact"
+              action={ADD_ROW_DESIGN_ACTION}
+            >
+              Add row design
+            </Button>
+          </>
+        ) : undefined}
+      </List>
+      {ready ? undefined : (
+        <ListInsetText>
+          <Text tone="quiet">
+            No true/false param or item field can pick a row design here.
+          </Text>
+        </ListInsetText>
+      )}
     </>
   );
 }

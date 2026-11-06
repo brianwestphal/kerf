@@ -2,7 +2,12 @@
 // `$slot` through a function looked up by slot name, so two places that use
 // one slot would be indistinguishable. Each placed `$slot` gets its own
 // preview name, which maps back to where it sits.
-import type { ViewChild, ViewDocument, ViewNode } from '@kerfjs/ui/view';
+import type {
+  ViewChild,
+  ViewDocument,
+  ViewNode,
+  ViewTemplate,
+} from '@kerfjs/ui/view';
 
 import type { SlotAddress } from './control-flow.js';
 
@@ -42,7 +47,11 @@ export function previewSlots(
         declared[preview] = document.slots[item.$slot];
       return { ...item, $slot: preview };
     }
-    if ('$each' in item) return { ...item, template: node(item.template) };
+    if ('$each' in item)
+      return {
+        ...item,
+        template: child(item.template, address) as ViewTemplate,
+      };
     if ('$if' in item)
       return {
         ...item,

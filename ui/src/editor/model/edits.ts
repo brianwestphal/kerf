@@ -8,11 +8,12 @@ import {
   type ViewChild,
   type ViewDocument,
   type ViewNode,
+  type ViewTemplate,
   type ViewType,
   type ViewValue,
 } from '@kerfjs/ui/view';
 
-import { findNode, visitNodes } from './document.js';
+import { findNode, templateNodes, visitNodes } from './document.js';
 import { type FieldPath, valueAt, withValueAt } from './fields.js';
 
 type MutableNode = {
@@ -70,13 +71,8 @@ function walk(document: ViewDocument, visit: (at: Located) => boolean) {
     branch = false,
   ): void => {
     if ('$each' in item)
-      visitNode(
-        item.template as MutableNode,
-        undefined,
-        undefined,
-        parent,
-        zone,
-      );
+      for (const node of templateNodes(item.template))
+        visitNode(node as MutableNode, undefined, undefined, parent, zone);
     else if ('$if' in item) {
       // A branch is itself a child: a node, a repeat, or a nested condition.
       visitChild(item.then, list, index, parent, zone, true);
@@ -358,7 +354,7 @@ export function copyChild<Child extends ViewChild>(
   const copy = (item: ViewChild): ViewChild => {
     if ('$slot' in item) return { ...item };
     if ('$each' in item)
-      return { ...item, template: copy(item.template) as ViewNode };
+      return { ...item, template: copy(item.template) as ViewTemplate };
     if ('$if' in item)
       return {
         ...item,
@@ -473,7 +469,7 @@ export function embedNode(
     // The first node with the id is wrapped, as `locate` finds it.
     if (wrapperId !== undefined || '$slot' in child) return child;
     if ('$each' in child)
-      return { ...child, template: place(child.template) as ViewNode };
+      return { ...child, template: place(child.template) as ViewTemplate };
     if ('$if' in child)
       return {
         ...child,
@@ -907,10 +903,11 @@ export function eachScopes(
       for (const item of children) {
         const found =
           '$each' in item
-            ? visit(item.template, [
-                ...frames,
-                { as: item.as, source: item.$each },
-              ])
+            ? templateNodes(item.template)
+                .map((node) =>
+                  visit(node, [...frames, { as: item.as, source: item.$each }]),
+                )
+                .find(Boolean)
             : '$if' in item
               ? (visit(item.then as ViewNode, frames) ??
                 (item.else ? visit(item.else as ViewNode, frames) : undefined))

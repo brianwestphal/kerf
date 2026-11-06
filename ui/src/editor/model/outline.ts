@@ -1,7 +1,7 @@
 // The outline rail's rows: one per node, in document order.
 import type { ViewChild, ViewDocument, ViewNode } from '@kerfjs/ui/view';
 
-import { visitNodes } from './document.js';
+import { templateBranches, visitNodes } from './document.js';
 
 export interface OutlineRow {
   readonly id: string;
@@ -246,13 +246,24 @@ export function outlineTree(
             .join(' · '),
         },
       ];
-    if ('$each' in item)
-      return [
-        entry(item.template, zone, true, [
+    if ('$each' in item) {
+      // KF-1CRGP1: each row design of an `$if`-chain template, with when it
+      // shows.
+      const branches = templateBranches(item.template);
+      return branches.map(({ node, condition }, at) =>
+        entry(node, zone, true, [
           ...control,
           `for each ${item.as} in ${sourceName(item.$each)}`,
+          ...(branches.length === 1
+            ? []
+            : [
+                condition === undefined
+                  ? 'otherwise'
+                  : `${at ? 'else if' : 'if'} ${sourceName(condition)}`,
+              ]),
         ]),
-      ];
+      );
+    }
     if ('$if' in item) {
       const condition = sourceName(item.$if);
       return [

@@ -7,6 +7,7 @@ import type {
   ViewChild,
   ViewDocument,
   ViewNode,
+  ViewTemplate,
   ViewType,
   ViewValue,
 } from '@kerfjs/ui/view';
@@ -587,7 +588,8 @@ export function documentInDeclaredOrder(
     };
   };
   const child = (item: ViewChild): ViewChild => {
-    if ('$each' in item) return { ...item, template: node(item.template) };
+    if ('$each' in item)
+      return { ...item, template: child(item.template) as ViewTemplate };
     if ('$if' in item)
       return {
         ...item,
