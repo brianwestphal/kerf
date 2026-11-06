@@ -48,12 +48,31 @@ export interface ViewNode {
   readonly src?: string;
 }
 
+/**
+ * A row design chosen per item: every branch is one keyable node, and `else`
+ * is required, so each item yields exactly one row.
+ */
+export interface ViewTemplateChain {
+  readonly $if: ViewValue;
+  readonly then: ViewNode;
+  readonly else: ViewTemplate;
+}
+
+/** An `$each` template: one node, or an `$if` chain of them. */
+export type ViewTemplate = ViewNode | ViewTemplateChain;
+
 export type ViewChild =
   | ViewNode
   | {
       readonly $each: ViewValue;
       readonly as: string;
       readonly key: string;
+      /**
+       * One node, or a `ViewTemplateChain`. Typed as the node form until the
+       * editor's model handles chains (KF-1CRGP1: editor chain support); a document that
+       * uses a chain is valid and renders, and TypeScript callers building
+       * one pass it as `ViewTemplate`.
+       */
       readonly template: ViewNode;
     }
   | {

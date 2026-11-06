@@ -1107,6 +1107,84 @@ function checkNode(ctx, node, at, scope, rowScoped, parentKey, text = false) {
   checkComposition(ctx, node, at, parentKey, shapes, literals, zones);
 }
 
+/**
+ * An `$each` template: one keyable node, or (KF-8J8E5V: per-item row
+ * designs) an `$if` chain whose every branch is one. `else` is required, so
+ * each item yields exactly one row and a repeat never filters.
+ */
+function checkTemplate(
+  ctx,
+  template,
+  at,
+  scope,
+  parentKey,
+  text,
+  chain = true,
+) {
+  // A chain nests only in `else`; `then` is always one node.
+  if (chain && isObject(template) && '$if' in template) {
+    for (const key of only(template, ['$if', 'then', 'else']))
+      ctx.report('KUI-V001', `${at}.${key}`, 'unknown `$if` field');
+    checkPropValue(
+      ctx,
+      { name: 'condition', type: { kind: 'boolean' } },
+      template.$if,
+      {},
+      scope,
+      `${at}.$if`,
+      true,
+    );
+    checkTemplate(
+      ctx,
+      template.then,
+      `${at}.then`,
+      scope,
+      parentKey,
+      text,
+      false,
+    );
+    if ('else' in template)
+      checkTemplate(ctx, template.else, `${at}.else`, scope, parentKey, text);
+    else
+      ctx.report(
+        'KUI-V008',
+        at,
+        'a template `$if` needs an `else`, so every item yields exactly one row',
+      );
+    return;
+  }
+  if (!isObject(template) || !('type' in template)) {
+    ctx.report(
+      'KUI-V008',
+      at,
+      'the template is exactly one node, or an `$if` chain of them',
+    );
+    return;
+  }
+  const entry = ctx.catalog.components.get(template.type);
+  if (entry && channelOf(entry.component) === 'none') {
+    ctx.report(
+      'KUI-V008',
+      at,
+      `${template.type} has no data-* channel to carry the row key`,
+    );
+  }
+  checkNode(ctx, template, at, scope, true, parentKey, text);
+}
+
+/**
+ * The nodes an `$each` template can render, in branch order: the template
+ * itself, or every leaf of its `$if` chain. The first one's id keys the list.
+ */
+export function templateNodes(template) {
+  if (isObject(template) && '$if' in template)
+    return [
+      ...templateNodes(template.then),
+      ...('else' in template ? templateNodes(template.else) : []),
+    ];
+  return isObject(template) ? [template] : [];
+}
+
 function checkChild(ctx, child, at, scope, rowScoped, parentKey, text = false) {
   if (!isObject(child)) {
     ctx.report('KUI-V001', at, 'a zone child is an object');
@@ -1182,28 +1260,11 @@ function checkChild(ctx, child, at, scope, rowScoped, parentKey, text = false) {
         '`key` is a path on the item that resolves to a string or number',
       );
     }
-    if (!isObject(child.template) || !('type' in child.template)) {
-      ctx.report(
-        'KUI-V008',
-        `${at}.template`,
-        'the template is exactly one node',
-      );
-      return;
-    }
-    const template = ctx.catalog.components.get(child.template.type);
-    if (template && channelOf(template.component) === 'none') {
-      ctx.report(
-        'KUI-V008',
-        `${at}.template`,
-        `${child.template.type} has no data-* channel to carry the row key`,
-      );
-    }
-    checkNode(
+    checkTemplate(
       ctx,
       child.template,
       `${at}.template`,
       inner,
-      true,
       parentKey,
       text,
     );

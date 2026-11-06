@@ -986,8 +986,20 @@ never styled from outside. This matches Kerf UI's "configure, never override".
 - **`$each`**: `{ "$each": <array value>, "as": "item", "key": "item.id",
 "template": <node> }`. `key` is required and must resolve to a string or
   number on the item, because the row becomes a keyed `each()` row. The
-  template is a single node, since kerf rows have one root element. An empty
-  list renders nothing.
+  template is a single node, since kerf rows have one root element, or an
+  `$if` chain of them (below). An empty list renders nothing.
+  - **A row design per item** (KF-8J8E5V: `$if`-chain templates). The
+    template may be `{ "$if": <boolean value>, "then": <node>, "else": <node or another chain> }`.
+    Each branch is one keyable node, under the same rules as a single
+    template, and a chain nests only in `else`, for three or more row kinds.
+    `else` is required, so every item yields exactly one row: a repeat never
+    filters (filter the array in the application). The condition resolves in
+    the item's scope (`{ "$bind": "item.header" }`, a param, or a literal).
+    The key rule is unchanged, and the generated module writes
+    `each(items, (item) => (cond ? A : B), { key })`, keyed by the first
+    branch's node id. Every branch's nodes are row-scoped: their actions are
+    row actions and their named nodes keyed refs (§4.4). A document without a
+    chain generates exactly what it did before.
   - Items must be objects, because `each()` keys rows by item identity.
   - The template's component needs a `data-*` channel to carry the row's
     `data-key`.
@@ -1019,11 +1031,13 @@ format already has that pattern: an `$each` template may be a `#view` (§3.7),
 so the row is its own document whose params are the item fields. Its
 generated module is a plain render function, so app code that owns its own
 list can call it per item with `each()` or `bindList` and fill only the
-item's details, the equivalent of dequeuing a prototype cell. A row is one
-template per list: rows that differ by kind vary inside one row component
-through `$if` (KF-B5JFTM decides whether to allow one template per item
-kind). The editor cannot yet insert, extract, or render a `#view` row
-document (KF-5N26H6).
+item's details, the equivalent of dequeuing a prototype cell. Rows that
+differ by kind either vary inside one row component through `$if`, or pick a
+row design per item through an `$if`-chain template (above). KF-B5JFTM chose
+both that and a `templates` map keyed by a bound kind, which KF-YX6HMT adds
+on the same row-branching plumbing. The editor cannot yet insert, extract,
+or render a `#view` row document (KF-5N26H6), nor author an `$if`-chain
+template (KF-1CRGP1).
 
 There are no other control-flow forms. Anything richer belongs in application
 code behind a slot.
@@ -1130,7 +1144,9 @@ cannot hand the view a raw string.
 `<Name>Refs` has one property per named node. Each is typed by the node's
 catalog `rootElement` (`ul` → `HTMLUListElement`), falling back to
 `HTMLElement`. A named node inside an `$each` template becomes a lookup,
-`(key: string) => <Element> | null`, instead of a single element.
+`(key: string) => <Element> | null`, instead of a single element. That
+includes a node in any branch of a template `$if` chain (§3.5): the lookup
+returns `null` for a row that took another branch.
 `<name>Refs(root)` resolves each ref by its `data-kerf-node` marker, never by
 class name or DOM position. It throws, naming the ref, when a non-row ref is
 missing. That catches a stale generated module paired with a different render.
@@ -1409,6 +1425,13 @@ schema and the validator in agreement.
 | `KUI-V015` | A `rootAttributes` key that is not a lowercase `data-*` name, or a reserved one (`data-kerf-*`, `data-key`, `data-editor-*`; §3.3)     |
 | `KUI-V016` | An `$each` at the top of a document that a `#view` composes inside an `$each` row (§3.5); reported at the composed `$each`'s path      |
 | `KUI-V017` | The document has no `root` (an editor's empty draft, KF-PK3GVY); reported at `$.root`. A `root` that is not a node stays `KUI-V001`    |
+
+For an `$if`-chain template (§3.5), `KUI-V008` also reports a chain without
+`else` ("a template `$if` needs an `else`, so every item yields exactly one
+row"), a branch that is not one node, including a chain in `then` ("the
+template is exactly one node, or an `$if` chain of them"), and a branch whose
+component has no `data-*` channel, each at that branch's path. The condition
+is checked as any `$if` condition is, in the item's scope.
 
 **Hints** (KF-KQ72TW: non-blocking view hints) are advice about a valid
 document. They never set `valid` to false, and generation, export, and Compare

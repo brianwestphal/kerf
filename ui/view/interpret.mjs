@@ -11,6 +11,7 @@ import {
   channelOf,
   fieldZoneOf,
   parseCssTree,
+  templateNodes,
   withFieldZones,
   ZoneFill,
   zonePropOf,
@@ -155,7 +156,7 @@ function renderDocument(document, inputs, slots, options) {
       const rest = child.key.split('.').slice(1);
       const items = value(child.$each, scope);
       const row = (item) =>
-        nodeValue(
+        rowValue(
           child.template,
           new Map(scope).set(child.as, item),
           readPath(item, rest),
@@ -168,7 +169,7 @@ function renderDocument(document, inputs, slots, options) {
       // module writes it (KF-CFA1S1).
       return scope.size
         ? items.map(row)
-        : each(items, row, { key: child.template.id });
+        : each(items, row, { key: templateNodes(child.template)[0]?.id });
     }
     if ('$if' in child) {
       if (value(child.$if, scope)) return childValue(child.then, scope, slot);
@@ -180,6 +181,19 @@ function renderDocument(document, inputs, slots, options) {
         : slots[child.$slot]();
     }
     return nodeValue(child, scope, undefined, slot);
+  };
+
+  // A row: the template node, or the branch its `$if` chain picks for this
+  // item (KF-8J8E5V). A preview of an unfinished chain with no `else`
+  // renders `then` for every item, since a keyed row must be one element.
+  const rowValue = (template, scope, rowKey, slot) => {
+    if (!isObject(template) || !('$if' in template))
+      return nodeValue(template, scope, rowKey, slot);
+    const chosen =
+      'else' in template && !value(template.$if, scope)
+        ? template.else
+        : template.then;
+    return rowValue(chosen, scope, rowKey, slot);
   };
 
   // A preview (previewView) swaps a node it cannot render for the caller's

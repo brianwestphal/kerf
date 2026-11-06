@@ -305,7 +305,7 @@
                 "minLength": 1
               },
               "template": {
-                "$ref": "#/$defs/node"
+                "$ref": "#/$defs/template"
               }
             }
           }
@@ -355,6 +355,29 @@
           }
         }
       ]
+    },
+    "template": {
+      "description": "An $each template: one keyable node, or an $if chain whose every branch is one. else is required, so each item yields exactly one row.",
+      "type": "object",
+      "if": {
+        "required": ["$if"]
+      },
+      "then": {
+        "required": ["$if", "then", "else"],
+        "additionalProperties": false,
+        "properties": {
+          "$if": {},
+          "then": {
+            "$ref": "#/$defs/node"
+          },
+          "else": {
+            "$ref": "#/$defs/template"
+          }
+        }
+      },
+      "else": {
+        "$ref": "#/$defs/node"
+      }
     }
   }
 }

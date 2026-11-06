@@ -45,7 +45,7 @@ function sharedSlot(root) {
   };
   const child = (item) => {
     if (!isObject(item)) return false;
-    if ('$each' in item) return node(item.template);
+    if ('$each' in item) return child(item.template);
     if ('$if' in item)
       return value(item.$if) || child(item.then) || child(item.else);
     if ('$slot' in item) return value(item.input);
@@ -89,7 +89,7 @@ function indexDocument(document) {
   };
   const child = (item, parent, zone, index, direct) => {
     if (!isObject(item)) ok = false;
-    else if ('$each' in item) node(item.template);
+    else if ('$each' in item) child(item.template, parent, zone, index, false);
     else if ('$if' in item) {
       child(item.then, parent, zone, index, false);
       if ('else' in item) child(item.else, parent, zone, index, false);
@@ -139,7 +139,7 @@ function prepareTree(node, prepare, map) {
 
 function prepareChild(item, prepare, map) {
   if ('$each' in item) {
-    const template = prepareTree(item.template, prepare, map);
+    const template = prepareChild(item.template, prepare, map);
     return template === item.template ? item : { ...item, template };
   }
   if ('$if' in item) {

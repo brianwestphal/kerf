@@ -15,6 +15,7 @@ import {
   fieldZoneOf,
   parseCssCall,
   withFieldZones,
+  templateNodes,
   ZoneFill,
   zonePropOf,
 } from './validate.mjs';
@@ -280,7 +281,7 @@ function createEmitter(document, catalog, imports, importFrom) {
   const childExpr = (child, scope, slot) => {
     if ('$each' in child) {
       const inner = new Map(scope).set(child.as, true);
-      const template = nodeExpr(child.template, inner, child.key, slot);
+      const template = rowExpr(child.template, inner, child.key, slot);
       // Scope holds only `$each` items, so a non-empty scope is a row
       // template. kerf never reconciles a list inside a row (a keyed each()
       // there throws), so an inner repeat is a plain map that re-renders with
@@ -295,7 +296,7 @@ function createEmitter(document, catalog, imports, importFrom) {
       return call(
         `each(${flat(value(child.$each, scope))}, (${child.as}) => `,
         template,
-        `, { key: ${literal(child.template.id)} })`,
+        `, { key: ${literal(templateNodes(child.template)[0].id)} })`,
       );
     }
     if ('$if' in child) {
@@ -314,6 +315,17 @@ function createEmitter(document, catalog, imports, importFrom) {
     }
     return nodeExpr(child, scope, undefined, slot);
   };
+
+  // A row: the template node, or the branch its `$if` chain picks per item
+  // (KF-8J8E5V). Every branch is a keyed node, and `else` is required.
+  const rowExpr = (template, scope, rowKey, slot) =>
+    '$if' in template
+      ? cond(
+          flat(value(template.$if, scope)),
+          rowExpr(template.then, scope, rowKey, slot),
+          rowExpr(template.else, scope, rowKey, slot),
+        )
+      : nodeExpr(template, scope, rowKey, slot);
 
   const nodeExpr = (node, scope, rowKey, slot) => {
     if (node.type === '#text') {
@@ -570,7 +582,8 @@ export function generateView(document, catalog, options = {}) {
     if (node.type === '#view') views[node.src] = options.resolveView(node.src);
     for (const list of Object.values(isObject(node.zones) ? node.zones : {})) {
       for (const child of list) {
-        if ('$each' in child) collectViews(child.template);
+        if ('$each' in child)
+          templateNodes(child.template).forEach(collectViews);
         else if ('$if' in child) {
           collectViews(child.then);
           collectViews(child.else);

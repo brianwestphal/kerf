@@ -108,7 +108,7 @@ function elementOf(catalog, node) {
 export function walkView(document, visit) {
   const child = (item, row) => {
     if (!isObject(item)) return;
-    if ('$each' in item) node(item.template, true);
+    if ('$each' in item) child(item.template, true);
     else if ('$if' in item) {
       child(item.then, row);
       if ('else' in item) child(item.else, row);
