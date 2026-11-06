@@ -525,6 +525,22 @@ and a component, refusing an empty or taken name. Removing the last other
 kind makes the list a plain template again. The outline reads
 `item.kind is header` for a kind's design and `otherwise` for `default`.
 
+**Decision: the two forms stay separate** (KF-B0ZDE6). A chain and a kinds map
+encode different data contracts. A chain's conditions read true/false fields
+(`item.header`), while a map reads one string field (`item.kind`), so
+switching is a redesign of what the application sends, not an edit:
+
+- Map → chain cannot be written, since a condition is a true/false value and
+  there are no expressions (§3.3) to test `item.kind == "header"`.
+- Chain → map would drop every condition, invent kind names, add `kinds` to
+  the contract, and require the application to send a `kind` that agrees
+  with the old conditions, which the editor cannot check.
+
+So the editor converts in neither direction. On a chain, Row designs shows a
+quiet line in place of Or pick designs by kind: "Rows chosen by conditions;
+to pick them by kind, remove designs down to one." A keyed list adds kinds,
+not conditioned designs.
+
 A css-value prop's field takes any `$css` builder call, compositions
 included (`calc(plus(px(8), space("m")))`, `lengthVar("--app-gap", px(8))`);
 its hint lists the builders the prop accepts (the catalog's `cssValue.helpers`)

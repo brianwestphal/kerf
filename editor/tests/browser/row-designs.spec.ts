@@ -172,6 +172,19 @@ test('removing a design leaves one template', async ({ page }, info) => {
   await openDocument(page);
   await addHeaderDesign(page);
   await expect(page.getByText(/· 4 nodes · valid$/)).toBeVisible();
+  // KF-B0ZDE6: a chain says how to switch to kinds instead of offering it.
+  await area(page, 'Flow');
+  const note = page.locator('[data-editor-row-kind-note]');
+  await expect(note).toHaveText(
+    'Rows chosen by conditions; to pick them by kind, remove designs down to one.',
+  );
+  await expect(page.locator('[data-editor-control="row-kind"]')).toHaveCount(0);
+  await note.scrollIntoViewIfNeeded();
+  await page.mouse.move(1, 1);
+  await page.screenshot({
+    path: info.outputPath('kf-b0zde6-row-kind-note-1440.png'),
+    animations: 'disabled',
+  });
   // The narrow Inspector shows the selected design's Row designs.
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole('button', { name: 'Show Inspector' }).click();
@@ -183,7 +196,14 @@ test('removing a design leaves one template', async ({ page }, info) => {
     path: info.outputPath('kf-1crgp1-row-designs-390.png'),
     animations: 'disabled',
   });
+  await note.scrollIntoViewIfNeeded();
+  await page.screenshot({
+    path: info.outputPath('kf-b0zde6-row-kind-note-390.png'),
+    animations: 'disabled',
+  });
   await remove.click();
+  // One design again: the list can pick designs by kind, so no note.
+  await expect(note).toHaveCount(0);
   await page.setViewportSize({ width: 1440, height: 900 });
   await expect(page.getByText(/· 3 nodes · valid$/)).toBeVisible();
   await expect(canvasRow(page, 'today')).toHaveAttribute(

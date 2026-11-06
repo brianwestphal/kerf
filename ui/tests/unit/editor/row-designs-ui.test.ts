@@ -229,6 +229,24 @@ describe('row designs keyed by kind', () => {
       (branch) => branch.kind,
     );
 
+  it('keeps a condition chain apart from kinds, and says how to switch (KF-B0ZDE6)', () => {
+    const { root } = open();
+    const note = () => root.querySelector('[data-editor-row-kind-note]');
+    // One design: it can pick designs by kind, so there is nothing to say.
+    expect(rowKind(root)).not.toBeNull();
+    expect(note()).toBeNull();
+    // A chain reads true/false values, a kinds map one kind value, so the
+    // chain is not converted; it says how to switch instead.
+    addDesign(root);
+    expect(root.querySelector('[data-editor-control="row-kind"]')).toBeNull();
+    expect(note()?.textContent).toContain(
+      'Rows chosen by conditions; to pick them by kind, remove designs down to one.',
+    );
+    click(root, 'editor-remove-row-design');
+    expect(note()).toBeNull();
+    expect(rowKind(root)).not.toBeNull();
+  });
+
   it('picks designs by kind, adds, renames, and removes kinds', () => {
     const { root, editor } = open();
     // Not by kind changes nothing.

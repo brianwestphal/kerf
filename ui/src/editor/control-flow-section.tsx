@@ -326,6 +326,19 @@ function rowDesignFields(
           </Text>
         </ListInsetText>
       )}
+      {rows ? (
+        // KF-B0ZDE6: a chain reads true/false values and a kinds map one
+        // kind value, so switching is a redesign, not a conversion.
+        <ListInsetText>
+          <Text
+            tone="quiet"
+            rootAttributes={{ 'data-editor-row-kind-note': '' }}
+          >
+            Rows chosen by conditions; to pick them by kind, remove designs down
+            to one.
+          </Text>
+        </ListInsetText>
+      ) : undefined}
     </>
   );
 }
