@@ -11,7 +11,7 @@ import type {
 } from '@kerfjs/ui/view';
 
 import type { PropsComponent } from '../catalog.js';
-import { visitNodes } from './document.js';
+import { mapRows, mapTemplate, visitNodes } from './document.js';
 import type { InspectorProp } from './inspector.js';
 
 /**
@@ -147,7 +147,9 @@ export function ownedViews(
     };
   };
   const child = (item: ViewChild): ViewChild => {
-    if ('$each' in item) return { ...item, template: node(item.template) };
+    // Every row design: an `$if`-chain's branches, or each kind's template.
+    if ('$each' in item)
+      return mapRows(item, (template) => mapTemplate(template, node));
     if ('$if' in item)
       return {
         ...item,

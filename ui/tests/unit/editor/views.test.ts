@@ -187,7 +187,20 @@ describe('composed document model', () => {
               $each: [],
               as: 'item',
               key: 'item.id',
-              template: { id: 'f', type: '@kerfjs/ui:text' },
+              template: {
+                $if: true,
+                then: { id: 'f', type: '@kerfjs/ui:text' },
+                else: { id: 'f', type: '@kerfjs/ui:text' },
+              },
+            },
+            {
+              $each: [],
+              as: 'item',
+              key: 'item.id',
+              kind: 'x',
+              templates: {
+                default: { id: 'f', type: '@kerfjs/ui:text' },
+              },
             },
             { $slot: 'more' },
           ],
