@@ -52,13 +52,25 @@ const matches = (option: HTMLElement, text: string) =>
   option.textContent!.toLowerCase().includes(text) ||
   option.dataset.value!.toLowerCase().includes(text);
 
+// KF-YA45PW: the open state and active option are wiring-owned mechanics.
+// `Combobox` renders the list closed, so an application render while the
+// field is focused re-applies `hidden` and `aria-expanded="false"`; the
+// wiring keeps, per field, whether it holds the list open and which option
+// is active, and puts both back after such a render.
+const opened = new WeakSet<HTMLElement>();
+const activeValue = new WeakMap<HTMLElement, string>();
+
 function setActive(parts: Parts, option: HTMLElement | null) {
   for (const item of parts.listbox.querySelectorAll('[role="option"]'))
     item.setAttribute('aria-selected', String(item === option));
   if (option) {
     parts.input.setAttribute('aria-activedescendant', option.id);
+    activeValue.set(parts.field, option.dataset.value!);
     option.scrollIntoView?.({ block: 'nearest' });
-  } else parts.input.removeAttribute('aria-activedescendant');
+  } else {
+    parts.input.removeAttribute('aria-activedescendant');
+    activeValue.delete(parts.field);
+  }
 }
 
 function activeOption(parts: Parts): HTMLElement | null {
@@ -75,6 +87,7 @@ const following = new WeakMap<HTMLElement, () => void>();
 
 function show(parts: Parts) {
   const { listbox } = parts;
+  opened.add(parts.field);
   listbox.hidden = false;
   if (!listbox.matches(':popover-open')) listbox.showPopover();
   if (following.has(listbox)) return;
@@ -98,6 +111,7 @@ function show(parts: Parts) {
 
 function hide(parts: Parts) {
   const { listbox } = parts;
+  opened.delete(parts.field);
   listbox.hidden = true;
   if (listbox.matches(':popover-open')) listbox.hidePopover();
   following.get(listbox)?.();
@@ -138,10 +152,28 @@ function update(parts: Parts) {
 }
 
 /**
+ * After a render touched the focused field's Combobox: when the wiring held
+ * its list open, filter the rendered options against the typed text again,
+ * reopen the list, and make the option that was active active again if it
+ * is still shown. A list the person closed stays closed.
+ */
+function restore(parts: Parts) {
+  if (!opened.has(parts.field)) return;
+  const value = activeValue.get(parts.field);
+  update(parts);
+  const option = visibleOptions(parts).find(
+    (item) => item.dataset.value === value,
+  );
+  if (option) setActive(parts, option);
+}
+
+/**
  * Wire every `Combobox` below root: typing filters the suggestions (and offers
  * to create the typed text), ArrowDown/ArrowUp move the active option, Enter or
  * a commit key (comma by default) commits the active option or the typed text,
  * a click commits an option, and Escape or leaving the field closes the list.
+ * An application render while the field is focused keeps an open list open,
+ * filtered against the typed text, with its active option (KF-YA45PW).
  * Typed text that matches no suggestion commits only when the field offers
  * creation; otherwise Enter commits the first matching suggestion. Dispose with the owning application.
  */
@@ -178,7 +210,10 @@ export function wireComboboxes(
   const onInput = (event: Event) => {
     const input = inputOf(event);
     const parts = input && partsOf(input);
-    if (parts) update(parts);
+    if (!parts) return;
+    update(parts);
+    // The wiring's own writes need no restore.
+    observer.takeRecords();
   };
   const onFocus = onInput;
   const onKeyDown = (event: Event) => {
@@ -230,12 +265,33 @@ export function wireComboboxes(
     const parts = input && partsOf(input);
     if (parts) close(parts);
   };
+  // A render that changes the focused field's Combobox (new suggestions, or
+  // the rendered closed state written back) restores the open list.
+  const observer = new MutationObserver((records) => {
+    // A Document's ownerDocument is null; an element's is its document.
+    const focused = (root.ownerDocument ?? (root as Document)).activeElement;
+    if (!(focused instanceof HTMLInputElement) || !focused.matches(INPUT))
+      return;
+    if (!root.contains(focused)) return;
+    const parts = partsOf(focused);
+    if (!records.some((record) => parts.field.contains(record.target))) return;
+    restore(parts);
+    // The restore's own writes are not a render.
+    observer.takeRecords();
+  });
+  observer.observe(root, {
+    subtree: true,
+    childList: true,
+    attributes: true,
+    attributeFilter: ['hidden', 'aria-expanded'],
+  });
   root.addEventListener('input', onInput);
   root.addEventListener('focusin', onFocus);
   root.addEventListener('keydown', onKeyDown);
   root.addEventListener('pointerdown', onPointerDown);
   root.addEventListener('focusout', onFocusOut);
   return () => {
+    observer.disconnect();
     root.removeEventListener('input', onInput);
     root.removeEventListener('focusin', onFocus);
     root.removeEventListener('keydown', onKeyDown);

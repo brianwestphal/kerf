@@ -7839,7 +7839,7 @@
           "export": "wireComboboxes",
           "import": "@kerfjs/ui/wire-comboboxes",
           "required": true,
-          "reason": "Filters suggestions, moves the active option, and reports commits; without it the list never opens.",
+          "reason": "Filters suggestions, moves the active option, reports commits, and keeps an open list open across an application render while the field is focused; without it the list never opens.",
           "stateAttributes": [
             {
               "name": "data-value",

@@ -53,7 +53,7 @@ Exact prop names and types: [`@kerfjs/ui/combobox`](../public-api-signatures-v1.
 
 **Wiring:** `wireComboboxes` is required.
 
-- Filters suggestions, moves the active option, and reports commits; without it the list never opens.
+- Filters suggestions, moves the active option, reports commits, and keeps an open list open across an application render while the field is focused; without it the list never opens.
 
 **Wiring-owned state attributes** — never render, remove, or branch on these as app state:
 

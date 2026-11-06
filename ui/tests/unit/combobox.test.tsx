@@ -23,6 +23,8 @@ vi.mock('@floating-ui/dom', () => ({
   size: () => ({ name: 'size', fn: () => ({}) }),
 }));
 
+import { mount, signal } from 'kerfjs';
+
 import { Combobox } from '../../src/components/forms/combobox/combobox.js';
 import { wireComboboxes } from '../../src/components/forms/combobox/wiring/wire-comboboxes.js';
 import { installPopoverPolyfill, isShown } from './helpers/popover.js';
@@ -223,5 +225,176 @@ describe('Combobox', () => {
     expect(onCommit).toHaveBeenCalledWith(
       expect.objectContaining({ value: 'bug', created: false }),
     );
+  });
+});
+
+// KF-YA45PW: an application render while the field is focused re-applies the
+// rendered closed state; the wiring keeps an open list open across it.
+describe('Combobox across application renders', () => {
+  afterEach(() => document.body.replaceChildren());
+
+  const flush = () =>
+    new Promise((resolve) => globalThis.setTimeout(resolve, 0));
+
+  function mounted(root: HTMLElement | Document = document) {
+    const host = document.createElement('div');
+    document.body.append(host);
+    const suggestions = signal<readonly string[]>(['bug', 'design']);
+    const hint = signal('');
+    const stopMount = mount(host, () =>
+      Combobox({
+        id: 'repo',
+        label: 'Repository',
+        suggestions: suggestions.value,
+        hint: hint.value || undefined,
+      }),
+    );
+    const onCommit = vi.fn();
+    const stop = wireComboboxes(root, { onCommit });
+    const input = () => host.querySelector<HTMLInputElement>('input')!;
+    const listbox = () => host.querySelector<HTMLElement>('[role="listbox"]')!;
+    const type = (text: string) => {
+      input().value = text;
+      input().dispatchEvent(new Event('input', { bubbles: true }));
+    };
+    const key = (name: string) =>
+      input().dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: name,
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    const visible = () =>
+      [...listbox().querySelectorAll<HTMLElement>('[role="option"]')]
+        .filter((option) => !option.hidden)
+        .map((option) => option.dataset.value);
+    const open = () =>
+      !listbox().hidden && input().getAttribute('aria-expanded') === 'true';
+    const focus = () => {
+      input().focus();
+      input().dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+    };
+    return {
+      host,
+      suggestions,
+      hint,
+      input,
+      listbox,
+      type,
+      key,
+      visible,
+      open,
+      focus,
+      stop: () => {
+        stop();
+        stopMount();
+      },
+    };
+  }
+
+  it('keeps an open list open, filtered, when its suggestions change', async () => {
+    const view = mounted();
+    view.focus();
+    view.type('d');
+    expect(view.visible()).toEqual(['design', 'd']);
+    view.key('ArrowDown');
+    expect(view.input().getAttribute('aria-activedescendant')).toBe(
+      'repo-option-1',
+    );
+    // Data arrives: the render writes the list back closed.
+    view.suggestions.value = ['docs', 'bug', 'design', 'deploy'];
+    await flush();
+    expect(view.open()).toBe(true);
+    expect(isShown(view.listbox())).toBe(true);
+    // The new options are filtered against the typed text.
+    expect(view.visible()).toEqual(['docs', 'design', 'deploy', 'd']);
+    // The active option is the same suggestion, wherever it now sits.
+    expect(view.input().getAttribute('aria-activedescendant')).toBe(
+      'repo-option-2',
+    );
+    expect(document.activeElement).toBe(view.input());
+    expect(view.input().value).toBe('d');
+    // Removing the active suggestion leaves none active, still open.
+    view.suggestions.value = ['docs', 'deploy'];
+    await flush();
+    expect(view.open()).toBe(true);
+    expect(view.visible()).toEqual(['docs', 'deploy', 'd']);
+    expect(view.input().hasAttribute('aria-activedescendant')).toBe(false);
+    // A render that keeps the suggestions keeps it open too.
+    view.hint.value = 'Owner/name';
+    await flush();
+    expect(view.open()).toBe(true);
+    // Escape still closes, and a later render leaves it closed.
+    view.key('Escape');
+    expect(view.open()).toBe(false);
+    view.suggestions.value = ['docs'];
+    await flush();
+    expect(view.listbox().hidden).toBe(true);
+    view.stop();
+  });
+
+  it('leaves an unfocused or blurred list closed, and ignores other renders', async () => {
+    const view = mounted(document.body);
+    // Never focused: the render keeps it closed.
+    view.suggestions.value = ['a', 'b'];
+    await flush();
+    expect(view.listbox().hidden).toBe(true);
+    // Leaving the field closes it, and a render after that keeps it closed.
+    view.focus();
+    expect(view.open()).toBe(true);
+    view.input().blur();
+    view.input().dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+    expect(view.open()).toBe(false);
+    view.suggestions.value = ['a', 'b', 'c'];
+    await flush();
+    expect(view.listbox().hidden).toBe(true);
+    // Focus in another field: a render does not touch this list.
+    const other = document.createElement('input');
+    document.body.append(other);
+    other.focus();
+    view.suggestions.value = ['a'];
+    await flush();
+    expect(view.listbox().hidden).toBe(true);
+    // An open list survives a render elsewhere in the root untouched.
+    view.focus();
+    const elsewhere = document.createElement('p');
+    document.body.append(elsewhere);
+    elsewhere.hidden = true;
+    await flush();
+    expect(view.open()).toBe(true);
+    // Disposed: renders no longer restore it.
+    view.stop();
+  });
+
+  it('leaves alone a focused Combobox outside the wired root', async () => {
+    const outside = document.createElement('div');
+    outside.innerHTML = String(
+      Combobox({ id: 'other', label: 'Other', suggestions: ['x'] }),
+    );
+    document.body.append(outside);
+    const view = mounted();
+    const host = view.host;
+    // Rewire only the first view's host, then focus the other field.
+    view.stop();
+    const stop = wireComboboxes(host, { onCommit: vi.fn() });
+    outside.querySelector('input')!.focus();
+    const listbox = host.querySelector<HTMLElement>('[role="listbox"]')!;
+    listbox.hidden = true;
+    await flush();
+    expect(listbox.hidden).toBe(true);
+    stop();
+  });
+
+  it('stops restoring once disposed', async () => {
+    const view = mounted();
+    view.focus();
+    expect(view.open()).toBe(true);
+    view.stop();
+    // A render the wiring no longer sees closes the list as rendered.
+    const listbox = view.listbox();
+    listbox.hidden = true;
+    await flush();
+    expect(listbox.hidden).toBe(true);
   });
 });
