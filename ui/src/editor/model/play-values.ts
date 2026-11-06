@@ -151,22 +151,35 @@ type Each = Extract<ViewChild, { $each: unknown }>;
  * `data-kerf-outer-<depth>`. Play mode only, after validation, which
  * reserves `data-kerf-*` for the renderer. A node with no data channel, or
  * whose `rootAttributes` is an expression, stays unmarked.
+ *
+ * KF-58917B: a `#view` in a row passes its row's keys on to the document it
+ * composes, as `VIEW_ROW` props (`viewRowParam`), and that document is
+ * marked with `prefix` (those params): its nodes are in the `#view`'s row.
  */
 export function markRows(
   document: ViewDocument,
   catalog: ViewCatalog,
+  prefix: readonly ViewValue[] = [],
 ): ViewDocument {
   const mark = (
     node: ViewNode,
-    keys: readonly string[],
+    keys: readonly ViewValue[],
     root: boolean,
   ): ViewNode => {
+    if (node.type === '#view')
+      return {
+        ...node,
+        props: {
+          ...node.props,
+          ...Object.fromEntries(
+            keys.map((key, depth) => [viewRowParam(depth), key]),
+          ),
+        },
+      };
     const marks: Record<string, ViewValue> = Object.fromEntries(
-      keys
-        .slice(0, -1)
-        .map((key, depth) => [`${OUTER_MARK}${depth}`, { $bind: key }]),
+      keys.slice(0, -1).map((key, depth) => [`${OUTER_MARK}${depth}`, key]),
     );
-    if (!root) marks[ROW_MARK] = { $bind: keys.at(-1)! };
+    if (!root) marks[ROW_MARK] = keys.at(-1)!;
     const component = catalog.components.get(node.type)?.component;
     if (!component || Object.keys(marks).length === 0) return node;
     switch (channelOf(component as Parameters<typeof channelOf>[0])) {
@@ -189,11 +202,11 @@ export function markRows(
         return node;
     }
   };
-  const child = (item: ViewChild, keys: readonly string[]): ViewChild => {
+  const child = (item: ViewChild, keys: readonly ViewValue[]): ViewChild => {
     if ('$each' in item)
       return mapRows(item, (template) =>
         mapTemplate(template, (branch) =>
-          node(branch, [...keys, item.key], true),
+          node(branch, [...keys, { $bind: item.key }], true),
         ),
       );
     if ('$if' in item)
@@ -207,7 +220,7 @@ export function markRows(
   };
   const node = (
     item: ViewNode,
-    keys: readonly string[],
+    keys: readonly ViewValue[],
     root: boolean,
   ): ViewNode => {
     const marked = keys.length > 0 ? mark(item, keys, root) : item;
@@ -223,9 +236,15 @@ export function markRows(
     };
   };
   return document.root
-    ? { ...document, root: node(document.root, [], false) }
+    ? { ...document, root: node(document.root, prefix, false) }
     : document;
 }
+
+/**
+ * KF-58917B: the reserved play-time param a composed document reads its
+ * `#view`'s row key at `depth` from (outermost row first).
+ */
+export const viewRowParam = (depth: number) => `$kerfPlayRow${depth}`;
 
 type ComponentFunction = (props: Record<string, unknown>) => SafeHtml;
 
@@ -446,17 +465,19 @@ function updateAt(
 }
 
 /**
- * Node `id`'s row closes. `keys` holds its row key, and the row key of each
+ * Node `id`'s row, changed by `change(each, key)`'s function over its
+ * `$each`'s items. `keys` holds its row key, and the row key of each
  * enclosing `$each` row, by template node id. The rows' items come from a
  * param, directly (`$param`) or through `$bind`s, possibly to an outer
- * row's item (KF-7XQAFR): the result is that param without the closed
- * item. Undefined when the items cannot be traced to a param.
+ * row's item (KF-7XQAFR): the result is that param with the change.
+ * Undefined when the items cannot be traced to a param.
  */
-export function closeRow(
+function changeRow(
   document: ViewDocument,
   id: string,
   keys: Readonly<Record<string, string>>,
   params: Readonly<Record<string, unknown>>,
+  change: (each: Each, key: string) => (items: readonly unknown[]) => unknown[],
 ): Readonly<Record<string, unknown>> | undefined {
   const each = eachOf(document, id);
   const key = keys[id];
@@ -466,8 +487,59 @@ export function closeRow(
   );
   const source = sourceOf(each.$each, enclosing, keys);
   if (!source) return undefined;
-  const next = updateAt(params[source.param], source.steps, (items) =>
-    items.filter((item) => keyOf(each, item) !== key),
-  );
+  const next = updateAt(params[source.param], source.steps, change(each, key));
   return next === undefined ? undefined : { [source.param]: next };
+}
+
+/**
+ * Node `id`'s row closes: the result is the param its items come from
+ * without the closed item (`changeRow`).
+ */
+export function closeRow(
+  document: ViewDocument,
+  id: string,
+  keys: Readonly<Record<string, string>>,
+  params: Readonly<Record<string, unknown>>,
+): Readonly<Record<string, unknown>> | undefined {
+  return changeRow(
+    document,
+    id,
+    keys,
+    params,
+    (each, key) => (items) => items.filter((item) => keyOf(each, item) !== key),
+  );
+}
+
+/**
+ * KF-58917B: node `id`'s row item with `field` (a path under the item, at
+ * least one name) set to `value`, in the param the row's items come from
+ * (`changeRow`). An item that is not a plain object stays as it is.
+ */
+export function setRowField(
+  document: ViewDocument,
+  id: string,
+  keys: Readonly<Record<string, string>>,
+  field: readonly string[],
+  value: unknown,
+  params: Readonly<Record<string, unknown>>,
+): Readonly<Record<string, unknown>> | undefined {
+  const set = (item: unknown, [name, ...rest]: readonly string[]): unknown => {
+    if (typeof item !== 'object' || item === null || Array.isArray(item))
+      return item;
+    const record = item as Record<string, unknown>;
+    return {
+      ...record,
+      [name!]: rest.length ? set(record[name!], rest) : value,
+    };
+  };
+  return changeRow(
+    document,
+    id,
+    keys,
+    params,
+    (each, key) => (items) =>
+      items.map((item) =>
+        keyOf(each, item) === key ? set(item, field) : item,
+      ),
+  );
 }

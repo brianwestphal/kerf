@@ -22,6 +22,7 @@ import {
 import { type DeviceInsets, safeAreaTokens } from './model/play-device.js';
 import { placeholderAnchors, popView, rootViews } from './model/play-state.js';
 import { fresh, type RowProps } from './model/play-values.js';
+import { topNode } from './model/play-views.js';
 import { wirePlayState } from './play-adapters.js';
 
 /** The action Kerf UI's dialog wiring opens a DialogSurface with. */
@@ -111,11 +112,19 @@ export function createPlayer(
   const received = signal(false);
   /** The composed documents `#view`s render, as the editor loaded them. */
   const views = signal<PlayViews>({});
+  /**
+   * KF-58917B: each `#view`'s play copy of the document it composes, by
+   * the `#view`'s composed id, once something in it changed.
+   */
+  const copies = signal<PlayViews>({});
 
   const render = (): SafeHtml => {
     if (!received.value) return raw('');
-    // KF-XV732Q: rows with play-time props render from fresh items.
-    const repeated = Object.keys(rows.value).length > 0;
+    // KF-XV732Q: rows with play-time props render from fresh items, as
+    // (KF-58917B) do rows whose composed documents' play copies changed.
+    const repeated =
+      Object.keys(rows.value).length > 0 ||
+      Object.keys(copies.value).length > 0;
     return repeated
       ? preview(
           fresh(document.value),
@@ -152,6 +161,8 @@ export function createPlayer(
       params,
       setParams,
       device,
+      views,
+      copies,
     });
     const html = root.ownerDocument.documentElement;
     const onMessage = (event: MessageEvent) => {
@@ -183,6 +194,7 @@ export function createPlayer(
       batch(() => {
         document.value = rootViews(data.document!);
         views.value = data.views ?? {};
+        copies.value = {};
         rows.value = {};
         received.value = true;
       });
@@ -214,7 +226,7 @@ export function createPlayer(
           if (dialog) openDialog(dialog);
           report({
             action,
-            node: nodeId ? label(document.value, nodeId) : action,
+            node: nodeId ? label(document.value, topNode(nodeId)) : action,
             event: event.type,
             outcome: dialog ? 'ran' : 'missing',
             message: dialog
@@ -230,9 +242,11 @@ export function createPlayer(
           )
         )
           return;
-        // Every rendered node carries its id, so an action has one.
-        const nodeId =
-          target.closest<HTMLElement>('[data-kerf-node]')!.dataset.kerfNode!;
+        // Every rendered node carries its id, so an action has one; a
+        // composed node's (KF-58917B) is its top `#view`'s.
+        const nodeId = topNode(
+          target.closest<HTMLElement>('[data-kerf-node]')!.dataset.kerfNode!,
+        );
         const base = {
           action,
           node: label(document.value, nodeId),
@@ -312,6 +326,7 @@ export function createPlayer(
       void document.value;
       void overrides.value;
       void rows.value;
+      void copies.value;
       void received.value;
       globalThis.queueMicrotask(play.sync);
     });
@@ -328,5 +343,5 @@ export function createPlayer(
     };
   };
 
-  return { render, wire, document, views };
+  return { render, wire, document, views, copies };
 }

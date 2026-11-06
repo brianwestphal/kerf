@@ -11,7 +11,10 @@
 // toggles, per-row TabBarItem selection, and tab close. KF-7XQAFR: a value
 // control nested inside an `$each` row records for its row (`data-kerf-row`),
 // and a repeated tab closes wherever its items come from. KF-ZMBST3: a row
-// inside another row is known by its path of row keys.
+// inside another row is known by its path of row keys. KF-58917B: a node
+// inside a composed document (`#view`) has a composed id; its adapter runs
+// over its `#view`'s play copy (model/play-views.ts), and a value change
+// goes where the value comes from (`recordComposedValue`).
 import type { ViewDocument } from '@kerfjs/ui/view';
 import {
   delegate,
@@ -80,6 +83,20 @@ import {
   type RowProps,
   rowPropsOf,
 } from './model/play-values.js';
+import {
+  isComposed,
+  levelsOf,
+  ownId,
+  recordComposedValue,
+  rowsIn,
+  rowsOut,
+} from './model/play-views.js';
+
+/** Documents by path, or (play copies) by their `#view`'s composed id. */
+type Documents = Readonly<Record<string, ViewDocument>>;
+
+/** A play-time document an adapter reads and changes. */
+type PlayDocument = Pick<Signal<ViewDocument>, 'value' | 'peek'>;
 
 /** What the player shares with its adapters besides the document. */
 export interface PlayStateOptions {
@@ -91,13 +108,18 @@ export interface PlayStateOptions {
   readonly setParams: (values: Readonly<Record<string, unknown>>) => void;
   /** The played device's class: SplitView's `compact` follows it. */
   readonly device: ReadonlySignal<{ readonly compact: boolean }>;
+  /** KF-58917B: the composed documents the editor sent, by path. */
+  readonly views: ReadonlySignal<Documents>;
+  /** KF-58917B: each `#view`'s play copy, by its composed id. */
+  readonly copies: Signal<Documents>;
 }
 
 /** What an adapter needs: the rendered node and the play-time document. */
 interface AdapterContext {
   readonly element: HTMLElement;
   readonly id: string;
-  readonly state: Signal<ViewDocument>;
+  /** The play copy the node is in: the top one, or its `#view`'s. */
+  readonly state: PlayDocument;
   /** The player's root, for helpers whose controls sit outside the node. */
   readonly root: HTMLElement;
 }
@@ -106,7 +128,7 @@ interface AdapterContext {
 function mirrored<Value>(
   read: (document: ViewDocument) => Value,
   write: (document: ViewDocument, value: Value) => ViewDocument,
-  state: Signal<ViewDocument>,
+  state: PlayDocument,
 ) {
   const value = signal(read(state.peek()));
   const stop = effect(() => {
@@ -224,7 +246,7 @@ const ADAPTERS: Readonly<
           // A toggle row (`pressed`) toggles; it does not select.
           if (row.hasAttribute('aria-pressed')) return;
           const at = nodeAt(row)!;
-          let next = selectListItem(state.value, at.id);
+          let next = selectListItem(state.value, ownId(at.id));
           if (compact) next = setDetailActive(next, id, true);
           state.value = next;
         },
@@ -403,8 +425,49 @@ const ON_CLICK: Readonly<Record<string, ValueReader>> = {
 export function wirePlayState(
   root: HTMLElement,
   state: Signal<ViewDocument>,
-  { rows, params, setParams, device }: PlayStateOptions,
+  { rows, params, setParams, device, views, copies }: PlayStateOptions,
 ): { sync: () => void; dispose: () => void } {
+  /** A composed document: `#view` `owner`'s play copy, or the one sent. */
+  const resolve = (path: string, owner: string) =>
+    copies.peek()[owner] ?? views.peek()[path];
+  /** `#view` `owner`'s play copy of the document at `path`. */
+  const copyOf = (owner: string, path: string): PlayDocument => ({
+    get value() {
+      return resolve(path, owner)!;
+    },
+    // As a signal: the same document is no change.
+    set value(next) {
+      if (next !== resolve(path, owner))
+        copies.value = { ...copies.peek(), [owner]: next };
+    },
+    peek: () => resolve(path, owner)!,
+  });
+  /**
+   * Rendered node `id`: its node, its id in the play copy that holds it,
+   * that copy, and (KF-58917B) the `#view` whose copy it is.
+   */
+  const locate = (id: string) => {
+    if (!isComposed(id)) {
+      const node = findNode(state.peek(), id)?.node;
+      return node && { node, id, state };
+    }
+    const found = levelsOf(state.peek(), id, resolve);
+    if (!found) return undefined;
+    const { owner, path, document } = found.levels.at(-1)!;
+    return {
+      node: findNode(document, found.id)!.node,
+      id: found.id,
+      owner,
+      state: copyOf(owner!, path!),
+    };
+  };
+  /** The row props of the play copy `owner` holds, by its nodes' ids. */
+  const rowsOf = (owner: string | undefined) =>
+    owner === undefined ? rows.peek() : rowsIn(rows.peek(), owner);
+  const setRowsOf = (owner: string | undefined, scoped: RowProps) => {
+    rows.value =
+      owner === undefined ? scoped : rowsOut(rows.peek(), owner, scoped);
+  };
   /** Each adapted element's node id, its shape, and its disposer. */
   const adapters = new Map<
     HTMLElement,
@@ -417,6 +480,28 @@ export function wirePlayState(
     prop: string,
     value: unknown,
   ) => {
+    if (isComposed(id)) {
+      const { levels, id: own } = levelsOf(state.peek(), id, resolve)!;
+      const recorded = recordComposedValue(
+        levels,
+        rows.peek(),
+        id,
+        own,
+        key,
+        prop,
+        value,
+        params(),
+      );
+      state.value = recorded.document;
+      rows.value = recorded.rows;
+      if (recorded.copy)
+        copies.value = {
+          ...copies.peek(),
+          [recorded.copy.owner]: recorded.copy.document,
+        };
+      if (recorded.params) setParams(recorded.params);
+      return;
+    }
     const recorded = recordValue(
       state.peek(),
       rows.peek(),
@@ -441,9 +526,14 @@ export function wirePlayState(
     (readers: Readonly<Record<string, ValueReader>>) => (event: Event) => {
       const at = nodeAt(event.target as Element);
       if (!at) return;
-      const node = findNode(state.peek(), at.id)?.node;
-      const reader = node && readers[node.type];
-      const change = reader?.(at.element, event, state.peek(), at.id);
+      const found = locate(at.id);
+      const reader = found && readers[found.node.type];
+      const change = reader?.(
+        at.element,
+        event,
+        found!.state.peek(),
+        found!.id,
+      );
       if (change) record(at.id, at.row, change.prop, change.value);
     };
   const onChange = onValue(ON_CHANGE);
@@ -454,7 +544,7 @@ export function wirePlayState(
     const at = nodeAt(details);
     if (
       at?.element === details &&
-      findNode(state.peek(), at.id)?.node.type === '@kerfjs/ui:disclosure'
+      locate(at.id)?.node.type === '@kerfjs/ui:disclosure'
     )
       record(at.id, at.row, 'open', (details as HTMLDetailsElement).open);
   };
@@ -469,13 +559,19 @@ export function wirePlayState(
       at && root.contains(at.element);
       at = nodeAt(at.element.parentElement)
     )
-      if (findNode(state.value, at.id)?.node.type === TAB_BAR_ITEM) return at;
+      if (locate(at.id)?.node.type === TAB_BAR_ITEM) return at;
     return undefined;
   };
   const selectItem = (id: string, key: RowKey | undefined) => {
-    const selected = selectTabBarItem(state.value, id, rows.value, key);
-    rows.value = selected.rows;
-    state.value = selected.document;
+    const found = locate(id)!;
+    const selected = selectTabBarItem(
+      found.state.peek(),
+      found.id,
+      rowsOf(found.owner),
+      key,
+    );
+    setRowsOf(found.owner, selected.rows);
+    found.state.value = selected.document;
   };
 
   const stateless = [
@@ -534,19 +630,27 @@ export function wirePlayState(
       (_event, close) => {
         const at = tabItemAt(close);
         if (!at) return;
+        const found = locate(at.id)!;
         if (at.key === undefined) {
           // KF-36QBFM: a placed tab in a bar inside a row closes for that
           // row only.
           if (at.row)
-            rows.value = closeTabBarItemInRow(
-              state.value,
-              rows.value,
-              at.id,
-              at.row,
+            setRowsOf(
+              found.owner,
+              closeTabBarItemInRow(
+                found.state.peek(),
+                rowsOf(found.owner),
+                found.id,
+                at.row,
+              ),
             );
-          else state.value = closeTabBarItem(state.value, at.id);
+          else
+            found.state.value = closeTabBarItem(found.state.peek(), found.id);
           return;
         }
+        // KF-58917B: a composed document's repeated tabs come from its
+        // `#view`'s props, which a close does not reach.
+        if (found.owner !== undefined) return;
         const closed = closeRow(
           state.value,
           at.id,
@@ -596,8 +700,10 @@ export function wirePlayState(
       '[data-kerf-node]',
     )) {
       const id = element.dataset.kerfNode!;
-      // Each rendered node is one of the play copy's.
-      const adapter = ADAPTERS[findNode(state.peek(), id)!.node.type];
+      // Each rendered node is one of a play copy's (KF-58917B: the top
+      // document's or a `#view`'s).
+      const found = locate(id);
+      const adapter = found && ADAPTERS[found.node.type];
       if (!adapter) continue;
       // The morph may reuse an element for another node, or a SplitView's
       // element for its other mode.
@@ -609,7 +715,12 @@ export function wirePlayState(
       }
       current?.stop();
       adapters.delete(element);
-      const stop = adapter({ element, id, state, root });
+      const stop = adapter({
+        element,
+        id: found!.id,
+        state: found!.state,
+        root,
+      });
       if (!stop) continue;
       adapters.set(element, { id, shape, stop });
       seen.add(element);

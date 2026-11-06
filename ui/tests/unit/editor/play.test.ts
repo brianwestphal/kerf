@@ -534,15 +534,17 @@ describe('the play page', () => {
     expect(root.textContent).toContain('Quarterly report');
     expect(root.textContent).toContain('Lunch on Friday');
     expect(root.textContent).not.toContain('cannot render');
-    // Every element a row draws is its #view, so it is in the document.
+    // KF-58917B: every element a row draws is its own node, composed with
+    // its #view's id, and marked with the #view's row.
     const list = root.querySelector(
       '[data-kerf-node="01JC0V1EW0000000000000000S"]',
     )!;
     const nodes = [...list.querySelectorAll<HTMLElement>('[data-kerf-node]')];
     expect(nodes.length).toBeGreaterThan(0);
     expect(new Set(nodes.map((node) => node.dataset.kerfNode))).toEqual(
-      new Set([ROW_VIEW]),
+      new Set([`${ROW_VIEW}.01JC0V1EW0000000000000000R`]),
     );
+    expect(nodes.map((node) => node.dataset.kerfRow)).toEqual(['m1', 'm2']);
     // A row document's action is the played view's, logged as its #view.
     const post = vi.spyOn(window, 'postMessage');
     click(list.querySelector('[data-action="open-message"]'));

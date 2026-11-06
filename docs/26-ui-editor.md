@@ -1254,12 +1254,37 @@ composing document belongs beside its rows before they render.
 - **Play** (KF-85SCQD: play renders composed documents). The play stage has
   no storage, so the editor sends the loaded composed documents with the
   document, keyed by their path from its folder. The stage renders a `#view`
-  from them as the canvas does, every element it draws owned by its `#view`,
-  and a composed document's actions are the played view's: they reach the
-  host's handlers and the action log, named as the `#view`. A `#view` whose
-  document had not loaded when Play started still plays as a placeholder.
-  Play-time state adapters (a TabNavigator's tab, a NavStack's views) wire
-  only the played document's own nodes, not nodes inside a composed one.
+  from them as the canvas does, and a composed document's actions are the
+  played view's: they reach the host's handlers and the action log, named as
+  the top `#view`. A `#view` whose document had not loaded when Play started
+  still plays as a placeholder.
+- **Play wires composed documents** (KF-58917B: play-state adapters inside a
+  `#view`; `ui/src/editor/model/play-views.ts`). Unlike the canvas, play
+  gives a composed node a composed id, its `#view`'s id (itself composed for
+  a nested `#view`) and its own joined by `.`, so the play-time adapters find
+  the component it really is.
+  - Each `#view` has a play copy of the document it composes, keyed by its
+    composed id and made the first time something in it changes; until then
+    it plays the document the editor sent. A composed TabNavigator, NavStack,
+    TabBar, or PinnablePopoverSurface runs its adapter over that copy.
+  - A `#view` inside `$each` rows passes its row keys to its document as
+    reserved play params, so composed nodes carry the row marks
+    (`data-kerf-row`, `data-kerf-outer-<n>`). Per-row state (a TabBarItem's
+    selection, a placed tab's close) then stays in the `#view`'s row.
+  - A value control's change goes where the value comes from. A `$param`
+    prop climbs to the `#view`'s prop of that name. In the top document a
+    `$param` there sets that param, a literal (or unset) prop changes outside
+    any row, and a repeated `#view`'s `$bind` to a field of its own row item
+    sets that field in the param the rows come from (through outer rows'
+    `$bind`s too). In a composed document a literal changes in its play copy
+    outside any row. A value that cannot be traced stays on the node itself:
+    for its row, or in its document's play copy.
+  - Not wired inside a composed document: helpers that report by a
+    control's `id` prop (Combobox, ColorField, ColorPicker, TagField, a
+    ResizableRegion's size), TabBar reordering, a SplitView's `compact`
+    following the device, closing a repeated tab, and starting a composed
+    NavStack at its root view. A repeated `#view`'s structural state (a
+    TabNavigator's tab) is one play copy shared by its rows.
 
 ## 4. The generated view module
 

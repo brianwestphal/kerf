@@ -327,6 +327,7 @@ import {
   resolveDevicePresets,
 } from './model/play-device.js';
 import { markRows, type RowProps, withRowProps } from './model/play-values.js';
+import { playedView, playedViews } from './model/play-views.js';
 import { type PreviewSlot, previewSlots } from './model/preview-slots.js';
 import {
   placementReason,
@@ -682,6 +683,12 @@ function canvasRenderer(
    * canvas renders it in place, selectable as its `#view` node.
    */
   resolveView?: (src: string) => ViewDocument | undefined,
+  /**
+   * KF-58917B: in play, a composed document by its path and its `#view`'s
+   * composed id (model/play-views.ts): that `#view`'s play copy, or the one
+   * the editor sent.
+   */
+  playView?: (path: string, owner: string) => ViewDocument,
 ) {
   const { viewCatalog, componentNames, placeholders, propsByKey } = catalog;
   /** Stands in for a node the preview cannot render; still selectable. */
@@ -779,9 +786,11 @@ function canvasRenderer(
     );
     // KF-7XQAFR: in play, a node nested in a row carries its row's key.
     const marked = play ? markRows(shown, viewCatalog) : shown;
-    // KF-5N26H6: a composed document's nodes carry its `#view`'s id.
+    // KF-5N26H6: a composed document's nodes carry its `#view`'s id;
+    // KF-58917B: in play, an id composed with it.
     const composed = resolveView !== undefined && composesViews(marked);
-    const document = composed ? ownedViews(marked) : marked;
+    const owned = play ? playedViews : ownedViews;
+    const document = composed ? owned(marked) : marked;
     const titles = new Map(
       visitNodes(source).map(({ node }) => [
         node.id,
@@ -816,10 +825,12 @@ function canvasRenderer(
         ? {
             // KF-3X7MFF: a key's source is already where it points from the
             // top document's folder, and its own `#view`s resolve from there.
-            resolveView: (key: string) => {
-              const { owner, src: at } = ownedSourceOf(key);
-              return ownedViews(resolveView(at)!, owner, at);
-            },
+            resolveView: play
+              ? (key: string) => playedView(key, viewCatalog, playView!)
+              : (key: string) => {
+                  const { owner, src: at } = ownedSourceOf(key);
+                  return ownedViews(resolveView(at)!, owner, at);
+                },
           }
         : {}),
     };
@@ -1094,7 +1105,11 @@ export function createEditor(options: EditorOptions) {
     // by path, as the canvas renders the ones it loaded.
     const playView = (src: string, path: string = src) =>
       player.views.value[path];
-    const render = canvasRenderer(catalog, playView);
+    const render = canvasRenderer(
+      catalog,
+      playView,
+      (path, owner) => player.copies.value[owner] ?? player.views.value[path]!,
+    );
     const player = createPlayer(
       options.document ?? emptyDocument(),
       (document, overrides, rows) =>

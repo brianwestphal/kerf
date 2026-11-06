@@ -82,16 +82,117 @@ const list = {
   },
 };
 
+/**
+ * KF-58917B: a row that holds a Switch for its `on` param and a TabBar,
+ * and a list whose rows bind `on` to their item.
+ */
+const toggleRow = {
+  schema: 'kerf-ui-document/v1',
+  name: 'ToggleRow',
+  catalogs: ['@kerfjs/ui'],
+  params: {
+    title: { type: { kind: 'string' } },
+    on: { type: { kind: 'boolean' }, default: false },
+  },
+  root: {
+    id: '01JC0V1EW0000000000000001R',
+    type: '@kerfjs/ui:row',
+    zones: {
+      children: [
+        {
+          id: '01JC0V1EW0000000000000001W',
+          type: '@kerfjs/ui:switch',
+          props: { label: { $param: 'title' }, checked: { $param: 'on' } },
+        },
+        {
+          id: '01JC0V1EW0000000000000001B',
+          type: '@kerfjs/ui:tab-bar',
+          props: { id: 'views', label: 'Views' },
+          zones: {
+            tabs: [
+              {
+                id: '01JC0V1EW0000000000000001A',
+                type: '@kerfjs/ui:tabs',
+                props: { id: 'list', name: 'List', selected: true },
+              },
+              {
+                id: '01JC0V1EW0000000000000001C',
+                type: '@kerfjs/ui:tabs',
+                props: { id: 'grid', name: 'Grid' },
+              },
+            ],
+          },
+        },
+      ],
+    },
+  },
+};
+
+const toggleList = {
+  ...list,
+  name: 'Toggles',
+  params: {
+    messages: {
+      type: {
+        kind: 'array',
+        items: {
+          kind: 'object',
+          props: [
+            { name: 'id', type: { kind: 'string' }, required: true },
+            { name: 'subject', type: { kind: 'string' }, required: true },
+            { name: 'on', type: { kind: 'boolean' }, required: true },
+          ],
+        },
+      },
+      default: [
+        { id: 'm1', subject: 'Quarterly report', on: false },
+        { id: 'm2', subject: 'Lunch on Friday', on: false },
+      ],
+    },
+  },
+  root: {
+    id: '01JC0V1EW0000000000000000S',
+    type: '@kerfjs/ui:pane',
+    props: { fill: true },
+    zones: {
+      content: [
+        {
+          $each: { $param: 'messages' },
+          as: 'message',
+          key: 'message.id',
+          template: {
+            id: VIEW,
+            type: '#view',
+            src: './message-row.kui.json',
+            props: {
+              title: { $bind: 'message.subject' },
+              on: { $bind: 'message.on' },
+            },
+          },
+        },
+      ],
+    },
+  },
+};
+
 /** Saves both documents in a folder of their own and opens the list. */
-async function openList(page: Page, name: string) {
+async function openList(
+  page: Page,
+  name: string,
+  documents: { row: object; list: object } = { row, list },
+) {
   const folder = `.kerf-ui-editor/pw-views/${name}-${Date.now()}`;
   const put = (path: string, document: unknown) =>
     page.request.put(`${API}?path=${encodeURIComponent(path)}`, {
       headers: { 'X-Kerf-UI-Editor': '1', 'Content-Type': 'application/json' },
       data: JSON.stringify(document),
     });
-  expect((await put(`${folder}/message-row.kui.json`, row)).ok()).toBe(true);
-  expect((await put(`${folder}/messages.kui.json`, list)).ok()).toBe(true);
+  expect(
+    (await put(`${folder}/message-row.kui.json`, documents.row)).ok(),
+  ).toBe(true);
+  expect((await put(`${folder}/messages.kui.json`, documents.list)).ok()).toBe(
+    true,
+  );
   await page.addInitScript((path) => {
     globalThis.localStorage.setItem('kerf-ui-editor:path', path);
   }, `${folder}/messages.kui.json`);
@@ -174,6 +275,41 @@ test('play renders composed rows and logs an action from one (KF-85SCQD)', async
       .locator('[data-editor-play-log-entry]')
       .first(),
   ).toContainText('open-message');
+});
+
+test('play wires a Switch and a TabBar inside composed rows (KF-58917B)', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openList(page, `play-wired-${info.project.name}`, {
+    row: toggleRow,
+    list: toggleList,
+  });
+  await page.locator('[data-action="editor-play"]').click();
+  const stage = page.frameLocator('[data-editor-play-frame]');
+  const lunch = stage.getByRole('switch', { name: 'Lunch on Friday' });
+  const report = stage.getByRole('switch', { name: 'Quarterly report' });
+  await expect(lunch).not.toBeChecked();
+  // The row's Switch turns on its own item's `on`; the other row stays.
+  await lunch.click();
+  await expect(lunch).toBeChecked();
+  await expect(report).not.toBeChecked();
+  await lunch.click();
+  await expect(lunch).not.toBeChecked();
+  // A tab selects in its own row's bar.
+  const grid = stage.getByRole('tab', { name: 'Grid' });
+  await grid.nth(1).click();
+  await expect(grid.nth(1)).toHaveAttribute('aria-selected', 'true');
+  await expect(grid.nth(0)).toHaveAttribute('aria-selected', 'false');
+  await expect(stage.getByRole('tab', { name: 'List' }).nth(1)).toHaveAttribute(
+    'aria-selected',
+    'false',
+  );
+  if (info.project.name === 'chromium')
+    await page.screenshot({
+      path: info.outputPath('kf-58917b-play-wired-1440.png'),
+      animations: 'disabled',
+    });
 });
 
 for (const width of [1440, 390]) {
