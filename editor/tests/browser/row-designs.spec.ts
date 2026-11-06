@@ -202,7 +202,12 @@ test('a list keyed by kind renders each kind’s design', async ({
     .locator(`[data-action="editor-select-node"][data-item-id="${ids.row}"]`)
     .click();
   await area(page, 'Flow');
-  await page.locator('[data-editor-control="row-kind"]').click();
+  // The Select's trigger: its root also holds the label and a hint, which
+  // wraps differently per platform, so its center is not the trigger.
+  await page
+    .locator('[data-editor-control="row-kind"]')
+    .getByRole('combobox')
+    .click();
   await page.getByRole('option', { name: 'item.kind', exact: true }).click();
   await expect(
     page.getByRole('combobox', { name: 'Pick the design by' }),
