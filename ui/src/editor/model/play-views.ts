@@ -16,9 +16,10 @@ import {
   type ViewValue,
 } from '@kerfjs/ui/view';
 
-import { findNode, mapRows, mapTemplate } from './document.js';
+import { findNode, mapRows, mapTemplate, visitNodes } from './document.js';
 import { setProp } from './edits.js';
 import {
+  closingRow,
   eachOf,
   fresh,
   markRows,
@@ -182,6 +183,57 @@ export function levelsOf(
     : undefined;
 }
 
+/**
+ * KF-HBRKFH: every `#view` the played document `top` reaches, nested ones
+ * too: its composed id, where its document is from the top document's
+ * folder, and that document (`resolve`: its play copy or the one the editor
+ * sent). A document that does not resolve, or one already on the way down
+ * (a cycle validation reports), adds nothing.
+ */
+export function playedComposed(
+  top: ViewDocument,
+  resolve: (path: string, owner: string) => ViewDocument | undefined,
+): Required<PlayLevel>[] {
+  const found: Required<PlayLevel>[] = [];
+  const walk = (
+    document: ViewDocument,
+    owner: string | undefined,
+    at: string | undefined,
+    trail: readonly string[],
+  ) => {
+    for (const { node } of visitNodes(document)) {
+      if (node.type !== '#view' || typeof node.src !== 'string') continue;
+      const id = owner === undefined ? node.id : composedId(owner, node.id);
+      const path = composedViewPath(at, node.src);
+      const composed = trail.includes(path) ? undefined : resolve(path, id);
+      if (!composed) continue;
+      found.push({ owner: id, path, document: composed });
+      walk(composed, id, path, [...trail, path]);
+    }
+  };
+  walk(top, undefined, undefined, []);
+  return found;
+}
+
+/**
+ * KF-HBRKFH: the play copies `change` makes of the composed documents `top`
+ * reaches (`playedComposed`), by composed id, for the ones it changes (a
+ * composed NavStack starting at its root view, a composed SplitView
+ * following the device).
+ */
+export function changedCopies(
+  top: ViewDocument,
+  resolve: (path: string, owner: string) => ViewDocument | undefined,
+  change: (document: ViewDocument) => ViewDocument,
+): Record<string, ViewDocument> {
+  return Object.fromEntries(
+    playedComposed(top, resolve).flatMap(({ owner, document }) => {
+      const next = change(document);
+      return next === document ? [] : [[owner, next]];
+    }),
+  );
+}
+
 /** `rows` of the nodes `owner` composes, by their own ids. */
 export function rowsIn(rows: RowProps, owner: string): RowProps {
   const prefix = composedId(owner, '');
@@ -189,6 +241,23 @@ export function rowsIn(rows: RowProps, owner: string): RowProps {
     Object.entries(rows).flatMap(([id, state]) => {
       const own = id.slice(prefix.length);
       return id.startsWith(prefix) && !isComposed(own) ? [[own, state]] : [];
+    }),
+  );
+}
+
+/**
+ * KF-HBRKFH: row keys by rendered node id (composed ones included) for the
+ * nodes `owner` composes, by their own ids.
+ */
+export function keysIn(
+  keys: Readonly<Record<string, string>>,
+  owner: string,
+): Record<string, string> {
+  const prefix = composedId(owner, '');
+  return Object.fromEntries(
+    Object.entries(keys).flatMap(([id, key]) => {
+      const own = id.slice(prefix.length);
+      return id.startsWith(prefix) && !isComposed(own) ? [[own, key]] : [];
     }),
   );
 }
@@ -347,4 +416,62 @@ export function recordComposedValue(
     };
   };
   return climb(levels.length - 1, own, prop) ?? kept();
+}
+
+/**
+ * KF-HBRKFH: a repeated tab `own` closes in the composed document it sits in
+ * (the last of `levels`, which are `levelsOf(id)`). `keys` are its row keys
+ * by that document's node ids. Its items come from a param of that document,
+ * which takes its value from its `#view`'s prop of that name: through
+ * `$param`s up the `#view` chain to a top param, or a literal (or unset, the
+ * param's default) prop, which changes in the document that holds that
+ * `#view` (the top play document, or a play copy). Undefined when the items
+ * cannot be traced that way (a `$bind`, or a `#view` repeated in its rows,
+ * whose literal props every row shares).
+ */
+export function closeComposedRow(
+  levels: readonly PlayLevel[],
+  rows: RowProps,
+  id: string,
+  own: string,
+  keys: Readonly<Record<string, string>>,
+  params: Readonly<Record<string, unknown>>,
+): ComposedValue | undefined {
+  const closing = closingRow(levels.at(-1)!.document, own, keys);
+  if (!closing) return undefined;
+  const segments = id.split(SEPARATOR);
+  const top = levels[0]!.document;
+  const climb = (depth: number, name: string): ComposedValue | undefined => {
+    const declared = levels[depth]!.document.params?.[name];
+    // The `#view` that composes this level, in the level above it.
+    const holder = levels[depth - 1]!;
+    const view = findNode(holder.document, segments[depth - 1]!)!;
+    const current = view.node.props?.[name];
+    if (isParam(current)) {
+      if (depth > 1) return climb(depth - 1, current.$param);
+      const next = closing.apply(params[current.$param]);
+      return next === undefined
+        ? undefined
+        : { document: top, rows, params: { [current.$param]: next } };
+    }
+    if (view.repeated || isExpression(current)) return undefined;
+    const next = closing.apply(
+      current === undefined ? declared?.default : current,
+    );
+    if (next === undefined) return undefined;
+    const changed = setProp(
+      holder.document,
+      view.node.id,
+      name,
+      next as ViewValue,
+    );
+    return holder.owner === undefined
+      ? { document: changed, rows }
+      : {
+          document: top,
+          rows,
+          copy: { owner: holder.owner, document: changed },
+        };
+  };
+  return climb(levels.length - 1, closing.param);
 }

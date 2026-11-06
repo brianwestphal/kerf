@@ -480,10 +480,12 @@ describe('composed documents in play', () => {
     close(tabs(ids.bound, ids.tabB)[1]!);
     await settled();
     expect(tabs(ids.bound, ids.tabB)).toHaveLength(1);
-    // A repeated tab's items are the #view's, which a close cannot reach.
+    // KF-HBRKFH: a repeated tab leaves its #view's items: here the param's
+    // default, which the unset prop takes, set on the #view.
     close(tabs(ids.tabsView, ids.tabC)[0]!);
     await settled();
-    expect(tabs(ids.tabsView, ids.tabC)).toHaveLength(1);
+    expect(tabs(ids.tabsView, ids.tabC)).toHaveLength(0);
+    expect(messages(player)).toContain('"tabs":[]');
   });
 
   it('switches a composed TabNavigator’s tab in its play copy', async () => {

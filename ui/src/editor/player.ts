@@ -22,7 +22,7 @@ import {
 import { type DeviceInsets, safeAreaTokens } from './model/play-device.js';
 import { placeholderAnchors, popView, rootViews } from './model/play-state.js';
 import { fresh, type RowProps } from './model/play-values.js';
-import { topNode } from './model/play-views.js';
+import { changedCopies, topNode } from './model/play-views.js';
 import { wirePlayState } from './play-adapters.js';
 
 /** The action Kerf UI's dialog wiring opens a DialogSurface with. */
@@ -192,9 +192,12 @@ export function createPlayer(
       // launches; handlers push the rest from `original`.
       // One render for the document and the composed documents it shows.
       batch(() => {
-        document.value = rootViews(data.document!);
-        views.value = data.views ?? {};
-        copies.value = {};
+        const top = rootViews(data.document!);
+        const sent = data.views ?? {};
+        document.value = top;
+        views.value = sent;
+        // KF-HBRKFH: a composed NavStack starts at its root view too.
+        copies.value = changedCopies(top, (path) => sent[path], rootViews);
         rows.value = {};
         received.value = true;
       });

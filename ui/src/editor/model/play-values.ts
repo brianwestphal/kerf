@@ -466,19 +466,22 @@ function updateAt(
 
 /**
  * Node `id`'s row, changed by `change(each, key)`'s function over its
- * `$each`'s items. `keys` holds its row key, and the row key of each
+ * `$each`'s items: the param the rows' items come from, and `apply`, which
+ * gives that param's value with the change (undefined when the value does
+ * not lead to the row). `keys` holds its row key, and the row key of each
  * enclosing `$each` row, by template node id. The rows' items come from a
  * param, directly (`$param`) or through `$bind`s, possibly to an outer
- * row's item (KF-7XQAFR): the result is that param with the change.
- * Undefined when the items cannot be traced to a param.
+ * row's item (KF-7XQAFR). Undefined when the items cannot be traced to a
+ * param.
  */
-function changeRow(
+function rowChange(
   document: ViewDocument,
   id: string,
   keys: Readonly<Record<string, string>>,
-  params: Readonly<Record<string, unknown>>,
   change: (each: Each, key: string) => (items: readonly unknown[]) => unknown[],
-): Readonly<Record<string, unknown>> | undefined {
+):
+  | { readonly param: string; readonly apply: (value: unknown) => unknown }
+  | undefined {
   const each = eachOf(document, id);
   const key = keys[id];
   if (!each || key === undefined) return undefined;
@@ -486,10 +489,40 @@ function changeRow(
     ({ node }) => eachOf(document, node.id) ?? [],
   );
   const source = sourceOf(each.$each, enclosing, keys);
-  if (!source) return undefined;
-  const next = updateAt(params[source.param], source.steps, change(each, key));
-  return next === undefined ? undefined : { [source.param]: next };
+  return (
+    source && {
+      param: source.param,
+      apply: (value) => updateAt(value, source.steps, change(each, key)),
+    }
+  );
 }
+
+/** `rowChange` applied to `params`: the param with the change. */
+function changeRow(
+  document: ViewDocument,
+  id: string,
+  keys: Readonly<Record<string, string>>,
+  params: Readonly<Record<string, unknown>>,
+  change: (each: Each, key: string) => (items: readonly unknown[]) => unknown[],
+): Readonly<Record<string, unknown>> | undefined {
+  const found = rowChange(document, id, keys, change);
+  const next = found?.apply(params[found.param]);
+  return next === undefined ? undefined : { [found!.param]: next };
+}
+
+const without = (each: Each, key: string) => (items: readonly unknown[]) =>
+  items.filter((item) => keyOf(each, item) !== key);
+
+/**
+ * KF-HBRKFH: node `id`'s row closes in a document whose param values it
+ * does not know (a composed one): the param its items come from, and the
+ * function that removes the closed item from that param's value.
+ */
+export const closingRow = (
+  document: ViewDocument,
+  id: string,
+  keys: Readonly<Record<string, string>>,
+) => rowChange(document, id, keys, without);
 
 /**
  * Node `id`'s row closes: the result is the param its items come from
@@ -501,13 +534,7 @@ export function closeRow(
   keys: Readonly<Record<string, string>>,
   params: Readonly<Record<string, unknown>>,
 ): Readonly<Record<string, unknown>> | undefined {
-  return changeRow(
-    document,
-    id,
-    keys,
-    params,
-    (each, key) => (items) => items.filter((item) => keyOf(each, item) !== key),
-  );
+  return changeRow(document, id, keys, params, without);
 }
 
 /**

@@ -175,6 +175,124 @@ const toggleList = {
   },
 };
 
+/**
+ * KF-HBRKFH: a panel document with closable tabs repeated from its `tabs`
+ * param and a Combobox in the first of a NavStack's two views, composed once.
+ */
+const panel = {
+  schema: 'kerf-ui-document/v1',
+  name: 'Panel',
+  catalogs: ['@kerfjs/ui'],
+  params: {
+    tabs: {
+      type: {
+        kind: 'array',
+        items: {
+          kind: 'object',
+          props: [{ name: 'id', type: { kind: 'string' }, required: true }],
+        },
+      },
+      default: [],
+    },
+  },
+  root: {
+    id: '01JC0V1EW000000000000000P5',
+    type: '@kerfjs/ui:nav-stack',
+    props: {
+      id: 'stack',
+      label: 'Stack',
+      views: [
+        { key: 'home', toolbar: { title: 'Home' } },
+        { key: 'more', toolbar: { title: 'More' } },
+      ],
+    },
+    zones: {
+      'views.0.content': [
+        {
+          id: '01JC0V1EW000000000000000P1',
+          type: '@kerfjs/ui:text',
+          props: { children: 'Quarterly report' },
+        },
+        {
+          id: '01JC0V1EW000000000000000P2',
+          type: '@kerfjs/ui:tab-bar',
+          props: { id: 'open-files', label: 'Open files' },
+          zones: {
+            tabs: [
+              {
+                $each: { $param: 'tabs' },
+                as: 'tab',
+                key: 'tab.id',
+                template: {
+                  id: '01JC0V1EW000000000000000P3',
+                  type: '@kerfjs/ui:tabs',
+                  props: {
+                    id: { $bind: 'tab.id' },
+                    name: { $bind: 'tab.id' },
+                    closable: true,
+                  },
+                },
+              },
+            ],
+          },
+        },
+        {
+          id: '01JC0V1EW000000000000000P4',
+          type: '@kerfjs/ui:combobox',
+          props: {
+            id: 'city',
+            label: 'City',
+            suggestions: [
+              { value: 'oslo', label: 'Oslo' },
+              { value: 'rome', label: 'Rome' },
+            ],
+          },
+        },
+      ],
+      'views.1.content': [
+        {
+          id: '01JC0V1EW000000000000000P7',
+          type: '@kerfjs/ui:text',
+          props: { children: 'More body' },
+        },
+      ],
+    },
+  },
+};
+
+/** The panel composed once, its tabs from a param of the composing document. */
+const panelHost = {
+  ...list,
+  name: 'Workspace',
+  params: {
+    files: {
+      type: {
+        kind: 'array',
+        items: {
+          kind: 'object',
+          props: [{ name: 'id', type: { kind: 'string' }, required: true }],
+        },
+      },
+      default: [{ id: 'notes.md' }, { id: 'plan.md' }],
+    },
+  },
+  root: {
+    id: '01JC0V1EW0000000000000000S',
+    type: '@kerfjs/ui:pane',
+    props: { fill: true },
+    zones: {
+      content: [
+        {
+          id: VIEW,
+          type: '#view',
+          src: './message-row.kui.json',
+          props: { tabs: { $param: 'files' } },
+        },
+      ],
+    },
+  },
+};
+
 /** Saves both documents in a folder of their own and opens the list. */
 async function openList(
   page: Page,
@@ -310,6 +428,43 @@ test('play wires a Switch and a TabBar inside composed rows (KF-58917B)', async 
       path: info.outputPath('kf-58917b-play-wired-1440.png'),
       animations: 'disabled',
     });
+});
+
+test('play closes a composed tab, commits a composed Combobox, and starts its NavStack at the root (KF-HBRKFH)', async ({
+  page,
+}, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openList(page, `play-panel-${info.project.name}`, {
+    row: panel,
+    list: panelHost,
+  });
+  await page.locator('[data-action="editor-play"]').click();
+  const stage = page.frameLocator('[data-editor-play-frame]');
+  // The composed NavStack starts at its root view.
+  await expect(stage.getByText('Quarterly report')).toBeVisible();
+  await expect(stage.getByText('More body')).toHaveCount(0);
+  // A tab closes out of the composing document's param.
+  await expect(stage.getByRole('tab', { name: 'notes.md' })).toBeVisible();
+  await stage
+    .locator('.kui-tab-bar-item', { hasText: 'notes.md' })
+    .locator('.kui-tab-bar-item__close')
+    .click();
+  await expect(stage.getByRole('tab', { name: 'notes.md' })).toHaveCount(0);
+  await expect(stage.getByRole('tab', { name: 'plan.md' })).toBeVisible();
+  // The composed Combobox's commit reaches its play copy, which renders
+  // the suggestion's value (the focused field keeps its typed text).
+  const city = stage.getByRole('combobox', { name: 'City' });
+  await city.fill('ROME');
+  await city.press('Enter');
+  await expect(city).toHaveAttribute('value', 'rome');
+  if (info.project.name === 'chromium')
+    for (const width of [1440, 390]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.screenshot({
+        path: info.outputPath(`kf-hbrkfh-play-composed-${width}.png`),
+        animations: 'disabled',
+      });
+    }
 });
 
 for (const width of [1440, 390]) {

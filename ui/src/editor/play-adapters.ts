@@ -14,7 +14,11 @@
 // inside another row is known by its path of row keys. KF-58917B: a node
 // inside a composed document (`#view`) has a composed id; its adapter runs
 // over its `#view`'s play copy (model/play-views.ts), and a value change
-// goes where the value comes from (`recordComposedValue`).
+// goes where the value comes from (`recordComposedValue`). KF-HBRKFH: a
+// helper that reports a control by its `id` prop finds the rendered control,
+// so composed and repeated controls record where they are; composed
+// SplitViews follow the device; a composed repeated tab closes through its
+// `#view`'s props (`closeComposedRow`).
 import type { ViewDocument } from '@kerfjs/ui/view';
 import {
   delegate,
@@ -58,6 +62,7 @@ import {
   NAV_STACK,
   popView,
   reorderTabBarItems,
+  RESIZABLE_REGION,
   selectListItem,
   selectTab,
   selectTabBarItem,
@@ -68,6 +73,7 @@ import {
   setWorkbenchPanelSize,
   sidebarToggleActions,
   SPLIT_VIEW,
+  TAB_BAR,
   TAB_BAR_ITEM,
   TAB_NAVIGATOR,
   WORKBENCH,
@@ -76,7 +82,6 @@ import {
 } from './model/play-state.js';
 import {
   closeRow,
-  nodeWithId,
   recordValue,
   type RowKey,
   rowPathOf,
@@ -84,7 +89,10 @@ import {
   rowPropsOf,
 } from './model/play-values.js';
 import {
+  changedCopies,
+  closeComposedRow,
   isComposed,
+  keysIn,
   levelsOf,
   ownId,
   recordComposedValue,
@@ -164,7 +172,7 @@ const rowAt = (element: HTMLElement) =>
  * nested inside a row is in that row too, and (KF-ZMBST3) a row inside
  * other rows is known by their keys as well as its own.
  */
-const nodeAt = (element: Element | null) => {
+const nodeAt = (element: Element | null | undefined) => {
   const rendered = element?.closest<HTMLElement>('[data-kerf-node]');
   return rendered
     ? {
@@ -514,12 +522,63 @@ export function wirePlayState(
     rows.value = recorded.rows;
     if (recorded.params) setParams(recorded.params);
   };
+  /**
+   * KF-HBRKFH: the control the person last pressed or focused, so a helper
+   * that reports only a control's `id` prop finds the one they used when
+   * several render it (rows of one document, or of a `#view`).
+   */
+  let touched: Element | undefined;
+  const touch = (event: Event) => {
+    touched = event.target as Element;
+  };
+  root.addEventListener('pointerdown', touch, true);
+  root.addEventListener('focusin', touch, true);
+  /**
+   * The rendered node of one of `types` that a helper reported by its
+   * `attribute` (`data-combobox-id="…"`): at `element` when the helper
+   * hands it over, else the one holding the last touched control, else the
+   * first. Its composed id (KF-58917B) and row path come with it.
+   */
+  const reported = (
+    types: readonly string[],
+    attribute: string,
+    id: string,
+    element?: Element,
+  ) => {
+    const matches = [
+      ...root.querySelectorAll(`[${attribute}="${CSS.escape(id)}"]`),
+    ];
+    const control =
+      element?.closest(`[${attribute}]`) ??
+      matches.find((match) => touched && match.contains(touched)) ??
+      matches[0];
+    for (
+      let at = nodeAt(control);
+      at && root.contains(at.element);
+      at = nodeAt(at.element.parentElement)
+    ) {
+      const found = locate(at.id);
+      if (found && types.includes(found.node.type)) return { ...at, found };
+    }
+    return undefined;
+  };
   /** Records a change a helper reported by the control's `id` prop. */
   const recordById =
-    (type: string, prop: string) =>
-    (change: { id: string; value?: unknown; tags?: unknown }) => {
-      const id = nodeWithId(state.peek(), type, change.id);
-      if (id) record(id, undefined, prop, change[prop as 'value' | 'tags']);
+    (type: string, attribute: string, prop: 'value' | 'tags') =>
+    (change: {
+      id: string;
+      value?: unknown;
+      tags?: unknown;
+      element?: Element;
+      input?: Element;
+    }) => {
+      const at = reported(
+        [type],
+        attribute,
+        change.id,
+        change.element ?? change.input,
+      );
+      if (at) record(at.id, at.row, prop, change[prop]);
     };
   /** Records a value control's change from its own event. */
   const onValue =
@@ -590,34 +649,64 @@ export function wirePlayState(
     wireContentItems(root),
     wireSummaryRows(root),
     // KF-XV732Q: the helpers that report a value by the control's `id`.
+    // KF-HBRKFH: each finds its control's node, in a composed document too.
     wireComboboxes(root, {
-      onCommit: recordById('@kerfjs/ui:combobox', 'value'),
+      onCommit: recordById('@kerfjs/ui:combobox', 'data-combobox-id', 'value'),
     }),
     wireColorFields(root, {
-      onChange: recordById('@kerfjs/ui:color-field', 'value'),
+      onChange: recordById(
+        '@kerfjs/ui:color-field',
+        'data-color-field-id',
+        'value',
+      ),
     }),
     wireColorPickers(root, {
-      onChange: recordById('@kerfjs/ui:color-picker', 'value'),
+      onChange: recordById(
+        '@kerfjs/ui:color-picker',
+        'data-color-picker-id',
+        'value',
+      ),
     }),
     wireTagFields(root, {
-      onChange: recordById('@kerfjs/ui:tag-field', 'tags'),
+      onChange: recordById('@kerfjs/ui:tag-field', 'data-tag-field-id', 'tags'),
     }),
-    // A ResizableRegion's, or a SplitView list's, committed size.
+    // A ResizableRegion's, or a SplitView list's, committed size, in the
+    // play copy that holds it.
     wireResizableRegions(root, {
       onCommit: ({ id, size }) => {
-        state.value = setRegionSize(state.value, id, size);
+        const at = reported(
+          [RESIZABLE_REGION, SPLIT_VIEW],
+          'data-region-id',
+          id,
+        );
+        if (at)
+          at.found.state.value = setRegionSize(at.found.state.peek(), id, size);
       },
     }),
-    // A SplitView's `compact` follows the played device.
+    // A SplitView's `compact` follows the played device, in every composed
+    // document too.
     effect(() => {
-      const next = followCompact(state.value, device.value.compact);
+      const { compact } = device.value;
+      const next = followCompact(state.value, compact);
       if (next !== state.peek()) state.value = next;
+      void views.value;
+      void copies.value;
+      const changed = changedCopies(state.peek(), resolve, (document) =>
+        followCompact(document, compact),
+      );
+      if (Object.keys(changed).length > 0)
+        copies.value = { ...copies.peek(), ...changed };
     }),
     // Arrow keys move between a strip's tabs (by clicking them), and a
     // draggable tab moves in its bar.
     wireTabBars(root, {
       onReorder: (change) => {
-        state.value = reorderTabBarItems(state.value, change);
+        const at = reported([TAB_BAR], 'data-tab-bar-id', change.barId);
+        if (at)
+          at.found.state.value = reorderTabBarItems(
+            at.found.state.peek(),
+            change,
+          );
       },
     }),
     // KF-XV732Q: a tab's close removes it from the play copy; a repeated
@@ -648,18 +737,29 @@ export function wirePlayState(
             found.state.value = closeTabBarItem(found.state.peek(), found.id);
           return;
         }
-        // KF-58917B: a composed document's repeated tabs come from its
-        // `#view`'s props, which a close does not reach.
-        if (found.owner !== undefined) return;
-        const closed = closeRow(
-          state.value,
-          at.id,
-          rowKeysAt(at.element, root),
-          params(),
-        );
-        if (!closed) return;
+        const keys = rowKeysAt(at.element, root);
+        // KF-HBRKFH: a composed document's repeated tabs come from its
+        // `#view`'s props.
+        const composed =
+          found.owner === undefined
+            ? undefined
+            : closeComposedRow(
+                levelsOf(state.peek(), at.id, resolve)!.levels,
+                rows.peek(),
+                at.id,
+                found.id,
+                keysIn(keys, found.owner),
+                params(),
+              );
+        const closed =
+          found.owner === undefined
+            ? closeRow(state.value, at.id, keys, params())
+            : composed?.params;
+        if (!closed && !composed) return;
         // A closed selected row hands its selection to a neighbor row.
-        if (rowPropsOf(rows.value, at.id, at.row!).selected === true) {
+        if (
+          rowPropsOf(rowsOf(found.owner), found.id, at.row!).selected === true
+        ) {
           const siblings = [
             ...at.element.parentElement!.querySelectorAll<HTMLElement>(
               `:scope > [data-kerf-node="${at.id}"]`,
@@ -669,7 +769,15 @@ export function wirePlayState(
           const neighbor = siblings[index + 1] ?? siblings[index - 1];
           if (neighbor) selectItem(at.id, rowAt(neighbor));
         }
-        setParams(closed);
+        if (composed) {
+          state.value = composed.document;
+          if (composed.copy)
+            copies.value = {
+              ...copies.peek(),
+              [composed.copy.owner]: composed.copy.document,
+            };
+        }
+        if (closed) setParams(closed);
       },
     ),
     // A TabBarItem's click selects it in its TabBar.
@@ -692,6 +800,8 @@ export function wirePlayState(
       root.removeEventListener('change', onChange);
       root.removeEventListener('click', onClick);
       root.removeEventListener('toggle', onToggle, true);
+      root.removeEventListener('pointerdown', touch, true);
+      root.removeEventListener('focusin', touch, true);
     },
   ];
   const sync = () => {

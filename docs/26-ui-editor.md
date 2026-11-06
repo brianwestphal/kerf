@@ -1283,12 +1283,28 @@ composing document belongs beside its rows before they render.
     `$bind`s too). In a composed document a literal changes in its play copy
     outside any row. A value that cannot be traced stays on the node itself:
     for its row, or in its document's play copy.
-  - Not wired inside a composed document: helpers that report by a
-    control's `id` prop (Combobox, ColorField, ColorPicker, TagField, a
-    ResizableRegion's size), TabBar reordering, a SplitView's `compact`
-    following the device, closing a repeated tab, and starting a composed
-    NavStack at its root view. A repeated `#view`'s structural state (a
-    TabNavigator's tab) is one play copy shared by its rows.
+  - KF-HBRKFH wires the rest:
+    - **Controls reported by id.** The helpers that report a control by its
+      `id` prop (Combobox, ColorField, ColorPicker, TagField, a
+      ResizableRegion's or SplitView list's size) and TabBar reordering find
+      the rendered control by its data attribute (`data-combobox-id`, …).
+      They use the element the helper hands over when it does, else the one
+      the person last pressed or focused in the stage, so the change reaches
+      the node in its own document and row.
+    - **Device and root view.** Every composed SplitView follows the device
+      into `compact`, and every composed NavStack starts at its root view.
+      Both are played copies of each `#view` the document reaches
+      (`playedComposed`).
+    - **Closing a repeated tab.** A repeated tab in a composed document
+      closes out of the param its items come from. That param's value
+      climbs the `#view` chain: through `$param` props to a top param, or
+      it stops at a literal (or unset, taking the param's default) prop,
+      which changes in the document holding that `#view` (the top play
+      document or a play copy). A `$bind` prop is not traced, and the tab
+      stays.
+  - A repeated `#view`'s structural state (a TabNavigator's tab, a NavStack
+    pop) is still one play copy shared by its rows. `resolveView` gets no
+    row, so a per-row copy needs a decision (KF-HBRKFH feedback).
 
 ## 4. The generated view module
 
