@@ -1439,7 +1439,10 @@ safe-area insets add to that chosen outer inset.
 center/trailing zones, wrap whole control groups (stacked zones span every grid
 track, because a toolbar cannot container-query itself; an expanded
 `center-priority` center spans every track the same way), and
-`Toolbar.responsive="wrap"` moves the trailing zone below a whole heading title.
+`Toolbar.responsive="wrap"` moves the trailing zone below a whole heading title,
+and `Toolbar.responsive="wrap-groups"` makes each leading control group a
+wrapping toolbar item so a leading zone of groups wraps whole groups (KF-K3TXCT;
+`ui/tests/browser/toolbar-wrap-groups.spec.ts`).
 `ui/tests/browser/toolbar-overflow.spec.ts` pins the compact-toolbar and
 loading-inspector recipes at 390px plus the focused Toolbar demo states.
 The center track's minimum is the center zone's own content width

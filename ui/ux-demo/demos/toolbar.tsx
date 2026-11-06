@@ -372,6 +372,70 @@ export function ToolbarDemo() {
         />
       </CatalogExample>
       <CatalogExample
+        label="Leading Groups Wrap"
+        note="The wrap-groups policy keeps leading control groups beside each other while they fit, then moves whole groups to the next row, beside the trailing controls."
+        viewport={{ width: 'wide', frame: 'solid' }}
+        rootAttributes={{ 'data-demo-toolbar-overflow': 'wrap-groups' }}
+      >
+        <Toolbar
+          label="Editor Controls"
+          responsive="wrap-groups"
+          leading={
+            <>
+              <ToolbarControlGroup label="Page Setup" content="text" single>
+                <ToolbarButton action="log-add">Page Setup</ToolbarButton>
+              </ToolbarControlGroup>
+              <ToolbarControlGroup label="Text Style">
+                <ToolbarButton
+                  ariaLabel="Bold"
+                  pressed={false}
+                  icon={<LucideIcon icon={Bold} name="bold" />}
+                />
+                <ToolbarButton
+                  ariaLabel="Italic"
+                  pressed={false}
+                  icon={<LucideIcon icon={Italic} name="italic" />}
+                />
+                <ToolbarButton
+                  ariaLabel="Underline"
+                  pressed={false}
+                  icon={<LucideIcon icon={Underline} name="underline" />}
+                />
+              </ToolbarControlGroup>
+              <ToolbarControlGroup label="Draft Tools">
+                <ToolbarButton
+                  ariaLabel="Filter Draft"
+                  icon={<LucideIcon icon={Funnel} name="funnel" />}
+                />
+                <ToolbarButton
+                  ariaLabel="Refresh Draft"
+                  icon={<LucideIcon icon={RefreshCw} name="refresh-cw" />}
+                />
+              </ToolbarControlGroup>
+              <ToolbarControlGroup label="Draft Options" single>
+                <ToolbarButton
+                  ariaLabel="Draft Options"
+                  icon={
+                    <LucideIcon
+                      icon={SlidersHorizontal}
+                      name="sliders-horizontal"
+                    />
+                  }
+                />
+              </ToolbarControlGroup>
+            </>
+          }
+          trailing={
+            <ToolbarControlGroup label="Editor Settings" single>
+              <ToolbarButton
+                ariaLabel="Editor Settings"
+                icon={<LucideIcon icon={Settings} name="settings" />}
+              />
+            </ToolbarControlGroup>
+          }
+        />
+      </CatalogExample>
+      <CatalogExample
         label="Heading Identity Stays Whole"
         note="The wrap policy keeps one row while the title fits, then moves the trailing zone below the title."
         viewport={{ width: 'text', frame: 'solid' }}

@@ -750,7 +750,12 @@ parent item, Escape closes it, and choosing a child dispatches the normal
 The enclosing `Toolbar` owns zone alignment and responsive topology: use
 `centerAlign="stretch"` when the center group should consume its track, and
 choose `responsive="stack"` with `responsiveAt="compact" | "narrow"`,
-`responsive="wrap"` for a heading whose title must stay whole, or
+`responsive="wrap"` for a heading whose title must stay whole,
+`responsive="wrap-groups"` for a leading zone made of control groups (each
+leading group is one of the toolbar's own wrapping items, so whole groups
+share a row with the trailing zone while they fit and move to the next row
+when they do not; the leading zone draws no box of its own, so its padding
+and minimum-width tokens do not apply), or
 `responsive="center-priority"` instead of selecting its zone classes from a
 parent stylesheet. No policy clips an action: the trailing zone wraps whole
 groups and its standalone primary `Button` onto another row; a stacked

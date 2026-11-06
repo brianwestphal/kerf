@@ -659,7 +659,12 @@ the header) labels itself with the default size, because extra-large truncates
 there — "Inspector" becomes "Ins…" in a 160px rail. By default, nothing wraps
 inside a `ToolbarControlGroup`: an icon sits beside its label on one row and the
 group sizes to its content, so a row that does not fit relocates whole groups
-through the toolbar's `responsive` policy. For independent action links that
+through the toolbar's `responsive` policy. When the leading zone is made of
+control groups rather than a title (a device picker with its options and a
+scale), choose `responsive="wrap-groups"`: each leading group shares a row with
+the trailing zone while it fits and otherwise moves, whole, to the next row,
+so the groups stay beside each other at the leading end instead of moving
+into the trailing zone. For independent action links that
 must all remain visible, set `overflow="wrap"`: whole links move to another
 row inside the group without breaking an icon from its label. Use
 `overflow="scroll"` when a single-row action strip is intentional. A

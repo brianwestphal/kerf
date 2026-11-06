@@ -161,7 +161,10 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
         rootAttributes={{ 'data-key': 'editor-play-bar' }}
         safeAreaEdges={['block-start', 'inline-start', 'inline-end']}
         dividerSides="b"
-        responsive="wrap"
+        // KF-K3TXCT: the device, its options, and the scale lead the bar;
+        // at a narrow window whole groups move to the next row, beside the
+        // trailing log and Done, so none is clipped.
+        responsive="wrap-groups"
         leading={
           <>
             <ToolbarControlGroup single focusRing="outline">
@@ -217,13 +220,6 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
                 />
               </>
             ) : undefined}
-          </>
-        }
-        // KF-MAM4AT: the device's options and the scale sit with the
-        // trailing controls, whose zone wraps whole groups at a narrow
-        // window, so none is clipped; the leading zone keeps one row.
-        trailing={
-          <>
             <ToolbarControlGroup label="Device options">
               <ToolbarButton
                 ariaLabel="Landscape"
@@ -280,6 +276,10 @@ export function createPlayStage({ presets, doneAction }: PlayStageOptions) {
                 rootAttributes={{ 'data-editor-play': 'scale' }}
               />
             </ToolbarControlGroup>
+          </>
+        }
+        trailing={
+          <>
             <ToolbarControlGroup single>
               <ToolbarButton
                 ariaLabel={

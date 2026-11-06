@@ -15649,14 +15649,15 @@
               "none",
               "stack",
               "wrap",
+              "wrap-groups",
               "center-priority",
               "trailing-priority"
             ],
-            "text": "\"none\" | \"stack\" | \"wrap\" | \"center-priority\" | \"trailing-priority\" | undefined",
+            "text": "\"none\" | \"stack\" | \"wrap\" | \"wrap-groups\" | \"center-priority\" | \"trailing-priority\" | undefined",
             "nullable": true
           },
           "required": false,
-          "description": "Component-owned responsive layout; applications choose the policy rather\nthan restyling toolbar internals. Under every policy the trailing zone\nwraps its groups instead of clipping an action, and the center zone keeps\nits whole content width: when the zones do not fit one row, the leading\ntitle truncates with an ellipsis rather than the center overlapping it.\n- `none` keeps one row; the leading identity truncates first.\n- `stack` stacks the zones at `responsiveAt`, wrapping stacked control\n  groups onto further rows.\n- `wrap` keeps one row while every zone fits at its natural width, and\n  otherwise moves the trailing zone below a whole leading identity.\n- `center-priority` gives an expanded center control the full row.\n- `trailing-priority` moves an expanded trailing control to a full row\n  below the leading identity at `responsiveAt`.",
+          "description": "Component-owned responsive layout; applications choose the policy rather\nthan restyling toolbar internals. Under every policy the trailing zone\nwraps its groups instead of clipping an action, and the center zone keeps\nits whole content width: when the zones do not fit one row, the leading\ntitle truncates with an ellipsis rather than the center overlapping it.\n- `none` keeps one row; the leading identity truncates first.\n- `stack` stacks the zones at `responsiveAt`, wrapping stacked control\n  groups onto further rows.\n- `wrap` keeps one row while every zone fits at its natural width, and\n  otherwise moves the trailing zone below a whole leading identity.\n- `wrap-groups` is for a leading zone of control groups rather than a\n  title: each leading group shares a row with the trailing zone while it\n  fits and otherwise moves, whole, to the next row; the trailing zone\n  stays at the inline end. The leading zone draws no box of its own, so\n  its padding and minimum-width tokens do not apply.\n- `center-priority` gives an expanded center control the full row.\n- `trailing-priority` moves an expanded trailing control to a full row\n  below the leading identity at `responsiveAt`.",
           "group": "Responsive",
           "order": 1
         },
@@ -26197,14 +26198,15 @@
               "none",
               "stack",
               "wrap",
+              "wrap-groups",
               "center-priority",
               "trailing-priority"
             ],
-            "text": "\"none\" | \"stack\" | \"wrap\" | \"center-priority\" | \"trailing-priority\" | undefined",
+            "text": "\"none\" | \"stack\" | \"wrap\" | \"wrap-groups\" | \"center-priority\" | \"trailing-priority\" | undefined",
             "nullable": true
           },
           "required": false,
-          "description": "Component-owned responsive layout; applications choose the policy rather\nthan restyling toolbar internals. Under every policy the trailing zone\nwraps its groups instead of clipping an action, and the center zone keeps\nits whole content width: when the zones do not fit one row, the leading\ntitle truncates with an ellipsis rather than the center overlapping it.\n- `none` keeps one row; the leading identity truncates first.\n- `stack` stacks the zones at `responsiveAt`, wrapping stacked control\n  groups onto further rows.\n- `wrap` keeps one row while every zone fits at its natural width, and\n  otherwise moves the trailing zone below a whole leading identity.\n- `center-priority` gives an expanded center control the full row.\n- `trailing-priority` moves an expanded trailing control to a full row\n  below the leading identity at `responsiveAt`."
+          "description": "Component-owned responsive layout; applications choose the policy rather\nthan restyling toolbar internals. Under every policy the trailing zone\nwraps its groups instead of clipping an action, and the center zone keeps\nits whole content width: when the zones do not fit one row, the leading\ntitle truncates with an ellipsis rather than the center overlapping it.\n- `none` keeps one row; the leading identity truncates first.\n- `stack` stacks the zones at `responsiveAt`, wrapping stacked control\n  groups onto further rows.\n- `wrap` keeps one row while every zone fits at its natural width, and\n  otherwise moves the trailing zone below a whole leading identity.\n- `wrap-groups` is for a leading zone of control groups rather than a\n  title: each leading group shares a row with the trailing zone while it\n  fits and otherwise moves, whole, to the next row; the trailing zone\n  stays at the inline end. The leading zone draws no box of its own, so\n  its padding and minimum-width tokens do not apply.\n- `center-priority` gives an expanded center control the full row.\n- `trailing-priority` moves an expanded trailing control to a full row\n  below the leading identity at `responsiveAt`."
         },
         {
           "name": "responsiveAt",
@@ -26458,14 +26460,15 @@
               "none",
               "stack",
               "wrap",
+              "wrap-groups",
               "center-priority",
               "trailing-priority"
             ],
-            "text": "\"none\" | \"stack\" | \"wrap\" | \"center-priority\" | \"trailing-priority\" | undefined",
+            "text": "\"none\" | \"stack\" | \"wrap\" | \"wrap-groups\" | \"center-priority\" | \"trailing-priority\" | undefined",
             "nullable": true
           },
           "required": false,
-          "description": "Component-owned responsive layout; applications choose the policy rather\nthan restyling toolbar internals. Under every policy the trailing zone\nwraps its groups instead of clipping an action, and the center zone keeps\nits whole content width: when the zones do not fit one row, the leading\ntitle truncates with an ellipsis rather than the center overlapping it.\n- `none` keeps one row; the leading identity truncates first.\n- `stack` stacks the zones at `responsiveAt`, wrapping stacked control\n  groups onto further rows.\n- `wrap` keeps one row while every zone fits at its natural width, and\n  otherwise moves the trailing zone below a whole leading identity.\n- `center-priority` gives an expanded center control the full row.\n- `trailing-priority` moves an expanded trailing control to a full row\n  below the leading identity at `responsiveAt`."
+          "description": "Component-owned responsive layout; applications choose the policy rather\nthan restyling toolbar internals. Under every policy the trailing zone\nwraps its groups instead of clipping an action, and the center zone keeps\nits whole content width: when the zones do not fit one row, the leading\ntitle truncates with an ellipsis rather than the center overlapping it.\n- `none` keeps one row; the leading identity truncates first.\n- `stack` stacks the zones at `responsiveAt`, wrapping stacked control\n  groups onto further rows.\n- `wrap` keeps one row while every zone fits at its natural width, and\n  otherwise moves the trailing zone below a whole leading identity.\n- `wrap-groups` is for a leading zone of control groups rather than a\n  title: each leading group shares a row with the trailing zone while it\n  fits and otherwise moves, whole, to the next row; the trailing zone\n  stays at the inline end. The leading zone draws no box of its own, so\n  its padding and minimum-width tokens do not apply.\n- `center-priority` gives an expanded center control the full row.\n- `trailing-priority` moves an expanded trailing control to a full row\n  below the leading identity at `responsiveAt`."
         },
         {
           "name": "responsiveAt",
@@ -26892,14 +26895,15 @@
               "none",
               "stack",
               "wrap",
+              "wrap-groups",
               "center-priority",
               "trailing-priority"
             ],
-            "text": "\"none\" | \"stack\" | \"wrap\" | \"center-priority\" | \"trailing-priority\" | undefined",
+            "text": "\"none\" | \"stack\" | \"wrap\" | \"wrap-groups\" | \"center-priority\" | \"trailing-priority\" | undefined",
             "nullable": true
           },
           "required": false,
-          "description": "Component-owned responsive layout; applications choose the policy rather\nthan restyling toolbar internals. Under every policy the trailing zone\nwraps its groups instead of clipping an action, and the center zone keeps\nits whole content width: when the zones do not fit one row, the leading\ntitle truncates with an ellipsis rather than the center overlapping it.\n- `none` keeps one row; the leading identity truncates first.\n- `stack` stacks the zones at `responsiveAt`, wrapping stacked control\n  groups onto further rows.\n- `wrap` keeps one row while every zone fits at its natural width, and\n  otherwise moves the trailing zone below a whole leading identity.\n- `center-priority` gives an expanded center control the full row.\n- `trailing-priority` moves an expanded trailing control to a full row\n  below the leading identity at `responsiveAt`."
+          "description": "Component-owned responsive layout; applications choose the policy rather\nthan restyling toolbar internals. Under every policy the trailing zone\nwraps its groups instead of clipping an action, and the center zone keeps\nits whole content width: when the zones do not fit one row, the leading\ntitle truncates with an ellipsis rather than the center overlapping it.\n- `none` keeps one row; the leading identity truncates first.\n- `stack` stacks the zones at `responsiveAt`, wrapping stacked control\n  groups onto further rows.\n- `wrap` keeps one row while every zone fits at its natural width, and\n  otherwise moves the trailing zone below a whole leading identity.\n- `wrap-groups` is for a leading zone of control groups rather than a\n  title: each leading group shares a row with the trailing zone while it\n  fits and otherwise moves, whole, to the next row; the trailing zone\n  stays at the inline end. The leading zone draws no box of its own, so\n  its padding and minimum-width tokens do not apply.\n- `center-priority` gives an expanded center control the full row.\n- `trailing-priority` moves an expanded trailing control to a full row\n  below the leading identity at `responsiveAt`."
         },
         {
           "name": "responsiveAt",
@@ -27081,14 +27085,15 @@
               "none",
               "stack",
               "wrap",
+              "wrap-groups",
               "center-priority",
               "trailing-priority"
             ],
-            "text": "\"none\" | \"stack\" | \"wrap\" | \"center-priority\" | \"trailing-priority\" | undefined",
+            "text": "\"none\" | \"stack\" | \"wrap\" | \"wrap-groups\" | \"center-priority\" | \"trailing-priority\" | undefined",
             "nullable": true
           },
           "required": false,
-          "description": "Component-owned responsive layout; applications choose the policy rather\nthan restyling toolbar internals. Under every policy the trailing zone\nwraps its groups instead of clipping an action, and the center zone keeps\nits whole content width: when the zones do not fit one row, the leading\ntitle truncates with an ellipsis rather than the center overlapping it.\n- `none` keeps one row; the leading identity truncates first.\n- `stack` stacks the zones at `responsiveAt`, wrapping stacked control\n  groups onto further rows.\n- `wrap` keeps one row while every zone fits at its natural width, and\n  otherwise moves the trailing zone below a whole leading identity.\n- `center-priority` gives an expanded center control the full row.\n- `trailing-priority` moves an expanded trailing control to a full row\n  below the leading identity at `responsiveAt`."
+          "description": "Component-owned responsive layout; applications choose the policy rather\nthan restyling toolbar internals. Under every policy the trailing zone\nwraps its groups instead of clipping an action, and the center zone keeps\nits whole content width: when the zones do not fit one row, the leading\ntitle truncates with an ellipsis rather than the center overlapping it.\n- `none` keeps one row; the leading identity truncates first.\n- `stack` stacks the zones at `responsiveAt`, wrapping stacked control\n  groups onto further rows.\n- `wrap` keeps one row while every zone fits at its natural width, and\n  otherwise moves the trailing zone below a whole leading identity.\n- `wrap-groups` is for a leading zone of control groups rather than a\n  title: each leading group shares a row with the trailing zone while it\n  fits and otherwise moves, whole, to the next row; the trailing zone\n  stays at the inline end. The leading zone draws no box of its own, so\n  its padding and minimum-width tokens do not apply.\n- `center-priority` gives an expanded center control the full row.\n- `trailing-priority` moves an expanded trailing control to a full row\n  below the leading identity at `responsiveAt`."
         },
         {
           "name": "responsiveAt",
@@ -29017,14 +29022,15 @@
               "none",
               "stack",
               "wrap",
+              "wrap-groups",
               "center-priority",
               "trailing-priority"
             ],
-            "text": "\"none\" | \"stack\" | \"wrap\" | \"center-priority\" | \"trailing-priority\" | undefined",
+            "text": "\"none\" | \"stack\" | \"wrap\" | \"wrap-groups\" | \"center-priority\" | \"trailing-priority\" | undefined",
             "nullable": true
           },
           "required": false,
-          "description": "Component-owned responsive layout; applications choose the policy rather\nthan restyling toolbar internals. Under every policy the trailing zone\nwraps its groups instead of clipping an action, and the center zone keeps\nits whole content width: when the zones do not fit one row, the leading\ntitle truncates with an ellipsis rather than the center overlapping it.\n- `none` keeps one row; the leading identity truncates first.\n- `stack` stacks the zones at `responsiveAt`, wrapping stacked control\n  groups onto further rows.\n- `wrap` keeps one row while every zone fits at its natural width, and\n  otherwise moves the trailing zone below a whole leading identity.\n- `center-priority` gives an expanded center control the full row.\n- `trailing-priority` moves an expanded trailing control to a full row\n  below the leading identity at `responsiveAt`."
+          "description": "Component-owned responsive layout; applications choose the policy rather\nthan restyling toolbar internals. Under every policy the trailing zone\nwraps its groups instead of clipping an action, and the center zone keeps\nits whole content width: when the zones do not fit one row, the leading\ntitle truncates with an ellipsis rather than the center overlapping it.\n- `none` keeps one row; the leading identity truncates first.\n- `stack` stacks the zones at `responsiveAt`, wrapping stacked control\n  groups onto further rows.\n- `wrap` keeps one row while every zone fits at its natural width, and\n  otherwise moves the trailing zone below a whole leading identity.\n- `wrap-groups` is for a leading zone of control groups rather than a\n  title: each leading group shares a row with the trailing zone while it\n  fits and otherwise moves, whole, to the next row; the trailing zone\n  stays at the inline end. The leading zone draws no box of its own, so\n  its padding and minimum-width tokens do not apply.\n- `center-priority` gives an expanded center control the full row.\n- `trailing-priority` moves an expanded trailing control to a full row\n  below the leading identity at `responsiveAt`."
         },
         {
           "name": "responsiveAt",
@@ -29176,14 +29182,15 @@
               "none",
               "stack",
               "wrap",
+              "wrap-groups",
               "center-priority",
               "trailing-priority"
             ],
-            "text": "\"none\" | \"stack\" | \"wrap\" | \"center-priority\" | \"trailing-priority\" | undefined",
+            "text": "\"none\" | \"stack\" | \"wrap\" | \"wrap-groups\" | \"center-priority\" | \"trailing-priority\" | undefined",
             "nullable": true
           },
           "required": false,
-          "description": "Component-owned responsive layout; applications choose the policy rather\nthan restyling toolbar internals. Under every policy the trailing zone\nwraps its groups instead of clipping an action, and the center zone keeps\nits whole content width: when the zones do not fit one row, the leading\ntitle truncates with an ellipsis rather than the center overlapping it.\n- `none` keeps one row; the leading identity truncates first.\n- `stack` stacks the zones at `responsiveAt`, wrapping stacked control\n  groups onto further rows.\n- `wrap` keeps one row while every zone fits at its natural width, and\n  otherwise moves the trailing zone below a whole leading identity.\n- `center-priority` gives an expanded center control the full row.\n- `trailing-priority` moves an expanded trailing control to a full row\n  below the leading identity at `responsiveAt`."
+          "description": "Component-owned responsive layout; applications choose the policy rather\nthan restyling toolbar internals. Under every policy the trailing zone\nwraps its groups instead of clipping an action, and the center zone keeps\nits whole content width: when the zones do not fit one row, the leading\ntitle truncates with an ellipsis rather than the center overlapping it.\n- `none` keeps one row; the leading identity truncates first.\n- `stack` stacks the zones at `responsiveAt`, wrapping stacked control\n  groups onto further rows.\n- `wrap` keeps one row while every zone fits at its natural width, and\n  otherwise moves the trailing zone below a whole leading identity.\n- `wrap-groups` is for a leading zone of control groups rather than a\n  title: each leading group shares a row with the trailing zone while it\n  fits and otherwise moves, whole, to the next row; the trailing zone\n  stays at the inline end. The leading zone draws no box of its own, so\n  its padding and minimum-width tokens do not apply.\n- `center-priority` gives an expanded center control the full row.\n- `trailing-priority` moves an expanded trailing control to a full row\n  below the leading identity at `responsiveAt`."
         },
         {
           "name": "responsiveAt",
@@ -29486,14 +29493,15 @@
                     "none",
                     "stack",
                     "wrap",
+                    "wrap-groups",
                     "center-priority",
                     "trailing-priority"
                   ],
-                  "text": "\"none\" | \"stack\" | \"wrap\" | \"center-priority\" | \"trailing-priority\" | undefined",
+                  "text": "\"none\" | \"stack\" | \"wrap\" | \"wrap-groups\" | \"center-priority\" | \"trailing-priority\" | undefined",
                   "nullable": true
                 },
                 "required": false,
-                "description": "Component-owned responsive layout; applications choose the policy rather\nthan restyling toolbar internals. Under every policy the trailing zone\nwraps its groups instead of clipping an action, and the center zone keeps\nits whole content width: when the zones do not fit one row, the leading\ntitle truncates with an ellipsis rather than the center overlapping it.\n- `none` keeps one row; the leading identity truncates first.\n- `stack` stacks the zones at `responsiveAt`, wrapping stacked control\n  groups onto further rows.\n- `wrap` keeps one row while every zone fits at its natural width, and\n  otherwise moves the trailing zone below a whole leading identity.\n- `center-priority` gives an expanded center control the full row.\n- `trailing-priority` moves an expanded trailing control to a full row\n  below the leading identity at `responsiveAt`."
+                "description": "Component-owned responsive layout; applications choose the policy rather\nthan restyling toolbar internals. Under every policy the trailing zone\nwraps its groups instead of clipping an action, and the center zone keeps\nits whole content width: when the zones do not fit one row, the leading\ntitle truncates with an ellipsis rather than the center overlapping it.\n- `none` keeps one row; the leading identity truncates first.\n- `stack` stacks the zones at `responsiveAt`, wrapping stacked control\n  groups onto further rows.\n- `wrap` keeps one row while every zone fits at its natural width, and\n  otherwise moves the trailing zone below a whole leading identity.\n- `wrap-groups` is for a leading zone of control groups rather than a\n  title: each leading group shares a row with the trailing zone while it\n  fits and otherwise moves, whole, to the next row; the trailing zone\n  stays at the inline end. The leading zone draws no box of its own, so\n  its padding and minimum-width tokens do not apply.\n- `center-priority` gives an expanded center control the full row.\n- `trailing-priority` moves an expanded trailing control to a full row\n  below the leading identity at `responsiveAt`."
               },
               {
                 "name": "responsiveAt",

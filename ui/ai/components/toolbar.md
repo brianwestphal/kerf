@@ -36,6 +36,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar`](../public-api-signatures-v1.m
 - centered content
 - stacked zones at compact or narrow widths
 - content-driven wrap that keeps a heading title whole
+- group wrap that moves whole leading control groups to another row
 - center priority for an expanded center control
 - trailing priority for an expanded trailing control at compact or narrow widths
 - trailing groups and a standalone primary Button wrap instead of clipping

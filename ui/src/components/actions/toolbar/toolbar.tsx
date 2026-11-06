@@ -53,12 +53,22 @@ export interface ToolbarProps {
    *   groups onto further rows.
    * - `wrap` keeps one row while every zone fits at its natural width, and
    *   otherwise moves the trailing zone below a whole leading identity.
+   * - `wrap-groups` is for a leading zone of control groups rather than a
+   *   title: each leading group shares a row with the trailing zone while it
+   *   fits and otherwise moves, whole, to the next row; the trailing zone
+   *   stays at the inline end. The leading zone draws no box of its own, so
+   *   its padding and minimum-width tokens do not apply.
    * - `center-priority` gives an expanded center control the full row.
    * - `trailing-priority` moves an expanded trailing control to a full row
    *   below the leading identity at `responsiveAt`.
    */
   responsive?:
-    'none' | 'stack' | 'wrap' | 'center-priority' | 'trailing-priority';
+    | 'none'
+    | 'stack'
+    | 'wrap'
+    | 'wrap-groups'
+    | 'center-priority'
+    | 'trailing-priority';
   /** Container width at which `stack` or `trailing-priority` activates. */
   responsiveAt?: 'compact' | 'narrow';
   /**

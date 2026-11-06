@@ -379,6 +379,35 @@
   margin-inline-start: auto;
 }
 
+/* Group wrap: for a leading zone made of control groups rather than a title.
+   The leading zone lays out no box of its own, so each of its groups (and any
+   direct custom content) is one of the toolbar's own wrapping items. Whole
+   groups share a row with the trailing zone while they fit and move to the
+   next row when they do not, so none is clipped; the trailing zone stays one
+   unit at the inline end and wraps its own groups as under every policy.
+   Items center in their row's 44px band, as they center in a zone's. */
+.kui-toolbar[data-responsive="wrap-groups"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.kui-toolbar[data-responsive="wrap-groups"] > .kui-toolbar__leading {
+  display: contents;
+}
+
+.kui-toolbar[data-responsive="wrap-groups"] > .kui-toolbar__center {
+  max-width: 100%;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+}
+
+.kui-toolbar[data-responsive="wrap-groups"] > .kui-toolbar__trailing {
+  max-width: 100%;
+  flex: 0 1 auto;
+  margin-inline-start: auto;
+}
+
 /* A lone zone spans every column track, so an absent (empty, hidden) zone's
    track and the column gap before it never narrow it: leading-only content
    set to fill the row reaches the toolbar's inline-end inset, and

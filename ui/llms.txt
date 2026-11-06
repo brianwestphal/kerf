@@ -566,7 +566,10 @@ headingLevel`, `SearchField clearIcon`, `ContentItem frame="framed"` for a
   `icon`, `items`, optional `placement` and `disabled`), which renders a
   `PopupMenu` as the row's sibling trailing control. Do not force a dropdown or button width. Nothing
   wraps inside a group: an icon sits beside its label on one row, and a
-  `ToolbarText` is one ellipsized line unless you opt into `wrap`/`maxLines`. A
+  `ToolbarText` is one ellipsized line unless you opt into `wrap`/`maxLines`.
+  For a leading zone made of control groups (no title), set
+  `Toolbar responsive="wrap-groups"`: each leading group shares a row with the
+  trailing zone while it fits and otherwise moves, whole, to the next row. A
   Select or PopupMenu trigger drops its focus ring while its popup is open and
   the ring follows the control's shape; never add ring CSS. Compact
   mixed groups keep standard item padding and raised selected chrome without an

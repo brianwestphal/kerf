@@ -1468,8 +1468,11 @@ test('a played ContentItem listbox moves with the arrows and logs Enter', async 
 
 // KF-MAM4AT: at a phone-width window the play bar keeps every control whole
 // and inside the window; whole groups move to another row instead.
+// KF-K3TXCT: the device's options and the scale lead the bar beside the
+// device (`responsive="wrap-groups"`), and at a wide window they share the
+// device's row at the leading end, ahead of the trailing log and Done.
 for (const width of [390, 1440]) {
-  test(`the play bar keeps every control whole at ${width} (KF-MAM4AT)`, async ({
+  test(`every play-bar control is whole and inside the window at ${width} (KF-MAM4AT, KF-K3TXCT)`, async ({
     page,
   }, testInfo) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -1478,9 +1481,10 @@ for (const width of [390, 1440]) {
     await play(page);
     await expect(page.locator('[data-editor-play-frame]')).toBeVisible();
     const bar = page.locator('[data-key="editor-play-bar"]');
+    await expect(bar).toHaveAttribute('data-responsive', 'wrap-groups');
     if (testInfo.project.name === 'chromium')
       await page.screenshot({
-        path: testInfo.outputPath(`kf-mam4at-play-bar-${width}.png`),
+        path: testInfo.outputPath(`kf-k3txct-play-bar-${width}.png`),
         animations: 'disabled',
       });
     const controls = bar.locator(
@@ -1490,6 +1494,35 @@ for (const width of [390, 1440]) {
     for (const control of await controls.all()) {
       if (await control.isVisible())
         await expect(control).toBeInViewport({ ratio: 1 });
+    }
+    // The options and the scale belong to the leading zone, in order.
+    const leading = bar.locator('.kui-toolbar__leading');
+    const options = leading.getByRole('group', { name: 'Device options' });
+    const scale = leading.locator('[data-editor-play="scale"]');
+    await expect(options).toBeVisible();
+    await expect(scale).toBeVisible();
+    const box = async (locator: typeof scale) => {
+      const rect = await locator.boundingBox();
+      if (!rect) throw new Error('missing control box');
+      return rect;
+    };
+    const device = await box(leading.locator('[data-editor-play="device"]'));
+    const log = await box(bar.locator('[data-action="editor-play-log"]'));
+    const optionsBox = await box(options);
+    const scaleBox = await box(scale);
+    if (width === 1440) {
+      // One row: device, options, scale at the leading end; the log after.
+      for (const rect of [optionsBox, scaleBox, log])
+        expect(Math.abs(rect.y - device.y)).toBeLessThan(12);
+      expect(optionsBox.x).toBeGreaterThan(device.x + device.width);
+      expect(scaleBox.x).toBeGreaterThan(optionsBox.x + optionsBox.width);
+      expect(scaleBox.x + scaleBox.width).toBeLessThan(width / 2);
+      expect(log.x).toBeGreaterThan(width / 2);
+    } else {
+      // Whole groups wrap: the scale never sits above the device's row,
+      // and the bar takes more than one row.
+      expect(scaleBox.y).toBeGreaterThanOrEqual(device.y);
+      expect(log.y).toBeGreaterThan(device.y + device.height - 1);
     }
   });
 }

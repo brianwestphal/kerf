@@ -1250,6 +1250,26 @@ describe('production UI primitives', () => {
     expect(toolbarCss).toMatch(
       /\.kui-toolbar\[data-responsive="wrap"\] > \.kui-toolbar__trailing \{[^}]*margin-inline-start: auto;/,
     );
+    // KF-K3TXCT: wrap-groups makes each leading group a wrapping toolbar item,
+    // with the trailing zone kept at the inline end.
+    expect(
+      asHtml(
+        Toolbar({
+          leading: ToolbarControlGroup({ children: icon }),
+          trailing: ToolbarControlGroup({ children: icon }),
+          responsive: 'wrap-groups',
+        }),
+      ),
+    ).toContain('data-responsive="wrap-groups"');
+    expect(toolbarCss).toMatch(
+      /\.kui-toolbar\[data-responsive="wrap-groups"\] \{\s*display: flex;\s*flex-wrap: wrap;/,
+    );
+    expect(toolbarCss).toMatch(
+      /\.kui-toolbar\[data-responsive="wrap-groups"\] > \.kui-toolbar__leading \{\s*display: contents;/,
+    );
+    expect(toolbarCss).toMatch(
+      /\.kui-toolbar\[data-responsive="wrap-groups"\] > \.kui-toolbar__trailing \{[^}]*margin-inline-start: auto;/,
+    );
   });
 
   it('lets List, Row, and Grid fill a definite-height parent and carry safe root metadata', () => {
