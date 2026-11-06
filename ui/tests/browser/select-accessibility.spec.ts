@@ -106,11 +106,18 @@ test('names plain and custom Select comboboxes without adding visible label geom
 
   // Real keyboard selection drives the catalog's controlled rerender, retaining
   // both the accessible name and custom selected content after each choice.
-  for (const control of [plain, custom]) {
+  // KF-SHZMBR: options and focus are read inside the Select under test. The
+  // previous Select's popup is still in its exit motion when the next one
+  // opens, so a demo-wide option query matched both lists.
+  for (const [control, name] of [
+    [plain, 'plain-rendering-balance'],
+    [custom, 'rendering-balance'],
+  ] as const) {
+    const host = demo.locator(`kui-select[name="${name}"]`);
     // KF-FGVKX6: an open listbox owns the navigation keys only once an
     // option holds focus; a key that lands on the trigger is ignored.
     const optionFocused = () =>
-      expect(demo.locator('.kui-select__option:focus')).toHaveCount(1);
+      expect(host.locator('.kui-select__option:focus')).toHaveCount(1);
     await control.focus();
     await page.keyboard.press('Enter');
     await expect(control).toHaveAttribute('aria-expanded', 'true');
@@ -124,7 +131,7 @@ test('names plain and custom Select comboboxes without adding visible label geom
     await expect(control).toHaveAttribute('aria-expanded', 'true');
     await optionFocused();
     await page.keyboard.press('End');
-    const lastOption = demo.getByRole('option', {
+    const lastOption = host.getByRole('option', {
       name: 'Explicit',
       exact: true,
     });
