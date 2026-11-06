@@ -41,6 +41,7 @@ Exact prop names and types: [`@kerfjs/ui/segmented-control`](../public-api-signa
 - small
 - placeholder (loading)
 - disabled (whole control)
+- choice corner badge: count (hidden at 0, capped at badgeMax as 99+), short text, or dot, in any semantic badgeTone
 
 ## Composition
 

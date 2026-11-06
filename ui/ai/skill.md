@@ -504,8 +504,11 @@ meaning) to an icon-only `Button`. On a `ToolbarControlGroup` button, pass
 `ToolbarButton` `badge` (a count, short text, or `true` for a dot) with
 `badgeTone` and `badgeMax` (default 99, so 128 shows "99+"); a count of 0 shows
 nothing. That badge is decorative, so name the count in the button's
-`ariaLabel` and `title` ("Workers, 2 live"). Never position a badge with
-application CSS.
+`ariaLabel` and `title` ("Workers, 2 live"). On a `SegmentedControl` choice,
+such as a toolbar view switcher's, pass the same `badge`, `badgeTone`, and
+`badgeMax` on the choice and name the count in its `label` and `title`
+("Workers View, 2 live"); give it icon `content`, since `label` is otherwise
+also the visible text. Never position a badge with application CSS.
 
 If the primary toolbar has search, make it search or filter the primary searchable content of the current page or view. Rebind its scope and available filters on sub-pages and alternate views; do not wire it only to the first view. Potentially long lists, especially dynamic or user-generated ones, should normally be searchable or filterable. Omit search where the page has no searchable content. `SearchField` supplies the editor; the application owns which content the query filters.
 

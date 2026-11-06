@@ -3892,6 +3892,10 @@ export { type CatalogRevealOptions, type WireCatalogOptions, revealCatalogEntry,
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { R as RootDataAttributes } from './extension-attributes-IJ4decoa.js';
+import { S as SemanticTone } from './semantic-tone-CdW013KF.js';
+
+/** A badge's value: a count, short text, or `true` for a text-free dot. */
+type BadgeValue = number | string | true;
 
 type SegmentedControlAppearance = 'filled' | 'outlined' | 'toolbar';
 type SegmentedControlShape = 'rounded' | 'pill';
@@ -3903,6 +3907,23 @@ interface SegmentedControlChoice<Value extends string = string> {
     content?: KerfUiContent;
     title?: string;
     disabled?: boolean;
+    /**
+     * A count, short text, or `true` for a text-free dot over the choice's
+     * top-trailing corner, such as how many workers are live. A count of 0 (or
+     * less) and empty text show no badge, and a `placeholder` control shows
+     * none. The badge is decorative (`aria-hidden`): put its meaning in `label`
+     * and `title` yourself, for example "Workers View, 2 live". Since `label`
+     * is also the visible text when `content` is omitted, give a badged choice
+     * its own `content`, such as an icon.
+     */
+    badge?: BadgeValue;
+    /** The badge's tone (default `danger`). */
+    badgeTone?: SemanticTone;
+    /**
+     * The largest count shown in full; a larger count shows as `{badgeMax}+`
+     * (default 99, so 100 shows "99+"). Text badges are shown as given.
+     */
+    badgeMax?: number;
 }
 interface SegmentedControlProps<Value extends string = string> {
     id: string;

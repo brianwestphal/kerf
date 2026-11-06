@@ -251,9 +251,15 @@ describe('consumer bundle boundaries', { timeout: 30_000 }, () => {
     expect(inputs).toContain('dist/browser/segmented-control.js');
     expect(css).toContain('.kui-segmented-control');
     expect(css).toContain('--kui-color-text');
-    expect(css).not.toContain('.kui-toolbar-control-group');
-    expect(css).not.toContain('.kui-select');
-    expect(css).not.toContain('.kui-tab-bar');
+    // KF-170258: a choice's corner badge brings badge.css, whose context
+    // selectors name the controls a badge sits in (a ToolbarControlGroup
+    // button, a Select trigger), but never those controls' own stylesheets
+    // or rules.
+    expect(inputs).toContain('dist/styles/badge.css');
+    for (const control of ['toolbar-control-group', 'select', 'tab-bar']) {
+      expect(inputs).not.toContain(`dist/styles/${control}.css`);
+      expect(css).not.toMatch(new RegExp(`\\.kui-${control}\\s*\\{`));
+    }
     expect(inputs).not.toContain('@awesome.me/webawesome');
   });
 

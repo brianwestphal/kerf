@@ -3760,6 +3760,86 @@ describe('production UI primitives', () => {
     expect(defaults).not.toContain('data-kui-disabled');
   });
 
+  it('pins a decorative corner badge on a SegmentedControl choice, hidden at 0 and capped at badgeMax (KF-170258)', () => {
+    const icon = LucideIcon({ icon: Check, name: 'check' });
+    const render = (
+      choice: Partial<
+        Parameters<typeof SegmentedControl>[0]['choices'][number]
+      >,
+      extra: { placeholder?: boolean; disabled?: boolean } = {},
+    ) => {
+      const host = document.createElement('div');
+      host.innerHTML = asHtml(
+        SegmentedControl({
+          id: 'view',
+          label: 'View Mode',
+          value: 'list',
+          appearance: 'toolbar',
+          ...extra,
+          choices: [
+            { value: 'list', label: 'List View', content: icon },
+            {
+              value: 'workers',
+              label: 'Workers View, 2 live',
+              content: icon,
+              ...choice,
+            },
+          ],
+        }),
+      );
+      const items = host.querySelectorAll<HTMLButtonElement>(
+        '.kui-segmented-control__item',
+      );
+      return {
+        item: items[1]!,
+        badge: items[1]!.querySelector<HTMLElement>(':scope > .kui-badge'),
+        others: items[0]!.querySelectorAll('.kui-badge').length,
+      };
+    };
+    const two = render({ badge: 2 });
+    expect(two.badge?.textContent).toBe('2');
+    expect(two.badge?.dataset).toMatchObject({
+      tone: 'danger',
+      appearance: 'solid',
+      size: 'compact',
+      placement: 'corner',
+    });
+    expect(two.badge?.getAttribute('aria-hidden')).toBe('true');
+    expect(two.others).toBe(0);
+    // The badge stays out of the caller's accessible name.
+    expect(two.item.getAttribute('aria-label')).toBe('Workers View, 2 live');
+    expect(render({ badge: 2, badgeTone: 'info' }).badge?.dataset.tone).toBe(
+      'info',
+    );
+    // 0 (or less) and empty text render no badge at all.
+    expect(render({ badge: 0 }).badge).toBeNull();
+    expect(render({ badge: -1 }).badge).toBeNull();
+    expect(render({ badge: '' }).badge).toBeNull();
+    expect(render({}).badge).toBeNull();
+    // A count past badgeMax (default 99) collapses to "{max}+".
+    expect(render({ badge: 99 }).badge?.textContent).toBe('99');
+    expect(render({ badge: 128 }).badge?.textContent).toBe('99+');
+    expect(render({ badge: 12, badgeMax: 9 }).badge?.textContent).toBe('9+');
+    // Short text is shown as given.
+    expect(render({ badge: 'New', badgeMax: 1 }).badge?.textContent).toBe(
+      'New',
+    );
+    // `true` is a decorative dot.
+    const dot = render({ badge: true, badgeTone: 'warning' }).badge;
+    expect(dot?.dataset).toMatchObject({
+      size: 'dot',
+      tone: 'warning',
+      placement: 'corner',
+    });
+    expect(dot?.textContent).toBe('');
+    // A disabled choice keeps its count; a loading placeholder shows none,
+    // since the count is live data it does not have yet.
+    expect(render({ badge: 2 }, { disabled: true }).badge?.textContent).toBe(
+      '2',
+    );
+    expect(render({ badge: 2 }, { placeholder: true }).badge).toBeNull();
+  });
+
   it('disables a whole SegmentedControl while keeping its selection visible', () => {
     const host = document.createElement('div');
     const render = (extra: { placeholder?: boolean } = {}) => {

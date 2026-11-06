@@ -186,3 +186,42 @@
     0 0 0 2px var(--_kui-toolbar-control-group-badge-ring),
     0 0 0 2px var(--kui-color-surface);
 }
+
+/* A corner badge on a SegmentedControl choice (SegmentedControlChoice
+   `badge`, KF-170258): the same 16px pill as a toolbar button's, its top on
+   the segment's top edge so its bottom covers only the top row of the
+   segment's centered 16px icon. It never rises past the segment: a filled or
+   outlined track scrolls sideways, which clips vertically too. */
+.kui-segmented-control__item > .kui-badge[data-placement="corner"] {
+  inset-block-start: remify(-1px);
+  inset-inline-end: remify(3px);
+  /* The segment's fill (the context value the control provides: none at
+     rest, then hover or selected) over its track's surface, over an opaque
+     surface, so a translucent fill still cuts cleanly. */
+  box-shadow:
+    0 0 0 2px var(--_kui-segmented-control-badge-ring),
+    0 0 0 2px var(--_kui-segmented-control-badge-base),
+    0 0 0 2px var(--kui-color-surface);
+}
+
+/* A filled or outlined track clips at its padding edge, 1px above a segment,
+   so the mark sits 1px lower there and its ring still clears the clip. */
+.kui-segmented-control:not([data-appearance="toolbar"])
+  > .kui-segmented-control__item
+  > .kui-badge[data-placement="corner"]:not([data-size="dot"]) {
+  inset-block-start: 0;
+}
+
+.kui-segmented-control__item
+  > .kui-badge[data-placement="corner"]:not([data-size="dot"]) {
+  min-width: remify(16px);
+  min-height: remify(16px);
+  padding-inline: remify(4px);
+  font-size: var(--kui-font-2xs);
+}
+
+.kui-segmented-control__item
+  > .kui-badge[data-placement="corner"][data-size="dot"] {
+  inset-block-start: remify(6px);
+  inset-inline-end: remify(6px);
+}

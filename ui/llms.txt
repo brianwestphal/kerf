@@ -1019,7 +1019,12 @@ created, input }`. Never use a hand-styled `<input list>` + `<datalist>`.
   (default 99, so 128 shows "99+"); a count of 0 shows nothing. The group owns
   the corner placement, the ring against its surface, and compact sizing. The
   badge is `aria-hidden`, so name the count in the button's `ariaLabel` and
-  `title`.
+  `title`. A `SegmentedControl` choice (such as a toolbar view switcher's)
+  takes the same `badge`, `badgeTone`, and `badgeMax`; the control owns its
+  placement over the choice's icon and its ring against the segment's fill.
+  Name the count in the choice's `label` and `title`, and give a badged
+  choice its own `content` (its `label` is otherwise also the visible text).
+  Never imitate an exclusive view switch with group buttons to get a badge.
   For app-supplied text that can run long (a tag or category name), set
   `maxWidth` (a `CssLength`, such as `px(160)`): the label truncates with an
   ellipsis and string or number content becomes the hover `title`.

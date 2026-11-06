@@ -6549,7 +6549,8 @@
         "equal width",
         "small",
         "placeholder (loading)",
-        "disabled (whole control)"
+        "disabled (whole control)",
+        "choice corner badge: count (hidden at 0, capped at badgeMax as 99+), short text, or dot, in any semantic badgeTone"
       ],
       "accessibility": [
         "Keep choice labels meaningful and every enabled native button in sequential Tab order."

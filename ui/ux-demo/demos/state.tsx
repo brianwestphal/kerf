@@ -138,6 +138,10 @@ export const popupContextAnchor = signal({ x: 0, y: 0 });
 export const displayDensity = signal<'compact' | 'comfortable' | 'roomy'>(
   'comfortable',
 );
+/** The selected view in the SegmentedControl Corner Count demo. */
+export const cornerCountView = signal<
+  'list' | 'workers' | 'notifications' | 'settings'
+>('list');
 
 /** A row in the drag-to-reorder ListItem and ListActionRow demos. */
 export interface DemoReorderRow {

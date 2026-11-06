@@ -6,9 +6,49 @@ import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
-import { Bell, Columns3, Folder, List, Settings } from 'lucide';
+import { Bell, Bot, Columns3, Folder, List, Settings } from 'lucide';
 
-import { displayDensity, inspectorSection, toolbarChoice } from './state.js';
+import {
+  cornerCountView,
+  displayDensity,
+  inspectorSection,
+  toolbarChoice,
+} from './state.js';
+
+/** The Corner Count demo's view switcher: 0, 2, 99+, and a dot. */
+function cornerCountChoices() {
+  return [
+    {
+      value: 'list' as const,
+      label: 'List View',
+      content: <LucideIcon icon={List} name="list" />,
+      badge: 0,
+    },
+    {
+      value: 'workers' as const,
+      label: 'Workers View, 2 live',
+      title: '2 workers live',
+      content: <LucideIcon icon={Bot} name="bot" />,
+      badge: 2,
+      badgeTone: 'info' as const,
+    },
+    {
+      value: 'notifications' as const,
+      label: 'Notifications View, 128 pending',
+      title: '128 notifications pending',
+      content: <LucideIcon icon={Bell} name="bell" />,
+      badge: 128,
+    },
+    {
+      value: 'settings' as const,
+      label: 'Settings View, update available',
+      title: 'An update is available',
+      content: <LucideIcon icon={Settings} name="settings" />,
+      badge: true as const,
+      badgeTone: 'warning' as const,
+    },
+  ];
+}
 
 export function SegmentedControlDemo() {
   return (
@@ -53,6 +93,36 @@ export function SegmentedControlDemo() {
               />
             </ToolbarControlGroup>
           }
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Corner Count"
+        note="A choice's badge is a count, short text, or a dot over its icon: hidden at 0, 99+ past badgeMax, and decorative, so the choice's label and title carry the count. It stays inside its segment, so neither a toolbar nor a filled track clips it."
+        align="inline-control"
+      >
+        <Toolbar
+          label="Corner Count Toolbar"
+          leading={
+            <ToolbarControlGroup>
+              <SegmentedControl
+                id="corner-count-toolbar"
+                label="Workspace View"
+                value={cornerCountView.value}
+                action="select-segment-demo"
+                appearance="toolbar"
+                shape="pill"
+                size="small"
+                choices={cornerCountChoices()}
+              />
+            </ToolbarControlGroup>
+          }
+        />
+        <SegmentedControl
+          id="corner-count-track"
+          label="Workspace View, Filled Track"
+          value={cornerCountView.value}
+          action="select-segment-demo"
+          choices={cornerCountChoices()}
         />
       </CatalogExample>
       <CatalogExample

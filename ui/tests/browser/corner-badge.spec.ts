@@ -138,3 +138,117 @@ test('toolbar buttons carry a corner count badge at default and compact sizes, w
     }
   }
 });
+
+// KF-170258: a SegmentedControl choice carries the same decorative corner
+// count as a toolbar button, hidden at 0 and capped at 99+, covering only the
+// top row of its 16px icon, ringed in the segment's fill, and never clipped
+// by a toolbar or a filled track, wide and narrow, selected and unselected.
+test('segmented control choices carry a corner count badge on a toolbar and a filled track, wide and narrow', async ({
+  page,
+}) => {
+  await page.goto('/?component=segmented-control');
+  const controls = ['corner-count-toolbar', 'corner-count-track'].map((id) =>
+    page.locator(`[data-segmented-control-id="${id}"]`),
+  );
+  await expect(
+    controls[0]!.locator('[data-segment-value="workers"]'),
+  ).toHaveAccessibleName('Workers View, 2 live');
+  const measure = (control: Locator) =>
+    control.evaluate((element) =>
+      [
+        ...element.querySelectorAll<HTMLButtonElement>(
+          ':scope > .kui-segmented-control__item',
+        ),
+      ].map((item) => {
+        const badge = item.querySelector<HTMLElement>(
+          ':scope > .kui-badge[data-placement="corner"]',
+        );
+        if (!badge) return { value: item.dataset.segmentValue, badge: null };
+        const mark = badge.getBoundingClientRect();
+        const icon = item.querySelector('svg')!.getBoundingClientRect();
+        const box = item.getBoundingClientRect();
+        const style = globalThis.getComputedStyle(badge);
+        // The ring reaches 2px past the mark; no ancestor may clip it.
+        let clipped = false;
+        for (
+          let node = badge.parentElement;
+          node && node !== document.body;
+          node = node.parentElement
+        ) {
+          const nodeStyle = globalThis.getComputedStyle(node);
+          if (nodeStyle.overflow === 'visible' && nodeStyle.clipPath === 'none')
+            continue;
+          const clip = node.getBoundingClientRect();
+          const top = clip.top + parseFloat(nodeStyle.borderTopWidth);
+          const right = clip.right - parseFloat(nodeStyle.borderRightWidth);
+          if (mark.top - 2 < top - 0.5 || mark.right + 2 > right + 0.5)
+            clipped = true;
+        }
+        return {
+          value: item.dataset.segmentValue,
+          badge: {
+            text: badge.textContent,
+            ariaHidden: badge.getAttribute('aria-hidden'),
+            pointer: style.pointerEvents,
+            ring: style.boxShadow,
+            dot: badge.dataset.size === 'dot',
+            height: mark.height,
+            iconOverlap: mark.bottom - icon.top,
+            inside:
+              mark.top >= box.top - 0.5 &&
+              mark.right <= box.right + 0.5 &&
+              mark.left >= box.left - 0.5,
+            clipped,
+          },
+        };
+      }),
+    );
+  for (const width of [1280, 390, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const selected of ['list', 'notifications']) {
+      await controls[1]!.locator(`[data-segment-value="${selected}"]`).click();
+      for (const control of controls) {
+        await control.scrollIntoViewIfNeeded();
+        const [list, workers, notifications, settings] = await measure(control);
+        expect(list).toEqual({ value: 'list', badge: null });
+        expect(workers!.badge!.text).toBe('2');
+        expect(notifications!.badge!.text).toBe('99+');
+        expect(settings!.badge!.dot).toBe(true);
+        for (const item of [workers, notifications, settings]) {
+          const badge = item!.badge!;
+          expect(badge.ariaHidden).toBe('true');
+          expect(badge.pointer).toBe('none');
+          expect(badge.inside).toBe(true);
+          expect(badge.clipped).toBe(false);
+          expect(badge.ring).toMatch(/0px 0px 0px 2px/);
+        }
+        for (const item of [workers, notifications]) {
+          const badge = item!.badge!;
+          expect(badge.height).toBeCloseTo(16, 0);
+          // It covers the icon's top row, not its body.
+          expect(badge.iconOverlap).toBeGreaterThan(0);
+          expect(badge.iconOverlap).toBeLessThanOrEqual(5.5);
+        }
+      }
+      // The selected segment's ring is its own fill, not the track's.
+      const rings = await controls[1]!.evaluate((element) => {
+        const ringOf = (value: string) =>
+          globalThis
+            .getComputedStyle(
+              element.querySelector(
+                `[data-segment-value="${value}"] > .kui-badge`,
+              )!,
+            )
+            .boxShadow.split(/,(?![^(]*\))/)[0]!
+            .trim();
+        return {
+          notifications: ringOf('notifications'),
+          workers: ringOf('workers'),
+        };
+      });
+      if (selected === 'notifications')
+        expect(rings.notifications).not.toEqual(rings.workers);
+      else expect(rings.notifications).toEqual(rings.workers);
+    }
+  }
+});

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 458400,
-  "measuredLargestJavaScriptGzip": 164548,
-  "measuredTotalJavaScriptGzip": 458335,
+  "totalJavaScriptGzip": 458800,
+  "measuredLargestJavaScriptGzip": 164545,
+  "measuredTotalJavaScriptGzip": 458707,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -6979,6 +6979,22 @@
         "measuredTotalJavaScriptGzip": 458335,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 458400
+      }
+    },
+    {
+      "at": "2026-11-06T02:23:36.828Z",
+      "reason": "KF-170258: SegmentedControl choices render the corner count Badge, and the demo adds a Corner Count example",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164548,
+        "measuredTotalJavaScriptGzip": 458335,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 458400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164545,
+        "measuredTotalJavaScriptGzip": 458707,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 458800
       }
     }
   ]

@@ -1,8 +1,14 @@
+import {
+  badgeText,
+  type BadgeValue,
+} from '../../../shared/content/badge-text.js';
 import type { KerfUiContent } from '../../../shared/content/semantic-content.js';
 import {
   filterDataAttributes,
   type RootDataAttributes,
 } from '../../../shared/dom/extension-attributes.js';
+import type { SemanticTone } from '../../../shared/styles/semantic-tone.js';
+import { Badge } from '../../feedback/badge/badge.js';
 
 export type SegmentedControlAppearance = 'filled' | 'outlined' | 'toolbar';
 export type SegmentedControlShape = 'rounded' | 'pill';
@@ -15,6 +21,23 @@ export interface SegmentedControlChoice<Value extends string = string> {
   content?: KerfUiContent;
   title?: string;
   disabled?: boolean;
+  /**
+   * A count, short text, or `true` for a text-free dot over the choice's
+   * top-trailing corner, such as how many workers are live. A count of 0 (or
+   * less) and empty text show no badge, and a `placeholder` control shows
+   * none. The badge is decorative (`aria-hidden`): put its meaning in `label`
+   * and `title` yourself, for example "Workers View, 2 live". Since `label`
+   * is also the visible text when `content` is omitted, give a badged choice
+   * its own `content`, such as an icon.
+   */
+  badge?: BadgeValue;
+  /** The badge's tone (default `danger`). */
+  badgeTone?: SemanticTone;
+  /**
+   * The largest count shown in full; a larger count shows as `{badgeMax}+`
+   * (default 99, so 100 shows "99+"). Text badges are shown as given.
+   */
+  badgeMax?: number;
 }
 
 export interface SegmentedControlProps<Value extends string = string> {
@@ -110,9 +133,44 @@ export function SegmentedControl<Value extends string>({
             data-kui-disabled={unavailable ? 'true' : undefined}
           >
             {choice.content ?? <span>{choice.label}</span>}
+            {placeholder ? null : (
+              <ChoiceBadge
+                badge={choice.badge}
+                tone={choice.badgeTone ?? 'danger'}
+                max={choice.badgeMax ?? 99}
+              />
+            )}
           </button>
         );
       })}
     </div>
+  );
+}
+
+// KF-170258: the same corner badge ToolbarButton draws, read from the same
+// plain data, so a view switcher can carry a count without app CSS.
+function ChoiceBadge({
+  badge,
+  tone,
+  max,
+}: {
+  badge: BadgeValue | undefined;
+  tone: SemanticTone;
+  max: number;
+}) {
+  if (badge === true)
+    return <Badge tone={tone} size="dot" placement="corner" ariaHidden />;
+  const text = badgeText(badge, max);
+  if (text === undefined) return null;
+  return (
+    <Badge
+      tone={tone}
+      appearance="solid"
+      size="compact"
+      placement="corner"
+      ariaHidden
+    >
+      {text}
+    </Badge>
   );
 }

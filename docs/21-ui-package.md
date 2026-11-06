@@ -359,7 +359,12 @@ slot without mixing authoring rules into the per-entry component catalog.
   dormant decoration only; it does not replace separator semantics or wiring.
 - `SegmentedControl` labels a group of native pressed buttons. Every enabled
   choice stays in sequential Tab order; the app handles its action and owns the
-  selected value.
+  selected value. A choice may carry a decorative corner `badge` (a count
+  hidden at 0 and capped at `badgeMax`, short text, or a dot; KF-170258) that
+  is `aria-hidden`, so its `label` and `title` name the count. The badge sits
+  on the segment's top edge, covering only its icon's top row, and stays
+  inside the segment so a scrolling track never clips it; a loading
+  `placeholder` shows no badge.
 - `ChoiceChips` names a `role="radiogroup"` of native radios (one Tab stop,
   arrow-key selection) or, with `multiple`, a `role="group"` of native
   checkboxes (each pill a Tab stop that Space toggles, native checked state).

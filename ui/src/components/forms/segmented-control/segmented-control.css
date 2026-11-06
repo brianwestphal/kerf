@@ -16,6 +16,9 @@
     0px,
     calc(var(--kui-segmented-radius) - var(--kui-layout-highlight-inset, 2px))
   );
+  /* Context for a choice's corner badge (badge.css, KF-170258): the surface
+     under every segment, which is the track's own fill. */
+  --_kui-segmented-control-badge-base: var(--kui-segmented-background);
   display: inline-flex;
   max-width: 100%;
   min-height: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
@@ -78,6 +81,12 @@
     --kui-toolbar-control-selected-shadow,
     var(--kui-shadow-s)
   );
+  /* The toolbar track has no fill: a segment sits on its group's surface
+     (the context value the group provides), or the page when standalone. */
+  --_kui-segmented-control-badge-base: var(
+    --_kui-toolbar-control-group-badge-ring,
+    var(--kui-color-surface)
+  );
   min-height: remify(40px);
   padding: 0;
   overflow: visible;
@@ -100,8 +109,13 @@
 }
 
 .kui-segmented-control__item {
+  /* The segment's own fill, layered over the track for a corner badge's
+     ring: none at rest, then the hover or selected fill. */
+  --_kui-segmented-control-badge-ring: transparent;
   appearance: none;
   display: inline-flex;
+  /* Anchors a choice's corner badge. */
+  position: relative;
   min-width: remify(40px);
   min-height: remify(40px);
   padding: remify(7px) var(--kui-layout-item-padding, remify(8px));
@@ -135,12 +149,14 @@
 }
 
 .kui-segmented-control__item:hover:not(:disabled) {
+  --_kui-segmented-control-badge-ring: var(--kui-segmented-hover-background);
   border-color: var(--kui-segmented-hover-border);
   background: var(--kui-segmented-hover-background);
 }
 
 .kui-segmented-control__item[data-selected="true"],
 .kui-segmented-control__item[data-selected="true"]:hover:not(:disabled) {
+  --_kui-segmented-control-badge-ring: var(--kui-segmented-selected-background);
   border-color: var(--kui-segmented-selected-border);
   color: var(--kui-segmented-selected-foreground);
   background: var(--kui-segmented-selected-background);

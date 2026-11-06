@@ -221,6 +221,7 @@ import {
   contentSwapFaded,
   contentSwapStep,
   conversationSelections,
+  cornerCountView,
   customDisclosureOpen,
   disclosureOpen,
   displayDensity,
@@ -1117,6 +1118,14 @@ const stopActions = delegateActions(app, 'click', {
       (value === 'summary' || value === 'activity' || value === 'files')
     )
       inspectorSection.value = value;
+    if (
+      (id === 'corner-count-toolbar' || id === 'corner-count-track') &&
+      (value === 'list' ||
+        value === 'workers' ||
+        value === 'notifications' ||
+        value === 'settings')
+    )
+      cornerCountView.value = value;
     if (
       id === 'display-density' &&
       (value === 'compact' || value === 'comfortable' || value === 'roomy')
