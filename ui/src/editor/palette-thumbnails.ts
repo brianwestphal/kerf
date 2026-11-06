@@ -54,21 +54,19 @@ function sharedSheet(document: Document): CSSStyleSheet | null {
  * content instead.
  */
 function fit(host: HTMLElement): void {
-  const shadow = host.shadowRoot;
-  const stage = shadow?.querySelector<HTMLElement>('[data-thumb-stage]');
-  const slot = shadow?.querySelector('slot');
-  if (!stage || !slot) return;
-  const content = stage.firstElementChild as HTMLElement | null;
+  // Only filled hosts are fitted, so the stage and slot are there.
+  const shadow = host.shadowRoot!;
+  const stage = shadow.querySelector<HTMLElement>('[data-thumb-stage]')!;
+  const slot = shadow.querySelector('slot')!;
+  // An empty stage measures as a zero-size box.
+  const content = (stage.firstElementChild ?? stage) as HTMLElement;
   // A control whose content outgrows its own box (a field wider than the
   // stage) fits by what it draws.
-  const width = Math.max(content?.offsetWidth ?? 0, content?.scrollWidth ?? 0);
-  const height = Math.max(
-    content?.offsetHeight ?? 0,
-    content?.scrollHeight ?? 0,
-  );
+  const width = Math.max(content.offsetWidth, content.scrollWidth);
+  const height = Math.max(content.offsetHeight, content.scrollHeight);
   const box = { width: host.clientWidth, height: host.clientHeight };
   // A component that shows nothing until it opens keeps its fallback icon.
-  const empty = !content || !width || !height;
+  const empty = content === stage || !width || !height;
   host.toggleAttribute('data-thumb-empty', empty);
   slot.hidden = !empty;
   stage.style.visibility = empty ? 'hidden' : '';

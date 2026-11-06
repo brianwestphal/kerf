@@ -4,6 +4,7 @@
 import { mount } from 'kerfjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { paletteSketch } from '../../../src/editor/palette-schematics.js';
 import { wirePaletteThumbnails } from '../../../src/editor/palette-thumbnails.js';
 import { createEditor } from './kerf-catalog.js';
 
@@ -122,12 +123,12 @@ describe('palette grid view', () => {
   });
 });
 
-describe('wirePaletteThumbnails', () => {
-  const size = (element: Element, sizes: Record<string, number>) => {
-    for (const [name, value] of Object.entries(sizes))
-      Object.defineProperty(element, name, { value, configurable: true });
-  };
+const size = (element: Element, sizes: Record<string, number>) => {
+  for (const [name, value] of Object.entries(sizes))
+    Object.defineProperty(element, name, { value, configurable: true });
+};
 
+describe('wirePaletteThumbnails', () => {
   it('scales a thumbnail to fit its tile, centered, never past its size', async () => {
     const root = document.createElement('div');
     root.innerHTML = '<div data-editor-palette-thumb="wide">Fallback</div>';
@@ -174,6 +175,24 @@ describe('wirePaletteThumbnails', () => {
     stop();
   });
 
+  it('keeps the fallback for a thumbnail that renders no element', async () => {
+    const root = document.createElement('div');
+    root.innerHTML = '<div data-editor-palette-thumb="blank">Fallback</div>';
+    document.body.append(root);
+    const stop = wirePaletteThumbnails(root, { htmlOf: () => '' });
+    const host = root.firstElementChild as HTMLElement;
+    await vi.waitFor(() =>
+      expect(host.hasAttribute('data-thumb-empty')).toBe(true),
+    );
+    expect(host.shadowRoot!.querySelector('slot')!.hidden).toBe(false);
+    // A later change elsewhere leaves a filled tile alone.
+    const stage = host.shadowRoot!.querySelector('[data-thumb-stage]');
+    root.append(document.createElement('span'));
+    await Promise.resolve();
+    expect(host.shadowRoot!.querySelector('[data-thumb-stage]')).toBe(stage);
+    stop();
+  });
+
   it('keeps the fallback for a component with no thumbnail', () => {
     const root = document.createElement('div');
     root.innerHTML = '<div data-editor-palette-thumb="none">Fallback</div>';
@@ -183,5 +202,123 @@ describe('wirePaletteThumbnails', () => {
     expect(host.hasAttribute('data-thumb-empty')).toBe(true);
     expect(host.shadowRoot!.querySelector('slot')!.hidden).toBe(false);
     stop();
+  });
+
+  it('shares the page sheets it can read and refits when a tile resizes', async () => {
+    const style = document.createElement('style');
+    style.textContent = '.probe-rule { color: red; }';
+    const hidden = document.createElement('style');
+    document.head.append(style, hidden);
+    // A cross-origin sheet hides its rules.
+    Object.defineProperty(hidden.sheet!, 'cssRules', {
+      get: () => {
+        throw new DOMException('cross-origin', 'SecurityError');
+      },
+    });
+    const observed: ResizeObserverCallback[] = [];
+    const Real = window.ResizeObserver;
+    window.ResizeObserver = class {
+      constructor(callback: ResizeObserverCallback) {
+        observed.push(callback);
+      }
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    } as unknown as typeof ResizeObserver;
+    // A fresh document, so the shared sheet is built for this test.
+    const page = document.implementation.createHTMLDocument('thumbs');
+    Object.defineProperty(page, 'defaultView', { value: window });
+    Object.defineProperty(page, 'styleSheets', {
+      value: [style.sheet, hidden.sheet],
+    });
+    try {
+      const root = page.createElement('div');
+      root.innerHTML = '<div data-editor-palette-thumb="a">Fallback</div>';
+      page.body.append(root);
+      const host = root.firstElementChild as HTMLElement;
+      const stop = wirePaletteThumbnails(root, {
+        htmlOf: () => '<span class="thumb">A</span>',
+      });
+      const sheet = host.shadowRoot!.adoptedStyleSheets[0];
+      if (sheet)
+        expect(
+          Array.from(sheet.cssRules)
+            .map((rule) => rule.cssText)
+            .join(''),
+        ).toContain('probe-rule');
+      const content = host.shadowRoot!.querySelector<HTMLElement>('.thumb')!;
+      size(host, { clientWidth: 100, clientHeight: 80 });
+      size(content, {
+        offsetWidth: 20,
+        offsetHeight: 10,
+        scrollWidth: 20,
+        scrollHeight: 10,
+        offsetLeft: 0,
+        offsetTop: 0,
+      });
+      observed[0]!(
+        [{ target: host } as unknown as ResizeObserverEntry],
+        {} as ResizeObserver,
+      );
+      const stage =
+        host.shadowRoot!.querySelector<HTMLElement>('[data-thumb-stage]')!;
+      expect(stage.style.transform).toBe('translate(40px, 35px) scale(1)');
+      stop();
+    } finally {
+      window.ResizeObserver = Real;
+      style.remove();
+      hidden.remove();
+    }
+  });
+});
+
+describe('wirePaletteThumbnails without optional browser APIs', () => {
+  it('fills tiles with no ResizeObserver or adoptable sheets, and waits for a sized tile', async () => {
+    const page = document.implementation.createHTMLDocument('bare');
+    // A view with only what the wiring needs.
+    Object.defineProperty(page, 'defaultView', {
+      value: {
+        MutationObserver: window.MutationObserver,
+        requestAnimationFrame: (callback: FrameRequestCallback) =>
+          window.requestAnimationFrame(callback),
+      },
+    });
+    const root = page.createElement('div');
+    root.innerHTML = '<div data-editor-palette-thumb="a">Fallback</div>';
+    page.body.append(root);
+    const host = root.firstElementChild as HTMLElement;
+    // A shadow root already there is reused.
+    const shadow = host.attachShadow({ mode: 'open' });
+    const stop = wirePaletteThumbnails(root, {
+      htmlOf: () => '<span class="thumb">A</span>',
+    });
+    expect(host.shadowRoot).toBe(shadow);
+    expect(shadow.adoptedStyleSheets).toEqual([]);
+    const content = shadow.querySelector<HTMLElement>('.thumb')!;
+    size(content, {
+      offsetWidth: 20,
+      offsetHeight: 10,
+      scrollWidth: 20,
+      scrollHeight: 10,
+      offsetLeft: 0,
+      offsetTop: 0,
+    });
+    // An unsized tile shows the thumbnail but leaves it unplaced.
+    const stage = shadow.querySelector<HTMLElement>('[data-thumb-stage]')!;
+    await vi.waitFor(() => expect(stage.style.visibility).toBe(''));
+    expect(host.hasAttribute('data-thumb-empty')).toBe(false);
+    expect(stage.style.transform).toBe('');
+    stop();
+  });
+});
+
+describe('paletteSketch', () => {
+  it('draws Kerf layouts and leaves everything else to live thumbnails', () => {
+    expect(paletteSketch('@kerfjs/ui:workbench')).toContain('<svg');
+    expect(
+      paletteSketch('@kerfjs/ui:collapsible-panel#CollapsiblePanelRelocated'),
+    ).toBe(paletteSketch('@kerfjs/ui:collapsible-panel'));
+    expect(paletteSketch('@kerfjs/ui:switch')).toBeUndefined();
+    expect(paletteSketch('@acme/app:workbench')).toBeUndefined();
   });
 });

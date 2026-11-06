@@ -4804,22 +4804,18 @@ export function createEditor(options: EditorOptions) {
    * once per editor. An empty layout's zones show their canvas stand-ins,
    * so a Workbench's thumbnail sketches its regions.
    */
-  const thumbnails = new Map<string, string | undefined>();
+  const thumbnails = new Map<string, string>();
   const thumbnailOf = (key: string) => {
     if (!thumbnails.has(key)) {
       const document = withCatalog(
         { ...emptyDocument(), root: asRoot(seededNode(key)) },
         key,
       );
-      const html = canvasContent(document, [], undefined, undefined, true);
-      // As `contained` does: a thumbnail that cannot mount keeps the icon.
-      const probe = globalThis.document.createElement('div');
-      try {
-        mount(probe, () => html)();
-        thumbnails.set(key, html.toString());
-      } catch {
-        thumbnails.set(key, undefined);
-      }
+      // Static markup in a shadow root, never mounted, so no mount probe.
+      thumbnails.set(
+        key,
+        canvasContent(document, [], undefined, undefined, true).toString(),
+      );
     }
     return thumbnails.get(key);
   };
