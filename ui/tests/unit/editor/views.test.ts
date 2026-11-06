@@ -420,8 +420,9 @@ describe('composed documents in the editor', () => {
     // An edit to the row saves to the row's file.
     editor.selection.value = { kind: 'node', id: rowDocument().root!.id };
     expect(root.querySelector('[data-editor-param="title"]')).not.toBeNull();
-    root.querySelector<HTMLElement>('[data-editor-name="true"] input')!.value =
-      'rowItem';
+    root.querySelector<HTMLInputElement>(
+      '[data-editor-name="true"] input',
+    )!.value = 'rowItem';
     root
       .querySelector<HTMLElement>('[data-editor-name="true"] input')!
       .dispatchEvent(new Event('change', { bubbles: true }));
