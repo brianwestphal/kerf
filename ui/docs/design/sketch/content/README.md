@@ -1,12 +1,12 @@
 # Content and feedback Sketch library
 
-[Kerf-Content.sketch](Kerf-Content.sketch) contains 56 editable light and dark
-Symbols for 28 reusable roots across 20 source variants: Disclosure,
-MessageComposer, ProgressBar, ProgressRing, StateBanner, EmptyState, and
-Skeleton. Multi-control Disclosure and progress sheets become separate native
+[Kerf-Content.sketch](Kerf-Content.sketch) contains 70 editable light and dark
+Symbols for 35 reusable roots across 22 source variants: Disclosure,
+MessageComposer, ProgressBar, ProgressRing, StateBanner, EmptyState,
+Skeleton, and Gauge. Multi-control Disclosure and progress sheets become separate native
 masters. This library was created and tested with Sketch 2026.3.1.
 
-ProgressRing geometry stays fixed. Other components stretch their tracks and
+ProgressRing and Gauge geometry stays fixed. Other components stretch their tracks and
 container surfaces with the instance: leading content stays left, the trailing
 half (a banner's action button, a composer's send button, a value label) moves
 to the right edge as one cluster, and EmptyState content stays centered. The
@@ -52,13 +52,13 @@ and save/reopen keeps both (`sync-verification.json`).
 
 The capture renders production templates in Chromium and clips each reusable
 root. Sketch's SVG import cannot reproduce three browser features, so the
-pipeline translates them: a ProgressRing's dashed arc becomes an explicit arc
-path, a translucent stroke's alpha moves into `stroke-opacity`, and a blurred
+pipeline translates them: a ProgressRing's dashed arc and a Gauge's
+`pathLength`-dashed fill become explicit arc paths cut at the dash length, a translucent stroke's alpha moves into `stroke-opacity`, and a blurred
 box shadow becomes a native Gaussian blur on the imported shadow layer. A
 native shadow extends past the master's frame, as a CSS box shadow does, so
 exports of MessageComposer include it. Native tasks use the serial runner in the existing Sketch process and
 preserve preexisting documents and Library registrations. Verification
-imports fourteen linked instances across all seven families and both themes,
+imports sixteen linked instances across all eight families and both themes,
 tests text overrides where text exists, increases width by 80px, then saves
 and reopens the Library and consumer document. The reviewed
 `comparison-*.png` files show production, native, and widened instances.

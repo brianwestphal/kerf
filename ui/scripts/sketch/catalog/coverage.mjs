@@ -85,13 +85,9 @@ const families = [
       'state-banner',
       'empty-state',
       'skeleton',
+      // KF-RS788E: Gauge joined this batch's library and pipeline.
+      'gauge',
     ],
-  },
-  {
-    name: 'Gauge',
-    ticket: 'KF-RS788E',
-    status: 'pending',
-    components: ['gauge'],
   },
 ];
 
@@ -124,8 +120,8 @@ const rows = families.flatMap((family) =>
   ),
 );
 assert.equal(rows.length, 114, 'Reconcile catalog count and ticket batches');
-assert.equal(rows.filter((row) => row.status === 'supported').length, 112);
-assert.equal(rows.filter((row) => row.status === 'pending').length, 2);
+assert.equal(rows.filter((row) => row.status === 'supported').length, 114);
+assert.equal(rows.filter((row) => row.status === 'pending').length, 0);
 assert.equal(
   new Set(rows.map((row) => `${row.component}/${row.variant}`)).size,
   rows.length,
@@ -156,7 +152,7 @@ variant may be a multi-control showcase; a family ticket must export its actual
 individual component states and retain the sheet only as a catalog page.
 
 Every supported Symbol ships in one Library, [Kerf-UI.sketch](unified/README.md),
-with 312 light/dark Symbols assembled from the family build inputs. The Button
+with 326 light/dark Symbols assembled from the family build inputs. The Button
 pilot covers seven source showcase variants with 40 appearance Symbols
 ([Button](button/README.md)). The Form controls batch covers 20 showcase
 variants with 66 individual Symbols ([Forms](forms/README.md)). The Advanced
@@ -165,7 +161,7 @@ inputs batch covers 17 variants with 34 Symbols
 variants with 46 Symbols ([Lists and data](lists/README.md)). The Toolbars and
 navigation batch covers 25 variants with 70 Symbols for 35 individual controls
 ([Toolbars and navigation](toolbar/README.md)). The Content and feedback batch
-covers 20 variants with 56 Symbols for 28 reusable roots
+covers 22 variants with 70 Symbols for 35 reusable roots
 ([Content and feedback](content/README.md)). Every source variant now has a
 supported native batch; a new template variant must join a family here and be
 rebuilt into the unified Library. The catalog's

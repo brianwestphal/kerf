@@ -15,6 +15,7 @@ const selected = [
   'state-banner-info-control',
   'empty-state-with-action-control',
   'skeleton-block-control',
+  'gauge-full-tokens',
 ];
 const output = defaultOutput;
 const fixtures = JSON.parse(

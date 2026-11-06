@@ -38,6 +38,7 @@ module.exports.apply = function (symbol, fixture, dom) {
       'state-banner',
       'empty-state',
       'skeleton',
+      'gauge',
     ].indexOf(fixture.component) < 0
   )
     throw new Error(
@@ -49,9 +50,11 @@ module.exports.apply = function (symbol, fixture, dom) {
   // the pins; the JS API exposes no setter, so use the native layer.
   root.sketchObject.setGroupBehavior(0);
   fixedLeft(root, dom);
-  // Ring geometry stays fixed; container and progress-track structure can
+  // Ring and dial geometry stays fixed (a Gauge's arc, ticks, and needle
+  // must not stretch, KF-RS788E); container and progress-track structure can
   // resize while labels and decorations keep their authored dimensions.
-  if (fixture.component === 'progress-ring') return;
+  if (fixture.component === 'progress-ring' || fixture.component === 'gauge')
+    return;
   root.horizontalPins = dom.Pin.All;
   pinFluid(root, dom, fixture.component === 'empty-state');
 };

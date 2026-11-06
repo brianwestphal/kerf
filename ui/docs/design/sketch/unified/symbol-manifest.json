@@ -5383,6 +5383,168 @@
       "symbolId": "3B7AAF8F-D998-4231-B620-7B659012B46C",
       "layerId": "357CA3B5-7A58-453B-BF63-52279305E4B2",
       "text": []
+    },
+    "content/gauge-full-tokens-light": {
+      "family": "content",
+      "name": "Gauge / Full / Tokens / Light",
+      "symbolId": "E13E9C0C-7396-4749-8EDA-2314C1AA9933",
+      "layerId": "A90AD531-64BF-4F48-8804-034804F774EF",
+      "text": [
+        {
+          "id": "59614EC2-03EF-4E95-A9E5-327505ECFE86",
+          "value": "420"
+        },
+        {
+          "id": "3CDABF3B-47DE-4B4C-B21A-57D027A1522B",
+          "value": "tok/min"
+        }
+      ]
+    },
+    "content/gauge-full-tickets-light": {
+      "family": "content",
+      "name": "Gauge / Full / Tickets / Light",
+      "symbolId": "76A1F153-F892-48FC-81F2-2C426AA7571F",
+      "layerId": "3A8D86ED-C155-47D9-B281-4C93DBE94719",
+      "text": [
+        {
+          "id": "85940483-9363-40DC-B4E9-277E8FBCD3CD",
+          "value": "18"
+        },
+        {
+          "id": "9EDA71D6-5B70-4FB7-B8C8-191E5D71C873",
+          "value": "per hour"
+        }
+      ]
+    },
+    "content/gauge-full-queue-light": {
+      "family": "content",
+      "name": "Gauge / Full / Queue / Light",
+      "symbolId": "356741FF-7801-4EA6-A6D4-53063A878AF3",
+      "layerId": "E29F1CD1-79FE-4335-8CEE-965F1DE70C59",
+      "text": [
+        {
+          "id": "C2E9C768-CFAA-4015-A8C0-61DB4C109C19",
+          "value": "72"
+        }
+      ]
+    },
+    "content/gauge-full-errors-light": {
+      "family": "content",
+      "name": "Gauge / Full / Errors / Light",
+      "symbolId": "B4822CC5-F07D-446A-B811-DF58931C3A56",
+      "layerId": "7AFC8387-5599-4256-AE58-839066506A14",
+      "text": [
+        {
+          "id": "A104F6C2-889E-4BA5-9D33-66B3FC855D12",
+          "value": "9.5"
+        },
+        {
+          "id": "BCC49F2D-EDE8-4727-9E2E-40A0397FEFD5",
+          "value": "%"
+        }
+      ]
+    },
+    "content/gauge-full-tokens-dark": {
+      "family": "content",
+      "name": "Gauge / Full / Tokens / Dark",
+      "symbolId": "30AAD16B-47DC-40C5-80B5-8872D932D76F",
+      "layerId": "448C85B5-5FF1-4B27-BBA1-94D1ABB0AF81",
+      "text": [
+        {
+          "id": "1142B2EF-25E9-46B3-8E63-0EE1D9B48AD8",
+          "value": "420"
+        },
+        {
+          "id": "C4E05A9E-50EC-47AE-8A3B-0CF3557D36E0",
+          "value": "tok/min"
+        }
+      ]
+    },
+    "content/gauge-full-tickets-dark": {
+      "family": "content",
+      "name": "Gauge / Full / Tickets / Dark",
+      "symbolId": "1D064A0D-8E14-456A-8389-7CC9455D6FDC",
+      "layerId": "E788C537-AEB7-4E27-8195-35242DB57BBA",
+      "text": [
+        {
+          "id": "795C1A3B-9D0C-49B0-908F-164B3CA33D76",
+          "value": "18"
+        },
+        {
+          "id": "3C244973-6577-4A0F-88A5-380538BD9CC8",
+          "value": "per hour"
+        }
+      ]
+    },
+    "content/gauge-full-queue-dark": {
+      "family": "content",
+      "name": "Gauge / Full / Queue / Dark",
+      "symbolId": "AE6AAED1-5035-42B0-8839-5032176EEF19",
+      "layerId": "0ED71F7E-65EE-4401-9707-D26D4864FC3C",
+      "text": [
+        {
+          "id": "BB11745D-3AEC-44AE-82BE-EB12F148DB7D",
+          "value": "72"
+        }
+      ]
+    },
+    "content/gauge-full-errors-dark": {
+      "family": "content",
+      "name": "Gauge / Full / Errors / Dark",
+      "symbolId": "5D73B6B7-C0C7-4B66-82AD-E3F6AFD9CDF2",
+      "layerId": "9E66FD72-95D3-4318-A4E8-E9EA6D53926D",
+      "text": [
+        {
+          "id": "8D349E16-BA5D-4E4C-BE6D-985552066677",
+          "value": "9.5"
+        },
+        {
+          "id": "3EC9B8A3-E6D1-4F8D-88A9-C8566E643A23",
+          "value": "%"
+        }
+      ]
+    },
+    "content/gauge-bare-low-light": {
+      "family": "content",
+      "name": "Gauge / Bare / Low / Light",
+      "symbolId": "42200874-047D-44E1-840F-7937545E59DC",
+      "layerId": "ED72F8AE-1BDA-4BEA-9F0A-E4382BF99A68",
+      "text": []
+    },
+    "content/gauge-bare-mid-light": {
+      "family": "content",
+      "name": "Gauge / Bare / Mid / Light",
+      "symbolId": "7592F545-A81D-4472-96C0-04A406BDC7F0",
+      "layerId": "136A8325-15BB-4AD1-9B34-A2E3CF6A7343",
+      "text": []
+    },
+    "content/gauge-bare-high-light": {
+      "family": "content",
+      "name": "Gauge / Bare / High / Light",
+      "symbolId": "C133AE91-0A69-41C3-BCE0-3AC4280FB022",
+      "layerId": "9A2A716E-A4E4-45A8-8593-79F7A58B2A52",
+      "text": []
+    },
+    "content/gauge-bare-low-dark": {
+      "family": "content",
+      "name": "Gauge / Bare / Low / Dark",
+      "symbolId": "B11FAB48-22FF-4AC2-948B-507EB71678BD",
+      "layerId": "BF0B9F07-26C6-4B5C-AF3E-A287462A7299",
+      "text": []
+    },
+    "content/gauge-bare-mid-dark": {
+      "family": "content",
+      "name": "Gauge / Bare / Mid / Dark",
+      "symbolId": "4277DEC7-BD9F-45E7-9088-1CA2A2F8F6FD",
+      "layerId": "B69272FA-E617-4D9B-8405-68934E0BBA5C",
+      "text": []
+    },
+    "content/gauge-bare-high-dark": {
+      "family": "content",
+      "name": "Gauge / Bare / High / Dark",
+      "symbolId": "E06A28C2-67E4-42E1-AFA8-FF8E0E4A1AD2",
+      "layerId": "9D84D236-9689-49E8-8103-A804903EF1A2",
+      "text": []
     }
   }
 }

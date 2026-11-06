@@ -132,8 +132,8 @@
     }
   },
   "bindings": {
-    "text": 86,
-    "fills": 12,
-    "borders": 78
+    "text": 100,
+    "fills": 63,
+    "borders": 86
   }
 }

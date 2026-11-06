@@ -21,6 +21,7 @@ module.exports.run = function (session, parameters, done) {
     'state-banner': 'info-control',
     'empty-state': 'with-action-control',
     skeleton: 'block-control',
+    gauge: 'full-tokens',
   };
   var selected = fixtures.filter(function (fixture) {
     return (
@@ -29,9 +30,9 @@ module.exports.run = function (session, parameters, done) {
       ) === 0
     );
   });
-  if (selected.length !== 14)
+  if (selected.length !== 16)
     throw new Error(
-      'Expected seven representative content/feedback components in two themes.',
+      'Expected eight representative content/feedback components in two themes.',
     );
   session.openDocument(
     parameters.libraryPath,

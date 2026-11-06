@@ -60,8 +60,8 @@ async function generate() {
   const fixtures = JSON.parse(await readFile(paths.fixturesPath, 'utf8'));
   assert.equal(
     fixtures.length,
-    56,
-    'Capture all 28 individual content/feedback controls in two themes',
+    70,
+    'Capture all 35 individual content/feedback controls in two themes',
   );
   const enriched = fixtures.map((fixture) => ({
     ...fixture,
@@ -111,9 +111,9 @@ async function generate() {
   );
   assert.deepEqual(await processIds(), before, 'Sketch process list changed');
   const report = status.result;
-  assert.equal(report.length, 56);
+  assert.equal(report.length, 70);
   const symbols = Object.fromEntries(report.map((entry) => [entry.id, entry]));
-  assert.equal(Object.keys(symbols).length, 56);
+  assert.equal(Object.keys(symbols).length, 70);
   for (const [id, old] of Object.entries(previous)) {
     assert.ok(
       symbols[id],
@@ -224,9 +224,9 @@ async function verify() {
     [...status.librariesBefore].sort(),
   );
   assert.deepEqual(await processIds(), before, 'Sketch process list changed');
-  assert.equal(status.result.symbols, 56);
-  assert.equal(status.result.instances.length, 14);
-  assert.equal(status.result.reopened.length, 14);
+  assert.equal(status.result.symbols, 70);
+  assert.equal(status.result.instances.length, 16);
+  assert.equal(status.result.reopened.length, 16);
   await writeFile(
     paths.verificationPath,
     await prettier.format(`${JSON.stringify(status.result, null, 2)}\n`, {
@@ -234,7 +234,7 @@ async function verify() {
     }),
   );
   console.log(
-    `Verified 14 linked content/feedback consumers after save/reopen in Sketch PID ${status.processId}.`,
+    `Verified 16 linked content/feedback consumers after save/reopen in Sketch PID ${status.processId}.`,
   );
 }
 

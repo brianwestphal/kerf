@@ -1622,5 +1622,411 @@
       "component": "skeleton"
     },
     "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\"><rect x=\"0\" y=\"0\" width=\"48\" height=\"48\" rx=\"24\" fill=\"rgba(245,245,247,0.12)\"/></svg>"
+  },
+  {
+    "id": "gauge-full-tokens-light",
+    "component": "gauge",
+    "variant": "full",
+    "key": "tokens",
+    "theme": "light",
+    "name": "Gauge / Full / Tokens / Light",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 88,
+      "height": 86.234375
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "gauge"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 88 86.234375\" width=\"88\" height=\"86.234375\"><g color=\"rgb(0, 0, 0)\"><g aria-hidden=\"true\" fill=\"rgb(0, 0, 0)\" stroke-width=\"1px\" font-family=\"ui-sans-serif, system-ui, sans-serif\" transform=\"translate(.003)scale(.87994)\"><path class=\"kui-gauge__track\" d=\"M13.6 71a42 42 0 1 1 72.8 0\" pathLength=\"100\" fill=\"none\" stroke=\"rgb(0, 0, 49)\" stroke-width=\"8px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M13.6 71A42 42 0 0 1 36.196 10.38\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(0, 117, 219)\" stroke-width=\"8px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"26.617\" y1=\"63.5\" x2=\"20.555\" y2=\"67\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\"/><line class=\"kui-gauge__tick\" x1=\"20.164\" y1=\"53.136\" x2=\"16.186\" y2=\"53.554\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"21.468\" y1=\"40.729\" x2=\"17.664\" y2=\"39.493\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"27.706\" y1=\"29.926\" x2=\"24.733\" y2=\"27.25\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"37.798\" y1=\"22.594\" x2=\"36.171\" y2=\"18.939\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"50\" y1=\"23\" x2=\"50\" y2=\"16\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\"/><line class=\"kui-gauge__tick\" x1=\"62.202\" y1=\"22.594\" x2=\"63.829\" y2=\"18.939\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"72.294\" y1=\"29.926\" x2=\"75.267\" y2=\"27.25\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"78.532\" y1=\"40.729\" x2=\"82.336\" y2=\"39.493\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"79.836\" y1=\"53.136\" x2=\"83.814\" y2=\"53.554\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"73.383\" y1=\"63.5\" x2=\"79.445\" y2=\"67\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\"/><g class=\"kui-gauge__needle\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" transform=\"rotate(-19.2 50 50)\"><line x1=\"50\" y1=\"50\" x2=\"50\" y2=\"25\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"4px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><circle cx=\"50\" cy=\"50\" r=\"5\" fill=\"rgb(29, 29, 31)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g><text class=\"kui-gauge__value\" x=\"50\" y=\"83\" text-anchor=\"middle\" font-size=\"18\" fill=\"rgb(29, 29, 31)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb;font-family:ui-sans-serif,system-ui,sans-serif;font-size:18px;font-weight:500;font-style:normal;font-stretch:normal;font-variant-numeric:tabular-nums;text-anchor:middle;dominant-baseline:auto;letter-spacing:normal;word-spacing:0\">420</text><text class=\"kui-gauge__unit\" x=\"50\" y=\"95\" text-anchor=\"middle\" font-size=\"11\" fill=\"rgb(29, 29, 31)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.75\" style=\"marker:none;vector-effect:none;color-interpolation:srgb;font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;font-weight:400;font-style:normal;font-stretch:normal;font-variant-numeric:tabular-nums;text-anchor:middle;dominant-baseline:auto;letter-spacing:normal;word-spacing:0\">tok/min</text></g></g></svg>"
+  },
+  {
+    "id": "gauge-full-tickets-light",
+    "component": "gauge",
+    "variant": "full",
+    "key": "tickets",
+    "theme": "light",
+    "name": "Gauge / Full / Tickets / Light",
+    "box": {
+      "x": 124,
+      "y": 20,
+      "width": 88,
+      "height": 86.234375
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "gauge"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 88 86.234375\" width=\"88\" height=\"86.234375\"><g color=\"rgb(0, 0, 0)\"><g aria-hidden=\"true\" fill=\"rgb(0, 0, 0)\" stroke-width=\"1px\" font-family=\"ui-sans-serif, system-ui, sans-serif\" transform=\"translate(.003)scale(.87994)\"><path class=\"kui-gauge__track\" d=\"M13.6 71a42 42 0 1 1 72.8 0\" pathLength=\"100\" fill=\"none\" stroke=\"rgb(0, 0, 49)\" stroke-width=\"8px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M13.6 71A42 42 0 0 1 41.273 8.963\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(52, 199, 89)\" stroke-width=\"8px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"26.617\" y1=\"63.5\" x2=\"20.555\" y2=\"67\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\"/><line class=\"kui-gauge__tick\" x1=\"20.164\" y1=\"53.136\" x2=\"16.186\" y2=\"53.554\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"21.468\" y1=\"40.729\" x2=\"17.664\" y2=\"39.493\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"27.706\" y1=\"29.926\" x2=\"24.733\" y2=\"27.25\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"37.798\" y1=\"22.594\" x2=\"36.171\" y2=\"18.939\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"50\" y1=\"23\" x2=\"50\" y2=\"16\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\"/><line class=\"kui-gauge__tick\" x1=\"62.202\" y1=\"22.594\" x2=\"63.829\" y2=\"18.939\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"72.294\" y1=\"29.926\" x2=\"75.267\" y2=\"27.25\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"78.532\" y1=\"40.729\" x2=\"82.336\" y2=\"39.493\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"79.836\" y1=\"53.136\" x2=\"83.814\" y2=\"53.554\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"73.383\" y1=\"63.5\" x2=\"79.445\" y2=\"67\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\"/><g class=\"kui-gauge__needle\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" transform=\"rotate(-12 50 50)\"><line x1=\"50\" y1=\"50\" x2=\"50\" y2=\"25\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"4px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><circle cx=\"50\" cy=\"50\" r=\"5\" fill=\"rgb(29, 29, 31)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g><text class=\"kui-gauge__value\" x=\"50\" y=\"83\" text-anchor=\"middle\" font-size=\"18\" fill=\"rgb(29, 29, 31)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb;font-family:ui-sans-serif,system-ui,sans-serif;font-size:18px;font-weight:500;font-style:normal;font-stretch:normal;font-variant-numeric:tabular-nums;text-anchor:middle;dominant-baseline:auto;letter-spacing:normal;word-spacing:0\">18</text><text class=\"kui-gauge__unit\" x=\"50\" y=\"95\" text-anchor=\"middle\" font-size=\"11\" fill=\"rgb(29, 29, 31)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.75\" style=\"marker:none;vector-effect:none;color-interpolation:srgb;font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;font-weight:400;font-style:normal;font-stretch:normal;font-variant-numeric:tabular-nums;text-anchor:middle;dominant-baseline:auto;letter-spacing:normal;word-spacing:0\">per hour</text></g></g></svg>"
+  },
+  {
+    "id": "gauge-full-queue-light",
+    "component": "gauge",
+    "variant": "full",
+    "key": "queue",
+    "theme": "light",
+    "name": "Gauge / Full / Queue / Light",
+    "box": {
+      "x": 228,
+      "y": 20,
+      "width": 88,
+      "height": 86.234375
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "gauge"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 88 86.234375\" width=\"88\" height=\"86.234375\"><g color=\"rgb(0, 0, 0)\"><g aria-hidden=\"true\" fill=\"rgb(0, 0, 0)\" stroke-width=\"1px\" font-family=\"ui-sans-serif, system-ui, sans-serif\" transform=\"translate(.003)scale(.87994)\"><path class=\"kui-gauge__track\" d=\"M13.6 71a42 42 0 1 1 72.8 0\" pathLength=\"100\" fill=\"none\" stroke=\"rgb(0, 0, 49)\" stroke-width=\"8px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M13.6 71A42 42 0 0 1 83.44 24.635\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 204, 0)\" stroke-width=\"8px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"26.617\" y1=\"63.5\" x2=\"20.555\" y2=\"67\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\"/><line class=\"kui-gauge__tick\" x1=\"20.164\" y1=\"53.136\" x2=\"16.186\" y2=\"53.554\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"21.468\" y1=\"40.729\" x2=\"17.664\" y2=\"39.493\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"27.706\" y1=\"29.926\" x2=\"24.733\" y2=\"27.25\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"37.798\" y1=\"22.594\" x2=\"36.171\" y2=\"18.939\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"50\" y1=\"23\" x2=\"50\" y2=\"16\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\"/><line class=\"kui-gauge__tick\" x1=\"62.202\" y1=\"22.594\" x2=\"63.829\" y2=\"18.939\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"72.294\" y1=\"29.926\" x2=\"75.267\" y2=\"27.25\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"78.532\" y1=\"40.729\" x2=\"82.336\" y2=\"39.493\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"79.836\" y1=\"53.136\" x2=\"83.814\" y2=\"53.554\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"73.383\" y1=\"63.5\" x2=\"79.445\" y2=\"67\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\"/><g class=\"kui-gauge__needle\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" transform=\"rotate(52.8 50 50)\"><line x1=\"50\" y1=\"50\" x2=\"50\" y2=\"25\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"4px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><circle cx=\"50\" cy=\"50\" r=\"5\" fill=\"rgb(29, 29, 31)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g><text class=\"kui-gauge__value\" x=\"50\" y=\"83\" text-anchor=\"middle\" font-size=\"18\" fill=\"rgb(29, 29, 31)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb;font-family:ui-sans-serif,system-ui,sans-serif;font-size:18px;font-weight:500;font-style:normal;font-stretch:normal;font-variant-numeric:tabular-nums;text-anchor:middle;dominant-baseline:auto;letter-spacing:normal;word-spacing:0\">72</text></g></g></svg>"
+  },
+  {
+    "id": "gauge-full-errors-light",
+    "component": "gauge",
+    "variant": "full",
+    "key": "errors",
+    "theme": "light",
+    "name": "Gauge / Full / Errors / Light",
+    "box": {
+      "x": 332,
+      "y": 20,
+      "width": 88,
+      "height": 86.234375
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "gauge"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 88 86.234375\" width=\"88\" height=\"86.234375\"><g color=\"rgb(0, 0, 0)\"><g aria-hidden=\"true\" fill=\"rgb(0, 0, 0)\" stroke-width=\"1px\" font-family=\"ui-sans-serif, system-ui, sans-serif\" transform=\"translate(.003)scale(.87994)\"><path class=\"kui-gauge__track\" d=\"M13.6 71a42 42 0 1 1 72.8 0\" pathLength=\"100\" fill=\"none\" stroke=\"rgb(0, 0, 49)\" stroke-width=\"8px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M13.6 71A42 42 0 1 1 89.959 62.979\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(235, 0, 5)\" stroke-width=\"8px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"26.617\" y1=\"63.5\" x2=\"20.555\" y2=\"67\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\"/><line class=\"kui-gauge__tick\" x1=\"20.164\" y1=\"53.136\" x2=\"16.186\" y2=\"53.554\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"21.468\" y1=\"40.729\" x2=\"17.664\" y2=\"39.493\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"27.706\" y1=\"29.926\" x2=\"24.733\" y2=\"27.25\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"37.798\" y1=\"22.594\" x2=\"36.171\" y2=\"18.939\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"50\" y1=\"23\" x2=\"50\" y2=\"16\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\"/><line class=\"kui-gauge__tick\" x1=\"62.202\" y1=\"22.594\" x2=\"63.829\" y2=\"18.939\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"72.294\" y1=\"29.926\" x2=\"75.267\" y2=\"27.25\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"78.532\" y1=\"40.729\" x2=\"82.336\" y2=\"39.493\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick\" x1=\"79.836\" y1=\"53.136\" x2=\"83.814\" y2=\"53.554\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"73.383\" y1=\"63.5\" x2=\"79.445\" y2=\"67\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\"/><g class=\"kui-gauge__needle\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" transform=\"rotate(108 50 50)\"><line x1=\"50\" y1=\"50\" x2=\"50\" y2=\"25\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"4px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><circle cx=\"50\" cy=\"50\" r=\"5\" fill=\"rgb(29, 29, 31)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g><text class=\"kui-gauge__value\" x=\"50\" y=\"83\" text-anchor=\"middle\" font-size=\"18\" fill=\"rgb(29, 29, 31)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb;font-family:ui-sans-serif,system-ui,sans-serif;font-size:18px;font-weight:500;font-style:normal;font-stretch:normal;font-variant-numeric:tabular-nums;text-anchor:middle;dominant-baseline:auto;letter-spacing:normal;word-spacing:0\">9.5</text><text class=\"kui-gauge__unit\" x=\"50\" y=\"95\" text-anchor=\"middle\" font-size=\"11\" fill=\"rgb(29, 29, 31)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.75\" style=\"marker:none;vector-effect:none;color-interpolation:srgb;font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;font-weight:400;font-style:normal;font-stretch:normal;font-variant-numeric:tabular-nums;text-anchor:middle;dominant-baseline:auto;letter-spacing:normal;word-spacing:0\">%</text></g></g></svg>"
+  },
+  {
+    "id": "gauge-full-tokens-dark",
+    "component": "gauge",
+    "variant": "full",
+    "key": "tokens",
+    "theme": "dark",
+    "name": "Gauge / Full / Tokens / Dark",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 88,
+      "height": 86.234375
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "gauge"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 88 86.234375\" width=\"88\" height=\"86.234375\"><g color=\"rgb(255, 255, 255)\"><g aria-hidden=\"true\" fill=\"rgb(0, 0, 0)\" stroke-width=\"1px\" font-family=\"ui-sans-serif, system-ui, sans-serif\" transform=\"translate(.003)scale(.87994)\"><path class=\"kui-gauge__track\" d=\"M13.6 71a42 42 0 1 1 72.8 0\" pathLength=\"100\" fill=\"none\" stroke=\"rgb(253, 253, 255)\" stroke-width=\"8px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.133\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M13.6 71A42 42 0 0 1 36.196 10.38\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(100, 210, 255)\" stroke-width=\"8px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"26.617\" y1=\"63.5\" x2=\"20.555\" y2=\"67\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"20.164\" y1=\"53.136\" x2=\"16.186\" y2=\"53.554\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"21.468\" y1=\"40.729\" x2=\"17.664\" y2=\"39.493\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"27.706\" y1=\"29.926\" x2=\"24.733\" y2=\"27.25\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"37.798\" y1=\"22.594\" x2=\"36.171\" y2=\"18.939\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"50\" y1=\"23\" x2=\"50\" y2=\"16\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"62.202\" y1=\"22.594\" x2=\"63.829\" y2=\"18.939\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"72.294\" y1=\"29.926\" x2=\"75.267\" y2=\"27.25\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"78.532\" y1=\"40.729\" x2=\"82.336\" y2=\"39.493\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"79.836\" y1=\"53.136\" x2=\"83.814\" y2=\"53.554\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"73.383\" y1=\"63.5\" x2=\"79.445\" y2=\"67\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><g class=\"kui-gauge__needle\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" transform=\"rotate(-19.2 50 50)\"><line x1=\"50\" y1=\"50\" x2=\"50\" y2=\"25\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"4px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><circle cx=\"50\" cy=\"50\" r=\"5\" fill=\"rgb(245, 245, 247)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g><text class=\"kui-gauge__value\" x=\"50\" y=\"83\" text-anchor=\"middle\" font-size=\"18\" fill=\"rgb(245, 245, 247)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb;font-family:ui-sans-serif,system-ui,sans-serif;font-size:18px;font-weight:500;font-style:normal;font-stretch:normal;font-variant-numeric:tabular-nums;text-anchor:middle;dominant-baseline:auto;letter-spacing:normal;word-spacing:0\">420</text><text class=\"kui-gauge__unit\" x=\"50\" y=\"95\" text-anchor=\"middle\" font-size=\"11\" fill=\"rgb(245, 245, 247)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.75\" style=\"marker:none;vector-effect:none;color-interpolation:srgb;font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;font-weight:400;font-style:normal;font-stretch:normal;font-variant-numeric:tabular-nums;text-anchor:middle;dominant-baseline:auto;letter-spacing:normal;word-spacing:0\">tok/min</text></g></g></svg>"
+  },
+  {
+    "id": "gauge-full-tickets-dark",
+    "component": "gauge",
+    "variant": "full",
+    "key": "tickets",
+    "theme": "dark",
+    "name": "Gauge / Full / Tickets / Dark",
+    "box": {
+      "x": 124,
+      "y": 20,
+      "width": 88,
+      "height": 86.234375
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "gauge"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 88 86.234375\" width=\"88\" height=\"86.234375\"><g color=\"rgb(255, 255, 255)\"><g aria-hidden=\"true\" fill=\"rgb(0, 0, 0)\" stroke-width=\"1px\" font-family=\"ui-sans-serif, system-ui, sans-serif\" transform=\"translate(.003)scale(.87994)\"><path class=\"kui-gauge__track\" d=\"M13.6 71a42 42 0 1 1 72.8 0\" pathLength=\"100\" fill=\"none\" stroke=\"rgb(253, 253, 255)\" stroke-width=\"8px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.133\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M13.6 71A42 42 0 0 1 41.273 8.963\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(52, 199, 89)\" stroke-width=\"8px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"26.617\" y1=\"63.5\" x2=\"20.555\" y2=\"67\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"20.164\" y1=\"53.136\" x2=\"16.186\" y2=\"53.554\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"21.468\" y1=\"40.729\" x2=\"17.664\" y2=\"39.493\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"27.706\" y1=\"29.926\" x2=\"24.733\" y2=\"27.25\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"37.798\" y1=\"22.594\" x2=\"36.171\" y2=\"18.939\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"50\" y1=\"23\" x2=\"50\" y2=\"16\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"62.202\" y1=\"22.594\" x2=\"63.829\" y2=\"18.939\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"72.294\" y1=\"29.926\" x2=\"75.267\" y2=\"27.25\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"78.532\" y1=\"40.729\" x2=\"82.336\" y2=\"39.493\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"79.836\" y1=\"53.136\" x2=\"83.814\" y2=\"53.554\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"73.383\" y1=\"63.5\" x2=\"79.445\" y2=\"67\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><g class=\"kui-gauge__needle\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" transform=\"rotate(-12 50 50)\"><line x1=\"50\" y1=\"50\" x2=\"50\" y2=\"25\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"4px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><circle cx=\"50\" cy=\"50\" r=\"5\" fill=\"rgb(245, 245, 247)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g><text class=\"kui-gauge__value\" x=\"50\" y=\"83\" text-anchor=\"middle\" font-size=\"18\" fill=\"rgb(245, 245, 247)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb;font-family:ui-sans-serif,system-ui,sans-serif;font-size:18px;font-weight:500;font-style:normal;font-stretch:normal;font-variant-numeric:tabular-nums;text-anchor:middle;dominant-baseline:auto;letter-spacing:normal;word-spacing:0\">18</text><text class=\"kui-gauge__unit\" x=\"50\" y=\"95\" text-anchor=\"middle\" font-size=\"11\" fill=\"rgb(245, 245, 247)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.75\" style=\"marker:none;vector-effect:none;color-interpolation:srgb;font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;font-weight:400;font-style:normal;font-stretch:normal;font-variant-numeric:tabular-nums;text-anchor:middle;dominant-baseline:auto;letter-spacing:normal;word-spacing:0\">per hour</text></g></g></svg>"
+  },
+  {
+    "id": "gauge-full-queue-dark",
+    "component": "gauge",
+    "variant": "full",
+    "key": "queue",
+    "theme": "dark",
+    "name": "Gauge / Full / Queue / Dark",
+    "box": {
+      "x": 228,
+      "y": 20,
+      "width": 88,
+      "height": 86.234375
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "gauge"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 88 86.234375\" width=\"88\" height=\"86.234375\"><g color=\"rgb(255, 255, 255)\"><g aria-hidden=\"true\" fill=\"rgb(0, 0, 0)\" stroke-width=\"1px\" font-family=\"ui-sans-serif, system-ui, sans-serif\" transform=\"translate(.003)scale(.87994)\"><path class=\"kui-gauge__track\" d=\"M13.6 71a42 42 0 1 1 72.8 0\" pathLength=\"100\" fill=\"none\" stroke=\"rgb(253, 253, 255)\" stroke-width=\"8px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.133\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M13.6 71A42 42 0 0 1 83.44 24.635\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 204, 0)\" stroke-width=\"8px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"26.617\" y1=\"63.5\" x2=\"20.555\" y2=\"67\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"20.164\" y1=\"53.136\" x2=\"16.186\" y2=\"53.554\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"21.468\" y1=\"40.729\" x2=\"17.664\" y2=\"39.493\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"27.706\" y1=\"29.926\" x2=\"24.733\" y2=\"27.25\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"37.798\" y1=\"22.594\" x2=\"36.171\" y2=\"18.939\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"50\" y1=\"23\" x2=\"50\" y2=\"16\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"62.202\" y1=\"22.594\" x2=\"63.829\" y2=\"18.939\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"72.294\" y1=\"29.926\" x2=\"75.267\" y2=\"27.25\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"78.532\" y1=\"40.729\" x2=\"82.336\" y2=\"39.493\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"79.836\" y1=\"53.136\" x2=\"83.814\" y2=\"53.554\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"73.383\" y1=\"63.5\" x2=\"79.445\" y2=\"67\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><g class=\"kui-gauge__needle\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" transform=\"rotate(52.8 50 50)\"><line x1=\"50\" y1=\"50\" x2=\"50\" y2=\"25\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"4px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><circle cx=\"50\" cy=\"50\" r=\"5\" fill=\"rgb(245, 245, 247)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g><text class=\"kui-gauge__value\" x=\"50\" y=\"83\" text-anchor=\"middle\" font-size=\"18\" fill=\"rgb(245, 245, 247)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb;font-family:ui-sans-serif,system-ui,sans-serif;font-size:18px;font-weight:500;font-style:normal;font-stretch:normal;font-variant-numeric:tabular-nums;text-anchor:middle;dominant-baseline:auto;letter-spacing:normal;word-spacing:0\">72</text></g></g></svg>"
+  },
+  {
+    "id": "gauge-full-errors-dark",
+    "component": "gauge",
+    "variant": "full",
+    "key": "errors",
+    "theme": "dark",
+    "name": "Gauge / Full / Errors / Dark",
+    "box": {
+      "x": 332,
+      "y": 20,
+      "width": 88,
+      "height": 86.234375
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "gauge"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 88 86.234375\" width=\"88\" height=\"86.234375\"><g color=\"rgb(255, 255, 255)\"><g aria-hidden=\"true\" fill=\"rgb(0, 0, 0)\" stroke-width=\"1px\" font-family=\"ui-sans-serif, system-ui, sans-serif\" transform=\"translate(.003)scale(.87994)\"><path class=\"kui-gauge__track\" d=\"M13.6 71a42 42 0 1 1 72.8 0\" pathLength=\"100\" fill=\"none\" stroke=\"rgb(253, 253, 255)\" stroke-width=\"8px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.133\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M13.6 71A42 42 0 1 1 89.959 62.979\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(255, 56, 60)\" stroke-width=\"8px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"26.617\" y1=\"63.5\" x2=\"20.555\" y2=\"67\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"20.164\" y1=\"53.136\" x2=\"16.186\" y2=\"53.554\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"21.468\" y1=\"40.729\" x2=\"17.664\" y2=\"39.493\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"27.706\" y1=\"29.926\" x2=\"24.733\" y2=\"27.25\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"37.798\" y1=\"22.594\" x2=\"36.171\" y2=\"18.939\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"50\" y1=\"23\" x2=\"50\" y2=\"16\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"62.202\" y1=\"22.594\" x2=\"63.829\" y2=\"18.939\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"72.294\" y1=\"29.926\" x2=\"75.267\" y2=\"27.25\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"78.532\" y1=\"40.729\" x2=\"82.336\" y2=\"39.493\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick\" x1=\"79.836\" y1=\"53.136\" x2=\"83.814\" y2=\"53.554\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"1.5px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.45\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><line class=\"kui-gauge__tick kui-gauge__tick--major\" x1=\"73.383\" y1=\"63.5\" x2=\"79.445\" y2=\"67\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"2px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.8\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><g class=\"kui-gauge__needle\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" transform=\"rotate(108 50 50)\"><line x1=\"50\" y1=\"50\" x2=\"50\" y2=\"25\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"4px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><circle cx=\"50\" cy=\"50\" r=\"5\" fill=\"rgb(245, 245, 247)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g><text class=\"kui-gauge__value\" x=\"50\" y=\"83\" text-anchor=\"middle\" font-size=\"18\" fill=\"rgb(245, 245, 247)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb;font-family:ui-sans-serif,system-ui,sans-serif;font-size:18px;font-weight:500;font-style:normal;font-stretch:normal;font-variant-numeric:tabular-nums;text-anchor:middle;dominant-baseline:auto;letter-spacing:normal;word-spacing:0\">9.5</text><text class=\"kui-gauge__unit\" x=\"50\" y=\"95\" text-anchor=\"middle\" font-size=\"11\" fill=\"rgb(245, 245, 247)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"0.75\" style=\"marker:none;vector-effect:none;color-interpolation:srgb;font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;font-weight:400;font-style:normal;font-stretch:normal;font-variant-numeric:tabular-nums;text-anchor:middle;dominant-baseline:auto;letter-spacing:normal;word-spacing:0\">%</text></g></g></svg>"
+  },
+  {
+    "id": "gauge-bare-low-light",
+    "component": "gauge",
+    "variant": "bare",
+    "key": "low",
+    "theme": "light",
+    "name": "Gauge / Bare / Low / Light",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 40,
+      "height": 30.390625
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "gauge"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 40 30.390625\" width=\"40\" height=\"30.390625\"><g color=\"rgb(0, 0, 0)\"><g aria-hidden=\"true\" fill=\"rgb(0, 0, 0)\" stroke-width=\"1px\" font-family=\"ui-sans-serif, system-ui, sans-serif\" transform=\"translate(.006)scale(.39988)\"><path class=\"kui-gauge__track\" d=\"M13.6 71a42 42 0 1 1 72.8 0\" pathLength=\"100\" fill=\"none\" stroke=\"rgb(0, 0, 49)\" stroke-width=\"8px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><g class=\"kui-gauge__needle\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" transform=\"rotate(240 50 50)\"><line x1=\"50\" y1=\"50\" x2=\"50\" y2=\"16\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"4px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><circle cx=\"50\" cy=\"50\" r=\"5\" fill=\"rgb(29, 29, 31)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g></g></g></svg>"
+  },
+  {
+    "id": "gauge-bare-mid-light",
+    "component": "gauge",
+    "variant": "bare",
+    "key": "mid",
+    "theme": "light",
+    "name": "Gauge / Bare / Mid / Light",
+    "box": {
+      "x": 76,
+      "y": 20,
+      "width": 40,
+      "height": 30.390625
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "gauge"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 40 30.390625\" width=\"40\" height=\"30.390625\"><g color=\"rgb(0, 0, 0)\"><g aria-hidden=\"true\" fill=\"rgb(0, 0, 0)\" stroke-width=\"1px\" font-family=\"ui-sans-serif, system-ui, sans-serif\" transform=\"translate(.006)scale(.39988)\"><path class=\"kui-gauge__track\" d=\"M13.6 71a42 42 0 1 1 72.8 0\" pathLength=\"100\" fill=\"none\" stroke=\"rgb(0, 0, 49)\" stroke-width=\"8px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M13.6 71A42 42 0 0 1 32.927 11.673\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(0, 117, 219)\" stroke-width=\"8px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><g class=\"kui-gauge__needle\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" transform=\"rotate(-24 50 50)\"><line x1=\"50\" y1=\"50\" x2=\"50\" y2=\"16\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"4px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><circle cx=\"50\" cy=\"50\" r=\"5\" fill=\"rgb(29, 29, 31)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g></g></g></svg>"
+  },
+  {
+    "id": "gauge-bare-high-light",
+    "component": "gauge",
+    "variant": "bare",
+    "key": "high",
+    "theme": "light",
+    "name": "Gauge / Bare / High / Light",
+    "box": {
+      "x": 132,
+      "y": 20,
+      "width": 40,
+      "height": 30.390625
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "gauge"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 40 30.390625\" width=\"40\" height=\"30.390625\"><g color=\"rgb(0, 0, 0)\"><g aria-hidden=\"true\" fill=\"rgb(0, 0, 0)\" stroke-width=\"1px\" font-family=\"ui-sans-serif, system-ui, sans-serif\" transform=\"translate(.006)scale(.39988)\"><path class=\"kui-gauge__track\" d=\"M13.6 71a42 42 0 1 1 72.8 0\" pathLength=\"100\" fill=\"none\" stroke=\"rgb(0, 0, 49)\" stroke-width=\"8px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M13.6 71a42 42 0 1 1 72.8 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(0, 117, 219)\" stroke-width=\"8px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><g class=\"kui-gauge__needle\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" transform=\"rotate(120 50 50)\"><line x1=\"50\" y1=\"50\" x2=\"50\" y2=\"16\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(29, 29, 31)\" stroke-width=\"4px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><circle cx=\"50\" cy=\"50\" r=\"5\" fill=\"rgb(29, 29, 31)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g></g></g></svg>"
+  },
+  {
+    "id": "gauge-bare-low-dark",
+    "component": "gauge",
+    "variant": "bare",
+    "key": "low",
+    "theme": "dark",
+    "name": "Gauge / Bare / Low / Dark",
+    "box": {
+      "x": 20,
+      "y": 20,
+      "width": 40,
+      "height": 30.390625
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "gauge"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 40 30.390625\" width=\"40\" height=\"30.390625\"><g color=\"rgb(255, 255, 255)\"><g aria-hidden=\"true\" fill=\"rgb(0, 0, 0)\" stroke-width=\"1px\" font-family=\"ui-sans-serif, system-ui, sans-serif\" transform=\"translate(.006)scale(.39988)\"><path class=\"kui-gauge__track\" d=\"M13.6 71a42 42 0 1 1 72.8 0\" pathLength=\"100\" fill=\"none\" stroke=\"rgb(253, 253, 255)\" stroke-width=\"8px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.133\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><g class=\"kui-gauge__needle\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" transform=\"rotate(240 50 50)\"><line x1=\"50\" y1=\"50\" x2=\"50\" y2=\"16\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"4px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><circle cx=\"50\" cy=\"50\" r=\"5\" fill=\"rgb(245, 245, 247)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g></g></g></svg>"
+  },
+  {
+    "id": "gauge-bare-mid-dark",
+    "component": "gauge",
+    "variant": "bare",
+    "key": "mid",
+    "theme": "dark",
+    "name": "Gauge / Bare / Mid / Dark",
+    "box": {
+      "x": 76,
+      "y": 20,
+      "width": 40,
+      "height": 30.390625
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "gauge"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 40 30.390625\" width=\"40\" height=\"30.390625\"><g color=\"rgb(255, 255, 255)\"><g aria-hidden=\"true\" fill=\"rgb(0, 0, 0)\" stroke-width=\"1px\" font-family=\"ui-sans-serif, system-ui, sans-serif\" transform=\"translate(.006)scale(.39988)\"><path class=\"kui-gauge__track\" d=\"M13.6 71a42 42 0 1 1 72.8 0\" pathLength=\"100\" fill=\"none\" stroke=\"rgb(253, 253, 255)\" stroke-width=\"8px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.133\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M13.6 71A42 42 0 0 1 32.927 11.673\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(100, 210, 255)\" stroke-width=\"8px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><g class=\"kui-gauge__needle\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" transform=\"rotate(-24 50 50)\"><line x1=\"50\" y1=\"50\" x2=\"50\" y2=\"16\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"4px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><circle cx=\"50\" cy=\"50\" r=\"5\" fill=\"rgb(245, 245, 247)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g></g></g></svg>"
+  },
+  {
+    "id": "gauge-bare-high-dark",
+    "component": "gauge",
+    "variant": "bare",
+    "key": "high",
+    "theme": "dark",
+    "name": "Gauge / Bare / High / Dark",
+    "box": {
+      "x": 132,
+      "y": 20,
+      "width": 40,
+      "height": 30.390625
+    },
+    "layout": {
+      "display": "block",
+      "direction": "row",
+      "align": "normal",
+      "justify": "normal",
+      "gap": "normal",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "borderWidth": "0px",
+      "textAlign": "start",
+      "whiteSpace": "normal",
+      "overflow": "visible",
+      "component": "gauge"
+    },
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 40 30.390625\" width=\"40\" height=\"30.390625\"><g color=\"rgb(255, 255, 255)\"><g aria-hidden=\"true\" fill=\"rgb(0, 0, 0)\" stroke-width=\"1px\" font-family=\"ui-sans-serif, system-ui, sans-serif\" transform=\"translate(.006)scale(.39988)\"><path class=\"kui-gauge__track\" d=\"M13.6 71a42 42 0 1 1 72.8 0\" pathLength=\"100\" fill=\"none\" stroke=\"rgb(253, 253, 255)\" stroke-width=\"8px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"0.133\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><path d=\"M13.6 71a42 42 0 1 1 72.8 0\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"none\" stroke=\"rgb(100, 210, 255)\" stroke-width=\"8px\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\"/><g class=\"kui-gauge__needle\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\" fill=\"rgb(0, 0, 0)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" transform=\"rotate(120 50 50)\"><line x1=\"50\" y1=\"50\" x2=\"50\" y2=\"16\" fill=\"rgb(0, 0, 0)\" stroke=\"rgb(245, 245, 247)\" stroke-width=\"4px\" stroke-dasharray=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/><circle cx=\"50\" cy=\"50\" r=\"5\" fill=\"rgb(245, 245, 247)\" stroke=\"none\" stroke-width=\"1px\" stroke-dasharray=\"none\" stroke-linecap=\"butt\" stroke-linejoin=\"miter\" stroke-opacity=\"1\" fill-opacity=\"1\" opacity=\"1\" style=\"marker:none;vector-effect:none;color-interpolation:srgb\"/></g></g></g></svg>"
   }
 ]

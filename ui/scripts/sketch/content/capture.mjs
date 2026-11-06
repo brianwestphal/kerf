@@ -72,6 +72,62 @@ export function dashedArcsToPaths(svg) {
   });
 }
 
+/**
+ * Gauge draws its fill as a circular-arc `<path>` with `pathLength` and a
+ * `stroke-dasharray` (KF-RS788E). Sketch's SVG import ignores the dash and
+ * paints the whole arc, so cut the arc itself at the dash length instead:
+ * an empty dash drops the path, a full one keeps the arc undashed.
+ */
+export function dashedPathArcsToPaths(svg) {
+  return svg.replace(/<path\b([^>]*)\/>/g, (match, attrs) => {
+    const length = /\spathLength="([\d.]+)"/.exec(attrs);
+    const dash =
+      /\sstroke-dasharray="([\d.]+)(?:px)?[ ,]+([\d.]+)(?:px)?"/.exec(attrs);
+    const d = /\sd="([^"]*)"/.exec(attrs);
+    if (!length || !dash || !d) return match;
+    const arc =
+      /^M\s*([-\d.]+)[ ,]*([-\d.]+)\s*([aA])\s*([\d.]+)[ ,]+([\d.]+)[ ,]+[-\d.]+[ ,]+([01])[ ,]*([01])[ ,]*([-\d.]+)[ ,]*([-\d.]+)\s*$/.exec(
+        d[1].trim(),
+      );
+    if (!arc) return match;
+    const rest = attrs
+      .replace(/\s(?:pathLength|stroke-dasharray|class)="[^"]*"/g, '')
+      .replace(/stroke-dasharray:[^;"]*;?/g, '')
+      .replace(/\sstyle=""/g, '');
+    const fraction = Number(dash[1]) / Number(length[1]);
+    if (fraction <= 0) return '';
+    if (fraction >= 1) return `<path${rest}/>`;
+    const [x1, y1] = [Number(arc[1]), Number(arc[2])];
+    const relative = arc[3] === 'a';
+    const r = Number(arc[4]);
+    const large = arc[6] === '1';
+    const sweep = arc[7] === '1';
+    const x2 = relative ? x1 + Number(arc[8]) : Number(arc[8]);
+    const y2 = relative ? y1 + Number(arc[9]) : Number(arc[9]);
+    // SVG endpoint-to-center conversion for a circle (rx = ry, no rotation).
+    const mx = (x1 - x2) / 2;
+    const my = (y1 - y2) / 2;
+    const chord = Math.hypot(mx, my);
+    const radius = Math.max(r, chord);
+    const offset =
+      (large === sweep ? -1 : 1) *
+      Math.sqrt(Math.max(0, radius * radius - chord * chord));
+    const cx = (x1 + x2) / 2 + (offset * my) / chord;
+    const cy = (y1 + y2) / 2 - (offset * mx) / chord;
+    const start = Math.atan2(y1 - cy, x1 - cx);
+    let total = Math.atan2(y2 - cy, x2 - cx) - start;
+    if (sweep && total < 0) total += 2 * Math.PI;
+    if (!sweep && total > 0) total -= 2 * Math.PI;
+    const angle = start + total * fraction;
+    const point = (value) => Number(value.toFixed(3));
+    const end = [cx + radius * Math.cos(angle), cy + radius * Math.sin(angle)]
+      .map(point)
+      .join(' ');
+    const largeArc = Math.abs(total * fraction) > Math.PI ? 1 : 0;
+    return `<path d="M${point(x1)} ${point(y1)}A${point(radius)} ${point(radius)} 0 ${largeArc} ${sweep ? 1 : 0} ${end}"${rest.replace(/\sd="[^"]*"/, '')}/>`;
+  });
+}
+
 // Keys are authored per individual component. A showcase reorder must change
 // this table deliberately instead of silently moving a consumer's Symbol ID.
 export const targets = {
@@ -103,6 +159,10 @@ export const targets = {
     lines: ['control'],
     avatar: ['control'],
   },
+  gauge: {
+    full: ['tokens', 'tickets', 'queue', 'errors'],
+    bare: ['low', 'mid', 'high'],
+  },
 };
 
 export function verifyTargets() {
@@ -116,6 +176,7 @@ export function verifyTargets() {
       'state-banner',
       'empty-state',
       'skeleton',
+      'gauge',
     ].sort(),
   );
   let variants = 0;
@@ -139,8 +200,8 @@ export function verifyTargets() {
       individuals += keys.length;
     }
   }
-  assert.equal(variants, 20);
-  assert.equal(individuals, 28);
+  assert.equal(variants, 22);
+  assert.equal(individuals, 35);
 }
 
 const title = (value) =>
@@ -247,7 +308,9 @@ export async function captureContent(
               );
               const svg = restoreDotPaths(
                 foldStrokeAlpha(
-                  dashedArcsToPaths(await readFile(svgPath, 'utf8')),
+                  dashedPathArcsToPaths(
+                    dashedArcsToPaths(await readFile(svgPath, 'utf8')),
+                  ),
                 ),
               );
               assert.match(svg, /<svg\b/);

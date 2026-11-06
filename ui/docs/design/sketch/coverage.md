@@ -14,7 +14,7 @@ variant may be a multi-control showcase; a family ticket must export its actual
 individual component states and retain the sheet only as a catalog page.
 
 Every supported Symbol ships in one Library, [Kerf-UI.sketch](unified/README.md),
-with 312 light/dark Symbols assembled from the family build inputs. The Button
+with 326 light/dark Symbols assembled from the family build inputs. The Button
 pilot covers seven source showcase variants with 40 appearance Symbols
 ([Button](button/README.md)). The Form controls batch covers 20 showcase
 variants with 66 individual Symbols ([Forms](forms/README.md)). The Advanced
@@ -23,7 +23,7 @@ inputs batch covers 17 variants with 34 Symbols
 variants with 46 Symbols ([Lists and data](lists/README.md)). The Toolbars and
 navigation batch covers 25 variants with 70 Symbols for 35 individual controls
 ([Toolbars and navigation](toolbar/README.md)). The Content and feedback batch
-covers 20 variants with 56 Symbols for 28 reusable roots
+covers 22 variants with 70 Symbols for 35 reusable roots
 ([Content and feedback](content/README.md)). Every source variant now has a
 supported native batch; a new template variant must join a family here and be
 rebuilt into the unified Library. The catalog's
@@ -39,8 +39,7 @@ supported Sketch version.
 | Advanced inputs         |          7 |              17 | supported | KF-6CC071 |
 | Toolbars and navigation |          7 |              25 | supported | KF-6Q8S95 |
 | Lists and data          |          6 |              23 | supported | KF-83M2MW |
-| Content and feedback    |          7 |              20 | supported | KF-P0X4R9 |
-| Gauge                   |          1 |               2 | pending   | KF-RS788E |
+| Content and feedback    |          8 |              22 | supported | KF-P0X4R9 |
 
 ## Variant inventory
 
@@ -158,5 +157,5 @@ supported Sketch version.
 | skeleton              | block                | Single Block                                    | supported     | KF-P0X4R9 |
 | skeleton              | lines                | Paragraph Lines                                 | supported     | KF-P0X4R9 |
 | skeleton              | avatar               | Circular (Avatar)                               | supported     | KF-P0X4R9 |
-| gauge                 | full                 | Full, with Tones                                | pending       | KF-RS788E |
-| gauge                 | bare                 | Bare                                            | pending       | KF-RS788E |
+| gauge                 | full                 | Full, with Tones                                | supported     | KF-P0X4R9 |
+| gauge                 | bare                 | Bare                                            | supported     | KF-P0X4R9 |

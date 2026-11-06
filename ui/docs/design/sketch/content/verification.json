@@ -1,10 +1,10 @@
 {
-  "symbols": 56,
-  "nativeText": 88,
-  "nativePaths": 288,
+  "symbols": 70,
+  "nativeText": 102,
+  "nativePaths": 430,
   "bitmaps": 0,
   "assets": 26,
-  "assetBindings": 176,
+  "assetBindings": 249,
   "instances": [
     {
       "id": "disclosure-plain-advanced-settings-light",
@@ -131,6 +131,24 @@
       "fitWidth": 256,
       "wideWidth": 336,
       "height": 24
+    },
+    {
+      "id": "gauge-full-tokens-light",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 88,
+      "fitWidth": 88,
+      "wideWidth": 168,
+      "height": 86.234375
+    },
+    {
+      "id": "gauge-full-tokens-dark",
+      "linked": true,
+      "override": "Done",
+      "naturalWidth": 88,
+      "fitWidth": 88,
+      "wideWidth": 168,
+      "height": 86.234375
     }
   ],
   "reopened": [
@@ -213,6 +231,14 @@
     {
       "name": "Skeleton / Block / Control / Dark",
       "overrides": []
+    },
+    {
+      "name": "Gauge / Full / Tokens / Light",
+      "overrides": ["Done", "420"]
+    },
+    {
+      "name": "Gauge / Full / Tokens / Dark",
+      "overrides": ["Done", "420"]
     }
   ]
 }
