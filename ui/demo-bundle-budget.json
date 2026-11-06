@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 164600,
-  "totalJavaScriptGzip": 461500,
-  "measuredLargestJavaScriptGzip": 164549,
-  "measuredTotalJavaScriptGzip": 461491,
+  "totalJavaScriptGzip": 461700,
+  "measuredLargestJavaScriptGzip": 164546,
+  "measuredTotalJavaScriptGzip": 461672,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -7027,6 +7027,22 @@
         "measuredTotalJavaScriptGzip": 461491,
         "largestJavaScriptGzip": 164600,
         "totalJavaScriptGzip": 461500
+      }
+    },
+    {
+      "at": "2026-11-06T23:26:34.148Z",
+      "reason": "KF-YA45PW: wireComboboxes keeps an open list open across app renders (MutationObserver restore)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 164549,
+        "measuredTotalJavaScriptGzip": 461491,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 461500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 164546,
+        "measuredTotalJavaScriptGzip": 461672,
+        "largestJavaScriptGzip": 164600,
+        "totalJavaScriptGzip": 461700
       }
     }
   ]
