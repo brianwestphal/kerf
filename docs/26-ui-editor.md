@@ -1336,8 +1336,12 @@ composing document belongs beside its rows before they render.
       document or a play copy). A `$bind` prop is not traced, and the tab
       stays.
   - A repeated `#view`'s structural state (a TabNavigator's tab, a NavStack
-    pop) is still one play copy shared by its rows. `resolveView` gets no
-    row, so a per-row copy needs a decision (KF-HBRKFH feedback).
+    pop) is one play copy shared by its rows. **Decision** (KF-81R7GZ: the
+    maintainer chose to keep it shared): per-row copies would need either a
+    published `resolveView(src, path, inputs)` extension or structural state
+    recorded as row props, which cannot express a NavStack pop, so play keeps
+    one copy per `#view`. Value controls and TabBarItem selection stay per
+    row through row props.
 
 ## 4. The generated view module
 
