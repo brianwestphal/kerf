@@ -122,6 +122,8 @@ describe('node context menu', () => {
       { label: 'Move up', disabled: false },
       { label: 'Move down', disabled: true },
       { label: 'Duplicate', disabled: false },
+      // KF-D9P3NP: Extract to document needs storage, which this editor lacks.
+      { label: 'Extract to Document…', disabled: true },
       { label: 'Delete', disabled: false },
     ]);
   });
@@ -218,6 +220,7 @@ describe('node context menu', () => {
       { label: 'Move up', disabled: true },
       { label: 'Move down', disabled: true },
       { label: 'Duplicate', disabled: true },
+      { label: 'Extract to Document…', disabled: true },
       // KF-PK3GVY: deleting the root leaves the document rootless.
       { label: 'Delete', disabled: false },
     ]);

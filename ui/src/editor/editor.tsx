@@ -263,6 +263,11 @@ import {
   type ExportReport,
 } from './model/export.js';
 import {
+  extractProblem,
+  extractSuggestion,
+  extractToDocument,
+} from './model/extract.js';
+import {
   appParamFor,
   containerFor,
   documentInDeclaredOrder,
@@ -422,6 +427,9 @@ type InspectorArea = 'properties' | 'flow' | 'children';
 const SAVE_ACTION = 'editor-save';
 const SAVE_AS_ACTION = 'editor-save-as';
 const SAVE_AS_DIALOG = 'editor-save-as-dialog';
+/** KF-D9P3NP: Extract to document, and its Save As–style dialog. */
+const EXTRACT_ACTION = 'editor-extract';
+const EXTRACT_DIALOG = 'editor-extract-dialog';
 const UNDO_ACTION = 'editor-undo';
 const REDO_ACTION = 'editor-redo';
 const MOVE_UP_ACTION = 'editor-move-up';
@@ -1195,6 +1203,9 @@ export function createEditor(options: EditorOptions) {
   const documentArea = signal<DocumentArea>('outline');
   const inspectorArea = signal<InspectorArea>('properties');
   const saveAsError = signal('');
+  /** KF-D9P3NP: the Extract dialog's suggested path, and why it failed. */
+  const extractPath = signal('');
+  const extractError = signal('');
   const fieldErrors = signal<Readonly<Record<string, string>>>({});
   const addZone = signal('');
   const addComponent = signal('');
@@ -3005,6 +3016,34 @@ export function createEditor(options: EditorOptions) {
   );
 
   /**
+   * KF-D9P3NP: why node `id` cannot be extracted to a document of its own:
+   * the editor has no storage to save it in, or the node cannot leave.
+   */
+  const extractBlocked = (id: string) =>
+    autosave
+      ? extractProblem(doc.value, id)
+      : 'Extracting saves a new document, which needs the editor’s storage.';
+
+  /** Extract to › New document…, in the Flow area after Embed in. */
+  const extractSection = (node: ViewNode) => {
+    const blocked = extractBlocked(node.id);
+    return (
+      <List rootAttributes={{ 'data-editor-extract-section': '' }}>
+        <ListHeader label="Extract to" size="xs" />
+        <ListItem
+          label="New document…"
+          action={EXTRACT_ACTION}
+          itemId="extract"
+          disabled={!!blocked}
+          description={blocked}
+          trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
+          rootAttributes={{ 'data-editor-extract': 'open' }}
+        />
+      </List>
+    );
+  };
+
+  /**
    * The node context menu (KF-JV7XW1), opened at the pointer on an Outline
    * row or a canvas element, or from the keyboard: Embed in with the Flow
    * area's entries and legality, then the node commands the Inspector has.
@@ -3053,6 +3092,13 @@ export function createEditor(options: EditorOptions) {
                   label: 'Duplicate',
                   action: CONTEXT_DUPLICATE_ACTION,
                   disabled: !movable.placed,
+                },
+                {
+                  label: 'Extract to Document…',
+                  action: EXTRACT_ACTION,
+                  ...(extractBlocked(id!)
+                    ? { disabled: true, disabledReason: extractBlocked(id!) }
+                    : {}),
                 },
                 { kind: 'divider' },
                 {
@@ -4367,6 +4413,7 @@ export function createEditor(options: EditorOptions) {
         )}
         {viewsSection(node)}
         {embedSection()}
+        {extractSection(node)}
         {moveSection(node)}
       </List>
     );
@@ -4649,6 +4696,94 @@ export function createEditor(options: EditorOptions) {
   };
 
   /**
+   * KF-D9P3NP: Extract to document always asks where the new document goes,
+   * as Save As does, starting from a name beside this one.
+   */
+  const extractDialog = () => (
+    <DialogSurface
+      id={EXTRACT_DIALOG}
+      label="Extract to Document"
+      size="small"
+      footer={
+        <>
+          <Button rootAttributes={{ 'data-dialog-close': '' }}>Cancel</Button>
+          <Button
+            tone="brand"
+            action={EXTRACT_ACTION}
+            rootAttributes={{ 'data-editor-extract': 'confirm' }}
+          >
+            Extract
+          </Button>
+        </>
+      }
+    >
+      <TextField
+        label="Path"
+        name="path"
+        value={extractPath.value}
+        hint="A new .kui.json file inside the project. The node moves there, and this document shows it through a #view."
+        error={extractError.value || undefined}
+        spellcheck={false}
+        autocapitalize="off"
+        autocorrect="off"
+        rootAttributes={{ 'data-editor-extract': 'path' }}
+      />
+    </DialogSurface>
+  );
+
+  /**
+   * KF-D9P3NP: writes the selected node's subtree to a new document at the
+   * dialog's path and puts a `#view` of it in its place, one undoable edit.
+   * The file stays on Undo, as a Save As file does.
+   */
+  const extract = async (dialog: HTMLDialogElement) => {
+    const saver = autosave!;
+    const storage = options.storage!;
+    const id = selectedNodeId()!;
+    const from = saver.path.peek();
+    const given = dialog
+      .querySelector<HTMLInputElement>('[data-editor-extract="path"] input')!
+      .value.trim();
+    const path = viewPath('', given);
+    const fail = (message: string) => {
+      extractError.value = message;
+    };
+    if (!path?.endsWith('.kui.json') || isDraft(path))
+      return fail(
+        'Name a .kui.json file inside the project, outside the drafts folder.',
+      );
+    if (path === from) return fail('That is this document’s own file.');
+    const before = doc.peek();
+    const result = extractToDocument(before, id, {
+      documentPath: from,
+      path,
+      view: newNodeId(),
+      catalog: viewCatalog,
+      resolveView,
+    });
+    if ('error' in result) return fail(result.error);
+    try {
+      if ((await storage.read(path)) !== undefined)
+        return fail(`There is already a file at ${path}.`);
+      await saver.flush();
+      await storage.write(path, fileText(result.extracted));
+    } catch (error) {
+      return fail(error instanceof Error ? error.message : String(error));
+    }
+    if (doc.peek() !== before)
+      return fail('The document changed meanwhile; extract it again.');
+    batch(() => {
+      viewLoads.value = new Map(viewLoads.peek()).set(path, {
+        state: 'loaded',
+        document: result.extracted,
+      });
+      commit(result.document);
+      select({ kind: 'node', id: result.view });
+    });
+    closeDialog(dialog);
+  };
+
+  /**
    * KF-60BEEJ: play mode's play bar and stage (docs/26-ui-editor.md §11.1).
    * The stage's iframe loads this page as a play page, which asks for the
    * document once it listens (wirePlay).
@@ -4856,6 +4991,7 @@ export function createEditor(options: EditorOptions) {
             ]}
           />
           {autosave ? saveAsDialog(document) : undefined}
+          {autosave ? extractDialog() : undefined}
           {fieldDialog()}
           {iconDialog()}
           {embedDialog()}
@@ -6717,6 +6853,28 @@ export function createEditor(options: EditorOptions) {
           inspectorArea.value = target.dataset.tabId!.slice(
             'editor-inspector-areas-'.length,
           ) as InspectorArea;
+        },
+        [EXTRACT_ACTION]: (_event, target) => {
+          const dialog = root.querySelector<HTMLDialogElement>(
+            `#${EXTRACT_DIALOG}`,
+          )!;
+          if (target.dataset.editorExtract === 'confirm') {
+            void extract(dialog);
+            return;
+          }
+          const path = autosave!.path.peek();
+          extractError.value = '';
+          extractPath.value = extractSuggestion(
+            doc.value,
+            isDraft(path) ? undefined : path,
+            selectedNodeId()!,
+          );
+          // A path typed last time is not this node's: start from the
+          // suggestion even when it is the same text as before.
+          dialog.querySelector<HTMLInputElement>(
+            '[data-editor-extract="path"] input',
+          )!.value = extractPath.value;
+          openDialog(dialog);
         },
         [SAVE_AS_ACTION]: (_event, target) => {
           const dialog = root.querySelector<HTMLDialogElement>(

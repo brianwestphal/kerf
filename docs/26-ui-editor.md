@@ -1098,9 +1098,9 @@ differ by kind either vary inside one row component through `$if`, or pick a
 row design per item through an `$if`-chain template or a `templates` map
 keyed by the item's kind (above; KF-B5JFTM chose both). The editor authors
 both in the Repeat section's Row designs (KF-1CRGP1, KF-YX6HMT), and renders
-and inspects a `#view` row document and opens it (KF-5N26H6, §3.7);
-inserting one from a document picker (KF-PX5EVZ) and extracting a subtree
-into one (KF-D9P3NP) are not built yet.
+and inspects a `#view` row document and opens it (KF-5N26H6, §3.7), and
+extracts a selected row (or any subtree) into one (KF-D9P3NP, §3.7);
+inserting one from a document picker (KF-PX5EVZ) is not built yet.
 
 There are no other control-flow forms. Anything richer belongs in application
 code behind a slot.
@@ -1162,6 +1162,40 @@ composing document belongs beside its rows before they render.
   Opening a document any other way (Open, New, a reload) ends the trail.
 - **Export and Compare** generate the composing document's module with its
   composed documents, as the CLI does.
+- **Extract to document** (KF-D9P3NP: row template phase 3). On a selected
+  node, including an `$each` template or one row design of an `$if` chain or
+  a kinds map, the Flow area's **Extract to › New document…** (and the node
+  context menu's **Extract to Document…**) opens a Save As–style dialog.
+  **Decision: it always asks for the path**, suggesting one beside the
+  current document named from the document and the node
+  (`views/messages.kui.json` and a ListItem suggest
+  `views/messages-list-item.kui.json`; a named node uses its name).
+  - The new document's root is the subtree, its name comes from the file
+    (`MessagesListItem`), and it keeps the composing document's catalogs.
+    Every value the subtree reads from outside itself becomes one of its
+    params. A `$param p` (or a `$bind` into one) copies that param's
+    definition. A `$bind message.subject` into an enclosing `$each` item
+    becomes a param named for the field (`subject`; `messageSubject` when a
+    copied param already holds that name), typed from the item's type, and
+    reads as `$param subject` (a deeper `message.meta.title` as
+    `$bind meta.title`). A repeat inside the subtree keeps its own item.
+  - A `#view` takes the subtree's place, its `src` relative to the
+    composing document, and its props pass each value back
+    (`{ "subject": { "$bind": "message.subject" } }`, `$param p`). It is
+    selected, and the canvas renders the new document in place at once.
+  - It is refused, with the reason in the dialog, when the path is not a
+    new `.kui.json` file inside the project and outside the drafts folder,
+    when a read has no known type (a repeat over a literal list), and when
+    the result has a problem the document did not, for example a row with
+    its own keyed repeat (`KUI-V016`) or an action the other row designs
+    share in the row's scope (a composed document's actions are its own
+    view's). A subtree that composes documents extracts only into the same
+    folder, since nested sources resolve from the top document (KF-3X7MFF).
+  - It is disabled with its reason on the root (Save As copies a whole
+    document), on a subtree holding a `$slot` (a composed document cannot
+    declare slots), and without storage.
+  - One Undo restores the original subtree. The new file stays, as a file
+    Save As wrote does.
 
 Play mode does not load composed documents yet: a `#view` plays as a
 placeholder (KF-85SCQD). Nested sources resolve from the top document, as `kerf-ui-view` resolves them today (KF-3X7MFF).
