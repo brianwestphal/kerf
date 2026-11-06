@@ -558,11 +558,15 @@ test('an embedded PopoverDialogSurface renders the same surface in flow', async 
     const split = element
       .querySelector('[data-component="split-view"]')!
       .getBoundingClientRect();
+    const style = window.getComputedStyle(element);
     return {
-      position: window.getComputedStyle(element).position,
+      position: style.position,
       height: Math.round(rect.height),
       fitsParent: rect.right <= parent.right + 1,
       split: Math.round(split.height),
+      // KF-ENXYEB: its border, without a drop shadow a scroll area clips.
+      shadow: style.boxShadow,
+      border: `${style.borderTopWidth} ${style.borderTopStyle}`,
     };
   });
   expect(geometry).toEqual({
@@ -570,6 +574,8 @@ test('an embedded PopoverDialogSurface renders the same surface in flow', async 
     height: 280,
     fitsParent: true,
     split: 278,
+    shadow: 'none',
+    border: '1px solid',
   });
 });
 

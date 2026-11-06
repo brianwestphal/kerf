@@ -810,6 +810,10 @@ h2.kui-dialog-surface__title {
   max-width: -moz-available;
   max-width: stretch;
   margin: 0;
+  /* In flow it is a panel, not an elevated layer: its border alone, as an
+     embedded DialogSurface. A scrolling container (a Pane's content) clips
+     the drop shadow to a square box (KF-ENXYEB). */
+  box-shadow: none;
 }
 
 /* PinnablePopoverSurface: a native popover="manual" surface that
@@ -926,6 +930,8 @@ h2.kui-dialog-surface__title {
   max-width: -moz-available;
   max-width: stretch;
   margin: 0;
+  /* Its border alone, as an embedded PopoverDialogSurface (KF-ENXYEB). */
+  box-shadow: none;
 }
 
 /* The header is the move handle: the title, then the header actions, Pin,

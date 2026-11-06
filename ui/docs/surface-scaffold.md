@@ -522,7 +522,8 @@ else, so move focus into it with `autofocus` on its first control when that
 matters. A closed surface stays hidden; only the open one lays out.
 `presentation="embedded"` renders the same surface in flow, with no top
 layer and never wider than its container, for a catalog specimen or an inline
-preview.
+preview. In flow it draws its border without the drop shadow, which a
+scrolling container would clip to a square box.
 
 ```tsx
 <button type="button" popoverTarget="repository-status">Repository Status</button>
@@ -607,8 +608,8 @@ The controller keeps its pinned state, placement, and the Pin toggle's
 `aria-pressed` across application re-renders. An application that closes the
 panel after a task (a drop from a library) checks `isPopoverPinned()` first.
 `presentation="embedded"` (with `pinned` for the pinned look) renders it in
-flow for a catalog or a design canvas; `wirePinnablePopover` leaves an
-embedded surface alone.
+flow for a catalog or a design canvas, with its border and no drop shadow;
+`wirePinnablePopover` leaves an embedded surface alone.
 
 Wrap one `PopupMenu` (or another single `wa-dropdown`) with `PopupSurface`. `inset="list-zero"` removes menu
 padding for a child that already owns row insets, `compact` uses 4px, and

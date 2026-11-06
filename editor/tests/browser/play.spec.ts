@@ -1257,6 +1257,14 @@ test('a pinnable popover shows embedded on the canvas and pins in play', async (
   await expect(shown).toBeVisible();
   await expect(shown).toHaveAttribute('data-presentation', 'embedded');
   await expect(shown).not.toHaveAttribute('popover');
+  // KF-ENXYEB: in flow it draws its border, not a drop shadow the canvas's
+  // scrolling Pane would clip to a square box.
+  expect(
+    await shown.evaluate((surface) => [
+      getComputedStyle(surface).boxShadow,
+      getComputedStyle(surface).borderTopStyle,
+    ]),
+  ).toEqual(['none', 'solid']);
   await canvas.getByText('Drag a component onto the page.').click();
   await expect(page.locator('.kui-editor__selection')).toBeVisible();
   await page.screenshot({
